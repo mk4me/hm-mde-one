@@ -1,8 +1,10 @@
 #include "PCH.h"
 #include "TrajectoriesDialog.h"
-#include <QtGui/QTreeWidget>
+#include <QtWidgets/QTreeWidget>
 #include <boost/array.hpp>
 #include "TrajectoriesDrawer.h"
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QColorDialog>
 
 class SchemeElementWidgetItem : public QTreeWidgetItem
 {
@@ -164,7 +166,7 @@ void SchemeParametersEditor::onItemChanged(QTreeWidgetItem * current, int column
 
 //
 //
-//#include <QtGui/QTableView>
+//#include <QtWidgets/QTableView>
 //#include "TrajectoriesDialog.h"
 
 
@@ -285,14 +287,14 @@ void TrajectoriesDialog::startTimeChanged( double time )
             QTreeWidgetItem* item = topItem->child(i);
             if (item && item->isSelected()) {
                 std::string name = item->text(1).toStdString();
-                auto manager = item2Root[topItem];
-                auto idx = item2Trajectories[item];
+				TrajectoryDrawerManagerPtr manager = item2Root[topItem];
+				int idx = item2Trajectories[item];
                 IRangeDrawer::Range times = manager->range(idx);
                 blockAllSignals(true);
                 startTimeSpin->setValue(time);
                 startSlider->setValue(time);
                 blockAllSignals(false);
-                manager->setRange(idx, std::make_pair<int, int>(time, times.second));
+                manager->setRange(idx, std::make_pair(static_cast<int>(time), times.second));
                 //currentTrajectories->setTimes(name, std::make_pair(static_cast<float>(time), times.second));
             }
         }
@@ -316,7 +318,7 @@ void TrajectoriesDialog::endTimeChanged( double time )
                 blockAllSignals(false);
                 //const std::pair<float, float>& times = currentTrajectories->getTimes(name);
 
-                manager->setRange(idx, std::make_pair<int, int>(times.first, time));
+                manager->setRange(idx, std::make_pair(times.first, static_cast<int>(time)));
                 //currentTrajectories->setTimes(name, std::make_pair(times.first, static_cast<float>(time)));
             }
         }

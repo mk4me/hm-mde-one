@@ -11,7 +11,7 @@
 
 #include <coreui/Export.h>
 #include <map>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 class QMainWindow;
 class QToolBar;

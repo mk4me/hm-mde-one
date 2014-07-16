@@ -2,7 +2,7 @@
 #include <coreui/CoreSplitableDockWidget.h>
 #include <coreui/CoreAction.h>
 #include <utils/Debug.h>
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QMainWindow>
 
 using namespace coreUI;
 

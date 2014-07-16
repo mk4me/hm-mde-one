@@ -2,12 +2,12 @@
 #include "LayeredImageVisualizer.h"
 #include <plugins/dicom/ILayeredImage.h>
 #include <QtGui/QPixmap>
-#include <QtGui/QLabel>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QSlider>
-#include <QtGui/QPushButton>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QSlider>
+#include <QtWidgets/QPushButton>
 #include "LayeredImageVisualizerView.h"
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include "BackgroundLayer.h"
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/archive/xml_iarchive.hpp>
@@ -19,7 +19,7 @@
 #include "corelib/ISourceManager.h"
 #include "plugins/newCommunication/IDownloadRequest.h"
 #include "coreui/CorePopup.h"
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 #include "IDicomService.h"
 #include <corelib/IServiceManager.h>
 

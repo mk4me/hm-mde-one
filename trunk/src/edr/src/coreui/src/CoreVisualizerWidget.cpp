@@ -1,11 +1,11 @@
 #include "CoreUiPCH.h"
 #include <coreui/CoreVisualizerWidget.h>
 
-#include <QtGui/QLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QComboBox>
-#include <QtGui/QMenu>
-#include <QtGui/QToolButton>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QToolButton>
 #include <iterator>
 #include <corelib/StringTools.h>
 #include <boost/foreach.hpp>

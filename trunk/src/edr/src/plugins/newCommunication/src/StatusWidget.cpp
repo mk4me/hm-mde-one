@@ -1,7 +1,7 @@
 #include "CommunicationPCH.h"
 #include "StatusWidget.h"
 #include <QtCore/QTimer>
-#include <QtGui/QToolTip>
+#include <QtWidgets/QToolTip>
 #include <coreui/CorePopup.h>
 
 communication::StatusWidget::StatusWidget(ServerStatusManagerConstWeakPtr statusManager, const std::string& pingUrl, QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/ ) :

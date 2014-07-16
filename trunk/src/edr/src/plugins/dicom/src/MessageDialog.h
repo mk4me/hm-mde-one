@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___MESSAGEDIALOG_H__
 #define HEADER_GUARD___MESSAGEDIALOG_H__
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 #include "ui_messageDialog.h"
 
 class MessageDialog : public QDialog, public Ui::MessageDialog

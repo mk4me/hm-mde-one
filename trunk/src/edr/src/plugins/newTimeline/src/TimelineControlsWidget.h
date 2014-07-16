@@ -10,7 +10,7 @@
 #define HEADER_GUARD_TIMELINE__TIMELINECONTROLSWIDGET_H__
 
 #include "ui_TimelineControlsWidget.h"
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 class TimelineControlsWidget : public QWidget, public Ui::TimelineControlsWidget
 {

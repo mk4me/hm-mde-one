@@ -6,7 +6,7 @@
 #include <boost/shared_ptr.hpp>
 #include <osg/Vec3>
 #include <osg/Vec4>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 
 namespace kinematic
 {
@@ -48,11 +48,11 @@ public:
 private:
     //! Wczytanie połączeń między markerami
     //! \param sticks Element pliku vsk zawierający połączenia
-    void readSticks(TiXmlElement* sticks);
+    void readSticks(tinyxml2::XMLElement* sticks);
 
     //! wczytanie danych markerow
     //! \param markers Element pliku vsk zawierający dane markerow
-    void readMarkers(TiXmlElement* markers);
+    void readMarkers(tinyxml2::XMLElement* markers);
 
 private:
     //! czy plik został wczytany

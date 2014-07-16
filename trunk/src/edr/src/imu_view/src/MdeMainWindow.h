@@ -2,7 +2,7 @@
 #define HMM_TOOLBOXMAIN_H
 
 #include <map>
-#include <QtGui/QToolButton>
+#include <QtWidgets/QToolButton>
 #include <coreui/IMdeTab.h>
 #include <corelib/PluginCommon.h>
 #include <coreui/CoreMainWindow.h>

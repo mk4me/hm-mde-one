@@ -1,7 +1,7 @@
 #include "DicomPCH.h"
 #include "PointsLayer.h"
-#include <QtGui/QGraphicsItemGroup>
-#include <QtGui/QGraphicsPathItem>
+#include <QtWidgets/QGraphicsItemGroup>
+#include <QtWidgets/QGraphicsPathItem>
 #include <QtGui/QPen>
 #include "spline.h"
 #include "boost/serialization/export.hpp"

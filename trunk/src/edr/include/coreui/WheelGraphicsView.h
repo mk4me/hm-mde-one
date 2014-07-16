@@ -11,7 +11,7 @@
 #define HEADER_GUARD_COREUI__WHEELGRAPHICSVIEW_H__
 
 
-#include <QtGui/QGraphicsView> 
+#include <QtWidgets/QGraphicsView> 
 #include <coreui/Export.h>
 
 class QWheelEvent;

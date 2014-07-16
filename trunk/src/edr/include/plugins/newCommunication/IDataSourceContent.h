@@ -10,7 +10,7 @@
 #define HEADER_GUARD___IDATASOURCECONTENT_H__
 
 #include <plugins/newCommunication/DataSourceShallowCopy.h>
-#include <QtGui/QTreeWidgetItem>
+#include <QtWidgets/QTreeWidgetItem>
 
 namespace communication
 {

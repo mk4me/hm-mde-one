@@ -1,9 +1,9 @@
 //#include "NewVdfPCH.h"
 //#include "VdfView.h"
 //#include "SimpleItem.h"
-//#include <QtGui/QGraphicsScene>
-//#include <QtGui/QGraphicsView>
-//#include <QtGui/QHBoxLayout>
+//#include <QtWidgets/QGraphicsScene>
+//#include <QtWidgets/QGraphicsView>
+//#include <QtWidgets/QHBoxLayout>
 //
 //using namespace vdf;
 //

@@ -18,6 +18,6 @@
 #include <utils/Utils.h>
 #include <utils/Debug.h>
 #include <utils/Enum.h>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 
 #endif

@@ -2,8 +2,8 @@
 #include <coreui/CorePopup.h>
 #include "CorePopupPrivate.h"
 #include <coreui/CoreCursorChanger.h>
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QDesktopWidget>
 #include <QtCore/QThread>
 #include <QtCore/QCoreApplication>
 

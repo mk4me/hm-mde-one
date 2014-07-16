@@ -16,12 +16,12 @@
 #include "NotesWidget.h"
 #include "QMultiToolBox.h"
 
-#include <QtGui/QFrame>
-#include <QtGui/QTextEdit>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QLabel>
-#include <QtGui/QToolButton>
-#include <QtGui/QListWidget>
+#include <QtWidgets/QFrame>
+#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QListWidget>
 
 //! domyślny widget obsługujący karte pacjenta
 class DefaultPatientCardWidget : public QFrame

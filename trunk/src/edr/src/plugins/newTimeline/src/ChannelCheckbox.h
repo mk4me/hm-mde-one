@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_TIMELINE__CHANELCHECKBOX_H__
 #define HEADER_GUARD_TIMELINE__CHANELCHECKBOX_H__
 
-#include <QtGui/QCheckBox>
+#include <QtWidgets/QCheckBox>
 #include <timelinelib/Model.h>
 
 class ChannelCheckBox : public QCheckBox

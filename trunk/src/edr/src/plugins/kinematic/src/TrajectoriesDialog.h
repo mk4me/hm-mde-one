@@ -12,7 +12,7 @@
 
 #include <corelib/IVisualizer.h>
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 class QTreeWidget;
 class QTreeWidgetItem;

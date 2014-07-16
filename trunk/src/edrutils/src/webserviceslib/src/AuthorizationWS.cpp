@@ -1,5 +1,4 @@
 #include <webserviceslib/AuthorizationWS.h>
-#include <tinyxml.h>
 
 namespace webservices
 {
@@ -62,7 +61,7 @@ const std::string AuthorizationWS::listUsers() const
 
 	auto r = c->xmlResponse();
 
-	TiXmlDocument document;
+	tinyxml2::XMLDocument document;
 
 	{
 		if(!document.Parse(r.c_str())) {
@@ -70,23 +69,23 @@ const std::string AuthorizationWS::listUsers() const
 		}
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hParent(0);
+	tinyxml2::XMLHandle hDocument(&document);
+	tinyxml2::XMLElement* _element;
+	tinyxml2::XMLHandle hParent(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().ToElement();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
-	hParent = TiXmlHandle(_element);
+	hParent = tinyxml2::XMLHandle(_element);
 
-	TiXmlElement* trials = hParent.FirstChild("ListUsersResponse").ToElement();
+	tinyxml2::XMLElement* trials = hParent.FirstChildElement("ListUsersResponse").ToElement();
 	trials = trials->FirstChildElement("UserList");	
-	TiXmlElement* user_details = trials->FirstChildElement("UserDetails");
+	tinyxml2::XMLElement* user_details = trials->FirstChildElement("UserDetails");
 	while(user_details != nullptr) {
 		UserDetails userDetails;
 
-		TiXmlElement* ud = user_details->FirstChildElement();
+		tinyxml2::XMLElement* ud = user_details->FirstChildElement();
 
 		if(ud != nullptr){
 			userDetails.login = ud->GetText();
@@ -164,7 +163,7 @@ const std::string AuthorizationWS::listSessionPrivileges(const int sessionID) co
 
 	auto r = c->xmlResponse();
 
-	TiXmlDocument document;
+	tinyxml2::XMLDocument document;
 
 	{
 		if(!document.Parse(r.c_str())) {
@@ -172,23 +171,23 @@ const std::string AuthorizationWS::listSessionPrivileges(const int sessionID) co
 		}
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hParent(0);
+	tinyxml2::XMLHandle hDocument(&document);
+	tinyxml2::XMLElement* _element;
+	tinyxml2::XMLHandle hParent(0);
 
-	_element = hDocument.FirstChildElement().Element();
+	_element = hDocument.FirstChildElement().ToElement();
 	if(!_element) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
-	hParent = TiXmlHandle(_element);
+	hParent = tinyxml2::XMLHandle(_element);
 
-	TiXmlElement* trials = hParent.FirstChild("ListSessionPrivilegesResponse").ToElement();
+	tinyxml2::XMLElement* trials = hParent.FirstChildElement("ListSessionPrivilegesResponse").ToElement();
 	trials = trials->FirstChildElement("SessionPrivilegeList");	
-	TiXmlElement* session_privileges = trials->FirstChildElement("SessionPrivilege");
+	tinyxml2::XMLElement* session_privileges = trials->FirstChildElement("SessionPrivilege");
 	while(session_privileges != nullptr) {
 		SessionPrivilege sessionPrivilege;
 
-		TiXmlElement* sp = session_privileges->FirstChildElement();
+		tinyxml2::XMLElement* sp = session_privileges->FirstChildElement();
 
 		if(sp != nullptr){
 			sessionPrivilege.login = sp->GetText();

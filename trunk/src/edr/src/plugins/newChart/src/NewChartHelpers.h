@@ -10,9 +10,9 @@
 #ifndef HEADER_GUARD_NEW_CHART__NEWCHARTHELPERS_H__
 #define HEADER_GUARD_NEW_CHART__NEWCHARTHELPERS_H__
 
-#include <QtGui/QWidget>
-#include <QtGui/QLabel>
-#include <QtGui/QDoubleSpinBox>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QDoubleSpinBox>
 
 //! Klasa tworzy widget z dwoma potomkami : QLabel i QDoubleSpinBox
 class LabeledSpinbox

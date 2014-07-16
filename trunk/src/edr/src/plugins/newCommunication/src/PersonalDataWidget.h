@@ -10,7 +10,9 @@
 #define HEADER_GUARD___PERSONALDATAWIDGET_H__
 
 #include "ui_PersonalDataWidget.h"
-#include <QtGui/QFrame>
+#include <QtWidgets/QFrame>
+// TODO gdzie jeszcze jest jakiœ min? Wszêdzie przed Windows.h wstawi³em NOMINMAX
+#undef min
 #include <QtCore/QDate>
 
 class PersonalDataWidget : public QFrame, public Ui::PersonalDataWidget

@@ -11,7 +11,7 @@
 #define HEADER_GUARD_COREUI__DATAFILTERWIDGET_H__
 
 #include <QtCore/QString>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <boost/date_time.hpp>
 #include <boost/function.hpp>
 #include <osg/Vec3>

@@ -19,7 +19,6 @@
 #include <iostream>
 
 #include <QtCore/QtCore>
-#include <QtGui/QtGui>
 
 #include <utils/Debug.h>
 #include <utils/Enum.h>

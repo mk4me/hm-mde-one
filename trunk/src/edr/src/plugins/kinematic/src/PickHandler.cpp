@@ -1,6 +1,6 @@
 #include "PCH.h"
 #include "PickHandler.h"
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 #include <set>
 PickHandler::PickHandler( HandlerFunction callback ) :
     handlerFunction(callback)

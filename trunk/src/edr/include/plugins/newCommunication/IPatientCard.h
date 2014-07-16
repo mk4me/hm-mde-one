@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___IPATIENTCARD_H__
 #define HEADER_GUARD___IPATIENTCARD_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtGui/QPixmap>
 #include <webserviceslib/ShallowCopy.h>
 #include <plugins/newCommunication/IDataSourceUserData.h>

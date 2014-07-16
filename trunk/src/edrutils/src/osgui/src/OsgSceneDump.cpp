@@ -1,7 +1,7 @@
 #include "PCH.h"
 #include <fstream>
 #include <boost/lexical_cast.hpp>
-#include <QtGui/QTreeWidgetItem>
+#include <QtWidgets/QTreeWidgetItem>
 #include <osgui/OsgSceneDump.h>
 
 using namespace osgui;

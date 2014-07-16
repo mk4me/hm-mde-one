@@ -1,10 +1,12 @@
 #include "NewVdfPCH.h"
 #include "PresetsWidget.h"
-#include <QtGui/QListWidget>
-#include <QtGui/QLayout>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QLayout>
 
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
+#include <QtWidgets/QPushButton>
+#include "QtWidgets/QFileDialog"
 
 vdf::PresetsWidget::PresetsWidget( SceneModelPtr scene, TypesWindow* tw ) :
     model(scene), 

@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEWVDF__UNIVERSALSOURCE_H__
 #define HEADER_GUARD_NEWVDF__UNIVERSALSOURCE_H__
 
-#include <QtGui/QTreeView>
+#include <QtWidgets/QTreeView>
 #include <corelib/HierarchyItem.h>
 #include <corelib/HierarchyDataItem.h>
 #include <plugins/newVdf/TypeFilter.h>
@@ -63,7 +63,7 @@ namespace vdf {
         virtual QWidget* getConfigurationWidget() { return tree; }
         virtual bool isNodeValid()
         {
-            return tryGetSelectedItem();
+			return tryGetSelectedItem() != core::IHierarchyItemConstPtr();
         }
         virtual QString getErrorMessage()
         {

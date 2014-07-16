@@ -10,8 +10,8 @@
 #define HEADER_GUARD_CORE__CORETITLEBAR_H__
 
 #include <coreui/Export.h>
-#include <QtGui/QWidget>
-#include <QtGui/QDockWidget>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QDockWidget>
 #include <map>
 
 class QToolBar;

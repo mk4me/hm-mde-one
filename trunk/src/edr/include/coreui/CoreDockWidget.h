@@ -10,7 +10,7 @@
 #define HEADER_GUARD_CORE__COREDOCKWIDGET_H__
 
 #include <coreui/Export.h>
-#include <QtGui/QDockWidget>
+#include <QtWidgets/QDockWidget>
 
 namespace coreUI {
 

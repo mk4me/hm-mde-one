@@ -3,7 +3,7 @@
 #include <plugins/subject/ISession.h>
 #include <plugins/subject/IMotion.h>
 #include <corelib/IDataHierarchyManagerReader.h>
-#include <QtGui/QDockWidget>
+#include <QtWidgets/QDockWidget>
 #include <plugins/newTimeline/ITimelineService.h>
 #include <corelib/IServiceManager.h>
 

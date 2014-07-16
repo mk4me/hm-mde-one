@@ -11,8 +11,8 @@
 
 #include <coreui/Export.h>
 #include <corelib/Visualizer.h>
-#include <QtGui/QWidget>
-#include <QtGui/QComboBox>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QComboBox>
 
 namespace coreUI{
 

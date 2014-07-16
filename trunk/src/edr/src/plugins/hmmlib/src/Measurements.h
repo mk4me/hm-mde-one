@@ -15,7 +15,7 @@
 #include <utils/SmartPtr.h>
 //#include <boost/bimap.hpp>
 
-class TiXmlElement;
+class tinyxml2::XMLElement;
 
 //! W klasie przechowywana jest konkretna konfiguracja EMG
 class MeasurementConfig
@@ -131,11 +131,11 @@ private:
     //! Wczytuje caly konfig
     //! \param element 
     //! \param config 
-    void readMeasurment(TiXmlElement* element, MeasurementConfigPtr config );
+    void readMeasurment(tinyxml2::XMLElement* element, MeasurementConfigPtr config );
     //! wczytuje wpisy konfigu
     //! \param A 
     //! \param entry 
-    void readAttribute(TiXmlElement* A, MeasurementConfig::MapEntry& entry); 
+    void readAttribute(tinyxml2::XMLElement* A, MeasurementConfig::MapEntry& entry); 
 
 private:
     //! czy dane zostały już poprawnie zaladowane

@@ -9,8 +9,8 @@
 #ifndef HEADER_GUARD___IDATASOURCEPERSPECTIVE_H__
 #define HEADER_GUARD___IDATASOURCEPERSPECTIVE_H__
 
-#include <QtGui/QTreeWidget>
-#include <QtGui/QTreeWidgetItem>
+#include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QTreeWidgetItem>
 #include <plugins/newCommunication/IDataSourceStatusManager.h>
 #include <plugins/newCommunication/DataSourceShallowCopy.h>
 #include <webserviceslib/Entity.h>

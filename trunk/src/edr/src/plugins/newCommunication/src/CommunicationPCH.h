@@ -3,7 +3,7 @@
 
 #ifndef DISABLE_PRECOMPILED_HEADERS
 
-#include <tinyxml.h>
+#include <tinyxml2.h>
 #include <OpenThreads/Thread>
 #include <utils/ObserverPattern.h>
 #include <vector>

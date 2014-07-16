@@ -13,7 +13,7 @@
 #include <corelib/IHierarchyItem.h>
 #include <coreui/CoreFlexiToolBarSection.h>
 #include <coreui/HierarchyTreeModel.h>
-#include <QtGui/QTabWidget>
+#include <QtWidgets/QTabWidget>
 #include "AnalisisModel.h"
 #include <coreui/IAppUsageContext.h>
 

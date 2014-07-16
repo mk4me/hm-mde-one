@@ -10,7 +10,7 @@
 #define HEADER_GUARD___ANTROPOMETRICDATAWIDGET_H__
 
 #include <qthtmlgenlib/TableGenerator.h>
-#include <QtGui/QTextEdit>
+#include <QtWidgets/QTextEdit>
 
 //! Widget realizujący prezentację danych antropometrycznych
 //! Robi to w oparciu o generowanie/formatowanie/stylowanie tabel HTML za pomocą CSS

@@ -11,11 +11,11 @@
 #define HEADER_GUARD_MEDUSA_EXPORTER__MEDUSAEXPORTERSERVICEWIDGET_H__
 
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <corelib/IFileDataManager.h>
 #include "ExporterModel.h"
 #include <QtCore/QThread>
-#include <QtGui/QAbstractButton>
+#include <QtWidgets/QAbstractButton>
 #include <boost/bind.hpp>
 
 class QPushButton;

@@ -1,10 +1,10 @@
 #include "MdePCH.h"
 #include "AnalysisTreeContext.h"
 
-#include <QtGui/QToolBar>
+#include <QtWidgets/QToolBar>
 #include <QtCore/QBuffer>
-#include <QtGui/QMenu>
-#include <QtGui/QToolButton>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QToolButton>
 #include <corelib/PluginCommon.h>
 #include <coreui/CoreVisualizerWidget.h>
 #include "AnalisisWidget.h"

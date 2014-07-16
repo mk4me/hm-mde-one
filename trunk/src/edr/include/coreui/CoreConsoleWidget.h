@@ -13,7 +13,7 @@
 #include <utils/SmartPtr.h>
 #include <corelib/ILog.h>
 #include <queue>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtCore/QDate>
 #include <QtCore/QMutex>
 #include <QtCore/QMetaType>

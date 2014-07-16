@@ -1,5 +1,5 @@
 #include <plugins/newCommunication/TreeItemHelper.h>
-#include <QtGui/QHBoxLayout>
+#include <QtWidgets/QHBoxLayout>
 #include <corelib/IVisualizerManager.h>
 #include <plugins/newChart/INewChartVisualizer.h>
 #include <plugins/c3d/EventSerieBase.h>

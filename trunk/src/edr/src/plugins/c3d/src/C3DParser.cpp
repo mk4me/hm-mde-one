@@ -171,11 +171,15 @@ void C3DParser::getObject(core::Variant & object, const unsigned int idx) const
 	object.setMetadata("core/source", path);
 	if (0 <= idx && idx < 4){
 		GRFChannelPtr ptr = data[idx]->get();
-		object.setMetadata("core/name", ptr->getName());
+		if (ptr) {
+			object.setMetadata("core/name", ptr->getName());
+		}
 	}
 	else if(idx < 20){
 		EMGChannelPtr ptr = data[idx]->get();
-		object.setMetadata("core/name", ptr->getName());
+		if (ptr) {
+			object.setMetadata("core/name", ptr->getName());
+		}
 	}
 	else if (idx < 22){
 		object.setMetadata("core/name", path);

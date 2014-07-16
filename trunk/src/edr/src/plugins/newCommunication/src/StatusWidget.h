@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_COMMUNICATION__STATUSWIDGET_H__
 #define HEADER_GUARD_COMMUNICATION__STATUSWIDGET_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <utils/SmartPtr.h>
 #include "CommunicationManager.h"
 #include "ui_StatusWidget.h"

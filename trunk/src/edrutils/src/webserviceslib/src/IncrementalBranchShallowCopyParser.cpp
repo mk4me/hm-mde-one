@@ -1,6 +1,6 @@
 #include <webserviceslib/IncrementalBranchShallowCopyParser.h>
 #include <utils/Debug.h>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 #include <webserviceslib/DateTimeUtils.h>
 #include <webserviceslib/Entity.h>
 #include <webserviceslib/ShallowCopy.h>
@@ -10,45 +10,45 @@ namespace webservices
 {
 
 
-void parseBranch( TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy );
-void parseFilesBranch( TiXmlElement* trial_element, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy, IncrementalBranchShallowCopy::Files& files, IncrementalBranchShallowCopy::Trial& trial );
+void parseBranch( tinyxml2::XMLHandle &hParent, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy );
+void parseFilesBranch( tinyxml2::XMLElement* trial_element, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy, IncrementalBranchShallowCopy::Files& files, IncrementalBranchShallowCopy::Trial& trial );
 
 void IncrementalBranchShallowCopyParser::parseFile( const std::string & path, IncrementalBranchShallowCopy& shallowCopy )
 {
-    TiXmlDocument document(path);
-    if(!document.LoadFile()) {
+    tinyxml2::XMLDocument document;
+    if(document.LoadFile(path.c_str()) != tinyxml2::XML_NO_ERROR) {
         UTILS_ASSERT(false, "Blad wczytania pliku MotionShallowCopy");
     }
 
-    TiXmlHandle hDocument(&document);
-    TiXmlElement* _element;
-    TiXmlHandle hParent(0);
+    tinyxml2::XMLHandle hDocument(&document);
+    tinyxml2::XMLElement* _element;
+    tinyxml2::XMLHandle hParent(0);
 
-    _element = hDocument.FirstChildElement().Element();
+    _element = hDocument.FirstChildElement().ToElement();
     if(!_element) {
         UTILS_ASSERT(false, "Blad wczytania z pliku MotionShallowCopy");
     }
-    hParent = TiXmlHandle(_element);
+    hParent = tinyxml2::XMLHandle(_element);
 
     
-    TiXmlElement* modified = hParent.FirstChild("Modified").ToElement();
+    tinyxml2::XMLElement* modified = hParent.FirstChildElement("Modified").ToElement();
     if (modified) {
-        parseBranch(TiXmlHandle(modified), shallowCopy.modified);
+        parseBranch(tinyxml2::XMLHandle(modified), shallowCopy.modified);
     }
     
-    TiXmlElement* added = hParent.FirstChild("Added").ToElement();
+    tinyxml2::XMLElement* added = hParent.FirstChildElement("Added").ToElement();
     if (added) {
-        parseBranch(TiXmlHandle(added), shallowCopy.added);
+        parseBranch(tinyxml2::XMLHandle(added), shallowCopy.added);
     }
 
 }
 
-void parseBranch( TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy )
+void parseBranch( tinyxml2::XMLHandle &hParent, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy )
 {
     ////Performers
-    //TiXmlElement* performers_element = hParent.FirstChild("Performers").ToElement();
+    //tinyxml2::XMLElement* performers_element = hParent.FirstChildElement("Performers").ToElement();
     //if (performers_element) {
-    //    TiXmlElement* performer_element = performers_element->FirstChildElement("Performer");
+    //    tinyxml2::XMLElement* performer_element = performers_element->FirstChildElement("Performer");
     //    while(performer_element) {
     //        //newMotionShallowCopy::Performer * performer = new MotionShallowCopy::Performer;
     //        MotionShallowCopy::Performer * performer = nullptr;
@@ -68,18 +68,18 @@ void parseBranch( TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCop
     //        }
 
     //        //Attrs
-    //        TiXmlElement* attrs_element = performer_element->FirstChildElement("Attrs");
+    //        tinyxml2::XMLElement* attrs_element = performer_element->FirstChildElement("Attrs");
     //        if(attrs_element) {
-    //            TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
+    //            tinyxml2::XMLElement* attr_element = attrs_element->FirstChildElement("A");
     //            while(attr_element) {
     //                MotionShallowCopy::Attrs::key_type name;
     //                MotionShallowCopy::Attrs::mapped_type value;
 
-    //                attr_element->QueryStringAttribute("Name", &name);
-    //                attr_element->QueryStringAttribute("Value", &value);
+    //                name = utils::safeString(attr_element->Attribute("Name"));
+    //                value = utils::safeString(attr_element->Attribute("Value"));
 
     //                performer->attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
-    //                attr_element = attr_element->NextSiblingElement();
+    //                attr_element = utils::safeString(attr_element->NextSiblingElement());
     //            }
     //        }
 
@@ -88,9 +88,9 @@ void parseBranch( TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCop
     //}
 
     ////Sessions
-    //TiXmlElement* sessions_element = hParent.FirstChild("Sessions").ToElement();
+    //tinyxml2::XMLElement* sessions_element = hParent.FirstChildElement("Sessions").ToElement();
     //if(sessions_element) {
-    //    TiXmlElement* session_element = sessions_element->FirstChildElement("Session");
+    //    tinyxml2::XMLElement* session_element = sessions_element->FirstChildElement("Session");
     //    while(session_element) {
     //        //newMotionShallowCopy::Session * session = new MotionShallowCopy::Session;
     //        MotionShallowCopy::Session * session = nullptr;
@@ -112,27 +112,27 @@ void parseBranch( TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCop
 
     //        session_element->QueryIntAttribute("UserID", &session->userID);
     //        session_element->QueryIntAttribute("LabID", &session->labID);
-    //        session_element->QueryStringAttribute("MotionKind", &session->motionKind);
+    //        session->motionKind = utils::safeString(session_element->Attribute("MotionKind"));
     //        {
     //            std::string sessionDate;
-    //            session_element->QueryStringAttribute("SessionDate", &sessionDate);
+    //            sessionDate = utils::safeString(session_element->Attribute("SessionDate"));
     //            session->sessionDate = toTime(sessionDate);
     //        }
-    //        session_element->QueryStringAttribute("SessionName", &session->sessionName);
-    //        session_element->QueryStringAttribute("Tags", &session->tags);
-    //        session_element->QueryStringAttribute("SessionDescription", &session->sessionDescription);
-    //        session_element->QueryStringAttribute("EMGConf", &session->emgConf);
+    //        session->sessionName = utils::safeString(session_element->Attribute("SessionName"));
+    //        session->tags = utils::safeString(session_element->Attribute("Tags"));
+    //        session->sessionDescription = utils::safeString(session_element->Attribute("SessionDescription"));
+    //        session->emgConf = utils::safeString(session_element->Attribute("EMGConf"));
 
     //        //Attrs
-    //        TiXmlElement* attrs_element = session_element->FirstChildElement("Attrs");
+    //        tinyxml2::XMLElement* attrs_element = session_element->FirstChildElement("Attrs");
     //        if(attrs_element) {
-    //            TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
+    //            tinyxml2::XMLElement* attr_element = attrs_element->FirstChildElement("A");
     //            while(attr_element) {
     //                MotionShallowCopy::Attrs::key_type name;
     //                MotionShallowCopy::Attrs::mapped_type value;
 
-    //                attr_element->QueryStringAttribute("Name", &name);
-    //                attr_element->QueryStringAttribute("Value", &value);
+    //                name = utils::safeString( attr_element->Attribute("Name"));
+    //                value = utils::safeString( attr_element->Attribute("Value"));
 
     //                session->attrs.insert(MotionShallowCopy::Attrs::value_type(name,value));
 
@@ -141,9 +141,9 @@ void parseBranch( TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCop
     //        }
 
     //        //Session files
-    //        TiXmlElement* files_element = session_element->FirstChildElement("Files");
+    //        tinyxml2::XMLElement* files_element = session_element->FirstChildElement("Files");
     //        if(files_element) {
-    //            TiXmlElement* file_element = files_element->FirstChildElement("File");
+    //            tinyxml2::XMLElement* file_element = files_element->FirstChildElement("File");
     //            while(file_element) {
     //                //newMotionShallowCopy::File * file = new MotionShallowCopy::File;
     //                MotionShallowCopy::File * file = nullptr;
@@ -167,9 +167,9 @@ void parseBranch( TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCop
     //                file->fileSize = 0;
     //                unsigned int s = 0;
 
-    //                file_element->QueryStringAttribute("FileName", &file->fileName);
-    //                file_element->QueryStringAttribute("FileDescription", &file->fileDescription);
-    //                file_element->QueryStringAttribute("SubdirPath", &file->subdirPath);
+    //                file->fileName = utils::safeString( file_element->Attribute("FileName"));
+    //                file->fileDescription = utils::safeString( file_element->Attribute("FileDescription"));
+    //                file->subdirPath = utils::safeString( file_element->Attribute("SubdirPath"));
     //                file_element->QueryUnsignedAttribute("Size", &s);
     //                file->fileSize = s;
 
@@ -183,9 +183,9 @@ void parseBranch( TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCop
     //    }
     //}
     ////GroupAssignments
-    //TiXmlElement* group_assignments_element = hParent.FirstChild("GroupAssignments").ToElement();
+    //tinyxml2::XMLElement* group_assignments_element = hParent.FirstChildElement("GroupAssignments").ToElement();
     //if(group_assignments_element) {
-    //    TiXmlElement* group_assignment_element = group_assignments_element->FirstChildElement("GroupAssignment");
+    //    tinyxml2::XMLElement* group_assignment_element = group_assignments_element->FirstChildElement("GroupAssignment");
     //    while(group_assignment_element) {
     //        MotionShallowCopy::GroupAssigment * group_assignment = nullptr;
 
@@ -219,9 +219,9 @@ void parseBranch( TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCop
     //    }
     //}
     //Trials
-    TiXmlElement* trials_element = hParent.FirstChild("Trials").ToElement();
+    tinyxml2::XMLElement* trials_element = hParent.FirstChildElement("Trials").ToElement();
     if(trials_element) {
-        TiXmlElement* trial_element = trials_element->FirstChildElement("Trial");
+        tinyxml2::XMLElement* trial_element = trials_element->FirstChildElement("Trial");
         while(trial_element) {
             IncrementalBranchShallowCopy::Trial  trial;
             trial_element->QueryIntAttribute("TrialID", &trial.trialID);
@@ -229,19 +229,19 @@ void parseBranch( TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCop
 
             //trial->session->trials[trial->trialID] = trial;
 
-            trial_element->QueryStringAttribute("TrialName", &trial.trialName);
-            trial_element->QueryStringAttribute("TrialDescription", &trial.trialDescription);
+            trial.trialName = utils::safeString( trial_element->Attribute("TrialName"));
+            trial.trialDescription = utils::safeString( trial_element->Attribute("TrialDescription"));
 
             //Attrs
-            TiXmlElement* attrs_element = trial_element->FirstChildElement("Attrs");
+            tinyxml2::XMLElement* attrs_element = trial_element->FirstChildElement("Attrs");
             if(attrs_element) {
-                TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
+                tinyxml2::XMLElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
                     MotionShallowCopy::Attrs::key_type name;
                     MotionShallowCopy::Attrs::mapped_type value;
 
-                    attr_element->QueryStringAttribute("Name", &name);
-                    attr_element->QueryStringAttribute("Value", &value);
+                    name = utils::safeString( attr_element->Attribute("Name"));
+                    value = utils::safeString( attr_element->Attribute("Value"));
 
                     trial.attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
 
@@ -251,12 +251,12 @@ void parseBranch( TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCop
 
             //Files
 
-            TiXmlElement* added_files_element = trial_element->FirstChildElement("AddedFiles");
+            tinyxml2::XMLElement* added_files_element = trial_element->FirstChildElement("AddedFiles");
             if(added_files_element) {
                 parseFilesBranch(added_files_element, shallowCopy, trial.addedFiles, trial);
             }
 
-            TiXmlElement* modified_files_element = trial_element->FirstChildElement("ModifiedFiles");
+            tinyxml2::XMLElement* modified_files_element = trial_element->FirstChildElement("ModifiedFiles");
             if(modified_files_element) {
                 parseFilesBranch(modified_files_element, shallowCopy, trial.modifiedFiles, trial);
             }
@@ -266,9 +266,9 @@ void parseBranch( TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCop
     }
 
     ////PerformerConfs
-    //TiXmlElement* performer_consfs_element = hParent.FirstChild("PerformerConfs").ToElement();
+    //tinyxml2::XMLElement* performer_consfs_element = hParent.FirstChildElement("PerformerConfs").ToElement();
     //if(performer_consfs_element) {
-    //    TiXmlElement* performer_consf_element = performer_consfs_element->FirstChildElement("PerformerConf");
+    //    tinyxml2::XMLElement* performer_consf_element = performer_consfs_element->FirstChildElement("PerformerConf");
     //    while(performer_consf_element) {
     //        //newMotionShallowCopy::PerformerConf * performerConf = new MotionShallowCopy::PerformerConf;
     //        MotionShallowCopy::PerformerConf * performerConf = nullptr;
@@ -304,15 +304,15 @@ void parseBranch( TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCop
 
 
     //        //Attrs
-    //        TiXmlElement* attrs_element = performer_consf_element->FirstChildElement("Attrs");
+    //        tinyxml2::XMLElement* attrs_element = performer_consf_element->FirstChildElement("Attrs");
     //        if(attrs_element) {
-    //            TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
+    //            tinyxml2::XMLElement* attr_element = attrs_element->FirstChildElement("A");
     //            while(attr_element) {
     //                MotionShallowCopy::Attrs::key_type name;
     //                MotionShallowCopy::Attrs::mapped_type value;
 
-    //                attr_element->QueryStringAttribute("Name", &name);
-    //                attr_element->QueryStringAttribute("Value", &value);
+    //                name = utils::safeString( attr_element->Attribute("Name"));
+    //                value = utils::safeString( attr_element->Attribute("Value"));
 
     //                performerConf->attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
 
@@ -325,9 +325,9 @@ void parseBranch( TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCop
     //}
 }
 
-void parseFilesBranch( TiXmlElement* files_element, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy, IncrementalBranchShallowCopy::Files& files, IncrementalBranchShallowCopy::Trial& trial )
+void parseFilesBranch( tinyxml2::XMLElement* files_element, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy, IncrementalBranchShallowCopy::Files& files, IncrementalBranchShallowCopy::Trial& trial )
 {
-    TiXmlElement* file_element = files_element->FirstChildElement("File");
+    tinyxml2::XMLElement* file_element = files_element->FirstChildElement("File");
     while(file_element) {
         //newMotionShallowCopy::File * file = new MotionShallowCopy::File;
         IncrementalBranchShallowCopy::File file;
@@ -337,9 +337,9 @@ void parseFilesBranch( TiXmlElement* files_element, IncrementalBranchShallowCopy
         file.fileSize = 0;
         unsigned int s = 0;
 
-        file_element->QueryStringAttribute("FileName", &file.fileName);
-        file_element->QueryStringAttribute("FileDescription", &file.fileDescription);
-        file_element->QueryStringAttribute("SubdirPath", &file.subdirPath);
+        file.fileName = utils::safeString( file_element->Attribute("FileName"));
+        file.fileDescription = utils::safeString( file_element->Attribute("FileDescription"));
+        file.subdirPath = utils::safeString( file_element->Attribute("SubdirPath"));
         file_element->QueryUnsignedAttribute("Size", &s);
         file.fileSize = s;
 

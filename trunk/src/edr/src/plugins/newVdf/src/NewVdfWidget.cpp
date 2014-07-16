@@ -1,8 +1,8 @@
 #include "NewVdfPCH.h"
 #include "NewVdfWidget.h"
-#include <QtGui/QGraphicsScene>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QVBoxLayout>
 #include <coreui/CoreAction.h>
 #include <coreui/CoreWidgetAction.h>
 #include "SimpleItem.h"
@@ -13,6 +13,7 @@
 #include <plugins/newVdf/UniversalSink.h>
 #include <coreui/WheelGraphicsView.h>
 #include <coreui/HierarchyTreeModel.h>
+#include <QtWidgets/QMessageBox>
 
 using namespace vdf;
 

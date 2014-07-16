@@ -26,7 +26,7 @@ namespace vdf {
 		
 	};
 }
-//#include <QtGui/QGraphicsItem>
+//#include <QtWidgets/QGraphicsItem>
 //#include <QtCore/QSize>
 //#include <plugins/newVdf/IVisualNode.h>
 //

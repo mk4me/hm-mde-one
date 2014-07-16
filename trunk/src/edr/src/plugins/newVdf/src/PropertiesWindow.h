@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEW_VDF__PROPERTIESWINDOW_H__
 #define HEADER_GUARD_NEW_VDF__PROPERTIESWINDOW_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <utils/ObserverPattern.h>
 #include <utils/CommandStack.h>
 #include "Command.h"

@@ -2,8 +2,8 @@
 #include <coreui/CoreTextEditWidget.h>
 #include <coreui/CoreFlexiToolBarSection.h>
 #include <coreui/CoreFlexiToolBar.h>
-#include <QtGui/QToolButton>
-#include <QtGui//QAction>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets//QAction>
 #include <coreui/ReportsTab.h>
 #include <coreui/IAppUsageContextManager.h>
 

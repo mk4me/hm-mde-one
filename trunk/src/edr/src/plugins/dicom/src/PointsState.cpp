@@ -1,10 +1,10 @@
 #include "DicomPCH.h"
 #include "PointsState.h"
-#include <QtGui/QGraphicsScene>
-#include <QtGui/QGraphicsSceneMouseEvent>
-#include <QtGui/QGraphicsRectItem>
-#include <QtGui/QGraphicsLineItem>
-#include <QtGui/QMenu>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsRectItem>
+#include <QtWidgets/QGraphicsLineItem>
+#include <QtWidgets/QMenu>
 #include <coreui/AbstractStateMachine.h>
 #include <coreui/MoveCommand.h>
 #include <coreUi/MultiCommand.h>
@@ -136,7 +136,8 @@ bool dicom::PointsState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 
         menu->exec(e->screenPos());
     } else if (e->button() == Qt::LeftButton) {
-        auto item = machine->getGraphicsScene()->itemAt(e->scenePos());
+		auto items = machine->getGraphicsScene()->items(e->scenePos());
+        auto item = items.isEmpty() ? nullptr : items.first();
         if (layer->hasPoint(item)) {
             possibleMove = true;
             positionsToCheck.clear();

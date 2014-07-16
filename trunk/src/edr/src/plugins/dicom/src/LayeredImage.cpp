@@ -5,7 +5,7 @@
 
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/export.hpp>
-#include <QtGui/QGraphicsItemGroup>
+#include <QtWidgets/QGraphicsItemGroup>
 
 
 dicom::LayeredImage::LayeredImage( const QPixmap& pixmap ) : isPowerDoppler_(false), trialID(-1)

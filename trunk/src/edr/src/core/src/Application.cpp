@@ -1,16 +1,16 @@
 #include "CorePCH.h"
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include <osgQt/GraphicsWindowQt>
 #include <osg/ArgumentParser>
 #include <QtCore/QTranslator>
 #include <QtCore/QSettings>
 #include <QtCore/QLocale>
-#include <QtGui/QDesktopServices>
+#include <QtCore/QStandardPaths>
 #include <QtCore/QDir>
 #include "Config.h"
 #include <coreui/CoreMainWindow.h>
-#include <QtGui/QSplashScreen>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QSplashScreen>
+#include <QtWidgets/QMessageBox>
 #include "ApplicationCommon.h"
 #include "VisualizerManager.h"
 #include "ServiceManager.h"
@@ -32,7 +32,12 @@
 #include <boost/algorithm/string.hpp>
 #include "ApplicationDescription.h"
 
+#ifdef CORE_ENABLE_LEAK_DETECTION
+#include <utils/LeakDetection.h>
+#endif
+
 #ifdef WIN32
+#define NOMINMAX
 #include <Windows.h>
 //#define KEY_PATH1 TEXT("Software\\Wow6432Node\\PJWSTK\\EDR")
 // Od Visty dodawane s? przedrostki typu Wow6432Node do sciezki w rejestrach
@@ -40,9 +45,6 @@
 #define KEY_PATH TEXT("Software\\PJWSTK\\MEDUSA")
 #endif
 
-#ifdef CORE_ENABLE_LEAK_DETECTION
-#include <utils/LeakDetection.h>
-#endif
 
 DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
@@ -609,8 +611,8 @@ void Application::setDefaultPaths(utils::shared_ptr<Path> & path)
 {
 	//TODO
 	//mie? na uwadze nazw? aplikacji i PJWSTK
-	auto userPath = Filesystem::Path(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation).toStdString()) / "PJWSTK" / "MEDUSA";
-	auto appDataPath = Filesystem::Path(QDesktopServices::storageLocation(QDesktopServices::DataLocation).toStdString());
+	auto userPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0).toStdString()) / "PJWSTK" / "MEDUSA";
+	auto appDataPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DataLocation).at(0).toStdString());
 	//TODO - czy pod linux taka konwencja jest ok? jak tam dzia³aj¹ takie wspólne foldery?
 	auto userAppDataPath = appDataPath;
 	auto resourcesPath = Filesystem::Path(QDir::currentPath().toStdString()) / "resources";

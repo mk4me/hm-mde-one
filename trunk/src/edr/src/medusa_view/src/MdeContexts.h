@@ -10,9 +10,9 @@
 #ifndef HEADER_GUARD_MDE_MDECONTEXTS_H__
 #define HEADER_GUARD_MDE_MDECONTEXTS_H__
 
-#include <QtGui/QPlainTextEdit>
-#include <QtGui/QComboBox>
-#include <QtGui/QTreeWidget>
+#include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QTreeWidget>
 #include <boost/tuple/tuple.hpp>
 #include <coreui/IAppUsageContext.h>
 #include <coreui/CoreFlexiToolBar.h>

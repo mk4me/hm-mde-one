@@ -13,7 +13,7 @@
 #include <QtCore/QFileInfo>
 #include <map>
 #include <list>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtGui/QPen>
 #include <QtGui/QPainter>
 #include "ConfigurationPainterAreas.h"

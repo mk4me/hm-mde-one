@@ -10,7 +10,7 @@
 #define HEADER_GUARD___IVISUALNODE_H__
 
 #include <plugins/newVdf/IVisualPin.h>
-#include <QtGui/QAbstractButton>
+#include <QtWidgets/QAbstractButton>
 #include <utils/Debug.h>
 #include <dflib/INode.h>
 

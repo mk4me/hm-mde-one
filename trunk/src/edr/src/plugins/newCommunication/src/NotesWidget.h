@@ -10,11 +10,12 @@
 #define HEADER_GUARD___NOTESWIDGET_H__
 
 #include "ui_NotesWidget.h"
-#include <QtGui/QFrame>
-#include <QtGui/QDialog>
-#include <QtGui/QLineEdit>
-#include <QtGui/QPushButton>
-#include <QtGui/QTextEdit>
+#include <QtWidgets/QFrame>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QTextEdit>
+#undef min
 #include <QtCore/QDateTime>
 #include <utils/SmartPtr.h>
 

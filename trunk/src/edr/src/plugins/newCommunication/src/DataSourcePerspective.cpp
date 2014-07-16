@@ -1,6 +1,6 @@
 #include "CommunicationPCH.h"
 #include "DataSourcePerspective.h"
-#include <QtGui/QMouseEvent>
+#include <QtGui/QCloseEvent>
 
 using namespace communication;
 

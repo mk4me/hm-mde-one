@@ -1,6 +1,6 @@
 #include "CoreUiPCH.h"
 #include <coreui/SimpleContext.h>
-#include <QtGui/QTabWidget>
+#include <QtWidgets/QTabWidget>
 #include <coreui/ContextAutoPlacer.h>
 #include <coreui/CoreFlexiToolBarSection.h>
 

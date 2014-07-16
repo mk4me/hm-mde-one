@@ -1,11 +1,11 @@
 #include "CoreUiPCH.h"
 #include <coreui/ReportsThumbnailContext.h>
 #include <corelib/PluginCommon.h>
-#include <QtGui/QPlainTextEdit>
-#include <QtGui/QComboBox>
-#include <QtGui/QMessageBox>
-#include <QtGui/QToolButton>
-#include <QtGui/QTabWidget>
+#include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QTabWidget>
 #include <QtCore/QBuffer>
 #include <QtCore/QDir>
 #include <QtCore/QDateTime>

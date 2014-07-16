@@ -11,9 +11,9 @@
 #define HEADER_GUARD_COREUI__COREUIPCH_H__
 
 #include <QtCore/QString>
-#include <QtGui/QWidget>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLabel>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
 #include <utils/SmartPtr.h>
 
 #endif

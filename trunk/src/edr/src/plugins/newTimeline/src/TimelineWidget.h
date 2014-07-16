@@ -9,17 +9,17 @@
 #ifndef HEADER_GUARD___TIMELINEWIDGET_H__
 #define HEADER_GUARD___TIMELINEWIDGET_H__
 
-#include <QtGui/QWidget>
-#include <QtGui/QMenu>
-#include <QtGui/QDoubleSpinBox>
-#include <QtGui/QSlider>
-#include <QtGui/QComboBox>
-#include <QtGui/QTimeEdit>
-#include <QtGui/QTabBar>
-#include <QtGui/QToolBar>
-#include <QtGui/QTabWidget>
-#include <QtGui/QLabel>
-#include <QtGui/QAction>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QDoubleSpinBox>
+#include <QtWidgets/QSlider>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QTimeEdit>
+#include <QtWidgets/QTabBar>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QAction>
 #include <QtCore/QTime>
 #include "ui_TimelineWidget.h"
 

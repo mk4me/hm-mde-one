@@ -13,8 +13,8 @@
 #include <coreui/Export.h>
 #include <boost/range.hpp>
 #include <QtCore/QString>
-#include <QtGui/QWidget>
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QMainWindow>
 
 class QDockWidget;
 

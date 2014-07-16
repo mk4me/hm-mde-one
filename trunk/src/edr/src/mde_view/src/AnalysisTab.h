@@ -13,7 +13,7 @@
 #include <coreui/AbstractTab.h>
 #include <coreui/CoreFlexiToolBar.h>
 #include <boost/tuple/tuple.hpp>
-#include <QtGui/QTabWidget>
+#include <QtWidgets/QTabWidget>
 #include "AnalisisWidget.h"
 
 class AnalysisTab : public coreUI::AbstractTab

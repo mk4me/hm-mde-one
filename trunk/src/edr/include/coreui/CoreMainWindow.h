@@ -14,7 +14,7 @@
 #include <utils/SmartPtr.h>
 #include <corelib/IPlugin.h>
 #include <QtCore/QSettings>
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QMainWindow>
 #include <QtCore/QTimer>
 #include <corelib/Filesystem.h>
 #include <boost/function.hpp>

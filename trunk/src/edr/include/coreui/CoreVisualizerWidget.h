@@ -12,7 +12,7 @@
 #include <coreui/Export.h>
 #include <map>
 #include <corelib/Visualizer.h>
-#include <QtGui/QScrollArea>
+#include <QtWidgets/QScrollArea>
 
 class QAction;
 class QLabel;

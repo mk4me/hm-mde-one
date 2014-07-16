@@ -1,7 +1,7 @@
 #include "DicomPCH.h"
 #include "AnnotationsDelegate.h"
-#include <QtGui/QComboBox>
-#include <QtGui/QLineEdit.h>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QLineEdit.h>
 #include <plugins/dicom/Annotations.h>
 #include "LayeredModelView.h"
 

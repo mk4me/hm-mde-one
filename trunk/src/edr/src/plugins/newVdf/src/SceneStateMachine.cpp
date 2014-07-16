@@ -1,8 +1,8 @@
 #include "NewVdfPCH.h"
 #include "SceneStateMachine.h"
-#include <QtGui/QGraphicsScene>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QHBoxLayout>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QHBoxLayout>
 #include "SimpleItem.h"
 #include "VdfScene.h"
 #include "SceneModel.h"

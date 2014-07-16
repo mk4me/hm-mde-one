@@ -11,11 +11,11 @@
 #define HEADER_GUARD_NEW_CHART__CHARTVISUALIZER_H__
 
 #include <QtCore/QObject>
-#include <QtGui/QWidget>
-#include <QtGui/QComboBox>
-#include <QtGui/QCheckBox>
-#include <QtGui/QPushButton>
-#include <QtGui/QSpinBox>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpinBox>
 #include <qwt_plot.h>
 #include <qwt_plot_marker.h>
 #include <qwt_plot_grid.h>

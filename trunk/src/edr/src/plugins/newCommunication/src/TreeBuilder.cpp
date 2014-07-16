@@ -408,9 +408,15 @@ core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channe
 
         for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
             VectorChannelCollectionConstPtr collection = (*it)->get();
+			if (!collection) {
+				continue;
+			}
             int count = collection->getNumChannels();
             for (int i = 0; i < count; ++i) {
                 VectorChannelConstPtr channel = collection->getChannel(i);
+				if (!channel) {
+					continue;
+				}
                 if (channel->getName() == channelName) {
                     ScalarChannelReaderInterfacePtr reader(new VectorToScalarAdaptor(channel, channelNo));
                     core::VariantPtr wrapper = core::Variant::create<ScalarChannelReaderInterface>();
@@ -504,9 +510,15 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
 
         for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
             VectorChannelCollectionConstPtr collection = (*it)->get();
+			if (!collection) {
+				continue;
+			}
             int count = collection->getNumChannels();
             for (int i = 0; i < count; ++i) {
                 VectorChannelConstPtr channel = collection->getChannel(i);
+				if (!channel) {
+					continue;
+				}
                 if (channel->getName() == channelName) {
 
                     int r = rand() % 200;

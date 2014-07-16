@@ -1,9 +1,9 @@
 #include <plugins/hmmlib/ConfigurationDialog.h>
 #include <corelib/PluginCommon.h>
 #include <QtCore/QFileInfo>
-#include <QtGui/QListWidgetItem>
+#include <QtWidgets/QListWidgetItem>
 #include <utils/Debug.h>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 #include "ui_FilterConfiguratorWidget.h"
 
 const float SCALE = 0.6f;
@@ -94,12 +94,12 @@ void ConfigurationWidget::loadXml(ConfigurationPainter& painter, const QString &
 {
     QFileInfo fileInfo(filename);
     QString path = fileInfo.absolutePath();
-    TiXmlDocument document(filename.toStdString());
-    if(!document.LoadFile()) {
+    tinyxml2::XMLDocument document;
+	if (document.LoadFile(filename.toStdString().c_str()) != tinyxml2::XML_SUCCESS) {
         throw std::runtime_error("Unable to load file");
     }
-    TiXmlHandle hDocument(&document);
-    TiXmlElement* root = hDocument.FirstChildElement().Element();
+    tinyxml2::XMLHandle hDocument(&document);
+    tinyxml2::XMLElement* root = hDocument.FirstChildElement().ToElement();
     if (!root) {
         throw std::runtime_error("Unable to load file");
     }
@@ -109,11 +109,11 @@ void ConfigurationWidget::loadXml(ConfigurationPainter& painter, const QString &
     QImagePtr img = utils::make_shared<QImage>(background);
     setBackground(painter, background, img);
 
-    TiXmlElement* element = root->FirstChildElement();
+    tinyxml2::XMLElement* element = root->FirstChildElement();
     while (element) {
         int x, y;
-        element->Attribute("X", &x);
-        element->Attribute("Y", &y);
+        element->QueryIntAttribute("X", &x);
+		element->QueryIntAttribute("Y", &y);
         std::string val = element->Value();
         if (val == "Picture") {
             QString filename(element->Attribute("Filename"));

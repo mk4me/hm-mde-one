@@ -4,7 +4,8 @@
 #include <vidlib/osg/VideoImageStream.h>
 #include <vidlib/FileSequenceVideoStream.h>
 #include <vidlib/FFmpegVideoStream.h>
-#include <tinyxml.h>
+#include <tinyxml2.h>
+#include <osgGA/Event>
 #include <corelib/PluginCommon.h>
 #include <corelib/ILog.h>
 #include <osg/ImageSequence>
@@ -75,24 +76,27 @@ void VideoParser::parse(const std::string & source)
 		localData.push_back(utils::ObjectWrapper::create<::VideoStream>());
 
         std::ostringstream errbuff;
-        TiXmlDocument document(path.string());
-        if ( !document.LoadFile() ) {
-            errbuff << document.ErrorDesc();
+        tinyxml2::XMLDocument document;
+		if (!document.LoadFile(path.string().c_str())) {
+            errbuff << "Unable to load file: " << path.string();
             throw std::runtime_error(errbuff.str());
         }
-        TiXmlHandle hDocument(&document);
-        TiXmlElement* seq = hDocument.FirstChild("ImageSequence").ToElement();
+        tinyxml2::XMLHandle hDocument(&document);
+        tinyxml2::XMLElement* seq = hDocument.FirstChildElement("ImageSequence").ToElement();
         if ( !seq ) {
             errbuff << "Missing ImageSequence node";
             throw std::runtime_error(errbuff.str());
         } else {
             std::string directory;
             double framerate;
-            if ( seq->QueryStringAttribute("directory", &directory) != TIXML_SUCCESS ) {
+			auto ptr = seq->Attribute("directory");
+            if ( !ptr ) {
                 errbuff << "Missing directory attribute";
                 throw std::runtime_error(errbuff.str());
-            }
-            if ( seq->QueryDoubleAttribute("framerate", &framerate) != TIXML_SUCCESS ) {
+			} else {
+				directory = std::string(ptr);
+			}
+            if ( seq->QueryDoubleAttribute("framerate", &framerate) != tinyxml2::XML_SUCCESS ) {
                 errbuff << "Missing framerate attribute";
                 throw std::runtime_error(errbuff.str());
             }

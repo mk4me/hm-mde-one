@@ -13,7 +13,7 @@
 #include <plugins/dicom/ILayer.h>
 
 #include <boost/serialization/nvp.hpp>
-#include <QtGui/QGraphicsPixmapItem>
+#include <QtWidgets/QGraphicsPixmapItem>
 #include "qstring_serialization.h"
 #include "Serializers.h"
 

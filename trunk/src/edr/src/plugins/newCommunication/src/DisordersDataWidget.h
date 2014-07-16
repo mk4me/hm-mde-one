@@ -10,7 +10,7 @@
 #define HEADER_GUARD___DISORDERSDATAWIDGET_H__
 
 #include <qthtmlgenlib/TableGenerator.h>
-#include <QtGui/QTextEdit>
+#include <QtWidgets/QTextEdit>
 
 class DisordersDataWidget : public QTextEdit
 {

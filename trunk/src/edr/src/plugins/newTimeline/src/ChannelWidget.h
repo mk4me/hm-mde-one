@@ -10,8 +10,8 @@
 #define HEADER_GUARD_TIMELINE__CHANNELWIDGET_H__
 
 #include <utils/Debug.h>
-#include <QtGui/QWidget>
-#include <QtGui/QFrame>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QFrame>
 #include <timelinelib/Model.h>
 
 //! Klasa reprezentująca pojedynczy kanał w czasie - rysuje jego zakres na osi ze względu na parametry begin i end,

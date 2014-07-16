@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEW_VDF__MERGEDWIDGET_H__
 #define HEADER_GUARD_NEW_VDF__MERGEDWIDGET_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 class QListWidget;
 

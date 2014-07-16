@@ -2,7 +2,6 @@
 #include "VidLibPrivate.h"
 #include <vidlib/FFmpegError.h>
 #include <vidlib/FFmpegVideoStream.h>
-
 //!
 #define AVIO_FFMPE_ENABLE_DUMP_INFO
 
@@ -27,8 +26,10 @@ extern "C" {
 #include <libavutil/mathematics.h>
 #include <libavutil/log.h>
 #include <libavutil/opt.h>
+#include <limits>
 #pragma warning (pop)
 }
+
 
 //! Ile ramek można ominąć podczas wyszukiwania do przodu?
 #define AVIO_FFMPEG_MAXSKIPFRAMES 100
@@ -503,8 +504,8 @@ bool FFmpegVideoStream::seekToKeyframe( int64_t timestamp, bool pickNextframe )
 
 #ifdef AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
         // granice
-        int64_t seekMin = pickNextframe ? seekTarget : INT64_MIN;
-        int64_t seekMax = !pickNextframe ? seekTarget : INT64_MAX;
+        int64_t seekMin = pickNextframe ? seekTarget : (std::numeric_limits<int64_t>::min)();
+        int64_t seekMax = !pickNextframe ? seekTarget : (std::numeric_limits<int64_t>::max)();
         // +- 2 wprowadzone z powodu błędu zaokrągleń
         // seek
         //error = avformat_seek_file(formatContext, streamIdx, seekMin, seekTarget, seekMax, AVSEEK_FLAG_ANY);

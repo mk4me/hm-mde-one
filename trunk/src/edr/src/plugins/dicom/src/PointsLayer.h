@@ -13,7 +13,7 @@
 
 #include <plugins/dicom/ILayer.h>
 #include <QtGui/QPainterPath>
-#include <QtGui/QGraphicsPathItem>
+#include <QtWidgets/QGraphicsPathItem>
 #include <qwt_spline.h>
 #include <plugins/dicom/ValueLayer.h>
 

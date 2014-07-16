@@ -11,7 +11,7 @@
 
 #include <coreui/Export.h>
 #include <coreui/CoreDockWidget.h>
-//#include <QtGui/QMainWindow>
+//#include <QtWidgets/QMainWindow>
 
 namespace coreUI {
 

@@ -1,6 +1,6 @@
 #include <webserviceslib/ShallowCopyParser.h>
 #include <utils/Debug.h>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 #include <webserviceslib/DateTimeUtils.h>
 #include <webserviceslib/Entity.h>
 
@@ -9,33 +9,32 @@ namespace webservices
 
 void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowCopy::ShallowCopy & shallowCopy)
 {
-    TiXmlDocument document(path);
-    if(!document.LoadFile()) {
+    tinyxml2::XMLDocument document;
+    if(document.LoadFile(path.c_str()) != tinyxml2::XML_NO_ERROR) {
         UTILS_ASSERT(false, "Blad wczytania pliku MotionShallowCopy");
     }
 
-    TiXmlHandle hDocument(&document);
-    TiXmlElement* _element;
-    TiXmlHandle hParent(0);
+    tinyxml2::XMLHandle hDocument(&document);
+    tinyxml2::XMLElement* _element;
+    tinyxml2::XMLHandle hParent(0);
 
-    _element = hDocument.FirstChildElement().Element();
+    _element = hDocument.FirstChildElement().ToElement();
     if(!_element) {
         UTILS_ASSERT(false, "Blad wczytania z pliku MotionShallowCopy");
     }
-    hParent = TiXmlHandle(_element);
+    hParent = tinyxml2::XMLHandle(_element);
 
 	//data utworzenia płytkiej kopii
 
-	std::string date;
-	_element->QueryStringAttribute("LastModified", &date);
+	std::string date = utils::safeString( _element->Attribute("LastModified"));
 
 	//mamy date to ja rozpakowujemy
 	shallowCopy.timestamp = toTime(date);
 
     //Performers
-    TiXmlElement* performers_element = hParent.FirstChild("Performers").ToElement();
+    tinyxml2::XMLElement* performers_element = hParent.FirstChildElement("Performers").ToElement();
     if(performers_element) {
-        TiXmlElement* performer_element = performers_element->FirstChildElement("Performer");
+        tinyxml2::XMLElement* performer_element = performers_element->FirstChildElement("Performer")->ToElement();
         while(performer_element) {
             //newMotionShallowCopy::Performer * performer = new MotionShallowCopy::Performer;
             MotionShallowCopy::Performer * performer = nullptr;
@@ -55,15 +54,15 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             }
 
             //Attrs
-            TiXmlElement* attrs_element = performer_element->FirstChildElement("Attrs");
+            tinyxml2::XMLElement* attrs_element = performer_element->FirstChildElement("Attrs");
             if(attrs_element) {
-                TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
+                tinyxml2::XMLElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
 					MotionShallowCopy::Attrs::key_type name;
 					MotionShallowCopy::Attrs::mapped_type value;
 
-                    attr_element->QueryStringAttribute("Name", &name);
-                    attr_element->QueryStringAttribute("Value", &value);
+                    name = utils::safeString( attr_element->Attribute("Name"));
+                    value = utils::safeString( attr_element->Attribute("Value"));
 
                     performer->attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
                     attr_element = attr_element->NextSiblingElement();
@@ -75,9 +74,9 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
     }
 
     //Sessions
-    TiXmlElement* sessions_element = hParent.FirstChild("Sessions").ToElement();
+    tinyxml2::XMLElement* sessions_element = hParent.FirstChildElement("Sessions").ToElement();
     if(sessions_element) {
-        TiXmlElement* session_element = sessions_element->FirstChildElement("Session");
+        tinyxml2::XMLElement* session_element = sessions_element->FirstChildElement("Session");
         while(session_element) {
             //newMotionShallowCopy::Session * session = new MotionShallowCopy::Session;
             MotionShallowCopy::Session * session = nullptr;
@@ -99,27 +98,27 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
 
             session_element->QueryIntAttribute("UserID", &session->userID);
             session_element->QueryIntAttribute("LabID", &session->labID);
-            session_element->QueryStringAttribute("MotionKind", &session->motionKind);
+            session->motionKind = utils::safeString( session_element->Attribute("MotionKind"));
 			{
 				std::string sessionDate;
-				session_element->QueryStringAttribute("SessionDate", &sessionDate);
+				sessionDate = utils::safeString( session_element->Attribute("SessionDate"));
 				session->sessionDate = toTime(sessionDate);
 			}
-            session_element->QueryStringAttribute("SessionName", &session->sessionName);
-            session_element->QueryStringAttribute("Tags", &session->tags);
-            session_element->QueryStringAttribute("SessionDescription", &session->sessionDescription);
-			session_element->QueryStringAttribute("EMGConf", &session->emgConf);
+            session->sessionName = utils::safeString( session_element->Attribute("SessionName"));
+            session->tags = utils::safeString( session_element->Attribute("Tags"));
+            session->sessionDescription = utils::safeString( session_element->Attribute("SessionDescription"));
+            session->emgConf = utils::safeString( session_element->Attribute("EMGConf"));
 
             //Attrs
-            TiXmlElement* attrs_element = session_element->FirstChildElement("Attrs");
+            tinyxml2::XMLElement* attrs_element = session_element->FirstChildElement("Attrs");
             if(attrs_element) {
-                TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
+                tinyxml2::XMLElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
 					MotionShallowCopy::Attrs::key_type name;
 					MotionShallowCopy::Attrs::mapped_type value;
 
-                    attr_element->QueryStringAttribute("Name", &name);
-                    attr_element->QueryStringAttribute("Value", &value);
+                    name = utils::safeString( attr_element->Attribute("Name"));
+                    value = utils::safeString( attr_element->Attribute("Value"));
 
                     session->attrs.insert(MotionShallowCopy::Attrs::value_type(name,value));
 
@@ -128,9 +127,9 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             }
 
             //Session files
-            TiXmlElement* files_element = session_element->FirstChildElement("Files");
+            tinyxml2::XMLElement* files_element = session_element->FirstChildElement("Files");
             if(files_element) {
-                TiXmlElement* file_element = files_element->FirstChildElement("File");
+                tinyxml2::XMLElement* file_element = files_element->FirstChildElement("File");
                 while(file_element) {
                     //newMotionShallowCopy::File * file = new MotionShallowCopy::File;
                     MotionShallowCopy::File * file = nullptr;
@@ -154,9 +153,9 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
 					file->fileSize = 0;
 					unsigned int s = 0;
 
-					file_element->QueryStringAttribute("FileName", &file->fileName);
-					file_element->QueryStringAttribute("FileDescription", &file->fileDescription);
-					file_element->QueryStringAttribute("SubdirPath", &file->subdirPath);
+                    file->fileName = utils::safeString( file_element->Attribute("FileName"));
+                    file->fileDescription = utils::safeString( file_element->Attribute("FileDescription"));
+                    file->subdirPath = utils::safeString( file_element->Attribute("SubdirPath"));
 					file_element->QueryUnsignedAttribute("Size", &s);
 					file->fileSize = s;
 
@@ -170,9 +169,9 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
         }
     }
     //GroupAssignments
-    TiXmlElement* group_assignments_element = hParent.FirstChild("GroupAssignments").ToElement();
+    tinyxml2::XMLElement* group_assignments_element = hParent.FirstChildElement("GroupAssignments").ToElement();
     if(group_assignments_element) {
-        TiXmlElement* group_assignment_element = group_assignments_element->FirstChildElement("GroupAssignment");
+        tinyxml2::XMLElement* group_assignment_element = group_assignments_element->FirstChildElement("GroupAssignment");
         while(group_assignment_element) {
             MotionShallowCopy::GroupAssigment * group_assignment = nullptr;
 
@@ -206,9 +205,9 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
         }
     }
     //Trials
-    TiXmlElement* trials_element = hParent.FirstChild("Trials").ToElement();
+    tinyxml2::XMLElement* trials_element = hParent.FirstChildElement("Trials").ToElement();
     if(trials_element) {
-        TiXmlElement* trial_element = trials_element->FirstChildElement("Trial");
+        tinyxml2::XMLElement* trial_element = trials_element->FirstChildElement("Trial");
         while(trial_element) {
             //newMotionShallowCopy::Trial * trial = new MotionShallowCopy::Trial;
             MotionShallowCopy::Trial * trial = nullptr;
@@ -234,19 +233,19 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
 
             trial->session->trials[trial->trialID] = trial;
 
-            trial_element->QueryStringAttribute("TrialName", &trial->trialName);
-            trial_element->QueryStringAttribute("TrialDescription", &trial->trialDescription);
+            trial->trialName = utils::safeString( trial_element->Attribute("TrialName"));
+            trial->trialDescription = utils::safeString( trial_element->Attribute("TrialDescription"));
 
             //Attrs
-            TiXmlElement* attrs_element = trial_element->FirstChildElement("Attrs");
+            tinyxml2::XMLElement* attrs_element = trial_element->FirstChildElement("Attrs");
             if(attrs_element) {
-                TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
+                tinyxml2::XMLElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
 					MotionShallowCopy::Attrs::key_type name;
 					MotionShallowCopy::Attrs::mapped_type value;
 
-                    attr_element->QueryStringAttribute("Name", &name);
-                    attr_element->QueryStringAttribute("Value", &value);
+                    name = utils::safeString( attr_element->Attribute("Name"));
+                    value = utils::safeString( attr_element->Attribute("Value"));
 
                     trial->attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
 
@@ -255,9 +254,9 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
             }
 
             //Files
-            TiXmlElement* files_element = trial_element->FirstChildElement("Files");
+            tinyxml2::XMLElement* files_element = trial_element->FirstChildElement("Files");
             if(files_element) {
-                TiXmlElement* file_element = files_element->FirstChildElement("File");
+                tinyxml2::XMLElement* file_element = files_element->FirstChildElement("File");
                 while(file_element) {
                     //newMotionShallowCopy::File * file = new MotionShallowCopy::File;
                     MotionShallowCopy::File * file = nullptr;
@@ -279,9 +278,9 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
 					file->fileSize = 0;
 					unsigned int s = 0;
 
-                    file_element->QueryStringAttribute("FileName", &file->fileName);
-                    file_element->QueryStringAttribute("FileDescription", &file->fileDescription);
-                    file_element->QueryStringAttribute("SubdirPath", &file->subdirPath);
+                    file->fileName = utils::safeString( file_element->Attribute("FileName"));
+                    file->fileDescription = utils::safeString( file_element->Attribute("FileDescription"));
+                    file->subdirPath = utils::safeString( file_element->Attribute("SubdirPath"));
 					file_element->QueryUnsignedAttribute("Size", &s);
 					file->fileSize = s;
 
@@ -295,9 +294,9 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
     }
 
     //PerformerConfs
-    TiXmlElement* performer_consfs_element = hParent.FirstChild("PerformerConfs").ToElement();
+    tinyxml2::XMLElement* performer_consfs_element = hParent.FirstChildElement("PerformerConfs").ToElement();
     if(performer_consfs_element) {
-        TiXmlElement* performer_consf_element = performer_consfs_element->FirstChildElement("PerformerConf");
+        tinyxml2::XMLElement* performer_consf_element = performer_consfs_element->FirstChildElement("PerformerConf");
         while(performer_consf_element) {
             //newMotionShallowCopy::PerformerConf * performerConf = new MotionShallowCopy::PerformerConf;
             MotionShallowCopy::PerformerConf * performerConf = nullptr;
@@ -333,15 +332,15 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
 
 
             //Attrs
-            TiXmlElement* attrs_element = performer_consf_element->FirstChildElement("Attrs");
+            tinyxml2::XMLElement* attrs_element = performer_consf_element->FirstChildElement("Attrs");
             if(attrs_element) {
-                TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
+                tinyxml2::XMLElement* attr_element = attrs_element->FirstChildElement("A");
                 while(attr_element) {
 					MotionShallowCopy::Attrs::key_type name;
 					MotionShallowCopy::Attrs::mapped_type value;
 
-                    attr_element->QueryStringAttribute("Name", &name);
-                    attr_element->QueryStringAttribute("Value", &value);
+                    name = utils::safeString( attr_element->Attribute("Name"));
+                    value = utils::safeString( attr_element->Attribute("Value"));
 
                     performerConf->attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
 
@@ -356,28 +355,28 @@ void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowC
 
 void MedicalShallowCopyParser::parseFile(const std::string & path, MedicalShallowCopy::ShallowCopy & shallowCopy)
 {
-    TiXmlDocument document(path);
-    if(!document.LoadFile()) {
+    tinyxml2::XMLDocument document;
+    if (document.LoadFile(path.c_str()) != tinyxml2::XML_NO_ERROR) {
         UTILS_ASSERT(false, "Blad wczytania pliku MedicalShallowCopy");
     }
 
-    TiXmlHandle hDocument(&document);
-    TiXmlElement* _element;
-    TiXmlHandle hParent(0);
+    tinyxml2::XMLHandle hDocument(&document);
+    tinyxml2::XMLElement* _element;
+    tinyxml2::XMLHandle hParent(0);
 
-    _element = hDocument.FirstChildElement().Element();
+    _element = hDocument.FirstChildElement().ToElement();
     if(!_element) {
         UTILS_ASSERT(false, "Blad wczytania z pliku MedicalShallowCopy");
     }
-    hParent = TiXmlHandle(_element);
+    hParent = tinyxml2::XMLHandle(_element);
 
     //Słowniki
-    TiXmlElement* dictionary_elements = hParent.FirstChild("Dictionaries").ToElement();
+    tinyxml2::XMLElement* dictionary_elements = hParent.FirstChildElement("Dictionaries").ToElement();
     if(dictionary_elements != nullptr){
         //Disorders
-        TiXmlElement* disorder_elements = dictionary_elements->FirstChild("Disorders")->ToElement();
+        tinyxml2::XMLElement* disorder_elements = dictionary_elements->FirstChildElement("Disorders")->ToElement();
         if(disorder_elements != nullptr){
-            TiXmlElement* disorder_element = disorder_elements->FirstChildElement("Disorder");
+            tinyxml2::XMLElement* disorder_element = disorder_elements->FirstChildElement("Disorder");
             while(disorder_element != nullptr){
 
                 int disorderID;
@@ -390,7 +389,7 @@ void MedicalShallowCopyParser::parseFile(const std::string & path, MedicalShallo
                     it->second->disorderID = disorderID;
                 }
 
-                disorder_element->QueryStringAttribute("DisorderName", &it->second->name);
+                it->second->name = utils::safeString( disorder_element->Attribute("DisorderName"));
 
                 disorder_element = disorder_element->NextSiblingElement();
             }
@@ -401,9 +400,9 @@ void MedicalShallowCopyParser::parseFile(const std::string & path, MedicalShallo
     }
 
     //Patients
-    TiXmlElement* patient_elements = hParent.FirstChild("Patients").ToElement();
+    tinyxml2::XMLElement* patient_elements = hParent.FirstChildElement("Patients").ToElement();
     if(patient_elements) {
-        TiXmlElement* patient_element = patient_elements->FirstChildElement("Patient");
+        tinyxml2::XMLElement* patient_element = patient_elements->FirstChildElement("Patient");
         while(patient_element) {
             MedicalShallowCopy::Patient * patient = nullptr;
 
@@ -422,12 +421,12 @@ void MedicalShallowCopyParser::parseFile(const std::string & path, MedicalShallo
             }
 
             patient_element->QueryIntAttribute("BDRPerformerID", &patient->motionPerformerID);
-            patient_element->QueryStringAttribute("FirstName", &patient->name);
-            patient_element->QueryStringAttribute("LastName", &patient->surname);
+            patient->name = utils::safeString( patient_element->Attribute("FirstName"));
+            patient->surname = utils::safeString( patient_element->Attribute("LastName"));
 
 			{
 				std::string gender;
-				patient_element->QueryStringAttribute("Gender", &gender);
+				gender = utils::safeString( patient_element->Attribute("Gender"));
 				patient->gender = xmlWsdl::Gender::convert(gender);
 			}
 
@@ -435,7 +434,7 @@ void MedicalShallowCopyParser::parseFile(const std::string & path, MedicalShallo
 
 			{
 				std::string birthDate;
-				patient_element->QueryStringAttribute("BirthDate", &birthDate);
+				birthDate = utils::safeString( patient_element->Attribute("BirthDate"));
 				patient->birthDate = toTime(birthDate);
 			}
 
@@ -444,9 +443,9 @@ void MedicalShallowCopyParser::parseFile(const std::string & path, MedicalShallo
     }
 
     //DisordersOccurences
-    TiXmlElement* disorder_elements = hParent.FirstChild("DisorderOccurences").ToElement();
+    tinyxml2::XMLElement* disorder_elements = hParent.FirstChildElement("DisorderOccurences").ToElement();
     if(disorder_elements) {
-        TiXmlElement* disorder_element = disorder_elements->FirstChildElement("DisorderOccurence");
+        tinyxml2::XMLElement* disorder_element = disorder_elements->FirstChildElement("DisorderOccurence");
         while(disorder_element) {
 
             int patientID;
@@ -457,17 +456,17 @@ void MedicalShallowCopyParser::parseFile(const std::string & path, MedicalShallo
 
             auto & disorder = shallowCopy.patients[patientID]->disorders[disorderID];
             shallowCopy.patients[patientID]->disorders[disorderID].disorder = shallowCopy.disorders.find(disorderID)->second;
-            disorder_element->QueryStringAttribute("Focus", &disorder.focus);
+            disorder.focus = utils::safeString( disorder_element->Attribute("Focus"));
 
 			{
 				std::string diagnosisDate;
-				disorder_element->QueryStringAttribute("DiagnosisDate", &diagnosisDate);
+				diagnosisDate = utils::safeString( disorder_element->Attribute("DiagnosisDate"));
 				if(diagnosisDate.empty() == false){
 					disorder.diagnosisDate = toTime(diagnosisDate);
 				}
 			}
 
-            disorder_element->QueryStringAttribute("Comments", &disorder.comments);
+            disorder.comments = utils::safeString( disorder_element->Attribute("Comments"));
 
             shallowCopy.patientsByDisorder[disorderID].insert(shallowCopy.patients[patientID]);
 

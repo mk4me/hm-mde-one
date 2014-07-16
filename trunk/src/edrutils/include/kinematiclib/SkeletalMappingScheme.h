@@ -14,9 +14,7 @@
 #include <map>
 #include <vector>
 #include <set>
-
-
-class TiXmlNode;
+#include <tinyxml2.h>
 
 namespace kinematic {
 
@@ -80,10 +78,10 @@ namespace kinematic {
 		//! wczytuje schematy mapowań z wczytanej struktury xml
 		//! \param node węzeł zawierający mapowania
 		//! \param result kolekcja ze schematami mapowań
-		static void readNode(TiXmlNode* node, std::vector<SkeletonMappingSchemePtr>& result);
+		static void readNode(tinyxml2::XMLNode* node, std::vector<SkeletonMappingSchemePtr>& result);
 		//! wczytuje pojedynczy wpis mapowania
 		//! \param node analizowany węzeł
-		static jointsMappingDict readMappingNode(TiXmlNode* node);
+		static jointsMappingDict readMappingNode(tinyxml2::XMLNode* node);
 	};
 }
 

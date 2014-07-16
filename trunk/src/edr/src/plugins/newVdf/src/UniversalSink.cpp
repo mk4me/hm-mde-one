@@ -1,8 +1,9 @@
 #include "NewVdfPCH.h"
 #include <plugins/newVdf/UniversalSink.h>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLineEdit>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLineEdit>
 #include <plugins/newCommunication/TreeItemHelper.h>
+#include <QtWidgets/QLabel>
 
 using namespace vdf;
 

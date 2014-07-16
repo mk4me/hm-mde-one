@@ -51,10 +51,11 @@
 #define HEADER_GUARD___CORETEXTEDITWIDGET_H__
 
 #include <coreui/Export.h>
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QMainWindow>
 #include <QtCore/QMap>
 #include <QtCore/QPointer>
 #include <QtGui/QTextDocument>
+#include <QtPrintSupport/QPrinter>
 
 QT_FORWARD_DECLARE_CLASS(QAction)
 QT_FORWARD_DECLARE_CLASS(QComboBox)

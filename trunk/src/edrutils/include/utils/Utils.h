@@ -104,6 +104,14 @@ inline std::string toString(const T& source)
     return boost::lexical_cast<std::string>(source);
 }
 
+//! Tworzy std::string z typu const char*. 
+//! \param ptr Łańcuch, może być nullptr
+//! \return Łańcuch na podstawie parametru lub pusty string, gdy przekazano nullptr
+inline std::string safeString(const char* ptr)
+{
+	return ptr ? std::string(ptr) : std::string();
+}
+
 //------------------------------------------------------------------------------
 
 /**

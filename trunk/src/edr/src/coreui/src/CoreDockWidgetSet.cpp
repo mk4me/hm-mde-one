@@ -1,9 +1,9 @@
 #include "CoreUiPCH.h"
 #include <coreui/CoreDockWidgetSet.h>
 #include <coreui/CoreDockWidget.h>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QDockWidget>
-#include <QtGui/QTabBar>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QTabBar>
 #include <stdexcept>
 #include <QtGui/QCloseEvent>
 

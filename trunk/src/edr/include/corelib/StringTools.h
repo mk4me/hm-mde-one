@@ -24,7 +24,7 @@ namespace core {
 
     inline QString toQString(const char* ascii, int size=-1)
     {
-        return QString::fromAscii(ascii, size);
+        return QString::fromLatin1(ascii, size);
     }
 
     inline QString toQString(const std::string& str)
@@ -41,12 +41,7 @@ namespace core {
         }
     }
 
-    inline std::string toStdString(const QString& str)
-    {
-        const QByteArray asc = str.toAscii(); 
-        return toStdString(asc.constData(), asc.length()); 
-    }
-
+    
     inline std::string toStdString(const boost::filesystem::path& path)
     {
         return path.string();
@@ -85,7 +80,7 @@ namespace core {
 
     inline toString_t toString(const QString& str)
     {
-        return toString_t(toStdString(str));
+        return toString_t(str.toStdString());
     }
     inline toString_t toString(const std::string& str)
     {

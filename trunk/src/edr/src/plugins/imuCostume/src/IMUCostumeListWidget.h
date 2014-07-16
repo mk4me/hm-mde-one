@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_IMU__IMUCOSTUMELISTWIDGET_H__
 #define HEADER_GUARD_IMU__IMUCOSTUMELISTWIDGET_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 class Ui_IMUCostumeListWidget;
 

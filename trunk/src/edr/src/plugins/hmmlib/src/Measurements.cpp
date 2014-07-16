@@ -1,6 +1,6 @@
 #include "HmmLibPCH.h"
 #include <iostream>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 #include "Measurements.h"
 #include <corelib/ILog.h>
 
@@ -12,12 +12,12 @@ MeasurementConfig::MeasurementConfig() :
 void MeasurementsParser::parse( const std::string& filename )
 {
     measurments = MeasurementsPtr(new Measurements());
-    TiXmlDocument doc(filename);
-    bool loadOkay = doc.LoadFile();
-    TiXmlElement* rootElement = nullptr;
+    tinyxml2::XMLDocument doc;
+    bool loadOkay = doc.LoadFile(filename.c_str()) == tinyxml2::XML_NO_ERROR;
+    tinyxml2::XMLElement* rootElement = nullptr;
     // jeśli plik jest plikiem *xml ...
     if (loadOkay) {
-        TiXmlElement* docElement = doc.FirstChildElement();
+        tinyxml2::XMLElement* docElement = doc.FirstChildElement();
         while (docElement) {
             // szukanie głównego elementu - "MeasurementConfs"
             if (strcmp(docElement->Value(), "MeasurementConfs") == 0) {
@@ -33,7 +33,7 @@ void MeasurementsParser::parse( const std::string& filename )
 
     // jeśli plik zawiera odpowiedni korzen (root)
     if (rootElement) {
-        for (TiXmlElement* element = rootElement->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
+        for (tinyxml2::XMLElement* element = rootElement->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
             if (element && strcmp(element->Value(), "MeasurementConf") == 0) {
                 MeasurementConfigPtr config(new MeasurementConfig());
                 readMeasurment(element, config);
@@ -46,10 +46,10 @@ void MeasurementsParser::parse( const std::string& filename )
     loaded = true;
 }
 
-void MeasurementsParser::readMeasurment( TiXmlElement* element, MeasurementConfigPtr config )
+void MeasurementsParser::readMeasurment( tinyxml2::XMLElement* element, MeasurementConfigPtr config )
 {
-    TiXmlElement* attrs = element->FirstChildElement(); 
-    TiXmlAttribute* attrib = element->FirstAttribute();
+    tinyxml2::XMLElement* attrs = element->FirstChildElement(); 
+    const tinyxml2::XMLAttribute* attrib = element->FirstAttribute();
     while(attrib) {
         if (strcmp(attrib->Name(), "MeasurementConfID") == 0) {
             config->number = attrib->IntValue();
@@ -62,7 +62,7 @@ void MeasurementsParser::readMeasurment( TiXmlElement* element, MeasurementConfi
         if (attrs->NextSiblingElement()) {
             throw std::runtime_error("Wrong measurments xml file");
         }
-        for (TiXmlElement* a = attrs->FirstChildElement(); a != nullptr; a = a->NextSiblingElement()) {
+        for (tinyxml2::XMLElement* a = attrs->FirstChildElement(); a != nullptr; a = a->NextSiblingElement()) {
             if (a && strcmp(a->Value(), "A") == 0) {
                 MeasurementConfig::MapEntry entry;
                 readAttribute(a, entry);
@@ -72,9 +72,9 @@ void MeasurementsParser::readMeasurment( TiXmlElement* element, MeasurementConfi
     }
 }
 
-void MeasurementsParser::readAttribute( TiXmlElement* A, MeasurementConfig::MapEntry& entry )
+void MeasurementsParser::readAttribute( tinyxml2::XMLElement* A, MeasurementConfig::MapEntry& entry )
 {
-    TiXmlAttribute* attrib = A->FirstAttribute();
+    const tinyxml2::XMLAttribute* attrib = A->FirstAttribute();
     while(attrib) {
         if (strcmp(attrib->Name(), "Name") == 0) {
             entry.first = QString::fromUtf8(attrib->Value());

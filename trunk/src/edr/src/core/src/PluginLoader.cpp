@@ -1,13 +1,5 @@
 #include "CorePCH.h"
-#if defined(__WIN32__)
-#include <windows.h>
-#elif defined(__UNIX__)
-#include <stdio.h>
-#include <dlfcn.h>
-#include <sys/types.h>
-#include <dirent.h>
-#include <errno.h>
-#endif
+
 
 #include <corelib/Version.h>
 #include "PluginLoader.h"
@@ -16,6 +8,17 @@
 #include "PluginApplication.h"
 #include "ApplicationCommon.h"
 #include <regex>
+
+#if defined(__WIN32__)
+#define NOMINMAX
+#include <windows.h>
+#elif defined(__UNIX__)
+#include <stdio.h>
+#include <dlfcn.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <errno.h>
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {

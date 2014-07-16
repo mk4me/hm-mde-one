@@ -10,7 +10,7 @@
 #define HEADER_GUARD_FLEXITOOLBARSECTION_H__
 
 #include <coreui/Export.h>
-#include <QtGui/QFrame>
+#include <QtWidgets/QFrame>
 
 class QAction;
 

@@ -1,7 +1,7 @@
 #include "CoreUiPCH.h"
 #include <coreui/CoreLabeledWidget.h>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLabel>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
 
 using namespace coreUI;
 

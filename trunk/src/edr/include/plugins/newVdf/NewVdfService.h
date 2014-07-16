@@ -16,9 +16,9 @@
 #include <corelib/IDataManagerReader.h>
 #include <corelib/BaseDataTypes.h>
 #include <coreui/HierarchyTreeModel.h>
-#include <QtGui/QTreeView>
-#include <QtGui/QListView>
-#include <QtGui/QPushButton>
+#include <QtWidgets/QTreeView>
+#include <QtWidgets/QListView>
+#include <QtWidgets/QPushButton>
 #include <plugins/newVdf/IDataProcessor.h>
 #include <plugins/newVdf/IDataSource.h>
 #include <plugins/newVdf/IDataSink.h>

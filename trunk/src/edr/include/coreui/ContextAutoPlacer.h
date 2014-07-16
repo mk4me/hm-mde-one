@@ -10,10 +10,10 @@
 #ifndef HEADER_GUARD_COREUI__CONTEXTAUTOPLACER_H__
 #define HEADER_GUARD_COREUI__CONTEXTAUTOPLACER_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtCore/QList>
-#include <QtGui/QAction>
-#include <QtGui/QTabWidget>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QTabWidget>
 #include <coreui/CoreFlexiToolBar.h>
 #include "IAppUsageContextManager.h"
 

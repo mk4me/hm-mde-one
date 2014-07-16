@@ -32,11 +32,11 @@
 #include <utils/Enum.h>
 
 #include <QtCore/QObject>
-#include <QtGui/QWidget>
-#include <QtGui/QFrame>
-#include <QtGui/QAction>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QTreeWidgetItem>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QFrame>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QTreeWidgetItem>
 #include <QtGui/QPainter>
 
 #define QT_NO_QT_INCLUDE_WARN

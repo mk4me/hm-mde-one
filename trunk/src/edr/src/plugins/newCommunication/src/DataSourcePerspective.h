@@ -11,7 +11,7 @@
 
 #include <plugins/newCommunication/IDataSourcePerspective.h>
 #include <plugins/newCommunication/IDataSourcePerspectiveManager.h>
-#include <QtGui/QTreeWidget>
+#include <QtWidgets/QTreeWidget>
 #include "DataSourceStatusManager.h"
 
 //! Klasa widgeta drzewa, gdzie na prawy przycisk myszy nie ma zaznaczania danych w drzewie

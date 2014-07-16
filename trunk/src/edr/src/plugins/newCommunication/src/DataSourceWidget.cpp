@@ -3,9 +3,9 @@
 #include "DownloadStatusWidget.h"
 #include "DataSource.h"
 #include "DataSourcePathsManager.h"
-#include <QtGui/QMessageBox>
-#include <QtGui/QMenu>
-#include <QtGui/QHBoxLayout>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QHBoxLayout>
 #include <QtCore/QRegExp>
 #include <QtGui/QKeyEvent>
 #include <QtCore/QSettings>
@@ -32,7 +32,7 @@
 #include "FilesHelper.h"
 #include <plugins/subject/ISubjectService.h>
 #include <webserviceslib/DateTimeUtils.h>
-#include <QtGui/QInputDialog>
+#include <QtWidgets/QInputDialog>
 #include <plugins/kinematic/Wrappers.h>
 #include <corelib/IFileDataManager.h>
 #include <corelib/IParserManagerReader.h>
@@ -2662,7 +2662,7 @@ void DataSourceWidget::unloadFiles(const std::set<int> & files, bool showMessage
 
 			//szukam po rootach czy ich przecięcie z aktualną grupą istnieje
 			for (auto IT = locFiles2roots.begin(); IT != locFiles2roots.end(); ++IT){
-				std::vector<int> inter(min(files.size(), IT->first.size()));
+				std::vector<int> inter(std::min(files.size(), IT->first.size()));
 				auto retIT = std::set_intersection(files.begin(), files.end(), IT->first.begin(), IT->first.end(), inter.begin());
 				if (std::distance(inter.begin(), retIT) == IT->first.size()){
 					auto roots = IT->second;

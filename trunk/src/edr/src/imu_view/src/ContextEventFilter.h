@@ -11,7 +11,7 @@
 #define HEADER_GUARD_MDE_VIEW__CONTEXTEVENTFILTER_H__
 
 #include <set>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtCore/QObject>
 #include <utils/SmartPtr.h>
 

@@ -1,5 +1,6 @@
 #include "NewVdfPCH.h"
 #include "SimpleItem.h"
+#include <QtGui/QPainter>
 
 namespace vdf
 {

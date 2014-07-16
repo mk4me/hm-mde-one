@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_COREUI__ICONTEXTROOT_H__
 #define HEADER_GUARD_COREUI__ICONTEXTROOT_H__
 
-#include <QtGui/QTabWidget>
+#include <QtWidgets/QTabWidget>
 #include <coreui/IAppUsageContext.h>
 
 namespace coreUI {

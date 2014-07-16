@@ -11,7 +11,7 @@
 #define HEADER_GUARD_HMM__FILTERENTRYWIDGET_H__
 
 #include <boost/function.hpp>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <osg/Vec3>
 #include <corelib/IFilterCommand.h>
 #include <QtGui/QIcon>

@@ -11,7 +11,7 @@
 #define HEADER_GUARD_NEW_VDF__PRESETSWIDGET_H__
 
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include "SceneModel.h"
 #include "TypesWindow.h"
 

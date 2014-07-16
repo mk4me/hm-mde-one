@@ -1,7 +1,7 @@
 #include "NewChartPCH.h"
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QCheckBox>
-#include <QtGui/QPushButton>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QPushButton>
 #include "NewChartLegend.h"
 #include "NewChartLegendItem.h"
 

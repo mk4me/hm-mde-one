@@ -10,9 +10,9 @@
 #ifndef HEADER_GUARD_HMM__CONFIGURATIONDIALOG_H__
 #define HEADER_GUARD_HMM__CONFIGURATIONDIALOG_H__
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 #include <QtCore/QFileInfo>
-#include <QtGui/QHBoxLayout>
+#include <QtWidgets/QHBoxLayout>
 #include "ConfigurationPainter.h"
 #include <plugins/hmmlib/Export.h>
 
