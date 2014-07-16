@@ -16,6 +16,7 @@
 #include <utils/DataChannel.h>
 #include <utils/DataChannelCollection.h>
 
+
 typedef osg::ref_ptr<vidlib::VideoImage> VideoImageOsgPtr;
 typedef vidlib::OsgStream VideoStream;
 typedef osg::ref_ptr<VideoStream> VideoStreamPtr;

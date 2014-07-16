@@ -11,7 +11,9 @@ SET_PRIVATE_HEADERS(
 	KinematicVisualizer.h
 	OsgSchemeDrawer.h
 	GRFSerie.h
+	FbxParser.h
 	MarkerSerie.h
+	OsgSerie.h
 	KinematicSerie.h
 	SchemeDialog.h
 	SkeletonSerie.h
@@ -34,11 +36,13 @@ SET_SOURCE_FILES(
 	OsgSchemeDrawer.cpp
 	KinematicPlugin.cpp
 	AsfParser.cpp
+	FbxParser.cpp
 	KinematicParser.cpp
 	KinematicSerie.cpp
 	KinematicVisualizer.cpp	
 	GRFSerie.cpp
 	MarkerSerie.cpp
+	OsgSerie.cpp
 	SkeletonSerie.cpp
 	TrajectoriesDialog.cpp
 	TrajectoriesDrawer.cpp
