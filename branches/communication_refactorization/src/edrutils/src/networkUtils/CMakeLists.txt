@@ -2,7 +2,7 @@ BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS(
 	Export.h
-	IFTPOperations.h
+	IFTPSession.h
 	IWSDLService.h
 	CURLFTPHelper.h
 	Types.h

@@ -306,6 +306,100 @@ std::string Filesystem::fileExtension(const Path & path)
     return path.extension().string();
 }
 
+const Filesystem::size_t Filesystem::availableSpace(const std::string & path)
+{
+	return availableSpace(Path(path));
+}
+
+const Filesystem::size_t Filesystem::availableSpace(const Path & path)
+{
+	Filesystem::size_t ret = -1;
+
+	try{
+		auto s = boost::filesystem::space(path);
+		ret = s.available;
+	}
+	catch (...){
+
+	}
+
+	return ret;
+}
+
+const Filesystem::size_t Filesystem::capacity(const std::string & path)
+{
+	return capacity(Path(path));
+}
+
+const Filesystem::size_t Filesystem::capacity(const Path & path)
+{
+	Filesystem::size_t ret = -1;
+
+	try{
+		auto s = boost::filesystem::space(path);
+		ret = s.capacity;
+	}
+	catch (...){
+
+	}
+
+	return ret;
+}
+
+const Filesystem::size_t Filesystem::freeSpace(const std::string & path)
+{
+	return freeSpace(Path(path));
+}
+
+const Filesystem::size_t Filesystem::freeSpace(const Path & path)
+{
+	Filesystem::size_t ret = -1;
+
+	try{
+		auto s = boost::filesystem::space(path);
+		ret = s.free;
+	}
+	catch (...){
+
+	}
+
+	return ret;
+}
+
+const Filesystem::size_t Filesystem::size(const std::string & path)
+{
+	return size(Path(path));
+}
+
+const Filesystem::size_t Filesystem::size(const Path & path)
+{
+	Filesystem::size_t ret = -1;
+
+	try{
+
+		if (isRegularFile(path) == true){
+			ret = boost::filesystem::file_size(path);
+		}
+		else if (isDirectory(path) == true){
+			ret = 0;
+			for (boost::filesystem::recursive_directory_iterator it(path);
+				it != boost::filesystem::recursive_directory_iterator();
+				++it)
+			{
+				if (isDirectory(*it) == false){
+					ret += boost::filesystem::file_size(*it);
+				}					
+			}
+		}
+
+	}
+	catch (...){
+
+	}
+
+	return ret;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core
 ////////////////////////////////////////////////////////////////////////////////

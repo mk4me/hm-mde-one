@@ -32,6 +32,7 @@ namespace hmdbServices
 		virtual const DateTime metadataModificationTime() const;
 
 	private:
+		//! Serwis obsługujący tą usługę
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 
@@ -183,6 +184,7 @@ namespace hmdbServices
 		virtual const std::string listMyReviewedAnnotationsXML() const;
 
 	private:
+		//! Serwis obsługujący tą usługę
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 
@@ -204,6 +206,7 @@ namespace hmdbServices
 		virtual const DateTime metadataModificationTime() const;
 
 	private:
+		//! Serwis obsługujący tą usługę
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 }

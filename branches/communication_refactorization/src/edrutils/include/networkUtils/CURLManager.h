@@ -9,7 +9,9 @@
 #define __HEADER_GUARD_NETWORKUTILS__CURLMANAGER_H__
 
 #include <networkUtils/Export.h>
+#include <string>
 #include <utils/SmartPtr.h>
+#define NOMINMAX
 #include <curl/curl.h>
 
 namespace networkUtils
@@ -22,6 +24,34 @@ namespace networkUtils
 		friend class CURLManagerImpl;
 
 	public:
+
+		//! Obiekt pozwalaj¹cy zaczekaæ na zakoñczenie zadania
+		class NETWORKUTILS_EXPORT WaitCurl
+		{
+			friend class CURLManagerImpl;
+
+		private:
+			//! Forward declaration
+			class WaitCurlImpl;
+
+		public:
+			//! Konstruktor domyslny
+			WaitCurl();
+			//! Destruktor
+			~WaitCurl();
+			//! Metoda czeka na zakoñczenie operacji curla
+			void wait();
+			//! \return Rezultat obs³ugi po³¹czenia
+			const CURLcode result() const;
+			//! \return Opis b³êdu jesli wyst¹pi³
+			const std::string error() const;
+
+		private:
+			//! Implementacja
+			utils::shared_ptr<WaitCurlImpl> impl;
+		};
+
+	public:
 		//! Domyœlny konstruktor
 		CURLManager();
 		//! \param multi Uchwyt dla obs³ugiwanych po³¹czeñ
@@ -29,19 +59,14 @@ namespace networkUtils
 		//! Destruktor wirtualny
 		virtual ~CURLManager();
 		//! \param curl Skonfigurowany uchwyt do obs³u¿enia
-		void addRequest(CURL * curl);
+		//! \param wait Obiekt pozwalaj¹cy zaczekaæ na zakoñæenie operacji curla
+		void addRequest(CURL * curl, WaitCurl * wait = nullptr);
 		//! \param curl Uchwyt do usuniêcia
 		void removeRequest(CURL * curl);
-		//! \param paused Czy pauzujemy przetwarzanie danych
-		void pause(const bool paused);
-		//! \return Czy przetwarzanie danych wstrzymane
-		const bool paused() const;
-		//! Definitywnie koñczy przetwarzanie danych
+		//! Metoda wo³ana w ramach w¹tku przetwarzaj¹cego uchwyty po³¹czeñ
+		const bool process();
+		//! Metoda konczaca przetwarzanie
 		void finalize();
-		//! \return Czy przetwarzanie danych zosta³o definitywnie przerwane
-		const bool finalized() const;
-		//! Metoda uruchomiowa w ramach w¹tku przetwarzaj¹cego uchwyty po³¹czeñ
-		void processThread();
 
 	private:
 		//! Metoda wo³ana zaraz po zakoñczeniu pracy z danymi przez po³¹czenia
@@ -53,7 +78,8 @@ namespace networkUtils
 		//! \param curl Uchwyt który zosta³ anulowany
 		virtual void onCancelRequest(CURL * curl) {}
 		//! \param curl Uchwyt który spowodowa³ b³¹d
-		virtual void onErrorRequest(CURL * curl) {}
+		//! \param error Opis b³êdu
+		virtual void onErrorRequest(CURL * curl, const std::string & error) {}
 		//! \param curl Uchwyt który zakoñczy³ przetwarzanie danych poprawnie
 		virtual void onFinishRequest(CURL * curl) {}
 
@@ -61,6 +87,8 @@ namespace networkUtils
 		//! Obiekt implementuj¹cy funkcjonalnoœc klasy
 		utils::shared_ptr<CURLManagerImpl> impl;
 	};
+
+	DEFINE_SMART_POINTERS(CURLManager);
 }
 
 #endif	// __HEADER_GUARD_NETWORKUTILS__CURLMANAGER_H__

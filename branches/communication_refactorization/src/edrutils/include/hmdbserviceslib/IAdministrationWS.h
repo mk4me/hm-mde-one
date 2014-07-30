@@ -9,14 +9,13 @@
 #ifndef HEADER_GUARD__HMDBSERVICES_IADMINISTRATIONWS_H__
 #define HEADER_GUARD__HMDBSERVICES_IADMINISTRATIONWS_H__
 
-#include <hmdbserviceslib/Export.h>
 #include <string>
 #include <utils/SmartPtr.h>
 
 namespace hmdbServices
 {
 	//! Interfejs serwisu z operacjami administracyjnymi
-	class HMDBSERVICES_EXPORT IAdministrationWS
+	class IAdministrationWS
 	{
 	public:
 		//! Destruktor wirtualny

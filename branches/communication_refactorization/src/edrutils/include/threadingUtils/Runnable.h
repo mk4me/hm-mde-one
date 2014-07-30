@@ -14,8 +14,9 @@
 #include <boost/function.hpp>
 
 namespace threadingUtils {
+
 	//! Interfejs obiektu realizuj�cego przetwarzanie w w�tkach
-	class THREADINGUTILS_EXPORT IRunnable
+	class IRunnable
 	{
 	public:
 		//! Wirtualny destruktor

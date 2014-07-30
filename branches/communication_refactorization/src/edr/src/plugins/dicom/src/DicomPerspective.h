@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_DICOM__DICOMPERSPECTIVE_H__
 #define HEADER_GUARD_DICOM__DICOMPERSPECTIVE_H__
 
-#include <plugins/newCommunication/IHierarchyPerspective.h>
+#include <plugins/hmdbCommunication/IHierarchyPerspective.h>
 #include <corelib/HierarchyHelper.h>
 #include <corelib/Visualizer.h>
 #include <corelib/HierarchyDataItem.h>
@@ -33,7 +33,7 @@ private:
 DEFINE_SMART_POINTERS(DicomHelper);
 
 //! Klasa realizuj¹ca perspektywe danych
-class DicomPerspective : public communication::IHierarchyPerspective
+class DicomPerspective : public hmdbCommunication::IHierarchyPerspective
 {
 public:
 	virtual ~DicomPerspective() {}

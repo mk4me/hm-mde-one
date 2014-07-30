@@ -9,14 +9,13 @@
 #ifndef HEADER_GUARD__HMDBSERVICES_IACCOUNTFACTORYWS_H__
 #define HEADER_GUARD__HMDBSERVICES_IACCOUNTFACTORYWS_H__
 
-#include <hmdbserviceslib/Export.h>
 #include <string>
 #include <utils/SmartPtr.h>
 
 namespace hmdbServices
 {
 	//! Interfejs serwisu do rejestracji i aktywacji kont w jednej usłudze - Med lub Motion
-	class HMDBSERVICES_EXPORT ISingleAccountFactoryWS
+	class ISingleAccountFactoryWS
 	{
 	public:
 		//! Destruktor wirtualny

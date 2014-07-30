@@ -62,8 +62,7 @@ private:
     QDockWidget* createDockVisualizer(const core::VisualizerPtr & visualizer);
     QDockWidget* createAndAddDockVisualizer( core::IHierarchyDataItemConstPtr treeItem, core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet);
     QDockWidget* createAndAddDockVisualizer( core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet, QString &path );
-
-     coreUI::CoreDockWidget* embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent);
+    
     //! dodaje widget z filtrami
     //! \param filter dodawany widget
     void addDataFilterWidget(coreUI::DataFilterWidget* filter);

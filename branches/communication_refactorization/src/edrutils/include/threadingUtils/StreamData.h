@@ -20,7 +20,7 @@
 namespace threadingUtils {
 	//! Interfejs obiektu obserwującego strumień
 	//! Implementacja musi gwarantować bezpieczne operacje wielowątkowe
-	class THREADINGUTILS_EXPORT IStreamStatusObserver
+	class IStreamStatusObserver
 	{
 	public:
 		virtual ~IStreamStatusObserver() {}

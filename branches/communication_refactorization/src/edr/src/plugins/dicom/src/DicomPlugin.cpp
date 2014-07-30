@@ -9,7 +9,7 @@
 #include "LayeredImageVisualizer.h"
 #include "LayeredImage.h"
 #include "DicomPerspective.h"
-#include <plugins/newCommunication/ICommunicationDataSource.h>
+#include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <corelib/ISourceManager.h>
 #include "LayersXmlParser.h"
 #include "InternalXmlParser.h"
@@ -17,7 +17,7 @@
 
 using namespace dicom;
 
-class DicomTempService : public IDicomService, public utils::Observer<communication::ICommunicationDataSource>
+class DicomTempService : public IDicomService
 {
 	UNIQUE_ID("{2B0AE786-F194-46DE-A161-CCCFF317E44B}")
 		CLASS_DESCRIPTION("DicomTempService", "DicomTempService");
@@ -59,7 +59,9 @@ public:
 
 	virtual const bool lateInit()
 	{
-		comm = core::querySource<communication::ICommunicationDataSource>(sourceManager);
+		//TODO
+		/*
+		comm = core::querySource<hmdbCommunication::IHMDBSource>(sourceManager);
 		if (comm != nullptr){
 			comm->attach(this);
 
@@ -74,16 +76,21 @@ public:
 		}
 
 		return false;
+
+		*/
+
+		return true;
 	}
 
 	virtual void finalize()
 	{
-		comm->detach(this);
-		comm.reset();
+		//comm->detach(this);
+		//comm.reset();
 	}
 
-	virtual void update(const communication::ICommunicationDataSource * subject)
+	virtual void update(const hmdbCommunication::ICommunicationDataSource * subject)
 	{
+		/*
 		if (subject->isLogged() == true){
 			if (subject->userIsReviewer() == true && usersToRefresh == true){
 				std::map<std::string, int>().swap(usersMapping);
@@ -109,6 +116,7 @@ public:
 		else{
 			usersToRefresh = true;
 		}
+		*/
 	}
 
 	const int getInEditionFilterIDX() const
@@ -150,6 +158,7 @@ public:
 		const hmdbServices::xmlWsdl::AnnotationStatus::Type status,
 		const std::string & comment)
 	{
+		/*
 		auto id = userID(user);
 
 		auto lu = comm->lastUpdateTime();
@@ -172,6 +181,7 @@ public:
 		annotations[id][trialID] = as;
 
 		updateFilters(comm.get());
+		*/
 	}
 
 	virtual void update(double deltaTime) {}
@@ -182,8 +192,9 @@ private:
 
 	const int userID(const std::string & user) const
 	{
+		
 		int ret = -1;
-
+		/*
 		auto it = usersMapping.find(user);
 		if (it != usersMapping.end()){
 			ret = it->second;
@@ -192,11 +203,15 @@ private:
 			ret = comm->currentUser()->id();
 		}
 
+		*/
+
 		return ret;
 	}
 
-	void updateFilters(const communication::ICommunicationDataSource * subject)
+	
+	void updateFilters(const hmdbCommunication::ICommunicationDataSource * subject)
 	{
+		/*
 		AnnotationStatusFilter::Identifiers inEdition;
 		AnnotationStatusFilter::Identifiers inVerification;
 		AnnotationStatusFilter::Identifiers verified;
@@ -268,6 +283,7 @@ private:
 					verified.insert(it->first);
 				}
 			}
+
 		}
 
 		std::set<int> noEditingTrials(inVerification);
@@ -290,6 +306,8 @@ private:
 			|| fID == verifiedFilterIDX){
 			comm->refreshCurrentFilter();
 		}
+
+		*/
 	}
 
 	virtual void updateItemIcon(const std::string& filename, const QIcon& icon)
@@ -312,7 +330,7 @@ private:
 private:
 	core::ISourceManager *sourceManager;
 	core::IMemoryDataManager* memoryDataManager;
-	communication::ICommunicationDataSourcePtr comm;
+	//hmdbCommunication::ICommunicationDataSourcePtr comm;
 	AnnotationStatusFilter * inEditionFilter;
 	AnnotationStatusFilter * inVerificationFilter;
 	AnnotationStatusFilter * verifiedFilter;

@@ -9,12 +9,12 @@
 #ifndef HEADER_GUARD_DICOM__ANNOTATIONSTATUSFILTER_H__
 #define HEADER_GUARD_DICOM__ANNOTATIONSTATUSFILTER_H__
 
-#include <plugins/newCommunication/DataSourceFilter.h>
+//#include <plugins/hmdbCommunication/DataSourceFilter.h>
 #include <set>
 
 namespace dicom
 {
-	class AnnotationStatusFilter : public DataSourceFilter
+	class AnnotationStatusFilter// : public ShallowCopyFilter
 	{
 	public:
 		//! Zbiór identyfikatorów

@@ -55,7 +55,7 @@ public:
     typedef typename utils::ObjectWrapperTraits<T>::Ptr Ptr;
     typedef typename utils::ObjectWrapperTraits<T>::ConstPtr ConstPtr;
 public:
-    UniversalOutputPinT (df::ISourceNode* node) : UniversalOutputPin(node, typeid(T)) {}
+	UniversalOutputPinT(df::ISourceNode* node) : UniversalOutputPin(node, typeid(T)) {}
     virtual ~UniversalOutputPinT() {}
 
     ConstPtr getValue() { return getWrapper()->get(); }

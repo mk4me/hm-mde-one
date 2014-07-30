@@ -47,6 +47,11 @@ namespace plugin
 		 return __coreApplication->fileDataManagerReader();
 	 }
 
+	 inline core::IStreamManagerReader * getStreamDataManagerReader()
+	 {
+		 return __coreApplication->streamDataManagerReader();
+	 }
+
 	inline core::IDataHierarchyManagerReader* getDataHierachyManagerReader()
 	{
 		return __coreApplication->dataHierarchyManagerReader();

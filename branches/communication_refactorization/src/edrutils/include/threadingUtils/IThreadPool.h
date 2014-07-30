@@ -15,6 +15,7 @@
 #include <list>
 
 namespace threadingUtils {
+
 	//! Wyj�tek rzucany kiedy chcemy pobra� w�tek/grup� z managera a nie ma ju� �adnych wolnych lub ilo�� wolnych jest niewystarczaj�ca (dla grupy)
 	class THREADINGUTILS_EXPORT NoFreeThreadAvaiable : public std::runtime_error
 	{
@@ -24,7 +25,7 @@ namespace threadingUtils {
 
 	//! Interfejs klasy zarz�dzaj�cej w�tkami. Klasa nadzoruje ilo�� aktualnie utworzonych w�tk�w i nie pozwala utworzy� wi�cej ni� zdefiniowano.
 	//! Aby zminimalizowa� koszt tworzenia i niszczenia w�tk�w klasa utrzymuje pewn� ilo�� w�tk�w do ponownego u�ycia.
-	class THREADINGUTILS_EXPORT IThreadPool
+	class IThreadPool
 	{
 	public:
 		//! Typ opisuj�cy ilo�� w�tk�w

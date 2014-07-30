@@ -1,0 +1,207 @@
+BEGIN_PROJECT("dynamic")
+
+SET_PRIVATE_HEADERS(
+	DataSourceBaseContent.h
+	DataSourceContentManager.h
+	DownloadStatusWidget.h
+	NotesWidget.h
+	StatusWidget.h
+	AntropometricDataWidget.h
+	DisordersDataWidget.h
+	PersonalDataWidget.h
+	DefaultPatientCardWidget.h
+	PatientCardManager.h
+	ShallowCopyFilterManager.h
+	QMultiToolBox.h
+	ShallowCopyUtils.h
+	Patient.h
+	DataSourcePerspective.h
+	DataSourcePerspectiveManager.h
+	CommunicationPCH.h
+	TreeBuilder.h
+	WSDLPULLService.h
+	CURLFTPTransfer.h
+	CURLFTPManager.h
+	CURLFTPProgress.h
+	CURLFTPStatus.h
+	CURLFTPTransferData.h
+	HMDBFTP.h
+	HMDBSession.h
+	HMDBService.h
+	HMDBStatusManager.h
+	HMDBLocalContext.h
+	HMDBRemoteContext.h
+	HMDBDataContext.h
+	AccountFactoryWS.h
+	AdministrationWS.h
+	AuthorizationWS.h
+	BasicQueriesWS.h
+	BasicUpdatesWS.h
+	FileStoremanWS.h
+	UserPersonalSpaceWS.h
+	WSDLServiceTypes.h
+	HMDBSource.h
+	HMDBSourceContext.h
+	SQLCipherStorage.h
+	HMDBSourceContextOperations.h
+	HMDBSourceWidget.h
+	#DataConfigurationWidget.h
+	#ViewConfigurationWidget.h
+	HMDBShallowCopyContext.h
+)
+
+SET_PUBLIC_HEADERS (
+	IDataSourceContent.h
+	IDataSourceContentManager.h
+	IPatientCard.h
+	IPatientCardManager.h
+	ShallowCopyFilter.h
+	IShallowCopyFilterManager.h
+	IPatient.h
+	ShallowCopy.h
+	IDataSourcePerspective.h
+	IDataSourcePerspectiveManager.h
+	MultiserieColorStrategy.h
+	TreeItemHelper.h
+	IHierarchyPerspective.h
+	Export.h
+	IHMDBSource.h
+	IHMDBSourceContext.h
+	IHMDBSession.h
+	IHMDBService.h
+	IHMDBFtp.h
+	IHMDBStorage.h
+	IHMDBStatusManager.h
+	IHMDBLocalContext.h
+	IHMDBRemoteContext.h
+	IHMDBDataContext.h
+	#AccountActivationWidget.h
+	#ConnectionConfigurationWidget.h
+	#ResetPasswordWidget.h
+	#ServerStatusCheckConfigurationWidget.h
+	ServerStatusWidget.h
+	SourceOptionsWidget.h
+	#StorageConfigurationWidget.h
+	#UserLoginWidget.h
+	#AccountRegistrationWidget.h
+	DataViewWidget.h
+	IHMDBShallowCopyContext.h
+	Types.h
+)
+
+#------------------------------------------------------------------------------
+SET_SOURCE_FILES(
+	DataSourceBaseContent.cpp
+	DataSourceContentManager.cpp
+	DownloadStatusWidget.cpp
+	NotesWidget.cpp
+	StatusWidget.cpp
+	AntropometricDataWidget.cpp
+	DisordersDataWidget.cpp
+	PersonalDataWidget.cpp
+	DefaultPatientCardWidget.cpp
+	PatientCardManager.cpp
+	ShallowCopyFilterManager.cpp
+	QMultiToolBox.cpp
+	Patient.cpp
+	ShallowCopyUtils.cpp
+	DataSourcePerspective.cpp
+	DataSourcePerspectiveManager.cpp
+	CommunicationPCH.cpp
+	TreeBuilder.cpp
+	TreeItemHelper.cpp
+	DataStatus.cpp
+	WSDLPULLService.cpp
+	CURLFTPTransfer.cpp
+	CURLFTPManager.cpp
+	CURLFTPProgress.cpp
+	CURLFTPStatus.cpp
+	HMDBFTP.cpp
+	HMDBSession.cpp
+	HMDBService.cpp
+	HMDBStatusManager.cpp
+	HMDBLocalContext.cpp
+	HMDBRemoteContext.cpp
+	HMDBDataContext.cpp
+	AccountFactoryWS.cpp
+	AdministrationWS.cpp
+	AuthorizationWS.cpp
+	BasicUpdatesWS.cpp
+	BasicQueriesWS.cpp
+	FileStoremanWS.cpp	
+	UserPersonalSpaceWS.cpp
+	HMDBSource.cpp
+	HMDBSourceContext.cpp
+	SQLCipherStorage.cpp
+	HMDBSourceContextOperations.cpp
+	#AccountActivationWidget.cpp
+	#ConnectionConfigurationWidget.cpp
+	#ResetPasswordWidget.cpp
+	#ServerStatusCheckConfigurationWidget.cpp	
+	ServerStatusWidget.cpp
+	SourceOptionsWidget.cpp
+	#StorageConfigurationWidget.cpp
+	#UserLoginWidget.cpp
+	HMDBSourceWidget.cpp
+	#AccountRegistrationWidget.cpp
+	Plugin.cpp
+	#DataConfigurationWidget.cpp
+	#ViewConfigurationWidget.cpp
+	DataViewWidget.cpp
+	HMDBShallowCopyContext.cpp
+)
+
+SET_MOC_FILES(
+	DownloadStatusWidget.h
+	QMultiToolBox.h
+	DefaultPatientCardWidget.h
+	PersonalDataWidget.h
+	AntropometricDataWidget.h
+	DisordersDataWidget.h
+	NotesWidget.h
+	StatusWidget.h
+	DataSourcePerspective.h
+	#AccountActivationWidget.h
+	#ConnectionConfigurationWidget.h
+	#ResetPasswordWidget.h	
+	#ServerStatusCheckConfigurationWidget.h	
+	ServerStatusWidget.h
+	SourceOptionsWidget.h
+	#StorageConfigurationWidget.h
+	#UserLoginWidget.h
+	HMDBSourceWidget.h
+	#AccountRegistrationWidget.h
+	#ViewConfigurationWidget.h
+	#DataConfigurationWidget.h
+	DataViewWidget.h
+)
+
+SET_UI_FILES(
+	DownloadStatusWidget.ui
+	DefaultPatientCardWidget.ui
+	PersonalDataWidget.ui
+	NotesWidget.ui
+	StatusWidget.ui
+	#AccountActivationWidget.ui
+	#ResetPasswordWidget.ui	
+	#ServerStatusCheckConfigurationWidget.ui	
+	ServerStatusWidget.ui
+	SourceOptionsWidget.ui
+	#StorageConfigurationWidget.ui
+	#ServiceConfigurationWidget.ui
+	#DataConfigurationWidget.ui
+	#UserLoginWidget.ui
+	#AccountRegistrationWidget.ui
+	#ViewConfigurationWidget.ui
+	DataViewWidget.ui
+)
+
+SET_RC_FILES (
+	hmdbCommunicationIcons.qrc
+)
+
+SET_PRECOMPILED_HEADER( CommunicationPCH.h CommunicationPCH.cpp)
+
+GENERATE_PROJECT_TRANSLATIONS()
+
+END_PROJECT()

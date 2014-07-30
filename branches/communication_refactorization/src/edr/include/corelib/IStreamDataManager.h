@@ -20,24 +20,41 @@ namespace core {
 	class IStreamDataManagerOperations
 	{
 	public:
+
+		//! Typ wskaŸnika na strumieñ
+		typedef utils::shared_ptr<std::istream> StreamPtr;
+
+		//! Interfejs obiektu dostarczaj¹cego strumieñ
+		class IStreamGrabber
+		{
+		public:
+			//! Destruktor wirtualny
+			virtual ~IStreamGrabber() {}
+			//! \return Strumieñ
+			virtual const StreamPtr stream() const = 0;
+			//! \return Nazwa, identyfikator strumienia
+			virtual const std::string name() const = 0;
+		};
+
+		//! WskaŸnik obiektu dostarczaj¹cego struemienia
+		typedef utils::shared_ptr<IStreamGrabber> StreamGrabberPtr;
+
+	public:
 		//! Destrutkor wirtualny
 		virtual ~IStreamDataManagerOperations() {}
 
 		//! \param stream Strumieñ dodawany do managera
 		//! Rzuca wyj¹tkiem jeœli coœ siê nie powiedzie
-		virtual void addStream(const IStreamManagerReaderOperations::StreamData & stream) = 0;
+		virtual void addStream(const StreamGrabberPtr streamGrabber) = 0;
 		//! \param stream Strumieñ usuwany z DM
 		//! Rzuca wyj¹tkiem jeœli coœ siê nie powiedzie
-		virtual void removeStream(const std::istream * stream) = 0;
+		virtual void removeStream(const std::string & stream) = 0;
 		//! \param stream Strumieñ dodawany do managera
 		//! \return Prawda jeœli pomyœlnie dodano strumieñ
-		virtual const bool tryAddStream(const IStreamManagerReaderOperations::StreamData & stream) = 0;
+		virtual const bool tryAddStream(const StreamGrabberPtr streamGrabber) = 0;
 		//! \param stream Strumieñ usuwany z managera
 		//! \return Prawda jeœli pomyœlnie usuniêto strumieñ
-		virtual const bool tryRemoveStream(const std::istream * stream) = 0;
-
-		//! TODO
-		// poprawiæ API - usuwamy smart pointerem strumienia albo jego œcie¿k¹
+		virtual const bool tryRemoveStream(const std::string & stream) = 0;
 	};
 
 	//! Manager udostêpniaj¹cy operacje na strumieniach zarz¹dzanych przez DM w oparciu o zarejestrowane parsery i rozszerzenia

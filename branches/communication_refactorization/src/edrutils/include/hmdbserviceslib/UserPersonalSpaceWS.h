@@ -22,6 +22,7 @@ namespace hmdbServices
 		virtual ~UserPersonalSpaceWS();
 
 	private:
+		//! Serwis obs³uguj¹cy t¹ us³ugê
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 }

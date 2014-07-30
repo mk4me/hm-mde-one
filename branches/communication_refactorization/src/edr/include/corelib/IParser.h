@@ -60,6 +60,8 @@ namespace plugin
         virtual void parse(const std::string & source) = 0;
 	};
 
+	DEFINE_SMART_POINTERS(ISourceParser);
+
 	//! Interfejs parsera z własnym I/O potrafiącego selektywnie wyciągać dane z pliku, nie wszystkie za jednym razem
 	class IOptimizedSourceParser : public ISourceParser
 	{
@@ -68,6 +70,8 @@ namespace plugin
 		//! \param objectsIndexes Jakie typy obiektów wg opisu dla danego źródła parser powinien wydobyć
 		virtual void parse(const std::string & source, const IParser::ObjectsIndexes & objectsIndexes) = 0;
 	};
+
+	DEFINE_SMART_POINTERS(IOptimizedSourceParser);
 
 	//! Interfejs parsera działąjącego w oparciu o strumienie STL i ścieżkę opisującą typ danych w strumieniu
 	//! np. pamięć współdzielona pomiędzy procesami, dostęp do ukrytych zasobów (SQLCIPHER) implementujących strumienie
@@ -82,6 +86,8 @@ namespace plugin
 		virtual void parse(const std::istream * stream, const std::string & source) = 0;
 	};
 
+	DEFINE_SMART_POINTERS(IStreamParser);
+
 	//! Interfejs parsera strumieni potrafiącego selektywnie wyciągać dane ze strumienia, nie wszystkie za jednym razem
 	class IOptimizedStreamParser : public IStreamParser
 	{
@@ -91,6 +97,8 @@ namespace plugin
 		//! \param objectsIndexes Jakie typy obiektów wg opisu dla danego źródła parser powinien wydobyć
 		virtual void parse(const std::istream * stream, const std::string & source, const ObjectsIndexes & objectsIndexes) = 0;
 	};
+
+	DEFINE_SMART_POINTERS(IOptimizedStreamParser);
 }
 
 #endif

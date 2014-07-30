@@ -136,6 +136,7 @@ namespace hmdbServices
 			const std::string & note);
 
 	private:
+		//! Serwis obsługujący tą usługę
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 
@@ -146,6 +147,7 @@ namespace hmdbServices
 		virtual ~MedicalBasicUpdatesWS();
 
 	private:
+		//! Serwis obsługujący tą usługę
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 }

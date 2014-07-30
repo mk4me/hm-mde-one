@@ -58,7 +58,7 @@ const bool df::DFModelRunner::DFModelRunnerImpl::SourceNodeRunner::dataflow()
 
 	stage++;
 	if (runner_->dataflowFinished() == true)
-	{
+	{		
 		return false;
 	}
 

@@ -79,7 +79,7 @@ void Session::addMotion(const core::VariantConstPtr & motion)
 {
 	utils::ObjectWrapper::Types types;
 	motion->data()->getSupportedTypes(types);
-	if(std::find(types.begin(), types.end(), typeid(PluginSubject::IMotion)) == types.end()){
+	if (std::find(types.begin(), types.end(), typeid(PluginSubject::IMotion)) == types.end()){
 		throw std::runtime_error("Data type does not support PluginSubject::IMotion type");
 	}
 

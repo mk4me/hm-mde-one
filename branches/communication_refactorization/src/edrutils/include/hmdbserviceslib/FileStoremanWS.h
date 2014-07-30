@@ -29,6 +29,7 @@ namespace hmdbServices
 		virtual const xmlWsdl::FileData retrieve(const int id);
 
 	private:
+		//! Serwis obsługujący tą usługę
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 
@@ -46,6 +47,7 @@ namespace hmdbServices
 		virtual const xmlWsdl::FileData retrieve(const int id);
 
 	private:
+		//! Serwis obsługujący tą usługę
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 
@@ -69,6 +71,7 @@ namespace hmdbServices
 		virtual const std::string getShallowCopyBranchesIncrement(const std::string & dateTime);
 
 	private:
+		//! Serwis obsługujący tą usługę
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 
@@ -139,6 +142,7 @@ namespace hmdbServices
 		virtual void replaceFile(int fileID, const std::string& path, std::string& filename);
 
 	private:
+		//! Serwis obsługujący tą usługę
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 
@@ -165,6 +169,7 @@ namespace hmdbServices
 		virtual const std::string getShallowCopyBranchesIncrement(const std::string & dateTime);
 
 	private:
+		//! Serwis obsługujący tą usługę
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 }

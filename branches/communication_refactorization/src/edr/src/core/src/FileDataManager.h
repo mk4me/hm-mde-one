@@ -18,19 +18,30 @@
 #include <corelib/IParserManagerReader.h>
 
 namespace core {
+
 	class FileDataManager : public IFileDataManager, public IFileManagerReader, public IDataManagerReader::IObjectObserver
 	{
 	private:
-
+		//! Forward declaration
 		class FileTransaction;
 		friend class FileTransaction;
-
+		//! Forward declaration
 		class FileReaderTransaction;
 		friend class FileReaderTransaction;
 
-		//! S�ownik aktualnie obs�ugiwanych plik�w i skojarzonych z nimi parser�w
-		typedef std::map<Filesystem::Path, VariantsList> ObjectsByFiles;
+		//! Forward declaration
+		class CompoundInitializer;		
 
+		//! S�ownik aktualnie obs�ugiwanych plik�w i skojarzonych z nimi parser�w
+		typedef std::map<Filesystem::Path, ConstVariantsList> ObjectsByFiles;
+		//! Mapowanie indeksu danych parsera do typu pod tym indeksem
+		typedef std::map<int, utils::TypeInfo> ParserTypes;
+		//! Mapowanie inicjalizatora do brakujących danych
+		typedef std::map<utils::shared_ptr<CompoundInitializer>, ParserTypes> ObjectsByParser;
+		//! Mapowanie plików do brakujących danych
+		typedef std::map<Filesystem::Path, ObjectsByParser> MissingObjects;
+
+		//! Polityka synchronizacji
 		typedef threadingUtils::RecursiveSyncPolicy SyncPolicy;
 		typedef threadingUtils::ScopedLock<SyncPolicy> ScopedLock;
 
@@ -38,6 +49,8 @@ namespace core {
 
 		//! Mapa parser�w wg plik�w
 		ObjectsByFiles objectsByFiles;
+		//! Dane wyładowane przez Memory DM
+		MissingObjects missingObjects;
 
 		//! Obiekt na potrzeby synchronizacji
 		mutable SyncPolicy sync;
@@ -50,11 +63,18 @@ namespace core {
 
 	private:
 
+		template<typename ParserT>
+		void initializeParsers(const IParserManagerReader::ParserPrototypes & parsers, const std::string & path, VariantsList & objects);
+
 		void rawRemoveFile(const Filesystem::Path & file, const IMemoryDataManager::TransactionPtr & memTransaction);
 
 		void rawAddFile(const Filesystem::Path & file, const IMemoryDataManager::TransactionPtr & memTransaction);
 
+		void rawReloadFile(const Filesystem::Path & file, const bool compleately, const IMemoryDataManager::TransactionPtr & memTransaction);
+
 		const bool rawIsManaged(const Filesystem::Path & file) const;
+
+		const bool rawIsLoadedCompleately(const Filesystem::Path & file) const;
 
 		void updateObservers(const ChangeList & changes);
 
@@ -76,12 +96,24 @@ namespace core {
 		//! b�da dost�pne poprzez DataMangera LENIWA INICJALIZACJA
 		virtual void addFile(const Filesystem::Path & file);
 
+		//! \param file Ścieżka pliku do przeładowania
+		//! \param complete Czy plik ma zostać całkowicie przeładowany czy tylko brakujące dane mają zostać doładowane
+		virtual void reloadFile(const Filesystem::Path & file,
+			const bool complete);
+
+
 		virtual const bool tryAddFile(const core::Filesystem::Path & file);
 
 		virtual const bool tryRemoveFile(const core::Filesystem::Path & file);
 
+		//! \param file Ścieżka pliku do przeładowania
+		//! \param complete Czy plik ma zostać całkowicie przeładowany czy tylko brakujące dane mają zostać doładowane
+		//! \return Prawda jeśli plik pomyślnie przeładowano
+		virtual const bool tryReloadFile(const Filesystem::Path & file,
+			const bool complete);
+
 		//! \return Nowa transakcja
-		virtual IFileDataManager::TransactionPtr transaction();
+		virtual const TransactionPtr transaction();
 
 	public:
 
@@ -97,6 +129,10 @@ namespace core {
 		//! \return Prawda je�li plik jest zarz�dzany przez ten DM
 		virtual const bool isManaged(const Filesystem::Path & file) const;
 
+		//! \param file Plik kótry weryfikujemy czy jest w pełni załadowany
+		//! \return Prawda jeśli plik jest w pełni załadowany
+		virtual const bool isLoadedCompleately(const Filesystem::Path & file) const;
+
 		//! \param files Zbior plik�w dla kt�rych chcemy pobra� list� obiekt�w
 		//! \return Mapa obiekt�w wzgl�dem plik�w z kt�rych pochodza
 		virtual void getObjects(const Filesystem::Path & file, ConstVariantsList & objects) const;
@@ -105,7 +141,7 @@ namespace core {
 		//! \return Mapa obiekt�w wzgl�dem plik�w z kt�rych pochodza
 		virtual void getObjects(const Filesystem::Path & file, VariantsCollection & objects) const;
 
-		virtual IFileManagerReader::TransactionPtr transaction() const;
+		virtual const TransactionConstPtr transaction() const;
 
 	public:
 
@@ -121,8 +157,37 @@ namespace core {
 	private:
 		//! \param path Ścieżka pliku który weryfikujemy pod kątem dostępności danych,
 		//! jeśli brak to usuwamy nieużywany plik
-		void tryRemoveUnusedFile(const core::Filesystem::Path & file);
+		void tryRemoveUnusedFile(const core::Filesystem::Path & file,
+			ChangeList & changes);
 	};
+
+
+	template<typename ParserT>
+	void FileDataManager::initializeParsers(const IParserManagerReader::ParserPrototypes & parsers, const std::string & path, VariantsList & objects)
+	{
+		auto pm = getParserManager();
+		auto hm = getDataHierarchyManager();
+
+		//je�li pliku nie ma dodaj go, stw�rz parsery i rozszerz dost�pne dane wraz z ich opisem
+		for (auto parserIT = parsers.begin(); parserIT != parsers.end(); ++parserIT){
+			// tworzymy współdzielone dane dla inicjalizatorów
+			CompoundInitializer::CompoundDataPtr cid(new CompoundInitializer::CompoundData);
+			cid->parser.reset(new ParserT((*parserIT)->create(), path));
+
+			auto parserTypesMap = pm->parserTypes((*parserIT)->ID(), path);
+
+			//zarejestrowanie obiekt�w i ich zwi�zku z parserem i typami danych
+			for (auto objectIT = parserTypesMap.begin(); objectIT != parserTypesMap.end(); ++objectIT){
+				//towrzymy taki obiekt
+				auto ow = hm->createWrapper(objectIT->second);
+				//aktualizuje ow dla CompoundInitializer
+				cid->objects[objectIT->first] = ow;
+				//inicjalizator na bazie parsera
+				ow->setInitializer(VariantInitializerPtr(new CompoundInitializer(cid, objectIT->first)));
+				objects.push_back(ow);
+			}
+		}
+	}
 }
 
 #endif	//	HEADER_GUARD___FILEDATAMANAGER_H__

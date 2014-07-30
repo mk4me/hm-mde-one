@@ -4,149 +4,149 @@
 <context>
     <name>KinematicVisualizer</name>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="48"/>
         <location filename="../src/KinematicVisualizer.cpp" line="49"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="50"/>
         <source>Markers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="58"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="60"/>
         <source>Skeleton</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="126"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="132"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="138"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="129"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="135"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="141"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="126"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="129"/>
         <source>Trajectories</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="132"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="135"/>
         <source>Scheme Drawers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="138"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="141"/>
         <source>Ghost</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="146"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="148"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="165"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="149"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="151"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="168"/>
         <source>View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="149"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="152"/>
         <source>Left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="150"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="153"/>
         <source>Right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="151"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="154"/>
         <source>Front</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="152"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="155"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="153"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="156"/>
         <source>Top</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="154"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="157"/>
         <source>Bottom</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="170"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="173"/>
         <source>TX: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="171"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="174"/>
         <source>TY: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="172"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="175"/>
         <source>TZ: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="178"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="179"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="180"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="191"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="192"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="193"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="203"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="204"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="205"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="181"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="182"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="183"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="194"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="195"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="196"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="206"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="207"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="208"/>
         <source>Manipulators properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="183"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="186"/>
         <source>RX: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="184"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="187"/>
         <source>RY: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="185"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="188"/>
         <source>RZ: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="208"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="213"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="218"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="223"/>
-        <location filename="../src/KinematicVisualizer.cpp" line="228"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="211"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="216"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="221"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="226"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="231"/>
         <source>Manipulators</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="208"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="211"/>
         <source>Picker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="213"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="216"/>
         <source>Translate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="218"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="221"/>
         <source>Rotate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="223"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="226"/>
         <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/KinematicVisualizer.cpp" line="228"/>
+        <location filename="../src/KinematicVisualizer.cpp" line="231"/>
         <source>Reset transform</source>
         <translation type="unfinished"></translation>
     </message>

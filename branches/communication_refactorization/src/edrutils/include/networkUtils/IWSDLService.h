@@ -1,55 +1,54 @@
 /********************************************************************
-	created:  2014/05/14	20:06:38
-	filename: IWSDLService.h
-	author:	  Mateusz Janiak
+created:  2014/05/14	20:06:38
+filename: IWSDLService.h
+author:	  Mateusz Janiak
 
-	purpose:
-	*********************************************************************/
+purpose:
+*********************************************************************/
 #ifndef __HEADER_GUARD_NETWORKUTILS__IWSDLSERVICE_H__
 #define __HEADER_GUARD_NETWORKUTILS__IWSDLSERVICE_H__
 
 #include <string>
-#include <networkUtils/Export.h>
 #include <utils/SmartPtr.h>
 #include <boost/lexical_cast.hpp>
+#include <exception>
 
 namespace networkUtils
 {
-	//! WA¯NA UWAGA DO WYJ¥TKÓW !! POWINNY BY RZUCANE TYLKO I WY£¥CZNIE PODCZAS WYWO£YWANIA INVOKE W ZALE¯NOŒCI CO SIÊ NIE POWIEDZIE !!
-	//! MA TO NA CELU WPROWADZENIE LENIWEJ INICJALIZACJI US£UG - PO£¥CZENIE JEST NAWI¥ZYWANE FAKTYCZNIE W MOMENCIE U¯YCIA
-
-	enum ExceptionType
-	{
-		Unknown,
-		Security,
-		Operation,
-		OperationValue,
-		Initialization,
-		Response,
-		Invoke
-	};
-
 	//! Wyj¹tek obs³ugi serwisu wsdl
-	class NETWORKUTILS_EXPORT WSDLServiceException
+	class WSDLServiceException : public std::exception
 	{
 	public:
-		WSDLServiceException(const ExceptionType type = Unknown) throw() : type_(type) {}
-		WSDLServiceException(const WSDLServiceException & exception) throw() : error(exception.error), type_(exception.type_) {}
-		WSDLServiceException(const char * exception, const ExceptionType type = Unknown) throw() : error(exception), type_(type) {}
+		//! Typ wyj¹tku
+		enum ExceptionType
+		{
+			Unknown,		//! Nieznany typ
+			Security,		//! Wyj¹tek bezpieczeñstwa
+			Operation,		//! Wyj¹tek operacji
+			OperationValue,	//! Wyj¹tek parametru operacji
+			Initialization,	//! Wyj¹tek inicjalizacji us³ugi
+			Response,		//! Wyj¹tek odpowiedzi
+			Invoke			//! Wyj¹tek wykonania us³ugi
+		};
+
+	public:
+		//! \param type Typ wyjatku us³ugi
+		WSDLServiceException(const ExceptionType type = Unknown) throw() : std::exception(), type_(type) {}
+		//! \param exception Wujatek który kopiujemy
+		WSDLServiceException(const WSDLServiceException & exception) throw() : std::exception(exception), type_(exception.type_) {}
+		//! \param exception Opis wyjatku
+		//! \param type Typ wyjatku us³ugi
+		WSDLServiceException(const char * exception, const ExceptionType type = Unknown) throw() : std::exception(exception), type_(type) {}
 
 		//! \return Typ wyj¹tku
 		inline const ExceptionType type() const { return type_; }
-		//! \return Opis wyj¹tku
-		inline const char * what() const { error.c_str(); }
 
 	private:
-		//! Opis wyj¹tku
-		std::string error;
 		//! Typ wyj¹tku
 		const ExceptionType type_;
 	};
 
-	class NETWORKUTILS_EXPORT IWSDLService
+	class IWSDLService
 	{
 	public:
 		//! Desturktor wirtualny
@@ -74,7 +73,15 @@ namespace networkUtils
 		template<class T>
 		void setValue(const std::string& param, const T& value)
 		{
-			setValue(param, boost::lexical_cast<std::string>(value));
+			try{
+				setValue(param, boost::lexical_cast<std::string>(value));
+			}
+			catch (std::exception & e){
+				throw WSDLServiceException(e.what(), WSDLServiceException::OperationValue);
+			}
+			catch (...){
+				throw WSDLServiceException("Unknown set operation value error", WSDLServiceException::OperationValue);
+			}
 		}
 		//! \tparam Typ jaki chemy pobraæ
 		//! \param param Nazwa parametru dla którego pobieramy wartoœæ jeœli wykonywaliœmy zapytanie z parsowanie

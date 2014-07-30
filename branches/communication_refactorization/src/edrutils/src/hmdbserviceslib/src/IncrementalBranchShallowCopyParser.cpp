@@ -4,26 +4,34 @@
 #include <hmdbserviceslib/DateTimeUtils.h>
 #include <hmdbserviceslib/Entity.h>
 #include <hmdbserviceslib/ShallowCopy.h>
+#include <utils/Utils.h>
 
 namespace hmdbServices
 {
 	void parseBranch(TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy);
 	void parseFilesBranch(TiXmlElement* trial_element, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy, IncrementalBranchShallowCopy::Files& files, IncrementalBranchShallowCopy::Trial& trial);
 
-	void IncrementalBranchShallowCopyParser::parseFile(const std::string & path, IncrementalBranchShallowCopy& shallowCopy)
+	const bool IncrementalBranchShallowCopyParser::parseFile(std::istream * document, IncrementalBranchShallowCopy& shallowCopy)
 	{
-		TiXmlDocument document(path);
-		if (!document.LoadFile()) {
+		auto s = utils::readStream(document);
+
+		TiXmlDocument xmlDocument;
+
+		xmlDocument.Parse(s.c_str());
+
+		if (xmlDocument.Error()) {
 			UTILS_ASSERT(false, "Blad wczytania pliku MotionShallowCopy");
+			return false;
 		}
 
-		TiXmlHandle hDocument(&document);
+		TiXmlHandle hDocument(&xmlDocument);
 		TiXmlElement* _element;
 		TiXmlHandle hParent(0);
 
 		_element = hDocument.FirstChildElement().Element();
 		if (!_element) {
 			UTILS_ASSERT(false, "Blad wczytania z pliku MotionShallowCopy");
+			return false;
 		}
 		hParent = TiXmlHandle(_element);
 
@@ -36,6 +44,18 @@ namespace hmdbServices
 		if (added) {
 			parseBranch(TiXmlHandle(added), shallowCopy.added);
 		}
+
+		TiXmlElement* removedLocaly = hParent.FirstChild("RemovedLocaly").ToElement();
+		if (added) {
+			parseBranch(TiXmlHandle(removedLocaly), shallowCopy.removedLocaly);
+		}
+
+		TiXmlElement* removedGlobaly = hParent.FirstChild("RemovedGlobaly").ToElement();
+		if (added) {
+			parseBranch(TiXmlHandle(removedGlobaly), shallowCopy.removedGlobaly);
+		}
+
+		return true;
 	}
 
 	void parseBranch(TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy)

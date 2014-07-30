@@ -15,7 +15,8 @@
 #include <threadingUtils/IThread.h>
 
 namespace threadingUtils {
-	class THREADINGUTILS_EXPORT IJobManager
+
+	class IJobManager
 	{
 	public:
 		//! Wirtualny destruktor

@@ -17,6 +17,7 @@ SET_PUBLIC_HEADERS(
 	Runnable.h
 	QtThreadFactory.h
 	StreamData.h
+	IOperation.h
 )
 
 SET_SOURCE_FILES(

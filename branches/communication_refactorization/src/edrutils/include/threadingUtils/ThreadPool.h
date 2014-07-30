@@ -14,6 +14,7 @@
 #include <threadingUtils/IThreadFactory.h>
 
 namespace threadingUtils {
+
 	class THREADINGUTILS_EXPORT ThreadPool : public IThreadPool
 	{
 	private:

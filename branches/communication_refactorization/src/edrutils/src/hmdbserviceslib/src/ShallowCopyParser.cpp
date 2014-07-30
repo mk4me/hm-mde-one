@@ -3,23 +3,31 @@
 #include <tinyxml.h>
 #include <hmdbserviceslib/DateTimeUtils.h>
 #include <hmdbserviceslib/Entity.h>
+#include <utils/Utils.h>
 
 namespace hmdbServices
 {
-	void MotionShallowCopyParser::parseFile(const std::string & path, MotionShallowCopy::ShallowCopy & shallowCopy)
+	const bool MotionShallowCopyParser::parseFile(std::istream * document, MotionShallowCopy::ShallowCopy & shallowCopy)
 	{
-		TiXmlDocument document(path);
-		if (!document.LoadFile()) {
+		auto s = utils::readStream(document);
+
+		TiXmlDocument xmlDocument;
+
+		xmlDocument.Parse(s.c_str());
+
+		if (xmlDocument.Error()) {
 			UTILS_ASSERT(false, "Blad wczytania pliku MotionShallowCopy");
+			return false;
 		}
 
-		TiXmlHandle hDocument(&document);
+		TiXmlHandle hDocument(&xmlDocument);
 		TiXmlElement* _element;
 		TiXmlHandle hParent(0);
 
 		_element = hDocument.FirstChildElement().Element();
 		if (!_element) {
 			UTILS_ASSERT(false, "Blad wczytania z pliku MotionShallowCopy");
+			return false;
 		}
 		hParent = TiXmlHandle(_element);
 
@@ -356,22 +364,31 @@ namespace hmdbServices
 				performer_consf_element = performer_consf_element->NextSiblingElement();
 			}
 		}
+
+		return true;
 	}
 
-	void MedicalShallowCopyParser::parseFile(const std::string & path, MedicalShallowCopy::ShallowCopy & shallowCopy)
+	const bool MedicalShallowCopyParser::parseFile(std::istream * document, MedicalShallowCopy::ShallowCopy & shallowCopy)
 	{
-		TiXmlDocument document(path);
-		if (!document.LoadFile()) {
+		auto s = utils::readStream(document);
+
+		TiXmlDocument xmlDocument;
+
+		xmlDocument.Parse(s.c_str());
+
+		if (xmlDocument.Error()) {
 			UTILS_ASSERT(false, "Blad wczytania pliku MedicalShallowCopy");
+			return false;
 		}
 
-		TiXmlHandle hDocument(&document);
+		TiXmlHandle hDocument(&xmlDocument);
 		TiXmlElement* _element;
 		TiXmlHandle hParent(0);
 
 		_element = hDocument.FirstChildElement().Element();
 		if (!_element) {
 			UTILS_ASSERT(false, "Blad wczytania z pliku MedicalShallowCopy");
+			return false;
 		}
 		hParent = TiXmlHandle(_element);
 
@@ -435,8 +452,6 @@ namespace hmdbServices
 					patient->gender = xmlWsdl::Gender::convert(gender);
 				}
 
-				shallowCopy.patientsByGender[patient->gender].insert(patient);
-
 				{
 					std::string birthDate;
 					patient_element->QueryStringAttribute("BirthDate", &birthDate);
@@ -472,10 +487,10 @@ namespace hmdbServices
 
 				disorder_element->QueryStringAttribute("Comments", &disorder.comments);
 
-				shallowCopy.patientsByDisorder[disorderID].insert(shallowCopy.patients[patientID]);
-
 				disorder_element = disorder_element->NextSiblingElement();
 			}
 		}
+
+		return true;
 	}
 }

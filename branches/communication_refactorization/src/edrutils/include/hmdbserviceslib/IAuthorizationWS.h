@@ -9,14 +9,13 @@
 #ifndef HEADER_GUARD__HMDBSERVICES_IAUTHORIZATIONWS_H__
 #define HEADER_GUARD__HMDBSERVICES_IAUTHORIZATIONWS_H__
 
-#include <hmdbserviceslib/Export.h>
 #include <string>
 #include <utils/SmartPtr.h>
 
 namespace hmdbServices
 {
 	//! Interfejs usługi autoryzacji użytkowników, zarządzania ich prawami do danych
-	class HMDBSERVICES_EXPORT IAuthorizationWS
+	class IAuthorizationWS
 	{
 	public:
 		//! Wirtualny destruktor

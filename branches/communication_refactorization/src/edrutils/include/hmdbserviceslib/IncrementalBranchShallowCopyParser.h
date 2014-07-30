@@ -19,9 +19,10 @@ namespace hmdbServices {
 	class HMDBSERVICES_EXPORT IncrementalBranchShallowCopyParser
 	{
 	public:
-		//! \param path Œcie¿ka do pliku do przeparsowania
+		//! \param document Strumieñ z danymi do parsowania
 		//! \param shallowCopy [out] Struktura przyrostowej p³ytkiej kopii danych ruchu do wype³nienia
-		static void parseFile(const std::string & path, IncrementalBranchShallowCopy& shallowCopy);
+		//! \return Czy uda³o siê sparsowaæ strumieñ
+		static const bool parseFile(std::istream * document, IncrementalBranchShallowCopy& shallowCopy);
 	};
 }
 #endif

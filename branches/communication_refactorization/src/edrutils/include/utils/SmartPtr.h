@@ -34,11 +34,14 @@ namespace utils {
 } // namespace utils
 ////////////////////////////////////////////////////////////////////////////////
 
+#define DEFINE_SMART_POINTERS_EXT(className, pointerName)                    \
+	typedef utils::shared_ptr<className> pointerName ## Ptr;                 \
+	typedef utils::shared_ptr<const className> pointerName ## ConstPtr;      \
+	typedef utils::weak_ptr<className> pointerName ## WeakPtr;               \
+	typedef utils::weak_ptr<const className> pointerName ## ConstWeakPtr;
+
 #define DEFINE_SMART_POINTERS(className)                                  \
-	typedef utils::shared_ptr<className> className ## Ptr;                 \
-	typedef utils::shared_ptr<const className> className ## ConstPtr;      \
-	typedef utils::weak_ptr<className> className ## WeakPtr;               \
-	typedef utils::weak_ptr<const className> className ## ConstWeakPtr;
+	DEFINE_SMART_POINTERS_EXT(className, className)
 
 #define DEFINE_SCOPED_SMART_POINTERS(className, targetNamespace)                                    \
 	typedef utils::shared_ptr<className> targetNamespace ## :: ## className ## Ptr;                  \

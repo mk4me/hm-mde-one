@@ -55,9 +55,7 @@ private:
 	//!
 	void populateVisualizersMenu( QMenu* menu );
 
-	void initializeUI();
-
-	static coreUI::CoreDockWidget * embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent);	
+	void initializeUI();	
 	
 private:
 	QMainWindow * visualizersPlaceholder;

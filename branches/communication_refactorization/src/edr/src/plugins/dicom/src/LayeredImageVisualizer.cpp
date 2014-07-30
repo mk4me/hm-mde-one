@@ -15,10 +15,9 @@
 #include "LayeredImage.h"
 #include "PointsLayer.h"
 #include <corelib/PluginCommon.h>
-#include <plugins/newCommunication/ICommunicationDataSource.h>
-#include "corelib/ISourceManager.h"
-#include "plugins/newCommunication/IDownloadRequest.h"
-#include "coreui/CorePopup.h"
+#include <plugins/hmdbCommunication/IHMDBSource.h>
+#include <corelib/ISourceManager.h>
+#include <coreui/CorePopup.h>
 #include <QtGui/QMessageBox>
 #include "IDicomService.h"
 #include <corelib/IServiceManager.h>
@@ -37,10 +36,12 @@ LayeredImageVisualizer::~LayeredImageVisualizer()
 
 const bool LayeredImageVisualizer::userIsReviewer() const
 {
-	communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
+	/*
+	hmdbCommunication::ICommunicationDataSourcePtr comm = core::querySource<hmdbCommunication::ICommunicationDataSource>(plugin::getSourceManager());
 	if (comm) {
 		return comm->userIsReviewer();
 	}
+	*/
 
 	return false;
 }
@@ -350,7 +351,8 @@ void dicom::LayeredImageVisualizer::uploadSerie()
 {
 	saveSerie();
 	if (correctIndex(currentSerie)) {
-		communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
+		/*
+		hmdbCommunication::ICommunicationDataSourcePtr comm = core::querySource<hmdbCommunication::ICommunicationDataSource>(plugin::getSourceManager());
 		core::Filesystem::Path p(series[currentSerie]->getXmlOutputFilename());
 		/// TODO : pobrac dane z OW
 		if (!comm->offlineMode()) {
@@ -360,6 +362,8 @@ void dicom::LayeredImageVisualizer::uploadSerie()
 			coreUI::CorePopup::showMessage(tr("Unable to upload file"), tr("Application is in offline mode"));
 		}
 
+		*/
+
 		//TODO
 		//zapis statusu adnotacji
 	}
@@ -367,8 +371,12 @@ void dicom::LayeredImageVisualizer::uploadSerie()
 
 std::string dicom::LayeredImageVisualizer::getUserName() const
 {
-	communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
+	/*
+	hmdbCommunication::ICommunicationDataSourcePtr comm = core::querySource<hmdbCommunication::ICommunicationDataSource>(plugin::getSourceManager());
 	return comm->currentUser()->name();
+	*/
+
+	return std::string();
 }
 
 void dicom::LayeredImageVisualizer::removeSelectedLayers()

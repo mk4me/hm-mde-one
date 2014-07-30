@@ -11,7 +11,7 @@
 namespace networkUtils
 {
 	//! Mechanizm weryfikacji hosta dla bezpiecznych po³¹czeñ przez SSL za pomoca curla i openssl
-	enum HostVerification {
+	enum SSLHostVerification {
 		HVNone = 0,     //! Brak weryfikacji
 		HVExist = 1,   //! Wpis o CN przynajmniej istnieje
 		HVMatch = 2,    //! Wpis o CN istnieje i jest zgodny

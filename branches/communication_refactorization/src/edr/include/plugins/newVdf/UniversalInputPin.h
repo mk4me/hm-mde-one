@@ -66,7 +66,7 @@ public:
     typedef typename utils::ObjectWrapperTraits<T>::Ptr Ptr;
     typedef typename utils::ObjectWrapperTraits<T>::ConstPtr ConstPtr;
 public:
-    UniversalInputPinT(df::ISinkNode * node) : UniversalInputPin(node, typeid(T)) {}
+	UniversalInputPinT(df::ISinkNode * node) : UniversalInputPin(node, typeid(T)) {}
     virtual ~UniversalInputPinT() {}
 
     ConstPtr getValue() { return getWrapper()->get(); }

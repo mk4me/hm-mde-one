@@ -39,7 +39,7 @@ void PngParser::acceptedExpressions(Expressions & expressions) const
     ExpressionDescription expDesc;
     expDesc.description = "Png format";
 
-    expDesc.objectsTypes.push_back(typeid(LayeredImage));
+	expDesc.objectsTypes.push_back(typeid(LayeredImage));
     expressions.insert(Expressions::value_type(".*\\.png$", expDesc));
 }
 

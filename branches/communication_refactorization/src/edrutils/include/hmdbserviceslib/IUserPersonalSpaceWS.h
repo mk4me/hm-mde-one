@@ -9,13 +9,12 @@
 #ifndef HEADER_GUARD__HMDBSERVICES_IUSERPERSONALSPACEWS_H__
 #define HEADER_GUARD__HMDBSERVICES_IUSERPERSONALSPACEWS_H__
 
-#include <hmdbserviceslib/Export.h>
 #include <utils/SmartPtr.h>
 
 namespace hmdbServices
 {
 	//! Interfejs usługi zarządzającej prywatną przestrzenią użytkownika w bazie
-	class HMDBSERVICES_EXPORT IUserPersonalSpaceWS
+	class IUserPersonalSpaceWS
 	{
 	public:
 		//! Wirtualny destruktor

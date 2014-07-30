@@ -39,6 +39,7 @@ namespace hmdbServices
 		virtual void downloadAreaCleanup(const int olderThanMinutes);
 
 	private:
+		//! Serwis obs³uguj¹cy t¹ us³ugê
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 }

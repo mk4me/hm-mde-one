@@ -1,4 +1,4 @@
-/********************************************************************
+ï»¿/********************************************************************
 	created:  2013/01/17
 	created:  17:1:2013   16:47
 	filename: StreamDataManager.h
@@ -17,76 +17,172 @@
 #include <corelib/IStreamManagerReader.h>
 
 //TODO
-//implementacja, wyci¹gniêcie czêœci wspólnej fileDM i streamDM -> parsery i wiêksza czêœc logiki parsowania i inicjalizacji
+//implementacja, wyciÄ…gniÄ™cie czÄ™Å›ci wspÃ³lnej fileDM i streamDM -> parsery i wiÄ™ksza czÄ™Å›c logiki parsowania i inicjalizacji
+
+#include <boost/bimap.hpp>
+#include <map>
+#include <list>
+#include <corelib/IStreamDataManager.h>
+#include <corelib/IStreamManagerReader.h>
+#include <corelib/IDataManagerReader.h>
+#include <threadingUtils/SynchronizationPolicies.h>
+#include <corelib/IParserManagerReader.h>
 
 namespace core {
-	class StreamDataManager : public IStreamDataManager, public IStreamManagerReader
-	{
-	public:
-		virtual const IStreamDataManager::TransactionPtr transaction()
-		{
-			return IStreamDataManager::TransactionPtr();
-		}
 
-		//! \data Dane wchodz¹ce pod kontrolê DM
-		virtual void addStream(const IStreamManagerReaderOperations::StreamData & stream)
-		{
-		}
+	class StreamDataManager : public IStreamDataManager, public IStreamManagerReader, public IDataManagerReader::IObjectObserver
+	{
+	private:
+
+		class StreamTransaction;
+		friend class StreamTransaction;
+
+		class StreamReaderTransaction;
+		friend class StreamReaderTransaction;
+
+		class CompoundInitializer;
+
+		//! Sï¿½ownik aktualnie obsï¿½ugiwanych plikï¿½w i skojarzonych z nimi parserï¿½w
+		typedef boost::bimap<std::string, StreamGrabberPtr> Streams;
+		//! Mapowanie indeksu danych parsera do typu pod tym indeksem
+		typedef std::map<int, utils::TypeInfo> ParserTypes;
+		//! Mapowanie inicjalizatora do brakujÄ…cych danych
+		typedef std::map<utils::shared_ptr<CompoundInitializer>, ParserTypes> ObjectsByParser;
+		//! Mapowanie plikÃ³w do brakujÄ…cych danych
+		typedef std::map<std::string, ObjectsByParser> MissingObjects;
+
+		//!
+		typedef std::map<std::string, VariantsList> ObjectsByStreams;
+
+		typedef threadingUtils::RecursiveSyncPolicy SyncPolicy;
+		typedef threadingUtils::ScopedLock<SyncPolicy> ScopedLock;
+
+	private:
+		//! Zarejestrowane strumienie
+		Streams streams_;
+
+		//! Mapa parserï¿½w wg plikï¿½w
+		ObjectsByStreams objectsByStreams;
+
+		//! Dane wyÅ‚adowane przez Memory DM
+		MissingObjects missingObjects;
+
+		//! Obiekt na potrzeby synchronizacji
+		mutable SyncPolicy sync;
+
+		//! Obiekty obserwujï¿½ce stan DM
+		std::list<StreamObserverPtr> observers;
+
+		//! Zmienna pozwalajÄ…ca szybko opuscic update memory data managera
+		volatile bool skipUpdate;
+
+	private:
+
+		void rawRemoveStream(const std::string & stream, const IMemoryDataManager::TransactionPtr & memTransaction);
+
+		void rawAddStream(const StreamGrabberPtr stream, const IMemoryDataManager::TransactionPtr & memTransaction);
+
+		const bool rawIsManaged(const std::string & stream) const;
+
+		void updateObservers(const ChangeList & changes);
+
+		void rawGetStreams(StreamsList & streams) const;
+
+		void rawGetObjects(const std::string & stream, ConstVariantsList & objects) const;
+
+		void rawGetObjects(const std::string & stream, VariantsCollection & objects) const;
+
+		void rawGetObjects(const std::string & stream, VariantsList & objects);
+
+		const bool rawIsLoadedCompleately(const std::string & stream) const;
+
+	public:
+
+		StreamDataManager();
+
+		virtual ~StreamDataManager();
+
+		virtual const IStreamDataManager::TransactionPtr transaction();
+
+		//! \data Dane wchodzÄ…ce pod kontrolÄ™ DM
+		virtual void addStream(const StreamGrabberPtr streamGrabber);
 
 		//! Dane usuwane z DM
-		virtual void removeStream(const std::istream * stream)
-		{
-		}
+		virtual void removeStream(const std::string & stream);
 
-		virtual const bool tryAddStream(const IStreamManagerReaderOperations::StreamData & stream)
-		{
-			return false;
-		}
+		virtual const bool tryAddStream(const StreamGrabberPtr streamGrabber);
+		//! \param stream StrumieÅ„ usuwany z managera
+		//! \return Prawda jeÅ›li pomyÅ›lnie usuniÄ™to strumieÅ„
+		virtual const bool tryRemoveStream(const std::string & stream);
 
-		virtual const bool tryRemoveStream(const std::istream * stream)
-		{
-			return false;
-		}
+		//! \param files ZbiÃ³r plikÃ³w ktrymi aktualnie zarzÄ…dza ten DataManager
+		virtual void getStreams(StreamsList & streams) const;
 
-		//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
-		virtual void getStreams(StreamsList & streams) const
-		{
-		}
+		//! \param stream Nazwa strumienia
+		//! \return Prawda jeÅ›li strumieÅ„ jest zarzÄ…dzany przez ten DM
+		virtual const bool isManaged(const std::string & stream) const;
 
-		//! \param file Plik kótry weryfikujemy czy jest zarz¹dzany przez DM
-		//! \return Prawda jeœli plik jest zarz¹dzany przez ten DM
-		virtual const bool isManaged(const std::istream * stream) const
-		{
-			return false;
-		}
+		//! \param stream StrumieÅ„ ktÃ³ry weryfikujemy czy jest w peÅ‚ni zaÅ‚adowany
+		//! \return Prawda jeÅ›li strumieÅ„ jest w peÅ‚ni zaÅ‚adowany
+		virtual const bool isLoadedCompleately(const std::string & stream) const;
 
-		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
-		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const std::istream * stream, ConstVariantsList & objects) const
-		{
-		}
+		//! \param stream Nazwa strumienia
+		//! \return Mapa obiektÃ³w wzglÄ™dem plikÃ³w z ktÃ³rych pochodza
+		virtual void getObjects(const std::string & stream, ConstVariantsList & objects) const;
+		//! \param stream Nazwa strumienia
+		//! \return Mapa obiektÃ³w wzglÄ™dem plikÃ³w z ktÃ³rych pochodza
+		virtual void getObjects(const std::string & stream, VariantsCollection & objects) const;
 
-		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
-		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const std::istream * stream, VariantsCollection & objects) const
-		{
-		}
+		//! \param streamWatcher Rejestrowany obiekt obserwujÄ…cy zmiany managera strumieni
+		virtual void addObserver(const StreamObserverPtr & streamWatcher);
+		//! \param streamWatcher Wyrejestrowywany obiekt obserwujÄ…cy zmiany managera strumieni
+		virtual void removeObserver(const StreamObserverPtr & streamWatcher);
+		//! \return Nowa transakcja
+		virtual const IStreamManagerReader::TransactionPtr transaction() const;
 
-		//! \param streamWatcher Rejestrowany obiekt obserwuj¹cy zmiany managera strumieni
-		virtual void addObserver(const StreamObserverPtr & streamWatcher)
-		{
-		}
+	public:
 
-		//! \param streamWatcher Wyrejestrowywany obiekt obserwuj¹cy zmiany managera strumieni
-		virtual void removeObserver(const StreamObserverPtr & streamWatcher)
-		{
-		}
+		//IDataManagerReader::IObjectObserver API
+		virtual void observe(const IDataManagerReader::ChangeList & changes);	
 
-		virtual IStreamManagerReader::TransactionPtr transaction() const
-		{
-			return IStreamManagerReader::TransactionPtr();
-		}
+	private:
+		//! \param stream StrumieÅ„ ktÃ³ry weryfikujemy pod kÄ…tem dostÄ™pnoÅ›ci danych, jeÅ›li brak to usuwamy nieuÅ¼ywany plik
+		//! \param changeList Lista zmian
+		void tryRemoveUnusedStream(const std::string & stream, ChangeList & changeList);
+
+		template<typename ParserT>
+		void initializeParsers(const IParserManagerReader::ParserPrototypes & parsers,
+			const IStreamDataManagerOperations::StreamGrabberPtr stream,
+			VariantsList & objects);
 	};
+
+	template<typename ParserT>
+	void StreamDataManager::initializeParsers(const IParserManagerReader::ParserPrototypes & parsers,
+		const IStreamDataManagerOperations::StreamGrabberPtr stream, VariantsList & objects)
+	{
+		auto pm = getParserManager();
+		auto hm = getDataHierarchyManager();
+
+		//jeï¿½li pliku nie ma dodaj go, stwï¿½rz parsery i rozszerz dostï¿½pne dane wraz z ich opisem
+		for (auto parserIT = parsers.begin(); parserIT != parsers.end(); ++parserIT){
+			// tworzymy wspÃ³Å‚dzielone dane dla inicjalizatorÃ³w
+			CompoundInitializer::CompoundDataPtr cid(new CompoundInitializer::CompoundData);
+			cid->parser.reset(new ParserT((*parserIT)->create(), stream));
+
+			auto parserTypesMap = pm->parserTypes((*parserIT)->ID(), stream->name());
+
+			//zarejestrowanie obiektï¿½w i ich zwiï¿½zku z parserem i typami danych
+			for (auto objectIT = parserTypesMap.begin(); objectIT != parserTypesMap.end(); ++objectIT){
+				//towrzymy taki obiekt
+				auto ow = hm->createWrapper(objectIT->second);
+				//aktualizuje ow dla CompoundInitializer
+				cid->objects[objectIT->first] = ow;
+				//inicjalizator na bazie parsera
+				ow->setInitializer(VariantInitializerPtr(new CompoundInitializer(cid, objectIT->first)));
+				objects.push_back(ow);
+			}
+		}
+	}
 }
 
 #endif	//	HEADER_GUARD___STREAMDATAMANAGER_H__

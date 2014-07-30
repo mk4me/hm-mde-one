@@ -11,6 +11,7 @@
 
 #include <utils/Config.h>
 #include <boost/lexical_cast.hpp>
+#include <boost/function.hpp>
 #include <cstring>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,6 +107,37 @@ inline std::string toString(const T& source)
 
 //------------------------------------------------------------------------------
 
+//! \param document Strumień z zawartością pliku
+//! \return Plik zapisany w stringu
+inline static const std::string readStream(std::istream * document)
+{
+	return std::string(std::istreambuf_iterator<char>(*document), std::istreambuf_iterator<char>());
+}
+
+//------------------------------------------------------------------------------
+
+//! \tparam Typ uywany do czyszczenia przy niszczeniu - funktor z operatorem ()
+class Cleanup
+{
+public:
+	typedef boost::function<void()> Functor;
+public:
+	//! \param cleanup Obiekt uywany do czyszczenia
+	Cleanup(const Functor & cleanup) : cleanup(cleanup) {}
+
+	//! \param cleanup Obiekt uywany do czyszczenia
+	template<typename T>
+	Cleanup(const T & cleanup) : cleanup(cleanup) {}
+
+	//! Destruktor
+	~Cleanup() { cleanup(); }
+private:
+	//! Obiekt czyszczacy
+	Functor cleanup;
+};
+
+
+//------------------------------------------------------------------------------
 /**
  *	Definicja ostrzeżenia o przestarzałej funkcjonalności
  */

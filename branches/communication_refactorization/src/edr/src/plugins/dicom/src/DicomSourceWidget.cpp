@@ -51,6 +51,7 @@ void dicom::DicomSourceWidget::onOpenProject()
 
 void dicom::DicomSourceWidget::onSendTest()
 {
+	/*
 	namespace ws = hmdbServices;
 	std::string caPath = (plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string();
 	ws::WSSecureConnectionPtr queriesConnection = utils::make_shared<ws::WSSecureConnection>();
@@ -86,10 +87,10 @@ void dicom::DicomSourceWidget::onSendTest()
 	//fileDownloadHelper.setDownload(22831, "E:/Testtt.xml");
 	//auto ret = fileDownloadHelper.get();
 
-	/*ws::BasicUploadHelper fileUploaderHelper;
+	ws::BasicUploadHelper fileUploaderHelper;
 	fileUploaderHelper.configure(motionFtps);
 	fileUploaderHelper.setFileUpload("C:/Users/Wojciech/Desktop/testImport1_6/2013-09-03-S0005/2013-09-03-S0005-T0001.xml", "BDR/635228989817457423/2013-08-21-S0007-T0013.xml");
-	auto res = fileUploaderHelper.put();*/
+	auto res = fileUploaderHelper.put();
 
 	ws::FtpsConnectionPtr  writerFps = utils::make_shared<ws::FtpsConnection>();
 	writerFps->setUrl("ftps://v21.pjwstk.edu.pl/");
@@ -103,4 +104,5 @@ void dicom::DicomSourceWidget::onSendTest()
 
 	int res2 = fileStoreman->storeTrialFile(3906, "/BDR/w", "test xml file", "2013-08-21-S0007-T0013.xml");
 	//int res = fileStoreman->storeTrialFile(3906, "BDR/635228989817457423", "test xml file", "2013-08-21-S0007-T0013.xml"  );
+	*/
 }

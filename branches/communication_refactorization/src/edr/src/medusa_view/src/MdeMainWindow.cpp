@@ -22,12 +22,12 @@
 #include "AnalysisTab.h"
 #include "ui_toolboxmaindeffile.h"
 #include "MdeServiceWindow.h"
-#include "plugins/newCommunication/ICommunicationDataSource.h"
 #include <corelib/IVisualizerManager.h>
 #include <corelib/IVisualizer.h>
 #include <QtGui/QMessageBox>
 #include <QtGui/QCloseEvent>
 #include <corelib/Version.h>
+#include <plugins/hmdbCommunication/IHMDBSource.h>
 
 using namespace core;
 
@@ -79,7 +79,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
  
    this->showFullScreen();
 
-   communication::ICommunicationDataSourcePtr icomm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
+   utils::shared_ptr<hmdbCommunication::IHMDBSource> icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
    plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(icomm);
    
    auto sourceManager = plugin::getSourceManager();
@@ -92,7 +92,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
    }
 
    QWidget* commWidget = commSource->getWidget();
-   icomm->setCompactMode(true);
+   //icomm->setCompactMode(true);
    commWidget->setMaximumWidth(304);
 
    QSplitter* compound = new QSplitter();

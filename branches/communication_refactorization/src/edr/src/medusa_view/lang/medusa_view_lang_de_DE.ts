@@ -84,34 +84,34 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="236"/>
+        <location filename="../src/AnalisisWidget.cpp" line="224"/>
         <source>Visualizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="319"/>
-        <location filename="../src/AnalisisWidget.cpp" line="824"/>
+        <location filename="../src/AnalisisWidget.cpp" line="307"/>
+        <location filename="../src/AnalisisWidget.cpp" line="812"/>
         <source>Group %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="646"/>
+        <location filename="../src/AnalisisWidget.cpp" line="634"/>
         <source>reason: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="648"/>
-        <location filename="../src/AnalisisWidget.cpp" line="650"/>
+        <location filename="../src/AnalisisWidget.cpp" line="636"/>
+        <location filename="../src/AnalisisWidget.cpp" line="638"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="650"/>
+        <location filename="../src/AnalisisWidget.cpp" line="638"/>
         <source>Unable to add data to visualizer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="831"/>
+        <location filename="../src/AnalisisWidget.cpp" line="819"/>
         <source>...TEST...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -119,32 +119,32 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>AnalysisTreeContextMenu</name>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="562"/>
+        <location filename="../src/AnalisisWidget.cpp" line="550"/>
         <source>Add to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="658"/>
+        <location filename="../src/AnalisisWidget.cpp" line="646"/>
         <source>Remove from:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="685"/>
+        <location filename="../src/AnalisisWidget.cpp" line="673"/>
         <source>All visualizers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="699"/>
+        <location filename="../src/AnalisisWidget.cpp" line="687"/>
         <source>Create in:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="706"/>
+        <location filename="../src/AnalisisWidget.cpp" line="694"/>
         <source>Set %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/AnalisisWidget.cpp" line="719"/>
+        <location filename="../src/AnalisisWidget.cpp" line="707"/>
         <source>New Group</source>
         <translation type="unfinished"></translation>
     </message>

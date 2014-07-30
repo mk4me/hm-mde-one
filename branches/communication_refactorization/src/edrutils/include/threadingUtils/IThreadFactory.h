@@ -9,12 +9,12 @@
 #ifndef HEADER_GUARD_THREADINGUTILS__ITHREADFACTORY_H__
 #define HEADER_GUARD_THREADINGUTILS__ITHREADFACTORY_H__
 
-#include <threadingUtils/Export.h>
 #include <utils/SmartPtr.h>
 #include <threadingUtils/IThread.h>
 
 namespace threadingUtils {
-	class THREADINGUTILS_EXPORT IThreadFactory
+
+	class IThreadFactory
 	{
 	public:
 		//! Wirtualny destruktor

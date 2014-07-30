@@ -5,19 +5,26 @@
 
 namespace hmdbServices
 {
-	void MotionMetadataParser::parseFile(const std::string & path, MotionMetaData::MetaData & metadata)
+	const bool MotionMetadataParser::parseFile(std::istream * document, MotionMetaData::MetaData & metadata)
 	{
-		TiXmlDocument document(path);
-		if (!document.LoadFile()) {
+		auto s = utils::readStream(document);
+		
+		TiXmlDocument xmlDocument;
+
+		xmlDocument.Parse(s.c_str());
+
+		if (xmlDocument.Error()) {
 			UTILS_ASSERT(false, "Blad wczytania pliku MotionMetadata");
+			return false;
 		}
-		TiXmlHandle hDocument(&document);
+		TiXmlHandle hDocument(&xmlDocument);
 		TiXmlElement* _element;
 		TiXmlHandle hParent(0);
 
 		_element = hDocument.FirstChildElement().Element();
 		if (!_element) {
 			UTILS_ASSERT(false, "Blad wczytania z pliku MotionMetadata");
+			return false;
 		}
 		hParent = TiXmlHandle(_element);
 
@@ -110,21 +117,30 @@ namespace hmdbServices
 				attribute_group_element = attribute_group_element->NextSiblingElement();
 			}
 		}
+
+		return true;
 	}
 
-	void MedicalMetadataParser::parseFile(const std::string & path, MedicalMetaData::MetaData & metadata)
+	const bool MedicalMetadataParser::parseFile(std::istream * document, MedicalMetaData::MetaData & metadata)
 	{
-		TiXmlDocument document(path);
-		if (!document.LoadFile()) {
+		auto s = utils::readStream(document);
+
+		TiXmlDocument xmlDocument;
+
+		xmlDocument.Parse(s.c_str());
+
+		if (xmlDocument.Error()) {
 			UTILS_ASSERT(false, "Blad wczytania pliku MedicalMetadata");
+			return false;
 		}
-		TiXmlHandle hDocument(&document);
+		TiXmlHandle hDocument(&xmlDocument);
 		TiXmlElement* _element;
 		TiXmlHandle hParent(0);
 
 		_element = hDocument.FirstChildElement().Element();
 		if (!_element) {
 			UTILS_ASSERT(false, "Blad wczytania z pliku MedicalMetadata");
+			return false;
 		}
 		hParent = TiXmlHandle(_element);
 
@@ -154,5 +170,7 @@ namespace hmdbServices
 				disorder_element = disorder_element->NextSiblingElement();
 			}
 		}
+
+		return true;
 	}
 }

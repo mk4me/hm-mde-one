@@ -79,11 +79,12 @@ void VideoVisualizer::VideoSerie::setData(const utils::TypeInfo & requestedType,
     if (data->getMetadata("movieDelay", delayIt)) {
         this->offset = boost::lexical_cast<double>(delayIt);
     }
-	if (data->data()->isSupported(typeid(VideoStreamPtr))) {
+	if (data->data()->isSupported(typeid(VideoStream))) {
 		auto clonedData = data->clone();
 		visualizer->clear();
 		success = clonedData->tryGet(visualizer->stream);
-	} else if (data->data()->isSupported(typeid(VideoChannel))) {
+	}
+	else if (data->data()->isSupported(typeid(VideoChannel))) {
 		auto clonedData = data->clone();
 		VideoChannelPtr channel = clonedData->get();
 		if (channel) {

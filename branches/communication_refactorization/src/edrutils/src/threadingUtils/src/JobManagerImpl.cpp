@@ -71,6 +71,9 @@ JobManager::JobManagerImpl::~JobManagerImpl()
 
 void JobManager::JobManagerImpl::addJob(IRunnablePtr job)
 {
+	//TODO
+	//sprawdzac czy jeden job nie scheduluje innych - potenjalnie niebezpieczne, deadlock
+
 	QMutexLocker lock(&jobsSynch_);
 	jobs_.push_back(job);
 	jobWait_.wakeOne();
@@ -117,14 +120,12 @@ void JobManager::JobManagerImpl::removeWorkerThread(IThreadPtr thread)
 {
 	ScopedLock<StrictSyncPolicy> lock(synch_);
 
+	//auto it = std::find(workerThreads_.begin(), workerThreads_.end(), thread);
 	auto it = workerThreads_.begin();
-
-	while (it != workerThreads_.end()){
+	for ( ; it != workerThreads_.end(); ++it){
 		if ((*it).thread == thread){
 			break;
 		}
-
-		++it;
 	}
 
 	if (it == workerThreads_.end()){
@@ -224,6 +225,11 @@ void JobManager::JobManagerImpl::maintainerRunner()
 				}
 			}
 		}
+
+		//TODO
+		//dodac conditional variable na ktorej bedzie sie usypial
+		//a w WorkerThread RAII sprawdzajace czy faktycznie konczymy dzialanie czy wylatujemy,
+		//jezeli wylatujemy to wakeOne na tej condition variable
 
 		//chwila przerwy
 		boost::this_thread::sleep(boost::posix_time::microseconds(100000));

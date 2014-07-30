@@ -18,18 +18,20 @@ namespace hmdbServices
 	class HMDBSERVICES_EXPORT MotionMetadataParser
 	{
 	public:
-		//! \param path Ścieżka do pliku do przeparsowania
+		//! \param document Strumień z dokumentem XML
 		//! \param metadata [out] Struktura metadanych do wypełnienia
-		static void parseFile(const std::string & path, MotionMetaData::MetaData & metadata);
+		//! \return Czy dokument poprawnie sparsowany
+		static const bool parseFile(std::istream * document, MotionMetaData::MetaData & metadata);
 	};
 
 	//! Parser metadanych medycznych
 	class HMDBSERVICES_EXPORT MedicalMetadataParser
 	{
 	public:
-		//! \param path Ścieżka do pliku do przeparsowania
+		//! \param document Strumień z dokumentem XML
 		//! \param metadata [out] Struktura metadanych do wypełnienia
-		static void parseFile(const std::string & path, MedicalMetaData::MetaData & metadata);
+		//! \return Czy dokument poprawnie sparsowany
+		static const bool parseFile(std::istream * document, MedicalMetaData::MetaData & metadata);
 	};
 }
 

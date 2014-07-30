@@ -18,18 +18,20 @@ namespace hmdbServices
 	class HMDBSERVICES_EXPORT MotionShallowCopyParser
 	{
 	public:
-		//! \param path Ścieżka do pliku do przeparsowania
+		//! \param document Strumień z dokumentem do parsowania
 		//! \param shallowCopy [out] Struktura płytkiej kopii danych ruchu do wypełnienia
-		static void parseFile(const std::string & path, MotionShallowCopy::ShallowCopy & shallowCopy);
+		//! \return Czy dokument poprawnie sparsowany
+		static const bool parseFile(std::istream * document, MotionShallowCopy::ShallowCopy & shallowCopy);
 	};
 
 	//! Parser płytkiej kopi danych medycznych
 	class HMDBSERVICES_EXPORT MedicalShallowCopyParser
 	{
 	public:
-		//! \param path Ścieżka do pliku do przeparsowania
+		//! \param document Strumień z dokumentem do parsowania
 		//! \param shallowCopy [out] Struktura płytkiej kopii danych medycznych do wypełnienia
-		static void parseFile(const std::string & path, MedicalShallowCopy::ShallowCopy & shallowCopy);
+		//! \return Czy dokument poprawnie sparsowany
+		static const bool parseFile(std::istream * document, MedicalShallowCopy::ShallowCopy & shallowCopy);
 	};
 }
 

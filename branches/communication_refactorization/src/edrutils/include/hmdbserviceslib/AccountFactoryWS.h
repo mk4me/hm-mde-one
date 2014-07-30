@@ -29,6 +29,7 @@ namespace hmdbServices{
 		virtual const bool resetPassword(const std::string & email);
 
 	private:
+		//! Serwis obsługujący tą usługę
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 
@@ -61,6 +62,7 @@ namespace hmdbServices{
 		virtual const bool resetPassword(const std::string & email, const bool propagateToHMDB);
 
 	private:
+		//! Serwis obsługujący tą usługę
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 }

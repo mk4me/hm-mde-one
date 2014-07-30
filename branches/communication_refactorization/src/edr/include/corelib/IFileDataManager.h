@@ -14,6 +14,7 @@
 #include <corelib/IMemoryDataManager.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/Filesystem.h>
+#include <corelib/IMemoryDataManager.h>
 
 namespace core {
 
@@ -24,20 +25,30 @@ namespace core {
 		//! Destruktor wirtualny
 		virtual ~IFileDataManagerOperations() {}
 
-		//! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
+		//! \param file Plik do usuniêcia
 		//! Rzuca wyj¹tkiem jeœli coœ siê nie powiedzie
 		virtual void removeFile(const Filesystem::Path & file) = 0;
 
-		//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
-		//! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
+		//! \param file Œcie¿ka pliku do dodania
 		//! Rzuca wyj¹tkiem jeœli coœ siê nie powiedzie
 		virtual void addFile(const Filesystem::Path & file) = 0;
+
+		//! \param file Œcie¿ka pliku do prze³adowania
+		//! \param complete Czy plik ma zostaæ ca³kowicie prze³adowany czy tylko brakuj¹ce dane maj¹ zostaæ do³adowane
+		virtual void reloadFile(const Filesystem::Path & file,
+			const bool complete = false) = 0;
+
 		//! \param file Œcie¿ka do dodawanego pliku
 		//! \return Prawda jeœli plik pomyœlnie dodano
 		virtual const bool tryAddFile(const Filesystem::Path & file) = 0;
 		//! \param file Œcie¿ka do usuwanego pliku
 		//! \return Prawda jeœli plik pomyœlnie usuniêto
 		virtual const bool tryRemoveFile(const Filesystem::Path & file) = 0;
+		//! \param file Œcie¿ka pliku do prze³adowania
+		//! \param complete Czy plik ma zostaæ ca³kowicie prze³adowany czy tylko brakuj¹ce dane maj¹ zostaæ do³adowane
+		//! \return Prawda jeœli plik pomyœlnie prze³adowano
+		virtual const bool tryReloadFile(const Filesystem::Path & file,
+			const bool complete = false) = 0;
 	};
 
 	//! Interfejs dostêpu do danych plikowych i ³adowania danych w aplikacji
@@ -57,8 +68,9 @@ namespace core {
 
 		//! Typ transakcji - dzia³a jak RAII -> przy niszczeniu próbuje "commitowaæ" zmiany jeœli nie by³o wczeœniej ¿adnych b³êdów
 		typedef utils::shared_ptr<IFileDataManagerTransaction> TransactionPtr;
+		//! \param mtransaction Transakcja MDM w ramach któej realizujemy funkcjonalnoœæ FDM
 		//! \return Nowa transakcja
-		virtual TransactionPtr transaction() = 0;
+		virtual const TransactionPtr transaction() = 0;
 	};
 
 }

@@ -5,7 +5,7 @@ using namespace networkUtils;
 void CURLFTPHelper::initializeFTPConnection(CURL * curl,
 	const std::string & user,
 	const std::string & password,
-	const HostVerification hostVerification,
+	const SSLHostVerification hostVerification,
 	const std::string & caPath)
 {
 	std::string user_(user);
@@ -78,30 +78,30 @@ size_t write(void *buffer, size_t size, size_t nmemb, void *stream)
 	return offset;
 }
 
-size_t setDownloadCustomProgress(CURLFTPProgress* progress, double t, /* dltotal */ double d, /* dlnow */ double ultotal, double ulnow)
+int setDownloadCustomProgress(ICURLFTPProgress* progress, curl_off_t t, /* dltotal */ curl_off_t d, /* dlnow */ curl_off_t ultotal, curl_off_t ulnow)
 {
 	if (progress->aborted() == true) {
 		return -1;
 	}
 
-	progress->setProgress(t > 0.0 ? (d / t) : 1.0);
+	progress->setProgress(t > 0 ? ((float)d / (float)t) : 1.0);
 	return 0;
 }
 
-size_t setUploadCustomProgress(CURLFTPProgress* progress, double t, /* dltotal */ double d, /* dlnow */ double ultotal, double ulnow)
+int setUploadCustomProgress(ICURLFTPProgress* progress, curl_off_t t, /* dltotal */ curl_off_t d, /* dlnow */ curl_off_t ultotal, curl_off_t ulnow)
 {
 	if (progress->aborted() == true) {
 		return -1;
 	}
 
-	progress->setProgress(ultotal > 0.0 ? (ulnow / ultotal) : 1.0);
+	progress->setProgress(ultotal > 0 ? ((float)ulnow / (float)ultotal) : 1.0);
 	return 0;
 }
 
 void CURLFTPHelper::initializeFTPDownload(CURL * curl,
 	const std::string & remoteFileUrl,
 	std::ostream * localDestination,
-	CURLFTPProgress * progress)
+	ICURLFTPProgress * progress)
 {
 	curl_easy_setopt(curl, CURLOPT_URL, remoteFileUrl.c_str());
 	curl_easy_setopt(curl, CURLOPT_UPLOAD, 0L);
@@ -111,8 +111,8 @@ void CURLFTPHelper::initializeFTPDownload(CURL * curl,
 	if (progress != nullptr){
 		// przywracamy progres
 		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-		curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, progress);
-		curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, setDownloadCustomProgress);
+		curl_easy_setopt(curl, CURLOPT_XFERINFODATA, progress);
+		curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, setDownloadCustomProgress);
 	}
 	else{
 		// brak progesu domyœlnie
@@ -123,7 +123,7 @@ void CURLFTPHelper::initializeFTPDownload(CURL * curl,
 void CURLFTPHelper::initializeFTPUpload(CURL * curl,
 	const std::string & remoteFileUrl,
 	std::istream * localSource,
-	CURLFTPProgress * progress)
+	ICURLFTPProgress * progress)
 {
 	curl_easy_setopt(curl, CURLOPT_URL, remoteFileUrl.c_str());
 	curl_easy_setopt(curl, CURLOPT_FTP_CREATE_MISSING_DIRS, 1L);
@@ -134,8 +134,8 @@ void CURLFTPHelper::initializeFTPUpload(CURL * curl,
 	if (progress != nullptr){
 		// przywracamy progres
 		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-		curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, progress);
-		curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, setUploadCustomProgress);
+		curl_easy_setopt(curl, CURLOPT_XFERINFODATA, progress);
+		curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, setUploadCustomProgress);		
 	}
 	else{
 		// brak progesu domyœlnie

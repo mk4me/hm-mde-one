@@ -78,6 +78,7 @@ namespace hmdbServices
 		virtual const std::string listMyUserGroupsAssigned() const;
 
 	private:
+		//! Serwis obsługujący tą usługę
 		networkUtils::IWSDLServicePtr wsdlService;
 	};
 }

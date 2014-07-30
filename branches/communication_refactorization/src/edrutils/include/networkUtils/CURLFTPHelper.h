@@ -10,19 +10,20 @@
 
 #include <networkUtils/IFtpOperations.h>
 #include <networkUtils/Types.h>
+#define NOMINMAX
 #include <curl/curl.h>
 
 namespace networkUtils
 {
-	class NETWORKUTILS_EXPORT CURLFTPProgress
+	class ICURLFTPProgress
 	{
 	public:
 		//! Destruktor wirtualny
-		virtual ~CURLFTPProgress() {}
+		virtual ~ICURLFTPProgress() {}
 		//! \return Czy nale¿y przerwaæ operacjê
 		virtual const bool aborted() const = 0;
 		//! \param progress Postêp od 0.0 do 1.0
-		virtual void setProgress(const double progress) = 0;
+		virtual void setProgress(const float progress) = 0;
 	};
 
 	class NETWORKUTILS_EXPORT CURLFTPHelper
@@ -37,7 +38,7 @@ namespace networkUtils
 		static void initializeFTPConnection(CURL * curl,
 			const std::string & user = std::string(),
 			const std::string & password = std::string(),
-			const HostVerification hostVerification = HVNone,
+			const SSLHostVerification hostVerification = HVNone,
 			const std::string & caPath = std::string());
 
 		//!	Metoda pobieraj¹ca plik z serwera.
@@ -48,7 +49,7 @@ namespace networkUtils
 		static void initializeFTPDownload(CURL * curl,
 			const std::string & remoteFileUrl,
 			std::ostream * localDestination,
-			CURLFTPProgress * progress = nullptr);
+			ICURLFTPProgress * progress = nullptr);
 
 		//!	Metoda ³aduj¹ca plik na serwer.
 		//! \param curl Uchwyt do po³¹czenia z serwerem
@@ -58,7 +59,7 @@ namespace networkUtils
 		static void initializeFTPUpload(CURL * curl,
 			const std::string & remoteFileUrl,
 			std::istream * localSource,
-			CURLFTPProgress * progress = nullptr);
+			ICURLFTPProgress * progress = nullptr);
 	};
 }
 
