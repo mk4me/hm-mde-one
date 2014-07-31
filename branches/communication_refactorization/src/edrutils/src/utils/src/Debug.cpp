@@ -2,6 +2,7 @@
 #include <utils/Debug.h>
 
 #ifdef __WIN32__
+#define NOMINMAX
 #include <Windows.h>
 #include <strsafe.h>
 #define snprintf StringCchPrintf

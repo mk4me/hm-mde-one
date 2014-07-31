@@ -10,8 +10,8 @@
 #ifndef HEADER_GUARD_NEWVDF__NEWVDFWIDGET_H__
 #define HEADER_GUARD_NEWVDF__NEWVDFWIDGET_H__
 
-#include <QtGui/QWidget>
-#include <QtGui/QGraphicsView>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QGraphicsView>
 #include <QtGui/QWheelEvent>
 
 #include "SceneModel.h"

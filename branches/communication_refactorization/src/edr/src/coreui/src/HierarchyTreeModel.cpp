@@ -1,6 +1,6 @@
 #include "CoreUiPCH.h"
 #include <coreui/HierarchyTreeModel.h>
-#include <QtGui/QMenu>
+#include <QtWidgets/QMenu>
 #include <corelib/IHierarchyDataItem.h>
 #include <corelib/IHierarchyItem.h>
 #include <corelib/HierarchyItem.h>
@@ -146,7 +146,8 @@ void HierarchyTreeModel::addRootItem(core::IHierarchyItemConstPtr root)
 		roots.push_back(currentFilter->getFilteredTree(root));
 		rootOrigins.push_back(root);
 		//Q_EMIT layoutChanged();
-		reset();
+		beginResetModel();
+		endResetModel();
 	}
 }
 
@@ -183,7 +184,8 @@ void HierarchyTreeModel::updateItem(core::IHierarchyItemConstPtr item)
 	// TODO : zrobic to wlasciwie
 	rebuildFilteredRoots();
 	//Q_EMIT layoutChanged();
-	reset();
+	beginResetModel();
+	endResetModel();
 }
 
 void HierarchyTreeModel::removeRootItem(core::IHierarchyItemConstPtr root)
@@ -216,7 +218,8 @@ void coreUI::HierarchyTreeModel::clear()
 	roots.clear();
 	rootOrigins.clear();
 	currentFilter = utils::make_shared<core::NullFilter>();
-	reset();
+	beginResetModel();
+	endResetModel();
 }
 
 void coreUI::HierarchyTreeModel::applyChange(const core::IMemoryDataManagerHierarchy::HierarchyChange& change)
@@ -266,5 +269,6 @@ void coreUI::HierarchyTreeModel::rebuildFilteredRoots()
 		roots.push_back(currentFilter->getFilteredTree(*it));
 	}
 
-	reset();
+	beginResetModel();
+	endResetModel();
 }

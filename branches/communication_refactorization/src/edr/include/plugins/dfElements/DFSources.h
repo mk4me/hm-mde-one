@@ -11,10 +11,10 @@
 #define HEADER_GUARD_DFELEMENTS__DFSOURCES_H__
 
 #include <plugins/dfElements/DFPins.h>
-#include <QtGui/QDoubleSpinBox>
+#include <QtWidgets/QDoubleSpinBox>
 #include <plugins/dfElements/DFPins.h>
 #include <utils/ObjectWrapper.h>
-#include <QtGui/QTreeWidget>
+#include <QtWidgets/QTreeWidget>
 #include <QtGui/QIcon>
 #include <coreui/HierarchyTreeModel.h>
 #include <plugins/subject/SubjectDataFilters.h>

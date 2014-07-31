@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <iostream>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 #include <kinematiclib/VskParser.h>
 #include <kinematiclib/hmException.h>
 
@@ -15,12 +15,12 @@ namespace kinematic
 
     void VskParser::parse(const string& filename) 
     {
-        TiXmlDocument doc(filename.c_str());
-        bool loadOkay = doc.LoadFile();
-        TiXmlElement* rootElement = nullptr;
+        tinyxml2::XMLDocument doc;
+        tinyxml2::XMLError error = doc.LoadFile(filename.c_str());
+        tinyxml2::XMLElement* rootElement = nullptr;
         // jeśli plik jest plikiem *xml ...
-        if (loadOkay) {
-            TiXmlElement* docElement = doc.FirstChildElement();
+        if (error == tinyxml2::XML_NO_ERROR) {
+            tinyxml2::XMLElement* docElement = doc.FirstChildElement();
             while (docElement) {
                 // szukanie głównego elementu - "KinematicModel"
                 if (strcmp(docElement->Value(), "KinematicModel") == 0) {
@@ -36,11 +36,11 @@ namespace kinematic
         
         // jeśli plik zawiera odpowiedni korzeń (root)
         if (rootElement) {
-            for (TiXmlElement* element = rootElement->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
+            for (tinyxml2::XMLElement* element = rootElement->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
                     // element Markers set zawiera dane dla połączeń i pojedynczych markerow
                     if (element && strcmp(element->Value(), "MarkerSet") == 0) {
                         for (
-                            TiXmlElement* markersElement = element->FirstChildElement(); 
+                            tinyxml2::XMLElement* markersElement = element->FirstChildElement(); 
                             markersElement != nullptr; markersElement = markersElement->NextSiblingElement()) {
                                 if (markersElement && strcmp(markersElement->Value(), "Markers") == 0) {
                                     // znaleziono element z markerami!
@@ -63,13 +63,13 @@ namespace kinematic
         loaded = true;
     }
 
-    void VskParser::readSticks( TiXmlElement* sticksElement )
+    void VskParser::readSticks( tinyxml2::XMLElement* sticksElement )
     {
         // odczyt wczystkich połączeń
-        for (TiXmlElement* child = sticksElement->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()) {
+        for (tinyxml2::XMLElement* child = sticksElement->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()) {
             if (child && strcmp(child->Value(), "Stick") == 0) {
                 Stick s;
-                TiXmlAttribute* attrib = child->FirstAttribute();
+                const tinyxml2::XMLAttribute* attrib = child->FirstAttribute();
                 while(attrib) {
                     if (strcmp(attrib->Name(), "MARKER1") == 0) {
                         s.name1 = attrib->Value();
@@ -96,13 +96,13 @@ namespace kinematic
         }
     }
 
-    void VskParser::readMarkers( TiXmlElement* markersElement )
+    void VskParser::readMarkers( tinyxml2::XMLElement* markersElement )
     {
         // odczyt wszystkich markerow
-        for (TiXmlElement* child = markersElement->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()) {
+        for (tinyxml2::XMLElement* child = markersElement->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()) {
            if (child && strcmp(child->Value(), "Marker") == 0) {
                Marker m;
-               TiXmlAttribute* attrib = child->FirstAttribute();
+               const tinyxml2::XMLAttribute* attrib = child->FirstAttribute();
                while(attrib) {
                    if (strcmp(attrib->Name(), "NAME") == 0) {
                        m.name = attrib->Value();

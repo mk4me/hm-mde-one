@@ -1,7 +1,7 @@
 #include "CommunicationPCH.h"
 #include "StatusWidget.h"
 #include <QtCore/QTimer>
-#include <QtGui/QToolTip>
+#include <QtWidgets/QToolTip>
 #include <coreui/CorePopup.h>
 #include <plugins/hmdbCommunication/IHMDBService.h>
 

@@ -1,6 +1,7 @@
 #include "NewVdfPCH.h"
 #include "StyleItem.h"
 #include <plugins/newVdf/IConnectionStrategy.h>
+#include <QtWidgets/QGraphicsProxyWidget>
 
 using namespace vdf;
 

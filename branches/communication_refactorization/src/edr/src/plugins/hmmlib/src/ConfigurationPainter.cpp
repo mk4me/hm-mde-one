@@ -1,5 +1,5 @@
 #include <plugins/hmmlib/ConfigurationPainter.h>
-#include <QtGui/QMouseEvent>
+#include <QtGui/QCloseEvent>
 #include <stdexcept>
 #include <utils/Debug.h>
 
@@ -50,7 +50,7 @@ void ConfigurationPainter::removeArea( const QString& name )
 
 void ConfigurationPainter::mouseMoveEvent( QMouseEvent * event )
 {
-    QPointF p = event->posF();
+	QPointF p = event->localPos();
     auto picture = getArea(p.x(), p.y());
     if (picture != currentArea) {
         if (currentArea) {

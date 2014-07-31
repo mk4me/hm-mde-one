@@ -13,12 +13,13 @@
 #include <plugins/dicom/ILayer.h>
 
 #include <boost/serialization/nvp.hpp>
-#include <QtGui/QGraphicsPixmapItem>
+#include <QtWidgets/QGraphicsPixmapItem>
 #include "qstring_serialization.h"
 #include "Serializers.h"
 
 namespace dicom {
 
+//! Layer z obrazem t³a
 class BackgroundLayer : public ILayerGraphicItem
 {
 public:
@@ -56,6 +57,8 @@ private:
 
 private:
     void lazy() const;
+
+    virtual std::vector<QPointF> getPointsCloud(int density = 0, int normalizeLength = -1) const;
 
 private:
     QString pixmapPath;

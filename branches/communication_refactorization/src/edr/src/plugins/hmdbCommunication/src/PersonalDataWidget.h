@@ -10,7 +10,7 @@
 #define HEADER_GUARD_HMDBCOMMUNICATION__PERSONALDATAWIDGET_H__
 
 #include "ui_PersonalDataWidget.h"
-#include <QtGui/QFrame>
+#include <QtWidgets/QFrame>
 #include <QtCore/QDate>
 
 class PersonalDataWidget : public QFrame, public Ui::PersonalDataWidget

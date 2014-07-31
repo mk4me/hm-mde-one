@@ -1,7 +1,7 @@
 #include "CoreUiPCH.h"
 #include <coreui/CoreCompoundVisualizerWidget.h>
 #include <coreui/CoreVisualizerWidget.h>
-#include <QtGui/QHBoxLayout>
+#include <QtWidgets/QHBoxLayout>
 #include <coreui/CoreWidgetAction.h>
 #include <boost/bind.hpp>
 

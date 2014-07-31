@@ -26,19 +26,19 @@ using namespace coreUI;
 
 using namespace log4cxx;
 
-void QtMessageHandler(QtMsgType type, const char *msg)
+void QtCustomMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString& msg)
 {
 	const static auto qtLogger = Logger::getLogger("qt");
     switch (type) {
         case QtDebugMsg:
-            LOG4CXX_DEBUG(qtLogger, msg);
+			LOG4CXX_DEBUG(qtLogger, msg.toStdString());
             break;
         case QtWarningMsg:
-            LOG4CXX_WARN(qtLogger, msg);
+			LOG4CXX_WARN(qtLogger, msg.toStdString());
             break;
         default:
             // pozostałe poziomy komunikatu są już tożsame errorowi
-            LOG4CXX_ERROR(qtLogger, msg);
+			LOG4CXX_ERROR(qtLogger, msg.toStdString());
             break;
     }
 }
@@ -191,7 +191,7 @@ protected:
 			#endif
         #endif
 
-        entry->file = QString::fromAscii( event->getLocationInformation().getFileName() );
+		entry->file = QString::fromLatin1(event->getLocationInformation().getFileName());
         entry->line = event->getLocationInformation().getLineNumber();
         entry->timestamp = QDate::currentDate();
         entry->theadId = QThread::currentThreadId();
@@ -221,13 +221,13 @@ LogInitializer::LogInitializer( const core::Filesystem::Path & configPath )
     // załadowanie parametów logowania
     PropertyConfigurator::configure(configPath.string());
     osg::setNotifyHandler( new OsgNotifyHandlerLog4cxx());
-    qInstallMsgHandler(QtMessageHandler);
+    qInstallMessageHandler(QtCustomMessageHandler);
 }
 
 LogInitializer::~LogInitializer()
 {
 	// koniecznie trzeba przywrócić, inaczej będzie błąd
-	qInstallMsgHandler(0);
+    qInstallMessageHandler(0);
 	osg::setNotifyHandler( new osg::StandardNotifyHandler() );
 	setConsoleWidget(nullptr);
 }

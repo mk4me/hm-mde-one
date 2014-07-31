@@ -13,7 +13,7 @@
 #include "AbstractTab.h"
 #include <coreui/CoreFlexiToolBar.h>
 #include <boost/tuple/tuple.hpp>
-#include <QtGui/QTabWidget>
+#include <QtWidgets/QTabWidget>
 #include <coreui/Export.h>
 
 namespace coreUI {

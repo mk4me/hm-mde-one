@@ -10,11 +10,18 @@
 #ifndef HEADER_GUARD_MEDUSA_EXPORTER__PYTHONEXPORTER_H__
 #define HEADER_GUARD_MEDUSA_EXPORTER__PYTHONEXPORTER_H__
 
-class PythonExporter
-{
-public:
-	virtual ~PythonExporter() {}
-};
-DEFINE_SMART_POINTERS(PythonExporter);
+#include "IExporter.h"
+
+namespace medusaExporter {
+	class PythonExporter : public IExporter
+	{
+	public:
+		virtual ~PythonExporter() {}
+
+		virtual void exportAnnotations(const core::Filesystem::Path& path, const AnnotationData& data) const;
+
+	};
+	DEFINE_SMART_POINTERS(PythonExporter);
+}
 
 #endif

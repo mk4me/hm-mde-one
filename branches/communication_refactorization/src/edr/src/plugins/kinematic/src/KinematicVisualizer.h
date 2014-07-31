@@ -18,10 +18,10 @@
 #include <osgManipulator/Command>
 #include <osgui/QOsgWidgets.h>
 #include <QtGui/QIcon>
-#include <QtGui/QMenu>
-#include <QtGui/QWidget>
-#include <QtGui/QDoubleSpinBox>
-#include <QtGui/QComboBox>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QDoubleSpinBox>
+#include <QtWidgets/QComboBox>
 #include "OsgSchemeDrawer.h"
 #include "Manipulators.h"
 #include "TrajectoriesDialog.h"

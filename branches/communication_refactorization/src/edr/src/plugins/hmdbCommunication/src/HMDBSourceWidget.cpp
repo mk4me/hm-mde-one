@@ -2,14 +2,14 @@
 #include "HMDBSourceWidget.h"
 #include "HMDBSource.h"
 
-#include <QtGui/QSplitter>
-#include <QtGui/QMainWindow>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QSplitter>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
 
 #include <plugins/hmdbCommunication/SourceOptionsWidget.h>
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QDesktopWidget>
 
 HMDBSourceWidget::HMDBSourceWidget(hmdbCommunication::HMDBSource * source,
 	QWidget * parent, Qt::WindowFlags f) : QWidget(parent, f), source(source),

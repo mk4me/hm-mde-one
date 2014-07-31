@@ -11,11 +11,11 @@
 #define HEADER_GUARD_COREUI__ABSTRACTSTATE_H__
 
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtGui/QWheelEvent>
 #include <utils/SmartPtr.h>
 #include <coreui/Export.h>
-#include <QtGui/QGraphicsScene>
+#include <QtWidgets/QGraphicsScene>
 
 namespace coreUI {
 

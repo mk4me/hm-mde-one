@@ -8,6 +8,7 @@
 #include <utils/System.h>
 
 #if __WIN32__
+#define NOMINMAX
 #include <Windows.h>
 #endif
 #include <utils/Profiler.h>

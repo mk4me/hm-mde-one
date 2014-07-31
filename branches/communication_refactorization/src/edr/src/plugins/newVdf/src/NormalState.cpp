@@ -1,11 +1,12 @@
 #include "NewVdfPCH.h"
 #include "NormalState.h"
-#include <QtGui/QInputDialog>
+#include <QtWidgets/QInputDialog>
 #include <coreui/MoveCommand.h>
 #include <coreui/MultiCommand.h>
 #include "SimpleItem.h"
 #include "SceneStateMachine.h"
 #include "VdfScene.h"
+#include <QtWidgets/QGraphicsSceneEvent>
 
 using namespace vdf;
 
@@ -30,7 +31,7 @@ void NormalState::selectionChanged(const QList<QGraphicsItem*>& list)
 bool NormalState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
 	if (e->button() == Qt::LeftButton) {
-		if (stateMachine->getScene()->itemAt(e->scenePos())) {
+		if (!stateMachine->getScene()->items(e->scenePos()).isEmpty()) {
 			positions.clear();
 			auto nodes = stateMachine->getSceneModel()->getVisualItems<IVisualNodePtr>();
 			for (auto it = nodes.begin(); it != nodes.end(); ++it) {

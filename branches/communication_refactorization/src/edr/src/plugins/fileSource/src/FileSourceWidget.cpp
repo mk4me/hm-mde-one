@@ -1,16 +1,16 @@
 #include "FileSourceWidget.h"
-#include <QtGui/QWidget>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QMessageBox>
-#include <QtGui/QLayout>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QLayout>
 #include <utils/Debug.h> 
 #include <corelib/PluginCommon.h>
 #include <corelib/ILog.h>
 #include <corelib/IFileDataManager.h>
 #include <corelib/Filesystem.h>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QFileDialog>
 #include "FileSource.h"
 
 FileSourceWidget::FileSourceWidget( FileSource* source ) :

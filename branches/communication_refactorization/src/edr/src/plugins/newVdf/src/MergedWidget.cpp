@@ -1,7 +1,8 @@
 #include "NewVdfPCH.h"
 #include "MergedWidget.h"
-#include <QtGui/QListWidget>
-#include <QtGui/QLayout>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QLabel>
 
 vdf::MergedWidget::MergedWidget()
 {

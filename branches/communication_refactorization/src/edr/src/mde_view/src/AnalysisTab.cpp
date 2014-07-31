@@ -2,7 +2,7 @@
 #include <coreui/CoreTextEditWidget.h>
 #include <coreui/CoreFlexiToolBarSection.h>
 #include <coreui/CoreFlexiToolBar.h>
-#include <QtGui/QToolButton>
+#include <QtWidgets/QToolButton>
 #include "AnalysisTab.h"
 
 AnalysisTab::AnalysisTab(AnalisisWidget* widget, const QIcon& icon, const QString& label ) :

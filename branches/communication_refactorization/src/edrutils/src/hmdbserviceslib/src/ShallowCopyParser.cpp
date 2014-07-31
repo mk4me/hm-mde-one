@@ -1,17 +1,54 @@
 #include <hmdbserviceslib/ShallowCopyParser.h>
 #include <utils/Debug.h>
-#include <tinyxml.h>
+#include "XMLHelper.h"
 #include <hmdbserviceslib/DateTimeUtils.h>
 #include <hmdbserviceslib/Entity.h>
 #include <utils/Utils.h>
 
 namespace hmdbServices
 {
+
+	void extractFiles(tinyxml2::XMLElement * element, MotionShallowCopy::Files & outputFiles, MotionShallowCopy::Files & srcFiles,
+		MotionShallowCopy::Session * session, MotionShallowCopy::Trial * trial)
+	{
+		//Session files
+		auto files_element = element->FirstChildElement("Files");
+		if (files_element != nullptr) {
+			auto file_element = files_element->FirstChildElement("File");
+			while (file_element != nullptr) {
+				MotionShallowCopy::File * file = nullptr;
+
+				int fileID;
+
+				XMLHelper::extractAttributeValue(files_element, "FileID", fileID);				
+
+				auto fileIT = srcFiles.find(fileID);
+
+				if (fileIT == srcFiles.end()){
+					file = new MotionShallowCopy::File;
+					file->fileID = fileID;
+					srcFiles.insert(MotionShallowCopy::Files::value_type(fileID, file));
+				}
+				else{
+					file = fileIT->second;
+				}
+
+				XMLHelper::extractShallowCopyFile(file_element, *file);
+				file->trial = trial;
+				file->session = session;
+
+				outputFiles.insert(MotionShallowCopy::Files::value_type(fileID, file));				
+
+				file_element = file_element->NextSiblingElement();
+			}
+		}
+	}
+
 	const bool MotionShallowCopyParser::parseFile(std::istream * document, MotionShallowCopy::ShallowCopy & shallowCopy)
 	{
 		auto s = utils::readStream(document);
 
-		TiXmlDocument xmlDocument;
+		tinyxml2::XMLDocument xmlDocument;
 
 		xmlDocument.Parse(s.c_str());
 
@@ -20,36 +57,30 @@ namespace hmdbServices
 			return false;
 		}
 
-		TiXmlHandle hDocument(&xmlDocument);
-		TiXmlElement* _element;
-		TiXmlHandle hParent(0);
-
-		_element = hDocument.FirstChildElement().Element();
-		if (!_element) {
+		auto element = xmlDocument.FirstChildElement();
+		if (element == nullptr) {
 			UTILS_ASSERT(false, "Blad wczytania z pliku MotionShallowCopy");
 			return false;
-		}
-		hParent = TiXmlHandle(_element);
+		}		
 
 		//data utworzenia płytkiej kopii
 
 		std::string date;
-		_element->QueryStringAttribute("LastModified", &date);
+		XMLHelper::extractAttributeValue(element, "LastModified", date);		
 
 		//mamy date to ja rozpakowujemy
 		shallowCopy.timestamp = toTime(date);
 
 		//Performers
-		TiXmlElement* performers_element = hParent.FirstChild("Performers").ToElement();
-		if (performers_element) {
-			TiXmlElement* performer_element = performers_element->FirstChildElement("Performer");
-			while (performer_element) {
+		auto performers_element = element->FirstChildElement("Performers");
+		if (performers_element != nullptr) {
+			auto performer_element = performers_element->FirstChildElement("Performer");
+			while (performer_element != nullptr) {
 				//newMotionShallowCopy::Performer * performer = new MotionShallowCopy::Performer;
 				MotionShallowCopy::Performer * performer = nullptr;
 
 				int perfID;
-
-				performer_element->QueryIntAttribute("PerformerID", &perfID);
+				XMLHelper::extractAttributeValue(performer_element, "PerformerID", perfID);				
 
 				auto perfIT = shallowCopy.performers.find(perfID);
 				if (perfIT == shallowCopy.performers.end()){
@@ -62,36 +93,21 @@ namespace hmdbServices
 					performer = perfIT->second;
 				}
 
-				//Attrs
-				TiXmlElement* attrs_element = performer_element->FirstChildElement("Attrs");
-				if (attrs_element) {
-					TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
-					while (attr_element) {
-						MotionShallowCopy::Attrs::key_type name;
-						MotionShallowCopy::Attrs::mapped_type value;
-
-						attr_element->QueryStringAttribute("Name", &name);
-						attr_element->QueryStringAttribute("Value", &value);
-
-						performer->attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
-						attr_element = attr_element->NextSiblingElement();
-					}
-				}
+				XMLHelper::extractShallowCopyAttributes(performer_element, performer->attrs);				
 
 				performer_element = performer_element->NextSiblingElement();
 			}
 		}
 
 		//Sessions
-		TiXmlElement* sessions_element = hParent.FirstChild("Sessions").ToElement();
-		if (sessions_element) {
-			TiXmlElement* session_element = sessions_element->FirstChildElement("Session");
-			while (session_element) {
-				//newMotionShallowCopy::Session * session = new MotionShallowCopy::Session;
+		auto sessions_element = element->FirstChildElement("Sessions");
+		if (sessions_element != nullptr) {
+			auto session_element = sessions_element->FirstChildElement("Session");
+			while (session_element != nullptr) {				
 				MotionShallowCopy::Session * session = nullptr;
 
 				int sessionID;
-				session_element->QueryIntAttribute("SessionID", &sessionID);
+				XMLHelper::extractAttributeValue(session_element, "SessionID", sessionID);				
 
 				auto sessionIT = shallowCopy.sessions.find(sessionID);
 				if (sessionIT == shallowCopy.sessions.end()){
@@ -106,89 +122,38 @@ namespace hmdbServices
 				session->performerConf = nullptr;
 				session->groupAssigment = nullptr;
 
-				session_element->QueryIntAttribute("UserID", &session->userID);
-				session_element->QueryIntAttribute("LabID", &session->labID);
-				session_element->QueryStringAttribute("MotionKind", &session->motionKind);
+				XMLHelper::extractAttributeValue(session_element, "UserID", session->userID);
+				XMLHelper::extractAttributeValue(session_element, "LabID", session->labID);
+				XMLHelper::extractAttributeValue(session_element, "MotionKind", session->motionKind);
+				
 				{
 					std::string sessionDate;
-					session_element->QueryStringAttribute("SessionDate", &sessionDate);
+					XMLHelper::extractAttributeValue(session_element, "SessionDate", sessionDate);					
 					session->sessionDate = toTime(sessionDate);
 				}
-				session_element->QueryStringAttribute("SessionName", &session->sessionName);
-				session_element->QueryStringAttribute("Tags", &session->tags);
-				session_element->QueryStringAttribute("SessionDescription", &session->sessionDescription);
-				session_element->QueryStringAttribute("EMGConf", &session->emgConf);
 
-				//Attrs
-				TiXmlElement* attrs_element = session_element->FirstChildElement("Attrs");
-				if (attrs_element) {
-					TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
-					while (attr_element) {
-						MotionShallowCopy::Attrs::key_type name;
-						MotionShallowCopy::Attrs::mapped_type value;
+				XMLHelper::extractAttributeValue(session_element, "SessionName", session->sessionName);
+				XMLHelper::extractAttributeValue(session_element, "Tags", session->tags);
+				XMLHelper::extractAttributeValue(session_element, "SessionDescription", session->sessionDescription);
+				XMLHelper::extractAttributeValue(session_element, "EMGConf", session->emgConf);				
 
-						attr_element->QueryStringAttribute("Name", &name);
-						attr_element->QueryStringAttribute("Value", &value);
+				XMLHelper::extractShallowCopyAttributes(session_element, session->attrs);				
 
-						session->attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
 
-						attr_element = attr_element->NextSiblingElement();
-					}
-				}
-
-				//Session files
-				TiXmlElement* files_element = session_element->FirstChildElement("Files");
-				if (files_element) {
-					TiXmlElement* file_element = files_element->FirstChildElement("File");
-					while (file_element) {
-						//newMotionShallowCopy::File * file = new MotionShallowCopy::File;
-						MotionShallowCopy::File * file = nullptr;
-
-						int fileID;
-
-						file_element->QueryIntAttribute("FileID", &fileID);
-
-						auto fileIT = shallowCopy.files.find(fileID);
-
-						if (fileIT == shallowCopy.files.end()){
-							file = new MotionShallowCopy::File;
-							file->fileID = fileID;
-							shallowCopy.files[fileID] = file;
-						}
-						else{
-							file = fileIT->second;
-						}
-
-						file->trial = nullptr;
-						file->session = session;
-						file->fileSize = 0;
-						unsigned int s = 0;
-
-						file_element->QueryStringAttribute("FileName", &file->fileName);
-						file_element->QueryStringAttribute("FileDescription", &file->fileDescription);
-						file_element->QueryStringAttribute("SubdirPath", &file->subdirPath);
-						file_element->QueryUnsignedAttribute("Size", &s);
-						file->fileSize = s;
-
-						session->files[file->fileID] = file;
-
-						file_element = file_element->NextSiblingElement();
-					}
-				}
+				extractFiles(session_element, session->files, shallowCopy.files, session, nullptr);
 
 				session_element = session_element->NextSiblingElement();
 			}
 		}
 		//GroupAssignments
-		TiXmlElement* group_assignments_element = hParent.FirstChild("GroupAssignments").ToElement();
-		if (group_assignments_element) {
-			TiXmlElement* group_assignment_element = group_assignments_element->FirstChildElement("GroupAssignment");
-			while (group_assignment_element) {
+		auto group_assignments_element = element->FirstChildElement("GroupAssignments");
+		if (group_assignments_element != nullptr) {
+			auto group_assignment_element = group_assignments_element->FirstChildElement("GroupAssignment");
+			while (group_assignment_element != nullptr) {
 				MotionShallowCopy::GroupAssigment * group_assignment = nullptr;
 
 				int sessionGroupID;
-
-				group_assignment_element->QueryIntAttribute("SessionGroupID", &sessionGroupID);
+				XMLHelper::extractAttributeValue(group_assignment_element, "SessionGroupID", sessionGroupID);
 
 				auto groupAssigmentIT = shallowCopy.groupAssigments.find(sessionGroupID);
 
@@ -202,8 +167,7 @@ namespace hmdbServices
 				}
 
 				int sessionID;
-
-				group_assignment_element->QueryIntAttribute("SessionID", &sessionID);
+				XMLHelper::extractAttributeValue(group_assignment_element, "SessionID", sessionID);				
 
 				auto sessionIT = shallowCopy.sessions.find(sessionID);
 
@@ -216,16 +180,15 @@ namespace hmdbServices
 			}
 		}
 		//Trials
-		TiXmlElement* trials_element = hParent.FirstChild("Trials").ToElement();
-		if (trials_element) {
-			TiXmlElement* trial_element = trials_element->FirstChildElement("Trial");
-			while (trial_element) {
-				//newMotionShallowCopy::Trial * trial = new MotionShallowCopy::Trial;
+		auto trials_element = element->FirstChildElement("Trials");
+		if (trials_element != nullptr) {
+			auto trial_element = trials_element->FirstChildElement("Trial");
+			while (trial_element != nullptr) {				
 				MotionShallowCopy::Trial * trial = nullptr;
 
 				int sessionID;
 				int trialID;
-				trial_element->QueryIntAttribute("TrialID", &trialID);
+				XMLHelper::extractAttributeValue(trial_element, "TrialID", trialID);
 
 				auto trialIT = shallowCopy.trials.find(trialID);
 
@@ -238,84 +201,33 @@ namespace hmdbServices
 					trial = trialIT->second;
 				}
 
-				trial_element->QueryIntAttribute("SessionID", &sessionID);
+				XMLHelper::extractAttributeValue(trial_element, "SessionID", sessionID);				
 				trial->session = shallowCopy.sessions[sessionID];
 
 				UTILS_ASSERT(trial->session != nullptr);
 
 				trial->session->trials[trial->trialID] = trial;
 
-				trial_element->QueryStringAttribute("TrialName", &trial->trialName);
-				trial_element->QueryStringAttribute("TrialDescription", &trial->trialDescription);
+				XMLHelper::extractAttributeValue(trial_element, "TrialName", trial->trialName);
+				XMLHelper::extractAttributeValue(trial_element, "TrialDescription", trial->trialDescription);
 
-				//Attrs
-				TiXmlElement* attrs_element = trial_element->FirstChildElement("Attrs");
-				if (attrs_element) {
-					TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
-					while (attr_element) {
-						MotionShallowCopy::Attrs::key_type name;
-						MotionShallowCopy::Attrs::mapped_type value;
+				XMLHelper::extractShallowCopyAttributes(trial_element, trial->attrs);
 
-						attr_element->QueryStringAttribute("Name", &name);
-						attr_element->QueryStringAttribute("Value", &value);
-
-						trial->attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
-
-						attr_element = attr_element->NextSiblingElement();
-					}
-				}
-
-				//Files
-				TiXmlElement* files_element = trial_element->FirstChildElement("Files");
-				if (files_element) {
-					TiXmlElement* file_element = files_element->FirstChildElement("File");
-					while (file_element) {
-						//newMotionShallowCopy::File * file = new MotionShallowCopy::File;
-						MotionShallowCopy::File * file = nullptr;
-						int fileID;
-						file_element->QueryIntAttribute("FileID", &fileID);
-
-						auto fileIT = shallowCopy.files.find(fileID);
-
-						if (fileIT == shallowCopy.files.end()){
-							file = new MotionShallowCopy::File;
-							file->fileID = fileID;
-							shallowCopy.files[fileID] = file;
-						}
-						else{
-							file = fileIT->second;
-						}
-
-						file->trial = trial;
-						file->session = trial->session;
-						file->fileSize = 0;
-						unsigned int s = 0;
-
-						file_element->QueryStringAttribute("FileName", &file->fileName);
-						file_element->QueryStringAttribute("FileDescription", &file->fileDescription);
-						file_element->QueryStringAttribute("SubdirPath", &file->subdirPath);
-						file_element->QueryUnsignedAttribute("Size", &s);
-						file->fileSize = s;
-
-						trial->files[file->fileID] = file;
-						file_element = file_element->NextSiblingElement();
-					}
-				}
+				extractFiles(trial_element, trial->files, shallowCopy.files, nullptr, trial);
 
 				trial_element = trial_element->NextSiblingElement();
 			}
 		}
 
 		//PerformerConfs
-		TiXmlElement* performer_consfs_element = hParent.FirstChild("PerformerConfs").ToElement();
-		if (performer_consfs_element) {
-			TiXmlElement* performer_consf_element = performer_consfs_element->FirstChildElement("PerformerConf");
-			while (performer_consf_element) {
-				//newMotionShallowCopy::PerformerConf * performerConf = new MotionShallowCopy::PerformerConf;
+		auto performer_consfs_element = element->FirstChildElement("PerformerConfs");
+		if (performer_consfs_element != nullptr) {
+			auto performer_consf_element = performer_consfs_element->FirstChildElement("PerformerConf");
+			while (performer_consf_element != nullptr) {				
 				MotionShallowCopy::PerformerConf * performerConf = nullptr;
 
 				int perfConfID;
-				performer_consf_element->QueryIntAttribute("PerformerConfID", &perfConfID);
+				XMLHelper::extractAttributeValue(performer_consf_element, "PerformerConfID", perfConfID);				
 
 				auto perfConfIT = shallowCopy.performerConfs.find(perfConfID);
 
@@ -329,12 +241,12 @@ namespace hmdbServices
 				}
 
 				int id;
-				performer_consf_element->QueryIntAttribute("SessionID", &id);
+				XMLHelper::extractAttributeValue(performer_consf_element, "SessionID", id);
 
 				performerConf->session = shallowCopy.sessions[id];
 				UTILS_ASSERT(performerConf->session != nullptr);
 
-				performer_consf_element->QueryIntAttribute("PerformerID", &id);
+				XMLHelper::extractAttributeValue(performer_consf_element, "PerformerID", id);				
 
 				performerConf->performer = shallowCopy.performers[id];
 				UTILS_ASSERT(performerConf->performer != nullptr);
@@ -344,22 +256,7 @@ namespace hmdbServices
 				//update performera
 				performerConf->performer->performerConfs[performerConf->performerConfID] = performerConf;
 
-				//Attrs
-				TiXmlElement* attrs_element = performer_consf_element->FirstChildElement("Attrs");
-				if (attrs_element) {
-					TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
-					while (attr_element) {
-						MotionShallowCopy::Attrs::key_type name;
-						MotionShallowCopy::Attrs::mapped_type value;
-
-						attr_element->QueryStringAttribute("Name", &name);
-						attr_element->QueryStringAttribute("Value", &value);
-
-						performerConf->attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
-
-						attr_element = attr_element->NextSiblingElement();
-					}
-				}
+				XMLHelper::extractShallowCopyAttributes(performer_consf_element, performerConf->attrs);
 
 				performer_consf_element = performer_consf_element->NextSiblingElement();
 			}
@@ -372,36 +269,31 @@ namespace hmdbServices
 	{
 		auto s = utils::readStream(document);
 
-		TiXmlDocument xmlDocument;
+		tinyxml2::XMLDocument xmlDocument;
 
 		xmlDocument.Parse(s.c_str());
 
 		if (xmlDocument.Error()) {
-			UTILS_ASSERT(false, "Blad wczytania pliku MedicalShallowCopy");
+			UTILS_ASSERT(false, "Blad wczytania pliku MotionShallowCopy");
 			return false;
 		}
 
-		TiXmlHandle hDocument(&xmlDocument);
-		TiXmlElement* _element;
-		TiXmlHandle hParent(0);
-
-		_element = hDocument.FirstChildElement().Element();
-		if (!_element) {
-			UTILS_ASSERT(false, "Blad wczytania z pliku MedicalShallowCopy");
+		auto element = xmlDocument.FirstChildElement();
+		if (element == nullptr) {
+			UTILS_ASSERT(false, "Blad wczytania z pliku MotionShallowCopy");
 			return false;
 		}
-		hParent = TiXmlHandle(_element);
 
 		//Słowniki
-		TiXmlElement* dictionary_elements = hParent.FirstChild("Dictionaries").ToElement();
+		auto dictionary_elements = element->FirstChildElement("Dictionaries");
 		if (dictionary_elements != nullptr){
 			//Disorders
-			TiXmlElement* disorder_elements = dictionary_elements->FirstChild("Disorders")->ToElement();
+			auto disorder_elements = dictionary_elements->FirstChildElement("Disorders");
 			if (disorder_elements != nullptr){
-				TiXmlElement* disorder_element = disorder_elements->FirstChildElement("Disorder");
+				auto disorder_element = disorder_elements->FirstChildElement("Disorder");
 				while (disorder_element != nullptr){
 					int disorderID;
-					disorder_element->QueryIntAttribute("DisorderID", &disorderID);
+					XMLHelper::extractAttributeValue(disorder_element, "DisorderID", disorderID);					
 
 					auto it = shallowCopy.disorders.find(disorderID);
 
@@ -410,7 +302,7 @@ namespace hmdbServices
 						it->second->disorderID = disorderID;
 					}
 
-					disorder_element->QueryStringAttribute("DisorderName", &it->second->name);
+					XMLHelper::extractAttributeValue(disorder_element, "DisorderName", it->second->name);
 
 					disorder_element = disorder_element->NextSiblingElement();
 				}
@@ -421,15 +313,14 @@ namespace hmdbServices
 		}
 
 		//Patients
-		TiXmlElement* patient_elements = hParent.FirstChild("Patients").ToElement();
-		if (patient_elements) {
-			TiXmlElement* patient_element = patient_elements->FirstChildElement("Patient");
-			while (patient_element) {
+		auto patient_elements = element->FirstChildElement("Patients");
+		if (patient_elements != nullptr) {
+			auto patient_element = patient_elements->FirstChildElement("Patient");
+			while (patient_element != nullptr) {
 				MedicalShallowCopy::Patient * patient = nullptr;
 
 				int patientID;
-
-				patient_element->QueryIntAttribute("PatientID", &patientID);
+				XMLHelper::extractAttributeValue(patient_element, "PatientID", patientID);				
 
 				auto perfIT = shallowCopy.patients.find(patientID);
 				if (perfIT == shallowCopy.patients.end()){
@@ -442,19 +333,14 @@ namespace hmdbServices
 					patient = perfIT->second;
 				}
 
-				patient_element->QueryIntAttribute("BDRPerformerID", &patient->motionPerformerID);
-				patient_element->QueryStringAttribute("FirstName", &patient->name);
-				patient_element->QueryStringAttribute("LastName", &patient->surname);
-
-				{
-					std::string gender;
-					patient_element->QueryStringAttribute("Gender", &gender);
-					patient->gender = xmlWsdl::Gender::convert(gender);
-				}
+				XMLHelper::extractAttributeValue(patient_element, "BDRPerformerID", patient->motionPerformerID);
+				XMLHelper::extractAttributeValue(patient_element, "FirstName", patient->name);
+				XMLHelper::extractAttributeValue(patient_element, "LastName", patient->surname);
+				XMLHelper::extractAndConvertAttributeValue<xmlWsdl::Gender>(patient_element, "Gender", patient->gender);
 
 				{
 					std::string birthDate;
-					patient_element->QueryStringAttribute("BirthDate", &birthDate);
+					XMLHelper::extractAttributeValue(patient_element, "BirthDate", birthDate);					
 					patient->birthDate = toTime(birthDate);
 				}
 
@@ -463,29 +349,28 @@ namespace hmdbServices
 		}
 
 		//DisordersOccurences
-		TiXmlElement* disorder_elements = hParent.FirstChild("DisorderOccurences").ToElement();
-		if (disorder_elements) {
-			TiXmlElement* disorder_element = disorder_elements->FirstChildElement("DisorderOccurence");
-			while (disorder_element) {
+		auto disorder_elements = element->FirstChildElement("DisorderOccurences");
+		if (disorder_elements != nullptr) {
+			auto disorder_element = disorder_elements->FirstChildElement("DisorderOccurence");
+			while (disorder_element != nullptr) {
+
 				int patientID;
-				disorder_element->QueryIntAttribute("PatientID", &patientID);
+				XMLHelper::extractAttributeValue(disorder_element, "PatientID", patientID);				
 
 				int disorderID;
-				disorder_element->QueryIntAttribute("DisorderID", &disorderID);
+				XMLHelper::extractAttributeValue(disorder_element, "DisorderID", disorderID);
 
 				auto & disorder = shallowCopy.patients[patientID]->disorders[disorderID];
 				shallowCopy.patients[patientID]->disorders[disorderID].disorder = shallowCopy.disorders.find(disorderID)->second;
-				disorder_element->QueryStringAttribute("Focus", &disorder.focus);
+				XMLHelper::extractAttributeValue(disorder_element, "Focus", disorder.focus);				
 
 				{
 					std::string diagnosisDate;
-					disorder_element->QueryStringAttribute("DiagnosisDate", &diagnosisDate);
-					if (diagnosisDate.empty() == false){
-						disorder.diagnosisDate = toTime(diagnosisDate);
-					}
+					XMLHelper::extractAttributeValue(disorder_element, "DiagnosisDate", diagnosisDate);
+					disorder.diagnosisDate = toTime(diagnosisDate);					
 				}
 
-				disorder_element->QueryStringAttribute("Comments", &disorder.comments);
+				XMLHelper::extractAttributeValue(disorder_element, "Comments", disorder.comments);				
 
 				disorder_element = disorder_element->NextSiblingElement();
 			}

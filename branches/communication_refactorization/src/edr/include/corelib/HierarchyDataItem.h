@@ -13,7 +13,6 @@
 #include <QtCore/QList>
 #include <QtCore/QVariant>
 #include <corelib/Variant.h>
-#include <boost/enable_shared_from_this.hpp>
 #include <corelib/HierarchyHelper.h>
 #include <corelib/HierarchyItem.h>
 #include <corelib/IHierarchyDataItem.h>

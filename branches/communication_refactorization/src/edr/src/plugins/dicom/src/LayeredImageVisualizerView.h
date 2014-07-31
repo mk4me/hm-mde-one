@@ -10,13 +10,13 @@
 #ifndef HEADER_GUARD_DICOM__LAYEREDIMAGEVISUALIZERVIEW_H__
 #define HEADER_GUARD_DICOM__LAYEREDIMAGEVISUALIZERVIEW_H__
 
-#include <QtGui/QWidget>
-#include <QtGui/QItemSelection>
+#include <QtWidgets/QWidget>
+#include <QtCore/QItemSelection>
 #include <coreui/GraphicSceneWithStateMachine.h>
 #include "LayeredModelView.h"
 #include "LayeredStateMachine.h"
 #include <coreui/CoreAction.h>
-#include "AdnotationsDelegate.h"
+#include "AnnotationsDelegate.h"
 #include "IDicomService.h"
 
 class QGraphicsScene;

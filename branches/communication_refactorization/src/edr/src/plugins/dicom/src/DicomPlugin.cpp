@@ -11,17 +11,18 @@
 #include "DicomPerspective.h"
 #include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <corelib/ISourceManager.h>
+#include <corelib/Filesystem.h>
 #include "LayersXmlParser.h"
 #include "InternalXmlParser.h"
 #include "AnnotationStatusFilter.h"
 
 using namespace dicom;
 
-class DicomTempService : public IDicomService
-{
-	UNIQUE_ID("{2B0AE786-F194-46DE-A161-CCCFF317E44B}")
-		CLASS_DESCRIPTION("DicomTempService", "DicomTempService");
-
+class DicomTempService : public IDicomService, public utils::Observer<communication::ICommunicationDataSource>
+{																		
+UNIQUE_ID("{2B0AE786-F194-46DE-A161-CCCFF317E44B}")						
+CLASS_DESCRIPTION("DicomTempService", "DicomTempService");							
+		
 private:
 
 	typedef std::map<int, std::map<int, AnnotationStatus>> AnnotationsMap;
@@ -57,12 +58,11 @@ public:
 		this->memoryDataManager = memoryDataManager;
 	}
 
-	virtual const bool lateInit()
-	{
-		//TODO
-		/*
-		comm = core::querySource<hmdbCommunication::IHMDBSource>(sourceManager);
-		if (comm != nullptr){
+    virtual const bool lateInit()  
+    { 
+        comm = core::querySource<communication::ICommunicationDataSource>(sourceManager);
+		if(comm != nullptr){
+
 			comm->attach(this);
 
 			auto as = QObject::tr("Annotation status");
@@ -347,14 +347,14 @@ private:
 };
 
 CORE_PLUGIN_BEGIN("dicom", core::UID::GenerateUniqueID("{09E8994A-99B4-42D6-9E72-C695ABFEAB1E}"))
-//CORE_PLUGIN_ADD_SOURCE(DicomSource);
-CORE_PLUGIN_ADD_PARSER(PngParser);
-CORE_PLUGIN_ADD_OBJECT_WRAPPER(DicomInternalStruct);
-CORE_PLUGIN_ADD_OBJECT_WRAPPER(LayersVector);
-CORE_PLUGIN_ADD_PARSER(InternalXmlParser);
-CORE_PLUGIN_ADD_PARSER(LayersXmlParser);
-CORE_PLUGIN_ADD_VISUALIZER(LayeredImageVisualizer);
-CORE_PLUGIN_ADD_OBJECT_WRAPPER(ILayeredImage);
-CORE_PLUGIN_ADD_OBJECT_WRAPPER(LayeredImage);
-CORE_PLUGIN_ADD_SERVICE(DicomTempService);
+    //CORE_PLUGIN_ADD_SOURCE(DicomSource);
+    CORE_PLUGIN_ADD_PARSER(PngParser);
+    CORE_PLUGIN_ADD_OBJECT_WRAPPER(DicomInternalStruct);
+    CORE_PLUGIN_ADD_OBJECT_WRAPPER(LayersVector);
+    CORE_PLUGIN_ADD_PARSER(InternalXmlParser);
+    CORE_PLUGIN_ADD_PARSER(LayersXmlParser);
+    CORE_PLUGIN_ADD_VISUALIZER(LayeredImageVisualizer);
+    CORE_PLUGIN_ADD_OBJECT_WRAPPER(ILayeredImage);
+    CORE_PLUGIN_ADD_OBJECT_WRAPPER(LayeredImage);
+    CORE_PLUGIN_ADD_SERVICE(DicomTempService);
 CORE_PLUGIN_END

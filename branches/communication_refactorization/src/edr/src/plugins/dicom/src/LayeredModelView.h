@@ -40,7 +40,10 @@ public:
 public:
     ILayeredImageConstPtr getImage() const;
     void setImage(ILayeredImagePtr val);
-    void refresh() { reset(); }
+	void refresh() {
+		beginResetModel();
+		endResetModel();
+	}
     void refreshSelected();
     typedef std::vector<std::pair<QModelIndex, bool>> Expands;
     Expands getExpands() const;

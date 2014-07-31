@@ -9,17 +9,17 @@
 #ifndef HEADER_GUARD_QT_EXT__QMULTITOOLBOX_H__
 #define HEADER_GUARD_QT_EXT__QMULTITOOLBOX_H__
 
-#include <QtGui/QFrame>
+#include <QtWidgets/QFrame>
 #include <QtGui/QIcon>
-#include <QtGui/QAbstractButton>
-#include <QtGui/QScrollArea>
-#include <QtGui/QStyleOption>
+#include <QtWidgets/QAbstractButton>
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QStyleOption>
 #include <QtCore/QList>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QVBoxLayout>
 #include <QtGui/QPainter>
-#include <QtGui/QStyle>
-#include <QtGui/QToolTip>
-#include <QtGui/QApplication>
+#include <QtWidgets/QStyle>
+#include <QtWidgets/QToolTip>
+#include <QtWidgets/QApplication>
 
 class QMultiToolBoxButton : public QAbstractButton
 {

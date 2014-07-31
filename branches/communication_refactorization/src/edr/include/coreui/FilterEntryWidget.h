@@ -11,7 +11,7 @@
 #define HEADER_GUARD_HMM__FILTERENTRYWIDGET_H__
 
 #include <boost/function.hpp>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <osg/Vec3>
 #include <corelib/IFilterCommand.h>
 #include <QtGui/QIcon>
@@ -73,8 +73,8 @@ private:
 };
 
 
-typedef boost::shared_ptr<FilterEntryWidget> FilterEntryWidgetPtr;
-typedef boost::shared_ptr<const FilterEntryWidget> FilterEntryWidgetConstPtr;
+typedef utils::shared_ptr<FilterEntryWidget> FilterEntryWidgetPtr;
+typedef utils::shared_ptr<const FilterEntryWidget> FilterEntryWidgetConstPtr;
 
 
 #endif

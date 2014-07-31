@@ -1,7 +1,7 @@
 #include "CoreUiPCH.h"
 #include <coreUI/ContextAutoPlacer.h>
-#include <QtGui/QWidgetAction>
-#include <QtGui/QToolBar>
+#include <QtWidgets/QWidgetAction>
+#include <QtWidgets/QToolBar>
 #include <coreui/ICoreActionSection.h>
 #include <coreui/CoreTitleBar.h>
 #include <coreui/CoreFlexiToolBarSection.h>

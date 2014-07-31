@@ -1,6 +1,6 @@
 #include <hmdbserviceslib/IncrementalBranchShallowCopyParser.h>
 #include <utils/Debug.h>
-#include <tinyxml.h>
+#include "XMLHelper.h"
 #include <hmdbserviceslib/DateTimeUtils.h>
 #include <hmdbserviceslib/Entity.h>
 #include <hmdbserviceslib/ShallowCopy.h>
@@ -8,14 +8,14 @@
 
 namespace hmdbServices
 {
-	void parseBranch(TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy);
-	void parseFilesBranch(TiXmlElement* trial_element, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy, IncrementalBranchShallowCopy::Files& files, IncrementalBranchShallowCopy::Trial& trial);
+	void parseBranch(tinyxml2::XMLElement * parent, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy);
+	void parseFilesBranch(tinyxml2::XMLElement * trial_element, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy, IncrementalBranchShallowCopy::Files& files, IncrementalBranchShallowCopy::Trial& trial);
 
 	const bool IncrementalBranchShallowCopyParser::parseFile(std::istream * document, IncrementalBranchShallowCopy& shallowCopy)
 	{
 		auto s = utils::readStream(document);
 
-		TiXmlDocument xmlDocument;
+		tinyxml2::XMLDocument xmlDocument;
 
 		xmlDocument.Parse(s.c_str());
 
@@ -24,46 +24,41 @@ namespace hmdbServices
 			return false;
 		}
 
-		TiXmlHandle hDocument(&xmlDocument);
-		TiXmlElement* _element;
-		TiXmlHandle hParent(0);
-
-		_element = hDocument.FirstChildElement().Element();
-		if (!_element) {
-			UTILS_ASSERT(false, "Blad wczytania z pliku MotionShallowCopy");
+		auto element = xmlDocument.FirstChildElement();
+		if (element == nullptr) {
+			UTILS_ASSERT(false, "Blad wczytania z pliku IncrementalBranchShallowCopy");
 			return false;
-		}
-		hParent = TiXmlHandle(_element);
+		}		
 
-		TiXmlElement* modified = hParent.FirstChild("Modified").ToElement();
-		if (modified) {
-			parseBranch(TiXmlHandle(modified), shallowCopy.modified);
-		}
-
-		TiXmlElement* added = hParent.FirstChild("Added").ToElement();
-		if (added) {
-			parseBranch(TiXmlHandle(added), shallowCopy.added);
+		auto modified = element->FirstChildElement("Modified");
+		if (modified != nullptr) {
+			parseBranch(modified, shallowCopy.modified);
 		}
 
-		TiXmlElement* removedLocaly = hParent.FirstChild("RemovedLocaly").ToElement();
-		if (added) {
-			parseBranch(TiXmlHandle(removedLocaly), shallowCopy.removedLocaly);
+		auto added = element->FirstChildElement("Added");
+		if (added != nullptr) {
+			parseBranch(added, shallowCopy.added);
 		}
 
-		TiXmlElement* removedGlobaly = hParent.FirstChild("RemovedGlobaly").ToElement();
-		if (added) {
-			parseBranch(TiXmlHandle(removedGlobaly), shallowCopy.removedGlobaly);
+		auto removedLocaly = element->FirstChildElement("RemovedLocaly");
+		if (removedLocaly != nullptr) {
+			parseBranch(removedLocaly, shallowCopy.removedLocaly);
+		}
+
+		auto removedGlobaly = element->FirstChildElement("RemovedGlobaly");
+		if (removedGlobaly != nullptr) {
+			parseBranch(removedGlobaly, shallowCopy.removedGlobaly);
 		}
 
 		return true;
 	}
 
-	void parseBranch(TiXmlHandle &hParent, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy)
+	void parseBranch(tinyxml2::XMLElement * parent, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy)
 	{
 		////Performers
-		//TiXmlElement* performers_element = hParent.FirstChild("Performers").ToElement();
+		//auto performers_element = parent->FirstChildElement("Performers");
 		//if (performers_element) {
-		//    TiXmlElement* performer_element = performers_element->FirstChildElement("Performer");
+		//    auto performer_element = performers_element->FirstChildElement("Performer");
 		//    while(performer_element) {
 		//        //newMotionShallowCopy::Performer * performer = new MotionShallowCopy::Performer;
 		//        MotionShallowCopy::Performer * performer = nullptr;
@@ -83,9 +78,9 @@ namespace hmdbServices
 		//        }
 
 		//        //Attrs
-		//        TiXmlElement* attrs_element = performer_element->FirstChildElement("Attrs");
+		//        auto attrs_element = performer_element->FirstChildElement("Attrs");
 		//        if(attrs_element) {
-		//            TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
+		//            auto attr_element = attrs_element->FirstChildElement("A");
 		//            while(attr_element) {
 		//                MotionShallowCopy::Attrs::key_type name;
 		//                MotionShallowCopy::Attrs::mapped_type value;
@@ -103,9 +98,9 @@ namespace hmdbServices
 		//}
 
 		////Sessions
-		//TiXmlElement* sessions_element = hParent.FirstChild("Sessions").ToElement();
+		//auto sessions_element = parent->FirstChildElement("Sessions");
 		//if(sessions_element) {
-		//    TiXmlElement* session_element = sessions_element->FirstChildElement("Session");
+		//    auto session_element = sessions_element->FirstChildElement("Session");
 		//    while(session_element) {
 		//        //newMotionShallowCopy::Session * session = new MotionShallowCopy::Session;
 		//        MotionShallowCopy::Session * session = nullptr;
@@ -139,9 +134,9 @@ namespace hmdbServices
 		//        session_element->QueryStringAttribute("EMGConf", &session->emgConf);
 
 		//        //Attrs
-		//        TiXmlElement* attrs_element = session_element->FirstChildElement("Attrs");
+		//        auto attrs_element = session_element->FirstChildElement("Attrs");
 		//        if(attrs_element) {
-		//            TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
+		//            auto attr_element = attrs_element->FirstChildElement("A");
 		//            while(attr_element) {
 		//                MotionShallowCopy::Attrs::key_type name;
 		//                MotionShallowCopy::Attrs::mapped_type value;
@@ -156,9 +151,9 @@ namespace hmdbServices
 		//        }
 
 		//        //Session files
-		//        TiXmlElement* files_element = session_element->FirstChildElement("Files");
+		//        auto files_element = session_element->FirstChildElement("Files");
 		//        if(files_element) {
-		//            TiXmlElement* file_element = files_element->FirstChildElement("File");
+		//            auto file_element = files_element->FirstChildElement("File");
 		//            while(file_element) {
 		//                //newMotionShallowCopy::File * file = new MotionShallowCopy::File;
 		//                MotionShallowCopy::File * file = nullptr;
@@ -198,9 +193,9 @@ namespace hmdbServices
 		//    }
 		//}
 		////GroupAssignments
-		//TiXmlElement* group_assignments_element = hParent.FirstChild("GroupAssignments").ToElement();
+		//auto group_assignments_element = parent->FirstChildElement("GroupAssignments");
 		//if(group_assignments_element) {
-		//    TiXmlElement* group_assignment_element = group_assignments_element->FirstChildElement("GroupAssignment");
+		//    auto group_assignment_element = group_assignments_element->FirstChildElement("GroupAssignment");
 		//    while(group_assignment_element) {
 		//        MotionShallowCopy::GroupAssigment * group_assignment = nullptr;
 
@@ -234,45 +229,29 @@ namespace hmdbServices
 		//    }
 		//}
 		//Trials
-		TiXmlElement* trials_element = hParent.FirstChild("Trials").ToElement();
-		if (trials_element) {
-			TiXmlElement* trial_element = trials_element->FirstChildElement("Trial");
-			while (trial_element) {
+		auto trials_element = parent->FirstChildElement("Trials");
+		if (trials_element != nullptr) {
+			auto trial_element = trials_element->FirstChildElement("Trial");
+			while (trial_element != nullptr) {
 				IncrementalBranchShallowCopy::Trial  trial;
-				trial_element->QueryIntAttribute("TrialID", &trial.trialID);
-				trial_element->QueryIntAttribute("SessionID", &trial.sessionID);
+				XMLHelper::extractAttributeValue(trial_element, "TrialID", trial.trialID);
+				XMLHelper::extractAttributeValue(trial_element, "SessionID", trial.sessionID);				
 
 				//trial->session->trials[trial->trialID] = trial;
 
-				trial_element->QueryStringAttribute("TrialName", &trial.trialName);
-				trial_element->QueryStringAttribute("TrialDescription", &trial.trialDescription);
+				XMLHelper::extractAttributeValue(trial_element, "TrialName", trial.trialName);
+				XMLHelper::extractAttributeValue(trial_element, "TrialDescription", trial.trialDescription);
 
-				//Attrs
-				TiXmlElement* attrs_element = trial_element->FirstChildElement("Attrs");
-				if (attrs_element) {
-					TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
-					while (attr_element) {
-						MotionShallowCopy::Attrs::key_type name;
-						MotionShallowCopy::Attrs::mapped_type value;
-
-						attr_element->QueryStringAttribute("Name", &name);
-						attr_element->QueryStringAttribute("Value", &value);
-
-						trial.attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
-
-						attr_element = attr_element->NextSiblingElement();
-					}
-				}
+				XMLHelper::extractShallowCopyAttributes(trial_element, trial.attrs);			
 
 				//Files
-
-				TiXmlElement* added_files_element = trial_element->FirstChildElement("AddedFiles");
-				if (added_files_element) {
+				auto added_files_element = trial_element->FirstChildElement("AddedFiles");
+				if (added_files_element != nullptr) {
 					parseFilesBranch(added_files_element, shallowCopy, trial.addedFiles, trial);
 				}
 
-				TiXmlElement* modified_files_element = trial_element->FirstChildElement("ModifiedFiles");
-				if (modified_files_element) {
+				auto modified_files_element = trial_element->FirstChildElement("ModifiedFiles");
+				if (modified_files_element != nullptr) {
 					parseFilesBranch(modified_files_element, shallowCopy, trial.modifiedFiles, trial);
 				}
 				shallowCopy.trials.push_back(trial);
@@ -281,9 +260,9 @@ namespace hmdbServices
 		}
 
 		////PerformerConfs
-		//TiXmlElement* performer_consfs_element = hParent.FirstChild("PerformerConfs").ToElement();
+		//auto performer_consfs_element = parent->FirstChildElement("PerformerConfs");
 		//if(performer_consfs_element) {
-		//    TiXmlElement* performer_consf_element = performer_consfs_element->FirstChildElement("PerformerConf");
+		//    auto performer_consf_element = performer_consfs_element->FirstChildElement("PerformerConf");
 		//    while(performer_consf_element) {
 		//        //newMotionShallowCopy::PerformerConf * performerConf = new MotionShallowCopy::PerformerConf;
 		//        MotionShallowCopy::PerformerConf * performerConf = nullptr;
@@ -318,9 +297,9 @@ namespace hmdbServices
 		//        performerConf->performer->performerConfs[performerConf->performerConfID] = performerConf;
 
 		//        //Attrs
-		//        TiXmlElement* attrs_element = performer_consf_element->FirstChildElement("Attrs");
+		//        auto attrs_element = performer_consf_element->FirstChildElement("Attrs");
 		//        if(attrs_element) {
-		//            TiXmlElement* attr_element = attrs_element->FirstChildElement("A");
+		//            auto attr_element = attrs_element->FirstChildElement("A");
 		//            while(attr_element) {
 		//                MotionShallowCopy::Attrs::key_type name;
 		//                MotionShallowCopy::Attrs::mapped_type value;
@@ -339,9 +318,9 @@ namespace hmdbServices
 		//}
 	}
 
-	void parseFilesBranch(TiXmlElement* files_element, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy, IncrementalBranchShallowCopy::Files& files, IncrementalBranchShallowCopy::Trial& trial)
+	void parseFilesBranch(tinyxml2::XMLElement * files_element, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy, IncrementalBranchShallowCopy::Files& files, IncrementalBranchShallowCopy::Trial& trial)
 	{
-		TiXmlElement* file_element = files_element->FirstChildElement("File");
+		auto file_element = files_element->FirstChildElement("File");
 		while (file_element) {
 			//newMotionShallowCopy::File * file = new MotionShallowCopy::File;
 			IncrementalBranchShallowCopy::File file;
@@ -351,11 +330,10 @@ namespace hmdbServices
 			file.fileSize = 0;
 			unsigned int s = 0;
 
-			file_element->QueryStringAttribute("FileName", &file.fileName);
-			file_element->QueryStringAttribute("FileDescription", &file.fileDescription);
-			file_element->QueryStringAttribute("SubdirPath", &file.subdirPath);
-			file_element->QueryUnsignedAttribute("Size", &s);
-			file.fileSize = s;
+			XMLHelper::extractAttributeValue(file_element, "FileName", file.fileName);
+			XMLHelper::extractAttributeValue(file_element, "FileDescription", file.fileDescription);
+			XMLHelper::extractAttributeValue(file_element, "SubdirPath", file.subdirPath);
+			XMLHelper::extractAttributeValue(file_element, "Size", file.fileSize);			
 
 			file.trialID = trial.trialID;
 			file.sessionID = trial.sessionID;

@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_COREUI__GRAPHICSCENEWITHSTATEMACHINE_H__
 #define HEADER_GUARD_COREUI__GRAPHICSCENEWITHSTATEMACHINE_H__
 
-#include <QtGui/QGraphicsScene>
+#include <QtWidgets/QGraphicsScene>
 #include <utils/SmartPtr.h>
 #include <coreui/Export.h>
 #include <coreui/AbstractStateMachine.h>

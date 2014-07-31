@@ -83,13 +83,13 @@ public:
     //! \return event, który spełnia założenia lub pusty wskaźnik
     EventConstPtr getEvent(float t, Context context) const;
 };
-typedef boost::shared_ptr<C3DEventsCollection> EventsCollectionPtr;
-typedef boost::shared_ptr<const C3DEventsCollection> EventsCollectionConstPtr;
+typedef utils::shared_ptr<C3DEventsCollection> EventsCollectionPtr;
+typedef utils::shared_ptr<const C3DEventsCollection> EventsCollectionConstPtr;
 
 //! Kolekcja obiektów EMG, obsługiwana w standardowy sposób
 typedef utils::DataChannelCollection<EMGChannel> EMGCollection;
-typedef boost::shared_ptr<EMGCollection> EMGCollectionPtr;
-typedef boost::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
+typedef utils::shared_ptr<EMGCollection> EMGCollectionPtr;
+typedef utils::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
 
 //! Kolekcja kanałów opartych o trójwymiarowy wektor
 typedef utils::DataChannelCollection<VectorChannel> VectorChannelCollection;
@@ -120,8 +120,8 @@ private:
     //! Platformy pomiarowe związane z tą samą próbą pomiarową co kanały z kolekcji
     IForcePlatformCollection platforms;
 };
-typedef boost::shared_ptr<GRFCollection> GRFCollectionPtr;
-typedef boost::shared_ptr<const GRFCollection> GRFCollectionConstPtr;
+typedef utils::shared_ptr<GRFCollection> GRFCollectionPtr;
+typedef utils::shared_ptr<const GRFCollection> GRFCollectionConstPtr;
 
 //! Kontener wszystkich markerów modelu, ułatwia obsługę danych, dodaje wsparcie o pliki VSK
 class PLUGINC3D_EXPORT MarkerCollection : public VectorChannelCollection

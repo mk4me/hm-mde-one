@@ -1,9 +1,9 @@
 #include "CoreUiPCH.h"
 #include <coreui/CoreFlexiToolBar.h>
 #include <coreui/CoreFlexiToolBarSection.h>
-#include <QtGui/QMainWindow>
-#include <QtGui/QToolBar>
-#include <QtGui/QHBoxLayout>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QHBoxLayout>
 
 using namespace coreUI;
 

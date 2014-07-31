@@ -41,8 +41,8 @@ namespace osgui
                 const Events& events = ev->getEvents();
                 for ( Events::const_iterator it = events.begin(), last = events.end(); it != last; ++it ) {
                     auto event = *it;
-                    if ( event->getEventType() == eventType ) {
-                        func(node, event);
+					if (event->asGUIEventAdapter()->getEventType() == eventType) {
+						func(node, event->asGUIEventAdapter());
                     }
                 }
             }

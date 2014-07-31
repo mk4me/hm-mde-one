@@ -1,6 +1,7 @@
 #include "DicomPCH.h"
 #include "DicomInternalStruct.h"
 #include <boost/format.hpp>
+#include <boost/range/join.hpp>
 
 using namespace dicom;
 
@@ -113,6 +114,7 @@ internalData::ImageConstPtr dicom::DicomInternalStruct::tryGetImage( const std::
         return internalData::ImageConstPtr();
     }
 }
+
 
 dicom::internalData::Patient::Patient( const Patient& other )
 {

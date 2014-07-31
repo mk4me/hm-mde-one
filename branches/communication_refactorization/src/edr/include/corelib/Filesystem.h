@@ -9,8 +9,10 @@
 #include <vector>
 #include <set>
 #include <string>
+#include <algorithm>
 
 #include <boost/filesystem.hpp>
+
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -89,6 +91,23 @@ public:
 	*/
 	static std::vector<std::string> listFiles(const std::string& path, bool recursive, const std::vector<std::string>& masks);
     static std::vector<Path> listFiles(const Path& path, bool recursive, const std::vector<std::string>& masks);
+	/*
+	Listuje wszystkie pliki danego folderu spełniające kryterium przekazywanego filtru.
+	@tparam Path Typ opisujący ścieżkę
+	@tparam Predicate Obiekt opisujący czy dana wartość ma być usunięta
+	@param path ścieżka do folderu który ma być przeszukany
+	@param recursive czy szukać plików w podfolderach
+	@param filter funkcja testująca przeszukiwane pliki
+	@return lista wszystkich plików wraz ze ścieżką
+	*/
+	template<typename Path, typename Predicate>
+	static std::vector<Path> listFilteredFiles(const Path& path, bool recursive, Predicate filter)
+	{
+		auto ret(listFiles(path, recursive));
+		auto eIT = std::remove_if(ret.begin(), ret.end(), filter);
+		ret.erase(eIT, ret.end());
+		return ret;
+	}	
 	/*
 	Listuje wszystkie podfoldery danego folderu.
 	@param path ścieżka do folderu który ma być przeszukany

@@ -1,5 +1,5 @@
 #include <plugins/hmdbCommunication/TreeItemHelper.h>
-#include <QtGui/QHBoxLayout>
+#include <QtWidgets/QHBoxLayout>
 #include <corelib/IVisualizerManager.h>
 #include <plugins/newChart/INewChartVisualizer.h>
 #include <plugins/c3d/EventSerieBase.h>
@@ -323,7 +323,7 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
 {
     ScalarChannelReaderInterfacePtr channel = wrapper->clone()->get();
 
-    boost::shared_ptr<AbsMeanChannel<float, float>> absTest( new AbsMeanChannel<float, float>(channel));
+    utils::shared_ptr<AbsMeanChannel<float, float>> absTest( new AbsMeanChannel<float, float>(channel));
     absTest->initialize();
 
     //utils::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, ScalarChannelIntegrator()));

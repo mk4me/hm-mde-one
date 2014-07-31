@@ -11,14 +11,14 @@
 #include <coreui/HierarchyTreeModel.h>
 #include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
 #include <coreui/CoreTitleBar.h>
-#include <QtGui/QMenu>
+#include <QtWidgets/QMenu>
 #include <coreui/ContextAutoPlacer.h>
 #include <coreui/DataFilterWidget.h>
 #include <coreui/ReportsThumbnailContext.h>
 #include <corelib/IDataHierarchyManagerReader.h>
 #include <coreui/HierarchyTreeModel.h>
-#include <QtGui/QMessageBox>
-#include <QtGui/QSortFilterProxyModel>
+#include <QtWidgets/QMessageBox>
+#include <QtCore/QSortFilterProxyModel>
 #include "AnalysisTreeContext.h"
 #include <coreui/SimpleContext.h>
 

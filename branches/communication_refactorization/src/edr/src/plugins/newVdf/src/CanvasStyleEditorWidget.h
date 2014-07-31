@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___CANVASSTYLEEDITORWIDGET_H__
 #define HEADER_GUARD___CANVASSTYLEEDITORWIDGET_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include "ui_canvasStyleEditorWidget.h"
 #include "CanvasStyleEditor.h"
 

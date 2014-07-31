@@ -1,10 +1,10 @@
 #include "DicomPCH.h"
 #include "DicomSourceWidget.h"
 #include "ui_DicomSource.h"
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QFileDialog>
 #include <corelib/Filesystem.h>
 #include "DicomSource.h"
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 
 //#include <hmdbserviceslib/WSConnection.h>
 #include <hmdbserviceslib/IBasicQueriesWS.h>

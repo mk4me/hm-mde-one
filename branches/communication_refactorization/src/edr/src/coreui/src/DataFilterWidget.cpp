@@ -1,7 +1,7 @@
 #include "CoreUiPCH.h"
 #include <coreui/DataFilterWidget.h>
 #include <coreui/FilterEntryWidget.h>
-#include <QtGui/QMouseEvent>
+#include <QtGui/QCloseEvent>
 #include <corelib/HierarchyItem.h>
 #include "ui_filter.h"
 //#include "FilterCommand.h"

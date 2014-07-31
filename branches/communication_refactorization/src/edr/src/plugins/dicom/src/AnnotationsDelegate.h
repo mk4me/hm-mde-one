@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_DICOM__ADNOTATIONSDELEGATE_H__
 #define HEADER_GUARD_DICOM__ADNOTATIONSDELEGATE_H__
 
-#include <QtGui/QStyledItemDelegate>
+#include <QtWidgets/QStyledItemDelegate>
 #include <plugins/dicom/ILayeredImage.h>
 
 class QWidget;

@@ -14,7 +14,7 @@
 #include <boost/range.hpp>
 #include <plugins/c3d/C3DChannels.h>
 
-#include <QtGui/QItemDelegate>
+#include <QtWidgets/QItemDelegate>
 
 //! klasa powstała, aby wymusic wielkość wpisów, dzięki temu można łatwo obliczyć potrzebna wysokość
 class ItemDelegate : public QItemDelegate

@@ -2,20 +2,20 @@
 #include "LayeredImageVisualizer.h"
 #include <plugins/dicom/ILayeredImage.h>
 #include <QtGui/QPixmap>
-#include <QtGui/QLabel>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QSlider>
-#include <QtGui/QPushButton>
-#include <QtGui/QGraphicsPixmapItem>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QSlider>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QGraphicsPixmapItem>
 #include "LayeredImageVisualizerView.h"
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include "BackgroundLayer.h"
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include "LayeredImage.h"
 #include <utils/ICommand.h>
-#include <QtGui/QScrollBar>
+#include <QtWidgets/QScrollBar>
 #include <boost/format.hpp>
 
 using namespace dicom;

@@ -11,7 +11,7 @@
 
 #include <hmdbserviceslib/ShallowCopy.h>
 #include <plugins/hmdbCommunication/ShallowCopy.h>
-#include <QtGui/QTreeWidgetItem>
+#include <QtWidgets/QTreeWidgetItem>
 
 namespace hmdbCommunication
 {

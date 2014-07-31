@@ -11,7 +11,7 @@
 #define HEADER_GUARD_NEWVDF__TYPESWINDOW_H__
 
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <utils/ObserverPattern.h>
 #include <utils/CommandStack.h>
 #include <plugins/newVdf/IDataProcessorManager.h>

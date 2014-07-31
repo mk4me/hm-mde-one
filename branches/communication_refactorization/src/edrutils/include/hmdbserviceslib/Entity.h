@@ -464,7 +464,7 @@ namespace hmdbServices
 		struct HMDBSERVICES_EXPORT AttributeDefinition
 		{
 			std::string name;			//! Nazwa
-			std::string type;			//! Typ
+			AttributeType::Type type;			//! Typ
 			int enumerate;				//! Identyfikator
 			std::string groupName;		//! Nazwa grupy
 			std::string unit;			//! Jednostka

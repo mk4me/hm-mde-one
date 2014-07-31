@@ -1,6 +1,6 @@
 #include "CoreUiPCH.h"
 #include <coreui/MoveCommand.h>
-#include <QtGui/QGraphicsItem>
+#include <QtWidgets/QGraphicsItem>
 
 using namespace coreUI;
 

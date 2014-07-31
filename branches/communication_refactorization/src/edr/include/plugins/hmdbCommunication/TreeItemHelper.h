@@ -11,7 +11,7 @@
 #define HEADER_GUARD_NEWCOMMUNICATION__TREEITEMHELPER_H__
 
 #include <QtCore/QString>
-#include <QtGui/QTreeWidgetItem>
+#include <QtWidgets/QTreeWidgetItem>
 #include <plugins/subject/IMotion.h>
 #include <plugins/newChart/INewChartSerie.h>
 #include <corelib/Visualizer.h>

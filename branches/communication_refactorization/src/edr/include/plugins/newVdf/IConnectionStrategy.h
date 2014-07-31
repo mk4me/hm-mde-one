@@ -11,6 +11,7 @@
 #define HEADER_GUARD_NEWVDF__ICONNECTIONSTRATEGY_H__
 
 #include <plugins/newVdf/IVisualStrategy.h>
+#include <QtGui/QPainterPath>
 
 namespace vdf {
 

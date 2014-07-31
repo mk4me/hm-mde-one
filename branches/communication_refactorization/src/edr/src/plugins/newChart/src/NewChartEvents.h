@@ -50,7 +50,7 @@ public:
     //! wskaźnik do wczytanego z pliku C3D zdarzenia
     typedef C3DEventsCollection::EventPtr EventPtr;
     //! wskażnik do krzywej wykresu
-    typedef boost::shared_ptr<QwtPlotCurve> PlotCurvePtr;
+    typedef utils::shared_ptr<QwtPlotCurve> PlotCurvePtr;
     //! segment oznaczający przedział czasowy związany z eventami
     struct Segment 
     {

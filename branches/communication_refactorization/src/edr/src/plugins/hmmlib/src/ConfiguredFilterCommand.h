@@ -10,12 +10,12 @@
 #ifndef HEADER_GUARD_HMM__CONFIGUREDFILTERCOMMAND_H__
 #define HEADER_GUARD_HMM__CONFIGUREDFILTERCOMMAND_H__
 
-#include <QtGui/QTreeWidget>
-#include <QtGui/QTreeWidgetItem>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QDoubleSpinBox>
-#include <QtGui/QCheckBox>
+#include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QTreeWidgetItem>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QDoubleSpinBox>
+#include <QtWidgets/QCheckBox>
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>

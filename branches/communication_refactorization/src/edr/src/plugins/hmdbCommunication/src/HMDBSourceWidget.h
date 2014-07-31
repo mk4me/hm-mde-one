@@ -8,7 +8,7 @@
 #ifndef __HEADER_GUARD_HMDBCOMMUNICATION__HMDBSOURCEWIDGET_H__
 #define __HEADER_GUARD_HMDBCOMMUNICATION__HMDBSOURCEWIDGET_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 class QSplitter;
 class QMainWindow;

@@ -7,6 +7,7 @@
 #include <QtCore/QCoreApplication>
 #include "PluginApplication.h"
 #include <coreui/SingleInstanceWindow.h>
+#include <QtWidgets/QMessageBox>
 
 DEFINE_CORE_APPLICATION_ACCESSOR;
 PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR;

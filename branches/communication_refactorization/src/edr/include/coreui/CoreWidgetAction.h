@@ -10,7 +10,7 @@
 #define HEADER_GUARD___COREWIDGETACTION_H__
 
 #include <coreui/Export.h>
-#include <QtGui/QWidgetAction>
+#include <QtWidgets/QWidgetAction>
 #include <coreui/CoreTitleBar.h>
 #include <coreui/ICoreActionSection.h>
 #include <boost/function.hpp>

@@ -231,7 +231,7 @@ void BvhParser::parse(SkeletalModelPtr model, SkeletalDataPtr data, const std::s
 
     ifstream in(filename.c_str(), ios_base::in);
     
-    if (in == false) {
+    if (!in) {
         throw UnableToOpenFileException(filename);
     }
 

@@ -7,82 +7,58 @@ using namespace std;
 
 namespace kinematic {
 
-	void SkeletonMappingScheme::readNode(TiXmlNode* node, vector<SkeletonMappingSchemePtr>& result) 
+	void SkeletonMappingScheme::readNode(tinyxml2::XMLNode* node, vector<SkeletonMappingSchemePtr>& result) 
 	{
 		if (!node) {
 			return;
 		}
 
-		TiXmlNode* pChild;
-		int t = node->Type();
-
-		switch (t) {
-		case TiXmlNode::TINYXML_DOCUMENT:
-			break;
-
-		case TiXmlNode::TINYXML_ELEMENT:
-			{
-				TiXmlElement* element = node->ToElement();
-				if (element && strcmp(element->Value(), "SkeletonScheme") == 0) {
-					jointsMappingDict dict = readMappingNode(element);
-					if (dict.size() > 0) {
-						SkeletonMappingSchemePtr sms(new SkeletonMappingScheme(dict, segmentsMappingDict()));
-						result.push_back(sms);
-					}
-					return;
-				}
-			}
-			break;
-
-		case TiXmlNode::TINYXML_UNKNOWN:
-			UTILS_ASSERT(false, "Unable to load dictionary");
-			break;
-
-		case TiXmlNode::TINYXML_TEXT:
-			break;
-
-		case TiXmlNode::TINYXML_DECLARATION:
-			break;
-		default:
-			break;
-		}
+		
+        if (node->ToUnknown()) {
+            UTILS_ASSERT(false, "Unable to load dictionary");
+        } else if (node->ToElement()) {
+            tinyxml2::XMLElement* element = node->ToElement();
+            if (element && strcmp(element->Value(), "SkeletonScheme") == 0) {
+                jointsMappingDict dict = readMappingNode(element);
+                if (dict.size() > 0) {
+                    SkeletonMappingSchemePtr sms(new SkeletonMappingScheme(dict, segmentsMappingDict()));
+                    result.push_back(sms);
+                }
+                return;
+            }
+        }
+		
+		tinyxml2::XMLNode* pChild;
 		for ( pChild = node->FirstChild(); pChild != 0; pChild = pChild->NextSibling()) {
 			readNode( pChild, result);
 		}
 	}
 
-	SkeletonMappingScheme::jointsMappingDict SkeletonMappingScheme::readMappingNode(TiXmlNode* node)
+	SkeletonMappingScheme::jointsMappingDict SkeletonMappingScheme::readMappingNode(tinyxml2::XMLNode* node)
 	{
 		jointsMappingDict result;
-		TiXmlNode* child;
-		for ( child = node->FirstChild(); child != nullptr; child = child->NextSibling()) {
-			int t = node->Type();
-			switch (t) {
-			case TiXmlNode::TINYXML_ELEMENT:
-				{
-					TiXmlElement* element = child ? child->ToElement() : nullptr;
-					TiXmlAttribute* pAttrib= element ? element->FirstAttribute() : nullptr;
-					string name;
-					string val;
-					while (pAttrib) {
-						if (strcmp(pAttrib->Name(),"hanim") == 0) {
-							name = pAttrib->Value();
-						} else if (strcmp(pAttrib->Name(), "name") == 0) {
-							val = pAttrib->Value();
-						} else {
-							UTILS_ASSERT(false, "Wrong file");
-						}
-						pAttrib=pAttrib->Next();
-					}
+		tinyxml2::XMLNode* child;
+        for (child = node->FirstChild(); child != nullptr; child = child->NextSibling()) {
+            if (node->ToElement()) {
+                tinyxml2::XMLElement* element = child ? child->ToElement() : nullptr;
+                const tinyxml2::XMLAttribute* pAttrib = element ? element->FirstAttribute() : nullptr;
+                string name;
+                string val;
+                while (pAttrib) {
+                    if (strcmp(pAttrib->Name(), "hanim") == 0) {
+                        name = pAttrib->Value();
+                    } else if (strcmp(pAttrib->Name(), "name") == 0) {
+                        val = pAttrib->Value();
+                    } else {
+                        UTILS_ASSERT(false, "Wrong file");
+                    }
+                    pAttrib = pAttrib->Next();
+                }
 
-					UTILS_ASSERT(val.size() > 0 && name.size() > 0, "Wrong file");
-					result[val] = name;
-				}
-				break;
-
-			default:
+                UTILS_ASSERT(val.size() > 0 && name.size() > 0, "Wrong file");
+                result[val] = name;
+            } else {
 				UTILS_ASSERT(false, "wrong dictionary file");
-				break;
 			}
 		}
 		return result;
@@ -90,9 +66,8 @@ namespace kinematic {
 
 	void SkeletonMappingScheme::loadFromXML(const std::string& filename, std::vector<SkeletonMappingSchemePtr>& outSchemes)
 	{
-		TiXmlDocument doc(filename.c_str());
-		bool loadOkay = doc.LoadFile();
-		if (loadOkay) {
+		tinyxml2::XMLDocument doc;
+		if (doc.LoadFile(filename.c_str()) == tinyxml2::XML_SUCCESS) {
 			readNode(&doc, outSchemes);
 		} else {
 			throw UnableToOpenFileException(filename);

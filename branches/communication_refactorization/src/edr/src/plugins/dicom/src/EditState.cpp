@@ -1,10 +1,10 @@
 #include "DicomPCH.h"
 #include "EditState.h"
-#include <QtGui/QGraphicsScene>
-#include <QtGui/QGraphicsSceneMouseEvent>
-#include <QtGui/QGraphicsRectItem>
-#include <QtGui/QGraphicsLineItem>
-#include <QtGui/QMenu>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsRectItem>
+#include <QtWidgets/QGraphicsLineItem>
+#include <QtWidgets/QMenu>
 #include <coreui/AbstractStateMachine.h>
 #include <coreui/MoveCommand.h>
 #include <coreUi/MultiCommand.h>
@@ -12,7 +12,7 @@
 #include "BackgroundLayer.h"
 #include "LayeredSerie.h"
 #include "PointsLayer.h"
-#include "Adnotations.h"
+#include <plugins/dicom/Annotations.h>
 
 
 using namespace dicom;
@@ -41,7 +41,8 @@ bool dicom::EditState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 
         QAction* doneAction = menu->addAction(tr("Done"));
         connect(doneAction, SIGNAL(triggered()), this, SLOT(done()));
-        auto item = machine->getGraphicsScene()->itemAt(e->scenePos());
+		QList<QGraphicsItem *> itemsAtPoint = machine->getGraphicsScene()->items(e->scenePos());
+		auto item =  itemsAtPoint.isEmpty() ? nullptr : itemsAtPoint.first();
         if (layer->hasPoint(item)) {
             delPointIdx = layer->getPointIdx(item);
             QAction* deleteAction = menu->addAction(tr("Delete point"));
@@ -56,7 +57,8 @@ bool dicom::EditState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 
         menu->exec(e->screenPos());
     } else if (e->button() == Qt::LeftButton) {
-        auto item = machine->getGraphicsScene()->itemAt(e->scenePos());
+        auto items = machine->getGraphicsScene()->items(e->scenePos());
+		auto item = items.isEmpty() ? nullptr : items.first();
         if (layer->hasPoint(item)) {
             possibleMove = true;
             positionsToCheck.clear();

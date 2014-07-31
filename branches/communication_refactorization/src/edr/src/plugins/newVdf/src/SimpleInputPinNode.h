@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEWVDF__SIMPLEINPUTPINNODE_H__
 #define HEADER_GUARD_NEWVDF__SIMPLEINPUTPINNODE_H__
 
-#include <QtGui/QGraphicsItem>
+#include <QtWidgets/QGraphicsItem>
 #include <QtCore/QSize>
 #include <plugins/newVdf/IVisualNode.h>
 #include <plugins/newVdf/IVisualInputPin.h>

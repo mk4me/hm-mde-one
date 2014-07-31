@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_HMM__CONFIGURATIONPAINTERAREAS_H__
 #define HEADER_GUARD_HMM__CONFIGURATIONPAINTERAREAS_H__
 
-#include <boost/shared_ptr.hpp>
+#include <utils/SmartPtr.h>
 #include <plugins/hmmlib/Export.h>
 
 //! okresla obszar na konfiguratorze graficznym
@@ -60,8 +60,8 @@ private:
     //! skala obszaru
     float scale;
 };
-typedef boost::shared_ptr<IArea> IAreaPtr;
-typedef boost::shared_ptr<const IArea> IAreaConstPtr;
+typedef utils::shared_ptr<IArea> IAreaPtr;
+typedef utils::shared_ptr<const IArea> IAreaConstPtr;
 
 //! zwykly punkt na konfiguratorze
 //! rysowany jako polprzezroczyste kolo
@@ -120,11 +120,11 @@ private:
     //! nazwa obiektu
     QString name;
 };
-typedef boost::shared_ptr<SingleMarker> SingleMarkerPtr;
-typedef boost::shared_ptr<const SingleMarker> SingleMarkerConstPtr;
+typedef utils::shared_ptr<SingleMarker> SingleMarkerPtr;
+typedef utils::shared_ptr<const SingleMarker> SingleMarkerConstPtr;
 
-typedef boost::shared_ptr<QImage> QImagePtr;
-typedef boost::shared_ptr<const QImage> QImageConstPtr;
+typedef utils::shared_ptr<QImage> QImagePtr;
+typedef utils::shared_ptr<const QImage> QImageConstPtr;
 
 //! reprezentuje obrazek na konfiguratorze
 class SinglePicture : public IArea
@@ -194,7 +194,7 @@ private:
     //! czy obrazek ma być zawsze widoczny
     bool alwaysVisible;
 };
-typedef boost::shared_ptr<SinglePicture> SinglePicturePtr;
-typedef boost::shared_ptr<const SinglePicture> SinglePictureConstPtr;
+typedef utils::shared_ptr<SinglePicture> SinglePicturePtr;
+typedef utils::shared_ptr<const SinglePicture> SinglePictureConstPtr;
 
 #endif

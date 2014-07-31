@@ -2,7 +2,7 @@
 #define HMM_TOOLBOXMAIN_H
 
 #include <map>
-#include <QtGui/QToolButton>
+#include <QtWidgets/QToolButton>
 #include <coreui/IMdeTab.h>
 #include <corelib/PluginCommon.h>
 #include <coreui/CoreMainWindow.h>
@@ -22,9 +22,13 @@ class MdeMainWindowController : public QObject
     Q_OBJECT;
 public:
     MdeMainWindowController(MdeMainWindow* mw);
-
+    QToolButton* createButton(const QString& label, const QIcon& icon);
+     
 public Q_SLOTS:
     void addTab(coreUI::IMdeTabPtr tab);
+
+    void addToolbarButton(QToolButton* button);
+
     void activateTab(coreUI::IMdeTabPtr tab);
 
 private Q_SLOTS:
@@ -60,6 +64,9 @@ public:
 Q_SIGNALS:
     void tabAdded(coreUI::IMdeTabPtr tab);
     void activateTab(coreUI::IMdeTabPtr tab);
+
+private Q_SLOTS:
+	void showMedusaExporterDialog();
 
 private:	
 	virtual void initializeSplashScreen(QSplashScreen * splashScreen);

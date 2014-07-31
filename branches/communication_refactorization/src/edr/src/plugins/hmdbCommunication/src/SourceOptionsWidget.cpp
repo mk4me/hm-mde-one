@@ -10,8 +10,8 @@
 #include <corelib/IServiceManager.h>
 #include <corelib/ISourceManager.h>
 #include <corelib/PluginCommon.h>
-#include <QtGui/QMainWindow>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QFileDialog>
 #include "SQLCipherStorage.h"
 #include "ShallowCopyUtils.h"
 #include <coreui/CoreDockWidget.h>

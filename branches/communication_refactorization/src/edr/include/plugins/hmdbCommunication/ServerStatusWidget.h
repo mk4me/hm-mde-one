@@ -8,7 +8,7 @@
 #ifndef __HEADER_GUARD_HMDBOCOMMUNICATION__SERVERSTATUSWIDGET_H__
 #define __HEADER_GUARD_HMDBOCOMMUNICATION__SERVERSTATUSWIDGET_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtGui/QPixmap>
 
 namespace Ui

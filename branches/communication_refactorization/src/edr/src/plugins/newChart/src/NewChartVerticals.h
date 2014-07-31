@@ -50,7 +50,7 @@ private:
     //! etykieta, która jest obecnie przesuwana (może to być dowolna etykieta)
     LabelDataConstPtr currentLabel;
     //! wybrany, pierwszy punkt
-    boost::shared_ptr<std::pair<const NewChartSerie*, QPointF>> point1;
+    utils::shared_ptr<std::pair<const NewChartSerie*, QPointF>> point1;
     //! styl połączenia (pionowe, poziome, proste)
     NewChartLabel::ConnectionStyle style;
     //! marker obrazujący pierwszy wskazywany punkt 

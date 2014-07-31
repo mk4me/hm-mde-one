@@ -13,7 +13,7 @@
 #include "IMUCostumeListWidget.h"
 #include <BIC.h>
 #include <windows.h>
-#include <QtGui/QApplication>
+#include <QtCore/QCoreApplication>
 #include <corelib/HierarchyHelper.h>
 #include <corelib/HierarchyDataItem.h>
 #include <boost/bind.hpp>
@@ -36,7 +36,7 @@ void IMUCostumeDataSource::init(core::IMemoryDataManager * memoryDM,
 {
 	this->memoryDM = memoryDM;
 
-	core::Filesystem::Path p(QApplication::applicationDirPath().toStdString());
+	core::Filesystem::Path p(QCoreApplication::applicationDirPath().toStdString());
 
 	p /= "BIC";
 	p /= "BIC.cfg";
@@ -583,7 +583,7 @@ void IMUCostumeDataSource::refreshData()
 					imuData.accelerometer = osg::Vec3(data.acc_x, data.acc_y, data.acc_z);
 					imuData.gyroscope = osg::Vec3(data.rate_x, data.rate_y, data.rate_z);
 					imuData.magnetometer = osg::Vec3(data.mag_x, data.mag_y, data.mag_z);
-					imuData.orientation = osg::Quat(data.quat_i, data.quat_j, data.quat_k, data.quat_r);
+					//imuData.orientation   = osg::Quat(data.quat_i, data.quat_j, data.quat_k, data.quat_r);
 
 					rawData[it->first].imuDataStreams[i]->pushData(imuData);
 

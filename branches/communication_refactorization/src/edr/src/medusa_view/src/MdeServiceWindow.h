@@ -11,7 +11,7 @@
 #define HEADER_GUARD_MDE_VIEW__MDESERVICEWINDOW_H__
 
 #include <map>
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QMainWindow>
 #include <coreui/CoreDockWidget.h>
 
 class QMenu;

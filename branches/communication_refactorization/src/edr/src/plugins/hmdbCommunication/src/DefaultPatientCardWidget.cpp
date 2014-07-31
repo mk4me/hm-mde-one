@@ -1,11 +1,11 @@
 #include "CommunicationPCH.h"
 #include "DefaultPatientCardWidget.h"
 //#include "DataSourceUserData.h"
-#include <QtGui/QFormLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QFormLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
 #include <plugins/hmdbCommunication/IDataSourceContent.h>
-#include <QtGui/QGroupBox>
+#include <QtWidgets/QGroupBox>
 #include <hmdbserviceslib/DateTimeUtils.h>
 
 using namespace hmdbCommunication;

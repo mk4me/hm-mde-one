@@ -16,6 +16,7 @@
 #include <utils/DataChannel.h>
 #include <utils/DataChannelCollection.h>
 
+
 typedef osg::ref_ptr<vidlib::VideoImage> VideoImageOsgPtr;
 typedef vidlib::OsgStream VideoStream;
 typedef osg::ref_ptr<VideoStream> VideoStreamPtr;
@@ -132,8 +133,8 @@ protected:
 		UTILS_ASSERT(false);
 	}
 };
-typedef boost::shared_ptr<VideoChannel> VideoChannelPtr;
-typedef boost::shared_ptr<const VideoChannel> VideoChannelConstPtr;
+typedef utils::shared_ptr<VideoChannel> VideoChannelPtr;
+typedef utils::shared_ptr<const VideoChannel> VideoChannelConstPtr;
 
 //utils::DataChannelTimeAccessor<VideoChannel::point_type, VideoChannel::time_type, utils::DiscreteInterpolator, utils::BorderExtrapolator>
 
@@ -141,8 +142,8 @@ class VideoCollection : public utils::DataChannelCollection<VideoChannel>
 {
 
 };
-typedef boost::shared_ptr<VideoCollection> VideoCollectionPtr;
-typedef boost::shared_ptr<const VideoCollection> VideoCollectionConstPtr;
+typedef utils::shared_ptr<VideoCollection> VideoCollectionPtr;
+typedef utils::shared_ptr<const VideoCollection> VideoCollectionConstPtr;
 
 DEFINE_WRAPPER(VideoChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 DEFINE_WRAPPER(vidlib::Picture, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);

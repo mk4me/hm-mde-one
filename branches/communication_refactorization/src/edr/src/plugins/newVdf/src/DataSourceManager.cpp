@@ -1,5 +1,5 @@
 #include "NewVdfPCH.h"
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 #include "DataSourceManager.h"
 
 using namespace vdf;

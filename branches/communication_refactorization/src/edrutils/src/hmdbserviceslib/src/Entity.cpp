@@ -1,7 +1,6 @@
 #include <hmdbserviceslib/Entity.h>
 #include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
-#include <tinyxml.h>
+#include "XMLHelper.h"
 #include <utils/Debug.h>
 #include <hmdbserviceslib/DateTimeUtils.h>
 
@@ -255,303 +254,37 @@ const std::string AnnotationStatus::convert(const Type & statusType)
 	return ret;
 }
 
-struct XMLHelper
-{
-public:
-	template<class T>
-	static const bool extractTagValue(TiXmlElement * root, const std::string & tag, T & value)
-	{
-		TiXmlHandle rE(root);
-
-		TiXmlElement * element = rE.FirstChildElement(tag.c_str()).Element();
-
-		if (element != nullptr){
-			try{
-				value = boost::lexical_cast<T>(element->GetText());
-				return true;
-			}
-			catch (...){
-				return false;
-			}
-		}
-
-		return false;
-	}
-
-	template<class T>
-	static const bool extractAttributeValue(TiXmlElement * root, const std::string & attribute, T & value)
-	{
-		std::string val;
-		if (root->QueryStringAttribute(attribute.c_str(), &val) == TIXML_SUCCESS){
-			try{
-				value = boost::lexical_cast<T>(val);
-				return true;
-			}
-			catch (...){
-				return false;
-			}
-		}
-
-		return false;
-	}
-
-	template<>
-	static const bool extractTagValue<std::string>(TiXmlElement * root, const std::string & tag, std::string & value)
-	{
-		TiXmlHandle rE(root);
-
-		TiXmlElement * element = rE.FirstChildElement(tag.c_str()).Element();
-
-		if (element != nullptr){
-			auto ret = element->GetText();
-			if (ret != nullptr){
-				value = std::string(ret);
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-
-	template<>
-	static const bool extractAttributeValue<std::string>(TiXmlElement * root, const std::string & attribute, std::string & value)
-	{
-		if (root->QueryStringAttribute(attribute.c_str(), &value) == TIXML_SUCCESS){
-			return true;
-		}
-
-		return false;
-	}
-
-	static const bool extractAttributes(TiXmlElement * root, Attributes & attributes)
-	{
-		bool ret = true;
-
-		Attributes locAttributes;
-
-		TiXmlHandle rE(root);
-
-		TiXmlElement * element = rE.FirstChildElement("Attributes").FirstChildElement("Attribute").Element();
-
-		while (element != nullptr){
-			Attribute attribute;
-
-			element->QueryStringAttribute("Name", &attribute.name);
-			element->QueryStringAttribute("Value", &attribute.value);
-
-			std::string entity;
-			element->QueryStringAttribute("Value", &entity);
-			attribute.entity = Entity::convert(entity);
-
-			element->QueryStringAttribute("AttributeGroup ", &attribute.attributeGroup);
-
-			std::string type;
-			element->QueryStringAttribute("Type", &type);
-			attribute.type = AttributeType::convert(type);
-
-			locAttributes.push_back(attribute);
-
-			element = element->NextSiblingElement();
-		}
-
-		if (ret == true){
-			attributes.insert(attributes.end(), locAttributes.begin(), locAttributes.end());
-		}
-
-		return ret;
-	}
-
-	static const bool extractEnumValues(TiXmlElement * root, EnumValueList & enumValues)
-	{
-		bool ret = true;
-
-		EnumValueList locEnumValues;
-
-		TiXmlHandle rE(root);
-
-		TiXmlElement * element = rE.FirstChildElement("EnumValueList").FirstChildElement("EnumValue").Element();
-
-		while (element != nullptr){
-			EnumValue enumValue;
-
-			enumValue = element->GetText();
-
-			locEnumValues.push_back(enumValue);
-
-			element = element->NextSiblingElement();
-		}
-
-		if (ret == true){
-			enumValues.insert(enumValues.end(), locEnumValues.begin(), locEnumValues.end());
-		}
-
-		return ret;
-	}
-
-	static void extractAnnotation(TiXmlElement * element, Annotation & annotation)
-	{
-		XMLHelper::extractTagValue(element, "TrialID", annotation.trialID);
-		XMLHelper::extractTagValue(element, "UserID", annotation.userID);
-
-		std::string status;
-		XMLHelper::extractTagValue(element, "Status", status);
-		annotation.status = AnnotationStatus::convert(status);
-
-		XMLHelper::extractTagValue(element, "Comment", annotation.comment);
-		XMLHelper::extractTagValue(element, "Note", annotation.note);
-	}
-
-	static void extractUserGroup(TiXmlElement * element, UserGroup & userGroup)
-	{
-		XMLHelper::extractAttributeValue(element, "UserGroupID", userGroup.id);
-		XMLHelper::extractAttributeValue(element, "UserGroupName", userGroup.name);
-	}
-
-	static void extractUserDetails(TiXmlElement * element, UserDetails & userDetails)
-	{
-		XMLHelper::extractTagValue(element, "ID", userDetails.id);
-		XMLHelper::extractTagValue(element, "Login", userDetails.login);
-		XMLHelper::extractTagValue(element, "FirstName", userDetails.firstName);
-		XMLHelper::extractTagValue(element, "LastName", userDetails.lastName);
-	}
-
-	//! TODO
-	//! ta metoda albo poprzednia musi znikn¹æ po ujednoliceniu opisu usera w odpowiedzi us³ug
-	static void _extractUserDetails(TiXmlElement * element, UserDetails & userDetails)
-	{
-		XMLHelper::extractAttributeValue(element, "ID", userDetails.id);
-		XMLHelper::extractAttributeValue(element, "Login", userDetails.login);
-		XMLHelper::extractAttributeValue(element, "FirstName", userDetails.firstName);
-		XMLHelper::extractAttributeValue(element, "LastName", userDetails.lastName);
-	}
-
-	static void extractUserData(TiXmlElement * element, User & user)
-	{
-		extractUserDetails(element, user);
-		XMLHelper::extractTagValue(element, "Email", user.email);
-	}
-
-	static void extractPerformer(TiXmlElement * element, PerformerDetails & performer)
-	{
-		XMLHelper::extractTagValue(element, "PerformerID", performer.id);
-		XMLHelper::extractTagValue(element, "FirstName", performer.firstName);
-		XMLHelper::extractTagValue(element, "LastName", performer.lastName);
-	}
-
-	static void extractSession(TiXmlElement * element, SessionDetails & session)
-	{
-		XMLHelper::extractTagValue(element, "SessionID", session.id);
-		XMLHelper::extractTagValue(element, "UserID", session.userID);
-		XMLHelper::extractTagValue(element, "LabID", session.labID);
-		XMLHelper::extractTagValue(element, "MotionKind", session.motionKind);
-
-		std::string sessionDate;
-		XMLHelper::extractTagValue(element, "LastName", sessionDate);
-		session.dateTime = toTime(sessionDate);
-
-		XMLHelper::extractTagValue(element, "SessionDescription", session.description);
-		XMLHelper::extractTagValue(element, "SessionLabel", session.label);
-	}
-
-	static void extractTrial(TiXmlElement * element, TrialDetails & trial)
-	{
-		XMLHelper::extractTagValue(element, "TrialID", trial.id);
-		XMLHelper::extractTagValue(element, "SessionID", trial.sessionID);
-		XMLHelper::extractTagValue(element, "TrialDescription", trial.description);
-	}
-
-	static void extractFile(TiXmlElement * element, FileDetails & file)
-	{
-		element->QueryIntAttribute("FileID", &file.id);
-		element->QueryStringAttribute("FileName", &file.name);
-		element->QueryStringAttribute("FileDescription", &file.description);
-		element->QueryStringAttribute("SubdirPath", &file.subdirPath);
-		element->QueryStringAttribute("AttributeName", &file.attributeName);
-	}
-
-	static void extractMeasurementConf(TiXmlElement * element, MeasurementConfDetails & mcDetails)
-	{
-		XMLHelper::extractTagValue(element, "MeasurementConfID", mcDetails.id);
-		XMLHelper::extractTagValue(element, "MeasurementConfName", mcDetails.name);
-		XMLHelper::extractTagValue(element, "MeasurementConfKind", mcDetails.kind);
-		XMLHelper::extractTagValue(element, "MeasurementConfDescription", mcDetails.description);
-	}
-
-	static void extractPerformerConf(TiXmlElement * element, PerformerConfDetails & pcDetails)
-	{
-		XMLHelper::extractTagValue(element, "PerformerConfID", pcDetails.id);
-		XMLHelper::extractTagValue(element, "SessionID", pcDetails.sessionID);
-		XMLHelper::extractTagValue(element, "PerformerID ", pcDetails.performerID);
-	}
-
-	static void extractAttribute(TiXmlElement * element, AttributeDefinition & attributeDef)
-	{
-		XMLHelper::extractTagValue(element, "AttributeName", attributeDef.name);
-
-		std::string attributeType;
-		XMLHelper::extractTagValue(element, "AttributeType", attributeType);
-		attributeDef.type = AttributeType::convert(attributeType);
-
-		XMLHelper::extractTagValue(element, "AttributeEnum ", attributeDef.enumerate);
-		XMLHelper::extractTagValue(element, "AttributeGroupName ", attributeDef.groupName);
-		XMLHelper::extractTagValue(element, "Unit ", attributeDef.unit);
-	}
-
-	static void extractAttributeGroup(TiXmlElement * element, AttributeGroupDefinition & attributeGroupDef)
-	{
-		XMLHelper::extractTagValue(element, "AttributeGroupName", attributeGroupDef.name);
-
-		std::string entityType;
-		XMLHelper::extractTagValue(element, "DescribedEntity", entityType);
-		attributeGroupDef.describedEntity = Entity::convert(entityType);
-	}
-
-	static void extractSessionGroup(TiXmlElement * element, SessionGroupDefinition & sessionGroupDef)
-	{
-		XMLHelper::extractTagValue(element, "SessionGroupID", sessionGroupDef.id);
-		XMLHelper::extractTagValue(element, "SessionGroupName", sessionGroupDef.name);
-	}
-
-	static void extractMotionKind(TiXmlElement * element, MotionKindDefinition & motionKind)
-	{
-		XMLHelper::extractTagValue(element, "MotionKindID", motionKind.id);
-		XMLHelper::extractTagValue(element, "MotionKindName", motionKind.name);
-	}
-};
-
 const AnnotationsList hmdbServices::xmlWsdl::parseAnnotations(const std::string & xmlResponse)
 {
 	AnnotationsList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
+	}		
+
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();		
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
-
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
+	element = element->FirstChildElement("Annotation");
 
-	TiXmlElement* annotationElement = hElement.FirstChild("Annotation").Element();
-
-	while (annotationElement != nullptr) {
+	while (element != nullptr) {
 		Annotation a;
 
-		XMLHelper::extractAnnotation(annotationElement, a);
+		XMLHelper::extractAnnotation(element, a);
 
 		ret.push_back(a);
 
-		annotationElement = annotationElement->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -561,34 +294,33 @@ const UserGroupsList hmdbServices::xmlWsdl::parseUserGroups(const std::string & 
 {
 	UserGroupsList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
+	element = element->FirstChildElement("UserGroup");
 
-	TiXmlElement* userGroupElement = hElement.FirstChild("UserGroup").Element();
-
-	while (userGroupElement != nullptr) {
+	while (element != nullptr) {
 		UserGroup ug;
 
-		XMLHelper::extractUserGroup(userGroupElement, ug);
+		XMLHelper::extractUserGroup(element, ug);
 
 		ret.push_back(ug);
 
-		userGroupElement = userGroupElement->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -598,34 +330,33 @@ const UsersList hmdbServices::xmlWsdl::parseUsersList(const std::string & xmlRes
 {
 	UsersList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
+	element = element->FirstChildElement("UserDetails");
 
-	TiXmlElement* userDetailsElement = hElement.FirstChild("UserDetails").Element();
-
-	while (userDetailsElement != nullptr) {
+	while (element != nullptr) {
 		UserDetails ud;
 
-		XMLHelper::_extractUserDetails(userDetailsElement, ud);
+		XMLHelper::_extractUserDetails(element, ud);
 
 		ret.push_back(ud);
 
-		userDetailsElement = userDetailsElement->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -635,22 +366,20 @@ const User hmdbServices::xmlWsdl::parseUser(const std::string & xmlResponse)
 {
 	User ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
+	auto element = doc.FirstChildElement();
 
-	_element = hDocument.FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr) {
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
 	}
 
-	XMLHelper::extractUserDetails(_element, ret);
+	XMLHelper::extractUserDetails(element, ret);
 
 	return ret;
 }
@@ -659,38 +388,34 @@ const AttributeGroupDefinitionList hmdbServices::xmlWsdl::parseAttributeGroupDef
 {
 	AttributeGroupDefinitionList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
+	element = element->FirstChildElement("AttributeGroupDefinition");	
 
-	TiXmlElement* attributeGroupDef = hElement.FirstChild("AttributeGroupDefinition").Element();
-
-	while (attributeGroupDef != nullptr) {
+	while (element != nullptr) {
 		AttributeGroupDefinition agd;
 
-		XMLHelper::extractTagValue(attributeGroupDef, "AttributeGroupName", agd.name);
-
-		std::string entityType;
-		XMLHelper::extractTagValue(attributeGroupDef, "DescribedEntity", entityType);
-		agd.describedEntity = Entity::convert(entityType);
+		XMLHelper::extractTagValue(element, "AttributeGroupName", agd.name);
+		XMLHelper::extractAndConvertTagValue<Entity>(element, "DescribedEntity", agd.describedEntity);		
 
 		ret.push_back(agd);
 
-		attributeGroupDef = attributeGroupDef->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -700,36 +425,35 @@ const PerformerList hmdbServices::xmlWsdl::parsePerfomers(const std::string & xm
 {
 	PerformerList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
+	element = element->FirstChildElement("PerformerDetails");
 
-	TiXmlElement* performerDetails = hElement.FirstChild("PerformerDetails").ToElement();
-
-	while (performerDetails != nullptr) {
+	while (element != nullptr) {
 		PerformerDetails pd;
 
-		performerDetails->QueryIntAttribute("PerformerID", &pd.id);
-		performerDetails->QueryStringAttribute("FirstName", &pd.firstName);
-		performerDetails->QueryStringAttribute("LastName", &pd.lastName);
+		XMLHelper::extractTagValue(element, "PerformerID", pd.id);
+		XMLHelper::extractTagValue(element, "FirstName", pd.firstName);
+		XMLHelper::extractTagValue(element, "LastName", pd.lastName);		
 
 		ret.push_back(pd);
 
-		performerDetails = performerDetails->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -739,23 +463,25 @@ const PerformerDetailsWithAttributes hmdbServices::xmlWsdl::parsePerformer(const
 {
 	PerformerDetailsWithAttributes ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	XMLHelper::extractPerformer(_element, ret.performerDetails);
-	XMLHelper::extractAttributes(_element, ret.attributes);
+	XMLHelper::extractPerformer(element, ret.performerDetails);
+	XMLHelper::extractAttributes(element, ret.attributes);
 
 	return ret;
 }
@@ -764,30 +490,32 @@ const PerformerWithAttributesList hmdbServices::xmlWsdl::parsePerfomersWithAttri
 {
 	PerformerWithAttributesList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	while (_element != nullptr){
+	while (element != nullptr){
 		PerformerDetailsWithAttributes pdwa;
 
-		XMLHelper::extractPerformer(_element, pdwa.performerDetails);
-		XMLHelper::extractAttributes(_element, pdwa.attributes);
+		XMLHelper::extractPerformer(element, pdwa.performerDetails);
+		XMLHelper::extractAttributes(element, pdwa.attributes);
 
 		ret.push_back(pdwa);
 
-		_element = _element->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -797,44 +525,43 @@ const SessionList hmdbServices::xmlWsdl::parseSessions(const std::string & xmlRe
 {
 	SessionList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
+	element = element->FirstChildElement("SessionDetails");	
 
-	_element = hElement.FirstChildElement("SessionDetails").Element();
-
-	while (_element != nullptr){
+	while (element != nullptr){
 		SessionDetails sd;
 
-		_element->QueryIntAttribute("SessionID", &sd.id);
-		_element->QueryIntAttribute("UserID", &sd.userID);
-		_element->QueryIntAttribute("LabID", &sd.labID);
-		_element->QueryStringAttribute("MotionKind", &sd.motionKind);
+		XMLHelper::extractAttributeValue(element, "SessionID", sd.id);
+		XMLHelper::extractAttributeValue(element, "UserID", sd.userID);
+		XMLHelper::extractAttributeValue(element, "LabID", sd.labID);
+		XMLHelper::extractAttributeValue(element, "MotionKind", sd.motionKind);
 
 		std::string sessionDate;
-		_element->QueryStringAttribute("SessionDate", &sessionDate);
+		XMLHelper::extractAttributeValue(element, "SessionDate", sessionDate);		
 		sd.dateTime = toTime(sessionDate);
 
-		_element->QueryStringAttribute("SessionDescription", &sd.description);
-		_element->QueryStringAttribute("SessionLabel ", &sd.label);
+		XMLHelper::extractAttributeValue(element, "SessionDescription", sd.description);
+		XMLHelper::extractAttributeValue(element, "SessionLabel", sd.label);
 
 		ret.push_back(sd);
 
-		_element = _element->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -844,23 +571,25 @@ const SessionDetailsWithAttributes hmdbServices::xmlWsdl::parseSession(const std
 {
 	SessionDetailsWithAttributes ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	XMLHelper::extractSession(_element, ret.sessionDetails);
-	XMLHelper::extractAttributes(_element, ret.attributes);
+	XMLHelper::extractSession(element, ret.sessionDetails);
+	XMLHelper::extractAttributes(element, ret.attributes);
 
 	return ret;
 }
@@ -869,34 +598,34 @@ const SessionWithAttributesList hmdbServices::xmlWsdl::parseSessionsWithAttribut
 {
 	SessionWithAttributesList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
-	_element = hElement.FirstChildElement("SessionDetailsWithAttributes").Element();
+	element = element->FirstChildElement("SessionDetailsWithAttributes");
 
-	while (_element != nullptr){
+	while (element != nullptr){
 		SessionDetailsWithAttributes sdwa;
 
-		XMLHelper::extractSession(_element, sdwa.sessionDetails);
-		XMLHelper::extractAttributes(_element, sdwa.attributes);
+		XMLHelper::extractSession(element, sdwa.sessionDetails);
+		XMLHelper::extractAttributes(element, sdwa.attributes);
 
 		ret.push_back(sdwa);
 
-		_element = _element->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -906,34 +635,34 @@ const SessionGroupDefinitionList hmdbServices::xmlWsdl::parseSessionGroups(const
 {
 	SessionGroupDefinitionList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
-	_element = hElement.FirstChildElement("SessionGroupDefinition").Element();
+	element = element->FirstChildElement("SessionGroupDefinition");	
 
-	while (_element != nullptr){
+	while (element != nullptr){
 		SessionGroupDefinition sgd;
 
-		XMLHelper::extractTagValue(_element, "SessionGroupID", sgd.id);
-		XMLHelper::extractTagValue(_element, "SessionGroupName", sgd.name);
+		XMLHelper::extractTagValue(element, "SessionGroupID", sgd.id);
+		XMLHelper::extractTagValue(element, "SessionGroupName", sgd.name);
 
 		ret.push_back(sgd);
 
-		_element = _element->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -943,34 +672,34 @@ const MotionKindDefinitionList hmdbServices::xmlWsdl::parseMotionKinds(const std
 {
 	MotionKindDefinitionList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
-	_element = hElement.FirstChildElement("MotionKindDefinition").Element();
+	element = element->FirstChildElement("MotionKindDefinition");	
 
-	while (_element != nullptr){
+	while (element != nullptr){
 		MotionKindDefinition mkd;
 
-		XMLHelper::extractTagValue(_element, "MotionKindID", mkd.id);
-		XMLHelper::extractTagValue(_element, "MotionKindName", mkd.name);
+		XMLHelper::extractTagValue(element, "MotionKindID", mkd.id);
+		XMLHelper::extractTagValue(element, "MotionKindName", mkd.name);
 
 		ret.push_back(mkd);
 
-		_element = _element->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -980,35 +709,35 @@ const TrialList hmdbServices::xmlWsdl::parseTrials(const std::string & xmlRespon
 {
 	TrialList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
-	_element = hElement.FirstChildElement("TrialDetails").Element();
+	element = element->FirstChildElement("TrialDetails");
 
-	while (_element != nullptr){
+	while (element != nullptr){
 		TrialDetails td;
 
-		_element->QueryIntAttribute("TrialID", &td.id);
-		_element->QueryIntAttribute("SessionID", &td.sessionID);
-		_element->QueryStringAttribute("TrialDescription", &td.description);
+		XMLHelper::extractAttributeValue(element, "TrialID", td.id);
+		XMLHelper::extractAttributeValue(element, "SessionID", td.sessionID);
+		XMLHelper::extractAttributeValue(element, "TrialDescription", td.description);
 
 		ret.push_back(td);
 
-		_element = _element->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -1018,23 +747,25 @@ const TrialDetailsWithAttributes hmdbServices::xmlWsdl::parseTrial(const std::st
 {
 	TrialDetailsWithAttributes ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
-	}
+		return ret;
+	}	
 
-	XMLHelper::extractTrial(_element, ret.trialDetails);
-	XMLHelper::extractAttributes(_element, ret.attributes);
+	XMLHelper::extractTrial(element, ret.trialDetails);
+	XMLHelper::extractAttributes(element, ret.attributes);
 
 	return ret;
 }
@@ -1043,34 +774,34 @@ const TrialsWithAttributesList hmdbServices::xmlWsdl::parseTrialsWithAttributes(
 {
 	TrialsWithAttributesList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
-	_element = hElement.FirstChildElement("TrialDetailsWithAttributes").Element();
+	element = element->FirstChildElement("TrialDetailsWithAttributes");	
 
-	while (_element != nullptr){
+	while (element != nullptr){
 		TrialDetailsWithAttributes tdwa;
 
-		XMLHelper::extractTrial(_element, tdwa.trialDetails);
-		XMLHelper::extractAttributes(_element, tdwa.attributes);
+		XMLHelper::extractTrial(element, tdwa.trialDetails);
+		XMLHelper::extractAttributes(element, tdwa.attributes);
 
 		ret.push_back(tdwa);
 
-		_element = _element->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -1080,23 +811,25 @@ const MeasurementConfDetailsWithAttributes hmdbServices::xmlWsdl::parseMeasureme
 {
 	MeasurementConfDetailsWithAttributes ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	XMLHelper::extractMeasurementConf(_element, ret.measurementConfDetails);
-	XMLHelper::extractAttributes(_element, ret.attributes);
+	XMLHelper::extractMeasurementConf(element, ret.measurementConfDetails);
+	XMLHelper::extractAttributes(element, ret.attributes);
 
 	return ret;
 }
@@ -1105,34 +838,34 @@ const MeasurementConfWithAttributesList hmdbServices::xmlWsdl::parseMeasurements
 {
 	MeasurementConfWithAttributesList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
-	_element = hElement.FirstChildElement("MeasurementConfDetailsWithAttributes").Element();
+	element = element->FirstChildElement("MeasurementConfDetailsWithAttributes");	
 
-	while (_element != nullptr){
+	while (element != nullptr){
 		MeasurementConfDetailsWithAttributes mcwa;
 
-		XMLHelper::extractMeasurementConf(_element, mcwa.measurementConfDetails);
-		XMLHelper::extractAttributes(_element, mcwa.attributes);
+		XMLHelper::extractMeasurementConf(element, mcwa.measurementConfDetails);
+		XMLHelper::extractAttributes(element, mcwa.attributes);
 
 		ret.push_back(mcwa);
 
-		_element = _element->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -1142,23 +875,25 @@ const PerformerConfDetailsWithAttributes hmdbServices::xmlWsdl::parsePerfomerCon
 {
 	PerformerConfDetailsWithAttributes ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	XMLHelper::extractPerformerConf(_element, ret.performerConfDetails);
-	XMLHelper::extractAttributes(_element, ret.attributes);
+	XMLHelper::extractPerformerConf(element, ret.performerConfDetails);
+	XMLHelper::extractAttributes(element, ret.attributes);
 
 	return ret;
 }
@@ -1167,34 +902,34 @@ const PerformerConfWithAttributesList hmdbServices::xmlWsdl::parsePerformersConf
 {
 	PerformerConfWithAttributesList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
-	_element = hElement.FirstChildElement("PerformerConfDetailsWithAttributes").Element();
+	element = element->FirstChildElement("PerformerConfDetailsWithAttributes");	
 
-	while (_element != nullptr){
+	while (element != nullptr){
 		PerformerConfDetailsWithAttributes pcwa;
 
-		XMLHelper::extractPerformerConf(_element, pcwa.performerConfDetails);
-		XMLHelper::extractAttributes(_element, pcwa.attributes);
+		XMLHelper::extractPerformerConf(element, pcwa.performerConfDetails);
+		XMLHelper::extractAttributes(element, pcwa.attributes);
 
 		ret.push_back(pcwa);
 
-		_element = _element->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -1204,33 +939,33 @@ const FileList hmdbServices::xmlWsdl::parseFiles(const std::string & xmlResponse
 {
 	FileList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
-	_element = hElement.FirstChildElement("FileDetails").Element();
+	element = element->FirstChildElement("FileDetails");	
 
-	while (_element != nullptr){
+	while (element != nullptr){
 		FileDetails fd;
 
-		XMLHelper::extractFile(_element, fd);
+		XMLHelper::extractFile(element, fd);
 
 		ret.push_back(fd);
 
-		_element = _element->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -1240,34 +975,34 @@ const FileWithAttributeList hmdbServices::xmlWsdl::parseFilesWithAttributes(cons
 {
 	FileWithAttributeList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
-	_element = hElement.FirstChildElement("FileDetailsWithAttributes").Element();
+	element = element->FirstChildElement("FileDetailsWithAttributes");	
 
-	while (_element != nullptr){
+	while (element != nullptr){
 		FileDetailsWithAttribute fdwa;
 
-		XMLHelper::extractFile(_element, fdwa.fileDetails);
-		XMLHelper::extractAttributes(_element, fdwa.attributes);
+		XMLHelper::extractFile(element, fdwa.fileDetails);
+		XMLHelper::extractAttributes(element, fdwa.attributes);
 
 		ret.push_back(fdwa);
 
-		_element = _element->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;
@@ -1277,22 +1012,24 @@ const EnumValueList hmdbServices::xmlWsdl::parseEnumValues(const std::string & x
 {
 	EnumValueList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	XMLHelper::extractEnumValues(_element, ret);
+	XMLHelper::extractEnumValues(element, ret);
 
 	return ret;
 }
@@ -1301,34 +1038,34 @@ const AttributeDefinitionList hmdbServices::xmlWsdl::parseAttributesDefinitions(
 {
 	AttributeDefinitionList ret;
 
-	TiXmlDocument document;
-	document.Parse(xmlResponse.c_str());
+	tinyxml2::XMLDocument doc;
 
-	if (document.Error()) {
+	if (doc.Parse(xmlResponse.c_str()) != tinyxml2::XML_NO_ERROR){
 		UTILS_ASSERT(false, "Blad parsowania odpowiedzi");
+		return ret;
 	}
 
-	TiXmlHandle hDocument(&document);
-	TiXmlElement* _element;
-	TiXmlHandle hElement(0);
+	auto element = doc.FirstChildElement();
+	if (element != nullptr){
+		element = element->FirstChildElement();
+	}
 
-	_element = hDocument.FirstChildElement().FirstChildElement().Element();
-	if (!_element) {
+	if (element == nullptr){
 		UTILS_ASSERT(false, "Bledna struktura odpowiedzi");
+		return ret;
 	}
 
-	hElement = TiXmlHandle(_element);
-	_element = hElement.FirstChildElement("AttributeDefinition").Element();
+	element = element->FirstChildElement("AttributeDefinition");	
 
-	while (_element != nullptr){
+	while (element != nullptr){
 		AttributeDefinition ad;
 
-		XMLHelper::extractAttribute(_element, ad);
-		XMLHelper::extractEnumValues(_element, ad.enumValues);
+		XMLHelper::extractAttribute(element, ad);
+		XMLHelper::extractEnumValues(element, ad.enumValues);
 
 		ret.push_back(ad);
 
-		_element = _element->NextSiblingElement();
+		element = element->NextSiblingElement();
 	}
 
 	return ret;

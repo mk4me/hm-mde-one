@@ -1,6 +1,6 @@
 #include "CoreUiPCH.h"
 #include <coreui/CoreCursorChanger.h>
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 
 using namespace coreUI;
 

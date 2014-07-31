@@ -12,8 +12,8 @@
 
 #include <coreui/Export.h>
 #include <boost/range.hpp>
-#include <QtGui/QWidget>
-#include <QtGui/QTabWidget>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QTabWidget>
 
 class QTabWidget;
 class QDockWidget;

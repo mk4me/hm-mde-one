@@ -1,18 +1,18 @@
 #include "DicomPCH.h"
 #include "IDicomService.h"
-#include "AdnotationsDelegate.h"
+#include "AnnotationsDelegate.h"
 #include "LayeredImageVisualizerView.h"
 #include "ui_layeredImageVisualizer.h"
 #include "LayeredImageVisualizer.h"
-#include <QtGui/QGraphicsScene>
+#include <QtWidgets/QGraphicsScene>
 #include <QtGui/QPainter>
 #include <coreui/WheelGraphicsView.h>
-#include <QtGui/QGraphicsItem>
-#include <QtGui/QMouseEvent>
+#include <QtWidgets/QGraphicsItem>
+#include <QtGui/QCloseEvent>
 #include <hmdbserviceslib/Entity.h>
 #include <corelib/IServiceManager.h>
 #include "MessageDialog.h"
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 
 using namespace dicom;
 
@@ -32,12 +32,12 @@ lastView(nullptr)
 	connect(ui->removeButton, SIGNAL(clicked()), model, SLOT(removeSelectedLayers()));
 	ui->removeButton->setToolTip(tr("Remove selected tag"));
 
-	ui->treeView->header()->setResizeMode(QHeaderView::ResizeToContents);
+	ui->treeView->header()->sectionResizeMode(QHeaderView::ResizeToContents);
 	ui->treeView->setItemDelegateForColumn(0, adnotationDelegate0);
 	ui->treeView->setItemDelegateForColumn(1, adnotationDelegate1);
 
 	ui->treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
-	ui->treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+	ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	connect(model, SIGNAL(changeSelection(const QModelIndex&)), this, SLOT(changeSelection(const QModelIndex &)));
 	connect(ui->treeView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(selectionChanged(const QModelIndex &)));

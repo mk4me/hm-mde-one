@@ -2,11 +2,11 @@
 #include "NormalState.h"
 #include "PointsState.h"
 #include <coreui/AbstractStateMachine.h>
-#include <QtGui/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
 #include "LayeredStateMachine.h"
 #include <coreUI/MoveCommand.h>
 #include "LayeredSerie.h"
-#include <QtGui/QMenu>
+#include <QtWidgets/QMenu>
 
 using namespace dicom;
 
@@ -112,8 +112,8 @@ void NormalState::end()
 
 QGraphicsItem* NormalState::extractItem( QGraphicsSceneMouseEvent* e )
 {
-    QGraphicsItem* itm = machine->getGraphicsScene()->itemAt(e->scenePos());
-    return extractItem(itm);
+    auto items = machine->getGraphicsScene()->items(e->scenePos());
+    return extractItem(items.isEmpty() ? nullptr : items.first());
 }
 
 

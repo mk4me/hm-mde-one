@@ -2,6 +2,7 @@
 #include "GroupState.h"
 #include "SceneStateMachine.h"
 #include "VdfScene.h"
+#include <QtWidgets/QGraphicsSceneEvent>
 
 using namespace vdf;
 

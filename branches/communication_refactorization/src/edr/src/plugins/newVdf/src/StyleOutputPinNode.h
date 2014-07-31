@@ -11,7 +11,7 @@
 #define HEADER_GUARD_NEWVDF__STYLEOUTPUTPINNODE_H__
 
 
-#include <QtGui/QGraphicsItem>
+#include <QtWidgets/QGraphicsItem>
 #include <QtCore/QSize>
 #include <plugins/newVdf/IVisualOutputPin.h>
 #include <plugins/newVdf/IPinStrategy.h>

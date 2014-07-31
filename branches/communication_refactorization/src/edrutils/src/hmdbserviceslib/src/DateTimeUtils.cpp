@@ -14,19 +14,21 @@ namespace hmdbServices
 
 		//musimy pociąć datę na kawałki
 		tokenizer tokens(time, sep);
-		tokenizer::iterator it = tokens.begin();
-		ret.setYear(boost::lexical_cast<int>(*it)); ++it;
-		ret.setMonth(boost::lexical_cast<int>(*it)); ++it;
-		ret.setDay(boost::lexical_cast<int>(*it)); ++it;
-		if (it != tokens.end()){
-			ret.setHour(boost::lexical_cast<int>(*it)); ++it;
-			ret.setMinutes(boost::lexical_cast<int>(*it)); ++it;
-			ret.setSeconds(boost::lexical_cast<int>(*it));
-		}
-		else{
-			ret.setHour(0);
-			ret.setMinutes(0);
-			ret.setSeconds(0);
+		if (tokens.begin() != tokens.end()){
+			tokenizer::iterator it = tokens.begin();
+			ret.setYear(boost::lexical_cast<int>(*it)); ++it;
+			ret.setMonth(boost::lexical_cast<int>(*it)); ++it;
+			ret.setDay(boost::lexical_cast<int>(*it)); ++it;
+			if (it != tokens.end()){
+				ret.setHour(boost::lexical_cast<int>(*it)); ++it;
+				ret.setMinutes(boost::lexical_cast<int>(*it)); ++it;
+				ret.setSeconds(boost::lexical_cast<int>(*it));
+			}
+			else{
+				ret.setHour(0);
+				ret.setMinutes(0);
+				ret.setSeconds(0);
+			}
 		}
 
 		return ret;

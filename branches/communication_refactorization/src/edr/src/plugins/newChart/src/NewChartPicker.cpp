@@ -1,8 +1,8 @@
 #include "NewChartPCH.h"
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include <QtCore/QEvent>
 #include <QtGui/QPainter>
-#include <QtGui/QMouseEvent>
+#include <QtGui/QCloseEvent>
 #include "NewChartPicker.h"
 #include "NewChartVisualizer.h"
 

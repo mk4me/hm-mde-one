@@ -8,7 +8,7 @@
 #ifndef __HEADER_GUARD_HMDBCOMMUNICATION__DATAVIEWWIDGET_H__
 #define __HEADER_GUARD_HMDBCOMMUNICATION__DATAVIEWWIDGET_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <plugins/hmdbCommunication/ShallowCopy.h>
 #include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
 #include <coreui/CoreCursorChanger.h>

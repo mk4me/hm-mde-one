@@ -13,7 +13,7 @@
 #include <plugins/newVdf/UniversalInputPin.h>
 #include <plugins/newVdf/UniversalOutputPin.h>
 #include <plugins/dfElements/DFPins.h>
-#include <QtGui/QDoubleSpinBox>
+#include <QtWidgets/QDoubleSpinBox>
 #include <dflib/Node.h>
 #include <dflib/IDFNode.h>
 #include <plugins/newVdf/INodeConfiguration.h>

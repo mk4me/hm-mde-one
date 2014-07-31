@@ -1,8 +1,8 @@
 #include "CoreUiPCH.h"
 #include <coreui/WheelGraphicsView.h>
-#include <QtGui/QGraphicsScene>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QHBoxLayout>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QHBoxLayout>
 #include <QtGui/QWheelEvent>
 
 using namespace coreUI;

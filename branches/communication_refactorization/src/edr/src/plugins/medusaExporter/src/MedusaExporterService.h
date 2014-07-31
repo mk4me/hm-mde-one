@@ -13,12 +13,14 @@
 #include <corelib/IService.h>
 #include <corelib/IDataManagerReader.h>
 #include <corelib/BaseDataTypes.h>
+#include <plugins/medusaExporter/IMedusaExporterService.h>
+#include "ExporterModel.h"
 
 namespace medusaExporter {
 
 	class MedusaExporterServiceWidget;
 
-	class MedusaExporterService : public plugin::IService
+	class MedusaExporterService : public IMedusaExporterService
 	{
 		UNIQUE_ID("{9B95F335-1E27-4245-8D00-A17C190F9D2A}")
 		CLASS_DESCRIPTION("Medusa Exporter Service", "Medusa Exporter Service");
@@ -45,10 +47,14 @@ namespace medusaExporter {
 		virtual const bool lateInit();
 		virtual void finalize();
 		virtual void update(double time);
+
+	public:
+		virtual QWidget* getExporterDialog();
 				
 	private:
 		MedusaExporterServiceWidget* exportWidget;
 		core::IMemoryDataManager * memoryManager;
+		ExporterModelPtr exporterModel;
 	};
 	DEFINE_SMART_POINTERS(MedusaExporterService);
 }

@@ -1,16 +1,16 @@
 #include "CoreUiPCH.h"
 #include <stdexcept>
-#include <QtGui/QMenu>
+#include <QtWidgets/QMenu>
 #include <QtGui/QPainter>
 #include <corelib/ILog.h>
 #include <corelib/PluginCommon.h>
 #include <coreui/CoreTitleBar.h>
 #include "ui_CoreTitleBar.h"
-#include <QtGui/QGraphicsScene>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QGraphicsProxyWidget>
-#include <QtGui/QToolBar>
-#include <QtGui/QAction>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QGraphicsProxyWidget>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QAction>
 
 using namespace coreUI;
 

@@ -7,6 +7,7 @@
 
 // rev
 #ifdef WIN32
+#	define NOMINMAX
 #   include "Windows.h"
 #else
 #   define HMODULE void *

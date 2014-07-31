@@ -12,13 +12,13 @@
 #include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
 #include <plugins/newVdf/NewVdfService.h>
 #include <coreui/CoreTitleBar.h>
-#include <QtGui/QMenu>
+#include <QtWidgets/QMenu>
 #include <coreui/ContextAutoPlacer.h>
 #include <coreui/DataFilterWidget.h>
 #include <coreui/ReportsThumbnailContext.h>
 #include <corelib/IDataHierarchyManagerReader.h>
 #include <coreui/HierarchyTreeModel.h>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 #include <QtCore/QBuffer>
 #include "AnalysisTreeContext.h"
 #include <coreui/SimpleContext.h>

@@ -32,8 +32,8 @@ namespace threadingUtils {
 
 namespace vdf {
 	class IVisualItem;
-	typedef boost::shared_ptr<df::IModel> IModelPtr;
-	typedef boost::shared_ptr<df::IConnection> IConnectionPtr;
+	typedef utils::shared_ptr<df::IModel> IModelPtr;
+	typedef utils::shared_ptr<df::IConnection> IConnectionPtr;
 
 	class PinResolver
 	{

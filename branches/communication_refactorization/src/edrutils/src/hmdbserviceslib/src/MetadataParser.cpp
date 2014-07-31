@@ -1,104 +1,93 @@
 #include <hmdbserviceslib/MetadataParser.h>
 #include <hmdbserviceslib/Entity.h>
 #include <utils/Debug.h>
-#include <tinyxml.h>
+#include "XMLHelper.h"
 
 namespace hmdbServices
 {
 	const bool MotionMetadataParser::parseFile(std::istream * document, MotionMetaData::MetaData & metadata)
 	{
 		auto s = utils::readStream(document);
-		
-		TiXmlDocument xmlDocument;
+
+		tinyxml2::XMLDocument xmlDocument;
 
 		xmlDocument.Parse(s.c_str());
 
 		if (xmlDocument.Error()) {
-			UTILS_ASSERT(false, "Blad wczytania pliku MotionMetadata");
+			UTILS_ASSERT(false, "Blad wczytania pliku MotionShallowCopy");
 			return false;
 		}
-		TiXmlHandle hDocument(&xmlDocument);
-		TiXmlElement* _element;
-		TiXmlHandle hParent(0);
 
-		_element = hDocument.FirstChildElement().Element();
-		if (!_element) {
-			UTILS_ASSERT(false, "Blad wczytania z pliku MotionMetadata");
+		auto element = xmlDocument.FirstChildElement();
+		if (element == nullptr) {
+			UTILS_ASSERT(false, "Blad wczytania z pliku MotionShallowCopy");
 			return false;
 		}
-		hParent = TiXmlHandle(_element);
 
 		//SessionGroups
-		TiXmlElement* session_goups_element = hParent.FirstChild("SessionGroups").ToElement();
-		if (session_goups_element) {
-			TiXmlElement* session_goup_element = session_goups_element->FirstChildElement("SessionGroup");
-			while (session_goup_element) {
+		auto session_goups_element = element->FirstChildElement("SessionGroups");
+		if (session_goups_element != nullptr) {
+			auto session_goup_element = session_goups_element->FirstChildElement("SessionGroup");
+			while (session_goup_element != nullptr) {
 				MotionMetaData::SessionGroup sessionGroup;
-				session_goup_element->QueryIntAttribute("SessionGroupID", &sessionGroup.sessionGroupID);
-				session_goup_element->QueryStringAttribute("SessionGroupName", &sessionGroup.sessionGroupName);
+				XMLHelper::extractAttributeValue(session_goup_element, "SessionGroupID", sessionGroup.sessionGroupID);
+				XMLHelper::extractAttributeValue(session_goup_element, "SessionGroupName", sessionGroup.sessionGroupName);				
 
 				metadata.sessionGroups[sessionGroup.sessionGroupID] = sessionGroup;
 				session_goup_element = session_goup_element->NextSiblingElement();
 			}
 		}
 		//MotionKinds
-		TiXmlElement* motion_kinds_element = hParent.FirstChild("MotionKinds").ToElement();
-		if (motion_kinds_element) {
-			TiXmlElement* motion_kind_element = motion_kinds_element->FirstChildElement("MotionKind");
-			while (motion_kind_element) {
+		auto motion_kinds_element = element->FirstChildElement("MotionKinds");
+		if (motion_kinds_element != nullptr) {
+			auto motion_kind_element = motion_kinds_element->FirstChildElement("MotionKind");
+			while (motion_kind_element != nullptr) {
 				MotionMetaData::MotionKind motionKind;
-				motion_kind_element->QueryStringAttribute("MotionKindName", &motionKind.motionKindName);
+				XMLHelper::extractAttributeValue(motion_kind_element, "MotionKindName", motionKind.motionKindName);
 
 				metadata.motionKinds.push_back(motionKind);
 				motion_kind_element = motion_kind_element->NextSiblingElement();
 			}
 		}
 		//Labs
-		TiXmlElement* labs_element = hParent.FirstChild("Labs").ToElement();
-		if (labs_element) {
-			TiXmlElement* lab_element = labs_element->FirstChildElement("Lab");
-			while (lab_element) {
+		auto labs_element = element->FirstChildElement("Labs");
+		if (labs_element != nullptr) {
+			auto lab_element = labs_element->FirstChildElement("Lab");
+			while (lab_element != nullptr) {
 				MotionMetaData::Lab lab;
-				lab_element->QueryIntAttribute("LabID", &lab.labID);
-				lab_element->QueryStringAttribute("LabName", &lab.labName);
+
+				XMLHelper::extractAttributeValue(lab_element, "LabID", lab.labID);
+				XMLHelper::extractAttributeValue(lab_element, "LabName", lab.labName);				
 
 				metadata.labs[lab.labID] = lab;
 				lab_element = lab_element->NextSiblingElement();
 			}
 		}
 		//AttributeGroups
-		TiXmlElement* attribute_groups_element = hParent.FirstChild("AttributeGroups").ToElement();
-		if (attribute_groups_element) {
-			TiXmlElement* attribute_group_element = attribute_groups_element->FirstChildElement("AttributeGroup");
-			while (attribute_group_element) {
+		auto attribute_groups_element = element->FirstChildElement("AttributeGroups");
+		if (attribute_groups_element != nullptr) {
+			auto attribute_group_element = attribute_groups_element->FirstChildElement("AttributeGroup");
+			while (attribute_group_element != nullptr) {
 				MotionMetaData::AttributeGroup attributeGroup;
-				attribute_group_element->QueryIntAttribute("AttributeGroupID", &attributeGroup.attributeGroupID);
-				attribute_group_element->QueryStringAttribute("AttributeGroupName", &attributeGroup.attributeGroupName);
-				{
-					std::string describedEntity;
-					attribute_group_element->QueryStringAttribute("DescribedEntity", &describedEntity);
-					attributeGroup.describedEntity = xmlWsdl::Entity::convert(describedEntity);
-				}
+				XMLHelper::extractAttributeValue(attribute_group_element, "AttributeGroupID", attributeGroup.attributeGroupID);
+				XMLHelper::extractAttributeValue(attribute_group_element, "AttributeGroupName", attributeGroup.attributeGroupName);
+				XMLHelper::extractAndConvertAttributeValue<xmlWsdl::Entity>(attribute_group_element, "DescribedEntity", attributeGroup.describedEntity);
 
 				//Attributes
-				TiXmlElement* attrs_element = attribute_group_element->FirstChildElement("Attributes");
+				auto attrs_element = attribute_group_element->FirstChildElement("Attributes");
 				if (attrs_element) {
-					TiXmlElement* attr_element = attrs_element->FirstChildElement("Attribute");
+					auto attr_element = attrs_element->FirstChildElement("Attribute");
 					while (attr_element) {
 						MotionMetaData::Attribute attribute;
-						attr_element->QueryStringAttribute("AttributeName", &attribute.attributeName);
 
-						{
-							std::string attributeType;
-							attr_element->QueryStringAttribute("AttributeType", &attributeType);
-							attribute.attributeType = xmlWsdl::AttributeType::convert(attributeType);
-						}
+						XMLHelper::extractAttributeValue(attr_element, "AttributeName", attribute.attributeName);						
+						XMLHelper::extractAndConvertAttributeValue<xmlWsdl::AttributeType>(attr_element, "AttributeType", attribute.attributeType);						
+						XMLHelper::extractAttributeValue(attr_element, "Unit", attribute.unit);
 
-						attr_element->QueryStringAttribute("Unit", &attribute.unit);
 						//EnumValues
-						/*TiXmlElement* enum_values_element = attr_element->FirstChildElement("EnumValues");
+						/*auto enum_values_element = attr_element->FirstChildElement("EnumValues");
 						if(enum_values_element) {
-						TiXmlElement* enum_value_element = enum_values_element->FirstChildElement("Enumeration");
+						auto enum_value_element = enum_values_element->FirstChildElement("Enumeration");
 						while(enum_value_element) {
 						communication::MotionMetaData::Enumeration enumeration;
 						enum_value_element->QueryStringAttribute("EnumValue", &enumeration.enumValue);
@@ -125,46 +114,44 @@ namespace hmdbServices
 	{
 		auto s = utils::readStream(document);
 
-		TiXmlDocument xmlDocument;
+		tinyxml2::XMLDocument xmlDocument;
 
 		xmlDocument.Parse(s.c_str());
 
 		if (xmlDocument.Error()) {
-			UTILS_ASSERT(false, "Blad wczytania pliku MedicalMetadata");
+			UTILS_ASSERT(false, "Blad wczytania pliku MotionShallowCopy");
 			return false;
 		}
-		TiXmlHandle hDocument(&xmlDocument);
-		TiXmlElement* _element;
-		TiXmlHandle hParent(0);
 
-		_element = hDocument.FirstChildElement().Element();
-		if (!_element) {
-			UTILS_ASSERT(false, "Blad wczytania z pliku MedicalMetadata");
+		auto element = xmlDocument.FirstChildElement();
+		if (element == nullptr) {
+			UTILS_ASSERT(false, "Blad wczytania z pliku MotionShallowCopy");
 			return false;
 		}
-		hParent = TiXmlHandle(_element);
 
 		//ExamTypes
-		TiXmlElement* exam_types_element = hParent.FirstChild("ExamTypes").ToElement();
-		if (exam_types_element) {
-			TiXmlElement* exam_type_element = exam_types_element->FirstChildElement("ExamType");
-			while (exam_type_element) {
+		auto exam_types_element = element->FirstChildElement("ExamTypes");
+		if (exam_types_element != nullptr) {
+			auto exam_type_element = exam_types_element->FirstChildElement("ExamType");
+			while (exam_type_element != nullptr) {
 				MedicalMetaData::ExamType examType;
-				exam_type_element->QueryIntAttribute("ExamTypeID", &examType.examTypeID);
-				exam_type_element->QueryStringAttribute("ExamTypeName", &examType.name);
+
+				XMLHelper::extractAttributeValue(exam_type_element, "ExamTypeID", examType.examTypeID);
+				XMLHelper::extractAttributeValue(exam_type_element, "ExamTypeName", examType.name);				
 
 				metadata.examTypes[examType.examTypeID] = examType;
 				exam_type_element = exam_type_element->NextSiblingElement();
 			}
 		}
 		//Disorders
-		TiXmlElement* disorders_element = hParent.FirstChild("Disorders").ToElement();
-		if (disorders_element) {
-			TiXmlElement* disorder_element = disorders_element->FirstChildElement("Disorder");
-			while (disorder_element) {
+		auto disorders_element = element->FirstChildElement("Disorders");
+		if (disorders_element != nullptr) {
+			auto disorder_element = disorders_element->FirstChildElement("Disorder");
+			while (disorder_element != nullptr) {
 				MedicalMetaData::DisorderType disorderType;
-				disorder_element->QueryIntAttribute("DisorderID", &disorderType.disorderTpeID);
-				disorder_element->QueryStringAttribute("DisorderName", &disorderType.name);
+
+				XMLHelper::extractAttributeValue(disorder_element, "DisorderID", disorderType.disorderTpeID);
+				XMLHelper::extractAttributeValue(disorder_element, "DisorderName", disorderType.name);
 
 				metadata.disorderTypes[disorderType.disorderTpeID] = disorderType;
 				disorder_element = disorder_element->NextSiblingElement();

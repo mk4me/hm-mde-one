@@ -1,15 +1,15 @@
 #include "MdePCH.h"
-#include <QtGui/QMenu>
-#include <QtGui/QLayout>
-#include <QtGui/QListWidget>
-#include <QtGui/QSplashScreen>
-#include <QtGui/QMainWindow>
-#include <QtGui/QSplitter>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QSplashScreen>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QSplitter>
 #include <utils/Debug.h>
 #include "MdeMainWindow.h"
 #include <coreui/CoreTextEditWidget.h>
-#include <QtGui/QApplication>
-#include <QtGui/QTreeView>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QTreeView>
 #include "AboutDialog.h"
 #include <corelib/IServiceManager.h>
 #include <corelib/ISourceManager.h>
@@ -24,9 +24,10 @@
 #include "MdeServiceWindow.h"
 #include <corelib/IVisualizerManager.h>
 #include <corelib/IVisualizer.h>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 #include <QtGui/QCloseEvent>
 #include <corelib/Version.h>
+#include <plugins/medusaExporter/IMedusaExporterService.h>
 #include <plugins/hmdbCommunication/IHMDBSource.h>
 
 using namespace core;
@@ -55,6 +56,7 @@ MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations) :
     contextEventFilter = ContextEventFilterPtr(new ContextEventFilter(this));
     analysisModel = AnalisisModelPtr(new AnalisisModel());
 	ui->versionLabel->setText(QString("ver. %1").arg(Version::formatedVersion().c_str()));
+
 }
 
 MdeMainWindow::~MdeMainWindow()
@@ -124,6 +126,11 @@ void MdeMainWindow::customViewInit(QWidget * console)
         }
    }
 
+   QToolButton* exporterButton = controller.createButton(tr("Exporter"), QIcon(":/mde/icons/Operacje.png"));
+   controller.addToolbarButton(exporterButton);
+   connect(exporterButton, SIGNAL(clicked()), this, SLOT(showMedusaExporterDialog()));
+
+   
    emit activateTab(*tabs.begin());
 }
 
@@ -172,23 +179,9 @@ void MdeMainWindow::addPropertiesToServiceWindow( plugin::IServicePtr service, M
 
 void MdeMainWindowController::addTab( coreUI::IMdeTabPtr tab )
 {
-    QToolButton* templateB = window->ui->templateButton;
-    QToolButton* button = new QToolButton();
-    button->setText(tab->getLabel());
-    button->setIcon(tab->getIcon());
-    button->setIconSize(templateB->iconSize());
-    button->setToolButtonStyle(templateB->toolButtonStyle());
-    button->setStyleSheet(templateB->styleSheet());
-    button->setMinimumSize(templateB->minimumSize());
-    button->setCheckable(true);
-    button->setFixedWidth(templateB->width());
+    QToolButton* button = createButton(tab->getLabel(), tab->getIcon());
+    addToolbarButton(button);
 
-    QLayout* layout = window->ui->toolBar->layout();
-    auto count = layout->count();
-    auto item = layout->itemAt(count - 1);
-    layout->removeItem(item);
-    layout->addWidget(button);
-    layout->addItem(item);
 
     button2TabWindow[button] = tab;
     connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -241,6 +234,31 @@ void MdeMainWindowController::activateTab( coreUI::IMdeTabPtr tab )
     tab->getMainWidget()->setVisible(true);
 }
 
+QToolButton* MdeMainWindowController::createButton(const QString& label, const QIcon& icon)
+{
+    QToolButton* templateB = window->ui->templateButton;
+    QToolButton* button = new QToolButton();
+    button->setText(label);
+    button->setIcon(icon);
+    button->setIconSize(templateB->iconSize());
+    button->setToolButtonStyle(templateB->toolButtonStyle());
+    button->setStyleSheet(templateB->styleSheet());
+    button->setMinimumSize(templateB->minimumSize());
+    button->setCheckable(true);
+    button->setFixedWidth(templateB->width());
+    return button;
+}
+
+void MdeMainWindowController::addToolbarButton(QToolButton* button)
+{
+    QLayout* layout = window->ui->toolBar->layout();
+    auto count = layout->count();
+    auto item = layout->itemAt(count - 1);
+    layout->removeItem(item);
+    layout->addWidget(button);
+    layout->addItem(item);
+}
+
 void MdeMainWindow::closeEvent(QCloseEvent* event)
 {
 	bool close = true;
@@ -273,5 +291,16 @@ void MdeMainWindow::closeEvent(QCloseEvent* event)
 		}
 	}else{
 		coreUI::CoreMainWindow::closeEvent(event);
+	}
+}
+
+void MdeMainWindow::showMedusaExporterDialog()
+{
+	auto exporter = core::queryService<medusaExporter::IMedusaExporterService>(plugin::getServiceManager());
+	if (exporter) {
+        QWidget* dlg = exporter->getExporterDialog();
+        dlg->setWindowFlags(Qt::Tool);
+        dlg->setWindowModality(Qt::ApplicationModal);
+		dlg->show();
 	}
 }

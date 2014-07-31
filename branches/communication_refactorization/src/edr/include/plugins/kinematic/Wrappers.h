@@ -5,6 +5,8 @@
 #include <threadingUtils/StreamData.h>
 #include <kinematiclib/SkeletalModel.h>
 #include <kinematiclib/JointAnglesCollection.h>
+#include <utils/PtrPolicyOSG.h>
+#include <osg/PositionAttitudeTransform>
 
 //! Typ definiuj¹cy indeksy na po³¹czonych punktach
 typedef std::pair<unsigned int, unsigned int> SegmentRange;
@@ -38,5 +40,6 @@ DEFINE_WRAPPER(kinematic::SkeletalData, utils::PtrPolicyBoost, utils::ClonePolic
 DEFINE_WRAPPER(kinematic::SkeletalModel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 DEFINE_WRAPPER(SkeletonDataStream, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
 DEFINE_WRAPPER(std::string, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(osg::PositionAttitudeTransform, utils::PtrPolicyOSG, utils::ClonePolicyOsgCloneMethod);
 
 #endif  // __HEADER_GUARD_KINEMATIC__WRAPPERS_H__

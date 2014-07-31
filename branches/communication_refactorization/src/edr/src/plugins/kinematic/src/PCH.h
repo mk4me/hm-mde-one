@@ -26,7 +26,6 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QtCore>
-#include <QtGui/QtGui>
 
 UTILS_PUSH_WARNINGS
 #include <osg/Array>

@@ -2,11 +2,11 @@
 #include "NotesWidget.h"
 #include <utils/Debug.h>
 
-#include <QtGui/QFormLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QTableWidgetItem>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QFormLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QTableWidgetItem>
+#include <QtWidgets/QMessageBox>
 
 
 NoteDialog::NoteDialog(QWidget * parent) : QDialog(parent),

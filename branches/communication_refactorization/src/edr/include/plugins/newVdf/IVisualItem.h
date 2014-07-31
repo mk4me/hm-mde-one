@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___IVISUALITEM_H__
 #define HEADER_GUARD___IVISUALITEM_H__
 
-#include <QtGui/QGraphicsItem>
+#include <QtWidgets/QGraphicsItem>
 #include <plugins/newVdf/IVisualStrategy.h>
 
 namespace vdf {

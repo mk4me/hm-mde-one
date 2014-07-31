@@ -2,7 +2,7 @@
 #include "MoveState.h"
 #include "PointsState.h"
 #include <coreui/AbstractStateMachine.h>
-#include <QtGui/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
 #include "LayeredStateMachine.h"
 #include <coreUI/MoveCommand.h>
 #include "LayeredSerie.h"

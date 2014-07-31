@@ -12,7 +12,7 @@
 
 #include <plugins/subject/ISubject.h>
 #include <corelib/HierarchyHelper.h>
-#include <QtGui/QTreeWidgetItem>
+#include <QtWidgets/QTreeWidgetItem>
 #include "AnalisisModel.h"
 
 namespace coreUI {

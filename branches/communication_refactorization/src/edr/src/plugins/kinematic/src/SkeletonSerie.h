@@ -185,7 +185,7 @@ private:
 	utils::shared_ptr<IConnectionsSchemeDrawer> connectionsDrawer;
 };
 
-typedef boost::shared_ptr<SkeletonSerie> SkeletonSeriePtr;
-typedef boost::shared_ptr<const SkeletonSerie> SkeletonSerieConstPtr;
+typedef utils::shared_ptr<SkeletonSerie> SkeletonSeriePtr;
+typedef utils::shared_ptr<const SkeletonSerie> SkeletonSerieConstPtr;
 
 #endif

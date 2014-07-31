@@ -1,7 +1,7 @@
 #include "TimelinePCH.h"
 
 #include <QtGui/QIcon>
-#include <QtGui/QCheckBox>
+#include <QtWidgets/QCheckBox>
 
 #include <math.h>
 //#include <qwt/qwt_scale_draw.h>
@@ -157,8 +157,8 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
 
     channelsWidget->header()->setMinimumSectionSize(14);
     channelsWidget->header()->resizeSection(1, 14);
-    channelsWidget->header()->setResizeMode(1, QHeaderView::Fixed);
-    channelsWidget->header()->setResizeMode(0, QHeaderView::ResizeToContents);
+	channelsWidget->header()->setSectionResizeMode(1, QHeaderView::Fixed);
+	channelsWidget->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     channelsWidget->header()->hide();
 
     // menu kontekstowe dla drzewa kanałów z akcją usuwającą zaznaczone kanały

@@ -27,14 +27,14 @@ public:
     virtual ~InternalXmlParser();
 
 public:
-    //! Parsowanie pliku c3d
+    //! Parsowanie pliku 
     //! \param path poprawna ścieżka do pliku
     virtual void parse(const std::string & source);
     //! \return pusty obiekt nowego parsera
     virtual plugin::IParser* create() const;
 	virtual void getObject(core::Variant& object, const core::VariantsVector::size_type idx) const;
 	virtual void reset();
-    //! Zwraca rozszerzenia, które są obsługiwane przez parser (tylko c3d)
+    //! Zwraca rozszerzenia, które są obsługiwane przez parser
     //! \param extensions kolecja z roszerzeniami
     virtual void acceptedExpressions(Expressions & expressions) const;
 

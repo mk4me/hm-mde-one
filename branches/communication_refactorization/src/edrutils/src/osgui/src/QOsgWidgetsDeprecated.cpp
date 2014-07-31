@@ -23,10 +23,23 @@
 #include <osgDB/ReadFile>
 #include <osgui/QOsgWidgets.h>
 
-#define USE_QT4 1
+#define USE_QT4 0
+#define USE_QT5 1
 
-#if USE_QT4
+#if USE_QT5
 
+    #include <QtCore/QString>
+    #include <QtCore/QTimer>
+    #include <QtGui/QKeyEvent>
+    #include <QtWidgets/QApplication>
+    #include <QtOpenGL/QGLWidget>
+    #include <QtWidgets/QMainWindow>
+    #include <QtWidgets/QMdiSubWindow>
+    #include <QtWidgets/QMdiArea>
+    
+    using Qt::WindowFlags;
+
+#elif USE_QT4
     #include <QtCore/QString>
     #include <QtCore/QTimer>
     #include <QtGui/QKeyEvent>
@@ -35,9 +48,8 @@
     #include <QtGui/QMainWindow>
     #include <QtGui/QMdiSubWindow>
     #include <QtGui/QMdiArea>
-    
-    using Qt::WindowFlags;
 
+    using Qt::WindowFlags;
 #else
 
     class QWidget;
@@ -56,14 +68,14 @@ namespace osgui {
 ////////////////////////////////////////////////////////////////////////////////
 
 QOsgDeprecatedWidget::QOsgDeprecatedWidget( QWidget * parent, const char * name, const QGLWidget * shareWidget, WindowFlags f):
-#if USE_QT4
+#if defined USE_QT4 || defined USE_QT5
     QGLWidget(parent, shareWidget, f)
 #else
     QGLWidget(parent, name, shareWidget, f)
 #endif
 {
     graphicsWindow = new osgViewer::GraphicsWindowEmbedded(0,0,width(),height());
-#if USE_QT4
+#if defined USE_QT4 || defined USE_QT5
     setFocusPolicy(Qt::WheelFocus);
 #else
     setFocusPolicy(QWidget::ClickFocus);
@@ -79,7 +91,7 @@ void QOsgDeprecatedWidget::resizeGL( int width, int height )
 
 void QOsgDeprecatedWidget::keyPressEvent( QKeyEvent* event )
 {
-#if USE_QT4
+#if defined USE_QT4 || defined USE_QT5
     graphicsWindow->getEventQueue()->keyPress( translateKey(event) );
 #else
     graphicsWindow->getEventQueue()->keyPress( (osgGA::GUIEventAdapter::KeySymbol) event->ascii() );
@@ -88,7 +100,7 @@ void QOsgDeprecatedWidget::keyPressEvent( QKeyEvent* event )
 
 void QOsgDeprecatedWidget::keyReleaseEvent( QKeyEvent* event )
 {
-#if USE_QT4
+#if defined USE_QT4 || defined USE_QT5
     graphicsWindow->getEventQueue()->keyRelease( translateKey(event) );
 #else
     graphicsWindow->getEventQueue()->keyRelease( (osgGA::GUIEventAdapter::KeySymbol) event->ascii() );
@@ -146,7 +158,7 @@ osgGA::GUIEventAdapter::KeySymbol QOsgDeprecatedWidget::translateKey( QKeyEvent*
     } else if ( key == Qt::Key_Shift ) {
         return osgGA::GUIEventAdapter::KEY_Shift_L;
     } else {
-        return static_cast<osgGA::GUIEventAdapter::KeySymbol>(*event->text().toAscii().data());
+        return static_cast<osgGA::GUIEventAdapter::KeySymbol>(*event->text().toStdString().c_str());
     }
 }
 

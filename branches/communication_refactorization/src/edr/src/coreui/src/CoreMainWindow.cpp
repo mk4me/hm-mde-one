@@ -1,12 +1,12 @@
 #include "CoreUiPCH.h"
 #include <coreui/CoreMainWindow.h>
 #include <corelib/PluginCommon.h>
-#include <QtGui/QSplashScreen>
+#include <QtWidgets/QSplashScreen>
 #include <coreui/CoreConsoleWidget.h>
 #include <coreui/CoreDockWidget.h>
 #include <QtCore/QFile>
 #include <QtCore/QSettings>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 #include <QtGui/QCloseEvent>
 #include <QtCore/QCoreApplication>
 

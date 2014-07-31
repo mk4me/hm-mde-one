@@ -1,6 +1,6 @@
 #include "DicomPCH.h"
 #include "MessageDialog.h"
-#include <QtGui/QPushButton>
+#include <QtWidgets/QPushButton>
 
 MessageDialog::MessageDialog(QWidget * parent, const QString & title, const QString & content)
 	: QDialog(parent)

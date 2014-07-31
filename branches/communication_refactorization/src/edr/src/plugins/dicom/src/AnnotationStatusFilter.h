@@ -10,6 +10,7 @@
 #define HEADER_GUARD_DICOM__ANNOTATIONSTATUSFILTER_H__
 
 //#include <plugins/hmdbCommunication/DataSourceFilter.h>
+#include <hmdbserviceslib/ShallowCopy.h>
 #include <set>
 
 namespace dicom

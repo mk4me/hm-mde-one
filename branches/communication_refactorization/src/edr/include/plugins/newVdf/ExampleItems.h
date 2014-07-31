@@ -18,7 +18,7 @@
 #include <boost/function.hpp>
 #include <corelib/ILog.h>
 #include <plugins/newVdf/INodeConfiguration.h>
-#include <QtGui/QLabel>
+#include <QtWidgets/QLabel>
 
 namespace vdf {
 

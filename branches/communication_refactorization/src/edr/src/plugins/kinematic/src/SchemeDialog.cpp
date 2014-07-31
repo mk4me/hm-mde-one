@@ -1,7 +1,8 @@
 #include "PCH.h"
-#include <QtGui/QTableView>
+#include <QtWidgets/QTableView>
 #include "SchemeDialog.h"
 #include "OsgSchemeDrawer.h"
+#include <QtWidgets/QCheckBox>
 
 SchemeDialog::SchemeDialog( QWidget* parent) :
 	QDialog(parent)

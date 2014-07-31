@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEW_CHART__NEWCHARTLEGEND_H__
 #define HEADER_GUARD_NEW_CHART__NEWCHARTLEGEND_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <qwt_legend.h>
 #include <qwt_legend_data.h>
 

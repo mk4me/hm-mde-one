@@ -11,7 +11,7 @@
 
 #include <plugins/hmdbCommunication/IDataSourcePerspective.h>
 #include <plugins/hmdbCommunication/IDataSourcePerspectiveManager.h>
-#include <QtGui/QTreeWidget>
+#include <QtWidgets/QTreeWidget>
 
 namespace hmdbCommunication
 {

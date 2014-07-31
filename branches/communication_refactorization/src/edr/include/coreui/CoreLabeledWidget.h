@@ -10,7 +10,7 @@
 #define HEADER_GUARD___CORELABELEDWIDGET_H__
 
 #include <coreui/Export.h>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 class QLabel;
 class QHBoxLayout;

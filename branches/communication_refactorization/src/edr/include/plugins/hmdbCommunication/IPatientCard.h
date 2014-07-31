@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_HMDBCOMMUNICATION__IPATIENTCARD_H__
 #define HEADER_GUARD_HMDBCOMMUNICATION__IPATIENTCARD_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtGui/QPixmap>
 #include <hmdbserviceslib/ShallowCopy.h>
 

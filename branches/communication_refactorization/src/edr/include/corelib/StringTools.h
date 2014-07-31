@@ -24,7 +24,7 @@ namespace core {
 
     inline QString toQString(const char* ascii, int size=-1)
     {
-        return QString::fromAscii(ascii, size);
+        return QString::fromLatin1(ascii, size);
     }
 
     inline QString toQString(const std::string& str)
@@ -43,7 +43,7 @@ namespace core {
 
     inline std::string toStdString(const QString& str)
     {
-        const QByteArray asc = str.toAscii(); 
+        const QByteArray asc = str.toLatin1(); 
         return toStdString(asc.constData(), asc.length()); 
     }
 
@@ -51,8 +51,6 @@ namespace core {
     {
         return path.string();
     }
-
-
 
     //! Przechowywanie instancji tego typu spowoduje błędy przy wyłuskiwaniu wartości.
     struct toString_t
@@ -85,7 +83,7 @@ namespace core {
 
     inline toString_t toString(const QString& str)
     {
-        return toString_t(toStdString(str));
+        return toString_t(str.toStdString());
     }
     inline toString_t toString(const std::string& str)
     {

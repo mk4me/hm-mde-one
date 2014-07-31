@@ -7,7 +7,6 @@
 #include <osg/Matrix>
 #include <osg/Vec3>
 #include <osg/Vec4>
-#include <tinyxml.h>
 #include <utils/Debug.h>
 #include <utils/DataChannelCollection.h>
 #include <kinematiclib/SkeletalParsers.h>

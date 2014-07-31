@@ -11,7 +11,7 @@
 #define HEADER_GUARD_COREUI__DATAFILTERWIDGET_H__
 
 #include <QtCore/QString>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <boost/date_time.hpp>
 #include <boost/function.hpp>
 #include <osg/Vec3>
@@ -127,8 +127,8 @@ private:
     Ui::FilterWidget* ui;
     BundleFilterPtr bundleFilter;
 };
-typedef boost::shared_ptr<DataFilterWidget> DataFilterWidgetPtr;
-typedef boost::shared_ptr<const DataFilterWidget> DataFilterWidgetConstPtr;
+typedef utils::shared_ptr<DataFilterWidget> DataFilterWidgetPtr;
+typedef utils::shared_ptr<const DataFilterWidget> DataFilterWidgetConstPtr;
 
 }
 

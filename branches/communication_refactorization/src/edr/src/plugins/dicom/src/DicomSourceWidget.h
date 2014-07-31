@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_DICOM__DICOMSOURCEWIDGET_H__
 #define HEADER_GUARD_DICOM__DICOMSOURCEWIDGET_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <corelib/IFileDataManager.h>
 
 class QPushButton;

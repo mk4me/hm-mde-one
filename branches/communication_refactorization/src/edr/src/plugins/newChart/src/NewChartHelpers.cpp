@@ -1,5 +1,5 @@
 #include "NewChartPCH.h"
-#include <QtGui/QHBoxLayout>
+#include <QtWidgets/QHBoxLayout>
 #include "NewChartHelpers.h"
 
 std::pair<QWidget*, QDoubleSpinBox*> LabeledSpinbox::create(const QString& label, double singleStep, double minimum, double maximum)

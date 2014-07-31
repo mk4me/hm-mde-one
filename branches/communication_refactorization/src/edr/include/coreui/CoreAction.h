@@ -10,7 +10,7 @@
 #define HEADER_GUARD___COREACTION_H__
 
 #include <coreui/Export.h>
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 #include <coreui/CoreTitleBar.h>
 #include <coreui/ICoreActionSection.h>
 

@@ -11,7 +11,7 @@
 #define HEADER_GUARD_COREUI__COREPOPUPPRIVATE_H__
 
 #include <QtCore/QTimer>
-#include <QtGui/QLabel>
+#include <QtWidgets/QLabel>
 
 #include "ui_CorePopup.h"
 

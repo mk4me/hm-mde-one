@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_COREUI__ABSTRACTSTATEMACHINE_H__
 #define HEADER_GUARD_COREUI__ABSTRACTSTATEMACHINE_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtGui/QWheelEvent>
 #include <coreui/Export.h>
 #include <coreui/AbstractState.h>

@@ -11,6 +11,7 @@
 
 #include <utils/Config.h>
 #if defined(__WIN32__)
+#define NOMINMAX
 #include <Windows.h>
 #elif defined(__UNIX__)
 #include <time.h>

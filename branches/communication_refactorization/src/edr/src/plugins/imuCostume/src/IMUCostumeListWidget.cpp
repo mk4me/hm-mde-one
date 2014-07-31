@@ -2,9 +2,9 @@
 #include "IMUCostumeListWidget.h"
 #include "ui_IMUCostumeListWidget.h"
 #include "DataSource.h"
-#include <QtGui/QMenu>
+#include <QtWidgets/QMenu>
 #include <coreui/CoreCursorChanger.h>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 #include <OpenThreads/Thread>
 
 IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,

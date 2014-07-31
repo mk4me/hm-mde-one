@@ -36,8 +36,8 @@ protected:
 private:
     std::set<utils::TypeInfo> typeinfos;
 };
-typedef boost::shared_ptr<SimpleFilterCommand> SimpleFilterCommandPtr;
-typedef boost::shared_ptr<const SimpleFilterCommand> SimpleFilterCommandConstPtr;
+typedef utils::shared_ptr<SimpleFilterCommand> SimpleFilterCommandPtr;
+typedef utils::shared_ptr<const SimpleFilterCommand> SimpleFilterCommandConstPtr;
 
 
 #endif

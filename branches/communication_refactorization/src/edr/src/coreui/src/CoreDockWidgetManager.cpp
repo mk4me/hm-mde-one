@@ -1,9 +1,9 @@
 #include "CoreUiPCH.h"
 #include <coreui/CoreDockWidgetSet.h>
 #include <coreui/CoreDockWidgetManager.h>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QTabWidget>
-#include <QtGui/QTabBar>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QTabBar>
 #include <boost/foreach.hpp>
 
 using namespace coreUI;

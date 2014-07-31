@@ -1,6 +1,6 @@
 #include <plugins/dfElements/DFProcessors.h>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLabel>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
 
 
 void VectorDiff::process()

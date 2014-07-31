@@ -58,11 +58,11 @@ void SummaryWindow::display( const HelpersCollection& helpers )
                 //QString text = motion ? createDescription(motion) : QString();
                 
                 core::IHierarchyItemConstPtr hdi = itHelper->lock();
-                QString text = hdi->getName() + "\n";
                 if (hdi) {
+                QString text = hdi->getName() + "\n";
                     text += hdi->getDescription();
+                    addItem(text, root);
                 }
-                addItem(text, root);
             //}
         }
 

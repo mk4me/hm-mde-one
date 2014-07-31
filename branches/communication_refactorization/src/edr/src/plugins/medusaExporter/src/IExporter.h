@@ -14,11 +14,18 @@ namespace medusaExporter {
 
 	class AnnotationData;
 
+	struct ExportConfig
+	{
+		bool skipIdentical;
+		int pointsDensity;
+        bool normalizePointVectorsLenght;
+	};
+
 	class IExporter
 	{
 	public:
 		virtual ~IExporter() {}
-		virtual void exportAnnotations(const core::Filesystem::Path& path, const AnnotationData& data) const = 0;
+		virtual void exportAnnotations(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const = 0;
 	};
 	DEFINE_SMART_POINTERS(IExporter);
 }

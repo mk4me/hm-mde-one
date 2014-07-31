@@ -2,7 +2,7 @@
 #include "ui_toolboxmaindeffile.h"
 #include <utils/Push.h>
 #include <corelib/BaseDataTypes.h>
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 #include <iostream>
 #include <corelib/PluginCommon.h>
 #include <corelib/IServiceManager.h>
@@ -196,7 +196,7 @@ void ToolboxMain::populateWindowMenu( QMenu* menu )
 {
 	std::vector<QAction*> sortedActions;
 
-	QList<QDockWidget*> dockwidgets = qFindChildren<QDockWidget*>(this);
+	QList<QDockWidget*> dockwidgets = this->findChildren<QDockWidget*>();
 	if ( dockwidgets.size() ) {
 		// pobranie i posortowanie akcji wg nazw
 		sortedActions.reserve(dockwidgets.size());
@@ -211,7 +211,7 @@ void ToolboxMain::populateWindowMenu( QMenu* menu )
 		sortedActions.resize(0);
 	}
 
-	QList<QToolBar*> toolbars = qFindChildren<QToolBar*>(this);
+	QList<QToolBar*> toolbars = this->findChildren<QToolBar*>();
 	if (toolbars.size()) {
 		sortedActions.reserve(toolbars.size());
 		BOOST_FOREACH(QToolBar* toolbar, toolbars) {

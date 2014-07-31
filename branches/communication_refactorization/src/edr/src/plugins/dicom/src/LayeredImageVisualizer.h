@@ -11,12 +11,12 @@
 #define HEADER_GUARD_DICOM__LAYEREDIMAGEVISUALIZER_H__
 
 #include <QtCore/QObject>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <corelib/IVisualizer.h>
 #include <corelib/AbstractSerie.h>
 #include <plugins/dicom/ILayeredImage.h>
 #include "LayeredSerie.h"
-#include "Adnotations.h"
+#include <plugins/dicom/Annotations.h>
 #include <hmdbserviceslib/Entity.h>
 
 class QLabel;

@@ -1,8 +1,8 @@
 #include "MdePCH.h"
 #include "MdeServiceWindow.h"
 #include <QtCore/QSettings>
-#include <QtGui/QToolButton>
-#include <QtGui/QMenu>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QMenu>
 #include <coreui/CoreWidgetAction.h>
 
 MdeServiceWindow::MdeServiceWindow( const QString& idName ) :

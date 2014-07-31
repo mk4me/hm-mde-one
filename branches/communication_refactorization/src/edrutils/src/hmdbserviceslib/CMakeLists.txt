@@ -26,6 +26,10 @@ SET_PUBLIC_HEADERS(
 	Entity.h
 )
 
+SET_PRIVATE_HEADERS(
+	XMLHelper.h
+)
+
 SET_SOURCE_FILES(
 	AccountFactoryWS.cpp
 	AdministrationWS.cpp
@@ -40,6 +44,7 @@ SET_SOURCE_FILES(
 	DateTime.cpp
 	DateTimeUtils.cpp
 	Entity.cpp
+	XMLHelper.cpp
 )
 
 END_PROJECT()

@@ -38,9 +38,9 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QEvent>
-#include <QtGui/QAction>
-#include <QtGui/QWidget>
-#include <QtGui/QMouseEvent>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QWidget>
+#include <QtGui/QCloseEvent>
 
 #include <corelib/IPlugin.h>
 #include <utils/SmartPtr.h>

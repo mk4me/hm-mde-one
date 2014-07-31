@@ -9,6 +9,7 @@ HierarchyDataItem::HierarchyDataItem(VariantConstPtr wrapper,
     HierarchyItem(name, description, icon),
     data(wrapper), defaultHelperIDX(0)
 {
+    UTILS_ASSERT(helper);
     helpers.push_back(helper);
 }
 
@@ -18,6 +19,11 @@ HierarchyDataItem::HierarchyDataItem(VariantConstPtr wrapper,
     helpers(helpers),
     data(wrapper), defaultHelperIDX(-1)
 {
+#ifdef _DEBUG 
+    for (auto it = helpers.begin(); it != helpers.end(); ++it) {
+        UTILS_ASSERT(*it);
+    }
+#endif
 }
 
 HierarchyDataItem::HierarchyDataItem( const QIcon& icon, const QString& name, const QString& description ) :
@@ -34,6 +40,7 @@ HierarchyDataItem::HierarchyDataItem(VariantConstPtr wrapper,
     data(wrapper), defaultHelperIDX(0)
 {
     HierarchyHelperPtr helper = utils::make_shared<WrappedItemHelper>(wrapper);
+    UTILS_ASSERT(helper);
     helpers.push_back(helper);
 }
 
@@ -42,12 +49,14 @@ HierarchyDataItem::HierarchyDataItem(VariantConstPtr wrapper, const QString& des
     data(wrapper), defaultHelperIDX(0)
 {
     HierarchyHelperPtr helper = utils::make_shared<WrappedItemHelper>(wrapper);
+    UTILS_ASSERT(helper);
     helpers.push_back(helper);
 }
 
 HierarchyDataItem::HierarchyDataItem(const QIcon& icon, const QString& name, const QString& description, HierarchyHelperPtr helper) :
     HierarchyItem( name, description, icon), defaultHelperIDX(0)
 {
+    UTILS_ASSERT(helper);
     helpers.push_back(helper);
 }
 
@@ -63,6 +72,7 @@ VariantConstPtr HierarchyDataItem::getData() const
 void HierarchyDataItem::addHelper( HierarchyHelperPtr helper )
 {
     helper->setParent(HierarchyItem::shared_from_this());
+    UTILS_ASSERT(helper);
     helpers.push_back(helper);
 
 	if(defaultHelperIDX == -1){
@@ -74,8 +84,13 @@ std::list<HierarchyHelperPtr> HierarchyDataItem::getHelpers() const
 {
     auto ptr = shared_from_this();
 
+    // Ustawianie parenta helperow, helpery bez parenta to te, ktore byly przekazane w konstruktorze
+    // Nie mozna wtedy wywolac shared_from_this
     for (auto it = helpers.begin(); it != helpers.end(); ++it) {
-        (*it)->setParent(ptr);
+        // TODO : kiedy helper moze byc nullem?
+        if (*it) {
+            (*it)->setParent(ptr);
+        }
     }
     
 

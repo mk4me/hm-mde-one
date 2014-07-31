@@ -1,11 +1,12 @@
 #include "NewVdfPCH.h"
 #include "ConnectState.h"
 #include "SimpleItem.h"
-#include <QtGui/QGraphicsScene>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QHBoxLayout>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QHBoxLayout>
 #include "SceneStateMachine.h"
 #include "VdfScene.h"
+#include "QtWidgets/QGraphicsSceneEvent"
 
 using namespace vdf;
 

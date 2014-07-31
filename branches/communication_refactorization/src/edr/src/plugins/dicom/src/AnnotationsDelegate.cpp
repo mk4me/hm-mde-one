@@ -1,8 +1,8 @@
 #include "DicomPCH.h"
-#include "AdnotationsDelegate.h"
-#include <QtGui/QComboBox>
-#include <QtGui/QLineEdit.h>
-#include "Adnotations.h"
+#include "AnnotationsDelegate.h"
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QLineEdit.h>
+#include <plugins/dicom/Annotations.h>
 #include "LayeredModelView.h"
 
 using namespace dicom;
@@ -34,7 +34,7 @@ QWidget * AdnotationsDelegate::createEditor(QWidget *parent,
 		int idx = td->idx;
 		if (idx != -1) {
 			std::string tag = val->getTag(td->tag);
-			if (val->getNumLayerItems(tag) > idx ) {// && idx >= 0) { //! TODO: wczeœniej sprawdzxamy czy rozne od -1 wiec chyba mniej juz nigdy nie ma
+			if (val->getNumLayerItems(tag) > idx ) {
 				auto il = val->getLayerItem(tag, idx);
 				auto aidx = il->getAdnotationIdx();
 
@@ -46,45 +46,45 @@ QWidget * AdnotationsDelegate::createEditor(QWidget *parent,
 
 						switch(aidx) {
 
-						case adnotations::bloodLevel:
+						case annotations::bloodLevel:
 							{
-								auto adn = dicom::adnotations::instanceBloodLevels();
+								auto adn = dicom::annotations::instanceBloodLevels();
 								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
 									editor->addItem(it->second, it->first);
 								}
 							}
 							break;
 
-						case adnotations::inflammatoryLevel:
+						case annotations::inflammatoryLevel:
 							{
-								auto adn = dicom::adnotations::instanceInflammatoryLevels();
+								auto adn = dicom::annotations::instanceInflammatoryLevels();
 								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
 									editor->addItem(it->second, it->first);
 								}
 							}
 							break;
 
-						case adnotations::fingerType:
+						case annotations::fingerType:
 							{
-								auto adn = dicom::adnotations::instanceFingerTypes();
+								auto adn = dicom::annotations::instanceFingerTypes();
 								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
 									editor->addItem(it->second, it->first);
 								}
 							}
 							break;
 
-						case adnotations::jointType:
+						case annotations::jointType:
 							{
-								auto adn = dicom::adnotations::instanceJointTypes();
+								auto adn = dicom::annotations::instanceJointTypes();
 								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
 									editor->addItem(it->second, it->first);
 								}
 							}
 							break;
 
-						case adnotations::imageType:
+						case annotations::imageType:
 							{
-								auto adn = dicom::adnotations::instanceImageTypes();
+								auto adn = dicom::annotations::instanceImageTypes();
 								for(auto it = adn->left.begin(); it != adn->left.end(); ++it){
 									editor->addItem(it->second, it->first);
 								}
@@ -117,7 +117,7 @@ void AdnotationsDelegate::setEditorData(QWidget *editor,
 		int idx = td->idx;
 		if (idx != -1) {
 			std::string tag = val->getTag(td->tag);
-			if (val->getNumLayerItems(tag) > idx ) {// && idx >= 0) { //! TODO: wczeœniej sprawdzxamy czy rozne od -1 wiec chyba mniej juz nigdy nie ma
+			if (val->getNumLayerItems(tag) > idx ) {
 				auto il = val->getLayerItem(tag, idx);
 				auto aidx = il->getAdnotationIdx();
 
@@ -151,7 +151,7 @@ void AdnotationsDelegate::setModelData(QWidget *editor, QAbstractItemModel *mode
 		int idx = td->idx;
 		if (idx != -1) {
 			std::string tag = val->getTag(td->tag);
-			if (val->getNumLayerItems(tag) > idx ) {// && idx >= 0) { //! TODO: wczeœniej sprawdzxamy czy rozne od -1 wiec chyba mniej juz nigdy nie ma
+			if (val->getNumLayerItems(tag) > idx ) {
 				auto il = val->getLayerItem(tag, idx);
 				auto aidx = il->getAdnotationIdx();
 
