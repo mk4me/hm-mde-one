@@ -13,43 +13,48 @@
 #include <QtCore/QObject>
 #include <corelib/IService.h>
 #include "PythonLogic.h"
+#include "PythonConsole.h"
+#include "MdeBridge.h"
 
 class QTextEdit;
 
-class PythonService : public QObject, public plugin::IService
-{
-    Q_OBJECT;
-	UNIQUE_ID("{2AB10F39-C5C9-4637-A562-85D15EAE118A}");
+namespace python {
+	class PythonService : public QObject, public plugin::IService
+	{
+		Q_OBJECT;
+		UNIQUE_ID("{2AB10F39-C5C9-4637-A562-85D15EAE118A}");
 
-    CLASS_DESCRIPTION("Python Service", "Python Service");
+		CLASS_DESCRIPTION("Python Service", "Python Service");
 
-public:
-	//! 
-	PythonService();
-	//! 
-	virtual ~PythonService();
+	public:
+		//! 
+		PythonService();
+		//! 
+		virtual ~PythonService();
 
-//core::IService
-public:
-    virtual void init( core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager );
-    virtual QWidget* getWidget();
+		//core::IService
+	public:
+		virtual void init(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager);
+		virtual QWidget* getWidget();
 
 
-private slots:
-    void runScript();
+	private slots:
+		void runScript();
 
-public:
-    virtual const bool lateInit();
+	public:
+		virtual const bool lateInit();
 
-    virtual void finalize();
+		virtual void finalize();
 
-    virtual void update( double deltaTime );
+		virtual void update(double deltaTime);
 
-    virtual QWidgetList getPropertiesWidgets();
-
-private:
-    PythonLogic logic;
-    QTextEdit* editor;
-};
-
+		virtual QWidgetList getPropertiesWidgets();
+		
+	private:
+		PythonLogicPtr logic;
+		QTextEdit* editor;
+		python::PythonConsole* console;
+		MdeBridgePtr bridge;
+	};
+}
 #endif //   HEADER_GUARD_SUBJECT__SUBJECTSERVICE_H__

@@ -537,6 +537,11 @@ namespace utils {
 			ObjectWrapperTraits<Type>::supportedTypes(supported);
 		}
 
+		virtual const bool isSupported(const TypeInfo& type) const
+		{
+			return ObjectWrapperTraits<Type>::typeSupported(type);
+		}
+
         virtual const ObjectWrapperPtr create() const {
             return ObjectWrapper::create<T>();
         }

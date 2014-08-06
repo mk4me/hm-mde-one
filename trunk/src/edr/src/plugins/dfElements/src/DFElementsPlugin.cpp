@@ -3,6 +3,7 @@
 #include <plugins/newVdf/UniversalSink.h>
 #include <plugins/newVdf/UniversalSource.h>
 #include <plugins/newVdf/IDataFlowProvider.h>
+#include <plugins/c3d/C3DChannels.h>
 
 CORE_PLUGIN_BEGIN("DFEments", core::UID::GenerateUniqueID("{678727A0-ED31-43CA-AE6D-BADA05717ADA}"))
 
