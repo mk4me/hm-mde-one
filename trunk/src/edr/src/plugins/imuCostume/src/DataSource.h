@@ -21,6 +21,8 @@
 #include <imucostumelib/ImuCostume.h>
 #include <corelib/HierarchyItem.h>
 #include <plugins/kinematic/Wrappers.h>
+#include <corelib/Filesystem.h>
+#include <corelib/IFileDataManager.h>
 
 namespace IMU
 {
@@ -122,6 +124,11 @@ namespace IMU
 
 		static kinematic::SkeletonMappingSchemePtr createMappingScheme();
 
+        void testMethod();
+        void loadDatFile(const core::Filesystem::Path& path);
+
+		
+
 	private:
 
 		void refreshData();
@@ -157,9 +164,7 @@ namespace IMU
 		static void extractMagnetometer(const IMUData & data, osg::Vec3 & ret);
 
 		static void extractScalar(const osg::Vec3 & data, float & ret, const unsigned int idx);
-
-
-
+        
 	private:
 		//! Czy odœwie¿amy dane
 		volatile bool refreshData_;
@@ -171,6 +176,8 @@ namespace IMU
 		utils::RecursiveSyncPolicy updateSynch;
 		//! Manager danych w pamiêci
 		core::IMemoryDataManager * memoryDM;
+        //! Manager plików
+        core::IFileDataManager * fileDM;
 		//! Watek odswiezajacy dane
 		core::IThreadPtr refreshThread;
 		//! Kostiumy

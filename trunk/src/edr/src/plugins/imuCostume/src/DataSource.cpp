@@ -18,12 +18,14 @@
 #include <corelib/HierarchyDataItem.h>
 #include <boost/bind.hpp>
 #include <plugins/newChart/Wrappers.h>
+#include "plugins/newCommunication/TreeItemHelper.h"
 #include <iosfwd>
+#include "IMUPerspective.h"
 
 using namespace IMU;
 
 IMUCostumeDataSource::IMUCostumeDataSource()
-	: connected_(false), refreshData_(false), memoryDM(nullptr)
+    : connected_(false), refreshData_(false), memoryDM(nullptr), fileDM(nullptr)
 {
 
 }
@@ -38,7 +40,7 @@ void IMUCostumeDataSource::init(core::IMemoryDataManager * memoryDM,
 	core::IFileDataManager * fileDM)
 {
 	this->memoryDM = memoryDM;
-
+    this->fileDM = fileDM;
 	core::Filesystem::Path p(QCoreApplication::applicationDirPath().toStdString());
 
 	p /= "BIC";
@@ -169,12 +171,12 @@ void IMUCostumeDataSource::innerLoadCostume(const unsigned int idx)
 		rd.skeletonDataStream.reset(new SkeletonDataStream);
 		rd.skeletonDataStream->jointsCount = costumesConfigurations[idx].jointsCount;
 		rd.skeletonDataStream->jointsStream.reset(new PointsCloudStream);
-		rd.skeletonDataStream->quatStream.reset(new QuaternionStream);
+		//rd.skeletonDataStream->quatStream.reset(new QuaternionStream);
 		rd.skeletonDataStream->connections.resize(GetSegmentsCount(idx));
 
 		int segCount = GetSegmentsCount(idx);
 		for (int i = 0; i < segCount; ++i) {
-			rd.skeletonDataStream->segmentNames[GetSegmentName(idx, i)] = i;
+			//rd.skeletonDataStream->segmentNames[GetSegmentName(idx, i)] = i;
 		}
 
 		//konfiguruje schemat po³¹czeñ
@@ -651,7 +653,7 @@ void IMUCostumeDataSource::refreshData()
 						globalQuats[i] = osg::Quat(q.I, q.J, q.K, q.R); 						
 					}
 					rawData[it->first].skeletonDataStream->jointsStream->pushData(jointsPositions);
-					rawData[it->first].skeletonDataStream->quatStream->pushData(globalQuats);
+					//rawData[it->first].skeletonDataStream->quatStream->pushData(globalQuats);
 				}
 			}
 		}catch(const std::exception & e){
@@ -687,4 +689,54 @@ void IMUCostumeDataSource::finalizeCalibration(const unsigned int idx)
 const bool IMUCostumeDataSource::isCalibrated(const unsigned int idx) const
 {
 	return costumesConfigurations[idx].jointsCount > 1;
+}
+
+void IMU::IMUCostumeDataSource::loadDatFile(const core::Filesystem::Path& path)
+{
+    auto transaction = fileDM->transaction();
+    transaction->addFile(path);
+    core::ConstVariantsList oList;
+    transaction->getObjects(path, oList);
+
+    auto hierarchyTransaction = memoryDM->hierarchyTransaction();
+    core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>(path.filename().string().c_str(), path.string().c_str(), QIcon());
+	IMUPerspective::createIMUBranch(oList, root);
+
+
+    hierarchyTransaction->addRoot(root);
+}
+
+void IMU::IMUCostumeDataSource::testMethod()
+{
+    connectCostiumes();
+    unsigned int i = 2000;
+    while (--i > 0) {
+        OpenThreads::Thread::microSleep(100);
+        QCoreApplication::processEvents();
+    }
+
+
+    callibrateFirstPass(0);
+
+    i = 2000;
+
+    while (--i > 0) {
+        OpenThreads::Thread::microSleep(100);
+        QCoreApplication::processEvents();
+    }
+
+    callibrateSecondPass(0);
+
+    i = 2000;
+
+    while (--i > 0) {
+        OpenThreads::Thread::microSleep(100);
+        QCoreApplication::processEvents();
+    }
+
+    finalizeCalibration(0);
+    CostumeRawData rd;
+    addToUpdate(0, rd);
+    return;
+    loadCostume(0);
 }

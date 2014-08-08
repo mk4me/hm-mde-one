@@ -1,7 +1,7 @@
 BEGIN_PROJECT("executable")
 
 
-FILE(GLOB objFiles  "${CMAKE_BINARY_DIR}/src/plugins/newVdf/plugin_dicom.dir/Debug/*.obj")
+FILE(GLOB objFiles  "${CMAKE_BINARY_DIR}/src/plugins/dicom/plugin_dicom.dir/Debug/*.obj")
 
 set (TARGET_OBJ ${objFiles})
 
