@@ -6,7 +6,7 @@ ADD_PROJECT_VARIABLE_DEPENDENCIES(VIDLIB_ENABLE_OSG "Enable osg for vidlib?" ON 
 ADD_PROJECT(vidlib "BOOST;FFMPEG;utils;STDINT;OPENTHREADS")
 
 
-ADD_PROJECT(kinematiclib "BOOST;TINYXML;OSG;utils")
+ADD_PROJECT(kinematiclib "BOOST;TINYXML2;OSG;utils")
 ADD_PROJECT(imucostumelib "BOOST;utils;OSG")
 ADD_PROJECT(osgui "utils;OSG;QT;BOOST")
 ADD_PROJECT(osgutils "utils;OSG;BOOST")
@@ -16,6 +16,7 @@ ADD_PROJECT(vdfmlib "osgui;dfmlib;BOOST;OSG;utils")
 ADD_PROJECT(testnodefactory "dfmlib;BOOST;utils")
 ADD_PROJECT(timelinelib "OPENTHREADS;utils;BOOST;QT")
 ADD_PROJECT(c3dlib "BTK;BOOST;OSG;utils")
-ADD_PROJECT(webserviceslib "BOOST;TINYXML;CURL;OPENTHREADS;WSDLPULL;utils")
-ADD_PROJECT(qthtmlgenlib "BOOST;TINYXML;QT;utils")
+ADD_PROJECT(webserviceslib "BOOST;TINYXML2;CURL;WSDLPULL;utils")
+ADD_PROJECT(communicationlib "webserviceslib;SQLCIPHER")
+ADD_PROJECT(qthtmlgenlib "BOOST;TINYXML2;QT;utils")
 #ADD_PROJECT(qtutils "QT;utils")
