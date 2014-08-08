@@ -15,13 +15,13 @@
 
 namespace hmdbCommunication
 {
-	class HMDBShallowCopyContext : public IHMDBShallowCopyContext
+	class HMDBShallowCopyDataContext : public IHMDBShallowCopyDataContext
 	{
 	public:
 		//! Domyœlny konsturktor
-		HMDBShallowCopyContext();
+		HMDBShallowCopyDataContext();
 		//! Destruktor wirtualny
-		virtual ~HMDBShallowCopyContext();
+		virtual ~HMDBShallowCopyDataContext();
 		//! \return Aktualna p³ytka kopia bazy danych
 		virtual const ShallowCopyConstPtr shallowCopy() const;
 		//! \return Manager statusów
@@ -53,7 +53,7 @@ namespace hmdbCommunication
 	public:
 		//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych
 		//! \param localContext Lokalny kontekst
-		HMDBShallowCopyLocalContext(IHMDBShallowCopyContext * shallowCopyContext,
+		HMDBShallowCopyLocalContext(IHMDBShallowCopyDataContext * shallowCopyContext,
 			IHMDBLocalContext * localContext);
 
 		//! Destruktor wirtualny
@@ -85,8 +85,8 @@ namespace hmdbCommunication
 		//! Metoda wy³adowuje wszystkie dane
 		virtual const bool unloadAll();
 
-		virtual IHMDBShallowCopyContext * shallowCopyContext();
-		virtual const IHMDBShallowCopyContext * shallowCopyContext() const;
+		virtual IHMDBShallowCopyDataContext * shallowCopyContext();
+		virtual const IHMDBShallowCopyDataContext * shallowCopyContext() const;
 
 		virtual IHMDBLocalContext * localContext();
 		virtual const IHMDBLocalContext * localContext() const;
@@ -137,7 +137,7 @@ namespace hmdbCommunication
 		//! Mapa danych
 		mutable GroupedData data_;
 		//! Kontekst p³ytkiej kopii bazy danych
-		IHMDBShallowCopyContext * shallowCopyContext_;
+		IHMDBShallowCopyDataContext * shallowCopyContext_;
 		//! Lokalny kontekst
 		IHMDBLocalContext * localContext_;
 	};
@@ -147,7 +147,7 @@ namespace hmdbCommunication
 	public:
 		//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych
 		//! \param remoteContext Zdalny kontekst
-		HMDBShallowCopyRemoteContext(IHMDBShallowCopyContext * shallowCopyContext,
+		HMDBShallowCopyRemoteContext(IHMDBShallowCopyDataContext * shallowCopyContext,
 			IHMDBRemoteContext * remoteContext);
 
 		//! Destruktor wirtualny
@@ -168,17 +168,43 @@ namespace hmdbCommunication
 		//! \param downloadOperations Operacje œci¹gania
 		virtual void synchronize(const IHMDBRemoteContext::CompoundOperationPtr downloadOperations);
 
-		virtual IHMDBShallowCopyContext * shallowCopyContext();
-		virtual const IHMDBShallowCopyContext * shallowCopyContext() const;
+		virtual IHMDBShallowCopyDataContext * shallowCopyContext();
+		virtual const IHMDBShallowCopyDataContext * shallowCopyContext() const;
 
 		virtual IHMDBRemoteContext * remoteContext();
 		virtual const IHMDBRemoteContext * remoteContext() const;
 
 	private:
 		//! Kontekst p³ytkiej kopii bazy danych
-		IHMDBShallowCopyContext * shallowCopyContext_;
+		IHMDBShallowCopyDataContext * shallowCopyContext_;
 		//! Zdalny kontekst
 		IHMDBRemoteContext * remoteContext_;
+	};
+
+	class HMDBShallowCopyContext : public IHMDBShallowCopyContext
+	{
+	public:
+
+		HMDBShallowCopyContext(IHMDBShallowCopyDataContext * scdc,
+			IHMDBShallowCopyLocalContext * sclc,
+			IHMDBShallowCopyRemoteContext * scrc = nullptr);
+
+		virtual ~HMDBShallowCopyContext();
+
+		virtual IHMDBShallowCopyDataContext * shallowCopyDataContext();
+		virtual const IHMDBShallowCopyDataContext * shallowCopyDataContext() const;
+
+		virtual IHMDBShallowCopyLocalContext * shallowCopyLocalContext();
+		virtual const IHMDBShallowCopyLocalContext * shallowCopyLocalContext() const;
+
+		virtual IHMDBShallowCopyRemoteContext * shallowCopyRemoteContext();
+		virtual const IHMDBShallowCopyRemoteContext * shallowCopyRemoteContext() const;
+
+	private:
+
+		utils::shared_ptr<IHMDBShallowCopyDataContext> dataContext_;
+		utils::shared_ptr<IHMDBShallowCopyLocalContext> localContext_;
+		utils::shared_ptr<IHMDBShallowCopyRemoteContext> remoteContext_;
 	};
 }
 

@@ -48,6 +48,7 @@ SET_PRIVATE_HEADERS(
 	#DataConfigurationWidget.h
 	#ViewConfigurationWidget.h
 	HMDBShallowCopyContext.h
+	HMDBServicesVerificationHelper.h
 )
 
 SET_PUBLIC_HEADERS (
@@ -149,6 +150,7 @@ SET_SOURCE_FILES(
 	#ViewConfigurationWidget.cpp
 	DataViewWidget.cpp
 	HMDBShallowCopyContext.cpp
+	HMDBServicesVerificationHelper.cpp
 )
 
 SET_MOC_FILES(

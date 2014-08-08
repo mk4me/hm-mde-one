@@ -64,7 +64,9 @@ namespace hmdbCommunication
 		virtual const Direction direction() const;
 		
 		//! \return Uchwyt do po³¹czenia
-		CURL * curl() const;
+		const CURL * curl() const;
+		//! \return Uchwyt do po³¹czenia
+		CURL * curl();
 
 	private:
 		//! Plik kórego dotyczy transfer

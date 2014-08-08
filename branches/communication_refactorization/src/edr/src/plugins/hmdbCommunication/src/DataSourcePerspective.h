@@ -77,7 +77,7 @@ namespace hmdbCommunication
 
 		virtual const std::string name() const;
 
-		virtual void rebuildPerspective(QTreeWidget * treeWidget, const ShallowCopy & shallowCopy);
+		virtual void rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const ShallowCopy & shallowCopy);
 	};
 
 	//! Perspektywa medusy - tylko sesje
@@ -89,7 +89,7 @@ namespace hmdbCommunication
 
 		virtual const std::string name() const;
 
-		virtual void rebuildPerspective(QTreeWidget * treeWidget, const ShallowCopy & shallowCopy);
+		virtual void rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const ShallowCopy & shallowCopy);
 
 		virtual bool headers(const QTreeWidgetItem * item, QStringList & headers) const;
 	};
@@ -103,7 +103,7 @@ namespace hmdbCommunication
 
 		virtual const std::string name() const;
 
-		virtual void rebuildPerspective(QTreeWidget * treeWidget, const ShallowCopy & shallowCopy);
+		virtual void rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const ShallowCopy & shallowCopy);
 	};
 
 	//! Perspektywa płci
@@ -115,7 +115,7 @@ namespace hmdbCommunication
 
 		virtual const std::string name() const;
 
-		virtual void rebuildPerspective(QTreeWidget * treeWidget, const ShallowCopy & shallowCopy);
+		virtual void rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const ShallowCopy & shallowCopy);
 
 		virtual const bool fillContent(QTreeWidgetItem * item, const ShallowCopy & shallowCopy) const;
 		virtual const bool headers(const QTreeWidgetItem * item, QStringList & headers) const;

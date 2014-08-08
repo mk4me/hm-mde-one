@@ -15,10 +15,13 @@ class QWidget;
 
 namespace hmdbCommunication
 {
-	//! Forward declaration
+	//! Forward declaration	
+	class IHMDBSourceContext;
 	class IHMDBSession;
 	class IHMDBStorage;
-	class IHMDBSourceContext;
+	class IHMDBShallowCopyContext;	
+	class IShallowCopyFilterManager;
+
 
 	class IHMDBSource
 	{
@@ -55,6 +58,7 @@ namespace hmdbCommunication
 		struct ContextConfiguration
 		{
 			QString name;										//! Nazwa konfiguracji (unikalna!!)
+			StorageConfiguration storageConfiguration;			//! Konfiguracja storage
 			RemoteConfiguration motionServicesConfiguration;	//! Konfiguracja us³ug ruchu
 			RemoteConfiguration motionDataConfiguration;		//! Konfiguracja danych ruchu
 			RemoteConfiguration medicalServicesConfiguration;	//! Konfiguracja us³ug medycznych
@@ -69,22 +73,29 @@ namespace hmdbCommunication
 			virtual ~IHMDBSourceContextView() {}
 			//! \return Nazwa widoku
 			virtual const QString name() const = 0;
-			//! \param sourceContext Kontekst jakim zasilamy widok
+			//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych jakim zasilamy widok
 			//! \return Widok obs³uguj¹cy kontekst
-			virtual QWidget * createView(IHMDBSourceContext * sourceContext) = 0;
+			virtual QWidget * createView(IHMDBShallowCopyContext * shallowCopyContext) = 0;
+			//! \return Czy dany widok wymaga po³¹czenia z us³ugami webowymi
+			virtual const bool requiresRemoteContext() const = 0;
 		};
 
 	public:
 		//! Destruktor wirtualny
 		virtual ~IHMDBSource() {}
-		
-		//! \param session Sesja us³ug bazy danych ruchu
-		//! \param storage Obiekt do przechowywania danych
-		//! \param userHash Skrót u¿ytkownika na potrzeby obs³ugi shallowCopy w storage
-		//! \return Konteks Ÿródla danych
-		virtual IHMDBSourceContext * createSourceContext(IHMDBSession * session,
-			IHMDBStorage * storage, const std::string & userName,
-			const std::string & userHash) = 0;
+
+		//! \param storage Miejsce sk³¹dowania danych
+		//! \param user Nazwa u¿ytkownika
+		//! \param password	Has³o u¿ytkownika
+		//! \param session Sesja us³ug zdalnych
+		//! \return Kontekst Ÿród³a dancyh
+		virtual IHMDBSourceContext * createSourceContext(IHMDBStorage * storage,
+			const std::string & user, const std::string & password,
+			IHMDBSession * session = nullptr) = 0;		
+
+		//! \param sourceContext Kontekst Ÿród³a danych
+		//! \return Konteks p³ytkiej kopii bazy danych
+		virtual IHMDBShallowCopyContext * createShallowCopyContext(IHMDBSourceContext * sourceContext) = 0;
 
 		//! \param prototype Prototyp widoku kontekstów
 		virtual void registerSourceContextViewPrototype(IHMDBSourceContextView * prototype) = 0;
@@ -100,8 +111,16 @@ namespace hmdbCommunication
 		//! \param prototype Prototyp widoku kontekstów dla którego chcemy zarejestrowaæ konfiguracjê
 		//! \param config Konfiguracja widoku
 		//! \return Czy uda³o siê zarejestrowaæ konfiguracjê (nazwa musi byæ unikalna!!)
-		virtual const bool registerSourceContextConfiguration(IHMDBSourceContextView * prototype,
+		virtual const bool registerSourceContextViewConfiguration(IHMDBSourceContextView * prototype,
 			const ContextConfiguration & config) = 0;
+
+		//! \param prototype Prototyp widoku dla którego szukam predefiniowanych konfiguracji
+		virtual const unsigned int sourceContextViewConfigurationsCount(IHMDBSourceContextView * prototype) const = 0;
+
+		//! \param prototype Prototyp widoku dla którego szukam predefiniowanych konfiguracji
+		//! \param idx Indeks konfiguracji
+		//! \return Konfiguracja
+		virtual const ContextConfiguration sourceContextViewConfiguration(IHMDBSourceContextView * prototype, const unsigned int idx) const = 0;
 
 		//! \param url Adres serwisu gdzie zak³adamy konto
 		//! \param login Nazwa u¿ytkownika dla którego chcemy za³o¿yc konto
@@ -135,6 +154,7 @@ namespace hmdbCommunication
 			const bool multi = true,
 			const std::string & caPath = std::string()) = 0;
 
+		/*
 		//! \return Iloœæ kontekstów danych
 		virtual const unsigned int size() const = 0;
 		//! \param idx Indeks kontekstu danych
@@ -143,6 +163,12 @@ namespace hmdbCommunication
 		//! \param idx Indeks kontekstu danych
 		//! \return Konteks danych dla zadanego indeksu
 		virtual const IHMDBSourceContext * sourceContext(const unsigned int idx) const = 0;
+		*/
+
+		//! \return Manager filtrow danych
+		virtual IShallowCopyFilterManager * filterManager() = 0;
+		//! \return Manager filtrow danych
+		virtual const IShallowCopyFilterManager * filterManager() const = 0;
 	};
 }
 

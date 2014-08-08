@@ -1,7 +1,7 @@
 #include "PythonPCH.h"
 #include "PythonHighlighter.h"
 #include <utils/ObjectWrapper.h>
-#include <QtGui/QLabel>
+#include <QtWidgets/QLabel>
 
 const char * const keywords[] = {
     "and", "as", "assert", "break", "class",

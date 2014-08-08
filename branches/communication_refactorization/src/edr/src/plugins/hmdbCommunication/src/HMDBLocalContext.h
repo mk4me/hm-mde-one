@@ -12,7 +12,6 @@
 #include <corelib/IDataManagerReader.h>
 #include <corelib/IMemoryDataManager.h>
 #include <corelib/IStreamDataManager.h>
-#include <threadingUtils/SynchronizationPolicies.h>
 //#include <corelib/IHierarchyItem.h>
 
 namespace hmdbCommunication
@@ -49,7 +48,8 @@ namespace hmdbCommunication
 
 		//! \return Czy dane o które pytamy pochodza z tego Ÿród³a
 		virtual const bool isMyData(core::VariantConstPtr data) const;
-
+		//! \param fileName Nazwa pliku z p³ytkiej kopii bazy danych
+		//! \return Za³adanowane dane z pliku
 		virtual const core::ConstVariantsList data(const std::string & fileName) const;
 
 		//! \param fileName Plik jaki bêdê ³adowaæ ze storage do StreamManagera
@@ -88,8 +88,6 @@ namespace hmdbCommunication
 		const bool rawIsLoaded(const std::string & fileName, const core::IStreamDataManager::TransactionPtr streamTransaction) const;
 
 	private:
-		//! Obiekt synchronizuj¹cy
-		//mutable threadingUtils::RecursiveSyncPolicy synch;
 		//! kontekst danych
 		IHMDBDataContext * dataContext_;
 		//! Manager danych

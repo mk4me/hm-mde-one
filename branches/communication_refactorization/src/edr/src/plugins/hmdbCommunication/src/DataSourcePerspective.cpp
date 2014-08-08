@@ -79,7 +79,7 @@ const std::string DataSourcePatientPerspective::name() const
 	return std::string(QObject::tr("Patient").toUtf8().constData());
 }
 
-void DataSourcePatientPerspective::rebuildPerspective(QTreeWidget * treeWidget, const ShallowCopy & shallowCopy)
+void DataSourcePatientPerspective::rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const ShallowCopy & shallowCopy)
 {
 	//auto patientsITEnd = shallowCopy.medicalShallowCopy->patients.end();
 	//for(auto patientIT = shallowCopy.medicalShallowCopy->patients.begin(); patientIT != patientsITEnd; ++patientIT){
@@ -99,7 +99,7 @@ void DataSourcePatientPerspective::rebuildPerspective(QTreeWidget * treeWidget, 
 			item = new TreeWidgetContentItem(SubjectContent, subjectIT->second->performerID);
 		}
 
-		treeWidget->addTopLevelItem(item);
+		treeWidgetItem->addChild(item);
 
 		auto perfConfsITEnd = subjectIT->second->performerConfs.end();
 		for (auto perfConfIT = subjectIT->second->performerConfs.begin(); perfConfIT != perfConfsITEnd; ++perfConfIT){
@@ -161,7 +161,7 @@ const int sessionLocalNumebr(const std::string & sessionName)
 	return ret;
 }
 
-void DataSourceMedusaPerspective::rebuildPerspective(QTreeWidget * treeWidget, const ShallowCopy & shallowCopy)
+void DataSourceMedusaPerspective::rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const ShallowCopy & shallowCopy)
 {
 	std::multimap<hmdbServices::ID, TreeWidgetContentItem*> sessionItems;
 	std::list<TreeWidgetContentItem*> unrecognizedSessionItems;
@@ -206,11 +206,11 @@ void DataSourceMedusaPerspective::rebuildPerspective(QTreeWidget * treeWidget, c
 	}
 
 	for (auto it = sessionItems.begin(); it != sessionItems.end(); ++it){
-		treeWidget->addTopLevelItem(it->second);
+		treeWidgetItem->addChild(it->second);
 	}
 
 	for (auto it = unrecognizedSessionItems.begin(); it != unrecognizedSessionItems.end(); ++it){
-		treeWidget->addTopLevelItem(*it);
+		treeWidgetItem->addChild(*it);
 	}
 }
 
@@ -233,9 +233,8 @@ const std::string DataSourceDisorderPerspective::name() const
 	return std::string(QObject::tr("Disorder").toUtf8().constData());
 }
 
-void DataSourceDisorderPerspective::rebuildPerspective(QTreeWidget * treeWidget, const hmdbCommunication::ShallowCopy & shallowCopy)
+void DataSourceDisorderPerspective::rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const hmdbCommunication::ShallowCopy & shallowCopy)
 {
-
 	std::map<hmdbServices::MedicalShallowCopy::Disorder*, std::set<hmdbServices::MedicalShallowCopy::Patient*>> patientsByDisorders;
 
 	auto patientsITEnd = shallowCopy.medicalShallowCopy.patients.end();
@@ -253,7 +252,7 @@ void DataSourceDisorderPerspective::rebuildPerspective(QTreeWidget * treeWidget,
 
 		auto disorderItem = new TreeWidgetContentItem(CustomContent, disorderIT->first->disorderID);
 
-		treeWidget->addTopLevelItem(disorderItem);
+		treeWidgetItem->addChild(disorderItem);
 
 		auto patientsITEnd = disorderIT->second.end();
 		for (auto patientIT = disorderIT->second.begin(); patientIT != patientsITEnd; ++patientIT){
@@ -278,7 +277,7 @@ const std::string DataSourceGenderPerspective::name() const
 	return std::string(QObject::tr("Gender").toLocal8Bit().constData());
 }
 
-void DataSourceGenderPerspective::rebuildPerspective(QTreeWidget * treeWidget, const hmdbCommunication::ShallowCopy & shallowCopy)
+void DataSourceGenderPerspective::rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const hmdbCommunication::ShallowCopy & shallowCopy)
 {
 	std::map<hmdbServices::xmlWsdl::Gender::Type, std::set<hmdbServices::MedicalShallowCopy::Patient*>> patientsByGender;
 
@@ -292,7 +291,7 @@ void DataSourceGenderPerspective::rebuildPerspective(QTreeWidget * treeWidget, c
 		auto genderItem = new TreeWidgetContentItem(PatientsGroupContent, -1);
 		contentMap[genderItem] = genderIT->first;
 
-		treeWidget->addTopLevelItem(genderItem);
+		treeWidgetItem->addChild(genderItem);
 
 		auto patientsITEnd = genderIT->second.end();
 		for (auto patientIT = genderIT->second.begin(); patientIT != patientsITEnd; ++patientIT){

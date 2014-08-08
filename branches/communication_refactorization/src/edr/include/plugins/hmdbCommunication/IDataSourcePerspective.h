@@ -44,7 +44,7 @@ namespace hmdbCommunication
 		//! \reuturn Numer pola z info o pobieraniu
 		virtual const int downloadField(QTreeWidgetItem * item) const { return -1; };
 		//! Czyścimy dane contentu (np. bo zmieniamy perspektywę)
-		virtual void release() = 0;
+		virtual void release() {}
 	};
 }
 

@@ -60,6 +60,9 @@ namespace hmdbCommunication
 			std::istream * motionShallowCopy, std::istream * motionMetadata,
 			std::istream * medicalShallowCopy, std::istream * medicalMetadata);
 
+		//! \param userHash Skrót użytkownika którego kopię sprawdzamy
+		//! \param storage Skład z którego wyciągamy płytką kopię
+		//! \return Płytka kopia bazy danych
 		static const ShallowCopyPtr extractShallowCopy(const std::string & userHash,
 			const IHMDBStorageOperations * storage);
 
@@ -93,39 +96,59 @@ namespace hmdbCommunication
 		//! \return Zbiór plików
 		static const StorageFileNames files(const ShallowCopy & shallowCopy);
 
+		//! \param userHash Skrót użytkownika którego kopię sprawdzamy
+		//! \param shallowType Typ płytkiej kopii o która pytamy
+		//! \param storage Skład w którym szukamy
 		//! \return Czy płytka kopia bazy danych jest dostepna w storage
 		static const bool shallowCopyInStorage(const std::string & userHash,
 			const ShallowCopyType shallowType,
 			const IHMDBStorageOperations * storage);
 
 		//! Usuwa wszystkie pliki płytkiej kopii bazy danych ze storage
+		//! \param storage Skład w którym szukamy
 		static void removeAllShallowCopies(IHMDBStorageOperations * storage);
+		
+		//! \param userHash Skrót użytkownika
 		//! \param dataReference Referencja danych
-		//! \param id Identyfikator pliku płytkiej kopii
+		//! \param shallowType Typ płytkiej kopii bazy danych		
 		//! \param stream Strumien do czytania danych płytkiej kopii
+		//! \param storage Skład w którym zapisujemy
 		static void storeShallowCopy(const std::string & userHash,
 			const IHMDBRemoteContext::DataReference dataReference,
 			const ShallowCopyType shallowType, std::istream * stream, IHMDBStorageOperations * storage);
+
+		//! \param userHash Skrót użytkownika
 		//! \param dataReference Referencja danych
-		//! \param id Identyfikator pliku płytkiej kopii
+		//! \param shallowType Typ płytkiej kopii bazy danych		
+		//! \param storage Skład w którym zapisujemy
 		//! \return Strumien do czytania danych lub nullptr jeśli nie ma
 		static std::istream * shallowCopyStream(const std::string & userHash,
 			const IHMDBRemoteContext::DataReference dataReference,
 			const ShallowCopyType shallowType, const IHMDBStorageOperations * storage);
 
+		//! \param userHash Skrót użytkownika
+		//! \param dataReference Referencja danych
+		//! \param shallowType Typ płytkiej kopii bazy danych				
+		//! \return Nazwa pliku płytkiej kopii bazy danych
 		static const std::string shallowCopyName(const std::string & userHash,
 			const IHMDBRemoteContext::DataReference dataReference,
 			const ShallowCopyType shallowType);
 
+		//! \param storage Skład w którym szukamy
+		//! \return Nazwy plików płytkiej kopii bazy danych
 		static const std::list<std::string> allShallowCopiesNames(IHMDBStorageOperations * storage);
 
 		static const std::list<std::string> filterShallowCopiesNames(const std::list<std::string> & src,
 			const IHMDBRemoteContext::DataReference dataReference,
 			const ShallowCopyType shallowType);
 
+		//! \param userHash Skrót użytkownika
 		static const std::list<std::string> removeUserShallowCopiesNames(const std::list<std::string> & src,
 			const std::string & userHash);
 
+		//! \param user Nazwa użytkownika
+		//! \param password Hasło użytkownika
+		//! \return Skrót użytkownika, unikalny dla pary user-password
 		static const std::string userHash(const std::string & user, const std::string & password);
 
 		//! \param storage Miejsce składowania danych

@@ -22,6 +22,10 @@
 #include "AnalysisTab.h"
 #include "ui_toolboxmaindeffile.h"
 #include "MdeServiceWindow.h"
+#include <plugins/hmdbCommunication/IHMDBSource.h>
+#include <plugins/hmdbCommunication/DataViewWidget.h>
+#include <corelib/PluginCommon.h>
+#include <corelib/IPath.h>
 
 using namespace core;
 
@@ -63,6 +67,18 @@ void MdeMainWindow::showSplashScreenMessage(const QString & message)
     splashScreen()->showMessage(message, Qt::AlignBottom | Qt::AlignLeft, Qt::white);
 }
 
+class IMUHMDBSourceView : public hmdbCommunication::IHMDBSource::IHMDBSourceContextView
+{
+public:
+	//! \return Nazwa widoku
+	virtual const QString name() const { return "IMU view"; }
+	//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych jakim zasilamy widok
+	//! \return Widok obs³uguj¹cy kontekst
+	virtual QWidget * createView(hmdbCommunication::IHMDBShallowCopyContext * shallowCopyContext) { return new DataViewWidget(shallowCopyContext); }
+	//! \return Czy dany widok wymaga po³¹czenia z us³ugami webowymi
+	virtual const bool requiresRemoteContext() const { return true; }
+};
+
 void MdeMainWindow::customViewInit(QWidget * console)
 {
    auto memoryManager = plugin::getHierarchyManagerReader();
@@ -70,8 +86,36 @@ void MdeMainWindow::customViewInit(QWidget * console)
    trySetStyleByName("hmm");
  
    this->showFullScreen();
-   
+
    auto sourceManager = plugin::getSourceManager();
+
+   auto hmdbSource = core::querySource<hmdbCommunication::IHMDBSource>(sourceManager);
+
+   if (hmdbSource != nullptr){
+
+	   auto hmdbView = new IMUHMDBSourceView;
+
+	   hmdbSource->registerSourceContextViewPrototype(hmdbView);
+
+	   {
+		   hmdbCommunication::IHMDBSource::ContextConfiguration ccfg;
+		   ccfg.name = tr("Default PJWSTK IMU data connection");
+		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getApplicationDataPath() / "db" / "localStorage.db").string());
+		   ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
+		   ccfg.motionServicesConfiguration.userConfiguration.user = "";
+		   ccfg.motionServicesConfiguration.userConfiguration.password = "";
+		   ccfg.motionServicesConfiguration.serviceConfiguration.url = "https://v21.pjwstk.edu.pl/IMU";
+		   ccfg.motionServicesConfiguration.serviceConfiguration.caPath = QString::fromStdString((plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string());
+
+		   ccfg.motionDataConfiguration.serviceConfiguration.url = "ftps://v21.pjwstk.edu.pl";
+		   ccfg.motionDataConfiguration.serviceConfiguration.caPath = "";
+		   ccfg.motionDataConfiguration.userConfiguration.user = "testUser";
+		   ccfg.motionDataConfiguration.userConfiguration.password = "testUser";
+
+		   hmdbSource->registerSourceContextViewConfiguration(hmdbView, ccfg);
+	   }
+   }
+   
    for (int i = 0; i < sourceManager->getNumSources(); ++i) {
        auto source = sourceManager->getSource(i);
        QWidget* widget = source->getWidget();

@@ -2,13 +2,17 @@
 #include "PythonLogic.h"
 #include "PythonService.h"
 #include "PythonHighlighter.h"
-#include <QtGui/QLabel>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QLabel>
 #include <QtGui/QFont>
-#include <QtGui/QTextEdit>
-#include <QtGui/QPushButton>
-#include <QtGui/QLabel>
 #include <utils/ObjectWrapper.h>
+#include "PythonConsole.h"
+#include "QtWidgets/QAction"
+#include "PythonEditor.h"
 
+using namespace python;
 
 PythonService::PythonService() :
     editor(nullptr)
@@ -22,36 +26,39 @@ PythonService::~PythonService()
 }
 
 
-void PythonService::init( core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager )
+void PythonService::init( core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, 
+	core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager )
 {
+	bridge = utils::make_shared<MdeBridge>();
+	bridge->setManagers(sourceManager, visualizerManager, memoryDataManager, streamDataManager, fileDataManager);
+	logic = utils::make_shared<PythonLogic>(bridge);
+	console = new python::PythonConsole(logic);
+
+	editor = PythonEditor::createPythonEditor();
+	QList<QAction*> actions;
+
+	QAction* run = new QAction("Run", editor);
+	connect(run, SIGNAL(triggered()), this, SLOT(runScript()));
+	actions.push_back(run);
+
+	editor->addActions(actions);
+	QString text("print \"Hello world\"\nresult = 5 * 4");
+	editor->setPlainText(text);
 
 }
 
 QWidget* PythonService::getWidget( )
 {
-    QFont font;
-    font.setFamily("Courier");
-    font.setFixedPitch(true);
-    font.setPointSize(10);
-
-    editor = new QTextEdit;
-    editor->setFont(font);
-
-    QString text("print \"Hello world\"\nresult = 5 * 4");
-    editor->setPlainText(text);
-    QSyntaxHighlighter* highlighter = new PythonHighlighter(editor->document());
-    //editor->setMinimumSize(600, 600);
-    editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    editor->setStyleSheet("border: 1px solid red");
-
     return editor;
 }
 
 void PythonService::runScript()
 {
     int input = 10;
-    logic.getDict()["input"] = input;
-    logic.run(editor->toPlainText().toStdString());
+    logic->getDict()["input"] = input;
+    QString out = QString::fromStdString(logic->run(editor->toPlainText().toStdString()));
+	//output->setText(out);
+	console->append(out);
 }
 
 const bool PythonService::lateInit()
@@ -72,24 +79,7 @@ void PythonService::update( double deltaTime )
 QWidgetList PythonService::getPropertiesWidgets()
 {
     QWidgetList l;
-    QVBoxLayout* layout = new QVBoxLayout();
-
-    QLabel* label = new QLabel("Widget TEST");
-    layout->addWidget(label);
-
-    QPushButton* buttonRun = new QPushButton();
-    buttonRun->setText("RUN");
-    connect(buttonRun, SIGNAL(clicked()), this, SLOT(runScript()));
-    layout->addWidget(buttonRun);
-
-    QWidget* spacer = new QWidget();
-    spacer->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-    layout->addWidget(spacer);
-
-    QWidget* widget = new QWidget();
-    widget->setLayout(layout);
-    l.push_back(widget);
-
-   
-    return l;
+    l.push_back(console);
+	return l;
 }
+

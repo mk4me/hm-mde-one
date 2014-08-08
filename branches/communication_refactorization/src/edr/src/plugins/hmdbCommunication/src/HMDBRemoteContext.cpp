@@ -102,7 +102,6 @@ const HMDBRemoteContext::SynchronizeOperationPtr HMDBRemoteContext::prepareShall
 const HMDBRemoteContext::DownloadOperationPtr HMDBRemoteContext::prepareFileDownload(const CompoundID & fileID,
 	IHMDBStorage * storage)
 {
-
 	HMDBRemoteContext::DownloadOperationPtr ret;
 
 	if (fileID.dataReference == IHMDBRemoteContext::Medical){
@@ -134,10 +133,10 @@ const IHMDBRemoteContext::TransferOperationPtr HMDBRemoteContext::prepareFileUpl
 	utils::shared_ptr<TransferOperation> ret(new TransferOperation());
 
 	if (dataReference == Motion){
-		ret->setTransfer(session_->motionFtp()->put(path + "/" + fileName, source));
+		ret->setTransfer(session_->motionFtp()->preparePut(path + "/" + fileName, source));
 	}
 	else{
-		ret->setTransfer(session_->medicalFtp()->put(path + "/" + fileName, source));
+		ret->setTransfer(session_->medicalFtp()->preparePut(path + "/" + fileName, source));
 	}
 
 	return ret;

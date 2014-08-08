@@ -12,22 +12,44 @@
 
 #include <boost/python.hpp>
 #include <map>
-class PythonLogic
-{
-public:
-    PythonLogic();
-	virtual ~PythonLogic();
+#include <utils/SmartPtr.h>
+#include <boost/circular_buffer.hpp>
+#include "MdeBridge.h"
 
-public:
-    void run( const std::string& script);
-    boost::python::object& getDict();
+namespace python {
 
-private:
-    boost::python::object mainModule;
-    boost::python::object mainNamespace;
-};
-typedef core::shared_ptr<PythonLogic> PythonLogicPtr;
-typedef core::shared_ptr<const PythonLogic> PythonLogicConstPtr;
+	class PythonStdIoRedirect {
+	public:
+		typedef boost::circular_buffer<std::string> ContainerType;
+		void Write(std::string const& str);
+		static std::string GetOutput();
+	private:
+		static ContainerType m_outputs; // must be static, otherwise output is missing
+	};
 
+
+	class PythonLogic
+	{
+	public:
+		PythonLogic(MdeBridgeConstPtr bridge);
+		virtual ~PythonLogic();
+		typedef boost::python::object object;
+
+	public:
+		std::string run(const std::string& script);
+		std::pair<std::string, object> runStatement(const std::string& script, object global = object(), object local = object());
+		object& getDict();
+		object createGlobal();
+
+	private:
+		boost::python::object mainModule;
+		boost::python::object mainNamespace;
+
+		PythonStdIoRedirect python_stdio_redirector;
+		MdeBridgeConstPtr bridge;
+	};
+	typedef utils::shared_ptr<PythonLogic> PythonLogicPtr;
+	typedef utils::shared_ptr<const PythonLogic> PythonLogicConstPtr;
+}
 
 #endif

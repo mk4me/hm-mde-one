@@ -45,13 +45,13 @@ namespace hmdbCommunication
 		//! \param destinationFileName Nazwa docelowa uploadowanego pliku na serwerze bazy ruchu
 		//! \param stream Strumieñ z którego bêdziemy wysy³aæ zawartoœæ pliku
 		//! \param size Rozmiar danych do wys³ania
-		virtual TransferPtr put(const std::string & destinationFileName,
+		virtual const TransferPtr preparePut(const std::string & destinationFileName,
 			std::istream * stream, const unsigned long long size = 0) = 0;
 
 		//! \param destinationFileName Nazwa pobieranego pliku z serwera bazy ruchu
 		//! \param stream Strumieñ do którego bêdziemy zapisywaæ zawartoœæ œci¹ganego pliku
 		//! \param size Rozmiar danych do pobrania
-		virtual TransferPtr get(const std::string & destinationFileName,
+		virtual const TransferPtr prepareGet(const std::string & destinationFileName,
 			std::ostream * stream, const unsigned long long size = 0) = 0;
 	};
 }

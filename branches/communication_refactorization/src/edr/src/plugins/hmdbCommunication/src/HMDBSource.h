@@ -65,12 +65,18 @@ namespace hmdbCommunication
 
 		//-----------------------------------------------------------------
 
-		//! \param session Sesja us³ug bazy danych ruchu
-		//! \param storage Obiekt do przechowywania danych
-		//! \return Konteks Ÿródla danych
-		virtual IHMDBSourceContext * createSourceContext(IHMDBSession * session,
-			IHMDBStorage * storage, const std::string & userName,
-			const std::string & userHash);
+		//! \param storage Miejsce sk³¹dowania danych
+		//! \param user Nazwa u¿ytkownika
+		//! \param password	Has³o u¿ytkownika
+		//! \param session Sesja us³ug zdalnych
+		//! \return Kontekst Ÿród³a dancyh
+		virtual IHMDBSourceContext * createSourceContext(IHMDBStorage * storage,
+			const std::string & user, const std::string & password,
+			IHMDBSession * session = nullptr);
+
+		//! \param sourceContext Kontekst Ÿród³a danych
+		//! \return Konteks p³ytkiej kopii bazy danych
+		virtual IHMDBShallowCopyContext * createShallowCopyContext(IHMDBSourceContext * sourceContext);
 
 		//! \param prototype Prototyp widoku kontekstów
 		virtual void registerSourceContextViewPrototype(IHMDBSourceContextView * prototype);
@@ -86,15 +92,16 @@ namespace hmdbCommunication
 		//! \param prototype Prototyp widoku kontekstów dla którego chcemy zarejestrowaæ konfiguracjê
 		//! \param config Konfiguracja widoku
 		//! \return Czy uda³o siê zarejestrowaæ konfiguracjê (nazwa musi byæ unikalna!!)
-		virtual const bool registerSourceContextConfiguration(IHMDBSourceContextView * prototype,
+		virtual const bool registerSourceContextViewConfiguration(IHMDBSourceContextView * prototype,
 			const ContextConfiguration & config);
-		//! \param prototype Prototyp widoku kontekstów
-		//! \return Iloœc zarejestrowanych konfiguracji widoku
-		const unsigned int sourceContextConfigurationsCount(IHMDBSourceContextView * prototype) const;
-		//! \param prototype Prototyp widoku kontekstów
+
+		//! \param prototype Prototyp widoku dla którego szukam predefiniowanych konfiguracji
+		virtual const unsigned int sourceContextViewConfigurationsCount(IHMDBSourceContextView * prototype) const;
+
+		//! \param prototype Prototyp widoku dla którego szukam predefiniowanych konfiguracji
 		//! \param idx Indeks konfiguracji
 		//! \return Konfiguracja
-		const ContextConfiguration sourceContextConfiguration(IHMDBSourceContextView * prototype,
+		virtual const ContextConfiguration sourceContextViewConfiguration(IHMDBSourceContextView * prototype,
 			const unsigned int idx) const;
 
 		//! \param url Adres serwisu gdzie zak³adamy konto
@@ -124,6 +131,7 @@ namespace hmdbCommunication
 			const bool multi = true,
 			const std::string & caPath = std::string());
 
+		/*
 		//! \return Iloœæ obs³ugiwanych kontekstów danych
 		virtual const unsigned int size() const;
 		//! \param idx Indeks kontekstu danych
@@ -132,6 +140,7 @@ namespace hmdbCommunication
 		//! \param idx Indeks kontekstu danych
 		//! \return Konteks danych dla zadanego indeksu
 		virtual const IHMDBSourceContext * sourceContext(const unsigned int idx) const;
+		*/
 		//! \param data Dane
 		//! \return Konteks danych lub nullptr jeœli nie znaleziono
 		//virtual IHMDBSourceContext * sourceContextForData(core::VariantConstPtr data);
@@ -139,13 +148,16 @@ namespace hmdbCommunication
 		//! \return Konteks danych lub nullptr jeœli nie znaleziono
 		//virtual const IHMDBSourceContext * sourceContextForData(core::VariantConstPtr data) const;
 
+		virtual IShallowCopyFilterManager * filterManager();
+		virtual const IShallowCopyFilterManager * filterManager() const;
+
 	private:
 		//! Widget
 		HMDBSourceWidget * mainWidget;
 		//! Obiekt synchronizuj¹cy
 		mutable threadingUtils::RecursiveSyncPolicy sync_;
 		//! Lista kontekstów danych
-		std::list<IHMDBSourceContext*> sourceContexts_;
+		//std::list<IHMDBSourceContext*> sourceContexts_;
 		//! Manager pamiêci
 		core::IMemoryDataManager * memoryDM;
 		//! Manager strumieni
@@ -154,6 +166,8 @@ namespace hmdbCommunication
 		core::IFileDataManager * fileDM;
 		//! Prototypy kontekstów
 		ContextViews contextViews;
+
+		utils::shared_ptr<IShallowCopyFilterManager> filterManager_;
 	};
 }
 

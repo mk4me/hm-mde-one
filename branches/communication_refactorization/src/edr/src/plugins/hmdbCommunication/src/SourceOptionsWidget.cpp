@@ -15,6 +15,10 @@
 #include "SQLCipherStorage.h"
 #include "ShallowCopyUtils.h"
 #include <coreui/CoreDockWidget.h>
+#include "HMDBServicesVerificationHelper.h"
+#include <QtWidgets/QMessageBox>
+#include <QtGui/QStandardItem>
+#include <QtGui/QStandardItemModel>
 
 const bool verifyFileExistance(const QString & filePath)
 {
@@ -29,6 +33,15 @@ const bool verifyFileExistance(const QString & filePath)
 
 	return ret;
 }
+
+void verify(const QString & text, const QString & message, QStringList & errors)
+{
+	if (text.isEmpty() == true){
+		errors.push_back(message);
+	}
+}
+
+using namespace hmdbCommunication;
 
 SourceOptionsWidget::SourceOptionsWidget(QWidget * parent, Qt::WindowFlags f)
 	: QWidget(parent, f), ui(new Ui::SourceOptionsWidget),
@@ -45,6 +58,7 @@ SourceOptionsWidget::SourceOptionsWidget(QWidget * parent, Qt::WindowFlags f)
 	ui->loginTab->setEnabled(false);
 
 	onRefreshViews();
+	onRefreshConfigurations();
 }
 
 SourceOptionsWidget::~SourceOptionsWidget()
@@ -62,6 +76,72 @@ const QMainWindow * SourceOptionsWidget::sourcesPlaceholder() const
 	return sourcesPlaceholder_;
 }
 
+void SourceOptionsWidget::onRefreshConfigurations()
+{
+	if (ui->viewComboBox->currentIndex() < 0){
+		return;
+	}
+
+	auto sm = plugin::getSourceManager();
+	if (sm != nullptr){
+		auto hmdbSource = core::querySource<hmdbCommunication::IHMDBSource>(sm);
+		if (hmdbSource != nullptr && hmdbSource->sourceContextViewPrototypesCount() > 0){
+
+			ui->profileComboBox->blockSignals(true);
+
+			auto configName = ui->profileComboBox->currentText();
+
+			auto view = hmdbSource->sourceContextViewPrototype(ui->viewComboBox->currentIndex());
+
+			//uzupe³niam widoki
+			ui->profileComboBox->clear();
+			ui->profileComboBox->addItem(tr("Custom connection profile"));
+			QStandardItemModel* model =
+				qobject_cast<QStandardItemModel*>(ui->profileComboBox->model());
+			QModelIndex firstIndex = model->index(0, ui->profileComboBox->modelColumn(),
+				ui->profileComboBox->rootModelIndex());
+			QStandardItem* firstItem = model->itemFromIndex(firstIndex);
+			firstItem->setSelectable(false);
+
+			const auto as = hmdbSource->sourceContextViewConfigurationsCount(nullptr);
+
+			if (as > 0){
+
+				for (auto i = 0; i < as; ++i){
+					ui->profileComboBox->addItem(hmdbSource->sourceContextViewConfiguration(nullptr, i).name);
+				}
+			}
+
+			const auto s = hmdbSource->sourceContextViewConfigurationsCount(view);
+
+			if (as > 0 && s > 0){
+				ui->profileComboBox->insertSeparator(as);
+			}
+
+			for (auto i = 0; i < s; ++i){
+				ui->profileComboBox->addItem(hmdbSource->sourceContextViewConfiguration(view, i).name);
+			}		
+
+			auto f = ui->profileComboBox->findText(configName);
+
+			bool refresh = false;
+
+			if (f < 0){
+				f = 1;
+				refresh = true;
+			}
+
+			ui->profileComboBox->setCurrentIndex(f);
+
+			ui->profileComboBox->blockSignals(false);
+
+			if (refresh == true){
+				onProfileChange(f);
+			}
+		}
+	}
+}
+
 void SourceOptionsWidget::onRefreshViews()
 {
 	ui->loginTab->setEnabled(false);
@@ -69,8 +149,24 @@ void SourceOptionsWidget::onRefreshViews()
 	auto sm = plugin::getSourceManager();
 	if (sm != nullptr){
 		auto hmdbSource = core::querySource<hmdbCommunication::IHMDBSource>(sm);
-		if (hmdbSource != nullptr && hmdbSource->sourceContextViewPrototypesCount() > 0){
+		if (hmdbSource != nullptr && hmdbSource->sourceContextViewPrototypesCount() > 0){			
+
 			ui->loginTab->setEnabled(true);
+			auto currentViewIndex = ui->viewComboBox->currentIndex();
+
+			//uzupe³niam widoki
+			ui->viewComboBox->clear();
+
+			for (auto i = 0; i < hmdbSource->sourceContextViewPrototypesCount(); ++i){
+				ui->viewComboBox->addItem(hmdbSource->sourceContextViewPrototype(i)->name());
+			}
+
+			if (currentViewIndex > -1 && currentViewIndex < hmdbSource->sourceContextViewPrototypesCount()){
+				ui->viewComboBox->setCurrentIndex(currentViewIndex);
+			}
+			else{
+				ui->viewComboBox->setCurrentIndex(0);
+			}			
 		}
 	}
 }
@@ -87,12 +183,120 @@ void SourceOptionsWidget::onRemoveProfile()
 
 void SourceOptionsWidget::onViewChange(int idx)
 {
+	if (idx >= 0){
+		auto sm = plugin::getSourceManager();
+		if (sm != nullptr){
+			auto hmdbSource = core::querySource<hmdbCommunication::IHMDBSource>(sm);
+			if (hmdbSource != nullptr && idx < hmdbSource->sourceContextViewPrototypesCount()){
+				auto viewProto = hmdbSource->sourceContextViewPrototype(idx);
+				if (viewProto != nullptr){
+					if (viewProto->requiresRemoteContext() == true){
+						ui->onlineModeCheckBox->setChecked(true);
+						//ui->onlineModeCheckBox->setEnabled(false);
+						return;
+					}					
+				}
+			}
+		}
+	}
 
+	//ui->onlineModeCheckBox->setEnabled(true);
 }
 
 void SourceOptionsWidget::onProfileChange(int idx)
 {
+	const auto viewIDX = ui->viewComboBox->currentIndex();
 
+	if (idx >= 1 && viewIDX >= 0){
+		--idx;
+		auto sm = plugin::getSourceManager();
+		if (sm != nullptr){
+			auto hmdbSource = core::querySource<hmdbCommunication::IHMDBSource>(sm);
+			if (hmdbSource != nullptr && hmdbSource->sourceContextViewPrototypesCount() > 0
+				&& viewIDX < hmdbSource->sourceContextViewPrototypesCount()){
+
+				hmdbCommunication::IHMDBSource::IHMDBSourceContextView * view = nullptr;
+
+				const auto commonConfigsCount = hmdbSource->sourceContextViewConfigurationsCount(nullptr);
+
+				if (idx >= commonConfigsCount){
+					view = hmdbSource->sourceContextViewPrototype(viewIDX);
+					idx -= commonConfigsCount;
+
+					if (commonConfigsCount > 0){
+						--idx;
+					}
+				}
+
+				const auto cfg = hmdbSource->sourceContextViewConfiguration(view, idx);
+
+				setConnectionProfile(cfg);
+			}
+		}
+	}
+}
+
+void SourceOptionsWidget::setConnectionProfile(const hmdbCommunication::IHMDBSource::ContextConfiguration & connectionProfile)
+{
+	ui->storagePathLineEdit->blockSignals(true);
+	ui->storagePasswordLineEdit->blockSignals(true);
+	ui->motionServiceURLLineEdit->blockSignals(true);
+	ui->motionDataURLLineEdit->blockSignals(true);
+	ui->medicaServicelURLLineEdit->blockSignals(true);
+	ui->medicalDataURLLineEdit->blockSignals(true);
+	ui->servicesCertificatePathLineEdit->blockSignals(true);
+	ui->dataUserLineEdit->blockSignals(true);
+	ui->dataPasswordLineEdit->blockSignals(true);
+
+	//ui->loginLineEdit->setText();
+	//ui->passwordLineEdit->setText();
+	ui->storagePathLineEdit->setText(connectionProfile.storageConfiguration.path);
+	ui->storagePasswordLineEdit->setText(connectionProfile.storageConfiguration.password);
+
+	bool online = false;
+
+	if (connectionProfile.motionDataConfiguration.userConfiguration.user.isEmpty() == false
+		&& connectionProfile.motionDataConfiguration.userConfiguration.password.isEmpty() == false){
+
+		if (connectionProfile.motionServicesConfiguration.serviceConfiguration.url.isEmpty() == false
+			&& connectionProfile.motionDataConfiguration.serviceConfiguration.url.isEmpty() == false){
+			ui->motionServiceURLLineEdit->setText(connectionProfile.motionServicesConfiguration.serviceConfiguration.url);
+			ui->motionDataURLLineEdit->setText(connectionProfile.motionDataConfiguration.serviceConfiguration.url);
+			online = true;
+		}
+
+		if (connectionProfile.medicalServicesConfiguration.serviceConfiguration.url.isEmpty() == false
+			&& connectionProfile.medicalDataConfiguration.serviceConfiguration.url.isEmpty() == false){
+
+			ui->medicaServicelURLLineEdit->setText(connectionProfile.medicalServicesConfiguration.serviceConfiguration.url);
+			ui->medicalDataURLLineEdit->setText(connectionProfile.medicalDataConfiguration.serviceConfiguration.url);
+			online = true;
+		}
+
+		if (online == true){
+			ui->servicesCertificatePathLineEdit->setText(connectionProfile.motionServicesConfiguration.serviceConfiguration.caPath);
+			ui->dataUserLineEdit->setText(connectionProfile.motionDataConfiguration.userConfiguration.user);
+			ui->dataPasswordLineEdit->setText(connectionProfile.motionDataConfiguration.userConfiguration.password);
+			ui->onlineModeCheckBox->setChecked(true);
+		}
+	}
+
+	ui->storagePathLineEdit->blockSignals(false);
+	ui->storagePasswordLineEdit->blockSignals(false);
+	ui->motionServiceURLLineEdit->blockSignals(false);
+	ui->motionDataURLLineEdit->blockSignals(false);
+	ui->medicaServicelURLLineEdit->blockSignals(false);
+	ui->medicalDataURLLineEdit->blockSignals(false);
+	ui->servicesCertificatePathLineEdit->blockSignals(false);
+	ui->dataUserLineEdit->blockSignals(false);
+	ui->dataPasswordLineEdit->blockSignals(false);
+}
+
+void SourceOptionsWidget::onConnectionProfileEdit()
+{
+	ui->profileComboBox->blockSignals(true);
+	ui->profileComboBox->setCurrentIndex(0);
+	ui->profileComboBox->blockSignals(false);
 }
 
 void SourceOptionsWidget::onStoragePathBrowse()
@@ -100,7 +304,9 @@ void SourceOptionsWidget::onStoragePathBrowse()
 	auto sf = QFileDialog::getOpenFileName(this,
 		tr("Open storage"), ui->storagePathLineEdit->text().isEmpty() == false ? ui->storagePathLineEdit->text() : QString(), tr("Storage File (*.dat)"));
 
-	ui->storagePathLineEdit->setText(sf);
+	if (sf.isEmpty() == false){
+		ui->storagePathLineEdit->setText(sf);
+	}
 }
 
 void SourceOptionsWidget::onServicesSSLCertificateBrowse()
@@ -108,115 +314,106 @@ void SourceOptionsWidget::onServicesSSLCertificateBrowse()
 	auto sf = QFileDialog::getOpenFileName(this,
 		tr("Chose service certificate"), ui->servicesCertificatePathLineEdit->text().isEmpty() == false ? ui->servicesCertificatePathLineEdit->text() : QString(), tr("Certificate File (*.crt)"));
 
-	ui->servicesCertificatePathLineEdit->setText(sf);
+	if (sf.isEmpty() == false){
+		ui->servicesCertificatePathLineEdit->setText(sf);
+	}
+}
+
+const QString formatSourceWidgetTitle(const QString & viewName, const QString & user)
+{
+	return viewName + "@" + user;
+}
+
+const QString formatErrorMessage(const QStringList & errors)
+{
+	QString ret = QObject::tr("UNKNOWN error");
+
+	if (errors.empty() == false){
+		int i = 1;
+		auto it = errors.begin();
+		ret = *it;
+		while (++it != errors.end()){
+			++i;
+			ret += QString("\n%1: ").arg(i) + *it;
+		}
+	}
+
+	return ret;
 }
 
 void SourceOptionsWidget::onLogin()
 {
 	coreUI::CoreCursorChanger ccc;
 
+	QStringList errors;
+
+	auto ok = verify(errors);
+
+	if (ok == false){
+		coreUI::CorePopup::showMessage(tr("Login failed"), formatErrorMessage(errors));
+		return;
+	}
+
+	auto sm = plugin::getServiceManager();	
+	auto hmdbService = core::queryService<hmdbCommunication::IHMDBService>(sm);	
+	auto srcm = plugin::getSourceManager();	
+	auto hmdbSource = core::querySource<hmdbCommunication::IHMDBSource>(srcm);	
+
 	QString message;
 
-	auto sm = plugin::getServiceManager();
-	if (sm != nullptr){
-		auto hmdbService = core::queryService<hmdbCommunication::IHMDBService>(sm);
-		if (hmdbService != nullptr){
-			QString message;
-			try{
+	try{
 
-				if (ui->storagePathLineEdit->text().isEmpty() == true ||
-					verifyFileExistance(ui->storagePathLineEdit->text()) == false){
-					message = tr("Login operation failed. Storage file not exists or was not chosen.");
+		std::auto_ptr<hmdbCommunication::SQLCipherStorage> storage(new hmdbCommunication::SQLCipherStorage);
+
+		storage->open(ui->storagePathLineEdit->text().toStdString(),
+			ui->storagePasswordLineEdit->text().toStdString());
+
+		std::auto_ptr<hmdbCommunication::IHMDBSession> session;
+
+		if (ui->onlineModeCheckBox->isChecked() == true){
+
+			session = std::auto_ptr<hmdbCommunication::IHMDBSession>(hmdbService->createSession(
+				ui->motionServiceURLLineEdit->text().toStdString(),
+				ui->medicalDataURLLineEdit->text().toStdString(),
+				ui->loginLineEdit->text().toStdString(),
+				ui->passwordLineEdit->text().toStdString(),
+				ui->motionDataURLLineEdit->text().toStdString(),
+				ui->medicalDataURLLineEdit->text().toStdString(),
+				ui->servicesCertificatePathLineEdit->text().toStdString(),
+				networkUtils::HVMatch));
+		}
+
+		auto sc = hmdbSource->createSourceContext(storage.release(), ui->loginLineEdit->text().toStdString(),
+			ui->passwordLineEdit->text().toStdString(), session.release());
+		auto scc = hmdbSource->createShallowCopyContext(sc);
+
+		//utworzenie widgeta aktualnie wybranego widoku z nowym kontekstem
+		const auto idx = ui->viewComboBox->currentIndex();
+		auto scvp = hmdbSource->sourceContextViewPrototype(idx);
+		if (scvp != nullptr){
+			auto view = scvp->createView(scc);
+			if (view != nullptr){
+				auto dw = coreUI::CoreDockWidget::embeddWidget(view,
+					formatSourceWidgetTitle(scvp->name(), ui->loginLineEdit->text()),
+					Qt::AllDockWidgetAreas, true);
+
+				if (sourcesPlaceholder_ != nullptr){
+					sourcesPlaceholder_->addDockWidget(Qt::LeftDockWidgetArea, dw);
 				}
 				else{
-
-					std::auto_ptr<hmdbCommunication::SQLCipherStorage> storage(new hmdbCommunication::SQLCipherStorage);
-
-					storage->open(ui->storagePathLineEdit->text().toStdString(),
-						ui->storagePasswordLineEdit->text().toStdString());
-
-					if (storage->isOpened() == false){
-						message = tr("Login operation failed. Could not open storage.");
-					}
-					else{
-
-						std::auto_ptr<hmdbCommunication::IHMDBSession> session;
-
-						if (ui->onlineModeCheckBox->isChecked() == true){
-
-							session = std::auto_ptr<hmdbCommunication::IHMDBSession>(hmdbService->createSession(
-								ui->motionServiceURLLineEdit->text().toStdString(),
-								ui->medicalDataURLLineEdit->text().toStdString(),
-								ui->loginLineEdit->text().toStdString(),
-								ui->passwordLineEdit->text().toStdString(),
-								ui->motionDataURLLineEdit->text().toStdString(),
-								ui->medicalDataURLLineEdit->text().toStdString(),
-								ui->servicesCertificatePathLineEdit->text().toStdString(),
-								networkUtils::HVMatch));
-						}
-
-						auto sm = plugin::getSourceManager();
-						if (sm != nullptr){
-							auto hmdbSource = core::querySource<hmdbCommunication::IHMDBSource>(sm);
-							if (hmdbSource != nullptr){								
-								try{
-									auto sc = hmdbSource->createSourceContext(session.release(), storage.release(),
-										ui->loginLineEdit->text().toStdString(),
-										hmdbCommunication::ShallowCopyUtils::userHash(ui->loginLineEdit->text().toStdString(),
-										ui->passwordLineEdit->text().toStdString()));
-									
-									//utworzenie widgeta aktualnie wybranego widoku z nowym kontekstem
-									const auto idx = ui->viewComboBox->currentIndex();
-									auto scvp = hmdbSource->sourceContextViewPrototype(idx);
-									if (scvp != nullptr){
-										auto view = scvp->createView(sc);
-										if (view != nullptr){
-											auto dw = coreUI::CoreDockWidget::embeddWidget(view,
-												scvp->name() + "@" + ui->loginLineEdit->text(),
-												Qt::AllDockWidgetAreas, true);
-
-											if (sourcesPlaceholder_ != nullptr){
-												sourcesPlaceholder_->addDockWidget(Qt::LeftDockWidgetArea, dw);
-											}
-											else{
-												dw->setFloating(true);
-												dw->setVisible(true);
-											}
-
-											message = tr("Logged successfully");
-										}
-									}
-								}
-								catch (std::exception & e){
-									message = tr("Login operation failed with the following error: ") + QString::fromStdString(e.what());
-								}
-								catch (...){
-									message = tr("Login operation failed with UNKNOWN error");
-								}
-							}
-							else{
-								message = tr("Login operation failed. Could not find HMDBSource.");
-							}
-						}
-						else{
-							message = tr("Login operation failed. Uninitialized source manager.");
-						}
-					}
+					dw->setFloating(true);
+					dw->setVisible(true);
 				}
+
+				message = tr("Logged successfully");
 			}
-			catch (std::exception & e){
-				message = tr("Login operation failed with the following error: ") + QString::fromStdString(e.what());
-			}
-			catch (...){
-				message = tr("Login operation failed with UNKNOWN error");
-			}
-		}
-		else{
-			message = tr("Login operation failed. Could not find HMDBService.");
 		}
 	}
-	else{
-		message = tr("Login operation failed. Uninitialized service manager.");
+	catch (std::exception & e){
+		message = QString::fromStdString(e.what());
+	}
+	catch (...){
+		message = tr("UNKNOWN login error");
 	}
 
 	coreUI::CorePopup::showMessage(tr("Login status"), message);
@@ -232,7 +429,9 @@ void SourceOptionsWidget::onAccountOperationServiceSSLCertificateBrowse()
 	auto sf = QFileDialog::getOpenFileName(this,
 		tr("Chose account service certificate"), ui->opServiceCertificatePathLineEdit->text().isEmpty() == false ? ui->opServiceCertificatePathLineEdit->text() : QString(), tr("Certificate File (*.crt)"));
 
-	ui->opServiceCertificatePathLineEdit->setText(sf);
+	if (sf.isEmpty() == false){
+		ui->opServiceCertificatePathLineEdit->setText(sf);
+	}
 }
 
 void SourceOptionsWidget::onRegister()
@@ -359,7 +558,9 @@ void SourceOptionsWidget::onServerSSLCertificateBrowse()
 	auto sf = QFileDialog::getOpenFileName(this,
 		tr("Chose server certificate"), ui->statusServerCertificatePathLineEdit->text().isEmpty() == false ? ui->statusServerCertificatePathLineEdit->text() : QString(), tr("Certificate File (*.crt)"));
 
-	ui->statusServerCertificatePathLineEdit->setText(sf);
+	if (sf.isEmpty() == false){
+		ui->statusServerCertificatePathLineEdit->setText(sf);
+	}
 }
 
 void SourceOptionsWidget::onStatusCheck()
@@ -412,5 +613,173 @@ void SourceOptionsWidget::onSourceModeChange(int mode)
 	else if (mode == Qt::Checked){
 		ui->line_18->setVisible(true);
 		ui->loginConnectionsGroupBox->setVisible(true);
+	}
+}
+
+const bool SourceOptionsWidget::verify(QStringList & messages)
+{
+	auto sm = plugin::getServiceManager();
+	if (sm == nullptr){
+		messages.push_back(tr("Uninitialized service manager"));
+	}
+
+	auto srcm = plugin::getSourceManager();
+	if (srcm == nullptr){
+		messages.push_back(tr("Uninitialized source manager"));
+	}
+
+	utils::shared_ptr<hmdbCommunication::IHMDBService> hmdbService;
+	if (sm != nullptr){
+		hmdbService = core::queryService<hmdbCommunication::IHMDBService>(sm);
+		if (hmdbService == nullptr){
+			messages.push_back(tr("HMDBService not found"));
+		}
+	}
+
+	utils::shared_ptr<hmdbCommunication::IHMDBSource> hmdbSource;
+	if (srcm != nullptr){
+		hmdbSource = core::querySource<hmdbCommunication::IHMDBSource>(srcm);
+		if (hmdbSource == nullptr){
+			messages.push_back(tr("HMDBSource not found"));
+		}
+	}
+
+	if (ui->storagePathLineEdit->text().isEmpty() == true){
+		messages.push_back(tr("Storage file was not not chosen."));
+	}
+	else if (verifyFileExistance(ui->storagePathLineEdit->text()) == false){
+		messages.push_back(tr("Storage file not exists."));		
+	}
+	else{
+
+		std::auto_ptr<hmdbCommunication::SQLCipherStorage> storage(new hmdbCommunication::SQLCipherStorage);
+
+		storage->open(ui->storagePathLineEdit->text().toStdString(),
+			ui->storagePasswordLineEdit->text().toStdString());
+
+		if (storage->isOpened() == false){
+			messages.push_back(tr("Could not open storage. Probably incorrect password"));
+		}
+		else{
+			storage->close();
+		}
+	}
+
+	if (ui->onlineModeCheckBox->isChecked() == true){
+
+		QStringList remoteErrors;
+
+		::verify(ui->loginLineEdit->text(), tr("Empty login"), remoteErrors);
+		::verify(ui->passwordLineEdit->text(), tr("Empty password"), remoteErrors);
+
+		if (ui->motionServiceURLLineEdit->text().isEmpty() == true && ui->medicaServicelURLLineEdit->text().isEmpty() == true){
+			remoteErrors.push_back(tr("Empty services URLs"));
+		}
+
+		if (remoteErrors.empty() == true){			
+
+			if (ui->motionServiceURLLineEdit->text().isEmpty() == false || ui->motionDataURLLineEdit->text().isEmpty() == false){
+				::verify(ui->motionServiceURLLineEdit->text(), tr("Empty motion service URL"), messages);
+				::verify(ui->motionDataURLLineEdit->text(), tr("Empty motion data URL"), messages);
+			}
+
+			if (ui->medicaServicelURLLineEdit->text().isEmpty() == false || ui->medicalDataURLLineEdit->text().isEmpty() == false){
+				::verify(ui->medicaServicelURLLineEdit->text(), tr("Empty medical service URL"), messages);
+				::verify(ui->medicalDataURLLineEdit->text(), tr("Empty medical data URL"), messages);
+			}
+		}
+
+		messages.append(remoteErrors);
+	}
+
+	return messages.empty();
+}
+
+template<typename T>
+static void _verify(T * service, const QString & errorMessage, QStringList & errors)
+{
+	if (HMDBServicesVerificationHelper::verify(service) == false){
+		errors.push_back(errorMessage);
+	}
+}
+
+void SourceOptionsWidget::verify(hmdbServices::IFileStoremanWS * fileStoreman,
+	hmdbCommunication::IHMDBFtp * ftp, const QString & errorMessage,
+	QStringList & errors)
+{
+	if (HMDBServicesVerificationHelper::verify(fileStoreman, ftp) == false){
+		errors.push_back(errorMessage);
+	}
+}
+
+void SourceOptionsWidget::verify(hmdbServices::ISingleAccountFactoryWS * singleAccountFactory, QStringList & errors)
+{
+	_verify(singleAccountFactory, tr("Single-account factory service failed"), errors);
+}
+
+void SourceOptionsWidget::verify(hmdbServices::IMultiAccountFactoryWS * multiAccountFactory, QStringList & errors)
+{
+	_verify(multiAccountFactory, tr("Multi-account factory service failed"), errors);
+}
+
+void SourceOptionsWidget::verify(hmdbServices::IAdministrationWS * administration, QStringList & errors)
+{
+	_verify(administration, tr("Administration service failed"), errors);
+}
+
+void SourceOptionsWidget::verify(hmdbServices::IAuthorizationWS * authorization, QStringList & errors)
+{
+	_verify(authorization, tr("Authorization service failed"), errors);
+}
+
+void SourceOptionsWidget::verify(hmdbServices::IGeneralBasicQueriesWS * generalQueries, QStringList & errors)
+{
+	_verify(generalQueries, tr("General queries service failed"), errors);
+}
+
+void SourceOptionsWidget::verify(hmdbServices::IMotionBasicQueriesWS * motionQueries, QStringList & errors)
+{
+	_verify(motionQueries, tr("Motion queries service failed"), errors);
+}
+
+void SourceOptionsWidget::verify(hmdbServices::IMotionBasicUpdatesWS * motionUpdate, QStringList & errors)
+{
+	_verify(motionUpdate, tr("Motion update service failed"), errors);
+}
+
+void SourceOptionsWidget::verify(hmdbServices::IMedicalBasicUpdatesWS * medicalUpdate, QStringList & errors)
+{
+	_verify(medicalUpdate, tr("Medical update service failed"), errors);
+}
+
+void SourceOptionsWidget::verify(hmdbServices::IMotionFileStoremanWS * motionFilestoreman, QStringList & errors)
+{
+	_verify(motionFilestoreman, tr("Motion filestoreman service failed"), errors);
+}
+
+void SourceOptionsWidget::verify(hmdbServices::IMedicalFileStoremanWS * medicalFilestoreman, QStringList & errors)
+{
+	_verify(medicalFilestoreman, tr("Medical filestoreman service failed"), errors);
+}
+
+void SourceOptionsWidget::verify(hmdbServices::IUserPersonalSpaceWS * userPersonalSpace, QStringList & errors)
+{
+	_verify(userPersonalSpace, tr("User personal space service failed"), errors);
+}
+
+void SourceOptionsWidget::onVerifyLogin()
+{
+	QStringList errors;
+	bool ok = false;
+	{
+		coreUI::CoreCursorChanger ccc;
+		ok = verify(errors);
+	}
+
+	if (ok == false){
+		QMessageBox::critical(this, tr("Configuration error(s)"), formatErrorMessage(errors));		
+	}
+	else{
+		QMessageBox::information(this, tr("Configuration status"), tr("Correct configuration"));
 	}
 }

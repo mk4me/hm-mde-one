@@ -22,10 +22,10 @@ namespace hmdbCommunication
 		//"testUser", "testUser"
 
 		//! Konstruktor
-		//! \param user
-		//! \param password
-		//! \param url
-		//! \param manager
+		//! \param user U¿ytkownik po³¹czenia
+		//! \param password Has³o u¿ytkownika
+		//! \param url Adres serwera
+		//! \param manager Manager obs³uguj¹cy transfery
 		HMDBFTP(const std::string user, const std::string password,
 			const std::string & url,
 			utils::shared_ptr<CURLFTPManager> manager);
@@ -36,12 +36,12 @@ namespace hmdbCommunication
 		//! \param destinationFileName Nazwa docelowa uploadowanego pliku na serwerze bazy ruchu
 		//! \param stream Strumieñ z którego bêdziemy wysy³aæ zawartoœæ pliku
 		//! \param size Rozmiar danych do wys³ania
-		virtual TransferPtr put(const std::string & destinationFileName,
+		virtual const TransferPtr preparePut(const std::string & destinationFileName,
 			std::istream * stream, const unsigned long long size);
 
 		//! \param destinationFileName Nazwa pobieranego pliku z serwera bazy ruchu
 		//! \param stream Strumieñ do którego bêdziemy zapisywaæ zawartoœæ œci¹ganego pliku
-		virtual TransferPtr get(const std::string & destinationFileName,
+		virtual const TransferPtr prepareGet(const std::string & destinationFileName,
 			std::ostream * stream, const unsigned long long size);
 
 	private:
@@ -52,7 +52,7 @@ namespace hmdbCommunication
 		//! Adres serwera
 		const std::string url;
 		//! Manager obs³uguj¹cy transfery
-		utils::shared_ptr<CURLFTPManager> manager;
+		utils::weak_ptr<CURLFTPManager> manager;
 	};
 }
 

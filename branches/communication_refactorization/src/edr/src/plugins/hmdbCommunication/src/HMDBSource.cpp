@@ -11,11 +11,16 @@
 #include <plugins/hmdbCommunication/IHMDBService.h>
 #include "HMDBService.h"
 #include <hmdbserviceslib/AccountFactoryWS.h>
+#include "ShallowCopyFilterManager.h"
+#include "ShallowCopyUtils.h"
+#include "HMDBShallowCopyContext.h"
+
 
 using namespace hmdbCommunication;
 
-HMDBSource::HMDBSource() : memoryDM(nullptr),
-streamDM(nullptr), fileDM(nullptr), mainWidget(nullptr)
+HMDBSource::HMDBSource()
+	: memoryDM(nullptr), streamDM(nullptr), fileDM(nullptr),
+	mainWidget(nullptr), filterManager_(new ShallowCopyFilterManager)
 {
 
 }
@@ -76,18 +81,34 @@ void HMDBSource::getOfferedTypes(utils::TypeInfoList & offeredTypes) const
 
 }
 
-IHMDBSourceContext * HMDBSource::createSourceContext(IHMDBSession * session,
-	IHMDBStorage * storage, const std::string & userName,
-	const std::string & userHash)
+IHMDBSourceContext * HMDBSource::createSourceContext(IHMDBStorage * storage,
+	const std::string & user, const std::string & password,
+	IHMDBSession * session)
 {
-	std::auto_ptr<HMDBDataContext> dCtx(new HMDBDataContext(storage, userName, userHash));
-	std::auto_ptr<HMDBLocalContext> lCtx(new HMDBLocalContext(dCtx.get(), memoryDM, streamDM));
-	std::auto_ptr<HMDBRemoteContext> rCtx(session != nullptr && userHash.empty() == false ? new HMDBRemoteContext(session, userHash) : nullptr);
-		
-	return new HMDBSourceContext(
-		dCtx.release(),
-		lCtx.release(),
-		rCtx.release());
+	IHMDBSourceContext * ret = nullptr;
+
+	if (storage != nullptr && user.empty() == false && password.empty() == false){
+		auto dc = new HMDBDataContext(storage, user, password);
+		ret = new HMDBSourceContext(dc, new HMDBLocalContext(dc, memoryDM, streamDM),
+			session == nullptr ? nullptr : new HMDBRemoteContext(session, ShallowCopyUtils::userHash(user, password)));
+	}
+
+	return ret;
+}
+
+IHMDBShallowCopyContext * HMDBSource::createShallowCopyContext(IHMDBSourceContext * sourceContext)
+{
+	IHMDBShallowCopyContext * ret = nullptr;
+
+	if (sourceContext != nullptr && sourceContext->dataContext() != nullptr
+		&& sourceContext->localContext() != nullptr){
+		auto scdc = new HMDBShallowCopyDataContext();
+		ret = new HMDBShallowCopyContext(scdc,
+			new HMDBShallowCopyLocalContext(scdc, sourceContext->localContext()),
+			sourceContext->remoteContext() == nullptr ? nullptr : new HMDBShallowCopyRemoteContext(scdc, sourceContext->remoteContext()));
+	}
+
+	return ret;
 }
 
 void HMDBSource::registerSourceContextViewPrototype(IHMDBSourceContextView * prototype)
@@ -99,6 +120,16 @@ void HMDBSource::registerSourceContextViewPrototype(IHMDBSourceContextView * pro
 	}
 
 	contextViews[SourceContextViewPtr(prototype)];
+}
+
+IShallowCopyFilterManager * HMDBSource::filterManager()
+{
+	return filterManager_.get();
+}
+
+const IShallowCopyFilterManager * HMDBSource::filterManager() const
+{
+	return filterManager_.get();
 }
 
 const unsigned int HMDBSource::sourceContextViewPrototypesCount() const
@@ -120,10 +151,9 @@ const IHMDBSource::IHMDBSourceContextView * HMDBSource::sourceContextViewPrototy
 	return it->first.get();
 }
 
-const bool HMDBSource::registerSourceContextConfiguration(IHMDBSourceContextView * prototype,
+const bool HMDBSource::registerSourceContextViewConfiguration(IHMDBSourceContextView * prototype,
 	const ContextConfiguration & config)
 {
-
 	if (config.name.isEmpty() == true){
 		return false;
 	}
@@ -131,9 +161,21 @@ const bool HMDBSource::registerSourceContextConfiguration(IHMDBSourceContextView
 	bool ret = false;
 
 	auto it = contextViews.begin();
-	for (; it != contextViews.end(); ++it){
-		if (it->first.get() == prototype){
-			break;
+
+	if (prototype == nullptr){
+		it = contextViews.find(SourceContextViewPtr());
+
+		if (it == contextViews.end()){
+			contextViews[SourceContextViewPtr()];
+			it = contextViews.find(SourceContextViewPtr());
+		}
+	}
+	else{
+
+		for (; it != contextViews.end(); ++it){
+			if (it->first.get() == prototype){
+				break;
+			}
 		}
 	}
 
@@ -145,7 +187,7 @@ const bool HMDBSource::registerSourceContextConfiguration(IHMDBSourceContextView
 	return ret;
 }
 
-const unsigned int HMDBSource::sourceContextConfigurationsCount(IHMDBSourceContextView * prototype) const
+const unsigned int HMDBSource::sourceContextViewConfigurationsCount(IHMDBSourceContextView * prototype) const
 {
 	unsigned int ret = 0;
 
@@ -163,10 +205,9 @@ const unsigned int HMDBSource::sourceContextConfigurationsCount(IHMDBSourceConte
 	return ret;
 }
 
-const HMDBSource::ContextConfiguration HMDBSource::sourceContextConfiguration(IHMDBSourceContextView * prototype,
+const HMDBSource::ContextConfiguration HMDBSource::sourceContextViewConfiguration(IHMDBSourceContextView * prototype,
 	const unsigned int idx) const
 {
-
 	ContextConfiguration ret;
 
 	auto it = contextViews.begin();
@@ -195,7 +236,7 @@ const networkUtils::IWSDLServicePtr createSystemService(const std::string & url,
 		auto hmdbService = core::queryService<hmdbCommunication::IHMDBService>(sm);
 		if (hmdbService != nullptr){
 
-			ret = hmdbService->createSystemService(url, caPath, networkUtils::HVMatch);
+			ret = hmdbService->createHMDBSystemService(url, caPath, networkUtils::HVMatch);
 
 			if (ret == nullptr){
 				throw std::runtime_error("Could not create system service");
@@ -270,6 +311,7 @@ void HMDBSource::resetPassword(const std::string & url,
 	}
 }
 
+/*
 const unsigned int HMDBSource::size() const
 {
 	return sourceContexts_.size();
@@ -290,6 +332,7 @@ const IHMDBSourceContext * HMDBSource::sourceContext(const unsigned int idx) con
 	std::advance(it, idx);
 	return *it;
 }
+*/
 
 /*
 IHMDBSourceContext * HMDBSource::sourceContextForData(core::VariantConstPtr data)

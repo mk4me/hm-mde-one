@@ -9,15 +9,17 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__HMDBREMOTECONTEXT_H__
 
 #include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
-#include <threadingUtils/SynchronizationPolicies.h>
 
 namespace hmdbCommunication
 {
 	class HMDBRemoteContext : public IHMDBRemoteContext
 	{
 	public:
+		//! \param session Sesja z baz¹ danych
+		//! \param userHash Skrót u¿ytkownika na potrzeby obs³ugi p³ytkiej kopii bazy danych
 		HMDBRemoteContext(IHMDBSession * session,
 			const std::string & userHash);
+		//! Destrutkor wirtualny
 		virtual ~HMDBRemoteContext();
 
 		//! \return Sesja us³ug hmdb
@@ -48,10 +50,8 @@ namespace hmdbCommunication
 	private:
 		//! Sesja z baz¹ danych
 		IHMDBSession * session_;
-
+		//! Skrót u¿ytkownika na potrzeby obs³ugi p³ytkiej kopii bazy danych
 		const std::string userHash;
-		//! Obiekt synchronizuj¹cy
-		mutable threadingUtils::RecursiveSyncPolicy synch;
 	};
 }
 

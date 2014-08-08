@@ -6,24 +6,30 @@
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <boost/bind.hpp>
 #include <corelib/IThreadPool.h>
+#include "DataSourcePerspective.h"
 
-DataViewWidget::DataViewWidget(hmdbCommunication::IDataSourcePerspective * perspective,
-	hmdbCommunication::IHMDBShallowCopyLocalContext * shallowLocalContext,
-	hmdbCommunication::IHMDBShallowCopyRemoteContext * shallowRemoteContext,
+DataViewWidget::DataViewWidget(hmdbCommunication::IHMDBShallowCopyContext * shallowCopyContext,
+	hmdbCommunication::IDataSourcePerspective * perspective,
 	QWidget * parent, Qt::WindowFlags f) : QWidget(parent, f), ui(new Ui::DataViewWidget),
-	perspective_(perspective), shallowLocalContext_(shallowLocalContext),
-	shallowRemoteContext_(shallowRemoteContext)
+	perspective_(perspective), shallowCopyContext_(shallowCopyContext), delPerspective(false)
 {
 	ui->setupUi(this);
 
-	if (shallowRemoteContext_ == nullptr){
+	if (shallowCopyContext->shallowCopyRemoteContext() == nullptr){
 		setRemoteOperationsEnabled(false);
+	}
+
+	if (perspective_ == nullptr){
+		perspective_ = new hmdbCommunication::DataSourcePatientPerspective;
+		delPerspective = true;
 	}
 }
 
 DataViewWidget::~DataViewWidget()
 {
-
+	if (delPerspective == true && perspective_ != nullptr){
+		delete perspective_;
+	}
 }
 
 void DataViewWidget::rebuildPerspective()
@@ -37,6 +43,7 @@ void DataViewWidget::rebuildPerspective()
 void DataViewWidget::setPerspective(hmdbCommunication::IDataSourcePerspective * perspective)
 {
 	perspective_ = perspective;
+	delPerspective = false;
 	rebuildPerspective();
 }
 
@@ -46,14 +53,14 @@ void DataViewWidget::setShallowCopy(const hmdbCommunication::ShallowCopyConstPtr
 	rebuildPerspective();
 }
 
-void DataViewWidget::setShallowRemoteContext(hmdbCommunication::IHMDBShallowCopyRemoteContext * shallowRemoteContext)
+void DataViewWidget::setShallowCopyContext(hmdbCommunication::IHMDBShallowCopyContext * shallowCopyContext)
 {
-	if (shallowRemoteContext == nullptr){
-		shallowRemoteContext = shallowRemoteContext;
+	if (shallowCopyContext == nullptr){
+		shallowCopyContext_ = shallowCopyContext;
 		setRemoteOperationsEnabled(false);
 	}
-	else if(shallowRemoteContext->shallowCopyContext() == shallowLocalContext_->shallowCopyContext()){
-		shallowRemoteContext = shallowRemoteContext;
+	else if (shallowCopyContext->shallowCopyDataContext() == shallowCopyContext_->shallowCopyDataContext()){
+		shallowCopyContext_ = shallowCopyContext;
 		setRemoteOperationsEnabled(true);
 	}	
 }
@@ -126,7 +133,7 @@ void DataViewWidget::onLoad()
 
 				for (auto it = items.begin(); it != items.end(); ++it){
 					for (auto iIT = it->second.begin(); iIT != it->second.end(); ++iIT){
-						shallowLocalContext_->load(it->first, *iIT);
+						shallowCopyContext_->shallowCopyLocalContext()->load(it->first, *iIT);
 					}
 				}				
 			}
@@ -142,7 +149,7 @@ void DataViewWidget::onLoadAll()
 	coreUI::CoreCursorChanger cursorChanger;
 
 	try{
-		shallowLocalContext_->loadAll();
+		shallowCopyContext_->shallowCopyLocalContext()->loadAll();
 	}
 	catch (...){
 
@@ -170,7 +177,7 @@ void DataViewWidget::onUnload()
 
 				for (auto it = items.begin(); it != items.end(); ++it){
 					for (auto iIT = it->second.begin(); iIT != it->second.end(); ++iIT){
-						shallowLocalContext_->unload(it->first, *iIT);
+						shallowCopyContext_->shallowCopyLocalContext()->unload(it->first, *iIT);
 					}
 				}
 			}
@@ -186,7 +193,7 @@ void DataViewWidget::onUnloadAll()
 	coreUI::CoreCursorChanger cursorChanger;
 
 	try{
-		shallowLocalContext_->unloadAll();
+		shallowCopyContext_->shallowCopyLocalContext()->unloadAll();
 	}
 	catch (...){
 
@@ -213,7 +220,7 @@ void execOperation(hmdbCommunication::IHMDBRemoteContext::OperationPtr operation
 void DataViewWidget::synchronize(hmdbCommunication::IHMDBRemoteContext::SynchronizeOperationPtr sOp,
 	utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger)
 {
-	shallowRemoteContext_->synchronize(sOp);
+	shallowCopyContext_->shallowCopyRemoteContext()->synchronize(sOp);
 	onRefreshStatus();
 	setRemoteOperationsEnabled(true);
 	operation_.reset();
@@ -221,12 +228,12 @@ void DataViewWidget::synchronize(hmdbCommunication::IHMDBRemoteContext::Synchron
 
 void DataViewWidget::onSynchronize()
 {
-	if (shallowRemoteContext_ != nullptr){
+	if (shallowCopyContext_->shallowCopyRemoteContext() != nullptr){
 
 		try{
 			utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger(new coreUI::CoreCursorChanger);
 
-			auto sOp = shallowRemoteContext_->remoteContext()->prepareShallowCopyDownload();
+			auto sOp = shallowCopyContext_->shallowCopyRemoteContext()->remoteContext()->prepareShallowCopyDownload();
 
 			threadingUtils::IRunnablePtr runnable(new threadingUtils::FunctorRunnable(boost::bind(&DataViewWidget::synchronize, this, sOp, cursorChanger)));
 
@@ -248,12 +255,12 @@ void DataViewWidget::onSynchronize()
 
 void DataViewWidget::onDownload()
 {
-	if (shallowRemoteContext_ != nullptr){
+	if (shallowCopyContext_->shallowCopyRemoteContext() != nullptr){
 
 		try{
 			utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger(new coreUI::CoreCursorChanger);
 
-			auto sOp = shallowRemoteContext_->remoteContext()->prepareShallowCopyDownload();
+			auto sOp = shallowCopyContext_->shallowCopyRemoteContext()->remoteContext()->prepareShallowCopyDownload();
 
 			threadingUtils::IRunnablePtr runnable(new threadingUtils::FunctorRunnable(boost::bind(&DataViewWidget::synchronize, this, sOp, cursorChanger)));
 

@@ -9,6 +9,7 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__CURLFTPPROGRESS_H__
 
 #include <networkUtils/CURLFTPHelper.h>
+#include <boost/atomic.hpp>
 
 namespace hmdbCommunication
 {
@@ -30,9 +31,9 @@ namespace hmdbCommunication
 
 	private:
 		//! Czy operacja ma byæ przerwana
-		volatile bool aborted_;
+		boost::atomic<bool> aborted_;
 		//! Postêp operacji
-		volatile float progress_;
+		boost::atomic<float> progress_;
 	};
 }
 

@@ -17,7 +17,13 @@ Path::Path(const Filesystem::Path & userDataPath,
 	  tmpPath_(tmpPath),
 	  pluginPath_(pluginPath)
 {
-
+	translationsPath_.make_preferred();
+	userDataPath_.make_preferred();
+	applicationDataPath_.make_preferred();
+	userApplicationDataPath_.make_preferred();
+	resourcesPath_.make_preferred();
+	tmpPath_.make_preferred();
+	pluginPath_.make_preferred();	
 }
 
 Path::~Path()

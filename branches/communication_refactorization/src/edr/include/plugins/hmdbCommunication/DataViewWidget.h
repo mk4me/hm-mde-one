@@ -8,6 +8,7 @@
 #ifndef __HEADER_GUARD_HMDBCOMMUNICATION__DATAVIEWWIDGET_H__
 #define __HEADER_GUARD_HMDBCOMMUNICATION__DATAVIEWWIDGET_H__
 
+#include <plugins/hmdbCommunication/Export.h>
 #include <QtWidgets/QWidget>
 #include <plugins/hmdbCommunication/ShallowCopy.h>
 #include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
@@ -23,27 +24,25 @@ namespace Ui
 
 namespace hmdbCommunication
 {
-	class IHMDBShallowCopyLocalContext;
-	class IHMDBShallowCopyRemoteContext;
+	class IHMDBShallowCopyContext;
 	class IDataSourcePerspective;	
 }
 
-class DataViewWidget : public QWidget
+class HMDBCOMMUNICATION_EXPORT DataViewWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
 
-	DataViewWidget(hmdbCommunication::IDataSourcePerspective * perspective,
-		hmdbCommunication::IHMDBShallowCopyLocalContext * shallowLocalContext,
-		hmdbCommunication::IHMDBShallowCopyRemoteContext * shallowRemoteContext = nullptr,
+	DataViewWidget(hmdbCommunication::IHMDBShallowCopyContext * shallowCopyContext,		
+		hmdbCommunication::IDataSourcePerspective * perspective = nullptr,
 		QWidget * parent = nullptr, Qt::WindowFlags f = 0);
 
 	virtual ~DataViewWidget();
 
 	void setPerspective(hmdbCommunication::IDataSourcePerspective * perspective);
 	void setShallowCopy(const hmdbCommunication::ShallowCopyConstPtr shallowCopy);
-	void setShallowRemoteContext(hmdbCommunication::IHMDBShallowCopyRemoteContext * shallowRemoteContext);
+	void setShallowCopyContext(hmdbCommunication::IHMDBShallowCopyContext * shallowCopyContext);
 
 	const hmdbCommunication::IHMDBRemoteContext::OperationConstPtr operation() const;
 
@@ -84,10 +83,10 @@ private:
 	core::IThreadPtr thread;
 	hmdbCommunication::ShallowCopyConstPtr shallowCopy_;
 	hmdbCommunication::IDataSourcePerspective * perspective_;
-	hmdbCommunication::IHMDBShallowCopyLocalContext * shallowLocalContext_;
-	hmdbCommunication::IHMDBShallowCopyRemoteContext * shallowRemoteContext_;
+	hmdbCommunication::IHMDBShallowCopyContext * shallowCopyContext_;	
 	Ui::DataViewWidget * ui;
 	hmdbCommunication::IHMDBRemoteContext::OperationConstPtr operation_;
+	bool delPerspective;
 };
 
 #endif	// __HEADER_GUARD_HMDBCOMMUNICATION__DATAVIEWWIDGET_H__

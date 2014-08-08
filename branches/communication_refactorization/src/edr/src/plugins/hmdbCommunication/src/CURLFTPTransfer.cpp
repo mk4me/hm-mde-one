@@ -26,7 +26,12 @@ CURLFTPTransfer::~CURLFTPTransfer()
 	curl_easy_cleanup(curl_);
 }
 
-CURL * CURLFTPTransfer::curl() const
+const CURL * CURLFTPTransfer::curl() const
+{
+	return curl_;
+}
+
+CURL * CURLFTPTransfer::curl()
 {
 	return curl_;
 }

@@ -34,7 +34,7 @@
 #include <utils/Enum.h>
 
 #include <QtCore/QObject>
-#include <QtGui/QWidget>
-#include <QtGui/QBoxLayout>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QBoxLayout>
 
 #endif

@@ -4,7 +4,6 @@
 #include <corelib/IThreadPool.h>
 #include <threadingUtils/IThread.h>
 #include <boost/bind.hpp>
-#include "ShallowCopyFilterManager.h"
 #include "WSDLPULLService.h"
 #include <wsdlparser/WsdlInvoker.h>
 
@@ -34,8 +33,9 @@ const utils::shared_ptr<XmlUtils::CURLExecutor> HMDBService::createCurlExecutor(
 	return utils::shared_ptr<XmlUtils::CURLExecutor>(new HMDBCURLExecutor(manager));
 }
 
-HMDBService::HMDBService() : mainWidget(nullptr), filterManager_(new ShallowCopyFilterManager),
-finalizeServices_(false), finalizeData_(false)
+HMDBService::HMDBService()
+	: mainWidget(nullptr), finalizeServices_(false),
+	finalizeData_(false)
 {
 
 }
@@ -83,8 +83,8 @@ IHMDBSession * HMDBService::createSession(const bool motion,
 	return ret;
 }
 
-networkUtils::IWSDLServicePtr HMDBService::createSecureWSDL(networkUtils::CURLManagerPtr manager,
-	utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
+const networkUtils::IWSDLServicePtr HMDBService::createSecureWSDL(const networkUtils::CURLManagerPtr manager,
+	const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 	const std::string & user,
 	const std::string & password,
 	const core::Filesystem::Path & CAPath,
@@ -101,8 +101,8 @@ networkUtils::IWSDLServicePtr HMDBService::createSecureWSDL(networkUtils::CURLMa
 	return networkUtils::IWSDLServicePtr(new WSDLPULLServiceT<WsdlPull::CustomSSLWsdlInvoker>(invoker));
 }
 
-networkUtils::IWSDLServicePtr HMDBService::createUnsecureWSDL(networkUtils::CURLManagerPtr manager,
-	utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
+const networkUtils::IWSDLServicePtr HMDBService::createUnsecureWSDL(const networkUtils::CURLManagerPtr manager,
+	const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 	const std::string & user,
 	const std::string & password,
 	const core::Filesystem::Path & schemaPath)
@@ -113,7 +113,7 @@ networkUtils::IWSDLServicePtr HMDBService::createUnsecureWSDL(networkUtils::CURL
 	return networkUtils::IWSDLServicePtr(new WSDLPULLServiceT<WsdlPull::WsdlInvoker>(invoker));
 }
 
-const networkUtils::IWSDLServicePtr HMDBService::createService(
+const networkUtils::IWSDLServicePtr HMDBService::createHMDBService(
 	const std::string & url,
 	const std::string & user,
 	const std::string & password,
@@ -129,13 +129,13 @@ const networkUtils::IWSDLServicePtr HMDBService::createService(
 	}
 }
 
-const networkUtils::IWSDLServicePtr HMDBService::createSystemService(
+const networkUtils::IWSDLServicePtr HMDBService::createHMDBSystemService(
 	const std::string & url,
 	const core::Filesystem::Path & CAPath,
 	const networkUtils::SSLHostVerification hostVerification,
 	const core::Filesystem::Path & schemaPath)
 {
-	return createService(url, "hmdbServiceUser", "4accountCreation", CAPath, hostVerification, schemaPath);
+	return createHMDBService(url, "hmdbServiceUser", "4accountCreation", CAPath, hostVerification, schemaPath);
 }
 
 static size_t DummyWriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
@@ -206,16 +206,6 @@ void HMDBService::detach(IHMDBSession * session)
 	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
 	//! TODO
 	//! od³¹czyæ widgeta
-}
-
-IShallowCopyFilterManager * HMDBService::filterManager()
-{
-	return filterManager_.get();
-}
-
-const IShallowCopyFilterManager * HMDBService::filterManager() const
-{
-	return filterManager_.get();
 }
 
 void HMDBService::init(core::ISourceManager * sourceManager,

@@ -10,6 +10,7 @@
 
 #include <utils/Debug.h>
 #include <utils/TypeInfo.h>
+#include <boost/type_traits.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {

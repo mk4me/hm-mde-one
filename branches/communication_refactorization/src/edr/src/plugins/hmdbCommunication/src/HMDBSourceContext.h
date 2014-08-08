@@ -24,6 +24,8 @@ namespace hmdbCommunication
 			IHMDBRemoteContext * remoteContext);
 		//! Destruktor wirtualny
 		virtual ~HMDBSourceContext();
+
+		//! Kontekst lokalny
 		virtual IHMDBLocalContext * localContext();
 		virtual const IHMDBLocalContext * localContext() const;
 
@@ -37,11 +39,11 @@ namespace hmdbCommunication
 
 	private:
 		//! Sesja us³ug bazy danych
-		IHMDBLocalContext * localContext_;;
+		utils::shared_ptr<IHMDBLocalContext> localContext_;
 		//! Storage dla danych
-		IHMDBRemoteContext * remoteContext_;
+		utils::shared_ptr<IHMDBRemoteContext> remoteContext_;
 		//! Aktualna p³ytka kopia bazy danych
-		IHMDBDataContext * dataContext_;
+		utils::shared_ptr<IHMDBDataContext> dataContext_;
 	};
 }
 

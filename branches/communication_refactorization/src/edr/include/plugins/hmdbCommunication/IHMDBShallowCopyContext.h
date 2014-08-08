@@ -20,11 +20,11 @@ namespace hmdbCommunication
 	class IHMDBLocalContext;
 	class IHMDBRemoteContext;
 
-	class IHMDBShallowCopyContext
+	class IHMDBShallowCopyDataContext
 	{
 	public:
 		//! Destruktor wirtualny
-		virtual ~IHMDBShallowCopyContext() {}
+		virtual ~IHMDBShallowCopyDataContext() {}
 		//! \return Aktualna p³ytka kopia bazy danych
 		virtual const ShallowCopyConstPtr shallowCopy() const = 0;
 		//! \param shallowCopy P³ytka kopia bazy danych
@@ -66,8 +66,8 @@ namespace hmdbCommunication
 		//! Metoda wy³adowuje wszystkie dane
 		virtual const bool unloadAll() = 0;
 
-		virtual IHMDBShallowCopyContext * shallowCopyContext() = 0;
-		virtual const IHMDBShallowCopyContext * shallowCopyContext() const = 0;
+		virtual IHMDBShallowCopyDataContext * shallowCopyContext() = 0;
+		virtual const IHMDBShallowCopyDataContext * shallowCopyContext() const = 0;
 
 		virtual IHMDBLocalContext * localContext() = 0;
 		virtual const IHMDBLocalContext * localContext() const = 0;
@@ -93,11 +93,27 @@ namespace hmdbCommunication
 		//! \param downloadOperations Operacje œci¹gania
 		virtual void synchronize(const IHMDBRemoteContext::CompoundOperationPtr downloadOperations) = 0;
 
-		virtual IHMDBShallowCopyContext * shallowCopyContext() = 0;
-		virtual const IHMDBShallowCopyContext * shallowCopyContext() const = 0;
+		virtual IHMDBShallowCopyDataContext * shallowCopyContext() = 0;
+		virtual const IHMDBShallowCopyDataContext * shallowCopyContext() const = 0;
 
 		virtual IHMDBRemoteContext * remoteContext() = 0;
 		virtual const IHMDBRemoteContext * remoteContext() const = 0;
+	};
+
+	class IHMDBShallowCopyContext
+	{
+	public:
+		//! Destruktor wirtualny
+		virtual ~IHMDBShallowCopyContext() {}
+
+		virtual IHMDBShallowCopyDataContext * shallowCopyDataContext() = 0;
+		virtual const IHMDBShallowCopyDataContext * shallowCopyDataContext() const = 0;
+
+		virtual IHMDBShallowCopyLocalContext * shallowCopyLocalContext() = 0;
+		virtual const IHMDBShallowCopyLocalContext * shallowCopyLocalContext() const = 0;
+
+		virtual IHMDBShallowCopyRemoteContext * shallowCopyRemoteContext() = 0;
+		virtual const IHMDBShallowCopyRemoteContext * shallowCopyRemoteContext() const = 0;
 	};
 }
 

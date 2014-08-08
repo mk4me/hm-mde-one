@@ -491,7 +491,7 @@ UploadOperation::UploadOperation(const std::string & fileName,
 	subdirectory(subdirectory), fileID_(-1)
 {
 	std::auto_ptr<TransferOperation> t(new TransferOperation());
-	t->setTransfer(ftp->put(fileName, source, size));	
+	t->setTransfer(ftp->preparePut(fileName, source, size));	
 	IHMDBRemoteContext::OperationPtr funcOp(new FunctorOperation(IHMDBRemoteContext::WebServiceCall,
 		boost::bind(&UploadOperation::getFileID, this)));
 
@@ -810,7 +810,7 @@ FTPDownloadFileOperation::~FTPDownloadFileOperation()
 
 void FTPDownloadFileOperation::setDownload(const std::string & path, std::ostream * stream, const hmdbServices::FileSize size)
 {
-	setTransfer(ftp->get(path, stream, size));
+	setTransfer(ftp->prepareGet(path, stream, size));
 }
 
 CompoundFileDownload::CompoundFileDownload(const IHMDBRemoteContext::CompoundID & fileToDownload,

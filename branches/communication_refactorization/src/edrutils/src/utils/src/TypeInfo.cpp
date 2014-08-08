@@ -58,7 +58,7 @@ const bool TypeInfo::operator!=(const TypeInfo& obj) const
 
 const bool TypeInfo::before(const TypeInfo& obj) const
 {
-	return (((*typeinfo).before(obj) > 0) ? true : false);
+	return (*typeinfo).before(obj);
 }
 
 const bool TypeInfo::compare(const TypeInfo& obj) const

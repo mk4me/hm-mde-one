@@ -30,16 +30,16 @@ namespace hmdbCommunication
 
 		static const utils::shared_ptr<XmlUtils::CURLExecutor> createCurlExecutor(const networkUtils::CURLManagerPtr manager);
 
-		static networkUtils::IWSDLServicePtr createSecureWSDL(networkUtils::CURLManagerPtr manager,
-			utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
+		static const networkUtils::IWSDLServicePtr createSecureWSDL(const networkUtils::CURLManagerPtr manager,
+			const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 			const std::string & user,
 			const std::string & password,
 			const core::Filesystem::Path & CAPath = core::Filesystem::Path(),
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone,
 			const core::Filesystem::Path & schemaPath = core::Filesystem::Path());
 
-		static networkUtils::IWSDLServicePtr createUnsecureWSDL(networkUtils::CURLManagerPtr manager,
-			utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
+		static const networkUtils::IWSDLServicePtr createUnsecureWSDL(const networkUtils::CURLManagerPtr manager,
+			const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 			const std::string & user,
 			const std::string & password,
 			const core::Filesystem::Path & schemaPath = core::Filesystem::Path());
@@ -81,7 +81,7 @@ namespace hmdbCommunication
 			const core::Filesystem::Path & CAPath,
 			const networkUtils::SSLHostVerification hostVerification);
 
-		virtual const networkUtils::IWSDLServicePtr createService(
+		virtual const networkUtils::IWSDLServicePtr createHMDBService(
 			const std::string & url,
 			const std::string & user,
 			const std::string & password,
@@ -89,7 +89,7 @@ namespace hmdbCommunication
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone,
 			const core::Filesystem::Path & schemaPath = core::Filesystem::Path());
 
-		virtual const networkUtils::IWSDLServicePtr createSystemService(
+		virtual const networkUtils::IWSDLServicePtr createHMDBSystemService(
 			const std::string & url,
 			const core::Filesystem::Path & CAPath = core::Filesystem::Path(),
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone,
@@ -107,9 +107,6 @@ namespace hmdbCommunication
 
 		//! \param session Sesja us³ug bazy danych ruchu któr¹ chcemy obs³ugiwaæ
 		virtual void detach(IHMDBSession * session);
-
-		virtual IShallowCopyFilterManager * filterManager();
-		virtual const IShallowCopyFilterManager * filterManager() const;
 
 		//-----------------------------------------------------------------
 
@@ -170,8 +167,6 @@ namespace hmdbCommunication
 		boost::atomic<bool> finalizeServices_;
 		//! Czy zakoñczyæ dzia³anie danych
 		boost::atomic<bool> finalizeData_;
-
-		utils::shared_ptr<IShallowCopyFilterManager> filterManager_;
 	};
 }
 

@@ -9,12 +9,35 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__SOURCEOPTIONSWIDGET_H__
 
 #include <QtWidgets/QWidget>
+#include <plugins/hmdbCommunication/IHMDBSource.h>
 
 class QMainWindow;
 
 namespace Ui
 {
 	class SourceOptionsWidget;
+}
+
+namespace hmdbCommunication
+{
+	class IHMDBSession;
+	class IHMDBFtp;
+}
+
+namespace hmdbServices
+{
+	class ISingleAccountFactoryWS;
+	class IMultiAccountFactoryWS;
+	class IAdministrationWS;
+	class IAuthorizationWS;
+	class IGeneralBasicQueriesWS;
+	class IMotionBasicQueriesWS;
+	class IMotionBasicUpdatesWS;
+	class IMedicalBasicUpdatesWS;
+	class IMotionFileStoremanWS;
+	class IMedicalFileStoremanWS;
+	class IUserPersonalSpaceWS;
+	class IFileStoremanWS;
 }
 
 class ServerStatusWidget;
@@ -32,9 +55,31 @@ public:
 	void setSourcesPlaceholder(QMainWindow * placeholder);
 	const QMainWindow * sourcesPlaceholder() const;
 
+	const bool verify(QStringList & messages);
+
+private:
+
+	static void verify(hmdbCommunication::IHMDBSession * session, QStringList & errors);
+	static void verify(hmdbServices::ISingleAccountFactoryWS * singleAccountFactory, QStringList & errors);
+	static void verify(hmdbServices::IMultiAccountFactoryWS * multiAccountFactory, QStringList & errors);
+	static void verify(hmdbServices::IAdministrationWS * administration, QStringList & errors);
+	static void verify(hmdbServices::IAuthorizationWS * authorization, QStringList & errors);
+	static void verify(hmdbServices::IGeneralBasicQueriesWS * generalQueries, QStringList & errors);
+	static void verify(hmdbServices::IMotionBasicQueriesWS * motionQueries, QStringList & errors);
+	static void verify(hmdbServices::IMotionBasicUpdatesWS * motionUpdate, QStringList & errors);
+	static void verify(hmdbServices::IMedicalBasicUpdatesWS * medicalUpdate, QStringList & errors);
+	static void verify(hmdbServices::IMotionFileStoremanWS * motionFilestoreman, QStringList & errors);
+	static void verify(hmdbServices::IMedicalFileStoremanWS * medicalFilestoreman, QStringList & errors);
+	static void verify(hmdbServices::IUserPersonalSpaceWS * userPersonalSpace, QStringList & errors);
+	static void verify(hmdbServices::IFileStoremanWS * fileStoreman,
+		hmdbCommunication::IHMDBFtp * ftp,
+		const QString & message,
+		QStringList & errors);
+
 public slots:
 
 	void onRefreshViews();
+	void onRefreshConfigurations();
 
 private slots:
 
@@ -54,6 +99,12 @@ private slots:
 	void onServerSSLCertificateBrowse();
 	void onStatusCheck();
 	void onSourceModeChange(int mode);
+	void onVerifyLogin();
+	void onConnectionProfileEdit();
+
+private:
+
+	void setConnectionProfile(const hmdbCommunication::IHMDBSource::ContextConfiguration & connectionProfile);
 
 private:
 	Ui::SourceOptionsWidget * ui;

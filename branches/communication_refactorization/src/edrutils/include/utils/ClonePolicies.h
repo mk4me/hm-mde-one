@@ -4,6 +4,7 @@
 #include <exception>
 #include <osg/CopyOp>
 #include <osg/Object>
+#include <utils/Debug.h>
 //Plik zawiera podstawowe zasady kopiowania obiektów domenowych
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -23,7 +24,7 @@ namespace utils {
     struct ClonePolicyVirtualCloneMethod
     {
         template <typename T>
-		static T* clone(T* s) {
+		static T* clone(const T* s) {
             auto copy = s->clone();
             T* result = dynamic_cast<T*>(copy);
             UTILS_ASSERT(result);
@@ -35,7 +36,7 @@ namespace utils {
     struct ClonePolicyOsgCloneMethod
     {
         template <typename T>
-		static T* clone(T* s) {
+		static T* clone(const T* s) {
             auto copy = osg::clone(s, osg::CopyOp::DEEP_COPY_ALL);
             T* result = dynamic_cast<T*>(copy);
             UTILS_ASSERT(result);

@@ -18,6 +18,7 @@
 #include <corelib/HierarchyDataItem.h>
 #include <boost/bind.hpp>
 #include <plugins/newChart/Wrappers.h>
+#include <iosfwd>
 
 using namespace IMU;
 
@@ -156,11 +157,18 @@ void IMUCostumeDataSource::innerLoadCostume(const unsigned int idx)
 		rd.imuDataStreams[i].reset(new threadingUtils::StreamT<IMUData>);
 	}
 
-	if (costumesConfigurations[idx].jointsCount > 0){
+	if(costumesConfigurations[idx].jointsCount > 0){
+
 		rd.skeletonDataStream.reset(new SkeletonDataStream);
 		rd.skeletonDataStream->jointsCount = costumesConfigurations[idx].jointsCount;
 		rd.skeletonDataStream->jointsStream.reset(new PointsCloudStream);
+		rd.skeletonDataStream->quatStream.reset(new QuaternionStream);
 		rd.skeletonDataStream->connections.resize(GetSegmentsCount(idx));
+
+		int segCount = GetSegmentsCount(idx);
+		for (int i = 0; i < segCount; ++i) {
+			rd.skeletonDataStream->segmentNames[GetSegmentName(idx, i)] = i;
+		}
 
 		//konfiguruje schemat po³¹czeñ
 		for (unsigned int i = 0; i < rd.skeletonDataStream->connections.size(); ++i){
@@ -605,17 +613,25 @@ void IMUCostumeDataSource::refreshData()
 						*/
 				}
 
-				if (costumesConfigurations[it->first].jointsCount > 0){
-					std::vector<osg::Vec3> jointsPositions(costumesConfigurations[it->first].jointsCount);
+				if(costumesConfigurations[it->first].jointsCount > 0){
 
-					for (unsigned int i = 0; i < costumesConfigurations[it->first].jointsCount; ++i){
+					std::vector<osg::Vec3> jointsPositions(costumesConfigurations[it->first].jointsCount);					
+
+					for(unsigned int i = 0; i < costumesConfigurations[it->first].jointsCount; ++i){
 						auto p = GetGlobalPositionF(it->first, i);
 
 						//normalizuje juz do tego co jest w wizualizatorach zeby odswiezania nie meczyc tym
 						jointsPositions[i] = osg::Vec3(p.x, p.y, p.z) / 100.0;
 					}
 
+					auto segCount = GetSegmentsCount(it->first);				
+					std::vector<osg::Quat> globalQuats(segCount);
+					for (int i = 0; i < segCount; ++i) {
+						auto q = GetGlobalOrientation(it->first, i);
+						globalQuats[i] = osg::Quat(q.I, q.J, q.K, q.R); 						
+					}
 					rawData[it->first].skeletonDataStream->jointsStream->pushData(jointsPositions);
+					rawData[it->first].skeletonDataStream->quatStream->pushData(globalQuats);
 				}
 			}
 		}
@@ -632,12 +648,12 @@ void IMUCostumeDataSource::refreshData()
 
 void IMUCostumeDataSource::callibrateFirstPass(const unsigned int idx)
 {
-	Calibrate(idx);
+	//Calibrate(idx);
 }
 
 void IMUCostumeDataSource::callibrateSecondPass(const unsigned int idx)
 {
-	Calibrate(idx);
+	//Calibrate(idx);
 }
 
 void IMUCostumeDataSource::finalizeCalibration(const unsigned int idx)

@@ -36,6 +36,7 @@ SET_PUBLIC_HEADERS(
 	Serializable.h
 	TypeInfo.h
 	ObjectWrapper.h
+	ObjectWrapperT.h
 	ObjectWrapperTraits.h
 	Export.h
 	SmartPtr.h
