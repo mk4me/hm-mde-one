@@ -52,7 +52,11 @@ void python::MdeBridge::addVectorChannel(const PythonDataChannel& channel)
 	wrp->set(c);
 	core::VariantPtr wrapper = core::Variant::create(wrp);
 	core::HierarchyHelperPtr helper = core::HierarchyHelperPtr(new NewVector3ItemHelper(wrapper));
-	core::IHierarchyItemPtr dataItem = core::HierarchyItemPtr(new core::HierarchyDataItem(wrapper, QIcon(), QString::fromStdString(wrapper->data()->getClassName()), QString(), helper));
+	std::string name = c->getName();
+	if (name.empty()) {
+		name = wrapper->data()->getClassName();
+	}
+	core::IHierarchyItemPtr dataItem = core::HierarchyItemPtr(new core::HierarchyDataItem(wrapper, QIcon(), QString::fromStdString(name), QString(), helper));
 	
 	auto hierarchyTransaction = memoryDataManager->hierarchyTransaction();
 	hierarchyTransaction->addRoot(dataItem);

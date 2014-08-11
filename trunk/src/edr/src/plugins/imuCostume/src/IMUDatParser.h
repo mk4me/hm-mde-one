@@ -41,6 +41,7 @@ namespace IMU {
     typedef  std::vector<ImuData> Frame;
     
     typedef std::vector<Frame> Frames;
+	DEFINE_SMART_POINTERS(Frames);
     
     class IMUDatParser
     {
@@ -52,6 +53,23 @@ namespace IMU {
     };
     DEFINE_SMART_POINTERS(IMUDatParser);
 
+	class IMUDatParserCore : public plugin::ISourceParser
+	{
+		UNIQUE_ID("33179925-FC36-4260-B0EC-25F5268BE1F2")
+		CLASS_DESCRIPTION("IMU dat parser", "IMU dat parser")
+	public:
+		virtual ~IMUDatParserCore() {}
+
+	public:
+		virtual void acceptedExpressions(Expressions & expressions) const;
+		virtual IParser* create() const;
+		virtual void getObject(core::Variant& object, const core::VariantsVector::size_type idx) const;
+		virtual void reset();
+		virtual void parse(const std::string& path);
+
+	private:
+		utils::ObjectWrapperPtr datWrapper;
+	};
 
     class IMUDatSplitter
     {
@@ -60,4 +78,6 @@ namespace IMU {
     };
 
 }
+
+DEFINE_WRAPPER(IMU::Frames, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 #endif

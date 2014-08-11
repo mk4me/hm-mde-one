@@ -31,7 +31,8 @@ python::PythonDataChannel python::PythonDataChannel::convert(VectorChannelConstP
 VectorChannelPtr python::PythonDataChannel::convert(const PythonDataChannel& obj)
 {
 	VectorChannelPtr channel = utils::make_shared<VectorChannel>(obj.getFrequency());
-	channel->setName("Result");
+	auto name = obj.getName();
+	channel->setName(name.empty() ? "Result" : name);
 	auto data = obj.getData();
 	int count = data.size();
 	for (int i = 0; i < count; ++i) {

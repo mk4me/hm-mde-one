@@ -14,6 +14,7 @@
 #include <utils/SmartPtr.h>
 #include <vector>
 #include <osg/Quat>
+#include "corelib/IParser.h"
 
 namespace IMU {
     struct IMUConfig {
@@ -32,13 +33,28 @@ namespace IMU {
     };
 	DEFINE_SMART_POINTERS(IMUConfig);
 
-    class IMUCFGParser
-    {
+	class IMUCFGParser : public plugin::ISourceParser
+	{
+		UNIQUE_ID("340EDB58-26D3-4FE1-943F-5817E9495211")
+		CLASS_DESCRIPTION("IMU cfg parser", "IMU cfg parser")
     public:
         virtual ~IMUCFGParser() {}
-        static IMUConfigPtr parse(const std::string& path);
+
+	public:
+		virtual void acceptedExpressions(Expressions & expressions) const;
+		virtual IParser* create() const;
+		virtual void getObject(core::Variant& object, const core::VariantsVector::size_type idx) const;
+		virtual void reset();
+		virtual void parse(const std::string& path);
+
+	public:
+		static IMUConfigPtr rawParse(const std::string& path);
+
+	private:
+		utils::ObjectWrapperPtr cfgWrapper;
     }; 
 
 }
+DEFINE_WRAPPER(IMU::IMUConfig, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 
 #endif

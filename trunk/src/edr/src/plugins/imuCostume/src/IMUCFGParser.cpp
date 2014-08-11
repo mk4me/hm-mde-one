@@ -3,8 +3,10 @@
 #include <fstream>
 #include <utils/Debug.h>
 #include <kinematiclib/Skeleton.h>
+#include "corelib/IParser.h"
+#include "utils/ObjectWrapper.h"
 
-IMU::IMUConfigPtr IMU::IMUCFGParser::parse(const std::string& path)
+IMU::IMUConfigPtr IMU::IMUCFGParser::rawParse(const std::string& path)
 {
     IMUConfig cfg;
     std::ifstream file;
@@ -36,4 +38,33 @@ IMU::IMUConfigPtr IMU::IMUCFGParser::parse(const std::string& path)
     file.close();
 
     return utils::make_shared<IMUConfig>(cfg);
+}
+
+void IMU::IMUCFGParser::acceptedExpressions(Expressions & expressions) const
+{
+	ExpressionDescription expDesc;
+	expDesc.description = "IMU cfg format";
+	expDesc.objectsTypes.push_back(typeid(IMUConfig));
+	expressions.insert(Expressions::value_type(".*\\.cfg$", expDesc));
+}
+
+plugin::IParser* IMU::IMUCFGParser::create() const
+{
+	return new IMUCFGParser();
+}
+
+void IMU::IMUCFGParser::getObject(core::Variant& object, const core::VariantsVector::size_type idx) const
+{
+	object.set(cfgWrapper);
+}
+
+void IMU::IMUCFGParser::reset()
+{
+	cfgWrapper.reset();
+}
+
+void IMU::IMUCFGParser::parse(const std::string& path)
+{
+	cfgWrapper = utils::ObjectWrapper::create<IMUConfig>();
+	cfgWrapper->set(rawParse(path));
 }

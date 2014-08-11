@@ -39,24 +39,6 @@ IMU::Frames IMU::IMUDatParser::parse(const core::Filesystem::Path& path, int imu
             imuData.qy = chunk[offs + 13];
             imuData.qz = chunk[offs + 14];
             imuData.qw = chunk[offs + 15];
-            /*int offs = 4 * 8 * i;
-            imuData.raw.acc_x = int16_t((uint16_t(chunk[offs + 1]) << 8) | uint16_t(chunk[offs + 0]));
-            imuData.raw.acc_y = int16_t((uint16_t(chunk[offs + 3]) << 8) | uint16_t(chunk[offs + 2]));
-            imuData.raw.acc_z = int16_t((uint16_t(chunk[offs + 5]) << 8) | uint16_t(chunk[offs + 4]));
-            offs += 8;                                                              
-            imuData.raw.mag_x = int16_t((uint16_t(chunk[offs + 1]) << 8) | uint16_t(chunk[offs + 0]));
-            imuData.raw.mag_y = int16_t((uint16_t(chunk[offs + 3]) << 8) | uint16_t(chunk[offs + 2]));
-            imuData.raw.mag_z = int16_t((uint16_t(chunk[offs + 5]) << 8) | uint16_t(chunk[offs + 4]));
-            offs += 8;                                                              
-            imuData.raw.rate_x = int16_t((uint16_t(chunk[offs + 1]) << 8) | uint16_t(chunk[offs + 0]));
-            imuData.raw.rate_y = int16_t((uint16_t(chunk[offs + 3]) << 8) | uint16_t(chunk[offs + 2]));
-            imuData.raw.rate_z = int16_t((uint16_t(chunk[offs + 5]) << 8) | uint16_t(chunk[offs + 4]));
-            offs += 8;
-            
-            imuData.qx = int16_t((uint16_t(chunk[offs + 1]) << 8) | uint16_t(chunk[offs + 0]));
-            imuData.qy = int16_t((uint16_t(chunk[offs + 3]) << 8) | uint16_t(chunk[offs + 2]));
-            imuData.qz = int16_t((uint16_t(chunk[offs + 5]) << 8) | uint16_t(chunk[offs + 4]));
-            imuData.qw = int16_t((uint16_t(chunk[offs + 7]) << 8) | uint16_t(chunk[offs + 6]));*/
             f.push_back(imuData);
         }
         frames.push_back(f);
@@ -152,4 +134,34 @@ std::vector<IMU::Frames> IMU::IMUDatSplitter::split(const Frames& frames, const 
     }
 
     return framesVector;
+}
+
+void IMU::IMUDatParserCore::acceptedExpressions(Expressions & expressions) const
+{
+	ExpressionDescription expDesc;
+	expDesc.description = "IMU dat format";
+	expDesc.objectsTypes.push_back(typeid(Frames));
+	expressions.insert(Expressions::value_type(".*\\.dat$", expDesc));
+}
+
+plugin::IParser* IMU::IMUDatParserCore::create() const
+{
+	return new IMUDatParserCore();
+}
+
+void IMU::IMUDatParserCore::getObject(core::Variant& object, const core::VariantsVector::size_type idx) const
+{
+	object.set(datWrapper);
+}
+
+void IMU::IMUDatParserCore::reset()
+{
+	datWrapper.reset();
+}
+
+void IMU::IMUDatParserCore::parse(const std::string& path)
+{
+	datWrapper = utils::ObjectWrapper::create<Frames>();
+	auto ptr = utils::make_shared<Frames>(IMUDatParser::parse(path).first);
+	datWrapper->set(ptr);
 }

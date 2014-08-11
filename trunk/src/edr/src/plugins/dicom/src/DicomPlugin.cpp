@@ -15,6 +15,10 @@
 #include "LayersXmlParser.h"
 #include "InternalXmlParser.h"
 #include "AnnotationStatusFilter.h"
+#include "webserviceslib/IWSConnection.h"
+#include "webserviceslib/IBasicQueriesWS.h"
+#include "webserviceslib/WSConnection.h"
+#include "webserviceslib/BasicQueriesWS.h"
 
 using namespace dicom;
 
@@ -129,7 +133,7 @@ public:
 
     virtual const bool lateInit()  
     {
-		//szybkieSprawdzenieDuplikatow();
+        //szybkieSprawdzenieDuplikatow();
         comm = core::querySource<communication::ICommunicationDataSource>(sourceManager);
 		if(comm != nullptr){
 

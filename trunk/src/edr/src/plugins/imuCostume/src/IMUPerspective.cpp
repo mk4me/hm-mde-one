@@ -18,8 +18,33 @@
 #include <corelib/PluginCommon.h>
 #include <corelib/ISourceManager.h>
 #include <boost/format.hpp>
+#include <QtCore/QObject>
+#include "IMUCFGParser.h"
+#include "IMUDatParser.h"
 
 typedef core::Filesystem fs;
+
+VectorChannelPtr createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit = std::string())
+{
+    auto name = [&](const IMU::IMUConfig& conf, int idx) -> std::string {
+		auto size = conf.joints.size();
+        for (int i = 0; i < size; ++i) {
+            if (conf.joints[i].idx == idx) {
+                return conf.joints[i].name;
+            }
+        }
+		QString unknown = QObject::tr("Sensor %1").arg(idx);
+        return unknown.toStdString();
+    };
+	
+    auto c = utils::make_shared<VectorChannel>(hz);
+    // + 1 , bo numeracja w plikach *.cfg zaczyna siê od 1
+    c->setName(name(config, i + 1));
+	c->setValueBaseUnit(unit);
+
+    return c;
+}
+
 
 
 core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::SubjectPtr subject )
@@ -30,12 +55,23 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
     auto rootItem = utils::make_shared<core::HierarchyItem>(QString(), QString(), QIcon());
     core::ConstVariantsList sessions;
     subject->getSessions(sessions);
-    for (auto it = sessions.crbegin(); it != sessions.crend(); ++it) {
+	
+    for (auto& sessionWrp :sessions) {
+		
         core::ConstVariantsList motions;
-        PluginSubject::SessionConstPtr s = (*it)->get();
+		PluginSubject::SessionConstPtr s = sessionWrp->get();
+		core::ConstVariantsList configs;
+		IMU::IMUConfigConstPtr config = utils::make_shared<IMUConfig>();
+		if (s->hasObject(typeid(IMU::IMUConfig), false)) {
+			s->getObjects(configs, typeid(IMU::IMUConfig), false);
+			UTILS_ASSERT(configs.size() == 1);
+			(*configs.begin())->tryGet(config);
+		}
+
+
+		
         QString label(QString::fromUtf8(s->getLocalName().c_str()));
         QString desc("");
-        core::VariantConstPtr sessionWrp;
         
         core::HierarchyItemPtr sessionItem(new core::HierarchyItem(label, desc));
         rootItem->appendChild(sessionItem);
@@ -53,6 +89,94 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 				motion->getObjects(vectors, typeid(VectorChannelCollection), false);
 				createIMUBranch(vectors, sessionItem);
             }
+
+			if (motion->hasObject(typeid(IMU::Frames), false)) {
+				core::ConstVariantsList framesV;
+				hasData = true;
+				motion->getObjects(framesV, typeid(IMU::Frames), false);
+
+				auto accWrapper = utils::ObjectWrapper::create<VectorChannelCollection>();
+				auto magWrapper = utils::ObjectWrapper::create<VectorChannelCollection>();
+				auto gyrWrapper = utils::ObjectWrapper::create<VectorChannelCollection>();
+				
+				VectorChannelCollectionPtr accelerations = utils::make_shared<VectorChannelCollection>();
+				VectorChannelCollectionPtr magnetometers = utils::make_shared<VectorChannelCollection>();
+				VectorChannelCollectionPtr gyroscopes = utils::make_shared<VectorChannelCollection>();
+				
+				// todo przeniesc te hz do configa?
+				int hz = 50;
+				/*IMU::Frames frames;
+				if (config->imusCount != -1) {
+					frames = IMU::IMUDatParser::parse(source, config->imusCount);
+				}
+				else {
+					auto res = IMU::IMUDatParser::parse(source);
+					frames = res.first;
+					config->imusCount = res.second;
+				}*/
+				
+				IMU::FramesConstPtr frms = (*framesV.begin())->get();
+				if (config->imusCount == -1 && !frms->empty()) {
+					auto c = utils::const_pointer_cast<IMU::IMUConfig>(config);
+					c->imusCount = frms->at(0).size();
+				}
+				for (int i = 0; i < config->imusCount; ++i) {
+				    accelerations->addChannel(createChannel(hz, *config, i, "m/s^2"));
+				    magnetometers->addChannel(createChannel(hz, *config, i));
+				    gyroscopes->addChannel(createChannel(hz, *config, i, "rad/s"));
+				}
+				    
+				for (auto itFrame = frms->begin(); itFrame != frms->end(); ++itFrame) {
+				    const IMU::Frame& f = *itFrame;
+				    for (int i = 0; i < config->imusCount; ++i) {
+						// TODO te parametry (1024, 2048) trzeba gdzies przeniesc (do ramki?)
+				        accelerations->getChannel(i)->addPoint(osg::Vec3(f[i].raw.acc_x, f[i].raw.acc_y, f[i].raw.acc_z) * (1 / 1024.0f));
+						magnetometers->getChannel(i)->addPoint(osg::Vec3(f[i].raw.mag_x, f[i].raw.mag_y, f[i].raw.mag_z) * (1 / 2048.0f));
+						gyroscopes->getChannel(i)->addPoint(osg::Vec3(f[i].raw.rate_x, f[i].raw.rate_y, f[i].raw.rate_z) * (1 / 2048.0f));
+				    }
+				}
+				accWrapper->set(accelerations);
+				magWrapper->set(magnetometers);
+				gyrWrapper->set(gyroscopes);
+
+				{
+					core::VariantsList objects;
+
+					auto _lambda = [&](VectorChannelCollectionPtr collection, const std::string& groupName)
+					{
+						int count = collection->getNumChannels();
+						for (int i = 0; i < count; ++i) {
+							VectorChannelPtr channel = collection->getChannel(i);
+							
+							core::VariantPtr wrapper = core::Variant::create<VectorChannel>();
+							wrapper->setMetadata("core/name", channel->getName());
+							wrapper->setMetadata("core/source", s->getName() + std::string("/") + groupName);
+							wrapper->set(channel);
+							objects.push_back(wrapper);
+						}
+					};
+
+					_lambda(accelerations, "accelerations");
+					_lambda(magnetometers, "magnetometers");
+					_lambda(gyroscopes, "gyroscopes");
+
+					auto memTransaction = memoryDataManager->transaction();
+					for (auto it = objects.begin(); it != objects.end(); ++it){
+						memTransaction->addData(*it);
+					}
+				}
+				    
+				
+
+				auto accItem = createImuCollectionItem(0, accelerations);
+				sessionItem->appendChild(accItem);
+
+				auto magItem = createImuCollectionItem(1, magnetometers);
+				sessionItem->appendChild(magItem);
+
+				auto gyrItem = createImuCollectionItem(2, gyroscopes);
+				sessionItem->appendChild(gyrItem);
+			}
         }
     }
 
@@ -69,240 +193,47 @@ void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &oList, core::
 	for (auto it = oList.begin(); it != oList.end(); ++i, ++it) {
 		VectorChannelCollectionConstPtr collection = (*it)->get();
 		if (collection) {
-			QString name;
-			switch (i) {
-			case 0: name = "Accelerations"; break;
-			case 1: name = "Magnetometers"; break;
-			case 2: name = "Gyroscopes"; break;
-			default: name = "Item"; break;
-			}
-			auto collectionItem = utils::make_shared<core::HierarchyItem>(name, QString());
-			for (int j = 0; j < collection->getNumChannels(); ++j) {
-				core::VariantPtr wrapper = core::Variant::create<VectorChannel>();
-				VectorChannelConstPtr c = collection->getChannel(j);
-				wrapper->set(utils::const_pointer_cast<VectorChannel>(c));
-				static int number = 0;
-				wrapper->setMetadata("name", "Serie_" + boost::lexical_cast<std::string>(number++));
-				wrapper->setMetadata("source", "TreeBuilder");
-				NewVector3ItemHelperPtr channelHelper = utils::make_shared<NewVector3ItemHelper>(wrapper);
-				core::IHierarchyItemPtr channelItem = utils::make_shared<core::HierarchyDataItem>(wrapper, QIcon(), QString::fromStdString(c->getName()), QString(), channelHelper);
-				collectionItem->appendChild(channelItem);
-			}
+			auto collectionItem = createImuCollectionItem(i, collection);
 			root->appendChild(collectionItem);
 		}
 	}
 }
 
-//core::HierarchyDataItemPtr dicom::DicomPerspective::tryGetHierarchyItem( const std::string& filename )
-//{
-//    auto it = name2hierarchy.find(filename);
-//    if (it != name2hierarchy.end()) {
-//        return (it->second).lock();
-//    }
-//
-//    return core::HierarchyDataItemPtr();
-//}
+core::IHierarchyItemPtr IMU::IMUPerspective::createImuCollectionItem(int i, VectorChannelCollectionConstPtr collection)
+{
+	QString name;
+	switch (i) {
+		case 0: name = QObject::tr("Accelerations"); break;
+		case 1: name = QObject::tr("Magnetometers"); break;
+		case 2: name = QObject::tr("Gyroscopes"); break;
+		default: name = QObject::tr("Item"); break;
+	}
+	auto collectionItem = utils::make_shared<core::HierarchyItem>(name, QString());
+	for (int j = 0; j < collection->getNumChannels(); ++j) {
+		core::VariantPtr wrapper = core::Variant::create<VectorChannel>();
+		VectorChannelConstPtr c = collection->getChannel(j);
+		wrapper->set(utils::const_pointer_cast<VectorChannel>(c));
+		static int number = 0;
+		wrapper->setMetadata("name", "Serie_" + boost::lexical_cast<std::string>(number++));
+		wrapper->setMetadata("source", "TreeBuilder");
+		NewVector3ItemHelperPtr channelHelper = utils::make_shared<NewVector3ItemHelper>(wrapper);
+		core::IHierarchyItemPtr channelItem = utils::make_shared<core::HierarchyDataItem>(wrapper, QIcon(), QString::fromStdString(c->getName()), QString(), channelHelper);
+		collectionItem->appendChild(channelItem);
+	}
 
+	return collectionItem;
+}
 
-//void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
-//{
-//    UTILS_ASSERT(wrapper, "Item should be initialized");
-//    core::VariantPtr wrp = utils::const_pointer_cast<core::Variant>(wrapper);
-//    std::string name = getUserName();
-//	fs::Path realXmlFilename(boost::str(boost::format(xmlFilename) % name));
-//    wrp->setMetadata("DICOM_XML", realXmlFilename.string());
-//	wrp->setMetadata("DICOM_XML_PATTERN", xmlFilename);
-//    wrp->setMetadata("TRIAL_NAME", trialName);
-//    //core::VariantPtr wrp = wrapper->clone();
-//    auto serie = visualizer->createSerie(wrp->data()->getTypeInfo(), wrp);
-//    auto layeredSerie = dynamic_cast<LayeredSerie*>(serie->serie());
-//    UTILS_ASSERT(layeredSerie);
-//    layeredSerie->setName(path.toStdString());
-//                        
-//    ILayeredImagePtr img = layeredSerie->getImage();
-//    //LayeredImagePtr img = utils::const_pointer_cast<LayeredImage>(cimg);
-//    bool localAdded = false;
-//
-//    for (auto itXml = layers.begin(); itXml != layers.end(); ++itXml) {
-//        LayersVectorConstPtr layersVector = (*itXml)->get();
-//        std::string xmlUser = "unknown";
-//        if ((*itXml)->getMetadata("core/source", xmlUser)) {
-//            // TODO zrobic to regexem
-//            xmlUser = fs::Path(xmlUser).stem().string();
-//            xmlUser = xmlUser.substr(xmlUser.find_last_of(".") + 1);
-//        }
-//        if (name == xmlUser) {
-//            layersVector = resolveLocalXml(realXmlFilename, layersVector);
-//            localAdded = true;
-//        }
-//
-//		bool bFound = false;
-//		bool iFound = false;
-//		bool fFound = false;
-//		bool jFound = false;
-//		bool imgFound = false;
-//
-//		for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
-//
-//			switch((*layerIt)->getAdnotationIdx()){
-//			case dicom::annotations::bloodLevel:
-//				bFound = true;
-//				break;
-//
-//
-//			case dicom::annotations::inflammatoryLevel:
-//				iFound = true;
-//				break;
-//
-//			case dicom::annotations::jointType:
-//				jFound = true;
-//				break;
-//
-//			case dicom::annotations::fingerType:
-//				fFound = true;
-//				break;
-//
-//			case dicom::annotations::imageType:
-//				imgFound = true;
-//				break;
-//			}
-//		}		
-//
-//		if(iFound == false){
-//			auto l = dicom::ILayerItemPtr(new InflammatoryLevelLayer(dicom::annotations::inflammatoryLevel, dicom::annotations::unknownInflammatoryLevel));
-//			l->setName(QObject::tr("Inflammatory level"));			
-//			img->addLayer(l, xmlUser);
-//		}
-//
-//		if(bFound == false && img->isPowerDoppler() == true){
-//			auto l = dicom::ILayerItemPtr(new BloodLevelLayer(dicom::annotations::bloodLevel, dicom::annotations::unknownBloodLevel));
-//			l->setName(QObject::tr("Blood level"));			
-//			img->addLayer(l, xmlUser);
-//		}
-//
-//		if(fFound == false){
-//			auto l = dicom::ILayerItemPtr(new FingerTypeLayer(dicom::annotations::fingerType, dicom::annotations::unknownFinger));
-//			l->setName(QObject::tr("Finger type"));			
-//			img->addLayer(l, xmlUser);
-//		}
-//
-//		if(jFound == false){
-//			auto l = dicom::ILayerItemPtr(new JointTypeLayer(dicom::annotations::jointType, dicom::annotations::unknownJoint));
-//			l->setName(QObject::tr("Joint type"));			
-//			img->addLayer(l, xmlUser);
-//		}
-//
-//		if(imgFound == false){
-//			auto l = dicom::ILayerItemPtr(new ImageQualityLayer(dicom::annotations::imageType, dicom::annotations::different));
-//			l->setName(QObject::tr("Image"));			
-//			img->addLayer(l, xmlUser);
-//		}
-//
-//        for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
-//            img->addLayer(*layerIt, xmlUser);
-//        }
-//    }
-//
-//    // nie bylo konfliktu danych lokalnych vs sciagnietych, ale mozliwe, ze sa tylko lokalne
-//    if (!localAdded) {
-//
-//		bool bFound = false;
-//		bool iFound = false;
-//		bool fFound = false;
-//		bool jFound = false;
-//		bool imgFound = false;
-//
-//        auto layersVector = resolveLocalXml(realXmlFilename);
-//        if (layersVector) {
-//            for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
-//                
-//				switch((*layerIt)->getAdnotationIdx()){
-//				case dicom::annotations::bloodLevel:
-//					bFound = true;
-//					break;
-//
-//
-//				case dicom::annotations::inflammatoryLevel:
-//					iFound = true;
-//					break;
-//
-//				case dicom::annotations::jointType:
-//					jFound = true;
-//					break;
-//
-//				case dicom::annotations::fingerType:
-//					fFound = true;
-//					break;
-//
-//				case dicom::annotations::imageType:
-//					imgFound = true;
-//					break;
-//				}
-//            }
-//        }
-//
-//		if(iFound == false){
-//			auto l = dicom::ILayerItemPtr(new InflammatoryLevelLayer(dicom::annotations::inflammatoryLevel, dicom::annotations::unknownInflammatoryLevel));
-//			l->setName(QObject::tr("Inflammatory level"));			
-//			img->addLayer(l, name);
-//		}
-//
-//		if(bFound == false && img->isPowerDoppler() == true){
-//			auto l = dicom::ILayerItemPtr(new BloodLevelLayer(dicom::annotations::bloodLevel, dicom::annotations::unknownBloodLevel));
-//			l->setName(QObject::tr("Blood level"));			
-//			img->addLayer(l, name);
-//		}
-//
-//		if(fFound == false){
-//			auto l = dicom::ILayerItemPtr(new FingerTypeLayer(dicom::annotations::fingerType, dicom::annotations::unknownFinger));
-//			l->setName(QObject::tr("Finger type"));			
-//			img->addLayer(l, name);
-//		}
-//
-//		if(jFound == false){
-//			auto l = dicom::ILayerItemPtr(new JointTypeLayer(dicom::annotations::jointType, dicom::annotations::unknownJoint));
-//			l->setName(QObject::tr("Joint type"));			
-//			img->addLayer(l, name);
-//		}
-//
-//		if(imgFound == false){
-//			auto l = dicom::ILayerItemPtr(new ImageQualityLayer(dicom::annotations::imageType, dicom::annotations::different));
-//			l->setName(QObject::tr("Image"));			
-//			img->addLayer(l, name);
-//		}
-//
-//		if (layersVector) {
-//			for (auto layerIt = layersVector->cbegin(); layerIt != layersVector->cend(); ++layerIt) {
-//				img->addLayer(*layerIt, name);				
-//			}
-//		}
-//    }
-//
-//    for (int row = img->getNumTags() - 1; row >= 0; --row) {
-//        std::string tag = img->getTag(row);
-//        img->setTagVisible(tag, tag == name);
-//    }
-//    layeredSerie->refresh();
-//    LayeredImageVisualizerView* view = dynamic_cast<LayeredImageVisualizerView*>(visualizer->getOrCreateWidget());
-//    UTILS_ASSERT(view);
-//    view->refresh();
-//    visualizer->setActiveSerie(serie);
-//    series.push_back(serie);    
-//}
+IMU::IMUPerspective::IMUPerspective(core::IMemoryDataManager * memoryDataManager) : 
+	memoryDataManager(memoryDataManager)
+{
 
-//dicom::DicomHelper::DicomHelper( const core::VariantConstPtr & wrapper, const core::ConstVariantsList& layers,
-//    const std::string& xmlFilename, const std::string& trialName) :
-//    WrappedItemHelper(wrapper),
-//    layers(layers),
-//    xmlFilename(xmlFilename),
-//    trialName(trialName)
-//{
-//
-//}
+}
 
 void IMU::IMUPerspectiveService::init(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager)
 {
 	this->sourceManager = sourceManager;
+	this->memoryDataManager = memoryDataManager;
 }
 
 void IMU::IMUPerspectiveService::finalize()
@@ -327,7 +258,7 @@ const bool IMU::IMUPerspectiveService::lateInit()
 {
 	communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(sourceManager);
 	if (comm){
-		comm->addHierarchyPerspective(utils::make_shared<IMUPerspective>());
+		comm->addHierarchyPerspective(utils::make_shared<IMUPerspective>(memoryDataManager));
 		return true;
 	}
 

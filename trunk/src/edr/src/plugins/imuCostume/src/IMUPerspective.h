@@ -15,6 +15,7 @@
 #include <corelib/Visualizer.h>
 #include <corelib/HierarchyDataItem.h>
 #include "corelib/IService.h"
+#include "plugins/c3d/C3DCollections.h"
 
 namespace IMU {
 
@@ -37,16 +38,20 @@ namespace IMU {
 class IMUPerspective : public communication::IHierarchyPerspective
 {
 public:
+	IMUPerspective(core::IMemoryDataManager * memoryDataManager);
 	virtual ~IMUPerspective() {}
 
     virtual core::IHierarchyItemPtr getPerspective( PluginSubject::SubjectPtr subject );
 
 	static void createIMUBranch(core::ConstVariantsList &oList, core::HierarchyItemPtr root);
 
+	static core::IHierarchyItemPtr createImuCollectionItem(int i, VectorChannelCollectionConstPtr collection);
+
     //core::HierarchyDataItemPtr tryGetHierarchyItem(const std::string& filename);
 
 private:
     std::map<std::string, core::HierarchyDataItemWeakPtr> name2hierarchy;
+	core::IMemoryDataManager * memoryDataManager;
 };
 DEFINE_SMART_POINTERS(IMUPerspective);
 
@@ -72,7 +77,7 @@ public:
 	virtual QWidgetList getPropertiesWidgets();
 private:
 	core::ISourceManager * sourceManager;
-
+	core::IMemoryDataManager * memoryDataManager;
 };
 
 }

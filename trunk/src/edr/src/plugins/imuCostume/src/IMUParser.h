@@ -18,7 +18,7 @@
 
 namespace IMU {
 
-    class IMUConfig;
+    struct IMUConfig;
 
     class IMUParser : public plugin::ISourceParser
     {
@@ -49,8 +49,9 @@ namespace IMU {
         utils::ObjectWrapperPtr magWrapper;
         utils::ObjectWrapperPtr gyrWrapper;
         utils::ObjectWrapperPtr quatWrapper;
-    };
+	};
     DEFINE_SMART_POINTERS(IMUParser);
 
 }
 #endif
+ 
