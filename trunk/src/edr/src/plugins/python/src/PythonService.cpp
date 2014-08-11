@@ -11,6 +11,7 @@
 #include "PythonConsole.h"
 #include "QtWidgets/QAction"
 #include "PythonEditor.h"
+#include "coreui/CoreAction.h"
 
 using namespace python;
 
@@ -37,7 +38,7 @@ void PythonService::init( core::ISourceManager * sourceManager, core::IVisualize
 	editor = PythonEditor::createPythonEditor();
 	QList<QAction*> actions;
 
-	QAction* run = new QAction("Run", editor);
+	coreUI::CoreAction*  run = new coreUI::CoreAction(tr("Run"), QIcon(":/newVdf/icons/run.png"), tr("Run"), this, coreUI::CoreTitleBar::Left);
 	connect(run, SIGNAL(triggered()), this, SLOT(runScript()));
 	actions.push_back(run);
 
