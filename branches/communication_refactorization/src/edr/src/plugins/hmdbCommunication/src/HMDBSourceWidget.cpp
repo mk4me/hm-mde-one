@@ -16,6 +16,7 @@ HMDBSourceWidget::HMDBSourceWidget(hmdbCommunication::HMDBSource * source,
 	mainWidget(new QSplitter), viewsWidget(new QMainWindow), sourceOptionsWidget(new SourceOptionsWidget)
 {
 	sourceOptionsWidget->setMaximumWidth(std::max(600, QApplication::desktop()->screenGeometry().width() / 4));
+	sourceOptionsWidget->setSourcesPlaceholder(viewsWidget);
 
 	//Splitter
 	auto l = new QVBoxLayout;

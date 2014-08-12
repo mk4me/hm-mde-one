@@ -100,7 +100,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
 	   {
 		   hmdbCommunication::IHMDBSource::ContextConfiguration ccfg;
 		   ccfg.name = tr("Default PJWSTK IMU data connection");
-		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getApplicationDataPath() / "db" / "localStorage.db").string());
+		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
 		   ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
 		   ccfg.motionServicesConfiguration.userConfiguration.user = "";
 		   ccfg.motionServicesConfiguration.userConfiguration.password = "";

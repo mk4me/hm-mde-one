@@ -4,6 +4,7 @@
 #include <hmdbserviceslib/IFileStoremanWS.h>
 #include <plugins/hmdbCommunication/IHMDBDataContext.h>
 #include <plugins/hmdbCommunication/IHMDBSession.h>
+#include "MemoryStorage.h"
 
 using namespace hmdbCommunication;
 
@@ -35,13 +36,20 @@ IHMDBRemoteContext::IDownloadOperation * createDownload(hmdbServices::IFileStore
 		new PrepareFileToDownloadOperation(fs, cid.fileID),
 		new PrepareMemoryTransferOutputOperation(),
 		new FTPDownloadFileOperation(ftp),
-		new StoreOutputOperation(storage, cid.fileName));
+		storage == nullptr ? nullptr : new StoreOutputOperation(storage, cid.fileName));
 }
 
 const HMDBRemoteContext::SynchronizeOperationPtr HMDBRemoteContext::prepareShallowCopyDownload(IHMDBStorage * storage)
 {
 	HMDBRemoteContext::SynchronizeOperationPtr ret;
 	std::list<IHMDBRemoteContext::IDownloadOperation*> downloads;
+
+	bool mustDelete = false;
+
+	if (storage == nullptr){
+		mustDelete = true;
+		storage = new MemoryStorage;
+	}
 
 	if (session_->medicalFilestoreman() != nullptr && session_->medicalFtp() != nullptr){
 
@@ -93,7 +101,7 @@ const HMDBRemoteContext::SynchronizeOperationPtr HMDBRemoteContext::prepareShall
 	}	
 
 	if (downloads.empty() == false){
-		ret.reset(new SynchronizeOperation(downloads));
+		ret.reset(new SynchronizeOperation(downloads, storage, mustDelete));
 	}
 
 	return ret;

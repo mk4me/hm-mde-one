@@ -5,6 +5,7 @@
 #include <QtWidgets/QAction>
 #include "QTextStream"
 #include "QtWidgets/QMessageBox"
+#include "coreui/CoreAction.h"
 
 using namespace python;
 
@@ -26,31 +27,32 @@ QTextEdit* PythonEditor::createPythonEditor()
 	const QString rsrcPath = ":/coreUI/icons/textedit";
 	QList<QAction*> actions;
 
-	QAction* undo = new QAction(QIcon::fromTheme("edit-undo", QIcon(rsrcPath + "/editundo.png")), tr("&Undo"), editor);
+
+	QAction* undo = new coreUI::CoreAction(tr("Edit"), QIcon::fromTheme("edit-undo", QIcon(rsrcPath + "/editundo.png")), tr("&Undo"), editor, coreUI::CoreTitleBar::Left);
 	undo->setShortcut(QKeySequence::Undo);
 	connect(undo, SIGNAL(triggered()), editor, SLOT(undo()));
 	actions.push_back(undo);
 
-	QAction* redo = new QAction(QIcon::fromTheme("edit-redo", QIcon(rsrcPath + "/editredo.png")), tr("&Redo"), editor);
+	QAction* redo = new coreUI::CoreAction(tr("Edit"), QIcon::fromTheme("edit-redo", QIcon(rsrcPath + "/editredo.png")), tr("&Redo"), editor);
 	redo->setShortcut(QKeySequence::Redo);
 	connect(redo, SIGNAL(triggered()), editor, SLOT(redo()));
 	actions.push_back(redo);
 
 	QIcon newIcon = QIcon::fromTheme("document-new", QIcon(rsrcPath + "/filenew.png"));
-	QAction* aNew = new QAction(newIcon, tr("&New"), editor);
+	QAction* aNew = new coreUI::CoreAction(tr("File"), newIcon, tr("&New"), editor);
 	aNew->setShortcut(QKeySequence::New);
 	connect(aNew, SIGNAL(triggered()), editor, SLOT(fileNew()));
 
-	QAction* save = new QAction(QIcon::fromTheme("document-save", QIcon(rsrcPath + "/filesave.png")), tr("&Save"), editor);
+	QAction* save = new coreUI::CoreAction(tr("File"), QIcon::fromTheme("document-save", QIcon(rsrcPath + "/filesave.png")), tr("&Save"), editor);
 	save->setShortcut(QKeySequence::Save);
 	connect(save, SIGNAL(triggered()), editor, SLOT(save()));
 	actions.push_back(save);
 
-	QAction* saveAs = new QAction(QIcon(rsrcPath + "/filesave.png"), tr("Save &As..."), editor);
+	QAction* saveAs = new coreUI::CoreAction(tr("File"), QIcon(rsrcPath + "/filesave.png"), tr("Save &As..."), editor);
 	connect(saveAs, SIGNAL(triggered()), editor, SLOT(saveAs()));
 	actions.push_back(saveAs);
 
-	QAction* open = new QAction(QIcon::fromTheme("document-open", QIcon(rsrcPath + "/fileopen.png")),
+	QAction* open = new coreUI::CoreAction(tr("File"), QIcon::fromTheme("document-open", QIcon(rsrcPath + "/fileopen.png")),
 		tr("&Open..."), editor);
 	open->setShortcut(QKeySequence::Open);
 	connect(open, SIGNAL(triggered()), editor, SLOT(open()));

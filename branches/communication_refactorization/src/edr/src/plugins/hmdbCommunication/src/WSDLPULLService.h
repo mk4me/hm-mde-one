@@ -32,9 +32,9 @@ namespace hmdbCommunication
 
 		void setOperation(const std::string & operation)
 		{
+			bool ok = true;
 			try{
-				invoker_->setOperation(operation);
-				operationName_ = operation;
+				ok = invoker_->setOperation(operation);
 			}
 			catch (std::exception & e){
 				throw WSDLServiceException(e.what(), WSDLServiceException::Operation);
@@ -42,6 +42,12 @@ namespace hmdbCommunication
 			catch (...){
 				throw WSDLServiceException("Unknown operation error", WSDLServiceException::Operation);
 			}
+
+			if (ok == false){
+				throw WSDLServiceException("Could not find particular operation in service - probably wrong service address, operation name or server verification settings", WSDLServiceException::Operation);
+			}
+
+			operationName_ = operation;
 		}
 
 		void setValue(const std::string & name, const std::string & value)

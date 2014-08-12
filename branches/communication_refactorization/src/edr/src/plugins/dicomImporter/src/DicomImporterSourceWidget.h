@@ -37,15 +37,10 @@ namespace dicomImporter {
         DicomImporterSourceWidget(DicomImporterSource *source);
 
     private slots:
-        /*void onLoadFiles();
-        void onLoadDirectory();
-*/
-        //void onOpenProject();
         void onImport();
         void onSelectImportDir();
         void onSelectSaveDir();
-        void onUpdateMeta();
-
+        
     private:
         DicomImporterSource* dicomSource;
         Ui::DicomSource* ui;

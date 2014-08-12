@@ -19,7 +19,7 @@ namespace hmdbCommunication
 		DataSourceBaseContent();
 		~DataSourceBaseContent();
 
-		virtual const std::string name() const;
+		virtual const QString name() const;
 
 		virtual const bool fillContent(QTreeWidgetItem * item, const ShallowCopy & shallowCopy) const;
 		virtual const bool headers(const QTreeWidgetItem * item, QStringList & headers) const;

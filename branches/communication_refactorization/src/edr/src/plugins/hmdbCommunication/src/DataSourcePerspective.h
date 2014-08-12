@@ -75,7 +75,7 @@ namespace hmdbCommunication
 		DataSourcePatientPerspective();
 		virtual ~DataSourcePatientPerspective();
 
-		virtual const std::string name() const;
+		virtual const QString name() const;
 
 		virtual void rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const ShallowCopy & shallowCopy);
 	};
@@ -87,11 +87,11 @@ namespace hmdbCommunication
 		DataSourceMedusaPerspective();
 		virtual ~DataSourceMedusaPerspective();
 
-		virtual const std::string name() const;
-
+		virtual const QString name() const;
+		virtual void defaultHeaders(QStringList & headers) const;
 		virtual void rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const ShallowCopy & shallowCopy);
 
-		virtual bool headers(const QTreeWidgetItem * item, QStringList & headers) const;
+		virtual const bool headers(const QTreeWidgetItem * item, QStringList & headers) const;
 	};
 
 	//! Perspektywa chorób - pacjenci pojawiają się kilka razy w zależności od choroby
@@ -101,7 +101,7 @@ namespace hmdbCommunication
 		DataSourceDisorderPerspective();
 		virtual ~DataSourceDisorderPerspective();
 
-		virtual const std::string name() const;
+		virtual const QString name() const;
 
 		virtual void rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const ShallowCopy & shallowCopy);
 	};
@@ -113,7 +113,7 @@ namespace hmdbCommunication
 		DataSourceGenderPerspective();
 		virtual ~DataSourceGenderPerspective();
 
-		virtual const std::string name() const;
+		virtual const QString name() const;
 
 		virtual void rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const ShallowCopy & shallowCopy);
 

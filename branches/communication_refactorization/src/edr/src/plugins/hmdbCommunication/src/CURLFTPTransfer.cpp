@@ -7,8 +7,10 @@
 
 using namespace hmdbCommunication;
 
-CURLFTPTransfer::CURLFTPTransfer(const Direction direction, CURL * curl, CURLManagerPtr manager,
-	const std::string & file, const size_t size) : file_(file), size_(size), direction_(direction)
+CURLFTPTransfer::CURLFTPTransfer(const Direction direction, CURL * curl,
+	CURLManagerPtr manager,	const std::string & file, const size_t size)
+	: file_(file), size_(size), direction_(direction), manager_(manager),
+	curl_(curl)
 {
 	utils::shared_ptr<CURLFTPTransferData> * td = nullptr;
 	auto ret = curl_easy_getinfo(curl, CURLINFO_PRIVATE, &td);

@@ -149,7 +149,7 @@ void CompoundOperation::callAnySerial()
 
 void CompoundOperation::callAnyParallel()
 {
-	for (auto it = operations.begin(); it != operations.end() && status_ == threadingUtils::IOperation::Running; ++it){
+	for (auto it = operations.begin(); it != operations.end() && status_ == threadingUtils::IOperation::Pending; ++it){
 		(*it)->start();
 	}
 
@@ -520,7 +520,7 @@ void UploadOperation::getFileID()
 StoreOutputOperation::StoreOutputOperation(IHMDBStorage * storage, const std::string & key)
 	: FunctorOperation(IHMDBRemoteContext::StoringData), storage(storage), key(key)
 {
-
+	setFunctor(boost::bind(&StoreOutputOperation::store, this));
 }
 
 StoreOutputOperation::~StoreOutputOperation()
@@ -731,13 +731,7 @@ IHMDBRemoteContext::IOperation * PrepareTmpFileTransferOutputOperation::cleanOut
 PrepareMemoryTransferOutputOperation::OpenMemoryTransferOutputOperation::OpenMemoryTransferOutputOperation(PrepareMemoryTransferOutputOperation * op)
 	: FunctorOperation(IHMDBRemoteContext::OpeningInput), op(op)
 {
-
-}
-
-PrepareMemoryTransferOutputOperation::PrepareMemoryTransferOutputOperation()
-	: FunctorOperation(IHMDBRemoteContext::PreparingOutput)
-{
-	setFunctor(boost::bind(&PrepareMemoryTransferOutputOperation::prepareOutput, this));
+	setFunctor(boost::bind(&PrepareMemoryTransferOutputOperation::OpenMemoryTransferOutputOperation::openOutput, this));
 }
 
 PrepareMemoryTransferOutputOperation::OpenMemoryTransferOutputOperation::~OpenMemoryTransferOutputOperation()
@@ -766,6 +760,12 @@ IHMDBRemoteContext::IOperation * PrepareMemoryTransferOutputOperation::OpenMemor
 	return nullptr;
 }
 
+PrepareMemoryTransferOutputOperation::PrepareMemoryTransferOutputOperation()
+	: FunctorOperation(IHMDBRemoteContext::PreparingOutput)
+{
+	setFunctor(boost::bind(&PrepareMemoryTransferOutputOperation::prepareOutput, this));
+}
+
 PrepareMemoryTransferOutputOperation::~PrepareMemoryTransferOutputOperation()
 {
 
@@ -778,7 +778,7 @@ std::ostream * PrepareMemoryTransferOutputOperation::fileOutput()
 
 IHMDBRemoteContext::IOperation * PrepareMemoryTransferOutputOperation::closeOutputOperation()
 {
-	return new FunctorOperation(IHMDBRemoteContext::ClosingOutput, boost::bind(&std::stringstream::flush, stream));
+	return nullptr;
 }
 
 IOpenTransferOutputOperation * PrepareMemoryTransferOutputOperation::openInputOperation()
@@ -842,6 +842,7 @@ CompoundFileDownload::CompoundFileDownload(const IHMDBRemoteContext::CompoundID 
 
 	operations.push_back(oiOp.get());
 	operations.push_back(soOp);
+
 	if (ciOp != nullptr){
 		operations.push_back(ciOp.get());
 	}
@@ -918,7 +919,7 @@ const IHMDBRemoteContext::OperationType CompoundFileDownload::operationType() co
 std::istream * CompoundFileDownload::stream()
 {
 	if (downloaded_ == true){
-		soOp->stream();
+		return soOp->stream();
 	}
 
 	return nullptr;
@@ -1058,11 +1059,15 @@ void ExtractShallowcopy::extract()
 		++it;
 		++progress_;
 	}
+
+	shallowCopy_ = locSh;
+	incrementalShallowCopy_ = locIncSh;
 }
 
-SynchronizeOperation::SynchronizeOperation(const std::list<IHMDBRemoteContext::IDownloadOperation*> & downloads)
+SynchronizeOperation::SynchronizeOperation(const std::list<IHMDBRemoteContext::IDownloadOperation*> & downloads,
+	IHMDBStorage * storage, const bool mustDelete)
 	: CompoundOperation(IHMDBRemoteContext::Synchronizing, IHMDBRemoteContext::ICompoundOperation::AllOrNothing,
-	IHMDBRemoteContext::ICompoundOperation::Serial)
+	IHMDBRemoteContext::ICompoundOperation::Serial), storage(storage), mustDelete(mustDelete)
 {
 	CompoundOperation::Operations downloadOperatins;
 
@@ -1086,7 +1091,9 @@ SynchronizeOperation::SynchronizeOperation(const std::list<IHMDBRemoteContext::I
 
 SynchronizeOperation::~SynchronizeOperation()
 {
-
+	if (mustDelete == true){
+		delete storage;
+	}
 }
 
 const ShallowCopyConstPtr SynchronizeOperation::shallowCopy() const

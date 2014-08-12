@@ -13,7 +13,7 @@
 
 namespace hmdbCommunication
 {
-	typedef boost::function<networkUtils::IWSDLServicePtr()> WSDLServiceCreator;
+	typedef boost::function<networkUtils::IWSDLServicePtr()> WSDLServiceCreator;	
 }
 
 #endif	// __HEADER_GUARD_HMDBCOMMUNICATION__WSDLSERVICETYPES_H__

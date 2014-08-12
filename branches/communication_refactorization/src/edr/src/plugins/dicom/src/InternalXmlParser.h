@@ -20,7 +20,7 @@ namespace dicom {
 class InternalXmlParser : public plugin::ISourceParser
 {
     UNIQUE_ID("{10F620FF-98EC-46A3-BE64-6269EFB16784}")
-	CLASS_DESCRIPTION("PNG parser", "PNG parser")
+	CLASS_DESCRIPTION("Internal Xml Parser", "Internal Xml Parser")
 	
 public:
     InternalXmlParser();

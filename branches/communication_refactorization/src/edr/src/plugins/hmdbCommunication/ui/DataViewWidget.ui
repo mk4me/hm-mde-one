@@ -16,6 +16,15 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTreeWidget" name="treeWidget">
+     <property name="contextMenuPolicy">
+      <enum>Qt::ActionsContextMenu</enum>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>60</width>
+       <height>20</height>
+      </size>
+     </property>
      <column>
       <property name="text">
        <string notr="true">1</string>
@@ -72,6 +81,11 @@
   <action name="actionForceDownload">
    <property name="text">
     <string>Force download</string>
+   </property>
+  </action>
+  <action name="actionForceDownloadAll">
+   <property name="text">
+    <string>Force download all</string>
    </property>
   </action>
  </widget>
@@ -193,7 +207,7 @@
    <sender>actionSynchronize</sender>
    <signal>triggered()</signal>
    <receiver>DataViewWidget</receiver>
-   <slot>onSynchronize()</slot>
+   <slot>onTrySynchronize()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -253,19 +267,37 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionForceDownloadAll</sender>
+   <signal>triggered()</signal>
+   <receiver>DataViewWidget</receiver>
+   <slot>onForceDownloadAll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>325</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <signal>currentItemChanged(char,int)</signal>
+  <signal>operationAboutToStart(char)</signal>
   <slot>onLoad()</slot>
   <slot>onLoadAll()</slot>
   <slot>onUnload()</slot>
   <slot>onUnloadAll()</slot>
   <slot>onRebuild()</slot>
   <slot>onRefreshStatus()</slot>
-  <slot>onSynchronize()</slot>
   <slot>onDownload()</slot>
   <slot>onForceDownload()</slot>
   <slot>onDownloadAll()</slot>
   <slot>onTreeCurrentItemChange(QTreeWidgetItem*,QTreeWidgetItem*)</slot>
+  <slot>onTrySynchronize()</slot>
+  <slot>onForceDownloadAll()</slot>
  </slots>
 </ui>

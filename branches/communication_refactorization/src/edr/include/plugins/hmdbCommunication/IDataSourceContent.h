@@ -130,13 +130,13 @@ namespace hmdbCommunication
 		//! \param item Element dla którego chcemy pobrać nagłówek
 		//! \param headers [out] Nagłowek dla zadanego elementu
 		//! \return Czy wypełnilismy nagłówek
-		virtual const bool headers(QTreeWidgetItem * item, QStringList & headers) const = 0;
+		virtual const bool headers(const QTreeWidgetItem * item, QStringList & headers) const = 0;
 		//! \param item Element dla którego chcemy pobrać pole w którym zamieścimy jego status
 		//! \reuturn Numer pola ze statusem
-		virtual const int statusField(QTreeWidgetItem * item) const = 0;
+		virtual const int statusField(const QTreeWidgetItem * item) const = 0;
 		//! \param item Element dla którego chcemy pobrać pole w którym zamieścimy info o aktualnym pobieraniu
 		//! \reuturn Numer pola z info o pobieraniu
-		virtual const int downloadField(QTreeWidgetItem * item) const = 0;
+		virtual const int downloadField(const QTreeWidgetItem * item) const = 0;
 		//! Czyścimy dane contentu (np. bo zmieniamy perspektywę)
 		virtual void release() = 0;
 		//! \param c Znak symbolizujący płeć - z hmdbServices::MedicalShallowCopy::Patient, m,M => Mężczyzna, f,F,w,W,k,K => Kobieta
@@ -168,7 +168,7 @@ namespace hmdbCommunication
 		//! Wirtualny destruktor
 		virtual ~IDataSourceContent() {}
 		//! \return Nazwa contentu
-		virtual const std::string name() const = 0;
+		virtual const QString name() const = 0;
 	};
 
 	typedef utils::shared_ptr<IDataSourceContent> DataSourceContentPtr;

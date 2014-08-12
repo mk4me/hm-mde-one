@@ -42,9 +42,8 @@
 //#define KEY_PATH1 TEXT("Software\\Wow6432Node\\PJWSTK\\EDR")
 // Od Visty dodawane s? przedrostki typu Wow6432Node do sciezki w rejestrach
 // adres podawany do oczytu klucza powinien by? automatycznie konwertowany.
-#define KEY_PATH TEXT("Software\\PJWSTK\\MEDUSA")
+//#define KEY_PATH TEXT("Software\\PJWSTK\\MEDUSA")
 #endif
-
 
 DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
@@ -100,12 +99,14 @@ void Application::showSplashScreenMessage(const QString & message)
 	QApplication::processEvents();
 }
 
-int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem::Path> & coreTranslations)
+int Application::initUIContext(int & argc, char *argv[], const std::string & appName,
+	std::vector<Filesystem::Path> & coreTranslations)
 {
 	//obs?uga argument?w i opisu uzycia aplikacji z konsoli
 	osg::ArgumentParser arguments(&argc, argv);
-	arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
-	arguments.getApplicationUsage()->setDescription(arguments.getApplicationName() + " example usage of MEDUSA.");
+	//arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
+	arguments.getApplicationUsage()->setApplicationName(appName);
+	arguments.getApplicationUsage()->setDescription("example usage of " + appName);
 	arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName() + " [options] filename");
 	arguments.getApplicationUsage()->addCommandLineOption("-h or --help", "Display this information");
 	arguments.getApplicationUsage()->addCommandLineOption("--plugins <path>", "Additional plugins directory");
@@ -136,8 +137,8 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 
 	//inicjalizacja ?cie?ek aplikacji, katalog?w tymczasowych itp, u?ywane do ?adowania t?umacze?
 	{
-		if (trySetPathsFromRegistry(paths_) == false){
-			setDefaultPaths(paths_);
+		if (trySetPathsFromRegistry(paths_, appName) == false){
+			setDefaultPaths(paths_, appName);
 		}
 
 		//sprawdzamy czy uda?o si? wygenerowac poprawne sciezki alikacji
@@ -533,29 +534,26 @@ core::JobManager* Application::jobManager()
 	return jobManager_.get();
 }
 
-bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path)
+const Filesystem::Path resourcesPath()
+{
+	return Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path() / "resources";
+}
+
+bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path,
+	const std::string & appName)
 {
 #ifdef WIN32
+	//TODO
+	//u¿yæ vendor info do generowania sciezki
+#define KEY_PATH TEXT("Software\\PJWSTK\\")
 #define PATH_BUFFER_SIZE 1024
 	HKEY hKey;
 	char buffer[PATH_BUFFER_SIZE];
-	DWORD dwType, dwSize = PATH_BUFFER_SIZE;
+	DWORD dwType, dwSize = PATH_BUFFER_SIZE;	
 
-	Filesystem::Path resourcesPath = Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path() / "resources";
+	std::string keyPath = KEY_PATH + appName;
 
-	/*
-	Filesystem::Path resourcesPath;
-	LPTSTR lpValueName = "ProgramFilesPath";
-	auto lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
-	if(lResult == ERROR_SUCCESS && RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
-	resourcesPath = Filesystem::Path(buffer) / "bin" / "resources";
-	RegCloseKey(hKey);
-	} else {
-	return false;
-	}
-	}*/
-
-	auto lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
+	auto lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, keyPath.c_str(), 0, KEY_READ, &hKey);
 
 	if (lResult != ERROR_SUCCESS){
 		return false;
@@ -599,7 +597,7 @@ bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path)
 
 	RegCloseKey(hKey);
 
-	path.reset(new Path(userDataPath, applicationDataPath, userApplicationDataPath, resourcesPath, userDataPath / "tmp", applicationDataPath / "plugins"));
+	path.reset(new Path(userDataPath, applicationDataPath, userApplicationDataPath, resourcesPath(), userDataPath / "tmp", applicationDataPath / "plugins"));
 
 	return true;
 #else
@@ -607,17 +605,24 @@ bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path)
 #endif
 }
 
-void Application::setDefaultPaths(utils::shared_ptr<Path> & path)
+void Application::setDefaultPaths(utils::shared_ptr<Path> & path, const std::string & appName)
 {
 	//TODO
+	//ciagnac to info z vendor info?
 	//mie? na uwadze nazw? aplikacji i PJWSTK
-	auto userPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0).toStdString()) / "PJWSTK" / "MEDUSA";
-	auto appDataPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DataLocation).at(0).toStdString());
-	//TODO - czy pod linux taka konwencja jest ok? jak tam dzia³aj¹ takie wspólne foldery?
-	auto userAppDataPath = appDataPath;
-	auto resourcesPath = Filesystem::Path(QDir::currentPath().toStdString()) / "resources";
+	auto userPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0).toStdString()) / "PJWSTK" / appName;
+#ifdef WIN32
+	//HACK ¿eby dostaæ siê do œcie¿ek roaming dla usera, Qt w innych przypadkach podaje œciezki w local
+	QString settingsPath = QFileInfo(QSettings().fileName()).absolutePath();
+	auto appDataPath = Filesystem::Path(settingsPath.toStdString()).parent_path() / "PJWSTK" / appName;
 
-	path.reset(new Path(userPath, appDataPath, userAppDataPath, resourcesPath, userPath / "tmp", appDataPath / "plugins"));
+#else
+	auto appDataPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DataLocation).at(0).toStdString()).parent_path() / "PJWSTK" / appName;
+#endif // WIN32
+	//TODO - czy pod linux taka konwencja jest ok? jak tam dzia³aj¹ takie wspólne foldery?
+	auto userAppDataPath = appDataPath;	
+
+	path.reset(new Path(userPath, appDataPath, userAppDataPath, resourcesPath(), userPath / "tmp", appDataPath / "plugins"));
 }
 
 void Application::safeRegisterService(const plugin::IServicePtr & service)

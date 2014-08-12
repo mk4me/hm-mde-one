@@ -36,21 +36,21 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1" rowspan="2">
-     <widget class="QPushButton" name="connectPushButton">
+    <item row="2" column="2">
+     <widget class="QPushButton" name="calibrateButton">
       <property name="text">
-       <string>Connect</string>
+       <string>Calibrate</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="0" rowspan="3">
+    <item row="1" column="0" rowspan="4">
      <widget class="QListWidget" name="costumesListWidget">
       <property name="contextMenuPolicy">
        <enum>Qt::CustomContextMenu</enum>
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
+    <item row="4" column="2">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -63,10 +63,17 @@
       </property>
      </spacer>
     </item>
-    <item row="2" column="1">
-     <widget class="QPushButton" name="calibrateButton">
+    <item row="0" column="2" rowspan="2">
+     <widget class="QPushButton" name="connectPushButton">
       <property name="text">
-       <string>Calibrate</string>
+       <string>Connect</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QPushButton" name="loadDatFileButton">
+      <property name="text">
+       <string>Load dat file</string>
       </property>
      </widget>
     </item>
@@ -123,10 +130,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>loadDatFileButton</sender>
+   <signal>clicked()</signal>
+   <receiver>IMUCostumeListWidget</receiver>
+   <slot>onLoadDatFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>310</x>
+     <y>80</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>182</x>
+     <y>118</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onConnect()</slot>
   <slot>onCostumesListContextMenu(QPoint)</slot>
   <slot>onCalibrate()</slot>
+  <slot>onLoadDatFile()</slot>
  </slots>
 </ui>

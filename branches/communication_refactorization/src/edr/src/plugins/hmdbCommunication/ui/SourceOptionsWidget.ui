@@ -121,7 +121,7 @@
           <item row="1" column="1">
            <widget class="QLineEdit" name="passwordLineEdit">
             <property name="echoMode">
-             <enum>QLineEdit::PasswordEchoOnEdit</enum>
+             <enum>QLineEdit::Password</enum>
             </property>
            </widget>
           </item>
@@ -178,7 +178,7 @@
           <item row="1" column="1">
            <widget class="QLineEdit" name="storagePasswordLineEdit">
             <property name="echoMode">
-             <enum>QLineEdit::PasswordEchoOnEdit</enum>
+             <enum>QLineEdit::Password</enum>
             </property>
            </widget>
           </item>
@@ -350,7 +350,7 @@
              <item row="3" column="1">
               <widget class="QLineEdit" name="dataPasswordLineEdit">
                <property name="echoMode">
-                <enum>QLineEdit::PasswordEchoOnEdit</enum>
+                <enum>QLineEdit::Password</enum>
                </property>
               </widget>
              </item>
@@ -491,7 +491,7 @@
        <item>
         <widget class="QTabWidget" name="accountOperationsTabWidget">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="registerTab">
           <attribute name="title">

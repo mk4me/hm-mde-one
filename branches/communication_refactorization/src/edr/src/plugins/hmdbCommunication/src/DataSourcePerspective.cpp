@@ -68,15 +68,17 @@ void DataSourcePerspective::clearPerspective()
 
 DataSourcePatientPerspective::DataSourcePatientPerspective()
 {
+
 }
 
 DataSourcePatientPerspective::~DataSourcePatientPerspective()
 {
+
 }
 
-const std::string DataSourcePatientPerspective::name() const
+const QString DataSourcePatientPerspective::name() const
 {
-	return std::string(QObject::tr("Patient").toUtf8().constData());
+	return QObject::tr("Patients");
 }
 
 void DataSourcePatientPerspective::rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const ShallowCopy & shallowCopy)
@@ -129,15 +131,22 @@ void DataSourcePatientPerspective::rebuildPerspective(QTreeWidgetItem * treeWidg
 
 DataSourceMedusaPerspective::DataSourceMedusaPerspective()
 {
+
 }
 
 DataSourceMedusaPerspective::~DataSourceMedusaPerspective()
 {
+
 }
 
-const std::string DataSourceMedusaPerspective::name() const
+void DataSourceMedusaPerspective::defaultHeaders(QStringList & headers) const
 {
-	return std::string(QObject::tr("Sessions only").toUtf8().constData());
+	headers << QObject::tr("Sessions");
+}
+
+const QString DataSourceMedusaPerspective::name() const
+{
+	return QObject::tr("Sessions only");
 }
 
 const int sessionLocalNumebr(const std::string & sessionName)
@@ -214,23 +223,25 @@ void DataSourceMedusaPerspective::rebuildPerspective(QTreeWidgetItem * treeWidge
 	}
 }
 
-bool DataSourceMedusaPerspective::headers(const QTreeWidgetItem * item, QStringList & headers) const
+const bool DataSourceMedusaPerspective::headers(const QTreeWidgetItem * item, QStringList & headers) const
 {
-	headers << QObject::tr("Data base");
+	headers << QObject::tr("Database");
 	return true;
 }
 
 DataSourceDisorderPerspective::DataSourceDisorderPerspective()
 {
+
 }
 
 DataSourceDisorderPerspective::~DataSourceDisorderPerspective()
 {
+
 }
 
-const std::string DataSourceDisorderPerspective::name() const
+const QString DataSourceDisorderPerspective::name() const
 {
-	return std::string(QObject::tr("Disorder").toUtf8().constData());
+	return QObject::tr("Disorders");
 }
 
 void DataSourceDisorderPerspective::rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const hmdbCommunication::ShallowCopy & shallowCopy)
@@ -266,15 +277,17 @@ void DataSourceDisorderPerspective::rebuildPerspective(QTreeWidgetItem * treeWid
 
 DataSourceGenderPerspective::DataSourceGenderPerspective()
 {
+
 }
 
 DataSourceGenderPerspective::~DataSourceGenderPerspective()
 {
+
 }
 
-const std::string DataSourceGenderPerspective::name() const
+const QString DataSourceGenderPerspective::name() const
 {
-	return std::string(QObject::tr("Gender").toLocal8Bit().constData());
+	return QObject::tr("Gender");
 }
 
 void DataSourceGenderPerspective::rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const hmdbCommunication::ShallowCopy & shallowCopy)

@@ -9,6 +9,7 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBDATACONTEXT_H__
 
 #include <string>
+#include <plugins/hmdbCommunication/ShallowCopy.h>
 
 namespace hmdbCommunication
 {
@@ -29,6 +30,10 @@ namespace hmdbCommunication
 		virtual const std::string userName() const = 0;
 		//! \return User hash na potrzeby obs³ugi p³ytkiej kopii bazy danych w storage
 		virtual const std::string userHash() const = 0;
+		//! \return P³ytka kopia bazy danych
+		virtual const ShallowCopyPtr createShallowCopy() const = 0;
+		//! \return Czy p³ytka kopia wystêpuje
+		virtual const bool shallowCopyExists() const = 0;
 	};
 }
 

@@ -139,10 +139,6 @@ namespace hmdbCommunication
 		utils::shared_ptr<CURLFTPManager> ftpManager_;
 		//! Manager po³aczeñ us³ug curla
 		networkUtils::CURLManagerPtr wsdlManager_;
-		//! Creator us³ug wsdlowych medycznych
-		WSDLServiceCreator medicalCreator_;
-		//! Creator us³ug wsdlowych ruchu
-		WSDLServiceCreator motionCreator_;
 
 		utils::shared_ptr<hmdbServices::ISingleAccountFactoryWS> motionAccountFactory_;
 		utils::shared_ptr<hmdbServices::ISingleAccountFactoryWS> medicalAccountFactory_;

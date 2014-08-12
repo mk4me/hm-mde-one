@@ -79,13 +79,11 @@ const bool ShallowCopyUtils::shallowCopyRequiresRefresh(const ShallowCopy & shal
 }
 
 const bool ShallowCopyUtils::shallowCopyInStorage(const std::string & userHash,
+	const IHMDBRemoteContext::DataReference dataReference,
 	const ShallowCopyType shallowType,
 	const IHMDBStorageOperations * storage)
 {
-	return (storage->exists(shallowCopyName(userHash, hmdbCommunication::IHMDBRemoteContext::Motion, Shallow)) == true
-		&& storage->exists(shallowCopyName(userHash, hmdbCommunication::IHMDBRemoteContext::Motion, Meta)) == true
-		&& storage->exists(shallowCopyName(userHash, hmdbCommunication::IHMDBRemoteContext::Medical, Shallow)) == true
-		&& storage->exists(shallowCopyName(userHash, hmdbCommunication::IHMDBRemoteContext::Medical, Meta)) == true);
+	return storage->exists(shallowCopyName(userHash, dataReference, shallowType));
 }
 
 void ShallowCopyUtils::removeAllShallowCopies(IHMDBStorageOperations * storage)
@@ -245,7 +243,7 @@ const std::string ShallowCopyUtils::userHash(const std::string & user, const std
 {
 	std::string hashTmp(user + ":" + password);
 	std::string hash;
-	hash.reserve(hashTmp.size());
+	hash.resize(hashTmp.size());
 
 	for (int i = 0; i < hashTmp.size(); ++i){
 		hash[i] = hashTmp[(i + 5) % hashTmp.size()];

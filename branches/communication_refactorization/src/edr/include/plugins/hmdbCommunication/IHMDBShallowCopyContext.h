@@ -91,7 +91,7 @@ namespace hmdbCommunication
 			const IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy = IncrementalBranchShallowCopyConstPtr()) = 0;
 
 		//! \param downloadOperations Operacje œci¹gania
-		virtual void synchronize(const IHMDBRemoteContext::CompoundOperationPtr downloadOperations) = 0;
+		virtual void synchronize(const IHMDBRemoteContext::SynchronizeOperationPtr downloadOperations) = 0;
 
 		virtual IHMDBShallowCopyDataContext * shallowCopyContext() = 0;
 		virtual const IHMDBShallowCopyDataContext * shallowCopyContext() const = 0;

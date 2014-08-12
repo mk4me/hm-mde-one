@@ -7,7 +7,7 @@ Job::Job(const std::string & who, const std::string & name,
 	: who_(who), name_(name), runnable_(runnable),
 	status_(IJob::JOB_PENDING)
 {
-	wait_.lock();
+
 }
 
 Job::~Job()
@@ -36,24 +36,28 @@ const std::string & Job::name() const
 }
 
 const IJob::Status Job::status() const
-{
-	threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
+{	
 	return status_;
 }
 
 void Job::wait()
 {
-	threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(wait_);
+	if (status_ == IJob::JOB_FINISHED || status_ == IJob::JOB_ERROR){
+		return;
+	}
+
+	threadingUtils::StrictSyncPolicy sobj;
+	sobj.lock();
+	wait_.wait(&sobj);
 }
 
 void Job::unlock()
 {
-	wait_.unlock();
+	wait_.wakeAll();
 }
 
 void Job::setStatus(const Status status)
-{
-	threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
+{	
 	status_ = status;
 }
 

@@ -7,12 +7,20 @@ SET_PUBLIC_HEADERS (
 SET_PRIVATE_HEADERS (
 	IMUCostumeListWidget.h
 	DataSource.h
+	IMUDatParser.h
+	IMUParser.h
+	IMUCFGParser.h
+	IMUPerspective.h
 	PCH.h
 )
 
 SET_SOURCE_FILES(
 	IMUCostumeListWidget.cpp
 	DataSource.cpp
+	IMUDatParser.cpp
+	IMUParser.cpp
+	IMUPerspective.cpp
+	IMUCFGParser.cpp
 	PCH.cpp
 	Plugin.cpp
 )

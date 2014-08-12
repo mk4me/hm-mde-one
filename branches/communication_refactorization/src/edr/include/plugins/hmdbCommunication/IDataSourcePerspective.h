@@ -36,13 +36,15 @@ namespace hmdbCommunication
 		//! \param item Element dla którego chcemy pobrać nagłówek
 		//! \param headers [out] Nagłowek dla zadanego elementu
 		//! \return Czy wypełnilismy nagłówek
-		virtual const bool headers(QTreeWidgetItem * item, QStringList & headers) const { return false; };
+		virtual const bool headers(const QTreeWidgetItem * item, QStringList & headers) const { return false; };
+		//! \param headers [out] Domyslne nagłówki kiedy nie ma danych
+		virtual void defaultHeaders(QStringList & headers) const { headers << name(); }
 		//! \param item Element dla którego chcemy pobrać pole w którym zamieścimy jego status
 		//! \reuturn Numer pola ze statusem
-		virtual const int statusField(QTreeWidgetItem * item) const { return -1; };
+		virtual const int statusField(const QTreeWidgetItem * item) const { return -1; };
 		//! \param item Element dla którego chcemy pobrać pole w którym zamieścimy info o aktualnym pobieraniu
 		//! \reuturn Numer pola z info o pobieraniu
-		virtual const int downloadField(QTreeWidgetItem * item) const { return -1; };
+		virtual const int downloadField(const QTreeWidgetItem * item) const { return -1; };
 		//! Czyścimy dane contentu (np. bo zmieniamy perspektywę)
 		virtual void release() {}
 	};

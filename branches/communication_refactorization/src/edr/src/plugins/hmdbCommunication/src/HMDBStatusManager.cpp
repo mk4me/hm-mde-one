@@ -38,19 +38,25 @@ class HMDBStatusManager::HMDBStatusManagerTransaction
 	virtual void setDataStatus(const DataType dataType,
 		const hmdbServices::ID id, const DataStatus dataStatus)
 	{
-		manager->setDataStatus(dataType, id, dataStatus);
+		manager->rawSetDataStatus(dataType, id, dataStatus);
+	}
+
+	virtual void updateDataStatus(const DataType dataType,
+		const hmdbServices::ID id, const DataStatus dataStatus)
+	{
+		manager->rawUpdateDataStatus(dataType, id, dataStatus);
 	}
 
 	virtual void removeDataStatus(const DataType dataType,
 		const hmdbServices::ID id)
 	{
-		manager->removeDataStatus(dataType, id);
+		manager->rawRemoveDataStatus(dataType, id);
 	}
 
 
 	virtual void removeDataStatus(const DataType dataType)
 	{
-		manager->removeDataStatus(dataType);
+		manager->rawRemoveDataStatus(dataType);
 	}
 
 	virtual void tryUpdate(const ShallowCopyConstPtr shallowCopy)
@@ -236,7 +242,7 @@ void HMDBStatusManager::rawTryUpdate(const ShallowCopyConstPtr shallowCopy)
 
 IHMDBStatusManager * HMDBStatusManager::create(const ShallowCopyConstPtr shallowCopy) const
 {
-	return nullptr;
+	return new HMDBStatusManager;
 }
 
 void HMDBStatusManager::rebuild(const IHMDBStorage * storage, const ShallowCopyConstPtr shallowCopy)
@@ -403,6 +409,13 @@ void HMDBStatusManager::setDataStatus(const DataType dataType,
 	rawSetDataStatus(dataType, id, dataStatus);
 }
 
+void HMDBStatusManager::updateDataStatus(const DataType dataType,
+	const hmdbServices::ID id, const DataStatus dataStatus)
+{
+	ScopedLock lock(synch_);
+	rawUpdateDataStatus(dataType, id, dataStatus);
+}
+
 void HMDBStatusManager::removeDataStatus(const DataType dataType,
 	const hmdbServices::ID id)
 {
@@ -435,6 +448,21 @@ void HMDBStatusManager::rawSetDataStatus(const DataType dataType,
 	const hmdbServices::ID id, const DataStatus dataStatus)
 {
 	statuses[dataType][id] = dataStatus;
+}
+
+void HMDBStatusManager::rawUpdateDataStatus(const DataType dataType,
+	const hmdbServices::ID id, const DataStatus dataStatus)
+{
+	auto it = statuses.find(dataType);
+	if (it != statuses.end()){
+		auto IT = it->second.find(id);
+		if (IT != it->second.end()){
+			IT->second |= dataStatus;
+			return;
+		}
+	}
+
+	rawSetDataStatus(dataType, id, dataStatus);
 }
 
 void HMDBStatusManager::rawRemoveDataStatus(const DataType dataType,

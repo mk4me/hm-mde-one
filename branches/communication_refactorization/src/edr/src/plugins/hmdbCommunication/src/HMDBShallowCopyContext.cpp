@@ -1188,7 +1188,8 @@ const IHMDBLocalContext * HMDBShallowCopyLocalContext::localContext() const
 }
 
 HMDBShallowCopyRemoteContext::HMDBShallowCopyRemoteContext(IHMDBShallowCopyDataContext * shallowCopyContext,
-	IHMDBRemoteContext * remoteContext)
+	IHMDBRemoteContext * remoteContext) : shallowCopyContext_(shallowCopyContext),
+	remoteContext_(remoteContext)
 {
 
 }
@@ -1204,15 +1205,50 @@ const IHMDBRemoteContext::CompoundOperationPtr HMDBShallowCopyRemoteContext::pre
 	return IHMDBRemoteContext::CompoundOperationPtr();
 }
 
+void updateIncrementalShallowCopyStatus(const hmdbServices::IncrementalBranchShallowCopy::ShallowCopy & ishallowCopy,
+	const DataStatus & dataStatus, IHMDBStatusManager::TransactionPtr transaction)
+{
+	for (auto it = ishallowCopy.files.begin(); it != ishallowCopy.files.end(); ++it){
+		transaction->updateDataStatus(FileType, (*it).fileID, dataStatus);
+	}
+
+	for (auto it = ishallowCopy.trials.begin(); it != ishallowCopy.trials.end(); ++it){
+		transaction->updateDataStatus(MotionType, (*it).trialID, dataStatus);
+	}
+
+	for (auto it = ishallowCopy.sessions.begin(); it != ishallowCopy.sessions.end(); ++it){
+		transaction->updateDataStatus(SessionType, (*it).sessionID, dataStatus);
+	}
+
+	for (auto it = ishallowCopy.performers.begin(); it != ishallowCopy.performers.end(); ++it){
+		transaction->updateDataStatus(SubjectType, (*it).performerID, dataStatus);
+	}
+}
+
 void HMDBShallowCopyRemoteContext::synchronize(const ShallowCopyConstPtr shallowCopy,
 	const IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy)
 {
-
+	shallowCopyContext_->setShallowCopy(shallowCopy);
+	if (incrementalBranchShallowCopy != nullptr){
+		auto t = shallowCopyContext_->dataStatusManager()->transaction();
+		updateIncrementalShallowCopyStatus(incrementalBranchShallowCopy->added, DataStatus(Remote, Unloaded, Valid), t);
+		updateIncrementalShallowCopyStatus(incrementalBranchShallowCopy->modified, DataStatus(Outdated), t);
+		//TODO
+		//co robic z takimi danymi?
+		updateIncrementalShallowCopyStatus(incrementalBranchShallowCopy->removedLocaly, DataStatus(Outdated), t);
+		updateIncrementalShallowCopyStatus(incrementalBranchShallowCopy->removedGlobaly, DataStatus(Outdated), t);
+	}
 }
 
-void HMDBShallowCopyRemoteContext::synchronize(const IHMDBRemoteContext::CompoundOperationPtr downloadOperations)
+void HMDBShallowCopyRemoteContext::synchronize(const IHMDBRemoteContext::SynchronizeOperationPtr downloadOperations)
 {
-
+	downloadOperations->start();
+	downloadOperations->wait();
+	if (downloadOperations->status() == threadingUtils::IOperation::Finieshed){
+		auto sc = downloadOperations->shallowCopy();
+		auto isc = downloadOperations->incrementalBranchShallowCopy();
+		synchronize(sc, isc);
+	}
 }
 
 IHMDBShallowCopyDataContext * HMDBShallowCopyRemoteContext::shallowCopyContext()

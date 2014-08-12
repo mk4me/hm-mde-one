@@ -6,3 +6,4 @@ ADD_TEST_PROJECT(test_medusa_view "core;corelib;coreui;utils;c3dlib;timelinelib;
 ADD_TEST_PROJECT(test_newVdf "dflib;core;kinematiclib;vidlib;plugin_subject;plugin_newCommunication;plugin_newTimeline;plugin_c3d;plugin_video;coreui" "plugins/newVdf")
 ADD_TEST_PROJECT(test_dfElements "dflib;coreui;plugin_newVdf;c3dlib;plugin_c3d;plugin_newCommunication" "plugins/dfElements")
 ADD_TEST_PROJECT(test_dicom "plugin_newCommunication;plugin_subject;CURL;WSDLPULL;BOOST;coreui;QWT;webserviceslib" "plugins/dicom")
+ADD_TEST_PROJECT(test_imuCostume "plugin_newCommunication;plugin_subject;CURL;WSDLPULL;BOOST;BIC;coreui;QWT;webserviceslib" "plugins/imuCostume")

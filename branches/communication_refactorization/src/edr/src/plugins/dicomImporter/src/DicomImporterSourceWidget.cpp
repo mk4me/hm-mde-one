@@ -27,55 +27,11 @@ DicomImporterSourceWidget::DicomImporterSourceWidget( DicomImporterSource* sourc
     ui(new Ui::DicomSource)
 {
     ui->setupUi(this);
-    connect(ui->openFileButton, SIGNAL(clicked()), this, SLOT(onLoadFiles()));
-    connect(ui->loadDirectoryButton, SIGNAL(clicked()), this, SLOT(onLoadDirectory()));
-    ui->openFileButton->setVisible(false);
-    ui->loadDirectoryButton->setVisible(false);
-
     connect(ui->importFromButton, SIGNAL(clicked()), this, SLOT(onSelectImportDir()));
     connect(ui->exportToButton, SIGNAL(clicked()), this, SLOT(onSelectSaveDir()));
     connect(ui->importButton, SIGNAL(clicked()), this, SLOT(onImport()));
-
-    connect(ui->updateMetaButton, SIGNAL(clicked()), this, SLOT(onUpdateMeta()));
-    
-
-    // TODO : wywalic
-#ifdef _DEBUG
-    ui->importFromEdit->setText("C:\\Users\\Wojciech\\Desktop\\testImport\\pts 10-12 and 23-26");
-    ui->exportToEdit->setText("C:\\Users\\Wojciech\\Desktop\\testImport\\_out");
-#endif
 }
 
-//void DicomImporterSourceWidget::onLoadFiles()
-//{
-//    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open file"));
-//    for (auto it = fileNames.begin(); it != fileNames.end(); ++it) {
-//        core::Filesystem::Path path = it->toStdString();
-//        dicomSource->addFile(path);
-//    }    
-//}
-
-//void DicomImporterSourceWidget::onLoadDirectory()
-//{
-//    QString dirPath = QFileDialog::getExistingDirectory(this, tr("Directory"));
-//    if ( dirPath.isNull() == false ) {
-//        core::Filesystem::Path path(dirPath.toStdString());
-//        if(core::Filesystem::pathExists(path)) {
-//            dicomSource->loadDirFile(path);
-//        }
-//    }
-//}
-
-//void dicomImporter::DicomImporterSourceWidget::onOpenProject()
-//{
-//    QString filePath = QFileDialog::getOpenFileName(this, tr("Main xml file"));
-//    if ( filePath.isNull() == false ) {
-//        core::Filesystem::Path path(filePath.toStdString());
-//        if(core::Filesystem::pathExists(path)) {
-//            dicomSource->openInternalDataMainFile(path);
-//        }
-//    }
-//}
 
 class Refresher
 {
@@ -144,31 +100,6 @@ void dicomImporter::DicomImporterSourceWidget::onSelectSaveDir()
     QString dirPath = QFileDialog::getExistingDirectory(this, tr("Directory"));
     if ( dirPath.isNull() == false ) {
         ui->exportToEdit->setText(dirPath);
-    }
-}
-
-void dicomImporter::DicomImporterSourceWidget::onUpdateMeta()
-{
-    core::Filesystem::Path dir = "C:/Users/Wojciech/Desktop/dbrip/data";
-    auto subdirs = core::Filesystem::listSubdirectories(dir);
-    for (auto iDir = subdirs.begin(); iDir != subdirs.end(); ++iDir) {
-        DicomLoader l;
-        std::string name = iDir->stem().string() + ".xml";
-
-        auto inter = l.load(*iDir / name);
-        UTILS_ASSERT(inter->getNumPatients() == 1);
-        UTILS_ASSERT(inter->patients[0]->sessions.size() == 1);
-        UTILS_ASSERT(inter->patients[0]->sessions[0]->series.size() == 1);
-
-        auto images = inter->patients[0]->sessions[0]->series[0]->images;
-        //auto files = core::Filesystem::listFiles(*iDir, false, "png");
-        //UTILS_ASSERT(files.size() == images.size());
-        for (auto iImg = images.begin(); iImg != images.end(); ++iImg) {
-            (*iImg)->isPowerDoppler = DicomImporter::testPowerDoppler(QPixmap((*iDir / (*iImg)->imageFile).string().c_str()));
-        }
-        DicomSaver s;
-        name += "2";
-        s.save("C:/Users/Wojciech/Desktop/dbrip/drop", inter);
     }
 }
 

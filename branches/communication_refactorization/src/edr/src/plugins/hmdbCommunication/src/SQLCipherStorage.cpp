@@ -895,9 +895,10 @@ sqlite3 * verify_(const core::Filesystem::Path & path,
 	//sprawdzam czy zaszyfrowana
 	//i czy struktura siê zgadza
 	else if (checkStructure(db) == false){
-		
-		if (checkIfEncrypted(db, key) == false || checkStructure(db) == false){
-			sqlite3_close(db);			
+		sqlite3_close(db);
+		rc = sqlite3_open_v2(path.string().c_str(), &db, SQLITE_OPEN_READWRITE, nullptr);
+		if (rc != SQLITE_OK || checkIfEncrypted(db, key) == false || checkStructure(db) == false){
+			sqlite3_close(db);
 			db = nullptr;
 		}	
 	}

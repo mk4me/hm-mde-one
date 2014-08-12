@@ -91,8 +91,8 @@ namespace core {
 
 	private:
 
-		static bool trySetPathsFromRegistry(utils::shared_ptr<Path> & path);
-		static void setDefaultPaths(utils::shared_ptr<Path> & path);
+		static bool trySetPathsFromRegistry(utils::shared_ptr<Path> & path, const std::string & appName);
+		static void setDefaultPaths(utils::shared_ptr<Path> & path, const std::string & appName);
 		void showSplashScreenMessage(const QString & message);
 
 		void safeRegisterService(const plugin::IServicePtr & service);
@@ -113,7 +113,8 @@ namespace core {
 		Application();
 		~Application();
 
-		int initUIContext(int & argc, char *argv[], std::vector<Filesystem::Path> & coreTranslations);
+		int initUIContext(int & argc, char *argv[], const std::string & appName,
+			std::vector<Filesystem::Path> & coreTranslations);
 
 		void initWithUI(coreUI::CoreMainWindow * mainWindow,
 			std::vector<Filesystem::Path> & translations);

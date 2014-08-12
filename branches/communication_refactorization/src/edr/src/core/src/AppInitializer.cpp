@@ -19,12 +19,12 @@ class AppInitializer::AppInitializerImpl
 {
 public:
 
-	AppInitializerImpl(int & argc, char *argv[]) : coreApplication(new Application())
+	AppInitializerImpl(int & argc, char *argv[], const std::string & appName) : coreApplication(new Application())
 	{
 		cleanUp_ = boost::bind(&Application::finalizeUI, coreApplication.get());
 		__application = coreApplication.get();
 		plugin::__coreApplication = &mainViewApplication;
-		initUIContextRes = coreApplication->initUIContext(argc, argv, translations);
+		initUIContextRes = coreApplication->initUIContext(argc, argv, appName, translations);
 	}
 
 	~AppInitializerImpl()
@@ -116,7 +116,7 @@ private:
 	coreUI::CoreMainWindow::CloseUpOperations cleanUp_;
 };
 
-AppInitializer::AppInitializer(int & argc, char *argv[]) : impl(new AppInitializerImpl(argc, argv))
+AppInitializer::AppInitializer(int & argc, char *argv[], const std::string & appName) : impl(new AppInitializerImpl(argc, argv, appName))
 {
 }
 

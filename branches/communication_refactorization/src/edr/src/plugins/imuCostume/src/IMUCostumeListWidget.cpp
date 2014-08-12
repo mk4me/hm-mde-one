@@ -5,7 +5,9 @@
 #include <QtWidgets/QMenu>
 #include <coreui/CoreCursorChanger.h>
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QFileDialog>
 #include <OpenThreads/Thread>
+#include <corelib/Filesystem.h>
 
 IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	QWidget * parent, const Qt::WindowFlags f)
@@ -204,3 +206,17 @@ void IMUCostumeWidget::onUnloadAll()
 {
 	ds->unloadAllCostumes();
 }
+
+void IMUCostumeWidget::onLoadDatFile()
+{
+    //ds->testMethod();
+    //return;
+    QString file = QFileDialog::getOpenFileName(this, tr("Open Image"), QString(), tr("Imu file (*.dat)"));
+    core::Filesystem::Path p(file.toStdString());
+    if (core::Filesystem::isRegularFile(p)) {
+        ds->loadDatFile(p);
+    }
+    
+}
+
+

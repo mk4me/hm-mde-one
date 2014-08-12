@@ -11,6 +11,7 @@
 
 #include <corelib/IJob.h>
 #include <threadingUtils/SynchronizationPolicies.h>
+#include <boost/atomic.hpp>
 
 namespace core
 {
@@ -56,16 +57,14 @@ namespace core
 		void unlock();
 
 	private:
-		//! Obiekt synchronizuj¹cy
-		mutable threadingUtils::StrictSyncPolicy synch_;
 		//! Obiekt do czekania
-		threadingUtils::StrictSyncPolicy wait_;
+		threadingUtils::ConditionVariable wait_;
 		//! Zleceniodawca
 		std::string who_;
 		//! Nazwa zadania
 		std::string name_;
 		//! Status zadania
-		Status status_;
+		boost::atomic<Status> status_;
 		//! Faktyczne zadanie
 		threadingUtils::IRunnablePtr runnable_;
 	};

@@ -15,8 +15,80 @@
 #include "LayersXmlParser.h"
 #include "InternalXmlParser.h"
 #include "AnnotationStatusFilter.h"
+#include "webserviceslib/IWSConnection.h"
+#include "webserviceslib/IBasicQueriesWS.h"
+#include "webserviceslib/WSConnection.h"
+#include "webserviceslib/BasicQueriesWS.h"
 
 using namespace dicom;
+
+//void szybkieSprawdzenieDuplikatow()
+//{
+//	typedef core::Filesystem fs;
+//
+//	std::set<fs::Path> goodImages;
+//	std::set<fs::Path> notSetImages;
+//	std::set<fs::Path> corruptImages;
+//	std::set<fs::Path> identicalImages;
+//	fs::Path dir = "C:/Users/Wojciech/Desktop/data_do_34_zrzut.15.5.2014/";
+//	auto files = fs::listFiles(dir, true);
+//
+//	for (auto it = files.begin(); it != files.end(); ++it) {
+//		try {
+//			auto layers = DicomLoader::loadLayers(*it);
+//			bool wasQual = false;
+//			for (auto l = layers->begin(); l != layers->end(); ++l) {
+//				auto qual = utils::dynamic_pointer_cast<ImageQualityLayer>(*l);
+//				if (qual) {
+//						wasQual = true;
+//					if (qual->value() == adnotations::different) {
+//						goodImages.insert(it->stem().stem());
+//					}
+//					else if (qual->value() == adnotations::incorrect) {
+//						corruptImages.insert(it->stem().stem());
+//					}
+//					else {
+//						identicalImages.insert(it->stem().stem());
+//					}
+//				}
+//			}
+//			if (!wasQual) {
+//				//notSetImages.insert(it->stem().stem());
+//				goodImages.insert(it->stem().stem());
+//			}
+//		} catch (...) {}
+//	}
+//
+//	std::ofstream file;
+//	file.open("C:/Users/Wojciech/Desktop/data_do_34_zrzut.15.5.2014/unique.txt", std::ios::out);
+//	//file << "--- Images with 'image quality' property set to 'different' ---" << std::endl;
+//	for (auto it = goodImages.begin(); it != goodImages.end(); ++it) {
+//		if (corruptImages.find(*it) == corruptImages.end() && identicalImages.find(*it) == identicalImages.end()) {
+//			file << (*it) << std::endl;
+//		}
+//	}
+//
+//	/*file << "--- Images with unknown quality ---" << std::endl;
+//	for (auto it = notSetImages.begin(); it != notSetImages.end(); ++it) {
+//		if (goodImages.find(*it) == goodImages.end()) {
+//			file << (*it) << std::endl;
+//		}
+//	}*/
+//
+//	/*file << "--- ident ---" << std::endl;
+//	for (auto it = identicalImages.begin(); it != identicalImages.end(); ++it) {
+//	file << (*it) << std::endl;
+//	}
+//
+//	file << "--- cprrupt quality ---" << std::endl;
+//	for (auto it = corruptImages.begin(); it != corruptImages.end(); ++it) {
+//	file << (*it) << std::endl;
+//	}*/
+//	file.close();
+//
+//}
+
+
 
 class DicomTempService : public IDicomService, public utils::Observer<communication::ICommunicationDataSource>
 {																		
@@ -59,7 +131,8 @@ public:
 	}
 
     virtual const bool lateInit()  
-    { 
+    {
+		//szybkieSprawdzenieDuplikatow();
         comm = core::querySource<communication::ICommunicationDataSource>(sourceManager);
 		if(comm != nullptr){
 
@@ -325,7 +398,46 @@ private:
 				hierarchyTransaction->updateRoot(root);
 			}
 		}
+
+		std::set<int> noEditingTrials(inVerification);
+		noEditingTrials.insert(verified.begin(), verified.end());
+
+		std::vector<int> result(allTrialsID.size());
+		auto retIT = std::set_difference(allTrialsID.begin(), allTrialsID.end(), noEditingTrials.begin(), noEditingTrials.end(), result.begin());
+
+		inEdition.insert(result.begin(), retIT);
+
+		//aktualizuje filtry
+		inEditionFilter->setIdentifiers(inEdition);
+		inVerificationFilter->setIdentifiers(inVerification);
+		verifiedFilter->setIdentifiers(verified);
+
+		//odœwie¿am jeœli trzeba
+		auto fID = subject->currentFilter();
+
+		if(fID == inEditionFilterIDX || fID == inVerificationFilterIDX
+			|| fID == verifiedFilterIDX){
+
+				comm->refreshCurrentFilter();
+		}
 	}
+    
+    virtual void updateItemIcon( const std::string& filename, const QIcon& icon )
+    {
+        auto item = perspective->tryGetHierarchyItem(filename);
+        if (item) {
+            item->setIcon(icon);
+            auto transaction = memoryDataManager->transaction();
+            auto hierarchyTransaction = memoryDataManager->hierarchyTransaction();
+            core::IHierarchyItemConstPtr root = item;
+            while (root->getParent() && root->getParent()->getParent()) {
+                root = root->getParent();
+            }
+            if (root) {
+                hierarchyTransaction->updateRoot(root);        
+            }
+        }
+    }
 
 private:
 	core::ISourceManager *sourceManager;

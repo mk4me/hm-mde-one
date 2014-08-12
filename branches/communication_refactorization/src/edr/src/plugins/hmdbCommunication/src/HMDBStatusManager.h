@@ -55,6 +55,9 @@ namespace hmdbCommunication
 		virtual void setDataStatus(const DataType dataType,
 			const hmdbServices::ID id, const DataStatus dataStatus);
 
+		virtual void updateDataStatus(const DataType dataType,
+			const hmdbServices::ID id, const DataStatus dataStatus);
+
 		//! \param dataType Typ danych
 		//! \param id Identyfikator danych		
 		virtual void removeDataStatus(const DataType dataType,
@@ -85,6 +88,9 @@ namespace hmdbCommunication
 		//! \param id Identyfikator danych
 		//! \param dataStatus Status danych
 		void rawSetDataStatus(const DataType dataType,
+			const hmdbServices::ID id, const DataStatus dataStatus);
+
+		void rawUpdateDataStatus(const DataType dataType,
 			const hmdbServices::ID id, const DataStatus dataStatus);
 
 		//! \param dataType Typ danych

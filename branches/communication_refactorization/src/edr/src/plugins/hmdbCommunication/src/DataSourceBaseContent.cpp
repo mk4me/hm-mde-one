@@ -14,9 +14,9 @@ DataSourceBaseContent::~DataSourceBaseContent()
 
 }
 
-const std::string DataSourceBaseContent::name() const
+const QString DataSourceBaseContent::name() const
 {
-	return "Base Content";
+	return QObject::tr("Base Content");
 }
 
 const bool DataSourceBaseContent::fillContent(QTreeWidgetItem * item, const hmdbCommunication::ShallowCopy & shallowCopy) const

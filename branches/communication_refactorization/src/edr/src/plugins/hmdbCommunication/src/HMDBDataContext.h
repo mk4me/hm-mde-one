@@ -32,6 +32,10 @@ namespace hmdbCommunication
 		virtual const std::string userName() const;
 		//! \return User hash na potrzeby obs逝gi p造tkiej kopii bazy danych w storage
 		virtual const std::string userHash() const;
+		//! \return P造tka kopia bazy danych
+		virtual const ShallowCopyPtr createShallowCopy() const;
+		//! \return Czy p造tka kopia wyst瘼uje
+		virtual const bool shallowCopyExists() const;
 
 	private:
 		//! Storage do zapisu plik闚 z danymi i p造tkiej kopii bazy danych

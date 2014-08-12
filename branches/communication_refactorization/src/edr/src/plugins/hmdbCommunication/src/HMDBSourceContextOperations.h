@@ -444,7 +444,7 @@ namespace hmdbCommunication
 		private:
 
 			//! Otiwera do odczytu output
-			void openOutput();
+			void openOutput();			
 
 		private:
 
@@ -579,7 +579,8 @@ namespace hmdbCommunication
 	class SynchronizeOperation : public IHMDBRemoteContext::ISynchronizeOperation, public CompoundOperation
 	{
 	public:
-		SynchronizeOperation(const std::list<IHMDBRemoteContext::IDownloadOperation*> & downloads);
+		SynchronizeOperation(const std::list<IHMDBRemoteContext::IDownloadOperation*> & downloads,
+			IHMDBStorage * storage, const bool mustDelete);
 
 		virtual ~SynchronizeOperation();
 
@@ -590,6 +591,8 @@ namespace hmdbCommunication
 
 	private:
 		ExtractShallowcopy * eOp;
+		IHMDBStorage * storage;
+		const bool mustDelete;
 	};
 }
 

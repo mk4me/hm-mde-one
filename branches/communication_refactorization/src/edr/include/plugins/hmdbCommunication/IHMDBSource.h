@@ -10,6 +10,7 @@
 
 #include <string>
 #include <corelib/Variant.h>
+#include <QtGui/QIcon>
 
 class QWidget;
 
@@ -76,6 +77,8 @@ namespace hmdbCommunication
 			//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych jakim zasilamy widok
 			//! \return Widok obs³uguj¹cy kontekst
 			virtual QWidget * createView(IHMDBShallowCopyContext * shallowCopyContext) = 0;
+			//! \return Ikona widoku
+			virtual const QIcon icon() const { return QIcon(); };
 			//! \return Czy dany widok wymaga po³¹czenia z us³ugami webowymi
 			virtual const bool requiresRemoteContext() const = 0;
 		};

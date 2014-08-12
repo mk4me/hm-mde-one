@@ -11,6 +11,7 @@
 #include <networkUtils/CURLManager.h>
 #include <networkUtils/CURLFTPHelper.h>
 #include "CURLFTPStatus.h"
+#include "CURLFTPProgress.h"
 
 namespace hmdbCommunication
 {
@@ -19,6 +20,12 @@ namespace hmdbCommunication
 	//! Struktura opisuj¹ca transfer
 	struct CURLFTPTransferData
 	{
+	public:
+		CURLFTPTransferData() : progress(new CURLFTPProgress), status(new CURLFTPStatus)
+		{
+
+		}
+
 		//! Obiekt do czekania
 		utils::shared_ptr<networkUtils::CURLManager::WaitCurl> wait;
 		//! Obiekt postêpu

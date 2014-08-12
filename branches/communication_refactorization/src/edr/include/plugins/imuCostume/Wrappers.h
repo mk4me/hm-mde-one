@@ -24,7 +24,7 @@ namespace IMU
 		osg::Vec3 accelerometer;
 		osg::Vec3 gyroscope;
 		osg::Vec3 magnetometer;
-		osg::Quat orientation;
+		//osg::Quat orientation;
 	};
 
 	//! Strumieñ danych jednego czujnika IMU

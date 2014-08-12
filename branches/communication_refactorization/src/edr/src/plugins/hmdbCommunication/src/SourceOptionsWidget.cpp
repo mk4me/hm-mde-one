@@ -19,6 +19,7 @@
 #include <QtWidgets/QMessageBox>
 #include <QtGui/QStandardItem>
 #include <QtGui/QStandardItemModel>
+#include <hmdbserviceslib/IAuthorizationWS.h>
 
 const bool verifyFileExistance(const QString & filePath)
 {
@@ -158,7 +159,14 @@ void SourceOptionsWidget::onRefreshViews()
 			ui->viewComboBox->clear();
 
 			for (auto i = 0; i < hmdbSource->sourceContextViewPrototypesCount(); ++i){
-				ui->viewComboBox->addItem(hmdbSource->sourceContextViewPrototype(i)->name());
+				auto viewProto = hmdbSource->sourceContextViewPrototype(i);
+				auto icon = viewProto->icon();
+				if (icon.isNull() == false){
+					ui->viewComboBox->addItem(icon, viewProto->name());
+				}
+				else{
+					ui->viewComboBox->addItem(viewProto->name());
+				}
 			}
 
 			if (currentViewIndex > -1 && currentViewIndex < hmdbSource->sourceContextViewPrototypesCount()){
@@ -238,6 +246,8 @@ void SourceOptionsWidget::onProfileChange(int idx)
 
 void SourceOptionsWidget::setConnectionProfile(const hmdbCommunication::IHMDBSource::ContextConfiguration & connectionProfile)
 {
+	ui->loginLineEdit->blockSignals(true);
+	ui->passwordLineEdit->blockSignals(true);
 	ui->storagePathLineEdit->blockSignals(true);
 	ui->storagePasswordLineEdit->blockSignals(true);
 	ui->motionServiceURLLineEdit->blockSignals(true);
@@ -248,8 +258,8 @@ void SourceOptionsWidget::setConnectionProfile(const hmdbCommunication::IHMDBSou
 	ui->dataUserLineEdit->blockSignals(true);
 	ui->dataPasswordLineEdit->blockSignals(true);
 
-	//ui->loginLineEdit->setText();
-	//ui->passwordLineEdit->setText();
+	ui->loginLineEdit->setText("imu-base01");
+	ui->passwordLineEdit->setText("imu-base0v");
 	ui->storagePathLineEdit->setText(connectionProfile.storageConfiguration.path);
 	ui->storagePasswordLineEdit->setText(connectionProfile.storageConfiguration.password);
 
@@ -281,6 +291,8 @@ void SourceOptionsWidget::setConnectionProfile(const hmdbCommunication::IHMDBSou
 		}
 	}
 
+	ui->loginLineEdit->blockSignals(false);
+	ui->passwordLineEdit->blockSignals(false);
 	ui->storagePathLineEdit->blockSignals(false);
 	ui->storagePasswordLineEdit->blockSignals(false);
 	ui->motionServiceURLLineEdit->blockSignals(false);
@@ -328,17 +340,21 @@ const QString formatErrorMessage(const QStringList & errors)
 {
 	QString ret = QObject::tr("UNKNOWN error");
 
-	if (errors.empty() == false){
-		int i = 1;
-		auto it = errors.begin();
-		ret = *it;
-		while (++it != errors.end()){
-			++i;
-			ret += QString("\n%1: ").arg(i) + *it;
+	if (errors.empty() == false){		
+		if (errors.size() == 1){
+			ret = errors.front();
+		}
+		else{
+			int i = 1;
+			auto it = errors.begin();
+			ret = QString("%1: ").arg(i++) + *it;
+			while (++it != errors.end()){
+				ret += QString("\n%1: ").arg(i++) + *it;
+			}
 		}
 	}
 
-	return ret;
+	return QObject::tr("Error(s)") + ":\n" + ret;
 }
 
 void SourceOptionsWidget::onLogin()
@@ -644,13 +660,54 @@ const bool SourceOptionsWidget::verify(QStringList & messages)
 		}
 	}
 
-	if (ui->storagePathLineEdit->text().isEmpty() == true){
+	bool storageCreated = false;
+	core::Filesystem::Path storagePath(ui->storagePathLineEdit->text().toStdString());
+	if (storagePath.empty() == true){
 		messages.push_back(tr("Storage file was not not chosen."));
 	}
-	else if (verifyFileExistance(ui->storagePathLineEdit->text()) == false){
-		messages.push_back(tr("Storage file not exists."));		
+	else if (storagePath.is_absolute() == false){
+		messages.push_back(tr("Storage file path is not the absolute path."));
 	}
-	else{
+	else if (storagePath.has_filename() == false
+		|| storagePath.has_extension() == false){
+		messages.push_back(tr("Storage file path is not a file path. Both: file name and extension are required."));
+	}
+	else if (core::Filesystem::pathExists(storagePath) == false){
+
+		auto ret = QMessageBox::question(this, tr("Storage not exists"), tr("Given storage does not exist. Would You like to create storage with the given parameters?"));
+
+		if (ret == QMessageBox::Yes){
+
+			auto parentDir = storagePath.parent_path();
+
+			if (core::Filesystem::pathExists(parentDir) == false){
+
+				try{
+					core::Filesystem::createDirectory(parentDir);
+				}
+				catch (...){
+
+				}
+			}
+
+			if (core::Filesystem::pathExists(parentDir) == false){
+				messages.push_back(tr("Failed to create storage in the given directory - do You have required permissions?"));
+			}
+			else if (hmdbCommunication::SQLCipherStorage::create(storagePath, ui->storagePasswordLineEdit->text().toStdString()) == true){
+				coreUI::CorePopup::showMessage(tr("Info"), tr("Storage successfully created"));
+				storageCreated = true;
+			}
+			else{
+				coreUI::CorePopup::showMessage(tr("Info"), tr("Failed to create storage"));
+				messages.push_back(tr("Failed to create storage"));
+			}
+		}
+		else{
+			messages.push_back(tr("Storage file not exists."));
+		}
+	}
+
+	if (storageCreated == false && core::Filesystem::pathExists(storagePath) == true) {
 
 		std::auto_ptr<hmdbCommunication::SQLCipherStorage> storage(new hmdbCommunication::SQLCipherStorage);
 
@@ -687,9 +744,25 @@ const bool SourceOptionsWidget::verify(QStringList & messages)
 				::verify(ui->medicaServicelURLLineEdit->text(), tr("Empty medical service URL"), messages);
 				::verify(ui->medicalDataURLLineEdit->text(), tr("Empty medical data URL"), messages);
 			}
-		}
+		}		
 
 		messages.append(remoteErrors);
+
+		if (messages.empty() == true){
+			std::auto_ptr<hmdbCommunication::IHMDBSession> session = std::auto_ptr<hmdbCommunication::IHMDBSession>(hmdbService->createSession(
+					ui->motionServiceURLLineEdit->text().toStdString(),
+					ui->medicalDataURLLineEdit->text().toStdString(),
+					ui->loginLineEdit->text().toStdString(),
+					ui->passwordLineEdit->text().toStdString(),
+					ui->motionDataURLLineEdit->text().toStdString(),
+					ui->medicalDataURLLineEdit->text().toStdString(),
+					ui->servicesCertificatePathLineEdit->text().toStdString(),
+					networkUtils::HVMatch));
+
+			if (session->authorization()->checkMyLogin() == false){
+				messages.push_back(tr("Incorrect login or password"));
+			}
+		}
 	}
 
 	return messages.empty();

@@ -236,6 +236,9 @@ void HMDBService::init(core::ISourceManager * sourceManager,
 	dataThread.swap(dt);
 	servicesManager.swap(sM);
 	dataManager.swap(dM);
+
+	WsdlPull::SCHEMADIR = (plugin::getPaths()->getResourcesPath() / "schemas/").string();
+	PLUGIN_LOG_INFO("WSDLPULL SCHEMADIR: " << WsdlPull::SCHEMADIR);
 }
 
 const bool HMDBService::lateInit()

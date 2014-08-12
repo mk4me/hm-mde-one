@@ -97,10 +97,12 @@ namespace hmdbCommunication
 		static const StorageFileNames files(const ShallowCopy & shallowCopy);
 
 		//! \param userHash Skrót użytkownika którego kopię sprawdzamy
+		//! \param dataReference Referencja danych
 		//! \param shallowType Typ płytkiej kopii o która pytamy
 		//! \param storage Skład w którym szukamy
 		//! \return Czy płytka kopia bazy danych jest dostepna w storage
 		static const bool shallowCopyInStorage(const std::string & userHash,
+			const IHMDBRemoteContext::DataReference dataReference,
 			const ShallowCopyType shallowType,
 			const IHMDBStorageOperations * storage);
 
