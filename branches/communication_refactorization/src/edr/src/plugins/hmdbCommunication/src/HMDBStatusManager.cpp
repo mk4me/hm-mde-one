@@ -18,16 +18,6 @@ class HMDBStatusManager::HMDBStatusManagerTransaction
 	{
 		manager->synch_.unlock();
 	}
-
-	virtual void setShallowCopy(const ShallowCopyConstPtr shallowCopy)
-	{
-		manager->shallowCopy_ = shallowCopy;
-	}
-
-	virtual const ShallowCopyConstPtr shallowCopy() const
-	{
-		return manager->shallowCopy_;
-	}
 	
 	virtual const DataStatus dataStatus(const DataType dataType,
 		const hmdbServices::ID id) const
@@ -64,7 +54,7 @@ class HMDBStatusManager::HMDBStatusManagerTransaction
 		manager->rawTryUpdate(shallowCopy);
 	}
 
-	virtual void rebuild(const IHMDBStorage * storage, const ShallowCopyConstPtr shallowCopy)
+	virtual void rebuild(const IHMDBStorageConstPtr storage, const ShallowCopyConstPtr shallowCopy)
 	{
 		manager->rawRebuild(storage, shallowCopy);
 	}
@@ -83,27 +73,15 @@ HMDBStatusManager::~HMDBStatusManager()
 
 }
 
-void HMDBStatusManager::setShallowCopy(const ShallowCopyConstPtr shallowCopy)
-{
-	ScopedLock lock(synch_);
-	shallowCopy_ = shallowCopy;
-}
-
-const ShallowCopyConstPtr HMDBStatusManager::shallowCopy() const
-{
-	ScopedLock lock(synch_);
-	return shallowCopy_;
-}
-
-const HMDBStatusManager::UpdateData HMDBStatusManager::fullUpdateData()
+const HMDBStatusManager::UpdateData HMDBStatusManager::fullUpdateData(const ShallowCopyConstPtr shallowCopy)
 {
 	UpdateData lud(updateData);
 
 	auto it = updateData.find(FileType);
 	if (it != updateData.end()){
 		for (auto fit = it->second.begin(); fit != it->second.end(); ++fit){
-			auto fIT = shallowCopy_->motionShallowCopy.files.find(*fit);
-			if (fIT != shallowCopy_->motionShallowCopy.files.end()){
+			auto fIT = shallowCopy->motionShallowCopy.files.find(*fit);
+			if (fIT != shallowCopy->motionShallowCopy.files.end()){
 				if (fIT->second->isSessionFile() == true){
 					lud[SessionType].insert(fIT->second->session->sessionID);
 				}
@@ -117,8 +95,8 @@ const HMDBStatusManager::UpdateData HMDBStatusManager::fullUpdateData()
 	it = updateData.find(MotionType);
 	if (it != updateData.end()){
 		for (auto mit = it->second.begin(); mit != it->second.end(); ++mit){
-			auto mIT = shallowCopy_->motionShallowCopy.trials.find(*mit);
-			if (mIT != shallowCopy_->motionShallowCopy.trials.end()){
+			auto mIT = shallowCopy->motionShallowCopy.trials.find(*mit);
+			if (mIT != shallowCopy->motionShallowCopy.trials.end()){
 				lud[SessionType].insert(mIT->second->session->sessionID);
 			}
 		}
@@ -127,8 +105,8 @@ const HMDBStatusManager::UpdateData HMDBStatusManager::fullUpdateData()
 	it = updateData.find(SessionType);
 	if (it != updateData.end()){
 		for (auto sit = it->second.begin(); sit != it->second.end(); ++sit){
-			auto sIT = shallowCopy_->motionShallowCopy.sessions.find(*sit);
-			if (sIT != shallowCopy_->motionShallowCopy.sessions.end()){
+			auto sIT = shallowCopy->motionShallowCopy.sessions.find(*sit);
+			if (sIT != shallowCopy->motionShallowCopy.sessions.end()){
 				lud[SubjectType].insert(sIT->second->performerConf->performer->performerID);
 			}
 		}
@@ -137,8 +115,8 @@ const HMDBStatusManager::UpdateData HMDBStatusManager::fullUpdateData()
 	it = updateData.find(SubjectType);
 	if (it != updateData.end()){
 		for (auto sit = it->second.begin(); sit != it->second.end(); ++sit){
-			auto sIT = shallowCopy_->motionShallowCopy.performers.find(*sit);
-			if (sIT != shallowCopy_->motionShallowCopy.performers.end()
+			auto sIT = shallowCopy->motionShallowCopy.performers.find(*sit);
+			if (sIT != shallowCopy->motionShallowCopy.performers.end()
 				&& sIT->second->patient != nullptr){
 
 				lud[PatientType].insert(sIT->second->patient->patientID);
@@ -159,7 +137,7 @@ void HMDBStatusManager::rawTryUpdate(const ShallowCopyConstPtr shallowCopy)
 {
 	if (shallowCopy != nullptr && updateData.empty() == false){
 
-		auto fud = fullUpdateData();
+		auto fud = fullUpdateData(shallowCopy);
 
 		auto it = fud.find(MotionType);
 
@@ -240,28 +218,24 @@ void HMDBStatusManager::rawTryUpdate(const ShallowCopyConstPtr shallowCopy)
 	}
 }
 
-IHMDBStatusManager * HMDBStatusManager::create(const ShallowCopyConstPtr shallowCopy) const
-{
-	return new HMDBStatusManager;
-}
-
-void HMDBStatusManager::rebuild(const IHMDBStorage * storage, const ShallowCopyConstPtr shallowCopy)
+void HMDBStatusManager::rebuild(const IHMDBStorageConstPtr storage, const ShallowCopyConstPtr shallowCopy)
 {
 	ScopedLock lock(synch_);
 	rawRebuild(storage, shallowCopy);
 }
 
-void HMDBStatusManager::rawRebuild(const IHMDBStorage * storage, const ShallowCopyConstPtr shallowCopy)
+void HMDBStatusManager::rawRebuild(const IHMDBStorageConstPtr storage, const ShallowCopyConstPtr shallowCopy)
 {
 	Statuses locStatuses;
 
 	{
 		auto t = plugin::getStreamDataManagerReader()->transaction();
+		auto sTransaction = storage->transaction();
 
 		for (auto it = shallowCopy->motionShallowCopy.files.begin();
 			it != shallowCopy->motionShallowCopy.files.end(); ++it){
 
-			auto st = storage->exists(it->second->fileName) == true ? Local : Remote;
+			auto st = sTransaction->exists(it->second->fileName) == true ? Local : Remote;
 			auto usage = Unloaded;
 			auto sName = core::IStreamManagerReader::streamName(storage->protocol(), it->second->fileName);
 			if (t->isManaged(sName) == true){

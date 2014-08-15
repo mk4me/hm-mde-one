@@ -9,6 +9,7 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBSESSION_H__
 
 #include <string>
+#include <utils/SmartPtr.h>
 
 namespace hmdbServices
 {
@@ -76,6 +77,8 @@ namespace hmdbCommunication
 		//! \return Po³¹czenie do pobierania danych medycznych
 		virtual IHMDBFtp * medicalFtp() = 0;
 	};
+
+	DEFINE_SMART_POINTERS(IHMDBSession);
 }
 
 #endif	// __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBSESSION_H__

@@ -1,4 +1,6 @@
 #include "Job.h"
+#include <utils/Utils.h>
+#include <boost/bind.hpp>
 
 using namespace core;
 
@@ -46,14 +48,22 @@ void Job::wait()
 		return;
 	}
 
-	threadingUtils::StrictSyncPolicy sobj;
-	sobj.lock();
-	wait_.wait(&sobj);
+	if (sync.tryLock() == true){
+		sync.unlock();
+	}
+	else{
+		wait_.wait(&sync);
+	}
 }
 
 void Job::unlock()
 {
 	wait_.wakeAll();
+}
+
+void Job::lock()
+{
+	sync.lock();
 }
 
 void Job::setStatus(const Status status)
@@ -63,6 +73,8 @@ void Job::setStatus(const Status status)
 
 void Job::run()
 {
+	utils::Cleanup cleanup(boost::bind(&Job::unlock, this));
+
 	setStatus(IJob::JOB_WORKING);
 
 	try{
@@ -76,7 +88,5 @@ void Job::run()
 
 	if (status_ != IJob::JOB_FINISHED){
 		setStatus(IJob::JOB_ERROR);
-	}
-
-	unlock();
+	}	
 }

@@ -45,12 +45,12 @@ const std::string CURLFTPTransfer::file() const
 
 const unsigned long long CURLFTPTransfer::processed() const
 {
-	return data_->progress->progress() * size_;
+	return data_->progress->processedData();
 }
 
 const unsigned long long CURLFTPTransfer::size() const
 {
-	return size_;
+	return std::max(size_, (size_t)processed());
 }
 
 void CURLFTPTransfer::start()
@@ -81,7 +81,11 @@ void CURLFTPTransfer::abort()
 
 void CURLFTPTransfer::wait()
 {
-	data_->wait->wait();
+	if (status() != CURLFTPTransfer::Finished
+		&& status() != CURLFTPTransfer::Error
+		&& status() != CURLFTPTransfer::Aborted){
+		data_->wait->wait();
+	}
 }
 
 const CURLFTPTransfer::Status CURLFTPTransfer::status() const

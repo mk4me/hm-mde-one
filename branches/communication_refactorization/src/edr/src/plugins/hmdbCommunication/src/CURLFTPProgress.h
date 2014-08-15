@@ -26,14 +26,20 @@ namespace hmdbCommunication
 		virtual const bool aborted() const;
 		//! \param progress Postêp operacji
 		virtual void setProgress(const float progress);
+		//! \param processedData Ilosc przetworzonych danych [bytes]
+		virtual void setProcessedData(const unsigned long long processedData);
 		//! \return Postêp operacji
 		const float progress() const;
+		//! \return Ilosæ do tej pory przetworzonych danych
+		const unsigned long long processedData() const;
 
 	private:
 		//! Czy operacja ma byæ przerwana
 		boost::atomic<bool> aborted_;
 		//! Postêp operacji
 		boost::atomic<float> progress_;
+		//! Ilosc przetworzonych danych
+		boost::atomic<unsigned long long> processedData_;
 	};
 }
 

@@ -47,7 +47,7 @@ public:
 					mainWindow->setAttribute(Qt::WA_QuitOnClose);
 					mainWindow->close();
 
-					QMessageBox::warning(nullptr, mainWindow->windowTitle(), QObject::tr("Detected other instance of application already running. Only one instance of this application is allowed to be run. This application will be closed now."));
+					QMessageBox::warning(mainWindow, mainWindow->windowTitle(), QObject::tr("Detected other instance of application already running. Only one instance of this application is allowed to be run. This application will be closed now."));
 					allowed = false;
 				}
 			}

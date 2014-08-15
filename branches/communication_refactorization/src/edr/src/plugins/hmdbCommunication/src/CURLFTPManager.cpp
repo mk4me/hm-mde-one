@@ -74,5 +74,5 @@ void CURLFTPManager::onErrorRequest(CURL * curl, const std::string & error)
 void CURLFTPManager::onFinishRequest(CURL * curl)
 {
 	auto t = getTransferData(curl);	
-	t->status->setStatus(threadingUtils::IOperation::Finieshed);	
+	t->status->setStatus(threadingUtils::IOperation::Finished);	
 }

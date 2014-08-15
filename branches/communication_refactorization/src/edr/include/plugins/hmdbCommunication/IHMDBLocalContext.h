@@ -8,14 +8,14 @@
 #ifndef __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBLOCALCONTEXT_H__
 #define __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBLOCALCONTEXT_H__
 
+#include <threadingUtils/ITTransaction.h>
 #include <corelib/Variant.h>
 #include <plugins/hmdbCommunication/ShallowCopy.h>
-#include <utils/ITTransaction.h>
+#include <plugins/hmdbCommunication/IHMDBDataContext.h>
+
 
 namespace hmdbCommunication
 {
-	//! Forward declaration
-	class IHMDBDataContext;
 
 	class IHMDBLocalContextOperations
 	{
@@ -48,17 +48,19 @@ namespace hmdbCommunication
 		virtual const bool unload(const core::VariantConstPtr data) = 0;
 	};
 
-	class IHMDBLocalContext : public utils::ITTransaction<IHMDBLocalContextOperations>
+	class IHMDBLocalContext : public threadingUtils::ITTransaction<IHMDBLocalContextOperations>
 	{
 	public:
 		//! Destruktor wirtualny
 		virtual ~IHMDBLocalContext() {}
 
 		//! \return Kontekst danych
-		virtual IHMDBDataContext * dataContext() = 0;
+		virtual const IHMDBDataContextPtr dataContext() = 0;
 		//! \return Kontekst danych
-		virtual const IHMDBDataContext * dataContext() const = 0;
+		virtual const IHMDBDataContextConstPtr dataContext() const = 0;
 	};
+
+	DEFINE_SMART_POINTERS(IHMDBLocalContext);
 }
 
 #endif	// __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBLOCALCONTEXT_H__

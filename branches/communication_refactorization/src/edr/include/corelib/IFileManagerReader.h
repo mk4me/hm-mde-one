@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___IFILEMANAGERREADER_H__
 #define HEADER_GUARD___IFILEMANAGERREADER_H__
 
-#include <utils/ITTransaction.h>
+#include <threadingUtils/ITTransaction.h>
 #include <corelib/Filesystem.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/VariantsCollection.h>
@@ -43,7 +43,7 @@ namespace core {
 	};
 
 	//! Zapewnia dostêp do danych plikowych aplikacji, pozwala obserwowaæ zmiany z nimi zwi¹zane
-	class IFileManagerReader : public utils::ITReadableTransaction<IFileManagerReaderOperations>
+	class IFileManagerReader : public threadingUtils::ITReadableTransaction<IFileManagerReaderOperations>
 	{
 	public:
 		//! Typ operacji na plikach

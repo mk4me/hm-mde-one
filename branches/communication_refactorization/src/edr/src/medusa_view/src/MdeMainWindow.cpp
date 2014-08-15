@@ -32,9 +32,8 @@
 
 using namespace core;
 
-MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations) :
-    coreUI::CoreMainWindow(closeUpOperations),
-	coreUI::SingleInstanceWindow("medusa_view_{E3F0B695-7E6D-44BF-BDDF-603D2C33B1EF}"),
+MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations, const std::string & appName)
+	: coreUI::CoreMainWindow(closeUpOperations), coreUI::SingleInstanceWindow(appName),
     controller(this)
 {
     ui = new Ui::HMMMain();

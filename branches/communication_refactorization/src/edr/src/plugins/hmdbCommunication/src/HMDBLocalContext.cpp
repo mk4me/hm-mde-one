@@ -13,7 +13,7 @@ public:
 
 	//! \param storage Obiekt z danymi
 	//! \param name Nazwa strumienia do wypakowania
-	StorageStreamGrabber(const IHMDBStorage * storage, const std::string & name)
+	StorageStreamGrabber(const IHMDBStorageConstPtr storage, const std::string & name)
 		: storage(storage), name_(name)
 	{
 
@@ -45,7 +45,7 @@ public:
 
 private:
 	//! Obiekt z danymi
-	const IHMDBStorage * storage;
+	const IHMDBStorageConstPtr storage;
 	//! Nazwa strumienia do wypakowania
 	const std::string name_;
 };
@@ -95,7 +95,7 @@ if (file->fileName == zipName){
 
 */
 
-HMDBLocalContext::HMDBLocalContext(IHMDBDataContext * dataContext, core::IMemoryDataManager * mdm,
+HMDBLocalContext::HMDBLocalContext(IHMDBDataContextPtr dataContext, core::IMemoryDataManager * mdm,
 	core::IStreamDataManager * sdm) : dataContext_(dataContext), mdm(mdm), sdm(sdm)
 {
 
@@ -106,12 +106,12 @@ HMDBLocalContext::~HMDBLocalContext()
 
 }
 
-IHMDBDataContext * HMDBLocalContext::dataContext()
+const IHMDBDataContextPtr HMDBLocalContext::dataContext()
 {
 	return dataContext_;
 }
 
-const IHMDBDataContext * HMDBLocalContext::dataContext() const
+const IHMDBDataContextConstPtr HMDBLocalContext::dataContext() const
 {
 	return dataContext_;
 }

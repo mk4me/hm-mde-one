@@ -81,31 +81,42 @@ void HMDBSource::getOfferedTypes(utils::TypeInfoList & offeredTypes) const
 
 }
 
-IHMDBSourceContext * HMDBSource::createSourceContext(IHMDBStorage * storage,
+const IHMDBSourceContextPtr HMDBSource::createSourceContext(IHMDBStoragePtr storage,
 	const std::string & user, const std::string & password,
-	IHMDBSession * session)
+	IHMDBSessionPtr session)
 {
-	IHMDBSourceContext * ret = nullptr;
+	IHMDBSourceContextPtr ret;
 
 	if (storage != nullptr && user.empty() == false && password.empty() == false){
-		auto dc = new HMDBDataContext(storage, user, password);
-		ret = new HMDBSourceContext(dc, new HMDBLocalContext(dc, memoryDM, streamDM),
-			session == nullptr ? nullptr : new HMDBRemoteContext(session, ShallowCopyUtils::userHash(user, password)));
+		IHMDBDataContextPtr dc(new HMDBDataContext(storage, user, ShallowCopyUtils::userHash(user, password)));
+		IHMDBRemoteContextPtr rc;
+		if (session != nullptr){
+			rc.reset(new HMDBRemoteContext(session, ShallowCopyUtils::userHash(user, password)));
+		}
+
+		IHMDBLocalContextPtr lc(new HMDBLocalContext(dc, memoryDM, streamDM));
+
+		ret.reset(new HMDBSourceContext(dc, lc, rc));
 	}
 
 	return ret;
 }
 
-IHMDBShallowCopyContext * HMDBSource::createShallowCopyContext(IHMDBSourceContext * sourceContext)
+const IHMDBShallowCopyContextPtr HMDBSource::createShallowCopyContext(IHMDBSourceContextPtr sourceContext)
 {
-	IHMDBShallowCopyContext * ret = nullptr;
+	IHMDBShallowCopyContextPtr ret;
 
 	if (sourceContext != nullptr && sourceContext->dataContext() != nullptr
 		&& sourceContext->localContext() != nullptr){
-		auto scdc = new HMDBShallowCopyDataContext();
-		ret = new HMDBShallowCopyContext(scdc,
-			new HMDBShallowCopyLocalContext(scdc, sourceContext->localContext()),
-			sourceContext->remoteContext() == nullptr ? nullptr : new HMDBShallowCopyRemoteContext(scdc, sourceContext->remoteContext()));
+		IHMDBShallowCopyDataContextPtr scdc(new HMDBShallowCopyDataContext());
+		IHMDBShallowCopyLocalContextPtr sclc(new HMDBShallowCopyLocalContext(scdc, sourceContext->localContext()));
+		IHMDBShallowCopyRemoteContextPtr scrc;
+
+		if (sourceContext->remoteContext() != nullptr){
+			scrc.reset(new HMDBShallowCopyRemoteContext(scdc, sourceContext->remoteContext()));
+		}
+
+		ret.reset(new HMDBShallowCopyContext(scdc, sclc, scrc));
 	}
 
 	return ret;

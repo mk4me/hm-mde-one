@@ -11,15 +11,19 @@ using namespace utils;
 
 class CURLManager::WaitCurl::WaitCurlImpl
 {
+	friend class CURLManagerImpl;
+
 public:
 	//! Konstruktor domyslny
 	WaitCurlImpl() : result_(CURLE_OK) {}
 	//! Destruktor
-	~WaitCurlImpl() {}
+	~WaitCurlImpl() { wait_.wakeAll(); }
 
 	void wait()
 	{
-		threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(sync_);
+		threadingUtils::StrictSyncPolicy sync;
+		sync.lock();
+		wait_.wait(&sync);
 	}
 
 	//! \return Rezultat obs³ugi po³¹czenia
@@ -44,21 +48,11 @@ public:
 		error_ = error;
 	}
 
-	void lock()
-	{
-		sync_.lock();
-	}
-
-	void unlock()
-	{
-		sync_.unlock();
-	}
-
 private:
 	//! Obiekt synchronizuj¹cy
-	threadingUtils::StrictSyncPolicy sync_;
+	threadingUtils::ConditionVariable wait_;
 	//! Rezultat obs³ugi po³aczenia
-	volatile CURLcode result_;
+	boost::atomic<CURLcode> result_;
 	//! Opis b³êdu
 	std::string error_;
 };
@@ -105,7 +99,7 @@ private:
 		auto IT = currentCurls.find(curl);
 		if (IT != currentCurls.end()){
 			if (IT->second != nullptr){
-				IT->second->impl->unlock();
+				IT->second->impl->wait_.wakeAll();
 			}
 
 			currentCurls.erase(IT);
@@ -127,8 +121,8 @@ private:
 
 
 public:
-	CURLManagerImpl(CURLM * multi, CURLManager * manager) : multi(multi),
-		manager(manager), finalize_(false)
+	CURLManagerImpl(CURLM * multi, CURLManager * manager, const bool releaseCurl) : multi(multi),
+		manager(manager), finalize_(false), releaseCurl(releaseCurl)
 	{
 		if (multi == nullptr){
 			throw std::runtime_error("Invalid multi handle");
@@ -141,7 +135,9 @@ public:
 
 	~CURLManagerImpl()
 	{
-		finalize();
+		if (releaseCurl == true){
+			curl_multi_cleanup(multi);
+		}
 	}
 
 	void finalize()
@@ -154,8 +150,8 @@ public:
 
 		innerRemove();
 
-		condVar.wakeOne();
 		finalize_ = true;
+		condVar.wakeOne();
 	}
 
 	void addRequest(CURL * curl, CURLManager::WaitCurl * wait)
@@ -180,7 +176,7 @@ public:
 
 					if (IT->second != nullptr){
 						// muszê poprzedni zwolniæ
-						IT->second->impl->unlock();
+						IT->second->impl->wait_.wakeAll();
 					}
 
 					IT->second = wait;
@@ -191,13 +187,6 @@ public:
 			}
 			else{
 				toAddCurlsSet[curl] = wait;
-			}
-
-			// czy wait podano
-			if ((lock == true) && (wait != nullptr))
-			{
-				// blokujemy czekanie
-				wait->impl->lock();
 			}
 		}
 		
@@ -225,7 +214,7 @@ public:
 				// czy by³ obiekt oczekujacy
 				if (IT->second != nullptr){
 					// zwalniamy
-					IT->second->impl->unlock();
+					IT->second->impl->wait_.wakeAll();
 				}
 
 				toAddCurlsSet.erase(IT);
@@ -345,7 +334,7 @@ public:
 	}
 
 private:
-
+	//! Czy mamy ju¿ koñczyæ dzia³anie managera
 	boost::atomic<bool> finalize_;
 	//! Czas oczekiwania na dane [ms]
 	static const int waitTime = 500;
@@ -365,16 +354,18 @@ private:
 	CURLsSet toRemoveCurlsSet;
 	//! Aktualnie obs³ugiwane uchwyty
 	CURLsWaitMap currentCurls;
+	//! Czy mamy usuwac uchwyt curla
+	const bool releaseCurl;
 };
 
 CURLManager::CURLManager()
 {
-	impl.reset(new CURLManagerImpl(curl_multi_init(), this));
+	impl.reset(new CURLManagerImpl(curl_multi_init(), this, true));
 }
 
 CURLManager::CURLManager(CURLM * multi)
 {
-	impl.reset(new CURLManagerImpl(multi, this));
+	impl.reset(new CURLManagerImpl(multi, this, false));
 }
 
 CURLManager::~CURLManager()

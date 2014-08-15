@@ -22,14 +22,88 @@ namespace hmdbServices
 	class IFileStoremanWS;
 }
 
-
 namespace hmdbCommunication
 {
+
+	class HMDBStorageProgress : public IHMDBStorageProgress
+	{
+	public:
+		HMDBStorageProgress();
+
+		virtual ~HMDBStorageProgress();
+
+		virtual void setProgress(const float progress);
+
+		virtual void setError(const std::string & error);
+
+		virtual const bool aborted() const;
+
+		const float progress() const;
+
+		const std::string & error() const;
+
+		void abort();
+
+	private:
+		std::string error_;
+		boost::atomic<float> progress_;
+		boost::atomic<bool> aborted_;
+	};
+
+
+	//! Interfejs opisujący wiele operacji
+	class ICompoundOperation : public IHMDBRemoteContext::IOperation
+	{
+	public:
+		//! Polityka wykonania
+		enum ExecutionPolicy
+		{
+			Any,			//! Pojawiające się błędy nie przeszkodzą pozostałym operacjom
+			AllOrNothing	//! Pierwszy napotkany błąd przerywa pozostałe i wycofuje wszystkie zmiany
+		};
+
+		//! Sposób wykonania
+		enum ExecutionSchema
+		{
+			Serial,		//! Zadania wykonywane sa jedno po drugim
+			Parallel	//! Zadania wykonywane są równolegle
+		};
+
+	public:
+		//! Destruktor wirtualny
+		virtual ~ICompoundOperation() {}
+		//! \return Postęp
+		virtual const float progress() const
+		{
+			const auto s = size();
+			float ret = 0.0;
+			for (unsigned int i = 0; i < s; ++i){
+				ret += operation(i)->progress();
+			}
+
+			return s > 0 ? ret / (float)s : 1.0;
+		}
+		//! \return Ilość podoperacji
+		virtual const unsigned int size() const = 0;
+		//! \param idx Index podoperacji
+		virtual const IHMDBRemoteContext::OperationConstPtr operation(const unsigned int idx) const = 0;
+		//! \param idx Index podoperacji
+		virtual const IHMDBRemoteContext::OperationPtr operation(const unsigned int idx) = 0;
+		//! \return Polityka wykonania operacji
+		virtual const ExecutionPolicy executionPolicy() const = 0;
+		//! \return sposób wykonania operacji
+		virtual const ExecutionSchema executionSchema() const = 0;
+	};
+
+	//! Wskaźnik dla złożonej operacji
+	typedef utils::shared_ptr<ICompoundOperation> CompoundOperationPtr;
+	//! Wskaźnik dla złożonej operacji
+	typedef utils::shared_ptr<const ICompoundOperation> CompoundOperationConstPtr;
 
 	class IHMDBStatusManager;
 
 	//! Operacja zbiorcza, wspiera rozne polityki wykonania i schematy wykonania
-	class CompoundOperation : public virtual IHMDBRemoteContext::ICompoundOperation
+	class CompoundOperation : public ICompoundOperation
 	{
 	public:
 
@@ -37,25 +111,20 @@ namespace hmdbCommunication
 
 	public:
 		//! Konstruktor
-		//! \param name Nazwa operacji
-		//! \param operation Operacje wchodzacje w skład operacji zbiorczej
 		//! \param ep Polityka wykonania
 		//! \param es Schemat wykonania
-		CompoundOperation(const IHMDBRemoteContext::OperationType opt,
-			const ExecutionPolicy ep,
+		CompoundOperation(const ExecutionPolicy ep,
 			const ExecutionSchema es,
 			const Operations & operations = Operations());
 
 		//! Destruktor wirtualny
 		virtual ~CompoundOperation();
-		//! \return Typ operacji
-		virtual const IHMDBRemoteContext::OperationType operationType() const;
 		//! \return Ilość podoperacji
 		virtual const unsigned int size() const;
 		//! \param idx Index podoperacji
-		virtual const IHMDBRemoteContext::IOperation * operation(const unsigned int idx) const;
+		virtual const IHMDBRemoteContext::OperationConstPtr operation(const unsigned int idx) const;
 		//! \param idx Index podoperacji
-		virtual IHMDBRemoteContext::IOperation * operation(const unsigned int idx);
+		virtual const IHMDBRemoteContext::OperationPtr operation(const unsigned int idx);
 		//! \return Polityka wykonania operacji
 		virtual const ExecutionPolicy executionPolicy() const;
 		//! \return Sposób wykonania operacji
@@ -86,11 +155,9 @@ namespace hmdbCommunication
 		void observe();
 
 		const Status compoundStatus() const;
-		IOperation * findErrorOperation() const;
+		IHMDBRemoteContext::OperationPtr findErrorOperation() const;
 
 	private:
-		//! Typ operacji
-		const IHMDBRemoteContext::OperationType opt;
 		//! Operacje wchodzacje w skład operacji zbiorczej
 		Operations operations;
 		//! Polityka wykonania
@@ -100,7 +167,7 @@ namespace hmdbCommunication
 		//! Wątek realizujacy operacje
 		core::IThreadPtr workerThread;
 		//! Operacja która spowodowała błąd
-		mutable IOperation * errorOperation;
+		mutable IHMDBRemoteContext::OperationPtr errorOperation;
 		//! Status
 		mutable boost::atomic<Status> status_;
 	};
@@ -109,14 +176,10 @@ namespace hmdbCommunication
 	class FunctorOperation : public virtual IHMDBRemoteContext::IOperation
 	{
 	public:
-		//! \param opt Typ operacji
 		//! \param functor Zadanie do wykonania
-		FunctorOperation(const IHMDBRemoteContext::OperationType opt,
-			threadingUtils::FunctorRunnable::Functor functor = threadingUtils::FunctorRunnable::Functor());
+		FunctorOperation(threadingUtils::FunctorRunnable::Functor functor = threadingUtils::FunctorRunnable::Functor());
 		//! Destruktor wirtualny
 		virtual ~FunctorOperation();
-		//! \return Typ operacji
-		virtual const IHMDBRemoteContext::OperationType operationType() const;
 		//! \return Post�p realizacji przetwarzania
 		virtual const float progress() const;
 		//! Metoda anuluje aktualne zadanie
@@ -141,10 +204,8 @@ namespace hmdbCommunication
 	private:
 		//! Postęp
 		boost::atomic<float> progress_;
-		//! Typ operacji
-		const IHMDBRemoteContext::OperationType opt;
 		//! Zadanie do wykonania
-		threadingUtils::FunctorRunnable::Functor functor;
+		threadingUtils::FunctorRunnable::Functor functor_;
 		//! Job obsługujący zadanie
 		core::IJobPtr job;
 		//! Status
@@ -152,45 +213,9 @@ namespace hmdbCommunication
 		//! Opis błędu
 		std::string error_;
 	};
-	
-	//! Operacja pojedynczego transfery
-	class TransferOperation : public IHMDBRemoteContext::ITransferOperation
-	{
-	public:
-		//! \param transfer 
-		TransferOperation();
-		//! Destruktor wirtualny
-		virtual ~TransferOperation();
-		//! \param transfer Transfer obsugiwany przez operacje
-		void setTransfer(IHMDBFtp::TransferPtr transfer);
-
-		//! \return Transfer FTP obsługiwany przez tą operację
-		virtual IHMDBFtp::ITransfer * transfer();
-		//! \return Transfer FTP obsługiwany przez tą operację
-		virtual const IHMDBFtp::ITransfer * transfer() const;
-		//! \return Postep
-		virtual const float progress() const;
-		//! Metoda anuluje aktualne zadanie
-		virtual void abort();
-		//! Metoda rozpoczyna operację
-		virtual void start();
-		//! Metoda czeka do zakończenia operacji
-		virtual void wait();
-		//! \return Stan operacji
-		virtual const Status status() const;
-		//! \return Opis błędu
-		virtual const std::string error() const;
-		virtual const IHMDBRemoteContext::OperationType operationType() const;
-
-	private:
-		//! Status
-		boost::atomic<Status> status_;
-		//! Transfer
-		IHMDBFtp::TransferPtr transfer_;
-	};
 
 	//! Klasa realizująca upload danych, dostarcza informacji o identyfikatorze pliku po zapisie w bazie
-	class UploadOperation : public IHMDBRemoteContext::IUploadOperation, public CompoundOperation
+	class UploadOperation : public IHMDBRemoteContext::IUploadOperation
 	{
 	public:
 		//! Funktor realizujący zapis pliku do bazy danych
@@ -208,66 +233,71 @@ namespace hmdbCommunication
 		//! \param fileDescription Opis pliku
 		//! \param subdirectory
 		UploadOperation(const std::string & fileName,
-			std::istream * source,
-			IHMDBFtp * ftp, HMDBStore store,
-			const unsigned long long size = 0,
+			IHMDBFtp::TransferPtr transfer,
+			HMDBStore store,
 			const std::string & fileDescription = std::string(),
 			const std::string & subdirectory = std::string());
 
 		//! Destruktor wirtualny
 		virtual ~UploadOperation();
+		//! Metoda rozpoczyna operację
+		virtual void start();
+		//! Metoda czeka do zakończenia operacji
+		virtual void wait();
+		//! Metoda anuluje aktualne zadanie
+		virtual void abort();
+		//! \return Stan operacji
+		virtual const Status status() const;
+		//! \return Opis błędu
+		virtual const std::string error() const;
+		//! \return Psotep operacji
+		virtual const float progress() const;
 		//! \return Identyfikator pliku po zapisie w bazie
-		virtual const int fileID() const;
+		virtual const hmdbServices::ID fileID() const;
 
 	private:
-		//! Pobiera identyfikator uploadowanego pliku
-		void getFileID();
+		//! Uploaduje plik
+		void upload();
 
 	private:
+		//! Status
+		boost::atomic<Status> status_;
+		//! Postęp
+		boost::atomic<float> progress_;
 		//! ID pliku po upload
-		boost::atomic<int> fileID_;
+		boost::atomic<hmdbServices::ID> fileID_;
 		//! Nazwa pliku w bazie danych
 		const std::string fileName;
-		//! Zawartośc pliku
-		std::istream * source;
-		//! Ftp użyty do uploadu
-		IHMDBFtp * ftp;
-		//! Metoda zapisująca plik
-		HMDBStore store;
 		//! Opis pliku
 		const std::string fileDescription;
 		//! Podkatalog pliku
 		const std::string subdirectory;
-		//! Operacja łączona
-		utils::shared_ptr<CompoundOperation> cop;
+		//! Operacja transferu
+		IHMDBFtp::TransferPtr transfer;
+		//! Operacja zapisująca plik do bazy
+		HMDBStore store;
+		//! Faktyczna operacja
+		FunctorOperation fOp;
 	};
 
 	//! Interfejs zadania dostarczającego mapy plików do ściągnięcia
-	class PrepareFileToDownloadOperation : public FunctorOperation
+	class PrepareHMDB
 	{
-	private:
-
-		class ClearFileToDownloadOperation;
-		friend class ClearFileToDownloadOperation;
-
 	public:
 		//! \param session Sesja usług HMDB
 		//! \param toPrepare Pliki do przygotowania do ściągnięcia po stronie HMDB
 		//! \param Polityka wykonania
-		PrepareFileToDownloadOperation(hmdbServices::IFileStoremanWS * fs,
+		PrepareHMDB(hmdbServices::IFileStoremanWS * fs,
 			const hmdbServices::ID fileID);
 
 		//! Destruktor wirtualny
-		virtual ~PrepareFileToDownloadOperation();
+		virtual ~PrepareHMDB();
 
 		//! \return Mapa przygotowanych plików do ściągnięcia
-		const std::string & preparedFilePath() const;
+		const std::string prepareFilePath();
 
-		ClearFileToDownloadOperation * clearFileDownloadOperation();
-
-	private:
-
-		void setPath(const std::string & path);
+		//! \return Czyści baze danych ruchu
+		void clearHMDB();
 
 	private:
 		hmdbServices::IFileStoremanWS * fs;
@@ -275,314 +305,186 @@ namespace hmdbCommunication
 		std::string preparedFilePath_;
 	};
 
-	class IOpenTransferOutputOperation : public virtual IHMDBRemoteContext::IOperation
+	class StoreOutput
 	{
 	public:
-		//! Destruktor wirtualny
-		virtual ~IOpenTransferOutputOperation() {}
-
-		//! \return Wyjscia dla sciaganych plikow
-		virtual std::istream * fileInput() = 0;
-
-		virtual IHMDBRemoteContext::IOperation * closeInputOperation() = 0;
-		
-	};
-
-	class IDownloadFileOperation : public virtual IHMDBRemoteContext::IOperation
-	{
-	public:
-		//! Destruktor wirtualny
-		virtual ~IDownloadFileOperation() {}
-
-		virtual void setDownload(const std::string & path, std::ostream * stream, const hmdbServices::FileSize size = 0) = 0;
-	};
-
-	class FTPDownloadFileOperation : public TransferOperation, public IDownloadFileOperation
-	{
-	public:
-		FTPDownloadFileOperation(IHMDBFtp * ftp);
-		virtual ~FTPDownloadFileOperation();
-
-		virtual void setDownload(const std::string & path, std::ostream * stream, const hmdbServices::FileSize size);
-
-	private:
-		IHMDBFtp * ftp;
-	};
-
-	class IStoreOutputOperation : public virtual IHMDBRemoteContext::IOperation
-	{
-	public:
-		//! Destruktor wirtualny
-		virtual ~IStoreOutputOperation() {}
-
-		//! \return Wyjscia dla sciaganych plikow
-		virtual void setFileInput(std::istream * stream) = 0;
-		//! \return Strumien po zapisie
-		virtual std::istream * stream() = 0;
-	};
-
-	class StoreOutputOperation : public IStoreOutputOperation, public FunctorOperation
-	{
-	public:
-		StoreOutputOperation(IHMDBStorage * storage, const std::string & key);
-
-		virtual ~StoreOutputOperation();
-
-		//! \return Wyjscia dla sciaganych plikow
-		virtual void setFileInput(std::istream * stream);
-
-		virtual std::istream * stream();
-
-	private:
 		//! Operacja zapisu
-		void store();
-
-	private:
-		//! Miejsce zapisu danych
-		IHMDBStorage * storage;
-		//! Klucz pod ktorym zapiszemy dane
-		const std::string key;
-		//!Strumien do zapisu
-		std::istream * stream_;
+		//! \param storageTransaction Transakcja storage
+		//! \param key Klucz pod jakim zapisujemy/nadpisujemy
+		//! \param stream Dane do zapisu w storage
+		//! \param progress Postęp zapisu do storage
+		static void store(IHMDBStorage::TransactionPtr storageTransaction, const std::string & key,
+			IHMDBStorage::IStreamPtr stream, IHMDBStorageProgress * progress);
 	};
 
-	class IPrepareTransferOutputOperation : public virtual IHMDBRemoteContext::IOperation
+	class ITransferIO
 	{
 	public:
 		//! Destruktor wirtualny
-		virtual ~IPrepareTransferOutputOperation() {}
+		virtual ~ITransferIO() {}
+
 		//! \return Wyjscia dla sciaganych plikow
-		virtual std::ostream * fileOutput() = 0;
-		//! Operacja zamykająca output (flush danych)
-		virtual IHMDBRemoteContext::IOperation * closeOutputOperation() = 0;
-		//! Operacja otwierająca zapisane dane do odczytu
-		virtual IOpenTransferOutputOperation * openInputOperation() = 0;
-		//! Operacja sprzątająca tymczasowe zasoby
-		virtual IHMDBRemoteContext::IOperation * cleanOutputOperation() = 0;
+		virtual IHMDBStorage::OStreamPtr prepareOutput() = 0;
+		//! Metoda zamyka zasoby użyte do zapisu danych przychodzących
+		virtual void closeOutput() = 0;
+
+		//! \return Otiera nasz output do czytania
+		virtual IHMDBStorage::IStreamPtr openInput() = 0;
+		//! Metoda zamyka otwarty do czytania output i zwalnia wszystkie jego zasoby
+		virtual void closeInput() = 0;
 	};
 
-	class PrepareTmpFileTransferOutputOperation : public IPrepareTransferOutputOperation,
-		public FunctorOperation
+	class TmpFileTransferIO : public ITransferIO
 	{
-	private:
-
-		class OpenTmpFileTransferOutputOperation : public IOpenTransferOutputOperation,
-			public FunctorOperation
-		{
-		public:
-
-			OpenTmpFileTransferOutputOperation(PrepareTmpFileTransferOutputOperation * op);
-
-			//! Destruktor wirtualny
-			virtual ~OpenTmpFileTransferOutputOperation();
-
-			//! \return Wyjscia dla sciaganych plikow
-			virtual std::istream * fileInput();
-
-			virtual IHMDBRemoteContext::IOperation * closeInputOperation();
-
-		private:
-			//! Otiwera do odczytu output
-			void openOutput();
-
-		private:
-			//! Output otwarty do odczytu
-			std::ifstream * stream_;
-			//! Operacja przygotowująca output pliku
-			PrepareTmpFileTransferOutputOperation * op;
-		};
-
-		friend class OpenTmpFileTransferOutputOperation;
-
 	public:
 		//! Domyslny konstruktor
-		PrepareTmpFileTransferOutputOperation();
+		TmpFileTransferIO();
 		//! Destruktor wirtualny
-		virtual ~PrepareTmpFileTransferOutputOperation();
+		virtual ~TmpFileTransferIO();
 		//! \return Wyjscia dla sciaganych plikow
-		virtual std::ostream * fileOutput();
-		//! Operacja zamykająca output (flush danych)
-		virtual IHMDBRemoteContext::IOperation * closeOutputOperation();
-		//! Operacja otwierająca zapisane dane do odczytu
-		virtual IOpenTransferOutputOperation * openInputOperation();
-		//! Operacja sprzątająca tymczasowe zasoby
-		virtual IHMDBRemoteContext::IOperation * cleanOutputOperation();
+		virtual IHMDBStorage::OStreamPtr prepareOutput();
+		//! Metoda zamyka zasoby użyte do zapisu danych przychodzących
+		virtual void closeOutput();
 
-	private:
-		//! Tworzy plik tymczasowy na dysku o losowej nazwie na potrzeby zapisu
-		void prepareOutput();
+		//! \return Otiera nasz output do czytania
+		virtual IHMDBStorage::IStreamPtr openInput();
+		//! Metoda zamyka otwarty do czytania output i zwalnia wszystkie jego zasoby
+		virtual void closeInput();
 
 	private:
 		//! Strumień do zapisu danych
-		std::ofstream * stream;
+		utils::shared_ptr<std::fstream> stream;
 		//! Ściezka pliku
 		core::Filesystem::Path tmpFilePath;
-
-		IOpenTransferOutputOperation * oOp;
 	};
 
-	class PrepareMemoryTransferOutputOperation : public IPrepareTransferOutputOperation,
-		public FunctorOperation
+	class MemoryTransferIO : public ITransferIO		
 	{
-	private:
-
-		class OpenMemoryTransferOutputOperation : public IOpenTransferOutputOperation,
-			public FunctorOperation
-		{
-		public:
-
-			OpenMemoryTransferOutputOperation(PrepareMemoryTransferOutputOperation * op);
-
-			//! Destruktor wirtualny
-			virtual ~OpenMemoryTransferOutputOperation();
-
-			//! \return Wyjscia dla sciaganych plikow
-			virtual std::istream * fileInput();
-
-			virtual IHMDBRemoteContext::IOperation * closeInputOperation();
-
-		private:
-
-			//! Otiwera do odczytu output
-			void openOutput();			
-
-		private:
-
-			std::istream * stream;
-
-			PrepareMemoryTransferOutputOperation * op;
-		};
-
-		friend class OpenMemoryTransferOutputOperation;
-
 	public:
-
-		PrepareMemoryTransferOutputOperation();
+		//! Konstruktor domyslny
+		MemoryTransferIO();
 		//! Destruktor wirtualny
-		virtual ~PrepareMemoryTransferOutputOperation();
+		virtual ~MemoryTransferIO();
 		//! \return Wyjscia dla sciaganych plikow
-		virtual std::ostream * fileOutput();
-		//! Operacja zamykająca output (flush danych)
-		virtual IHMDBRemoteContext::IOperation * closeOutputOperation();
-		//! Operacja otwierająca zapisane dane do odczytu
-		virtual IOpenTransferOutputOperation * openInputOperation();
-		//! Operacja sprzątająca tymczasowe zasoby
-		virtual IHMDBRemoteContext::IOperation * cleanOutputOperation();
+		virtual IHMDBStorage::OStreamPtr prepareOutput();
+		//! Metoda zamyka zasoby użyte do zapisu danych przychodzących
+		virtual void closeOutput();
+
+		//! \return Otiera nasz output do czytania
+		virtual IHMDBStorage::IStreamPtr openInput();
+		//! Metoda zamyka otwarty do czytania output i zwalnia wszystkie jego zasoby
+		virtual void closeInput();
 
 	private:
-
-		void prepareOutput();
-
-	private:
-		std::stringstream * stream;
+		//! Strumień z danymi
+		IHMDBStorage::IOStreamPtr stream;
 	};
 
 	//! Operacja pozwalajaca realizowac sciaganie plikow z HMDB
-	class CompoundFileDownload : public IHMDBRemoteContext::IDownloadOperation, public FunctorOperation
+	class FileDownload : public IHMDBRemoteContext::IDownloadOperation
 	{
 	public:
 		//! \param fileToDownload		
 		//! \param ptOp
 		//! \param storage
-		CompoundFileDownload(const IHMDBRemoteContext::CompoundID & fileToDownload,
-			PrepareFileToDownloadOperation * pfOp,
-			IPrepareTransferOutputOperation * ptOp,
-			IDownloadFileOperation * dOp,
-			IStoreOutputOperation * soOp);
+		FileDownload(const IHMDBRemoteContext::CompoundID & fileToDownload,
+			utils::shared_ptr<PrepareHMDB> prepareHMDB,
+			utils::shared_ptr<ITransferIO> transferIO,
+			IHMDBFtp * ftp,
+			IHMDBStoragePtr storage);
 
 		//! Destruktor wirtualny
-		virtual ~CompoundFileDownload();
+		virtual ~FileDownload();
+
+		//! Metoda rozpoczyna operację
+		virtual void start();
+		//! Metoda czeka do zakończenia operacji
+		virtual void wait();
+		//! Metoda anuluje aktualne zadanie
+		virtual void abort();
+		//! \return Stan operacji
+		virtual const Status status() const;
+		//! \return Opis błędu
+		virtual const std::string error() const;
 		//! \return Psotep operacji
 		virtual const float progress() const;
-		//! \return Ilość podoperacji
-		virtual const unsigned int size() const;
-		//! \param idx Index podoperacji
-		virtual const IHMDBRemoteContext::IOperation * operation(const unsigned int idx) const;
-		//! \param idx Index podoperacji
-		virtual IHMDBRemoteContext::IOperation * operation(const unsigned int idx);
-		//! \return Polityka wykonania operacji
-		virtual const ExecutionPolicy executionPolicy() const;
-		//! \return Sposób wykonania operacji
-		virtual const ExecutionSchema executionSchema() const;
 		//! \return Identyfikator ściąganego pliku
 		virtual const IHMDBRemoteContext::CompoundID fileID() const;
 		//! \return Czy plik jest dostepny w storage (ściągnięto i poprawnie zapisano, choć reszta operacji mogła pójsć nie tak)
 		virtual const bool fileDownloaded() const;
-		//! \return Typ operacji
-		virtual const IHMDBRemoteContext::OperationType operationType() const;
-
-		virtual std::istream * stream();
+		//! \return Storage
+		virtual const IHMDBStoragePtr storage();
+		//! \return Storage
+		virtual const IHMDBStorageConstPtr storage() const;
 
 	private:
 		//! Wykonanie operacji
-		void run();
+		void download();
 
 	private:
-
-		const IHMDBRemoteContext::CompoundID file_;
-
+		//! Wartość normalizujaca progress
+		const int progressNormalizer;
+		//! Identyfikator ściąganego pliku
+		const IHMDBRemoteContext::CompoundID fileID_;
+		//! Czy plik został ściągnięty - można próbowac wyciągnąc go ze storage?
 		boost::atomic<bool> downloaded_;
-
+		//! Czy plik został ściągnięty - można próbowac wyciągnąc go ze storage?
+		boost::atomic<int> progress_;
+		//! Postęp zapisu
+		utils::shared_ptr<HMDBStorageProgress> storeProgress;
+		//! Status ściągania
+		boost::atomic<Status> status_;
 		//! Operacja przygotowujaca pliki w HMDB
-		utils::shared_ptr<PrepareFileToDownloadOperation> pfOp;
+		utils::shared_ptr<PrepareHMDB> prepareHMDB;
 		//! Operacja przygotowujaca output dla sciaganego pliku
-		utils::shared_ptr<IPrepareTransferOutputOperation> ptOp;
+		utils::shared_ptr<ITransferIO> transferIO;
+		//! FTP z którego będziemy ściągać
+		IHMDBFtp * ftp;
 		//! Operacja sciagajaca przygotowany plik z FTP
-		utils::shared_ptr<IDownloadFileOperation> dOp;
-		//! Operacja zamykajca output pliku - utrwala jego stan
-		utils::shared_ptr<IHMDBRemoteContext::IOperation> ctoOp;
-		//! Operacja czyszczaca pliki na HMDB
-		utils::shared_ptr<IHMDBRemoteContext::IOperation> cfOp;
-		//! Operacja otwiera sciagniety plik do odczytu
-		utils::shared_ptr<IOpenTransferOutputOperation> oiOp;
-		//! Operacja utrwalajaca plik w storage
-		utils::shared_ptr<IStoreOutputOperation> soOp;
-		//! Operacja zamykajaca plik do odczytu
-		utils::shared_ptr<IHMDBRemoteContext::IOperation> ciOp;
-		//! Operacja czyszczaca output pliku po zakonczeniu transferu
-		utils::shared_ptr<IHMDBRemoteContext::IOperation> cltoOp;
-		//! Zbior operacji
-		std::vector<IOperation*> operations;
-		//! Faktyczna operacja
-		utils::shared_ptr<FunctorOperation> fOp;
+		IHMDBFtp::TransferPtr transfer;
 		//! Storage do zapisu ściągniętych danych
-		IHMDBStorage * storage_;
+		IHMDBStoragePtr storage_;
+		//! Funktor realizujący przetwarzanie operacji
+		FunctorOperation fOp;
 	};
 
-	class ExtractShallowcopy : public FunctorOperation
+	class ExtractShallowcopy
 	{
 	public:
-		ExtractShallowcopy(const std::list<IHMDBRemoteContext::IDownloadOperation*> & downloads);
-
-		virtual ~ExtractShallowcopy();
-
-		virtual const float progress() const;
-
 		//! \return Pełna płytka kopia bazy danych - cała perspektywa dostepnych danych
 		const ShallowCopyConstPtr shallowCopy() const;
 		//! \return Pełna płytka kopia bazy danych - cała perspektywa dostepnych danych
-		const IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy() const;
+		const IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy() const;	
 
-	protected:
-
-		void extract();
+		void extract(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads, IHMDBStorageProgress * progress);
 
 	private:
 
 		ShallowCopyPtr shallowCopy_;
 		IncrementalBranchShallowCopyConstPtr incrementalShallowCopy_;
-
-		boost::atomic<unsigned int> progress_;
-		const std::list<IHMDBRemoteContext::IDownloadOperation*> downloads;
 	};
 
-	class SynchronizeOperation : public IHMDBRemoteContext::ISynchronizeOperation, public CompoundOperation
+	class SynchronizeOperation : public IHMDBRemoteContext::ISynchronizeOperation
 	{
 	public:
-		SynchronizeOperation(const std::list<IHMDBRemoteContext::IDownloadOperation*> & downloads,
-			IHMDBStorage * storage, const bool mustDelete);
-
+		//! \param downloads Operacje ściągania które biora udzuał w synchronizacji
+		//! \param storage Storage do którego ewentualnie zapisze dane
+		SynchronizeOperation(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads,
+			IHMDBStoragePtr storage);
+		//! Destruktor wirtualny
 		virtual ~SynchronizeOperation();
+		//! Metoda rozpoczyna operację
+		virtual void start();
+		//! Metoda czeka do zakończenia operacji
+		virtual void wait();
+		//! Metoda anuluje aktualne zadanie
+		virtual void abort();
+		//! \return Stan operacji
+		virtual const Status status() const;
+		//! \return Opis błędu
+		virtual const std::string error() const;
+		//! \return Psotep operacji
+		virtual const float progress() const;
 
 		//! \return Pełna płytka kopia bazy danych - cała perspektywa dostepnych danych
 		virtual const ShallowCopyConstPtr shallowCopy() const;
@@ -590,9 +492,27 @@ namespace hmdbCommunication
 		virtual const IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy() const;
 
 	private:
-		ExtractShallowcopy * eOp;
-		IHMDBStorage * storage;
-		const bool mustDelete;
+		//! Faktyczna operacja ściągania
+		void synchronize();
+
+		const float downloadsProgress() const;
+
+	private:
+
+		boost::atomic<Status> status_;
+
+		utils::shared_ptr<HMDBStorageProgress> extractProgress;
+
+		ShallowCopyConstPtr shallowCopy_;
+
+		IncrementalBranchShallowCopyConstPtr incrementalShallowCopy_;
+
+		//! Operacje ściągania elementów płytkiej kopii
+		std::list<IHMDBRemoteContext::DownloadOperationPtr> downloads;
+		//! Storage do zapisu danych
+		IHMDBStoragePtr storage;
+		//! Faktyczna operacja
+		FunctorOperation fOp;
 	};
 }
 

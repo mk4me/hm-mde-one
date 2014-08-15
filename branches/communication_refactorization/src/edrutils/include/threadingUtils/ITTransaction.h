@@ -5,12 +5,12 @@
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_UTILS__ITTRANSACTION_H__
-#define __HEADER_GUARD_UTILS__ITTRANSACTION_H__
+#ifndef __HEADER_GUARD_THREADINGUTILS__ITTRANSACTION_H__
+#define __HEADER_GUARD_THREADINGUTILS__ITTRANSACTION_H__
 
 #include <utils/SmartPtr.h>
 
-namespace utils
+namespace threadingUtils
 {
 	template<typename T>
 	class ITWritableTransaction : public virtual T
@@ -18,7 +18,7 @@ namespace utils
 	public:
 
 		//! Typ wskaünika do transakcji
-		typedef shared_ptr<T> TransactionPtr;
+		typedef utils::shared_ptr<T> TransactionPtr;
 
 	public:
 		//! Destruktor wirtualny
@@ -34,7 +34,7 @@ namespace utils
 	{
 	public:
 		//! Typ wskaünika do sta≥ej transakcji
-		typedef shared_ptr<const T> TransactionConstPtr;
+		typedef utils::shared_ptr<const T> TransactionConstPtr;
 
 	public:
 		//! Destruktor wirtualny
@@ -49,9 +49,9 @@ namespace utils
 	{
 	public:
 		//! Typ wskaünika do transakcji
-		typedef shared_ptr<T> TransactionPtr;
+		typedef utils::shared_ptr<T> TransactionPtr;
 		//! Typ wskaünika do sta≥ej transakcji
-		typedef shared_ptr<const T> TransactionConstPtr;
+		typedef utils::shared_ptr<const T> TransactionConstPtr;
 
 	public:
 		//! Destruktor wirtualny
@@ -63,4 +63,4 @@ namespace utils
 	};
 }
 
-#endif	// __HEADER_GUARD_UTILS__ITTRANSACTION_H__
+#endif	// __HEADER_GUARD_THREADINGUTILS__ITTRANSACTION_H__

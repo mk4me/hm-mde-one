@@ -36,6 +36,7 @@ void JobManager::JobManagerImpl::ThreadWorker::run()
 			}
 			catch (...){
 			}
+			job.reset();
 		}
 	}
 }

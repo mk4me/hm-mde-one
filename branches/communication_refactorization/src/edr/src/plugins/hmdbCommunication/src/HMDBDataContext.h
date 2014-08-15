@@ -20,14 +20,14 @@ namespace hmdbCommunication
 		//! \param storage Storage do zapisu plików z danymi i p³ytkiej kopii bazy danych
 		//! \param userName Skrót u¿ytkownika na potrzby obs³ugi p³ytkiej kopii
 		//! \param userHash Nazwa u¿ytkownika
-		HMDBDataContext(IHMDBStorage * storage, const std::string & userName,
+		HMDBDataContext(IHMDBStoragePtr storage, const std::string & userName,
 			const std::string & userHash);
 		//! Destruktor wirtualny
 		virtual ~HMDBDataContext();
 		//! \return Obiekt zarz¹dzaj¹cy œci¹gniêtymi danymi
-		virtual const IHMDBStorage * storage() const;
+		virtual const IHMDBStorageConstPtr storage() const;
 		//! \return Obiekt zarz¹dzaj¹cy œci¹gniêtymi danymi
-		virtual IHMDBStorage * storage();
+		virtual const IHMDBStoragePtr storage();
 		//! \return User hash na potrzeby obs³ugi p³ytkiej kopii bazy danych w storage
 		virtual const std::string userName() const;
 		//! \return User hash na potrzeby obs³ugi p³ytkiej kopii bazy danych w storage
@@ -39,7 +39,7 @@ namespace hmdbCommunication
 
 	private:
 		//! Storage do zapisu plików z danymi i p³ytkiej kopii bazy danych
-		IHMDBStorage * storage_;
+		IHMDBStoragePtr storage_;
 		//! Skrót u¿ytkownika na potrzby obs³ugi p³ytkiej kopii
 		const std::string userHash_;
 		//! Nazwa u¿ytkownika

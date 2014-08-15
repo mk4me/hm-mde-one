@@ -7,8 +7,9 @@ using namespace coreUI;
 class SingleInstanceWindow::SingleInstanceWindowImpl
 {
 public:
+	//! TODO - postfix guida powinien byæ konfigurowalny z poziomu cmake
 	SingleInstanceWindowImpl(const std::string & viewUniqueID)
-		: sm(new QSharedMemory(QString::fromStdString(viewUniqueID)))
+		: sm(new QSharedMemory(QString::fromStdString(viewUniqueID) + "_{E3F0B695-7E6D-44BF-BDDF-603D2C33B1EF}"))
 	{
 
 	}

@@ -1,35 +1,223 @@
 #include "CommunicationPCH.h"
 #include "SQLCipherStorage.h"
-#include <boost/format.hpp>
-#include <sqlite3.h>
-#include <boost/shared_array.hpp>
 #include <streambuf>
+
+#include <boost/shared_array.hpp>
+#include <boost/thread.hpp>
+#include <boost/format.hpp>
 #include <boost/array.hpp>
+#include <sqlite3.h>
+
+static const unsigned int sqliteExecWaitMS = 50;
+static const unsigned int maxSqliteExecTries = 2400;
+
+class SQLiteDB
+{
+public:
+
+	SQLiteDB(const core::Filesystem::Path & path, const int flags = SQLITE_OPEN_READWRITE) : db(nullptr)
+	{
+		open(path, flags);
+	}
+
+	SQLiteDB(const core::Filesystem::Path & path, const std::string & key, const int flags = SQLITE_OPEN_READWRITE) : db(nullptr)
+	{
+		open(path, key, flags);
+	}
+
+	explicit SQLiteDB(sqlite3 * db = nullptr) : db(db) {}
+
+	void open(const core::Filesystem::Path & path, const int flags = SQLITE_OPEN_READWRITE)
+	{
+		reset();
+		auto rc = sqlite3_open_v2(path.string().c_str(), &db, flags, nullptr);
+		if (rc != SQLITE_OK){
+			reset();
+		}
+	}
+
+	void open(const core::Filesystem::Path & path, const std::string & key, const int flags = SQLITE_OPEN_READWRITE)
+	{
+		reset();
+		auto rc = sqlite3_open_v2(path.string().c_str(), &db, flags, nullptr);
+		if (rc != SQLITE_OK){
+			reset();
+		}
+		else{
+			rc = sqlite3_key(db, key.c_str(), key.size());
+			if (rc != SQLITE_OK){
+				reset();
+			}
+		}
+	}
+
+	void reset(sqlite3 * db = nullptr)
+	{
+		clean();
+		this->db = db;
+	}
+
+	sqlite3 * release()
+	{
+		auto ret = db;
+		db = nullptr;
+		return ret;
+	}
+
+	~SQLiteDB()
+	{
+		clean();
+	}	
+
+	sqlite3 * get() const
+	{
+		return db;
+	}
+
+	SQLiteDB & operator = (sqlite3 * db)
+	{
+		reset(db);
+	}
+
+private:
+
+	void clean()
+	{
+		if (db != nullptr){
+			sqlite3_close(db);
+		}
+	}
+
+private:
+	sqlite3 * db;
+};
+
+class SQLiteBLOB
+{
+public:
+
+	SQLiteBLOB(sqlite3 * db, const std::string & tableName,
+		const std::string & columnName, const sqlite3_int64 rowID,
+		const int flags, const std::string & dbName = "main") : blob(nullptr)
+	{
+		open(db, tableName, columnName, rowID, flags, dbName);
+	}
+
+	explicit SQLiteBLOB(sqlite3_blob * blob = nullptr) : blob(blob) {}
+
+	void open(sqlite3 * db, const std::string & tableName,
+		const std::string & columnName, const sqlite3_int64 rowID,
+		const int flags, const std::string & dbName = "main")
+	{
+		reset();
+		const auto ret = sqlite3_blob_open(db, dbName.c_str(), tableName.c_str(),
+			columnName.c_str(), rowID, flags, &blob);
+
+		if (ret != SQLITE_OK){
+			reset();
+		}
+	}
+
+	void reset(sqlite3_blob * blob = nullptr)
+	{
+		clean();
+		this->blob = blob;
+	}
+
+	sqlite3_blob * release()
+	{
+		auto ret = blob;
+		blob = nullptr;
+		return ret;
+	}
+
+	~SQLiteBLOB()
+	{
+		clean();
+	}
+
+	sqlite3_blob * get() const
+	{
+		return blob;
+	}
+
+	SQLiteBLOB & operator = (sqlite3_blob * blob)
+	{
+		reset(blob);
+	}
+
+private:
+
+	void clean()
+	{
+		if (blob != nullptr){
+			sqlite3_blob_close(blob);
+		}
+	}
+
+private:
+	//!
+	sqlite3_blob * blob;
+};
+
+void mtExecute(sqlite3 * db, const std::string & querry)
+{
+
+}
+
+sqlite3_stmt * mtPrepare(sqlite3 * db, const std::string & querry)
+{
+	sqlite3_stmt * ret = nullptr;
+	unsigned int n = 0;
+	int rc = SQLITE_OK;
+	do{
+
+		rc = sqlite3_prepare_v2(db, querry.c_str(), querry.size(), &ret, 0);
+
+		if ((rc == SQLITE_BUSY) || (rc == SQLITE_LOCKED)){
+			boost::this_thread::sleep_for(boost::chrono::milliseconds(sqliteExecWaitMS));
+		}
+
+	} while ((n++ < maxSqliteExecTries) && ((rc == SQLITE_BUSY) || (rc == SQLITE_LOCKED)));
+
+	if (rc == SQLITE_OK){
+		return ret;
+	}
+
+	return nullptr;
+}
+
+const bool mtStep(sqlite3_stmt * step)
+{
+	sqlite3_stmt * ret = nullptr;
+	unsigned int n = 0;
+	int rc = SQLITE_OK;
+	do{
+		rc = sqlite3_step(step);
+
+		if (rc == SQLITE_LOCKED){
+			rc = sqlite3_reset(step);
+			boost::this_thread::sleep_for(boost::chrono::milliseconds(sqliteExecWaitMS));
+		}
+		else if (rc == SQLITE_BUSY){
+			boost::this_thread::sleep_for(boost::chrono::milliseconds(sqliteExecWaitMS));
+		}
+	} while ((n++ < maxSqliteExecTries) && ((rc == SQLITE_BUSY) || (rc == SQLITE_LOCKED)));
+
+	if (rc == SQLITE_OK || rc == SQLITE_ROW || rc == SQLITE_DONE){
+		return true;
+	}
+
+	return false;
+}
 
 class SQLitePreparedStatement
 {
 public:
 	SQLitePreparedStatement(sqlite3 * db, const std::string & sql)
-		: statement(nullptr)
+		: statement(mtPrepare(db, sql))
 	{
-		sqlite3_stmt * q = nullptr;
-		auto ret = sqlite3_prepare_v2(db, sql.c_str(), sql.size(), &q, nullptr);
 
-		if (ret == SQLITE_OK){
-			statement = q;
-		}
-	}
-
-	sqlite3_stmt * get() const
-	{
-		return statement;
-	}
-
-	sqlite3_stmt * release()
-	{
-		sqlite3_stmt * q = nullptr;
-		std::swap(q, statement);
-		return q;
 	}
 
 	~SQLitePreparedStatement()
@@ -37,6 +225,23 @@ public:
 		if (statement != nullptr){
 			sqlite3_finalize(statement);
 		}
+	}
+
+	inline operator sqlite3_stmt*()
+	{
+		return statement;
+	}
+
+	inline sqlite3_stmt * get() const
+	{
+		return statement;
+	}
+
+	inline sqlite3_stmt * release()
+	{
+		sqlite3_stmt * q = nullptr;
+		std::swap(q, statement);
+		return q;
 	}
 
 private:
@@ -56,9 +261,14 @@ enum BufferSizeTraits {
 template<typename T, int Size = DefaultBufferSize>
 class FixedBufferPolicy
 {
+
+	UTILS_STATIC_ASSERT((Size > 0), "Fixed buffer sieze must be greater than 0");
+
 private:
 	//! Typ kolekcji przechowujacej dane
 	typedef boost::array<T, Size> Data;
+	//! Indeks ostatniego elementu
+	static const int LastIdx = Size - 1;
 
 public:
 	//! Domyœlny konsturktor
@@ -66,17 +276,17 @@ public:
 	//! Destruktor niewirtualny
 	~FixedBufferPolicy() {}
 
-	T * begin() { return data->c_array();  }
-	T * end() { return &data->c_array()[data->size()-1]; }
+	T * begin() { return &(data.data()[0]); }
+	T * end() { return &(data.data()[LastIdx]); }
 
-	const T * begin() const { return data->c_array(); }
-	const T * end() const { return &data->c_array()[data->size() - 1]; }
+	const T * begin() const { return &(data.data()[0]); }
+	const T * end() const { return &(data.data()[LastIdx]); }
 
-	const int updateSize(const int size) { if (data == nullptr) { data.reset(new Data); } return Size; }
+	const int updateSize(const int size) { return Size; }
 
 private:
 	//! Faktyczne dane
-	utils::shared_ptr<Data> data;
+	Data data;
 };
 
 //! \tparam T Typ danych przechowywanych w buforze
@@ -85,6 +295,9 @@ template<typename T>
 class DynamicWriteBufferPolicy
 {
 private:
+
+	//! Rozmiar przechowywanego elementu
+	static const int SizeT = sizeof(T);
 	//! Typ kolekcji przechowujacej dane
 	typedef std::vector<T> Data;
 	//! Wspó³czynnik procentowy opisuj¹cy rozmiar bufora wzglêdem rozmiaru strumienia
@@ -92,26 +305,22 @@ private:
 
 public:
 	//! Domyœlny konsturktor
-	DynamicWriteBufferPolicy() {}
+	DynamicWriteBufferPolicy() { data.resize(DefaultBufferSize); }
 	//! Destruktor niewirtualny
 	~DynamicWriteBufferPolicy() {}
 
-	T * begin() { return &(data->front()); }
-	T * end() { return &(data->back()); }
+	T * begin() { return &data.data()[0]; }
+	T * end() { return &data.data()[0] + data.size() * sizeof(T); }
 
-	const T * begin() const { return &(data->front()); }
-	const T * end() const { return &(data->back()); }
+	const T * begin() const { return &(data.front()); }
+	const T * end() const { return &(data.back()); }
 
 	const int updateSize(const int size) {
 
 		const auto newSize = std::min(std::max((int)(size * BufferFactor()), (int)MinBufferSize), (int)MaxBufferSize);
 
-		if (data == nullptr) {
-			data.reset(new Data);
-		}
-
-		if (data->capacity() < newSize){
-			data->reserve(newSize);
+		if (data.size() < newSize){
+			data.resize(newSize);
 		}
 
 		return newSize;
@@ -119,7 +328,7 @@ public:
 
 private:
 	//! Faktyczne dane
-	utils::shared_ptr<Data> data;
+	Data data;
 };
 
 //! Wzorzec klasy obslugujacej sturmieniowe IO do blobow bazy sqlite
@@ -224,13 +433,8 @@ public:
 	virtual __CLR_OR_THIS_CALL ~basic_sqliteblobbuf()
 	{
 		//pozamykaæ wszystko i pozwalaniac zasoby bufora i sqlite
-		if (_Myblob != nullptr){
-			synch();
-			sqlite3_blob_close(_Myblob);
-		}
-
-		if (update != nullptr){
-			sqlite3_finalize(update);
+		if (_Myblob.get() != nullptr){
+			synch();			
 		}
 	}
 
@@ -252,25 +456,18 @@ public:
 		const std::string & column, const sqlite3_int64 rowID,
 		std::ios_base::openmode _Mode =	std::ios_base::in | std::ios_base::out)
 		: _Mysb(), db(db), dbName(dbName), table(table), column(column),
-		rowID(rowID), _Myblob(nullptr), update(nullptr),
+		rowID(rowID), _Myblob(db, table.c_str(),
+		column.c_str(), rowID, _Mode & std::ios_base::out, dbName.c_str()),
 		blobReadIDX(0), blobWriteIDX(0), blobSize(-1), _Seekhigh(-1)
 	{
-		//teraz otwieram bloba
-		sqlite3_blob * b = nullptr;
-		auto ret = sqlite3_blob_open(db, dbName.c_str(), table.c_str(),
-			column.c_str(), rowID, _Mode & std::ios_base::out, &b);
-
-		if (ret != SQLITE_OK){
-			sqlite3_blob_close(b);
+		if (_Myblob.get() == nullptr){			
 			throw std::runtime_error("Error initializing sqlite db blob stream");
-		}
-
-		_Myblob = b;
+		}		
 
 		_Mystate = _Getstate(_Mode);
 
 		//pobieram rozmiar bloba ¿eby dobrac bufor na poczatek
-		_Seekhigh = blobSize = sqlite3_blob_bytes(_Myblob);		
+		_Seekhigh = blobSize = sqlite3_blob_bytes(_Myblob.get());		
 
 		//czy pierwsze wywolanie i tryb append?
 		if (_Mystate & _Append)
@@ -287,7 +484,7 @@ protected:
 	virtual int_type __CLR_OR_THIS_CALL overflow(int_type _Meta =
 		_Traits::eof())
 	{	
-		if ((_Mystate & _Constant) || _Myblob == nullptr){
+		if ((_Mystate & _Constant) || _Myblob.get() == nullptr){
 			return (_Traits::eof()); // read only mode or no open blob, fail
 		} else if (_Traits::eq_int_type(_Traits::eof(), _Meta)) {
 			return (_Traits::not_eof(_Meta));	// EOF, return success code
@@ -321,7 +518,7 @@ protected:
 			//sprawdzam gdzie teraz w strumieniu jestem
 			else if (blobWriteIDX < blobSize){
 				//ca³y czas piszê wewn¹trz bloba, moge odœwiezyæ zawartoœæ bufor ze strumienia
-				auto s = refillBuffer(buffer.begin(), buffer.end() - buffer.begin(), _Myblob, blobWriteIDX, blobSize);
+				auto s = refillBuffer(buffer.begin(), buffer.end() - buffer.begin(), _Myblob.get(), blobWriteIDX, blobSize);
 
 				//czy cos pobralem albo jakis blad?
 				if (s < 1){
@@ -343,7 +540,7 @@ protected:
 				_Mysb::setg(buffer.begin(), nullptr, buffer.end());
 
 				//prze³adowuje bufor nowymi danymi, bêdê po nich pisa³
-				auto s = refillBuffer(buffer.begin(), buffer.end() - buffer.begin(), _Myblob, blobWriteIDX, blobSize);
+				auto s = refillBuffer(buffer.begin(), buffer.end() - buffer.begin(), _Myblob.get(), blobWriteIDX, blobSize);
 
 				//czy cos pobralem albo jakis blad?
 				if (s < 1){
@@ -366,7 +563,7 @@ protected:
 
 			if (blobSize > 0 && blobWriteIDX != blobSize){
 				//uzupelniam bufor
-				auto s = refillBuffer(buffer.begin(), buffer.end() - buffer.begin(), _Myblob, blobWriteIDX, blobSize);
+				auto s = refillBuffer(buffer.begin(), buffer.end() - buffer.begin(), _Myblob.get(), blobWriteIDX, blobSize);
 
 				//czy cos pobralem albo jakis blad?
 				if (s < 1){
@@ -388,7 +585,7 @@ protected:
 
 	virtual int_type __CLR_OR_THIS_CALL underflow()
 	{	// get an element from stream, point on it
-		if (_Myblob == nullptr || blobSize < 1 || (_Mystate & _Noread) ||
+		if (_Myblob.get() == nullptr || blobSize < 1 || (_Mystate & _Noread) ||
 			((buffer.begin() == nullptr) && (buffer.updateSize(std::max(blobSize, (int)DefaultBufferSize)) < 1))){
 			return (_Traits::eof());	// no open blob or no data to read or failed to create buffer, fail
 		}
@@ -432,12 +629,14 @@ protected:
 		if (refill == true){
 
 			//uzupelnam bufor
-			auto s = refillBuffer(buffer.begin(), buffer.end() - buffer.begin(), _Myblob, blobReadIDX, blobSize);
+			auto s = refillBuffer(buffer.begin(), buffer.end() - buffer.begin(), _Myblob.get(), blobReadIDX, blobSize);
 
 			//czy cos pobralem albo jakis blad?
 			if (s < 1){
 				return (_Traits::eof()); // nic nie pobralem wiec pewnie koniec
 			}
+
+			blobReadIDX += s;
 
 			//inicjuje obszar do odczytu
 			_Mysb::setg(buffer.begin(), buffer.begin(), buffer.begin() + s);
@@ -615,7 +814,7 @@ protected:
 
 	virtual int __CLR_OR_THIS_CALL sync()
 	{	// synchronize C stream with external file
-		return (_Myblob == 0
+		return (_Myblob.get() == nullptr
 			|| _Traits::eq_int_type(_Traits::eof(), overflow())
 			/*|| 0 <= fflush(_Myblob)*/ ? 0 : -1);
 	}
@@ -658,28 +857,6 @@ private:
 		return save(base, end - base, blobIDX);
 	}
 
-	//! Metoda probuje tworzyc zapytanie aktualizujace bloba
-	//! \return Czy udalo sie utworzyc zapytanie
-	const bool tryCreateUpdateQuery()
-	{
-		if (update == nullptr) {
-
-			auto updateq = (boost::format("UPDATE %1% SET %2% = ? WHERE iRow = %3%;")
-				% updateTableName(dbName, table) % column % rowID).str();
-
-			SQLitePreparedStatement u(db, updateq);
-
-			if (u.get() != nullptr){
-				update = u.release();
-			}
-			else {
-				return false;	// prepare statement not created, fail
-			}
-		}
-
-		return true;
-	}
-
 	//! Metoda zapisuje bufor do bloba
 	//! \param buffer Bufor ktory zapisujemy
 	//! \param bufferSize Ile z bufora zapisujemy
@@ -694,7 +871,7 @@ private:
 		// czy dane jeszcze sie zmieszcza?
 		if (newSize <= blobSize){
 			//pisze bezposrednio do bloba
-			auto ret = sqlite3_blob_write(_Myblob, buffer, bufferSize, blobIDX);
+			auto ret = sqlite3_blob_write(_Myblob.get(), buffer, bufferSize, blobIDX);
 
 			if (ret != SQLITE_OK){
 				return false;
@@ -702,8 +879,13 @@ private:
 		}
 		else {
 
-			//jezeli jeszcze nie mam probuje utworzyc odpowiednie zapytanie aktualizujace bloba
-			if (tryCreateUpdateQuery() == false){
+			//przygotowuje update
+			static const auto updateq = (boost::format("UPDATE %1% SET %2% = ? WHERE iRow = %3%;")
+				% updateTableName(dbName, table) % column % rowID).str();
+
+			SQLitePreparedStatement update(db, updateq);
+
+			if (update == nullptr){
 				return false;
 			}
 
@@ -716,26 +898,21 @@ private:
 				tmpBuffer.reserve(newSize);
 
 			}
-			catch (...){
+			catch (...){				
 				return false; // failed to compose complete data, probably out of memory
 			}
 
 			//rozszerzam do aktualnego rozmiaru
 			tmpBuffer.resize(blobIDX);
 			//czytam calego bloba
-			auto ret = sqlite3_blob_read(_Myblob, &tmpBuffer[0], blobIDX, 0);
+			auto ret = sqlite3_blob_read(_Myblob.get(), &tmpBuffer[0], blobIDX, 0);
 
-			if (ret != SQLITE_OK){
+			if (ret != SQLITE_OK){				
 				return false;
 			}
 
 			//zamykam bloba
-			ret = sqlite3_blob_close(_Myblob);
-			_Myblob = nullptr;
-
-			if (ret != SQLITE_OK){
-				return false;
-			}
+			_Myblob.reset();			
 
 			//dopisuje to co mam
 			tmpBuffer.append(buffer, bufferSize);
@@ -743,24 +920,20 @@ private:
 			//aktualizuje bloba
 			ret = sqlite3_bind_blob(update, 1, tmpBuffer.c_str(), newSize, SQLITE_STATIC);
 
-			if (ret != SQLITE_OK){
+			if (ret != SQLITE_OK){				
 				return false; // failed to bind sqlite query
 			}
 
-			//odpalam update
-			ret = sqlite3_step(update);
-
-			if (ret != SQLITE_OK){
+			//odpalam update			
+			if (mtStep(update) == false){
 				return false; // failed to write to sqlite db
 			}
 
 			// wszystko ok
 			// otwieram bloba ponownie
-			ret = sqlite3_blob_open(db, dbName.c_str(), table.c_str(), column.c_str(), rowID, !(_Mystate & _Constant), &_Myblob);
+			_Myblob.open(db, table, column, rowID, !(_Mystate & _Constant), dbName);			
 
-			if (ret != SQLITE_OK){
-				sqlite3_blob_close(_Myblob);
-				_Myblob = nullptr;
+			if (_Myblob.get() == nullptr){				
 				return false; // failed to open sqlite blob for io
 			}
 
@@ -812,11 +985,9 @@ private:
 	//! Identyfikator wiersza
 	sqlite3_int64 rowID;
 	//! Ostwarty blob
-	sqlite3_blob *_Myblob;
+	SQLiteBLOB _Myblob;
 	//! Aktualny rozmiar bloba
 	int blobSize;
-	//! Zapytanie aktualizujace bloba
-	sqlite3_stmt * update;
 
 	//! ----------------- STAN BUFORÓW --------------------
 	//! Bufor
@@ -836,7 +1007,7 @@ private:
 const bool initialize(sqlite3 * db)
 {
 	char * error;
-	static const char sqlCreateTable[] = "CREATE TABLE files_table (file_name TEXT PRIMARY KEY, file BLOB, size UNSIGNED BIG INT);";
+	static const char sqlCreateTable[] = "CREATE TABLE files_table (file_name TEXT PRIMARY KEY, file BLOB);";
 	const auto rc = sqlite3_exec(db, sqlCreateTable, NULL, NULL, &error);
 	if (rc != SQLITE_OK){
 		sqlite3_free(error);
@@ -848,16 +1019,13 @@ const bool initialize(sqlite3 * db)
 
 const bool checkStructure(sqlite3 * db)
 {
-	bool ret = false;
+	static const std::string sqlCheckTable = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='files_table' ORDER BY name;";
 
-	const char* tail;
-	sqlite3_stmt* res;
-	static const char sqlCheckTable[] = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='files_table' ORDER BY name;";
-	const auto rc = sqlite3_prepare_v2(db, sqlCheckTable, -1, &res, &tail);
+	bool ret = false;	
+	SQLitePreparedStatement query(db, sqlCheckTable);	
 
-	if (rc == SQLITE_OK && res != nullptr && sqlite3_step(res) == SQLITE_ROW){
-		const auto count = sqlite3_column_int(res, 0);
-		sqlite3_finalize(res);
+	if (query != nullptr && mtStep(query) == true){
+		const auto count = sqlite3_column_int(query, 0);		
 		if (count >= 1){
 			ret = true;
 		}
@@ -866,244 +1034,237 @@ const bool checkStructure(sqlite3 * db)
 	return ret;
 }
 
-const bool checkIfEncrypted(sqlite3 * db, const std::string & key)
+sqlite3 * verify_(const core::Filesystem::Path & path,
+	const std::string & key, bool & ciphered)
 {
-	bool ret = true;
+	ciphered = false;
+	bool flag = false;
+	SQLiteDB db;
 
-	const auto rc = sqlite3_key(db, key.c_str(), key.size());
-
-	if (rc != SQLITE_OK){
-		ret = false;
+	if (key.empty() == false){
+		db.open(path, key);		
 	}
 
-	return ret;
+	if (db.get() == nullptr){
+		flag = true;
+		db.open(path);
+	}
+
+	if (db.get() != nullptr){
+
+		if (key.empty() == false){
+			ciphered = !flag;
+		}
+
+		if(checkStructure(db.get()) == false){
+			db.reset();
+		}		
+	}	
+
+	return db.release();
 }
 
-sqlite3 * verify_(const core::Filesystem::Path & path,
-	const std::string & key)
-{
-	sqlite3 * db;
-	auto rc = sqlite3_open_v2(path.string().c_str(), &db, SQLITE_OPEN_READWRITE, nullptr);
+sqlite3 * openDB(const core::Filesystem::Path & path, const std::string & key){
 
-	if (rc != SQLITE_OK){
-		//TODO
-		//obs³uga kodów b³êdu sqlite
-		sqlite3_close(db);
-		db = nullptr;
-	}
-	//uda³o siê otworzyæ
-	//sprawdzam czy zaszyfrowana
-	//i czy struktura siê zgadza
-	else if (checkStructure(db) == false){
-		sqlite3_close(db);
-		rc = sqlite3_open_v2(path.string().c_str(), &db, SQLITE_OPEN_READWRITE, nullptr);
-		if (rc != SQLITE_OK || checkIfEncrypted(db, key) == false || checkStructure(db) == false){
-			sqlite3_close(db);
-			db = nullptr;
-		}	
-	}
+	SQLiteDB db;
 
-	return db;
+	if (key.empty() == false){
+		db.open(path, key);
+	}
+	else{
+		db.open(path);
+	}	
+
+	return db.release();
 }
 
 class hmdbCommunication::SQLCipherStorage::SQLCipherStorageTransaction : public hmdbCommunication::IHMDBStorageOperations
 {
 public:
-	SQLCipherStorageTransaction(SQLCipherStorage * storage)
-		: storage(storage), lock(storage->sync_)
-	{
-
+	SQLCipherStorageTransaction(const SQLCipherStorage * storage)
+		: storage(storage), db(openDB(storage->path_, storage->key_))
+	{		
+		if (db.get() == nullptr){
+			throw std::runtime_error("Failed to create transaction");
+		}
 	}
 
 	virtual ~SQLCipherStorageTransaction()
 	{
-
+		
 	}
 
 	virtual const bool exists(const std::string & key) const
 	{
-		return storage->rawExists(key);
+		return SQLCipherStorage::rawExists(key, db.get());
 	}
 	
-	virtual std::iostream * get(const std::string & key)
+	virtual const IOStreamPtr get(const std::string & key)
 	{
-		return storage->rawGet(key);
+		return SQLCipherStorage::rawGet(key, db.get());
 	}
 	
-	virtual std::istream * get(const std::string & key) const
+	virtual const IStreamPtr get(const std::string & key) const
 	{
-		return storage->rawGet(key);
+		return SQLCipherStorage::rawGetReadOnly(key, db.get());
 	}
 	
-	virtual const bool set(const std::string & key, std::istream * input)
+	virtual const bool set(const std::string & key, IStreamPtr input)
 	{
-		return storage->rawSet(key, input);
+		return SQLCipherStorage::rawSet(key, input, db.get());
+	}
+		
+	virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
+	{
+		return SQLCipherStorage::rawSet(key, input, progress, db.get());
 	}
 	
-	virtual void remove(const std::string & key)
+	virtual const bool remove(const std::string & key)
 	{
-		storage->rawRemove(key);
+		return SQLCipherStorage::rawRemove(key, db.get());
 	}
 	
 	virtual const bool rename(const std::string & oldKey,
 		const std::string & newKey, const bool overwrite = false)
 	{
-		return storage->rawRename(oldKey, newKey, overwrite);
+		return SQLCipherStorage::rawRename(oldKey, newKey, overwrite, db.get());
 	}
 	
 	virtual const Keys keys() const
 	{
-		return storage->rawKeys();
+		return SQLCipherStorage::rawKeys(db.get());
+	}
+
+	const bool canStore(const unsigned long long size) const
+	{
+		return storage->canStore(size);
+	}
+
+	const bool shareDiskSpace(const core::Filesystem::Path & path) const
+	{
+		return storage->shareDiskSpace(path);
 	}
 
 private:
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock;
-	SQLCipherStorage * const storage;
-
+	const SQLCipherStorage * storage;
+	SQLiteDB db;
 };
 
 
 using namespace hmdbCommunication;
 
-SQLCipherStorage::SQLCipherStorage() : db(nullptr)
+SQLCipherStorage::SQLCipherStorage()
 {
 
 }
+
 SQLCipherStorage::~SQLCipherStorage()
 {
-	close();	
+
 }
 
 
-const bool SQLCipherStorage::rawExists(const std::string & key) const
+const bool SQLCipherStorage::rawExists(const std::string & key, sqlite3 * db)
 {
 	bool ret = false;
+	const std::string fileQuery((boost::format("SELECT count(*) FROM files_table WHERE file_name='%1%';") % key).str());
 
-	const char* tail;
-	sqlite3_stmt* res;
+	SQLitePreparedStatement query(db, fileQuery);	
 
-	std::string fileQuery((boost::format("SELECT count(*) FROM files_table WHERE file_name='%1%';") % key).str());
-
-	auto rc = sqlite3_prepare_v2(db, fileQuery.c_str(), -1, &res, &tail);
-
-	if (rc == SQLITE_OK && res != nullptr && sqlite3_step(res) == SQLITE_ROW){
-		const auto count = sqlite3_column_int(res, 0);
+	if (query != nullptr && mtStep(query) == true){
+		const auto count = sqlite3_column_int(query, 0);
 		if (count == 1){
 			ret = true;
 		}
-	}
-
-	sqlite3_finalize(res);
+	}	
 
 	return ret;
 }
 
-std::iostream * SQLCipherStorage::rawGet(const std::string & key)
+const IHMDBStorage::IOStreamPtr SQLCipherStorage::rawGet(const std::string & key, sqlite3 * db)
 {
 	//typ bufora strumienia
 	typedef basic_sqliteblobbuf<char, std::char_traits<char>, DynamicWriteBufferPolicy<char>> SQLiteBuffer;
 
 	//pobieramy dane z bazy
-	const char* tail;
-	sqlite3_stmt* res;
+	const std::string fileQuery((boost::format("SELECT _rowid_ FROM files_table WHERE file_name = '%1%';") % key).str());
+	SQLitePreparedStatement query(db, fileQuery);
 
-	std::string fileQuery((boost::format("SELECT _rowid_ FROM files_table WHERE file_name = '%1%';") % key).str());
+	if (query != nullptr && mtStep(query) == true){
+		const auto rowID = sqlite3_column_int64(query, 0);
 
-	int rc = sqlite3_prepare_v2(db, fileQuery.c_str(), -1, &res, &tail);
+		std::auto_ptr<SQLiteBuffer> buf(new SQLiteBuffer(db, "main", "files_table", "file", rowID));		
 
-	if (rc != SQLITE_OK){
-		return nullptr;
+		return IHMDBStorage::IOStreamPtr(new std::iostream(buf.release()));
 	}
 
-	if (sqlite3_step(res) == SQLITE_ROW){
-		const auto rowID = sqlite3_column_int64(res, 0);
-
-		std::auto_ptr<SQLiteBuffer> buf(new SQLiteBuffer(db, "main", "files_table", "file", rowID));
-
-		sqlite3_finalize(res);
-
-		return new std::iostream(buf.release());
-	}
-
-	return nullptr;
+	return IHMDBStorage::IOStreamPtr();
 }
 
-std::istream * SQLCipherStorage::rawGet(const std::string & key) const
+const IHMDBStorage::IStreamPtr SQLCipherStorage::rawGetReadOnly(const std::string & key, sqlite3 * db)
 {
 	typedef basic_sqliteblobbuf<char, std::char_traits<char>, FixedBufferPolicy<char>> SQLiteBuffer;
 
 	//pobieramy dane z bazy
-	const char* tail;
-	sqlite3_stmt* res;
+	const std::string fileQuery((boost::format("SELECT _rowid_ FROM files_table WHERE file_name = '%1%';") % key).str());
+	SQLitePreparedStatement query(db, fileQuery);
 
-	std::string fileQuery((boost::format("SELECT _rowid_ FROM files_table WHERE file_name = '%1%';") % key).str());
-
-	int rc = sqlite3_prepare_v2(db, fileQuery.c_str(), -1, &res, &tail);
-
-	if (rc != SQLITE_OK){
-		return nullptr;
-	}
-
-	if (sqlite3_step(res) == SQLITE_ROW){
-		const auto rowID = sqlite3_column_int64(res, 0);
+	if (query != nullptr && mtStep(query) == true){
+		const auto rowID = sqlite3_column_int64(query, 0);
 		//http://www.sqlite.org/c3ref/blob_open.html
-		std::auto_ptr<SQLiteBuffer> buf(new SQLiteBuffer(db, "main", "files_table", "file", rowID));
+		std::auto_ptr<SQLiteBuffer> buf(new SQLiteBuffer(db, "main", "files_table", "file", rowID, std::ios_base::in));
 
-		sqlite3_finalize(res);
-
-		return new std::iostream(buf.release());
+		return IHMDBStorage::IStreamPtr(new std::iostream(buf.release()));
 	}
 
-	return nullptr;
+	return IHMDBStorage::IStreamPtr();
 }
 
-const bool SQLCipherStorage::rawSet(const std::string & key, std::istream * input)
+const bool SQLCipherStorage::rawSet(const std::string & key, IHMDBStorage::IStreamPtr input, sqlite3 * db)
 {
 	if (input == nullptr){
 		return false;
 	}
 
+	const auto currentPos = input->tellg();
 	input->seekg(0, std::ios::beg);
 	auto begin = input->tellg();
 	input->seekg(0, std::ios::end);
 	auto end = input->tellg();
+	input->seekg(currentPos, std::ios::beg);
 	const auto streamSize = end - begin;
 
+	if (streamSize == 0){
+		return false;
+	}
+
 	//wrzucam to do bazy danych
+	std::string query;
 
-	const char* tail;
-	sqlite3_stmt* res;
-	std::string querry;
-
-	const bool existed = exists(key);
+	const bool existed = rawExists(key, db);
 
 	//najpierw sprawdzam czy plik istnieje
 	if (existed == false){
 		//insert
-		querry = (boost::format("INSERT INTO files_table VALUES('%1%', ?, %2%);") % key % (streamSize * sizeof(char))).str();
+		query = (boost::format("INSERT INTO files_table(file_name, file) VALUES('%1%', ?);") % key).str();
 	}
 	else{
 		//update
-		querry = (boost::format("UPDATE files_table SET file = ?, size = %1% WHERE file_name = '%2%';") % (streamSize * sizeof(char)) % key).str();
+		query = (boost::format("UPDATE files_table SET file = ? WHERE file_name = '%1%';") % key).str();
 	}
 
-	int rc = sqlite3_prepare_v2(db, querry.c_str(), -1, &res, &tail);
+	{
+		SQLitePreparedStatement store(db, query);
 
-	if (rc != SQLITE_OK || res == nullptr){
-		sqlite3_finalize(res);
-		return false;
-	}
+		if (store == nullptr){
+			return false;
+		}
 
-	input->seekg(0, std::ios::beg);
+		auto rc = sqlite3_bind_zeroblob(store, 1, streamSize);
 
-	sqlite3_bind_zeroblob(res, 1, streamSize);
-
-	//sqlite3_bind_blob(res, 1, memblock.get(), size * sizeof(char), SQLITE_STATIC);
-
-	auto ret = sqlite3_step(res);
-	sqlite3_finalize(res);
-	if (ret != SQLITE_DONE){
-		return false;
+		if (rc != SQLITE_OK || mtStep(store) == false){
+			return false;
+		}		
 	}
 
 	sqlite3_int64 rowid = -1;
@@ -1112,136 +1273,278 @@ const bool SQLCipherStorage::rawSet(const std::string & key, std::istream * inpu
 		rowid = sqlite3_last_insert_rowid(db);
 	}
 	else{
-		sqlite3_stmt* res;
+		const std::string fileQuery((boost::format("SELECT _rowid_ FROM files_table WHERE file_name='%1%';") % key).str());
+		SQLitePreparedStatement selectQuery(db, fileQuery);		
 
-		std::string fileQuery((boost::format("SELECT _rowid_ FROM files_table WHERE file_name='%1%';") % key).str());
-
-		auto rc = sqlite3_prepare_v2(db, fileQuery.c_str(), -1, &res, nullptr);
-
-		if (rc == SQLITE_OK && res != nullptr && sqlite3_step(res) == SQLITE_ROW){
-			rowid = sqlite3_column_int64(res, 0);
-		}
-
-		sqlite3_finalize(res);
+		if (selectQuery != nullptr && mtStep(selectQuery) == true){
+			rowid = sqlite3_column_int64(selectQuery, 0);
+		}		
 	}
 
 	if (rowid == -1){
-		remove(key);
+		rawRemove(key, db);
 		return false;
 	}
 
 	// Getting here means we have a valid file handle, f, and a valid db handle, db
 	//   Also, a blank row has been inserted with key rowid
-	sqlite3_blob *blob;
-	rc = sqlite3_blob_open(db, "main", "files_table", "file", rowid, 1, &blob);
 
-	if (SQLITE_OK != rc) {
-		sqlite3_blob_close(blob);
-		remove(key);
+	SQLiteBLOB blob(db, "files_table", "file", rowid, 1, "main");	
+
+	if (blob.get() == nullptr) {		
+		rawRemove(key, db);
 		return false;
 	}
 
-	const auto readSize = std::min(streamSize, (long long)MaxBufferSize);
+	const auto readSize = std::min((int)streamSize, (int)MaxBufferSize);
 
 	boost::shared_array<char> memblock(new char[readSize]);
 	input->seekg(0, std::ios::beg);
 	int offset = 0;
-	while (input->eof() == false){
-		input->read(memblock.get(), readSize);
-		const auto rs = input->gcount();
-		rc = sqlite3_blob_write(blob, memblock.get(), rs, offset);
+	const unsigned int fullReads = (streamSize / readSize);
+	for (unsigned int i = 0; i < fullReads; ++i){	
+		input->read(memblock.get(), readSize);		
+		auto rc = sqlite3_blob_write(blob.get(), memblock.get(), readSize, offset);
 		if (rc != SQLITE_OK){
-			sqlite3_blob_close(blob);
-			remove(key);
+			blob.reset();
+			rawRemove(key, db);
 			return false;
 		}
 
-		offset += rs;
+		offset += readSize;
 	}
 
-	sqlite3_blob_close(blob);
+	const auto left = streamSize - offset;
+
+	if (left > 0){
+		input->read(memblock.get(), left);
+		auto rc = sqlite3_blob_write(blob.get(), memblock.get(), left, offset);
+		if (rc != SQLITE_OK){
+			blob.reset();
+			rawRemove(key, db);
+			return false;
+		}
+	}
+
+	blob.reset();
+
+	//TODO co jak zwalnianie bloba nie da rady?
+	/*
+	if (rc != SQLITE_OK){
+		rawRemove(key, db);
+		return false;
+	}*/
 
 	return true;
 }
 
-void SQLCipherStorage::rawRemove(const std::string & key)
+void SQLCipherStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, sqlite3 * db)
 {
-	std::string fileDelete((boost::format("DELETE FROM files_table WHERE file_name = '%1%';") % key).str());
+	if (input == nullptr){
+		progress->setError("Uninitialized input");
+		return;
+	}
+
+	const auto currentPos = input->tellg();
+	input->seekg(0, std::ios::beg);
+	auto begin = input->tellg();
+	input->seekg(0, std::ios::end);
+	auto end = input->tellg();
+	input->seekg(currentPos, std::ios::beg);
+	const auto streamSize = end - begin;
+
+	if (streamSize == 0){
+		progress->setError("Empty input stream");
+		return;
+	}
+
+	//wrzucam to do bazy danych
+	std::string query;
+
+	const bool existed = rawExists(key, db);
+
+	//najpierw sprawdzam czy plik istnieje
+	if (existed == false){
+		//insert
+		query = (boost::format("INSERT INTO files_table(file_name, file) VALUES('%1%', ?);") % key).str();
+	}
+	else{
+		//update
+		query = (boost::format("UPDATE files_table SET file = ? WHERE file_name = '%1%';") % key).str();
+	}
+
+	{
+		SQLitePreparedStatement store(db, query);
+
+		if (store == nullptr){
+			progress->setError("Creation of db query failed");
+			return;
+		}
+
+		auto rc = sqlite3_bind_zeroblob(store, 1, streamSize);
+	
+		if (rc != SQLITE_OK || mtStep(store) == false){
+			progress->setError("DB update failed");
+			return;
+		}
+	}
+
+	sqlite3_int64 rowid = -1;
+
+	if (existed == false){
+		rowid = sqlite3_last_insert_rowid(db);
+	}
+	else{
+		const std::string fileQuery((boost::format("SELECT _rowid_ FROM files_table WHERE file_name='%1%';") % key).str());
+		SQLitePreparedStatement selectQuery(db, fileQuery);
+
+		if (selectQuery != nullptr && mtStep(selectQuery) == true){
+			rowid = sqlite3_column_int64(selectQuery, 0);
+		}
+	}
+
+	if (rowid == -1){
+		rawRemove(key, db);
+		progress->setError("Failed to grab DB record for modification");
+		return;
+	}
+
+	// Getting here means we have a valid file handle, f, and a valid db handle, db
+	//   Also, a blank row has been inserted with key rowid
+	SQLiteBLOB blob(db, "files_table", "file", rowid, 1, "main");
+
+	if (blob.get() == nullptr) {		
+		rawRemove(key, db);
+		progress->setError("Failed to attach DB output for data");
+		return;
+	}
+
+	const auto readSize = std::min((int)streamSize, (int)MaxBufferSize);
+
+	boost::shared_array<char> memblock(new char[readSize]);
+	input->seekg(0, std::ios::beg);
+	int offset = 0;
+	const unsigned int fullReads = (streamSize / readSize);
+
+	const float progressPart = (float)readSize / (float)streamSize;
+	progress->setProgress(0.0);
+	for (unsigned int i = 0; i < fullReads && progress->aborted() == false; ++i){
+		input->read(memblock.get(), readSize);
+		auto rc = sqlite3_blob_write(blob.get(), memblock.get(), readSize, offset);
+		if (rc != SQLITE_OK){
+			blob.reset();
+			rawRemove(key, db);
+			progress->setError("Failed to write to DB output");
+			return;
+		}
+
+		offset += readSize;
+		progress->setProgress(progressPart * (i + 1));
+	}
+
+	if (progress->aborted() == true){
+		blob.reset();
+		rawRemove(key, db);
+		return;
+	}
+
+	const auto left = streamSize - offset;
+
+	if (left > 0){
+		input->read(memblock.get(), left);
+		auto rc = sqlite3_blob_write(blob.get(), memblock.get(), left, offset);
+		if (rc != SQLITE_OK){
+			blob.reset();
+			rawRemove(key, db);
+			progress->setError("Failed to write to DB output");
+			return;
+		}
+	}
+
+	//TODO
+	//sprawdzac czy czasem nie bylo problemow ze zwolnieniem bloba!!
+}
+
+const bool SQLCipherStorage::rawRemove(const std::string & key, sqlite3 * db)
+{
+	const std::string fileDelete((boost::format("DELETE FROM files_table WHERE file_name = '%1%';") % key).str());
 	char * error;
 	int rc = sqlite3_exec(db, fileDelete.c_str(), nullptr, nullptr, &error);
 	if (rc != SQLITE_OK) {
 		sqlite3_free(error);
-		throw std::runtime_error("Could not remove key from database");
+		return false;
 	}
+
+	if (sqlite3_changes(db) == 0){
+		return false;
+	}
+
+	return true;
 }
 
 const bool SQLCipherStorage::rawRename(const std::string & oldKey,
-	const std::string & newKey, const bool overwrite)
+	const std::string & newKey, const bool overwrite, sqlite3 * db)
 {
-	if (rawExists(oldKey) == true){
-		const char* tail;
-		sqlite3_stmt* res;
-		std::string querry((boost::format("UPDATE files_table SET file_name = %1% WHERE file_name = '%2%';") % newKey % oldKey).str());
-		int rc = sqlite3_prepare_v2(db, querry.c_str(), -1, &res, &tail);
+	const std::string query((boost::format("UPDATE files_table SET file_name = %1% WHERE file_name = '%2%';") % newKey % oldKey).str());
+	SQLitePreparedStatement update(db, query);
 
-		if (rc != SQLITE_OK || res == nullptr){
-			sqlite3_finalize(res);
-			return false;
+	if (update != nullptr && rawExists(oldKey, db) == true){		
+		if (rawExists(newKey, db) == false){			
+			if (mtStep(update) == true){
+				return true;
+			}
 		}
+		else if (overwrite == true){
+			if (rawRemove(newKey, db) == false){
+				return false;
+			}
 
-		auto ret = sqlite3_step(res);
-		sqlite3_finalize(res);
-		if (ret != SQLITE_DONE){
-			return false;
-		}
-
-		return true;
+			if (mtStep(update) == true){
+				return true;
+			}
+		}		
 	}
-	else{
-		return false;
-	}
+	
+	return false;	
 }
 
-const SQLCipherStorage::Keys SQLCipherStorage::rawKeys() const
+const SQLCipherStorage::Keys SQLCipherStorage::rawKeys(sqlite3 * db)
 {
-
 	SQLCipherStorage::Keys ret;
 
-	const char* tail;
-	sqlite3_stmt* res;
+	const std::string fileQuery("SELECT file_name FROM files_table;");
+	SQLitePreparedStatement query(db, fileQuery);	
 
-	std::string fileQuery("SELECT file_name FROM files_table;");
-
-	auto rc = sqlite3_prepare_v2(db, fileQuery.c_str(), -1, &res, &tail);
-
-	if (rc == SQLITE_OK && res != nullptr){
-		int r = -1;
-		while ((r = sqlite3_step(res)) == SQLITE_ROW){
-			const auto key = sqlite3_column_text(res, 0);
+	if (query != nullptr){
+		bool r = false;
+		while ((r = mtStep(query)) == true){
+			const auto key = sqlite3_column_text(query, 0);
 			
 			ret.insert(std::string((const char *)key));
 		}
 
-		if (r != SQLITE_DONE){
+		if (r == false){
 			SQLCipherStorage::Keys().swap(ret);
 		}
-	}
-
-	sqlite3_finalize(res);
+	}	
 
 	return ret;
 }
 
 void SQLCipherStorage::open(const core::Filesystem::Path & path,
 	const std::string & key)
-{
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
-	if (db != nullptr){
+{	
+	if (path_.empty() == false || core::Filesystem::pathExists(path) == false){
 		return;
 	}
 
-	if (core::Filesystem::pathExists(path) == true){
-		db = verify_(path, key);
+	bool ciphered = false;
+	SQLiteDB db(verify_(path, key, ciphered));
+	if (db.get() != nullptr){
+		path_ = path;
+		if (ciphered == true){
+			key_ = key;
+		}			
 	}	
 }
 
@@ -1251,47 +1554,40 @@ const bool SQLCipherStorage::create(const core::Filesystem::Path & path,
 	if (core::Filesystem::pathExists(path) == true){
 		return false;
 	}	
-
-	bool ret = false;
-	sqlite3 * db;
-
-	auto rc = sqlite3_open_v2(path.string().c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
-
-	if (rc == SQLITE_OK){
-		rc = sqlite3_rekey(db, key.c_str(), key.size());
-		if (rc == SQLITE_OK){
-			ret = initialize(db);
-		}
+	
+	SQLiteDB db;
+	
+	if (key.empty() == true){
+		db.open(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+	}
+	else{
+		db.open(path, key, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 	}
 
-	sqlite3_close(db);
+	if (db.get() != nullptr){
+		return initialize(db.get());
+	}
 
-	return ret;
+	return false;
 }
 
 const bool SQLCipherStorage::changeKey(const core::Filesystem::Path & path,
 	const std::string & oldKey, const std::string & newKey)
 {
-	if (core::Filesystem::pathExists(path) == false){
+	if (core::Filesystem::pathExists(path) == false || oldKey == newKey){
 		return false;
-	}
+	}	
 
 	bool ret = false;
-	sqlite3 * db;
 
-	auto rc = sqlite3_open_v2(path.string().c_str(), &db, SQLITE_OPEN_READWRITE, nullptr);
+	SQLiteDB db(path, oldKey);
 
-	if (rc == SQLITE_OK){
-		rc = sqlite3_key(db, oldKey.c_str(), oldKey.size());
+	if (db.get() != nullptr){
+		auto rc = sqlite3_rekey(db.get(), newKey.c_str(), newKey.size());
 		if (rc == SQLITE_OK){
-			rc = sqlite3_rekey(db, newKey.c_str(), newKey.size());
-			if (rc == SQLITE_OK){
-				ret = true;
-			}
-		}
-	}
-
-	sqlite3_close(db);
+			ret = true;
+		}		
+	}	
 
 	return ret;
 }
@@ -1304,18 +1600,14 @@ const bool SQLCipherStorage::setKey(const core::Filesystem::Path & path,
 	}
 
 	bool ret = false;
-	sqlite3 * db;
+	SQLiteDB db(path);	
 
-	auto rc = sqlite3_open_v2(path.string().c_str(), &db, SQLITE_OPEN_READWRITE, nullptr);
-
-	if (rc == SQLITE_OK){
-		rc = sqlite3_rekey(db, key.c_str(), key.size());
+	if (db.get() != nullptr){
+		auto rc = sqlite3_rekey(db.get(), key.c_str(), key.size());
 		if (rc == SQLITE_OK){
 			ret = true;
 		}
-	}
-
-	sqlite3_close(db);
+	}	
 
 	return ret;
 }
@@ -1323,63 +1615,68 @@ const bool SQLCipherStorage::setKey(const core::Filesystem::Path & path,
 const bool SQLCipherStorage::verify(const core::Filesystem::Path & path,
 	const std::string & key)
 {
-	auto db = verify_(path, key);
+	bool ciphered = false;
+	SQLiteDB db(verify_(path, key, ciphered));
 
-	if (db == nullptr){
+	if (db.get() == nullptr){
 		return false;
-	}
-
-	sqlite3_close(db);
+	}	
 
 	return true;
 }
 
 const bool SQLCipherStorage::isOpened() const
 {
-	return db != nullptr;
+	return path_.empty() == false;
 }
 
 const bool SQLCipherStorage::exists(const std::string & key) const
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
-	return rawExists(key);
+	SQLiteDB db(openDB(path_, key_));
+	return rawExists(key, db.get());
 }
 
-std::iostream * SQLCipherStorage::get(const std::string & key)
-{
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
-	return rawGet(key);
+const IHMDBStorage::IOStreamPtr SQLCipherStorage::get(const std::string & key)
+{	
+	SQLiteDB db(openDB(path_, key_));
+	return rawGet(key, db.get());
 }
 
-std::istream * SQLCipherStorage::get(const std::string & key) const
-{
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
-	return rawGet(key);
+const IHMDBStorage::IStreamPtr SQLCipherStorage::get(const std::string & key) const
+{	
+	SQLiteDB db(openDB(path_, key_));
+	return rawGetReadOnly(key, db.get());
 }
 
-const bool SQLCipherStorage::set(const std::string & key, std::istream * input)
+const bool SQLCipherStorage::set(const std::string & key, IHMDBStorage::IStreamPtr input)
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
-	return rawSet(key, input);
+	SQLiteDB db(openDB(path_, key_));
+	return rawSet(key, input, db.get());
 }
 
-void SQLCipherStorage::remove(const std::string & key)
+void SQLCipherStorage::set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
-	return rawRemove(key);
+	SQLiteDB db(openDB(path_, key_));
+	rawSet(key, input, progress, db.get());
+}
+
+const bool SQLCipherStorage::remove(const std::string & key)
+{	
+	SQLiteDB db(openDB(path_, key_));
+	return rawRemove(key, db.get());
 }
 
 const bool SQLCipherStorage::rename(const std::string & oldKey,
 	const std::string & newKey, const bool overwrite)
-{
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
-	return rawRename(oldKey, newKey, overwrite);
+{	
+	SQLiteDB db(openDB(path_, key_));
+	return rawRename(oldKey, newKey, overwrite, db.get());
 }
 
 const SQLCipherStorage::Keys SQLCipherStorage::keys() const
-{
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
-	return rawKeys();
+{	
+	SQLiteDB db(openDB(path_, key_));
+	return rawKeys(db.get());
 }
 
 const std::string SQLCipherStorage::name() const
@@ -1394,10 +1691,8 @@ const std::string SQLCipherStorage::protocol() const
 
 void SQLCipherStorage::close()
 {
-	if (db != nullptr){
-		sqlite3_close(db);
-		db = nullptr;
-	}
+	core::Filesystem::Path().swap(path_);
+	std::string().swap(key_);	
 }
 
 const SQLCipherStorage::TransactionPtr SQLCipherStorage::transaction()
@@ -1407,5 +1702,15 @@ const SQLCipherStorage::TransactionPtr SQLCipherStorage::transaction()
 
 const SQLCipherStorage::TransactionConstPtr SQLCipherStorage::transaction() const
 {
-	return TransactionPtr(new SQLCipherStorageTransaction(const_cast<SQLCipherStorage*>(this)));
+	return TransactionPtr(new SQLCipherStorageTransaction(this));
+}
+
+const bool SQLCipherStorage::canStore(const unsigned long long size) const
+{
+	return core::Filesystem::availableSpace(path_) >= size;
+}
+
+const bool SQLCipherStorage::shareDiskSpace(const core::Filesystem::Path & path) const
+{
+	return path.root_path() == path_.root_path();
 }

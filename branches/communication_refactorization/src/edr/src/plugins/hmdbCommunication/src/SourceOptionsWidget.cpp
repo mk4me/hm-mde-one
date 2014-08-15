@@ -379,28 +379,27 @@ void SourceOptionsWidget::onLogin()
 
 	try{
 
-		std::auto_ptr<hmdbCommunication::SQLCipherStorage> storage(new hmdbCommunication::SQLCipherStorage);
+		utils::shared_ptr<hmdbCommunication::SQLCipherStorage> storage(new hmdbCommunication::SQLCipherStorage);
 
 		storage->open(ui->storagePathLineEdit->text().toStdString(),
 			ui->storagePasswordLineEdit->text().toStdString());
 
-		std::auto_ptr<hmdbCommunication::IHMDBSession> session;
+		hmdbCommunication::IHMDBSessionPtr session;
 
 		if (ui->onlineModeCheckBox->isChecked() == true){
 
-			session = std::auto_ptr<hmdbCommunication::IHMDBSession>(hmdbService->createSession(
-				ui->motionServiceURLLineEdit->text().toStdString(),
+			session = hmdbService->createSession(ui->motionServiceURLLineEdit->text().toStdString(),
 				ui->medicalDataURLLineEdit->text().toStdString(),
 				ui->loginLineEdit->text().toStdString(),
 				ui->passwordLineEdit->text().toStdString(),
 				ui->motionDataURLLineEdit->text().toStdString(),
 				ui->medicalDataURLLineEdit->text().toStdString(),
 				ui->servicesCertificatePathLineEdit->text().toStdString(),
-				networkUtils::HVMatch));
+				networkUtils::HVMatch);
 		}
 
-		auto sc = hmdbSource->createSourceContext(storage.release(), ui->loginLineEdit->text().toStdString(),
-			ui->passwordLineEdit->text().toStdString(), session.release());
+		auto sc = hmdbSource->createSourceContext(storage, ui->loginLineEdit->text().toStdString(),
+			ui->passwordLineEdit->text().toStdString(), session);
 		auto scc = hmdbSource->createShallowCopyContext(sc);
 
 		//utworzenie widgeta aktualnie wybranego widoku z nowym kontekstem
@@ -749,15 +748,14 @@ const bool SourceOptionsWidget::verify(QStringList & messages)
 		messages.append(remoteErrors);
 
 		if (messages.empty() == true){
-			std::auto_ptr<hmdbCommunication::IHMDBSession> session = std::auto_ptr<hmdbCommunication::IHMDBSession>(hmdbService->createSession(
-					ui->motionServiceURLLineEdit->text().toStdString(),
+			auto session = hmdbService->createSession(ui->motionServiceURLLineEdit->text().toStdString(),
 					ui->medicalDataURLLineEdit->text().toStdString(),
 					ui->loginLineEdit->text().toStdString(),
 					ui->passwordLineEdit->text().toStdString(),
 					ui->motionDataURLLineEdit->text().toStdString(),
 					ui->medicalDataURLLineEdit->text().toStdString(),
 					ui->servicesCertificatePathLineEdit->text().toStdString(),
-					networkUtils::HVMatch));
+					networkUtils::HVMatch);
 
 			if (session->authorization()->checkMyLogin() == false){
 				messages.push_back(tr("Incorrect login or password"));

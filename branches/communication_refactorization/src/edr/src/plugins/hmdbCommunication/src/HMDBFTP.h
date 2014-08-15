@@ -26,7 +26,7 @@ namespace hmdbCommunication
 		//! \param password Has³o u¿ytkownika
 		//! \param url Adres serwera
 		//! \param manager Manager obs³uguj¹cy transfery
-		HMDBFTP(const std::string user, const std::string password,
+		HMDBFTP(const std::string & user, const std::string & password,
 			const std::string & url,
 			utils::shared_ptr<CURLFTPManager> manager);
 
@@ -37,12 +37,12 @@ namespace hmdbCommunication
 		//! \param stream Strumieñ z którego bêdziemy wysy³aæ zawartoœæ pliku
 		//! \param size Rozmiar danych do wys³ania
 		virtual const TransferPtr preparePut(const std::string & destinationFileName,
-			std::istream * stream, const unsigned long long size);
+			IHMDBStorage::IStreamPtr stream, const unsigned long long size);
 
 		//! \param destinationFileName Nazwa pobieranego pliku z serwera bazy ruchu
 		//! \param stream Strumieñ do którego bêdziemy zapisywaæ zawartoœæ œci¹ganego pliku
 		virtual const TransferPtr prepareGet(const std::string & destinationFileName,
-			std::ostream * stream, const unsigned long long size);
+			IHMDBStorage::OStreamPtr stream, const unsigned long long size);
 
 	private:
 		//! U¿ytkownik po³¹czenia

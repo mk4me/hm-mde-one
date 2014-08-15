@@ -10,16 +10,33 @@
 
 #include <string>
 #include <set>
-#include <utils/ITTransaction.h>
+#include <threadingUtils/ITTransaction.h>
+#include <corelib/Filesystem.h>
+#include <networkUtils/CURLFTPHelper.h>
 
 namespace hmdbCommunication
 {
+
+	class IHMDBStorageProgress : public networkUtils::ICURLFTPBasicProgress
+	{
+	public:
+		//! Destruktor wirtualny
+		virtual ~IHMDBStorageProgress() {}
+		//! \param error Opis b³êdu
+		virtual void setError(const std::string & error) = 0;
+	};
 
 	class IHMDBStorageOperations
 	{
 	public:
 		//! Klucze
 		typedef std::set<std::string> Keys;
+		//!
+		typedef utils::shared_ptr<std::istream> IStreamPtr;
+		//!
+		typedef utils::shared_ptr<std::iostream> IOStreamPtr;
+		//!
+		typedef utils::shared_ptr<std::ostream> OStreamPtr;
 	public:
 		//! Destruktor wirtualny
 		virtual ~IHMDBStorageOperations() {}
@@ -28,17 +45,22 @@ namespace hmdbCommunication
 		virtual const bool exists(const std::string & key) const = 0;
 		//! \param key Klucz o który pytamy
 		//! \return WskaŸnik do strumienia pozwalaj¹cego czytaæ i zapisywaæ dane spod klucza lub nullptr jesli klucza nie ma
-		virtual std::iostream * get(const std::string & key) = 0;
+		virtual const IOStreamPtr get(const std::string & key) = 0;
 		//! \param key Klucz o który pytamy
 		//! \return WskaŸnik do strumienia pozwalaj¹cego czytaæ dane spod klucza lub nullptr jesli klucza nie ma
-		virtual std::istream * get(const std::string & key) const = 0;
+		virtual const IStreamPtr get(const std::string & key) const = 0;
 		//! Metoda nadpisuje dane jeœli ju¿ wystêpuj¹
 		//! \param key Klucz pod którym zapisujemy wartoœæ
 		//! \param input Dane do zapisania
 		//! \return Czy uda³o siê zapisaæ poprawnie dane
-		virtual const bool set(const std::string & key, std::istream * input) = 0;
+		virtual const bool set(const std::string & key, IStreamPtr input) = 0;
+		//! Metoda nadpisuje dane jeœli ju¿ wystêpuj¹
+		//! \param key Klucz pod którym zapisujemy wartoœæ
+		//! \param input Dane do zapisania
+		//! \param progress Obiekt steruj¹cy postêpem zapisu		
+		virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress) = 0;
 		//! \param key Klucz który usuwam
-		virtual void remove(const std::string & key) = 0;
+		virtual const bool remove(const std::string & key) = 0;
 		//! \param oldKey Klucz któremu zmieniamy nazwê
 		//! \param newKey Nowa nazwa klucza (unikalna)
 		//! \param overwrite Czy nadpisaæ jeœli istnieje ju¿ taki klucz
@@ -47,9 +69,15 @@ namespace hmdbCommunication
 			const std::string & newKey, const bool overwrite = false) = 0;
 		//! \return Lista kluczy w storage
 		virtual const Keys keys() const = 0;
+		//! \param size Iloœæ bajtów do zapisu
+		//! \return Czy storage bêdzie jeszcze w stanie zapisaæ tak¹ iloœæ danych
+		virtual const bool canStore(const unsigned long long size) const = 0;
+		//! \param path Œcie¿ka
+		//! \return Czy dana œcie¿ka dzieli przestrzeñ dyskow¹ z naszym storage
+		virtual const bool shareDiskSpace(const core::Filesystem::Path & path) const { return false; }
 	};
 
-	class IHMDBStorage : public utils::ITTransaction<IHMDBStorageOperations>
+	class IHMDBStorage : public threadingUtils::ITTransaction<IHMDBStorageOperations>
 	{
 	public:
 		//! Destruktor wirtualny
@@ -66,6 +94,8 @@ namespace hmdbCommunication
 		//! Po tym wywo³aniu isOpened powinno zwracaæ false!!
 		virtual void close() = 0;
 	};
+
+	DEFINE_SMART_POINTERS(IHMDBStorage);
 }
 
 #endif	// __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBSTORAGE_H__

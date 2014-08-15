@@ -6,8 +6,8 @@ author:   Mateusz Janiak
 
 purpose:
 *********************************************************************/
-#ifndef HEADER_GUARD___IFTPSESSION_H__
-#define HEADER_GUARD___IFTPSESSION_H__
+#ifndef HEADER_GUARD_NETWORKUTILS__IFTPSESSION_H__
+#define HEADER_GUARD_NETWORKUTILS__IFTPSESSION_H__
 
 #include <list>
 #include <string>
@@ -132,4 +132,4 @@ namespace networkUtils
 	typedef utils::shared_ptr<const IFtpSession> FtpSessionConstPtr;
 }
 
-#endif	//	HEADER_GUARD___IFTPSESSION_H__
+#endif	//	HEADER_GUARD_NETWORKUTILS__IFTPSESSION_H__

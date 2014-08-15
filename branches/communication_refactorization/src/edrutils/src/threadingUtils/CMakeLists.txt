@@ -18,6 +18,8 @@ SET_PUBLIC_HEADERS(
 	QtThreadFactory.h
 	StreamData.h
 	IOperation.h
+	ThreadAfinityVerifier.h
+	ITTransaction.h
 )
 
 SET_SOURCE_FILES(
@@ -28,6 +30,7 @@ SET_SOURCE_FILES(
 	QtThreadFactory.cpp
 	SynchronizationPolicies.cpp
 	StreamData.cpp
+	ThreadAfinityVerifier.cpp
 )
 
 END_PROJECT()

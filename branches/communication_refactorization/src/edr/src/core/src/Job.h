@@ -55,8 +55,11 @@ namespace core
 
 		//! Metoda pozwala managerowi zwolnic czekanie na joba jesli go anuluje
 		void unlock();
-
+		//! Metoda pozwala managerowi zwolnic czekanie na joba jesli go anuluje
+		void lock();
 	private:
+
+		threadingUtils::StrictSyncPolicy sync;
 		//! Obiekt do czekania
 		threadingUtils::ConditionVariable wait_;
 		//! Zleceniodawca

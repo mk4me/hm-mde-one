@@ -23,24 +23,29 @@ public:
 		return storage->rawExists(key);
 	}
 
-	virtual std::iostream * get(const std::string & key)
+	virtual const IOStreamPtr get(const std::string & key)
 	{
 		return storage->rawGet(key);
 	}
 
-	virtual std::istream * get(const std::string & key) const
+	virtual const IStreamPtr get(const std::string & key) const
 	{
 		return storage->rawGet(key);
 	}
 
-	virtual const bool set(const std::string & key, std::istream * input)
+	virtual const bool set(const std::string & key, IStreamPtr input)
 	{
 		return storage->rawSet(key, input);
 	}
 
-	virtual void remove(const std::string & key)
+	virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
 	{
-		storage->rawRemove(key);
+		storage->rawSet(key, input, progress);
+	}
+
+	virtual const bool remove(const std::string & key)
+	{
+		return storage->rawRemove(key);
 	}
 
 	virtual const bool rename(const std::string & oldKey,
@@ -52,6 +57,11 @@ public:
 	virtual const Keys keys() const
 	{
 		return storage->rawKeys();
+	}
+
+	virtual const bool canStore(const unsigned long long size) const
+	{
+		return storage->canStore(size);
 	}
 
 private:
@@ -83,25 +93,31 @@ const bool MemoryStorage::exists(const std::string & key) const
 	return rawExists(key);
 }
 
-std::iostream * MemoryStorage::get(const std::string & key)
+const IHMDBStorage::IOStreamPtr MemoryStorage::get(const std::string & key)
 {
 	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
 	return rawGet(key);
 }
 
-std::istream * MemoryStorage::get(const std::string & key) const
+const IHMDBStorage::IStreamPtr MemoryStorage::get(const std::string & key) const
 {
 	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
 	return rawGet(key);
 }
 
-const bool MemoryStorage::set(const std::string & key, std::istream * input)
+const bool MemoryStorage::set(const std::string & key, IHMDBStorage::IStreamPtr input)
 {
 	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
 	return rawSet(key, input);
 }
 
-void MemoryStorage::remove(const std::string & key)
+void MemoryStorage::set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
+{
+	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
+	rawSet(key, input, progress);
+}
+
+const bool MemoryStorage::remove(const std::string & key)
 {
 	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
 	return rawRemove(key);
@@ -123,6 +139,13 @@ const MemoryStorage::Keys MemoryStorage::keys() const
 {
 	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
 	return rawKeys();
+}
+
+const bool MemoryStorage::canStore(const unsigned long long size) const
+{
+	//TODO
+	//crossplatform free memory
+	return true;
 }
 
 const std::string MemoryStorage::name() const
@@ -150,29 +173,29 @@ const bool MemoryStorage::rawExists(const std::string & key) const
 	return storage.find(key) != storage.end();
 }
 
-std::iostream * MemoryStorage::rawGet(const std::string & key)
+const IHMDBStorage::IOStreamPtr MemoryStorage::rawGet(const std::string & key)
 {
 	auto it = storage.find(key);
 	if (it != storage.end()){
-		return new std::stringstream(it->second);
+		return IHMDBStorage::IOStreamPtr(new std::stringstream(it->second));
 	}
 
-	return nullptr;
+	return IHMDBStorage::IOStreamPtr();
 }
 
-std::istream * MemoryStorage::rawGet(const std::string & key) const
+const IHMDBStorage::IStreamPtr MemoryStorage::rawGet(const std::string & key) const
 {
 	auto it = storage.find(key);
 	if (it != storage.end()){
-		return new std::stringstream(it->second);
+		return IHMDBStorage::IStreamPtr(new std::stringstream(it->second));
 	}
 
-	return nullptr;
+	return IHMDBStorage::IStreamPtr();
 }
 
-const bool MemoryStorage::rawSet(const std::string & key, std::istream * input)
+const bool MemoryStorage::rawSet(const std::string & key, IStreamPtr input)
 {
-	auto str = utils::readStream(input);
+	auto str = utils::readStream(input.get());
 	auto it = storage.find(key);
 	if (it != storage.end()){
 		it->second = str;
@@ -184,9 +207,63 @@ const bool MemoryStorage::rawSet(const std::string & key, std::istream * input)
 	return true;
 }
 
-void MemoryStorage::rawRemove(const std::string & key)
+void MemoryStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
 {
-	storage.erase(key);
+	const auto currentPos = input->tellg();
+	input->seekg(0, std::ios::beg);
+	auto begin = input->tellg();
+	input->seekg(0, std::ios::end);
+	auto end = input->tellg();
+	input->seekg(currentPos, std::ios::beg);
+	const auto streamSize = end - begin;
+
+	if (streamSize == 0){
+		progress->setError("Empty input stream");
+		return;
+	}
+
+	const auto readSize = std::min((int)streamSize, (int)MaxBufferSize);
+
+	boost::shared_array<char> memblock(new char[readSize]);
+	input->seekg(0, std::ios::beg);
+	int offset = 0;
+	const unsigned int fullReads = (streamSize / readSize);
+
+	const float progressPart = (float)readSize / (float)streamSize;
+
+	std::string str;
+
+	progress->setProgress(0.0);
+	for (unsigned int i = 0; i < fullReads && progress->aborted() == false; ++i){
+		input->read(memblock.get(), readSize);
+		str.append(memblock.get(), readSize);
+		offset += readSize;
+		progress->setProgress(progressPart * (i + 1));
+	}
+
+	if (progress->aborted() == true){
+		return;
+	}
+
+	const auto left = streamSize - offset;
+
+	if (left > 0){
+		input->read(memblock.get(), left);
+		str.append(memblock.get(), left);
+	}
+
+	auto it = storage.find(key);
+	if (it != storage.end()){
+		it->second = str;
+	}
+	else{
+		storage.insert(Storage::value_type(key, str));
+	}
+}
+
+const bool MemoryStorage::rawRemove(const std::string & key)
+{
+	return storage.erase(key) > 0;
 }
 
 const bool MemoryStorage::rawRename(const std::string & oldKey,

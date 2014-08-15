@@ -88,6 +88,11 @@
     <string>Force download all</string>
    </property>
   </action>
+  <action name="actionForceSynchronize">
+   <property name="text">
+    <string>Force synchronize</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -283,6 +288,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionForceSynchronize</sender>
+   <signal>triggered()</signal>
+   <receiver>DataViewWidget</receiver>
+   <slot>onForceSynchronize()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>325</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <signal>currentItemChanged(char,int)</signal>
@@ -299,5 +320,6 @@
   <slot>onTreeCurrentItemChange(QTreeWidgetItem*,QTreeWidgetItem*)</slot>
   <slot>onTrySynchronize()</slot>
   <slot>onForceDownloadAll()</slot>
+  <slot>onForceSynchronize()</slot>
  </slots>
 </ui>

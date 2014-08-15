@@ -12,12 +12,10 @@
 #include <corelib/Filesystem.h>
 #include <networkUtils/Types.h>
 #include <networkUtils/IWSDLService.h>
+#include <plugins/hmdbCommunication/IHMDBSession.h>
 
 namespace hmdbCommunication
 {
-	//! Forward declaration
-	class IHMDBSession;
-
 	class IHMDBService
 	{
 	public:
@@ -34,7 +32,7 @@ namespace hmdbCommunication
 		//! \param hostVerification Sposób weryfikacji hosta
 		//! \return Sesja serwisów danych ruchu, nullptr je¿eli nie uda³o siê uwierzytelniæ
 		//! u¿ytkownika w us³ugach danych ruchu i medycznych
-		virtual IHMDBSession * createSession(const std::string & motionServicesUrl,
+		virtual const IHMDBSessionPtr createSession(const std::string & motionServicesUrl,
 			const std::string & medicalServicesUrl,
 			const std::string & user,
 			const std::string & password,
@@ -52,7 +50,7 @@ namespace hmdbCommunication
 		//! \param hostVerification Sposób weryfikacji hosta
 		//! \return Sesja serwisów danych ruchu, nullptr je¿eli nie uda³o siê uwierzytelniæ
 		//! u¿ytkownika w us³ugach danych ruchu i medycznych
-		virtual IHMDBSession * createSession(const bool motion,
+		virtual const IHMDBSessionPtr createSession(const bool motion,
 			const std::string & servicesUrl,			
 			const std::string & user,
 			const std::string & password,
@@ -95,10 +93,10 @@ namespace hmdbCommunication
 			const core::Filesystem::Path & caPath = core::Filesystem::Path()) const = 0;
 
 		//! \param session Sesja us³ug bazy danych ruchu któr¹ chcemy obs³ugiwaæ
-		virtual void attach(IHMDBSession * session) = 0;
+		virtual void attach(IHMDBSessionPtr session) = 0;
 
 		//! \param session Sesja us³ug bazy danych ruchu któr¹ chcemy obs³ugiwaæ
-		virtual void detach(IHMDBSession * session) = 0;
+		virtual void detach(IHMDBSessionPtr session) = 0;
 	};
 }
 

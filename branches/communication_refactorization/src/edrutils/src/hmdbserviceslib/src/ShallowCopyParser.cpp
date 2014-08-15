@@ -18,9 +18,9 @@ namespace hmdbServices
 			while (file_element != nullptr) {
 				MotionShallowCopy::File * file = nullptr;
 
-				int fileID;
+				int fileID = -1;
 
-				XMLHelper::extractAttributeValue(files_element, "FileID", fileID);				
+				XMLHelper::extractAttributeValue(file_element, "FileID", fileID);
 
 				auto fileIT = srcFiles.find(fileID);
 
@@ -79,7 +79,7 @@ namespace hmdbServices
 				//newMotionShallowCopy::Performer * performer = new MotionShallowCopy::Performer;
 				MotionShallowCopy::Performer * performer = nullptr;
 
-				int perfID;
+				int perfID = -1;
 				XMLHelper::extractAttributeValue(performer_element, "PerformerID", perfID);				
 
 				auto perfIT = shallowCopy.performers.find(perfID);
@@ -106,7 +106,7 @@ namespace hmdbServices
 			while (session_element != nullptr) {				
 				MotionShallowCopy::Session * session = nullptr;
 
-				int sessionID;
+				int sessionID = -1;
 				XMLHelper::extractAttributeValue(session_element, "SessionID", sessionID);				
 
 				auto sessionIT = shallowCopy.sessions.find(sessionID);
@@ -152,7 +152,7 @@ namespace hmdbServices
 			while (group_assignment_element != nullptr) {
 				MotionShallowCopy::GroupAssigment * group_assignment = nullptr;
 
-				int sessionGroupID;
+				int sessionGroupID = -1;
 				XMLHelper::extractAttributeValue(group_assignment_element, "SessionGroupID", sessionGroupID);
 
 				auto groupAssigmentIT = shallowCopy.groupAssigments.find(sessionGroupID);
@@ -166,7 +166,7 @@ namespace hmdbServices
 					group_assignment = groupAssigmentIT->second;
 				}
 
-				int sessionID;
+				int sessionID = -1;
 				XMLHelper::extractAttributeValue(group_assignment_element, "SessionID", sessionID);				
 
 				auto sessionIT = shallowCopy.sessions.find(sessionID);
@@ -186,8 +186,8 @@ namespace hmdbServices
 			while (trial_element != nullptr) {				
 				MotionShallowCopy::Trial * trial = nullptr;
 
-				int sessionID;
-				int trialID;
+				int sessionID = -1;
+				int trialID = -1;
 				XMLHelper::extractAttributeValue(trial_element, "TrialID", trialID);
 
 				auto trialIT = shallowCopy.trials.find(trialID);
@@ -226,7 +226,7 @@ namespace hmdbServices
 			while (performer_consf_element != nullptr) {				
 				MotionShallowCopy::PerformerConf * performerConf = nullptr;
 
-				int perfConfID;
+				int perfConfID = -1;
 				XMLHelper::extractAttributeValue(performer_consf_element, "PerformerConfID", perfConfID);				
 
 				auto perfConfIT = shallowCopy.performerConfs.find(perfConfID);
@@ -240,7 +240,7 @@ namespace hmdbServices
 					performerConf = perfConfIT->second;
 				}
 
-				int id;
+				int id = -1;
 				XMLHelper::extractAttributeValue(performer_consf_element, "SessionID", id);
 
 				performerConf->session = shallowCopy.sessions[id];
@@ -292,7 +292,7 @@ namespace hmdbServices
 			if (disorder_elements != nullptr){
 				auto disorder_element = disorder_elements->FirstChildElement("Disorder");
 				while (disorder_element != nullptr){
-					int disorderID;
+					int disorderID = -1;
 					XMLHelper::extractAttributeValue(disorder_element, "DisorderID", disorderID);					
 
 					auto it = shallowCopy.disorders.find(disorderID);
@@ -319,7 +319,7 @@ namespace hmdbServices
 			while (patient_element != nullptr) {
 				MedicalShallowCopy::Patient * patient = nullptr;
 
-				int patientID;
+				int patientID = -1;
 				XMLHelper::extractAttributeValue(patient_element, "PatientID", patientID);				
 
 				auto perfIT = shallowCopy.patients.find(patientID);
@@ -354,10 +354,10 @@ namespace hmdbServices
 			auto disorder_element = disorder_elements->FirstChildElement("DisorderOccurence");
 			while (disorder_element != nullptr) {
 
-				int patientID;
+				int patientID = -1;
 				XMLHelper::extractAttributeValue(disorder_element, "PatientID", patientID);				
 
-				int disorderID;
+				int disorderID = -1;
 				XMLHelper::extractAttributeValue(disorder_element, "DisorderID", disorderID);
 
 				auto & disorder = shallowCopy.patients[patientID]->disorders[disorderID];

@@ -3,31 +3,68 @@
 #include <corelib/Filesystem.h>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/thread.hpp>
 #include <corelib/IPlugin.h>
 #include <corelib/IJobManager.h>
 #include <corelib/IThreadPool.h>
-#include <boost/thread.hpp>
 #include <hmdbserviceslib/IFileStoremanWS.h>
 #include <plugins/hmdbCommunication/IHMDBSession.h>
-#include <QThread>
 #include <plugins/hmdbCommunication/IHMDBStorage.h>
 #include <hmdbserviceslib/IncrementalBranchShallowCopyParser.h>
 #include <hmdbserviceslib/ShallowCopyParser.h>
 #include <plugins/hmdbCommunication/IHMDBDataContext.h>
-#include <boost/lexical_cast.hpp>
 #include <plugins/hmdbCommunication/IHMDBStatusManager.h>
 #include <plugins/hmdbCommunication/DataStatus.h>
 #include <utils/Utils.h>
 
 using namespace hmdbCommunication;
 
+HMDBStorageProgress::HMDBStorageProgress() : progress_(0), aborted_(false)
+{
 
-CompoundOperation::CompoundOperation(const IHMDBRemoteContext::OperationType opt,
-	const ExecutionPolicy ep, const ExecutionSchema es,
+}
+
+HMDBStorageProgress::~HMDBStorageProgress()
+{
+
+}
+
+void HMDBStorageProgress::setProgress(const float progress)
+{
+	progress_ = progress;
+}
+
+void HMDBStorageProgress::setError(const std::string & error)
+{
+	error_ = error;
+}
+
+const bool HMDBStorageProgress::aborted() const
+{
+	return aborted_;
+}
+
+const float HMDBStorageProgress::progress() const
+{
+	return progress_;
+}
+
+const std::string & HMDBStorageProgress::error() const
+{
+	return error_;
+}
+
+void HMDBStorageProgress::abort()
+{
+	aborted_ = true;
+}
+
+CompoundOperation::CompoundOperation(const ExecutionPolicy ep,
+	const ExecutionSchema es,
 	const Operations & suboperations)
-	: opt(opt), operations(suboperations),
-	ep(ep), es(es), status_(threadingUtils::IOperation::Initialized)
+	: operations(suboperations),
+	ep(ep), es(es),
+	status_(threadingUtils::IOperation::Initialized)
 {
 
 }
@@ -48,32 +85,27 @@ void CompoundOperation::setOperations(const Operations & suboperations)
 	}
 }
 
-const IHMDBRemoteContext::OperationType CompoundOperation::operationType() const
-{
-	return opt;
-}
-
 const unsigned int CompoundOperation::size() const
 {
 	return operations.size();
 }
 
-const IHMDBRemoteContext::IOperation * CompoundOperation::operation(const unsigned int idx) const
+const IHMDBRemoteContext::OperationConstPtr CompoundOperation::operation(const unsigned int idx) const
 {
-	return operations[idx].get();
+	return operations[idx];
 }
 
-IHMDBRemoteContext::IOperation * CompoundOperation::operation(const unsigned int idx)
+const IHMDBRemoteContext::OperationPtr CompoundOperation::operation(const unsigned int idx)
 {
-	return operations[idx].get();
+	return operations[idx];
 }
 
-const IHMDBRemoteContext::ICompoundOperation::ExecutionPolicy CompoundOperation::executionPolicy() const
+const ICompoundOperation::ExecutionPolicy CompoundOperation::executionPolicy() const
 {
 	return ep;
 }
 
-const IHMDBRemoteContext::ICompoundOperation::ExecutionSchema CompoundOperation::executionSchema() const
+const ICompoundOperation::ExecutionSchema CompoundOperation::executionSchema() const
 {
 	return es;
 }
@@ -86,11 +118,10 @@ void CompoundOperation::start()
 
 	status_ = threadingUtils::IOperation::Pending;
 
-	if (ep == IHMDBRemoteContext::ICompoundOperation::Any){
+	if (ep == ICompoundOperation::Any){
 
-		if (es == IHMDBRemoteContext::ICompoundOperation::Serial){
+		if (es == ICompoundOperation::Serial){
 			auto runnable = threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&CompoundOperation::callAnySerial, this)));
-			//job = plugin::getJobManager()->addJob("HMDBSourceContext", "CompoundOperation: " + boost::lexical_cast<std::string>(opt), runnable);
 			core::IThreadPool::Threads t;
 			plugin::getThreadPool()->getThreads("HMDBSourceContext", t, 1);
 			workerThread = t.front();
@@ -109,9 +140,8 @@ void CompoundOperation::start()
 
 		threadingUtils::IRunnablePtr runnable;
 
-		if (es == IHMDBRemoteContext::ICompoundOperation::Serial){
+		if (es == ICompoundOperation::Serial){
 			runnable = threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&CompoundOperation::callAllSerial, this)));
-			//job = plugin::getJobManager()->addJob("HMDBSourceContext", "CompoundOperation: " + boost::lexical_cast<std::string>(opt), threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&CompoundOperation::callAllSerial, this))));
 		}
 		else{
 			runnable = threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&CompoundOperation::callAllParallel, this)));
@@ -125,7 +155,7 @@ void CompoundOperation::abort()
 {
 	if (status_ != threadingUtils::IOperation::Aborted &&
 		status_ != threadingUtils::IOperation::Error &&
-		status_ != threadingUtils::IOperation::Finieshed){
+		status_ != threadingUtils::IOperation::Finished){
 
 		status_ = threadingUtils::IOperation::Aborted;
 
@@ -167,7 +197,7 @@ void CompoundOperation::callAllSerial()
 
 			if ((*it)->status() == threadingUtils::IOperation::Error){
 				status_ = threadingUtils::IOperation::Error;
-				errorOperation = (*it).get();
+				errorOperation = (*it);
 				break;
 			}
 		}
@@ -186,14 +216,14 @@ void CompoundOperation::observe()
 
 			if (s == threadingUtils::IOperation::Error){
 				if (errorOperation == nullptr){
-					errorOperation = (*it).get();
+					errorOperation = (*it);
 					status_ = threadingUtils::IOperation::Error;
 				}
 			}
 			else if (s == threadingUtils::IOperation::Aborted){
 				status_ = threadingUtils::IOperation::Aborted;
 			}
-			else if (s == threadingUtils::IOperation::Finieshed){
+			else if (s == threadingUtils::IOperation::Finished){
 				++opFinished;
 			}
 		}
@@ -252,7 +282,7 @@ const threadingUtils::IOperation::Status CompoundOperation::compoundStatus() con
 			s = ss;
 			break;
 		}
-		else if (ss == IOperation::Finieshed)
+		else if (ss == IOperation::Finished)
 		{
 			++fi;
 		}
@@ -268,7 +298,7 @@ const threadingUtils::IOperation::Status CompoundOperation::compoundStatus() con
 		if (pi == operations.size()){
 			s = IOperation::Pending;
 		}else if (fi == operations.size()){
-			s = IOperation::Finieshed;
+			s = IOperation::Finished;
 		}else if(ri > 0){	
 			s = IOperation::Running;	
 		}
@@ -296,13 +326,13 @@ const std::string CompoundOperation::error() const
 	return errorOperation == nullptr ? std::string() : errorOperation->error();
 }
 
-IHMDBRemoteContext::IOperation * CompoundOperation::findErrorOperation() const
+IHMDBRemoteContext::OperationPtr CompoundOperation::findErrorOperation() const
 {
-	IOperation * ret = nullptr;
+	IHMDBRemoteContext::OperationPtr ret;
 
 	for (auto it = operations.begin(); it != operations.end(); ++it){
 		if ((*it)->status() == IOperation::Error){
-			ret = (*it).get();
+			ret = (*it);
 			break;
 		}
 	}
@@ -310,9 +340,8 @@ IHMDBRemoteContext::IOperation * CompoundOperation::findErrorOperation() const
 	return ret;
 }
 
-FunctorOperation::FunctorOperation(const IHMDBRemoteContext::OperationType opt,
-	threadingUtils::FunctorRunnable::Functor functor)
-	: opt(opt), functor(functor), progress_(0.0),
+FunctorOperation::FunctorOperation(threadingUtils::FunctorRunnable::Functor functor)
+	: functor_(functor), progress_(0.0),
 	status_(threadingUtils::IOperation::Initialized)
 {
 
@@ -326,17 +355,9 @@ FunctorOperation::~FunctorOperation()
 
 void FunctorOperation::setFunctor(threadingUtils::FunctorRunnable::Functor functor)
 {
-	if (status_ == IOperation::Initialized){
-		this->functor = functor;
-	}
-	else{
-		throw std::runtime_error("Functor operation already started");
-	}
-}
-
-const IHMDBRemoteContext::OperationType FunctorOperation::operationType() const
-{
-	return opt;
+	if (functor_.empty() == false){
+		throw std::runtime_error("Functor operation already initialized");
+	}	
 }
 
 const float FunctorOperation::progress() const
@@ -352,12 +373,9 @@ void FunctorOperation::call()
 
 	status_ = threadingUtils::IOperation::Running;
 	try{
-		functor();
-
-		if (status_ == threadingUtils::IOperation::Running){
-			status_ = threadingUtils::IOperation::Finieshed;
-			progress_ = 1.0;
-		}
+		functor_();
+		status_ = threadingUtils::IOperation::Finished;
+		progress_ = 1.0;
 	}
 	catch (std::exception & e){
 		error_ = e.what();
@@ -371,9 +389,8 @@ void FunctorOperation::call()
 
 void FunctorOperation::abort()
 {
-	if (status_ != threadingUtils::IOperation::Aborted &&
-		status_ != threadingUtils::IOperation::Error &&
-		status_ != threadingUtils::IOperation::Finieshed){
+	if (status_ == threadingUtils::IOperation::Initialized ||
+		status_ == threadingUtils::IOperation::Pending){
 
 		status_ = threadingUtils::IOperation::Aborted;
 
@@ -387,7 +404,7 @@ void FunctorOperation::start()
 	}
 
 	status_ = threadingUtils::IOperation::Pending;
-	job = plugin::getJobManager()->addJob("HMDBSourceContext", "FunctorOperation: " + boost::lexical_cast<std::string>(opt), threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&FunctorOperation::call, this))));
+	job = plugin::getJobManager()->addJob("HMDBSourceContext", "FunctorOperation", threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&FunctorOperation::call, this))));
 }
 
 void FunctorOperation::wait()
@@ -408,97 +425,17 @@ const std::string FunctorOperation::error() const
 	return error_;
 }
 
-TransferOperation::TransferOperation()
-	: status_(threadingUtils::IOperation::Initialized)
-{
-
-}
-
-TransferOperation::~TransferOperation()
-{
-	abort();
-	wait();
-}
-
-void TransferOperation::setTransfer(IHMDBFtp::TransferPtr transfer)
-{
-	transfer_ = transfer;
-}
-
-IHMDBFtp::ITransfer * TransferOperation::transfer()
-{
-	return transfer_.get();
-}
-
-const IHMDBFtp::ITransfer * TransferOperation::transfer() const
-{
-	return transfer_.get();
-}
-
-const float TransferOperation::progress() const
-{
-	return transfer_ != nullptr ? transfer_->progress() : 0.0;
-}
-
-void TransferOperation::abort()
-{
-	if (transfer_ != nullptr){
-		transfer_->abort();
-	}
-	else{
-		status_ = threadingUtils::IOperation::Aborted;
-	}
-}
-
-void TransferOperation::start()
-{
-	if (transfer_ != nullptr){
-		transfer_->start();
-	}
-}
-
-void TransferOperation::wait()
-{
-	if (transfer_ != nullptr){
-		transfer_->wait();
-	}
-}
-
-const threadingUtils::IOperation::Status TransferOperation::status() const
-{
-	return transfer_ != nullptr ? transfer_->status() : status_;
-}
-
-const std::string TransferOperation::error() const
-{
-	return transfer_ != nullptr ? transfer_->error() : std::string();
-}
-
-const IHMDBRemoteContext::OperationType TransferOperation::operationType() const
-{
-	return IHMDBRemoteContext::TransferingData;
-}
-
 UploadOperation::UploadOperation(const std::string & fileName,
-	std::istream * source,
-	IHMDBFtp * ftp, HMDBStore store,
-	const unsigned long long size,
+	IHMDBFtp::TransferPtr transfer,
+	HMDBStore store,
 	const std::string & fileDescription,
 	const std::string & subdirectory)
-	: CompoundOperation(IHMDBRemoteContext::Uploading, IHMDBRemoteContext::ICompoundOperation::AllOrNothing, IHMDBRemoteContext::ICompoundOperation::Serial),
-	fileName(fileName), source(source),
-	ftp(ftp), store(store), fileDescription(fileDescription),
-	subdirectory(subdirectory), fileID_(-1)
-{
-	std::auto_ptr<TransferOperation> t(new TransferOperation());
-	t->setTransfer(ftp->preparePut(fileName, source, size));	
-	IHMDBRemoteContext::OperationPtr funcOp(new FunctorOperation(IHMDBRemoteContext::WebServiceCall,
-		boost::bind(&UploadOperation::getFileID, this)));
+	: fileName(fileName), store(store), transfer(transfer),
+	fileDescription(fileDescription),
+	subdirectory(subdirectory), fileID_(-1),
+	fOp(boost::bind(&UploadOperation::upload, this))
+{	
 
-	Operations op;
-	op.push_back(IHMDBRemoteContext::OperationPtr(t.release()));
-	op.push_back(funcOp);
-	setOperations(op);	
 }
 
 UploadOperation::~UploadOperation()
@@ -506,41 +443,58 @@ UploadOperation::~UploadOperation()
 
 }
 
-const int UploadOperation::fileID() const
+const hmdbServices::ID UploadOperation::fileID() const
 {
 	return fileID_;
 }
 
-void UploadOperation::getFileID()
+void UploadOperation::upload()
 {
-	fileID_ = store(fileName, fileDescription, subdirectory);
+	if (status() != threadingUtils::IOperation::Aborted){
+		transfer->start();
+		transfer->wait();
+	}
+
+	if (status() != threadingUtils::IOperation::Aborted){
+		fileID_ = store(fileName, fileDescription, subdirectory);
+		progress_ = 1.0f;
+		status_ = threadingUtils::IOperation::Finished;
+	}
 }
 
-
-StoreOutputOperation::StoreOutputOperation(IHMDBStorage * storage, const std::string & key)
-	: FunctorOperation(IHMDBRemoteContext::StoringData), storage(storage), key(key)
-{
-	setFunctor(boost::bind(&StoreOutputOperation::store, this));
+void UploadOperation::start()
+{	
+	fOp.start();
 }
 
-StoreOutputOperation::~StoreOutputOperation()
+void UploadOperation::wait()
 {
-
+	fOp.wait();
 }
 
-void StoreOutputOperation::setFileInput(std::istream * stream)
+void UploadOperation::abort()
 {
-	stream_ = stream;
+	status_ = Aborted;
+	fOp.abort();
 }
 
-std::istream * StoreOutputOperation::stream()
+const UploadOperation::Status UploadOperation::status() const
 {
-	return storage->get(key);
+	if (status_ == Aborted){
+		return status_;
+	}
+
+	return fOp.status();
 }
 
-void StoreOutputOperation::store()
+const std::string UploadOperation::error() const
 {
-	storage->set(key, stream_);
+	return fOp.error();
+}
+
+const float UploadOperation::progress() const
+{
+	return (progress_ + transfer->progress()) / 2.0;
 }
 
 const std::string retrieveData(hmdbServices::IBasicStoremanWS * service, const int id)
@@ -577,409 +531,326 @@ const std::string retrievePerspective(hmdbServices::IShallowStoremanWS * service
 	return ret;
 }
 
-typedef boost::function<void(const std::string &)> StoreFunctor;
-typedef boost::function<std::string()> GetPathFunctor;
-
-void setDataPath(StoreFunctor sf, GetPathFunctor gpf)
-{
-	sf(gpf());
-}
-
-class PrepareFileToDownloadOperation::ClearFileToDownloadOperation : public FunctorOperation
-{
-public:
-	ClearFileToDownloadOperation(PrepareFileToDownloadOperation * op)
-		: FunctorOperation(IHMDBRemoteContext::CleaningHMDB), op(op)
-	{
-		setFunctor(boost::bind(&ClearFileToDownloadOperation::clear, this));
-	}
-
-private:
-
-	void clear()
-	{
-		if (op->fileID_ > -1){
-			dynamic_cast<hmdbServices::IBasicStoremanWS*>(op->fs)->downloadComplete(op->fileID_, op->preparedFilePath_);
-		}
-		else{
-			dynamic_cast<hmdbServices::IShallowStoremanWS*>(op->fs)->downloadComplete(op->preparedFilePath_);			
-		}
-	}
-
-private:
-	PrepareFileToDownloadOperation * op;
-};
-
-PrepareFileToDownloadOperation::PrepareFileToDownloadOperation(hmdbServices::IFileStoremanWS * fs,
+PrepareHMDB::PrepareHMDB(hmdbServices::IFileStoremanWS * fs,
 	const hmdbServices::ID fileID)
-	: FunctorOperation(IHMDBRemoteContext::PreparingHMDB), fs(fs), fileID_(fileID)
-{
-	threadingUtils::FunctorRunnable::Functor func;
-
-	StoreFunctor sf = boost::bind(&PrepareFileToDownloadOperation::setPath, this, _1);
-	GetPathFunctor gpf;
-
-	if (fileID > -1){		
-		gpf = boost::bind(&retrieveData, fs, fileID);
-	}
-	else{		
-		gpf = boost::bind(&retrievePerspective, fs, fileID);
-	}
-
-	setFunctor(boost::bind(&setDataPath, sf, gpf));
-}
-
-PrepareFileToDownloadOperation::~PrepareFileToDownloadOperation()
-{
-
-}
-
-const std::string & PrepareFileToDownloadOperation::preparedFilePath() const
-{
-	return preparedFilePath_;
-}
-
-PrepareFileToDownloadOperation::ClearFileToDownloadOperation * PrepareFileToDownloadOperation::clearFileDownloadOperation()
-{
-	return new ClearFileToDownloadOperation(this);
-}
-
-void PrepareFileToDownloadOperation::setPath(const std::string & path)
-{
-	preparedFilePath_ = path;
-}
-
-PrepareTmpFileTransferOutputOperation::OpenTmpFileTransferOutputOperation::OpenTmpFileTransferOutputOperation(PrepareTmpFileTransferOutputOperation * op)
-	: FunctorOperation(IHMDBRemoteContext::OpeningInput), op(op)
-{
-	setFunctor(boost::bind(&OpenTmpFileTransferOutputOperation::openOutput, this));
-}
-
-PrepareTmpFileTransferOutputOperation::OpenTmpFileTransferOutputOperation::~OpenTmpFileTransferOutputOperation()
-{
-
-}
-
-void PrepareTmpFileTransferOutputOperation::OpenTmpFileTransferOutputOperation::openOutput()
-{
-	stream_ = new std::ifstream(op->tmpFilePath.string());
-}
-
-std::istream * PrepareTmpFileTransferOutputOperation::OpenTmpFileTransferOutputOperation::fileInput()
-{
-	return stream_;
-}
-
-void closeInputFileStream(std::ifstream * stream)
-{
-	stream->close();
-	delete stream;
-}
-
-IHMDBRemoteContext::IOperation * PrepareTmpFileTransferOutputOperation::OpenTmpFileTransferOutputOperation::closeInputOperation()
-{
-	return new FunctorOperation(IHMDBRemoteContext::ClosingInput, boost::bind(&closeInputFileStream, stream_));
-}
-
-PrepareTmpFileTransferOutputOperation::PrepareTmpFileTransferOutputOperation()
-	: FunctorOperation(IHMDBRemoteContext::PreparingOutput)
-{
-	setFunctor(boost::bind(&PrepareTmpFileTransferOutputOperation::prepareOutput, this));
-}
-
-PrepareTmpFileTransferOutputOperation::~PrepareTmpFileTransferOutputOperation()
-{
-
-}
-
-void PrepareTmpFileTransferOutputOperation::prepareOutput()
-{
-	std::string nameBase(boost::lexical_cast<std::string>(boost::posix_time::microsec_clock::local_time().time_of_day().total_microseconds()) + "_" + boost::lexical_cast<std::string>(QThread::currentThreadId()) + ".tmp");
-	tmpFilePath = plugin::getPaths()->getTmpPath() / nameBase;
-	stream = new std::ofstream(tmpFilePath.string());
-}
-
-std::ostream * PrepareTmpFileTransferOutputOperation::fileOutput()
-{
-	return stream;
-}
-
-void closeOutputFileStream(std::ofstream * stream)
-{
-	stream->close();
-	delete stream;
-}
-
-IHMDBRemoteContext::IOperation * PrepareTmpFileTransferOutputOperation::closeOutputOperation()
-{
-	return new FunctorOperation(IHMDBRemoteContext::ClosingOutput, boost::bind(&closeOutputFileStream, stream));
-}
-
-IOpenTransferOutputOperation * PrepareTmpFileTransferOutputOperation::openInputOperation()
-{
-	return new PrepareTmpFileTransferOutputOperation::OpenTmpFileTransferOutputOperation(this);
-}
-
-IHMDBRemoteContext::IOperation * PrepareTmpFileTransferOutputOperation::cleanOutputOperation()
-{
-	return new FunctorOperation(IHMDBRemoteContext::CleaningOutput,
-		boost::bind(static_cast<void(*)(const core::Filesystem::Path&)>(&core::Filesystem::deleteFile),
-		tmpFilePath));
-}
-
-
-PrepareMemoryTransferOutputOperation::OpenMemoryTransferOutputOperation::OpenMemoryTransferOutputOperation(PrepareMemoryTransferOutputOperation * op)
-	: FunctorOperation(IHMDBRemoteContext::OpeningInput), op(op)
-{
-	setFunctor(boost::bind(&PrepareMemoryTransferOutputOperation::OpenMemoryTransferOutputOperation::openOutput, this));
-}
-
-PrepareMemoryTransferOutputOperation::OpenMemoryTransferOutputOperation::~OpenMemoryTransferOutputOperation()
-{
-
-}
-
-void PrepareMemoryTransferOutputOperation::prepareOutput()
-{
-	stream = new std::stringstream();
-}
-
-std::istream * PrepareMemoryTransferOutputOperation::OpenMemoryTransferOutputOperation::fileInput()
-{
-	return stream;
-}
-
-void PrepareMemoryTransferOutputOperation::OpenMemoryTransferOutputOperation::openOutput()
-{
-	stream = dynamic_cast<std::istream*>(op->stream);
-	stream->seekg(0, std::ios::beg);
-}
-
-IHMDBRemoteContext::IOperation * PrepareMemoryTransferOutputOperation::OpenMemoryTransferOutputOperation::closeInputOperation()
-{
-	return nullptr;
-}
-
-PrepareMemoryTransferOutputOperation::PrepareMemoryTransferOutputOperation()
-	: FunctorOperation(IHMDBRemoteContext::PreparingOutput)
-{
-	setFunctor(boost::bind(&PrepareMemoryTransferOutputOperation::prepareOutput, this));
-}
-
-PrepareMemoryTransferOutputOperation::~PrepareMemoryTransferOutputOperation()
-{
-
-}
-
-std::ostream * PrepareMemoryTransferOutputOperation::fileOutput()
-{
-	return stream;
-}
-
-IHMDBRemoteContext::IOperation * PrepareMemoryTransferOutputOperation::closeOutputOperation()
-{
-	return nullptr;
-}
-
-IOpenTransferOutputOperation * PrepareMemoryTransferOutputOperation::openInputOperation()
-{
-	return new OpenMemoryTransferOutputOperation(this);
-}
-
-void cleanStringstream(std::stringstream * stream)
-{
-	delete stream;
-}
-
-IHMDBRemoteContext::IOperation * PrepareMemoryTransferOutputOperation::cleanOutputOperation()
-{
-	return new FunctorOperation(IHMDBRemoteContext::CleaningOutput, boost::bind(&cleanStringstream, stream));
-}
-
-
-FTPDownloadFileOperation::FTPDownloadFileOperation(IHMDBFtp * ftp)
-	: ftp(ftp)
+	: fs(fs), fileID_(fileID)
 {
 	
 }
 
-FTPDownloadFileOperation::~FTPDownloadFileOperation()
+PrepareHMDB::~PrepareHMDB()
 {
-
+	clearHMDB();
 }
 
-void FTPDownloadFileOperation::setDownload(const std::string & path, std::ostream * stream, const hmdbServices::FileSize size)
+const std::string PrepareHMDB::prepareFilePath()
 {
-	setTransfer(ftp->prepareGet(path, stream, size));
+	if (fileID_ > -1){
+		preparedFilePath_ = retrieveData(fs, fileID_);
+	}
+	else{
+		preparedFilePath_ = retrievePerspective(fs, fileID_);
+	}
+
+	return preparedFilePath_;
 }
 
-CompoundFileDownload::CompoundFileDownload(const IHMDBRemoteContext::CompoundID & fileToDownload,
-	PrepareFileToDownloadOperation * pfOp,
-	IPrepareTransferOutputOperation * ptOp,
-	IDownloadFileOperation * dOp,
-	IStoreOutputOperation * soOp) : FunctorOperation(IHMDBRemoteContext::Downloading),
-	pfOp(pfOp), ptOp(ptOp), dOp(dOp), soOp(soOp),
-	downloaded_(false), file_(fileToDownload)
-{	
-	cfOp.reset(pfOp->clearFileDownloadOperation());
-	ctoOp.reset(ptOp->closeOutputOperation());
-	oiOp.reset(ptOp->openInputOperation());
-
-	if (oiOp != nullptr){
-		ciOp.reset(oiOp->closeInputOperation());
-	}
-
-	ptOp->cleanOutputOperation();
-	cltoOp.reset(pfOp->clearFileDownloadOperation());
-
-	operations.push_back(pfOp);
-	operations.push_back(ptOp);
-	operations.push_back(dOp);
-	operations.push_back(cfOp.get());
-	if (ctoOp != nullptr){
-		operations.push_back(ctoOp.get());
-	}
-
-	operations.push_back(oiOp.get());
-	operations.push_back(soOp);
-
-	if (ciOp != nullptr){
-		operations.push_back(ciOp.get());
-	}
-
-	if (cltoOp != nullptr){
-		operations.push_back(cltoOp.get());
-	}
-
-	setFunctor(boost::bind(&CompoundFileDownload::run, this));
-}
-
-CompoundFileDownload::~CompoundFileDownload()
+//! \return Czyści baze danych ruchu
+void PrepareHMDB::clearHMDB()
 {
-
-}
-
-const float CompoundFileDownload::progress() const
-{
-	float ret = 0.0;
-
-	auto s = operations.size();
-
-	if (s > 0){
-		for (auto it = operations.begin(); it != operations.end(); ++it){
-			ret += (*it)->progress();
+	if (preparedFilePath_.empty() == false){
+		const auto tmpPath = preparedFilePath_;
+		std::string().swap(preparedFilePath_);
+		if (fileID_ > -1){
+			dynamic_cast<hmdbServices::IBasicStoremanWS*>(fs)->downloadComplete(fileID_, tmpPath);
 		}
+		else{
+			dynamic_cast<hmdbServices::IShallowStoremanWS*>(fs)->downloadComplete(tmpPath);
+		}
+	}
+}
 
-		ret /= s;
+void StoreOutput::store(IHMDBStorage::TransactionPtr storageTransaction, const std::string & key,
+	IHMDBStorage::IStreamPtr stream, IHMDBStorageProgress * progress)
+{
+	storageTransaction->set(key, stream, progress);
+}
+
+TmpFileTransferIO::TmpFileTransferIO()
+{
+
+}
+
+TmpFileTransferIO::~TmpFileTransferIO()
+{
+
+}
+
+IHMDBStorage::OStreamPtr TmpFileTransferIO::prepareOutput()
+{
+	int i = 0;
+	while (core::Filesystem::pathExists(tmpFilePath = plugin::getPaths()->getTmpPath() / plugin::getPaths()->generateTempFileName()) == true && i++ < 10) {}
+
+	if (core::Filesystem::pathExists(tmpFilePath) == false){
+
+		//stream.reset(new std::fstream(tmpFilePath.string().c_str(), std::ios_base::in | std::ios_base::out));
+		stream.reset(new std::fstream(tmpFilePath.string(), std::ios_base::out));
+
+		if (stream->is_open() == false){
+			stream.reset();
+		}
+		else{
+			stream->close();
+			stream.reset(new std::fstream(tmpFilePath.string()));
+			if (stream->is_open() == false){
+				stream.reset();
+			}
+		}
 	}
 
-	return ret;
+	return stream;
 }
 
-const unsigned int CompoundFileDownload::size() const
+void TmpFileTransferIO::closeOutput()
 {
-	return operations.size();
+	stream->close();
+	stream.reset();
 }
 
-const IHMDBRemoteContext::IOperation * CompoundFileDownload::operation(const unsigned int idx) const
+IHMDBStorage::IStreamPtr TmpFileTransferIO::openInput()
 {
-	return operations[idx];
+	stream->flush();
+	stream->seekg(0, std::ios::beg);
+	return stream;
 }
 
-IHMDBRemoteContext::IOperation * CompoundFileDownload::operation(const unsigned int idx)
+void TmpFileTransferIO::closeInput()
 {
-	return operations[idx];
+	stream->flush();
+	stream.reset();
 }
 
-const IHMDBRemoteContext::ICompoundOperation::ExecutionPolicy CompoundFileDownload::executionPolicy() const
+MemoryTransferIO::MemoryTransferIO()
 {
-	return IHMDBRemoteContext::ICompoundOperation::Any;
+
 }
 
-const IHMDBRemoteContext::ICompoundOperation::ExecutionSchema CompoundFileDownload::executionSchema() const
+MemoryTransferIO::~MemoryTransferIO()
 {
-	return IHMDBRemoteContext::ICompoundOperation::Serial;
+
 }
 
-const IHMDBRemoteContext::CompoundID CompoundFileDownload::fileID() const
+IHMDBStorage::OStreamPtr MemoryTransferIO::prepareOutput()
 {
-	return file_;
+	stream.reset(new std::stringstream);
+	return stream;
 }
 
-const bool CompoundFileDownload::fileDownloaded() const
+void MemoryTransferIO::closeOutput()
+{
+	stream.reset();
+}
+
+IHMDBStorage::IStreamPtr MemoryTransferIO::openInput()
+{
+	stream->seekg(0, std::ios::beg);
+	return stream;
+}
+
+void MemoryTransferIO::closeInput()
+{
+	closeOutput();
+}
+
+FileDownload::FileDownload(const IHMDBRemoteContext::CompoundID & fileToDownload,
+	utils::shared_ptr<PrepareHMDB> prepareHMDB,
+	utils::shared_ptr<ITransferIO> transferIO,
+	IHMDBFtp * ftp,
+	IHMDBStoragePtr storage)
+	: prepareHMDB(prepareHMDB), transferIO(transferIO), storage_(storage), ftp(ftp),
+	downloaded_(false), fileID_(fileToDownload), fOp(boost::bind(&FileDownload::download, this)),
+	progressNormalizer(storage == nullptr ? 5 : 7), progress_(0)
+{	
+	
+}
+
+FileDownload::~FileDownload()
+{
+
+}
+
+void FileDownload::start()
+{
+	storeProgress.reset(new HMDBStorageProgress);
+	fOp.start();
+}
+
+void FileDownload::wait()
+{
+	fOp.wait();
+}
+
+void FileDownload::abort()
+{
+	if (status() != FileDownload::Aborted){
+		status_ = FileDownload::Aborted;
+		fOp.abort();
+	}
+}
+
+const FileDownload::Status FileDownload::status() const
+{
+	if (status_ == FileDownload::Aborted){
+		return status_;
+	}
+
+	return fOp.status();
+}
+
+const std::string FileDownload::error() const
+{
+	return fOp.error();
+}
+
+const float FileDownload::progress() const
+{
+	return (progress_ + (transfer != nullptr ? transfer->progress() : 0) + (storeProgress != nullptr ? storeProgress->progress() : 0)) / (float)progressNormalizer;
+}
+
+const IHMDBRemoteContext::CompoundID FileDownload::fileID() const
+{
+	return fileID_;
+}
+
+const bool FileDownload::fileDownloaded() const
 {
 	return downloaded_;
 }
 
-const IHMDBRemoteContext::OperationType CompoundFileDownload::operationType() const
+const IHMDBStoragePtr FileDownload::storage()
 {
-	return IHMDBRemoteContext::Downloading;
+	return storage_;
 }
 
-std::istream * CompoundFileDownload::stream()
+const IHMDBStorageConstPtr FileDownload::storage() const
 {
-	if (downloaded_ == true){
-		return soOp->stream();
+	return storage_;
+}
+
+void FileDownload::download()
+{
+	if (status_ == FileDownload::Aborted){
+		return;
 	}
 
-	return nullptr;
-}
+	auto const filePath = prepareHMDB->prepareFilePath();
 
-threadingUtils::IOperation::Status launchAndWait(const IHMDBRemoteContext::OperationPtr operation)
-{
-	operation->start();
-	operation->wait();
-	return operation->status();
-}
+	if (filePath.empty() == true){
+		throw std::runtime_error("Empty file path to retrieve");
+	}
+	++progress_;
 
-void CompoundFileDownload::run()
-{
-	if (status() == threadingUtils::IOperation::Running && launchAndWait(pfOp) == IOperation::Finieshed){
+	if (status_ == FileDownload::Aborted){
+		prepareHMDB->clearHMDB();
+		++progress_;
+		return;
+	}
 
-		auto c = utils::Cleanup(boost::bind(&launchAndWait, cfOp));
+	auto output = transferIO->prepareOutput();
 
-		if (status() == threadingUtils::IOperation::Running && launchAndWait(ptOp) == IOperation::Finieshed){
+	if (output == nullptr){
+		prepareHMDB->clearHMDB();
+		++progress_;
+		throw std::runtime_error("Uninitialized output stream");
+	}
+	++progress_;
 
-			utils::shared_ptr<utils::Cleanup> c(cltoOp != nullptr ? new utils::Cleanup(boost::bind(&launchAndWait, cltoOp)) : nullptr);
+	if (status_ == FileDownload::Aborted){
+		transferIO->closeOutput();
+		++progress_;
+		prepareHMDB->clearHMDB();
+		++progress_;
+		return;
+	}
 
-			dOp->setDownload(pfOp->preparedFilePath(), ptOp->fileOutput(), file_.fileSize);
-			auto s = launchAndWait(dOp);
+	transfer = ftp->prepareGet(filePath, output, fileID_.fileSize);
+	
+	if (transfer == nullptr){
+		transferIO->closeOutput();
+		++progress_;
+		prepareHMDB->clearHMDB();
+		++progress_;
+		throw std::runtime_error("Uninitialized data transfer");
+	}
 
-			if (ctoOp != nullptr){
-				launchAndWait(ctoOp);				
-			}
+	transfer->start();
+	transfer->wait();
 
-			if (s == IOperation::Finieshed){				
+	if (status() == FileDownload::Aborted || transfer->size() == 0){
+		transferIO->closeOutput();
+		++progress_;
+		prepareHMDB->clearHMDB();
+		++progress_;
+		return;
+	}
 
-				if (status() == threadingUtils::IOperation::Running && launchAndWait(oiOp) == IOperation::Finieshed){
+	if (storage_ != nullptr){
+		auto input = transferIO->openInput();
 
-					utils::shared_ptr<utils::Cleanup> c(ciOp != nullptr ? new utils::Cleanup(boost::bind(&launchAndWait, ciOp)) : nullptr);
-
-					soOp->setFileInput(oiOp->fileInput());
-
-					if (status() == threadingUtils::IOperation::Running && launchAndWait(soOp) == IOperation::Finieshed){
-						downloaded_ = true;
-					}
-				}
-			}
+		if (input == nullptr){
+			transferIO->closeInput();
+			++progress_;
+			prepareHMDB->clearHMDB();
+			++progress_;
+			throw std::runtime_error("Failed to open downloaded data for reading");
 		}
+		++progress_;
+
+		
+		const auto begin = input->tellg();
+		input->seekg(0, std::ios::end);
+		const auto end = input->tellg();
+		input->seekg(0, std::ios::beg);
+		const auto streamSize = end - begin;
+
+		auto storageTransaction = storage_->transaction();
+
+		if (storageTransaction == nullptr){
+			transferIO->closeInput();
+			++progress_;
+			prepareHMDB->clearHMDB();
+			++progress_;
+			throw std::runtime_error("Failed to create storage transaction");
+		}
+
+		if (storageTransaction->canStore(streamSize) == false){
+			transferIO->closeInput();
+			++progress_;
+			prepareHMDB->clearHMDB();
+			++progress_;
+			throw std::runtime_error("Storage can not handle downloaded data size");
+		}
+
+		StoreOutput::store(storageTransaction, fileID_.fileName, input, storeProgress.get());
+
+		if (storeProgress->error().empty() == false){
+			throw std::runtime_error("Saving file in storage failed");
+		}
+
+		if (storeProgress->aborted() == false){
+			downloaded_ = true;
+		}
+
+		transferIO->closeInput();
 	}
-}
+	else{
+		transferIO->closeOutput();
+	}
 
-ExtractShallowcopy::ExtractShallowcopy(const std::list<IHMDBRemoteContext::IDownloadOperation*> & downloads)
-	: FunctorOperation(IHMDBRemoteContext::ExtractingShallowCopy), downloads(downloads)
-{
-	setFunctor(boost::bind(&ExtractShallowcopy::extract, this));
-}
+	++progress_;
 
-ExtractShallowcopy::~ExtractShallowcopy()
-{
-
-}
-
-const float ExtractShallowcopy::progress() const
-{
-	return downloads.size() > 0 ? (float)progress_ / (float)downloads.size() : 0.0;
+	prepareHMDB->clearHMDB();
+	++progress_;
 }
 
 const ShallowCopyConstPtr ExtractShallowcopy::shallowCopy() const
@@ -1041,67 +912,152 @@ void extractShallowCopy(const hmdbServices::ID shallowID, const IHMDBRemoteConte
 	}
 }
 
-void ExtractShallowcopy::extract()
+void ExtractShallowcopy::extract(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads, IHMDBStorageProgress * progress)
 {
-	auto it = downloads.begin();
+	auto it = downloads.begin();	
+
+	std::map<IHMDBStoragePtr, std::list<IHMDBRemoteContext::DownloadOperationPtr>> byStorage;
+	int numDownloadsToProcess = 0;
+
+	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	{
+		if (d->fileDownloaded() == true){
+			auto s = d->storage();
+			if (s != nullptr){
+				byStorage[s].push_back(d);
+				++numDownloadsToProcess;
+			}
+		}
+	});
+
+	if (numDownloadsToProcess == 0){
+		return;
+	}
 
 	ShallowCopyPtr locSh(new ShallowCopy);
 	IncrementalBranchShallowCopyPtr locIncSh(new hmdbServices::IncrementalBranchShallowCopy);
 
-	while (it != downloads.end() && status() == Running){
+	const auto progressStep = 1.0 / numDownloadsToProcess;
+	int currentStep = 1;
+	progress->setProgress(0.0);
 
-		if ((*it)->fileDownloaded() == true){
+	for (auto it = byStorage.begin(); it != byStorage.end() && progress->aborted() == false; ++it){
 
-			extractShallowCopy((*it)->fileID().fileID, (*it)->fileID().dataReference,
-				*locSh, *locIncSh, (*it)->stream());
+		auto streamTransaction = it->first->transaction();
+
+		auto IT = it->second.begin();
+		while (IT != it->second.end() && progress->aborted() == false){
+			
+			auto stream = streamTransaction->get((*IT)->fileID().fileName);
+			extractShallowCopy((*IT)->fileID().fileID, (*IT)->fileID().dataReference,
+					*locSh, *locIncSh, stream.get());
+
+			++IT;
+			progress->setProgress(progressStep * currentStep++);
 		}
-
-		++it;
-		++progress_;
 	}
 
-	shallowCopy_ = locSh;
-	incrementalShallowCopy_ = locIncSh;
+	if (progress->aborted() == false){
+		progress->setProgress(1.0);
+		shallowCopy_ = locSh;
+		incrementalShallowCopy_ = locIncSh;
+	}
 }
 
-SynchronizeOperation::SynchronizeOperation(const std::list<IHMDBRemoteContext::IDownloadOperation*> & downloads,
-	IHMDBStorage * storage, const bool mustDelete)
-	: CompoundOperation(IHMDBRemoteContext::Synchronizing, IHMDBRemoteContext::ICompoundOperation::AllOrNothing,
-	IHMDBRemoteContext::ICompoundOperation::Serial), storage(storage), mustDelete(mustDelete)
+SynchronizeOperation::SynchronizeOperation(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads,
+	IHMDBStoragePtr storage)
+	: status_(Initialized), storage(storage),
+	downloads(downloads), fOp(boost::bind(&SynchronizeOperation::synchronize, this))
 {
-	CompoundOperation::Operations downloadOperatins;
-
-	for (auto it = downloads.begin(); it != downloads.end(); ++it){
-		downloadOperatins.push_back(IHMDBRemoteContext::OperationPtr(*it));
-	}
-
-	IHMDBRemoteContext::OperationPtr dco(new CompoundOperation(IHMDBRemoteContext::Downloading,
-		IHMDBRemoteContext::ICompoundOperation::Any,
-		IHMDBRemoteContext::ICompoundOperation::Parallel,
-		downloadOperatins));
-
-	eOp = new ExtractShallowcopy(downloads);
-
-	CompoundOperation::Operations synchOperatins;
-	synchOperatins.push_back(dco);
-	synchOperatins.push_back(IHMDBRemoteContext::OperationPtr(eOp));
-
-	setOperations(synchOperatins);
+	
 }
 
 SynchronizeOperation::~SynchronizeOperation()
 {
-	if (mustDelete == true){
-		delete storage;
+
+}
+
+void SynchronizeOperation::start()
+{
+	extractProgress.reset(new HMDBStorageProgress);
+	fOp.start();
+}
+
+void SynchronizeOperation::wait()
+{
+	fOp.wait();
+}
+
+void SynchronizeOperation::abort()
+{
+	if (status_ == Initialized){
+		status_ = Aborted;
+		fOp.abort();
 	}
+}
+
+const SynchronizeOperation::Status SynchronizeOperation::status() const
+{
+	if (status_ == Aborted){
+		return status_;
+	}
+
+	return fOp.status();
+}
+
+const std::string SynchronizeOperation::error() const
+{
+	return fOp.error();
+}
+
+const float SynchronizeOperation::progress() const
+{
+	return (downloadsProgress() + ((extractProgress == nullptr) ? 0.0 : extractProgress->progress())) / 2.0;
+}
+
+void SynchronizeOperation::synchronize()
+{
+	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	{
+		d->start();
+	});
+
+	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	{
+		d->wait();
+	});
+
+	if (status() == Running){
+
+		ExtractShallowcopy eSc;
+
+		eSc.extract(downloads, extractProgress.get());
+
+		if (extractProgress->aborted() == false && extractProgress->error().empty() == true){
+			shallowCopy_ = eSc.shallowCopy();
+			incrementalShallowCopy_ = eSc.incrementalBranchShallowCopy();
+		}
+	}
+}
+
+const float SynchronizeOperation::downloadsProgress() const
+{
+	float p = 0.0;
+
+	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	{
+		p += d->progress();
+	});
+
+	return p / downloads.size();
 }
 
 const ShallowCopyConstPtr SynchronizeOperation::shallowCopy() const
 {
-	return eOp->shallowCopy();
+	return shallowCopy_;
 }
 
 const IncrementalBranchShallowCopyConstPtr SynchronizeOperation::incrementalBranchShallowCopy() const
 {
-	return eOp->incrementalBranchShallowCopy();
+	return incrementalShallowCopy_;
 }

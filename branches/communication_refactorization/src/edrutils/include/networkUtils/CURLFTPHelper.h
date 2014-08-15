@@ -8,6 +8,7 @@
 #ifndef __HEADER_GUARD_NETWORKUTILS__CURLFTPHELPER_H__
 #define __HEADER_GUARD_NETWORKUTILS__CURLFTPHELPER_H__
 
+#include <networkUtils/Export.h>
 #include <networkUtils/IFtpOperations.h>
 #include <networkUtils/Types.h>
 #define NOMINMAX
@@ -24,6 +25,8 @@ namespace networkUtils
 		virtual const bool aborted() const = 0;
 		//! \param progress Postêp od 0.0 do 1.0
 		virtual void setProgress(const float progress) = 0;
+		//! \param processedData Ilosc przetworzonych danych [bytes]
+		virtual void setProcessedData(const unsigned long long processedData) = 0;
 	};
 
 	class NETWORKUTILS_EXPORT CURLFTPHelper

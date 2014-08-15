@@ -57,7 +57,7 @@ namespace hmdbCommunication
 		//! \param motionDataUrl Adres danych medycznych
 		//! \return Sesja serwisów danych ruchu, nullptr je¿eli nie uda³o siê uwierzytelniæ
 		//! u¿ytkownika w us³ugach danych ruchu i medycznych
-		virtual IHMDBSession * createSession(const std::string & motionServicesUrl,
+		virtual const IHMDBSessionPtr createSession(const std::string & motionServicesUrl,
 			const std::string & medicalServicesUrl,
 			const std::string & user,
 			const std::string & password,
@@ -73,7 +73,7 @@ namespace hmdbCommunication
 		//! \param dataUrl Adres danych ruchu		
 		//! \return Sesja serwisów danych ruchu, nullptr je¿eli nie uda³o siê uwierzytelniæ
 		//! u¿ytkownika w us³ugach danych ruchu i medycznych
-		virtual IHMDBSession * createSession(const bool motion,
+		virtual const IHMDBSessionPtr createSession(const bool motion,
 			const std::string & servicesUrl,
 			const std::string & user,
 			const std::string & password,
@@ -103,10 +103,10 @@ namespace hmdbCommunication
 			const core::Filesystem::Path & caPath = core::Filesystem::Path()) const;
 
 		//! \param session Sesja us³ug bazy danych ruchu któr¹ chcemy obs³ugiwaæ
-		virtual void attach(IHMDBSession * session);
+		virtual void attach(IHMDBSessionPtr session);
 
 		//! \param session Sesja us³ug bazy danych ruchu któr¹ chcemy obs³ugiwaæ
-		virtual void detach(IHMDBSession * session);
+		virtual void detach(IHMDBSessionPtr session);
 
 		//-----------------------------------------------------------------
 

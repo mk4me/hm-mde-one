@@ -17,39 +17,38 @@ namespace hmdbCommunication
 	public:
 		//! \param session Sesja z baz¹ danych
 		//! \param userHash Skrót u¿ytkownika na potrzeby obs³ugi p³ytkiej kopii bazy danych
-		HMDBRemoteContext(IHMDBSession * session,
-			const std::string & userHash);
+		HMDBRemoteContext(IHMDBSessionPtr session, const std::string & userHash);
 		//! Destrutkor wirtualny
 		virtual ~HMDBRemoteContext();
 
 		//! \return Sesja us³ug hmdb
-		virtual IHMDBSession * session();
+		virtual const IHMDBSessionPtr session();
 		//! \return Sesja us³ug hmdb
-		virtual const IHMDBSession * session() const;
+		virtual const IHMDBSessionConstPtr session() const;
 
 		//---------- Operacje kontekstu -----------------
 
 		//! \return Operacja opisuj¹ca odœwie¿enia p³ytkiej kopii bazy danych
-		virtual const SynchronizeOperationPtr prepareShallowCopyDownload(IHMDBStorage * storage);
+		virtual const SynchronizeOperationPtr prepareSynchronization(IHMDBStoragePtr storage);
 
 		//! \param fileIDs Identyfikatory plików do œci¹gniêcia
 		//! \param ep Polityka wykonania
 		//! \return Transfer danych
 		virtual const DownloadOperationPtr prepareFileDownload(const CompoundID & fileID,
-			IHMDBStorage * storage);
+			IHMDBStoragePtr storage);
 
 		//! \param fileName Nazwa pliku w bazie
 		//! \param path Œcie¿ka po stronie bazy, gdzie zostanie zpaisany plik
 		//! \param source Strumieñ z zawartoœci¹ pliku
 		//! \param dataReference Której bazy dotyczy upload
 		//! \return Transfer
-		virtual const TransferOperationPtr prepareFileUpload(const std::string & fileName,
-			const std::string & path, std::istream * source,
+		virtual const IHMDBFtp::TransferPtr prepareFileUpload(const std::string & fileName,
+			const std::string & path, IHMDBStorage::IStreamPtr source,
 			const DataReference dataReference);
 
 	private:
 		//! Sesja z baz¹ danych
-		IHMDBSession * session_;
+		IHMDBSessionPtr session_;
 		//! Skrót u¿ytkownika na potrzeby obs³ugi p³ytkiej kopii bazy danych
 		const std::string userHash;
 	};

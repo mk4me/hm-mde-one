@@ -2,7 +2,7 @@ BEGIN_PROJECT("dynamic")
 
 SET_PRIVATE_HEADERS(
 	DataSourceBaseContent.h
-	DataSourceContentManager.h
+	#DataSourceContentManager.h
 	DownloadStatusWidget.h
 	NotesWidget.h
 	StatusWidget.h
@@ -49,11 +49,14 @@ SET_PRIVATE_HEADERS(
 	#ViewConfigurationWidget.h
 	HMDBShallowCopyContext.h
 	HMDBServicesVerificationHelper.h
+	MemoryStorage.h
+	DataSourceDefaultContent.h
+	HMDBOperations.h
 )
 
 SET_PUBLIC_HEADERS (
 	IDataSourceContent.h
-	IDataSourceContentManager.h
+	#IDataSourceContentManager.h
 	IPatientCard.h
 	IPatientCardManager.h
 	ShallowCopyFilter.h
@@ -93,7 +96,7 @@ SET_PUBLIC_HEADERS (
 #------------------------------------------------------------------------------
 SET_SOURCE_FILES(
 	DataSourceBaseContent.cpp
-	DataSourceContentManager.cpp
+	#DataSourceContentManager.cpp
 	DownloadStatusWidget.cpp
 	NotesWidget.cpp
 	StatusWidget.cpp
@@ -151,6 +154,9 @@ SET_SOURCE_FILES(
 	DataViewWidget.cpp
 	HMDBShallowCopyContext.cpp
 	HMDBServicesVerificationHelper.cpp
+	MemoryStorage.cpp
+	DataSourceDefaultContent.cpp
+	HMDBOperations.cpp
 )
 
 SET_MOC_FILES(

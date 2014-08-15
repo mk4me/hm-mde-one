@@ -1,13 +1,13 @@
 /********************************************************************
 created:  2012/03/05
 created:  5:3:2012   21:16
-filename: IFtpSession.h
+filename: IFtpOperations.h
 author:   Mateusz Janiak
 
 purpose:
 *********************************************************************/
-#ifndef HEADER_GUARD_NETWORKUTILS__IFTPSESSION_H__
-#define HEADER_GUARD_NETWORKUTILS__IFTPSESSION_H__
+#ifndef HEADER_GUARD_NETWORKUTILS__IFTPOPERATIONS_H__
+#define HEADER_GUARD_NETWORKUTILS__IFTPOPERATIONS_H__
 
 #include <networkUtils/Export.h>
 #include <list>
@@ -141,4 +141,4 @@ namespace networkUtils
 	typedef utils::shared_ptr<const IFtpOperations> FtpOperationsConstPtr;
 }
 
-#endif	//	HEADER_GUARD_NETWORKUTILS__IFTPSESSION_H__
+#endif	//	HEADER_GUARD_NETWORKUTILS__IFTPOPERATIONS_H__

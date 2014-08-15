@@ -29,8 +29,8 @@
 
 using namespace core;
 
-MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations) :
-    coreUI::CoreMainWindow(closeUpOperations),
+MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations, const std::string & appName)
+	: coreUI::CoreMainWindow(closeUpOperations), coreUI::SingleInstanceWindow(appName),
     controller(this)
 {
     ui = new Ui::HMMMain();
@@ -71,10 +71,10 @@ class IMUHMDBSourceView : public hmdbCommunication::IHMDBSource::IHMDBSourceCont
 {
 public:
 	//! \return Nazwa widoku
-	virtual const QString name() const { return "IMU view"; }
+	virtual const QString name() const { return QObject::tr("IMU view"); }
 	//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych jakim zasilamy widok
 	//! \return Widok obs³uguj¹cy kontekst
-	virtual QWidget * createView(hmdbCommunication::IHMDBShallowCopyContext * shallowCopyContext) { return new DataViewWidget(shallowCopyContext); }
+	virtual QWidget * createView(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext) { return new DataViewWidget(shallowCopyContext); }
 	//! \return Czy dany widok wymaga po³¹czenia z us³ugami webowymi
 	virtual const bool requiresRemoteContext() const { return true; }
 };

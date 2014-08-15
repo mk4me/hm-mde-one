@@ -12,9 +12,11 @@
 #include <QtWidgets/QWidget>
 #include <plugins/hmdbCommunication/ShallowCopy.h>
 #include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
+#include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <coreui/CoreCursorChanger.h>
 #include <corelib/IThread.h>
 #include <plugins/hmdbCommunication/DataStatus.h>
+#include <plugins/hmdbCommunication/Types.h>
 
 class QTreeWidgetItem;
 
@@ -28,7 +30,14 @@ namespace hmdbCommunication
 	class IHMDBShallowCopyContext;
 	class IDataSourcePerspective;	
 	class IDataSourceContent;
+	class ShallowCopyFilter;
 }
+
+Q_DECLARE_OPAQUE_POINTER(hmdbCommunication::IDataSourcePerspective*);
+Q_DECLARE_OPAQUE_POINTER(hmdbCommunication::IDataSourceContent*);
+Q_DECLARE_OPAQUE_POINTER(hmdbCommunication::ShallowCopyFilter*);
+Q_DECLARE_METATYPE(hmdbServices::ID);
+Q_DECLARE_METATYPE(hmdbCommunication::DataType);
 
 class HMDBCOMMUNICATION_EXPORT DataViewWidget : public QWidget
 {
@@ -36,22 +45,29 @@ class HMDBCOMMUNICATION_EXPORT DataViewWidget : public QWidget
 
 public:
 
-	DataViewWidget(hmdbCommunication::IHMDBShallowCopyContext * shallowCopyContext,		
+	DataViewWidget(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext,		
 		hmdbCommunication::IDataSourcePerspective * perspective = nullptr,
-		hmdbCommunication::IDataSourceContent * content = nullptr,		
+		hmdbCommunication::IDataSourceContent * content = nullptr,
+		hmdbCommunication::ShallowCopyFilter * filter = nullptr,
 		QWidget * parent = nullptr, Qt::WindowFlags f = 0);
 
 	virtual ~DataViewWidget();
-
-	void setPerspective(hmdbCommunication::IDataSourcePerspective * perspective);
-	void setContent(hmdbCommunication::IDataSourceContent * content);
-	void setShallowCopy(const hmdbCommunication::ShallowCopyConstPtr shallowCopy);	
 
 	const hmdbCommunication::IHMDBRemoteContext::OperationConstPtr operation() const;
 
 public slots:
 
 	void selectItem(char type, int id);
+
+	void setPerspective(hmdbCommunication::IDataSourcePerspective * perspective);
+	void setContent(hmdbCommunication::IDataSourceContent * content);
+	void setFilter(hmdbCommunication::ShallowCopyFilter * filter);
+
+	void rebuildPerspective();
+	void refreshContent();	
+	void onRefreshStatus();
+	void onTrySynchronize();
+	void onForceSynchronize();
 
 private slots:
 
@@ -60,51 +76,65 @@ private slots:
 	void onUnload();
 	void onUnloadAll();
 	void onRebuild();
-	void onRefreshStatus();
-	void onTrySynchronize();
 	void onDownload();
 	void onDownloadAll();
 	void onForceDownload();
 	void onForceDownloadAll();
-	void onTreeCurrentItemChange(QTreeWidgetItem* previous, QTreeWidgetItem* current);
-	void onExtractLocalShallowCopy();
-	void onNoShallowCopyInStorage();
-	void onNoShallowCopyInStorageAndLocalOnly();
-	void onExtractLocalShallowCopyAndTryUpdate();
+	void onTreeCurrentItemChange(QTreeWidgetItem* current, QTreeWidgetItem* previous);
 	void setRemoteOperationsEnabled(const bool enable);
 	void setLocalOperationsEnabled(const bool enable);
-	void rebuildPerspective();
-	void refreshContent();
 	void onSynchronizeFinished();
+	void onDownloadFinished();
+	void initializeShallowCopy();
 
 signals:
 
-	void currentItemChanged(char previousType, int previousId, char currentType, int currentId);
+	void currentItemChanged(char currentType, int currentId, char previousType, int previousId);
 	void operationAboutToStart(char type);
 
 private:
+	static void extractItem(const QTreeWidgetItem * item, char & id, char & type);
+
+	void doShallowCopyFiltering();
+	void rawFilterShallowCopy();
+	void filterShallowCopy();
+	void setShallowCopy(const hmdbCommunication::ShallowCopyConstPtr shallowCopy);
+	void extractLocalShallowCopy();
+	void noShallowCopyInStorage();
+	void noShallowCopyInStorageAndLocalOnly();
+	void extractLocalShallowCopyAndTryUpdate();
 
 	void refreshCurrentContent(bool perspectiveFirst);	
 
-	const hmdbCommunication::DataStatus DataViewWidget::refrshItemContent(QTreeWidgetItem * item,
-		bool perspectiveFirst);
+	const hmdbCommunication::DataStatus refrshItemContent(QTreeWidgetItem * item,
+		const bool perspectiveFirst);
+
+	const hmdbCommunication::DataStatus refreshDataStatus(QTreeWidgetItem * item,
+		const bool perspectiveFirst);
+	void refreshDataStatus(const bool perspectiveFirst);	
+	const bool tryRebuildDataStatus();
 
 	const QIcon statusIcon(const hmdbCommunication::DataStatus dataStatus);
 
 	void onSynchronize();
 	void initializeActions();
-	void initializeShallowCopy();
 	void setDefaultPerspectiveHeaders();
 
 	void synchronize(hmdbCommunication::IHMDBRemoteContext::SynchronizeOperationPtr sOp,
 		utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger);
+	void download(const std::list<hmdbCommunication::IHMDBRemoteContext::DownloadOperationPtr> & downloads,
+		utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger);
+
+	void setupDownload(const hmdbCommunication::StorageFileNames & files);
 
 private:
-	core::IThreadPtr thread;
+	core::IThreadPtr remoteOperationThread;
+	core::IThreadPtr filteringThread;
 	hmdbCommunication::ShallowCopyConstPtr shallowCopy_;
 	hmdbCommunication::IDataSourcePerspective * perspective_;
 	hmdbCommunication::IDataSourceContent * content_;
-	hmdbCommunication::IHMDBShallowCopyContext * shallowCopyContext_;	
+	hmdbCommunication::ShallowCopyFilter * filter_;
+	hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext_;	
 	Ui::DataViewWidget * ui;
 	hmdbCommunication::IHMDBRemoteContext::OperationConstPtr operation_;
 	bool delPerspective;

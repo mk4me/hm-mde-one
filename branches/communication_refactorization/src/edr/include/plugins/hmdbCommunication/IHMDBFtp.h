@@ -9,7 +9,7 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBFTP_H__
 
 #include <networkUtils/IFTPSession.h>
-#include <threadingUtils/IProgress.h>
+#include <plugins/hmdbCommunication/IHMDBStorage.h>
 #include <utils/SmartPtr.h>
 
 namespace hmdbCommunication
@@ -46,14 +46,16 @@ namespace hmdbCommunication
 		//! \param stream Strumieñ z którego bêdziemy wysy³aæ zawartoœæ pliku
 		//! \param size Rozmiar danych do wys³ania
 		virtual const TransferPtr preparePut(const std::string & destinationFileName,
-			std::istream * stream, const unsigned long long size = 0) = 0;
+			IHMDBStorage::IStreamPtr stream, const unsigned long long size = 0) = 0;
 
 		//! \param destinationFileName Nazwa pobieranego pliku z serwera bazy ruchu
 		//! \param stream Strumieñ do którego bêdziemy zapisywaæ zawartoœæ œci¹ganego pliku
 		//! \param size Rozmiar danych do pobrania
 		virtual const TransferPtr prepareGet(const std::string & destinationFileName,
-			std::ostream * stream, const unsigned long long size = 0) = 0;
+			IHMDBStorage::OStreamPtr stream, const unsigned long long size = 0) = 0;
 	};
+
+	DEFINE_SMART_POINTERS(IHMDBFtp);
 }
 
 #endif	// __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBFTP_H__

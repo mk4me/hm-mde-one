@@ -37,26 +37,26 @@ const ShallowCopyConstPtr HMDBShallowCopyDataContext::shallowCopy() const
 	return shallowCopy_;
 }
 
-const IHMDBStatusManager * HMDBShallowCopyDataContext::dataStatusManager() const
+const IHMDBStatusManagerConstPtr HMDBShallowCopyDataContext::dataStatusManager() const
 {
-	return statusManager_.get();
+	return statusManager_;
 }
 
-IHMDBStatusManager * HMDBShallowCopyDataContext::dataStatusManager()
+const IHMDBStatusManagerPtr HMDBShallowCopyDataContext::dataStatusManager()
 {
-	return statusManager_.get();
+	return statusManager_;
 }
 
 void HMDBShallowCopyDataContext::setShallowCopy(const ShallowCopyConstPtr shallowCopy)
 {
 	shallowCopy_ = shallowCopy;
 	if (shallowCopy_ != nullptr){
-		statusManager_.reset(statusManager_->create(shallowCopy_));
+		//statusManager_->rebuild(shallowCopy_);
 	}
 }
 
-HMDBShallowCopyLocalContext::HMDBShallowCopyLocalContext(IHMDBShallowCopyDataContext * shallowCopyContext,
-	IHMDBLocalContext * localContext) : shallowCopyContext_(shallowCopyContext),
+HMDBShallowCopyLocalContext::HMDBShallowCopyLocalContext(IHMDBShallowCopyDataContextPtr shallowCopyContext,
+	IHMDBLocalContextPtr localContext) : shallowCopyContext_(shallowCopyContext),
 	localContext_(localContext)
 {
 
@@ -386,7 +386,7 @@ const std::map<DataType, std::set<hmdbServices::ID>> childItems(const DataType t
 }
 
 void filterAndInsertData(core::ConstVariantsList & inputData, core::ConstVariantsList & outputData,
-	const IHMDBLocalContext * localContext)
+	const IHMDBLocalContextConstPtr localContext)
 {
 	auto it = inputData.begin();
 	while (it != inputData.end()){
@@ -462,7 +462,7 @@ const core::ConstVariantsList HMDBShallowCopyLocalContext::data(const DataType t
 }
 
 const std::set<hmdbServices::ID> filterFiles(const std::set<hmdbServices::ID> & inFiles,
-	const IHMDBStatusManager * statusManager, const DataStatus & status)
+	const IHMDBStatusManagerConstPtr statusManager, const DataStatus & status)
 {
 	std::set<hmdbServices::ID> ret;
 	auto transaction = statusManager->transaction();
@@ -1059,6 +1059,12 @@ const bool HMDBShallowCopyLocalContext::unload(const DataType type,
 
 const bool HMDBShallowCopyLocalContext::unloadAll()
 {
+	return false;
+
+	if (shallowCopyContext_->shallowCopy() == nullptr){
+		return false;
+	}
+
 	bool ret = false;
 
 	auto files = filesToProcess(FileType, -1, shallowCopyContext_->shallowCopy());
@@ -1167,28 +1173,28 @@ files2roots.erase(IT->first);
 return unloadedFiles;
 */
 
-IHMDBShallowCopyDataContext * HMDBShallowCopyLocalContext::shallowCopyContext()
+const IHMDBShallowCopyDataContextPtr HMDBShallowCopyLocalContext::shallowCopyContext()
 {
 	return shallowCopyContext_;
 }
 
-const IHMDBShallowCopyDataContext * HMDBShallowCopyLocalContext::shallowCopyContext() const
+const IHMDBShallowCopyDataContextConstPtr HMDBShallowCopyLocalContext::shallowCopyContext() const
 {
 	return shallowCopyContext_;
 }
 
-IHMDBLocalContext * HMDBShallowCopyLocalContext::localContext()
+const IHMDBLocalContextPtr HMDBShallowCopyLocalContext::localContext()
 {
 	return localContext_;
 }
 
-const IHMDBLocalContext * HMDBShallowCopyLocalContext::localContext() const
+const IHMDBLocalContextConstPtr HMDBShallowCopyLocalContext::localContext() const
 {
 	return localContext_;
 }
 
-HMDBShallowCopyRemoteContext::HMDBShallowCopyRemoteContext(IHMDBShallowCopyDataContext * shallowCopyContext,
-	IHMDBRemoteContext * remoteContext) : shallowCopyContext_(shallowCopyContext),
+HMDBShallowCopyRemoteContext::HMDBShallowCopyRemoteContext(IHMDBShallowCopyDataContextPtr shallowCopyContext,
+	IHMDBRemoteContextPtr remoteContext) : shallowCopyContext_(shallowCopyContext),
 	remoteContext_(remoteContext)
 {
 
@@ -1199,10 +1205,10 @@ HMDBShallowCopyRemoteContext::~HMDBShallowCopyRemoteContext()
 
 }
 
-const IHMDBRemoteContext::CompoundOperationPtr HMDBShallowCopyRemoteContext::prepareDownload(const DataType type,
+const std::list<IHMDBRemoteContext::DownloadOperationPtr> HMDBShallowCopyRemoteContext::prepareDownload(const DataType type,
 	const hmdbServices::ID id, const bool recursive, const bool forceDownload)
 {
-	return IHMDBRemoteContext::CompoundOperationPtr();
+	return std::list<IHMDBRemoteContext::DownloadOperationPtr>();
 }
 
 void updateIncrementalShallowCopyStatus(const hmdbServices::IncrementalBranchShallowCopy::ShallowCopy & ishallowCopy,
@@ -1244,36 +1250,36 @@ void HMDBShallowCopyRemoteContext::synchronize(const IHMDBRemoteContext::Synchro
 {
 	downloadOperations->start();
 	downloadOperations->wait();
-	if (downloadOperations->status() == threadingUtils::IOperation::Finieshed){
+	if (downloadOperations->status() == threadingUtils::IOperation::Finished){
 		auto sc = downloadOperations->shallowCopy();
 		auto isc = downloadOperations->incrementalBranchShallowCopy();
 		synchronize(sc, isc);
 	}
 }
 
-IHMDBShallowCopyDataContext * HMDBShallowCopyRemoteContext::shallowCopyContext()
+const IHMDBShallowCopyDataContextPtr HMDBShallowCopyRemoteContext::shallowCopyContext()
 {
 	return shallowCopyContext_;
 }
 
-const IHMDBShallowCopyDataContext * HMDBShallowCopyRemoteContext::shallowCopyContext() const
+const IHMDBShallowCopyDataContextConstPtr HMDBShallowCopyRemoteContext::shallowCopyContext() const
 {
 	return shallowCopyContext_;
 }
 
-IHMDBRemoteContext * HMDBShallowCopyRemoteContext::remoteContext()
+const IHMDBRemoteContextPtr HMDBShallowCopyRemoteContext::remoteContext()
 {
 	return remoteContext_;
 }
 
-const IHMDBRemoteContext * HMDBShallowCopyRemoteContext::remoteContext() const
+const IHMDBRemoteContextConstPtr HMDBShallowCopyRemoteContext::remoteContext() const
 {
 	return remoteContext_;
 }
 
-HMDBShallowCopyContext::HMDBShallowCopyContext(IHMDBShallowCopyDataContext * scdc,
-	IHMDBShallowCopyLocalContext * sclc,
-	IHMDBShallowCopyRemoteContext * scrc)
+HMDBShallowCopyContext::HMDBShallowCopyContext(IHMDBShallowCopyDataContextPtr scdc,
+	IHMDBShallowCopyLocalContextPtr sclc,
+	IHMDBShallowCopyRemoteContextPtr scrc)
 	: dataContext_(scdc), localContext_(sclc), remoteContext_(scrc)
 {
 
@@ -1284,32 +1290,32 @@ HMDBShallowCopyContext::~HMDBShallowCopyContext()
 
 }
 
-IHMDBShallowCopyDataContext * HMDBShallowCopyContext::shallowCopyDataContext()
+const IHMDBShallowCopyDataContextPtr HMDBShallowCopyContext::shallowCopyDataContext()
 {
-	return dataContext_.get();
+	return dataContext_;
 }
 
-const IHMDBShallowCopyDataContext * HMDBShallowCopyContext::shallowCopyDataContext() const
+const IHMDBShallowCopyDataContextConstPtr HMDBShallowCopyContext::shallowCopyDataContext() const
 {
-	return dataContext_.get();
+	return dataContext_;
 }
 
-IHMDBShallowCopyLocalContext * HMDBShallowCopyContext::shallowCopyLocalContext()
+const IHMDBShallowCopyLocalContextPtr HMDBShallowCopyContext::shallowCopyLocalContext()
 {
-	return localContext_.get();
+	return localContext_;
 }
 
-const IHMDBShallowCopyLocalContext * HMDBShallowCopyContext::shallowCopyLocalContext() const
+const IHMDBShallowCopyLocalContextConstPtr HMDBShallowCopyContext::shallowCopyLocalContext() const
 {
-	return localContext_.get();
+	return localContext_;
 }
 
-IHMDBShallowCopyRemoteContext * HMDBShallowCopyContext::shallowCopyRemoteContext()
+const IHMDBShallowCopyRemoteContextPtr HMDBShallowCopyContext::shallowCopyRemoteContext()
 {
-	return remoteContext_.get();
+	return remoteContext_;
 }
 
-const IHMDBShallowCopyRemoteContext * HMDBShallowCopyContext::shallowCopyRemoteContext() const
+const IHMDBShallowCopyRemoteContextConstPtr HMDBShallowCopyContext::shallowCopyRemoteContext() const
 {
-	return remoteContext_.get();
+	return remoteContext_;
 }

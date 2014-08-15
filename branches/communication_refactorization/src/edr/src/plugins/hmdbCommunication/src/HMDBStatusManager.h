@@ -36,10 +36,6 @@ namespace hmdbCommunication
 		HMDBStatusManager();
 		virtual ~HMDBStatusManager();
 
-		virtual void setShallowCopy(const ShallowCopyConstPtr shallowCopy);
-
-		virtual const ShallowCopyConstPtr shallowCopy() const;
-
 		virtual const TransactionPtr transaction();
 		virtual const TransactionConstPtr transaction() const;
 
@@ -68,15 +64,11 @@ namespace hmdbCommunication
 
 		virtual void tryUpdate(const ShallowCopyConstPtr shallowCopy);
 
-		virtual void rebuild(const IHMDBStorage * storage, const ShallowCopyConstPtr shallowCopy);
-
-		//! \param shallowCopy P³ytka kopia bazy dnaych dla której budujemy statusy na bazie aktualnych statusów
-		//! \return Manager statusów
-		virtual IHMDBStatusManager * create(const ShallowCopyConstPtr shallowCopy) const;
+		virtual void rebuild(const IHMDBStorageConstPtr storage, const ShallowCopyConstPtr shallowCopy);
 
 	private:
 
-		const UpdateData fullUpdateData();
+		const UpdateData fullUpdateData(const ShallowCopyConstPtr shallowCopy);
 
 		//! \param dataType Typ danych
 		//! \param id Identyfikator danych
@@ -104,15 +96,13 @@ namespace hmdbCommunication
 
 		void rawTryUpdate(const ShallowCopyConstPtr shallowCopy);
 
-		void rawRebuild(const IHMDBStorage * storage, const ShallowCopyConstPtr shallowCopy);
+		void rawRebuild(const IHMDBStorageConstPtr storage, const ShallowCopyConstPtr shallowCopy);
 
 	private:
 		//! Statusy danych
 		Statuses statuses;
 		//! Obiekt synchronizuj¹cy
 		mutable threadingUtils::RecursiveSyncPolicy synch_;
-		//! P³ytka kopia bazy danych
-		ShallowCopyConstPtr shallowCopy_;
 		//! Mapa aktualizacji
 		UpdateData updateData;
 	};

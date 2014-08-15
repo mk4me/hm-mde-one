@@ -32,7 +32,7 @@ namespace threadingUtils
 			Pending,	//! Czeka na wykonanie
 			Running,	//! W trakcie
 			Aborted,	//! Przerwano
-			Finieshed,	//! Zakoñczono powodzeniem
+			Finished,	//! Zakoñczono powodzeniem
 			Error,		//! Zakoñczono b³êdem
 		};
 	public:

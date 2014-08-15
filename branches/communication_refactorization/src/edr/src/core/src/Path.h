@@ -37,8 +37,12 @@ namespace core {
 		virtual const Filesystem::Path& getTmpPath() const;
 		//! \return Zwraca pe³n¹ œcie¿kê do folderu pluginu
 		virtual const Filesystem::Path& getPluginPath() const;
+		//! \return Losowa nazwa pliku tymczasowego
+		virtual const Filesystem::Path generateTempFileName() const;
 		//! \return Zwraca pe³n¹ œcie¿kê do folderu z t³umaczeniami aplikacji
 		const Filesystem::Path& getTranslationsPath() const;
+		//! \return Losowa nazwa pliku tymczasowego
+		static const Filesystem::Path TempFileName();
 
 	private:
 		Filesystem::Path translationsPath_;

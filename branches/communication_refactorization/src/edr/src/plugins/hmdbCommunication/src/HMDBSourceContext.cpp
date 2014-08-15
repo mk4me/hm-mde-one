@@ -11,9 +11,9 @@
 
 using namespace hmdbCommunication;
 
-HMDBSourceContext::HMDBSourceContext(IHMDBDataContext * dataContext,
-	IHMDBLocalContext * localContext,
-	IHMDBRemoteContext * remoteContext)
+HMDBSourceContext::HMDBSourceContext(IHMDBDataContextPtr dataContext,
+	IHMDBLocalContextPtr localContext,
+	IHMDBRemoteContextPtr remoteContext)
 	: dataContext_(dataContext), localContext_(localContext), remoteContext_(remoteContext)
 {
 
@@ -24,32 +24,32 @@ HMDBSourceContext::~HMDBSourceContext()
 	
 }
 
-IHMDBLocalContext * HMDBSourceContext::localContext()
+const IHMDBLocalContextPtr HMDBSourceContext::localContext()
 {
-	return localContext_.get();
+	return localContext_;
 }
 
-const IHMDBLocalContext * HMDBSourceContext::localContext() const
+const IHMDBLocalContextConstPtr HMDBSourceContext::localContext() const
 {
-	return localContext_.get();
+	return localContext_;
 }
 
-IHMDBRemoteContext * HMDBSourceContext::remoteContext()
+const IHMDBRemoteContextPtr HMDBSourceContext::remoteContext()
 {
-	return remoteContext_.get();
+	return remoteContext_;
 }
 
-const IHMDBRemoteContext * HMDBSourceContext::remoteContext() const
+const IHMDBRemoteContextConstPtr HMDBSourceContext::remoteContext() const
 {
-	return remoteContext_.get();
+	return remoteContext_;
 }
 
-IHMDBDataContext * HMDBSourceContext::dataContext()
+const IHMDBDataContextPtr HMDBSourceContext::dataContext()
 {
-	return dataContext_.get();
+	return dataContext_;
 }
 
-const IHMDBDataContext * HMDBSourceContext::dataContext() const
+const IHMDBDataContextConstPtr HMDBSourceContext::dataContext() const
 {
-	return dataContext_.get();
+	return dataContext_;
 }

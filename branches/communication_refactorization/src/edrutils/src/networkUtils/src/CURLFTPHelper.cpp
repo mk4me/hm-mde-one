@@ -84,6 +84,7 @@ int setDownloadCustomProgress(ICURLFTPProgress* progress, curl_off_t t, /* dltot
 		return -1;
 	}
 
+	progress->setProcessedData(d >= 0 ? d : 0);
 	progress->setProgress(t > 0 ? ((float)d / (float)t) : 1.0);
 	return 0;
 }
@@ -94,6 +95,7 @@ int setUploadCustomProgress(ICURLFTPProgress* progress, curl_off_t t, /* dltotal
 		return -1;
 	}
 
+	progress->setProcessedData(ulnow >= 0 ? ulnow : 0);
 	progress->setProgress(ultotal > 0 ? ((float)ulnow / (float)ultotal) : 1.0);
 	return 0;
 }

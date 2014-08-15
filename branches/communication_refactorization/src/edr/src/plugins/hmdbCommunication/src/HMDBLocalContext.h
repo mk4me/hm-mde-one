@@ -29,7 +29,7 @@ namespace hmdbCommunication
 		//! \param dataContext Kontekst dancyh z dostepem do storage
 		//! \param mdm MemoryManager
 		//! \param sdm StreaManager
-		HMDBLocalContext(IHMDBDataContext * dataContext, core::IMemoryDataManager * mdm,
+		HMDBLocalContext(IHMDBDataContextPtr dataContext, core::IMemoryDataManager * mdm,
 			core::IStreamDataManager * sdm);
 
 		//! Destruktor wirtualny
@@ -40,9 +40,9 @@ namespace hmdbCommunication
 	//! ------------ Opis kontekstu ---------------------------
 
 		//! \return Kontekst danych
-		virtual IHMDBDataContext * dataContext();
+		virtual const IHMDBDataContextPtr dataContext();
 		//! \return Kontekst danych
-		virtual const IHMDBDataContext * dataContext() const;
+		virtual const IHMDBDataContextConstPtr dataContext() const;
 
 	//! ------------- Operacje --------------------------------
 
@@ -89,7 +89,7 @@ namespace hmdbCommunication
 
 	private:
 		//! kontekst danych
-		IHMDBDataContext * dataContext_;
+		IHMDBDataContextPtr dataContext_;
 		//! Manager danych
 		core::IMemoryDataManager * mdm;
 		//! Manager strumieni

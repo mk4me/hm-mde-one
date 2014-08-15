@@ -19,31 +19,31 @@ namespace hmdbCommunication
 		//! \param dataContext Kontekst danych
 		//! \param localContext Kontekst danych lokalnych
 		//! \param remoteContext Kontekst zdalnych danych i operacji
-		HMDBSourceContext(IHMDBDataContext * dataContext,
-			IHMDBLocalContext * localContext,
-			IHMDBRemoteContext * remoteContext);
+		HMDBSourceContext(IHMDBDataContextPtr dataContext,
+			IHMDBLocalContextPtr localContext,
+			IHMDBRemoteContextPtr remoteContext);
 		//! Destruktor wirtualny
 		virtual ~HMDBSourceContext();
 
 		//! Kontekst lokalny
-		virtual IHMDBLocalContext * localContext();
-		virtual const IHMDBLocalContext * localContext() const;
+		virtual const IHMDBLocalContextPtr localContext();
+		virtual const IHMDBLocalContextConstPtr localContext() const;
 
 		//! Kontekst zdalny
-		virtual IHMDBRemoteContext * remoteContext();
-		virtual const IHMDBRemoteContext * remoteContext() const;
+		virtual const IHMDBRemoteContextPtr remoteContext();
+		virtual const IHMDBRemoteContextConstPtr remoteContext() const;
 
 		//! Kontekst danych
-		virtual IHMDBDataContext * dataContext();
-		virtual const IHMDBDataContext * dataContext() const;
+		virtual const IHMDBDataContextPtr dataContext();
+		virtual const IHMDBDataContextConstPtr dataContext() const;
 
 	private:
-		//! Sesja us³ug bazy danych
-		utils::shared_ptr<IHMDBLocalContext> localContext_;
-		//! Storage dla danych
-		utils::shared_ptr<IHMDBRemoteContext> remoteContext_;
 		//! Aktualna p³ytka kopia bazy danych
-		utils::shared_ptr<IHMDBDataContext> dataContext_;
+		IHMDBDataContextPtr dataContext_;
+		//! Sesja us³ug bazy danych
+		IHMDBLocalContextPtr localContext_;
+		//! Storage dla danych
+		IHMDBRemoteContextPtr remoteContext_;
 	};
 }
 

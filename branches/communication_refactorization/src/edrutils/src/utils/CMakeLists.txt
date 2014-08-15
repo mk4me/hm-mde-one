@@ -45,7 +45,6 @@ SET_PUBLIC_HEADERS(
 	CommandStack.h
 	dynamictreemodel.h
 	modeltest.h
-	ITTransaction.h
 )
 
 #------------------------------------------------------------------------------

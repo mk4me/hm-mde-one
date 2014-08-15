@@ -41,7 +41,9 @@ struct SortActionsByNames
 
 typedef CoreSplitableDockWidgetT<WidgetClonePolicyCopyConstructor<CoreVisualizerWidget>> VisualizerWidget;
 
-ToolboxMain::ToolboxMain(const CloseUpOperations & closeUpOperations) : CoreMainWindow(closeUpOperations), ui(new Ui::EDRMain), visualizersPlaceholder(new QMainWindow)
+ToolboxMain::ToolboxMain(const CloseUpOperations & closeUpOperations, const std::string & appName)
+	: CoreMainWindow(closeUpOperations), SingleInstanceWindow(appName),
+	ui(new Ui::EDRMain), visualizersPlaceholder(new QMainWindow)
 {
 	ui->setupUi(this);
 	qApp->setApplicationName("EDR");

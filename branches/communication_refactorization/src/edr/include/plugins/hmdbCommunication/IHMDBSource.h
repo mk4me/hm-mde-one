@@ -11,16 +11,15 @@
 #include <string>
 #include <corelib/Variant.h>
 #include <QtGui/QIcon>
+#include <plugins/hmdbCommunication/IHMDBStorage.h>
+#include <plugins/hmdbCommunication/IHMDBSession.h>
+#include <plugins/hmdbCommunication/IHMDBSourceContext.h>
+#include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 
 class QWidget;
 
 namespace hmdbCommunication
 {
-	//! Forward declaration	
-	class IHMDBSourceContext;
-	class IHMDBSession;
-	class IHMDBStorage;
-	class IHMDBShallowCopyContext;	
 	class IShallowCopyFilterManager;
 
 
@@ -76,7 +75,7 @@ namespace hmdbCommunication
 			virtual const QString name() const = 0;
 			//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych jakim zasilamy widok
 			//! \return Widok obs³uguj¹cy kontekst
-			virtual QWidget * createView(IHMDBShallowCopyContext * shallowCopyContext) = 0;
+			virtual QWidget * createView(IHMDBShallowCopyContextPtr shallowCopyContext) = 0;
 			//! \return Ikona widoku
 			virtual const QIcon icon() const { return QIcon(); };
 			//! \return Czy dany widok wymaga po³¹czenia z us³ugami webowymi
@@ -92,13 +91,13 @@ namespace hmdbCommunication
 		//! \param password	Has³o u¿ytkownika
 		//! \param session Sesja us³ug zdalnych
 		//! \return Kontekst Ÿród³a dancyh
-		virtual IHMDBSourceContext * createSourceContext(IHMDBStorage * storage,
+		virtual const IHMDBSourceContextPtr createSourceContext(IHMDBStoragePtr storage,
 			const std::string & user, const std::string & password,
-			IHMDBSession * session = nullptr) = 0;		
+			IHMDBSessionPtr session = nullptr) = 0;		
 
 		//! \param sourceContext Kontekst Ÿród³a danych
 		//! \return Konteks p³ytkiej kopii bazy danych
-		virtual IHMDBShallowCopyContext * createShallowCopyContext(IHMDBSourceContext * sourceContext) = 0;
+		virtual const IHMDBShallowCopyContextPtr createShallowCopyContext(IHMDBSourceContextPtr sourceContext) = 0;
 
 		//! \param prototype Prototyp widoku kontekstów
 		virtual void registerSourceContextViewPrototype(IHMDBSourceContextView * prototype) = 0;

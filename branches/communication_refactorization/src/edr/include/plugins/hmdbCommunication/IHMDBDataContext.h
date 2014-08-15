@@ -10,6 +10,7 @@
 
 #include <string>
 #include <plugins/hmdbCommunication/ShallowCopy.h>
+#include <plugins/hmdbCommunication/IHMDBStorage.h>
 
 namespace hmdbCommunication
 {
@@ -23,9 +24,9 @@ namespace hmdbCommunication
 		//! Desturktor wirtualny
 		virtual ~IHMDBDataContext() {}
 		//! \return Obiekt zarz¹dzaj¹cy œci¹gniêtymi danymi
-		virtual const IHMDBStorage * storage() const = 0;
+		virtual const IHMDBStorageConstPtr storage() const = 0;
 		//! \return Obiekt zarz¹dzaj¹cy œci¹gniêtymi danymi
-		virtual IHMDBStorage * storage() = 0;
+		virtual const IHMDBStoragePtr storage() = 0;
 		//! \return User hash na potrzeby obs³ugi p³ytkiej kopii bazy danych w storage
 		virtual const std::string userName() const = 0;
 		//! \return User hash na potrzeby obs³ugi p³ytkiej kopii bazy danych w storage
@@ -35,6 +36,8 @@ namespace hmdbCommunication
 		//! \return Czy p³ytka kopia wystêpuje
 		virtual const bool shallowCopyExists() const = 0;
 	};
+
+	DEFINE_SMART_POINTERS(IHMDBDataContext);
 }
 
 #endif	// __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBDATACONTEXT_H__

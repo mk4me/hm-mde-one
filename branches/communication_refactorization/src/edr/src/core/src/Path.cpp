@@ -1,5 +1,8 @@
 #include "CorePCH.h"
 #include "Path.h"
+#include <QtCore/QThread>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace core;
 
@@ -62,7 +65,17 @@ const Filesystem::Path& Path::getPluginPath() const
 	return pluginPath_;
 }
 
+const Filesystem::Path Path::generateTempFileName() const
+{
+	return TempFileName();
+}
+
 const Filesystem::Path& Path::getTranslationsPath() const
 {
 	return translationsPath_;
+}
+
+const Filesystem::Path Path::TempFileName()
+{
+	return Filesystem::Path(boost::lexical_cast<std::string>(boost::posix_time::microsec_clock::local_time().time_of_day().total_microseconds()) + "_" + boost::lexical_cast<std::string>(QThread::currentThreadId()) + ".tmp");
 }

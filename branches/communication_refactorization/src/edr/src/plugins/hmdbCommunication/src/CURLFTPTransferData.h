@@ -12,6 +12,7 @@
 #include <networkUtils/CURLFTPHelper.h>
 #include "CURLFTPStatus.h"
 #include "CURLFTPProgress.h"
+#include <plugins/hmdbCommunication/IHMDBStorage.h>
 
 namespace hmdbCommunication
 {
@@ -32,6 +33,18 @@ namespace hmdbCommunication
 		utils::shared_ptr<CURLFTPProgress> progress;
 		//! Obiekt statusu
 		utils::shared_ptr<CURLFTPStatus> status;
+	};
+
+	struct CURLFTPUploadTransferData : public CURLFTPTransferData
+	{
+	public:
+		IHMDBStorage::IStreamPtr stream;
+	};
+
+	struct CURLFTPDownloadTransferData : public CURLFTPTransferData
+	{
+	public:
+		IHMDBStorage::OStreamPtr stream;
 	};
 }
 

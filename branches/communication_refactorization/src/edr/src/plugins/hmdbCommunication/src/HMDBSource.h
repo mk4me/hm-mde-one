@@ -70,13 +70,13 @@ namespace hmdbCommunication
 		//! \param password	Has³o u¿ytkownika
 		//! \param session Sesja us³ug zdalnych
 		//! \return Kontekst Ÿród³a dancyh
-		virtual IHMDBSourceContext * createSourceContext(IHMDBStorage * storage,
+		virtual const IHMDBSourceContextPtr createSourceContext(IHMDBStoragePtr storage,
 			const std::string & user, const std::string & password,
-			IHMDBSession * session = nullptr);
+			IHMDBSessionPtr session = IHMDBSessionPtr());
 
 		//! \param sourceContext Kontekst Ÿród³a danych
 		//! \return Konteks p³ytkiej kopii bazy danych
-		virtual IHMDBShallowCopyContext * createShallowCopyContext(IHMDBSourceContext * sourceContext);
+		virtual const IHMDBShallowCopyContextPtr createShallowCopyContext(IHMDBSourceContextPtr sourceContext);
 
 		//! \param prototype Prototyp widoku kontekstów
 		virtual void registerSourceContextViewPrototype(IHMDBSourceContextView * prototype);

@@ -8,7 +8,7 @@
 
 using namespace hmdbCommunication;
 
-HMDBRemoteContext::HMDBRemoteContext(IHMDBSession * session, const std::string & userHash)
+HMDBRemoteContext::HMDBRemoteContext(IHMDBSessionPtr session, const std::string & userHash)
 	: session_(session), userHash(userHash)
 {
 
@@ -19,36 +19,23 @@ HMDBRemoteContext::~HMDBRemoteContext()
 
 }
 
-IHMDBSession * HMDBRemoteContext::session()
+const IHMDBSessionPtr HMDBRemoteContext::session()
 {
 	return session_;
 }
 
-const IHMDBSession * HMDBRemoteContext::session() const
+const IHMDBSessionConstPtr HMDBRemoteContext::session() const
 {
 	return session_;
 }
 
-IHMDBRemoteContext::IDownloadOperation * createDownload(hmdbServices::IFileStoremanWS * fs,
-	IHMDBFtp * ftp, IHMDBStorage * storage, const IHMDBRemoteContext::CompoundID cid)
-{
-	return new CompoundFileDownload(cid,
-		new PrepareFileToDownloadOperation(fs, cid.fileID),
-		new PrepareMemoryTransferOutputOperation(),
-		new FTPDownloadFileOperation(ftp),
-		storage == nullptr ? nullptr : new StoreOutputOperation(storage, cid.fileName));
-}
-
-const HMDBRemoteContext::SynchronizeOperationPtr HMDBRemoteContext::prepareShallowCopyDownload(IHMDBStorage * storage)
+const HMDBRemoteContext::SynchronizeOperationPtr HMDBRemoteContext::prepareSynchronization(IHMDBStoragePtr storage)
 {
 	HMDBRemoteContext::SynchronizeOperationPtr ret;
-	std::list<IHMDBRemoteContext::IDownloadOperation*> downloads;
-
-	bool mustDelete = false;
+	std::list<IHMDBRemoteContext::DownloadOperationPtr> downloads;	
 
 	if (storage == nullptr){
-		mustDelete = true;
-		storage = new MemoryStorage;
+		storage.reset(new MemoryStorage);
 	}
 
 	if (session_->medicalFilestoreman() != nullptr && session_->medicalFtp() != nullptr){
@@ -60,15 +47,17 @@ const HMDBRemoteContext::SynchronizeOperationPtr HMDBRemoteContext::prepareShall
 		{
 			cid.fileID = ShallowCopyUtils::MetadataFileID;
 			cid.fileName = ShallowCopyUtils::shallowCopyName(userHash, cid.dataReference, ShallowCopyUtils::Meta);
-
-			downloads.push_back(createDownload(session_->medicalFilestoreman(), session_->medicalFtp(), storage, cid));
+			utils::shared_ptr<MemoryTransferIO> ptoOp(new MemoryTransferIO());
+			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->medicalFilestoreman(), cid.fileID));
+			downloads.push_back(IHMDBRemoteContext::DownloadOperationPtr(new FileDownload(cid, pftdOp, ptoOp, session_->medicalFtp(), storage)));			
 		}
 
 		{
 			cid.fileID = ShallowCopyUtils::ShallowCopyFileID;
 			cid.fileName = ShallowCopyUtils::shallowCopyName(userHash, cid.dataReference, ShallowCopyUtils::Shallow);
-
-			downloads.push_back(createDownload(session_->medicalFilestoreman(), session_->medicalFtp(), storage, cid));
+			utils::shared_ptr<MemoryTransferIO> ptoOp(new MemoryTransferIO());
+			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->medicalFilestoreman(), cid.fileID));
+			downloads.push_back(IHMDBRemoteContext::DownloadOperationPtr(new FileDownload(cid, pftdOp, ptoOp, session_->medicalFtp(), storage)));			
 		}
 
 	}
@@ -81,71 +70,74 @@ const HMDBRemoteContext::SynchronizeOperationPtr HMDBRemoteContext::prepareShall
 		{
 			cid.fileID = ShallowCopyUtils::MetadataFileID;
 			cid.fileName = ShallowCopyUtils::shallowCopyName(userHash, cid.dataReference, ShallowCopyUtils::Meta);
-
-			downloads.push_back(createDownload(session_->motionFilestoreman(), session_->motionFtp(), storage, cid));
+			utils::shared_ptr<MemoryTransferIO> ptoOp(new MemoryTransferIO());
+			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->motionFilestoreman(), cid.fileID));
+			downloads.push_back(IHMDBRemoteContext::DownloadOperationPtr(new FileDownload(cid, pftdOp, ptoOp, session_->motionFtp(), storage)));
 		}
 
 		{
 			cid.fileID = ShallowCopyUtils::ShallowCopyFileID;
 			cid.fileName = ShallowCopyUtils::shallowCopyName(userHash, cid.dataReference, ShallowCopyUtils::Shallow);
-
-			downloads.push_back(createDownload(session_->motionFilestoreman(), session_->motionFtp(), storage, cid));
+			utils::shared_ptr<MemoryTransferIO> ptoOp(new MemoryTransferIO());
+			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->motionFilestoreman(), cid.fileID));
+			downloads.push_back(IHMDBRemoteContext::DownloadOperationPtr(new FileDownload(cid, pftdOp, ptoOp, session_->motionFtp(), storage)));			
 		}
 
 		{
 			cid.fileID = ShallowCopyUtils::IncrementalShallowCopyFileID;
 			cid.fileName = ShallowCopyUtils::shallowCopyName(userHash, cid.dataReference, ShallowCopyUtils::IncrementalShallow);
-
-			downloads.push_back(createDownload(session_->motionFilestoreman(), session_->motionFtp(), storage, cid));
+			utils::shared_ptr<MemoryTransferIO> ptoOp(new MemoryTransferIO());
+			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->motionFilestoreman(), cid.fileID));
+			downloads.push_back(IHMDBRemoteContext::DownloadOperationPtr(new FileDownload(cid, pftdOp, ptoOp, session_->motionFtp(), storage)));			
 		}
 	}	
 
 	if (downloads.empty() == false){
-		ret.reset(new SynchronizeOperation(downloads, storage, mustDelete));
+		ret.reset(new SynchronizeOperation(downloads, storage));
 	}
 
 	return ret;
 }
 
 const HMDBRemoteContext::DownloadOperationPtr HMDBRemoteContext::prepareFileDownload(const CompoundID & fileID,
-	IHMDBStorage * storage)
+	IHMDBStoragePtr storage)
 {
 	HMDBRemoteContext::DownloadOperationPtr ret;
 
+	hmdbServices::IFileStoremanWS * fsWS = nullptr;
+	IHMDBFtp * ftp = nullptr;
+
 	if (fileID.dataReference == IHMDBRemoteContext::Medical){
 		if (session_->medicalFilestoreman() != nullptr && session_->medicalFtp() != nullptr){
-			ret.reset(new CompoundFileDownload(fileID,
-				new PrepareFileToDownloadOperation(session_->medicalFilestoreman(), fileID.fileID),
-				new PrepareTmpFileTransferOutputOperation(),
-				new FTPDownloadFileOperation(session_->medicalFtp()),
-				new StoreOutputOperation(storage, fileID.fileName)));
+			fsWS = session_->medicalFilestoreman();
+			ftp = session_->medicalFtp();
 		}
 	}
 	else{
 		if (session_->motionFilestoreman() != nullptr && session_->motionFtp() != nullptr){
-			ret.reset(new CompoundFileDownload(fileID,
-				new PrepareFileToDownloadOperation(session_->motionFilestoreman(), fileID.fileID),
-				new PrepareTmpFileTransferOutputOperation(),
-				new FTPDownloadFileOperation(session_->motionFtp()),
-				new StoreOutputOperation(storage, fileID.fileName)));
+			fsWS = session_->motionFilestoreman();
+			ftp = session_->motionFtp();
 		}		
+	}
+
+	if (fsWS != nullptr && ftp != nullptr){
+		utils::shared_ptr<TmpFileTransferIO> ptoOp(new TmpFileTransferIO());
+		utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(fsWS, fileID.fileID));
+		ret.reset(new FileDownload(fileID, pftdOp, ptoOp, ftp, storage));
 	}
 
 	return ret;
 }
 
-const IHMDBRemoteContext::TransferOperationPtr HMDBRemoteContext::prepareFileUpload(const std::string & fileName,
-	const std::string & path, std::istream * source,
+const IHMDBFtp::TransferPtr HMDBRemoteContext::prepareFileUpload(const std::string & fileName,
+	const std::string & path, IHMDBStorage::IStreamPtr source,
 	const DataReference dataReference)
 {
-	utils::shared_ptr<TransferOperation> ret(new TransferOperation());
 
 	if (dataReference == Motion){
-		ret->setTransfer(session_->motionFtp()->preparePut(path + "/" + fileName, source));
+		return session_->motionFtp()->preparePut(path + "/" + fileName, source);
 	}
 	else{
-		ret->setTransfer(session_->medicalFtp()->preparePut(path + "/" + fileName, source));
+		return session_->medicalFtp()->preparePut(path + "/" + fileName, source);
 	}
-
-	return ret;
 }

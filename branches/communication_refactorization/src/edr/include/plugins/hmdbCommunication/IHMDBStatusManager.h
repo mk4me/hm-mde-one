@@ -11,14 +11,10 @@
 #include <plugins/hmdbCommunication/Types.h>
 #include <plugins/hmdbCommunication/DataStatus.h>
 #include <plugins/hmdbCommunication/ShallowCopy.h>
-#include <utils/ITTransaction.h>
+#include <threadingUtils/ITTransaction.h>
 
 namespace hmdbCommunication
 {
-
-	class IHMDBStorage;
-	class IHMDBStatusManager;
-
 	class IHMDBStatusManagerOperations
 	{
 	public:
@@ -54,19 +50,18 @@ namespace hmdbCommunication
 		//! Metoda buduje od zera statusy na bazie p³ytkiej kopii bazy danych, StreamDataManager i Storage
 		//! \param storage Storage z danymi
 		//! \param shallowCopy P³ytka kopia dla której budujemy statusu
-		virtual void rebuild(const IHMDBStorage * storage, const ShallowCopyConstPtr shallowCopy) = 0;
-		//! \param shallowCopy P³ytka kopia bazy dnaych dla której budujemy statusy na bazie aktualnych statusów
-		//! \return Manager statusów
-		virtual IHMDBStatusManager * create(const ShallowCopyConstPtr shallowCopy) const = 0;
+		virtual void rebuild(const IHMDBStorageConstPtr storage, const ShallowCopyConstPtr shallowCopy) = 0;
 	};
 
 	//! Interfejs udostêpniaj¹cy opis statusu danych
-	class IHMDBStatusManager : public utils::ITTransaction<IHMDBStatusManagerOperations>
+	class IHMDBStatusManager : public threadingUtils::ITTransaction<IHMDBStatusManagerOperations>
 	{
 	public:
 		//! Destruktor wirtualny
 		virtual ~IHMDBStatusManager() {}	
 	};
+
+	DEFINE_SMART_POINTERS(IHMDBStatusManager);
 }
 
 #endif	// __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBSTATUSMANAGER_H__

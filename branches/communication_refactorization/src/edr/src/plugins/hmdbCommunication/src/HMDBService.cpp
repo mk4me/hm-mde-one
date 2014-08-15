@@ -45,7 +45,7 @@ HMDBService::~HMDBService()
 
 }
 
-IHMDBSession * HMDBService::createSession(const std::string & motionServicesUrl,
+const IHMDBSessionPtr HMDBService::createSession(const std::string & motionServicesUrl,
 	const std::string & medicalServicesUrl,
 	const std::string & user,
 	const std::string & password,
@@ -54,12 +54,12 @@ IHMDBSession * HMDBService::createSession(const std::string & motionServicesUrl,
 	const core::Filesystem::Path & CAPath,
 	const networkUtils::SSLHostVerification hostVerification)
 {
-	return new HMDBSession(dataManager, servicesManager, serviceCurlExecutor,
+	return IHMDBSessionPtr(new HMDBSession(dataManager, servicesManager, serviceCurlExecutor,
 		user, password,	motionServicesUrl, medicalServicesUrl, motionDataUrl,
-		medicalDataUrl, CAPath, hostVerification);
+		medicalDataUrl, CAPath, hostVerification));
 }
 
-IHMDBSession * HMDBService::createSession(const bool motion,
+const IHMDBSessionPtr HMDBService::createSession(const bool motion,
 	const std::string & servicesUrl,
 	const std::string & user,
 	const std::string & password,
@@ -67,17 +67,17 @@ IHMDBSession * HMDBService::createSession(const bool motion,
 	const core::Filesystem::Path & CAPath,
 	const networkUtils::SSLHostVerification hostVerification)
 {
-	IHMDBSession * ret = nullptr;
+	IHMDBSessionPtr ret;
 
 	if (motion == true){
-		ret = new HMDBSession(dataManager, servicesManager, serviceCurlExecutor,
+		ret.reset(new HMDBSession(dataManager, servicesManager, serviceCurlExecutor,
 			user, password,	servicesUrl, "", dataUrl,
-			"", CAPath, hostVerification);
+			"", CAPath, hostVerification));
 	}
 	else{
-		ret = new HMDBSession(dataManager, servicesManager, serviceCurlExecutor,
+		ret.reset(new HMDBSession(dataManager, servicesManager, serviceCurlExecutor,
 			user, password,	"", servicesUrl, "",
-			dataUrl, CAPath, hostVerification);
+			dataUrl, CAPath, hostVerification));
 	}
 
 	return ret;
@@ -194,14 +194,14 @@ const bool HMDBService::serverOnline(const std::string & url,
 	return ret;
 }
 
-void HMDBService::attach(IHMDBSession * session)
+void HMDBService::attach(IHMDBSessionPtr session)
 {
 	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
 	//! TODO
 	//! podpi¹æ pod widget
 }
 
-void HMDBService::detach(IHMDBSession * session)
+void HMDBService::detach(IHMDBSessionPtr session)
 {
 	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
 	//! TODO

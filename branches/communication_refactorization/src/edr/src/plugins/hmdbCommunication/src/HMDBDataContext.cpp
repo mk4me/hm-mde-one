@@ -6,7 +6,7 @@
 
 using namespace hmdbCommunication;
 
-HMDBDataContext::HMDBDataContext(IHMDBStorage * storage,
+HMDBDataContext::HMDBDataContext(IHMDBStoragePtr storage,
 	const std::string & userName,
 	const std::string & userHash)
 	: storage_(storage), userName_(userName),
@@ -20,12 +20,12 @@ HMDBDataContext::~HMDBDataContext()
 
 }
 
-const IHMDBStorage * HMDBDataContext::storage() const
+const IHMDBStorageConstPtr HMDBDataContext::storage() const
 {
 	return storage_;
 }
 
-IHMDBStorage * HMDBDataContext::storage()
+const IHMDBStoragePtr HMDBDataContext::storage()
 {
 	return storage_;
 }
@@ -41,20 +41,19 @@ const std::string HMDBDataContext::userHash() const
 }
 
 const ShallowCopyPtr HMDBDataContext::createShallowCopy() const
-{
-	auto st = storage_->transaction();
-	return ShallowCopyUtils::extractShallowCopy(userHash_, st.get());
+{	
+	return ShallowCopyUtils::extractShallowCopy(userHash_, storage_->transaction());
 }
 
 const bool HMDBDataContext::shallowCopyExists() const
 {
 	auto st = storage_->transaction();
 
-	const bool motionExists = ShallowCopyUtils::shallowCopyInStorage(userHash_, IHMDBRemoteContext::Motion, ShallowCopyUtils::Shallow, st.get()) &&
-		ShallowCopyUtils::shallowCopyInStorage(userHash_, IHMDBRemoteContext::Motion, ShallowCopyUtils::Meta, st.get());
+	const bool motionExists = ShallowCopyUtils::shallowCopyInStorage(userHash_, IHMDBRemoteContext::Motion, ShallowCopyUtils::Shallow, st) &&
+		ShallowCopyUtils::shallowCopyInStorage(userHash_, IHMDBRemoteContext::Motion, ShallowCopyUtils::Meta, st);
 
-	const bool medicalExists = ShallowCopyUtils::shallowCopyInStorage(userHash_, IHMDBRemoteContext::Medical, ShallowCopyUtils::Shallow, st.get()) &&
-		ShallowCopyUtils::shallowCopyInStorage(userHash_, IHMDBRemoteContext::Medical, ShallowCopyUtils::Meta, st.get());
+	const bool medicalExists = ShallowCopyUtils::shallowCopyInStorage(userHash_, IHMDBRemoteContext::Medical, ShallowCopyUtils::Shallow, st) &&
+		ShallowCopyUtils::shallowCopyInStorage(userHash_, IHMDBRemoteContext::Medical, ShallowCopyUtils::Meta, st);
 
 	return motionExists || medicalExists;		
 }
