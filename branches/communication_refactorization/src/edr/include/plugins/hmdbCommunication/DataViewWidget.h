@@ -45,6 +45,17 @@ class HMDBCOMMUNICATION_EXPORT DataViewWidget : public QWidget
 
 public:
 
+	class IOperation : public threadingUtils::IProgress, public threadingUtils::IAbortable
+	{
+	public:
+		virtual ~IOperation() {}
+		virtual const QString name() const = 0;
+	};
+
+	DEFINE_SMART_POINTERS(IOperation);
+
+public:
+
 	DataViewWidget(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext,		
 		hmdbCommunication::IDataSourcePerspective * perspective = nullptr,
 		hmdbCommunication::IDataSourceContent * content = nullptr,
@@ -53,7 +64,7 @@ public:
 
 	virtual ~DataViewWidget();
 
-	const hmdbCommunication::IHMDBRemoteContext::OperationConstPtr operation() const;
+	const IOperationPtr operation() const;
 
 public slots:
 
@@ -90,7 +101,8 @@ private slots:
 signals:
 
 	void currentItemChanged(char currentType, int currentId, char previousType, int previousId);
-	void operationAboutToStart(char type);
+	void operationAboutToStart();
+	void operationFinished();
 
 private:
 	static void extractItem(const QTreeWidgetItem * item, char & id, char & type);
@@ -120,7 +132,7 @@ private:
 	void initializeActions();
 	void setDefaultPerspectiveHeaders();
 
-	void synchronize(hmdbCommunication::IHMDBRemoteContext::SynchronizeOperationPtr sOp,
+	void synchronize(hmdbCommunication::IHMDBShallowCopyRemoteContext::SynchronizeOperationPtr sOp,
 		utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger);
 	void download(const std::list<hmdbCommunication::IHMDBRemoteContext::DownloadOperationPtr> & downloads,
 		utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger);
@@ -136,7 +148,7 @@ private:
 	hmdbCommunication::ShallowCopyFilter * filter_;
 	hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext_;	
 	Ui::DataViewWidget * ui;
-	hmdbCommunication::IHMDBRemoteContext::OperationConstPtr operation_;
+	IOperationPtr operation_;
 	bool delPerspective;
 	bool delContent;
 	std::map<hmdbCommunication::DataStatus, QIcon> icons;

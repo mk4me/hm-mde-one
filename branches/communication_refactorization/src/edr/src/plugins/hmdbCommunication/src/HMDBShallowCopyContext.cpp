@@ -1,12 +1,12 @@
 #include "CommunicationPCH.h"
 #include "HMDBShallowCopyContext.h"
+#include "HMDBSourceContextOperations.h"
 #include "HMDBStatusManager.h"
 #include <plugins/hmdbCommunication/IHMDBLocalContext.h>
 #include <plugins/hmdbCommunication/IPatient.h>
 #include "Patient.h"
 
 #include <hmdbserviceslib/DateTimeUtils.h>
-
 
 #include <plugins/subject/ISubjectService.h>
 #include <plugins/subject/ISubject.h>
@@ -1211,6 +1211,12 @@ const std::list<IHMDBRemoteContext::DownloadOperationPtr> HMDBShallowCopyRemoteC
 	return std::list<IHMDBRemoteContext::DownloadOperationPtr>();
 }
 
+const HMDBShallowCopyRemoteContext::SynchronizeOperationPtr HMDBShallowCopyRemoteContext::prepareSynchronization(IHMDBStoragePtr storage)
+{
+	auto sDownloads = remoteContext()->prepareSynchronization();
+	return SynchronizeOperationPtr(new hmdbCommunication::SynchronizeOperation(sDownloads, storage));
+}
+
 void updateIncrementalShallowCopyStatus(const hmdbServices::IncrementalBranchShallowCopy::ShallowCopy & ishallowCopy,
 	const DataStatus & dataStatus, IHMDBStatusManager::TransactionPtr transaction)
 {
@@ -1246,7 +1252,7 @@ void HMDBShallowCopyRemoteContext::synchronize(const ShallowCopyConstPtr shallow
 	}
 }
 
-void HMDBShallowCopyRemoteContext::synchronize(const IHMDBRemoteContext::SynchronizeOperationPtr downloadOperations)
+void HMDBShallowCopyRemoteContext::synchronize(const SynchronizeOperationPtr downloadOperations)
 {
 	downloadOperations->start();
 	downloadOperations->wait();

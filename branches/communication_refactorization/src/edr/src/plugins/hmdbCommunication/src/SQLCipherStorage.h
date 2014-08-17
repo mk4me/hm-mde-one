@@ -10,6 +10,7 @@
 
 #include <plugins/hmdbCommunication/IHMDBStorage.h>
 #include <corelib/Filesystem.h>
+#include <threadingUtils/SynchronizationPolicies.h>
 #include <sqlite3.h>
 
 namespace hmdbCommunication
@@ -116,11 +117,15 @@ namespace hmdbCommunication
 		//! \return Czy klucz wystêpuje w storage
 		static const bool rawExists(const std::string & key, sqlite3 * db);
 		//! \param key Klucz o który pytamy
+		//! \param path Œcie¿ka do pliku z baz¹
+		//! \param dbKey Klucz bazy
 		//! \return WskaŸnik do strumienia pozwalaj¹cego czytaæ i zapisywaæ dane spod klucza lub nullptr jesli klucza nie ma
-		static const IOStreamPtr rawGet(const std::string & key, sqlite3 * db);
+		static const IOStreamPtr rawGet(const std::string & key, sqlite3 * db, const core::Filesystem::Path & path, const std::string & dbKey);
 		//! \param key Klucz o który pytamy
+		//! \param path Œcie¿ka do pliku z baz¹
+		//! \param dbKey Klucz bazy
 		//! \return WskaŸnik do strumienia pozwalaj¹cego czytaæ dane spod klucza lub nullptr jesli klucza nie ma
-		static const IStreamPtr rawGetReadOnly(const std::string & key, sqlite3 * db);
+		static const IStreamPtr rawGetReadOnly(const std::string & key, sqlite3 * db, const core::Filesystem::Path & path, const std::string & dbKey);
 		//! Metoda nadpisuje dane jeœli ju¿ wystêpuj¹
 		//! \param key Klucz pod którym zapisujemy wartoœæ
 		//! \param input Dane do zapisania
@@ -148,6 +153,8 @@ namespace hmdbCommunication
 		std::string key_;
 		//! Œcie¿ka do pliku z baz¹
 		core::Filesystem::Path path_;
+		//! Obiekt synchornizuj¹cy
+		threadingUtils::StrictSyncPolicy sync_;
 	};
 }
 

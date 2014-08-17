@@ -25,7 +25,7 @@ namespace hmdbCommunication
 	};
 
 	//! Mapa identyfikatorów plikw do œci¹gniêcia z odpowiadaj¹cymi œcie¿kami na ftp
-	typedef std::map<hmdbServices::ID, IHMDBRemoteContext::CompoundID> StorageFileNames;
+	typedef std::map<hmdbServices::ID, IHMDBRemoteContext::FileDescriptor> StorageFileNames;
 }
 
 #endif	// __HEADER_GUARD_HMDBCOMMUNICATION__TYPES_H__

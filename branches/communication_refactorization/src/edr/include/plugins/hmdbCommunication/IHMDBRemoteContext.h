@@ -30,16 +30,21 @@ namespace hmdbCommunication
 			Motion,	//! Dane ruchu
 			Medical	//! Dane medyczne
 		};
-		
-		//! Struktura opisuj¹ca pochodzenie danych - czy dane medyczne/ruchu i ID pliku
+
 		struct CompoundID
 		{
 			DataReference dataReference;	//! Pochodzenie danych
 			hmdbServices::ID fileID;		//! Identyfikator pliku
+		};
+		
+		//! Struktura opisuj¹ca pochodzenie danych - czy dane medyczne/ruchu i ID pliku
+		struct FileDescriptor
+		{
+			CompoundID id;					//! Identyfikator pliku
 			std::string fileName;			//! Nazwa pliku
 			hmdbServices::FileSize fileSize;//! Rozmiar pliku
 
-			bool operator<(const CompoundID a) const
+			bool operator<(const FileDescriptor a) const
 			{
 				return fileName < a.fileName;
 			}
@@ -81,36 +86,19 @@ namespace hmdbCommunication
 			//! Destruktor wirtualny
 			virtual ~IDownloadOperation() {}
 			//! \return Identyfikator œci¹ganego pliku
-			virtual const CompoundID fileID() const = 0;
+			virtual const FileDescriptor fileID() const = 0;
 			//! \return Czy plik jest dostepny w storage (œci¹gniêto i poprawnie zapisano, choæ reszta operacji mog³a pójsæ nie tak)
 			virtual const bool fileDownloaded() const = 0;
-			//! \return Storage
-			virtual const IHMDBStoragePtr storage() = 0;
-			//! \return Storage
-			virtual const IHMDBStorageConstPtr storage() const = 0;
+			//! \return Strumieñ œci¹gniêtych danych
+			virtual const IHMDBStorage::IStreamPtr stream() const = 0;
+			//! Metoda czyœci zapisane dane
+			virtual void release() = 0;
 		};
 
 		//! WskaŸnik dla operacji uploadu danych
 		typedef utils::shared_ptr<IDownloadOperation> DownloadOperationPtr;
 		//! WskaŸnik dla operacji uploadu danych
 		typedef utils::shared_ptr<const IDownloadOperation> DownloadOperationConstPtr;
-
-		//! Interfejs realizuj¹cy operacjê synchronizacji perspektywy danych
-		class ISynchronizeOperation : public IOperation
-		{
-		public:
-			//! Destruktor wirtualny
-			virtual ~ISynchronizeOperation() {}
-			//! \return Pe³na p³ytka kopia bazy danych - ca³a perspektywa dostepnych danych
-			virtual const ShallowCopyConstPtr shallowCopy() const = 0;
-			//! \return Pe³na p³ytka kopia bazy danych - ca³a perspektywa dostepnych danych
-			virtual const IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy() const = 0;
-		};
-
-		//! WskaŸnik dla operacji synchronizacji
-		typedef utils::shared_ptr<ISynchronizeOperation> SynchronizeOperationPtr;
-		//! WskaŸnik dla operacji synchronizacji
-		typedef utils::shared_ptr<const ISynchronizeOperation> SynchronizeOperationConstPtr;
 
 	public:
 		
@@ -127,13 +115,11 @@ namespace hmdbCommunication
 		//---------- Operacje kontekstu -----------------
 
 		//! \return Operacja opisuj¹ca odœwie¿enia p³ytkiej kopii bazy danych
-		virtual const SynchronizeOperationPtr prepareSynchronization(IHMDBStoragePtr storage = IHMDBStoragePtr()) = 0;
+		virtual const std::list<DownloadOperationPtr> prepareSynchronization() = 0;
 
-		//! \param fileIDs Identyfikatory plików do œci¹gniêcia
-		//! \param ep Polityka wykonania
+		//! \param fd Opis pliku do œci¹gniêcia
 		//! \return Transfer danych
-		virtual const DownloadOperationPtr prepareFileDownload(const CompoundID & fileID,
-			IHMDBStoragePtr storage) = 0;
+		virtual const DownloadOperationPtr prepareFileDownload(const FileDescriptor & fd) = 0;
 
 		//! \param fileName Nazwa pliku w bazie
 		//! \param path Œcie¿ka po stronie bazy, gdzie zostanie zpaisany plik

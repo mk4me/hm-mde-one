@@ -491,12 +491,9 @@ const hmdbCommunication::DataStatus DataViewWidget::refrshItemContent(QTreeWidge
 		if (contentItem != nullptr){
 			const auto id = contentItem->id();
 			//wystarczy switch + dynamic_cast
-			switch (contentItem->contentType()){
-			case hmdbCommunication::FileContent:
-			{
-				status = shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->dataStatus(hmdbCommunication::FileType, id);
-			}
-				break;
+			DataType dt = hmdbCommunication::FileType;
+			if (mapContentTypeToDataType(contentItem->contentType(), dt) == true){
+				status = shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->dataStatus(dt, id);
 			}
 		}
 	}	
@@ -1180,7 +1177,7 @@ void DataViewWidget::filterShallowCopy()
 	QMetaObject::invokeMethod(this, "rebuildPerspective");
 }
 
-const hmdbCommunication::IHMDBRemoteContext::OperationConstPtr DataViewWidget::operation() const
+const DataViewWidget::IOperationPtr DataViewWidget::operation() const
 {
 	return operation_;
 }
@@ -1321,7 +1318,7 @@ void DataViewWidget::onSynchronizeFinished()
 	setRemoteOperationsEnabled(true);
 }
 
-void DataViewWidget::synchronize(hmdbCommunication::IHMDBRemoteContext::SynchronizeOperationPtr sOp,
+void DataViewWidget::synchronize(hmdbCommunication::IHMDBShallowCopyRemoteContext::SynchronizeOperationPtr sOp,
 	utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger)
 {
 	shallowCopyContext_->shallowCopyRemoteContext()->synchronize(sOp);
@@ -1366,7 +1363,7 @@ void DataViewWidget::onSynchronize()
 	try{
 		utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger(new coreUI::CoreCursorChanger);
 
-		auto sOp = shallowCopyContext_->shallowCopyRemoteContext()->remoteContext()->prepareSynchronization(shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage());
+		auto sOp = shallowCopyContext_->shallowCopyRemoteContext()->prepareSynchronization(shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage());
 
 		threadingUtils::IRunnablePtr runnable(new threadingUtils::FunctorRunnable(boost::bind(&DataViewWidget::synchronize, this, sOp, cursorChanger)));
 
@@ -1374,9 +1371,9 @@ void DataViewWidget::onSynchronize()
 		plugin::getThreadPool()->getThreads("DataViewWidget", threads, 1);
 		if (threads.empty() == false){
 			remoteOperationThread = threads.front();
-			operation_ = sOp;
+			//operation_ = sOp;
 			setRemoteOperationsEnabled(false);
-			emit operationAboutToStart(0);
+			emit operationAboutToStart();
 			remoteOperationThread->start(runnable);
 		}
 	}
@@ -1415,24 +1412,24 @@ const hmdbCommunication::StorageFileNames extractItemFiles(const QTreeWidgetItem
 
 void DataViewWidget::onDownloadFinished()
 {
-	onRefreshStatus();
 	setRemoteOperationsEnabled(true);
+	refreshDataStatus(true);
 }
 
 void DataViewWidget::download(const std::list<hmdbCommunication::IHMDBRemoteContext::DownloadOperationPtr> & downloads,
 	utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger)
 {
-	std::for_each(downloads.begin(), downloads.end(), [&](hmdbCommunication::IHMDBRemoteContext::DownloadOperationPtr d)
-	{
-		d->start();
-	});
+	hmdbCommunication::DownloadHelper downloadHelper(shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage(), downloads);
 
-	std::for_each(downloads.begin(), downloads.end(), [&](hmdbCommunication::IHMDBRemoteContext::DownloadOperationPtr d)
-	{
-		d->wait();
-	});
+	downloadHelper.download();
+	
+	downloadHelper.wait();
 
-	onRefreshStatus();
+	downloadHelper.filterDownloaded();
+
+	downloadHelper.store();
+
+	tryRebuildDataStatus();
 	QMetaObject::invokeMethod(this, "onDownloadFinished", Qt::BlockingQueuedConnection);
 	operation_.reset();
 	cursorChanger->restore();
@@ -1469,8 +1466,7 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 
 		std::for_each(files.begin(), files.end(), [&](const hmdbCommunication::StorageFileNames::value_type & i)
 		{
-			downloads.push_back(shallowCopyContext_->shallowCopyRemoteContext()->remoteContext()->prepareFileDownload(i.second,
-				storage));
+			downloads.push_back(shallowCopyContext_->shallowCopyRemoteContext()->remoteContext()->prepareFileDownload(i.second));
 			size += i.second.fileSize;
 		});
 
@@ -1498,7 +1494,7 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 			remoteOperationThread = threads.front();
 			//operation_ = cdOp;
 			setRemoteOperationsEnabled(false);
-			emit operationAboutToStart(0);
+			emit operationAboutToStart();
 			remoteOperationThread->start(runnable);
 		}
 	}

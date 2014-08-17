@@ -29,13 +29,12 @@ namespace hmdbCommunication
 		//---------- Operacje kontekstu -----------------
 
 		//! \return Operacja opisuj¹ca odœwie¿enia p³ytkiej kopii bazy danych
-		virtual const SynchronizeOperationPtr prepareSynchronization(IHMDBStoragePtr storage);
+		virtual const std::list<DownloadOperationPtr> prepareSynchronization();
 
 		//! \param fileIDs Identyfikatory plików do œci¹gniêcia
 		//! \param ep Polityka wykonania
 		//! \return Transfer danych
-		virtual const DownloadOperationPtr prepareFileDownload(const CompoundID & fileID,
-			IHMDBStoragePtr storage);
+		virtual const DownloadOperationPtr prepareFileDownload(const FileDescriptor & fileID);
 
 		//! \param fileName Nazwa pliku w bazie
 		//! \param path Œcie¿ka po stronie bazy, gdzie zostanie zpaisany plik

@@ -8,7 +8,7 @@
 #ifndef __HEADER_GUARD_HMDBCOMMUNICATION__HMDBSOURCECONTEXTOPERATIONS_H__
 #define __HEADER_GUARD_HMDBCOMMUNICATION__HMDBSOURCECONTEXTOPERATIONS_H__
 
-#include "HMDBRemoteContext.h"
+#include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <plugins/hmdbCommunication/IHMDBFtp.h>
 #include "ShallowCopyUtils.h"
 #include <boost/atomic.hpp>
@@ -48,6 +48,29 @@ namespace hmdbCommunication
 		std::string error_;
 		boost::atomic<float> progress_;
 		boost::atomic<bool> aborted_;
+	};
+
+	class DownloadHelper
+	{
+	public:
+		DownloadHelper(IHMDBStoragePtr storage, const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads);
+
+		void download();
+
+		void wait();
+
+		void filterDownloaded();
+
+		const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloaded() const;
+
+		void store();
+
+		~DownloadHelper();
+
+	private:
+		IHMDBStoragePtr storage;
+		std::list<IHMDBRemoteContext::DownloadOperationPtr> downloads;
+		std::list<IHMDBRemoteContext::DownloadOperationPtr> downloaded_;
 	};
 
 
@@ -332,6 +355,8 @@ namespace hmdbCommunication
 		virtual IHMDBStorage::IStreamPtr openInput() = 0;
 		//! Metoda zamyka otwarty do czytania output i zwalnia wszystkie jego zasoby
 		virtual void closeInput() = 0;
+		//! Metoda zwalnia wszystkie zasoby niezależnie czy to input czy output
+		virtual void release() = 0;
 	};
 
 	class TmpFileTransferIO : public ITransferIO
@@ -350,6 +375,8 @@ namespace hmdbCommunication
 		virtual IHMDBStorage::IStreamPtr openInput();
 		//! Metoda zamyka otwarty do czytania output i zwalnia wszystkie jego zasoby
 		virtual void closeInput();
+		//! Metoda zwalnia wszystkie zasoby niezależnie czy to input czy output
+		virtual void release();
 
 	private:
 		//! Strumień do zapisu danych
@@ -374,6 +401,8 @@ namespace hmdbCommunication
 		virtual IHMDBStorage::IStreamPtr openInput();
 		//! Metoda zamyka otwarty do czytania output i zwalnia wszystkie jego zasoby
 		virtual void closeInput();
+		//! Metoda zwalnia wszystkie zasoby niezależnie czy to input czy output
+		virtual void release();
 
 	private:
 		//! Strumień z danymi
@@ -387,11 +416,10 @@ namespace hmdbCommunication
 		//! \param fileToDownload		
 		//! \param ptOp
 		//! \param storage
-		FileDownload(const IHMDBRemoteContext::CompoundID & fileToDownload,
+		FileDownload(const IHMDBRemoteContext::FileDescriptor & fileToDownload,
 			utils::shared_ptr<PrepareHMDB> prepareHMDB,
 			utils::shared_ptr<ITransferIO> transferIO,
-			IHMDBFtp * ftp,
-			IHMDBStoragePtr storage);
+			IHMDBFtp * ftp);
 
 		//! Destruktor wirtualny
 		virtual ~FileDownload();
@@ -409,29 +437,25 @@ namespace hmdbCommunication
 		//! \return Psotep operacji
 		virtual const float progress() const;
 		//! \return Identyfikator ściąganego pliku
-		virtual const IHMDBRemoteContext::CompoundID fileID() const;
+		virtual const IHMDBRemoteContext::FileDescriptor fileID() const;
 		//! \return Czy plik jest dostepny w storage (ściągnięto i poprawnie zapisano, choć reszta operacji mogła pójsć nie tak)
 		virtual const bool fileDownloaded() const;
-		//! \return Storage
-		virtual const IHMDBStoragePtr storage();
-		//! \return Storage
-		virtual const IHMDBStorageConstPtr storage() const;
+		//! \return Strumień ściągniętych danych
+		virtual const IHMDBStorage::IStreamPtr stream() const;
+		//! Metoda czyści zapisane dane
+		virtual void release();
 
 	private:
 		//! Wykonanie operacji
 		void download();
 
-	private:
-		//! Wartość normalizujaca progress
-		const int progressNormalizer;
+	private:		
 		//! Identyfikator ściąganego pliku
-		const IHMDBRemoteContext::CompoundID fileID_;
+		const IHMDBRemoteContext::FileDescriptor fileID_;
 		//! Czy plik został ściągnięty - można próbowac wyciągnąc go ze storage?
 		boost::atomic<bool> downloaded_;
 		//! Czy plik został ściągnięty - można próbowac wyciągnąc go ze storage?
-		boost::atomic<int> progress_;
-		//! Postęp zapisu
-		utils::shared_ptr<HMDBStorageProgress> storeProgress;
+		boost::atomic<int> progress_;		
 		//! Status ściągania
 		boost::atomic<Status> status_;
 		//! Operacja przygotowujaca pliki w HMDB
@@ -442,8 +466,6 @@ namespace hmdbCommunication
 		IHMDBFtp * ftp;
 		//! Operacja sciagajaca przygotowany plik z FTP
 		IHMDBFtp::TransferPtr transfer;
-		//! Storage do zapisu ściągniętych danych
-		IHMDBStoragePtr storage_;
 		//! Funktor realizujący przetwarzanie operacji
 		FunctorOperation fOp;
 	};
@@ -464,7 +486,7 @@ namespace hmdbCommunication
 		IncrementalBranchShallowCopyConstPtr incrementalShallowCopy_;
 	};
 
-	class SynchronizeOperation : public IHMDBRemoteContext::ISynchronizeOperation
+	class SynchronizeOperation : public IHMDBShallowCopyRemoteContext::ISynchronizeOperation
 	{
 	public:
 		//! \param downloads Operacje ściągania które biora udzuał w synchronizacji
@@ -494,22 +516,21 @@ namespace hmdbCommunication
 	private:
 		//! Faktyczna operacja ściągania
 		void synchronize();
-
+		//! Postęp operacji ściągania
 		const float downloadsProgress() const;
 
 	private:
-
+		//! Status
 		boost::atomic<Status> status_;
-
+		//! Postęp wypakowywania płytkich kopii
 		utils::shared_ptr<HMDBStorageProgress> extractProgress;
-
+		//! Pełna płytka kopia bazy danych
 		ShallowCopyConstPtr shallowCopy_;
-
+		//! Przyrostowa kopia bazy danych
 		IncrementalBranchShallowCopyConstPtr incrementalShallowCopy_;
-
 		//! Operacje ściągania elementów płytkiej kopii
 		std::list<IHMDBRemoteContext::DownloadOperationPtr> downloads;
-		//! Storage do zapisu danych
+		//! Miejsce zapisu danych po ściągnięciu
 		IHMDBStoragePtr storage;
 		//! Faktyczna operacja
 		FunctorOperation fOp;

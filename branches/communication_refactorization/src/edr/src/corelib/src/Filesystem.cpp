@@ -313,11 +313,18 @@ const Filesystem::size_t Filesystem::availableSpace(const std::string & path)
 
 const Filesystem::size_t Filesystem::availableSpace(const Path & path)
 {
-	Filesystem::size_t ret = -1;
+	Filesystem::size_t ret = 0;
 
 	try{
-		auto s = boost::filesystem::space(path);
-		ret = s.available;
+		if (isRegularFile(path) == true){
+			auto s = boost::filesystem::space(path.parent_path());
+			ret = s.available;
+		}
+		else{
+			auto s = boost::filesystem::space(path);
+			ret = s.available;
+		}
+		
 	}
 	catch (...){
 

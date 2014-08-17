@@ -261,15 +261,15 @@ const ShallowCopyUtils::StorageUserFiles ShallowCopyUtils::groupedShallowCopiesN
 	const auto sfiles = allShallowCopiesNames(storage);
 
 	for (auto it = sfiles.begin(); it != sfiles.end(); ++it){
-		IHMDBRemoteContext::CompoundID cid;
-		cid.fileSize = -1;
-		cid.fileName = *it;
-		cid.dataReference = IHMDBRemoteContext::Motion;
+		IHMDBRemoteContext::FileDescriptor fd;
+		fd.fileSize = -1;
+		fd.fileName = *it;
+		fd.id.dataReference = IHMDBRemoteContext::Motion;
 		int fileID = 0;
 
 		auto spos = (*it).find("med_");
 		if (spos == 0){
-			cid.dataReference = IHMDBRemoteContext::Medical;
+			fd.id.dataReference = IHMDBRemoteContext::Medical;
 			spos = 4;
 		}
 		else{
@@ -279,15 +279,15 @@ const ShallowCopyUtils::StorageUserFiles ShallowCopyUtils::groupedShallowCopiesN
 		auto epos = (*it).find_last_of(".xml.shallow") - 1;
 
 		if (epos == 'm'){
-			cid.fileID = MetadataFileID;
+			fd.id.fileID = MetadataFileID;
 		}
 		else{
-			cid.fileID = ShallowCopyFileID;
+			fd.id.fileID = ShallowCopyFileID;
 		}
 
 		const std::string userHash((*it).substr(spos, epos - spos - 1));
 
-		ret[userHash][fileID] = cid;
+		ret[userHash][fileID] = fd;
 	}
 
 	return ret;
@@ -299,12 +299,12 @@ const StorageFileNames ShallowCopyUtils::files(const ShallowCopy & shallowCopy)
 
 	for (auto it = shallowCopy.motionShallowCopy.files.begin();
 		it != shallowCopy.motionShallowCopy.files.end(); ++it){
-		IHMDBRemoteContext::CompoundID cid;
-		cid.fileID = it->first;
-		cid.fileName = it->second->fileName;
-		cid.fileSize = it->second->fileSize;
-		cid.dataReference = IHMDBRemoteContext::Motion;
-		ret[it->first] = cid;
+		IHMDBRemoteContext::FileDescriptor fd;
+		fd.id.fileID = it->first;
+		fd.fileName = it->second->fileName;
+		fd.fileSize = it->second->fileSize;
+		fd.id.dataReference = IHMDBRemoteContext::Motion;
+		ret[it->first] = fd;
 	}
 
 	return ret;
@@ -314,12 +314,12 @@ void extractFiles(StorageFileNames & storageFiles,
 	const hmdbServices::MotionShallowCopy::Files & files)
 {
 	for (auto fit = files.begin(); fit != files.end(); ++fit){
-		IHMDBRemoteContext::CompoundID cid;
-		cid.fileID = fit->first;
-		cid.fileName = fit->second->fileName;
-		cid.fileSize = fit->second->fileSize;
-		cid.dataReference = IHMDBRemoteContext::Motion;
-		storageFiles[fit->first] = cid;
+		IHMDBRemoteContext::FileDescriptor fd;
+		fd.id.fileID = fit->first;
+		fd.fileName = fit->second->fileName;
+		fd.fileSize = fit->second->fileSize;
+		fd.id.dataReference = IHMDBRemoteContext::Motion;
+		storageFiles[fit->first] = fd;
 	}
 }
 
@@ -421,12 +421,12 @@ const StorageFileNames ShallowCopyUtils::files(const DataType dataType,
 	{
 		auto it = shallowCopy.motionShallowCopy.files.find(id);
 		if (it != shallowCopy.motionShallowCopy.files.end()){
-			IHMDBRemoteContext::CompoundID cid;
-			cid.fileID = id;
-			cid.fileName = it->second->fileName;
-			cid.fileSize = it->second->fileSize;
-			cid.dataReference = IHMDBRemoteContext::Motion;
-			ret.insert(StorageFileNames::value_type(id,cid));
+			IHMDBRemoteContext::FileDescriptor fd;
+			fd.id.fileID = id;
+			fd.fileName = it->second->fileName;
+			fd.fileSize = it->second->fileSize;
+			fd.id.dataReference = IHMDBRemoteContext::Motion;
+			ret.insert(StorageFileNames::value_type(id,fd));
 		}
 	}
 		break;

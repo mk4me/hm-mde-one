@@ -167,14 +167,15 @@ namespace hmdbCommunication
 		//! \return Przygotowany transfer danych
 		virtual const std::list<IHMDBRemoteContext::DownloadOperationPtr> prepareDownload(const DataType type,
 			const hmdbServices::ID id, const bool recursive = true, const bool forceDownload = false);
-
+		//! \return Operacja synchronizacji
+		virtual const SynchronizeOperationPtr prepareSynchronization(IHMDBStoragePtr storage);
 		//! \param shallowCopy P³ytka kopia bazy danych
 		//! \param incrementalBranchShallowCopy Przyrostowa kopia bazy danych
 		virtual void synchronize(const ShallowCopyConstPtr shallowCopy,
 			const IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy = IncrementalBranchShallowCopyConstPtr());
 
 		//! \param downloadOperations Operacje œci¹gania
-		virtual void synchronize(const IHMDBRemoteContext::SynchronizeOperationPtr downloadOperations);
+		virtual void synchronize(const SynchronizeOperationPtr downloadOperations);
 
 		virtual const IHMDBShallowCopyDataContextPtr shallowCopyContext();
 		virtual const IHMDBShallowCopyDataContextConstPtr shallowCopyContext() const;
