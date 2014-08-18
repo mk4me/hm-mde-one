@@ -22,15 +22,19 @@ typedef std::vector<SegmentDescriptor> SegmentsDescriptors;
 
 //! Strumieñ danych szkieletu
 typedef utils::StreamT<std::vector<osg::Vec3>> PointsCloudStream;
-
 DEFINE_SMART_POINTERS(PointsCloudStream);
+
+typedef utils::StreamT<std::vector<osg::Quat>> QuaternionStream;
+DEFINE_SMART_POINTERS(QuaternionStream);
 
 //! Dane szkieletu
 struct SkeletonDataStream
 {
 	unsigned int jointsCount;				//! Ilosc jointów w modelu
 	PointsCloudStreamPtr jointsStream;		//! Strumieñ dla pozycji jointów
+	QuaternionStreamPtr quatStream;			//! Strumieñ globalnych kwaternionów jointów
 	SegmentsDescriptors connections;	//! Schemat po³¹czeñ
+	std::map<std::string, int> segmentNames; 
 };
 
 DEFINE_SMART_POINTERS(SkeletonDataStream);
