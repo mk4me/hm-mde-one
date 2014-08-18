@@ -32,6 +32,9 @@ namespace core
 		virtual IJobPtr addJob(const std::string & who, const std::string & name,
 			threadingUtils::IRunnablePtr runnable);
 
+		virtual const bool execute(const std::string & who, const std::string & name,
+			threadingUtils::FunctorRunnable::Functor f);
+
 		//! \param workerThread W¹tek wykonuj¹cy czynnoœci w poolu
 		void addWorkerThread(threadingUtils::IThreadPtr workerThread);
 		//! \param workerThread Usuwany w¹tek wykonuj¹cy czynnoœci w poolu

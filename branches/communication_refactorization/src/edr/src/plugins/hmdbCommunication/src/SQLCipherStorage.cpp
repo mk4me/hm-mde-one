@@ -945,7 +945,7 @@ private:
 
 		// jak mam jeszcze cos do czytania
 		if (toRead > 0){
-			SQLiteDB db(path, key);
+			SQLiteDB db(path, key, SQLITE_OPEN_READONLY | SQLITE_OPEN_SHAREDCACHE);
 
 			if (db.get() == nullptr){
 				return -1;
@@ -978,7 +978,7 @@ private:
 		const unsigned int bufferSize = end - base;
 		const unsigned int newSize = blobIDX + bufferSize;
 
-		SQLiteDB db(path, key);
+		SQLiteDB db(path, key, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE);
 
 		if (db.get() == nullptr){
 			return false;
@@ -1148,7 +1148,7 @@ class hmdbCommunication::SQLCipherStorage::SQLCipherStorageTransaction : public 
 {
 public:
 	SQLCipherStorageTransaction(const SQLCipherStorage * storage)
-		: storage(storage), db(storage->path_, storage->key_)
+		: storage(storage), db(storage->path_, storage->key_, false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE)
 	{		
 		if (db.get() == nullptr){
 			throw std::runtime_error("Failed to create transaction");
@@ -1180,9 +1180,9 @@ public:
 		return SQLCipherStorage::rawSet(key, input, db.get());
 	}
 		
-	virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
+	virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div)
 	{
-		return SQLCipherStorage::rawSet(key, input, progress, db.get());
+		return SQLCipherStorage::rawSet(key, input, progress, div, db.get());
 	}
 	
 	virtual const bool remove(const std::string & key)
@@ -1408,7 +1408,7 @@ const bool SQLCipherStorage::rawSet(const std::string & key, IHMDBStorage::IStre
 	return true;
 }
 
-void SQLCipherStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, sqlite3 * db)
+void SQLCipherStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div, sqlite3 * db)
 {
 	if (input == nullptr){
 		progress->setError("Uninitialized input");
@@ -1497,7 +1497,7 @@ void SQLCipherStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBSt
 	int offset = 0;
 	const unsigned int fullReads = (streamSize / readSize);
 
-	const float progressPart = (float)readSize / (float)streamSize;
+	const float progressPart = ((float)readSize / (float)streamSize) / div;
 	progress->setProgress(0.0);
 	for (unsigned int i = 0; i < fullReads && progress->aborted() == false; ++i){
 		input->read(memblock.get(), readSize);
@@ -1606,7 +1606,7 @@ void SQLCipherStorage::open(const core::Filesystem::Path & path,
 		return;
 	}
 	
-	SQLiteDB db(path, key, false);
+	SQLiteDB db(path, key, false, SQLITE_OPEN_READONLY | SQLITE_OPEN_SHAREDCACHE);
 	if (db.get() != nullptr){
 		if (checkStructure(db.get()) == false){
 			db.reset();
@@ -1625,7 +1625,7 @@ const bool SQLCipherStorage::create(const core::Filesystem::Path & path,
 		return false;
 	}	
 	
-	SQLiteDB db(path, key, false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+	SQLiteDB db(path, key, false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_SHAREDCACHE);
 	if (db.get() != nullptr){
 		return initialize(db.get());
 	}
@@ -1642,7 +1642,7 @@ const bool SQLCipherStorage::changeKey(const core::Filesystem::Path & path,
 
 	bool ret = false;
 
-	SQLiteDB db(path, oldKey);
+	SQLiteDB db(path, oldKey, true, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE);
 
 	if (db.get() != nullptr){
 		auto rc = sqlite3_rekey(db.get(), newKey.c_str(), newKey.size());
@@ -1663,7 +1663,7 @@ const bool SQLCipherStorage::setKey(const core::Filesystem::Path & path,
 	}
 
 	bool ret = false;
-	SQLiteDB db(path);	
+	SQLiteDB db(path, "", false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE);
 
 	if (db.get() != nullptr){
 		auto rc = sqlite3_rekey(db.get(), key.c_str(), key.size());
@@ -1678,7 +1678,7 @@ const bool SQLCipherStorage::setKey(const core::Filesystem::Path & path,
 const bool SQLCipherStorage::verify(const core::Filesystem::Path & path,
 	const std::string & key)
 {
-	SQLiteDB db(path, key, SQLITE_OPEN_READWRITE, false);
+	SQLiteDB db(path, key, false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE);
 
 	if (db.get() == nullptr){
 		return checkStructure(db.get());
@@ -1694,50 +1694,50 @@ const bool SQLCipherStorage::isOpened() const
 
 const bool SQLCipherStorage::exists(const std::string & key) const
 {
-	SQLiteDB db(path_, key_, false);
+	SQLiteDB db(path_, key_, false, SQLITE_OPEN_READONLY | SQLITE_OPEN_SHAREDCACHE);
 	return rawExists(key, db.get());
 }
 
 const IHMDBStorage::IOStreamPtr SQLCipherStorage::get(const std::string & key)
 {	
-	SQLiteDB db(path_, key_, false);
+	SQLiteDB db(path_, key_, false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE);
 	return rawGet(key, db.get(), path_, key_);
 }
 
 const IHMDBStorage::IStreamPtr SQLCipherStorage::get(const std::string & key) const
 {	
-	SQLiteDB db(path_, key_, false);
+	SQLiteDB db(path_, key_, false, SQLITE_OPEN_READONLY | SQLITE_OPEN_SHAREDCACHE);
 	return rawGetReadOnly(key, db.get(), path_, key_);
 }
 
 const bool SQLCipherStorage::set(const std::string & key, IHMDBStorage::IStreamPtr input)
 {
-	SQLiteDB db(path_, key_, false);
+	SQLiteDB db(path_, key_, false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE);
 	return rawSet(key, input, db.get());
 }
 
-void SQLCipherStorage::set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
+void SQLCipherStorage::set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div)
 {
-	SQLiteDB db(path_, key_, false);
-	rawSet(key, input, progress, db.get());
+	SQLiteDB db(path_, key_, false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE);
+	rawSet(key, input, progress, div, db.get());
 }
 
 const bool SQLCipherStorage::remove(const std::string & key)
 {	
-	SQLiteDB db(path_, key_, false);
+	SQLiteDB db(path_, key_, false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE);
 	return rawRemove(key, db.get());
 }
 
 const bool SQLCipherStorage::rename(const std::string & oldKey,
 	const std::string & newKey, const bool overwrite)
 {	
-	SQLiteDB db(path_, key_, false);
+	SQLiteDB db(path_, key_, false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE);
 	return rawRename(oldKey, newKey, overwrite, db.get());
 }
 
 const SQLCipherStorage::Keys SQLCipherStorage::keys() const
 {	
-	SQLiteDB db(path_, key_, false);
+	SQLiteDB db(path_, key_, false, SQLITE_OPEN_READONLY | SQLITE_OPEN_SHAREDCACHE);
 	return rawKeys(db.get());
 }
 
@@ -1748,7 +1748,7 @@ const std::string SQLCipherStorage::name() const
 
 const std::string SQLCipherStorage::protocol() const
 {
-	return std::string("sqlcipherstream://");
+	return std::string("sqlcipher");
 }
 
 void SQLCipherStorage::close()

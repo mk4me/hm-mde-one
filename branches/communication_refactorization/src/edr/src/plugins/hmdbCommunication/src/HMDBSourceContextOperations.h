@@ -40,7 +40,7 @@ namespace hmdbCommunication
 
 		const float progress() const;
 
-		const std::string & error() const;
+		const std::string error() const;
 
 		void abort();
 
@@ -49,6 +49,8 @@ namespace hmdbCommunication
 		boost::atomic<float> progress_;
 		boost::atomic<bool> aborted_;
 	};
+
+	
 
 	class DownloadHelper
 	{
@@ -59,6 +61,10 @@ namespace hmdbCommunication
 
 		void wait();
 
+		void abort();
+
+		const float progress() const;
+
 		void filterDownloaded();
 
 		const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloaded() const;
@@ -68,8 +74,9 @@ namespace hmdbCommunication
 		~DownloadHelper();
 
 	private:
-		IHMDBStoragePtr storage;
-		std::list<IHMDBRemoteContext::DownloadOperationPtr> downloads;
+		HMDBStorageProgress storeProgress;
+		const IHMDBStoragePtr storage;
+		const std::list<IHMDBRemoteContext::DownloadOperationPtr> downloads;
 		std::list<IHMDBRemoteContext::DownloadOperationPtr> downloaded_;
 	};
 
@@ -328,18 +335,6 @@ namespace hmdbCommunication
 		std::string preparedFilePath_;
 	};
 
-	class StoreOutput
-	{
-	public:
-		//! Operacja zapisu
-		//! \param storageTransaction Transakcja storage
-		//! \param key Klucz pod jakim zapisujemy/nadpisujemy
-		//! \param stream Dane do zapisu w storage
-		//! \param progress Postęp zapisu do storage
-		static void store(IHMDBStorage::TransactionPtr storageTransaction, const std::string & key,
-			IHMDBStorage::IStreamPtr stream, IHMDBStorageProgress * progress);
-	};
-
 	class ITransferIO
 	{
 	public:
@@ -470,6 +465,91 @@ namespace hmdbCommunication
 		FunctorOperation fOp;
 	};
 
+	class MultipleFilesDownloadAndStore : public IHMDBRemoteContext::IOperation
+	{
+	public:
+		//! \param downloads Operacje ściągania które biora udzuał w synchronizacji
+		//! \param storage Storage do którego ewentualnie zapisze dane
+		MultipleFilesDownloadAndStore(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads,
+			IHMDBStoragePtr storage);
+		//! Destruktor wirtualny
+		virtual ~MultipleFilesDownloadAndStore();
+		//! Metoda rozpoczyna operację
+		virtual void start();
+		//! Metoda czeka do zakończenia operacji
+		virtual void wait();
+		//! Metoda anuluje aktualne zadanie
+		virtual void abort();
+		//! \return Stan operacji
+		virtual const Status status() const;
+		//! \return Opis błędu
+		virtual const std::string error() const;
+		//! \return Psotep operacji
+		virtual const float progress() const;
+
+	private:
+		//! Faktyczna operacja ściągania uruchamiana w wątku
+		void download();
+		//! \param finishedDownloads Ściągania plików zakończone powodzeniem
+		virtual void downloadFinished(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & finishedDownloads) {}
+
+	private:
+		std::string error_;
+		DownloadHelper downloadHelper;
+		boost::atomic<Status> status_;
+		core::IThreadPtr thread_;
+	};
+
+	class MultipleFilesDownloadStoreAndStatusUpdate : public MultipleFilesDownloadAndStore
+	{
+	public:
+		MultipleFilesDownloadStoreAndStatusUpdate(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads,
+			IHMDBStoragePtr storage, IHMDBStatusManagerPtr statusManager, ShallowCopyConstPtr shallowCopy);
+
+		virtual ~MultipleFilesDownloadStoreAndStatusUpdate();
+
+	private:
+		//! \param finishedDownloads Ściągania plików zakończone powodzeniem
+		virtual void downloadFinished(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & finishedDownloads);
+
+	private:
+		IHMDBStatusManagerPtr statusManager;
+		ShallowCopyConstPtr shallowCopy;
+	};
+
+	class SynchronizeOperationImpl : public MultipleFilesDownloadAndStore
+	{
+	public:
+		SynchronizeOperationImpl(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads,
+			IHMDBStoragePtr storage);
+
+		~SynchronizeOperationImpl();
+
+		virtual void abort();
+
+		virtual const float progress() const;
+
+		//! \return Pełna płytka kopia bazy danych - cała perspektywa dostepnych danych
+		const ShallowCopyConstPtr shallowCopy() const;
+		//! \return Pełna płytka kopia bazy danych - cała perspektywa dostepnych danych
+		const IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy() const;
+
+	private:
+
+		//! \param finishedDownloads Ściągania plików zakończone powodzeniem
+		virtual void downloadFinished(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & finishedDownloads);
+
+	private:
+		//! Pełna płytka kopia bazy danych
+		ShallowCopyConstPtr shallowCopy_;
+		//! Przyrostowa kopia bazy danych
+		IncrementalBranchShallowCopyConstPtr incrementalShallowCopy_;
+		//! Postęp rozpakowywania
+		HMDBStorageProgress extractProgress;
+		//! Operacja rozpakowywania
+		FunctorOperation fOp;
+	};
+
 	class ExtractShallowcopy
 	{
 	public:
@@ -514,26 +594,8 @@ namespace hmdbCommunication
 		virtual const IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy() const;
 
 	private:
-		//! Faktyczna operacja ściągania
-		void synchronize();
-		//! Postęp operacji ściągania
-		const float downloadsProgress() const;
-
-	private:
-		//! Status
-		boost::atomic<Status> status_;
 		//! Postęp wypakowywania płytkich kopii
-		utils::shared_ptr<HMDBStorageProgress> extractProgress;
-		//! Pełna płytka kopia bazy danych
-		ShallowCopyConstPtr shallowCopy_;
-		//! Przyrostowa kopia bazy danych
-		IncrementalBranchShallowCopyConstPtr incrementalShallowCopy_;
-		//! Operacje ściągania elementów płytkiej kopii
-		std::list<IHMDBRemoteContext::DownloadOperationPtr> downloads;
-		//! Miejsce zapisu danych po ściągnięciu
-		IHMDBStoragePtr storage;
-		//! Faktyczna operacja
-		FunctorOperation fOp;
+		SynchronizeOperationImpl op;
 	};
 }
 

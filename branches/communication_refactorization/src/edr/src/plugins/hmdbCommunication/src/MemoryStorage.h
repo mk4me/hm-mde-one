@@ -53,7 +53,8 @@ namespace hmdbCommunication
 		//! \param key Klucz pod którym zapisujemy wartoœæ
 		//! \param input Dane do zapisania
 		//! \param progress Obiekt steruj¹cy postêpem zapisu		
-		virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress);
+		//! \param div Dzielnik dla progresu, jesli zapis czêœci¹ wiêkszej transakcji
+		virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div = 1.0);
 		//! \param key Klucz który usuwam
 		virtual const bool remove(const std::string & key);
 		//! Metoda powinna zamykaæ storage, zapisuj¹c wszystkie jeszcze niezapisane dane
@@ -100,7 +101,8 @@ namespace hmdbCommunication
 		//! \param key Klucz pod którym zapisujemy wartoœæ
 		//! \param input Dane do zapisania
 		//! \param progress Obiekt steruj¹cy postêpem zapisu
-		void rawSet(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress);
+		//! \param div Dzielnik dla progresu, jesli zapis czêœci¹ wiêkszej transakcji
+		void rawSet(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div = 1.0);
 		//! \param key Klucz który usuwam
 		const bool rawRemove(const std::string & key);
 		//! \param oldKey Klucz któremu zmieniamy nazwê

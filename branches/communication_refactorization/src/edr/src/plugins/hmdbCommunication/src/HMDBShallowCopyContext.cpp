@@ -469,8 +469,7 @@ const std::set<hmdbServices::ID> filterFiles(const std::set<hmdbServices::ID> & 
 
 	for (auto it = inFiles.begin(); it != inFiles.end(); ++it){
 		auto fs = transaction->dataStatus(FileType, *it);
-		if ((fs.storage() && status.storage()) && (fs.usage() && status.usage())
-			&& (fs.validity() && status.validity())){
+		if (DataStatus::filter(fs, status) == true){
 			ret.insert(*it);
 		}
 	}
@@ -989,7 +988,7 @@ const bool HMDBShallowCopyLocalContext::load(const DataType type,
 
 	auto files = filesToProcess(type, id, shallowCopyContext_->shallowCopy());
 
-	files = filterFiles(files, shallowCopyContext_->dataStatusManager(), DataStatus(Local, Unloaded));
+	files = filterFiles(files, shallowCopyContext_->dataStatusManager(), DataStatus(DataStatus::Local, DataStatus::Unloaded));
 
 	if (files.empty() == false){
 		auto t = localContext_->transaction();
@@ -1034,7 +1033,7 @@ const bool HMDBShallowCopyLocalContext::unload(const DataType type,
 
 	auto files = filesToProcess(type, id, shallowCopyContext_->shallowCopy());
 
-	files = filterFiles(files, shallowCopyContext_->dataStatusManager(), DataStatus(Local, Loaded));
+	files = filterFiles(files, shallowCopyContext_->dataStatusManager(), DataStatus(DataStatus::Local, DataStatus::Loaded));
 
 	if (files.empty() == false){
 		auto t = localContext_->transaction();
@@ -1069,7 +1068,7 @@ const bool HMDBShallowCopyLocalContext::unloadAll()
 
 	auto files = filesToProcess(FileType, -1, shallowCopyContext_->shallowCopy());
 
-	files = filterFiles(files, shallowCopyContext_->dataStatusManager(), DataStatus(Local, Loaded));
+	files = filterFiles(files, shallowCopyContext_->dataStatusManager(), DataStatus(DataStatus::Local, DataStatus::Loaded));
 	auto t = localContext_->transaction();
 
 	if (files.empty() == false){
@@ -1243,12 +1242,12 @@ void HMDBShallowCopyRemoteContext::synchronize(const ShallowCopyConstPtr shallow
 	shallowCopyContext_->setShallowCopy(shallowCopy);
 	if (incrementalBranchShallowCopy != nullptr){
 		auto t = shallowCopyContext_->dataStatusManager()->transaction();
-		updateIncrementalShallowCopyStatus(incrementalBranchShallowCopy->added, DataStatus(Remote, Unloaded, Valid), t);
-		updateIncrementalShallowCopyStatus(incrementalBranchShallowCopy->modified, DataStatus(Outdated), t);
+		updateIncrementalShallowCopyStatus(incrementalBranchShallowCopy->added, DataStatus(DataStatus::Remote, DataStatus::Unloaded, DataStatus::Valid), t);
+		updateIncrementalShallowCopyStatus(incrementalBranchShallowCopy->modified, DataStatus(DataStatus::Outdated), t);
 		//TODO
 		//co robic z takimi danymi?
-		updateIncrementalShallowCopyStatus(incrementalBranchShallowCopy->removedLocaly, DataStatus(Outdated), t);
-		updateIncrementalShallowCopyStatus(incrementalBranchShallowCopy->removedGlobaly, DataStatus(Outdated), t);
+		updateIncrementalShallowCopyStatus(incrementalBranchShallowCopy->removedLocaly, DataStatus(DataStatus::Outdated), t);
+		updateIncrementalShallowCopyStatus(incrementalBranchShallowCopy->removedGlobaly, DataStatus(DataStatus::Outdated), t);
 	}
 }
 

@@ -6,17 +6,19 @@
 
 using namespace hmdbCommunication;
 
-class HMDBStatusManager::HMDBStatusManagerTransaction
+class HMDBStatusManager::HMDBStatusManagerTransaction : public IHMDBStatusManagerOperations
 {
+public:
+
 	HMDBStatusManagerTransaction(HMDBStatusManager * manager)
-		: manager(manager)
+		: manager(manager), lock(manager->synch_)
 	{
-		manager->synch_.lock();
+		
 	}
 
 	virtual ~HMDBStatusManagerTransaction()
 	{
-		manager->synch_.unlock();
+
 	}
 	
 	virtual const DataStatus dataStatus(const DataType dataType,
@@ -26,13 +28,13 @@ class HMDBStatusManager::HMDBStatusManagerTransaction
 	}
 	
 	virtual void setDataStatus(const DataType dataType,
-		const hmdbServices::ID id, const DataStatus dataStatus)
+		const hmdbServices::ID id, const DataStatus & dataStatus)
 	{
 		manager->rawSetDataStatus(dataType, id, dataStatus);
 	}
 
 	virtual void updateDataStatus(const DataType dataType,
-		const hmdbServices::ID id, const DataStatus dataStatus)
+		const hmdbServices::ID id, const DataStatus & dataStatus)
 	{
 		manager->rawUpdateDataStatus(dataType, id, dataStatus);
 	}
@@ -61,6 +63,7 @@ class HMDBStatusManager::HMDBStatusManagerTransaction
 
 private:
 	HMDBStatusManager * manager;
+	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock;
 };
 
 HMDBStatusManager::HMDBStatusManager()
@@ -84,9 +87,11 @@ const HMDBStatusManager::UpdateData HMDBStatusManager::fullUpdateData(const Shal
 			if (fIT != shallowCopy->motionShallowCopy.files.end()){
 				if (fIT->second->isSessionFile() == true){
 					lud[SessionType].insert(fIT->second->session->sessionID);
+					updateData[SessionType].insert(fIT->second->session->sessionID);
 				}
 				else{
 					lud[MotionType].insert(fIT->second->trial->trialID);
+					updateData[MotionType].insert(fIT->second->trial->trialID);
 				}
 			}
 		}
@@ -98,6 +103,7 @@ const HMDBStatusManager::UpdateData HMDBStatusManager::fullUpdateData(const Shal
 			auto mIT = shallowCopy->motionShallowCopy.trials.find(*mit);
 			if (mIT != shallowCopy->motionShallowCopy.trials.end()){
 				lud[SessionType].insert(mIT->second->session->sessionID);
+				updateData[SessionType].insert(mIT->second->session->sessionID);
 			}
 		}
 	}
@@ -108,6 +114,7 @@ const HMDBStatusManager::UpdateData HMDBStatusManager::fullUpdateData(const Shal
 			auto sIT = shallowCopy->motionShallowCopy.sessions.find(*sit);
 			if (sIT != shallowCopy->motionShallowCopy.sessions.end()){
 				lud[SubjectType].insert(sIT->second->performerConf->performer->performerID);
+				updateData[SubjectType].insert(sIT->second->performerConf->performer->performerID);
 			}
 		}
 	}
@@ -235,17 +242,17 @@ void HMDBStatusManager::rawRebuild(const IHMDBStorageConstPtr storage, const Sha
 		for (auto it = shallowCopy->motionShallowCopy.files.begin();
 			it != shallowCopy->motionShallowCopy.files.end(); ++it){
 
-			auto st = sTransaction->exists(it->second->fileName) == true ? Local : Remote;
-			auto usage = Unloaded;
+			auto st = sTransaction->exists(it->second->fileName) == true ? DataStatus::Local : DataStatus::Remote;
+			auto usage = DataStatus::Unloaded;
 			auto sName = core::IStreamManagerReader::streamName(storage->protocol(), it->second->fileName);
 			if (t->isManaged(sName) == true){
-				usage = PartiallyLoaded;
+				usage = DataStatus::PartiallyLoaded;
 				if (t->isLoadedCompleately(sName) == true){
-					usage = Loaded;
+					usage = DataStatus::Loaded;
 				}
 			}
 
-			auto validity = Valid;
+			auto validity = DataStatus::Valid;
 
 			auto sIT = statuses[FileType].find(it->first);
 			if (sIT != statuses[FileType].end()){
@@ -259,7 +266,7 @@ void HMDBStatusManager::rawRebuild(const IHMDBStorageConstPtr storage, const Sha
 	for (auto it = shallowCopy->motionShallowCopy.trials.begin();
 		it != shallowCopy->motionShallowCopy.trials.end(); ++it){
 
-		auto validity = UnknownValidity;
+		auto validity = DataStatus::UnknownValidity;
 		auto mIT = statuses[MotionType].find(it->first);
 		if (mIT != statuses[MotionType].end()){
 			validity = mIT->second.validity();
@@ -278,7 +285,7 @@ void HMDBStatusManager::rawRebuild(const IHMDBStorageConstPtr storage, const Sha
 	for (auto it = shallowCopy->motionShallowCopy.sessions.begin();
 		it != shallowCopy->motionShallowCopy.sessions.end(); ++it){
 		
-		auto validity = UnknownValidity;
+		auto validity = DataStatus::UnknownValidity;
 		auto mIT = statuses[SessionType].find(it->first);
 		if (mIT != statuses[SessionType].end()){
 			validity = mIT->second.validity();
@@ -302,7 +309,7 @@ void HMDBStatusManager::rawRebuild(const IHMDBStorageConstPtr storage, const Sha
 	for (auto it = shallowCopy->motionShallowCopy.performers.begin();
 		it != shallowCopy->motionShallowCopy.performers.end(); ++it){
 
-		auto validity = UnknownValidity;
+		auto validity = DataStatus::UnknownValidity;
 		auto mIT = statuses[SubjectType].find(it->first);
 		if (mIT != statuses[SubjectType].end()){
 			validity = mIT->second.validity();
@@ -321,7 +328,7 @@ void HMDBStatusManager::rawRebuild(const IHMDBStorageConstPtr storage, const Sha
 	for (auto it = shallowCopy->medicalShallowCopy.patients.begin();
 		it != shallowCopy->medicalShallowCopy.patients.end(); ++it){
 
-		auto validity = UnknownValidity;
+		auto validity = DataStatus::UnknownValidity;
 		auto mIT = statuses[PatientType].find(it->first);
 		if (mIT != statuses[PatientType].end()){
 			validity = mIT->second.validity();
@@ -357,16 +364,17 @@ void HMDBStatusManager::rawRebuild(const IHMDBStorageConstPtr storage, const Sha
 
 	//teraz podmieniam
 	locStatuses.swap(statuses);
+	UpdateData().swap(updateData);
 }
 
 const HMDBStatusManager::TransactionPtr HMDBStatusManager::transaction()
 {
-	return TransactionPtr();
+	return HMDBStatusManager::TransactionPtr(new HMDBStatusManagerTransaction(this));
 }
 
 const HMDBStatusManager::TransactionConstPtr HMDBStatusManager::transaction() const
 {
-	return TransactionConstPtr();
+	return HMDBStatusManager::TransactionConstPtr(new HMDBStatusManagerTransaction(const_cast<HMDBStatusManager*>(this)));
 }
 
 const DataStatus HMDBStatusManager::dataStatus(const DataType dataType,
@@ -377,14 +385,14 @@ const DataStatus HMDBStatusManager::dataStatus(const DataType dataType,
 }
 
 void HMDBStatusManager::setDataStatus(const DataType dataType,
-	const hmdbServices::ID id, const DataStatus dataStatus)
+	const hmdbServices::ID id, const DataStatus & dataStatus)
 {
 	ScopedLock lock(synch_);
 	rawSetDataStatus(dataType, id, dataStatus);
 }
 
 void HMDBStatusManager::updateDataStatus(const DataType dataType,
-	const hmdbServices::ID id, const DataStatus dataStatus)
+	const hmdbServices::ID id, const DataStatus & dataStatus)
 {
 	ScopedLock lock(synch_);
 	rawUpdateDataStatus(dataType, id, dataStatus);
@@ -419,19 +427,33 @@ const DataStatus HMDBStatusManager::rawDataStatus(const DataType dataType,
 }
 
 void HMDBStatusManager::rawSetDataStatus(const DataType dataType,
-	const hmdbServices::ID id, const DataStatus dataStatus)
+	const hmdbServices::ID id, const DataStatus & dataStatus)
 {
 	statuses[dataType][id] = dataStatus;
+	updateData[dataType].insert(id);
 }
 
 void HMDBStatusManager::rawUpdateDataStatus(const DataType dataType,
-	const hmdbServices::ID id, const DataStatus dataStatus)
+	const hmdbServices::ID id, const DataStatus & dataStatus)
 {
 	auto it = statuses.find(dataType);
 	if (it != statuses.end()){
 		auto IT = it->second.find(id);
 		if (IT != it->second.end()){
-			IT->second |= dataStatus;
+
+			if (dataStatus.storage() != DataStatus::UnknownStorage){
+				IT->second.setStorage(dataStatus.storage());
+			}
+
+			if (dataStatus.usage() != DataStatus::UnknownUsage){
+				IT->second.setUsage(dataStatus.usage());
+			}
+
+			if (dataStatus.validity() != DataStatus::UnknownValidity){
+				IT->second.setValidity(dataStatus.validity());
+			}
+
+			updateData[dataType].insert(id);
 			return;
 		}
 	}

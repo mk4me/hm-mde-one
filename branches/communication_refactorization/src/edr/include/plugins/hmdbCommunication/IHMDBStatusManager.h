@@ -31,10 +31,10 @@ namespace hmdbCommunication
 		//! \param id Identyfikator danych
 		//! \param dataStatus Status danych
 		virtual void setDataStatus(const DataType dataType,
-			const hmdbServices::ID id, const DataStatus dataStatus) = 0;
+			const hmdbServices::ID id, const DataStatus & dataStatus) = 0;
 
 		virtual void updateDataStatus(const DataType dataType,
-			const hmdbServices::ID id, const DataStatus dataStatus) = 0;
+			const hmdbServices::ID id, const DataStatus & dataStatus) = 0;
 
 		//! \param dataType Typ danych
 		//! \param id Identyfikator danych		

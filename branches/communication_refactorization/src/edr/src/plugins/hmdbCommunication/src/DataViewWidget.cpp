@@ -129,15 +129,15 @@ const QIcon DataViewWidget::statusIcon(const DataStatus dataStatus)
 	QPixmap s;
 
 	switch (dataStatus.storage()){
-	case Local:
+	case DataStatus::Local:
 		s = QPixmap(QString::fromUtf8(":/hmdbCommunication/icons/lokalne.png"));
 		break;
 
 	default:
-	case Remote:
+	case DataStatus::Remote:
 		s = QPixmap(QString::fromUtf8(":/hmdbCommunication/icons/zdalne.png"));
 		break;
-	case PartiallyLocal:
+	case DataStatus::PartiallyLocal:
 		s = QPixmap(QString::fromUtf8(":/hmdbCommunication/icons/pol-na-pol-green.png"));
 		break;
 	}
@@ -148,15 +148,15 @@ const QIcon DataViewWidget::statusIcon(const DataStatus dataStatus)
 	QPixmap u;
 
 	switch (dataStatus.usage()){
-	case Loaded:
+	case DataStatus::Loaded:
 		u = QPixmap(QString::fromUtf8(":/hmdbCommunication/icons/zaladowane.png"));
 		break;
 
 	default:
-	case Unloaded:
+	case DataStatus::Unloaded:
 		u = QPixmap(QString::fromUtf8(":/hmdbCommunication/icons/niezaladowane.png"));
 		break;
-	case PartiallyLoaded:
+	case DataStatus::PartiallyLoaded:
 		u = QPixmap(QString::fromUtf8(":/hmdbCommunication/icons/polnapol-ladowanie2.png"));
 		break;
 	}
@@ -169,15 +169,15 @@ const QIcon DataViewWidget::statusIcon(const DataStatus dataStatus)
 		QPixmap v;
 
 		switch (dataStatus.validity()){
-		case Valid:
+		case DataStatus::Valid:
 			v = QPixmap(QString::fromUtf8(":/hmdbCommunication/icons/zaladowane.png"));
 			break;
 
 		default:
-		case Outdated:
+		case DataStatus::Outdated:
 			v = QPixmap(QString::fromUtf8(":/hmdbCommunication/icons/niezaladowane.png"));
 			break;
-		case PartiallyValid:
+		case DataStatus::PartiallyValid:
 			v = QPixmap(QString::fromUtf8(":/hmdbCommunication/icons/polnapol-ladowanie2.png"));
 			break;
 		}
@@ -1177,9 +1177,9 @@ void DataViewWidget::filterShallowCopy()
 	QMetaObject::invokeMethod(this, "rebuildPerspective");
 }
 
-const DataViewWidget::IOperationPtr DataViewWidget::operation() const
+DataViewWidget::IOperation * DataViewWidget::operation()
 {
-	return operation_;
+	return operation_.get();
 }
 
 void DataViewWidget::selectItem(char type, int id)
@@ -1316,6 +1316,7 @@ void DataViewWidget::onSynchronizeFinished()
 {
 	rebuildPerspective();
 	setRemoteOperationsEnabled(true);
+	emit operationFinished();
 }
 
 void DataViewWidget::synchronize(hmdbCommunication::IHMDBShallowCopyRemoteContext::SynchronizeOperationPtr sOp,
@@ -1328,6 +1329,7 @@ void DataViewWidget::synchronize(hmdbCommunication::IHMDBShallowCopyRemoteContex
 		rawFilterShallowCopy();
 	}
 
+	tryRebuildDataStatus();
 	//onRefreshStatus();	
 	QMetaObject::invokeMethod(this, "onSynchronizeFinished", Qt::BlockingQueuedConnection);
 	operation_.reset();
@@ -1414,22 +1416,15 @@ void DataViewWidget::onDownloadFinished()
 {
 	setRemoteOperationsEnabled(true);
 	refreshDataStatus(true);
+	emit operationFinished();
 }
 
-void DataViewWidget::download(const std::list<hmdbCommunication::IHMDBRemoteContext::DownloadOperationPtr> & downloads,
+void DataViewWidget::download(hmdbCommunication::IHMDBRemoteContext::OperationPtr dOp,
 	utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger)
 {
-	hmdbCommunication::DownloadHelper downloadHelper(shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage(), downloads);
+	dOp->start();
+	dOp->wait();
 
-	downloadHelper.download();
-	
-	downloadHelper.wait();
-
-	downloadHelper.filterDownloaded();
-
-	downloadHelper.store();
-
-	tryRebuildDataStatus();
 	QMetaObject::invokeMethod(this, "onDownloadFinished", Qt::BlockingQueuedConnection);
 	operation_.reset();
 	cursorChanger->restore();
@@ -1462,7 +1457,6 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 		unsigned long long size = 0;
 
 		std::list<hmdbCommunication::IHMDBRemoteContext::DownloadOperationPtr> downloads;
-		auto storage = shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage();
 
 		std::for_each(files.begin(), files.end(), [&](const hmdbCommunication::StorageFileNames::value_type & i)
 		{
@@ -1470,6 +1464,7 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 			size += i.second.fileSize;
 		});
 
+		auto storage = shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage();
 		if (storage->canStore(size) == false){
 			QMessageBox::warning(this, tr("Download disk space requirements"), tr("Requested download requires %1 to store and it exceeds capability of the storage. Please limit amount of elements for download and try again.").arg(formatFileSize(size)));
 			return;
@@ -1486,7 +1481,11 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 			return;
 		}
 
-		threadingUtils::IRunnablePtr runnable(new threadingUtils::FunctorRunnable(boost::bind(&DataViewWidget::download, this, downloads, cursorChanger)));
+		hmdbCommunication::IHMDBRemoteContext::OperationPtr op(new hmdbCommunication::MultipleFilesDownloadStoreAndStatusUpdate(downloads,
+			shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage(),
+			shallowCopyContext_->shallowCopyDataContext()->dataStatusManager(), shallowCopyContext_->shallowCopyDataContext()->shallowCopy()));
+
+		threadingUtils::IRunnablePtr runnable(new threadingUtils::FunctorRunnable(boost::bind(&DataViewWidget::download, this, op, cursorChanger)));
 
 		core::IThreadPool::Threads threads;
 		plugin::getThreadPool()->getThreads("DataViewWidget", threads, 1);
@@ -1503,7 +1502,7 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 	}
 }
 
-const hmdbCommunication::StorageFileNames filterOutLocalFiles(const const hmdbCommunication::StorageFileNames & inputFiles,
+const hmdbCommunication::StorageFileNames filterOutLocalFiles(const hmdbCommunication::StorageFileNames & inputFiles,
 	hmdbCommunication::IHMDBStoragePtr storage)
 {
 	hmdbCommunication::StorageFileNames ret;

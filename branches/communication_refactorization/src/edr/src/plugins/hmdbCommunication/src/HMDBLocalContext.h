@@ -83,7 +83,7 @@ namespace hmdbCommunication
 		const bool rawLoad(const core::VariantPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction);
 		const bool rawUnload(const core::VariantConstPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction);
 
-		const bool rawIsMyData(core::VariantConstPtr data) const;
+		const bool rawIsMyData(core::VariantConstPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction) const;
 
 		const bool rawIsLoaded(const std::string & fileName, const core::IStreamDataManager::TransactionPtr streamTransaction) const;
 

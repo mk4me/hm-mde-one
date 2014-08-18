@@ -64,7 +64,7 @@ public:
 
 	virtual ~DataViewWidget();
 
-	const IOperationPtr operation() const;
+	IOperation * operation();
 
 public slots:
 
@@ -134,7 +134,7 @@ private:
 
 	void synchronize(hmdbCommunication::IHMDBShallowCopyRemoteContext::SynchronizeOperationPtr sOp,
 		utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger);
-	void download(const std::list<hmdbCommunication::IHMDBRemoteContext::DownloadOperationPtr> & downloads,
+	void download(hmdbCommunication::IHMDBRemoteContext::OperationPtr dOp,
 		utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger);
 
 	void setupDownload(const hmdbCommunication::StorageFileNames & files);

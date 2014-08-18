@@ -38,9 +38,9 @@ public:
 		return storage->rawSet(key, input);
 	}
 
-	virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
+	virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div)
 	{
-		storage->rawSet(key, input, progress);
+		storage->rawSet(key, input, progress, div);
 	}
 
 	virtual const bool remove(const std::string & key)
@@ -111,10 +111,10 @@ const bool MemoryStorage::set(const std::string & key, IHMDBStorage::IStreamPtr 
 	return rawSet(key, input);
 }
 
-void MemoryStorage::set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
+void MemoryStorage::set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div)
 {
 	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
-	rawSet(key, input, progress);
+	rawSet(key, input, progress, div);
 }
 
 const bool MemoryStorage::remove(const std::string & key)
@@ -155,7 +155,7 @@ const std::string MemoryStorage::name() const
 
 const std::string MemoryStorage::protocol() const
 {
-	return "mem";
+	return "memory";
 }
 
 const MemoryStorage::TransactionPtr MemoryStorage::transaction()
@@ -207,7 +207,7 @@ const bool MemoryStorage::rawSet(const std::string & key, IStreamPtr input)
 	return true;
 }
 
-void MemoryStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
+void MemoryStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div)
 {
 	const auto currentPos = input->tellg();
 	input->seekg(0, std::ios::beg);
@@ -229,7 +229,7 @@ void MemoryStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStora
 	int offset = 0;
 	const unsigned int fullReads = (streamSize / readSize);
 
-	const float progressPart = (float)readSize / (float)streamSize;
+	const float progressPart = ((float)readSize / (float)streamSize) / div;
 
 	std::string str;
 

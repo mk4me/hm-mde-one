@@ -50,6 +50,75 @@ private:
 	const std::string name_;
 };
 
+class HMDBLocalContext::HMDBLocalContextTransaction : public IHMDBLocalContextOperations
+{
+public:
+	HMDBLocalContextTransaction(HMDBLocalContext * localContext)
+		: localContext(localContext), mdm(localContext->mdm->transaction()),
+		sdm(localContext->sdm->transaction())
+	{
+
+	}
+
+	virtual ~HMDBLocalContextTransaction()
+	{
+
+	}
+
+	//! \return Czy dane o które pytamy pochodza z tego Ÿród³a
+	virtual const bool isMyData(core::VariantConstPtr data) const
+	{
+		return localContext->rawIsMyData(data, mdm);
+	}
+
+	//! \param fileName Nazwa pliku ze storage
+	//! \return Dane skojarzone z tym plikiem
+	virtual const core::ConstVariantsList data(const std::string & fileName) const
+	{
+		return localContext->rawData(fileName, sdm);
+	}
+
+	//! \param fileName Plik jaki bêdê ³adowaæ ze storage do StreamManagera
+	//! \return Czy uda³o siê za³adowac plik
+	virtual const bool load(const std::string & fileName)
+	{
+		return localContext->rawLoad(fileName, sdm);
+	}
+	//! \param fileName Plik jaki bêdê wy³adowywaæ ze StreamManagera
+	//! \return Czy uda³o siê wy³adowac plik
+	virtual const bool unload(const std::string & fileName)
+	{
+		return localContext->rawUnload(fileName, sdm);
+	}
+	//! \param fileName Plik o który pytam czy jest za³¹dowany
+	//! \return Czy plik jest za³adowany
+	virtual const bool isLoaded(const std::string & fileName) const
+	{
+		return localContext->rawIsLoaded(fileName, sdm);
+	}
+
+	//! \param data Dane jakie bêdê ³adowa³ do MemoryManagera
+	//! \return Czy uda³o siê za³adowac dane
+	virtual const bool load(const core::VariantPtr data)
+	{
+		return localContext->rawLoad(data, mdm);
+	}
+	//! \param data Dane jakie bêdê wy³adowa³ z MemoryManagera
+	//! \return Czy uda³o siê wy³adowac dane
+	virtual const bool unload(const core::VariantConstPtr data)
+	{
+		return localContext->rawUnload(data, mdm);
+	}
+
+private:
+	//! Transakcja MDM
+	core::IMemoryDataManager::TransactionPtr mdm;
+	//! Transakcja SDM
+	core::IStreamDataManager::TransactionPtr sdm;
+	//! Lokalny kontekst
+	HMDBLocalContext * localContext;
+};
+
 /*
 
 //próbuje pliki vsk wypakowaæ z zip
@@ -119,15 +188,13 @@ const IHMDBDataContextConstPtr HMDBLocalContext::dataContext() const
 const bool HMDBLocalContext::isMyData(core::VariantConstPtr data) const
 {
 	//threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
-	auto mT = mdm->transaction();
-	return rawIsMyData(data);
+	return rawIsMyData(data, mdm->transaction());
 }
 
 const core::ConstVariantsList HMDBLocalContext::data(const std::string & fileName) const
 {
-	//threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
-	auto sT = sdm->transaction();
-	return rawData(fileName, sT);
+	//threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);	
+	return rawData(fileName, sdm->transaction());
 }
 
 const bool HMDBLocalContext::load(const std::string & fileName)
@@ -161,14 +228,12 @@ const bool HMDBLocalContext::unload(const core::VariantConstPtr data)
 
 const HMDBLocalContext::TransactionPtr HMDBLocalContext::transaction()
 {
-	//TODO
-	return TransactionPtr();
+	return TransactionPtr(new HMDBLocalContextTransaction(this));
 }
 
 const HMDBLocalContext::TransactionConstPtr HMDBLocalContext::transaction() const
 {
-	//TODO
-	return TransactionConstPtr();
+	return TransactionConstPtr(new HMDBLocalContextTransaction(const_cast<HMDBLocalContext*>(this)));
 }
 
 const bool HMDBLocalContext::rawLoad(const std::string & fileName, const core::IStreamDataManager::TransactionPtr streamTransaction)
@@ -244,8 +309,8 @@ const bool HMDBLocalContext::rawUnload(const core::VariantConstPtr data, const c
 	return ret;
 }
 
-const bool HMDBLocalContext::rawIsMyData(core::VariantConstPtr data) const
-{
+const bool HMDBLocalContext::rawIsMyData(core::VariantConstPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction) const
+{	
 	return std::find(myData_.begin(), myData_.end(), data) != myData_.end();
 }
 

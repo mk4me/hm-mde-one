@@ -28,6 +28,15 @@ core::IJobPtr core::JobManager::addJob(const std::string & who, const std::strin
 	return ret;
 }
 
+const bool core::JobManager::execute(const std::string & who, const std::string & name,
+	threadingUtils::FunctorRunnable::Functor f)
+{
+	threadingUtils::IRunnablePtr runnable(new threadingUtils::FunctorRunnable(f));
+	auto job = addJob(who, name, runnable);
+	job->wait();
+	return job->status() == IJob::JOB_FINISHED;
+}
+
 void core::JobManager::addWorkerThread(threadingUtils::IThreadPtr workerThread)
 {
 	threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);

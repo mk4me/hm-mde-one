@@ -44,34 +44,49 @@ DataStatus::~DataStatus()
 
 }
 
-const DataStorage DataStatus::storage() const
+const DataStatus::DataStorage DataStatus::storage() const
 {
 	return storage_;
 }
 
-const DataUsage DataStatus::usage() const
+const DataStatus::DataUsage DataStatus::usage() const
 {
 	return usage_;
 }
 
-const DataValidity DataStatus::validity() const
+const DataStatus::DataValidity DataStatus::validity() const
 {
 	return validity_;
 }
 
-const DataStorage DataStatus::merge(const DataStorage storage)
+void DataStatus::setStorage(const DataStorage storage)
+{
+	storage_ = storage;
+}
+
+void DataStatus::setUsage(const DataUsage usage)
+{
+	usage_ = usage;
+}
+
+void DataStatus::setValidity(const DataValidity validity)
+{
+	validity_ = validity;
+}
+
+const DataStatus::DataStorage DataStatus::merge(const DataStorage storage)
 {
 	storage_ |= storage;
 	return storage_;
 }
 
-const DataUsage DataStatus::merge(const DataUsage usage)
+const DataStatus::DataUsage DataStatus::merge(const DataUsage usage)
 {
 	usage_ |= usage;
 	return usage_;
 }
 
-const DataValidity DataStatus::merge(const DataValidity validity)
+const DataStatus::DataValidity DataStatus::merge(const DataValidity validity)
 {
 	validity_ |= validity;
 	return validity_;
@@ -83,6 +98,13 @@ const DataStatus & DataStatus::merge(const DataStatus & status)
 	merge(status.usage());
 	merge(status.validity());
 	return *this;
+}
+
+const bool DataStatus::filter(const DataStatus & status, const DataStatus & fstatus)
+{
+	return (((fstatus.storage() == DataStatus::UnknownStorage) || (status.storage() & fstatus.storage())) &&
+		((fstatus.usage() == DataStatus::UnknownUsage) || (status.usage() & fstatus.usage())) &&
+		((fstatus.validity() == DataStatus::UnknownValidity) || (status.validity() & fstatus.validity())));
 }
 
 /*
@@ -135,32 +157,32 @@ bool DataStatus::operator<(const DataStatus & b) const
 	return ret;
 }
 
-DataStorage operator|(DataStorage l, DataStorage r)
+DataStatus::DataStorage operator|(DataStatus::DataStorage l, DataStatus::DataStorage r)
 {
-	return static_cast<DataStorage>((int)l | (int)r);
+	return static_cast<DataStatus::DataStorage>((int)l | (int)r);
 }
 
-DataStorage & operator|=(DataStorage & l, DataStorage r)
-{
-	return l = (l | r);
-}
-
-DataUsage operator|(DataUsage l, DataUsage r)
-{
-	return static_cast<DataUsage>((int)l | (int)r);
-}
-
-DataUsage & operator|=(DataUsage & l, DataUsage r)
+DataStatus::DataStorage & operator|=(DataStatus::DataStorage & l, DataStatus::DataStorage r)
 {
 	return l = (l | r);
 }
 
-DataValidity operator|(DataValidity l, DataValidity r)
+DataStatus::DataUsage operator|(DataStatus::DataUsage l, DataStatus::DataUsage r)
 {
-	return static_cast<DataValidity>((int)l | (int)r);
+	return static_cast<DataStatus::DataUsage>((int)l | (int)r);
 }
 
-DataValidity & operator|=(DataValidity & l, DataValidity r)
+DataStatus::DataUsage & operator|=(DataStatus::DataUsage & l, DataStatus::DataUsage r)
+{
+	return l = (l | r);
+}
+
+DataStatus::DataValidity operator|(DataStatus::DataValidity l, DataStatus::DataValidity r)
+{
+	return static_cast<DataStatus::DataValidity>((int)l | (int)r);
+}
+
+DataStatus::DataValidity & operator|=(DataStatus::DataValidity & l, DataStatus::DataValidity r)
 {
 	return l = (l | r);
 }
@@ -171,40 +193,40 @@ DataStatus operator|(const DataStatus & l, const DataStatus & r)
 		l.validity() | r.validity());
 }
 
-DataStatus operator|(const DataStatus & l, const DataStorage & r)
+DataStatus operator|(const DataStatus & l, const DataStatus::DataStorage & r)
 {
 	DataStatus ds(l);
 	ds.merge(r);
 	return ds;
 }
 
-DataStatus & operator|=(DataStatus & l, const DataStorage & r)
+DataStatus & operator|=(DataStatus & l, const DataStatus::DataStorage & r)
 {
 	l.merge(r);
 	return l;
 }
 
-DataStatus operator|(const DataStatus & l, const DataUsage & r)
+DataStatus operator|(const DataStatus & l, const DataStatus::DataUsage & r)
 {
 	DataStatus ds(l);
 	ds.merge(r);
 	return ds;
 }
 
-DataStatus & operator|=(DataStatus & l, const DataUsage & r)
+DataStatus & operator|=(DataStatus & l, const DataStatus::DataUsage & r)
 {
 	l.merge(r);
 	return l;
 }
 
-DataStatus operator|(const DataStatus & l, const DataValidity & r)
+DataStatus operator|(const DataStatus & l, const DataStatus::DataValidity & r)
 {
 	DataStatus ds(l);
 	ds.merge(r);
 	return ds;
 }
 
-DataStatus & operator|=(DataStatus & l, const DataValidity & r)
+DataStatus & operator|=(DataStatus & l, const DataStatus::DataValidity & r)
 {
 	l.merge(r);
 	return l;

@@ -16,6 +16,7 @@
 #include <plugins/hmdbCommunication/IHMDBStatusManager.h>
 #include <plugins/hmdbCommunication/DataStatus.h>
 #include <utils/Utils.h>
+#include <numeric>
 
 using namespace hmdbCommunication;
 
@@ -49,7 +50,7 @@ const float HMDBStorageProgress::progress() const
 	return progress_;
 }
 
-const std::string & HMDBStorageProgress::error() const
+const std::string HMDBStorageProgress::error() const
 {
 	return error_;
 }
@@ -57,6 +58,104 @@ const std::string & HMDBStorageProgress::error() const
 void HMDBStorageProgress::abort()
 {
 	aborted_ = true;
+}
+
+DownloadHelper::DownloadHelper(IHMDBStoragePtr storage, const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads)
+	: downloads(downloads), storage(storage)
+{
+
+}
+
+void DownloadHelper::download()
+{
+	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	{
+		d->start();
+	});
+}
+
+void DownloadHelper::wait()
+{
+	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	{
+		d->wait();
+	});
+}
+
+void DownloadHelper::abort()
+{
+	storeProgress.abort();
+	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	{
+		d->abort();
+	});
+}
+
+const float DownloadHelper::progress() const
+{
+	const auto pd = std::accumulate(downloads.begin(), downloads.end(), 0.0, [](float total, IHMDBRemoteContext::DownloadOperationPtr d) { return total + d->progress(); }) / downloads.size();
+	return (pd + storeProgress.progress()) / 2.0;
+}
+
+const std::list<IHMDBRemoteContext::DownloadOperationPtr> filterCompleteDownloads(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads)
+{
+	std::list<IHMDBRemoteContext::DownloadOperationPtr> ret;
+
+	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	{
+		if (d->fileDownloaded() == true){
+			ret.push_back(d);
+		}
+	});
+
+	return ret;
+}
+
+void DownloadHelper::filterDownloaded()
+{
+	downloaded_ = filterCompleteDownloads(downloads);
+}
+
+const std::list<IHMDBRemoteContext::DownloadOperationPtr> & DownloadHelper::downloaded() const
+{
+	return downloaded_;
+}
+
+void DownloadHelper::store()
+{
+	if (downloaded_.empty() == true){
+		throw std::runtime_error("Downloads failed. Could not synchronize");
+	}
+
+	auto t = storage->transaction();
+
+	const auto s = downloaded_.size();
+	std::for_each(downloaded_.begin(), downloaded_.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	{
+		if (storeProgress.aborted() == true){
+			return;
+		}
+
+		try{
+			t->set(d->fileID().fileName, d->stream(), &storeProgress, s);
+		}
+		catch (...){
+
+		}
+	});
+}
+
+DownloadHelper::~DownloadHelper()
+{
+	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	{
+		try{
+			d->release();
+		}
+		catch (...){
+
+		}
+	});
 }
 
 CompoundOperation::CompoundOperation(const ExecutionPolicy ep,
@@ -570,12 +669,6 @@ void PrepareHMDB::clearHMDB()
 	}
 }
 
-void StoreOutput::store(IHMDBStorage::TransactionPtr storageTransaction, const std::string & key,
-	IHMDBStorage::IStreamPtr stream, IHMDBStorageProgress * progress)
-{
-	storageTransaction->set(key, stream, progress);
-}
-
 TmpFileTransferIO::TmpFileTransferIO()
 {
 
@@ -809,6 +902,141 @@ void FileDownload::download()
 	++progress_;
 }
 
+MultipleFilesDownloadAndStore::MultipleFilesDownloadAndStore(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads,
+	IHMDBStoragePtr storage) : status_(Initialized), downloadHelper(storage, downloads)
+{
+
+}
+
+MultipleFilesDownloadAndStore::~MultipleFilesDownloadAndStore()
+{
+
+}
+
+void MultipleFilesDownloadAndStore::start()
+{
+	if (status_ != Initialized){
+		return;
+	}
+
+	try{
+		core::IThreadPool::Threads t;
+		plugin::getThreadPool()->getThreads("HMDBCommunication", t, 1);
+		thread_ = t.front();
+		threadingUtils::IRunnablePtr runnable(new threadingUtils::FunctorRunnable(boost::bind(&MultipleFilesDownloadAndStore::download, this)));
+
+		thread_->start(runnable);
+		status_ = Pending;
+	}
+	catch (std::exception & e){
+		error_ = e.what();
+		status_ = Error;
+		throw;
+	}
+	catch (...){
+		error_ = "UNKNOWN error while launching multiple files download";
+		status_ = Error;
+		throw;
+	}
+}
+
+void MultipleFilesDownloadAndStore::wait()
+{
+	if (thread_ != nullptr){
+		thread_->join();
+	}
+}
+
+void MultipleFilesDownloadAndStore::abort()
+{
+	if (status_ != Error && status_ != Aborted){
+		status_ = Aborted;
+		downloadHelper.abort();
+	}
+}
+
+const MultipleFilesDownloadAndStore::Status MultipleFilesDownloadAndStore::status() const
+{
+	return status_;
+}
+
+const std::string MultipleFilesDownloadAndStore::error() const
+{
+	return error_;
+}
+
+const float MultipleFilesDownloadAndStore::progress() const
+{
+	return downloadHelper.progress();
+}
+
+void MultipleFilesDownloadAndStore::download()
+{
+	try{
+
+		if (status_ == Aborted){
+			return;
+		}
+
+		downloadHelper.download();
+		downloadHelper.wait();
+
+		if (status_ == Aborted){
+			return;
+		}
+
+		downloadHelper.filterDownloaded();
+
+		downloadHelper.store();
+
+		if (status_ == Aborted){
+			return;
+		}
+
+		downloadFinished(downloadHelper.downloaded());
+
+		status_ = Finished;
+	}
+	catch (std::exception & e){
+		error_ = e.what();
+		status_ = Error;
+	}
+	catch (...){
+		error_ = "UNKNOWN error while downloading multiple files";
+		status_ = Error;
+	}
+}
+
+MultipleFilesDownloadStoreAndStatusUpdate::MultipleFilesDownloadStoreAndStatusUpdate(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads,
+	IHMDBStoragePtr storage, IHMDBStatusManagerPtr statusManager, ShallowCopyConstPtr shallowCopy)
+	: MultipleFilesDownloadAndStore(downloads, storage), statusManager(statusManager), shallowCopy(shallowCopy)
+{
+
+}
+
+MultipleFilesDownloadStoreAndStatusUpdate::~MultipleFilesDownloadStoreAndStatusUpdate()
+{
+
+}
+
+void MultipleFilesDownloadStoreAndStatusUpdate::downloadFinished(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & finishedDownloads)
+{
+	if (finishedDownloads.empty() == true){
+		return;
+	}
+
+	auto t = statusManager->transaction();
+
+	std::for_each(finishedDownloads.begin(), finishedDownloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	{		
+		t->updateDataStatus(FileType, d->fileID().id.fileID, DataStatus(DataStatus::Local, DataStatus::UnknownUsage, DataStatus::Valid));
+	});
+
+	if (shallowCopy != nullptr){
+		statusManager->tryUpdate(shallowCopy);
+	}
+}
+
 const ShallowCopyConstPtr ExtractShallowcopy::shallowCopy() const
 {
 	return shallowCopy_;
@@ -867,20 +1095,6 @@ void extractShallowCopy(const hmdbServices::ID shallowID, const IHMDBRemoteConte
 	}
 }
 
-const std::list<IHMDBRemoteContext::DownloadOperationPtr> filterCompleteDownloads(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads)
-{
-	std::list<IHMDBRemoteContext::DownloadOperationPtr> ret;
-
-	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
-	{
-		if (d->fileDownloaded() == true){
-			ret.push_back(d);
-		}
-	});
-
-	return ret;
-}
-
 void ExtractShallowcopy::extract(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads, IHMDBStorageProgress * progress)
 {
 	ShallowCopyPtr locSh(new ShallowCopy);
@@ -910,9 +1124,52 @@ void ExtractShallowcopy::extract(const std::list<IHMDBRemoteContext::DownloadOpe
 	}
 }
 
+SynchronizeOperationImpl::SynchronizeOperationImpl(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads,
+		IHMDBStoragePtr storage) : MultipleFilesDownloadAndStore(downloads, storage)
+{
+
+}
+
+SynchronizeOperationImpl::~SynchronizeOperationImpl()
+{
+
+}
+
+void SynchronizeOperationImpl::abort()
+{
+	extractProgress.abort();
+	MultipleFilesDownloadAndStore::abort();
+}
+
+const float SynchronizeOperationImpl::progress() const
+{
+	return (MultipleFilesDownloadAndStore::progress() + extractProgress.progress()) / 2.0;
+}
+
+const ShallowCopyConstPtr SynchronizeOperationImpl::shallowCopy() const
+{
+	return shallowCopy_;
+}
+
+const IncrementalBranchShallowCopyConstPtr SynchronizeOperationImpl::incrementalBranchShallowCopy() const
+{
+	return incrementalShallowCopy_;
+}
+
+void SynchronizeOperationImpl::downloadFinished(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & finishedDownloads)
+{
+	ExtractShallowcopy eSc;
+
+	eSc.extract(finishedDownloads, &extractProgress);
+
+	if (extractProgress.aborted() == false && extractProgress.error().empty() == true){
+		shallowCopy_ = eSc.shallowCopy();
+		incrementalShallowCopy_ = eSc.incrementalBranchShallowCopy();
+	}
+}
+
 SynchronizeOperation::SynchronizeOperation(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads,
-	IHMDBStoragePtr storage) : status_(Initialized), downloads(downloads), storage(storage),
-	fOp(boost::bind(&SynchronizeOperation::synchronize, this))
+	IHMDBStoragePtr storage) : op(downloads, storage)
 {
 	
 }
@@ -924,149 +1181,40 @@ SynchronizeOperation::~SynchronizeOperation()
 
 void SynchronizeOperation::start()
 {
-	extractProgress.reset(new HMDBStorageProgress);
-	fOp.start();
+	op.start();
 }
 
 void SynchronizeOperation::wait()
 {
-	fOp.wait();
+	op.wait();
 }
 
 void SynchronizeOperation::abort()
 {
-	if (status_ == Initialized){
-		status_ = Aborted;
-		fOp.abort();
-	}
+	op.abort();
 }
 
 const SynchronizeOperation::Status SynchronizeOperation::status() const
 {
-	if (status_ == Aborted){
-		return status_;
-	}
-
-	return fOp.status();
+	return op.status();
 }
 
 const std::string SynchronizeOperation::error() const
 {
-	return fOp.error();
+	return op.error();
 }
 
 const float SynchronizeOperation::progress() const
 {
-	return (downloadsProgress() + ((extractProgress == nullptr) ? 0.0 : extractProgress->progress())) / 2.0;
-}
-
-DownloadHelper::DownloadHelper(IHMDBStoragePtr storage, const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads)
-	: downloads(downloads), storage(storage)
-{
-
-}
-
-void DownloadHelper::download()
-{
-	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
-	{
-		d->start();
-	});
-}
-
-void DownloadHelper::wait()
-{
-	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
-	{
-		d->wait();
-	});
-}
-
-void DownloadHelper::filterDownloaded()
-{
-	downloaded_ = filterCompleteDownloads(downloads);
-}
-
-const std::list<IHMDBRemoteContext::DownloadOperationPtr> & DownloadHelper::downloaded() const
-{
-	return downloaded_;
-}
-
-void DownloadHelper::store()
-{
-	if (downloaded_.empty() == true){
-		throw std::runtime_error("Downloads failed. Could not synchronize");
-	}
-
-	auto t = storage->transaction();
-
-	std::for_each(downloaded_.begin(), downloaded_.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
-	{
-		try{
-			t->set(d->fileID().fileName, d->stream());
-		}
-		catch (...){
-
-		}
-	});
-}
-
-DownloadHelper::~DownloadHelper()
-{
-	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
-	{
-		try{
-			d->release();
-		}
-		catch (...){
-
-		}
-	});
-}
-
-void SynchronizeOperation::synchronize()
-{
-	DownloadHelper storeHelper(storage, downloads);
-
-	storeHelper.download();
-
-	storeHelper.wait();
-
-	storeHelper.filterDownloaded();
-
-	storeHelper.store();
-
-	if (status() == Running){
-
-		ExtractShallowcopy eSc;
-
-		eSc.extract(storeHelper.downloaded(), extractProgress.get());
-
-		if (extractProgress->aborted() == false && extractProgress->error().empty() == true){
-			shallowCopy_ = eSc.shallowCopy();
-			incrementalShallowCopy_ = eSc.incrementalBranchShallowCopy();
-		}
-	}
-}
-
-const float SynchronizeOperation::downloadsProgress() const
-{
-	float p = 0.0;
-
-	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
-	{
-		p += d->progress();
-	});
-
-	return p / downloads.size();
+	return op.progress();
 }
 
 const ShallowCopyConstPtr SynchronizeOperation::shallowCopy() const
 {
-	return shallowCopy_;
+	return op.shallowCopy();
 }
 
 const IncrementalBranchShallowCopyConstPtr SynchronizeOperation::incrementalBranchShallowCopy() const
 {
-	return incrementalShallowCopy_;
+	return op.incrementalBranchShallowCopy();
 }
