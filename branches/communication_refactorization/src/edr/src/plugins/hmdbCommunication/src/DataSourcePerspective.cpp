@@ -83,8 +83,6 @@ const QString DataSourcePatientPerspective::name() const
 
 void DataSourcePatientPerspective::rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const ShallowCopy & shallowCopy)
 {
-	//auto patientsITEnd = shallowCopy.medicalShallowCopy->patients.end();
-	//for(auto patientIT = shallowCopy.medicalShallowCopy->patients.begin(); patientIT != patientsITEnd; ++patientIT){
 	auto subjectsITEnd = shallowCopy.motionShallowCopy.performers.end();
 	for (auto subjectIT = shallowCopy.motionShallowCopy.performers.begin(); subjectIT != subjectsITEnd; ++subjectIT){
 		//jeśli pusty pacjent to go pomijamy
@@ -111,7 +109,6 @@ void DataSourcePatientPerspective::rebuildPerspective(QTreeWidgetItem * treeWidg
 
 			//generuje item sesji
 			auto sessionItem = new TreeWidgetContentItem(SessionContent, perfConfIT->second->session->sessionID);
-
 			item->addChild(sessionItem);
 
 			auto motionsITEnd = perfConfIT->second->session->trials.end();
@@ -122,7 +119,6 @@ void DataSourcePatientPerspective::rebuildPerspective(QTreeWidgetItem * treeWidg
 
 				//generuje item motiona
 				auto motionItem = new TreeWidgetContentItem(MotionContent, motionIT->second->trialID);
-
 				sessionItem->addChild(motionItem);
 			}
 		}

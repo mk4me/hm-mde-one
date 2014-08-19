@@ -22,12 +22,6 @@ namespace hmdbCommunication
 		UNIQUE_ID("{00001231-BACA-42C6-9A8E-706F561A563F}")
 		CLASS_DESCRIPTION("HMDB Source", "HMDB Source")
 
-	private:
-
-		typedef std::map<QString, ContextConfiguration> ContextConfigurations;
-		typedef utils::shared_ptr<IHMDBSourceContextView> SourceContextViewPtr;
-		typedef std::map<SourceContextViewPtr, ContextConfigurations> ContextViews;
-
 	public:
 		//! Konstruktor domyslny
 		HMDBSource();
@@ -78,32 +72,6 @@ namespace hmdbCommunication
 		//! \return Konteks p³ytkiej kopii bazy danych
 		virtual const IHMDBShallowCopyContextPtr createShallowCopyContext(IHMDBSourceContextPtr sourceContext);
 
-		//! \param prototype Prototyp widoku kontekstów
-		virtual void registerSourceContextViewPrototype(IHMDBSourceContextView * prototype);
-		//! \return Iloœc zarejestrowanych prototypów widoków
-		virtual const unsigned int sourceContextViewPrototypesCount() const;
-		//! \param idx Indeks prototypu widoku
-		//! \return Prototyp widoku
-		virtual IHMDBSourceContextView * sourceContextViewPrototype(const unsigned int idx);
-		//! \param idx Indeks prototypu widoku
-		//! \return Prototyp widoku
-		virtual const IHMDBSourceContextView * sourceContextViewPrototype(const unsigned int idx) const;
-
-		//! \param prototype Prototyp widoku kontekstów dla którego chcemy zarejestrowaæ konfiguracjê
-		//! \param config Konfiguracja widoku
-		//! \return Czy uda³o siê zarejestrowaæ konfiguracjê (nazwa musi byæ unikalna!!)
-		virtual const bool registerSourceContextViewConfiguration(IHMDBSourceContextView * prototype,
-			const ContextConfiguration & config);
-
-		//! \param prototype Prototyp widoku dla którego szukam predefiniowanych konfiguracji
-		virtual const unsigned int sourceContextViewConfigurationsCount(IHMDBSourceContextView * prototype) const;
-
-		//! \param prototype Prototyp widoku dla którego szukam predefiniowanych konfiguracji
-		//! \param idx Indeks konfiguracji
-		//! \return Konfiguracja
-		virtual const ContextConfiguration sourceContextViewConfiguration(IHMDBSourceContextView * prototype,
-			const unsigned int idx) const;
-
 		//! \param url Adres serwisu gdzie zak³adamy konto
 		//! \param login Nazwa u¿ytkownika dla którego chcemy za³o¿yc konto
 		//! \param password Has³o nowego konta
@@ -131,6 +99,11 @@ namespace hmdbCommunication
 			const bool multi = true,
 			const std::string & caPath = std::string());
 
+		//! \return Manager widowkow
+		virtual IHMDBSourceViewManager * viewManager();
+		//! \return Manager widowkow
+		virtual const IHMDBSourceViewManager * viewManager() const;
+
 		/*
 		//! \return Iloœæ obs³ugiwanych kontekstów danych
 		virtual const unsigned int size() const;
@@ -148,9 +121,6 @@ namespace hmdbCommunication
 		//! \return Konteks danych lub nullptr jeœli nie znaleziono
 		//virtual const IHMDBSourceContext * sourceContextForData(core::VariantConstPtr data) const;
 
-		virtual IShallowCopyFilterManager * filterManager();
-		virtual const IShallowCopyFilterManager * filterManager() const;
-
 	private:
 		//! Widget
 		HMDBSourceWidget * mainWidget;
@@ -164,10 +134,8 @@ namespace hmdbCommunication
 		core::IStreamDataManager * streamDM;
 		//! Manager danych
 		core::IFileDataManager * fileDM;
-		//! Prototypy kontekstów
-		ContextViews contextViews;
-
-		utils::shared_ptr<IShallowCopyFilterManager> filterManager_;
+		//! Manager ustawieñ widoków
+		utils::shared_ptr<IHMDBSourceViewManager> viewManager_;
 	};
 }
 

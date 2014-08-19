@@ -15,10 +15,10 @@
 #include "LayersXmlParser.h"
 #include "InternalXmlParser.h"
 #include "AnnotationStatusFilter.h"
-#include "webserviceslib/IWSConnection.h"
-#include "webserviceslib/IBasicQueriesWS.h"
-#include "webserviceslib/WSConnection.h"
-#include "webserviceslib/BasicQueriesWS.h"
+//#include "webserviceslib/IWSConnection.h"
+#include <hmdbserviceslib/IBasicQueriesWS.h>
+//#include <hmdbserviceslib/WSConnection.h>
+#include <hmdbserviceslib/BasicQueriesWS.h>
 
 using namespace dicom;
 

@@ -63,20 +63,37 @@
           </spacer>
          </item>
          <item row="2" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
-            <widget class="QToolButton" name="addProfileToolButton">
-             <property name="text">
-              <string>Add</string>
+            <spacer name="horizontalSpacer_10">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
-            </widget>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
            <item>
-            <widget class="QToolButton" name="removeProfileToolButton">
-             <property name="text">
-              <string>Del</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="QToolButton" name="addProfileToolButton">
+               <property name="text">
+                <string>Add</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="removeProfileToolButton">
+               <property name="text">
+                <string>Del</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </item>
@@ -127,6 +144,36 @@
           </item>
          </layout>
         </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QToolButton" name="advanceToolButton">
+           <property name="text">
+            <string>&lt;&lt; Advance</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="Line" name="line_16">
@@ -392,7 +439,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>246</height>
+           <height>213</height>
           </size>
          </property>
         </spacer>
@@ -1365,6 +1412,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>advanceToolButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>SourceOptionsWidget</receiver>
+   <slot>setLoginAdvanceConfiguration(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>588</x>
+     <y>207</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>324</x>
+     <y>479</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onStoragePathBrowse()</slot>
@@ -1387,5 +1450,6 @@
   <slot>onRefreshViews()</slot>
   <slot>onVerifyLogin()</slot>
   <slot>onConnectionProfileEdit()</slot>
+  <slot>setLoginAdvanceConfiguration(bool)</slot>
  </slots>
 </ui>

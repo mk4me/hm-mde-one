@@ -214,7 +214,7 @@ void IMUCostumeWidget::onLoadDatFile()
     QString file = QFileDialog::getOpenFileName(this, tr("Open Image"), QString(), tr("Imu file (*.dat)"));
     core::Filesystem::Path p(file.toStdString());
     if (core::Filesystem::isRegularFile(p)) {
-        ds->loadDatFile(p);
+        //ds->loadDatFile(p);
     }
     
 }

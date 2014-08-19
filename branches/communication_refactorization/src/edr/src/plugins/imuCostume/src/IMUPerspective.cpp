@@ -6,14 +6,15 @@
 #include <corelib/DataAccessors.h>
 #include <plugins/subject/IMotion.h>
 #include <corelib/HierarchyDataItem.h>
-#include <plugins/newCommunication/TreeItemHelper.h>
+#include <plugins/hmdbCommunication/TreeItemHelper.h>
 #include <boost/foreach.hpp>
 #include <plugins/subject/ISubject.h>
-#include <plugins/newCommunication/IPatient.h>
+#include <plugins/hmdbCommunication/IPatient.h>
 #include <corelib/PluginCommon.h>
 #include <utils/ObjectWrapper.h>
-#include <plugins/newCommunication/ICommunicationDataSource.h>
-#include <plugins/newCommunication/IDataSourceUser.h>
+#include <plugins/hmdbCommunication/IHMDBSource.h>
+#include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
+//#include <plugins/hmdbCommunication/IDataSourceUser.h>
 #include <corelib/ISourceManager.h>
 #include <corelib/PluginCommon.h>
 #include <corelib/ISourceManager.h>
@@ -49,8 +50,6 @@ VectorChannelPtr createChannel(int hz, const IMU::IMUConfig& config, int i, cons
 
 core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::SubjectPtr subject )
 {
-	auto comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
-
     bool hasData = false;
     auto rootItem = utils::make_shared<core::HierarchyItem>(QString(), QString(), QIcon());
     core::ConstVariantsList sessions;
@@ -256,9 +255,9 @@ QWidgetList IMU::IMUPerspectiveService::getPropertiesWidgets()
 
 const bool IMU::IMUPerspectiveService::lateInit()
 {
-	communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(sourceManager);
+	auto comm = core::querySource<hmdbCommunication::IHMDBSource>(sourceManager);
 	if (comm){
-		comm->addHierarchyPerspective(utils::make_shared<IMUPerspective>(memoryDataManager));
+		comm->viewManager()->addHierarchyPerspective(utils::make_shared<IMUPerspective>(memoryDataManager));
 		return true;
 	}
 

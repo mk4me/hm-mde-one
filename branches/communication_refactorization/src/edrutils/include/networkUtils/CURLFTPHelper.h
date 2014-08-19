@@ -16,7 +16,19 @@
 
 namespace networkUtils
 {
-	class ICURLFTPProgress
+	class ICURLFTPBasicProgress
+	{
+	public:
+		//! Destruktor wirtualny
+		virtual ~ICURLFTPBasicProgress() {}
+		//! \return Czy nale¿y przerwaæ operacjê
+		virtual const bool aborted() const = 0;
+		//! \param progress Postêp od 0.0 do 1.0
+		virtual void setProgress(const float progress) = 0;
+	};
+
+
+	class ICURLFTPProgress : public ICURLFTPBasicProgress
 	{
 	public:
 		//! Destruktor wirtualny

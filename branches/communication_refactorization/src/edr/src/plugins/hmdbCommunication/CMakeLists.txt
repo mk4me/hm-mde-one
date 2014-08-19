@@ -52,6 +52,7 @@ SET_PRIVATE_HEADERS(
 	MemoryStorage.h
 	DataSourceDefaultContent.h
 	HMDBOperations.h
+	HMDBSourceViewManager.h
 )
 
 SET_PUBLIC_HEADERS (
@@ -91,6 +92,7 @@ SET_PUBLIC_HEADERS (
 	DataViewWidget.h
 	IHMDBShallowCopyContext.h
 	Types.h
+	IHMDBSourceViewManager.h
 )
 
 #------------------------------------------------------------------------------
@@ -157,6 +159,7 @@ SET_SOURCE_FILES(
 	MemoryStorage.cpp
 	DataSourceDefaultContent.cpp
 	HMDBOperations.cpp
+	HMDBSourceViewManager.cpp
 )
 
 SET_MOC_FILES(

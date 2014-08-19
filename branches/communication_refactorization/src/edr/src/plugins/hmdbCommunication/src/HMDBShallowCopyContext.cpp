@@ -385,6 +385,136 @@ const std::map<DataType, std::set<hmdbServices::ID>> childItems(const DataType t
 	return ret;
 }
 
+const std::map<DataType, std::set<hmdbServices::ID>> parentItems(const DataType type,
+	const hmdbServices::ID id, const ShallowCopyConstPtr shallowCopy)
+{
+	std::map<DataType, std::set<hmdbServices::ID>> ret;
+
+	switch (type)
+	{
+	case MotionType:
+
+	{
+		std::set<hmdbServices::ID> fileIDs;
+
+		if (id < 0){
+			//parentItems(shallowCopy->motionShallowCopy.trials, fileIDs);
+		}
+		else{
+			auto it = shallowCopy->motionShallowCopy.trials.find(id);
+			if (it != shallowCopy->motionShallowCopy.trials.end()){
+				//parentItems(it->second->files, fileIDs);
+			}
+		}
+
+		if (fileIDs.empty() == false){
+			ret[FileType].insert(fileIDs.begin(), fileIDs.end());
+		}
+	}
+
+		break;
+
+	case SessionType:
+
+	{
+		std::set<hmdbServices::ID> fileIDs;
+		std::set<hmdbServices::ID> motionIDs;
+
+		if (id < 0){
+			childItems(shallowCopy->motionShallowCopy.sessions, motionIDs, fileIDs);
+		}
+		else{
+			auto it = shallowCopy->motionShallowCopy.sessions.find(id);
+			if (it != shallowCopy->motionShallowCopy.sessions.end()){
+				childItems(it->second, motionIDs, fileIDs);
+			}
+		}
+
+		if (motionIDs.empty() == false){
+			ret[MotionType].insert(motionIDs.begin(), motionIDs.end());
+		}
+
+		if (fileIDs.empty() == false){
+			ret[FileType].insert(fileIDs.begin(), fileIDs.end());
+		}
+	}
+
+		break;
+
+	case SubjectType:
+
+	{
+		std::set<hmdbServices::ID> fileIDs;
+		std::set<hmdbServices::ID> motionIDs;
+		std::set<hmdbServices::ID> sessionIDs;
+
+		if (id < 0){
+			childItems(shallowCopy->motionShallowCopy.performers, sessionIDs, motionIDs, fileIDs);
+		}
+		else{
+			auto it = shallowCopy->motionShallowCopy.performers.find(id);
+			if (it != shallowCopy->motionShallowCopy.performers.end()){
+				childItems(it->second, sessionIDs, motionIDs, fileIDs);
+			}
+		}
+
+		if (sessionIDs.empty() == false){
+			ret[SessionType].insert(sessionIDs.begin(), sessionIDs.end());
+		}
+
+		if (motionIDs.empty() == false){
+			ret[MotionType].insert(motionIDs.begin(), motionIDs.end());
+		}
+
+		if (fileIDs.empty() == false){
+			ret[FileType].insert(fileIDs.begin(), fileIDs.end());
+		}
+	}
+
+		break;
+
+	case PatientType:
+
+	{
+		std::set<hmdbServices::ID> fileIDs;
+		std::set<hmdbServices::ID> motionIDs;
+		std::set<hmdbServices::ID> sessionIDs;
+		std::set<hmdbServices::ID> subjectIDs;
+
+		if (id < 0){
+			childItems(shallowCopy->medicalShallowCopy.patients, subjectIDs, sessionIDs, motionIDs, fileIDs);
+		}
+		else{
+			auto it = shallowCopy->medicalShallowCopy.patients.find(id);
+			if (it != shallowCopy->medicalShallowCopy.patients.end()){
+				childItems(it->second, subjectIDs, sessionIDs, motionIDs, fileIDs);
+			}
+		}
+
+		if (subjectIDs.empty() == false){
+			ret[SubjectType].insert(subjectIDs.begin(), subjectIDs.end());
+		}
+
+		if (sessionIDs.empty() == false){
+			ret[SessionType].insert(sessionIDs.begin(), sessionIDs.end());
+		}
+
+		if (motionIDs.empty() == false){
+			ret[MotionType].insert(motionIDs.begin(), motionIDs.end());
+		}
+
+		if (fileIDs.empty() == false){
+			ret[FileType].insert(fileIDs.begin(), fileIDs.end());
+		}
+	}
+
+		break;
+
+	}
+
+	return ret;
+}
+
 void filterAndInsertData(core::ConstVariantsList & inputData, core::ConstVariantsList & outputData,
 	const IHMDBLocalContextConstPtr localContext)
 {
@@ -462,10 +592,9 @@ const core::ConstVariantsList HMDBShallowCopyLocalContext::data(const DataType t
 }
 
 const std::set<hmdbServices::ID> filterFiles(const std::set<hmdbServices::ID> & inFiles,
-	const IHMDBStatusManagerConstPtr statusManager, const DataStatus & status)
+	const IHMDBStatusManager::TransactionConstPtr transaction, const DataStatus & status)
 {
-	std::set<hmdbServices::ID> ret;
-	auto transaction = statusManager->transaction();
+	std::set<hmdbServices::ID> ret;	
 
 	for (auto it = inFiles.begin(); it != inFiles.end(); ++it){
 		auto fs = transaction->dataStatus(FileType, *it);
@@ -615,15 +744,15 @@ const core::VariantPtr HMDBShallowCopyLocalContext::findObjectByType(const DataT
 	return ret;
 }
 
-PluginSubject::SubjectPtr HMDBShallowCopyLocalContext::getSubject(const hmdbServices::ID id,
+core::VariantPtr HMDBShallowCopyLocalContext::getSubject(const hmdbServices::ID id,
 	utils::shared_ptr<PluginSubject::ISubjectService> subjectService,
 	const ShallowCopyConstPtr shallowCopy)
 {
 	core::VariantPtr subOW = findObjectByType(SubjectType, id, typeid(PluginSubject::ISubject));
-	
-	PluginSubject::SubjectPtr subPtr;
 
 	if (subOW == nullptr){
+
+		PluginSubject::SubjectPtr subPtr;
 		//tworzê subjecta
 		subOW = subjectService->createSubject();
 
@@ -652,16 +781,11 @@ PluginSubject::SubjectPtr HMDBShallowCopyLocalContext::getSubject(const hmdbServ
 		//zapamiêtujê mapowanie
 		data_[SubjectType][id].push_back(subOW);
 	}
-	else{
-		//FIX dla linux RtR
-		//subPtr = subOW->get();
-		subOW->tryGet(subPtr);
-	}
 
-	return subPtr;
+	return subOW;
 }
 
-PluginSubject::SessionPtr HMDBShallowCopyLocalContext::getSession(const std::pair<Indexes, MotionFiles> & sessionFiles,
+core::VariantPtr HMDBShallowCopyLocalContext::getSession(const std::pair<Indexes, MotionFiles> & sessionFiles,
 	const IndexedData & loadedFilesData,
 	PluginSubject::SubjectPtr subPtr,
 	core::VariantPtr subOW,
@@ -671,15 +795,15 @@ PluginSubject::SessionPtr HMDBShallowCopyLocalContext::getSession(const std::pai
 {
 	core::VariantPtr sOW = findObjectByType(SessionType, id, typeid(PluginSubject::ISession));
 
-	PluginSubject::SessionPtr sPtr;
-
 	if (sOW == nullptr){
+
+		PluginSubject::SessionPtr sPtr;
 
 		auto sIT = shallowCopy->motionShallowCopy.sessions.find(id);
 
 		if (sIT == shallowCopy->motionShallowCopy.sessions.end()){
 			PLUGIN_LOG_DEBUG("Inconsistent subject hierarchy");
-			return PluginSubject::SessionPtr();
+			return sOW;
 		}
 
 		auto s = sIT->second;
@@ -738,13 +862,8 @@ PluginSubject::SessionPtr HMDBShallowCopyLocalContext::getSession(const std::pai
 		data_[SessionType][id].push_back(antroOW);
 		subPtr->addSession(sOW);
 	}
-	else{
-		//FIX dla linux RtR
-		//sPtr = sOW->get();
-		sOW->tryGet(sPtr);
-	}
 
-	return sPtr;
+	return sOW;
 }
 
 const core::VariantPtr createJointsAngles(const core::ConstVariantsList objects, PluginSubject::SessionPtr session)
@@ -779,7 +898,7 @@ const core::VariantPtr createJointsAngles(const core::ConstVariantsList objects,
 	return ret;
 }
 
-PluginSubject::MotionPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & motionFiles,
+core::VariantPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & motionFiles,
 	const IndexedData & loadedFilesData,
 	PluginSubject::SessionPtr sPtr,
 	core::VariantPtr sOW,
@@ -788,16 +907,16 @@ PluginSubject::MotionPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & 
 	const ShallowCopyConstPtr shallowCopy)
 {
 	core::VariantPtr mOW = findObjectByType(MotionType, id, typeid(PluginSubject::IMotion));
-
-	PluginSubject::MotionPtr mPtr;
 	
 	if (mOW == nullptr){
+
+		PluginSubject::MotionPtr mPtr;
 
 		auto mIT = shallowCopy->motionShallowCopy.trials.find(id);
 
 		if (mIT == shallowCopy->motionShallowCopy.trials.end()){
 			PLUGIN_LOG_DEBUG("Broken subject hierarchy");
-			return mPtr;
+			return mOW;
 		}
 
 		auto m = mIT->second;
@@ -873,13 +992,8 @@ PluginSubject::MotionPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & 
 
 		sPtr->addMotion(mOW);
 	}
-	else{
-		//FIX dla linux RtR
-		//mPtr = mOW->get();
-		mOW->tryGet(mPtr);
-	}
 
-	return mPtr;
+	return mOW;
 }
 
 const HMDBShallowCopyLocalContext::SubjectFiles HMDBShallowCopyLocalContext::groupDataInHierarchy(const IndexedData & loadedFilesData,
@@ -942,23 +1056,24 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 	for (auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
 		//tworzê subject jeœli to konieczne!!
 
-		core::VariantPtr subOW;
-		PluginSubject::SubjectPtr subPtr = getSubject(subjectIT->first, subjectService, shallowCopy);		
+		core::VariantPtr subOW = getSubject(subjectIT->first, subjectService, shallowCopy);
+		PluginSubject::SubjectPtr subPtr;
+		subOW->tryGet(subPtr);
 
 		//mam subjecta, mogê iœæ dalej do sesji
 		for (auto sessionIT = subjectIT->second.begin(); sessionIT != subjectIT->second.end(); ++sessionIT){
 			
-			core::VariantPtr sOW;
-			PluginSubject::SessionPtr sPtr = getSession(sessionIT->second,
+			core::VariantPtr sOW = getSession(sessionIT->second,
 				loadedFilesData, subPtr, subOW, sessionIT->first,
 				subjectService, shallowCopy);
+			PluginSubject::SessionPtr sPtr;
+			sOW->tryGet(sPtr);
 
 			//mam sesjê - mogê iœæ dalej z motionami!!
 			for (auto motionIT = sessionIT->second.second.begin(); motionIT != sessionIT->second.second.end(); ++motionIT){
-				core::VariantPtr mOW;
-				PluginSubject::MotionPtr mPtr = getMotion(motionIT->second,
+				core::VariantPtr mOW = getMotion(motionIT->second,
 					loadedFilesData, sPtr, sOW, motionIT->first,
-					subjectService, shallowCopy);
+					subjectService, shallowCopy);				
 			}
 		}
 
@@ -988,7 +1103,8 @@ const bool HMDBShallowCopyLocalContext::load(const DataType type,
 
 	auto files = filesToProcess(type, id, shallowCopyContext_->shallowCopy());
 
-	files = filterFiles(files, shallowCopyContext_->dataStatusManager(), DataStatus(DataStatus::Local, DataStatus::Unloaded));
+	auto dsT = shallowCopyContext_->dataStatusManager()->transaction();
+	files = filterFiles(files, dsT, DataStatus(DataStatus::Local, DataStatus::Unloaded));
 
 	if (files.empty() == false){
 		auto t = localContext_->transaction();
@@ -998,6 +1114,7 @@ const bool HMDBShallowCopyLocalContext::load(const DataType type,
 
 			if (fIT != shallowCopyContext_->shallowCopy()->motionShallowCopy.files.end()){
 				t->load(fIT->second->fileName);
+				dsT->updateDataStatus(FileType, fIT->second->fileID, DataStatus(DataStatus::Loaded));
 				core::ConstVariantsList loadedData = t->data(fIT->second->fileName);
 				if (loadedData.empty() == false){
 					indexedData[*it] = loadedData;
@@ -1011,6 +1128,8 @@ const bool HMDBShallowCopyLocalContext::load(const DataType type,
 		else{
 			PLUGIN_LOG_DEBUG("Files without data to load");
 		}
+
+		dsT->tryUpdate(shallowCopyContext_->shallowCopy());
 
 		ret = true;
 	}
@@ -1033,19 +1152,24 @@ const bool HMDBShallowCopyLocalContext::unload(const DataType type,
 
 	auto files = filesToProcess(type, id, shallowCopyContext_->shallowCopy());
 
-	files = filterFiles(files, shallowCopyContext_->dataStatusManager(), DataStatus(DataStatus::Local, DataStatus::Loaded));
+	auto dsT = shallowCopyContext_->dataStatusManager()->transaction();
+	files = filterFiles(files, dsT, DataStatus(DataStatus::Local, DataStatus::Loaded));
 
 	if (files.empty() == false){
+
 		auto t = localContext_->transaction();
 		for (auto it = files.begin(); it != files.end(); ++it){
 			auto fIT = shallowCopyContext_->shallowCopy()->motionShallowCopy.files.find(*it);
 
 			if (fIT != shallowCopyContext_->shallowCopy()->motionShallowCopy.files.end()){
 				t->unload(fIT->second->fileName);
+				dsT->updateDataStatus(FileType, fIT->second->fileID, DataStatus(DataStatus::Unloaded));
 			}
 		}
 
 		unloadSubjectHierarchy(type, id);
+
+		dsT->tryUpdate(shallowCopyContext_->shallowCopy());
 
 		ret = true;
 	}

@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_IMU__IMUPerspective_H__
 #define HEADER_GUARD_IMU__IMUPerspective_H__
 
-#include <plugins/newCommunication/IHierarchyPerspective.h>
+#include <plugins/hmdbCommunication/IHierarchyPerspective.h>
 #include <corelib/HierarchyHelper.h>
 #include <corelib/Visualizer.h>
 #include <corelib/HierarchyDataItem.h>
@@ -35,7 +35,7 @@ namespace IMU {
 //DEFINE_SMART_POINTERS(DicomHelper);
 
 //! Klasa realizuj¹ca perspektywe danych
-class IMUPerspective : public communication::IHierarchyPerspective
+class IMUPerspective : public hmdbCommunication::IHierarchyPerspective
 {
 public:
 	IMUPerspective(core::IMemoryDataManager * memoryDataManager);

@@ -362,26 +362,122 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	showSplashScreenMessage(QObject::tr("Initializing services"));
 
 	// inicjalizacja us?ug
+	std::set<plugin::IServicePtr> skipServices;
 	for (int i = 0; i < serviceManager_->getNumServices(); ++i) {
-		serviceManager_->getService(i)->init(sourceManager_.get(),
-			visualizerManager_.get(), memoryDataManager_.get(), streamDataManager_.get(), fileDataManager_.get());
+		try{
+			serviceManager_->getService(i)->init(sourceManager_.get(),
+				visualizerManager_.get(), memoryDataManager_.get(), streamDataManager_.get(), fileDataManager_.get());
+		}
+		catch (std::exception & e){
+			skipServices.insert(serviceManager_->getService(i));
+			CORE_LOG_ERROR("Failed to initialize " << serviceManager_->getService(i)->name() << " service (ID: " << serviceManager_->getService(i)->ID() << ") -> " << e.what());
+			try{
+				serviceManager_->getService(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
+		catch (...){
+			skipServices.insert(serviceManager_->getService(i));
+			CORE_LOG_ERROR("Failed to initialize " << serviceManager_->getService(i)->name() << " service (ID: " << serviceManager_->getService(i)->ID() << ")");
+			try{
+				serviceManager_->getService(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
 	}
 
 	// inicjalizacja us?ug
 	for (int i = 0; i < serviceManager_->getNumServices(); ++i) {
-		serviceManager_->getService(i)->lateInit();
+
+		if (skipServices.find(serviceManager_->getService(i)) != skipServices.end()){
+			continue;
+		}
+
+		try{
+			serviceManager_->getService(i)->lateInit();
+		}
+		catch (std::exception & e){
+			CORE_LOG_ERROR("Failed to do late initialization for " << serviceManager_->getService(i)->name() << " service (ID: " << serviceManager_->getService(i)->ID() << ") -> " << e.what());
+			try{
+				serviceManager_->getService(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
+		catch (...){
+			CORE_LOG_ERROR("Failed to do late initialization for " << serviceManager_->getService(i)->name() << " service (ID: " << serviceManager_->getService(i)->ID() << ")");
+			try{
+				serviceManager_->getService(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
 	}
 
 	showSplashScreenMessage(QObject::tr("Initializing sources"));
 
 	// inicjalizacja ?r?de?
+	std::set<plugin::ISourcePtr> skipSources;
 	for (int i = 0; i < sourceManager_->getNumSources(); ++i) {
-		sourceManager_->getSource(i)->init(memoryDataManager_.get(), streamDataManager_.get(), fileDataManager_.get());
+		try{
+			sourceManager_->getSource(i)->init(memoryDataManager_.get(), streamDataManager_.get(), fileDataManager_.get());
+		}
+		catch (std::exception & e){
+			skipSources.insert(sourceManager_->getSource(i));
+			CORE_LOG_ERROR("Failed to initialize " << sourceManager_->getSource(i)->name() << " source (ID: " << sourceManager_->getSource(i)->ID() << ") -> " << e.what());
+			try{
+				serviceManager_->getService(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
+		catch (...){
+			skipSources.insert(sourceManager_->getSource(i));
+			CORE_LOG_ERROR("Failed to initialize " << sourceManager_->getSource(i)->name() << " source (ID: " << sourceManager_->getSource(i)->ID() << ")");
+			try{
+				sourceManager_->getSource(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
 	}
 
 	// inicjalizacja ?r?de?
 	for (int i = 0; i < sourceManager_->getNumSources(); ++i) {
-		sourceManager_->getSource(i)->lateInit();
+
+		if (skipSources.find(sourceManager_->getSource(i)) != skipSources.end()){
+			continue;
+		}
+
+		try{
+			sourceManager_->getSource(i)->lateInit();
+		}
+		catch (std::exception & e){
+			CORE_LOG_ERROR("Failed to do late initialization for " << sourceManager_->getSource(i)->name() << " source (ID: " << sourceManager_->getSource(i)->ID() << ") -> " << e.what());
+			try{
+				sourceManager_->getSource(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
+		catch (...){
+			CORE_LOG_ERROR("Failed to do late initialization for " << sourceManager_->getSource(i)->name() << " source (ID: " << sourceManager_->getSource(i)->ID() << ")");
+			try{
+				sourceManager_->getSource(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
 	}
 
 	showSplashScreenMessage(QObject::tr("Initializing console"));

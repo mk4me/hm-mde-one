@@ -686,7 +686,6 @@ IHMDBStorage::OStreamPtr TmpFileTransferIO::prepareOutput()
 
 	if (core::Filesystem::pathExists(tmpFilePath) == false){
 
-		//stream.reset(new std::fstream(tmpFilePath.string().c_str(), std::ios_base::in | std::ios_base::out));
 		stream.reset(new std::fstream(tmpFilePath.string(), std::ios_base::out));
 
 		if (stream->is_open() == false){

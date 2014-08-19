@@ -9,7 +9,7 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__SOURCEOPTIONSWIDGET_H__
 
 #include <QtWidgets/QWidget>
-#include <plugins/hmdbCommunication/IHMDBSource.h>
+#include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
 
 class QMainWindow;
 
@@ -80,6 +80,7 @@ public slots:
 
 	void onRefreshViews();
 	void onRefreshConfigurations();
+	void setLoginAdvanceConfiguration(bool show);
 
 private slots:
 
@@ -104,7 +105,7 @@ private slots:
 
 private:
 
-	void setConnectionProfile(const hmdbCommunication::IHMDBSource::ContextConfiguration & connectionProfile);
+	void setConnectionProfile(const hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration & connectionProfile);
 
 private:
 	Ui::SourceOptionsWidget * ui;

@@ -393,6 +393,11 @@ public:
 	void parseFile()
 	{
 		UTILS_ASSERT(!isUsed());
+
+		if (core::Filesystem::pathExists(path) == false){
+			throw std::runtime_error("File not exist or not available to read");
+		}
+
 		CORE_LOG_NAMED_DEBUG("parser", "Parsing file: " << path );
 		used = true;
 		_parseFile();
@@ -674,15 +679,19 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file, const IMemoryDat
 	//obiekty wyciągnięte z parserów
 	VariantsList objects;
 	//preferuje uzycie parser�w z w�asn� obs�ug� I/O - wierze �e zrobi� to maksymalnie wydajnie wg w�asnych zasad
-	initializeParsers<StreameFileParser>(streamParsers, file.string(), objects);
+	if (streamParsers.empty() == false){
+		initializeParsers<StreameFileParser>(streamParsers, file.string(), objects);
+	}
 	//teraz uzywam parser�w strumieniowych - sam dostarcz� im strumieni
-	initializeParsers<FileParser>(sourcesLeft, file.string(), objects);
+	if (sourceParsers.empty() == false){
+		initializeParsers<FileParser>(sourcesLeft, file.string(), objects);
+	}
 
 	if(objects.empty() == true){
 		CORE_LOG_DEBUG("None of known parsers provide any valid data for file: " << file);
 	}else{
 
-		int idx = 0;
+		int idx ;
 		ConstVariantsList objectsAdded;
 
 		for(auto it = objects.begin(); it != objects.end(); ++it){

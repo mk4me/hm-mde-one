@@ -4,6 +4,7 @@
 #include <plugins/hmdbCommunication/ServerStatusWidget.h>
 #include <plugins/hmdbCommunication/IHMDBService.h>
 #include <plugins/hmdbCommunication/IHMDBSource.h>
+#include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
 #include <plugins/hmdbCommunication/IHMDBSession.h>
 #include <coreui/CorePopup.h>
 #include <coreui/CoreCursorChanger.h>
@@ -60,6 +61,7 @@ SourceOptionsWidget::SourceOptionsWidget(QWidget * parent, Qt::WindowFlags f)
 
 	onRefreshViews();
 	onRefreshConfigurations();
+	setLoginAdvanceConfiguration(false);
 }
 
 SourceOptionsWidget::~SourceOptionsWidget()
@@ -86,58 +88,61 @@ void SourceOptionsWidget::onRefreshConfigurations()
 	auto sm = plugin::getSourceManager();
 	if (sm != nullptr){
 		auto hmdbSource = core::querySource<hmdbCommunication::IHMDBSource>(sm);
-		if (hmdbSource != nullptr && hmdbSource->sourceContextViewPrototypesCount() > 0){
+		if (hmdbSource != nullptr){
+			
+			auto vm = hmdbSource->viewManager();
+			if (vm->viewPrototypesCount() > 0){
 
-			ui->profileComboBox->blockSignals(true);
+				ui->profileComboBox->blockSignals(true);
 
-			auto configName = ui->profileComboBox->currentText();
+				auto configName = ui->profileComboBox->currentText();
 
-			auto view = hmdbSource->sourceContextViewPrototype(ui->viewComboBox->currentIndex());
+				auto view = vm->viewPrototype(ui->viewComboBox->currentText());
 
-			//uzupe³niam widoki
-			ui->profileComboBox->clear();
-			ui->profileComboBox->addItem(tr("Custom connection profile"));
-			QStandardItemModel* model =
-				qobject_cast<QStandardItemModel*>(ui->profileComboBox->model());
-			QModelIndex firstIndex = model->index(0, ui->profileComboBox->modelColumn(),
-				ui->profileComboBox->rootModelIndex());
-			QStandardItem* firstItem = model->itemFromIndex(firstIndex);
-			firstItem->setSelectable(false);
+				//uzupe³niam widoki
+				ui->profileComboBox->clear();
+				ui->profileComboBox->addItem(tr("Custom connection profile"));
+				QStandardItemModel* model = qobject_cast<QStandardItemModel*>(ui->profileComboBox->model());
+				QModelIndex firstIndex = model->index(0, ui->profileComboBox->modelColumn(),
+					ui->profileComboBox->rootModelIndex());
+				QStandardItem* firstItem = model->itemFromIndex(firstIndex);
+				firstItem->setSelectable(false);
 
-			const auto as = hmdbSource->sourceContextViewConfigurationsCount(nullptr);
+				const auto as = vm->configurationsCount();
 
-			if (as > 0){
+				if (as > 0){
 
-				for (auto i = 0; i < as; ++i){
-					ui->profileComboBox->addItem(hmdbSource->sourceContextViewConfiguration(nullptr, i).name);
+					for (auto i = 0; i < as; ++i){
+						ui->profileComboBox->addItem(vm->configuration(i).name);
+					}
 				}
-			}
 
-			const auto s = hmdbSource->sourceContextViewConfigurationsCount(view);
+				const auto s = vm->configurationsCount(view->name());
 
-			if (as > 0 && s > 0){
-				ui->profileComboBox->insertSeparator(as);
-			}
+				if (as > 0 && s > 0){
+					ui->profileComboBox->insertSeparator(as);
+				}
 
-			for (auto i = 0; i < s; ++i){
-				ui->profileComboBox->addItem(hmdbSource->sourceContextViewConfiguration(view, i).name);
-			}		
+				for (auto i = 0; i < s; ++i){
+					ui->profileComboBox->addItem(vm->configuration(i, view->name()).name);
+				}
 
-			auto f = ui->profileComboBox->findText(configName);
+				auto f = ui->profileComboBox->findText(configName);
 
-			bool refresh = false;
+				bool refresh = false;
 
-			if (f < 0){
-				f = 1;
-				refresh = true;
-			}
+				if (f < 0){
+					f = 1;
+					refresh = true;
+				}
 
-			ui->profileComboBox->setCurrentIndex(f);
+				ui->profileComboBox->setCurrentIndex(f);
 
-			ui->profileComboBox->blockSignals(false);
+				ui->profileComboBox->blockSignals(false);
 
-			if (refresh == true){
-				onProfileChange(f);
+				if (refresh == true){
+					onProfileChange(f);
+				}
 			}
 		}
 	}
@@ -150,31 +155,35 @@ void SourceOptionsWidget::onRefreshViews()
 	auto sm = plugin::getSourceManager();
 	if (sm != nullptr){
 		auto hmdbSource = core::querySource<hmdbCommunication::IHMDBSource>(sm);
-		if (hmdbSource != nullptr && hmdbSource->sourceContextViewPrototypesCount() > 0){			
+		if (hmdbSource != nullptr){
+			auto vm = hmdbSource->viewManager();
+			
+			if (vm->viewPrototypesCount() > 0){
 
-			ui->loginTab->setEnabled(true);
-			auto currentViewIndex = ui->viewComboBox->currentIndex();
+				ui->loginTab->setEnabled(true);
+				auto currentViewIndex = ui->viewComboBox->currentIndex();
 
-			//uzupe³niam widoki
-			ui->viewComboBox->clear();
+				//uzupe³niam widoki
+				ui->viewComboBox->clear();
 
-			for (auto i = 0; i < hmdbSource->sourceContextViewPrototypesCount(); ++i){
-				auto viewProto = hmdbSource->sourceContextViewPrototype(i);
-				auto icon = viewProto->icon();
-				if (icon.isNull() == false){
-					ui->viewComboBox->addItem(icon, viewProto->name());
+				for (auto i = 0; i < vm->viewPrototypesCount(); ++i){
+					auto viewProto = vm->viewPrototype(i);
+					auto icon = viewProto->icon();
+					if (icon.isNull() == false){
+						ui->viewComboBox->addItem(icon, viewProto->name());
+					}
+					else{
+						ui->viewComboBox->addItem(viewProto->name());
+					}
+				}
+
+				if (currentViewIndex > -1 && currentViewIndex < vm->viewPrototypesCount()){
+					ui->viewComboBox->setCurrentIndex(currentViewIndex);
 				}
 				else{
-					ui->viewComboBox->addItem(viewProto->name());
+					ui->viewComboBox->setCurrentIndex(0);
 				}
 			}
-
-			if (currentViewIndex > -1 && currentViewIndex < hmdbSource->sourceContextViewPrototypesCount()){
-				ui->viewComboBox->setCurrentIndex(currentViewIndex);
-			}
-			else{
-				ui->viewComboBox->setCurrentIndex(0);
-			}			
 		}
 	}
 }
@@ -189,20 +198,36 @@ void SourceOptionsWidget::onRemoveProfile()
 
 }
 
+void SourceOptionsWidget::setLoginAdvanceConfiguration(bool show)
+{
+	bool locShow = !show;
+	ui->line_16->setVisible(show);
+	ui->loginStorageGroupBox->setVisible(show);
+	ui->line_17->setVisible(show);
+	ui->loginSourceModeGroupBox->setVisible(show);
+	ui->line_18->setVisible(show);
+	ui->loginConnectionsGroupBox->setVisible(show);
+	ui->advanceToolButton->setText(show == true ? ">> " + tr("Simple") : "<< " + tr("Advance"));
+}
+
 void SourceOptionsWidget::onViewChange(int idx)
 {
 	if (idx >= 0){
 		auto sm = plugin::getSourceManager();
 		if (sm != nullptr){
 			auto hmdbSource = core::querySource<hmdbCommunication::IHMDBSource>(sm);
-			if (hmdbSource != nullptr && idx < hmdbSource->sourceContextViewPrototypesCount()){
-				auto viewProto = hmdbSource->sourceContextViewPrototype(idx);
-				if (viewProto != nullptr){
-					if (viewProto->requiresRemoteContext() == true){
-						ui->onlineModeCheckBox->setChecked(true);
-						//ui->onlineModeCheckBox->setEnabled(false);
-						return;
-					}					
+			if (hmdbSource != nullptr){
+				
+				auto vm = hmdbSource->viewManager();
+				if (idx < vm->viewPrototypesCount()){
+					auto viewProto = vm->viewPrototype(ui->viewComboBox->currentText());
+					if (viewProto != nullptr){
+						if (viewProto->requiresRemoteContext() == true){
+							ui->onlineModeCheckBox->setChecked(true);
+							//ui->onlineModeCheckBox->setEnabled(false);
+							return;
+						}
+					}
 				}
 			}
 		}
@@ -220,31 +245,34 @@ void SourceOptionsWidget::onProfileChange(int idx)
 		auto sm = plugin::getSourceManager();
 		if (sm != nullptr){
 			auto hmdbSource = core::querySource<hmdbCommunication::IHMDBSource>(sm);
-			if (hmdbSource != nullptr && hmdbSource->sourceContextViewPrototypesCount() > 0
-				&& viewIDX < hmdbSource->sourceContextViewPrototypesCount()){
+			if (hmdbSource != nullptr){
+				auto vm = hmdbSource->viewManager();
+				if (vm->viewPrototypesCount() > 0
+					&& viewIDX < vm->viewPrototypesCount()){
 
-				hmdbCommunication::IHMDBSource::IHMDBSourceContextView * view = nullptr;
+					hmdbCommunication::IHMDBSourceViewManager::IHMDBSourceContextView * view = nullptr;
 
-				const auto commonConfigsCount = hmdbSource->sourceContextViewConfigurationsCount(nullptr);
+					const auto commonConfigsCount = vm->configurationsCount();
 
-				if (idx >= commonConfigsCount){
-					view = hmdbSource->sourceContextViewPrototype(viewIDX);
-					idx -= commonConfigsCount;
+					if (idx >= commonConfigsCount){
+						view = vm->viewPrototype(ui->viewComboBox->currentText());
+						idx -= commonConfigsCount;
 
-					if (commonConfigsCount > 0){
-						--idx;
+						if (commonConfigsCount > 0){
+							--idx;
+						}
 					}
+
+					const auto cfg = vm->configuration(idx, view->name());
+
+					setConnectionProfile(cfg);
 				}
-
-				const auto cfg = hmdbSource->sourceContextViewConfiguration(view, idx);
-
-				setConnectionProfile(cfg);
 			}
 		}
 	}
 }
 
-void SourceOptionsWidget::setConnectionProfile(const hmdbCommunication::IHMDBSource::ContextConfiguration & connectionProfile)
+void SourceOptionsWidget::setConnectionProfile(const hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration & connectionProfile)
 {
 	ui->loginLineEdit->blockSignals(true);
 	ui->passwordLineEdit->blockSignals(true);
@@ -402,11 +430,11 @@ void SourceOptionsWidget::onLogin()
 			ui->passwordLineEdit->text().toStdString(), session);
 		auto scc = hmdbSource->createShallowCopyContext(sc);
 
-		//utworzenie widgeta aktualnie wybranego widoku z nowym kontekstem
-		const auto idx = ui->viewComboBox->currentIndex();
-		auto scvp = hmdbSource->sourceContextViewPrototype(idx);
+		//utworzenie widgeta aktualnie wybranego widoku z nowym kontekstem		
+		auto vm = hmdbSource->viewManager();
+		auto scvp = vm->viewPrototype(ui->viewComboBox->currentText());
 		if (scvp != nullptr){
-			auto view = scvp->createView(scc);
+			auto view = scvp->createView(scc, vm);
 			if (view != nullptr){
 				auto dw = coreUI::CoreDockWidget::embeddWidget(view,
 					formatSourceWidgetTitle(scvp->name(), ui->loginLineEdit->text()),

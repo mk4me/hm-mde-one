@@ -1218,20 +1218,32 @@ void DataViewWidget::onLoad()
 		auto contentItem = dynamic_cast<hmdbCommunication::TreeWidgetContentItem*>(sItem);
 
 		if (contentItem != nullptr){
+
+			bool dataStatusRefreshRequired = false;
+
 			try{
 
 				std::map<hmdbCommunication::DataType, std::set<hmdbServices::ID>> items;
 
 				dataItems(contentItem, items);
-
+				
 				for (auto it = items.begin(); it != items.end(); ++it){
 					for (auto iIT = it->second.begin(); iIT != it->second.end(); ++iIT){
-						shallowCopyContext_->shallowCopyLocalContext()->load(it->first, *iIT);
+						if (shallowCopyContext_->shallowCopyLocalContext()->load(it->first, *iIT) == true){
+							dataStatusRefreshRequired = true;
+						}
 					}
 				}				
 			}
+			catch (std::exception & e){
+				PLUGIN_LOG_ERROR("Failed to load data: " << e.what());
+			}
 			catch (...){
+				PLUGIN_LOG_ERROR("Failed to load data");
+			}
 
+			if (dataStatusRefreshRequired = true){
+				refreshDataStatus(true);
 			}
 		}
 	}
@@ -1262,6 +1274,9 @@ void DataViewWidget::onUnload()
 		auto contentItem = dynamic_cast<hmdbCommunication::TreeWidgetContentItem*>(sItem);
 
 		if (contentItem != nullptr){
+
+			bool dataStatusRefreshRequired = false;
+
 			try{
 
 				std::map<hmdbCommunication::DataType, std::set<hmdbServices::ID>> items;
@@ -1270,12 +1285,21 @@ void DataViewWidget::onUnload()
 
 				for (auto it = items.begin(); it != items.end(); ++it){
 					for (auto iIT = it->second.begin(); iIT != it->second.end(); ++iIT){
-						shallowCopyContext_->shallowCopyLocalContext()->unload(it->first, *iIT);
+						if (shallowCopyContext_->shallowCopyLocalContext()->unload(it->first, *iIT) == true){
+							dataStatusRefreshRequired = true;
+						}
 					}
 				}
 			}
+			catch (std::exception & e){
+				PLUGIN_LOG_ERROR("Failed to unload data: " << e.what());
+			}
 			catch (...){
+				PLUGIN_LOG_ERROR("Failed to unload data");
+			}
 
+			if (dataStatusRefreshRequired = true){
+				refreshDataStatus(true);
 			}
 		}
 	}

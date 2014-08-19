@@ -97,11 +97,11 @@ namespace hmdbCommunication
 			const hmdbServices::ID id,
 			const utils::TypeInfo & typeInfo) const;
 
-		PluginSubject::SubjectPtr getSubject(const hmdbServices::ID id,
+		core::VariantPtr getSubject(const hmdbServices::ID id,
 			utils::shared_ptr<PluginSubject::ISubjectService> subjectService,
 			const ShallowCopyConstPtr shallowCopy);
 
-		PluginSubject::SessionPtr getSession(const std::pair<Indexes, MotionFiles> & sessionFiles,
+		core::VariantPtr getSession(const std::pair<Indexes, MotionFiles> & sessionFiles,
 			const IndexedData & loadedFilesData,
 			PluginSubject::SubjectPtr subPtr,
 			core::VariantPtr subOW,
@@ -109,7 +109,7 @@ namespace hmdbCommunication
 			utils::shared_ptr<PluginSubject::ISubjectService> subjectService,
 			const ShallowCopyConstPtr shallowCopy);
 
-		PluginSubject::MotionPtr getMotion(const Indexes & motionFiles,
+		core::VariantPtr getMotion(const Indexes & motionFiles,
 			const IndexedData & loadedFilesData,
 			PluginSubject::SessionPtr sPtr,
 			core::VariantPtr sOW,

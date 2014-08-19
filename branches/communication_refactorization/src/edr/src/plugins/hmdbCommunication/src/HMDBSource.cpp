@@ -14,13 +14,14 @@
 #include "ShallowCopyFilterManager.h"
 #include "ShallowCopyUtils.h"
 #include "HMDBShallowCopyContext.h"
+#include "HMDBSourceViewManager.h"
 
 
 using namespace hmdbCommunication;
 
 HMDBSource::HMDBSource()
 	: memoryDM(nullptr), streamDM(nullptr), fileDM(nullptr),
-	mainWidget(nullptr), filterManager_(new ShallowCopyFilterManager)
+	mainWidget(nullptr), viewManager_(new HMDBSourceViewManager)
 {
 
 }
@@ -49,7 +50,6 @@ void HMDBSource::finalize()
 	//TODO
 	//zamkn¹æ wszystkie widgety z kontekstami,
 	//posprz¹taæ po nich - usuwamy
-	ContextViews().swap(contextViews);
 }
 
 void HMDBSource::update(double deltaTime)
@@ -117,121 +117,6 @@ const IHMDBShallowCopyContextPtr HMDBSource::createShallowCopyContext(IHMDBSourc
 		}
 
 		ret.reset(new HMDBShallowCopyContext(scdc, sclc, scrc));
-	}
-
-	return ret;
-}
-
-void HMDBSource::registerSourceContextViewPrototype(IHMDBSourceContextView * prototype)
-{
-	for (auto it = contextViews.begin(); it != contextViews.end(); ++it){
-		if (it->first.get() == prototype){
-			throw std::runtime_error("HMDBSourceContextView prototype already registered");
-		}
-	}
-
-	contextViews[SourceContextViewPtr(prototype)];
-}
-
-IShallowCopyFilterManager * HMDBSource::filterManager()
-{
-	return filterManager_.get();
-}
-
-const IShallowCopyFilterManager * HMDBSource::filterManager() const
-{
-	return filterManager_.get();
-}
-
-const unsigned int HMDBSource::sourceContextViewPrototypesCount() const
-{
-	return contextViews.size();
-}
-
-IHMDBSource::IHMDBSourceContextView * HMDBSource::sourceContextViewPrototype(const unsigned int idx)
-{
-	auto it = contextViews.begin();
-	std::advance(it, idx);
-	return it->first.get();
-}
-
-const IHMDBSource::IHMDBSourceContextView * HMDBSource::sourceContextViewPrototype(const unsigned int idx) const
-{
-	auto it = contextViews.begin();
-	std::advance(it, idx);
-	return it->first.get();
-}
-
-const bool HMDBSource::registerSourceContextViewConfiguration(IHMDBSourceContextView * prototype,
-	const ContextConfiguration & config)
-{
-	if (config.name.isEmpty() == true){
-		return false;
-	}
-
-	bool ret = false;
-
-	auto it = contextViews.begin();
-
-	if (prototype == nullptr){
-		it = contextViews.find(SourceContextViewPtr());
-
-		if (it == contextViews.end()){
-			contextViews[SourceContextViewPtr()];
-			it = contextViews.find(SourceContextViewPtr());
-		}
-	}
-	else{
-
-		for (; it != contextViews.end(); ++it){
-			if (it->first.get() == prototype){
-				break;
-			}
-		}
-	}
-
-	if (it != contextViews.end() && it->second.find(config.name) == it->second.end()){
-		it->second[config.name] = config;
-		ret = true;
-	}
-
-	return ret;
-}
-
-const unsigned int HMDBSource::sourceContextViewConfigurationsCount(IHMDBSourceContextView * prototype) const
-{
-	unsigned int ret = 0;
-
-	auto it = contextViews.begin();
-	for (; it != contextViews.end(); ++it){
-		if (it->first.get() == prototype){
-			break;
-		}
-	}
-
-	if (it != contextViews.end()){
-		ret = it->second.size();
-	}
-
-	return ret;
-}
-
-const HMDBSource::ContextConfiguration HMDBSource::sourceContextViewConfiguration(IHMDBSourceContextView * prototype,
-	const unsigned int idx) const
-{
-	ContextConfiguration ret;
-
-	auto it = contextViews.begin();
-	for (; it != contextViews.end(); ++it){
-		if (it->first.get() == prototype){
-			break;
-		}
-	}
-
-	if (it != contextViews.end()){
-		auto IT = it->second.begin();
-		std::advance(IT, idx);
-		ret = IT->second;
 	}
 
 	return ret;
@@ -320,6 +205,16 @@ void HMDBSource::resetPassword(const std::string & url,
 		hmdbServices::SingleAccountFactoryWS(s).resetPassword(email);
 
 	}
+}
+
+IHMDBSourceViewManager * HMDBSource::viewManager()
+{
+	return viewManager_.get();
+}
+
+const IHMDBSourceViewManager * HMDBSource::viewManager() const
+{
+	return viewManager_.get();
 }
 
 /*
