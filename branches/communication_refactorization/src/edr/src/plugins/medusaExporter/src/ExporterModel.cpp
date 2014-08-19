@@ -7,7 +7,7 @@
 #include <QtCore/QDir>
 #include <quazip/quazipnewinfo.h>
 #include <quazip/quazipfile.h>
-#include <plugins/newCommunication/ICommunicationDataSource.h>
+#include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <corelib/PluginCommon.h>
 #include <corelib/IFileDataManager.h>
 #include <corelib/ISourceManager.h>

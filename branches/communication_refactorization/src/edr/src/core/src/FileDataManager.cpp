@@ -437,6 +437,11 @@ public:
 			
 	}
 
+	virtual ~FileParser()
+	{
+
+	}
+
 private:
 	virtual void _parseFile()
 	{
@@ -460,6 +465,11 @@ class StreameFileParser : public Parser
 {
 public:
 	StreameFileParser(plugin::IParser* parser, const std::string & source) : Parser(parser, source), streamFileParser(nullptr)
+	{
+
+	}
+
+	virtual ~StreameFileParser()
 	{
 
 	}

@@ -130,16 +130,14 @@ namespace hmdbCommunication
 			const ShallowCopyConstPtr shallowCopy);
 
 		const SubjectFiles groupDataInHierarchy(const IndexedData & loadedFilesData,
-			const ShallowCopyConstPtr shallowCopy, Indexes & loadedFiles);
+			const ShallowCopyConstPtr shallowCopy);
 		
 		void addPatientObject(const hmdbServices::MedicalShallowCopy::Patient * patient,
-			PluginSubject::SubjectID subjectID,
-			core::IMemoryDataManager::IMemoryDataTransaction * transaction);
+			PluginSubject::SubjectID subjectID);
 
 		void loadSubjectHierarchy(const IndexedData & loadedFilesData);
 
-		void unloadSubjectHierarchy(const DataType type,
-			const hmdbServices::ID id);
+		void unloadSubjectHierarchy(const IndexedData & unloadedFiles);
 
 	private:
 		//! Mapa danych

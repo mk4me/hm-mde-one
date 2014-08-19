@@ -13,7 +13,7 @@
 #include <corelib/Filesystem.h>
 #include "MedusaExporterService.h"
 #include <corelib/ISourceManager.h>
-#include <plugins/newCommunication/ICommunicationDataSource.h>
+#include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <quazip/JlCompress.h>
 #include <boost/bind.hpp>
 #include <QtCore/QUrl>

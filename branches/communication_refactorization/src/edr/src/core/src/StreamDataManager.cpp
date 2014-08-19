@@ -271,11 +271,11 @@ private:
 };
 
 //! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
-class StreamParser
+class Parser
 {
 private:
 	//! Prawdziwy wewn�trzny parser.
-	const plugin::IStreamParserPtr parser;
+	const plugin::IParserPtr parser;
 	//! Opis źródła danych
 	const IStreamDataManagerOperations::StreamGrabberPtr sg;
 	//! Czy przeparsowano plik?
@@ -285,19 +285,23 @@ private:
 	//! Czy w�a�nie parsujemy?
 	bool parsing;
 
+private:
+
+	virtual void _parseStream() = 0;
+
 public:
 	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
 	//!     czas �ycia.
 	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
-	StreamParser(plugin::IParser* parser, const IStreamDataManagerOperations::StreamGrabberPtr sg) :
-		parser(dynamic_cast<plugin::IStreamParser*>(parser)), parsed(false), used(false), sg(sg)
+	Parser(plugin::IParser * parser, const IStreamDataManagerOperations::StreamGrabberPtr sg) :
+		parser(parser), parsed(false), used(false), sg(sg)
 	{
 		UTILS_ASSERT(parser != nullptr);
 		UTILS_ASSERT(sg != nullptr);
 	}
 
 	//! Destruktor drukuj�cy wiadomo�� o wy�adowaniu pliku.
-	virtual ~StreamParser()
+	virtual ~Parser()
 	{
 		if (isParsed()) {
 			CORE_LOG_NAMED_DEBUG("parser", "Unloading parser for stream: " << sg->name());
@@ -339,7 +343,7 @@ public:
 	}
 
 	//! \return
-	inline plugin::IStreamParserPtr getParser() const
+	inline plugin::IParserPtr getParser() const
 	{
 		return parser;
 	}
@@ -349,7 +353,7 @@ public:
 		UTILS_ASSERT(!isUsed());
 		CORE_LOG_NAMED_DEBUG("parser", "Parsing stream: " << sg->name());
 		used = true;
-		parser->parse(getStream().get(), sg->name());
+		_parseStream();
 		parsed = true;
 		CORE_LOG_NAMED_DEBUG("parser", "Stream parsed OK: " << sg->name());
 	}
@@ -379,10 +383,128 @@ public:
 	}
 };
 
+//! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
+class StreamParser : public Parser
+{
+private:
+	//! Prawdziwy wewn�trzny parser.
+	plugin::IStreamParser * streamParser;
+
+public:
+	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
+	//!     czas �ycia.
+	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
+	StreamParser(plugin::IParser * parser, const IStreamDataManagerOperations::StreamGrabberPtr sg)
+		: Parser(parser, sg), streamParser(nullptr)
+	{
+		
+	}
+
+	//! Destruktor drukuj�cy wiadomo�� o wy�adowaniu pliku.
+	virtual ~StreamParser()
+	{
+		
+	}
+
+private:
+
+	virtual void _parseStream()
+	{
+		if (streamParser == nullptr){
+			streamParser = dynamic_cast<plugin::IStreamParser*>(getParser().get());
+		}
+
+		if (streamParser != nullptr){
+			auto stream = getStream();
+			if (stream != nullptr){
+				streamParser->parse(stream.get(), getStreamName());
+			}
+			else{
+				std::string("Uninitialized stream for parsing");
+			}
+		}
+		else{
+			throw std::runtime_error("Parser is expected to implement plugin::ISourceParser interface but failed to cast");
+		}
+	}
+};
+
+//! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
+class FileStreamParser : public Parser
+{
+private:
+	//! Prawdziwy wewn�trzny parser.
+	plugin::ISourceParser * sourceParser;
+	core::Filesystem::Path tmpFilePath;
+
+public:
+	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
+	//!     czas �ycia.
+	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
+	FileStreamParser(plugin::IParser * parser, const IStreamDataManagerOperations::StreamGrabberPtr sg)
+		: Parser(parser, sg), sourceParser(nullptr)
+	{
+
+	}
+
+	//! Destruktor drukuj�cy wiadomo�� o wy�adowaniu pliku.
+	virtual ~FileStreamParser()
+	{
+		if (tmpFilePath.empty() == false){
+			try{
+				core::Filesystem::deleteFile(tmpFilePath);
+			}
+			catch (...){
+			}
+		}
+	}
+
+private:
+
+	virtual void _parseStream()
+	{
+		if (sourceParser == nullptr){
+			sourceParser = dynamic_cast<plugin::ISourceParser*>(getParser().get());
+		}
+
+		if (sourceParser != nullptr){
+			auto stream = getStream();
+			if (stream != nullptr){
+
+				const auto tmpPath = plugin::getPaths()->getTmpPath() / plugin::getPaths()->getTmpPath();
+				std::ofstream output(tmpPath.string());
+
+				if (output.is_open() == true){
+
+					tmpFilePath = tmpPath;
+
+					static const unsigned int BufferSize = 1024 * 512;
+					char buffer[BufferSize] = { 0 };
+					int read = 0;
+					while ((read = stream->readsome(buffer, BufferSize)) > 0) { output.write(buffer, read); }
+					output.flush();
+					output.close();
+
+					sourceParser->parse(tmpPath.string());
+				}
+				else{
+					throw std::runtime_error("Failed to create temporary file for stream");
+				}
+			}
+			else{
+				std::string("Uninitialized stream for parsing");
+			}
+		}
+		else{
+			throw std::runtime_error("Parser is expected to implement plugin::ISourceParser interface but failed to cast");
+		}
+	}
+};
+
 class SimpleInitializer : public IVariantInitializer
 {
 public:
-	SimpleInitializer(const utils::shared_ptr<StreamParser> & parser, const int idx)
+	SimpleInitializer(const utils::shared_ptr<Parser> & parser, const int idx)
 		: parser(parser), idx(idx) {}
 	virtual ~SimpleInitializer() {}
 	virtual void initialize(Variant * object) {
@@ -394,7 +516,7 @@ public:
 	virtual const bool isEqual(const IVariantInitializer &) const { return false; }
 
 private:
-	utils::shared_ptr<StreamParser> parser;
+	utils::shared_ptr<Parser> parser;
 	const int idx;
 };
 
@@ -403,7 +525,7 @@ class StreamDataManager::CompoundInitializer : public IVariantInitializer
 public:
 
 	struct CompoundData {
-		utils::shared_ptr<StreamParser> parser;
+		utils::shared_ptr<Parser> parser;
 		std::map<int, VariantWeakPtr> objects;
 	};
 
@@ -494,7 +616,7 @@ public:
 		return ret;
 	}
 
-	utils::shared_ptr<const StreamParser> innerParser() const { return ((data != nullptr) ? data->parser : utils::shared_ptr<const StreamParser>()); }
+	utils::shared_ptr<const Parser> innerParser() const { return ((data != nullptr) ? data->parser : utils::shared_ptr<const Parser>()); }
 
 	CompoundDataPtr details()
 	{
@@ -569,9 +691,13 @@ void StreamDataManager::rawAddStream(const StreamGrabberPtr stream, const IMemor
 	//obiekty wyciągnięte z parserów
 	VariantsList objects;
 	//preferuje uzycie parser�w z w�asn� obs�ug� I/O - wierze �e zrobi� to maksymalnie wydajnie wg w�asnych zasad
-	initializeParsers<StreamParser>(streamParsers, stream, objects);
+	if (streamParsers.empty() == false){
+		initializeParsers<StreamParser>(streamParsers, stream, objects);
+	}
 	//teraz uzywam parser�w strumieniowych - sam dostarcz� im strumieni
-	//initializeParsers<FileParser>(sourcesLeft, stream, objects);
+	if (sourceParsers.empty() == false){
+		initializeParsers<FileStreamParser>(sourcesLeft, stream, objects);
+	}
 
 	if (objects.empty() == true){
 		CORE_LOG_DEBUG("Any of known parsers did not provide any valid data for stream: " << streamName);

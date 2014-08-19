@@ -27,12 +27,17 @@ namespace hmdbCommunication
 		virtual const DataStatus dataStatus(const DataType dataType,
 			const hmdbServices::ID id) const = 0;
 
+		//! Metoda przypisuje status danych
 		//! \param dataType Typ danych
 		//! \param id Identyfikator danych
 		//! \param dataStatus Status danych
 		virtual void setDataStatus(const DataType dataType,
 			const hmdbServices::ID id, const DataStatus & dataStatus) = 0;
 
+		//! Metoda aktualizuje status danych - pomija przy przypisaniu wartoœci Unknown...
+		//! \param dataType Typ danych
+		//! \param id Identyfikator danych
+		//! \param dataStatus Status danych
 		virtual void updateDataStatus(const DataType dataType,
 			const hmdbServices::ID id, const DataStatus & dataStatus) = 0;
 

@@ -506,7 +506,13 @@ void MemoryDataManager::rawAddData(const VariantPtr & data)
 
 void MemoryDataManager::rawRemoveData(const VariantConstPtr & data)
 {
-	objectsByTypes[data->data()->getTypeInfo()].erase(utils::const_pointer_cast<Variant>(data));
+	auto it = objectsByTypes.find(data->data()->getTypeInfo());
+	if (it != objectsByTypes.end()){
+		it->second.erase(utils::const_pointer_cast<Variant>(data));
+		if (it->second.empty() == true){
+			objectsByTypes.erase(it);
+		}
+	}
 }
 
 void MemoryDataManager::rawUpdateData(const VariantConstPtr & data, const VariantConstPtr & newData)
@@ -522,11 +528,12 @@ void MemoryDataManager::rawUpdateData(const VariantConstPtr & data, const Varian
 
 const bool MemoryDataManager::rawIsManaged(const VariantConstPtr & object) const
 {
-	if(getDataHierarchyManager()->isRegistered(object->data()->getTypeInfo()) == false){
+	auto type = object->data()->getTypeInfo();
+	if(getDataHierarchyManager()->isRegistered(type) == false){
 		throw std::runtime_error("Type not registered");
 	}
 
-	auto it = objectsByTypes.find(object->data()->getTypeInfo());
+	auto it = objectsByTypes.find(type);
 	if(it != objectsByTypes.end() && std::find(it->second.begin(), it->second.end(), object) != it->second.end()){
 		return true;
 	}

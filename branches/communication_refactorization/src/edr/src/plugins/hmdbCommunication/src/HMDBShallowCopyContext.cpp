@@ -2,8 +2,11 @@
 #include "HMDBShallowCopyContext.h"
 #include "HMDBSourceContextOperations.h"
 #include "HMDBStatusManager.h"
+#include <plugins/hmdbCommunication/IHMDBSource.h>
+#include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
 #include <plugins/hmdbCommunication/IHMDBLocalContext.h>
 #include <plugins/hmdbCommunication/IPatient.h>
+#include <plugins/hmdbCommunication/IHierarchyPerspective.h>
 #include "Patient.h"
 
 #include <hmdbserviceslib/DateTimeUtils.h>
@@ -19,6 +22,7 @@
 
 #include <corelib/PluginCommon.h>
 #include <corelib/IServiceManager.h>
+#include <corelib/ISourceManager.h>
 
 using namespace hmdbCommunication;
 
@@ -641,8 +645,7 @@ private:
 	core::VariantConstPtr modelWrapper;
 };
 
-void HMDBShallowCopyLocalContext::addPatientObject(const hmdbServices::MedicalShallowCopy::Patient * patient, PluginSubject::SubjectID subjectID,
-	core::IMemoryDataManager::IMemoryDataTransaction * transaction)
+void HMDBShallowCopyLocalContext::addPatientObject(const hmdbServices::MedicalShallowCopy::Patient * patient, PluginSubject::SubjectID subjectID)
 {
 	//generujê listê schorzeñ
 	std::vector<hmdbCommunication::Disorder> disorders;
@@ -663,10 +666,10 @@ void HMDBShallowCopyLocalContext::addPatientObject(const hmdbServices::MedicalSh
 	auto pOW = core::Variant::create<hmdbCommunication::IPatient>();
 	pOW->set(pPtr);
 
-	transaction->addData(pOW);
+	localContext_->load(pOW);
 
 	//zapamiêtuje
-	data_[PatientType][patient->patientID].push_back(pOW);
+	data_[PatientType][subjectID].push_back(pOW);
 }
 
 const float getAntropometricValue(const std::string & attribute, const hmdbServices::MotionShallowCopy::Attrs & attrs, float defValue = 0.0)
@@ -770,7 +773,7 @@ core::VariantPtr HMDBShallowCopyLocalContext::getSubject(const hmdbServices::ID 
 		else{
 			label << pIT->second->name << ", " << pIT->second->surname;
 			//TODO
-			//addPatientObject(pIT->second, subPtr->getID(), transaction.get());
+			addPatientObject(pIT->second, subPtr->getID());
 		}
 
 		subOW->setMetadata("label", label.str());
@@ -997,13 +1000,12 @@ core::VariantPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & motionFi
 }
 
 const HMDBShallowCopyLocalContext::SubjectFiles HMDBShallowCopyLocalContext::groupDataInHierarchy(const IndexedData & loadedFilesData,
-	const ShallowCopyConstPtr shallowCopy, Indexes & loadedFiles)
+	const ShallowCopyConstPtr shallowCopy)
 {
 	SubjectFiles subjectHierarchy;
 
 	auto itEND = loadedFilesData.end();
 	for (auto it = loadedFilesData.begin(); it != itEND; ++it){
-		loadedFiles.insert(it->first);
 		if (it->first < 0){
 			auto s = shallowCopy->motionShallowCopy.sessions.find(-it->first);
 
@@ -1048,8 +1050,7 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 	//buduje mapê hierarchii subject -> session -> motion -> files
 	//na bazie tej mapy bêdê realizowa³ hierarchiê pluginu subject
 
-	Indexes loadedFiles;
-	SubjectFiles subjectHierarchy = groupDataInHierarchy(loadedFilesData, shallowCopy, loadedFiles);
+	SubjectFiles subjectHierarchy = groupDataInHierarchy(loadedFilesData, shallowCopy);
 
 	auto transaction = localContext_->transaction();
 	//auto hierarchyTransaction = mdm->hierarchyTransaction();
@@ -1077,21 +1078,26 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 			}
 		}
 
+		//auto subPtr = loadSubjectHierarchy(indexedData);
+
+		//auto hmdbSource = core::querySource<IHMDBSource>(plugin::getSourceManager());
 		/*
-		std::vector<IHierarchyPerspectivePtr> perspectives = dataSource->getHierarchyPerspectives();
+		if (hmdbSource != nullptr){
+		//auto hierarchyTransaction = mdm->hierarchyTransaction();
 		std::set<core::IHierarchyItemConstPtr> roots;
-		for (auto it = perspectives.begin(); it != perspectives.end(); ++it) {
-			//auto root = TreeBuilder::createTree("SUB", subPtr);
-			auto root = (*it)->getPerspective(subPtr);
-			if (root) {
-				int childCount = root->getNumChildren();
-				for (int c = 0; c < childCount; ++c) {
-					auto r = root->getChild(c);
-					updateOrAddRoot(r, roots, hierarchyTransaction);
-				}
-			}
+		for (int i = 0; i < hmdbSource->viewManager()->hierarchyPerspectivesCount(); ++i) {
+		//auto root = TreeBuilder::createTree("SUB", subPtr);
+		auto root = hmdbSource->viewManager()->hierarchyPerspective(i)->getPerspective(subPtr);
+		if (root) {
+		int childCount = root->getNumChildren();
+		for (int c = 0; c < childCount; ++c) {
+		auto r = root->getChild(c);
+		updateOrAddRoot(r, roots, hierarchyTransaction);
+		}
+		}
 		}
 		files2roots[loadedFiles] = roots;
+		}
 		*/
 	}
 }
@@ -1109,6 +1115,7 @@ const bool HMDBShallowCopyLocalContext::load(const DataType type,
 	if (files.empty() == false){
 		auto t = localContext_->transaction();
 		IndexedData indexedData;
+		Indexes loadedFiles;
 		for (auto it = files.begin(); it != files.end(); ++it){
 			auto fIT = shallowCopyContext_->shallowCopy()->motionShallowCopy.files.find(*it);
 
@@ -1118,6 +1125,7 @@ const bool HMDBShallowCopyLocalContext::load(const DataType type,
 				core::ConstVariantsList loadedData = t->data(fIT->second->fileName);
 				if (loadedData.empty() == false){
 					indexedData[*it] = loadedData;
+					loadedFiles.insert(fIT->first);
 				}
 			}			
 		}
@@ -1156,18 +1164,58 @@ const bool HMDBShallowCopyLocalContext::unload(const DataType type,
 	files = filterFiles(files, dsT, DataStatus(DataStatus::Local, DataStatus::Loaded));
 
 	if (files.empty() == false){
-
+		Indexes unloadFiles;
+		IndexedData indexedData;
 		auto t = localContext_->transaction();
 		for (auto it = files.begin(); it != files.end(); ++it){
 			auto fIT = shallowCopyContext_->shallowCopy()->motionShallowCopy.files.find(*it);
-
 			if (fIT != shallowCopyContext_->shallowCopy()->motionShallowCopy.files.end()){
+				indexedData[*it] = t->data(fIT->second->fileName);
+				unloadFiles.insert(fIT->second->fileID);
 				t->unload(fIT->second->fileName);
 				dsT->updateDataStatus(FileType, fIT->second->fileID, DataStatus(DataStatus::Unloaded));
 			}
 		}
 
-		unloadSubjectHierarchy(type, id);
+		if (unloadFiles.empty() == false){
+			unloadSubjectHierarchy(indexedData);
+
+			auto hmdbSource = core::querySource<IHMDBSource>(plugin::getSourceManager());
+
+			if (hmdbSource != nullptr){
+				/*
+				auto hierarchyTransaction = mdm->hierarchyTransaction();
+				auto entry = files2roots.find(unloadFiles);
+				if (entry != files2roots.end()) {
+				auto roots = entry->second;
+				for (auto it = roots.begin(); it != roots.end(); ++it) {
+				hierarchyTransaction->removeRoot(*it);
+				name2root.erase((*it)->getName());
+				}
+
+				files2roots.erase(entry);
+				}
+				else{
+				auto locFiles2roots = files2roots;
+
+				//szukam po rootach czy ich przeciêcie z aktualn¹ grup¹ istnieje
+				for (auto IT = locFiles2roots.begin(); IT != locFiles2roots.end(); ++IT){
+				std::vector<int> inter(min(unloadFiles.size(), IT->first.size()));
+				auto retIT = std::set_intersection(unloadFiles.begin(), unloadFiles.end(), IT->first.begin(), IT->first.end(), inter.begin());
+				if (std::distance(inter.begin(), retIT) == IT->first.size()){
+				auto roots = IT->second;
+				for (auto it = roots.begin(); it != roots.end(); ++it) {
+				hierarchyTransaction->removeRoot(*it);
+				name2root.erase((*it)->getName());
+				}
+
+				files2roots.erase(IT->first);
+				}
+				}
+				}*/
+			}
+
+		}		
 
 		dsT->tryUpdate(shallowCopyContext_->shallowCopy());
 
@@ -1182,119 +1230,117 @@ const bool HMDBShallowCopyLocalContext::unload(const DataType type,
 
 const bool HMDBShallowCopyLocalContext::unloadAll()
 {
-	return false;
-
-	if (shallowCopyContext_->shallowCopy() == nullptr){
-		return false;
-	}
-
-	bool ret = false;
-
-	auto files = filesToProcess(FileType, -1, shallowCopyContext_->shallowCopy());
-
-	files = filterFiles(files, shallowCopyContext_->dataStatusManager(), DataStatus(DataStatus::Local, DataStatus::Loaded));
-	auto t = localContext_->transaction();
-
-	if (files.empty() == false){
-		for (auto it = files.begin(); it != files.end(); ++it){
-			auto fIT = shallowCopyContext_->shallowCopy()->motionShallowCopy.files.find(*it);
-
-			if (fIT != shallowCopyContext_->shallowCopy()->motionShallowCopy.files.end()){
-				t->unload(fIT->second->fileName);
-			}
-		}
-
-		ret = true;
-	}
-	else{
-		PLUGIN_LOG_DEBUG("No files to unload");
-	}	
-
-	//po typach
-	for (auto it = data_.begin(); it != data_.end(); ++it){
-		//po identyfikatorach
-		for (auto iIT = it->second.begin(); iIT != it->second.end(); ++iIT){
-			//po danych
-			for (auto rIT = iIT->second.begin(); rIT != iIT->second.end(); ++rIT){
-				t->unload(*rIT);
-				ret = true;
-			}
-		}
-	}
-
-	GroupedData().swap(data_);
-
-	return ret;
+	return unload(FileType, -1);
 }
 
-void HMDBShallowCopyLocalContext::unloadSubjectHierarchy(const DataType type,
-	const hmdbServices::ID id)
+void HMDBShallowCopyLocalContext::unloadSubjectHierarchy(const IndexedData & unloadedFiles)
 {
-	auto ci = childItems(type, id, shallowCopyContext_->shallowCopy());
-	ci[type].insert(id);
+	auto shallowCopy = shallowCopyContext_->shallowCopy();
 
-	auto t = localContext_->transaction();
+	//buduje mapê hierarchii subject -> session -> motion -> files
+	//na bazie tej mapy bêdê realizowa³ hierarchiê pluginu subject
 
-	//po typach
-	for (auto tIT = ci.begin(); tIT != ci.end(); ++tIT){
-		auto dIT = data_.find(tIT->first);
-		if (dIT != data_.end() && dIT->second.empty() == false){
-			//po identyfikatorach do usuniêcia
-			for (auto IT = tIT->second.begin(); IT != tIT->second.end(); ++IT){
-				//czy takie dane by³y ³adowane
-				auto rIT = dIT->second.find(*IT);
-				if (rIT != dIT->second.end()){
-					//po danych
-					for (auto it = rIT->second.begin(); it != rIT->second.end(); ++it){
-						t->unload(*it);
+	SubjectFiles subjectHierarchy = groupDataInHierarchy(unloadedFiles, shallowCopy);
+
+	auto transaction = localContext_->transaction();
+	for (auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
+		//tworzê subject jeœli to konieczne!!
+
+		core::VariantPtr subOW = findObjectByType(SubjectType, subjectIT->first, typeid(PluginSubject::ISubject));
+		PluginSubject::SubjectPtr subPtr;
+		subOW->tryGet(subPtr);
+
+		//mam subjecta, mogê iœæ dalej do sesji
+		for (auto sessionIT = subjectIT->second.begin(); sessionIT != subjectIT->second.end(); ++sessionIT){
+
+			core::VariantPtr sOW = findObjectByType(SessionType, sessionIT->first, typeid(PluginSubject::ISession));
+			PluginSubject::SessionPtr sPtr;
+			sOW->tryGet(sPtr);
+
+			//mam sesjê - mogê iœæ dalej z motionami!!
+			for (auto motionIT = sessionIT->second.second.begin(); motionIT != sessionIT->second.second.end(); ++motionIT){
+				core::VariantPtr mOW = findObjectByType(MotionType, motionIT->first, typeid(PluginSubject::IMotion));
+				PluginSubject::MotionPtr mPtr;
+				mOW->tryGet(mPtr);
+
+				//czy usunalem calego motiona?
+				if (motionIT->second.size() == shallowCopy->motionShallowCopy.trials.find(motionIT->first)->second->files.size()){
+					auto data = data_[MotionType][motionIT->first];
+					for (auto it = data.begin(); it != data.end(); ++it){
+						localContext_->unload(*it);
 					}
 
-					dIT->second.erase(rIT);
+					data_[MotionType].erase(motionIT->first);
+					if (data_[MotionType].empty() == true){
+						data_.erase(MotionType);
+					}
+
+					sPtr->removeMotion(mOW);
+				}
+				else{
+					for (auto it = motionIT->second.begin(); it != motionIT->second.end(); ++it){
+						auto data = unloadedFiles.find(*it)->second;
+						for (auto dIT = data.begin(); dIT != data.end(); ++dIT){
+							mPtr->removeData(*dIT);
+						}
+					}
 				}
 			}
 
-			if (dIT->second.empty() == true){
-				data_.erase(dIT);
+			core::ConstVariantsList motions;
+			sPtr->getMotions(motions);
+
+			if (motions.empty() == true){
+
+				auto data = data_[SessionType][sessionIT->first];
+				for (auto it = data.begin(); it != data.end(); ++it){
+					localContext_->unload(*it);
+				}
+
+				data_[SessionType].erase(sessionIT->first);
+				if (data_[SessionType].empty() == true){
+					data_.erase(SessionType);
+				}
+
+				subPtr->removeSession(sOW);
+			}
+		}
+
+		core::ConstVariantsList sessions;
+		subPtr->getSessions(sessions);
+
+		if (sessions.empty() == true){
+
+			auto data = data_[SubjectType][subjectIT->first];
+			for (auto it = data.begin(); it != data.end(); ++it){
+				localContext_->unload(*it);
+			}
+
+			data_[SubjectType].erase(subjectIT->first);
+			if (data_[SubjectType].empty() == true){
+				data_.erase(SubjectType);
+			}
+
+			auto it = data_.find(PatientType);
+			if (it != data_.end()){
+				auto pIT = it->second.find(subPtr->getID());
+				if (pIT != it->second.end()){
+
+					auto data = pIT->second;
+					for (auto it = data.begin(); it != data.end(); ++it){
+						localContext_->unload(*it);
+					}
+
+					it->second.erase(pIT);
+				}
+
+				if (it->second.empty() == true){
+					data_.erase(it);
+				}
 			}
 		}
 	}
 }
-
-/*
-{
-auto hierarchyTransaction = mdm->hierarchyTransaction();
-auto entry = files2roots.find(unloadFiles);
-if (entry != files2roots.end()) {
-auto roots = entry->second;
-for (auto it = roots.begin(); it != roots.end(); ++it) {
-hierarchyTransaction->removeRoot(*it);
-name2root.erase((*it)->getName());
-}
-
-files2roots.erase(entry);
-}
-else{
-auto locFiles2roots = files2roots;
-
-//szukam po rootach czy ich przeciêcie z aktualn¹ grup¹ istnieje
-for (auto IT = locFiles2roots.begin(); IT != locFiles2roots.end(); ++IT){
-std::vector<int> inter(min(unloadFiles.size(), IT->first.size()));
-auto retIT = std::set_intersection(unloadFiles.begin(), unloadFiles.end(), IT->first.begin(), IT->first.end(), inter.begin());
-if (std::distance(inter.begin(), retIT) == IT->first.size()){
-auto roots = IT->second;
-for (auto it = roots.begin(); it != roots.end(); ++it) {
-hierarchyTransaction->removeRoot(*it);
-name2root.erase((*it)->getName());
-}
-
-files2roots.erase(IT->first);
-}
-}
-}
-}
-
-return unloadedFiles;
-*/
 
 const IHMDBShallowCopyDataContextPtr HMDBShallowCopyLocalContext::shallowCopyContext()
 {
