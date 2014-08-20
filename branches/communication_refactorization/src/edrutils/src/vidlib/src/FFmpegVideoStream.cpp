@@ -195,7 +195,15 @@ void FFmpegVideoStream::setLogCallback( LogCallback callback )
 
 VideoStream* FFmpegVideoStream::clone() const
 {
-    std::auto_ptr<FFmpegVideoStream> cloned(new FFmpegVideoStream( getSource(), wantedStream ));
+	std::auto_ptr<FFmpegVideoStream> cloned;
+	if (stream != nullptr){
+		//TODO
+		//klonowanie strumienia!!
+		cloned = std::auto_ptr<FFmpegVideoStream>(new FFmpegVideoStream(stream, getSource(), wantedStream));
+	}
+	else{
+		cloned = std::auto_ptr<FFmpegVideoStream>(new FFmpegVideoStream(getSource(), wantedStream));
+	}
     if ( getTime() != INVALID_TIMESTAMP ) {
         cloned->setTime( getTime() );
         UTILS_ASSERT(getTime() == cloned->getTime());
@@ -210,16 +218,14 @@ FFmpegVideoStream::FFmpegVideoStream( const std::string& source, int wantedVideo
 : VideoStream(), wantedStream(wantedVideoStream)
 {
     VIDLIB_FUNCTION_PROLOG;
-    static Initializer initializer;
-
-    formatContext = NULL;
-    codecContext = NULL;
-    frame = NULL;
-    videoStream = NULL;
+    static Initializer initializer;    
 
     frameTimestamp = AV_NOPTS_VALUE;
     frameSpan = AV_NOPTS_VALUE;
     nextFrameTimestamp = AV_NOPTS_VALUE;
+
+	videoStream = nullptr;
+	frame = nullptr;
 
     keyframeStats.count = 0;
     keyframeStats.lastTimestamp = AV_NOPTS_VALUE;
@@ -227,10 +233,7 @@ FFmpegVideoStream::FFmpegVideoStream( const std::string& source, int wantedVideo
     keyframeStats.avgSpan = INVALID_TIMESTAMP;
 
 
-    frameBytesRemaining = 0;
-    frameData = NULL;
-    packet = NULL;
-    alignedPacket = NULL;
+    frameBytesRemaining = 0;        
 
     wantedTime = INVALID_TIMESTAMP;
     init( source, wantedVideoStream );
@@ -240,118 +243,228 @@ FFmpegVideoStream::FFmpegVideoStream( const std::string& source, int wantedVideo
     UTILS_ASSERT(frameCount==getFrameCount(), "Frame count does not match (%d vs %d)", frameCount, getFrameCount());
 }
 
+//! \param source Źródło.
+//! \param wantedVideoStream Strumień wideo do obsłużenia
+FFmpegVideoStream::FFmpegVideoStream(const utils::shared_ptr<std::istream> source, const std::string & streamName,
+	int wantedVideoStream)
+	: VideoStream(), wantedStream(wantedVideoStream), stream(source)
+{
+	VIDLIB_FUNCTION_PROLOG;
+	static Initializer initializer;
+
+	frameTimestamp = AV_NOPTS_VALUE;
+	frameSpan = AV_NOPTS_VALUE;
+	nextFrameTimestamp = AV_NOPTS_VALUE;
+
+	videoStream = nullptr;
+	frame = nullptr;
+
+	keyframeStats.count = 0;
+	keyframeStats.lastTimestamp = AV_NOPTS_VALUE;
+	keyframeStats.maxSpan = AV_NOPTS_VALUE;
+	keyframeStats.avgSpan = INVALID_TIMESTAMP;
+
+
+	frameBytesRemaining = 0;
+
+	wantedTime = INVALID_TIMESTAMP;
+	init(stream.get(), streamName, wantedVideoStream);
+
+	// sprawdzanie pewnych warunków
+	int frameCount = static_cast<int>(videoStream->duration / frameSpan);
+	UTILS_ASSERT(frameCount == getFrameCount(), "Frame count does not match (%d vs %d)", frameCount, getFrameCount());
+}
+
 //------------------------------------------------------------------------------
 
 FFmpegVideoStream::~FFmpegVideoStream()
 {
     VIDLIB_FUNCTION_PROLOG;
-    av_free_packet(alignedPacket);
+    //av_free_packet(alignedPacket.get());
     //av_freep(alignedPacket);
-	av_free_packet(packet);
+	//av_free_packet(packet.get());
     //av_freep(packet);
-    avcodec_free_frame(&frame);
+	av_frame_free(&frame);
 
-	if(videoStream != NULL){
+	if(videoStream != nullptr){
 		videoStream->discard = AVDISCARD_ALL;
 	}
 
-    avcodec_close(codecContext);
+    //avcodec_close(codecContext);
 	//av_freep(codecContext);
-	avformat_close_input(&formatContext);
+	//avformat_close_input(&formatContext);
 }
 
 //------------------------------------------------------------------------------
+
+bool FFmpegVideoStream::commonInit(const std::string & streamName, int wantedVideoStream)
+{
+	VIDLIB_FUNCTION_PROLOG;
+	int error = 0;
+
+	// szukamy strumienia video
+	for (unsigned int i = 0; i < formatContext->nb_streams; ++i) {
+		auto selectedStream = formatContext->streams[i];
+		if (selectedStream->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+			// czy to jest ten strumień, który chcemy otworzyć?
+			if (wantedVideoStream < 0 || wantedVideoStream == static_cast<int>(i)) {
+				codecContext.reset(selectedStream->codec, &avcodec_close);
+				videoStream = selectedStream;
+				break;
+			}
+		}
+	}
+
+	// TODO: ujednolicenie errorów
+	if (codecContext == nullptr) {
+		VIDLIB_ERROR(FFmpegError("Video stream not found."));
+	}
+
+	// pobieramy kodek
+	AVCodec *pCodec = avcodec_find_decoder(codecContext->codec_id);
+	if (pCodec == nullptr) {
+		VIDLIB_ERROR(FFmpegError("avcodec_find_decoder"));
+	}
+
+	codecContext->thread_type = FF_THREAD_SLICE;
+
+	//! Ustawienia dla kodeka - ilość wątków do dekodowania
+	AVDictionary * codec_opts = nullptr;
+	av_dict_set(&codec_opts, "threads", "auto", 0);
+	av_dict_set(&codec_opts, "b", "2.5M", 0);
+
+	// otwieramy kodek
+	if ((error = avcodec_open2(codecContext.get(), pCodec, &codec_opts)) < 0) {
+		av_dict_free(&codec_opts);
+		VIDLIB_ERROR(FFmpegError("avcodec_open2", error));
+	}
+
+	av_dict_free(&codec_opts);
+
+	// alokacja kaltki
+	frame = av_frame_alloc();
+	if (frame == nullptr) {
+		VIDLIB_ERROR(FFmpegError("avcodec_alloc_frame error", error));
+	}
+
+	// alokacja pakietu
+	//packet.reset((AVPacket*)av_malloc(sizeof(AVPacket)), &av_free);
+	packet.reset((AVPacket*)av_malloc(sizeof(AVPacket)), &av_free_packet);
+	av_init_packet(packet.get());
+	//alignedPacket.reset((AVPacket*)av_malloc(sizeof(AVPacket)), &av_free);
+	alignedPacket.reset((AVPacket*)av_malloc(sizeof(AVPacket)), &av_free_packet);
+	av_init_packet(alignedPacket.get());
+
+	// odstęp między ramkami
+	AVRational frameSpanRational = av_mul_q(videoStream->time_base, videoStream->r_frame_rate);
+	frameSpan = frameSpanRational.den;
+	UTILS_ASSERT(frameSpanRational.num == 1, "Error getting frame span.");
+	//UTILS_ASSERT(videoStream->duration % frameSpan == 0, "Error getting frame span.");
+
+	// parametry strumienia
+	double frameRate = av_q2d(videoStream->r_frame_rate);
+	double durationSec = static_cast<double>(videoStream->duration) * videoStream->time_base.num / videoStream->time_base.den;
+	VIDLIB_PixelFormat format = static_cast<VIDLIB_PixelFormat>(codecContext->pix_fmt);
+
+	// format
+	double aspectRatio = 0.0f;
+	if (codecContext->sample_aspect_ratio.num != 0) {
+		aspectRatio = av_q2d(codecContext->sample_aspect_ratio);
+	}
+	if (aspectRatio <= 0.0f) {
+		aspectRatio = 1.0f;
+	}
+
+	// wszystko OK
+	return onAfterInit(streamName, frameRate, durationSec, format, codecContext->width, codecContext->height, aspectRatio);
+}
 
 bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /*= -1*/ )
 {
     VIDLIB_FUNCTION_PROLOG;
     int error = 0;
+	//inicjuję kontekst formatu
+	formatContext.reset(avformat_alloc_context(), &avformat_free_context);
+	auto formatContextPtr = formatContext.get();
     // otwieramy plik
-	if ( (error = avformat_open_input(&formatContext, source.c_str(), NULL, 0)) != 0 ) {
+	if ((error = avformat_open_input(&formatContextPtr, source.c_str(), NULL, 0)) != 0) {
         VIDLIB_ERROR(FFmpegError( "avformat_open_input error", error ));
     }
     // info o kodekach
-    if ( (error=avformat_find_stream_info(formatContext, nullptr)) < 0 ) {
+    if ( (error=avformat_find_stream_info(formatContext.get(), nullptr)) < 0 ) {
         VIDLIB_ERROR(FFmpegError( "avformat_find_stream_info error", error ));
     }
 
 #ifdef VIDLIB_DEBUG
-	av_dump_format(formatContext, 0, source.c_str(), false);
+	av_dump_format(formatContext.get(), 0, source.c_str(), false);
 #endif // VIDLIB_DEBUG
 
-    // szukamy strumienia video
-    for (unsigned int i = 0; i < formatContext->nb_streams; ++i) {
-        auto selectedStream = formatContext->streams[i];
-		if ( selectedStream->codec->codec_type == AVMEDIA_TYPE_VIDEO ) {
-            // czy to jest ten strumień, który chcemy otworzyć?
-            if ( wantedVideoStream < 0 || wantedVideoStream == static_cast<int>(i) ) {
-                codecContext = selectedStream->codec;
-                videoStream = selectedStream;
-                break;
-            }
-        }
-    }
+	return commonInit(source, wantedVideoStream);
+}
 
-    // TODO: ujednolicenie errorów
-    if ( codecContext == NULL ) {
-        VIDLIB_ERROR( FFmpegError( "Video stream not found." ) );
-    }
+static int readFunction(void* opaque, uint8_t* buf, int buf_size) {
+	auto& me = *reinterpret_cast<std::istream*>(opaque);
+	return me.readsome(reinterpret_cast<char*>(buf), buf_size);
+}
 
-    // pobieramy kodek
-    AVCodec *pCodec = avcodec_find_decoder(codecContext->codec_id);
-    if(pCodec==NULL) {
-        VIDLIB_ERROR( FFmpegError( "avcodec_find_decoder" ) );
-    }
+int64_t seekFunction(void* opaque, int64_t offset, int whence)
+{
+	auto& me = *reinterpret_cast<std::istream*>(opaque);
+	if (whence == AVSEEK_SIZE)
+		return utils::streamSize(me); // I don't know "size of my handle in bytes"
+	
 
-	codecContext->thread_type = FF_THREAD_SLICE;
+	//if (stream->isSequential())
+//		return -1; // cannot seek a sequential stream
+	
+	if (!me.seekg(offset, whence))
+		return -1;
+	return me.tellg();
+}
 
-	//! Ustawienia dla kodeka - ilość wątków do dekodowania
-	AVDictionary * codec_opts = NULL;
-	av_dict_set(&codec_opts, "threads", "auto", 0);
-	av_dict_set(&codec_opts, "b", "2.5M", 0);
+//http://www.codeproject.com/Tips/489450/Creating-Custom-FFmpeg-IO-Context
+//http://stackoverflow.com/questions/9604633/reading-a-file-located-in-memory-with-libavformat
+//https://ffmpeg.org/doxygen/trunk/aviobuf_8c-source.html
 
-    // otwieramy kodek
-    if( (error=avcodec_open2(codecContext, pCodec, &codec_opts)) <0) {
-		av_dict_free(&codec_opts);
-        VIDLIB_ERROR( FFmpegError( "avcodec_open2", error ) );
-    }
+bool FFmpegVideoStream::init(std::istream * source, const std::string & streamName,
+	int wantedVideoStream /*= -1*/)
+{
+	VIDLIB_FUNCTION_PROLOG;
 
-	av_dict_free(&codec_opts);
+	static const unsigned int BufferSize = 1024 * 512;
+	//inicjuję bufor
+	buffer.reset(reinterpret_cast<unsigned char*>(av_malloc(BufferSize)), &av_free);
+	int error = 0;
+	//inicjuję kontekst własnego I/O w oparciu o strumień i bufor
+	ioContext.reset(avio_alloc_context(buffer.get(), BufferSize, 0, reinterpret_cast<void*>(source), &readFunction, nullptr, &seekFunction), &av_free);
+	//inicjuję kontekst formatu
+	formatContext.reset(avformat_alloc_context(), &avformat_free_context);
+	auto formatContextPtr = formatContext.get();
+	formatContext->pb = ioContext.get();
 
-    // alokacja kaltki
-    frame = avcodec_alloc_frame();
-    if ( !frame ) {
-        VIDLIB_ERROR( FFmpegError( "avcodec_alloc_frame error", error ) );
-    }
+	AVProbeData probeData;
+	probeData.buf = buffer.get();
+	probeData.buf_size = source->readsome((char*)probeData.buf, BufferSize);
+	probeData.filename = "";
+	source->seekg(0, std::ios::beg);
 
-    // alokacja pakietu
-    packet = (AVPacket*)av_malloc(sizeof(AVPacket));
-    av_init_packet(packet);
-    alignedPacket = (AVPacket*)av_malloc(sizeof(AVPacket));
-    av_init_packet(alignedPacket);
+	formatContext->iformat = av_probe_input_format(&probeData, 1);
+	formatContext->flags |= (AVFMT_FLAG_CUSTOM_IO | AVFMT_FLAG_NONBLOCK);
 
-    // odstęp między ramkami
-    AVRational frameSpanRational = av_mul_q(videoStream->time_base, videoStream->r_frame_rate);
-    frameSpan = frameSpanRational.den;
-    UTILS_ASSERT(frameSpanRational.num == 1, "Error getting frame span.");
-    //UTILS_ASSERT(videoStream->duration % frameSpan == 0, "Error getting frame span.");
+	// otwieramy strumień
+	if ((error = avformat_open_input(&formatContextPtr, streamName.c_str(), nullptr, nullptr)) != 0) {
+		VIDLIB_ERROR(FFmpegError("avformat_open_input error", error));
+	}
+	// info o kodekach
+	if ((error = avformat_find_stream_info(formatContext.get(), nullptr)) < 0) {
+		VIDLIB_ERROR(FFmpegError("avformat_find_stream_info error", error));
+	}
 
-    // parametry strumienia
-    double frameRate = av_q2d(videoStream->r_frame_rate);
-    double durationSec = static_cast<double>(videoStream->duration) * videoStream->time_base.num / videoStream->time_base.den;
-    VIDLIB_PixelFormat format = static_cast<VIDLIB_PixelFormat>(codecContext->pix_fmt);
+#ifdef VIDLIB_DEBUG
+	av_dump_format(formatContext.get(), 0, streamName.c_str(), false);
+#endif // VIDLIB_DEBUG
 
-    // format
-    double aspectRatio = 0.0f;
-    if (codecContext->sample_aspect_ratio.num != 0) {
-        aspectRatio = av_q2d(codecContext->sample_aspect_ratio);
-    }
-    if (aspectRatio <= 0.0f) {
-        aspectRatio = 1.0f;
-    }
-
-    // wszystko OK
-    return onAfterInit(source, frameRate, durationSec, format, codecContext->width, codecContext->height, aspectRatio);
+	return commonInit(streamName, wantedVideoStream);
 }
 
 //------------------------------------------------------------------------------
@@ -489,7 +602,6 @@ bool FFmpegVideoStream::seekToKeyframe( int64_t timestamp, bool pickNextframe )
 
         // zerowanie zmiennych trzymających stan
         frameBytesRemaining = 0;
-        frameData = NULL;
 
         int error = 0;
 
@@ -509,12 +621,12 @@ bool FFmpegVideoStream::seekToKeyframe( int64_t timestamp, bool pickNextframe )
         // +- 2 wprowadzone z powodu błędu zaokrągleń
         // seek
         //error = avformat_seek_file(formatContext, streamIdx, seekMin, seekTarget, seekMax, AVSEEK_FLAG_ANY);
-		error = avformat_seek_file(formatContext, streamIdx, seekMin, seekTarget, seekMax, 0);
+		error = avformat_seek_file(formatContext.get(), streamIdx, seekMin, seekTarget, seekMax, 0);
 #else // AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
         int flags = (pickNextframe ? 0 : AVSEEK_FLAG_BACKWARD);
-        if ( av_seek_frame(formatContext, streamIdx, seekTarget, flags) < 0 ) {
+        if ( av_seek_frame(formatContext.get(), streamIdx, seekTarget, flags) < 0 ) {
             flags ^= AVSEEK_FLAG_BACKWARD;
-            error = av_seek_frame(formatContext, streamIdx, seekTarget, flags);
+            error = av_seek_frame(formatContext.get(), streamIdx, seekTarget, flags);
         }
 #endif // AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
 
@@ -523,7 +635,7 @@ bool FFmpegVideoStream::seekToKeyframe( int64_t timestamp, bool pickNextframe )
         }
 
         // flush buffers
-        avcodec_flush_buffers(codecContext);
+        avcodec_flush_buffers(codecContext.get());
 
         // "symulujemy" timestamp, aby nextFrameTimestamp został ustawiony
         nextFrameTimestamp = frameTimestamp = AV_NOPTS_VALUE;
@@ -566,11 +678,11 @@ bool FFmpegVideoStream::readFrame()
         }
 
         // zwalniamy poprzedni pakiet
-        av_free_packet(packet);
+        av_free_packet(packet.get());
 
         // odczytujemy pakiet
         {
-            error = av_read_frame(formatContext, packet);
+            error = av_read_frame(formatContext.get(), packet.get());
             if ( error < 0 ) {
                 if ( error == AVERROR_EOF ) {
                     //VIDLIB_ERROR( FFmpegError("Unexpected EOF", error));
@@ -584,7 +696,7 @@ bool FFmpegVideoStream::readFrame()
 
         // alignujemy dane
         if ( reinterpret_cast<int>(packet->data) & AVIO_FFMPEG_ALIGN_MASK ) {
-            alignPacket(packet);
+            alignPacket(packet.get());
         }
 
         // czy to ten strumień?
@@ -592,7 +704,7 @@ bool FFmpegVideoStream::readFrame()
             // pomocnicza zmienna
             codecContext->reordered_opaque = packet->pts;
             {
-                error = avcodec_decode_video2(codecContext, frame, &gotPicture, packet);
+                error = avcodec_decode_video2(codecContext.get(), frame, &gotPicture, packet.get());
                 if ( error < 0 ) {
                     // tolerujemy błąd
                 }
@@ -659,8 +771,8 @@ void FFmpegVideoStream::alignPacket( AVPacket * packet )
     int realSize = packet->size + VIDLIB_FFMPEG_ALIGN_BYTES;
     if ( realSize > alignedPacket->size ) {
         // alokujemy pamięć dla pakietu...
-        av_free_packet(alignedPacket);
-        av_new_packet(alignedPacket, realSize);
+        av_free_packet(alignedPacket.get());
+        av_new_packet(alignedPacket.get(), realSize);
     }
 
     // alignujemy wskaźnik i rozmiar ...

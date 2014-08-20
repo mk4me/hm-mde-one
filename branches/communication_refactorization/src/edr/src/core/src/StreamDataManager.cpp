@@ -332,7 +332,7 @@ public:
 		parsed = false;
 	}
 
-	const IStreamDataManagerOperations::StreamPtr getStream() const
+	const IStreamDataManagerOperations::IStreamPtr getStream() const
 	{
 		return sg->stream();
 	}
@@ -417,7 +417,7 @@ private:
 		if (streamParser != nullptr){
 			auto stream = getStream();
 			if (stream != nullptr){
-				streamParser->parse(stream.get(), getStreamName());
+				streamParser->parse(stream, getStreamName());
 			}
 			else{
 				std::string("Uninitialized stream for parsing");

@@ -17,7 +17,9 @@ extern "C" {
 #undef UINTMAX_C
 }
 
+#include <utils/SmartPtr.h>
 #include <vidlib/VideoStream.h>
+#include <istream>
 
 struct AVFormatContext;
 struct AVCodecContext;
@@ -26,6 +28,7 @@ struct AVStream;
 struct AVPacket;
 struct AVPicture;
 struct AVDictionary;
+struct AVIOContext;
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace vidlib {
@@ -95,14 +98,16 @@ private:
     };
 
 private:
-    //! 
-    AVFormatContext * formatContext;
+    //! Kontekst formatu
+    utils::shared_ptr<AVFormatContext> formatContext;
+	//! Kontekst I/O
+	utils::shared_ptr<AVIOContext> ioContext;
     //! Kodek video.
-    AVCodecContext * codecContext;
+	utils::shared_ptr<AVCodecContext> codecContext;
     //! Strumień.
-    AVStream * videoStream;
+	AVStream * videoStream;
     //! Bieżąca ramka.
-    AVFrame * frame;
+	AVFrame * frame;
     //! Prawdziwy timestamp prezentacji bieżącej ramki. W jednostkach strumienia.
     int64_t frameTimestamp;
     //! Minimalny odstęp między ramkami.
@@ -120,16 +125,24 @@ private:
 
     //! Liczba bajtów do zdekodowania. Używane tylko w starym API.
     int frameBytesRemaining;
-    //! Dane pakietu. Tylko w starym API.
-    const uint8_t * frameData;
     //! Pakiet.
-    AVPacket * packet;
+	utils::shared_ptr<AVPacket> packet;
     //! Prawdziwy używany w momencie, gdy źródłowy nie ma wyalignowanych danych.
-    AVPacket * alignedPacket;
+	utils::shared_ptr<AVPacket> alignedPacket;
+	//! Ewentualny buffor na dane
+	utils::shared_ptr<unsigned char> buffer;
+	//! Strumień
+	utils::shared_ptr<std::istream> stream;
 
 public:
     //! \param source Źródło.
+	//! \param wantedVideoStream Strumień wideo do obsłużenia
     FFmpegVideoStream(const std::string& source, int wantedVideoStream = -1);
+	//! \param source Źródło.
+	//! \param streamName Nazwa strumienia.
+	//! \param wantedVideoStream Strumień wideo do obsłużenia
+	FFmpegVideoStream(const utils::shared_ptr<std::istream> source, const std::string & streamName,
+		int wantedVideoStream = -1);
     //!
     virtual ~FFmpegVideoStream();
 
@@ -182,6 +195,11 @@ private:
 
     //!
     bool init(const std::string& source, int wantedVideoStream = -1);
+	//!
+	bool init(std::istream * source, const std::string & streamName,
+		int wantedVideoStream = -1);
+
+	bool commonInit(const std::string & streamName, int wantedVideoStream = -1);
     //! Wewnętrzny callback wywoływany w momencie kiedy uda się zdekodować ramkę.
     void onGotFrame(AVFrame * frame, int64_t timestamp);
 };

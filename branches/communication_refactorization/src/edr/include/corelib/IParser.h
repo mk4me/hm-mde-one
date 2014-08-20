@@ -79,11 +79,15 @@ namespace plugin
 	class IStreamParser : public virtual IParser
 	{
 	public:
+		//! Wskaźnik strumienia
+		typedef utils::shared_ptr<std::istream> IStreamPtr;
+
+	public:
 		//! Destruktor wirtualny
 		virtual ~IStreamParser() {}
 		//! \param stream Strumień wejściowy z którego dostarczamy danych
 		//! \param source Ścieżka źródła identyfikująca zawartość strumienia - np. rozszerzenie, protokół, adres
-		virtual void parse(const std::istream * stream, const std::string & source) = 0;
+		virtual void parse(const IStreamPtr stream, const std::string & source) = 0;
 	};
 
 	DEFINE_SMART_POINTERS(IStreamParser);
@@ -95,7 +99,7 @@ namespace plugin
 		//! \param stream Strumień wejściowy z którego dostarczamy danych
 		//! \param source Ścieżka do źródła danych - plik, url, id urządzenia, ...
 		//! \param objectsIndexes Jakie typy obiektów wg opisu dla danego źródła parser powinien wydobyć
-		virtual void parse(const std::istream * stream, const std::string & source, const ObjectsIndexes & objectsIndexes) = 0;
+		virtual void parse(const IStreamPtr stream, const std::string & source, const ObjectsIndexes & objectsIndexes) = 0;
 	};
 
 	DEFINE_SMART_POINTERS(IOptimizedStreamParser);

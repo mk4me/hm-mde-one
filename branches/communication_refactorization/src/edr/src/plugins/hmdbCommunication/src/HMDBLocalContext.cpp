@@ -26,9 +26,9 @@ public:
 	}
 
 	//! \return Strumieñ
-	virtual const core::IStreamDataManager::StreamPtr stream() const
+	virtual const plugin::IStreamParser::IStreamPtr stream() const
 	{
-		return core::IStreamDataManager::StreamPtr(storage->get(name_));
+		return plugin::IStreamParser::IStreamPtr(storage->get(name_));
 	}
 
 	//! \return Nazwa, identyfikator strumienia

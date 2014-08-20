@@ -13,6 +13,7 @@
 #include <corelib/ITransaction.h>
 #include <corelib/IStreamManagerReader.h>
 #include <corelib/IMemoryDataManager.h>
+#include <corelib/IParser.h>
 
 namespace core {
 
@@ -20,9 +21,8 @@ namespace core {
 	class IStreamDataManagerOperations
 	{
 	public:
-
-		//! Typ wskaŸnika na strumieñ
-		typedef utils::shared_ptr<std::istream> StreamPtr;
+		//! Typ strumienia dla grabbera
+		typedef plugin::IStreamParser::IStreamPtr IStreamPtr;
 
 		//! Interfejs obiektu dostarczaj¹cego strumieñ
 		class IStreamGrabber
@@ -31,7 +31,7 @@ namespace core {
 			//! Destruktor wirtualny
 			virtual ~IStreamGrabber() {}
 			//! \return Strumieñ
-			virtual const StreamPtr stream() const = 0;
+			virtual const IStreamPtr stream() const = 0;
 			//! \return Nazwa, identyfikator strumienia
 			virtual const std::string name() const = 0;
 		};

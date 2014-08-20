@@ -484,9 +484,9 @@ private:
 		if(streamFileParser != nullptr){
 
 			auto path = getPath().string();
-			utils::scoped_ptr<std::ifstream> localStream(new std::ifstream(path));
+			utils::shared_ptr<std::ifstream> localStream(new std::ifstream(path));
 			if(localStream->good() == true){
-				streamFileParser->parse(localStream.get(), path);
+				streamFileParser->parse(localStream, path);
 			}else{
 				throw std::runtime_error("Failed to initialize parser stream");
 			}

@@ -209,13 +209,7 @@ const bool MemoryStorage::rawSet(const std::string & key, IStreamPtr input)
 
 void MemoryStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div)
 {
-	const auto currentPos = input->tellg();
-	input->seekg(0, std::ios::beg);
-	auto begin = input->tellg();
-	input->seekg(0, std::ios::end);
-	auto end = input->tellg();
-	input->seekg(currentPos, std::ios::beg);
-	const auto streamSize = end - begin;
+	const auto streamSize = utils::streamSize(*input);
 
 	if (streamSize == 0){
 		progress->setError("Empty input stream");

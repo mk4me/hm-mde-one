@@ -105,13 +105,22 @@ inline std::string toString(const T& source)
     return boost::lexical_cast<std::string>(source);
 }
 
-//! Tworzy std::string z typu const char*. 
-//! \param ptr Łańcuch, może być nullptr
-//! \return Łańcuch na podstawie parametru lub pusty string, gdy przekazano nullptr
-inline std::string safeString(const char* ptr)
+//------------------------------------------------------------------------------
+
+//! \param stream Strumień którego rozmiar pobieramy
+//! \return Rozmiar strumienia
+inline static const std::streamsize streamSize(std::istream & stream)
 {
-	return ptr ? std::string(ptr) : std::string();
+	const auto pos = stream.tellg();
+	stream.seekg(0, std::ios::beg);
+	const auto start = stream.tellg();
+	stream.seekg(0, std::ios::end);
+	const auto end = stream.tellg();
+	stream.seekg(pos);
+
+	return std::streamsize(end - start);
 }
+
 
 //------------------------------------------------------------------------------
 
@@ -124,7 +133,7 @@ inline static const std::string readStream(std::istream * stream)
 	char buffer[BufferSize] = { 0 };
 
 	//TODO - uruchomić metody strumienia do szybkiego czytania danych a nie iteratorami
-	int read = 0;
+	std::streamsize read = 0;
 	while ((read = stream->readsome(buffer, BufferSize)) > 0) { ret.append(buffer, read); }
 	return ret;
 }
