@@ -60,8 +60,8 @@ void HMDBShallowCopyDataContext::setShallowCopy(const ShallowCopyConstPtr shallo
 }
 
 HMDBShallowCopyLocalContext::HMDBShallowCopyLocalContext(IHMDBShallowCopyDataContextPtr shallowCopyContext,
-	IHMDBLocalContextPtr localContext) : shallowCopyContext_(shallowCopyContext),
-	localContext_(localContext)
+	IHMDBLocalContextPtr localContext, core::IMemoryDataManager * mdm) : shallowCopyContext_(shallowCopyContext),
+	localContext_(localContext), mdm(mdm)
 {
 
 }
@@ -278,136 +278,6 @@ const std::map<DataType, std::set<hmdbServices::ID>> childItems(const DataType t
 			auto it = shallowCopy->motionShallowCopy.trials.find(id);
 			if (it != shallowCopy->motionShallowCopy.trials.end()){
 				childItems(it->second->files, fileIDs);
-			}
-		}
-
-		if (fileIDs.empty() == false){
-			ret[FileType].insert(fileIDs.begin(), fileIDs.end());
-		}
-	}
-
-		break;
-
-	case SessionType:
-
-	{
-		std::set<hmdbServices::ID> fileIDs;
-		std::set<hmdbServices::ID> motionIDs;
-
-		if (id < 0){
-			childItems(shallowCopy->motionShallowCopy.sessions, motionIDs, fileIDs);
-		}
-		else{
-			auto it = shallowCopy->motionShallowCopy.sessions.find(id);
-			if (it != shallowCopy->motionShallowCopy.sessions.end()){
-				childItems(it->second, motionIDs, fileIDs);
-			}
-		}
-
-		if (motionIDs.empty() == false){
-			ret[MotionType].insert(motionIDs.begin(), motionIDs.end());
-		}
-
-		if (fileIDs.empty() == false){
-			ret[FileType].insert(fileIDs.begin(), fileIDs.end());
-		}
-	}
-
-		break;
-
-	case SubjectType:
-
-	{
-		std::set<hmdbServices::ID> fileIDs;
-		std::set<hmdbServices::ID> motionIDs;
-		std::set<hmdbServices::ID> sessionIDs;
-
-		if (id < 0){
-			childItems(shallowCopy->motionShallowCopy.performers, sessionIDs, motionIDs, fileIDs);
-		}
-		else{
-			auto it = shallowCopy->motionShallowCopy.performers.find(id);
-			if (it != shallowCopy->motionShallowCopy.performers.end()){
-				childItems(it->second, sessionIDs, motionIDs, fileIDs);
-			}
-		}
-
-		if (sessionIDs.empty() == false){
-			ret[SessionType].insert(sessionIDs.begin(), sessionIDs.end());
-		}
-
-		if (motionIDs.empty() == false){
-			ret[MotionType].insert(motionIDs.begin(), motionIDs.end());
-		}
-
-		if (fileIDs.empty() == false){
-			ret[FileType].insert(fileIDs.begin(), fileIDs.end());
-		}
-	}
-
-		break;
-
-	case PatientType:
-
-	{
-		std::set<hmdbServices::ID> fileIDs;
-		std::set<hmdbServices::ID> motionIDs;
-		std::set<hmdbServices::ID> sessionIDs;
-		std::set<hmdbServices::ID> subjectIDs;
-
-		if (id < 0){
-			childItems(shallowCopy->medicalShallowCopy.patients, subjectIDs, sessionIDs, motionIDs, fileIDs);
-		}
-		else{
-			auto it = shallowCopy->medicalShallowCopy.patients.find(id);
-			if (it != shallowCopy->medicalShallowCopy.patients.end()){
-				childItems(it->second, subjectIDs, sessionIDs, motionIDs, fileIDs);
-			}
-		}
-
-		if (subjectIDs.empty() == false){
-			ret[SubjectType].insert(subjectIDs.begin(), subjectIDs.end());
-		}
-
-		if (sessionIDs.empty() == false){
-			ret[SessionType].insert(sessionIDs.begin(), sessionIDs.end());
-		}
-
-		if (motionIDs.empty() == false){
-			ret[MotionType].insert(motionIDs.begin(), motionIDs.end());
-		}
-
-		if (fileIDs.empty() == false){
-			ret[FileType].insert(fileIDs.begin(), fileIDs.end());
-		}
-	}
-
-		break;
-
-	}
-
-	return ret;
-}
-
-const std::map<DataType, std::set<hmdbServices::ID>> parentItems(const DataType type,
-	const hmdbServices::ID id, const ShallowCopyConstPtr shallowCopy)
-{
-	std::map<DataType, std::set<hmdbServices::ID>> ret;
-
-	switch (type)
-	{
-	case MotionType:
-
-	{
-		std::set<hmdbServices::ID> fileIDs;
-
-		if (id < 0){
-			//parentItems(shallowCopy->motionShallowCopy.trials, fileIDs);
-		}
-		else{
-			auto it = shallowCopy->motionShallowCopy.trials.find(id);
-			if (it != shallowCopy->motionShallowCopy.trials.end()){
-				//parentItems(it->second->files, fileIDs);
 			}
 		}
 
@@ -1051,6 +921,12 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 	//na bazie tej mapy bêdê realizowa³ hierarchiê pluginu subject
 
 	SubjectFiles subjectHierarchy = groupDataInHierarchy(loadedFilesData, shallowCopy);
+	Indexes loadedFiles;
+
+	std::for_each(loadedFilesData.begin(), loadedFilesData.end(), [&loadedFiles](const IndexedData::value_type & val)
+	{
+		loadedFiles.insert(val.first);
+	});
 
 	auto transaction = localContext_->transaction();
 	//auto hierarchyTransaction = mdm->hierarchyTransaction();
@@ -1078,27 +954,23 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 			}
 		}
 
-		//auto subPtr = loadSubjectHierarchy(indexedData);
-
-		//auto hmdbSource = core::querySource<IHMDBSource>(plugin::getSourceManager());
-		/*
+		auto hmdbSource = core::querySource<IHMDBSource>(plugin::getSourceManager());
+		
 		if (hmdbSource != nullptr){
-		//auto hierarchyTransaction = mdm->hierarchyTransaction();
-		std::set<core::IHierarchyItemConstPtr> roots;
-		for (int i = 0; i < hmdbSource->viewManager()->hierarchyPerspectivesCount(); ++i) {
-		//auto root = TreeBuilder::createTree("SUB", subPtr);
-		auto root = hmdbSource->viewManager()->hierarchyPerspective(i)->getPerspective(subPtr);
-		if (root) {
-		int childCount = root->getNumChildren();
-		for (int c = 0; c < childCount; ++c) {
-		auto r = root->getChild(c);
-		updateOrAddRoot(r, roots, hierarchyTransaction);
+			auto hierarchyTransaction = mdm->hierarchyTransaction();
+			std::set<core::IHierarchyItemConstPtr> roots;
+			for (int i = 0; i < hmdbSource->viewManager()->hierarchyPerspectivesCount(); ++i) {				
+				auto root = hmdbSource->viewManager()->hierarchyPerspective(i)->getPerspective(subPtr);
+				if (root) {
+					int childCount = root->getNumChildren();
+					for (int c = 0; c < childCount; ++c) {
+						auto r = root->getChild(c);
+						updateOrAddRoot(r, roots, hierarchyTransaction);
+					}
+				}
+			}
+			files2roots[loadedFiles] = roots;
 		}
-		}
-		}
-		files2roots[loadedFiles] = roots;
-		}
-		*/
 	}
 }
 
@@ -1153,6 +1025,37 @@ const bool HMDBShallowCopyLocalContext::loadAll()
 	return load(FileType, -1);
 }
 
+bool hasChild(core::IHierarchyItemConstPtr root, const QString& childName)
+{
+	for (int i = root->getNumChildren() - 1; i >= 0; --i) {
+		if (root->getChild(i)->getName() == childName) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void HMDBShallowCopyLocalContext::updateOrAddRoot(core::IHierarchyItemConstPtr root, std::set<core::IHierarchyItemConstPtr>& roots,
+	core::IMemoryDataManager::HierarchyTransactionPtr hierarchyTransaction)
+{
+	auto it = name2root.find(root->getName());
+	if (it != name2root.end()) {
+		for (int i = root->getNumChildren() - 1; i >= 0; --i) {
+			auto nroot = utils::const_pointer_cast<core::IHierarchyItem>(it->second);
+			auto nchild = utils::const_pointer_cast<core::IHierarchyItem>(root->getChild(i));
+			if (!hasChild(nroot, nchild->getName())) {
+				nroot->appendChild(nchild);
+				hierarchyTransaction->updateRoot(nroot);
+			}
+		}
+	}
+	else {
+		name2root[root->getName()] = root;
+		roots.insert(root);
+		hierarchyTransaction->addRoot(root);
+	}
+}
+
 const bool HMDBShallowCopyLocalContext::unload(const DataType type,
 	const hmdbServices::ID id)
 {
@@ -1183,36 +1086,35 @@ const bool HMDBShallowCopyLocalContext::unload(const DataType type,
 			auto hmdbSource = core::querySource<IHMDBSource>(plugin::getSourceManager());
 
 			if (hmdbSource != nullptr){
-				/*
 				auto hierarchyTransaction = mdm->hierarchyTransaction();
 				auto entry = files2roots.find(unloadFiles);
 				if (entry != files2roots.end()) {
-				auto roots = entry->second;
-				for (auto it = roots.begin(); it != roots.end(); ++it) {
-				hierarchyTransaction->removeRoot(*it);
-				name2root.erase((*it)->getName());
-				}
+					auto roots = entry->second;
+					for (auto it = roots.begin(); it != roots.end(); ++it) {
+						hierarchyTransaction->removeRoot(*it);
+						name2root.erase((*it)->getName());
+					}
 
-				files2roots.erase(entry);
+					files2roots.erase(entry);
 				}
 				else{
-				auto locFiles2roots = files2roots;
+					auto locFiles2roots = files2roots;
 
-				//szukam po rootach czy ich przeciêcie z aktualn¹ grup¹ istnieje
-				for (auto IT = locFiles2roots.begin(); IT != locFiles2roots.end(); ++IT){
-				std::vector<int> inter(min(unloadFiles.size(), IT->first.size()));
-				auto retIT = std::set_intersection(unloadFiles.begin(), unloadFiles.end(), IT->first.begin(), IT->first.end(), inter.begin());
-				if (std::distance(inter.begin(), retIT) == IT->first.size()){
-				auto roots = IT->second;
-				for (auto it = roots.begin(); it != roots.end(); ++it) {
-				hierarchyTransaction->removeRoot(*it);
-				name2root.erase((*it)->getName());
-				}
+					//szukam po rootach czy ich przeciêcie z aktualn¹ grup¹ istnieje
+					for (auto IT = locFiles2roots.begin(); IT != locFiles2roots.end(); ++IT){
+						std::vector<int> inter(std::min(unloadFiles.size(), IT->first.size()));
+						auto retIT = std::set_intersection(unloadFiles.begin(), unloadFiles.end(), IT->first.begin(), IT->first.end(), inter.begin());
+						if (std::distance(inter.begin(), retIT) == IT->first.size()){
+							auto roots = IT->second;
+							for (auto it = roots.begin(); it != roots.end(); ++it) {
+								hierarchyTransaction->removeRoot(*it);
+								name2root.erase((*it)->getName());
+							}
 
-				files2roots.erase(IT->first);
+							files2roots.erase(IT->first);
+						}
+					}
 				}
-				}
-				}*/
 			}
 
 		}		

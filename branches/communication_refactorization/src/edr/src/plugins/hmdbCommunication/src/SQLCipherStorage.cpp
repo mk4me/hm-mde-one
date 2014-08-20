@@ -373,9 +373,9 @@ const int sqliteExec(sqlite3 * db, const std::string & query)
 }
 
 enum BufferSizeTraits {
-	MinBufferSize = (1 << 8),		//! 256B
-	DefaultBufferSize = (1 << 11),	//! 2KB
-	MaxBufferSize = (1 << 20) * 10	//! 10MB
+	MinBufferSize = (100 * (1 << 10)),		//! 100KB
+	DefaultBufferSize = (2 * (1 << 20)),	//! 2MB
+	MaxBufferSize = (10 * (1 << 20))	//! 10MB
 };
 
 //! \tparam T Typ danych przechowywanych w buforze
@@ -591,6 +591,15 @@ public:
 	}
 
 protected:
+
+	virtual std::streamsize __CLR_OR_THIS_CALL showmanyc()
+	{	// return count of input characters
+		if (buffer.begin() == nullptr){
+			buffer.updateSize(std::max(blobSize, (int)DefaultBufferSize));
+		}
+
+		return std::min(_Seekhigh - blobReadIDX, bufferSize());
+	}
 
 	virtual int_type __CLR_OR_THIS_CALL overflow(int_type _Meta =
 		_Traits::eof())
@@ -1259,7 +1268,7 @@ const IHMDBStorage::IOStreamPtr SQLCipherStorage::rawGet(const std::string & key
 
 	if (query != nullptr && mtStep(query) == SQLITE_ROW){
 		const auto rowID = sqlite3_column_int64(query, 0);
-		SQLiteBLOB blob(db, "files_table", "file", rowID, std::ios_base::in, "main");
+		SQLiteBLOB blob(db, "files_table", "file", rowID, 0, "main");
 		std::auto_ptr<SQLiteBuffer> buf(new SQLiteBuffer(path, dbKey, "main", "files_table", "file", rowID, sqlite3_blob_bytes(blob.get())));
 
 		return IHMDBStorage::IOStreamPtr(new std::iostream(buf.release()));
@@ -1279,11 +1288,11 @@ const IHMDBStorage::IStreamPtr SQLCipherStorage::rawGetReadOnly(const std::strin
 
 	if (query != nullptr && mtStep(query) == SQLITE_ROW){
 		const auto rowID = sqlite3_column_int64(query, 0);
-		SQLiteBLOB blob(db, "files_table", "file", rowID, std::ios_base::in, "main");
+		SQLiteBLOB blob(db, "files_table", "file", rowID, 0, "main");
 		//http://www.sqlite.org/c3ref/blob_open.html
 		std::auto_ptr<SQLiteBuffer> buf(new SQLiteBuffer(path, dbKey, "main", "files_table", "file", rowID, sqlite3_blob_bytes(blob.get()), std::ios_base::in));
 
-		return IHMDBStorage::IStreamPtr(new std::iostream(buf.release()));
+		return IHMDBStorage::IStreamPtr(new std::istream(buf.release()));
 	}
 
 	return IHMDBStorage::IStreamPtr();

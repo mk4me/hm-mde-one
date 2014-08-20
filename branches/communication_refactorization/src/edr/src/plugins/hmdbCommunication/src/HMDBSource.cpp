@@ -109,7 +109,7 @@ const IHMDBShallowCopyContextPtr HMDBSource::createShallowCopyContext(IHMDBSourc
 	if (sourceContext != nullptr && sourceContext->dataContext() != nullptr
 		&& sourceContext->localContext() != nullptr){
 		IHMDBShallowCopyDataContextPtr scdc(new HMDBShallowCopyDataContext());
-		IHMDBShallowCopyLocalContextPtr sclc(new HMDBShallowCopyLocalContext(scdc, sourceContext->localContext()));
+		IHMDBShallowCopyLocalContextPtr sclc(new HMDBShallowCopyLocalContext(scdc, sourceContext->localContext(), memoryDM));
 		IHMDBShallowCopyRemoteContextPtr scrc;
 
 		if (sourceContext->remoteContext() != nullptr){

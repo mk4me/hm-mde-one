@@ -115,11 +115,18 @@ inline std::string safeString(const char* ptr)
 
 //------------------------------------------------------------------------------
 
-//! \param document Strumień z zawartością pliku
+//! \param stream Strumień do skopiowania
 //! \return Plik zapisany w stringu
-inline static const std::string readStream(std::istream * document)
+inline static const std::string readStream(std::istream * stream)
 {
-	return std::string(std::istreambuf_iterator<char>(*document), std::istreambuf_iterator<char>());
+	std::string ret;
+	static const unsigned int BufferSize = 1024 * 512;
+	char buffer[BufferSize] = { 0 };
+
+	//TODO - uruchomić metody strumienia do szybkiego czytania danych a nie iteratorami
+	int read = 0;
+	while ((read = stream->readsome(buffer, BufferSize)) > 0) { ret.append(buffer, read); }
+	return ret;
 }
 
 //------------------------------------------------------------------------------

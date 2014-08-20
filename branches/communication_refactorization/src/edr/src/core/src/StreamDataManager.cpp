@@ -471,7 +471,7 @@ private:
 			auto stream = getStream();
 			if (stream != nullptr){
 
-				const auto tmpPath = plugin::getPaths()->getTmpPath() / plugin::getPaths()->getTmpPath();
+				const auto tmpPath = plugin::getPaths()->getTmpPath() / plugin::getPaths()->generateTempFileName();
 				std::ofstream output(tmpPath.string());
 
 				if (output.is_open() == true){
@@ -480,8 +480,10 @@ private:
 
 					static const unsigned int BufferSize = 1024 * 512;
 					char buffer[BufferSize] = { 0 };
+					
 					int read = 0;
 					while ((read = stream->readsome(buffer, BufferSize)) > 0) { output.write(buffer, read); }
+
 					output.flush();
 					output.close();
 

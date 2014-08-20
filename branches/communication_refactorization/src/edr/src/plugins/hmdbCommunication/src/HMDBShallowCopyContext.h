@@ -54,7 +54,7 @@ namespace hmdbCommunication
 		//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych
 		//! \param localContext Lokalny kontekst
 		HMDBShallowCopyLocalContext(IHMDBShallowCopyDataContextPtr shallowCopyContext,
-			IHMDBLocalContextPtr localContext);
+			IHMDBLocalContextPtr localContext, core::IMemoryDataManager * mdm);
 
 		//! Destruktor wirtualny
 		virtual ~HMDBShallowCopyLocalContext();
@@ -92,6 +92,9 @@ namespace hmdbCommunication
 		virtual const IHMDBLocalContextConstPtr localContext() const;
 
 	private:
+
+		void updateOrAddRoot(core::IHierarchyItemConstPtr root, std::set<core::IHierarchyItemConstPtr>& roots,
+			core::IMemoryDataManager::HierarchyTransactionPtr hierarchyTransaction);
 
 		const core::VariantPtr findObjectByType(const DataType type,
 			const hmdbServices::ID id,
@@ -140,12 +143,18 @@ namespace hmdbCommunication
 		void unloadSubjectHierarchy(const IndexedData & unloadedFiles);
 
 	private:
+		//! Manager na potrzeby hierarchi
+		core::IMemoryDataManager * mdm;
 		//! Mapa danych
 		mutable GroupedData data_;
 		//! Kontekst p³ytkiej kopii bazy danych
 		IHMDBShallowCopyDataContextPtr shallowCopyContext_;
 		//! Lokalny kontekst
 		IHMDBLocalContextPtr localContext_;
+		//! Obs³uga hierarchi analiz
+		std::map<std::set<int>, std::set<core::IHierarchyItemConstPtr>> files2roots;
+		//! Obs³uga hierarchi analiz
+		std::map<QString, core::IHierarchyItemConstPtr> name2root;
 	};
 
 	class HMDBShallowCopyRemoteContext : public IHMDBShallowCopyRemoteContext
