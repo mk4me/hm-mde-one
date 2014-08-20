@@ -663,6 +663,7 @@ void StreamDataManager::rawRemoveStream(const std::string & stream, const IMemor
 
 	//usu� plik	
 	objectsByStreams.erase(stream);
+	streams_.left.erase(stream);
 	if (ok == true){
 		CORE_LOG_INFO("Stream " << stream << " successfully removed from manager");
 	}
