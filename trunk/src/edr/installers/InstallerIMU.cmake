@@ -14,7 +14,7 @@ BEGIN_INSTALLER_GROUP(core "Core" "Core application elements")
 ADD_INSTALLER_GROUP_COMPONENT(corelib "corelib" "General purpose library" "REQUIRED" "Full Min")
 ADD_INSTALLER_GROUP_COMPONENT(coreui "coreui" "UI support library" "REQUIRED" "Full Min")
 
-ADD_INSTALLER_GROUP_COMPONENT(mde_view "imu_view" "IMU view" "REQUIRED HIDDEN" "Full Min")
+ADD_INSTALLER_GROUP_COMPONENT(imu_view "imu_view" "IMU view" "REQUIRED HIDDEN" "Full Min")
 
 END_INSTALLER_GROUP()
 
