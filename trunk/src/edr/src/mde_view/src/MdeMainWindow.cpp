@@ -167,6 +167,12 @@ void MdeMainWindow::addPropertiesToServiceWindow( plugin::IServicePtr service, M
     }
 }
 
+void MdeMainWindow::onAbout()
+{
+	std::unique_ptr<AboutDialog> dialog = std::make_unique<AboutDialog>();
+	dialog->exec();
+}
+
 void MdeMainWindowController::addTab( coreUI::IMdeTabPtr tab )
 {
     QToolButton* templateB = window->ui->templateButton;
