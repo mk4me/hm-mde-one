@@ -7,7 +7,7 @@ namespace kinematic
 {
 hAnimSkeleton::hAnimSkeleton()
 {
-	mappingSchemes.push_back(SkeletonMappingScheme::createDefault());
+	//mappingSchemes.push_back(SkeletonMappingScheme::createDefault());
 }
 
 void hAnimSkeleton::backJointAndBone(std::string newJointName, std::string newBoneName,

@@ -31,6 +31,8 @@ public:
     {
         DataItemDescription() {}
 
+		virtual ~DataItemDescription() {}
+
         //! Konstruktor wype³nia wszystkie pola struktury 
         //! \param visualizer 
         //! \param series 
@@ -41,11 +43,25 @@ public:
 
         QDockWidget * visualizerDockWidget;
 
-        utils::shared_ptr<VisualizerSerieTimelineMultiChannel> channel;
-
         std::string path;
     };
     DEFINE_SMART_POINTERS(DataItemDescription)
+
+		//! s³u¿y do przechowywania informacji o utworzonych wizualizatorach i ich seriach, u¿ywane w mapie itemHelper -> itemDesc
+	struct TimeDataItemDescription : public DataItemDescription
+	{
+		TimeDataItemDescription() {}
+
+		//! Konstruktor wype³nia wszystkie pola struktury 
+		//! \param visualizer 
+		//! \param series 
+		//! \param widget 
+		TimeDataItemDescription(coreUI::CoreVisualizerWidget* widget, QDockWidget * dockWidget)
+			: DataItemDescription(widget, dockWidget) {}
+
+		utils::shared_ptr<VisualizerSerieTimelineMultiChannel> channel;		
+	};
+	DEFINE_SMART_POINTERS(TimeDataItemDescription)
 
 public:
     AnalisisModel();
@@ -68,6 +84,7 @@ Q_SIGNALS:
     void filterBundleAdded(core::IFilterBundlePtr);
     void reportCreated(const QString& html);
     void expandTree(int);
+    void dataAdded();
 
 private:
     // TODO : przyda sie madrzejszy sposob zarzadzania elementami przefiltrowanymi i nieprzefiltrowanymi 
@@ -83,7 +100,7 @@ private:
     std::multimap<core::HierarchyHelperWeakPtr, DataItemDescriptionPtr> items2Descriptions;
     std::map<core::HierarchyHelperWeakPtr, core::IHierarchyDataItemConstWeakPtr> helper2hierarchyItem;
 
-    std::map<core::Visualizer::VisualizerSerie*, std::string> seriesToChannels;
+    std::map<core::Visualizer::VisualizerSerie*, std::string> seriesToPaths;
 };
 DEFINE_SMART_POINTERS(AnalisisModel);
 

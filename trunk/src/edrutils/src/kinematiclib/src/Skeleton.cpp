@@ -120,6 +120,7 @@ osg::Quat SkeletonUtils::createRotation( const osg::Quat& rX, const osg::Quat& r
 {
 	switch (order) 
 	{
+	case Axis::UnknownAxisOrder:
 	case Axis::XYZ: return rX * rY * rZ;
 	case Axis::XZY: return rX * rZ * rY;
 	case Axis::YXZ: return rY * rX * rZ;

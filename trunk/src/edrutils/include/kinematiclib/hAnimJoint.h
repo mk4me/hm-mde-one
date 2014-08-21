@@ -71,7 +71,8 @@ public:
 
 	  /// \brief domyślny konstruktor
 	  hAnimJoint() :
-	  active(false)
+	  active(false),
+	  order(Axis::UnknownAxisOrder)
 	  {
 
 	  }

@@ -12,6 +12,7 @@
 #include <plugins/kinematic/Wrappers.h>
 #include <QtWidgets/QToolButton>
 #include "OsgSerie.h"
+#include "BvhSerie.h"
 
 using namespace coreUI;
 
@@ -34,6 +35,7 @@ void KinematicVisualizer::getSupportedTypes(utils::TypeInfoList & supportedTypes
 	supportedTypes.push_back(typeid(kinematic::JointAnglesCollection));
 	supportedTypes.push_back(typeid(SkeletonDataStream));
 	supportedTypes.push_back(typeid(osg::PositionAttitudeTransform));
+	supportedTypes.push_back(typeid(BVHData));
 }
 
 int KinematicVisualizer::getMaxDataSeries() const
@@ -62,6 +64,8 @@ plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const utils::TypeI
         ret = ss;
 	} else if (requestedType == typeid (SkeletonDataStream)) {
 		ret = new SkeletonStreamSerie(this, requestedType, data);
+	} else if (requestedType == typeid (BVHData)) {
+		ret = new BvhSerie(this, requestedType, data);
 	} else if (requestedType == typeid (osg::PositionAttitudeTransform)) {
 		ret = new OsgSerie(this, requestedType, data);
 	} else {

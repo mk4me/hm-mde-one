@@ -95,87 +95,8 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 				hasData = true;
 				motion->getObjects(framesV, typeid(IMU::Frames), false);
 
-				auto accWrapper = utils::ObjectWrapper::create<VectorChannelCollection>();
-				auto magWrapper = utils::ObjectWrapper::create<VectorChannelCollection>();
-				auto gyrWrapper = utils::ObjectWrapper::create<VectorChannelCollection>();
-				
-				VectorChannelCollectionPtr accelerations = utils::make_shared<VectorChannelCollection>();
-				VectorChannelCollectionPtr magnetometers = utils::make_shared<VectorChannelCollection>();
-				VectorChannelCollectionPtr gyroscopes = utils::make_shared<VectorChannelCollection>();
-				
-				// todo przeniesc te hz do configa?
-				int hz = 50;
-				/*IMU::Frames frames;
-				if (config->imusCount != -1) {
-					frames = IMU::IMUDatParser::parse(source, config->imusCount);
-				}
-				else {
-					auto res = IMU::IMUDatParser::parse(source);
-					frames = res.first;
-					config->imusCount = res.second;
-				}*/
-				
-				IMU::FramesConstPtr frms = (*framesV.begin())->get();
-				if (config->imusCount == -1 && !frms->empty()) {
-					auto c = utils::const_pointer_cast<IMU::IMUConfig>(config);
-					c->imusCount = frms->at(0).size();
-				}
-				for (int i = 0; i < config->imusCount; ++i) {
-				    accelerations->addChannel(createChannel(hz, *config, i, "m/s^2"));
-				    magnetometers->addChannel(createChannel(hz, *config, i));
-				    gyroscopes->addChannel(createChannel(hz, *config, i, "rad/s"));
-				}
-				    
-				for (auto itFrame = frms->begin(); itFrame != frms->end(); ++itFrame) {
-				    const IMU::Frame& f = *itFrame;
-				    for (int i = 0; i < config->imusCount; ++i) {
-						// TODO te parametry (1024, 2048) trzeba gdzies przeniesc (do ramki?)
-				        accelerations->getChannel(i)->addPoint(osg::Vec3(f[i].raw.acc_x, f[i].raw.acc_y, f[i].raw.acc_z) * (1 / 1024.0f));
-						magnetometers->getChannel(i)->addPoint(osg::Vec3(f[i].raw.mag_x, f[i].raw.mag_y, f[i].raw.mag_z) * (1 / 2048.0f));
-						gyroscopes->getChannel(i)->addPoint(osg::Vec3(f[i].raw.rate_x, f[i].raw.rate_y, f[i].raw.rate_z) * (1 / 2048.0f));
-				    }
-				}
-				accWrapper->set(accelerations);
-				magWrapper->set(magnetometers);
-				gyrWrapper->set(gyroscopes);
+				createIMUBranch(framesV, config, s->getName(), sessionItem, memoryDataManager);
 
-				{
-					core::VariantsList objects;
-
-					auto _lambda = [&](VectorChannelCollectionPtr collection, const std::string& groupName)
-					{
-						int count = collection->getNumChannels();
-						for (int i = 0; i < count; ++i) {
-							VectorChannelPtr channel = collection->getChannel(i);
-							
-							core::VariantPtr wrapper = core::Variant::create<VectorChannel>();
-							wrapper->setMetadata("core/name", channel->getName());
-							wrapper->setMetadata("core/source", s->getName() + std::string("/") + groupName);
-							wrapper->set(channel);
-							objects.push_back(wrapper);
-						}
-					};
-
-					_lambda(accelerations, "accelerations");
-					_lambda(magnetometers, "magnetometers");
-					_lambda(gyroscopes, "gyroscopes");
-
-					auto memTransaction = memoryDataManager->transaction();
-					for (auto it = objects.begin(); it != objects.end(); ++it){
-						memTransaction->addData(*it);
-					}
-				}
-				    
-				
-
-				auto accItem = createImuCollectionItem(0, accelerations);
-				sessionItem->appendChild(accItem);
-
-				auto magItem = createImuCollectionItem(1, magnetometers);
-				sessionItem->appendChild(magItem);
-
-				auto gyrItem = createImuCollectionItem(2, gyroscopes);
-				sessionItem->appendChild(gyrItem);
 			}
         }
     }
@@ -197,6 +118,99 @@ void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &oList, core::
 			root->appendChild(collectionItem);
 		}
 	}
+}
+
+void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &framesV, IMU::IMUConfigConstPtr config, const std::string& sourceName, core::HierarchyItemPtr sessionItem, core::IMemoryDataManager * memoryDataManager)
+{
+	auto accWrapper = utils::ObjectWrapper::create<VectorChannelCollection>();
+	auto magWrapper = utils::ObjectWrapper::create<VectorChannelCollection>();
+	auto gyrWrapper = utils::ObjectWrapper::create<VectorChannelCollection>();
+
+	VectorChannelCollectionPtr accelerations = utils::make_shared<VectorChannelCollection>();
+	VectorChannelCollectionPtr magnetometers = utils::make_shared<VectorChannelCollection>();
+	VectorChannelCollectionPtr gyroscopes = utils::make_shared<VectorChannelCollection>();
+
+	// todo przeniesc te hz do configa?
+	int hz = 50;
+	/*IMU::Frames frames;
+	if (config->imusCount != -1) {
+	frames = IMU::IMUDatParser::parse(source, config->imusCount);
+	}
+	else {
+	auto res = IMU::IMUDatParser::parse(source);
+	frames = res.first;
+	config->imusCount = res.second;
+	}*/
+
+	IMU::FramesConstPtr frms = (*framesV.begin())->get();
+	if (config->imusCount == -1 && !frms->empty()) {
+		auto c = utils::const_pointer_cast<IMU::IMUConfig>(config);
+		c->imusCount = frms->at(0).size();
+	}
+	for (int i = 0; i < config->imusCount; ++i) {
+		accelerations->addChannel(createChannel(hz, *config, i, "m/s^2"));
+		magnetometers->addChannel(createChannel(hz, *config, i));
+		gyroscopes->addChannel(createChannel(hz, *config, i, "rad/s"));
+	}
+
+	for (auto itFrame = frms->begin(); itFrame != frms->end(); ++itFrame) {
+		const IMU::Frame& f = *itFrame;
+		
+		int count = config->imusCount;
+		// na wypadek, gdyby jakies z ostatnich czujnikow byly uszkodzone
+		if (count > f.size()) {
+			count = f.size();
+		}
+		for (int i = 0; i < count; ++i) {
+			// TODO te parametry (1024, 2048) trzeba gdzies przeniesc (do ramki?)
+			accelerations->getChannel(i)->addPoint(osg::Vec3(f[i].raw.acc_x, f[i].raw.acc_y, f[i].raw.acc_z) * (1 / 1024.0f));
+			magnetometers->getChannel(i)->addPoint(osg::Vec3(f[i].raw.mag_x, f[i].raw.mag_y, f[i].raw.mag_z) * (1 / 2048.0f));
+			gyroscopes->getChannel(i)->addPoint(osg::Vec3(f[i].raw.rate_x, f[i].raw.rate_y, f[i].raw.rate_z) * (1 / 2048.0f));
+		}
+	}
+	accWrapper->set(accelerations);
+	magWrapper->set(magnetometers);
+	gyrWrapper->set(gyroscopes);
+
+	{
+		core::VariantsList objects;
+
+		auto _lambda = [&](VectorChannelCollectionPtr collection, const std::string& groupName)
+		{
+			int count = collection->getNumChannels();
+			for (int i = 0; i < count; ++i) {
+				VectorChannelPtr channel = collection->getChannel(i);
+
+				core::VariantPtr wrapper = core::Variant::create<VectorChannel>();
+				wrapper->setMetadata("core/name", channel->getName());
+				wrapper->setMetadata("core/source", sourceName + std::string("/") + groupName);
+				wrapper->set(channel);
+				objects.push_back(wrapper);
+			}
+		};
+
+		_lambda(accelerations, "accelerations");
+		_lambda(magnetometers, "magnetometers");
+		_lambda(gyroscopes, "gyroscopes");
+
+		if (memoryDataManager) {
+			auto memTransaction = memoryDataManager->transaction();
+			for (auto it = objects.begin(); it != objects.end(); ++it){
+				memTransaction->addData(*it);
+			}
+		}
+	}
+
+
+
+	auto accItem = createImuCollectionItem(0, accelerations);
+	sessionItem->appendChild(accItem);
+
+	auto magItem = createImuCollectionItem(1, magnetometers);
+	sessionItem->appendChild(magItem);
+
+	auto gyrItem = createImuCollectionItem(2, gyroscopes);
+	sessionItem->appendChild(gyrItem);
 }
 
 core::IHierarchyItemPtr IMU::IMUPerspective::createImuCollectionItem(int i, VectorChannelCollectionConstPtr collection)

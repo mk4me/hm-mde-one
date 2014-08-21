@@ -24,7 +24,7 @@ namespace python {
 		Q_OBJECT;
 		UNIQUE_ID("{2AB10F39-C5C9-4637-A562-85D15EAE118A}");
 
-		CLASS_DESCRIPTION("Python Service", "Python Service");
+		CLASS_DESCRIPTION("Scripting", "Python Service");
 
 	public:
 		//! 

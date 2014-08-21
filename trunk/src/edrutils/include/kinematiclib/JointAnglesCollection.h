@@ -43,7 +43,8 @@ public:
     //! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
     //! \param skeletalModel struktura szkieletu
     //! \param skeletalData dane szkieletu
-    void setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData);
+	void setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData, 
+		SkeletonMappingSchemePtr mapping = SkeletonMappingScheme::createDefault());
     //! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
     //! \param skeletalModel struktura szkieletu w postaci pełnego szkieletu h-anim
     //! \param rootPositions kolekcja danych pozycji korzenia szkieletu

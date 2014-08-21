@@ -6,12 +6,15 @@
 #include "AsfParser.h"
 #include "FbxParser.h"
 #include <plugins/kinematic/Wrappers.h>
+#include "BvhParser.h"
 
 CORE_PLUGIN_BEGIN("kinematic", core::UID::GenerateUniqueID("{3C0CD7AF-9351-46CC-A5FE-52AA182E1279}"));
     CORE_PLUGIN_ADD_PARSER(KinematicParser);
-    CORE_PLUGIN_ADD_PARSER(AsfParser);
+	CORE_PLUGIN_ADD_PARSER(AsfParser);
+	CORE_PLUGIN_ADD_PARSER(BvhParser);
 	CORE_PLUGIN_ADD_PARSER(FbxParser);
-    CORE_PLUGIN_ADD_VISUALIZER(KinematicVisualizer);
+	CORE_PLUGIN_ADD_VISUALIZER(KinematicVisualizer);
+	CORE_PLUGIN_ADD_OBJECT_WRAPPER(BVHData);
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::JointAnglesCollection);
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::SkeletalData);
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::SkeletalModel);

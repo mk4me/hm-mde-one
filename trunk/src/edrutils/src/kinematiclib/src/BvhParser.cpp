@@ -281,6 +281,10 @@ void BvhParser::parse(SkeletalModelPtr model, SkeletalDataPtr data, const std::s
     root->id = -1;
     // utworzenie 'dummy bones' jeśli jest taka potrzeba
     //setBones(model);
+
+	model->getSkeleton().setRoot(root);
+	model->getJointIDMap() = tempBonesID;
+	model->getJointMap() = tempBonesMap;
     in.close();
 }
 //----------------------------------------------------------------------------------

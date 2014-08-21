@@ -700,7 +700,8 @@ void IMU::IMUCostumeDataSource::loadDatFile(const core::Filesystem::Path& path)
 
     auto hierarchyTransaction = memoryDM->hierarchyTransaction();
     core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>(path.filename().string().c_str(), path.string().c_str(), QIcon());
-	IMUPerspective::createIMUBranch(oList, root);
+	auto config = utils::make_shared<IMU::IMUConfig>();
+	IMUPerspective::createIMUBranch(oList, config, path.filename().string(), root);
 
 
     hierarchyTransaction->addRoot(root);

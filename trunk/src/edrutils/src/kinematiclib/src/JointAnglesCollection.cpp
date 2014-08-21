@@ -15,11 +15,12 @@ JointAnglesCollection::JointAnglesCollection(void) :
 {
 }
 
-void JointAnglesCollection::setSkeletal( kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData )
+void JointAnglesCollection::setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData, SkeletonMappingSchemePtr mapping)
 {
     UTILS_ASSERT(!initialized);
     
    this->haSkeleton = hAnimSkeleton::create();
+   this->haSkeleton->registerMappingScheme(mapping);
    this->haSkeleton->doSkeletonMapping(skeletalModel);
    this->haSkeleton->createActiveHierarchy();
 

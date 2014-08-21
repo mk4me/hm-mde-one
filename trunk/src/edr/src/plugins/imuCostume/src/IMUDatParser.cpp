@@ -54,7 +54,7 @@ std::pair<IMU::Frames, int> IMU::IMUDatParser::parse(const core::Filesystem::Pat
 	if (file.read((char*)chunk.data(), CHUNK_SIZE)) {
 		// chunkS / frameS da maksymalna liczbe czujnikow
 		auto maxCount = CHUNK_SIZE / FRAME_SIZE;
-		for (uint8_t i = 0; i < maxCount; i++) {
+		for (uint8_t i = maxCount - 1; i >= 0; --i) {
 			ImuData imuData;
 
 			// przeskakujemy o 32 bajty (16 intów), do kolejnej ramki 
@@ -67,9 +67,9 @@ std::pair<IMU::Frames, int> IMU::IMUDatParser::parse(const core::Filesystem::Pat
 				}
 			}
 			
-			if (zeros) {
+			if (!zeros) {
 				// znamy juz liczbe czujnikow
-				return std::make_pair(parse(path, i), i);
+				return std::make_pair(parse(path, i+1), i+1);
 			}
 		}
 		return std::make_pair(parse(path, maxCount), maxCount);

@@ -101,7 +101,8 @@ void SkeletonJointsMapping::generateMappedConnectionsDescription( kinematic::hAn
 	const unsigned int idx,
 	SegmentsDescriptors & cds) const
 {
-	BOOST_FOREACH(hAnimJointPtr child, joint->getActiveJointChildren()) {
+	auto jointChildren = joint->getActiveJointChildren();
+	BOOST_FOREACH(hAnimJointPtr child, jointChildren) {
 		
 		auto idxB = jointIndex(child);
 

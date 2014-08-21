@@ -62,6 +62,9 @@ Q_SIGNALS:
     void activateTab(coreUI::IMdeTabPtr tab);
     void modelChanged();
 
+private Q_SLOTS:
+	void onAbout();
+
 private:	
 	virtual void initializeSplashScreen(QSplashScreen * splashScreen);
 	virtual void customViewInit(QWidget * console);
