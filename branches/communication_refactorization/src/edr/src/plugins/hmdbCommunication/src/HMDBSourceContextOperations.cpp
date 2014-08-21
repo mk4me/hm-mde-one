@@ -20,7 +20,7 @@
 
 using namespace hmdbCommunication;
 
-HMDBStorageProgress::HMDBStorageProgress() : progress_(0), aborted_(false)
+HMDBStorageProgress::HMDBStorageProgress() : progress_(0.0), aborted_(false)
 {
 
 }
@@ -32,6 +32,7 @@ HMDBStorageProgress::~HMDBStorageProgress()
 
 void HMDBStorageProgress::setProgress(const float progress)
 {
+	UTILS_ASSERT(progress >= progress_);
 	progress_ = progress;
 }
 
@@ -60,8 +61,97 @@ void HMDBStorageProgress::abort()
 	aborted_ = true;
 }
 
+
+HMDBCompondStorageProgress::HMDBCompondStorageSubProgress::HMDBCompondStorageSubProgress(HMDBCompondStorageProgress * parent)
+	: parent(parent), progress_(0.0)
+{
+
+}
+
+HMDBCompondStorageProgress::HMDBCompondStorageSubProgress::~HMDBCompondStorageSubProgress()
+{
+
+}
+
+void HMDBCompondStorageProgress::HMDBCompondStorageSubProgress::setError(const std::string & error)
+{
+	error_ = error;
+}
+
+void HMDBCompondStorageProgress::HMDBCompondStorageSubProgress::setProgress(const float progress)
+{
+	UTILS_ASSERT(progress >= progress_);
+	progress_ = progress;
+}
+
+const bool HMDBCompondStorageProgress::HMDBCompondStorageSubProgress::aborted() const
+{
+	return parent->aborted();
+}
+
+const float HMDBCompondStorageProgress::HMDBCompondStorageSubProgress::progress() const
+{
+	return progress_;
+}
+
+const std::string HMDBCompondStorageProgress::HMDBCompondStorageSubProgress::error() const
+{
+	return error_;
+}
+
+HMDBCompondStorageProgress::HMDBCompondStorageProgress()
+	: aborted_(false)
+{
+
+}
+
+HMDBCompondStorageProgress::~HMDBCompondStorageProgress()
+{
+
+}
+
+void HMDBCompondStorageProgress::setSize(const unsigned int size)
+{
+	subProgresses.reserve(size);
+	for (int i = 0; i < size; ++i){
+		subProgresses.push_back(utils::shared_ptr<HMDBCompondStorageSubProgress>(new HMDBCompondStorageSubProgress(this)));
+	}
+}
+
+IHMDBStorageProgress * HMDBCompondStorageProgress::get(const unsigned int idx)
+{
+	return subProgresses[idx].get();
+}
+
+const bool HMDBCompondStorageProgress::aborted() const
+{
+	return aborted_;
+}
+
+const float HMDBCompondStorageProgress::progress() const
+{
+	return ((subProgresses.empty() == true) ? 0.0 : std::accumulate(subProgresses.begin(), subProgresses.end(), 0.0, [](float total, utils::shared_ptr<HMDBCompondStorageSubProgress> d) { return total + d->progress(); }) / subProgresses.size());
+}
+
+const std::string HMDBCompondStorageProgress::error() const
+{
+	for (auto it = subProgresses.begin(); it != subProgresses.end(); ++it){
+		auto e = (*it)->error();
+		if (e.empty() == false){
+			return e;
+		}
+	}
+
+	return std::string();
+}
+
+void HMDBCompondStorageProgress::abort()
+{
+	aborted_ = true;
+}
+
 DownloadHelper::DownloadHelper(IHMDBStoragePtr storage, const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads)
-	: downloads(downloads), storage(storage)
+	: downloads(downloads), storage(storage), released(false)
 {
 
 }
@@ -122,14 +212,17 @@ const std::list<IHMDBRemoteContext::DownloadOperationPtr> & DownloadHelper::down
 }
 
 void DownloadHelper::store()
-{
+{	
 	if (downloaded_.empty() == true){
 		throw std::runtime_error("Downloads failed. Could not synchronize");
 	}
 
 	auto t = storage->transaction();
-
 	const auto s = downloaded_.size();
+
+	storeProgress.setSize(s);
+
+	int i = 0;
 	std::for_each(downloaded_.begin(), downloaded_.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
 	{
 		if (storeProgress.aborted() == true){
@@ -137,25 +230,41 @@ void DownloadHelper::store()
 		}
 
 		try{
-			t->set(d->fileID().fileName, d->stream(), &storeProgress, s);
+			t->set(d->fileID().fileName, d->stream(), storeProgress.get(i++));
 		}
-		catch (...){
+		catch (std::exception & e){
+
+		}
+		catch (...){			
 
 		}
 	});
 }
 
+void DownloadHelper::release()
+{
+	if (released == false){
+		released = true;
+		std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+		{
+			try{
+				if (d->fileDownloaded() == true){
+					d->release();
+				}
+			}
+			catch (std::exception & e){
+				PLUGIN_LOG_ERROR("Failed to release download: " << e.what());
+			}
+			catch (...){
+				PLUGIN_LOG_ERROR("Failed to release download");
+			}
+		});
+	}
+}
+
 DownloadHelper::~DownloadHelper()
 {
-	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
-	{
-		try{
-			d->release();
-		}
-		catch (...){
-
-		}
-	});
+	release();
 }
 
 CompoundOperation::CompoundOperation(const ExecutionPolicy ep,
@@ -593,7 +702,7 @@ const std::string UploadOperation::error() const
 
 const float UploadOperation::progress() const
 {
-	return (progress_ + transfer->progress()) / 2.0;
+	return ((float)progress_ + transfer->progress()) / 2.0;
 }
 
 const std::string retrieveData(hmdbServices::IBasicStoremanWS * service, const int id)
@@ -619,11 +728,11 @@ const std::string retrievePerspective(hmdbServices::IShallowStoremanWS * service
 		break;
 
 	case ShallowCopyUtils::IncrementalMetadataFileID:
-		UTILS_DEBUG((false), "Brak operacji w HMDB");
+		UTILS_ASSERT((false), "Brak operacji w HMDB");
 		break;
 
 	default:
-		UTILS_DEBUG((false), "Blad identyfikatora pliku perspektywy danych");
+		UTILS_ASSERT((false), "Blad identyfikatora pliku perspektywy danych");
 		break;
 	}
 
@@ -818,7 +927,7 @@ const std::string FileDownload::error() const
 
 const float FileDownload::progress() const
 {
-	return (progress_ + (transfer != nullptr ? transfer->progress() : 0)) / 5;
+	return ((float)progress_ + (transfer != nullptr ? transfer->progress() : 0.0)) / 5.0;
 }
 
 const IHMDBRemoteContext::FileDescriptor FileDownload::fileID() const
@@ -859,7 +968,7 @@ void FileDownload::download()
 		++progress_;
 		return;
 	}
-
+	
 	auto output = transferIO->prepareOutput();
 
 	if (output == nullptr){
@@ -871,6 +980,7 @@ void FileDownload::download()
 
 	if (status_ == FileDownload::Aborted){
 		transferIO->closeOutput();
+		release();
 		++progress_;
 		prepareHMDB->clearHMDB();
 		++progress_;
@@ -881,19 +991,23 @@ void FileDownload::download()
 	
 	if (transfer == nullptr){
 		transferIO->closeOutput();
+		release();
 		++progress_;
 		prepareHMDB->clearHMDB();
 		++progress_;
 		throw std::runtime_error("Uninitialized data transfer");
 	}
-
+	
 	transfer->start();
 	transfer->wait();
-	
+		
 	transferIO->closeOutput();
 
-	if (transfer->status() == threadingUtils::IOperation::Finished){
+	if (transfer->status() == threadingUtils::IOperation::Finished){		
 		downloaded_ = true;
+	}
+	else{		
+		release();
 	}
 
 	++progress_;
@@ -924,8 +1038,9 @@ void MultipleFilesDownloadAndStore::start()
 		thread_ = t.front();
 		threadingUtils::IRunnablePtr runnable(new threadingUtils::FunctorRunnable(boost::bind(&MultipleFilesDownloadAndStore::download, this)));
 
-		thread_->start(runnable);
 		status_ = Pending;
+		thread_->start(runnable);
+		
 	}
 	catch (std::exception & e){
 		error_ = e.what();
@@ -972,10 +1087,13 @@ const float MultipleFilesDownloadAndStore::progress() const
 void MultipleFilesDownloadAndStore::download()
 {
 	try{
+		utils::Cleanup release(boost::bind(&DownloadHelper::release, &downloadHelper));
 
 		if (status_ == Aborted){
 			return;
 		}
+
+		status_ = Running;
 
 		downloadHelper.download();
 		downloadHelper.wait();
@@ -991,10 +1109,12 @@ void MultipleFilesDownloadAndStore::download()
 		if (status_ == Aborted){
 			return;
 		}
-
+	
 		downloadFinished(downloadHelper.downloaded());
 
-		status_ = Finished;
+		if (status_ == Running){
+			status_ = Finished;
+		}
 	}
 	catch (std::exception & e){
 		error_ = e.what();
@@ -1056,7 +1176,7 @@ void extractShallowCopy(const hmdbServices::ID shallowID, const IHMDBRemoteConte
 		switch (shallowID)
 		{
 		case ShallowCopyUtils::IncrementalMetadataFileID:
-			UTILS_DEBUG((false), "Incremental metadata not supported for motion database");
+			UTILS_ASSERT((false), "Incremental metadata not supported for motion database");
 			break;
 
 		case ShallowCopyUtils::IncrementalShallowCopyFileID:
@@ -1076,11 +1196,11 @@ void extractShallowCopy(const hmdbServices::ID shallowID, const IHMDBRemoteConte
 		switch (shallowID)
 		{
 		case ShallowCopyUtils::IncrementalMetadataFileID:
-			UTILS_DEBUG((false), "Incremental metadata not supported for medical database");
+			UTILS_ASSERT((false), "Incremental metadata not supported for medical database");
 			break;
 
 		case ShallowCopyUtils::IncrementalShallowCopyFileID:
-			UTILS_DEBUG((false), "Incremental shallowcopy not supported for medical database");
+			UTILS_ASSERT((false), "Incremental shallowcopy not supported for medical database");
 			break;
 
 		case ShallowCopyUtils::ShallowCopyFileID:
@@ -1096,6 +1216,10 @@ void extractShallowCopy(const hmdbServices::ID shallowID, const IHMDBRemoteConte
 
 void ExtractShallowcopy::extract(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads, IHMDBStorageProgress * progress)
 {
+	if (downloads.empty() == true){		
+		return;
+	}
+
 	ShallowCopyPtr locSh(new ShallowCopy);
 	IncrementalBranchShallowCopyPtr locIncSh(new hmdbServices::IncrementalBranchShallowCopy);	
 
@@ -1109,11 +1233,17 @@ void ExtractShallowcopy::extract(const std::list<IHMDBRemoteContext::DownloadOpe
 			return;
 		}
 
-		auto stream = d->stream();		
-		extractShallowCopy(d->fileID().id.fileID, d->fileID().id.dataReference,
-			*locSh, *locIncSh, stream.get());		
+		try{
 
-		progress->setProgress(progressStep * currentStep++);
+			auto stream = d->stream();
+			extractShallowCopy(d->fileID().id.fileID, d->fileID().id.dataReference,
+				*locSh, *locIncSh, stream.get());
+
+			progress->setProgress(progressStep * currentStep++);
+		}
+		catch (std::exception & e){
+
+		}
 	});
 
 	if (progress->aborted() == false){
@@ -1158,9 +1288,8 @@ const IncrementalBranchShallowCopyConstPtr SynchronizeOperationImpl::incremental
 void SynchronizeOperationImpl::downloadFinished(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & finishedDownloads)
 {
 	ExtractShallowcopy eSc;
-
-	eSc.extract(finishedDownloads, &extractProgress);
-
+	
+	eSc.extract(finishedDownloads, &extractProgress);	
 	if (extractProgress.aborted() == false && extractProgress.error().empty() == true){
 		shallowCopy_ = eSc.shallowCopy();
 		incrementalShallowCopy_ = eSc.incrementalBranchShallowCopy();

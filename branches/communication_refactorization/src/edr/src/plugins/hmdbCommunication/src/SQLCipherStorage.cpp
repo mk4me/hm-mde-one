@@ -1189,9 +1189,9 @@ public:
 		return SQLCipherStorage::rawSet(key, input, db.get());
 	}
 		
-	virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div)
+	virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
 	{
-		return SQLCipherStorage::rawSet(key, input, progress, div, db.get());
+		return SQLCipherStorage::rawSet(key, input, progress, db.get());
 	}
 	
 	virtual const bool remove(const std::string & key)
@@ -1411,7 +1411,7 @@ const bool SQLCipherStorage::rawSet(const std::string & key, IHMDBStorage::IStre
 	return true;
 }
 
-void SQLCipherStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div, sqlite3 * db)
+void SQLCipherStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, sqlite3 * db)
 {
 	if (input == nullptr){
 		progress->setError("Uninitialized input");
@@ -1493,9 +1493,8 @@ void SQLCipherStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBSt
 	input->seekg(0, std::ios::beg);
 	int offset = 0;
 	const unsigned int fullReads = (streamSize / readSize);
-
-	const float progressPart = ((float)readSize / (float)streamSize) / div;
-	progress->setProgress(0.0);
+	
+	const float progressPart = (float)readSize / (float)streamSize;	
 	for (unsigned int i = 0; i < fullReads && progress->aborted() == false; ++i){
 		input->read(memblock.get(), readSize);
 		auto rc = sqlite3_blob_write(blob.get(), memblock.get(), readSize, offset);
@@ -1528,6 +1527,8 @@ void SQLCipherStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBSt
 			return;
 		}
 	}
+
+	progress->setProgress(1.0);
 
 	//TODO
 	//sprawdzac czy czasem nie bylo problemow ze zwolnieniem bloba!!
@@ -1713,10 +1714,10 @@ const bool SQLCipherStorage::set(const std::string & key, IHMDBStorage::IStreamP
 	return rawSet(key, input, db.get());
 }
 
-void SQLCipherStorage::set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div)
+void SQLCipherStorage::set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
 {
 	SQLiteDB db(path_, key_, false, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE);
-	rawSet(key, input, progress, div, db.get());
+	rawSet(key, input, progress, db.get());
 }
 
 const bool SQLCipherStorage::remove(const std::string & key)

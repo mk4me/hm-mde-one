@@ -24,10 +24,12 @@
 #include "MdeServiceWindow.h"
 #include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <plugins/hmdbCommunication/DataViewWidget.h>
+#include <plugins/hmdbCommunication/OperationProgressWidget.h>
 #include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
 #include <plugins/hmdbCommunication/IDataSourcePerspective.h>
 #include <corelib/PluginCommon.h>
 #include <corelib/IPath.h>
+#include "IMUSourceViewWidget.h"
 
 using namespace core;
 
@@ -95,7 +97,7 @@ public:
 			content = viewManager->content(0);
 		}
 
-		return new DataViewWidget(shallowCopyContext, perspective, content);
+		return new IMUSourceViewWidget(shallowCopyContext, perspective, content);
 	}
 	//! \return Czy dany widok wymaga po³¹czenia z us³ugami webowymi
 	virtual const bool requiresRemoteContext() const { return true; }

@@ -26,6 +26,7 @@ const bool CURLFTPProgress::aborted() const
 
 void CURLFTPProgress::setProgress(const float progress)
 {
+	UTILS_ASSERT(progress >= progress_);
 	progress_ = progress;
 }
 

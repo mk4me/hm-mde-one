@@ -36,13 +36,13 @@ const utils::shared_ptr<XmlUtils::CURLExecutor> HMDBService::createCurlExecutor(
 HMDBService::HMDBService()
 	: mainWidget(nullptr), finalizeServices_(false),
 	finalizeData_(false)
-{
-
+{	
+	curl_global_init(CURL_GLOBAL_DEFAULT);
 }
 
 HMDBService::~HMDBService()
 {
-
+	curl_global_cleanup();
 }
 
 const IHMDBSessionPtr HMDBService::createSession(const std::string & motionServicesUrl,

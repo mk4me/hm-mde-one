@@ -17,7 +17,7 @@
    <item>
     <widget class="QTreeWidget" name="treeWidget">
      <property name="contextMenuPolicy">
-      <enum>Qt::ActionsContextMenu</enum>
+      <enum>Qt::CustomContextMenu</enum>
      </property>
      <property name="iconSize">
       <size>
@@ -304,6 +304,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>treeWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>DataViewWidget</receiver>
+   <slot>onContextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>325</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>325</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <signal>currentItemChanged(char,int)</signal>
@@ -321,5 +337,6 @@
   <slot>onTrySynchronize()</slot>
   <slot>onForceDownloadAll()</slot>
   <slot>onForceSynchronize()</slot>
+  <slot>onContextMenu(QPoint)</slot>
  </slots>
 </ui>

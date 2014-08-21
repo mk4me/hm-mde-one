@@ -273,6 +273,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	visualizerManager_.reset(new VisualizerManager());
 
 	memoryDataManager_->addObserver(fileDataManager_);
+	memoryDataManager_->addObserver(streamDataManager_);
 
 	//Wielow¹tkowoœæ
 	{
@@ -518,6 +519,7 @@ Application::~Application()
 		CORE_LOG_INFO("Releasing visualizer manager");
 		visualizerManager_.reset();
 		CORE_LOG_INFO("Releasing stream data manager");
+		memoryDataManager_->removeObserver(streamDataManager_);
 		streamDataManager_.reset();
 		CORE_LOG_INFO("Releasing file data manager");
 		memoryDataManager_->removeObserver(fileDataManager_);

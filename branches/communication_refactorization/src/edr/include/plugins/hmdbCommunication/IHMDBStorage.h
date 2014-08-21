@@ -59,7 +59,7 @@ namespace hmdbCommunication
 		//! \param input Dane do zapisania
 		//! \param progress Obiekt steruj¹cy postêpem zapisu		
 		//! \param div Dzielnik dla progresu, jesli zapis czêœci¹ wiêkszej transakcji
-		virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div = 1.0) = 0;
+		virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress) = 0;
 		//! \param key Klucz który usuwam
 		virtual const bool remove(const std::string & key) = 0;
 		//! \param oldKey Klucz któremu zmieniamy nazwê

@@ -390,13 +390,13 @@ void SourceOptionsWidget::onLogin()
 	coreUI::CoreCursorChanger ccc;
 
 	QStringList errors;
-
+	
 	auto ok = verify(errors);
 
-	if (ok == false){
+	if (ok == false){		
 		coreUI::CorePopup::showMessage(tr("Login failed"), formatErrorMessage(errors));
 		return;
-	}
+	}	
 
 	auto sm = plugin::getServiceManager();	
 	auto hmdbService = core::queryService<hmdbCommunication::IHMDBService>(sm);	
@@ -428,8 +428,7 @@ void SourceOptionsWidget::onLogin()
 
 		auto sc = hmdbSource->createSourceContext(storage, ui->loginLineEdit->text().toStdString(),
 			ui->passwordLineEdit->text().toStdString(), session);
-		auto scc = hmdbSource->createShallowCopyContext(sc);
-
+		auto scc = hmdbSource->createShallowCopyContext(sc);		
 		//utworzenie widgeta aktualnie wybranego widoku z nowym kontekstem		
 		auto vm = hmdbSource->viewManager();
 		auto scvp = vm->viewPrototype(ui->viewComboBox->currentText());
@@ -735,7 +734,6 @@ const bool SourceOptionsWidget::verify(QStringList & messages)
 	}
 
 	if (storageCreated == false && core::Filesystem::pathExists(storagePath) == true) {
-
 		std::auto_ptr<hmdbCommunication::SQLCipherStorage> storage(new hmdbCommunication::SQLCipherStorage);
 
 		storage->open(ui->storagePathLineEdit->text().toStdString(),
@@ -775,7 +773,7 @@ const bool SourceOptionsWidget::verify(QStringList & messages)
 
 		messages.append(remoteErrors);
 
-		if (messages.empty() == true){
+		if (messages.empty() == true){			
 			auto session = hmdbService->createSession(ui->motionServiceURLLineEdit->text().toStdString(),
 					ui->medicalDataURLLineEdit->text().toStdString(),
 					ui->loginLineEdit->text().toStdString(),
@@ -783,11 +781,21 @@ const bool SourceOptionsWidget::verify(QStringList & messages)
 					ui->motionDataURLLineEdit->text().toStdString(),
 					ui->medicalDataURLLineEdit->text().toStdString(),
 					ui->servicesCertificatePathLineEdit->text().toStdString(),
-					networkUtils::HVMatch);
+					networkUtils::HVMatch);			
 
-			if (session->authorization()->checkMyLogin() == false){
-				messages.push_back(tr("Incorrect login or password"));
+			try{
+
+				if (session->authorization()->checkMyLogin() == false){					
+					messages.push_back(tr("Incorrect login or password"));
+				}
+
 			}
+			catch (std::exception & e){
+				messages.push_back(tr("Error while verifying user: ") + QString::fromStdString(e.what()));
+			}
+			catch (...){
+				messages.push_back(tr("UNKNOWN rrror while verifying user"));
+			}			
 		}
 	}
 

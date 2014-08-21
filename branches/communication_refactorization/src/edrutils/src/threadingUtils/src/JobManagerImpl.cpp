@@ -233,6 +233,6 @@ void JobManager::JobManagerImpl::maintainerRunner()
 		//jezeli wylatujemy to wakeOne na tej condition variable
 
 		//chwila przerwy
-		boost::this_thread::sleep(boost::posix_time::microseconds(100000));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 	}
 }

@@ -25,7 +25,27 @@
 #include <plugins/hmdbCommunication/ShallowCopyFilter.h>
 #include <QtCore/QMetaType>
 #include "HMDBSourceContextOperations.h"
+#include <QtWidgets/QMenu>
 
+class OperationImpl : public DataViewWidget::IOperation
+{
+public:
+	OperationImpl(const QString & name, hmdbCommunication::IHMDBRemoteContext::OperationPtr op)
+		: op(op), name_(name)
+	{
+
+	}
+
+	virtual const QString name() const { return name_; }
+	virtual const float progress() const { return op->progress(); }
+	virtual void abort() { op->abort(); }
+
+	virtual ~OperationImpl() {}
+
+private:
+	QString name_;
+	hmdbCommunication::IHMDBRemoteContext::OperationPtr op;
+};
 
 const bool mapContentTypeToDataType(const hmdbCommunication::ContentType ct,
 	hmdbCommunication::DataType & dt)
@@ -236,6 +256,10 @@ DataViewWidget::~DataViewWidget()
 	if (delContent == true && content_ != nullptr){
 		delete content_;
 	}
+
+	if (remoteOperationThread != nullptr && remoteOperationThread->running() == true){
+		remoteOperationThread->join();
+	}
 }
 
 void DataViewWidget::initializeActions()
@@ -349,11 +373,11 @@ void DataViewWidget::rebuildPerspective()
 {
 	ui->treeWidget->clear();
 	if (shallowCopy_ != nullptr){
-		coreUI::CoreCursorChanger cc;
-		perspective_->rebuildPerspective(ui->treeWidget->invisibleRootItem(), *shallowCopy_);
+		coreUI::CoreCursorChanger cc;		
+		perspective_->rebuildPerspective(ui->treeWidget->invisibleRootItem(), *shallowCopy_);		
 		refreshCurrentContent(true);
 	}
-	else{
+	else{		
 		setDefaultPerspectiveHeaders();
 	}
 }
@@ -1396,8 +1420,11 @@ void DataViewWidget::onSynchronize()
 		core::IThreadPool::Threads threads;
 		plugin::getThreadPool()->getThreads("DataViewWidget", threads, 1);
 		if (threads.empty() == false){
+			if (remoteOperationThread != nullptr && remoteOperationThread->running() == true){
+				remoteOperationThread->join();
+			}
 			remoteOperationThread = threads.front();
-			//operation_ = sOp;
+			operation_.reset(new OperationImpl(tr("Synchronization"), sOp));
 			setRemoteOperationsEnabled(false);
 			emit operationAboutToStart();
 			remoteOperationThread->start(runnable);
@@ -1514,8 +1541,14 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 		core::IThreadPool::Threads threads;
 		plugin::getThreadPool()->getThreads("DataViewWidget", threads, 1);
 		if (threads.empty() == false){
+
+			if (remoteOperationThread != nullptr && remoteOperationThread->running() == true){
+				remoteOperationThread->join();
+			}
+
 			remoteOperationThread = threads.front();
-			//operation_ = cdOp;
+			
+			operation_.reset(new OperationImpl(tr("Downloading"), op));
 			setRemoteOperationsEnabled(false);
 			emit operationAboutToStart();
 			remoteOperationThread->start(runnable);
@@ -1687,4 +1720,63 @@ void DataViewWidget::setLocalOperationsEnabled(const bool enable)
 	ui->actionUnloadAll->setEnabled(enable);
 	ui->actionRebuild->setEnabled(enable);
 	ui->actionRefreshStatus->setEnabled(enable);
+}
+
+void DataViewWidget::onContextMenu(QPoint position)
+{
+	QMenu menu;
+	menu.addAction(ui->actionLoad);
+	menu.addAction(ui->actionUnload);
+	menu.addAction(ui->actionDownload);
+	menu.addAction(ui->actionForceDownload);
+	menu.addSeparator();
+	menu.addAction(ui->actionLoadAll);
+	menu.addAction(ui->actionUnloadAll);
+	menu.addAction(ui->actionDownloadAll);
+	menu.addAction(ui->actionForceDownloadAll);
+	menu.addSeparator();
+	menu.addAction(ui->actionRebuild);
+	menu.addAction(ui->actionRefreshStatus);
+	menu.addSeparator();
+	menu.addAction(ui->actionSynchronize);
+	menu.addAction(ui->actionForceSynchronize);
+
+	auto selectedItems = ui->treeWidget->selectedItems();
+
+	if (selectedItems.empty() == true){
+		ui->actionLoad->setEnabled(false);
+		ui->actionUnload->setEnabled(false);
+		ui->actionDownload->setEnabled(false);
+		ui->actionForceDownload->setEnabled(false);
+	}
+	else{
+		auto item = selectedItems.front();
+		bool localActionsSet = false;
+
+		hmdbCommunication::TreeWidgetContentItem * citem = dynamic_cast<hmdbCommunication::TreeWidgetContentItem *>(item);
+		if (citem != nullptr){
+			hmdbCommunication::DataType dt = FileType;
+			bool ok = mapContentTypeToDataType(citem->contentType(), dt);
+			if (ok == true){
+
+				localActionsSet = true;
+
+				auto ds = shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->dataStatus(dt, citem->id());
+				
+				ui->actionLoad->setEnabled((ds.usage() & hmdbCommunication::DataStatus::Unloaded) && (ds.storage() & hmdbCommunication::DataStatus::Local));
+				ui->actionUnload->setEnabled(ds.usage() & hmdbCommunication::DataStatus::Loaded);
+				ui->actionDownload->setEnabled(ds.storage() & hmdbCommunication::DataStatus::Remote);
+				ui->actionForceDownload->setEnabled((ds.storage() & hmdbCommunication::DataStatus::Local) && (ds.validity() & hmdbCommunication::DataStatus::Outdated));
+			}
+		}
+
+		if (localActionsSet == false){
+			ui->actionUnload->setEnabled(false);
+			ui->actionLoad->setEnabled(false);
+			ui->actionDownload->setEnabled(false);
+			ui->actionForceDownload->setEnabled(false);
+		}
+	}
+
+	menu.exec(ui->treeWidget->mapToGlobal(position));
 }

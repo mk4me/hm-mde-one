@@ -90,6 +90,7 @@ SET_PUBLIC_HEADERS (
 	#UserLoginWidget.h
 	#AccountRegistrationWidget.h
 	DataViewWidget.h
+	OperationProgressWidget.h
 	IHMDBShallowCopyContext.h
 	Types.h
 	IHMDBSourceViewManager.h
@@ -160,6 +161,7 @@ SET_SOURCE_FILES(
 	DataSourceDefaultContent.cpp
 	HMDBOperations.cpp
 	HMDBSourceViewManager.cpp
+	OperationProgressWidget.cpp
 )
 
 SET_MOC_FILES(
@@ -185,6 +187,7 @@ SET_MOC_FILES(
 	#ViewConfigurationWidget.h
 	#DataConfigurationWidget.h
 	DataViewWidget.h
+	OperationProgressWidget.h
 )
 
 SET_UI_FILES(
@@ -205,6 +208,7 @@ SET_UI_FILES(
 	#AccountRegistrationWidget.ui
 	#ViewConfigurationWidget.ui
 	DataViewWidget.ui
+	OperationProgressWidget.ui
 )
 
 SET_RC_FILES (

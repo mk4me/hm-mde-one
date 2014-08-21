@@ -38,9 +38,9 @@ public:
 		return storage->rawSet(key, input);
 	}
 
-	virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div)
+	virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
 	{
-		storage->rawSet(key, input, progress, div);
+		storage->rawSet(key, input, progress);
 	}
 
 	virtual const bool remove(const std::string & key)
@@ -111,10 +111,10 @@ const bool MemoryStorage::set(const std::string & key, IHMDBStorage::IStreamPtr 
 	return rawSet(key, input);
 }
 
-void MemoryStorage::set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div)
+void MemoryStorage::set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
 {
 	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
-	rawSet(key, input, progress, div);
+	rawSet(key, input, progress);
 }
 
 const bool MemoryStorage::remove(const std::string & key)
@@ -207,7 +207,7 @@ const bool MemoryStorage::rawSet(const std::string & key, IStreamPtr input)
 	return true;
 }
 
-void MemoryStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress, const float div)
+void MemoryStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
 {
 	const auto streamSize = utils::streamSize(*input);
 
@@ -222,12 +222,10 @@ void MemoryStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStora
 	input->seekg(0, std::ios::beg);
 	int offset = 0;
 	const unsigned int fullReads = (streamSize / readSize);
-
-	const float progressPart = ((float)readSize / (float)streamSize) / div;
+	const float progressPart = (float)readSize / (float)streamSize;
 
 	std::string str;
-
-	progress->setProgress(0.0);
+	
 	for (unsigned int i = 0; i < fullReads && progress->aborted() == false; ++i){
 		input->read(memblock.get(), readSize);
 		str.append(memblock.get(), readSize);
@@ -245,6 +243,8 @@ void MemoryStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStora
 		input->read(memblock.get(), left);
 		str.append(memblock.get(), left);
 	}
+
+	progress->setProgress(1.0);
 
 	auto it = storage.find(key);
 	if (it != storage.end()){

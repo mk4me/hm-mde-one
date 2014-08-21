@@ -67,9 +67,6 @@ size_t write(void *buffer, size_t size, size_t nmemb, void *stream)
 		if (ostream->fail() == true || ostream->bad() == true){
 			offset = 0;
 		}
-		else{
-			ostream->flush();
-		}
 	}
 	catch (...){
 		offset = 0;
@@ -85,7 +82,7 @@ int setDownloadCustomProgress(ICURLFTPProgress* progress, curl_off_t t, /* dltot
 	}
 
 	progress->setProcessedData(d >= 0 ? d : 0);
-	progress->setProgress(t > 0 ? ((float)d / (float)t) : 1.0);
+	progress->setProgress(t > 0 ? ((float)d / (float)t) : 0.0);
 	return 0;
 }
 
@@ -96,7 +93,7 @@ int setUploadCustomProgress(ICURLFTPProgress* progress, curl_off_t t, /* dltotal
 	}
 
 	progress->setProcessedData(ulnow >= 0 ? ulnow : 0);
-	progress->setProgress(ultotal > 0 ? ((float)ulnow / (float)ultotal) : 1.0);
+	progress->setProgress(ultotal > 0 ? ((float)ulnow / (float)ultotal) : 0.0);
 	return 0;
 }
 

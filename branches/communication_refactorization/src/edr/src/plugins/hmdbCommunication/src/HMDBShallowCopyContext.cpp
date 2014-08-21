@@ -1327,7 +1327,8 @@ void HMDBShallowCopyRemoteContext::synchronize(const SynchronizeOperationPtr dow
 {
 	downloadOperations->start();
 	downloadOperations->wait();
-	if (downloadOperations->status() == threadingUtils::IOperation::Finished){
+	
+	if (downloadOperations->status() == threadingUtils::IOperation::Finished){		
 		auto sc = downloadOperations->shallowCopy();
 		auto isc = downloadOperations->incrementalBranchShallowCopy();
 		synchronize(sc, isc);

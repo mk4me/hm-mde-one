@@ -97,6 +97,7 @@ private slots:
 	void onSynchronizeFinished();
 	void onDownloadFinished();
 	void initializeShallowCopy();
+	void onContextMenu(QPoint position);
 
 signals:
 

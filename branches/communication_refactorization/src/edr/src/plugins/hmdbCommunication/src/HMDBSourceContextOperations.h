@@ -50,7 +50,52 @@ namespace hmdbCommunication
 		boost::atomic<bool> aborted_;
 	};
 
-	
+	class HMDBCompondStorageProgress
+	{
+	private:
+
+		class HMDBCompondStorageSubProgress : public IHMDBStorageProgress
+		{
+		public:
+			HMDBCompondStorageSubProgress(HMDBCompondStorageProgress * parent);
+			virtual ~HMDBCompondStorageSubProgress();
+
+			//! \param error Opis błędu
+			virtual void setError(const std::string & error);
+			virtual void setProgress(const float progress);
+			virtual const bool aborted() const;
+
+			const float progress() const;
+
+			const std::string error() const;
+
+		private:
+			HMDBCompondStorageProgress * parent;
+			std::string error_;
+			boost::atomic<float> progress_;
+		};
+
+	public:
+		HMDBCompondStorageProgress();
+
+		virtual ~HMDBCompondStorageProgress();
+
+		void setSize(const unsigned int size);
+
+		IHMDBStorageProgress * get(const unsigned int idx);
+
+		virtual const bool aborted() const;
+
+		const float progress() const;
+
+		const std::string error() const;
+
+		void abort();
+
+	private:
+		boost::atomic<bool> aborted_;
+		std::vector<utils::shared_ptr<HMDBCompondStorageSubProgress>> subProgresses;
+	};	
 
 	class DownloadHelper
 	{
@@ -71,10 +116,13 @@ namespace hmdbCommunication
 
 		void store();
 
+		void release();
+
 		~DownloadHelper();
 
 	private:
-		HMDBStorageProgress storeProgress;
+		bool released;
+		HMDBCompondStorageProgress storeProgress;
 		const IHMDBStoragePtr storage;
 		const std::list<IHMDBRemoteContext::DownloadOperationPtr> downloads;
 		std::list<IHMDBRemoteContext::DownloadOperationPtr> downloaded_;
