@@ -802,7 +802,7 @@ IHMDBStorage::OStreamPtr TmpFileTransferIO::prepareOutput()
 		}
 		else{
 			stream->close();
-			stream.reset(new std::fstream(tmpFilePath.string()));
+			stream.reset(new std::fstream(tmpFilePath.string(), std::ios_base::in | std::ios_base::out | std::ios_base::binary));
 			if (stream->is_open() == false){
 				stream.reset();
 			}
