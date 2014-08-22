@@ -33,6 +33,10 @@ SET_UI_FILES(
 	IMUCostumeListWidget.ui
 )
 
+SET_RC_FILES(
+	imuCostumeIcons.qrc
+)
+
 #------------------------------------------------------------------------------
 # prekompilowany nag³ówek
 SET_PRECOMPILED_HEADER( PCH.h PCH.cpp )

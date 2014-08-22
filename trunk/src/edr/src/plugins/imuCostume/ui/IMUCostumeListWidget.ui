@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>365</width>
-    <height>237</height>
+    <width>559</width>
+    <height>173</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,68 +19,178 @@
   <property name="windowTitle">
    <string>IMUCostumeList</string>
   </property>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>339</width>
-     <height>213</height>
-    </rect>
-   </property>
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QLabel" name="costumesLabel">
-      <property name="text">
-       <string>Costumes:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="2">
-     <widget class="QPushButton" name="calibrateButton">
-      <property name="text">
-       <string>Calibrate</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0" rowspan="4">
-     <widget class="QListWidget" name="costumesListWidget">
-      <property name="contextMenuPolicy">
-       <enum>Qt::CustomContextMenu</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="2">
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="0" column="2" rowspan="2">
-     <widget class="QPushButton" name="connectPushButton">
-      <property name="text">
-       <string>Connect</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="2">
-     <widget class="QPushButton" name="loadDatFileButton">
-      <property name="text">
-       <string>Load dat file</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QLabel" name="costumesLabel">
+       <property name="text">
+        <string>Costumes:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTreeWidget" name="costumesTreeWidget">
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
+       </property>
+       <column>
+        <property name="text">
+         <string>ID</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Status</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>IP Address</string>
+        </property>
+       </column>
+       <item>
+        <property name="text">
+         <string>1</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="imuCostumeIcons.qrc">
+          <normaloff>:/imuCostume/icons/dostepny.png</normaloff>:/imuCostume/icons/dostepny.png</iconset>
+        </property>
+        <property name="text">
+         <string>TestCostume1</string>
+        </property>
+        <property name="text">
+         <string>192.168.2.115</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="imuCostumeIcons.qrc">
+          <normaloff>:/imuCostume/icons/nieznanydostepny.png</normaloff>:/imuCostume/icons/nieznanydostepny.png</iconset>
+        </property>
+        <property name="text">
+         <string>TestCostumeJump</string>
+        </property>
+        <property name="text">
+         <string>192.168.2.116</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>3</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="imuCostumeIcons.qrc">
+          <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+        </property>
+        <property name="text">
+         <string>TestCostumeShoes</string>
+        </property>
+        <property name="text">
+         <string>192.168.2.117</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>4</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="imuCostumeIcons.qrc">
+          <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+        </property>
+        <property name="text">
+         <string>SpiderMan</string>
+        </property>
+        <property name="text">
+         <string>192.168.1.12</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>5</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="imuCostumeIcons.qrc">
+          <normaloff>:/imuCostume/icons/czesciowodostepny.png</normaloff>:/imuCostume/icons/czesciowodostepny.png</iconset>
+        </property>
+        <property name="text">
+         <string>TestWalking</string>
+        </property>
+        <property name="text">
+         <string>192.168.1.18</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QPushButton" name="connectPushButton">
+       <property name="text">
+        <string>Connect</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="calibrateButton">
+       <property name="text">
+        <string>Calibrate</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="loadDatFileButton">
+       <property name="text">
+        <string>Load dat file</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="imuCostumeIcons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>connectPushButton</sender>
@@ -95,22 +205,6 @@
     <hint type="destinationlabel">
      <x>182</x>
      <y>104</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>costumesListWidget</sender>
-   <signal>customContextMenuRequested(QPoint)</signal>
-   <receiver>IMUCostumeListWidget</receiver>
-   <slot>onCostumesListContextMenu(QPoint)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>138</x>
-     <y>125</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>182</x>
-     <y>118</y>
     </hint>
    </hints>
   </connection>

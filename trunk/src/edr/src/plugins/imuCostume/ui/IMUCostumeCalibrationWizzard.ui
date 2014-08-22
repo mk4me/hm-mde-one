@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>IMUCostumeCalibrationWizard</class>
+ <widget class="QWizard" name="IMUCostumeCalibrationWizard">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>624</width>
+    <height>732</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Costume Calibration Wizard</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../../imu_view/ui/MdeViewIcons.qrc">
+    <normaloff>:/mde/icons/imu.png</normaloff>:/mde/icons/imu.png</iconset>
+  </property>
+  <property name="toolTip">
+   <string/>
+  </property>
+  <property name="wizardStyle">
+   <enum>QWizard::AeroStyle</enum>
+  </property>
+  <property name="options">
+   <set>QWizard::HelpButtonOnRight|QWizard::NoBackButtonOnStartPage</set>
+  </property>
+  <widget class="QWizardPage" name="costumeCalibrationPage1">
+   <property name="title">
+    <string>Costume info</string>
+   </property>
+   <property name="subTitle">
+    <string/>
+   </property>
+   <layout class="QFormLayout" name="formLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="nameLabel">
+      <property name="text">
+       <string>Name:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="nameLineEdit">
+      <property name="text">
+       <string>TestCostume1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="ipAddressLabel">
+      <property name="text">
+       <string>IP Address:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="ipAddressLineEdit">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>192.168.2.115</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="imuSensorsLabellabel_2">
+      <property name="text">
+       <string>IMU Sensors:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QSpinBox" name="imuSensorsSpinBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="value">
+       <number>18</number>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="grfSensorsLabel">
+      <property name="text">
+       <string>GRF Sensors:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QSpinBox" name="grfSensorsSpinBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="value">
+       <number>2</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="costumeCalibrationPage2">
+   <property name="minimumSize">
+    <size>
+     <width>525</width>
+     <height>510</height>
+    </size>
+   </property>
+   <property name="title">
+    <string>Performer description</string>
+   </property>
+   <property name="subTitle">
+    <string>Body dimensions [m]</string>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QFormLayout" name="formLayout_2">
+        <item row="0" column="0">
+         <widget class="QLabel" name="bodyHeighLabel">
+          <property name="text">
+           <string>Body Height:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QDoubleSpinBox" name="bodyHeightDoubleSpinBox">
+          <property name="toolTip">
+           <string>Ground to top of head when standing upright</string>
+          </property>
+          <property name="value">
+           <double>1.850000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="footSizeLabel">
+          <property name="text">
+           <string>Foot Size:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QDoubleSpinBox" name="footSizeDoubleSpinBox">
+          <property name="toolTip">
+           <string>Top of shoe nose to end of the heel</string>
+          </property>
+          <property name="value">
+           <double>0.260000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="ankleHeightLabel">
+          <property name="text">
+           <string>Ankle Height:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QDoubleSpinBox" name="ankleHeightDoubleSpinBox">
+          <property name="toolTip">
+           <string>Ground to distal tip of lateral malleolus</string>
+          </property>
+          <property name="value">
+           <double>0.120000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="hipHeightLabel">
+          <property name="text">
+           <string>Hip Height:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QDoubleSpinBox" name="hipHeightDoubleSpinBox">
+          <property name="toolTip">
+           <string>Ground to most lateral bony prominence of greater trochanter</string>
+          </property>
+          <property name="value">
+           <double>0.890000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="hipWidthLabel">
+          <property name="text">
+           <string>Hip Width:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QDoubleSpinBox" name="hipWidthDoubleSpinBox">
+          <property name="toolTip">
+           <string>Right to left anterior sup. iliac spine</string>
+          </property>
+          <property name="value">
+           <double>0.340000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="kneeHeightLabel">
+          <property name="text">
+           <string>Knee Height:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QDoubleSpinBox" name="kneeHeightDoubleSpinBox">
+          <property name="toolTip">
+           <string>Ground to lateral epicondyle on the femoral bone</string>
+          </property>
+          <property name="value">
+           <double>0.320000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="shoulderWidthLabel">
+          <property name="text">
+           <string>Shoulder Width:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QDoubleSpinBox" name="shoulderWidthDoubleSpinBox">
+          <property name="toolTip">
+           <string>Right to left distal tip of acromion (acromial angle)</string>
+          </property>
+          <property name="value">
+           <double>0.430000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="shoeSoleHeightLabel">
+          <property name="text">
+           <string>Shoe Sole Height:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QDoubleSpinBox" name="shoeSoleHeightDoubleSpinBox">
+          <property name="toolTip">
+           <string>Average thickness of the sole of the used shoes. This value will add an offset to the ankle height.</string>
+          </property>
+          <property name="value">
+           <double>0.040000000000000</double>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="bodyDimensionsLabel">
+      <property name="minimumSize">
+       <size>
+        <width>375</width>
+        <height>500</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>375</width>
+        <height>500</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>../resources/embedded/images/skeletonWithDimensions.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::NoTextInteraction</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="costumeCalibrationPage3">
+   <property name="title">
+    <string>Calibration</string>
+   </property>
+   <property name="subTitle">
+    <string>Algorithm</string>
+   </property>
+   <layout class="QFormLayout" name="formLayout_3">
+    <item row="0" column="0">
+     <widget class="QComboBox" name="algorithmComboBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <item>
+       <property name="text">
+        <string>Choose algorithm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Simple2Stage</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Advanced2Stage</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>KalmanBasedMultiStage</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>AutoAdaptive</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="costumeCalibrationPage4">
+   <property name="title">
+    <string>Calibration: Simple2Stage</string>
+   </property>
+   <property name="subTitle">
+    <string>Stage 1</string>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QTextEdit" name="stage1DescriptionTextEdit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="html">
+         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Press &lt;span style=&quot; font-weight:600;&quot;&gt;Calibrate&lt;/span&gt; and stand in a &lt;span style=&quot; font-weight:600;&quot;&gt;T-pose&lt;/span&gt; as presented. Stand  approximately &lt;span style=&quot; font-weight:600;&quot;&gt;30 seconds&lt;/span&gt;, until algorithm finishes and notifies You it is ready for the next stage.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="calibrate1PushButton">
+          <property name="text">
+           <string>Calibrate</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="tposLabel">
+      <property name="minimumSize">
+       <size>
+        <width>375</width>
+        <height>500</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>375</width>
+        <height>500</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>../resources/embedded/images/tpos.bmp</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::NoTextInteraction</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="costumeCalibrationPage5">
+   <property name="title">
+    <string>Calibration: Simple2Stage</string>
+   </property>
+   <property name="subTitle">
+    <string>Stage 2</string>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_5">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QTextEdit" name="stage2DescriptionTextEdit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="html">
+         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Press &lt;span style=&quot; font-weight:600;&quot;&gt;Calibrate&lt;/span&gt; and stand in a &lt;span style=&quot; font-weight:600;&quot;&gt;N-pose&lt;/span&gt; as presented. Stand  approximately &lt;span style=&quot; font-weight:600;&quot;&gt;30 seconds&lt;/span&gt;, until algorithm finishes and notifies You that costume is ready to use.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="calibrate2PushButton">
+          <property name="text">
+           <string>Calibrate</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="nposLabel">
+      <property name="minimumSize">
+       <size>
+        <width>375</width>
+        <height>510</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>375</width>
+        <height>510</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>../resources/embedded/images/npos.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources>
+  <include location="../../../imu_view/ui/MdeViewIcons.qrc"/>
+  <include location="imuCostumeIcons.qrc"/>
+ </resources>
+ <connections/>
+</ui>

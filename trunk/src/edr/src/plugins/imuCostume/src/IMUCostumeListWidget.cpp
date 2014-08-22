@@ -28,11 +28,11 @@ void IMUCostumeWidget::onCalibrate()
 {
 	coreUI::CoreCursorChanger cc;
 
-	auto ci = ui->costumesListWidget->currentItem();
+	auto ci = ui->costumesTreeWidget->currentItem();
 
 	if(ci != nullptr){
 
-		unsigned int idx = ci->data(Qt::UserRole).toUInt();
+		unsigned int idx = ci->data(0, Qt::UserRole).toUInt();
 
 		if(ds->isCalibrated(idx) == true &&
 			QMessageBox::information(this, tr("Calibration status"), tr("Selected Costume already calibrated. Do You want to re-calibrate it?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::No){
@@ -102,7 +102,7 @@ void IMUCostumeWidget::onConnect()
 {
 	coreUI::CoreCursorChanger cc;
 
-	ui->costumesListWidget->clear();
+	ui->costumesTreeWidget->clear();
 
 	bool connected = ds->connected();
 
@@ -126,11 +126,11 @@ void IMUCostumeWidget::onConnect()
 	if(s > 0){
 		for(unsigned int i = 0; i < s; ++i){
 
-			QListWidgetItem * lwi = new QListWidgetItem;
-			lwi->setText(QString::fromStdString(ds->costumeConfiguration(i).name));
-			lwi->setData(Qt::UserRole, i);
+			QTreeWidgetItem * lwi = new QTreeWidgetItem;
+			lwi->setText(1, QString::fromStdString(ds->costumeConfiguration(i).name));
+			lwi->setData(0, Qt::UserRole, i);
 
-			ui->costumesListWidget->addItem(lwi);
+			ui->costumesTreeWidget->addTopLevelItem(lwi);
 		}
 	}	
 }
@@ -160,9 +160,9 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 			unloadAll->setEnabled(false);
 		}
 
-		if(ui->costumesListWidget->currentItem() != nullptr){
+		if(ui->costumesTreeWidget->currentItem() != nullptr){
 
-			const unsigned int idx = ui->costumesListWidget->currentItem()->data(Qt::UserRole).toUInt();
+			const unsigned int idx = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).toUInt();
 
 			menu->addSeparator();
 
@@ -185,14 +185,14 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 
 void IMUCostumeWidget::onLoad()
 {
-	const unsigned int idx = ui->costumesListWidget->currentItem()->data(Qt::UserRole).toUInt();
+	const unsigned int idx = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).toUInt();
 
 	ds->loadCostume(idx);
 }
 
 void IMUCostumeWidget::onUnload()
 {
-	const unsigned int idx = ui->costumesListWidget->currentItem()->data(Qt::UserRole).toUInt();
+	const unsigned int idx = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).toUInt();
 
 	ds->unloadCostume(idx);
 }

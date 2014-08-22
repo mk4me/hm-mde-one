@@ -6,6 +6,7 @@
 #include <utils/Push.h>
 #include <boost/bind.hpp>
 #include <fstream>
+#include <boost/shared_array.hpp>
 
 using namespace core;
 
@@ -271,7 +272,7 @@ private:
 };
 
 //! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
-class Parser
+class SParser
 {
 private:
 	//! Prawdziwy wewn�trzny parser.
@@ -293,7 +294,7 @@ public:
 	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
 	//!     czas �ycia.
 	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
-	Parser(plugin::IParser * parser, const IStreamDataManagerOperations::StreamGrabberPtr sg) :
+	SParser(plugin::IParser * parser, const IStreamDataManagerOperations::StreamGrabberPtr sg) :
 		parser(parser), parsed(false), used(false), sg(sg)
 	{
 		UTILS_ASSERT(parser != nullptr);
@@ -301,7 +302,7 @@ public:
 	}
 
 	//! Destruktor drukuj�cy wiadomo�� o wy�adowaniu pliku.
-	virtual ~Parser()
+	virtual ~SParser()
 	{
 		if (isParsed()) {
 			CORE_LOG_NAMED_DEBUG("parser", "Unloading parser for stream: " << sg->name());
@@ -384,7 +385,7 @@ public:
 };
 
 //! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
-class StreamParser : public Parser
+class StreamParser : public SParser
 {
 private:
 	//! Prawdziwy wewn�trzny parser.
@@ -395,7 +396,7 @@ public:
 	//!     czas �ycia.
 	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
 	StreamParser(plugin::IParser * parser, const IStreamDataManagerOperations::StreamGrabberPtr sg)
-		: Parser(parser, sg), streamParser(nullptr)
+		: SParser(parser, sg), streamParser(nullptr)
 	{
 		
 	}
@@ -430,7 +431,7 @@ private:
 };
 
 //! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
-class FileStreamParser : public Parser
+class FileStreamParser : public SParser
 {
 private:
 	//! Prawdziwy wewn�trzny parser.
@@ -442,7 +443,7 @@ public:
 	//!     czas �ycia.
 	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
 	FileStreamParser(plugin::IParser * parser, const IStreamDataManagerOperations::StreamGrabberPtr sg)
-		: Parser(parser, sg), sourceParser(nullptr)
+		: SParser(parser, sg), sourceParser(nullptr)
 	{
 
 	}
@@ -478,11 +479,11 @@ private:
 
 					tmpFilePath = tmpPath;
 
-					static const unsigned int BufferSize = 1024 * 512;
-					char buffer[BufferSize] = { 0 };
+					static unsigned int BufferSize = 1024 * 1024 * 5;					
+					boost::shared_array<char> buffer(new char[BufferSize] {0});
 					
 					int read = 0;
-					while ((read = stream->readsome(buffer, BufferSize)) > 0) { output.write(buffer, read); }
+					while ((read = stream->readsome(buffer.get(), BufferSize)) > 0) { output.write(buffer.get(), read); }
 
 					output.flush();
 					output.close();
@@ -506,7 +507,7 @@ private:
 class SimpleInitializer : public IVariantInitializer
 {
 public:
-	SimpleInitializer(const utils::shared_ptr<Parser> & parser, const int idx)
+	SimpleInitializer(const utils::shared_ptr<SParser> & parser, const int idx)
 		: parser(parser), idx(idx) {}
 	virtual ~SimpleInitializer() {}
 	virtual void initialize(Variant * object) {
@@ -518,7 +519,7 @@ public:
 	virtual const bool isEqual(const IVariantInitializer &) const { return false; }
 
 private:
-	utils::shared_ptr<Parser> parser;
+	utils::shared_ptr<SParser> parser;
 	const int idx;
 };
 
@@ -527,7 +528,7 @@ class StreamDataManager::CompoundInitializer : public IVariantInitializer
 public:
 
 	struct CompoundData {
-		utils::shared_ptr<Parser> parser;
+		utils::shared_ptr<SParser> parser;
 		std::map<int, VariantWeakPtr> objects;
 	};
 
@@ -618,7 +619,7 @@ public:
 		return ret;
 	}
 
-	utils::shared_ptr<const Parser> innerParser() const { return ((data != nullptr) ? data->parser : utils::shared_ptr<const Parser>()); }
+	utils::shared_ptr<const SParser> innerParser() const { return ((data != nullptr) ? data->parser : utils::shared_ptr<const SParser>()); }
 
 	CompoundDataPtr details()
 	{

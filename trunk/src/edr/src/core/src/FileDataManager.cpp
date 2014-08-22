@@ -320,7 +320,7 @@ private:
 };
 
 //! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
-class Parser
+class FParser
 {
 private:
 	//! Prawdziwy wewn�trzny parser.
@@ -342,7 +342,7 @@ public:
 	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
 	//!     czas �ycia.
 	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
-	Parser(plugin::IParser* parser, const Filesystem::Path & path) :
+	FParser(plugin::IParser* parser, const Filesystem::Path & path) :
 		parser(parser), parsed(false), used(false), path(path)
 	{
 		UTILS_ASSERT(parser);
@@ -350,7 +350,7 @@ public:
 	}
 
 	//! Destruktor drukuj�cy wiadomo�� o wy�adowaniu pliku.
-	virtual ~Parser()
+	virtual ~FParser()
 	{
 		if ( isParsed() ) {
 			CORE_LOG_NAMED_DEBUG("parser", "Unloading parser for file: " << path );
@@ -429,10 +429,10 @@ public:
 };
 
 //! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
-class FileParser : public Parser
+class FileParser : public FParser
 {
 public:
-	FileParser(plugin::IParser* parser, const Filesystem::Path & path) : Parser(parser, path), fileParser(nullptr)
+	FileParser(plugin::IParser* parser, const Filesystem::Path & path) : FParser(parser, path), fileParser(nullptr)
 	{
 			
 	}
@@ -461,10 +461,10 @@ private:
 	plugin::ISourceParser * fileParser;
 };
 
-class StreameFileParser : public Parser
+class StreameFileParser : public FParser
 {
 public:
-	StreameFileParser(plugin::IParser* parser, const std::string & source) : Parser(parser, source), streamFileParser(nullptr)
+	StreameFileParser(plugin::IParser* parser, const std::string & source) : FParser(parser, source), streamFileParser(nullptr)
 	{
 
 	}
@@ -503,7 +503,7 @@ private:
 class SimpleInitializer : public IVariantInitializer
 {
 public:
-	SimpleInitializer(const utils::shared_ptr<Parser> & parser, const int idx)
+	SimpleInitializer(const utils::shared_ptr<FParser> & parser, const int idx)
 	: parser_(parser), idx(idx) {}
 	virtual ~SimpleInitializer() {}
 	virtual void initialize(Variant * object) {
@@ -515,7 +515,7 @@ public:
 	virtual const bool isEqual(const IVariantInitializer &) const { return false; }
 
 private:
-	utils::shared_ptr<Parser> parser_;
+	utils::shared_ptr<FParser> parser_;
 	const int idx;
 };
 
@@ -524,7 +524,7 @@ class FileDataManager::CompoundInitializer : public IVariantInitializer
 public:
 
 	struct CompoundData {
-		utils::shared_ptr<Parser> parser;
+		utils::shared_ptr<FParser> parser;
 		std::map<int, VariantWeakPtr> objects;
 	};
 
@@ -615,7 +615,7 @@ public:
 		return ret;
 	}
 
-	utils::shared_ptr<const Parser> innerParser() const { return ((data != nullptr) ? data->parser : utils::shared_ptr<const Parser>()); }
+	utils::shared_ptr<const FParser> innerParser() const { return ((data != nullptr) ? data->parser : utils::shared_ptr<const FParser>()); }
 
 	CompoundDataPtr details()
 	{
@@ -701,7 +701,7 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file, const IMemoryDat
 		CORE_LOG_DEBUG("None of known parsers provide any valid data for file: " << file);
 	}else{
 
-		int idx ;
+		int idx = 0;
 		ConstVariantsList objectsAdded;
 
 		for(auto it = objects.begin(); it != objects.end(); ++it){
