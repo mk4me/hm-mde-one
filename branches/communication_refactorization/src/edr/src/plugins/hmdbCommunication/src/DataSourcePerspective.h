@@ -10,7 +10,6 @@
 #define HEADER_GUARD_HMDBCOMMUNICATION__DATASOURCEPERSPECTIVE_H__
 
 #include <plugins/hmdbCommunication/IDataSourcePerspective.h>
-#include <plugins/hmdbCommunication/IDataSourcePerspectiveManager.h>
 #include <QtWidgets/QTreeWidget>
 
 namespace hmdbCommunication
@@ -38,12 +37,12 @@ namespace hmdbCommunication
 	public:
 		//! Konstruktor
 		//! \param perspective Perspektywa danych
-		DataSourcePerspective(const DataSourcePerspectivePtr & perspective);
+		DataSourcePerspective(const IDataSourcePerspectivePtr & perspective);
 		//! Destruktor
 		~DataSourcePerspective();
 
 		//! \return Zarejestrowana perspektywa
-		const DataSourcePerspectivePtr & perspective() const;
+		const IDataSourcePerspectivePtr & perspective() const;
 
 		//! Uniewaznia perspektywę
 		void invalidate();
@@ -61,7 +60,7 @@ namespace hmdbCommunication
 
 	private:
 		//! Zarejestroana perspektywa
-		DataSourcePerspectivePtr perspective_;
+		IDataSourcePerspectivePtr perspective_;
 		//! Drzewo danych na których operuje zarejestrowana perspektywa
 		QTreeWidget * treeWidget;
 		//! Czy perspektywa jest ważna

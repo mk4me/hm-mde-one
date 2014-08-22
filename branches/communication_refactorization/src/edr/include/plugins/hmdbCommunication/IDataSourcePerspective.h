@@ -48,6 +48,8 @@ namespace hmdbCommunication
 		//! Czyścimy dane contentu (np. bo zmieniamy perspektywę)
 		virtual void release() {}
 	};
+
+	DEFINE_SMART_POINTERS(IDataSourcePerspective)
 }
 
 #endif	//	HEADER_GUARD_HMDBCOMMUNICATION__IDATASOURCEPERSPECTIVE_H__

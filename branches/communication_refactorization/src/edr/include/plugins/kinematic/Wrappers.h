@@ -39,6 +39,11 @@ struct SkeletonDataStream
 
 DEFINE_SMART_POINTERS(SkeletonDataStream);
 
+//tymczasowy typ dla BVH
+typedef std::pair<kinematic::SkeletalModelPtr, kinematic::SkeletalDataPtr> BVHData;
+DEFINE_SMART_POINTERS(BVHData);
+DEFINE_WRAPPER(BVHData, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+
 DEFINE_WRAPPER(kinematic::JointAnglesCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 DEFINE_WRAPPER(kinematic::SkeletalData, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
 DEFINE_WRAPPER(kinematic::SkeletalModel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);

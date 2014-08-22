@@ -35,45 +35,46 @@ namespace kinematic
 			JointAnglesCollection(void);
 		virtual ~JointAnglesCollection() {}
 
-	public:
-		//! \return głęboka kopia obiektu
-		virtual JointAnglesCollection* clone() const;
-
-	public:
-		//! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
-		//! \param skeletalModel struktura szkieletu
-		//! \param skeletalData dane szkieletu
-		void setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData);
-		//! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
-		//! \param skeletalModel struktura szkieletu w postaci pełnego szkieletu h-anim
-		//! \param rootPositions kolekcja danych pozycji korzenia szkieletu
-		//! \param channels kolekcja z danymi w postaci DataChannel
-		void setSkeletal(kinematic::hAnimSkeletonPtr skeletalModel, const std::vector<osg::Vec3>& rootPositions, const std::vector<JointAngleChannelPtr>& channels);
-		//! \brief zwraca szkielet zgodny z h-anim
-		const kinematic::hAnimSkeletonPtr & getHAnimSkeleton() const { return haSkeleton; }
-
-		//! zwraca indeks kanału lub rzuca wyjątkiem w przypadku niepowodzenia
-		//! \param name nazwa szukanego kanału
-		//! \return indeks kanału
-		int getIndex(const std::string& name) const;
-		//! zwraca indeks kanału lub -1 wyjątkiem w przypadku niepowodzenia
-		//! \param name nazwa szukanego kanału
-		//! \return indeks kanału
-		int tryGetIndex(const std::string& name) const;
-		//! zwraca pozycję roota
-		//! \param frame klatka, dla której ma być zwrócona pozycja
-		//! \return pozycja
-		osg::Vec3 getRootPosition(int frame) const;
-		//! zwraca pozycję roota
-		//! \param time czas, dla którego ma być zwrócona pozycja
-		//! \return pozycja
-		osg::Vec3 getRootPosition(double time) const;
-		//! \return zwraca kolekcję z wszystkimi pozycjami roota na przestrzeni czasu
-		const std::vector<osg::Vec3>& getRootPositions() const { return rootPositions; }
-		//! \return długość przez którą należy pomnożyc aby uzyskać początkowe długości kości
-		double getLengthRatio() const { return lengthRatio; }
-		//! ustawia długość przez którą należy pomnożyc aby uzyskać początkowe długości kości
-		void setLengthRatio(double val) { lengthRatio = val; }
+public:
+    //! \return głęboka kopia obiektu
+	virtual JointAnglesCollection* clone() const;
+	
+public: 
+    //! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
+    //! \param skeletalModel struktura szkieletu
+    //! \param skeletalData dane szkieletu
+	void setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData, 
+		SkeletonMappingSchemePtr mapping = SkeletonMappingScheme::createDefault());
+    //! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
+    //! \param skeletalModel struktura szkieletu w postaci pełnego szkieletu h-anim
+    //! \param rootPositions kolekcja danych pozycji korzenia szkieletu
+    //! \param channels kolekcja z danymi w postaci DataChannel
+    void setSkeletal(kinematic::hAnimSkeletonPtr skeletalModel, const std::vector<osg::Vec3>& rootPositions, const std::vector<JointAngleChannelPtr>& channels);
+    //! \brief zwraca szkielet zgodny z h-anim
+    const kinematic::hAnimSkeletonPtr & getHAnimSkeleton() const { return haSkeleton; }
+	
+   	//! zwraca indeks kanału lub rzuca wyjątkiem w przypadku niepowodzenia
+   	//! \param name nazwa szukanego kanału
+    //! \return indeks kanału
+   	int getIndex(const std::string& name) const;
+    //! zwraca indeks kanału lub -1 wyjątkiem w przypadku niepowodzenia
+    //! \param name nazwa szukanego kanału
+    //! \return indeks kanału
+	int tryGetIndex(const std::string& name) const;
+    //! zwraca pozycję roota
+    //! \param frame klatka, dla której ma być zwrócona pozycja
+    //! \return pozycja  
+    osg::Vec3 getRootPosition(int frame) const;
+    //! zwraca pozycję roota
+    //! \param time czas, dla którego ma być zwrócona pozycja
+    //! \return pozycja  
+    osg::Vec3 getRootPosition(double time) const;
+    //! \return zwraca kolekcję z wszystkimi pozycjami roota na przestrzeni czasu
+    const std::vector<osg::Vec3>& getRootPositions() const { return rootPositions; }
+    //! \return długość przez którą należy pomnożyc aby uzyskać początkowe długości kości
+	double getLengthRatio() const { return lengthRatio; }
+    //! ustawia długość przez którą należy pomnożyc aby uzyskać początkowe długości kości
+	void setLengthRatio(double val) { lengthRatio = val; }
 
 	private:
 		/// \brief  Na podstawie danych z parsera tworzy tablicę z kwaternionami

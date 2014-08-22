@@ -22,17 +22,31 @@ namespace python {
 	typedef std::pair<std::string, std::string> StringPair;
 	typedef std::vector<StringPair> DataList;
 
+	//! Klasa ³¹czy MDE z Pythonem. Zapewnia wymianê danych miêdzy tymi œrodowiskami
 	class MdeBridge {
 	public:
 		virtual ~MdeBridge() {}
 		
 	public:
+		//! Metoda inicjalizuj¹ca, dostarcza potrzebnych managerów, powinna zostaæ wywo³ana przed pozosta³ymi metodami
+		//! \param sourceManager
+		//! \param visualizerManager
+		//! \param memoryDataManager
+		//! \param streamDataManager
+		//! \param fileDataManager
 		void setManagers(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager,
 			core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager);
-
+		//! 
+		//! \param sessionDesc
+		//! \param dataDesc
+		//! \return 
 		PythonDataChannel getVectorChannel(const std::string& sessionDesc, const std::string& dataDesc);
+		//! 
+		//! \param channel
+		//! \return 
 		void addVectorChannel(const PythonDataChannel& channel);
-
+		//! 
+		//! \return 
 		DataList listLoadedVectors();
 
 		PythonDataChannel createVectorChannel();

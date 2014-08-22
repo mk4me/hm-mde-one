@@ -16,6 +16,7 @@
 #include <plugins/kinematic/Wrappers.h>
 #include <osg/PositionAttitudeTransform>
 #include "TrajectoriesDrawer.h"
+#include <osgAnimation/Bone>
 
 class KinematicVisualizer;
 class SkeletalVisualizationSchemeHelper;
@@ -66,6 +67,7 @@ public:
 	virtual void setGhostVisible(const bool visible);
 
 	utils::shared_ptr<TrajectoryDrawerManager> getTrajectoriesManager();
+
 
 protected:
 	//! Abstrakcyjny setter do czasu, metoda z inną sygnaturą może uchronić przed błędami
@@ -154,6 +156,10 @@ public:
 
 	virtual const utils::TypeInfo & getRequestedDataType() const;
 
+
+	osg::Quat getQuatbyName(const std::string& name);
+	void traverse(osgAnimation::Bone* root, const std::vector<osg::Quat>& quats, const std::vector<osg::Vec3>& points);
+	osg::Matrix getGlobalTranslation(const std::string& name, const std::vector<osg::Vec3>& points);
 private:
 
 	osg::Matrix lToW;
@@ -183,6 +189,9 @@ private:
 	utils::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
 	//! Obiekt rysujący połączenia
 	utils::shared_ptr<IConnectionsSchemeDrawer> connectionsDrawer;
+
+	std::map<std::string, osgAnimation::Bone*> boneMap;
+	osgAnimation::Bone* root;
 };
 
 typedef utils::shared_ptr<SkeletonSerie> SkeletonSeriePtr;

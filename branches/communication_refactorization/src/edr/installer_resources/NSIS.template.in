@@ -928,16 +928,18 @@ Section un.main main
   
 SectionEnd
 
-Section "Microsoft Visual C++ 2010 Redistributable Package (x86)"
+Section "Microsoft Visual C++ 2013 Redistributable Package (x86)"
 ;-------------------------------
-; Test if Visual Studio Redistributables 2010 installed
+; Test if Visual Studio Redistributables 2013 installed
 ; Returns -1 if there is no VC redistributables intstalled
 
    Push $R0
    ClearErrors
-   ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{196BB40D-1578-3D01-B289-BEFC77A11A1E}" "Version"
+   ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{196BB40D-1578-3D01-B289-BEFC77A11A1E}" "Version"
+   
+   ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\DevDiv\VC\Servicing\12.0\RuntimeMinimum" "Install"
 
-   ; if VS 2010+ redist SP1 not installed, install it
+   ; if VS 2013+ redist not installed, install it
    IfErrors 0 VSRedistInstalled
    File "@CPACK_INSTALLER_ADDITIONAL_RESOURCES@\vcredist_x86.exe" 
 ExecWait '$INSTDIR\vcredist_x86.exe /q:a /c:"VCREDI~3.EXE /q:a /c:""msiexec /i vcredist.msi /qn"" "'

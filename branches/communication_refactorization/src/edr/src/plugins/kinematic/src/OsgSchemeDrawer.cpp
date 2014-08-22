@@ -226,6 +226,10 @@ const std::vector<utils::shared_ptr<ConnectionInstance>> ConnectionInstance::cre
 	const SegmentsDescriptors & connections,
 	const unsigned int complexity)
 {
+	if (connections.empty()) {
+		UTILS_ASSERT(false);
+		throw std::runtime_error("No connections");
+	}
 	std::vector<utils::shared_ptr<ConnectionInstance>> ret(connections.size());
 
 	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;

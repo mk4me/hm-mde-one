@@ -1,8 +1,6 @@
 BEGIN_PROJECT("dynamic")
 
 SET_PRIVATE_HEADERS(
-	DataSourceBaseContent.h
-	#DataSourceContentManager.h
 	DownloadStatusWidget.h
 	NotesWidget.h
 	StatusWidget.h
@@ -11,12 +9,10 @@ SET_PRIVATE_HEADERS(
 	PersonalDataWidget.h
 	DefaultPatientCardWidget.h
 	PatientCardManager.h
-	ShallowCopyFilterManager.h
 	QMultiToolBox.h
 	ShallowCopyUtils.h
 	Patient.h
 	DataSourcePerspective.h
-	DataSourcePerspectiveManager.h
 	CommunicationPCH.h
 	TreeBuilder.h
 	WSDLPULLService.h
@@ -45,27 +41,21 @@ SET_PRIVATE_HEADERS(
 	SQLCipherStorage.h
 	HMDBSourceContextOperations.h
 	HMDBSourceWidget.h
-	#DataConfigurationWidget.h
-	#ViewConfigurationWidget.h
 	HMDBShallowCopyContext.h
 	HMDBServicesVerificationHelper.h
 	MemoryStorage.h
 	DataSourceDefaultContent.h
-	HMDBOperations.h
 	HMDBSourceViewManager.h
 )
 
 SET_PUBLIC_HEADERS (
 	IDataSourceContent.h
-	#IDataSourceContentManager.h
 	IPatientCard.h
 	IPatientCardManager.h
 	ShallowCopyFilter.h
-	IShallowCopyFilterManager.h
 	IPatient.h
 	ShallowCopy.h
 	IDataSourcePerspective.h
-	IDataSourcePerspectiveManager.h
 	MultiserieColorStrategy.h
 	TreeItemHelper.h
 	IHierarchyPerspective.h
@@ -80,15 +70,8 @@ SET_PUBLIC_HEADERS (
 	IHMDBLocalContext.h
 	IHMDBRemoteContext.h
 	IHMDBDataContext.h
-	#AccountActivationWidget.h
-	#ConnectionConfigurationWidget.h
-	#ResetPasswordWidget.h
-	#ServerStatusCheckConfigurationWidget.h
 	ServerStatusWidget.h
 	SourceOptionsWidget.h
-	#StorageConfigurationWidget.h
-	#UserLoginWidget.h
-	#AccountRegistrationWidget.h
 	DataViewWidget.h
 	OperationProgressWidget.h
 	IHMDBShallowCopyContext.h
@@ -98,8 +81,6 @@ SET_PUBLIC_HEADERS (
 
 #------------------------------------------------------------------------------
 SET_SOURCE_FILES(
-	DataSourceBaseContent.cpp
-	#DataSourceContentManager.cpp
 	DownloadStatusWidget.cpp
 	NotesWidget.cpp
 	StatusWidget.cpp
@@ -108,12 +89,10 @@ SET_SOURCE_FILES(
 	PersonalDataWidget.cpp
 	DefaultPatientCardWidget.cpp
 	PatientCardManager.cpp
-	ShallowCopyFilterManager.cpp
 	QMultiToolBox.cpp
 	Patient.cpp
 	ShallowCopyUtils.cpp
 	DataSourcePerspective.cpp
-	DataSourcePerspectiveManager.cpp
 	CommunicationPCH.cpp
 	TreeBuilder.cpp
 	TreeItemHelper.cpp
@@ -141,25 +120,15 @@ SET_SOURCE_FILES(
 	HMDBSourceContext.cpp
 	SQLCipherStorage.cpp
 	HMDBSourceContextOperations.cpp
-	#AccountActivationWidget.cpp
-	#ConnectionConfigurationWidget.cpp
-	#ResetPasswordWidget.cpp
-	#ServerStatusCheckConfigurationWidget.cpp	
 	ServerStatusWidget.cpp
 	SourceOptionsWidget.cpp
-	#StorageConfigurationWidget.cpp
-	#UserLoginWidget.cpp
 	HMDBSourceWidget.cpp
-	#AccountRegistrationWidget.cpp
 	Plugin.cpp
-	#DataConfigurationWidget.cpp
-	#ViewConfigurationWidget.cpp
 	DataViewWidget.cpp
 	HMDBShallowCopyContext.cpp
 	HMDBServicesVerificationHelper.cpp
 	MemoryStorage.cpp
 	DataSourceDefaultContent.cpp
-	HMDBOperations.cpp
 	HMDBSourceViewManager.cpp
 	OperationProgressWidget.cpp
 )
@@ -174,18 +143,9 @@ SET_MOC_FILES(
 	NotesWidget.h
 	StatusWidget.h
 	DataSourcePerspective.h
-	#AccountActivationWidget.h
-	#ConnectionConfigurationWidget.h
-	#ResetPasswordWidget.h	
-	#ServerStatusCheckConfigurationWidget.h	
 	ServerStatusWidget.h
 	SourceOptionsWidget.h
-	#StorageConfigurationWidget.h
-	#UserLoginWidget.h
 	HMDBSourceWidget.h
-	#AccountRegistrationWidget.h
-	#ViewConfigurationWidget.h
-	#DataConfigurationWidget.h
 	DataViewWidget.h
 	OperationProgressWidget.h
 )
@@ -196,17 +156,8 @@ SET_UI_FILES(
 	PersonalDataWidget.ui
 	NotesWidget.ui
 	StatusWidget.ui
-	#AccountActivationWidget.ui
-	#ResetPasswordWidget.ui	
-	#ServerStatusCheckConfigurationWidget.ui	
 	ServerStatusWidget.ui
 	SourceOptionsWidget.ui
-	#StorageConfigurationWidget.ui
-	#ServiceConfigurationWidget.ui
-	#DataConfigurationWidget.ui
-	#UserLoginWidget.ui
-	#AccountRegistrationWidget.ui
-	#ViewConfigurationWidget.ui
 	DataViewWidget.ui
 	OperationProgressWidget.ui
 )

@@ -18,7 +18,9 @@
 #include <corelib/HierarchyDataItem.h>
 #include <boost/bind.hpp>
 #include <plugins/newChart/Wrappers.h>
+#include <plugins/hmdbCommunication/TreeItemHelper.h>
 #include <iosfwd>
+#include "IMUPerspective.h"
 
 using namespace IMU;
 
@@ -161,18 +163,18 @@ void IMUCostumeDataSource::innerLoadCostume(const unsigned int idx)
 	for (unsigned int i = 0; i < costumesConfigurations[idx].imusCount; ++i){
 		rd.imuDataStreams[i].reset(new threadingUtils::StreamT<IMUData>);
 	}
-
-	if(costumesConfigurations[idx].jointsCount > 0){
+	const auto jointsCount = costumesConfigurations[idx].jointsCount;
+	if(jointsCount > 0){
 
 		rd.skeletonDataStream.reset(new SkeletonDataStream);
 		rd.skeletonDataStream->jointsCount = costumesConfigurations[idx].jointsCount;
 		rd.skeletonDataStream->jointsStream.reset(new PointsCloudStream);
-		rd.skeletonDataStream->quatStream.reset(new QuaternionStream);
+		//rd.skeletonDataStream->quatStream.reset(new QuaternionStream);
 		rd.skeletonDataStream->connections.resize(GetSegmentsCount(idx));
 
 		int segCount = GetSegmentsCount(idx);
 		for (int i = 0; i < segCount; ++i) {
-			rd.skeletonDataStream->segmentNames[GetSegmentName(idx, i)] = i;
+			//rd.skeletonDataStream->segmentNames[GetSegmentName(idx, i)] = i;
 		}
 
 		//konfiguruje schemat po³¹czeñ
@@ -620,9 +622,9 @@ void IMUCostumeDataSource::refreshData()
 
 				if(costumesConfigurations[it->first].jointsCount > 0){
 
-					std::vector<osg::Vec3> jointsPositions(costumesConfigurations[it->first].jointsCount);					
-
-					for(unsigned int i = 0; i < costumesConfigurations[it->first].jointsCount; ++i){
+					const auto count = costumesConfigurations[it->first].jointsCount;
+					std::vector<osg::Vec3> jointsPositions(count);	
+					for(unsigned int i = 0; i < count; ++i){
 						auto p = GetGlobalPositionF(it->first, i);
 
 						//normalizuje juz do tego co jest w wizualizatorach zeby odswiezania nie meczyc tym
@@ -636,7 +638,7 @@ void IMUCostumeDataSource::refreshData()
 						globalQuats[i] = osg::Quat(q.I, q.J, q.K, q.R); 						
 					}
 					rawData[it->first].skeletonDataStream->jointsStream->pushData(jointsPositions);
-					rawData[it->first].skeletonDataStream->quatStream->pushData(globalQuats);
+					//rawData[it->first].skeletonDataStream->quatStream->pushData(globalQuats);
 				}
 			}
 		}
@@ -676,3 +678,55 @@ const bool IMUCostumeDataSource::isCalibrated(const unsigned int idx) const
 {
 	return costumesConfigurations[idx].jointsCount > 1;
 }
+/*
+void IMU::IMUCostumeDataSource::loadDatFile(const core::Filesystem::Path& path)
+{
+    auto transaction = fileDM->transaction();
+    transaction->addFile(path);
+    core::ConstVariantsList oList;
+    transaction->getObjects(path, oList);
+
+    auto hierarchyTransaction = memoryDM->hierarchyTransaction();
+    core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>(path.filename().string().c_str(), path.string().c_str(), QIcon());
+	auto config = utils::make_shared<IMU::IMUConfig>();
+	IMUPerspective::createIMUBranch(oList, config, path.filename().string(), root);
+
+
+    hierarchyTransaction->addRoot(root);
+}
+
+void IMU::IMUCostumeDataSource::testMethod()
+{
+    connectCostiumes();
+    unsigned int i = 2000;
+    while (--i > 0) {
+        OpenThreads::Thread::microSleep(100);
+        QCoreApplication::processEvents();
+    }
+
+
+    callibrateFirstPass(0);
+
+    i = 2000;
+
+    while (--i > 0) {
+        OpenThreads::Thread::microSleep(100);
+        QCoreApplication::processEvents();
+    }
+
+    callibrateSecondPass(0);
+
+    i = 2000;
+
+    while (--i > 0) {
+        OpenThreads::Thread::microSleep(100);
+        QCoreApplication::processEvents();
+    }
+
+    finalizeCalibration(0);
+    CostumeRawData rd;
+    addToUpdate(0, rd);
+    return;
+    loadCostume(0);
+}
+*/

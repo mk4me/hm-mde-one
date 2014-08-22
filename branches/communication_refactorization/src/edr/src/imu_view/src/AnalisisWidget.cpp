@@ -19,6 +19,7 @@
 #include <corelib/IDataHierarchyManagerReader.h>
 #include <coreui/HierarchyTreeModel.h>
 #include <QtWidgets/QMessageBox>
+#include <QtCore/QBuffer>
 #include "AnalysisTreeContext.h"
 #include <coreui/SimpleContext.h>
 //#include "SummaryWindow.h"
@@ -36,6 +37,9 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     visualizerFilter(new VisualizerEventFilter(contextEventFilter))
 {
     setupUi(this);
+
+	tabWidget->removeTab(tabWidget->indexOf(filtersTab));
+
     devideArea();
     showTimeline();
     treeView->setModel(model->getTreeModel());
@@ -45,6 +49,7 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     connect(treeView, SIGNAL(customContextMenuRequested(const QPoint &)), contextMenu ,SLOT(contextualMenu(const QPoint &)));
     connect(treeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(onTreeItemActivated(const QModelIndex&)));
     connect(model.get(), SIGNAL(expandTree(int)), treeView, SLOT(expandToDepth(int)));
+    connect(model.get(), SIGNAL(dataAdded()), this, SIGNAL(dataAdded()));
     connect(contextMenu, SIGNAL(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)), this, SLOT(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)));
     connect(visualizerFilter.get(), SIGNAL(focusOn(QWidget*)), this, SLOT(onVisualizerFocus(QWidget*)));
     
@@ -57,6 +62,8 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     summary = utils::make_shared<SummaryWindow>(SummaryWindowWidget);
     summaryController = new SummaryWindowController(summary, model);
     summary->initialize();
+
+    initReportsCombos();
 }
 
 void AnalisisWidget::showTimeline()
@@ -103,13 +110,13 @@ void AnalisisWidget::createVisualizer( core::IHierarchyDataItemConstPtr treeItem
     createAndAddDockVisualizer(treeItem, helper, nullptr);
 }
 
-QDockWidget* AnalisisWidget::createDockVisualizer(const core::VisualizerPtr & visualizer)
+QDockWidget* AnalisisWidget::createDockVisualizer(const core::VisualizerPtr & visualizer, const QString& titleName)
 {
     connect(visualizer.get(), SIGNAL(screenshotTaken(const QPixmap&)), this, SLOT(addToReports(const QPixmap&)));
 
     auto visWidget = new coreUI::CoreVisualizerWidget(visualizer);
 
-    auto dockVisWidget = coreUI::CoreDockWidget::embeddWidget(visWidget, QString::fromStdString(visualizer->getName()),
+	auto dockVisWidget = coreUI::CoreDockWidget::embeddWidget(visWidget, titleName,
         Qt::AllDockWidgetAreas,
         false);
 
@@ -131,19 +138,10 @@ void AnalisisWidget::registerVisualizerContext(ContextEventFilterPtr contextEven
     contextEventFilter->registerClosableContextWidget(visWidget);
     visWidget->installEventFilter(visualizerFilter.get());
 
-    // TODO : zastanowic sie nas sensem tych operacji
-
-    //plainContextWidgets.insert(visualizerDockWidget);
-    //derrivedContextWidgets.insert(DerrivedContextWidgets::value_type(titleBar,visualizerDockWidget));
-    //derrivedContextWidgets.insert(DerrivedContextWidgets::value_type(visWidget,visualizerDockWidget));
-    //
-    //visWidget->setFocusPolicy(Qt::ClickFocus);
-    //visualizerDockWidget->setFocusProxy(visWidget);
-    //
     connect(visualizerDockWidget, SIGNAL(destroyed(QObject *)), this, SLOT(visualizerDestroyed(QObject *)));
 
     //kontekst wizualizatora!!
-    coreUI::SimpleContextPtr visualizerUsageContext(new coreUI::SimpleContext(flexiTabWidget, tr("Visualizer")));
+    coreUI::SimpleContextPtr visualizerUsageContext(new coreUI::SimpleContext(flexiTabWidget, tr("Visualizer"), QStringList(tr("Settings"))));
     manager->addContext(visualizerUsageContext, parent);
     manager->addWidgetToContext(visualizerUsageContext, visualizerDockWidget);
     manager->addWidgetToContext(visualizerUsageContext, titleBar);
@@ -200,7 +198,7 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPt
 {
     auto visualizer = helper->createVisualizer(plugin::getVisualizerManager());
     visualizer->addObserver(this->model.get());
-    auto visualizerDockWidget = createDockVisualizer(visualizer);
+    auto visualizerDockWidget = createDockVisualizer(visualizer, path);
 
     if (dockSet) {
         dockSet->addDockWidget(visualizerDockWidget);
@@ -218,14 +216,15 @@ void AnalisisWidget::setContextItems( coreUI::IAppUsageContextManager* manager, 
     this->parent = parent;
     this->flexiTabWidget = flexiTabWidget;
 
-    coreUI::ReportsThumbnailContextPtr visualizerUsageContext(new coreUI::ReportsThumbnailContext(flexiTabWidget, raportsArea));
-    manager->addContext(visualizerUsageContext, parent);
-    this->raportsArea->addAction(new QAction(tr("Create report"), this));
-    getContextEventFilter()->registerPermamentContextWidget(this->raportsArea);
-    this->raportsArea->installEventFilter(getContextEventFilter().get());
-    manager->addWidgetToContext(visualizerUsageContext, this->raportsArea);
-    connect(visualizerUsageContext.get(), SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
-
+    //ReportsThumbnailContextPtr visualizerUsageContext(new ReportsThumbnailContext(flexiTabWidget, raportsArea));
+    //manager->addContext(visualizerUsageContext, parent);
+    //this->raportsArea->addAction(new QAction(tr("Create report"), this));
+    //getContextEventFilter()->registerPermamentContextWidget(this->raportsArea);
+    //this->raportsArea->installEventFilter(getContextEventFilter().get());
+    //manager->addWidgetToContext(visualizerUsageContext, this->raportsArea);
+    //connect(visualizerUsageContext.get(), SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
+    connect(createReportButton, SIGNAL(clicked()), this, SLOT(createReportClicked()));
+    connect(this, SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
     AnalysisTreeContextPtr treeContext = utils::make_shared<AnalysisTreeContext>(flexiTabWidget, model->getTreeModel(), contextMenu);
     manager->addContext(treeContext, parent);
     getContextEventFilter()->registerPermamentContextWidget(treeView);
@@ -233,10 +232,11 @@ void AnalisisWidget::setContextItems( coreUI::IAppUsageContextManager* manager, 
     manager->addWidgetToContext(treeContext, treeView);
 }
 
-void AnalisisWidget::addRoot( core::IHierarchyItemPtr root )
-{
-    model->getTreeModel()->addRootItem(root);
-}
+//void AnalisisWidget::addRoot( core::IHierarchyItemPtr root )
+//{
+//    model->getTreeModel()->addRootItem(root);
+//    emit dataAdded();
+//}
 
 void AnalisisWidget::onFilterBundleAdded( core::IFilterBundlePtr bundle )
 {
@@ -651,12 +651,14 @@ void AnalisisWidget::removeFromVisualizers( HelperAction* action, bool once)
         while(it != descriptors.end() ) {
             // na razie kopia, w przeciwnym razie jest problem z usuwaniem.
             AnalisisModel::DataItemDescriptionConstPtr desc = *it;
+
+			AnalisisModel::TimeDataItemDescriptionConstPtr timeDesc = utils::dynamic_pointer_cast<const AnalisisModel::TimeDataItemDescription>(desc);
             // jeśli w akcji nie przechowujemy informacji o konkretnym wizualizatorze
             // to znaczy, ze chcemy usunąć dane z wszystkich wizualizatorw
-            if (action->getVisualizer() == nullptr || desc->visualizerWidget->getVisualizer() == action->getVisualizer()) {
+            if (timeDesc != nullptr && action->getVisualizer() == nullptr || desc->visualizerWidget->getVisualizer() == action->getVisualizer()) {
 
                 //teraz usuwamy serie
-                auto channel = desc->channel;
+                auto channel = timeDesc->channel;
                 if (channel) {
                     auto series = channel->getVisualizersSeries();
 
@@ -765,4 +767,45 @@ void AnalisisWidget::onVisualizerFocus( QWidget* w )
         }
         obj = obj->parent();
     }
+}
+
+void AnalisisWidget::createReportClicked()
+{
+    const QWidget* thumbParent = this->raportsArea;
+
+    QString templateDir = QString::fromStdString(plugin::getResourcePath("templates\\").string());//QString("C:\\programming\\HMEdr\\src\\edr\\resources\\deploy\\templates\\");
+    QString cssFile = templateDir + styleComboBox->currentText();
+    QFile f(cssFile);
+    QString css;
+    if (f.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        css = f.readAll();
+        f.close();
+    }
+
+
+    QString p = templateDir + templateComboBox->currentText();
+    QFile file(p);
+    QString html;
+    if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        html = QString::fromUtf8(file.readAll());
+    } 
+    emit reportCreated(coreUI::ReportsThumbnailContext::createRaport(thumbParent, reportsTitle->text(), html, css ));
+}
+
+void AnalisisWidget::initReportsCombos()
+{
+    reportsTitle->setText(tr("Simple Report"));
+   
+    QString dirPath = QString::fromStdString(plugin::getResourcePath("templates").string());
+    QStringList filters;
+    filters << "*.htm" << "*.html";
+    QDir templateDir(dirPath);
+    templateDir.setNameFilters(filters);
+
+    templateComboBox->addItem(tr("Empty"));
+    templateComboBox->addItems(templateDir.entryList());
+   
+    QDir cssDir(dirPath, "*.css");
+    styleComboBox->addItem(tr("Empty"));
+    styleComboBox->addItems(cssDir.entryList());
 }

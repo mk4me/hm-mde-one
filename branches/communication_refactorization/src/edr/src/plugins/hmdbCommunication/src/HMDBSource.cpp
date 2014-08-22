@@ -11,7 +11,6 @@
 #include <plugins/hmdbCommunication/IHMDBService.h>
 #include "HMDBService.h"
 #include <hmdbserviceslib/AccountFactoryWS.h>
-#include "ShallowCopyFilterManager.h"
 #include "ShallowCopyUtils.h"
 #include "HMDBShallowCopyContext.h"
 #include "HMDBSourceViewManager.h"

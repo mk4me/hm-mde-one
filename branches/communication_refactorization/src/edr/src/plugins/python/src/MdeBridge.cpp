@@ -46,6 +46,11 @@ python::PythonDataChannel python::MdeBridge::getVectorChannel(const std::string&
 
 void python::MdeBridge::addVectorChannel(const PythonDataChannel& channel)
 {
+	if (channel.getFrequency() <= 0.0f) {
+		throw std::runtime_error("Invalid channel frequency");
+	} else if (channel.getData().empty()) {
+		throw std::runtime_error("Channel was not initialized with data");
+	}
 	VectorChannelPtr c = PythonDataChannel::convert(channel);
 
 	utils::ObjectWrapperPtr wrp = utils::ObjectWrapper::create<VectorChannel>();

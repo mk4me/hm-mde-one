@@ -17,7 +17,8 @@
 #include "MdeBridge.h"
 
 namespace python {
-
+	//! Klasa dziêki której realizowane jest przekierowanie wyjœcia z pythona.
+	//! kod z http://onegazhang.wordpress.com/2008/09/30/redirect-python-stdoutstderr-via-boost-python/
 	class PythonStdIoRedirect {
 	public:
 		typedef boost::circular_buffer<std::string> ContainerType;
@@ -27,7 +28,7 @@ namespace python {
 		static ContainerType m_outputs; // must be static, otherwise output is missing
 	};
 
-
+	//! Klasa zarz¹dza pythonem z poziomu c++
 	class PythonLogic
 	{
 	public:

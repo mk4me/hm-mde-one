@@ -8,12 +8,14 @@ SET_UI_FILES (
 SET_PRIVATE_HEADERS(
 	KinematicParser.h
 	AsfParser.h
+	BvhParser.h
 	KinematicVisualizer.h
 	OsgSchemeDrawer.h
 	GRFSerie.h
 	FbxParser.h
 	MarkerSerie.h
 	OsgSerie.h
+	BvhSerie.h
 	KinematicSerie.h
 	SchemeDialog.h
 	SkeletonSerie.h
@@ -36,6 +38,7 @@ SET_SOURCE_FILES(
 	OsgSchemeDrawer.cpp
 	KinematicPlugin.cpp
 	AsfParser.cpp
+	BvhParser.cpp
 	FbxParser.cpp
 	KinematicParser.cpp
 	KinematicSerie.cpp
@@ -43,6 +46,7 @@ SET_SOURCE_FILES(
 	GRFSerie.cpp
 	MarkerSerie.cpp
 	OsgSerie.cpp
+	BvhSerie.cpp
 	SkeletonSerie.cpp
 	TrajectoriesDialog.cpp
 	TrajectoriesDrawer.cpp

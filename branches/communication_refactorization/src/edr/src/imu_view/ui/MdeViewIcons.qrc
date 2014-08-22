@@ -1,11 +1,17 @@
 <RCC>
     <qresource prefix="mde/icons">
         <file alias="minimalizacja-alpha.png">../resources/embedded/icons/minimalizacja-alpha.png</file>
+        <file alias="logotypes.png">../resources/embedded/icons/logotypes.png</file>
         <file alias="trojkat-8x8-naboku.png">../resources/embedded/icons/trojkat-8x8-naboku.png</file>
         <file alias="trojkat-8x8-dodolu.png">../resources/embedded/icons/trojkat-8x8-dodolu.png</file>
         <file alias="trojkat-8x8-dogory.png">../resources/embedded/icons/trojkat-8x8-dogory.png</file>
         <file alias="header.png">../resources/embedded/icons/header.png</file>
         <file alias="Triangle.png">../resources/embedded/icons/triangle.png</file>
+		<file alias="skrypty.png">../resources/embedded/icons/skrypty.png</file>
+		<file alias="dataFlow.png">../resources/embedded/icons/dataFlow.png</file>
+		<file alias="log.png">../resources/embedded/icons/log.png</file>
+		<file alias="imu.png">../resources/embedded/icons/imu.png</file>
+		<file alias="communication.png">../resources/embedded/icons/communication.png</file>
         <file alias="Analizy.png">../resources/embedded/icons/Analizy.png</file>
         <file alias="Badania.png">../resources/embedded/icons/Badania.png</file>
         <file alias="Operacje.png">../resources/embedded/icons/Operacje.png</file>

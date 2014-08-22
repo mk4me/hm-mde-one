@@ -9,6 +9,7 @@ AnalysisTab::AnalysisTab(AnalisisWidget* widget, const QIcon& icon, const QStrin
     AbstractTab(icon, label),
     widget(widget)
 {
+    connect(widget, SIGNAL(dataAdded()), this, SLOT(dataAdded()));
 }
 
 
@@ -20,4 +21,9 @@ QWidget* AnalysisTab::getMainWidget()
 void AnalysisTab::registerConxtext( coreUI::IAppUsageContextManager* manager, coreUI::IAppUsageContextPtr parent, QTabWidget * flexiTabWidget )
 {
     widget->setContextItems(manager, parent, flexiTabWidget);
+}
+
+void AnalysisTab::dataAdded()
+{
+    setEnabled(true);
 }

@@ -167,6 +167,19 @@ public:
 
 void MdeMainWindow::customViewInit(QWidget * console)
 {
+	auto name2icon = [](const std::string& name, bool source) -> QIcon {
+		if (name == "Scripting")  return QIcon(":/mde/icons/skrypty.png");
+		if (name == "Data Flow Service")  return QIcon(":/mde/icons/dataFlow.png");
+		if (name == "IMUCostume")  return QIcon(":/mde/icons/imu.png");
+		if (name == "Communication") return QIcon(":/mde/icons/communication.png");
+		return source ? QIcon(":/mde/icons/Badania.png") : QIcon(":/mde/icons/Operacje.png");
+	};
+	auto name2name = [](const std::string& name) -> std::string {
+		if (name == "Data Flow Service")  return "Data flow";
+		if (name == "IMUCostume")  return "Suit";
+		if (name == "Communication") return "Data";
+		return name;
+	};
    auto memoryManager = plugin::getHierarchyManagerReader();
    memoryManager->addObserver(analysisModel);
    trySetStyleByName("hmm");
@@ -208,20 +221,31 @@ void MdeMainWindow::customViewInit(QWidget * console)
        auto source = sourceManager->getSource(i);
        QWidget* widget = source->getWidget();
        if (widget) {
-           addTab(coreUI::IMdeTabPtr(new SimpleTab(widget, QIcon(":/mde/icons/Badania.png"),tr(source->name().c_str()))));
+		   auto name = source->name();
+           addTab(coreUI::IMdeTabPtr(new SimpleTab(widget, name2icon(name, true),tr(name2name(name).c_str()))));
        }
    }
    
    AnalisisWidget* aw = new AnalisisWidget(analysisModel, contextEventFilter, nullptr);
    // -----------------------
+   /*QIcon analysisIcon;
+   analysisIcon.addPixmap(QPixmap(":/mde/icons/Analizy.png"),QIcon::Active);
+   analysisIcon.addPixmap(QPixmap(":/mde/icons/AnalizyH.png"),QIcon::Disabled);
+   auto analysisTab = utils::make_shared<AnalysisTab>(aw, analysisIcon, tr("Analysis"));
+   analysisTab->setEnabled(false);
+   addTab(analysisTab);*/
 
    addTab(coreUI::IMdeTabPtr(new AnalysisTab(aw, QIcon(":/mde/icons/Analizy.png"), tr("Analysis"))));
-   coreUI::IMdeTabPtr reportsTab  = coreUI::IMdeTabPtr(new coreUI::ReportsTab(QIcon(":/mde/icons/Raporty.png"), tr("Reports")));
+   /*QIcon reportsIcon;
+   reportsIcon.addPixmap(QPixmap(":/mde/icons/Raporty.png"),QIcon::Active);
+   reportsIcon.addPixmap(QPixmap(":/mde/icons/RaportyH.png"),QIcon::Disabled);
+   auto reportsTab = utils::make_shared<coreUI::ReportsTab>(reportsIcon, tr("Reports"));
+   connect(aw, SIGNAL(reportCreated(const QString& )), reportsTab.get(), SLOT(enable()));
+   reportsTab->setEnabled(false);
    addTab(reportsTab);
    addTab(coreUI::IMdeTabPtr(new SimpleTab(console, QIcon(":/mde/icons/Operacje.png"),tr("Console"))));
-
+*/
    // TODO : najlepiej byloby przeniesc to do kontrolera
-   bool cc = connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
    auto serviceManager = plugin::getServiceManager();
    auto timeline = plugin::getServiceManager()->getService(core::UID::GenerateUniqueID("{0157346E-D1F3-4A4F-854F-37C87FA3E5F9}"));
    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
@@ -230,9 +254,9 @@ void MdeMainWindow::customViewInit(QWidget * console)
        if (service != timeline) {
             auto w = createServiceWidget(service);
             if (w) {
-                addTab(coreUI::IMdeTabPtr(new SimpleTab(w, QIcon(":/mde/icons/Operacje.png"),tr(service->name().c_str()))));
+				auto name = service->name();
+                addTab(coreUI::IMdeTabPtr(new SimpleTab(w, name2icon(name, false),tr(name2name(name).c_str()))));
                 addPropertiesToServiceWindow(service, w);
-
             }
        }
 
@@ -242,6 +266,12 @@ void MdeMainWindow::customViewInit(QWidget * console)
         }
    }
 
+   coreUI::IMdeTabPtr reportsTab  = coreUI::IMdeTabPtr(new coreUI::ReportsTab(QIcon(":/mde/icons/Raporty.png"), tr("Reports")));
+   addTab(reportsTab);
+   addTab(coreUI::IMdeTabPtr(new SimpleTab(console, QIcon(":/mde/icons/log.png"),tr("Log"))));
+
+   bool cc = connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
+	emit modelChanged();
    emit activateTab(*tabs.begin());
 }
 
@@ -300,7 +330,15 @@ void MdeMainWindowController::addTab( coreUI::IMdeTabPtr tab )
     button->setMinimumSize(templateB->minimumSize());
     button->setCheckable(true);
     button->setFixedWidth(templateB->width());
-
+    button->setEnabled(tab->isEnabled());
+    QObject* obj = dynamic_cast<QObject*>(tab.get());
+    if (obj) {
+        connect(obj, SIGNAL(tabEnabled(bool)), this, SLOT(update()));
+        connect(obj, SIGNAL(tabActivated(bool)), this, SLOT(activateTab()));
+    } else {
+        UTILS_ASSERT(false, "IMdeTab powinien byc zaimplementowany przez jakis QObject, bo implementacja zaklada uzycie sygnalow");
+    }
+   
     QLayout* layout = window->ui->toolBar->layout();
     auto count = layout->count();
     auto item = layout->itemAt(count - 1);
@@ -330,6 +368,7 @@ void MdeMainWindowController::addTab( coreUI::IMdeTabPtr tab )
 MdeMainWindowController::MdeMainWindowController( MdeMainWindow* mw ) : 
 window(mw)
 {
+    connect(mw, SIGNAL(modelChanged()), this, SLOT(update()));
     connect(mw, SIGNAL(activateTab(coreUI::IMdeTabPtr)), this, SLOT(activateTab(coreUI::IMdeTabPtr)));
     connect(mw, SIGNAL(tabAdded(coreUI::IMdeTabPtr)), this, SLOT(addTab(coreUI::IMdeTabPtr)));
 }
@@ -340,6 +379,52 @@ void MdeMainWindowController::buttonClicked()
     UTILS_ASSERT(button);
     coreUI::IMdeTabPtr tab = button2TabWindow[button];
     activateTab(tab);
+    handleContext(tab, button);
+
+}
+
+void MdeMainWindowController::activateTab( coreUI::IMdeTabPtr tab )
+{
+    for (auto it = button2TabWindow.begin(); it != button2TabWindow.end(); ++it) {
+        coreUI::IMdeTabPtr t = it->second;
+        QObject* obj = dynamic_cast<QObject*>(t.get());
+        if (obj) {
+            obj->blockSignals(true);
+            t->setActive(t == tab);
+            obj->blockSignals(false);
+            t->getMainWidget()->setVisible(false);
+            it->first->setChecked( t == tab);
+        } else {
+            UTILS_ASSERT(false, "obecna implementacja wymaga aby realizacja IMdeTab byla QObject");
+        }
+    }
+
+    tab->getMainWidget()->setVisible(true);
+}
+
+void MdeMainWindowController::activateTab()
+{
+    QObject* obj = sender();
+    coreUI::IMdeTab* tab = dynamic_cast<coreUI::IMdeTab*>(obj);
+    for (auto it = button2TabWindow.begin(); it != button2TabWindow.end(); ++it) {
+        if (it->second.get() == tab) {
+            activateTab(it->second);
+            handleContext(it->second, it->first);
+            return;
+        }
+    }
+}
+
+void MdeMainWindowController::update()
+{
+    for (auto it = button2TabWindow.begin(); it != button2TabWindow.end(); ++it) {
+        coreUI::IMdeTabPtr t = it->second;
+        it->first->setEnabled( t->isEnabled());
+    }
+}
+
+void MdeMainWindowController::handleContext( coreUI::IMdeTabPtr tab, QToolButton* button )
+{
     if (window->isContextWidget(tab->getMainWidget())) {
         window->setCurrentContext(tab->getMainWidget());
     } else {
@@ -347,16 +432,9 @@ void MdeMainWindowController::buttonClicked()
     }
 }
 
-void MdeMainWindowController::activateTab( coreUI::IMdeTabPtr tab )
+
+void MdeMainWindow::onAbout()
 {
-    for (auto it = button2TabWindow.begin(); it != button2TabWindow.end(); ++it) {
-        coreUI::IMdeTabPtr t = it->second;
-        t->setActive(t == tab);
-        t->getMainWidget()->setVisible(false);
-        it->first->setChecked( t == tab);
-    }
-
-    tab->getMainWidget()->setVisible(true);
+	std::unique_ptr<AboutDialog> dialog = std::make_unique<AboutDialog>();
+	dialog->exec();
 }
-
-

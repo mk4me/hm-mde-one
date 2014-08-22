@@ -68,11 +68,12 @@ namespace kinematic {
 		  }
 		  */
 
-		/// \brief domyślny konstruktor
-		hAnimJoint() :
-			active(false)
-		{
-		}
+	  /// \brief domyślny konstruktor
+	  hAnimJoint() :
+	  active(false)
+	  {
+
+	  }
 
 	public:
 

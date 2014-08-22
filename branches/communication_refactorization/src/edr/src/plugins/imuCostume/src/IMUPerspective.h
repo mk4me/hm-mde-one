@@ -16,6 +16,7 @@
 #include <corelib/HierarchyDataItem.h>
 #include "corelib/IService.h"
 #include "plugins/c3d/C3DCollections.h"
+#include "IMUCFGParser.h"
 
 namespace IMU {
 
@@ -42,6 +43,8 @@ public:
 	virtual ~IMUPerspective() {}
 
     virtual core::IHierarchyItemPtr getPerspective( PluginSubject::SubjectPtr subject );
+
+	static void createIMUBranch(core::ConstVariantsList &framesV, IMU::IMUConfigConstPtr config, const std::string& sourceName, core::HierarchyItemPtr sessionItem, core::IMemoryDataManager * memoryDataManager = nullptr);
 
 	static void createIMUBranch(core::ConstVariantsList &oList, core::HierarchyItemPtr root);
 

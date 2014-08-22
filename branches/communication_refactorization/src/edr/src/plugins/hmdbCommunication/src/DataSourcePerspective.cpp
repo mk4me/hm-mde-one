@@ -26,7 +26,7 @@ void PerspectiveTreeWidget::mousePressEvent(QMouseEvent *event)
 	QTreeWidget::mousePressEvent(event);
 }
 
-DataSourcePerspective::DataSourcePerspective(const hmdbCommunication::DataSourcePerspectivePtr & perspective)
+DataSourcePerspective::DataSourcePerspective(const hmdbCommunication::IDataSourcePerspectivePtr & perspective)
 : perspective_(perspective), treeWidget(new PerspectiveTreeWidget()), invalid_(true)
 {
 }
@@ -35,7 +35,7 @@ DataSourcePerspective::~DataSourcePerspective()
 {
 }
 
-const hmdbCommunication::DataSourcePerspectivePtr & DataSourcePerspective::perspective() const
+const hmdbCommunication::IDataSourcePerspectivePtr & DataSourcePerspective::perspective() const
 {
 	return perspective_;
 }
