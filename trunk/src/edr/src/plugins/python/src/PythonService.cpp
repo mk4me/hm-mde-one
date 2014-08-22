@@ -11,6 +11,10 @@
 #include "PythonConsole.h"
 #include "QtWidgets/QAction"
 #include "PythonEditor.h"
+
+#define signals Q_SIGNALS
+#define slots Q_SLOTS
+
 #include "coreui/CoreAction.h"
 
 using namespace python;

@@ -3,8 +3,12 @@
 #include "QtWidgets/QFileDialog"
 #include "PythonHighlighter.h"
 #include <QtWidgets/QAction>
-#include "QTextStream"
+#include <QtCore/QTextStream>
 #include "QtWidgets/QMessageBox"
+
+#define signals Q_SIGNALS
+#define slots Q_SLOTS
+
 #include "coreui/CoreAction.h"
 
 using namespace python;

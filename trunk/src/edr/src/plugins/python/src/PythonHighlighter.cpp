@@ -64,7 +64,7 @@ PythonHighlighter::PythonHighlighter( QTextDocument *parent /*= 0*/ )
 
 void PythonHighlighter::highlightBlock( const QString &text )
 {
-    foreach (const HighlightingRule &rule, highlightingRules) {
+    Q_FOREACH (const HighlightingRule &rule, highlightingRules) {
         QRegExp expression(rule.pattern);
         int index = expression.indexIn(text);
         while (index >= 0) {

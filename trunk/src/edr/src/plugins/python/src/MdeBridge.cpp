@@ -4,7 +4,7 @@
 #include "corelib/HierarchyHelper.h"
 #include "corelib/IHierarchyItem.h"
 #include "corelib/IMemoryDataManager.h"
-#include "plugins/newCommunication/TreeItemHelper.h"
+#include "plugins/hmdbCommunication/TreeItemHelper.h"
 #include "corelib/HierarchyDataItem.h"
 #include "corelib/Variant.h"
 

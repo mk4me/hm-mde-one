@@ -34,4 +34,6 @@ SET_MOC_FILES (
 
 SET_PRECOMPILED_HEADER( PythonPCH.h PythonPCH.cpp)
 
+add_definitions(-DQT_NO_KEYWORDS)
+
 END_PROJECT()

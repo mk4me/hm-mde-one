@@ -38,7 +38,7 @@ namespace python {
 		virtual QWidget* getWidget();
 
 
-	private slots:
+	private Q_SLOTS:
 		void runScript();
 
 	public:
