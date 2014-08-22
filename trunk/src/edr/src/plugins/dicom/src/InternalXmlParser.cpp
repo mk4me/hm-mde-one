@@ -43,7 +43,7 @@ void InternalXmlParser::acceptedExpressions(Expressions & expressions) const
     expressions.insert(Expressions::value_type(".*[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}\\.xml$", expDesc));
 
     //std::cmatch cm;
-    //bool test = std::regex_match("C:\\Users\\Wojciech\\Documents\\PJWSTK\\MDE\\tmp\\newCommunication\\data\\zxl2rjizxf56pzxl2rjizxf7i\\data\\2013-08-21-S0007\\2013-08-21-S0007.xml", cm,std::regex(".*[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}\.xml$"));
+    //bool test = std::regex_match("C:\\Users\\Wojciech\\Documents\\PJWSTK\\MDE\\tmp\\hmdbCommunication\\data\\zxl2rjizxf56pzxl2rjizxf7i\\data\\2013-08-21-S0007\\2013-08-21-S0007.xml", cm,std::regex(".*[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}\.xml$"));
 }
 
 void InternalXmlParser::getObject(core::Variant& object, const core::VariantsVector::size_type idx) const

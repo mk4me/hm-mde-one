@@ -4,5 +4,5 @@
 
 int main(int argc, char* argv[])
 {
-	return core::AppInitializer::runApp<MdeMainWindow>(argc, argv);
+	return core::AppInitializer::runApp<MdeMainWindow>(argc, argv, "IMU");
 }

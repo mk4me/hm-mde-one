@@ -73,8 +73,8 @@ private:
 };
 
 
-typedef boost::shared_ptr<FilterEntryWidget> FilterEntryWidgetPtr;
-typedef boost::shared_ptr<const FilterEntryWidget> FilterEntryWidgetConstPtr;
+typedef utils::shared_ptr<FilterEntryWidget> FilterEntryWidgetPtr;
+typedef utils::shared_ptr<const FilterEntryWidget> FilterEntryWidgetConstPtr;
 
 
 #endif

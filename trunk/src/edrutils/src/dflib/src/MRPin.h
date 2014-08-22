@@ -1,15 +1,15 @@
 /********************************************************************
-    created:  2012/12/10
-    created:  10:12:2012   16:30
-    filename: MRPin.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+	created:  2012/12/10
+	created:  10:12:2012   16:30
+	filename: MRPin.h
+	author:   Mateusz Janiak
+
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD___MRPIN_H__
 #define HEADER_GUARD___MRPIN_H__
 
-#include <threading/SynchronizationPolicies.h>
+#include <threadingUtils/Synchronized.h>
 #include <vector>
 #include <dflib/IDFFeatures.h>
 #include <dflib/IDFPin.h>
@@ -38,7 +38,7 @@ public:
 	virtual const bool empty() const = 0;
 };
 
-class MRInputPin : public IMRPin, public utils::SynchronizedT<true>
+class MRInputPin : public IMRPin, public threadingUtils::SynchronizedT<true>
 {
 public:
 	MRInputPin(IMRSink * sink, df::IInputPin * pin, df::IDFInput * dfInput);
@@ -78,7 +78,7 @@ private:
 	unsigned int outputsReady;
 };
 
-class MROutputPin : public IMRPin, public utils::SynchronizedT<true>
+class MROutputPin : public IMRPin, public threadingUtils::SynchronizedT<true>
 {
 public:
 	MROutputPin(IMRSource * source, df::IOutputPin * pin, df::IDFOutput * dfOutput);
@@ -112,7 +112,7 @@ public:
 private:
 	IMRSource * source_;
 	df::IOutputPin * pin_;
-	df::IDFOutput * dfOutput_;	
+	df::IDFOutput * dfOutput_;
 	bool updated_;
 	std::vector<MRConnection*> connections;
 	unsigned int inputsConsumed;

@@ -21,6 +21,9 @@ namespace core {
 
 		virtual ~ITransaction() {}
 
+		//! Manualne commitowanie aktualnych zmian, nie podlegajπ one poüniejszym rollbackom
+		//virtual void commit() = 0;
+
 		//! Cofa zmiany w ramach transakcji
 		virtual void rollback() = 0;
 		//! \return Czy transakcja zosta≥a wycofana np. w wyniku b≥Ídu jednej z operacji transakcji lub

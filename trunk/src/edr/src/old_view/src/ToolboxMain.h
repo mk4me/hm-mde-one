@@ -4,6 +4,7 @@
 #include <coreui/CoreMainWindow.h>
 #include <corelib/Visualizer.h>
 #include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
+#include <coreui/SingleInstanceWindow.h>
 
 namespace timeline {
 
@@ -21,12 +22,12 @@ namespace coreUI {
 	class CoreDockWidget;
 }
 
-class ToolboxMain : public coreUI::CoreMainWindow
+class ToolboxMain : public coreUI::CoreMainWindow, public coreUI::SingleInstanceWindow
 {
 	Q_OBJECT
 
 public:
-	ToolboxMain(const CloseUpOperations & closeUpOperations);
+	ToolboxMain(const CloseUpOperations & closeUpOperations, const std::string & appName);
 	virtual ~ToolboxMain();
 
 private:
@@ -55,9 +56,7 @@ private:
 	//!
 	void populateVisualizersMenu( QMenu* menu );
 
-	void initializeUI();
-
-	static coreUI::CoreDockWidget * embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent);	
+	void initializeUI();	
 	
 private:
 	QMainWindow * visualizersPlaceholder;

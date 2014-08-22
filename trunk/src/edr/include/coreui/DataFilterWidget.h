@@ -127,8 +127,8 @@ private:
     Ui::FilterWidget* ui;
     BundleFilterPtr bundleFilter;
 };
-typedef boost::shared_ptr<DataFilterWidget> DataFilterWidgetPtr;
-typedef boost::shared_ptr<const DataFilterWidget> DataFilterWidgetConstPtr;
+typedef utils::shared_ptr<DataFilterWidget> DataFilterWidgetPtr;
+typedef utils::shared_ptr<const DataFilterWidget> DataFilterWidgetConstPtr;
 
 }
 

@@ -2,7 +2,7 @@
 #define __HEADER_GUARD_KINEMATIC__WRAPPERS_H__
 
 #include <corelib/BaseDataTypes.h>
-#include <utils/StreamData.h>
+#include <threadingUtils/StreamData.h>
 #include <kinematiclib/SkeletalModel.h>
 #include <kinematiclib/JointAnglesCollection.h>
 #include <utils/PtrPolicyOSG.h>
@@ -21,10 +21,10 @@ struct SegmentDescriptor
 typedef std::vector<SegmentDescriptor> SegmentsDescriptors;
 
 //! Strumieñ danych szkieletu
-typedef utils::StreamT<std::vector<osg::Vec3>> PointsCloudStream;
+typedef threadingUtils::StreamT<std::vector<osg::Vec3>> PointsCloudStream;
 DEFINE_SMART_POINTERS(PointsCloudStream);
 
-typedef utils::StreamT<std::vector<osg::Quat>> QuaternionStream;
+typedef threadingUtils::StreamT<std::vector<osg::Quat>> QuaternionStream;
 DEFINE_SMART_POINTERS(QuaternionStream);
 
 //! Dane szkieletu

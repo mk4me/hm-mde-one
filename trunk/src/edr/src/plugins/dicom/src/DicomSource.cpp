@@ -280,7 +280,7 @@ QString dicom::DicomSource::createDesc( const internalData::Image& image )
 std::vector<utils::TypeInfo> dicom::LayerHelper::getTypeInfos() const
 {
     std::vector<utils::TypeInfo> ret;
-    ret.push_back(typeid(ILayeredImage));
+	ret.push_back(typeid(ILayeredImage));
     return ret;
 }
 

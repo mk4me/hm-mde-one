@@ -1,6 +1,7 @@
 #include "CoreUiPCH.h"
 #include <coreui/CoreDockWidget.h>
 #include <coreui/CoreAction.h>
+#include <coreui/CoreTitleBar.h>
 
 using namespace coreUI;
 
@@ -31,12 +32,24 @@ void CoreDockWidget::setDockWidgetPermament(QDockWidget * dockWidget, bool perma
 	dockWidget->setAttribute(Qt::WA_DeleteOnClose, !permanent);
 }
 
+CoreDockWidget* CoreDockWidget::embeddWidget(QWidget * widget, const QString & windowTitle,
+	const Qt::DockWidgetArea allowedAreas, const bool permanent)
+{
+	std::auto_ptr<CoreDockWidget> embeddedDockWidget(new CoreDockWidget(windowTitle));
+	embeddedDockWidget->setWidget(widget);
+	embeddedDockWidget->setAllowedAreas(allowedAreas);
+	embeddedDockWidget->setPermanent(permanent);
+
+	CoreTitleBar::supplyWithCoreTitleBar(embeddedDockWidget.get());
+	return embeddedDockWidget.release();
+}
+
 bool CoreDockWidget::isPermanent() const
 {
     return isDockWidgetPermanent(this);
 }
 
-void CoreDockWidget::setPermanent(bool permanent)
+void CoreDockWidget::setPermanent(const bool permanent)
 {
     setDockWidgetPermament(this, permanent);
 }

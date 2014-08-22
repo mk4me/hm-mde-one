@@ -13,12 +13,10 @@
 
 df::DFModelRunner::DFModelRunnerImpl::DFModelRunnerImpl()
 {
-
 }
 
 df::DFModelRunner::DFModelRunnerImpl::INodeRunner::INodeRunner(DFModelRunnerImpl * runner, df::IDFLogger * logger) : runner_(runner), logger_(logger), i(0)
 {
-
 }
 
 void df::DFModelRunner::DFModelRunnerImpl::INodeRunner::run()
@@ -29,28 +27,29 @@ void df::DFModelRunner::DFModelRunnerImpl::INodeRunner::run()
 
 	i = 0;
 
-	while(error == false && next == true){
+	while (error == false && next == true){
 		try{
 			++i;
 			stage = 0;
 			next = dataflow();
-		}catch(std::exception & e){
+		}
+		catch (std::exception & e){
 			error = true;
 			errorMessage = std::string(e.what());
-		}catch(...){
+		}
+		catch (...){
 			error = true;
 			errorMessage = "Unknown node runner error";
 		}
 	}
 
-	if(error == true){
+	if (error == true){
 		runner_->markFailure(errorMessage);
 	}
 }
 
 df::DFModelRunner::DFModelRunnerImpl::SourceNodeRunner::SourceNodeRunner(IMRSourceNode * node, DFModelRunnerImpl * runner, df::IDFLogger * logger) : INodeRunner(runner, logger), node_(node)
 {
-
 }
 
 const bool df::DFModelRunner::DFModelRunnerImpl::SourceNodeRunner::dataflow()
@@ -58,8 +57,8 @@ const bool df::DFModelRunner::DFModelRunnerImpl::SourceNodeRunner::dataflow()
 	node_->lockSrcProcessing();
 
 	stage++;
-	if(runner_->dataflowFinished() == true)
-	{
+	if (runner_->dataflowFinished() == true)
+	{		
 		return false;
 	}
 
@@ -89,7 +88,7 @@ const bool df::DFModelRunner::DFModelRunnerImpl::SinkNodeRunner::dataflow()
 {
 	node_->lockSnkProcessing();
 	stage++;
-	if(runner_->dataflowFinished() == true)
+	if (runner_->dataflowFinished() == true)
 	{
 		return false;
 	}
@@ -117,7 +116,7 @@ const bool df::DFModelRunner::DFModelRunnerImpl::ProcessingNodeRunner::dataflow(
 	node_->lockSrcProcessing();
 	stage++;
 
-	if(runner_->dataflowFinished() == true)
+	if (runner_->dataflowFinished() == true)
 	{
 		return false;
 	}
@@ -138,9 +137,9 @@ const bool df::DFModelRunner::DFModelRunnerImpl::sourcesHaveMore() const
 {
 	bool ret = true;
 
-	for(auto it = sources_.begin(); it != sources_.end(); ++it)
+	for (auto it = sources_.begin(); it != sources_.end(); ++it)
 	{
-		if((*it).dfSource->empty() == true)
+		if ((*it).dfSource->empty() == true)
 		{
 			ret = false;
 			break;
@@ -178,16 +177,17 @@ void df::DFModelRunner::DFModelRunnerImpl::sourceFinished()
 
 	++sourcesFinished_;
 
-	if(sourcesFinished_ == sources_.size())
+	if (sourcesFinished_ == sources_.size())
 	{
-		if(sourcesHaveMore() == true){
+		if (sourcesHaveMore() == true){
 			sourcesFinished_ = 0;
 			sourcesStartWait.lock();
 			sourcesFinishWait.unlock();
-		}else{
+		}
+		else{
 			//Ÿród³a skoñczy³y przetwarzaæ - czekamy na innych ¿eby zakoñczyæ dataflow
 			sourcesEmpty_ = true;
-			if(dataToProcess == 0){
+			if (dataToProcess == 0){
 				stopDataflow();
 			}
 		}
@@ -200,7 +200,7 @@ void df::DFModelRunner::DFModelRunnerImpl::sourceStarted()
 
 	++sourcesStarted_;
 
-	if(sourcesStarted_ == sources_.size())
+	if (sourcesStarted_ == sources_.size())
 	{
 		sourcesStarted_ = 0;
 		increaseDataToProcess();
@@ -214,14 +214,14 @@ void df::DFModelRunner::DFModelRunnerImpl::nonSourceFinished()
 	StrictScopedLock lock(nonSourcesSync);
 	++nonSourcesFinished_;
 
-	if(nonSourcesFinished_ == nonSourceElements)
+	if (nonSourcesFinished_ == nonSourceElements)
 	{
 		nonSourcesFinished_ = 0;
 		decreaseDataToProcess();
 
-		if(sourcesEmpty_ == true && dataToProcess == 0){
+		if (sourcesEmpty_ == true && dataToProcess == 0){
 			stopDataflow();
-		}		
+		}
 	}
 }
 
@@ -232,29 +232,29 @@ void df::DFModelRunner::DFModelRunnerImpl::stopDataflow()
 	//unlock all nodes to kill corresponding threads (runners)!!
 	//when all are dead dataflow will finish seamlessly processing by cleaning up and reseting
 
-	if(paused_ == true){
+	if (paused_ == true){
 		paused_ = false;
 		dataflowPauseSync.unlock();
 	}
 
-	for(auto it = pausedNodes.begin(); it != pausedNodes.end(); ++it)
+	for (auto it = pausedNodes.begin(); it != pausedNodes.end(); ++it)
 	{
 		it->second->resume();
 	}
 
-	for(auto it = sources_.begin(); it != sources_.end(); ++it)
+	for (auto it = sources_.begin(); it != sources_.end(); ++it)
 	{
 		(*it).node->unlockSrcProcessing();
 	}
 
 	sourcesFinishWait.unlock();
 
-	for(auto it = sinks_.begin(); it != sinks_.end(); ++it)
+	for (auto it = sinks_.begin(); it != sinks_.end(); ++it)
 	{
 		(*it)->unlockSnkProcessing();
 	}
 
-	for(auto it = processors_.begin(); it != processors_.end(); ++it)
+	for (auto it = processors_.begin(); it != processors_.end(); ++it)
 	{
 		(*it)->unlockSnkProcessing();
 	}
@@ -263,16 +263,17 @@ void df::DFModelRunner::DFModelRunnerImpl::stopDataflow()
 void df::DFModelRunner::DFModelRunnerImpl::finishDataflow()
 {
 	try{
-		for(auto it = threads_.begin(); it != threads_.end(); ++it)
+		for (auto it = threads_.begin(); it != threads_.end(); ++it)
 		{
 			(*it)->join();
 		}
 
 		cleanUpDataflow();
-
-	}catch(std::exception & e){
+	}
+	catch (std::exception & e){
 		markFailure(e.what());
-	}catch(...){
+	}
+	catch (...){
 		markFailure("Unknown error while finishing dataflow");
 	}
 }
@@ -305,28 +306,29 @@ void df::DFModelRunner::DFModelRunnerImpl::tryPause()
 	StrictScopedLock lock(dataflowPauseSync);
 }
 
-void df::DFModelRunner::DFModelRunnerImpl::start(df::IModelReader * model, df::IDFLogger * logger, utils::IThreadPool * tPool)
+void df::DFModelRunner::DFModelRunnerImpl::start(df::IModelReader * model, df::IDFLogger * logger, threadingUtils::IThreadPool * tPool)
 {
 	MRModelInterfaceVerifier::ModelVerificationData interfaceVerification;
-	if(verifyModel(model, interfaceVerification) == false){
+	if (verifyModel(model, interfaceVerification) == false){
 		std::string message("Model verification failed:");
 
-		if(interfaceVerification.incompatibleNodes.empty() == false){
+		if (interfaceVerification.incompatibleNodes.empty() == false){
 			message += "Some nodes do not implement required functionality - IDFSource, IDFSink or IDFProcessor";
 		}
 
-		if(interfaceVerification.incompatiblePins.empty() == false){
+		if (interfaceVerification.incompatiblePins.empty() == false){
 			message += "Some pins do not implement required functionality - IDFInput or IDFOutput";
 		}
 
 		throw df::ModelVerificationException(message.c_str());
 	}
 
-	utils::IThreadPool::Threads().swap(threads_);
+	threadingUtils::IThreadPool::Threads().swap(threads_);
 	Runnables().swap(runnables_);
 	try{
 		tPool->getThreads(model->nodesSize(), threads_);
-	}catch(utils::NoFreeThreadAvaiable & e){
+	}
+	catch (threadingUtils::NoFreeThreadAvaiable & e){
 		throw ModelRunInitializationException(e.what());
 	}
 
@@ -338,26 +340,29 @@ void df::DFModelRunner::DFModelRunnerImpl::start(df::IModelReader * model, df::I
 
 		//runnables_.push_back(utils::IRunnablePtr(new utils::FunctorRunnable(boost::bind(&DFModelRunnerImpl::finishDataflow,this))));
 		resetDataflowElements();
-	}catch(std::exception & e){
+	}
+	catch (std::exception & e){
 		cleanUpDataflow();
 		throw ModelRunInitializationException(e.what());
-	}catch(...){
+	}
+	catch (...){
 		cleanUpDataflow();
 		throw ModelRunInitializationException("Unknown error while initializing dataflow");
 	}
 
 	try{
 		startDataflow();
-	}catch(std::exception & e){
+	}
+	catch (std::exception & e){
 		throw ModelStartException(e.what());
-	}catch(...){
+	}
+	catch (...){
 		throw ModelStartException("Unknown error while starting dataflow");
 	}
 }
 
 void df::DFModelRunner::DFModelRunnerImpl::stop()
 {
-
 }
 
 void df::DFModelRunner::DFModelRunnerImpl::pause()
@@ -379,35 +384,33 @@ const bool df::DFModelRunner::DFModelRunnerImpl::paused() const
 
 void df::DFModelRunner::DFModelRunnerImpl::join()
 {
-	for(auto it = threads_.begin(); it != threads_.end(); ++it)
+	for (auto it = threads_.begin(); it != threads_.end(); ++it)
 	{
 		(*it)->join();
 	}
 
 	{
-		utils::ScopedLock<utils::StrictSyncPolicy> lock(failureMessageSync);
+		threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(failureMessageSync);
 
-		if(dataflowFinished_ == true){
-
+		if (dataflowFinished_ == true){
 			dataflowFinished_ = false;
 
 			try{
-
 				cleanUpDataflow();
-
-			}catch(std::exception & e){
+			}
+			catch (std::exception & e){
 				markFailure(e.what());
-			}catch(...){
+			}
+			catch (...){
 				markFailure("Unknown error while finishing dataflow");
 			}
 		}
-
 	}
 
-	if(failure_ == true){
+	if (failure_ == true){
 		std::string message = "Error(s) while model running: ";
 
-		for(auto it = failureMessages_.begin(); it != failureMessages_.end(); ++it){
+		for (auto it = failureMessages_.begin(); it != failureMessages_.end(); ++it){
 			message += *it + " | ";
 		}
 
@@ -420,22 +423,22 @@ void df::DFModelRunner::DFModelRunnerImpl::wrapModelElements(df::IModelReader * 
 	InputPinsMapping inputMapping;
 	OutputPinsMapping outputMapping;
 
-	for(auto it = modelElements.sourceVerification.begin(); it != modelElements.sourceVerification.end(); ++it)
+	for (auto it = modelElements.sourceVerification.begin(); it != modelElements.sourceVerification.end(); ++it)
 	{
 		wrapSourceNode(*it, outputMapping);
 	}
 
-	for(auto it = modelElements.sinkVerification.begin(); it != modelElements.sinkVerification.end(); ++it)
+	for (auto it = modelElements.sinkVerification.begin(); it != modelElements.sinkVerification.end(); ++it)
 	{
 		wrapSinkNode(*it, inputMapping);
 	}
 
-	for(auto it = modelElements.processorVerification.begin(); it != modelElements.processorVerification.end(); ++it)
+	for (auto it = modelElements.processorVerification.begin(); it != modelElements.processorVerification.end(); ++it)
 	{
 		wrapProcessorNode(*it, inputMapping, outputMapping);
 	}
 
-	for(unsigned int i = 0; i < model->connectionsSize(); ++i)
+	for (unsigned int i = 0; i < model->connectionsSize(); ++i)
 	{
 		auto c = model->connection(i);
 		auto src = outputMapping[c->source()];
@@ -444,12 +447,10 @@ void df::DFModelRunner::DFModelRunnerImpl::wrapModelElements(df::IModelReader * 
 
 		src->addConnection(mrconnection);
 		dest->addConnection(mrconnection);
-
 	}
 
-	nonSourceElements = sinks_.size() + processors_.size();	
+	nonSourceElements = sinks_.size() + processors_.size();
 }
-
 
 void df::DFModelRunner::DFModelRunnerImpl::wrapSourceNode(const MRModelInterfaceVerifier::SourceVerificationData & sourceData, OutputPinsMapping & outputMapping)
 {
@@ -460,12 +461,12 @@ void df::DFModelRunner::DFModelRunnerImpl::wrapSourceNode(const MRModelInterface
 
 	auto runner = new SourceNodeRunner(srcWrapData.node, this, logger_);
 	nodeRunners_.push_back(runner);
-	
-	runnables_.push_back(utils::IRunnablePtr(new utils::FunctorRunnable(boost::bind(&INodeRunner::run,runner))));
+
+	runnables_.push_back(threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&INodeRunner::run, runner))));
 
 	df::IDFLoggable * loggable = dynamic_cast<df::IDFLoggable*>(sourceData.node);
 
-	if(loggable != nullptr){
+	if (loggable != nullptr){
 		auto loggerHelper = new df::SourceLoggerHelper(sourceData.node, logger_);
 		loggable->initLogger(loggerHelper);
 		loggerHelpers_.push_back(loggerHelper);
@@ -478,15 +479,15 @@ void df::DFModelRunner::DFModelRunnerImpl::wrapSinkNode(const MRModelInterfaceVe
 {
 	auto node = new MRSinkNode(sinkData.node, sinkData.sink);
 	wrapInputPins(node, sinkData.inputVerication, inputMapping);
-	
+
 	auto runner = new SinkNodeRunner(node, this, logger_);
 	nodeRunners_.push_back(runner);
 
-	runnables_.push_back(utils::IRunnablePtr(new utils::FunctorRunnable(boost::bind(&INodeRunner::run,runner))));
+	runnables_.push_back(threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&INodeRunner::run, runner))));
 
 	df::IDFLoggable * loggable = dynamic_cast<df::IDFLoggable*>(sinkData.node);
 
-	if(loggable != nullptr){
+	if (loggable != nullptr){
 		auto loggerHelper = new df::SinkLoggerHelper(sinkData.node, logger_);
 		loggable->initLogger(loggerHelper);
 		loggerHelpers_.push_back(loggerHelper);
@@ -504,18 +505,19 @@ void df::DFModelRunner::DFModelRunnerImpl::wrapProcessorNode(const MRModelInterf
 
 	INodeRunner * runner = nullptr;
 
-	if(processorData.node->outputsConnected() == 0){
+	if (processorData.node->outputsConnected() == 0){
 		runner = new SinkNodeRunner(node, this, logger_);
-	}else{
+	}
+	else{
 		runner = new ProcessingNodeRunner(node, this, logger_);
 	}
 
 	nodeRunners_.push_back(runner);
-	runnables_.push_back(utils::IRunnablePtr(new utils::FunctorRunnable(boost::bind(&INodeRunner::run,runner))));
+	runnables_.push_back(threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&INodeRunner::run, runner))));
 
 	df::IDFLoggable * loggable = dynamic_cast<df::IDFLoggable*>(processorData.node);
 
-	if(loggable != nullptr){
+	if (loggable != nullptr){
 		auto loggerHelper = new df::ProcessingLoggerHelper(processorData.node, logger_);
 		loggable->initLogger(loggerHelper);
 		loggerHelpers_.push_back(loggerHelper);
@@ -526,7 +528,7 @@ void df::DFModelRunner::DFModelRunnerImpl::wrapProcessorNode(const MRModelInterf
 
 void df::DFModelRunner::DFModelRunnerImpl::wrapInputPins(IMRSinkNode * sink, const MRModelInterfaceVerifier::InputVerification & inputData, InputPinsMapping & inputMapping)
 {
-	for(auto it = inputData.begin(); it != inputData.end(); ++it)
+	for (auto it = inputData.begin(); it != inputData.end(); ++it)
 	{
 		auto p = new MRInputPin(sink, (*it).first, (*it).second);
 		sink->addInputPin(p);
@@ -536,7 +538,7 @@ void df::DFModelRunner::DFModelRunnerImpl::wrapInputPins(IMRSinkNode * sink, con
 
 void df::DFModelRunner::DFModelRunnerImpl::wrapOutputPins(IMRSourceNode * source, const MRModelInterfaceVerifier::OutputVerification & outputData, OutputPinsMapping & inputMapping)
 {
-	for(auto it = outputData.begin(); it != outputData.end(); ++it)
+	for (auto it = outputData.begin(); it != outputData.end(); ++it)
 	{
 		auto p = new MROutputPin(source, (*it).first, (*it).second);
 		source->addOutputPin(p);
@@ -561,17 +563,17 @@ void df::DFModelRunner::DFModelRunnerImpl::resetDataflowStatus()
 
 void df::DFModelRunner::DFModelRunnerImpl::resetDataflowElements()
 {
-	for(auto it = sources_.begin(); it != sources_.end(); ++it)
+	for (auto it = sources_.begin(); it != sources_.end(); ++it)
 	{
 		(*it).node->reset();
 	}
 
-	for(auto it = sinks_.begin(); it != sinks_.end(); ++it)
+	for (auto it = sinks_.begin(); it != sinks_.end(); ++it)
 	{
 		(*it)->reset();
 	}
 
-	for(auto it = processors_.begin(); it != processors_.end(); ++it)
+	for (auto it = processors_.begin(); it != processors_.end(); ++it)
 	{
 		(*it)->reset();
 	}
@@ -580,35 +582,35 @@ void df::DFModelRunner::DFModelRunnerImpl::resetDataflowElements()
 void df::DFModelRunner::DFModelRunnerImpl::startDataflow()
 {
 	auto it = threads_.begin();
-	for(unsigned int i = 0; i < runnables_.size(); ++i)
+	for (unsigned int i = 0; i < runnables_.size(); ++i)
 	{
 		(*it++)->start(runnables_[i]);
-	}	
+	}
 }
 
 void df::DFModelRunner::DFModelRunnerImpl::cleanUpDataflow()
 {
-	for(auto it = sources_.begin(); it != sources_.end(); ++it)
+	for (auto it = sources_.begin(); it != sources_.end(); ++it)
 	{
 		delete (*it).node;
 	}
 
-	for(auto it = sinks_.begin(); it != sinks_.end(); ++it)
+	for (auto it = sinks_.begin(); it != sinks_.end(); ++it)
 	{
 		delete *it;
 	}
 
-	for(auto it = processors_.begin(); it != processors_.end(); ++it)
+	for (auto it = processors_.begin(); it != processors_.end(); ++it)
 	{
 		delete *it;
 	}
 
-	for(auto it = loggerHelpers_.begin(); it != loggerHelpers_.end(); ++it)
+	for (auto it = loggerHelpers_.begin(); it != loggerHelpers_.end(); ++it)
 	{
 		delete *it;
 	}
 
-	utils::IThreadPool::Threads().swap(threads_);
+	threadingUtils::IThreadPool::Threads().swap(threads_);
 	Runnables().swap(runnables_);
 
 	NodesMapping().swap(nodesMapping);
@@ -622,7 +624,7 @@ void df::DFModelRunner::DFModelRunnerImpl::cleanUpDataflow()
 	resetDataflowStatus();
 
 	sourcesEmpty_ = false;
-	dataflowFinished_ = false;	
+	dataflowFinished_ = false;
 
 	logger_ = nullptr;
 }
@@ -631,7 +633,7 @@ void df::DFModelRunner::DFModelRunnerImpl::markFailure(const std::string & messa
 {
 	StrictScopedLock lock(failureMessageSync);
 	failureMessages_.push_back(message);
-	if(failure_ == false)
+	if (failure_ == false)
 	{
 		failure_ = true;
 		stopDataflow();

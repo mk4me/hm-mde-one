@@ -1,6 +1,6 @@
 #include "SummaryWindow.h"
 #include "AnalisisWidget.h"
-#include <plugins/newCommunication/IPatient.h>
+#include <plugins/hmdbCommunication/IPatient.h>
 
 void SummaryWindow::initialize()
 {
@@ -59,7 +59,7 @@ void SummaryWindow::display( const HelpersCollection& helpers )
                 
                 core::IHierarchyItemConstPtr hdi = itHelper->lock();
                 if (hdi) {
-                    QString text = hdi->getName() + "\n";
+                QString text = hdi->getName() + "\n";
                     text += hdi->getDescription();
                     addItem(text, root);
                 }

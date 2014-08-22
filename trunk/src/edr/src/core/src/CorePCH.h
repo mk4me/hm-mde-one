@@ -30,7 +30,7 @@
 #include <utils/Enum.h>
 
 #include <QtCore/QtCore>
-#include <QtGui/QtGui>
+#include <QtWidgets/QtWidgets>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/function.hpp>

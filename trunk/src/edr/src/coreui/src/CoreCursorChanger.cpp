@@ -4,12 +4,25 @@
 
 using namespace coreUI;
 
-CoreCursorChanger::CoreCursorChanger(const Qt::CursorShape cursorShape)
+CoreCursorChanger::CoreCursorChanger(const Qt::CursorShape cursorShape) : restored(false)
 {
 	QApplication::setOverrideCursor(cursorShape);
 }
 
+CoreCursorChanger::CoreCursorChanger(const QCursor & cursor) : restored(false)
+{
+	QApplication::setOverrideCursor(cursor);
+}
+
 CoreCursorChanger::~CoreCursorChanger()
 {
-	QApplication::restoreOverrideCursor();
+	restore();
+}
+
+void CoreCursorChanger::restore()
+{
+	if (restored == false){
+		QApplication::restoreOverrideCursor();
+		restored = true;
+	}
 }

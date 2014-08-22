@@ -1,25 +1,23 @@
 ﻿/********************************************************************
-    created:  2013/07/05
-    created:  5:7:2013   13:53
-    filename: Thread.h
-    author:   Mateusz Janiak
-    
-    purpose:  Implementacja wątku
-*********************************************************************/
+	created:  2013/07/05
+	created:  5:7:2013   13:53
+	filename: Thread.h
+	author:   Mateusz Janiak
+
+	purpose:  Implementacja wątku
+	*********************************************************************/
 #ifndef HEADER_GUARD_CORE__THREAD_H__
 #define HEADER_GUARD_CORE__THREAD_H__
 
 #include <corelib/IThread.h>
-#include <threading/SynchronizationPolicies.h>
+#include <threadingUtils/SynchronizationPolicies.h>
 
 namespace core
 {
-
 	class ThreadPool;
 
 	class Thread : public IThread
 	{
-
 		friend class ThreadPool;
 
 	private:
@@ -27,24 +25,24 @@ namespace core
 		//! \param destination Przeznaczenie wątku
 		//! \param thread Faktyczny wątek przetwarzający
 		Thread(const std::string & who, const std::string & destination,
-			utils::IThreadPtr thread);
+			threadingUtils::IThreadPtr thread);
 
-		//! \param who Właściciel wątku		
+		//! \param who Właściciel wątku
 		//! \param thread Faktyczny wątek przetwarzający
-		Thread(const std::string & who, utils::IThreadPtr thread);
+		Thread(const std::string & who, threadingUtils::IThreadPtr thread);
 
 	public:
 
 		//! Destruktor wirtualny
 		virtual ~Thread();
-		//! \return Właściciel wątku	
+		//! \return Właściciel wątku
 		virtual const std::string & who() const;
 		//! \return Przeznaczenie wątku
 		virtual const std::string & destination() const;
 		//! \param destination Przeznaczenie wątku, co realizuje
 		virtual void setDestination(const std::string & destination);
 
-		virtual void start(const utils::IRunnablePtr & runnable, const Priority priority);
+		virtual void start(const threadingUtils::IRunnablePtr & runnable, const Priority priority);
 		//! Metoda zabija w�tek/grupe, nie nadaje si� on/ona ponownie do u�ycia
 		virtual void cancel();
 		//! Metoda blokuj�ca a� w�tek/grupa nie zako�czy przetwarzania lub nie zostanie zniszczony/a
@@ -64,9 +62,9 @@ namespace core
 		//! \param priority Priorytet wątku
 		virtual void setPriority(const Priority priority);
 		//! \return Aktualnie wykonywana operacja w w�tku, mo�e by� null jesli nic si� nie dzieje
-		virtual const utils::IRunnableConstPtr runnable() const;
+		virtual const threadingUtils::IRunnableConstPtr runnable() const;
 		//! \return Aktualnie wykonywana operacja w w�tku, mo�e by� null jesli nic si� nie dzieje
-		virtual utils::IRunnablePtr runnable();
+		virtual threadingUtils::IRunnablePtr runnable();
 
 	private:
 		//! Właściciel wątku
@@ -74,11 +72,10 @@ namespace core
 		//! Przeznaczenie wątku
 		std::string destination_;
 		//! Właściwy wątek
-		utils::IThreadPtr thread_;
+		threadingUtils::IThreadPtr thread_;
 		//! Obiekt synchronizujący
-		mutable utils::StrictSyncPolicy synch_;
+		mutable threadingUtils::StrictSyncPolicy synch_;
 	};
-
 }
 
 #endif	//	HEADER_GUARD_CORE__THREAD_H__

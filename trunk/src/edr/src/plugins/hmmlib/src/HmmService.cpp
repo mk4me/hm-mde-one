@@ -37,7 +37,7 @@ core::IFilterProvider::FilterBundles HmmService::getFilterBundles() const
     core::IFilterProvider::FilterBundles bundles;
 
     core::IFilterBundlePtr analog = utils::make_shared<core::FilterBundle>(QObject::tr("ANALOG"), iconAnalog);
-    addSubjectFilterToBundle(analog, typeid(GRFCollection), QObject::tr("GRF"), iconGRFSmall);
+	addSubjectFilterToBundle(analog, typeid(GRFCollection), QObject::tr("GRF"), iconGRFSmall);
     analog->addFilterCommand(utils::make_shared<EMGConfigFilter>());
     //addSubjectFilterToBundle(analog, typeid(EMGChannel), QObject::tr("EMG"), iconEmgSmall);
     bundles.push_back(analog);
@@ -50,12 +50,12 @@ core::IFilterProvider::FilterBundles HmmService::getFilterBundles() const
 
     core::IFilterBundlePtr kinematic = utils::make_shared<core::FilterBundle>(QObject::tr("KINEMATIC"), iconKinematic);
     kinematic->addFilterCommand(utils::make_shared<MarkersFilter>());
-    addSubjectFilterToBundle(kinematic, typeid(kinematic::JointAnglesCollection), QObject::tr("Joints"), iconJointSmall);
+	addSubjectFilterToBundle(kinematic, typeid(kinematic::JointAnglesCollection), QObject::tr("Joints"), iconJointSmall);
     bundles.push_back(kinematic);
 
 
     core::IFilterBundlePtr video = utils::make_shared<core::FilterBundle>(QObject::tr("VIDEO"), iconVideo);
-    addSubjectFilterToBundle(video, typeid(VideoChannel), QObject::tr("Videos"), iconVideoSmall);
+	addSubjectFilterToBundle(video, typeid(VideoChannel), QObject::tr("Videos"), iconVideoSmall);
     bundles.push_back(video);
 
 

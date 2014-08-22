@@ -10,6 +10,7 @@
 
 #include <utils/Debug.h>
 #include <utils/TypeInfo.h>
+#include <boost/type_traits.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
@@ -82,10 +83,10 @@ namespace utils {
 	typedef PtrPolicy::Ptr<const typeT>::Type ConstPtr;\
 	typedef clonePolicyT ClonePolicy;\
 	static const ObjectWrapper::TypeInfoPair ptrTypeInfo(){\
-		return ObjectWrapper::TypeInfoPair(TypeInfo(typeid(Ptr)), TypeInfo(typeid(ConstPtr)));\
+		return ObjectWrapper::TypeInfoPair(typeid(Ptr), typeid(ConstPtr));\
 	}\
 	static const bool ptrTypeSupported(const TypeInfo & ptrInfo){\
-		auto p = ptrTypeInfo();\
+		const auto p = ptrTypeInfo();\
 		return ptrInfo == p.first || ptrInfo == p.second;\
 	}\
 	static const bool typeSupported(const TypeInfo & type){\
@@ -95,7 +96,7 @@ namespace utils {
 		types.push_back(typeInfo());\
 	}\
 	static const TypeInfo typeInfo(){\
-		return TypeInfo(typeid(typeT));\
+		return typeid(typeT);\
 	}\
 	__DEFINE_WRAPPER_META_HELPER \
 	template<class PtrIn>\
@@ -121,10 +122,10 @@ namespace utils {
 	typedef PtrPolicy::Ptr<const typeT>::Type ConstPtr;\
 	typedef ObjectWrapperTraits<baseTypeT>::ClonePolicy ClonePolicy;\
 	static const ObjectWrapper::TypeInfoPair ptrTypeInfo(){\
-		return ObjectWrapper::TypeInfoPair(TypeInfo(typeid(Ptr)), TypeInfo(typeid(ConstPtr)));\
+		return ObjectWrapper::TypeInfoPair(typeid(Ptr), typeid(ConstPtr));\
 	}\
 	static const bool ptrTypeSupported(const TypeInfo & ptrInfo){\
-		auto p = ptrTypeInfo();\
+		const auto p = ptrTypeInfo();\
 		return ptrInfo == p.first || ptrInfo == p.second || ObjectWrapperTraits<baseTypeT>::ptrTypeSupported(ptrInfo);\
 	}\
 	static void supportedTypes(ObjectWrapper::Types & types){\
@@ -134,7 +135,7 @@ namespace utils {
 		return type == typeInfo() || ObjectWrapperTraits<baseTypeT>::typeSupported(type);\
 	}\
 	static const TypeInfo typeInfo(){\
-		return TypeInfo(typeid(typeT));\
+		return typeid(typeT);\
 	}\
 	__DEFINE_WRAPPER_META_HELPER \
 	template<class PtrIn>\
@@ -142,14 +143,14 @@ namespace utils {
 		if (ObjectWrapperTraits<baseTypeT>::ptrTypeInfo().first == ptrType ||\
 				ObjectWrapperTraits<typeT>::ptrTypeInfo().second == ptrType){\
 			return ObjectWrapperTraits<baseTypeT>::tryGetData(object, ptrType, wrapped);\
-		}\
+						}\
 		return ObjectWrapperTraits<baseTypeT>::tryGetBaseData(object, ptrType, wrapped);\
 	}\
 	template<class PtrIn>\
 	static const bool tryGetConstBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped){\
 		if (ObjectWrapperTraits<baseTypeT>::ptrTypeInfo().second == ptrType){\
 			return ObjectWrapperTraits<baseTypeT>::tryGetConstData(object, ptrType, wrapped);\
-		}\
+						}\
 		return ObjectWrapperTraits<baseTypeT>::tryGetConstBaseData(object, ptrType, wrapped);\
 	}\
 };

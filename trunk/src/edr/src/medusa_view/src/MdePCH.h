@@ -19,7 +19,6 @@
 #include <boost/function.hpp>
 #include <boost/foreach.hpp>
 #include <boost/bind.hpp>
-#include <boost/smart_ptr.hpp>
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -53,6 +52,7 @@
 
 #include <utils/Utils.h>
 #include <utils/ObjectWrapper.h>
+#include <utils/SmartPtr.h>
 
 #include <corelib/IVisualizer.h>
 #include <plugins/c3d/C3DChannels.h>

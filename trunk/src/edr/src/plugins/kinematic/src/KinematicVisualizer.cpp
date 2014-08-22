@@ -48,13 +48,15 @@ plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const utils::TypeI
 	KinematicSerieBase * ret = nullptr;
 	if (requestedType == typeid(GRFCollection)) {
 		ret = new GRFSerie(this, requestedType, data);		
-	} else if (requestedType == typeid (MarkerCollection)) {
+	}
+	else if (requestedType == typeid(MarkerCollection)) {
 		auto ms = new MarkerSerie(this, requestedType, data);		
         trajectoriesDialog->setDrawer(ms->getTrajectoriesManager(), getRootName(data, tr("Markers")), getMarkersNames(data->get()));
         schemeDialog->setDrawer(ms->getPointsDrawer(), getRootName(data, tr("Markers")), getMarkersNames(data->get()), ms->getConnectionsDrawer());
         //schemeDialog->setDrawer(ms->getConnectionsDrawer(), getRootName(data, tr("Markers")));
         ret = ms;
-	} else if (requestedType == typeid (kinematic::JointAnglesCollection)) {
+	}
+	else if (requestedType == typeid(kinematic::JointAnglesCollection)) {
 		auto ss = new SkeletonSerie(this, requestedType, data);		
         QStringList names;
         for (int i = 1; i <= ss->getTrajectoriesManager()->count(); ++i) {
@@ -62,13 +64,14 @@ plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const utils::TypeI
         }
         trajectoriesDialog->setDrawer(ss->getTrajectoriesManager(), getRootName(data, tr("Skeleton")), names); //getSkeletonNames(data->get()));
         ret = ss;
-	} else if (requestedType == typeid (SkeletonDataStream)) {
+	}
+	else if (requestedType == typeid(SkeletonDataStream)) {
 		ret = new SkeletonStreamSerie(this, requestedType, data);
 	} else if (requestedType == typeid (BVHData)) {
 		ret = new BvhSerie(this, requestedType, data);
 	} else if (requestedType == typeid (osg::PositionAttitudeTransform)) {
 		ret = new OsgSerie(this, requestedType, data);
-	} else {
+	}else {
 		UTILS_ASSERT(false);
 	}
 

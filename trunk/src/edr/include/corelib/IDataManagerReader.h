@@ -49,9 +49,9 @@ namespace core {
 		struct ObjectChange
 		{
 			VariantConstPtr previousValue;	//! Kopia OW przed zmianą, nie jest zarejestrowana w DM
-			VariantConstPtr currentValue;		//! Aktualny OW zarejestrowany w DM
-			utils::TypeInfo type;							//! Typ OW
-			ModificationType modyfication;			//! Typ zmiany na OW
+			VariantConstPtr currentValue;	//! Aktualny OW zarejestrowany w DM
+			utils::TypeInfo type;			//! Typ OW
+			ModificationType modyfication;	//! Typ zmiany na OW
 		};
 
 		//! Agregat zmian w DM

@@ -225,51 +225,6 @@ std::vector<Filesystem::Path> Filesystem::listFiles(const Path& path, bool recur
 	return files;
 }
 
-std::vector<std::string> Filesystem::listFilteredFiles(const std::string& path, bool recursive, boost::function<bool(const std::string&)> filter)
-{
-	auto _filter = [&](const Path& p) {
-		return filter(p.string());
-	};
-
-	auto pathFiles = listFilteredFiles(Path(path), recursive, _filter);
-	std::vector<std::string> files;
-	for (auto it = pathFiles.begin(); it != pathFiles.end(); ++it) {
-		files.push_back(it->string());
-	}
-
-	return files;
-}
-
-std::vector<Filesystem::Path> Filesystem::listFilteredFiles(const Path& path, bool recursive, boost::function<bool(const Filesystem::Path&)> filter)
-{
-
-	std::vector<Path> files;
-
-	if (pathExists(path) == true)
-	{
-		if (recursive)
-		{
-			std::vector<Path> dirs = listSubdirectories(path);
-			BOOST_FOREACH(Path& dir, dirs)
-			{
-				std::vector<Path> subfiles = listFilteredFiles(dir, recursive, filter);
-				BOOST_FOREACH(Path& file, subfiles)
-				{
-					files.push_back(file);
-				}
-			}
-		}
-		Iterator end;
-		for (Iterator iter(path); iter != end; ++iter)
-		{
-			if (isDirectory(iter->path()) == false && filter(iter->path()))	{
-				files.push_back(iter->path());
-			}
-		}
-	}
-	return files;
-}
-
 std::vector<std::string> Filesystem::listSubdirectories(const std::string& path)
 {
     auto subdirs = listSubdirectories(Path(path));
@@ -349,6 +304,107 @@ std::string Filesystem::fileExtension(const std::string & path)
 std::string Filesystem::fileExtension(const Path & path)
 {
     return path.extension().string();
+}
+
+const Filesystem::size_t Filesystem::availableSpace(const std::string & path)
+{
+	return availableSpace(Path(path));
+}
+
+const Filesystem::size_t Filesystem::availableSpace(const Path & path)
+{
+	Filesystem::size_t ret = 0;
+
+	try{
+		if (isRegularFile(path) == true){
+			auto s = boost::filesystem::space(path.parent_path());
+			ret = s.available;
+		}
+		else{
+			auto s = boost::filesystem::space(path);
+			ret = s.available;
+		}
+		
+	}
+	catch (...){
+
+	}
+
+	return ret;
+}
+
+const Filesystem::size_t Filesystem::capacity(const std::string & path)
+{
+	return capacity(Path(path));
+}
+
+const Filesystem::size_t Filesystem::capacity(const Path & path)
+{
+	Filesystem::size_t ret = -1;
+
+	try{
+		auto s = boost::filesystem::space(path);
+		ret = s.capacity;
+	}
+	catch (...){
+
+	}
+
+	return ret;
+}
+
+const Filesystem::size_t Filesystem::freeSpace(const std::string & path)
+{
+	return freeSpace(Path(path));
+}
+
+const Filesystem::size_t Filesystem::freeSpace(const Path & path)
+{
+	Filesystem::size_t ret = -1;
+
+	try{
+		auto s = boost::filesystem::space(path);
+		ret = s.free;
+	}
+	catch (...){
+
+	}
+
+	return ret;
+}
+
+const Filesystem::size_t Filesystem::size(const std::string & path)
+{
+	return size(Path(path));
+}
+
+const Filesystem::size_t Filesystem::size(const Path & path)
+{
+	Filesystem::size_t ret = -1;
+
+	try{
+
+		if (isRegularFile(path) == true){
+			ret = boost::filesystem::file_size(path);
+		}
+		else if (isDirectory(path) == true){
+			ret = 0;
+			for (boost::filesystem::recursive_directory_iterator it(path);
+				it != boost::filesystem::recursive_directory_iterator();
+				++it)
+			{
+				if (isDirectory(*it) == false){
+					ret += boost::filesystem::file_size(*it);
+				}					
+			}
+		}
+
+	}
+	catch (...){
+
+	}
+
+	return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

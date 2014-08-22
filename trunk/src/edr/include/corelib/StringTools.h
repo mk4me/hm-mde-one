@@ -41,13 +41,16 @@ namespace core {
         }
     }
 
-    
+    inline std::string toStdString(const QString& str)
+    {
+        const QByteArray asc = str.toLatin1(); 
+        return toStdString(asc.constData(), asc.length()); 
+    }
+
     inline std::string toStdString(const boost::filesystem::path& path)
     {
         return path.string();
     }
-
-
 
     //! Przechowywanie instancji tego typu spowoduje błędy przy wyłuskiwaniu wartości.
     struct toString_t

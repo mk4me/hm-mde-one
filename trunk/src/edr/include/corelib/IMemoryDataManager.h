@@ -53,8 +53,6 @@ namespace core {
         //! Wywo³ane, gdy hierarchia, lub jej dane siê zmieni³y
         //! \param ptr update'owany element
         virtual void updateRoot(IHierarchyItemConstPtr ptr) = 0;
-
-        
     };
 
     class IMemoryDataManagerHierarchy : public IMemoryDataManagerHierarchyOperations

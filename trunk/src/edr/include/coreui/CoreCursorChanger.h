@@ -10,7 +10,7 @@
 #define HEADER_GUARD___CORECURSORCHANGER_H__
 
 #include <coreui/Export.h>
-#include <QtCore/qnamespace.h>
+#include <QtGui/QCursor>
 
 namespace coreUI
 {
@@ -19,9 +19,17 @@ namespace coreUI
 	{
 	public:
 		//! \param cursorShape Tymczasowy kszta³t kursora
-		CoreCursorChanger(const Qt::CursorShape cursorShape = Qt::BusyCursor);
+		explicit CoreCursorChanger(const Qt::CursorShape cursorShape = Qt::BusyCursor);
+		//! \param cursor Tymczasowy kursor
+		explicit CoreCursorChanger(const QCursor & cursor);
 		//! Destruktor
 		~CoreCursorChanger();
+		//! Metoda przywraca poprzedni ksztalt kursora
+		void restore();
+
+	private:
+		//! Czy kursor by³ ju¿ przywrócony
+		bool restored;
 	};
 }
 

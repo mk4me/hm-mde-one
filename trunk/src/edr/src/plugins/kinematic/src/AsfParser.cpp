@@ -40,7 +40,7 @@ void AsfParser::acceptedExpressions(Expressions & expressions) const
     plugin::IParser::ExpressionDescription expDesc;
     expDesc.description = "Acclaim Skeleton File format";
 
-    expDesc.objectsTypes.push_back(typeid(kinematic::SkeletalModel));
+	expDesc.objectsTypes.push_back(typeid(kinematic::SkeletalModel));
 
     expressions[".*\\.asf$"] = expDesc;
 }

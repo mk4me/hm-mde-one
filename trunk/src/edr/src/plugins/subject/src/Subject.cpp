@@ -64,7 +64,7 @@ void Subject::addSession(const core::VariantConstPtr & session)
 {
 	utils::TypeInfoList types;
 	session->data()->getSupportedTypes(types);
-	if(std::find(types.begin(), types.end(), typeid(PluginSubject::ISession)) == types.end()){
+	if (std::find(types.begin(), types.end(), typeid(PluginSubject::ISession)) == types.end()){
 		throw std::runtime_error("Data type does not support PluginSubject::ISession type");
 	}
 

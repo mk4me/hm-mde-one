@@ -1,13 +1,13 @@
 #include <testnodefactory/TestDFPin.h>
 #include <testnodefactory/TestDFNodeProcessing.h>
 
-#include <boost/shared_ptr.hpp>
+#include <utils/SmartPtr.h>
 #include <iostream>
 #include <string>
 
 TestDFPin::TestDFPin(const std::string & pinName, bool required,
-		const std::set<dflm::WPinPtr> & requiredPins)
-		: DFPin(pinName, required, requiredPins){
+	const std::set<dflm::WPinPtr> & requiredPins)
+	: DFPin(pinName, required, requiredPins){
 }
 
 TestDFPin::~TestDFPin(void)
@@ -17,10 +17,11 @@ TestDFPin::~TestDFPin(void)
 std::string TestDFPin::getPinFullName() const{
 	std::string fullName;
 
-	boost::shared_ptr<TestDFNodeProcessing> parent(boost::dynamic_pointer_cast<TestDFNodeProcessing>(getParent()));
-	if(parent != 0){
+	utils::shared_ptr<TestDFNodeProcessing> parent(boost::dynamic_pointer_cast<TestDFNodeProcessing>(getParent()));
+	if (parent != 0){
 		fullName.append(parent->getName());
-	}else{
+	}
+	else{
 		fullName.append("UNKNOWN PARENT");
 	}
 

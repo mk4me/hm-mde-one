@@ -183,7 +183,7 @@ QDockWidget* AnalisisWidget::createDockVisualizer(const core::VisualizerPtr & vi
 
     auto visWidget = new coreUI::CoreVisualizerWidget(visualizer);
     
-    auto dockVisWidget = embeddWidget(visWidget, QString::fromStdString(visualizer->getName() + "[*]"),
+	auto dockVisWidget = coreUI::CoreDockWidget::embeddWidget(visWidget, QString::fromStdString(visualizer->getName() + "[*]"),
         Qt::AllDockWidgetAreas,
         false);
 
@@ -204,18 +204,6 @@ QDockWidget* AnalisisWidget::createDockVisualizer(const core::VisualizerPtr & vi
     dockVisWidget->setMinimumSize((std::max)(50, dockVisWidget->minimumWidth()), (std::max)(50, dockVisWidget->minimumHeight()));
     
     return dockVisWidget;
-}
-
-coreUI::CoreDockWidget* AnalisisWidget::embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent)
-{
-    coreUI::CoreDockWidget * embeddedDockWidget = new coreUI::CoreDockWidget(windowTitle);
-    embeddedDockWidget->setWidget(widget);
-    embeddedDockWidget->setAllowedAreas(allowedAreas);
-    embeddedDockWidget->setPermanent(permanent);
-
-    auto consoleTitleBar = coreUI::CoreTitleBar::supplyWithCoreTitleBar(embeddedDockWidget, false);
-
-    return embeddedDockWidget;
 }
 
 void AnalisisWidget::registerVisualizerContext(ContextEventFilterPtr contextEventFilter, coreUI::CoreTitleBar * titleBar, coreUI::CoreVisualizerWidget* visualizerDockWidget, const core::VisualizerPtr & visualizer )

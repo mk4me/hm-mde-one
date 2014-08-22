@@ -17,6 +17,8 @@
 //! W konstruktorze pobiera widget, na podstawie dostarczonych przez niego akcji tworzony jest kontekst 
 class COREUI_EXPORT SimpleTab : public coreUI::AbstractTab
 {
+	Q_OBJECT
+
 public:
     SimpleTab(QWidget* mainWidget, const QIcon& icon, const QString& label);
     SimpleTab(const QIcon& icon, const QString& label);

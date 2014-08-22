@@ -97,8 +97,8 @@ private:
 	//! Klasa pomocnicza przy rysowaniu trajektorii
 	TrajectoryDrawerManagerPtr trajectoriesManager;
 };
-typedef boost::shared_ptr<MarkerSerie> MarkerSeriePtr;
-typedef boost::shared_ptr<const MarkerSerie> MarkerSerieConstPtr;
+typedef utils::shared_ptr<MarkerSerie> MarkerSeriePtr;
+typedef utils::shared_ptr<const MarkerSerie> MarkerSerieConstPtr;
 
 
 #endif

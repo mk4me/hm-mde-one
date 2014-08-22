@@ -6,17 +6,16 @@
 #include <corelib/DataAccessors.h>
 #include <plugins/subject/IMotion.h>
 #include <corelib/HierarchyDataItem.h>
-#include <plugins/newCommunication/TreeItemHelper.h>
+#include <plugins/hmdbCommunication/TreeItemHelper.h>
 #include <boost/foreach.hpp>
 #include <plugins/subject/ISubject.h>
-#include <plugins/newCommunication/IPatient.h>
+#include <plugins/hmdbCommunication/IPatient.h>
 #include <corelib/PluginCommon.h>
 #include <utils/ObjectWrapper.h>
 #include "plugins/dicom/ILayeredImage.h"
 #include "DicomInternalStruct.h"
 #include "LayeredImage.h"
-#include <plugins/newCommunication/ICommunicationDataSource.h>
-#include <plugins/newCommunication/IDataSourceUser.h>
+#include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <corelib/ISourceManager.h>
 #include <corelib/PluginCommon.h>
 #include "DicomSource.h"
@@ -41,16 +40,20 @@ dicom::LayersVectorConstPtr resolveLocalXml( const fs::Path& xmlPath, dicom::Lay
 
 std::string getUserName()
 {
-    communication::ICommunicationDataSourcePtr comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
-    const communication::IUser* usr = comm->currentUser();
+	/*
+    hmdbCommunication::ICommunicationDataSourcePtr comm = core::querySource<hmdbCommunication::ICommunicationDataSource>(plugin::getSourceManager());
+    const hmdbCommunication::IUser* usr = comm->currentUser();
     return usr->name();
+	*/
+
+	return std::string();
 }
 
 core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::SubjectPtr subject )
 {
     std::string name = getUserName();
 
-	auto comm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
+	auto comm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
     
     fs::Path tmpDir = plugin::getUserDataPath() / std::string( "MEDUSA/tmp");
     if (!fs::pathExists(tmpDir)) {
@@ -70,7 +73,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
         core::VariantConstPtr sessionWrp;
         if (s->hasObject(typeid(dicom::DicomInternalStruct),false)) {
             core::ConstVariantsList inter;
-            s->getObjects(inter, typeid(dicom::DicomInternalStruct), false);
+			s->getObjects(inter, typeid(dicom::DicomInternalStruct), false);
             sessionWrp = *inter.begin();
             std::string sessionName;
             if (sessionWrp->getMetadata("core/source", sessionName)) {
@@ -94,7 +97,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
             std::string trialName;
             motionOW->getMetadata("core/source", trialName);
             
-            if (motion->hasObject(typeid(dicom::ILayeredImage), false)) {
+			if (motion->hasObject(typeid(dicom::ILayeredImage), false)) {
                 core::ConstVariantsList images;
                 core::ConstVariantsList layers;
                 motion->getObjects(images, typeid(dicom::ILayeredImage), false);	
@@ -123,7 +126,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                             }
                         }
 
-						ncimg->setTrialID(comm->trialID(stem.string()));
+						//ncimg->setTrialID(comm->trialID(stem.string()));
                         
                         QIcon icon;
                         auto hasAnnotation = [&](const std::string& filename, const core::ConstVariantsList& layers) -> bool {

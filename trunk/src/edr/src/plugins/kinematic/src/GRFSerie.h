@@ -85,8 +85,8 @@ private:
 		//! \return aktualny kolor wektora
 		const osg::Vec4& getColor() const;
 	};
-	typedef boost::shared_ptr<Arrow> ArrowPtr;
-	typedef boost::shared_ptr<const Arrow> ArrowConstPtr;
+	typedef utils::shared_ptr<Arrow> ArrowPtr;
+	typedef utils::shared_ptr<const Arrow> ArrowConstPtr;
 
     typedef std::map<IForcePlatformConstPtr, osg::ref_ptr<osg::ShapeDrawable> > Platform2Shape;
 
@@ -117,8 +117,8 @@ private:
         //! maksymalny rozmiar stosu
 		int maxSize;
 	};
-	typedef boost::shared_ptr<GhostStack> GhostStackPtr;
-	typedef boost::shared_ptr<const GhostStack> GhostStackConstPtr;
+	typedef utils::shared_ptr<GhostStack> GhostStackPtr;
+	typedef utils::shared_ptr<const GhostStack> GhostStackConstPtr;
 
 private:
 	//! Tworzy węzeł z geometria wszystkich płyt GRF

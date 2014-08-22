@@ -9,12 +9,13 @@
 #ifndef HEADER_GUARD_DICOM__ANNOTATIONSTATUSFILTER_H__
 #define HEADER_GUARD_DICOM__ANNOTATIONSTATUSFILTER_H__
 
-#include <plugins/newCommunication/DataSourceFilter.h>
+//#include <plugins/hmdbCommunication/DataSourceFilter.h>
+#include <hmdbserviceslib/ShallowCopy.h>
 #include <set>
 
 namespace dicom
 {
-	class AnnotationStatusFilter : public DataSourceFilter
+	class AnnotationStatusFilter// : public ShallowCopyFilter
 	{
 	public:
 		//! Zbiór identyfikatorów
@@ -35,7 +36,7 @@ namespace dicom
 		virtual std::string name() const;
 
 		//! Filtr dla motionów opisuj¹cych badania USG
-		virtual bool filterMotion(const webservices::MotionShallowCopy::Trial* motion) const;
+		virtual bool filterMotion(const hmdbServices::MotionShallowCopy::Trial* motion) const;
 
 		//! \param identifiers Identyfikatory na których bêdzie operowa³ filtr
 		void setIdentifiers(const Identifiers & identifiers);

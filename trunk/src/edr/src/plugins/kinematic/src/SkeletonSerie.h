@@ -3,9 +3,9 @@
 	created:	4:9:2011   14:24
 	filename: 	SkeletonSerie.h
 	author:		Wojciech Kniec
-	
-	purpose:	
-*********************************************************************/
+
+	purpose:
+	*********************************************************************/
 
 #ifndef HEADER_GUARD_KINEMATIC__SKELETONSERIE_H__
 #define HEADER_GUARD_KINEMATIC__SKELETONSERIE_H__
@@ -27,7 +27,7 @@ class SkeletonJointsMapping;
 class TrajectoryDrawerManager;
 
 //! Seria danych wizualizatora 3D wizualizująca animacje szkieletowa
-class SkeletonSerie :  public QObject, public KinematicTimeSerie, public IGhostSerie
+class SkeletonSerie : public QObject, public KinematicTimeSerie, public IGhostSerie
 {
 	Q_OBJECT;
 
@@ -39,19 +39,19 @@ public:
 
 	virtual ~SkeletonSerie() {}
 
-private slots:
+	private slots:
 	//! zmiana osi, gdy otrzymamy obiekt w nietypowym ukł. współrzędnych
-	//! \param xyz 
+	//! \param xyz
 	void setAxis(bool xyz);
 
 public:
-    //! Ustawia nową nazwę serii
-    //! \param name nowa nazwa
-    virtual void setName(const std::string & name);
-    //! \return nazwa serii
-    virtual const std::string getName() const;
-    //! \return ustawione dane
-    virtual const core::VariantConstPtr & getData() const;
+	//! Ustawia nową nazwę serii
+	//! \param name nowa nazwa
+	virtual void setName(const std::string & name);
+	//! \return nazwa serii
+	virtual const std::string getName() const;
+	//! \return ustawione dane
+	virtual const core::VariantConstPtr & getData() const;
 
 	virtual void update();
 
@@ -66,7 +66,7 @@ public:
 	virtual const bool ghostVisible() const;
 	virtual void setGhostVisible(const bool visible);
 
-    utils::shared_ptr<TrajectoryDrawerManager> getTrajectoriesManager();
+	utils::shared_ptr<TrajectoryDrawerManager> getTrajectoriesManager();
 
 
 protected:
@@ -91,18 +91,18 @@ private:
 	osg::Vec3 rootPosition;
 	//! Czas faktycznej aktualizacji
 	double lastUpdateTime;
-    //! Wizualizator, który utworzył serie
+	//! Wizualizator, który utworzył serie
 	KinematicVisualizer * visualizer;
-    //! wrapper przekazany serii
-    core::VariantConstPtr data;
+	//! wrapper przekazany serii
+	core::VariantConstPtr data;
 	//! Dane rozpakowane
 	kinematic::JointAnglesCollectionConstPtr jointAngles;
 	//! Typ danych
 	utils::TypeInfo requestedType;
-    //! nazwa serii
-    std::string name;
-    //! czy operujemy na układzie XYZ czy innym
-    bool xyzAxis;
+	//! nazwa serii
+	std::string name;
+	//! czy operujemy na układzie XYZ czy innym
+	bool xyzAxis;
 	//! Obiekt rysujący punkty
 	utils::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
 	//! Obiekt rysujący połączenia
@@ -118,7 +118,7 @@ private:
 };
 
 //! Seria danych wizualizatora 3D wizualizująca animacje szkieletowa
-class SkeletonStreamSerie :  public QObject, public KinematicSerie
+class SkeletonStreamSerie : public QObject, public KinematicSerie
 {
 	Q_OBJECT;
 
@@ -131,9 +131,9 @@ public:
 	virtual ~SkeletonStreamSerie();
 
 	private slots:
-		//! zmiana osi, gdy otrzymamy obiekt w nietypowym ukł. współrzędnych
-		//! \param xyz 
-		void setAxis(bool xyz);
+	//! zmiana osi, gdy otrzymamy obiekt w nietypowym ukł. współrzędnych
+	//! \param xyz
+	void setAxis(bool xyz);
 
 public:
 
@@ -168,7 +168,7 @@ private:
 	//! Czy wyliczono juz poprawkę na wysokość
 	bool heightCompensation;
 	//! Obiekt aktualizujący
-	utils::StreamStatusObserverPtr updater;
+	threadingUtils::StreamStatusObserverPtr updater;
 	//! Aktualna dodatkowa rotacja wynikająca ze zmiany osi
 	osg::Quat preRot;
 	//! Pozycja wynikająca z położenia roota szkieletu
@@ -194,8 +194,7 @@ private:
 	osgAnimation::Bone* root;
 };
 
-typedef boost::shared_ptr<SkeletonSerie> SkeletonSeriePtr;
-typedef boost::shared_ptr<const SkeletonSerie> SkeletonSerieConstPtr;
+typedef utils::shared_ptr<SkeletonSerie> SkeletonSeriePtr;
+typedef utils::shared_ptr<const SkeletonSerie> SkeletonSerieConstPtr;
 
 #endif
-

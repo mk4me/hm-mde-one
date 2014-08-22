@@ -9,9 +9,10 @@
 #include <vector>
 #include <set>
 #include <string>
+#include <algorithm>
 
 #include <boost/filesystem.hpp>
-#include <boost/function.hpp>
+
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -25,6 +26,7 @@ public:
     typedef boost::filesystem::directory_entry DirectoryEntry;
     typedef boost::filesystem::directory_iterator Iterator;
     typedef boost::filesystem::recursive_directory_iterator RecursiveIterator;
+	typedef boost::uintmax_t size_t;
 
 public:
 	/*
@@ -91,13 +93,21 @@ public:
     static std::vector<Path> listFiles(const Path& path, bool recursive, const std::vector<std::string>& masks);
 	/*
 	Listuje wszystkie pliki danego folderu spełniające kryterium przekazywanego filtru.
+	@tparam Path Typ opisujący ścieżkę
+	@tparam Predicate Obiekt opisujący czy dana wartość ma być usunięta
 	@param path ścieżka do folderu który ma być przeszukany
 	@param recursive czy szukać plików w podfolderach
 	@param filter funkcja testująca przeszukiwane pliki
 	@return lista wszystkich plików wraz ze ścieżką
 	*/
-	static std::vector<std::string> listFilteredFiles(const std::string& path, bool recursive, boost::function<bool(const std::string&)> filter);
-	static std::vector<Path> listFilteredFiles(const Path& path, bool recursive, boost::function<bool(const Path&)> filter);          
+	template<typename Path, typename Predicate>
+	static std::vector<Path> listFilteredFiles(const Path& path, bool recursive, Predicate filter)
+	{
+		auto ret(listFiles(path, recursive));
+		auto eIT = std::remove_if(ret.begin(), ret.end(), filter);
+		ret.erase(eIT, ret.end());
+		return ret;
+	}	
 	/*
 	Listuje wszystkie podfoldery danego folderu.
 	@param path ścieżka do folderu który ma być przeszukany
@@ -141,9 +151,37 @@ public:
     static std::string fileExtension(const std::string & path);
     static std::string fileExtension(const Path & path);
 
-private:
-    //! Prywatny konstruktor uniemożliwiający tworzenie instancji typu.
-    Filesystem() {}
+	/*
+	Wyciąga wolną przestrzeń w bajtach do zapisu dla aktualnego użytkownika
+	@param path ścieżka partycji
+	@return wolna przestrzeń w bajtach dla danego użytkownika
+	*/
+	static const size_t availableSpace(const std::string & path);
+	static const size_t availableSpace(const Path & path);
+
+	/*
+	Wyciąga pojemność partycji
+	@param path ścieżka partycji
+	@return pojemnośc dysku w bajtach
+	*/
+	static const size_t capacity(const std::string & path);
+	static const size_t capacity(const Path & path);
+
+	/*
+	Wyciąga całkowitą wolną przestrzeń do zapisu dla partycji
+	@param path ścieżka partycji
+	@return Całkowita wolna przestrzeń partycji do zapisu w bajtach
+	*/
+	static const size_t freeSpace(const std::string & path);
+	static const size_t freeSpace(const Path & path);
+
+	/*
+	Wyciąga rozmiar pliku/katalogu wskazanego ścieżką
+	@param path ścieżka
+	@return Całkowity rozmiar wskazany przez ścieżke
+	*/
+	static const size_t size(const std::string & path);
+	static const size_t size(const Path & path);
 };
 
 // Zbiór ścieżek

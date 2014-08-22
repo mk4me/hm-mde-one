@@ -73,25 +73,25 @@ void Variant::set(const utils::ObjectWrapperPtr & wrapper)
 
 utils::ObjectWrapper::get_t Variant::get(const bool exact)
 {
-	initialize();
+	innerInitialize();
 	return wrapper_->get(exact);
 }
 
 const utils::ObjectWrapper::get_t Variant::get(const bool exact) const
 {
-	initialize();
+	innerInitialize();
 	return utils::ObjectWrapperConstPtr(wrapper_)->get(exact);
 }
 
 void * Variant::getRawPtr()
 {
-	initialize();
+	innerInitialize();
 	return wrapper_->getRawPtr();
 }
 
 const void * Variant::getRawPtr() const
 {
-	initialize();
+	innerInitialize();
 	return wrapper_->getRawPtr();
 }
 
@@ -176,11 +176,17 @@ void Variant::setInitializer(const VariantInitializerPtr & initializer)
 	initializer_ = initializer;
 
 	if (initializer_ != nullptr){
-		reset();
+		resetData();
 	}
 	else{
 		initialized_ = true;
 	}
+}
+
+const VariantInitializerPtr Variant::initializer()
+{
+	ScopedLock lock(sync_);
+	return initializer_;
 }
 
 const VariantInitializerConstPtr Variant::initializer() const
@@ -189,7 +195,7 @@ const VariantInitializerConstPtr Variant::initializer() const
 	return initializer_;
 }
 
-void Variant::initialize() const
+void Variant::innerInitialize() const
 {
 	ScopedLock lock(sync_);
 	if (initialized() == false && initializer_ != nullptr){
@@ -233,7 +239,7 @@ void Variant::clone(Variant & dest, const CloneOp co) const
 	dest.initialized_ = initialized_;
 }
 
-void Variant::reset()
+void Variant::resetData()
 {
 	wrapper_->reset();
 	initialized_ = false;
@@ -262,6 +268,20 @@ const bool Variant::isEqual(const Variant & obj) const
 		((initializer_ != nullptr) && (obj.initializer_ != nullptr) && initializer_->isEqual(*(obj.initializer_))))));
 }
 
+
+void Variant::tryInitialize()
+{
+	innerInitialize();
+}
+
+void Variant::forceInitialize()
+{
+	ScopedLock lock(sync_);
+	utils::Push<mutable bool> init(initializing_, true);
+	initializer_->initialize(const_cast<Variant*>(this));
+	initialized_ = true;
+}
+
 const Variant::data_t Variant::data() const
 {
 	return data_t(this);
@@ -269,7 +289,7 @@ const Variant::data_t Variant::data() const
 
 const Variant::data_t Variant::initializedData() const
 {
-	initialize();
+	innerInitialize();
 	return data_t(this);
 }
 
@@ -279,4 +299,9 @@ void Variant::tryResetInitializer()
 		initializer_.reset();
 		initialized_ = true;
 	}
+}
+
+void Variant::copyData(const Variant & srcWrapper)
+{
+	wrapper_->clone(*(srcWrapper.wrapper_));
 }

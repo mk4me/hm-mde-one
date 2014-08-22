@@ -1,15 +1,15 @@
 /********************************************************************
-    created:  2012/12/10
-    created:  10:12:2012   20:35
-    filename: MRNodeImpl.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+	created:  2012/12/10
+	created:  10:12:2012   20:35
+	filename: MRNodeImpl.h
+	author:   Mateusz Janiak
+
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD___MRNODEIMPL_H__
 #define HEADER_GUARD___MRNODEIMPL_H__
 
-#include <threading/SynchronizationPolicies.h>
+#include <threadingUtils/SynchronizationPolicies.h>
 #include <vector>
 
 class MRInputPin;
@@ -32,10 +32,10 @@ public:
 
 private:
 	bool paused_;
-	utils::StrictSyncPolicy syncPolicy;
+	threadingUtils::StrictSyncPolicy syncPolicy;
 };
 
-class MRSourceNodeImpl : public utils::StrictSyncPolicy
+class MRSourceNodeImpl : public threadingUtils::StrictSyncPolicy
 {
 private:
 
@@ -70,7 +70,7 @@ private:
 	OutputPins outputPins;
 };
 
-class MRSinkNodeImpl : public utils::StrictSyncPolicy
+class MRSinkNodeImpl : public threadingUtils::StrictSyncPolicy
 {
 private:
 

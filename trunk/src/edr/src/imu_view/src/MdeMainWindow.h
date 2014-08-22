@@ -11,6 +11,7 @@
 #include "ContextEventFilter.h"
 #include "AnalisisModel.h"
 #include <coreui/IAppUsageContext.h>
+#include <coreui/SingleInstanceWindow.h>
 
 class QWidget;
 class MdeServiceWindow;
@@ -44,13 +45,14 @@ private:
 };
 //! Klasa realizuje widok aplikacji dla medyków
 //! Z czasem klasa zaczela się rozrastac, wymaga glebszej refaktoryzacji
-class MdeMainWindow : public coreUI::CoreMainWindow, public coreUI::IAppUsageContextManager//, private core::Visualizer::IVisualizerObserver
+class MdeMainWindow : public coreUI::CoreMainWindow, public coreUI::IAppUsageContextManager,
+	public coreUI::SingleInstanceWindow
 {
     Q_OBJECT;
     friend class MdeMainWindowController;
 
 public:
-    MdeMainWindow(const CloseUpOperations & closeUpOperations);
+	MdeMainWindow(const CloseUpOperations & closeUpOperations, const std::string & appName);
     virtual ~MdeMainWindow();
 
 public:

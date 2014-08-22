@@ -3,9 +3,9 @@
 	created:	17:7:2011   11:26
 	filename: 	SkeletalMappingScheme.h
 	author:		Wojciech Kniec
-	
-	purpose:	
-*********************************************************************/
+
+	purpose:
+	*********************************************************************/
 
 #ifndef HEADER_GUARD_KINEMATIC__SKELETALMAPPINGSCHEME_H__
 #define HEADER_GUARD_KINEMATIC__SKELETALMAPPINGSCHEME_H__
@@ -15,12 +15,12 @@
 #include <vector>
 #include <set>
 #include <tinyxml2.h>
+#include <utils/SmartPtr.h>
 
 namespace kinematic {
-
 	class SkeletonMappingScheme;
-	typedef boost::shared_ptr<SkeletonMappingScheme> SkeletonMappingSchemePtr;
-	typedef boost::shared_ptr<const SkeletonMappingScheme> SkeletonMappingSchemeConstPtr;
+	typedef utils::shared_ptr<SkeletonMappingScheme> SkeletonMappingSchemePtr;
+	typedef utils::shared_ptr<const SkeletonMappingScheme> SkeletonMappingSchemeConstPtr;
 
 	//! Schemat mapowania kości
 	class SkeletonMappingScheme {
@@ -47,8 +47,8 @@ namespace kinematic {
 		const jointsMappingDict& getJointsMappingDictionary() const { return jointsMappingDictionary_; }
 		//! \return zwraca słownik mapowania
 		const segmentsMappingDict& getSegmentsMappingDictionary() const { return segmentsMappingDictionary_; }
-        //! \return głęboka kopia obiektu
-		virtual SkeletonMappingScheme* clone() const 
+		//! \return głęboka kopia obiektu
+		virtual SkeletonMappingScheme* clone() const
 		{
 			std::auto_ptr<SkeletonMappingScheme> ret(new SkeletonMappingScheme(*this));
 			return ret.release();
@@ -62,14 +62,13 @@ namespace kinematic {
 			: jointsMappingDictionary_(jointsMapping),
 			segmentsMappingDictionary_(segmentsMapping)
 		{
-			
 		}
 
 		//! \return Domyslne mapowanie
 		static const jointsMappingDict createDefaultMappingDict();
 
 	private:
-        //! wypełniony słownik mapowania jointow
+		//! wypełniony słownik mapowania jointow
 		jointsMappingDict jointsMappingDictionary_;
 		//! wypelniony slownik mapowania segmentow
 		segmentsMappingDict segmentsMappingDictionary_;

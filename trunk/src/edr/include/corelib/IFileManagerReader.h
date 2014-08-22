@@ -9,6 +9,7 @@
 #ifndef HEADER_GUARD___IFILEMANAGERREADER_H__
 #define HEADER_GUARD___IFILEMANAGERREADER_H__
 
+#include <threadingUtils/ITTransaction.h>
 #include <corelib/Filesystem.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/VariantsCollection.h>
@@ -28,23 +29,28 @@ namespace core {
 		//! \return Prawda jeœli plik jest zarz¹dzany przez ten DM
 		virtual const bool isManaged(const Filesystem::Path & file) const = 0;
 
-		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
-		//! \return Mapa obiektów wzglêdem plików z których pochodza
+		//! \param file Plik kótry weryfikujemy czy jest w pe³ni za³adowany
+		//! \return Prawda jeœli plik jest w pe³ni za³adowany
+		virtual const bool isLoadedCompleately(const Filesystem::Path & file) const = 0;
+
+		//! \param file Plik dla któego pobieramy dane
+		//! \param objects [out] Lista danych dla pliku
 		virtual void getObjects(const Filesystem::Path & file, ConstVariantsList & objects) const = 0;
 
-		//! \param files Zbior plików dla których chcemy pobraæ listê obiektów
-		//! \return Mapa obiektów wzglêdem plików z których pochodza
+		//! \param file Plik dla któego pobieramy dane
+		//! \param objects [out] Kolekcja danych pliku
 		virtual void getObjects(const Filesystem::Path & file, VariantsCollection & objects) const = 0;
 	};
 
 	//! Zapewnia dostêp do danych plikowych aplikacji, pozwala obserwowaæ zmiany z nimi zwi¹zane
-	class IFileManagerReader : public IFileManagerReaderOperations
+	class IFileManagerReader : public threadingUtils::ITReadableTransaction<IFileManagerReaderOperations>
 	{
 	public:
 		//! Typ operacji na plikach
 		enum ModificationType {
 			ADD_FILE,				//! Operacja dodawania pliku
-			REMOVE_FILE,			//! Operacja usuniêcia pliku			
+			REMOVE_FILE,			//! Operacja usuniêcia pliku	
+			RELOAD_FILE,			//! Operacja prze³adowania pliku (ca³ego lub dodania tylko brakujacych danych wy³adowanych z poziomu MemoryDM)
 			REMOVE_UNUSED_FILE		//! Operacja usuniêcia pliku w wyniku usuniêcia jego wszystkich obiektów ( w wyniku niepomyœlnych inicjalizacji, innych operacji u¿ytkowników na MemoryDataManager)			
 		};
 
@@ -53,6 +59,8 @@ namespace core {
 		{
 			Filesystem::Path filePath;		//! Plik który zmieniamy
 			ModificationType modyfication;	//! Typ zmiany na plikach
+			ConstVariantsList previousData;
+			ConstVariantsList currentData;
 		};
 
 		//! Agregat zmian w DM
@@ -64,9 +72,6 @@ namespace core {
 		//! WskaŸnik na obiek obserwuj¹cy zmiany
 		typedef utils::shared_ptr<IFileObserver> FileObserverPtr;
 
-		//! WskaŸnik transakcji
-		typedef utils::shared_ptr<IFileManagerReaderOperations> TransactionPtr;
-
 	public:
 
 		//! Destrutkor wirtualny
@@ -76,8 +81,6 @@ namespace core {
 		virtual void addObserver(const FileObserverPtr & fileWatcher) = 0;
 		//! \param fileWatcher Usuwany obserwator managera plików
 		virtual void removeObserver(const FileObserverPtr & fileWatcher) = 0;
-		//! \return Nowa transakcja do czytania danych
-		virtual TransactionPtr transaction() const = 0;
 	};
 
 }

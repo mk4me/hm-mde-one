@@ -9,13 +9,15 @@ class MemoryDataManager::MemoryTransaction : public IMemoryDataManager::IMemoryD
 {
 private:
 	MemoryDataManager * mdm;
+	utils::shared_ptr<threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy>> lock;
 	MemoryDataManager::ChangeList modyfications;
 	bool transactionRollbacked;
 
 public:
-	MemoryTransaction(MemoryDataManager * mdm) : mdm(mdm), transactionRollbacked(false)
-	{
-		mdm->sync.lock();
+	MemoryTransaction(MemoryDataManager * mdm) : mdm(mdm),
+		lock(new threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy>(mdm->sync)),
+		transactionRollbacked(false)
+	{		
 	}
 
 	~MemoryTransaction()
@@ -23,8 +25,7 @@ public:
 		if(transactionRollbacked == false){
 			if(modyfications.empty() == false){
 				mdm->updateObservers(modyfications);
-			}
-			mdm->sync.unlock();
+			}			
 		}
 	}
 
@@ -64,7 +65,7 @@ public:
 			}
 		}
 
-		mdm->sync.unlock();
+		lock.reset();
 	}
 
 	//! \data Dane wchodz�ce pod kontrol� DM
@@ -387,6 +388,14 @@ void MemoryDataManager::removeData(const VariantConstPtr & data)
 	}
 
 	rawRemoveData(data);
+
+	ChangeList changes;
+	ObjectChange change;
+	change.previousValue = data;
+	change.modyfication = IDataManagerReader::REMOVE_OBJECT;
+	change.type = data->data()->getTypeInfo();
+	changes.push_back(change);
+	updateObservers(changes);
 }
 
 void MemoryDataManager::updateData(const VariantConstPtr & data, const VariantConstPtr & newData)
@@ -397,7 +406,18 @@ void MemoryDataManager::updateData(const VariantConstPtr & data, const VariantCo
 		throw std::runtime_error("Object not managed by manager");
 	}
 
+	ChangeList changes;
+	ObjectChange change;
+	change.previousValue = data->clone();
+
 	rawUpdateData(data, newData);
+
+	change.currentValue = data;
+
+	change.modyfication = IDataManagerReader::UPDATE_OBJECT;
+	change.type = data->data()->getTypeInfo();
+	changes.push_back(change);
+	updateObservers(changes);
 }
 
 const bool MemoryDataManager::tryAddData(const VariantPtr & data)
@@ -486,22 +506,34 @@ void MemoryDataManager::rawAddData(const VariantPtr & data)
 
 void MemoryDataManager::rawRemoveData(const VariantConstPtr & data)
 {
-	objectsByTypes[data->data()->getTypeInfo()].erase(utils::const_pointer_cast<Variant>(data));
+	auto it = objectsByTypes.find(data->data()->getTypeInfo());
+	if (it != objectsByTypes.end()){
+		it->second.erase(utils::const_pointer_cast<Variant>(data));
+		if (it->second.empty() == true){
+			objectsByTypes.erase(it);
+		}
+	}
 }
 
 void MemoryDataManager::rawUpdateData(const VariantConstPtr & data, const VariantConstPtr & newData)
 {
 	//TODO
 	//assign value - clone?
+
+	auto d = utils::const_pointer_cast<Variant>(data);
+
+	d->copyData(*newData);
+	d->copyMetadata(*newData);
 }
 
 const bool MemoryDataManager::rawIsManaged(const VariantConstPtr & object) const
 {
-	if(getDataHierarchyManager()->isRegistered(object->data()->getTypeInfo()) == false){
+	auto type = object->data()->getTypeInfo();
+	if(getDataHierarchyManager()->isRegistered(type) == false){
 		throw std::runtime_error("Type not registered");
 	}
 
-	auto it = objectsByTypes.find(object->data()->getTypeInfo());
+	auto it = objectsByTypes.find(type);
 	if(it != objectsByTypes.end() && std::find(it->second.begin(), it->second.end(), object) != it->second.end()){
 		return true;
 	}

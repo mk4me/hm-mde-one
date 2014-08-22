@@ -22,11 +22,19 @@
 #include "AnalysisTab.h"
 #include "ui_toolboxmaindeffile.h"
 #include "MdeServiceWindow.h"
+#include <plugins/hmdbCommunication/IHMDBSource.h>
+#include <plugins/hmdbCommunication/DataViewWidget.h>
+#include <plugins/hmdbCommunication/OperationProgressWidget.h>
+#include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
+#include <plugins/hmdbCommunication/IDataSourcePerspective.h>
+#include <corelib/PluginCommon.h>
+#include <corelib/IPath.h>
+#include "IMUSourceViewWidget.h"
 
 using namespace core;
 
-MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations) :
-    coreUI::CoreMainWindow(closeUpOperations),
+MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations, const std::string & appName)
+	: coreUI::CoreMainWindow(closeUpOperations), coreUI::SingleInstanceWindow(appName),
     controller(this)
 {
     ui = new Ui::HMMMain();
@@ -63,6 +71,100 @@ void MdeMainWindow::showSplashScreenMessage(const QString & message)
     splashScreen()->showMessage(message, Qt::AlignBottom | Qt::AlignLeft, Qt::white);
 }
 
+class IMUHMDBSourceView : public hmdbCommunication::IHMDBSourceViewManager::IHMDBSourceContextView
+{
+public:
+	//! \return Nazwa widoku
+	virtual const QString name() const { return QObject::tr("IMU view"); }
+	//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych jakim zasilamy widok
+	//! \return Widok obs³uguj¹cy kontekst
+	virtual QWidget * createView(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext, hmdbCommunication::IHMDBSourceViewManager * viewManager) {
+
+		hmdbCommunication::IDataSourcePerspective * perspective = nullptr;
+		hmdbCommunication::IDataSourceContent * content = nullptr;
+
+		if (viewManager->perspectivesCount(name()) > 0){
+			perspective = viewManager->perspective(0, name());
+		}
+		else if(viewManager->perspectivesCount() > 0){
+			perspective = viewManager->perspective(0);
+		}
+
+		if (viewManager->contentsCount(name()) > 0){
+			content = viewManager->content(0, name());
+		}
+		else if (viewManager->contentsCount() > 0){
+			content = viewManager->content(0);
+		}
+
+		return new IMUSourceViewWidget(shallowCopyContext, perspective, content);
+	}
+	//! \return Czy dany widok wymaga po³¹czenia z us³ugami webowymi
+	virtual const bool requiresRemoteContext() const { return true; }
+};
+
+class IMUPerspective : public hmdbCommunication::IDataSourcePerspective
+{
+public:
+	IMUPerspective() {}
+	virtual ~IMUPerspective() {}
+
+	virtual const QString name() const{ return QObject::tr("Subject"); }
+
+	virtual void rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const hmdbCommunication::ShallowCopy & shallowCopy)
+	{
+		QFont sessionFont;
+		sessionFont.setBold(true);
+		QFont motionFont;
+		motionFont.setItalic(true);
+
+		auto subjectsITEnd = shallowCopy.motionShallowCopy.performers.end();
+		for (auto subjectIT = shallowCopy.motionShallowCopy.performers.begin(); subjectIT != subjectsITEnd; ++subjectIT){
+			//jeœli pusty pacjent to go pomijamy
+			if (subjectIT->second->performerConfs.empty() == true){
+				continue;
+			}
+
+			//generuje item pacjenta
+			QTreeWidgetItem * item = nullptr;
+			if (subjectIT->second->patient != nullptr){
+				item = new hmdbCommunication::TreeWidgetContentItem(hmdbCommunication::PatientContent, subjectIT->second->patient->patientID);
+			}
+			else{
+				item = new hmdbCommunication::TreeWidgetContentItem(hmdbCommunication::SubjectContent, subjectIT->second->performerID);
+			}
+
+			treeWidgetItem->addChild(item);
+
+			auto perfConfsITEnd = subjectIT->second->performerConfs.end();
+			for (auto perfConfIT = subjectIT->second->performerConfs.begin(); perfConfIT != perfConfsITEnd; ++perfConfIT){
+				if (perfConfIT->second->session->trials.empty() == true){
+					continue;
+				}
+
+				//generuje item sesji
+				auto sessionItem = new hmdbCommunication::TreeWidgetContentItem(hmdbCommunication::SessionContent, perfConfIT->second->session->sessionID);
+				sessionItem->setFont(0, sessionFont);
+
+				item->addChild(sessionItem);
+
+				auto motionsITEnd = perfConfIT->second->session->trials.end();
+				for (auto motionIT = perfConfIT->second->session->trials.begin(); motionIT != motionsITEnd; ++motionIT){
+					if (motionIT->second->files.empty() == true){
+						continue;
+					}
+
+					//generuje item motiona
+					auto motionItem = new hmdbCommunication::TreeWidgetContentItem(hmdbCommunication::MotionContent, motionIT->second->trialID);
+					motionItem->setFont(0, motionFont);
+					sessionItem->addChild(motionItem);
+				}
+			}
+		}
+	}
+};
+
+
 void MdeMainWindow::customViewInit(QWidget * console)
 {
 	auto name2icon = [](const std::string& name, bool source) -> QIcon {
@@ -80,11 +182,41 @@ void MdeMainWindow::customViewInit(QWidget * console)
 	};
    auto memoryManager = plugin::getHierarchyManagerReader();
    memoryManager->addObserver(analysisModel);
-   trySetStyleByName("hmm");
+   //trySetStyleByName("hmm");
  
    this->showFullScreen();
-   
+
    auto sourceManager = plugin::getSourceManager();
+
+   auto hmdbSource = core::querySource<hmdbCommunication::IHMDBSource>(sourceManager);
+
+   if (hmdbSource != nullptr){
+	   auto vm = hmdbSource->viewManager();
+	   auto hmdbView = new IMUHMDBSourceView;
+
+	   vm->registerViewPrototype(hmdbView);
+
+	   {
+		   hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration ccfg;
+		   ccfg.name = tr("Default PJWSTK IMU data connection");
+		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
+		   ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
+		   ccfg.motionServicesConfiguration.userConfiguration.user = "";
+		   ccfg.motionServicesConfiguration.userConfiguration.password = "";
+		   ccfg.motionServicesConfiguration.serviceConfiguration.url = "https://v21.pjwstk.edu.pl/IMU";
+		   ccfg.motionServicesConfiguration.serviceConfiguration.caPath = QString::fromStdString((plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string());
+
+		   ccfg.motionDataConfiguration.serviceConfiguration.url = "ftps://v21.pjwstk.edu.pl";
+		   ccfg.motionDataConfiguration.serviceConfiguration.caPath = "";
+		   ccfg.motionDataConfiguration.userConfiguration.user = "testUser";
+		   ccfg.motionDataConfiguration.userConfiguration.password = "testUser";
+
+		   vm->registerConfiguration(ccfg, hmdbView->name());
+	   }
+
+	   vm->registerPerspective(new IMUPerspective, hmdbView->name());
+   }
+   
    for (int i = 0; i < sourceManager->getNumSources(); ++i) {
        auto source = sourceManager->getSource(i);
        QWidget* widget = source->getWidget();

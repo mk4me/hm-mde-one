@@ -19,7 +19,6 @@
 #include <boost/function.hpp>
 #include <boost/foreach.hpp>
 #include <boost/bind.hpp>
-#include <boost/smart_ptr.hpp>
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -52,6 +51,7 @@
 #include <QtWidgets/QFrame>
 
 #include <utils/Utils.h>
+#include <utils/SmartPtr.h>
 #include <utils/ObjectWrapper.h>
 
 #include <corelib/IVisualizer.h>

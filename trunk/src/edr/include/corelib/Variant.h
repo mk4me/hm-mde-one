@@ -4,21 +4,21 @@
 	author:	  Mateusz Janiak
 
 	purpose:
-*********************************************************************/
+	*********************************************************************/
 #ifndef __HEADER_GUARD_CORE__OBJECTWRAPPER_H__
 #define __HEADER_GUARD_CORE__OBJECTWRAPPER_H__
 
 #include <corelib/Export.h>
 #include <utils/SmartPtr.h>
 #include <utils/ObjectWrapper.h>
-#include <threading/SynchronizationPolicies.h>
+#include <threadingUtils/SynchronizationPolicies.h>
 #include <list>
 #include <set>
 #include <vector>
 
 namespace core
 {
-
+	//! Forward declaration
 	class Variant;
 
 	//! Klasa realizuj¹ca inicjalizacjê danych dla OW
@@ -43,12 +43,15 @@ namespace core
 
 	DEFINE_SMART_POINTERS(Variant);
 	typedef std::list<VariantPtr> VariantsList;
+	typedef std::list<VariantWeakPtr> WeakVariantsList;
 	typedef std::list<VariantConstPtr> ConstVariantsList;
+	typedef std::list<VariantConstWeakPtr> ConstWeakVariantsList;
 	typedef std::set<VariantPtr> VariantsSet;
 	typedef std::set<VariantConstPtr> ConstVariantsSet;
+	typedef std::set<VariantWeakPtr> WeakVariantsSet;
+	typedef std::set<VariantConstWeakPtr> ConstWeakVariantsSet;
 	typedef std::vector<VariantPtr> VariantsVector;
 	typedef std::vector<VariantConstPtr> ConstVariantsVector;
-	
 
 	class CORELIB_EXPORT Variant
 	{
@@ -57,7 +60,7 @@ namespace core
 		//! Typ przechowuj¹cy metadane OW
 		typedef std::map<std::string, std::string> Metadata;
 		//! Typ loklanej synchronizacji
-		typedef utils::ScopedLock<utils::RecursiveSyncPolicy> ScopedLock;
+		typedef threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> ScopedLock;
 
 	public:
 
@@ -96,7 +99,7 @@ namespace core
 		//! Faktyczne dane
 		utils::ObjectWrapperPtr wrapper_;
 		//! Obiekt synchronizuj¹cy
-		mutable utils::RecursiveSyncPolicy sync_;
+		mutable threadingUtils::RecursiveSyncPolicy sync_;
 		//! Czy jesteœmy w trakcie inicjalizacji
 		mutable bool initializing_;
 
@@ -124,6 +127,8 @@ namespace core
 			return VariantPtr(new Variant(utils::ObjectWrapper::create<T>()));
 		}
 
+		//! \tparam Ptr
+		//! \param object
 		template <class Ptr>
 		void set(const Ptr& object)
 		{
@@ -146,7 +151,7 @@ namespace core
 		template <class Ptr>
 		const bool tryGet(Ptr& object, bool exact = false)
 		{
-			initialize();
+			innerInitialize();
 			return wrapper_->tryGet(object, exact);
 		}
 
@@ -158,17 +163,23 @@ namespace core
 		template <class Ptr>
 		const bool tryGet(Ptr& object, bool exact = false) const
 		{
-			initialize();
+			innerInitialize();
 			return utils::ObjectWrapperConstPtr(wrapper_)->tryGet(object, exact);
 		}
 
+		//! \param exact
+		//! \return
 		utils::ObjectWrapper::get_t get(const bool exact = false);
-
+		//! \param exact
+		//! \return
 		const utils::ObjectWrapper::get_t get(const bool exact = false) const;
-
+		//! \return
 		void * getRawPtr();
-
+		//! \return
 		const void * getRawPtr() const;
+
+		//! Zeruje dane
+		void resetData();
 
 		//! Destruktor niepolimorficzny!!
 		~Variant();
@@ -195,9 +206,15 @@ namespace core
 		//! \param initializer Obiekt leniwie inicjuj¹cy wartoœæ OW
 		void setInitializer(const VariantInitializerPtr & initializer);
 		//! \return Obiekt leniwie inicjuj¹cy wartoœæ OW
+		const VariantInitializerPtr initializer();
+		//! \return Obiekt leniwie inicjuj¹cy wartoœæ OW
 		const VariantInitializerConstPtr initializer() const;
 		//! \return Czy obiekt by³ inicjalizowany
 		const bool initialized() const;
+		//! Metoda próbuje inicjalizowaæ dane
+		void tryInitialize();
+		//! Metoda ponownie inicjuje dane
+		void forceInitialize();
 		//! \return Dostêp do danych do odczytu
 		const data_t data() const;
 		//! \return Dostêp do danych do odczytu po inicjalizacji
@@ -214,14 +231,14 @@ namespace core
 		//! \param obj Obiekt z którym siê porównujemy
 		//! \return Czy obiekty s¹ takie same - trzymaj¹ te same dane
 		const bool isEqual(const Variant & obj) const;
+		//! \param srcWrapper Zrodlowy OW z ktorego kopiujemy dane
+		void copyData(const Variant & srcWrapper);
 
 	private:
 		//! Próbuje resetowaæ inicjalizator kiedy ustawia siê bezpoœrednio dane
 		void tryResetInitializer();
-		//! Zeruje dane
-		void reset();
 		//! Metoda próbuje inicjowac obiekt
-		void initialize() const;
+		void innerInitialize() const;
 		//! Prywatny operator kopiowania - nie mo¿na kopiowaæ sync_
 		Variant & operator=(const Variant &);
 	};

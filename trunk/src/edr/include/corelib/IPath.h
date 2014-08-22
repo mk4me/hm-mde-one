@@ -33,6 +33,8 @@ public:
     virtual const Filesystem::Path& getTmpPath() const = 0;
 	//! \return Zwraca pełną ścieżkę do folderu pluginu
 	virtual const Filesystem::Path& getPluginPath() const = 0;
+	//! \return Losowa nazwa pliku tymczasowego
+	virtual const Filesystem::Path generateTempFileName() const = 0;
 };
 
 }

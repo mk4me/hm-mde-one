@@ -1,6 +1,7 @@
 #include "CorePCH.h"
 #include "PluginPath.h"
 #include "ApplicationCommon.h"
+#include "Path.h"
 
 using namespace core;
 
@@ -39,4 +40,9 @@ const Filesystem::Path& PluginPath::getTmpPath() const
 const Filesystem::Path& PluginPath::getPluginPath() const
 {
 	return pluginPath;
+}
+
+const Filesystem::Path PluginPath::generateTempFileName() const
+{
+	return Path::TempFileName();
 }

@@ -11,6 +11,7 @@
 #include "ContextEventFilter.h"
 #include "AnalisisModel.h"
 #include <coreUI/SingleInstanceWindow.h>
+#include <coreui/SingleInstanceWindow.h>
 
 class QWidget;
 class MdeServiceWindow;
@@ -50,7 +51,7 @@ class MdeMainWindow : public coreUI::CoreMainWindow, public coreUI::SingleInstan
     friend class MdeMainWindowController;
 
 public:
-    MdeMainWindow(const CloseUpOperations & closeUpOperations);
+    MdeMainWindow(const CloseUpOperations & closeUpOperations, const std::string & appName);
     virtual ~MdeMainWindow();
 
 public:

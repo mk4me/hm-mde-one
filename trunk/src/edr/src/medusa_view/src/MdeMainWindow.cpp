@@ -22,19 +22,18 @@
 #include "AnalysisTab.h"
 #include "ui_toolboxmaindeffile.h"
 #include "MdeServiceWindow.h"
-#include "plugins/newCommunication/ICommunicationDataSource.h"
 #include <corelib/IVisualizerManager.h>
 #include <corelib/IVisualizer.h>
 #include <QtWidgets/QMessageBox>
 #include <QtGui/QCloseEvent>
 #include <corelib/Version.h>
 #include <plugins/medusaExporter/IMedusaExporterService.h>
+#include <plugins/hmdbCommunication/IHMDBSource.h>
 
 using namespace core;
 
-MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations) :
-    coreUI::CoreMainWindow(closeUpOperations),
-	coreUI::SingleInstanceWindow("medusa_view_{E3F0B695-7E6D-44BF-BDDF-603D2C33B1EF}"),
+MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations, const std::string & appName)
+	: coreUI::CoreMainWindow(closeUpOperations), coreUI::SingleInstanceWindow(appName),
     controller(this)
 {
     ui = new Ui::HMMMain();
@@ -81,7 +80,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
  
    this->showFullScreen();
 
-   communication::ICommunicationDataSourcePtr icomm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
+   utils::shared_ptr<hmdbCommunication::IHMDBSource> icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
    plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(icomm);
    
    auto sourceManager = plugin::getSourceManager();
@@ -94,7 +93,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
    }
 
    QWidget* commWidget = commSource->getWidget();
-   icomm->setCompactMode(true);
+   //icomm->setCompactMode(true);
    commWidget->setMaximumWidth(304);
 
    QSplitter* compound = new QSplitter();

@@ -9,12 +9,10 @@ AnnotationStatusFilter::AnnotationStatusFilter(const std::string & name,
 	: name_(name), accept(accept), missingDefault(missingDefault),
 	identifiers(identifiers)
 {
-
 }
 
 AnnotationStatusFilter::~AnnotationStatusFilter()
 {
-
 }
 
 std::string AnnotationStatusFilter::name() const
@@ -22,7 +20,7 @@ std::string AnnotationStatusFilter::name() const
 	return name_;
 }
 
-bool AnnotationStatusFilter::filterMotion(const webservices::MotionShallowCopy::Trial* motion) const
+bool AnnotationStatusFilter::filterMotion(const hmdbServices::MotionShallowCopy::Trial* motion) const
 {
 	return (identifiers.find(motion->trialID) != identifiers.end()) ? accept : missingDefault;
 }

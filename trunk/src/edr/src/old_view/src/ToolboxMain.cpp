@@ -41,7 +41,9 @@ struct SortActionsByNames
 
 typedef CoreSplitableDockWidgetT<WidgetClonePolicyCopyConstructor<CoreVisualizerWidget>> VisualizerWidget;
 
-ToolboxMain::ToolboxMain(const CloseUpOperations & closeUpOperations) : CoreMainWindow(closeUpOperations), ui(new Ui::EDRMain), visualizersPlaceholder(new QMainWindow)
+ToolboxMain::ToolboxMain(const CloseUpOperations & closeUpOperations, const std::string & appName)
+	: CoreMainWindow(closeUpOperations), SingleInstanceWindow(appName),
+	ui(new Ui::EDRMain), visualizersPlaceholder(new QMainWindow)
 {
 	ui->setupUi(this);
 	qApp->setApplicationName("EDR");
@@ -67,7 +69,7 @@ void ToolboxMain::customViewInit(QWidget * console)
 {
 	trySetStyleByName("dark");
 	connect(ui->menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));	
-	auto dockConsole = embeddWidget(console, tr("Console"), Qt::BottomDockWidgetArea, true);
+	auto dockConsole = coreUI::CoreDockWidget::embeddWidget(console, tr("Console"), Qt::BottomDockWidgetArea, true);
 	addDockWidget(Qt::BottomDockWidgetArea, dockConsole);
 	dockConsole->setFeatures(dockConsole->features() | QDockWidget::DockWidgetVerticalTitleBar);
 	dockConsole->setObjectName(QString::fromUtf8("ConsoleWidget"));
@@ -88,20 +90,20 @@ void ToolboxMain::initializeUI()
 		//QWidget* settingsWidget = service->getSettingsWidget();
 
 		if ( viewWidget ) {
-			addDockWidget(Qt::RightDockWidgetArea, embeddWidget(viewWidget, QString::fromStdString(service->name()), Qt::RightDockWidgetArea, true));
+			addDockWidget(Qt::RightDockWidgetArea, coreUI::CoreDockWidget::embeddWidget(viewWidget, QString::fromStdString(service->name()), Qt::RightDockWidgetArea, true));
 		}
 
         QWidgetList propertiesWidgets = service->getPropertiesWidgets();
         for (auto it = propertiesWidgets.begin(); it != propertiesWidgets.end(); ++it) {
-            addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(*it, QString::fromStdString(service->name()), Qt::LeftDockWidgetArea, true));
+			addDockWidget(Qt::LeftDockWidgetArea, coreUI::CoreDockWidget::embeddWidget(*it, QString::fromStdString(service->name()), Qt::LeftDockWidgetArea, true));
         }
 
 		//if ( controlWidget ) {
-		//	addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(controlWidget, QString::fromStdString(service->getName()) + " " + tr("control"), Qt::BottomDockWidgetArea, true));
+		//	addDockWidget(Qt::BottomDockWidgetArea, coreUI::CoreDockWidget::embeddWidget(controlWidget, QString::fromStdString(service->getName()) + " " + tr("control"), Qt::BottomDockWidgetArea, true));
 		//}
         //
 		//if ( settingsWidget ) {
-		//	addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(settingsWidget, QString::fromStdString(service->getName()) + " " + tr("settings"), Qt::LeftDockWidgetArea, true));
+		//	addDockWidget(Qt::LeftDockWidgetArea, coreUI::CoreDockWidget::embeddWidget(settingsWidget, QString::fromStdString(service->getName()) + " " + tr("settings"), Qt::LeftDockWidgetArea, true));
 		//}
 	}
 
@@ -115,15 +117,15 @@ void ToolboxMain::initializeUI()
 		QWidget* settingsWidget = source->getSettingsWidget();
 
 		if ( viewWidget ) {
-			addDockWidget(Qt::RightDockWidgetArea, embeddWidget(viewWidget, QString::fromStdString(source->name()), Qt::RightDockWidgetArea, true));
+			addDockWidget(Qt::RightDockWidgetArea, coreUI::CoreDockWidget::embeddWidget(viewWidget, QString::fromStdString(source->name()), Qt::RightDockWidgetArea, true));
 		}
 
 		if ( controlWidget ) {
-			addDockWidget(Qt::BottomDockWidgetArea, embeddWidget(controlWidget, QString::fromStdString(source->name()) + " " + tr("control"), Qt::BottomDockWidgetArea, true));
+			addDockWidget(Qt::BottomDockWidgetArea, coreUI::CoreDockWidget::embeddWidget(controlWidget, QString::fromStdString(source->name()) + " " + tr("control"), Qt::BottomDockWidgetArea, true));
 		}
 
 		if ( settingsWidget ) {
-			addDockWidget(Qt::LeftDockWidgetArea, embeddWidget(settingsWidget, QString::fromStdString(source->name()) + " " + tr("settings"), Qt::LeftDockWidgetArea, true));
+			addDockWidget(Qt::LeftDockWidgetArea, coreUI::CoreDockWidget::embeddWidget(settingsWidget, QString::fromStdString(source->name()) + " " + tr("settings"), Qt::LeftDockWidgetArea, true));
 		}
 	}
 
@@ -222,17 +224,4 @@ void ToolboxMain::populateWindowMenu( QMenu* menu )
 			menu->addAction(action);
 		}
 	}
-}
-
-CoreDockWidget * ToolboxMain::embeddWidget(QWidget * widget, const QString & windowTitle, Qt::DockWidgetArea allowedAreas, bool permanent)
-{
-	CoreDockWidget * embeddedDockWidget = new CoreDockWidget(windowTitle);
-	embeddedDockWidget->setWidget(widget);
-	embeddedDockWidget->setAllowedAreas(allowedAreas);
-	embeddedDockWidget->setPermanent(permanent);
-
-	auto consoleTitleBar = CoreTitleBar::supplyWithCoreTitleBar(embeddedDockWidget);
-	CoreTitleBar::supplyCoreTitleBarWithActions(consoleTitleBar, widget);
-
-	return embeddedDockWidget;
 }

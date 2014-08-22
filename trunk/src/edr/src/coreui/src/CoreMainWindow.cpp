@@ -52,7 +52,7 @@ void CoreMainWindow::setStyleByName( const std::string& styleName )
     for (int i = 0; i < count; ++i) {
         const core::Filesystem::Path& path = getApplicationSkinsFilePath(i);
         if (path.stem() == styleName) {
-            //setStyle(path);
+            setStyle(path);
             return;
         }
     }

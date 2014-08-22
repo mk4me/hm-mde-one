@@ -66,6 +66,31 @@ VideoParser::~VideoParser()
 {
 }
 
+void VideoParser::parse(const IStreamPtr stream, const std::string & source)
+{
+	this->stream = stream;
+	utils::ObjectsVector localData;
+
+	localData.push_back(utils::ObjectWrapper::create<VideoChannel>());
+
+	// tworzymy strumień ffmpeg
+	std::auto_ptr<FFmpegVideoStream> innerStream(new FFmpegVideoStream(stream, source));
+	// UTILS_ASSERT(!innerStream->getLastError());
+
+	// podpinay go pod adapter strumienia
+	VideoStreamPtr realStream(new ::VideoStream(innerStream.release()));
+	realStream->setTime(0);
+
+	//adapter->set(realStream);
+	//TODO
+
+	VideoChannelPtr channel(new VideoChannel(realStream));
+//	channel->setName(path.filename().string());
+	localData[0]->set(channel);
+
+	data.swap(localData);
+}
+
 void VideoParser::parse(const std::string & source)
 {
 	utils::ObjectsVector localData;	

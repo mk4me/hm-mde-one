@@ -38,7 +38,7 @@ namespace dicom {
 		virtual ~LayeredImageVisualizerView() {}
 
 	public:
-		void setAnnotationStatus(webservices::xmlWsdl::AnnotationStatus::Type status);
+		void setAnnotationStatus(hmdbServices::xmlWsdl::AnnotationStatus::Type status);
 
 		public Q_SLOTS:
 		//! odœwie¿enie ca³ego wizualizatora, np. gdy zmieni³a siê aktywna seria
@@ -61,7 +61,7 @@ namespace dicom {
 		void noiseState();
 
 		void editSelectedSerie();
-		
+
 		void changeSelection(const QModelIndex &);
 		void selectionChanged(const QModelIndex &);
 

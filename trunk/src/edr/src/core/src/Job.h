@@ -1,25 +1,24 @@
 /********************************************************************
-    created:  2013/07/05
-    created:  5:7:2013   10:34
-    filename: Job.h
-    author:   Mateusz Janiak
-    
-    purpose:  Faktyczna implementacja zadañ do przetworzenia
-*********************************************************************/
+	created:  2013/07/05
+	created:  5:7:2013   10:34
+	filename: Job.h
+	author:   Mateusz Janiak
+
+	purpose:  Faktyczna implementacja zadañ do przetworzenia
+	*********************************************************************/
 #ifndef HEADER_GUARD_CORE__JOB_H__
 #define HEADER_GUARD_CORE__JOB_H__
 
 #include <corelib/IJob.h>
-#include <threading/SynchronizationPolicies.h>
+#include <threadingUtils/SynchronizationPolicies.h>
+#include <boost/atomic.hpp>
 
 namespace core
 {
-
 	class JobManager;
 
-	class Job : public IJob, public utils::IRunnable
+	class Job : public IJob, public threadingUtils::IRunnable
 	{
-
 		friend class JobManager;
 
 	public:
@@ -28,9 +27,9 @@ namespace core
 		virtual ~Job();
 
 		//! \return Zadanie do przetworzenia
-		virtual utils::IRunnablePtr runnable();
+		virtual threadingUtils::IRunnablePtr runnable();
 		//! \return Zadanie do przetworzenia
-		virtual utils::IRunnableConstPtr runnable() const;
+		virtual threadingUtils::IRunnableConstPtr runnable() const;
 		//! \return Nazwa zleceniodawcy
 		virtual const std::string & who() const;
 		//! \return Nazwa zadania
@@ -52,26 +51,26 @@ namespace core
 		//! \param name Nazwa zadania
 		//! \param runnable Faktyczne zadanie do wykonania
 		Job(const std::string & who, const std::string & name,
-			const utils::IRunnablePtr runnable);
+			const threadingUtils::IRunnablePtr runnable);
 
 		//! Metoda pozwala managerowi zwolnic czekanie na joba jesli go anuluje
 		void unlock();
-
+		//! Metoda pozwala managerowi zwolnic czekanie na joba jesli go anuluje
+		void lock();
 	private:
-		//! Obiekt synchronizuj¹cy
-		mutable utils::StrictSyncPolicy synch_;
+
+		threadingUtils::StrictSyncPolicy sync;
 		//! Obiekt do czekania
-		utils::StrictSyncPolicy wait_;
+		threadingUtils::ConditionVariable wait_;
 		//! Zleceniodawca
 		std::string who_;
 		//! Nazwa zadania
 		std::string name_;
 		//! Status zadania
-		Status status_;
+		boost::atomic<Status> status_;
 		//! Faktyczne zadanie
-		utils::IRunnablePtr runnable_;
+		threadingUtils::IRunnablePtr runnable_;
 	};
-
 }
 
 #endif	//	HEADER_GUARD_CORE__JOB_H__

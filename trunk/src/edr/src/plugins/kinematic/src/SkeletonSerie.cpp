@@ -4,31 +4,31 @@
 #include "TrajectoriesDrawer.h"
 #include "SkeletalVisualizationSchemeHelper.h"
 #include <kinematiclib/JointAnglesCollection.h>
-#include <utils/StreamData.h>
+#include <threadingUtils/StreamData.h>
 
 static const osg::Quat invQXYZ = osg::Quat(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f)) * osg::Quat(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
 
-SkeletonSerie::SkeletonSerie( KinematicVisualizer * visualizer,
+SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer,
 	const utils::TypeInfo & requestedType,
-	const core::VariantConstPtr & data ) : 
+	const core::VariantConstPtr & data) :
 	visualizer(visualizer),
 	data(data), requestedType(requestedType),
 	lastUpdateTime(std::numeric_limits<double>::min()),
-    xyzAxis(false),
+	xyzAxis(false),
 	name("Skeleton"),
 	pointsDrawer(new PointsDrawer(3)),
 	connectionsDrawer(new ConnectionsDrawer(10)),
 	jointsMapping(new SkeletonJointsMapping),
 	localRootNode(new osg::PositionAttitudeTransform)
-{	
+{
 	UTILS_ASSERT(data->data()->getTypeInfo() == typeid(kinematic::JointAnglesCollection));
-	data->getMetadata("core/name", name);	
+	data->getMetadata("core/name", name);
 	jointAngles = data->get();
 
 	std::vector<std::string> mapping;
 	mapping.reserve(jointAngles->getNumChannels());
 
-	for(unsigned int i = 0; i < jointAngles->getNumChannels(); ++i){
+	for (unsigned int i = 0; i < jointAngles->getNumChannels(); ++i){
 		mapping.push_back(jointAngles->getChannel(i)->getName());
 	}
 
@@ -68,7 +68,7 @@ const std::vector<std::vector<osg::Vec3>> SkeletonSerie::createPointsPositions(c
 
 	double time = 0.0;
 
-	for(unsigned int i = 0; i < density; ++i, time = delta * i){
+	for (unsigned int i = 0; i < density; ++i, time = delta * i){
 		auto rotations = jointAngles->getValues(time);
 		auto rootPosition = jointAngles->getRootPosition(time / jointAngles->getLength());
 		std::vector<osg::Vec3> positions;
@@ -82,32 +82,32 @@ const std::vector<std::vector<osg::Vec3>> SkeletonSerie::createPointsPositions(c
 	return ret;
 }
 
-void SkeletonSerie::setAxis( bool xyz)
+void SkeletonSerie::setAxis(bool xyz)
 {
 	//TODO - sprawdzic jak to dziala
-    localRootNode->setAttitude( xyz == true ? invQXYZ : osg::Quat());
+	localRootNode->setAttitude(xyz == true ? invQXYZ : osg::Quat());
 
 	localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
 }
 
-void SkeletonSerie::setName( const std::string & name )
+void SkeletonSerie::setName(const std::string & name)
 {
-    this->name = name;
+	this->name = name;
 }
 
 const std::string SkeletonSerie::getName() const
 {
-    return name;
+	return name;
 }
 
 const core::VariantConstPtr & SkeletonSerie::getData() const
 {
-    return data;
+	return data;
 }
 
 double SkeletonSerie::getLength() const
 {
-    return jointAngles->getLength();
+	return jointAngles->getLength();
 }
 
 double SkeletonSerie::getBegin() const
@@ -137,7 +137,7 @@ void SkeletonSerie::update()
 
 void SkeletonSerie::setLocalTime(double time)
 {
-	if( (lastUpdateTime == std::numeric_limits<double>::min()) ||
+	if ((lastUpdateTime == std::numeric_limits<double>::min()) ||
 		(std::abs(time - lastUpdateTime) >= jointAngles->getChannel(0)->getSampleDuration())){
 		lastUpdateTime = time;
 		requestUpdate();
@@ -151,10 +151,10 @@ const utils::TypeInfo & SkeletonSerie::getRequestedDataType() const
 
 const bool SkeletonSerie::ghostVisible() const
 {
-	if(ghostDrawer == nullptr){
+	if (ghostDrawer == nullptr){
 		return false;
 	}
-	
+
 	return !(ghostDrawer->getNode()->getNodeMask() == 0);
 }
 
@@ -168,7 +168,7 @@ void SkeletonSerie::createGhostAndTrajectories()
 
 	std::vector<std::vector<osg::Vec3>> pointsPositions(10);
 
-	for(unsigned int i = 0; i < 10; ++i){
+	for (unsigned int i = 0; i < 10; ++i){
 		pointsPositions[i] = allPointsPositions[i * 30];
 	}
 
@@ -178,7 +178,7 @@ void SkeletonSerie::createGhostAndTrajectories()
 	ghostDrawer->connectionsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
 	ghostDrawer->pointsDrawer()->setSize(0.02);
 	ghostDrawer->connectionsDrawer()->setSize(0.005);
-    ghostDrawer->getNode()->setNodeMask(false);
+	ghostDrawer->getNode()->setNodeMask(false);
 
 	localRootNode->addChild(ghostDrawer->getNode());
 
@@ -187,13 +187,13 @@ void SkeletonSerie::createGhostAndTrajectories()
 
 	std::vector<std::vector<osg::Vec3>> trajectories(jointsMapping->mappedJointsNumber());
 
-	for(auto it = allPointsPositions.begin(); it != allPointsPositions.end(); ++it){
-		for(unsigned int i = 0; i < jointsMapping->mappedJointsNumber(); ++i){
+	for (auto it = allPointsPositions.begin(); it != allPointsPositions.end(); ++it){
+		for (unsigned int i = 0; i < jointsMapping->mappedJointsNumber(); ++i){
 			trajectories[i].push_back((*it)[i]);
 		}
 	}
 
-	trajectoriesManager->initialize(trajectories);	
+	trajectoriesManager->initialize(trajectories);
 	trajectoriesManager->setVisible(false);
 	trajectoriesManager->setColor(osg::Vec4(1.0, 0.0, 0.0, 0.5));
 	localRootNode->addChild(trajectoriesManager->getNode());
@@ -201,33 +201,29 @@ void SkeletonSerie::createGhostAndTrajectories()
 
 void SkeletonSerie::setGhostVisible(const bool visible)
 {
-	if(visible == true && ghostDrawer == nullptr){
+	if (visible == true && ghostDrawer == nullptr){
 		createGhostAndTrajectories();
 	}
 
-	ghostDrawer->getNode()->setNodeMask( visible == true ? 1 : 0);
+	ghostDrawer->getNode()->setNodeMask(visible == true ? 1 : 0);
 }
 
-utils::shared_ptr<TrajectoryDrawerManager> SkeletonSerie::getTrajectoriesManager() 
+utils::shared_ptr<TrajectoryDrawerManager> SkeletonSerie::getTrajectoriesManager()
 {
-    if (!trajectoriesManager) {
-        createGhostAndTrajectories();
-    }
-    return trajectoriesManager;
+	if (!trajectoriesManager) {
+		createGhostAndTrajectories();
+	}
+	return trajectoriesManager;
 }
-
-
 
 //---------------------------------------------------------------------
 
-
-class SkeletonStreamSerieUpdater : public utils::IStreamStatusObserver
+class SkeletonStreamSerieUpdater : public threadingUtils::IStreamStatusObserver
 {
 public:
 	SkeletonStreamSerieUpdater(SkeletonStreamSerie * serie)
 		: serie(serie)
 	{
-
 	}
 
 	virtual ~SkeletonStreamSerieUpdater() {}
@@ -244,23 +240,22 @@ private:
 	SkeletonStreamSerie * serie;
 };
 
-
-SkeletonStreamSerie::SkeletonStreamSerie( KinematicVisualizer * visualizer,
+SkeletonStreamSerie::SkeletonStreamSerie(KinematicVisualizer * visualizer,
 	const utils::TypeInfo & requestedType,
-	const core::VariantConstPtr & data ) : 
-visualizer(visualizer),
-	data(data), requestedType(requestedType),	
+	const core::VariantConstPtr & data) :
+	visualizer(visualizer),
+	data(data), requestedType(requestedType),
 	xyzAxis(false),
 	name("SkeletonData"),
 	pointsDrawer(new PointsDrawer(3)),
 	connectionsDrawer(new ConnectionsDrawer(10)),
 	heightCompensation(false),
 	localRootNode(new osg::PositionAttitudeTransform)
-{	
+{
 	UTILS_ASSERT(data->data()->getTypeInfo() == typeid(SkeletonDataStream));
-	data->getMetadata("core/name", name);	
+	data->getMetadata("core/name", name);
 	skeletalData = data->get();
-	
+
 	pointsDrawer->init(skeletalData->jointsCount);
 	pointsDrawer->setSize(0.02);
 
@@ -285,20 +280,20 @@ visualizer(visualizer),
 
 SkeletonStreamSerie::~SkeletonStreamSerie()
 {
-	if(skeletalData != nullptr){
+	if (skeletalData != nullptr){
 		skeletalData->jointsStream->detachObserver(updater);
 	}
 }
 
-void SkeletonStreamSerie::setAxis( bool xyz)
+void SkeletonStreamSerie::setAxis(bool xyz)
 {
 	//TODO - sprawdzic jak to dziala
-	xyzAxis = xyz;	
+	xyzAxis = xyz;
 	localRootNode->setAttitude(xyz == true ? invQXYZ : osg::Quat());
 	localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
 }
 
-void SkeletonStreamSerie::setName( const std::string & name )
+void SkeletonStreamSerie::setName(const std::string & name)
 {
 	this->name = name;
 }
@@ -315,14 +310,13 @@ const core::VariantConstPtr & SkeletonStreamSerie::getData() const
 
 void SkeletonStreamSerie::update()
 {
-
 	std::vector<osg::Vec3> points;
 	skeletalData->jointsStream->data(points);
 
-	if(heightCompensation == false){
+	if (heightCompensation == false){
 		heightCompensation = true;
 		float minZ = std::numeric_limits<float>::max();
-		for(auto it = points.begin(); it != points.end(); ++it){
+		for (auto it = points.begin(); it != points.end(); ++it){
 			minZ = std::min(minZ, (*it).z());
 		}
 
@@ -332,9 +326,9 @@ void SkeletonStreamSerie::update()
 		localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
 	}
 
-	rootPosition = osg::Vec3(0,0,0);
+	rootPosition = osg::Vec3(0, 0, 0);
 
-	for(auto it = points.begin(); it != points.end(); ++it){
+	for (auto it = points.begin(); it != points.end(); ++it){
 		rootPosition += *it;
 	}
 

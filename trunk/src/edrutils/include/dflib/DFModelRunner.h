@@ -1,11 +1,11 @@
 /********************************************************************
-    created:  2012/12/17
-    created:  17:12:2012   8:30
-    filename: DFModelRunner.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+	created:  2012/12/17
+	created:  17:12:2012   8:30
+	filename: DFModelRunner.h
+	author:   Mateusz Janiak
+
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD___DFMODELRUNNER_H__
 #define HEADER_GUARD___DFMODELRUNNER_H__
 
@@ -13,14 +13,14 @@
 #include <stdexcept>
 
 //! Forward declaration
-namespace utils
+namespace threadingUtils
 {
 	class IThreadPool;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace df{
-////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
 	//! Forward declarations
 	class IModelReader;
 	class IDFLogger;
@@ -60,7 +60,7 @@ namespace df{
 	//! dedykowan� klas� wraz z obs�uguj�cycm j� w�tkiem. Przetwarzanie odbywa si� od �r�de� do sink�w lub procesor�w
 	//! z niepodpi�tymi wyjsciami. Tylko �t�d�� s� synchronizowane - czekaj� a� wszystkie razem sko�cz� produkowa� dane
 	//! do modelu, aby sprawdzi� czy s� w stanie wszystkie dostarczy� nowych danych. Je�li tak ponownie moga produkowac dane,
-	//! w przeciwnym wypadku czekamy na przetworzenie danych ju� znajduj�cych si� w modelu. 
+	//! w przeciwnym wypadku czekamy na przetworzenie danych ju� znajduj�cych si� w modelu.
 	class DFModelRunner : public IDFPausable, public IDFJoinable
 	{
 	public:
@@ -73,7 +73,7 @@ namespace df{
 		//! \param model Model k�ry b�dziemy przetwarza�
 		//! \param logger Obiekt loguj�cy stan przetwarzania
 		//! \param tFactory Fabryka w�tk�w - gdy pusta u�ywamy domyslnej wynikaj�cej z implementacji
-		void start(IModelReader * model, IDFLogger * logger, utils::IThreadPool * tPool);
+		void start(IModelReader * model, IDFLogger * logger, threadingUtils::IThreadPool * tPool);
 
 		//! Natychmiastowe przerwania przetwarzania
 		//! Metoda blokuj�ca - czeka na zako�czenie wszystkich w�tk�w
@@ -95,7 +95,7 @@ namespace df{
 		//! poprawnie b�d� z b��dem - wtedy rzuca wyj�tkiem i zwalnia blokad�.
 		virtual void join();
 
-		//! \param reader Model kt�ry potencjalnie ma by� uruchomiony 
+		//! \param reader Model kt�ry potencjalnie ma by� uruchomiony
 		//! \return Czy model mo�na uruchomi� za pomoca tego runnera
 		static const bool verifyModel(const IModelReader * reader);
 
@@ -107,7 +107,6 @@ namespace df{
 		//! Hidden implementation
 		DFModelRunnerImpl * privImpl;
 	};
-
 }
 
 #endif	//	HEADER_GUARD___DFMODELRUNNER_H__

@@ -2,10 +2,8 @@
 #include "DFModelRunnerImpl.h"
 
 namespace df {
-
 	DFModelRunner::DFModelRunner() : privImpl(new DFModelRunnerImpl())
 	{
-
 	}
 
 	DFModelRunner::~DFModelRunner()
@@ -13,7 +11,7 @@ namespace df {
 		delete privImpl;
 	}
 
-	void DFModelRunner::start(IModelReader * model, IDFLogger * logger, utils::IThreadPool * tPool)
+	void DFModelRunner::start(IModelReader * model, IDFLogger * logger, threadingUtils::IThreadPool * tPool)
 	{
 		privImpl->start(model, logger, tPool);
 	}
@@ -40,12 +38,10 @@ namespace df {
 
 	void DFModelRunner::pause(INode * node)
 	{
-
 	}
 
 	void DFModelRunner::resume(INode * node)
 	{
-
 	}
 
 	void DFModelRunner::join()
@@ -57,5 +53,4 @@ namespace df {
 	{
 		return DFModelRunnerImpl::verifyModel(reader);
 	}
-
 }

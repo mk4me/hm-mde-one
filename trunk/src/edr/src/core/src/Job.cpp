@@ -1,13 +1,15 @@
 #include "Job.h"
+#include <utils/Utils.h>
+#include <boost/bind.hpp>
 
 using namespace core;
 
 Job::Job(const std::string & who, const std::string & name,
-	const utils::IRunnablePtr runnable)
+	const threadingUtils::IRunnablePtr runnable)
 	: who_(who), name_(name), runnable_(runnable),
 	status_(IJob::JOB_PENDING)
 {
-	wait_.lock();
+
 }
 
 Job::~Job()
@@ -15,12 +17,12 @@ Job::~Job()
 	unlock();
 }
 
-utils::IRunnablePtr Job::runnable()
+threadingUtils::IRunnablePtr Job::runnable()
 {
 	return runnable_;
 }
 
-utils::IRunnableConstPtr Job::runnable() const
+threadingUtils::IRunnableConstPtr Job::runnable() const
 {
 	return runnable_;
 }
@@ -36,43 +38,55 @@ const std::string & Job::name() const
 }
 
 const IJob::Status Job::status() const
-{
-	utils::ScopedLock<utils::StrictSyncPolicy> lock(synch_);
+{	
 	return status_;
 }
 
 void Job::wait()
 {
-	utils::ScopedLock<utils::StrictSyncPolicy> lock(wait_);
+	if (status_ == IJob::JOB_FINISHED || status_ == IJob::JOB_ERROR){
+		return;
+	}
+
+	if (sync.tryLock() == true){
+		sync.unlock();
+	}
+	else{
+		wait_.wait(&sync);
+	}
 }
 
 void Job::unlock()
 {
-	wait_.unlock();
+	wait_.wakeAll();
+}
+
+void Job::lock()
+{
+	sync.lock();
 }
 
 void Job::setStatus(const Status status)
-{
-	utils::ScopedLock<utils::StrictSyncPolicy> lock(synch_);
+{	
 	status_ = status;
 }
 
 void Job::run()
 {
+	utils::Cleanup cleanup(boost::bind(&Job::unlock, this));
+
 	setStatus(IJob::JOB_WORKING);
 
 	try{
 		runnable_->run();
 		setStatus(IJob::JOB_FINISHED);
-	}catch(std::exception &){
-	
-	}catch(...){
-	
+	}
+	catch (std::exception &){
+	}
+	catch (...){
 	}
 
-	if(status_ != IJob::JOB_FINISHED){	
+	if (status_ != IJob::JOB_FINISHED){
 		setStatus(IJob::JOB_ERROR);
-	}
-
-	unlock();
+	}	
 }

@@ -12,444 +12,441 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace timeline{
-////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
 
-class Model : public utils::Observable<Model>
-{
-public:
+	class Model : public utils::Observable<Model>
+	{
+	public:
 
-    //! Forward declartation
-    class TChannel;
-    typedef boost::shared_ptr<TChannel> TChannelPtr;
-    typedef boost::shared_ptr<const TChannel> TChannelConstPtr;
+		//! Forward declartation
+		class TChannel;
+		typedef utils::shared_ptr<TChannel> TChannelPtr;
+		typedef utils::shared_ptr<const TChannel> TChannelConstPtr;
 
-    typedef boost::weak_ptr<TChannel> TChannelWPtr;
-    typedef boost::weak_ptr<const TChannel> TChannelConstWPtr;
+		typedef utils::weak_ptr<TChannel> TChannelWPtr;
+		typedef utils::weak_ptr<const TChannel> TChannelConstWPtr;
 
-    //! Klasa wprowadzająca hierarchię kanałów, kolejność, obsługę ścieżek
-    class TChannel : public NamedTree<Channel, utils::PtrPolicyBoost>
-    {
-        public:
-            TChannel(const std::string & name = "UnnamedChannel") : NamedTree<Channel, utils::PtrPolicyBoost>(name, Ptr(new Channel()))
-            {
+		//! Klasa wprowadzająca hierarchię kanałów, kolejność, obsługę ścieżek
+		class TChannel : public NamedTree<Channel, utils::PtrPolicyBoost>
+		{
+		public:
+			TChannel(const std::string & name = "UnnamedChannel") : NamedTree<Channel, utils::PtrPolicyBoost>(name, Ptr(new Channel()))
+			{
+			}
 
-            }
+			virtual void addChild(const std::string & path)
+			{
+				NamedTreeBase::addChild<TChannel>(path, -1);
+			}
 
-            virtual void addChild(const std::string & path)
-            {
-                NamedTreeBase::addChild<TChannel>(path, -1);
-            }
+			void addChild(const std::string & path, NamedTreeBase::size_type idx)
+			{
+				NamedTreeBase::addChild<TChannel>(path, idx);
+			}
+		};
 
-            void addChild(const std::string & path, NamedTreeBase::size_type idx)
-            {
-                NamedTreeBase::addChild<TChannel>(path, idx);
-            }
-    };
-    
-    
-    typedef TChannel::const_iterator channel_const_iterator;
-    typedef TChannel::size_type channel_size_type;
+		typedef TChannel::const_iterator channel_const_iterator;
+		typedef TChannel::size_type channel_size_type;
 
-    typedef ConstTags::const_iterator tag_const_iterator;
-    typedef ConstTags::size_type tag_size_type;
+		typedef ConstTags::const_iterator tag_const_iterator;
+		typedef ConstTags::size_type tag_size_type;
 
-    typedef Channel::Mask Mask;
+		typedef Channel::Mask Mask;
 
-private:
+	private:
 
-    typedef Tags::iterator tag_iterator;
-    
-    //! Mapowanie Kanałów do kanałów z obsługa ścieżek i hierarchią
-    typedef std::map<ChannelConstPtr, TChannelConstPtr> ChannelToTChannel;
+		typedef Tags::iterator tag_iterator;
 
-    typedef std::vector<ChannelConstPtr> ConstChannels;
+		//! Mapowanie Kanałów do kanałów z obsługa ścieżek i hierarchią
+		typedef std::map<ChannelConstPtr, TChannelConstPtr> ChannelToTChannel;
 
-    //! Typ ścieżki w formacie ścieżka/liść
-    typedef std::pair<std::string, std::string> ExtPath;
+		typedef std::vector<ChannelConstPtr> ConstChannels;
 
-    typedef std::set<IChannelPtr> IChannels;
+		//! Typ ścieżki w formacie ścieżka/liść
+		typedef std::pair<std::string, std::string> ExtPath;
 
-private:
+		typedef std::set<IChannelPtr> IChannels;
 
-    //! Wszystkie tagi wystepujące w timeline
-    Tags allTags;
+	private:
 
-    //! Wszystkie tagi wystepujące w timeline
-    ConstTags constAllTags;
+		//! Wszystkie tagi wystepujące w timeline
+		Tags allTags;
 
-    //! Root dla timeline
-    TChannelPtr root;
+		//! Wszystkie tagi wystepujące w timeline
+		ConstTags constAllTags;
 
-    //! Root dla timeline
-    TChannelConstPtr constRoot;
+		//! Root dla timeline
+		TChannelPtr root;
 
-    //! Mapowanie kanałów logicznych do kanałów w hierarchii
-    ChannelToTChannel channelToTChannel;
+		//! Root dla timeline
+		TChannelConstPtr constRoot;
 
-    //! Aktualny stan modelu
-    State state;
+		//! Mapowanie kanałów logicznych do kanałów w hierarchii
+		ChannelToTChannel channelToTChannel;
 
-    ////! Ostatnie zmiany w modelu dla których wywołano notify - ważne tylko podczas notify, potem są resetowane!!
-    //int latestChanges;
+		//! Aktualny stan modelu
+		State state;
 
-    IChannels iChannels;
+		////! Ostatnie zmiany w modelu dla których wywołano notify - ważne tylko podczas notify, potem są resetowane!!
+		//int latestChanges;
 
-public:
+		IChannels iChannels;
 
-    //! Konstruktor zerujący
-    Model(const std::string & name = "DefaultModel");
+	public:
 
-    ~Model();
+		//! Konstruktor zerujący
+		Model(const std::string & name = "DefaultModel");
 
-    ////! Powiadamianie z kasowaniem ostatnich zmian
-    //virtual void notify();
+		~Model();
 
-    ////! \return Ostatnie zmiany w modelu
-    //int getLatestChanges() const;
+		////! Powiadamianie z kasowaniem ostatnich zmian
+		//virtual void notify();
 
-    //! \return Stan modelu
-    const State & getState() const;
+		////! \return Ostatnie zmiany w modelu
+		//int getLatestChanges() const;
 
-    //! \param state Stan modelu
-    void setState(const State & state);
+		//! \return Stan modelu
+		const State & getState() const;
 
-    //! \return Wewnętrzna maska czasu kanału
-    const Mask & getMask() const;
-    
-    //! \return początek maski
-    double getMaskBegin() const;
+		//! \param state Stan modelu
+		void setState(const State & state);
 
-    //! \return Koniec maski
-    double getMaskEnd() const;
+		//! \return Wewnętrzna maska czasu kanału
+		const Mask & getMask() const;
 
-    //! \return Offset czasu - przesunięcie względem 0
-    double getOffset() const;
+		//! \return początek maski
+		double getMaskBegin() const;
 
-    //! \return długość kanału w sekundach, uwzględniając skale
-    double getLength() const;
+		//! \return Koniec maski
+		double getMaskEnd() const;
 
-    //! \return Czas początku w timeline
-    double getBeginTime() const;
+		//! \return Offset czasu - przesunięcie względem 0
+		double getOffset() const;
 
-    //! \return Czas końca w timeline
-    double getEndTime() const;
+		//! \return długość kanału w sekundach, uwzględniając skale
+		double getLength() const;
 
-    //! \return Aktualny czas kanału
-    double getTime() const;
+		//! \return Czas początku w timeline
+		double getBeginTime() const;
 
-    //! \return Znormalizowany czas timeline
-    double getNormalizedTime() const;
+		//! \return Czas końca w timeline
+		double getEndTime() const;
 
-    //! \return Skala czasu kanału
-    double getTimeScale() const;
+		//! \return Aktualny czas kanału
+		double getTime() const;
 
-    //! maska dla podkanałów
-    //! \return Czy kanał jest aktywny podczas odtwarzania timeline i operacji czasowych
-    bool isActive() const;
+		//! \return Znormalizowany czas timeline
+		double getNormalizedTime() const;
 
-    //! \param mask Maska czasu realizowana wewnętrznie przez timeline, 0 <= mask <= length
-    void setMask(const Mask & mask);
+		//! \return Skala czasu kanału
+		double getTimeScale() const;
 
-    //! \param maskBegin początek maski - 0 <= maskBegin <= maskEnd
-    void setMaskBegin(double maskBegin);
+		//! maska dla podkanałów
+		//! \return Czy kanał jest aktywny podczas odtwarzania timeline i operacji czasowych
+		bool isActive() const;
 
-    //! \param maskEnd Koniec maski - maskBegin <= maskEnd <= length
-    void setMaskEnd(double maskEnd);
+		//! \param mask Maska czasu realizowana wewnętrznie przez timeline, 0 <= mask <= length
+		void setMask(const Mask & mask);
 
-    //! propaguje zmiane na wszystkie aktywne podkanały
-    //! sprawdza maske i offset
-    //! \param time Aktualny czas timeline, 0 <= time <= length
-    //! \param lockHolder Obiekt chcacy aktualizować czas, trzymający blokade
-    void setTime(double time);
+		//! \param maskBegin początek maski - 0 <= maskBegin <= maskEnd
+		void setMaskBegin(double maskBegin);
 
-    //! propaguje zmiane na wszystkie aktywne podkanały
-    //! sprawdza maske i offset
-    //! \param normTime Aktualny czas timeline, 0 <= time <= length
-    //! \param lockHolder Obiekt chcacy aktualizować czas, trzymający blokade
-    void setNormalizedTime(double normTime);
+		//! \param maskEnd Koniec maski - maskBegin <= maskEnd <= length
+		void setMaskEnd(double maskEnd);
 
-    //! modyfikuje skale
-    //! \param Aktualna długość timeline
-    //virtual void setLength(double length);
+		//! propaguje zmiane na wszystkie aktywne podkanały
+		//! sprawdza maske i offset
+		//! \param time Aktualny czas timeline, 0 <= time <= length
+		//! \param lockHolder Obiekt chcacy aktualizować czas, trzymający blokade
+		void setTime(double time);
 
-    //! \param offset Czas względem 0
-    void setOffset(double offset);
+		//! propaguje zmiane na wszystkie aktywne podkanały
+		//! sprawdza maske i offset
+		//! \param normTime Aktualny czas timeline, 0 <= time <= length
+		//! \param lockHolder Obiekt chcacy aktualizować czas, trzymający blokade
+		void setNormalizedTime(double normTime);
 
-    //! \param scale Skala kanału, bezwzględna wartość skali
-    void setTimeScale(double scale);
+		//! modyfikuje skale
+		//! \param Aktualna długość timeline
+		//virtual void setLength(double length);
 
-    //! \param active Czy strumień jest aktywny podczas operacji oczasowych i odtwarzania timeline
-    void setActive(bool active); 
+		//! \param offset Czas względem 0
+		void setOffset(double offset);
 
-    //! Czysci wszystkie tagi w timeline
-    void clearAllTags();
+		//! \param scale Skala kanału, bezwzględna wartość skali
+		void setTimeScale(double scale);
 
-    //! Resetuje skale czasu dla wszystkich kanałów do ich globalnej wartości rownej 1
-    void resetAllScales();
+		//! \param active Czy strumień jest aktywny podczas operacji oczasowych i odtwarzania timeline
+		void setActive(bool active);
 
-    //! Resetuje offsety dla wszystkich kanałów do ich globalnej wartości rownej 0
-    void resetAllOffsets();
+		//! Czysci wszystkie tagi w timeline
+		void clearAllTags();
 
-    //! Resetuje wszystkie offsety (0) i skale (1) w timeline
-    void resetAllOffsetsAndScales();
+		//! Resetuje skale czasu dla wszystkich kanałów do ich globalnej wartości rownej 1
+		void resetAllScales();
 
-    //! \param path Sciezka do taga w postaci sciezka do kanału sciezki / nazwa taga
-    //! \param time Czas wystapienia taga
-    void addTag(const std::string & path, double begin = 0, double length = 0);
+		//! Resetuje offsety dla wszystkich kanałów do ich globalnej wartości rownej 0
+		void resetAllOffsets();
 
-    //! \param path Sciezka do taga w postaci sciezka do kanału sciezki / nazwa taga
-    //! \return Tag
-    const TagConstPtr & getTag(const std::string & path) const;
+		//! Resetuje wszystkie offsety (0) i skale (1) w timeline
+		void resetAllOffsetsAndScales();
 
-    //! \param path Sciezka do taga w postaci sciezka do kanału sciezki / nazwa taga
-    void removeTag(const std::string & path);
+		//! \param path Sciezka do taga w postaci sciezka do kanału sciezki / nazwa taga
+		//! \param time Czas wystapienia taga
+		void addTag(const std::string & path, double begin = 0, double length = 0);
 
-    //! \return Pierwszy tag wsrod wszystkich obecnych w timeline
-    tag_const_iterator beginAllTags() const;
+		//! \param path Sciezka do taga w postaci sciezka do kanału sciezki / nazwa taga
+		//! \return Tag
+		const TagConstPtr & getTag(const std::string & path) const;
 
-    //! \return Koniec tagów wsrod wszystkich obecnych w timeline
-    tag_const_iterator endAllTags() const;
+		//! \param path Sciezka do taga w postaci sciezka do kanału sciezki / nazwa taga
+		void removeTag(const std::string & path);
 
-    //! \param idx Indeks tagu wsrod wqszystkich tagów w timeline
-    //! \return Tag o zadanym indeksie wsrod wszystkich obecnych w timeline
-    const TagConstPtr & getAllTags(tag_size_type idx) const;
+		//! \return Pierwszy tag wsrod wszystkich obecnych w timeline
+		tag_const_iterator beginAllTags() const;
 
-    //! \return Ilość wszystkich tagów w timeline
-    tag_size_type sizeAllTags() const;
+		//! \return Koniec tagów wsrod wszystkich obecnych w timeline
+		tag_const_iterator endAllTags() const;
 
-    //! \param path Sciezka nowego kanału
-    //! \param channel fatyczny kanał dotarczony przez klienta
-    void addChannel(const std::string & path, const IChannelPtr & channel);
+		//! \param idx Indeks tagu wsrod wqszystkich tagów w timeline
+		//! \return Tag o zadanym indeksie wsrod wszystkich obecnych w timeline
+		const TagConstPtr & getAllTags(tag_size_type idx) const;
 
-    //! \param channels Kanały do dodawnia w formie ściezka -> kanał, kanał nie powiniem być nullptr
-    void addChannels(const std::map<std::string, IChannelPtr> & channels);
+		//! \return Ilość wszystkich tagów w timeline
+		tag_size_type sizeAllTags() const;
 
-    //! \param path Sciezka kanału do usuniecia
-    void removeChannel(const std::string & path);
+		//! \param path Sciezka nowego kanału
+		//! \param channel fatyczny kanał dotarczony przez klienta
+		void addChannel(const std::string & path, const IChannelPtr & channel);
 
-    //! \param paths Sciezki kanałów do usuniecia
-    void removeChannels(const std::set<std::string> & paths);
+		//! \param channels Kanały do dodawnia w formie ściezka -> kanał, kanał nie powiniem być nullptr
+		void addChannels(const std::map<std::string, IChannelPtr> & channels);
 
-    //! \return Pierwszy kanał timeline
-    channel_const_iterator beginChannels() const;
-    
-    //! \return Koniec kanałów timeline
-    channel_const_iterator endChannels() const;
+		//! \param path Sciezka kanału do usuniecia
+		void removeChannel(const std::string & path);
 
-    //! \param idx Indeks kanału w timeline
-    //! \return kanał w timeline o zadanym indeksie
-    TChannelConstPtr getChannel(channel_size_type idx) const;
+		//! \param paths Sciezki kanałów do usuniecia
+		void removeChannels(const std::set<std::string> & paths);
 
-    //! \param path Sciezka do kanału względem roota
-    //! \return kanał o zadanej sciezce
-    TChannelConstPtr getChannel(const std::string & path) const;
+		//! \return Pierwszy kanał timeline
+		channel_const_iterator beginChannels() const;
 
-    //! \return Ilość kanałów dzieci w timeline
-    channel_size_type sizeChannels() const;
+		//! \return Koniec kanałów timeline
+		channel_const_iterator endChannels() const;
 
-    //------------------- Operacje na kanałach -----------------------
-    // ich zmiany sa propagowane w calym timeline a obserwatorzy beda powiadomieni
+		//! \param idx Indeks kanału w timeline
+		//! \return kanał w timeline o zadanym indeksie
+		TChannelConstPtr getChannel(channel_size_type idx) const;
 
-    //! \param path Sciezka do kanału
-    //! \param offset Offset kanału względem rodzica
-    void setChannelLocalOffset(const std::string & path, double offset);
+		//! \param path Sciezka do kanału względem roota
+		//! \return kanał o zadanej sciezce
+		TChannelConstPtr getChannel(const std::string & path) const;
 
-    //! \param path Sciezka do kanału
-    //! \param offset Offset kanału względem 0
-    void setChannelGlobalOffset(const std::string & path, double offset);
-   
-    //! \param path Sciezka do kanału
-    //! \param timeScale Skala czasu kanału, lokalna względem rodzica
-    void setChannelLocalTimeScale(const std::string & path, double timeScale);
+		//! \return Ilość kanałów dzieci w timeline
+		channel_size_type sizeChannels() const;
 
-    //! \param path Sciezka do kanału
-    //! \param timeScale Skala czasu kanału, globalna
-    void setChannelGlobalTimeScale(const std::string & path, double timeScale);
+		//------------------- Operacje na kanałach -----------------------
+		// ich zmiany sa propagowane w calym timeline a obserwatorzy beda powiadomieni
 
-    //! \param path Sciezka do kanału
-    //! \param name Nazwa kanału uniklalna względem jego rodzica
-    void setChannelName(const std::string & path, const std::string & name);
+		//! \param path Sciezka do kanału
+		//! \param offset Offset kanału względem rodzica
+		void setChannelLocalOffset(const std::string & path, double offset);
 
-    //! \param path Sciezka do kanału
-    //! \param mask Maska czasu dla kanału, musi być w zakresie 0 <= mask <= length
-    void setChannelMask(const std::string & path, const Channel::Mask & mask);
+		//! \param path Sciezka do kanału
+		//! \param offset Offset kanału względem 0
+		void setChannelGlobalOffset(const std::string & path, double offset);
 
-    //! \param path Sciezka do kanału
-    //! \param maskBegin początek maski czasu dla kanału, musi być w zakresie 0 <= maskBegin <= maskEnd
-    void setChannelMaskBegin(const std::string & path, double maskBegin);
+		//! \param path Sciezka do kanału
+		//! \param timeScale Skala czasu kanału, lokalna względem rodzica
+		void setChannelLocalTimeScale(const std::string & path, double timeScale);
 
-    //! \param path Sciezka do kanału
-    //! \param maskEnd Koniec maski czasu dla kanału, musi być w zakresie maskBegin <= maskEnd <= length
-    void setChannelMaskEnd(const std::string & path, double maskEnd);
+		//! \param path Sciezka do kanału
+		//! \param timeScale Skala czasu kanału, globalna
+		void setChannelGlobalTimeScale(const std::string & path, double timeScale);
 
-    //! \param path Sciezka do kanału
-    //! \param active Czy kanał jest aktywny podczas operacji czasowych (odtwarzanie timeline)
-    void setChannelActive(const std::string & path, bool active);
+		//! \param path Sciezka do kanału
+		//! \param name Nazwa kanału uniklalna względem jego rodzica
+		void setChannelName(const std::string & path, const std::string & name);
 
-    //! \param path Sciezka do kanału
-    void clearChannelTags(const std::string & path, bool deeper = false);
+		//! \param path Sciezka do kanału
+		//! \param mask Maska czasu dla kanału, musi być w zakresie 0 <= mask <= length
+		void setChannelMask(const std::string & path, const Channel::Mask & mask);
 
-    ////! \param path Sciezka do kanału
-    //void resetChannelOffsets(const std::string & path, bool deeper = false);
+		//! \param path Sciezka do kanału
+		//! \param maskBegin początek maski czasu dla kanału, musi być w zakresie 0 <= maskBegin <= maskEnd
+		void setChannelMaskBegin(const std::string & path, double maskBegin);
 
-    ////! \param path Sciezka do kanału
-    //void resetChannelTimeScales(const std::string & path, bool deeper = false);
+		//! \param path Sciezka do kanału
+		//! \param maskEnd Koniec maski czasu dla kanału, musi być w zakresie maskBegin <= maskEnd <= length
+		void setChannelMaskEnd(const std::string & path, double maskEnd);
 
-    ////! \param path Sciezka do kanału
-    //void resetChannelOffsetsAndTimeScales(const std::string & path, bool deeper = false);
+		//! \param path Sciezka do kanału
+		//! \param active Czy kanał jest aktywny podczas operacji czasowych (odtwarzanie timeline)
+		void setChannelActive(const std::string & path, bool active);
 
-    //! \param path Sciezka do kanału
-    //! \param time Czas kanału w którym dokona się podzial kanału - 0 < time < length
-    //! \param nameA Nazwa młodszej części kanału po podziale, musi być unikalna względem rodzica kanału
-    //! \param nameB Nazwa starszej części kanału po podziale, musi być unikalna względem rodzica kanału
-    void splitChannel(const std::string & path, double time, const std::string & nameA = "A", const std::string & nameB = "B");
-    
-    //! oba kanału musza być w obrebie jednego rodzica
-    //! \param pathA Pierwszy kanał do scalenia
-    //! \param pathB Drugi kanał do scalenia
-    //! \param name Nazwa kanału po połączeniu
-    void mergeChannels(const std::string & pathA, const std::string & pathB, const std::string & name = "Merged");
+		//! \param path Sciezka do kanału
+		void clearChannelTags(const std::string & path, bool deeper = false);
 
-    
-    //--------------------------- Zarzadzanie tagami ------------------------------------------------
+		////! \param path Sciezka do kanału
+		//void resetChannelOffsets(const std::string & path, bool deeper = false);
 
-    //! \param path Sciezka do taga w postaci sciezka do kanału sciezki / nazwa taga
-    //! \param name Nazwa tagu
-    void setTagName(const std::string & path, const std::string & name);
+		////! \param path Sciezka do kanału
+		//void resetChannelTimeScales(const std::string & path, bool deeper = false);
 
-    //! \param path Sciezka do taga w postaci sciezka do kanału sciezki / nazwa taga
-    //! \param time Czas wystapienia tagu w kanale - 0 <= time <= length
-    void setTagTime(const std::string & path, double time);
+		////! \param path Sciezka do kanału
+		//void resetChannelOffsetsAndTimeScales(const std::string & path, bool deeper = false);
 
-    //! \param path Sciezka do taga w postaci sciezka do kanału sciezki / nazwa taga
-    //! \param length długość trwania tagu tak aby begin >= 0 && begin + length <= channel->length
-    void setTagLength(const std::string & path, double length);
+		//! \param path Sciezka do kanału
+		//! \param time Czas kanału w którym dokona się podzial kanału - 0 < time < length
+		//! \param nameA Nazwa młodszej części kanału po podziale, musi być unikalna względem rodzica kanału
+		//! \param nameB Nazwa starszej części kanału po podziale, musi być unikalna względem rodzica kanału
+		void splitChannel(const std::string & path, double time, const std::string & nameA = "A", const std::string & nameB = "B");
 
-    //! \param path Sciezka do taga w postaci sciezka do kanału sciezki / nazwa taga
-    //! \param dTime Czas przesuniecia taga w kanale tak aby po zastosowaniu begin >= 0 && begin + length <= channel->length
-    void shiftTag(const std::string & path, double dTime);
+		//! oba kanału musza być w obrebie jednego rodzica
+		//! \param pathA Pierwszy kanał do scalenia
+		//! \param pathB Drugi kanał do scalenia
+		//! \param name Nazwa kanału po połączeniu
+		void mergeChannels(const std::string & pathA, const std::string & pathB, const std::string & name = "Merged");
 
-    //-------------------- Pomocnicze funkcje ----------------------------
+		//--------------------------- Zarzadzanie tagami ------------------------------------------------
 
-    //! \param channel Reprezentacja węzła w postaci NamedTreeBase
-    //! \return wskaźnik na Channel
-    static TChannelConstPtr toTChannel(const NamedTreeBaseConstPtr & channel);
+		//! \param path Sciezka do taga w postaci sciezka do kanału sciezki / nazwa taga
+		//! \param name Nazwa tagu
+		void setTagName(const std::string & path, const std::string & name);
 
-    //! \param channel kanał wynikający z elementów jak tag czy selection
-    //! \return kanał timeline opakowujący zadany kanał logiczny
-    TChannelConstPtr getTChannelForChannel(const ChannelConstPtr & channel) const;
+		//! \param path Sciezka do taga w postaci sciezka do kanału sciezki / nazwa taga
+		//! \param time Czas wystapienia tagu w kanale - 0 <= time <= length
+		void setTagTime(const std::string & path, double time);
 
-    //! \param path Sciezka do szukanego kanału
-    //! \return wskaźnik do szukanego kanału lub pusty wskaźnik jeśli nie znaleziono
-    TChannelConstPtr findChannel(const std::string & path) const;
+		//! \param path Sciezka do taga w postaci sciezka do kanału sciezki / nazwa taga
+		//! \param length długość trwania tagu tak aby begin >= 0 && begin + length <= channel->length
+		void setTagLength(const std::string & path, double length);
 
-private:
+		//! \param path Sciezka do taga w postaci sciezka do kanału sciezki / nazwa taga
+		//! \param dTime Czas przesuniecia taga w kanale tak aby po zastosowaniu begin >= 0 && begin + length <= channel->length
+		void shiftTag(const std::string & path, double dTime);
 
-    static void getAllChildrenData(const TChannelConstPtr & channel, ConstTags & tags, ConstChannels & channels);
+		//-------------------- Pomocnicze funkcje ----------------------------
 
-    //! \param channel kanał danych
-    //! \param offset Offset kanału względem rodzica
-    void innerSetChannelLocalOffset(const TChannelConstPtr & channel, double offset);
+		//! \param channel Reprezentacja węzła w postaci NamedTreeBase
+		//! \return wskaźnik na Channel
+		static TChannelConstPtr toTChannel(const NamedTreeBaseConstPtr & channel);
 
-    //! \param channel kanał danych
-    //! \param offset Offset kanału względem 0
-    void innerSetChannelGlobalOffset(const TChannelConstPtr & channel, double offset);
+		//! \param channel kanał wynikający z elementów jak tag czy selection
+		//! \return kanał timeline opakowujący zadany kanał logiczny
+		TChannelConstPtr getTChannelForChannel(const ChannelConstPtr & channel) const;
 
-    //! \param channel kanał danych
-    void innerRemoveChannel(const TChannelConstPtr & channel);
+		//! \param path Sciezka do szukanego kanału
+		//! \return wskaźnik do szukanego kanału lub pusty wskaźnik jeśli nie znaleziono
+		TChannelConstPtr findChannel(const std::string & path) const;
 
-    //! \param channel kanał danych
-    //! \param timeScale Skala czasu kanału, lokalna względem rodzica
-    void innerSetChannelLocalTimeScale(const TChannelConstPtr & channel, double timeScale);
+	private:
 
-    //! \param channel kanał danych
-    //! \param timeScale Skala czasu kanału, globalna
-    void innerSetChannelGlobalTimeScale(const TChannelConstPtr & channel, double timeScale);
+		static void getAllChildrenData(const TChannelConstPtr & channel, ConstTags & tags, ConstChannels & channels);
 
-    //! \param channel kanał danych
-    //! \param name Nazwa kanału uniklalna względem jego rodzica
-    void innerSetChannelName(const TChannelConstPtr & channel, const std::string & name);
+		//! \param channel kanał danych
+		//! \param offset Offset kanału względem rodzica
+		void innerSetChannelLocalOffset(const TChannelConstPtr & channel, double offset);
 
-    //! \param channel kanał danych
-    //! \param mask Maska czasu dla kanału, musi być w zakresie 0 <= mask <= length
-    void innerSetChannelMask(const TChannelConstPtr & channel, const Channel::Mask & mask);
+		//! \param channel kanał danych
+		//! \param offset Offset kanału względem 0
+		void innerSetChannelGlobalOffset(const TChannelConstPtr & channel, double offset);
 
-    //! \param channel kanał danych
-    //! \param maskBegin początek maski czasu dla kanału, musi być w zakresie 0 <= maskBegin <= maskEnd
-    void innerSetChannelMaskBegin(const TChannelConstPtr & channel, double maskBegin);
+		//! \param channel kanał danych
+		void innerRemoveChannel(const TChannelConstPtr & channel);
 
-    //! \param channel kanał danych
-    //! \param maskEnd Koniec maski czasu dla kanału, musi być w zakresie maskBegin <= maskEnd <= length
-    void innerSetChannelMaskEnd(const TChannelConstPtr & channel, double maskEnd);
+		//! \param channel kanał danych
+		//! \param timeScale Skala czasu kanału, lokalna względem rodzica
+		void innerSetChannelLocalTimeScale(const TChannelConstPtr & channel, double timeScale);
 
-    //! \param channel kanał danych
-    //! \param active Czy kanał jest aktywny podczas operacji czasowych (odtwarzanie timeline)
-    void innerSetChannelActive(const TChannelConstPtr & channel, bool active);
+		//! \param channel kanał danych
+		//! \param timeScale Skala czasu kanału, globalna
+		void innerSetChannelGlobalTimeScale(const TChannelConstPtr & channel, double timeScale);
 
-    //! \param channel kanał danych
-    void innerClearChannelTags(const TChannelConstPtr & channel, bool deeper = false);
+		//! \param channel kanał danych
+		//! \param name Nazwa kanału uniklalna względem jego rodzica
+		void innerSetChannelName(const TChannelConstPtr & channel, const std::string & name);
 
-    //! \param channel kanał danych
-    //! \param time Czas kanału w którym dokona się podzial kanału - 0 < time < length
-    //! \param nameA Nazwa mlodszej części kanału po podziale, musi być unikalna względem rodzica kanału
-    //! \param nameB Nazwa starszej części kanału po podziale, musi być unikalna względem rodzica kanału
-    void innerSplitChannel(const TChannelConstPtr & channel, double time, const std::string & nameA = "A", const std::string & nameB = "B");
+		//! \param channel kanał danych
+		//! \param mask Maska czasu dla kanału, musi być w zakresie 0 <= mask <= length
+		void innerSetChannelMask(const TChannelConstPtr & channel, const Channel::Mask & mask);
 
-    //! oba kanały musza być w obrebie jednego rodzica
-    //! \param channelA Pierwszy kanał do scalenia
-    //! \param channelB Drugi kanał do scalenia
-    //! \param name Nazwa kanału po połączeniu
-    void innerMergeChannels(const TChannelConstPtr & channelA, const TChannelConstPtr & channelB, const std::string & name = "Merged");
+		//! \param channel kanał danych
+		//! \param maskBegin początek maski czasu dla kanału, musi być w zakresie 0 <= maskBegin <= maskEnd
+		void innerSetChannelMaskBegin(const TChannelConstPtr & channel, double maskBegin);
 
-    //! \param path Sciezka rozszerzona, gdzie ostatni element sciezki to nazwa, prawdziwa sciezka do kanału znajduje się wczesniej
-    //! \return Podzielona sciezka na nazwę i sciezke
-    static ExtPath getExtPath(const std::string & path);
+		//! \param channel kanał danych
+		//! \param maskEnd Koniec maski czasu dla kanału, musi być w zakresie maskBegin <= maskEnd <= length
+		void innerSetChannelMaskEnd(const TChannelConstPtr & channel, double maskEnd);
 
-    //! Konwertuje stale kanały podawane przez klienta na kanały które mozna modyfikowac
-    //! sciaga modyfikatro const!!
-    //! \param channel kanał do konwersji na wersje do zapisu
-    static TChannelPtr getWritableTChannel(const TChannelConstPtr & channel);
+		//! \param channel kanał danych
+		//! \param active Czy kanał jest aktywny podczas operacji czasowych (odtwarzanie timeline)
+		void innerSetChannelActive(const TChannelConstPtr & channel, bool active);
 
-    //! Konwertuje stale kanały podawane przez klienta na kanały które mozna modyfikowac
-    //! sciaga modyfikatro const!!
-    //! \param channel kanał do konwersji na wersje do zapisu
-    static TChannelPtr getWritableTChannel(const NamedTreeBaseConstPtr & channel);
+		//! \param channel kanał danych
+		void innerClearChannelTags(const TChannelConstPtr & channel, bool deeper = false);
 
-    //! Konwertuje stale kanały podawane przez klienta na kanały które mozna modyfikowac
-    //! sciaga modyfikatro const!!
-    //! \param channel kanał do konwersji na wersje do zapisu
-    static ChannelPtr getWritableChannel(const ChannelConstPtr & channel);
+		//! \param channel kanał danych
+		//! \param time Czas kanału w którym dokona się podzial kanału - 0 < time < length
+		//! \param nameA Nazwa mlodszej części kanału po podziale, musi być unikalna względem rodzica kanału
+		//! \param nameB Nazwa starszej części kanału po podziale, musi być unikalna względem rodzica kanału
+		void innerSplitChannel(const TChannelConstPtr & channel, double time, const std::string & nameA = "A", const std::string & nameB = "B");
 
-    //! Konwertuje stale kanały podawane przez klienta na kanały które mozna modyfikowac
-    //! sciaga modyfikatro const!!
-    //! \param channel kanał do konwersji na wersje do zapisu
-    static ChannelPtr getWritableChannel(const TChannelConstPtr & channel);
+		//! oba kanały musza być w obrebie jednego rodzica
+		//! \param channelA Pierwszy kanał do scalenia
+		//! \param channelB Drugi kanał do scalenia
+		//! \param name Nazwa kanału po połączeniu
+		void innerMergeChannels(const TChannelConstPtr & channelA, const TChannelConstPtr & channelB, const std::string & name = "Merged");
 
-    //! Konwertuje stale tagi podawane przez klienta na tagi które mozna modyfikowac
-    //! sciaga modyfikatro const!!
-    //! \param tag Tag do konwersji na wersje do zapisu
-    static TagPtr getWritableTag(const TagConstPtr & tag);
+		//! \param path Sciezka rozszerzona, gdzie ostatni element sciezki to nazwa, prawdziwa sciezka do kanału znajduje się wczesniej
+		//! \return Podzielona sciezka na nazwę i sciezke
+		static ExtPath getExtPath(const std::string & path);
 
-    //! \param ratio względna zmiana skali do zastosowania na skalach dzieci
-    void updateChildrenScale(const TChannelConstPtr & child, double ratio);
+		//! Konwertuje stale kanały podawane przez klienta na kanały które mozna modyfikowac
+		//! sciaga modyfikatro const!!
+		//! \param channel kanał do konwersji na wersje do zapisu
+		static TChannelPtr getWritableTChannel(const TChannelConstPtr & channel);
 
-    //! \param child Dziecko którego długość ulegla zmianie
-    static void updateParentLength(const TChannelConstPtr & parent, const TChannelConstPtr & child);
+		//! Konwertuje stale kanały podawane przez klienta na kanały które mozna modyfikowac
+		//! sciaga modyfikatro const!!
+		//! \param channel kanał do konwersji na wersje do zapisu
+		static TChannelPtr getWritableTChannel(const NamedTreeBaseConstPtr & channel);
 
-    //! \param channel kanał któremu uaktualniamy długość
-    //! \return Czy długość kanału ulegla zmianie
-    static bool refreshChannelLength(const TChannelConstPtr & channel);
+		//! Konwertuje stale kanały podawane przez klienta na kanały które mozna modyfikowac
+		//! sciaga modyfikatro const!!
+		//! \param channel kanał do konwersji na wersje do zapisu
+		static ChannelPtr getWritableChannel(const ChannelConstPtr & channel);
 
-    //! \param dOffset Przyrost offsetu globalnego dzieci
-    static void updateChildrenOffset(const TChannelConstPtr & child, double dOffset);
+		//! Konwertuje stale kanały podawane przez klienta na kanały które mozna modyfikowac
+		//! sciaga modyfikatro const!!
+		//! \param channel kanał do konwersji na wersje do zapisu
+		static ChannelPtr getWritableChannel(const TChannelConstPtr & channel);
 
-    static void updateParentOffset(const TChannelConstPtr & parent, const Model::TChannelConstPtr & child);
+		//! Konwertuje stale tagi podawane przez klienta na tagi które mozna modyfikowac
+		//! sciaga modyfikatro const!!
+		//! \param tag Tag do konwersji na wersje do zapisu
+		static TagPtr getWritableTag(const TagConstPtr & tag);
 
-    //! \param ratio Zamiana skali wplywająca na pozycje Tagow, zaznaczen i masek
-    static void updateForScaleRatio(const ChannelPtr & channel, double ratio);
-};
+		//! \param ratio względna zmiana skali do zastosowania na skalach dzieci
+		void updateChildrenScale(const TChannelConstPtr & child, double ratio);
 
-////////////////////////////////////////////////////////////////////////////////
+		//! \param child Dziecko którego długość ulegla zmianie
+		static void updateParentLength(const TChannelConstPtr & parent, const TChannelConstPtr & child);
+
+		//! \param channel kanał któremu uaktualniamy długość
+		//! \return Czy długość kanału ulegla zmianie
+		static bool refreshChannelLength(const TChannelConstPtr & channel);
+
+		//! \param dOffset Przyrost offsetu globalnego dzieci
+		static void updateChildrenOffset(const TChannelConstPtr & child, double dOffset);
+
+		static void updateParentOffset(const TChannelConstPtr & parent, const Model::TChannelConstPtr & child);
+
+		//! \param ratio Zamiana skali wplywająca na pozycje Tagow, zaznaczen i masek
+		static void updateForScaleRatio(const ChannelPtr & channel, double ratio);
+	};
+
+	////////////////////////////////////////////////////////////////////////////////
 } // namespace timeline
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -1,11 +1,11 @@
 /********************************************************************
-    created:  2012/12/10
-    created:  10:12:2012   23:05
-    filename: DFModelRunnerImpl.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+	created:  2012/12/10
+	created:  10:12:2012   23:05
+	filename: DFModelRunnerImpl.h
+	author:   Mateusz Janiak
+
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD___DFMODELRUNNERIMPL_H__
 #define HEADER_GUARD___DFMODELRUNNERIMPL_H__
 
@@ -13,17 +13,15 @@
 #include <dflib/MRModelInterfaceVerifier.h>
 #include <dflib/IDFLogger.h>
 
-#include <threading/SynchronizationPolicies.h>
-#include <threading/IThread.h>
-#include <threading/IThreadPool.h>
+#include <threadingUtils/Synchronized.h>
+#include <threadingUtils/IThread.h>
+#include <threadingUtils/IThreadPool.h>
 
 #include <list>
 #include <vector>
 #include <map>
 
-
 namespace df{
-
 	class IPin;
 	class INode;
 
@@ -47,22 +45,20 @@ namespace df{
 class MRInputPin;
 class MROutputPin;
 
-
 class IMRNode;
 class IMRSourceNode;
 class IMRSinkNode;
 class IMRProcessingNode;
 
-class df::DFModelRunner::DFModelRunnerImpl : public utils::SynchronizedT<true>
+class df::DFModelRunner::DFModelRunnerImpl : public threadingUtils::SynchronizedT<true>
 {
 private:
 
-	typedef utils::RecursiveSyncPolicy RecursiveSyncPolicy;
-	typedef utils::ScopedLock<RecursiveSyncPolicy> RecursiveScopedLock;
+	typedef threadingUtils::RecursiveSyncPolicy RecursiveSyncPolicy;
+	typedef threadingUtils::ScopedLock<RecursiveSyncPolicy> RecursiveScopedLock;
 
-	typedef utils::StrictSyncPolicy StrictSyncPolicy;
-	typedef utils::ScopedLock<StrictSyncPolicy> StrictScopedLock;
-
+	typedef threadingUtils::StrictSyncPolicy StrictSyncPolicy;
+	typedef threadingUtils::ScopedLock<StrictSyncPolicy> StrictScopedLock;
 
 private:
 
@@ -82,7 +78,6 @@ private:
 		unsigned int stage;
 		df::IDFLogger * logger_;
 		DFModelRunnerImpl * runner_;
-
 	};
 
 	friend class INodeRunner;
@@ -124,29 +119,29 @@ private:
 		virtual const bool dataflow();
 
 	private:
-		IMRProcessingNode * node_;		
+		IMRProcessingNode * node_;
 	};
 
 	friend class ProcessingNodeRunner;
 
-struct SourceNodeWrapData
-{
-	IMRSourceNode * node;
-	df::IDFSource * dfSource;
-};
+	struct SourceNodeWrapData
+	{
+		IMRSourceNode * node;
+		df::IDFSource * dfSource;
+	};
 
-typedef std::vector<SourceNodeWrapData> WrapedSources;
-typedef std::vector<IMRSinkNode *> WrapedSinks;
-typedef std::vector<IMRProcessingNode*> WrapedProcessors;
+	typedef std::vector<SourceNodeWrapData> WrapedSources;
+	typedef std::vector<IMRSinkNode *> WrapedSinks;
+	typedef std::vector<IMRProcessingNode*> WrapedProcessors;
 
-typedef std::vector<utils::IRunnablePtr> Runnables;
-typedef std::list<df::IDFLoggerHelper*> LoggerHelpers;
-typedef std::vector<INodeRunner*> NodeRunners;
+	typedef std::vector<threadingUtils::IRunnablePtr> Runnables;
+	typedef std::list<df::IDFLoggerHelper*> LoggerHelpers;
+	typedef std::vector<INodeRunner*> NodeRunners;
 
-typedef std::map<df::INode*, IMRNode *> NodesMapping;
+	typedef std::map<df::INode*, IMRNode *> NodesMapping;
 
-typedef std::map<df::IInputPin*, MRInputPin*> InputPinsMapping;
-typedef std::map<df::IOutputPin*, MROutputPin*> OutputPinsMapping;
+	typedef std::map<df::IInputPin*, MRInputPin*> InputPinsMapping;
+	typedef std::map<df::IOutputPin*, MROutputPin*> OutputPinsMapping;
 
 private:
 
@@ -157,7 +152,7 @@ private:
 	void wrapSourceNode(const MRModelInterfaceVerifier::SourceVerificationData & sourceData, OutputPinsMapping & outputMapping);
 	void wrapSinkNode(const MRModelInterfaceVerifier::SinkVerificationData & sinkData, InputPinsMapping & inputMapping);
 	void wrapProcessorNode(const MRModelInterfaceVerifier::ProcessorVerificationData & processorData, InputPinsMapping & inputMapping, OutputPinsMapping & outputMapping);
-	
+
 	void wrapInputPins(IMRSinkNode * sink, const MRModelInterfaceVerifier::InputVerification & inputData, InputPinsMapping & inputMapping);
 	void wrapOutputPins(IMRSourceNode * source, const MRModelInterfaceVerifier::OutputVerification & outputData, OutputPinsMapping & outputMapping);
 
@@ -187,7 +182,6 @@ private:
 	//! Koñczymy przep³yw danych - czyœcimy wszystko
 	const bool dataflowFinished() const;
 
-
 	//! \param reader Obiekt pozwalajacy czytaæ strukturê naszego modelu
 	//! \return Czy model mo¿na przetwarzaæ
 	static const bool verifyModel(df::IModelReader * reader, MRModelInterfaceVerifier::ModelVerificationData & interfaceVerifier);
@@ -213,7 +207,7 @@ private:
 	WrapedSinks sinks_;
 	WrapedProcessors processors_;
 	Runnables runnables_;
-	utils::IThreadPool::Threads threads_;
+	threadingUtils::IThreadPool::Threads threads_;
 	LoggerHelpers loggerHelpers_;
 	NodeRunners nodeRunners_;
 
@@ -237,7 +231,7 @@ private:
 
 	df::IDFLogger * logger_;
 
-	utils::IThreadPool * threadPool;
+	threadingUtils::IThreadPool * threadPool;
 
 public:
 
@@ -247,7 +241,7 @@ public:
 	//! \return Czy model mo¿na przetwarzaæ
 	static const bool verifyModel(const df::IModelReader * reader);
 
-	void start(df::IModelReader * model, df::IDFLogger * logger, utils::IThreadPool * tPool);
+	void start(df::IModelReader * model, df::IDFLogger * logger, threadingUtils::IThreadPool * tPool);
 	void stop();
 
 	void pause(df::INode * node);

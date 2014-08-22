@@ -42,37 +42,36 @@
 //#define KEY_PATH1 TEXT("Software\\Wow6432Node\\PJWSTK\\EDR")
 // Od Visty dodawane s? przedrostki typu Wow6432Node do sciezki w rejestrach
 // adres podawany do oczytu klucza powinien by? automatycznie konwertowany.
-#define KEY_PATH TEXT("Software\\PJWSTK\\MEDUSA")
+//#define KEY_PATH TEXT("Software\\PJWSTK\\MEDUSA")
 #endif
-
 
 DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
 
-const double TimeDelta = 1000.0/25.0;
+const double TimeDelta = 1000.0 / 25.0;
 
 namespace coreUI {
-
-class UIApplication : public QApplication
-{
-public:
-	UIApplication(int & argc, char *argv[]) : QApplication(argc, argv) {}
-
-	virtual bool notify(QObject* receiver, QEvent* event)
+	class UIApplication : public QApplication
 	{
-		try {
-			return QApplication::notify(receiver, event);
-		} catch (std::exception &e) {
-			CORE_LOG_ERROR("Error occurred in UI during user operation execution for QObject "
-				<< receiver->objectName().toStdString()  << " while processing event type " << event->type() << ": " << e.what());
-		} catch (...) {
-			CORE_LOG_ERROR("Unknown error occurred in UI during user operation execution for QObject "
-				<< receiver->objectName().toStdString() << " while processing event type " << event->type());
-		}
-		return false;
-	}
-};
+	public:
+		UIApplication(int & argc, char *argv[]) : QApplication(argc, argv) {}
 
+		virtual bool notify(QObject* receiver, QEvent* event)
+		{
+			try {
+				return QApplication::notify(receiver, event);
+			}
+			catch (std::exception &e) {
+				CORE_LOG_ERROR("Error occurred in UI during user operation execution for QObject "
+					<< receiver->objectName().toStdString() << " while processing event type " << event->type() << ": " << e.what());
+			}
+			catch (...) {
+				CORE_LOG_ERROR("Unknown error occurred in UI during user operation execution for QObject "
+					<< receiver->objectName().toStdString() << " while processing event type " << event->type());
+			}
+			return false;
+		}
+	};
 }
 
 using namespace coreUI;
@@ -92,7 +91,6 @@ Application::Application() : vendor_("Polsko-Japoñska Wy¿sza Szko³a Technik Komp
 	"PJWSTK Bytom", "Uczelnia prywatna", "marek.kulbacki@gmail.com"),
 	visualizerTimeDelta(TimeDelta), servicesTimeDelta(TimeDelta), mainWindow(nullptr), uiInit(false)
 {
-	
 }
 
 void Application::showSplashScreenMessage(const QString & message)
@@ -101,15 +99,17 @@ void Application::showSplashScreenMessage(const QString & message)
 	QApplication::processEvents();
 }
 
-int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem::Path> & coreTranslations)
+int Application::initUIContext(int & argc, char *argv[], const std::string & appName,
+	std::vector<Filesystem::Path> & coreTranslations)
 {
 	//obs?uga argument?w i opisu uzycia aplikacji z konsoli
-	osg::ArgumentParser arguments(&argc,argv);
-	arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
-	arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" example usage of MEDUSA.");
-	arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName()+" [options] filename");
-	arguments.getApplicationUsage()->addCommandLineOption("-h or --help","Display this information");
-	arguments.getApplicationUsage()->addCommandLineOption("--plugins <path>","Additional plugins directory");
+	osg::ArgumentParser arguments(&argc, argv);
+	//arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
+	arguments.getApplicationUsage()->setApplicationName(appName);
+	arguments.getApplicationUsage()->setDescription("example usage of " + appName);
+	arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName() + " [options] filename");
+	arguments.getApplicationUsage()->addCommandLineOption("-h or --help", "Display this information");
+	arguments.getApplicationUsage()->addCommandLineOption("--plugins <path>", "Additional plugins directory");
 
 	// czy wy?wietlamy pomoc?
 	if (arguments.read("-h") || arguments.read("--help"))
@@ -120,14 +120,16 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 
 	// pdczytujemy czy jest podana dodatkowa ?cie?ka dla plugin?w
 	std::string path;
-	arguments.read("--plugins",path);
-	if(path.empty() == false){
+	arguments.read("--plugins", path);
+	if (path.empty() == false){
 		additionalPluginsPath = path;
-	} 
+	}
 	// inicjalizacja UI, wszystkich potrzebnych zasob?w
 	{
 		uiApplication_.reset(new coreUI::UIApplication(argc, argv));
-		QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath()+"/plugins");
+		QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
+		//TODO - przejrzec w Qt jak to edytowaæ
+		//QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins/platforms");
 
 		//ustawienia aplikacji
 		QSettings::setDefaultFormat(QSettings::IniFormat);
@@ -135,19 +137,19 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 
 	//inicjalizacja ?cie?ek aplikacji, katalog?w tymczasowych itp, u?ywane do ?adowania t?umacze?
 	{
-		if(trySetPathsFromRegistry(paths_) == false){
-			setDefaultPaths(paths_);
+		if (trySetPathsFromRegistry(paths_, appName) == false){
+			setDefaultPaths(paths_, appName);
 		}
 
 		//sprawdzamy czy uda?o si? wygenerowac poprawne sciezki alikacji
-		if(paths_ == nullptr){
+		if (paths_ == nullptr){
 			throw std::runtime_error("Could not initialize application path interface");
 		}
-	}	
+	}
 
 	//teraz inicjujemy logger zeby moc juz wszystko logowaæ
 	//potem moge dolaczyc widget
-	{	
+	{
 		logInitializer_.reset(new LogInitializer((paths_->getApplicationDataPath() / "resources" / "settings" / "log.ini").string()));
 
 		loggerPrototype_.reset(new Log());
@@ -183,10 +185,10 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 		// dodaje na sztywno angielski zebym mial przynajmniej jeden jezyk
 		// a qt w takiej wersji jest domyslnie i dla niej nie ma
 		// translatora
-		
+
 		const auto en = LanguagesHelper::languageFromISO639Code("en");
 
-		languagesManager_->registerTranslator("qt",	en,
+		languagesManager_->registerTranslator("qt", en,
 			LanguagesManager::TranslatorPtr());
 
 		//ustawiamy jezyk
@@ -201,25 +203,21 @@ int Application::initUIContext(int & argc, char *argv[], std::vector<Filesystem:
 
 		CORE_LOG_INFO("System locale and language: " << locale << " -> " << lang);
 
-		if(lang.empty() == true){			
-			
+		if (lang.empty() == true){
 			QMessageBox::information(nullptr, QObject::tr("Translation problem"),
 				QObject::tr("Could not deduce application language from locale %1. Application will be launched with English translation").arg(QString::fromStdString(locale)));
 
 			lang = en;
-
-		} else {
-
+		}
+		else {
 			auto registeredLangs = languagesManager_->registeredLanguages();
-			if(registeredLangs.find(lang) == registeredLangs.end()){
-				
+			if (registeredLangs.find(lang) == registeredLangs.end()){
 				QMessageBox::information(nullptr, QObject::tr("Translation problem"),
 					QObject::tr("Could not load application with %1 language - no translations for this language. Application will be launched with English translation").arg(QString::fromStdString(lang)));
 
 				lang = en;
 			}
 		}
-
 
 		CORE_LOG_DEBUG("Setting appliaction language to " << lang);
 		languagesManager_->setLanguage(lang);
@@ -244,10 +242,11 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	//probujemy tmp katalog zapewni?
 	try{
 		Filesystem::createDirectory(paths_->getTmpPath());
-	}catch(...){
+	}
+	catch (...){
 		CORE_LOG_ERROR("Could not create temporary directory: " << paths_->getTmpPath());
 		throw;
-	}	
+	}
 
 	showSplashScreenMessage(QObject::tr("Initializing 3D context"));
 
@@ -259,8 +258,8 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 		// jest to niezb?dne dla prawid?owej deinicjalizacji tego obiektu - czasu ?ycia jego zasob?w.
 		// W przeciwnym wypadku powstanie kilka instancji tego obiektu - po jednej dla ka?dego pluginu dostarczaj?cego widget?w OSG
 		// Bardzo niebezpieczne!! Powodowa?o crash aplikacji przy inicjalizacji a potem przy zamykaniu
-		boost::shared_ptr<QWidget> w(new osgQt::GLWidget());
-	}	
+		utils::shared_ptr<QWidget> w(new osgQt::GLWidget());
+	}
 
 	showSplashScreenMessage(QObject::tr("Initializing core managers"));
 
@@ -274,16 +273,17 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	visualizerManager_.reset(new VisualizerManager());
 
 	memoryDataManager_->addObserver(fileDataManager_);
+	memoryDataManager_->addObserver(streamDataManager_);
 
 	//Wielow¹tkowoœæ
-	{	
+	{
 		showSplashScreenMessage(QObject::tr("Initializing threading"));
 
-		threadFactory_.reset(new utils::QtThreadFactory());
+		threadFactory_.reset(new threadingUtils::QtThreadFactory());
 
 		const core::ThreadPool::size_type threadsCount = QThread::idealThreadCount();
 
-		threadPool_.reset(new core::ThreadPool(threadFactory_, (threadsCount / 2) + 1 , threadsCount * 50));
+		threadPool_.reset(new core::ThreadPool(threadFactory_, (threadsCount / 2) + 1, threadsCount * 50));
 
 		core::ThreadPool::Threads ts;
 		threadPool_->getThreads("Core", ts, 1, true);
@@ -292,17 +292,17 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 		jobManager_.reset(new core::JobManager(ts.front()));
 
 		ts.clear();
-	
+
 		threadPool_->getThreads("Core", ts, threadsCount - 1, true);
 
-		for(auto it = ts.begin(); it != ts.end(); ++it){
+		for (auto it = ts.begin(); it != ts.end(); ++it){
 			(*it)->setDestination("JobManager worker");
 			jobManager_->addWorkerThread(*it);
 		}
 	}
 
 	showSplashScreenMessage(QObject::tr("Initializing plugins loader"));
-	
+
 	//inicjalizacja obiektu ?aduj?cego pluginy
 	pluginLoader_.reset(new PluginLoader(Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path()));
 
@@ -313,7 +313,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 #endif
 
 	//obsluga dodatkowej sciezki z pluginami zewnetrznymi
-	if(additionalPluginsPath.empty() == false && Filesystem::pathExists(additionalPluginsPath) == true)
+	if (additionalPluginsPath.empty() == false && Filesystem::pathExists(additionalPluginsPath) == true)
 	{
 		Filesystem::Iterator endIT;
 		std::for_each(Filesystem::Iterator(additionalPluginsPath), endIT, [=](const Filesystem::Path & p) {
@@ -321,10 +321,10 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 				pluginLoader_->addPath(p);
 				CORE_LOG_INFO("Plugin path added: " << p);
 			}
-		});			
+		});
 	}
 
-	showSplashScreenMessage(QObject::tr("Loading plugins"));	
+	showSplashScreenMessage(QObject::tr("Loading plugins"));
 
 	{
 		//tworze filtr zeby w unpackPlugin moc spokojnie dodawac nowe tlumaczenia
@@ -332,19 +332,19 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 
 		//ladujemy pluginy
 		pluginLoader_->load();
-		
+
 		auto pluginTranslations = core::Filesystem::listFiles(paths_->getPluginPath(), true, ".qm");
 		translations.insert(translations.end(), pluginTranslations.begin(), pluginTranslations.end());
 
-		for(int i = 0; i < pluginLoader_->getNumPlugins(); ++i){
+		for (int i = 0; i < pluginLoader_->getNumPlugins(); ++i){
 			auto plugin = pluginLoader_->getPlugin(i);
 			auto pluginName = plugin->getPath().stem().string();
 
-// je¿eli jestesmy w debug to pluginy maj¹ d na koñcu a t³umaczenia nie!!
-// muszê siê pozbyæ d
+			// je¿eli jestesmy w debug to pluginy maj¹ d na koñcu a t³umaczenia nie!!
+			// muszê siê pozbyæ d
 #ifdef _DEBUG
 
-			if(pluginName.back() == 'd'){
+			if (pluginName.back() == 'd'){
 				pluginName.resize(pluginName.size() - 1);
 			}
 
@@ -354,42 +354,138 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 				plugin->defaultLanguageCode(), languagesManager_.get());
 
 			LanguagesLoader::loadPluginTranslations(translations,
-				pluginName, languagesManager_.get());			
+				pluginName, languagesManager_.get());
 
 			unpackPlugin(mainWindow, plugin);
 		}
 	}
 
-	showSplashScreenMessage(QObject::tr("Initializing services"));	
+	showSplashScreenMessage(QObject::tr("Initializing services"));
 
 	// inicjalizacja us?ug
+	std::set<plugin::IServicePtr> skipServices;
 	for (int i = 0; i < serviceManager_->getNumServices(); ++i) {
-		serviceManager_->getService(i)->init(sourceManager_.get(),
-			visualizerManager_.get(), memoryDataManager_.get(), streamDataManager_.get(), fileDataManager_.get());
+		try{
+			serviceManager_->getService(i)->init(sourceManager_.get(),
+				visualizerManager_.get(), memoryDataManager_.get(), streamDataManager_.get(), fileDataManager_.get());
+		}
+		catch (std::exception & e){
+			skipServices.insert(serviceManager_->getService(i));
+			CORE_LOG_ERROR("Failed to initialize " << serviceManager_->getService(i)->name() << " service (ID: " << serviceManager_->getService(i)->ID() << ") -> " << e.what());
+			try{
+				serviceManager_->getService(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
+		catch (...){
+			skipServices.insert(serviceManager_->getService(i));
+			CORE_LOG_ERROR("Failed to initialize " << serviceManager_->getService(i)->name() << " service (ID: " << serviceManager_->getService(i)->ID() << ")");
+			try{
+				serviceManager_->getService(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
 	}
 
 	// inicjalizacja us?ug
 	for (int i = 0; i < serviceManager_->getNumServices(); ++i) {
-		serviceManager_->getService(i)->lateInit();
+
+		if (skipServices.find(serviceManager_->getService(i)) != skipServices.end()){
+			continue;
+		}
+
+		try{
+			serviceManager_->getService(i)->lateInit();
+		}
+		catch (std::exception & e){
+			CORE_LOG_ERROR("Failed to do late initialization for " << serviceManager_->getService(i)->name() << " service (ID: " << serviceManager_->getService(i)->ID() << ") -> " << e.what());
+			try{
+				serviceManager_->getService(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
+		catch (...){
+			CORE_LOG_ERROR("Failed to do late initialization for " << serviceManager_->getService(i)->name() << " service (ID: " << serviceManager_->getService(i)->ID() << ")");
+			try{
+				serviceManager_->getService(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
 	}
 
 	showSplashScreenMessage(QObject::tr("Initializing sources"));
 
-	// inicjalizacja ?r?de?	
+	// inicjalizacja ?r?de?
+	std::set<plugin::ISourcePtr> skipSources;
 	for (int i = 0; i < sourceManager_->getNumSources(); ++i) {
-		sourceManager_->getSource(i)->init(memoryDataManager_.get(), streamDataManager_.get(), fileDataManager_.get());
+		try{
+			sourceManager_->getSource(i)->init(memoryDataManager_.get(), streamDataManager_.get(), fileDataManager_.get());
+		}
+		catch (std::exception & e){
+			skipSources.insert(sourceManager_->getSource(i));
+			CORE_LOG_ERROR("Failed to initialize " << sourceManager_->getSource(i)->name() << " source (ID: " << sourceManager_->getSource(i)->ID() << ") -> " << e.what());
+			try{
+				serviceManager_->getService(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
+		catch (...){
+			skipSources.insert(sourceManager_->getSource(i));
+			CORE_LOG_ERROR("Failed to initialize " << sourceManager_->getSource(i)->name() << " source (ID: " << sourceManager_->getSource(i)->ID() << ")");
+			try{
+				sourceManager_->getSource(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
 	}
 
-	// inicjalizacja ?r?de?	
+	// inicjalizacja ?r?de?
 	for (int i = 0; i < sourceManager_->getNumSources(); ++i) {
-		sourceManager_->getSource(i)->lateInit();
+
+		if (skipSources.find(sourceManager_->getSource(i)) != skipSources.end()){
+			continue;
+		}
+
+		try{
+			sourceManager_->getSource(i)->lateInit();
+		}
+		catch (std::exception & e){
+			CORE_LOG_ERROR("Failed to do late initialization for " << sourceManager_->getSource(i)->name() << " source (ID: " << sourceManager_->getSource(i)->ID() << ") -> " << e.what());
+			try{
+				sourceManager_->getSource(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
+		catch (...){
+			CORE_LOG_ERROR("Failed to do late initialization for " << sourceManager_->getSource(i)->name() << " source (ID: " << sourceManager_->getSource(i)->ID() << ")");
+			try{
+				sourceManager_->getSource(i)->finalize();
+			}
+			catch (...){
+
+			}
+		}
 	}
 
-	showSplashScreenMessage(QObject::tr("Initializing console"));	
+	showSplashScreenMessage(QObject::tr("Initializing console"));
 
 	logInitializer_->setConsoleWidget(mainWindow->getConsole());
 
-	showSplashScreenMessage(QObject::tr("Initializing main view"));	
+	showSplashScreenMessage(QObject::tr("Initializing main view"));
 
 	mainWindow->show();
 
@@ -400,7 +496,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 
 int Application::run()
 {
-	if(uiInit == true){
+	if (uiInit == true){
 		connect(&visualizerUpdateTimer, SIGNAL(timeout()), this, SLOT(updateVisualizers()));
 		connect(&servicesUpdateTimer, SIGNAL(timeout()), this, SLOT(updateServices()));
 
@@ -413,8 +509,7 @@ int Application::run()
 
 Application::~Application()
 {
-	if(uiInit == true){
-
+	if (uiInit == true){
 		CORE_LOG_INFO("Closing core application");
 
 		CORE_LOG_INFO("Releasing sources");
@@ -424,6 +519,7 @@ Application::~Application()
 		CORE_LOG_INFO("Releasing visualizer manager");
 		visualizerManager_.reset();
 		CORE_LOG_INFO("Releasing stream data manager");
+		memoryDataManager_->removeObserver(streamDataManager_);
 		streamDataManager_.reset();
 		CORE_LOG_INFO("Releasing file data manager");
 		memoryDataManager_->removeObserver(fileDataManager_);
@@ -449,10 +545,10 @@ Application::~Application()
 
 		CORE_LOG_INFO("Cleaning UI context");
 		uiApplication_.reset();
-		
+
 		CORE_LOG_INFO("Cleaning tmp files");
 		Filesystem::deleteDirectory(getPaths()->getTmpPath());
-		
+
 		CORE_LOG_INFO("Releasing application description");
 		applicationDescription_.reset();
 
@@ -536,31 +632,28 @@ core::JobManager* Application::jobManager()
 	return jobManager_.get();
 }
 
-bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path)
+const Filesystem::Path resourcesPath()
+{
+	return Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path() / "resources";
+}
+
+bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path,
+	const std::string & appName)
 {
 #ifdef WIN32
+	//TODO
+	//u¿yæ vendor info do generowania sciezki
+#define KEY_PATH TEXT("Software\\PJWSTK\\")
 #define PATH_BUFFER_SIZE 1024
 	HKEY hKey;
 	char buffer[PATH_BUFFER_SIZE];
-	DWORD dwType, dwSize = PATH_BUFFER_SIZE;
+	DWORD dwType, dwSize = PATH_BUFFER_SIZE;	
 
-	Filesystem::Path resourcesPath = Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path() / "resources";
+	std::string keyPath = KEY_PATH + appName;
 
-	/*
-	Filesystem::Path resourcesPath;
-	LPTSTR lpValueName = "ProgramFilesPath";
-	auto lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
-	if(lResult == ERROR_SUCCESS && RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
-		resourcesPath = Filesystem::Path(buffer) / "bin" / "resources";
-		RegCloseKey(hKey);
-	} else {
-		return false;
-	}
-	}*/
+	auto lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, keyPath.c_str(), 0, KEY_READ, &hKey);
 
-	auto lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, KEY_PATH, 0, KEY_READ, &hKey);
-
-	if(lResult != ERROR_SUCCESS){
+	if (lResult != ERROR_SUCCESS){
 		return false;
 	}
 
@@ -568,9 +661,10 @@ bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path)
 
 	LPTSTR lpValueName = "ApplicationDataPath";
 	dwSize = sizeof(buffer);
-	if(RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
-		applicationDataPath = Filesystem::Path(buffer);		
-	} else {		
+	if (RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
+		applicationDataPath = Filesystem::Path(buffer);
+	}
+	else {
 		RegCloseKey(hKey);
 		return false;
 	}
@@ -578,10 +672,11 @@ bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path)
 	Filesystem::Path userApplicationDataPath;
 
 	lpValueName = "UserApplicationDataPath";
-	dwSize = sizeof(buffer);	
-	if(RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
-		userApplicationDataPath = Filesystem::Path(buffer);		
-	} else {		
+	dwSize = sizeof(buffer);
+	if (RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
+		userApplicationDataPath = Filesystem::Path(buffer);
+	}
+	else {
 		RegCloseKey(hKey);
 		return false;
 	}
@@ -590,16 +685,17 @@ bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path)
 
 	lpValueName = "UserDataPath";
 	dwSize = sizeof(buffer);
-	if(RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
-		userDataPath = Filesystem::Path(buffer);		
-	}else{		
+	if (RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
+		userDataPath = Filesystem::Path(buffer);
+	}
+	else{
 		RegCloseKey(hKey);
 		return false;
 	}
 
 	RegCloseKey(hKey);
 
-	path.reset(new Path(userDataPath, applicationDataPath, userApplicationDataPath, resourcesPath, userDataPath / "tmp", applicationDataPath / "plugins"));
+	path.reset(new Path(userDataPath, applicationDataPath, userApplicationDataPath, resourcesPath(), userDataPath / "tmp", applicationDataPath / "plugins"));
 
 	return true;
 #else
@@ -607,95 +703,97 @@ bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path)
 #endif
 }
 
-void Application::setDefaultPaths(utils::shared_ptr<Path> & path)
+void Application::setDefaultPaths(utils::shared_ptr<Path> & path, const std::string & appName)
 {
 	//TODO
+	//ciagnac to info z vendor info?
 	//mie? na uwadze nazw? aplikacji i PJWSTK
-	auto userPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0).toStdString()) / "PJWSTK" / "MEDUSA";
-	auto appDataPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DataLocation).at(0).toStdString());
+	auto userPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0).toStdString()) / "PJWSTK" / appName;
+#ifdef WIN32
+	//HACK ¿eby dostaæ siê do œcie¿ek roaming dla usera, Qt w innych przypadkach podaje œciezki w local
+	QString settingsPath = QFileInfo(QSettings().fileName()).absolutePath();
+	auto appDataPath = Filesystem::Path(settingsPath.toStdString()).parent_path() / "PJWSTK" / appName;
+
+#else
+	auto appDataPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DataLocation).at(0).toStdString()).parent_path() / "PJWSTK" / appName;
+#endif // WIN32
 	//TODO - czy pod linux taka konwencja jest ok? jak tam dzia³aj¹ takie wspólne foldery?
-	auto userAppDataPath = appDataPath;
-	auto resourcesPath = Filesystem::Path(QDir::currentPath().toStdString()) / "resources";
-	
-	path.reset(new Path(userPath, appDataPath, userAppDataPath, resourcesPath, userPath / "tmp", appDataPath / "plugins"));
+	auto userAppDataPath = appDataPath;	
+
+	path.reset(new Path(userPath, appDataPath, userAppDataPath, resourcesPath(), userPath / "tmp", appDataPath / "plugins"));
 }
 
 void Application::safeRegisterService(const plugin::IServicePtr & service)
 {
 	try{
-
 		serviceManager_->registerService(service);
-
-	}catch(std::exception & e){
-		CORE_LOG_WARNING("Service " << service->name() << " " <<service->description() << " with ID " << service->ID() <<
-			" has caused an error during registration: " << e.what() << ". Service NOT registered in application!" );
 	}
-	catch(...){
-		CORE_LOG_WARNING("Service " << service->name() << " " <<service->description() << " with ID " << service->ID() <<
-			" has caused an UNKNOWN error during registration. Service NOT registered in application!" );
+	catch (std::exception & e){
+		CORE_LOG_WARNING("Service " << service->name() << " " << service->description() << " with ID " << service->ID() <<
+			" has caused an error during registration: " << e.what() << ". Service NOT registered in application!");
+	}
+	catch (...){
+		CORE_LOG_WARNING("Service " << service->name() << " " << service->description() << " with ID " << service->ID() <<
+			" has caused an UNKNOWN error during registration. Service NOT registered in application!");
 	}
 }
 
 void Application::safeRegisterSource(const plugin::ISourcePtr & source)
 {
 	try{
-
 		sourceManager_->registerSource(source);
-
-	}catch(std::exception & e){
-		CORE_LOG_WARNING("Source " << source->name() << " with ID " << source->ID() <<
-			" has caused an error during registration: " << e.what() << ". Source NOT registered in application!" );
 	}
-	catch(...){
+	catch (std::exception & e){
 		CORE_LOG_WARNING("Source " << source->name() << " with ID " << source->ID() <<
-			" has caused an UNKNOWN error during registration. Source NOT registered in application!" );
+			" has caused an error during registration: " << e.what() << ". Source NOT registered in application!");
+	}
+	catch (...){
+		CORE_LOG_WARNING("Source " << source->name() << " with ID " << source->ID() <<
+			" has caused an UNKNOWN error during registration. Source NOT registered in application!");
 	}
 }
 
 void Application::safeRegisterParser(const plugin::IParserPtr & parser)
 {
 	try{
-
 		parserManager_->registerParser(parser);
-
-	}catch(std::exception & e){
-		CORE_LOG_WARNING("Parser " << parser->description() << " with ID " << parser->ID() <<
-			" has caused an error during registration: " << e.what() << ". Parser NOT registered in application!" );
 	}
-	catch(...){
+	catch (std::exception & e){
 		CORE_LOG_WARNING("Parser " << parser->description() << " with ID " << parser->ID() <<
-			" has caused an UNKNOWN error during registration. Parser NOT registered in application!" );
+			" has caused an error during registration: " << e.what() << ". Parser NOT registered in application!");
+	}
+	catch (...){
+		CORE_LOG_WARNING("Parser " << parser->description() << " with ID " << parser->ID() <<
+			" has caused an UNKNOWN error during registration. Parser NOT registered in application!");
 	}
 }
 
 void Application::safeRegisterObjectWrapperPrototype(const utils::ObjectWrapperPtr & prototype)
 {
 	try{
-
 		dataHierarchyManager_->registerObjectWrapperPrototype(prototype);
-
-	}catch(std::exception & e){
-		CORE_LOG_WARNING("Object wrapper prototype for type " << prototype->getTypeInfo().name() << " has caused an error during registration: "
-			<< e.what() << ". Object type NOT registered in application!" );
 	}
-	catch(...){
-		CORE_LOG_WARNING("Object wrapper prototype for type " << prototype->getTypeInfo().name() << " has caused an UNKNOWN error during registration. Object type NOT registered in application!" );
+	catch (std::exception & e){
+		CORE_LOG_WARNING("Object wrapper prototype for type " << prototype->getTypeInfo().name() << " has caused an error during registration: "
+			<< e.what() << ". Object type NOT registered in application!");
+	}
+	catch (...){
+		CORE_LOG_WARNING("Object wrapper prototype for type " << prototype->getTypeInfo().name() << " has caused an UNKNOWN error during registration. Object type NOT registered in application!");
 	}
 }
 
 void Application::safeRegisterVisualizer(const plugin::IVisualizerPtr & visualizer)
 {
 	try{
-
 		visualizerManager_->registerVisualizerPrototype(visualizer);
-
-	}catch(std::exception & e){
-		CORE_LOG_WARNING("Visualizer " << visualizer->name() << " with ID " << visualizer->ID()
-			<< " has caused an error during registration: " << e.what() << ". Visualizer NOT registered in application!" );
 	}
-	catch(...){
+	catch (std::exception & e){
 		CORE_LOG_WARNING("Visualizer " << visualizer->name() << " with ID " << visualizer->ID()
-			<< " has caused an UNKNOWN error during registration. Visualizer NOT registered in application!" );
+			<< " has caused an error during registration: " << e.what() << ". Visualizer NOT registered in application!");
+	}
+	catch (...){
+		CORE_LOG_WARNING("Visualizer " << visualizer->name() << " with ID " << visualizer->ID()
+			<< " has caused an UNKNOWN error during registration. Visualizer NOT registered in application!");
 	}
 }
 
@@ -703,41 +801,39 @@ void Application::unpackPlugin(CoreMainWindow * mainWindow, const core::PluginPt
 {
 	auto message = QObject::tr("Loading plugin %1 content: %2").arg(QString::fromStdString(plugin->name()));
 
-	showSplashScreenMessage(message.arg(QObject::tr("domain objects")));	
+	showSplashScreenMessage(message.arg(QObject::tr("domain objects")));
 
-	for(int j = 0; j < plugin->getNumObjectWrapperPrototypes(); ++j) {
+	for (int j = 0; j < plugin->getNumObjectWrapperPrototypes(); ++j) {
 		safeRegisterObjectWrapperPrototype(plugin->getObjectWrapperPrototype(j));
 	}
 
-	showSplashScreenMessage(message.arg(QObject::tr("services")));	
+	showSplashScreenMessage(message.arg(QObject::tr("services")));
 
-	for ( int j = 0; j < plugin->getNumServices(); ++j ) {
+	for (int j = 0; j < plugin->getNumServices(); ++j) {
 		safeRegisterService(plugin->getService(j));
 	}
 
-	showSplashScreenMessage(message.arg(QObject::tr("sources")));	
+	showSplashScreenMessage(message.arg(QObject::tr("sources")));
 
-	for ( int j = 0; j < plugin->getNumSources(); ++j ) {
+	for (int j = 0; j < plugin->getNumSources(); ++j) {
 		safeRegisterSource(plugin->getSource(j));
 	}
 
-	showSplashScreenMessage(message.arg(QObject::tr("parsers")));	
+	showSplashScreenMessage(message.arg(QObject::tr("parsers")));
 
-	for(int j = 0; j < plugin->getNumParsersPrototypes(); ++j) {
+	for (int j = 0; j < plugin->getNumParsersPrototypes(); ++j) {
 		safeRegisterParser(plugin->getParserPrototype(j));
 	}
-	
-	showSplashScreenMessage(message.arg(QObject::tr("visualizers")));	
 
-	for(int j = 0; j < plugin->getNumVisualizerPrototypes(); ++j) {
+	showSplashScreenMessage(message.arg(QObject::tr("visualizers")));
+
+	for (int j = 0; j < plugin->getNumVisualizerPrototypes(); ++j) {
 		safeRegisterVisualizer(plugin->getVisualizerPrototype(j));
 	}
 }
 
 void Application::finalizeUI(){
-
-	if(uiInit == true){
-
+	if (uiInit == true){
 		try{
 			CORE_LOG_INFO("Finalizing sources");
 			sourceManager_->finalizeSources();
@@ -749,11 +845,12 @@ void Application::finalizeUI(){
 			logInitializer_->setConsoleWidget(nullptr);
 
 			CORE_LOG_INFO("Reseting log system");
-			logInitializer_.reset();	
-		
-		}catch(std::exception & e){
+			logInitializer_.reset();
+		}
+		catch (std::exception & e){
 			CORE_LOG_ERROR("Error while closing UI during sources, services and log finalization: " << e.what());
-		}catch(...){
+		}
+		catch (...){
 			CORE_LOG_ERROR("UNKNOWN error while closing UI during sources and services finalization");
 		}
 	}

@@ -12,7 +12,7 @@
 #include <dflib/Node.h>
 #include <type_traits>
 #include <corelib/IThreadPool.h>
-#include <threading/IThreadPool.h>
+#include <threadingUtils/IThreadPool.h>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -24,13 +24,12 @@
 
 using namespace vdf;
 
-class VDFThreadPool : public utils::IThreadPool
+class VDFThreadPool : public threadingUtils::IThreadPool
 {
 public:
 
 	VDFThreadPool(core::IThreadPool * tp) : tp_(tp)
 	{
-
 	}
 
 	virtual ~VDFThreadPool() {}
@@ -50,7 +49,7 @@ public:
 		return tp_->count();
 	}
 
-	virtual utils::IThreadPtr getThread()
+	virtual threadingUtils::IThreadPtr getThread()
 	{
 		core::IThreadPool::Threads ret;
 		tp_->getThreads("VDF", ret, 1);
@@ -62,10 +61,10 @@ public:
 	{
 		core::IThreadPool::Threads ret;
 		tp_->getThreads("VDF", ret, groupSize);
-		for(auto it = ret.begin(); it != ret.end(); ++it){
+		for (auto it = ret.begin(); it != ret.end(); ++it){
 			(*it)->setDestination("Node thread");
 			threads.push_back(*it);
-		}		
+		}
 	}
 
 private:
@@ -74,38 +73,36 @@ private:
 
 IVisualConnectionPtr SceneModel::addConnection(IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin)
 {
-   	UTILS_ASSERT(outputPin && inputPin);
-    	
+	UTILS_ASSERT(outputPin && inputPin);
+
 	auto modelInput = inputPin->getModelPin();
 	auto modelOutput = outputPin->getModelPin();
-	
-    df::IConnection* con = new df::Connection(modelOutput, modelInput);
+
+	df::IConnection* con = new df::Connection(modelOutput, modelInput);
 	model->addConnection(con);
-    
-    IVisualConnectionPtr connection = builder.createConnection(outputPin, inputPin);
+
+	IVisualConnectionPtr connection = builder.createConnection(outputPin, inputPin);
 	connection->setModelConnection(con);
-    addItem(connection);
-    return connection;
+	addItem(connection);
+	return connection;
 }
 
-
-SceneModel::SceneModel( CanvasStyleEditorPtr factories, core::IThreadPool* threadpool ) :
-    builder(factories),
-	model(new df::Model),
-	dfThreadFactory(new VDFThreadPool(threadpool))
+SceneModel::SceneModel(CanvasStyleEditorPtr factories, core::IThreadPool* threadpool) :
+builder(factories),
+model(new df::Model),
+dfThreadFactory(new VDFThreadPool(threadpool))
 {
-
 }
 
-void SceneModel::addItem( IVisualItemPtr item )
+void SceneModel::addItem(IVisualItemPtr item)
 {
-    auto* graphics = item->visualItem();
-    graphics2Visual[graphics] = item;
+	auto* graphics = item->visualItem();
+	graphics2Visual[graphics] = item;
 
-    // nie trzeba tego robic dla elementow, ktore maja parenta
-    //if (graphics2Visual.find(graphics->parentItem()) == graphics2Visual.end()) {
-    if (!item->isType(IVisualItem::Pin)) {
-        emit visualItemAdded(item);
+	// nie trzeba tego robic dla elementow, ktore maja parenta
+	//if (graphics2Visual.find(graphics->parentItem()) == graphics2Visual.end()) {
+	if (!item->isType(IVisualItem::Pin)) {
+		emit visualItemAdded(item);
 	}
 
 	if (item->isType(IVisualItem::Node)) {
@@ -114,80 +111,83 @@ void SceneModel::addItem( IVisualItemPtr item )
 		if (modelNode) {
 			addNode(modelNode);
 		}
-	} else if (item->isType(IVisualItem::InputPin)) {
-		inputPins.push_back(utils::dynamic_pointer_cast<IVisualInputPin>(item)); 
-	} else if (item->isType(IVisualItem::OutputPin)) {
+	}
+	else if (item->isType(IVisualItem::InputPin)) {
+		inputPins.push_back(utils::dynamic_pointer_cast<IVisualInputPin>(item));
+	}
+	else if (item->isType(IVisualItem::OutputPin)) {
 		outputPins.push_back(utils::dynamic_pointer_cast<IVisualOutputPin>(item));
-	} else if (item->isType(IVisualItem::Connection)) {
-        auto c = utils::dynamic_pointer_cast<IVisualConnection>(item);
-        c->getInputPin()->setConnection(c);
-        c->getOutputPin()->addConnection(c);
-    }
+	}
+	else if (item->isType(IVisualItem::Connection)) {
+		auto c = utils::dynamic_pointer_cast<IVisualConnection>(item);
+		c->getInputPin()->setConnection(c);
+		c->getOutputPin()->addConnection(c);
+	}
 }
 
-bool SceneModel::connectionPossible( IVisualPinPtr pin1, IVisualPinPtr pin2) const
+bool SceneModel::connectionPossible(IVisualPinPtr pin1, IVisualPinPtr pin2) const
 {
 	if (pin1->getType() == pin2->getType() || !pin1 || !pin2) {
 		return false;
-	} 
+	}
 
-    if (pin1->getParent().lock() == pin2->getParent().lock()) {
-        return false;
-    }
+	if (pin1->getParent().lock() == pin2->getParent().lock()) {
+		return false;
+	}
 
-    PinResolver p(pin1, pin2);
-    if (p.getInput()->getConnection().lock()) {
-        return false;
-    }
-   
-    auto modelInput = p.getInput()->getModelPin();
-    auto modelOutput = p.getOutput()->getModelPin();
-    return model->canConnect(modelOutput, modelInput);
+	PinResolver p(pin1, pin2);
+	if (p.getInput()->getConnection().lock()) {
+		return false;
+	}
+
+	auto modelInput = p.getInput()->getModelPin();
+	auto modelOutput = p.getOutput()->getModelPin();
+	return model->canConnect(modelOutput, modelInput);
 }
 
-void SceneModel::addNode(df::INode* node )
+void SceneModel::addNode(df::INode* node)
 {
 	UTILS_ASSERT(node);
 
-	switch(node->type()) {
-		case df::INode::PROCESSING_NODE: {
-			df::IProcessingNode* processing = dynamic_cast<df::IProcessingNode*>(node);
-			model->addNode(processing); 
-		} return;
+	switch (node->type()) {
+	case df::INode::PROCESSING_NODE: {
+		df::IProcessingNode* processing = dynamic_cast<df::IProcessingNode*>(node);
+		model->addNode(processing);
+	} return;
 
-		case df::INode::SINK_NODE: {
-			df::ISinkNode* sink = dynamic_cast<df::ISinkNode*>(node);
-			model->addNode(sink);
-		} return;
+	case df::INode::SINK_NODE: {
+		df::ISinkNode* sink = dynamic_cast<df::ISinkNode*>(node);
+		model->addNode(sink);
+	} return;
 
-		case df::INode::SOURCE_NODE: {
-			df::ISourceNode* source = dynamic_cast<df::ISourceNode*>(node);
-            auto dmNode = dynamic_cast<INodeHierarchyObserver*>(source);
-            if (dmNode) {
-                dmNode->refresh(plugin::getHierarchyManagerReader(), core::IMemoryDataManagerHierarchy::HierarchyChangeList());
-            }
-			model->addNode(source);
-		} return;
+	case df::INode::SOURCE_NODE: {
+		df::ISourceNode* source = dynamic_cast<df::ISourceNode*>(node);
+		auto dmNode = dynamic_cast<INodeHierarchyObserver*>(source);
+		if (dmNode) {
+			dmNode->refresh(plugin::getHierarchyManagerReader(), core::IMemoryDataManagerHierarchy::HierarchyChangeList());
+		}
+		model->addNode(source);
+	} return;
 	}
-	
+
 	UTILS_ASSERT(false);
 }
 
 void SceneModel::run()
-{	
-	if(df::DFModelRunner::verifyModel(model.get()) == true){
+{
+	if (df::DFModelRunner::verifyModel(model.get()) == true){
 		df::DFModelRunner runner;
 		runner.start(model.get(), nullptr, dfThreadFactory.get());
 		runner.join();
-	}else{
+	}
+	else{
 		//TODO
 		//obs³uga b³êdów
 		UTILS_ASSERT(false);
-
 	}
 }
 
-const SceneModel::Connections& SceneModel::getPossibleConections(IVisualPinPtr vpin  ) 
+const SceneModel::Connections& SceneModel::getPossibleConections(IVisualPinPtr vpin)
 {
 	pinsHelper.impossible.clear();
 	pinsHelper.possible.clear();
@@ -196,7 +196,8 @@ const SceneModel::Connections& SceneModel::getPossibleConections(IVisualPinPtr v
 		if (*it != vpin) {
 			if (connectionPossible(vpin, *it)) {
 				pinsHelper.possible.push_back(*it);
-			} else {
+			}
+			else {
 				pinsHelper.impossible.push_back(*it);
 			}
 		}
@@ -205,7 +206,8 @@ const SceneModel::Connections& SceneModel::getPossibleConections(IVisualPinPtr v
 		if (*it != vpin) {
 			if (connectionPossible(vpin, *it)) {
 				pinsHelper.possible.push_back(*it);
-			} else {
+			}
+			else {
 				pinsHelper.impossible.push_back(*it);
 			}
 		}
@@ -214,35 +216,37 @@ const SceneModel::Connections& SceneModel::getPossibleConections(IVisualPinPtr v
 }
 
 template<class VisualPinT>
-void vdf::SceneModel::removePin( IVisualItemPtr item )
+void vdf::SceneModel::removePin(IVisualItemPtr item)
 {
 	auto pin = utils::dynamic_pointer_cast<VisualPinT>(item);
 	UTILS_ASSERT(pin);
-	
+
 	if (std::is_same<VisualPinT, IVisualInputPin>::value) {
-        auto inputPin = utils::dynamic_pointer_cast<IVisualInputPin>(pin);
-        auto connection = inputPin->getConnection().lock();
-        if (connection) {
-            removeConnection(connection);
-        }
+		auto inputPin = utils::dynamic_pointer_cast<IVisualInputPin>(pin);
+		auto connection = inputPin->getConnection().lock();
+		if (connection) {
+			removeConnection(connection);
+		}
 		inputPins.remove(inputPin);
-	} else if (std::is_same<VisualPinT, IVisualOutputPin>::value) {
-        auto outputPin = utils::dynamic_pointer_cast<IVisualOutputPin>(pin);
-        int count = outputPin->getNumConnections();
-        for (int i = count - 1; i >= 0 ; --i) {
-            auto connection = outputPin->getConnection(i).lock();
-            if (connection) {
-                removeConnection(connection);
-            }
-        }
+	}
+	else if (std::is_same<VisualPinT, IVisualOutputPin>::value) {
+		auto outputPin = utils::dynamic_pointer_cast<IVisualOutputPin>(pin);
+		int count = outputPin->getNumConnections();
+		for (int i = count - 1; i >= 0; --i) {
+			auto connection = outputPin->getConnection(i).lock();
+			if (connection) {
+				removeConnection(connection);
+			}
+		}
 		outputPins.remove(outputPin);
-	} else {
+	}
+	else {
 		UTILS_ASSERT(false);
 	}
 }
 
 template<class VisualT, class DFNodeT>
-void SceneModel::removeNode( IVisualItemPtr item )
+void SceneModel::removeNode(IVisualItemPtr item)
 {
 	auto node = utils::dynamic_pointer_cast<VisualT>(item);
 	UTILS_ASSERT(node);
@@ -259,14 +263,12 @@ void SceneModel::removeNode( IVisualItemPtr item )
 	}
 }
 
-
-void SceneModel::removeItem( IVisualItemPtr item )
+void SceneModel::removeItem(IVisualItemPtr item)
 {
-    UTILS_ASSERT(!utils::dynamic_pointer_cast<IVisualConnection>(item));
-    commonErase(item);
+	UTILS_ASSERT(!utils::dynamic_pointer_cast<IVisualConnection>(item));
+	commonErase(item);
 
-
-	switch(item->getType()) {
+	switch (item->getType()) {
 	case IVisualItem::ProcessingNode:
 		removeNode<IVisualProcessingNode, df::ProcessingNode>(item);
 		break;
@@ -279,21 +281,21 @@ void SceneModel::removeItem( IVisualItemPtr item )
 		removeNode<IVisualSourceNode, df::SourceNode>(item);
 		break;
 
-	case (IVisualItem::InputPin):
+	case (IVisualItem::InputPin) :
 		removePin<IVisualInputPin>(item);
 		break;
 
-	case (IVisualItem::OutputPin):
+	case (IVisualItem::OutputPin) :
 		removePin<IVisualOutputPin>(item);
 		break;
 
-	case (IVisualItem::Connection):
-        UTILS_ASSERT(false);
+	case (IVisualItem::Connection) :
+		UTILS_ASSERT(false);
 		break;
 	}
 }
 
-IVisualItemPtr SceneModel::tryGetVisualItem( QGraphicsItem* item )
+IVisualItemPtr SceneModel::tryGetVisualItem(QGraphicsItem* item)
 {
 	auto it = graphics2Visual.find(item);
 	if (it != graphics2Visual.end()) {
@@ -303,7 +305,7 @@ IVisualItemPtr SceneModel::tryGetVisualItem( QGraphicsItem* item )
 	return IVisualItemPtr();
 }
 
-SceneBuilder::VisualNodeWithPins SceneModel::merge( const QList<QGraphicsItem*>& items )
+SceneBuilder::VisualNodeWithPins SceneModel::merge(const QList<QGraphicsItem*>& items)
 {
 	QList<IVisualNodePtr> nodes = this->getVisualItems<IVisualNodePtr>(items);
 	MergedItemPtr merged(new MergedItem());
@@ -321,17 +323,17 @@ SceneBuilder::VisualNodeWithPins SceneModel::merge( const QList<QGraphicsItem*>&
 			int count = source->getNumOutputPins();
 			for (int i = 0; i < count; ++i) {
 				IVisualOutputPinPtr opin = source->getOutputPin(i);
-                
-                int numConnections = opin->getNumConnections();
-                for (int i = 0; i < numConnections; ++i) {
-                    auto connection = opin->getConnection(i).lock();
-                    if (connection) {
-                        connection->visualItem()->setVisible(false);
-                    }
-                }
-                if (!numConnections) {
-				    opins.push_back(opin);
-                }
+
+				int numConnections = opin->getNumConnections();
+				for (int i = 0; i < numConnections; ++i) {
+					auto connection = opin->getConnection(i).lock();
+					if (connection) {
+						connection->visualItem()->setVisible(false);
+					}
+				}
+				if (!numConnections) {
+					opins.push_back(opin);
+				}
 			}
 		}
 		IVisualSinkNodePtr sink = utils::dynamic_pointer_cast<IVisualSinkNode>(*it);
@@ -342,7 +344,8 @@ SceneBuilder::VisualNodeWithPins SceneModel::merge( const QList<QGraphicsItem*>&
 				auto connection = ipin->getConnection().lock();
 				if (connection) {
 					connection->visualItem()->setVisible(false);
-				} else {
+				}
+				else {
 					ipins.push_back(sink->getInputPin(i));
 				}
 			}
@@ -354,23 +357,23 @@ SceneBuilder::VisualNodeWithPins SceneModel::merge( const QList<QGraphicsItem*>&
 	return SceneBuilder::VisualNodeWithPins();
 }
 
-
 void vdf::SceneModel::clearScene()
 {
-    auto nodes = getVisualItems<IVisualNodePtr>();
+	auto nodes = getVisualItems<IVisualNodePtr>();
 	for (auto it = nodes.begin(); it != nodes.end(); ++it) {
-        if ((*it)->isType(IVisualItem::Connection)) {
-            removeConnection(*it);
-        } else {
-            removeItem(*it);
-        }
-    }
-    UTILS_ASSERT(graphics2Visual.empty());
-    UTILS_ASSERT(inputPins.empty());
-    UTILS_ASSERT(outputPins.empty());
+		if ((*it)->isType(IVisualItem::Connection)) {
+			removeConnection(*it);
+		}
+		else {
+			removeItem(*it);
+		}
+	}
+	UTILS_ASSERT(graphics2Visual.empty());
+	UTILS_ASSERT(inputPins.empty());
+	UTILS_ASSERT(outputPins.empty());
 }
 
-void vdf::SceneModel::removeInputPins(IVisualNodePtr node )
+void vdf::SceneModel::removeInputPins(IVisualNodePtr node)
 {
 	IVisualSinkNodePtr sink = utils::dynamic_pointer_cast<vdf::IVisualSinkNode>(node);
 	if (sink) {
@@ -381,7 +384,7 @@ void vdf::SceneModel::removeInputPins(IVisualNodePtr node )
 	}
 }
 
-void vdf::SceneModel::removeOutputPins(IVisualNodePtr node) 
+void vdf::SceneModel::removeOutputPins(IVisualNodePtr node)
 {
 	IVisualSourceNodePtr source = utils::dynamic_pointer_cast<vdf::IVisualSourceNode>(node);
 	if (source) {
@@ -392,98 +395,97 @@ void vdf::SceneModel::removeOutputPins(IVisualNodePtr node)
 	}
 }
 
-void vdf::SceneModel::commonErase( IVisualItemPtr item ) 
+void vdf::SceneModel::commonErase(IVisualItemPtr item)
 {
-    auto* graphics = item->visualItem();
-    auto it = graphics2Visual.find(graphics);
-    UTILS_ASSERT(it != graphics2Visual.end());
-    graphics2Visual.erase(it);
-    //if (graphics2Visual.find(graphics->parentItem()) == graphics2Visual.end()) {
-    if (!item->isType(IVisualItem::Pin)) {
-        emit visualItemRemoved(item);
-    }
+	auto* graphics = item->visualItem();
+	auto it = graphics2Visual.find(graphics);
+	UTILS_ASSERT(it != graphics2Visual.end());
+	graphics2Visual.erase(it);
+	//if (graphics2Visual.find(graphics->parentItem()) == graphics2Visual.end()) {
+	if (!item->isType(IVisualItem::Pin)) {
+		emit visualItemRemoved(item);
+	}
 }
 
-void vdf::SceneModel::removeConnection( IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin )
+void vdf::SceneModel::removeConnection(IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin)
 {
-    auto connections = getVisualItems<IVisualConnectionPtr>();
+	auto connections = getVisualItems<IVisualConnectionPtr>();
 
-    for (auto it = connections.begin(); it != connections.end(); ++it) {
-        IVisualConnectionPtr c = *it;
-        if (c->getOutputPin() == outputPin && c->getInputPin() == inputPin) {
-            commonErase(c);
-            inputPin->setConnection(IVisualConnectionWeakPtr());
-            outputPin->removeConnection(c);
-            try {
-                model->removeConnection(c->getModelConnection());
-            } catch (std::exception& ) {
-                // TODO
-            }
-            return;
-        }
-    }
+	for (auto it = connections.begin(); it != connections.end(); ++it) {
+		IVisualConnectionPtr c = *it;
+		if (c->getOutputPin() == outputPin && c->getInputPin() == inputPin) {
+			commonErase(c);
+			inputPin->setConnection(IVisualConnectionWeakPtr());
+			outputPin->removeConnection(c);
+			try {
+				model->removeConnection(c->getModelConnection());
+			}
+			catch (std::exception&) {
+				// TODO
+			}
+			return;
+		}
+	}
 
-    UTILS_ASSERT (false);
+	UTILS_ASSERT(false);
 }
 
-void vdf::SceneModel::removeConnection( IVisualItemPtr item )
+void vdf::SceneModel::removeConnection(IVisualItemPtr item)
 {
-    auto c = utils::dynamic_pointer_cast<IVisualConnection>(item);
-    UTILS_ASSERT(c);
-    removeConnection(c->getOutputPin(), c->getInputPin());
+	auto c = utils::dynamic_pointer_cast<IVisualConnection>(item);
+	UTILS_ASSERT(c);
+	removeConnection(c->getOutputPin(), c->getInputPin());
 }
 
-void vdf::SceneModel::addNodeWithPins( const SceneBuilder::VisualNodeWithPins& nodeWithPins, const QPointF& pos )
+void vdf::SceneModel::addNodeWithPins(const SceneBuilder::VisualNodeWithPins& nodeWithPins, const QPointF& pos)
 {
-    auto node = nodeWithPins.get<0>();
-    auto vis = node->visualItem();
-    vis->setPos(pos);
+	auto node = nodeWithPins.get<0>();
+	auto vis = node->visualItem();
+	vis->setPos(pos);
 
-    addItem(node);
+	addItem(node);
 
-    SceneBuilder::Pins pins = nodeWithPins.get<1>();
-    for (auto it = pins.begin(); it != pins.end(); ++it) {
-        addItem(*it);
-    }
+	SceneBuilder::Pins pins = nodeWithPins.get<1>();
+	for (auto it = pins.begin(); it != pins.end(); ++it) {
+		addItem(*it);
+	}
 
-    pins = nodeWithPins.get<2>();
-    for (auto it = pins.begin(); it != pins.end(); ++it) {
-        addItem(*it);
-    }
+	pins = nodeWithPins.get<2>();
+	for (auto it = pins.begin(); it != pins.end(); ++it) {
+		addItem(*it);
+	}
 }
-
 
 vdf::SceneModel::Serializer::Infos vdf::SceneModel::Serializer::extractInfos() const
 {
-    auto nodes = model->getVisualItems<IVisualNodePtr>();
-    std::map<IVisualNodePtr, int> node2idx;
-    NodeInfo::Collection infos;
-    int count = nodes.size();
-    for (int i = 0; i < count; ++i) {
-        NodeInfo ni;
-        node2idx[nodes[i]] = i;
-        ni.index = i;
-        ni.id = boost::lexical_cast<std::string>(typesWindow->getId(nodes[i]->getName()));
-        ni.x = nodes[i]->visualItem()->x();
-        ni.y = nodes[i]->visualItem()->y();
-        ni.name = nodes[i]->getName().toStdString();
-        infos.push_back(ni);
-    }
-    
-    ConnectionInfo::Collection connections;
-    auto connectionItems = model->getVisualItems<IVisualConnectionPtr>();
-    for (auto it = connectionItems.begin(); it != connectionItems.end(); ++it) {
-        IVisualInputPinPtr ipin = (*it)->getInputPin();
-        IVisualOutputPinPtr opin = (*it)->getOutputPin();
-        
-        ConnectionInfo info;
-        info.inputNodeIndex = node2idx[ipin->getParent().lock()];
-        info.inputPinIndex = ipin->getIndex();
-        info.outputNodeIndex = node2idx[opin->getParent().lock()];
-        info.outputPinIndex = opin->getIndex();
-        connections.push_back(info);
-    }
-    
-    return std::make_pair(infos, connections);
-}
+	auto nodes = model->getVisualItems<IVisualNodePtr>();
+	std::map<IVisualNodePtr, int> node2idx;
+	NodeInfo::Collection infos;
+	int count = nodes.size();
+	for (int i = 0; i < count; ++i) {
+		NodeInfo ni;
+		node2idx[nodes[i]] = i;
+		ni.index = i;
+		ni.id = boost::lexical_cast<std::string>(typesWindow->getId(nodes[i]->getName()));
+		ni.x = nodes[i]->visualItem()->x();
+		ni.y = nodes[i]->visualItem()->y();
+		ni.name = nodes[i]->getName().toStdString();
+		infos.push_back(ni);
+	}
 
+	ConnectionInfo::Collection connections;
+	auto connectionItems = model->getVisualItems<IVisualConnectionPtr>();
+	for (auto it = connectionItems.begin(); it != connectionItems.end(); ++it) {
+		IVisualInputPinPtr ipin = (*it)->getInputPin();
+		IVisualOutputPinPtr opin = (*it)->getOutputPin();
+
+		ConnectionInfo info;
+		info.inputNodeIndex = node2idx[ipin->getParent().lock()];
+		info.inputPinIndex = ipin->getIndex();
+		info.outputNodeIndex = node2idx[opin->getParent().lock()];
+		info.outputPinIndex = opin->getIndex();
+		connections.push_back(info);
+	}
+
+	return std::make_pair(infos, connections);
+}

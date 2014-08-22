@@ -69,7 +69,7 @@ UTILS_PUSH_WARNINGS
 UTILS_POP_WARNINGS
 
 #include <QtCore/QtCore>
-#include <QtGui/QtGui>
+#include <QtWidgets/QtWidgets>
 #include <QtWidgets/QAction>
 
 #include <utils/Debug.h>

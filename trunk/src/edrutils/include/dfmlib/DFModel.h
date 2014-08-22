@@ -10,159 +10,158 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
-////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
 
-//! Klasa modelu obsługującego przepływ danych. Model też jest częścią tego przepływu - zbiera informację o przetworzeniu danych przez węzły liście.
-//! Na bazie tej informacji kontroluje moment wprowadzenia nowych danych do modelu (wyzwolenie źródeł).
-class DFModel : public Model
-{
-public:
+	//! Klasa modelu obsługującego przepływ danych. Model też jest częścią tego przepływu - zbiera informację o przetworzeniu danych przez węzły liście.
+	//! Na bazie tej informacji kontroluje moment wprowadzenia nowych danych do modelu (wyzwolenie źródeł).
+	class DFModel : public Model
+	{
+	public:
 
-    //! Typ przechowujący zestaw źródeł na potrzeby wstrzykiwania kolejnej porcji danych do data flow
-	typedef std::set<DFSNPtr> SourceNodes;
+		//! Typ przechowujący zestaw źródeł na potrzeby wstrzykiwania kolejnej porcji danych do data flow
+		typedef std::set<DFSNPtr> SourceNodes;
 
-    //typedef std::set<DFNPtr> Nodes;
+		//typedef std::set<DFNPtr> Nodes;
 
-    //typedef std::set<DFNPtr> Nodes;
+		//typedef std::set<DFNPtr> Nodes;
 
-//private:
-//
-//    class ModelRunner : public OpenThreads::Thread
-//    {
-//    public:
-//        ModelRunner(DFModel * model);
-//        ~ModelRunner();
-//
-//        virtual void run();
-//        void finishProcessing();
-//
-//    private:
-//        DFModel * model;
-//        bool finish;
-//    };
-//
-//    friend class ModelRunner;
+		//private:
+		//
+		//    class ModelRunner : public OpenThreads::Thread
+		//    {
+		//    public:
+		//        ModelRunner(DFModel * model);
+		//        ~ModelRunner();
+		//
+		//        virtual void run();
+		//        void finishProcessing();
+		//
+		//    private:
+		//        DFModel * model;
+		//        bool finish;
+		//    };
+		//
+		//    friend class ModelRunner;
 
-public:
+	public:
 
-    //! Domyśłny konstruktor
-	DFModel(void);
+		//! Domyśłny konstruktor
+		DFModel(void);
 
-    //! Wirtualny destruktor
-	virtual ~DFModel(void);
+		//! Wirtualny destruktor
+		virtual ~DFModel(void);
 
-    //---------------------- Model interface ----------------------------
-    
-    //! \param node Węzeł którego kompatybilność z modelem sprawdzamy
-    //! \return Czy węzeł jest wspierany przez model
-    virtual bool isNodeSupported(const NPtr & node) const;
+		//---------------------- Model interface ----------------------------
 
-    //---------------------- DFModel -------------------------------------
+		//! \param node Węzeł którego kompatybilność z modelem sprawdzamy
+		//! \return Czy węzeł jest wspierany przez model
+		virtual bool isNodeSupported(const NPtr & node) const;
 
-    //! \return Zwraca zbiór węzłów źródłowych
-	const SourceNodes & getSourceNodes() const;
+		//---------------------- DFModel -------------------------------------
 
-    //! Wyzwala źródła, rozpoczyna przepływ informacji w modelu
-    void run();
+		//! \return Zwraca zbiór węzłów źródłowych
+		const SourceNodes & getSourceNodes() const;
 
-    //! \return Czy model jest uruchomiony (może być spauzpowany)
-    bool isRunning() const;
+		//! Wyzwala źródła, rozpoczyna przepływ informacji w modelu
+		void run();
 
-    //! \return Czy wszystkie dane zostały przetworzone
-    bool isFinished() const;
+		//! \return Czy model jest uruchomiony (może być spauzpowany)
+		bool isRunning() const;
 
-    //! Wstrzymuje wyzpolenie źródeł po zakończeniu aktualnie trwającego cyklu danych
-    void pause();
+		//! \return Czy wszystkie dane zostały przetworzone
+		bool isFinished() const;
 
-    //! \return Czy model jest wstrzymany (rownoznatrzne że isRunning daje true jeśli isPaused również true)
-    bool isPaused() const;
+		//! Wstrzymuje wyzpolenie źródeł po zakończeniu aktualnie trwającego cyklu danych
+		void pause();
 
-    //! Zatrzymuje model, resetuje wszystkie węzły i piny do ich stanu pocvzątkowego
-    void stop();
+		//! \return Czy model jest wstrzymany (rownoznatrzne że isRunning daje true jeśli isPaused również true)
+		bool isPaused() const;
 
-    void reset();
+		//! Zatrzymuje model, resetuje wszystkie węzły i piny do ich stanu pocvzątkowego
+		void stop();
 
-protected:
+		void reset();
 
-    //---------------- Interfejs Model --------------------
+	protected:
 
-    //! \return true jeśli można dokonać zmiany modelu, inaczej false lub wyjątek
-    virtual bool isModelChangeAllowed() const;
+		//---------------- Interfejs Model --------------------
 
-    //! \param src Pin źródłowy (wyjściowy)
-    //! \param src Pin docelowy (wejściowy)
-    //! \return Czy mozna połączyć piny
-    virtual bool additionalConnectRules(const CPinPtr & src, const CPinPtr & dest) const;
+		//! \return true jeśli można dokonać zmiany modelu, inaczej false lub wyjątek
+		virtual bool isModelChangeAllowed() const;
 
-    //! \return true jeśli model jest poprawny
-    virtual bool additionalModelValidation() const;
+		//! \param src Pin źródłowy (wyjściowy)
+		//! \param src Pin docelowy (wejściowy)
+		//! \return Czy mozna połączyć piny
+		virtual bool additionalConnectRules(const CPinPtr & src, const CPinPtr & dest) const;
 
-    //! \param node Węzeł do dodania
-    virtual void afterNodeAdd(const NPtr & node);
+		//! \return true jeśli model jest poprawny
+		virtual bool additionalModelValidation() const;
 
-    //! \param node Węzeł do usunięcia
-    virtual void beforeNodeRemove(const NPtr & node);
+		//! \param node Węzeł do dodania
+		virtual void afterNodeAdd(const NPtr & node);
 
-    //! \param node Węzeł który stał się właśnie liściem
-    virtual void afterLeafAdd(const NPtr & node);
+		//! \param node Węzeł do usunięcia
+		virtual void beforeNodeRemove(const NPtr & node);
 
-    //! \param node Węzeł który przestaje być liściem
-    virtual void beforeLeafRemove(const NPtr & node);
+		//! \param node Węzeł który stał się właśnie liściem
+		virtual void afterLeafAdd(const NPtr & node);
 
-    //! Resetuje stany wezłów
-	void resetNodeStates();
+		//! \param node Węzeł który przestaje być liściem
+		virtual void beforeLeafRemove(const NPtr & node);
 
-    //! Resetuje stany pinów
-	void resetPinStates();
+		//! Resetuje stany wezłów
+		void resetNodeStates();
 
-    //! \param pin Pin którego stan resetujemy
-	void resetPinState(const PinPtr & pin);
+		//! Resetuje stany pinów
+		void resetPinStates();
 
-    //! Powiadamia źródła o konieczności zasilenia model w nowe dane
-	void notifySources();
-	
-    //! \return Prawda jeśli źródła mają więcej danych do zasilenia modelu
-	bool sourcesHaveMoreData() const;
+		//! \param pin Pin którego stan resetujemy
+		void resetPinState(const PinPtr & pin);
 
-private:
+		//! Powiadamia źródła o konieczności zasilenia model w nowe dane
+		void notifySources();
 
-    //! Informuje że liść przetworzył dane
-	void leafHasProcessedData();
+		//! \return Prawda jeśli źródła mają więcej danych do zasilenia modelu
+		bool sourcesHaveMoreData() const;
 
-private:
+	private:
 
-    //! Zbiór węzłów źródłowych
-	SourceNodes sourceNodes;
+		//! Informuje że liść przetworzył dane
+		void leafHasProcessedData();
 
-    //! Czy model jest uruchomiony
-    bool running;
+	private:
 
-    //! Czy wszystkie dane przetworzone
-    bool finished;
+		//! Zbiór węzłów źródłowych
+		SourceNodes sourceNodes;
 
-    //! Czy model jest spauzowany
-    bool paused;
+		//! Czy model jest uruchomiony
+		bool running;
 
-    bool stopPending;
+		//! Czy wszystkie dane przetworzone
+		bool finished;
 
-    bool pausePending;
+		//! Czy model jest spauzowany
+		bool paused;
 
-    //! Licznik ilości węzłów liści które przetworzyły dane
-	unsigned int finishedLeafes;
+		bool stopPending;
 
-    //! mutex do kontroli wątku notyfikującego źródła
-    //OpenThreads::Mutex pauseMutex;
+		bool pausePending;
 
-    //! mutex do synchronizacji aktualizacji ilości liści które przetworzyły dane
-    //OpenThreads::Mutex leavesMutex;
+		//! Licznik ilości węzłów liści które przetworzyły dane
+		unsigned int finishedLeafes;
 
-    //! mutex do synchronizacji operacji uruchamiania/zatrzymywania/pauzowania dataflow
-    mutable OpenThreads::ReentrantMutex runningMutex;
+		//! mutex do kontroli wątku notyfikującego źródła
+		//OpenThreads::Mutex pauseMutex;
 
-    //! wątek obsługujący wyzwalanie źródeł
-    //boost::shared_ptr<ModelRunner> modelRunner;
-};
+		//! mutex do synchronizacji aktualizacji ilości liści które przetworzyły dane
+		//OpenThreads::Mutex leavesMutex;
 
+		//! mutex do synchronizacji operacji uruchamiania/zatrzymywania/pauzowania dataflow
+		mutable OpenThreads::ReentrantMutex runningMutex;
+
+		//! wątek obsługujący wyzwalanie źródeł
+		//utils::shared_ptr<ModelRunner> modelRunner;
+	};
 }
 
 #endif

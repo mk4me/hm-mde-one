@@ -34,14 +34,14 @@ private:
 public:
 
 	template<class FrontPageWidget>
-	static int runApp(int & argc, char *argv[])
+	static int runApp(int & argc, char *argv[], const std::string & appName)
 	{
 		try{
 			UTILS_STATIC_ASSERT((boost::is_base_of<coreUI::CoreMainWindow, FrontPageWidget>::value), "FrontPageWidget class should inherit from coreUI::CoreMainWindow");
 			//we create application UI context and initialize everything
-			AppInitializer application(argc, argv);
+			AppInitializer application(argc, argv, appName);
 			//now it is safe to create view widget
-			FrontPageWidget widget(application.cleanUp());
+			FrontPageWidget widget(application.cleanUp(), appName);
 			//we run application
 			return application.start(&widget);
 		}catch(...){
@@ -51,7 +51,7 @@ public:
 
 private:
 
-	AppInitializer(int & argc, char *argv[]);
+	AppInitializer(int & argc, char *argv[], const std::string & appName);
 	~AppInitializer();
 
 	//! Metoda uruchamiająca aplikacje, pobiera jako parametr wzorca widok który będzie uruchomiony, widok powinien dziedziczyć po MainWindow
