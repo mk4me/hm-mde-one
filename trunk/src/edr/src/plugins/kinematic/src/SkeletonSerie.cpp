@@ -41,9 +41,12 @@ SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer,
 
 	skeletonSchemeHelper->init(jointsMapping.get(), connections);
 
-	pointsDrawer->setSize(0.02);
-	connectionsDrawer->setSize(0.005);
-
+	float ratio = jointAngles->getLengthRatio();
+	if (ratio > 0) {
+		pointsDrawer->setSize(0.02 / ratio);
+		connectionsDrawer->setSize(0.005 / ratio);
+		localRootNode->setScale(osg::Vec3(ratio, ratio, ratio));
+	}
 	pointsDrawer->setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
 	connectionsDrawer->setColor(osg::Vec4(0.7, 0.7, 0.7, 0.5));
 

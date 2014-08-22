@@ -22,6 +22,8 @@
 #include <QtCore/QObject>
 #include "IMUCFGParser.h"
 #include "IMUDatParser.h"
+#include "kinematiclib/JointAnglesCollection.h"
+#include <plugins/kinematic/Wrappers.h>
 
 typedef core::Filesystem fs;
 
@@ -97,6 +99,57 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 				createIMUBranch(framesV, config, s->getName(), sessionItem, memoryDataManager);
 
 			}
+
+			if (motion->hasObject(typeid(kinematic::SkeletalData), false) && 
+				motion->hasObject(typeid(kinematic::SkeletalModel), false)) {
+				
+				core::ConstVariantsList sdl, sml;
+				motion->getObjects(sdl, typeid(kinematic::SkeletalData), false);
+				motion->getObjects(sml, typeid(kinematic::SkeletalModel), false);
+
+				kinematic::SkeletalDataConstPtr sd = sdl.front()->get();
+				kinematic::SkeletalModelConstPtr sm = sml.front()->get();
+
+				kinematic::JointAnglesCollectionPtr ja = utils::make_shared<kinematic::JointAnglesCollection>();
+				ja->setSkeletal(sm, sd);
+				auto jaWrapper = utils::ObjectWrapper::create<kinematic::JointAnglesCollection>();
+				ja->setLengthRatio(0.05);
+				jaWrapper->set(ja);
+
+				core::VariantConstPtr joints = core::Variant::create(jaWrapper);
+				
+				auto skeletonItem = core::IHierarchyItemPtr(new core::HierarchyDataItem(joints, QString()));
+				sessionItem->appendChild(skeletonItem);
+			}
+
+			if (motion->hasObject(typeid(kinematic::JointAnglesCollection), false)) {
+				JointsItemHelperPtr skeletonHelper(new JointsItemHelper(motion));
+			
+				core::ConstVariantsList jCollections;
+				motion->getObjects(jCollections, typeid(kinematic::JointAnglesCollection), false);
+				if (jCollections.size() != 1) {
+					// error
+				}
+
+				core::VariantConstPtr joints = jCollections.front();
+
+
+
+				auto skeletonItem = core::IHierarchyItemPtr(new core::HierarchyDataItem(joints, QIcon(), QString("3D"), desc, skeletonHelper));
+				sessionItem->appendChild(skeletonItem);
+			}
+			
+			/*try {
+				core::ConstVariantsList aCollections;
+				motion->getObjects(aCollections, typeid(AngleCollection), false);
+				core::VariantConstPtr angleCollection = aCollections.front();
+				AngleCollectionConstPtr m = angleCollection->get();
+				tryAddVectorToTree<AngleChannel>(motion, m, "Angle collection", itemIcon, skeletonItem, false);
+			}
+			catch (...) {
+
+			}*/
+
         }
     }
 

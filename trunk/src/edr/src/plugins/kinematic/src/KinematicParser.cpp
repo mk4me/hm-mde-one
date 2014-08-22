@@ -29,11 +29,11 @@ void KinematicParser::parse( const std::string & source)
 
 	SkeletalDataPtr dataPtr(new SkeletalData());
 
-	if(core::Filesystem::fileExtension(path).compare(".amc") == 0) {
+	//if(core::Filesystem::fileExtension(path).compare(".amc") == 0) {
 		AmcParser amc;
 		std::string amcFilename = path.string();
 		amc.parse(dataPtr, amcFilename);
-	} 
+	//} 
 	// bvh chwilowo wylaczone
 	/*else if (core::Filesystem::fileExtension(path).compare(".bvh") == 0)  {
 		BvhParser bvh;
