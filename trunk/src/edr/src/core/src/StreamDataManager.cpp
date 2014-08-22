@@ -472,7 +472,7 @@ private:
 			if (stream != nullptr){
 
 				const auto tmpPath = plugin::getPaths()->getTmpPath() / plugin::getPaths()->generateTempFileName();
-				std::ofstream output(tmpPath.string());
+				std::ofstream output(tmpPath.string(), std::ios_base::out | std::ios_base::binary);
 
 				if (output.is_open() == true){
 
