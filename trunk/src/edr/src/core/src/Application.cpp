@@ -433,7 +433,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 			skipSources.insert(sourceManager_->getSource(i));
 			CORE_LOG_ERROR("Failed to initialize " << sourceManager_->getSource(i)->name() << " source (ID: " << sourceManager_->getSource(i)->ID() << ") -> " << e.what());
 			try{
-				serviceManager_->getService(i)->finalize();
+				sourceManager_->getSource(i)->finalize();
 			}
 			catch (...){
 

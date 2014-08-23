@@ -52,25 +52,6 @@ void IMUCostumeDataSource::init(core::IMemoryDataManager * memoryDM,
 	InitFromCFG(p.string().c_str());
 
 	this->memoryDM = memoryDM;
-
-	int i = GetModelsCount();
-
-	if (i > 0){
-		costumesConfigurations.resize(i);
-		costumesDataStatus_.resize(i);
-
-		std::fill(costumesDataStatus_.begin(), costumesDataStatus_.end(), NODATA);
-
-		for (unsigned int j = 0; j < i; ++j){
-			costumesConfigurations[j].id = j;
-			costumesConfigurations[j].imusCount = 18;
-			costumesConfigurations[j].jointsCount = 0;
-			costumesConfigurations[j].name = "Costume " + boost::lexical_cast<std::string>(j);
-		}
-	}
-	else{
-		throw std::runtime_error("Initialization failed");
-	}
 }
 
 bool IMUCostumeDataSource::lateInit()
@@ -538,21 +519,39 @@ void IMUCostumeDataSource::connectCostiumes()
 		return;
 	}
 
-	unsigned int i = 1000;
 
-	while (!GetIsReady() && --i > 0)								//Pêtla czekaj¹ca na gotowoœæ biblioteki BIC.dll
-		Sleep(1);
+	int i = GetModelsCount();
 
-	//! Nie uda³o sie po³¹czyæ
-	if (i == 0){
-		return;
-	}
+	if (i > 0){
 
-	core::IThreadPool::Threads t;
-	plugin::getThreadPool()->getThreads("IMUCostumeDataSource", t, 1);
-	refreshThread = t.front();
+		costumesConfigurations.resize(i);
+		costumesDataStatus_.resize(i);
 
-	connected_ = true;
+		std::fill(costumesDataStatus_.begin(), costumesDataStatus_.end(), NODATA);
+
+		for (unsigned int j = 0; j < i; ++j){
+			costumesConfigurations[j].id = j;
+			costumesConfigurations[j].imusCount = 18;
+			costumesConfigurations[j].jointsCount = 0;
+			costumesConfigurations[j].name = "Costume " + boost::lexical_cast<std::string>(j);
+		}
+
+		unsigned int i = 1000;
+
+		while (!GetIsReady() && --i > 0)								//Pêtla czekaj¹ca na gotowoœæ biblioteki BIC.dll
+			Sleep(1);
+
+		//! Nie uda³o sie po³¹czyæ
+		if (i == 0){
+			return;
+		}
+
+		core::IThreadPool::Threads t;
+		plugin::getThreadPool()->getThreads("IMUCostumeDataSource", t, 1);
+		refreshThread = t.front();
+
+		connected_ = true;
+	}	
 }
 
 void IMUCostumeDataSource::disconnectCostiumes()
