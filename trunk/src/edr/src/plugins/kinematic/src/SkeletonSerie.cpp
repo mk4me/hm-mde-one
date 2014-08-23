@@ -17,7 +17,7 @@ SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer,
 	xyzAxis(false),
 	name("Skeleton"),
 	pointsDrawer(new PointsDrawer(3)),
-	connectionsDrawer(new ConnectionsDrawer(10)),
+	connectionsDrawer(new ConnectionsSphereDrawer(3)),
 	jointsMapping(new SkeletonJointsMapping),
 	localRootNode(new osg::PositionAttitudeTransform)
 {
@@ -50,7 +50,7 @@ SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer,
 	pointsDrawer->setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
 	connectionsDrawer->setColor(osg::Vec4(0.7, 0.7, 0.7, 0.5));
 
-	localRootNode->addChild(pointsDrawer->getNode());
+	//localRootNode->addChild(pointsDrawer->getNode());
 	localRootNode->addChild(connectionsDrawer->getNode());
 	localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
 
@@ -251,7 +251,7 @@ SkeletonStreamSerie::SkeletonStreamSerie(KinematicVisualizer * visualizer,
 	xyzAxis(false),
 	name("SkeletonData"),
 	pointsDrawer(new PointsDrawer(3)),
-	connectionsDrawer(new ConnectionsDrawer(10)),
+	connectionsDrawer(new ConnectionsSphereDrawer(10)),
 	heightCompensation(false),
 	localRootNode(new osg::PositionAttitudeTransform)
 {

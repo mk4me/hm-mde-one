@@ -48,9 +48,15 @@ public:
 
 	static void createIMUBranch(core::ConstVariantsList &oList, core::HierarchyItemPtr root);
 
+	static core::IHierarchyItemPtr createChannelItem(VectorChannelCollectionPtr collection, int i, const QString& name);
+
 	static core::IHierarchyItemPtr createImuCollectionItem(int i, VectorChannelCollectionConstPtr collection);
 
     //core::HierarchyDataItemPtr tryGetHierarchyItem(const std::string& filename);
+
+private:
+	static std::string generateChannelName(const IMU::IMUConfig&, int i);
+	static VectorChannelPtr createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit = std::string());
 
 private:
     std::map<std::string, core::HierarchyDataItemWeakPtr> name2hierarchy;

@@ -171,13 +171,13 @@ void MdeMainWindow::customViewInit(QWidget * console)
 		if (name == "Scripting")  return QIcon(":/mde/icons/skrypty.png");
 		if (name == "Data Flow Service")  return QIcon(":/mde/icons/dataFlow.png");
 		if (name == "IMUCostume")  return QIcon(":/mde/icons/imu.png");
-		if (name == "Communication") return QIcon(":/mde/icons/communication.png");
+		if (name == "HMDB Source") return QIcon(":/mde/icons/communication.png");
 		return source ? QIcon(":/mde/icons/Badania.png") : QIcon(":/mde/icons/Operacje.png");
 	};
 	auto name2name = [](const std::string& name) -> std::string {
 		if (name == "Data Flow Service")  return "Data flow";
 		if (name == "IMUCostume")  return "Suit";
-		if (name == "Communication") return "Data";
+		if (name == "HMDB Source") return "Data";
 		return name;
 	};
    auto memoryManager = plugin::getHierarchyManagerReader();

@@ -182,10 +182,10 @@ const float PointsDrawer::size(const unsigned int idx) const
 	return pointsInstances[idx]->sphere.radius;
 }
 
-class ConnectionInstance
+class ConnectionSphereInstance
 {
 public:
-	osgutils::CustomCylinderDescription cylinder;
+	osgutils::CustomSphereDescription sphere;
 	osg::ref_ptr<osg::Geode> geode;
 	osg::ref_ptr<osg::PositionAttitudeTransform> posAtt;
 	SegmentRange connectionIndices;
@@ -193,36 +193,38 @@ public:
 	static void updatePositionOrientation(const osg::Vec3 & start, const osg::Vec3 & end,
 		osg::PositionAttitudeTransform * pat);
 
-	static const std::vector<utils::shared_ptr<ConnectionInstance>> createConnectionsScheme(const SegmentsDescriptors & connections,
+	static const std::vector<utils::shared_ptr<ConnectionSphereInstance>> createConnectionsScheme(const SegmentsDescriptors & connections,
 		const unsigned int complexity);
 
-	static void setSize(std::vector<utils::shared_ptr<ConnectionInstance>> & connections,
+	static void setSize(std::vector<utils::shared_ptr<ConnectionSphereInstance>> & connections,
 		const double size);
 
-	static void setSize(osgutils::CustomCylinderDescription & cd, const float size);
+	static void setSize(osgutils::CustomSphereDescription & cd, const float size);
 
-	static void setColor(std::vector<utils::shared_ptr<ConnectionInstance>> & connections,
+	static void setColor(std::vector<utils::shared_ptr<ConnectionSphereInstance>> & connections,
 		const osg::Vec4 & color);
 
-	static void setColor(osgutils::CustomCylinderDescription & cd, const osg::Vec4 & color);
+	static void setColor(osgutils::CustomSphereDescription & cd, const osg::Vec4 & color);
 };
 
-void ConnectionInstance::updatePositionOrientation(const osg::Vec3 & start,
+void ConnectionSphereInstance::updatePositionOrientation(const osg::Vec3 & start,
 	const osg::Vec3 & end, osg::PositionAttitudeTransform * pat)
 {
-	static const osg::Vec3 originalDir = osg::Vec3(0.0, 0.0, 1.0);
-	auto diff = end - start;
-	auto nDiff(diff);
-	nDiff.normalize();
+	if (start != end) {
+		static const osg::Vec3 originalDir = osg::Vec3(0.0, 0.0, 1.0);
+		auto diff = end - start;
+		auto nDiff(diff);
+		nDiff.normalize();
 
-	osg::Quat q;
-	q.makeRotate(originalDir, nDiff);
+		osg::Quat q;
+		q.makeRotate(originalDir, nDiff);
 
-	pat->setPosition(start + diff / 2.0);
-	pat->setAttitude(q);
+		pat->setPosition(start + diff / 2.0);
+		pat->setAttitude(q);
+	}
 }
 
-const std::vector<utils::shared_ptr<ConnectionInstance>> ConnectionInstance::createConnectionsScheme(
+const std::vector<utils::shared_ptr<ConnectionSphereInstance>> ConnectionSphereInstance::createConnectionsScheme(
 	const SegmentsDescriptors & connections,
 	const unsigned int complexity)
 {
@@ -230,30 +232,36 @@ const std::vector<utils::shared_ptr<ConnectionInstance>> ConnectionInstance::cre
 		UTILS_ASSERT(false);
 		throw std::runtime_error("No connections");
 	}
-	std::vector<utils::shared_ptr<ConnectionInstance>> ret(connections.size());
+	std::vector<utils::shared_ptr<ConnectionSphereInstance>> ret(connections.size());
 
 	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
 	stateset->setMode( GL_LIGHTING, osg::StateAttribute::ON );
 	stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
 
-	utils::shared_ptr<ConnectionInstance> ci(new ConnectionInstance);
-	ci->connectionIndices = connections[0].range;
-	ci->cylinder = osgutils::CustomPrimitivesFactory::createCylinder(complexity, connections[0].length, 5.0, osg::Vec4(0.5, 0.5, 0.5, 0.5));
-	ci->geode = new osg::Geode;
-	ci->geode->setStateSet(stateset);
-	ci->posAtt = new osg::PositionAttitudeTransform;
-	ci->geode->addDrawable(ci->cylinder.geom);
-	ci->posAtt->addChild(ci->geode);	
-	ret[0] = ci;
+	//utils::shared_ptr<ConnectionInstance> ci(new ConnectionInstance);
+	//ci->connectionIndices = connections[0].range;
+	////ci->cylinder = osgutils::CustomPrimitivesFactory::createCylinder(complexity, connections[0].length, 5.0, osg::Vec4(0.5, 0.5, 0.5, 0.5));
+	//float r = connections[0].length / 2;
+	//ci->sphere = osgutils::CustomPrimitivesFactory::createSphere(complexity, r > 0 ? r : 0.001, osg::Vec4(0.5, 0.5, 0.5, 0.5));
+	//ci->geode = new osg::Geode;
+	//ci->geode->setStateSet(stateset);
+	//ci->posAtt = new osg::PositionAttitudeTransform;
+	//
+	//ci->geode->addDrawable(ci->sphere.geom);
+	//ci->posAtt->addChild(ci->geode);	
+	//ret[0] = ci;
 
-	for(unsigned int i = 1; i < connections.size(); ++i){
-		utils::shared_ptr<ConnectionInstance> lci(new ConnectionInstance);
+	for(unsigned int i = 0; i < connections.size(); ++i){
+		utils::shared_ptr<ConnectionSphereInstance> lci(new ConnectionSphereInstance);
 		lci->connectionIndices = connections[i].range;
-		lci->cylinder = osgutils::CustomPrimitivesHelper::cloneForHeightChange(ci->cylinder, connections[i].length);
+		//lci->cylinder = osgutils::CustomPrimitivesHelper::cloneForHeightChange(ci->cylinder, connections[i].length);
+		float r = connections[i].length / 2;
+		lci->sphere = osgutils::CustomPrimitivesFactory::createSphere(complexity, r > 0 ? r : 0.001, osg::Vec4(0.5, 0.5, 0.5, 0.5));
 		lci->geode = new osg::Geode;
 		lci->geode->setStateSet(stateset);
 		lci->posAtt = new osg::PositionAttitudeTransform;
-		lci->geode->addDrawable(lci->cylinder.geom);
+		lci->posAtt->setScale(osg::Vec3(0.3, 0.3, 1.0));
+		lci->geode->addDrawable(lci->sphere.geom);
 		lci->posAtt->addChild(lci->geode);		
 		ret[i] = lci;
 	}
@@ -261,36 +269,37 @@ const std::vector<utils::shared_ptr<ConnectionInstance>> ConnectionInstance::cre
 	return ret;
 }
 
-void ConnectionInstance::setSize(std::vector<utils::shared_ptr<ConnectionInstance>> & connections,
+void ConnectionSphereInstance::setSize(std::vector<utils::shared_ptr<ConnectionSphereInstance>> & connections,
 	const double size)
 {
-	for(auto it = connections.begin(); it != connections.end(); ++it){
-		osgutils::CustomPrimitivesHelper::scaleCylinderRadius((*it)->cylinder.geomBase.verticies, size / (*it)->cylinder.radius);
-		(*it)->cylinder.radius = size;
-		(*it)->cylinder.geom->dirtyDisplayList();		
-	}
+	/*for(auto it = connections.begin(); it != connections.end(); ++it){
+		osgutils::CustomPrimitivesHelper::scaleSphereRadius((*it)->sphere.geomBase.verticies, size / (*it)->sphere.radius);
+		(*it)->sphere.radius = size;
+		(*it)->sphere.geom->dirtyDisplayList();
+	}*/
 }
 
-void ConnectionInstance::setSize(osgutils::CustomCylinderDescription & cd,
+void ConnectionSphereInstance::setSize(osgutils::CustomSphereDescription & cd,
 	const float size)
 {
-	osgutils::CustomPrimitivesHelper::scaleCylinderRadius(cd.geomBase.verticies, size / cd.radius);
+	//osgutils::CustomPrimitivesHelper::scaleCylinderRadius(cd.geomBase.verticies, size / cd.radius);
+	osgutils::CustomPrimitivesHelper::scaleSphereRadius(cd.geomBase.verticies, size / cd.radius);
 	cd.radius = size;
 	cd.geom->dirtyDisplayList();
 }
 
-void ConnectionInstance::setColor(std::vector<utils::shared_ptr<ConnectionInstance>> & connections,
+void ConnectionSphereInstance::setColor(std::vector<utils::shared_ptr<ConnectionSphereInstance>> & connections,
 	const osg::Vec4 & color)
 {
 	osg::Vec4Array * newColorArray = new osg::Vec4Array;
 	newColorArray->push_back(color);
 
 	for(auto it = connections.begin(); it != connections.end(); ++it){
-		osgutils::CustomPrimitivesHelper::setColor((*it)->cylinder, newColorArray);
+		osgutils::CustomPrimitivesHelper::setColor((*it)->sphere, newColorArray);
 	}
 }
 
-void ConnectionInstance::setColor(osgutils::CustomCylinderDescription & cd,
+void ConnectionSphereInstance::setColor(osgutils::CustomSphereDescription & cd,
 	const osg::Vec4 & color)
 {
 	osg::Vec4Array * newColorArray = new osg::Vec4Array;
@@ -298,15 +307,15 @@ void ConnectionInstance::setColor(osgutils::CustomCylinderDescription & cd,
 	osgutils::CustomPrimitivesHelper::setColor(cd, newColorArray);
 }
 
-ConnectionsDrawer::ConnectionsDrawer(const unsigned int complexity)
+ConnectionsSphereDrawer::ConnectionsSphereDrawer(const unsigned int complexity)
 	: complexity(complexity)
 {
 	
 }
 
-void ConnectionsDrawer::init(const SegmentsDescriptors & connections)
+void ConnectionsSphereDrawer::init(const SegmentsDescriptors & connections)
 {
-	std::vector<utils::shared_ptr<ConnectionInstance>> locConnsInst(ConnectionInstance::createConnectionsScheme(connections, complexity));	
+	std::vector<utils::shared_ptr<ConnectionSphereInstance>> locConnsInst(ConnectionSphereInstance::createConnectionsScheme(connections, complexity));	
 	osg::ref_ptr<osg::Switch> tmpNode(new osg::Switch);
 
 	for(unsigned int i = 0; i < locConnsInst.size(); ++i){		
@@ -317,12 +326,12 @@ void ConnectionsDrawer::init(const SegmentsDescriptors & connections)
 	std::swap(connectionsInstances, locConnsInst);
 }
 
-osg::ref_ptr<osg::Node> ConnectionsDrawer::getNode()
+osg::ref_ptr<osg::Node> ConnectionsSphereDrawer::getNode()
 {
 	return node;
 }
 
-void ConnectionsDrawer::update(const std::vector<osg::Vec3> & positions)
+void ConnectionsSphereDrawer::update(const std::vector<osg::Vec3> & positions)
 {
 	for(unsigned int i = 0; i < connectionsInstances.size(); ++i){
 		if(node->getValue(i) == true){
@@ -335,17 +344,17 @@ void ConnectionsDrawer::update(const std::vector<osg::Vec3> & positions)
 	}
 }
 
-void ConnectionsDrawer::setSize(const float size)
+void ConnectionsSphereDrawer::setSize(const float size)
 {
-	ConnectionInstance::setSize(connectionsInstances, size);
+	ConnectionSphereInstance::setSize(connectionsInstances, size);
 }
 
-void ConnectionsDrawer::setColor(const osg::Vec4 & color)
+void ConnectionsSphereDrawer::setColor(const osg::Vec4 & color)
 {
-	ConnectionInstance::setColor(connectionsInstances, color);
+	ConnectionSphereInstance::setColor(connectionsInstances, color);
 }
 
-void ConnectionsDrawer::setVisible(const bool visible)
+void ConnectionsSphereDrawer::setVisible(const bool visible)
 {
 	if(visible == true){
 		for(auto it = updateCache.begin(); it != updateCache.end(); ++it){
@@ -361,17 +370,17 @@ void ConnectionsDrawer::setVisible(const bool visible)
 	}
 }
 
-void ConnectionsDrawer::setSize(const unsigned int idx, const float size)
+void ConnectionsSphereDrawer::setSize(const unsigned int idx, const float size)
 {
-	ConnectionInstance::setSize(connectionsInstances[idx]->cylinder, size);
+	ConnectionSphereInstance::setSize(connectionsInstances[idx]->sphere, size);
 }
 
-void ConnectionsDrawer::setColor(const unsigned int idx, const osg::Vec4 & color)
+void ConnectionsSphereDrawer::setColor(const unsigned int idx, const osg::Vec4 & color)
 {
-	ConnectionInstance::setColor(connectionsInstances[idx]->cylinder, color);
+	ConnectionSphereInstance::setColor(connectionsInstances[idx]->sphere, color);
 }
 
-void ConnectionsDrawer::setVisible(const unsigned int idx, const bool visible)
+void ConnectionsSphereDrawer::setVisible(const unsigned int idx, const bool visible)
 {
 	if(node->getValue(idx) != visible){
 
@@ -389,19 +398,19 @@ void ConnectionsDrawer::setVisible(const unsigned int idx, const bool visible)
 	}	
 }
 
-const osg::Vec4 & ConnectionsDrawer::color(const unsigned int idx) const
+const osg::Vec4 & ConnectionsSphereDrawer::color(const unsigned int idx) const
 {
-	return connectionsInstances[idx]->cylinder.colors->at(0);
+	return connectionsInstances[idx]->sphere.colors->at(0);
 }
 
-const bool ConnectionsDrawer::visible(const unsigned int idx) const
+const bool ConnectionsSphereDrawer::visible(const unsigned int idx) const
 {
 	return node->getValue(idx);
 }
 
-const float ConnectionsDrawer::size(const unsigned int idx) const
+const float ConnectionsSphereDrawer::size(const unsigned int idx) const
 {
-	return connectionsInstances[idx]->cylinder.radius;
+	return connectionsInstances[idx]->sphere.radius;
 }
 
 class TrajectoryInstance
@@ -569,7 +578,7 @@ public:
 	unsigned int frameSize;
 
 	std::vector<utils::shared_ptr<PointInstance>> pointsInstances;
-	std::vector<utils::shared_ptr<ConnectionInstance>> connectionsInstances;	
+	std::vector<utils::shared_ptr<ConnectionSphereInstance>> connectionsInstances;	
 
 	utils::shared_ptr<GhostPointsSchemeDrawer> pointsDrawer;
 	utils::shared_ptr<GhostConnectionsSchemeDrawer> connectionsDrawer;
@@ -656,12 +665,12 @@ GhostConnectionsSchemeDrawer::~GhostConnectionsSchemeDrawer()
 
 void GhostConnectionsSchemeDrawer::setColor(const osg::Vec4 & color)
 {
-	ConnectionInstance::setColor(gi->connectionsInstances, color);
+	ConnectionSphereInstance::setColor(gi->connectionsInstances, color);
 }
 
 void GhostConnectionsSchemeDrawer::setColor(const unsigned int idx, const osg::Vec4 & color)
 {
-	ConnectionInstance::setColor(gi->connectionsInstances[idx]->cylinder, color);
+	ConnectionSphereInstance::setColor(gi->connectionsInstances[idx]->sphere, color);
 }
 
 void GhostConnectionsSchemeDrawer::setVisible(const bool visible)
@@ -690,17 +699,17 @@ void GhostConnectionsSchemeDrawer::setVisible(const unsigned int idx, const bool
 
 void GhostConnectionsSchemeDrawer::setSize(const float size)
 {
-	ConnectionInstance::setSize(gi->connectionsInstances, size);
+	ConnectionSphereInstance::setSize(gi->connectionsInstances, size);
 }
 
 void GhostConnectionsSchemeDrawer::setSize(const unsigned int idx, const float size)
 {
-	ConnectionInstance::setSize(gi->connectionsInstances[idx]->cylinder, size);
+	ConnectionSphereInstance::setSize(gi->connectionsInstances[idx]->sphere, size);
 }
 
 const osg::Vec4 & GhostConnectionsSchemeDrawer::color(const unsigned int idx) const
 {
-	return gi->connectionsInstances[idx]->cylinder.colors->at(0);
+	return gi->connectionsInstances[idx]->sphere.colors->at(0);
 }
 
 const bool GhostConnectionsSchemeDrawer::visible(const unsigned int idx) const
@@ -710,7 +719,7 @@ const bool GhostConnectionsSchemeDrawer::visible(const unsigned int idx) const
 
 const float GhostConnectionsSchemeDrawer::size(const unsigned int idx) const
 {
-	return gi->connectionsInstances[idx]->cylinder.radius;
+	return gi->connectionsInstances[idx]->sphere.radius;
 }
 
 GhostSchemeDrawer::GhostSchemeDrawer(const unsigned int pointComplexity,
@@ -733,7 +742,7 @@ void GhostSchemeDrawer::init(const std::vector<std::vector<osg::Vec3>> & points,
 	tmpGhost->range.second = points.size()-1;
 	tmpGhost->node = new osg::Switch;
 	tmpGhost->pointsInstances = PointInstance::createPointsScheme(points[0].size(), pointComplexity);
-	tmpGhost->connectionsInstances = ConnectionInstance::createConnectionsScheme(connections, connectionComplexity);
+	tmpGhost->connectionsInstances = ConnectionSphereInstance::createConnectionsScheme(connections, connectionComplexity);
 	tmpGhost->frameSize = tmpGhost->pointsInstances.size() + tmpGhost->connectionsInstances.size();
 	tmpGhost->frames.resize(points.size());
 
@@ -753,7 +762,7 @@ void GhostSchemeDrawer::init(const std::vector<std::vector<osg::Vec3>> & points,
 		for(unsigned int j = 0; j < tmpGhost->connectionsInstances.size(); ++j){
 
 			auto pat = dynamic_cast<osg::PositionAttitudeTransform*>(tmpGhost->connectionsInstances[j]->posAtt->clone(osg::CopyOp::SHALLOW_COPY));			
-			ConnectionInstance::updatePositionOrientation(points[i][tmpGhost->connectionsInstances[j]->connectionIndices.first],
+			ConnectionSphereInstance::updatePositionOrientation(points[i][tmpGhost->connectionsInstances[j]->connectionIndices.first],
 				points[i][tmpGhost->connectionsInstances[j]->connectionIndices.second], pat);
 			tmpGhost->frames[i].second.push_back(pat);
 
@@ -775,7 +784,7 @@ void GhostSchemeDrawer::init(const std::vector<std::vector<osg::Vec3>> & points,
 	PointInstance::update(tmpGhost->pointsInstances, points[points.size()-1]);	
 
 	for(unsigned int i = 0; i < tmpGhost->connectionsInstances.size(); ++i){
-		ConnectionInstance::updatePositionOrientation(points.back()[tmpGhost->connectionsInstances[i]->connectionIndices.first],
+		ConnectionSphereInstance::updatePositionOrientation(points.back()[tmpGhost->connectionsInstances[i]->connectionIndices.first],
 			points.back()[tmpGhost->connectionsInstances[i]->connectionIndices.second],
 			tmpGhost->connectionsInstances[i]->posAtt);
 		cF.push_back(tmpGhost->connectionsInstances[i]->posAtt);
@@ -855,4 +864,224 @@ IBaseDrawerScheme * GhostSchemeDrawer::connectionsDrawer()
 IBaseDrawerScheme * GhostSchemeDrawer::pointsDrawer()
 {
 	return ghostInstance->pointsDrawer.get();
+}
+
+class ConnectionInstance
+{
+public:
+	osgutils::CustomCylinderDescription cylinder;
+	osg::ref_ptr<osg::Geode> geode;
+	osg::ref_ptr<osg::PositionAttitudeTransform> posAtt;
+	SegmentRange connectionIndices;
+
+	static void updatePositionOrientation(const osg::Vec3 & start, const osg::Vec3 & end,
+		osg::PositionAttitudeTransform * pat);
+
+	static const std::vector<utils::shared_ptr<ConnectionInstance>> createConnectionsScheme(const SegmentsDescriptors & connections,
+		const unsigned int complexity);
+
+	static void setSize(std::vector<utils::shared_ptr<ConnectionInstance>> & connections,
+		const double size);
+
+	static void setSize(osgutils::CustomCylinderDescription & cd, const float size);
+
+	static void setColor(std::vector<utils::shared_ptr<ConnectionInstance>> & connections,
+		const osg::Vec4 & color);
+
+	static void setColor(osgutils::CustomCylinderDescription & cd, const osg::Vec4 & color);
+};
+
+void ConnectionInstance::updatePositionOrientation(const osg::Vec3 & start,
+	const osg::Vec3 & end, osg::PositionAttitudeTransform * pat)
+{
+	static const osg::Vec3 originalDir = osg::Vec3(0.0, 0.0, 1.0);
+	auto diff = end - start;
+	auto nDiff(diff);
+	nDiff.normalize();
+
+	osg::Quat q;
+	q.makeRotate(originalDir, nDiff);
+
+	pat->setPosition(start + diff / 2.0);
+	pat->setAttitude(q);
+}
+
+const std::vector<utils::shared_ptr<ConnectionInstance>> ConnectionInstance::createConnectionsScheme(
+	const SegmentsDescriptors & connections,
+	const unsigned int complexity)
+{
+	std::vector<utils::shared_ptr<ConnectionInstance>> ret(connections.size());
+
+	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
+	stateset->setMode(GL_LIGHTING, osg::StateAttribute::ON);
+	stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
+
+	utils::shared_ptr<ConnectionInstance> ci(new ConnectionInstance);
+	ci->connectionIndices = connections[0].range;
+	ci->cylinder = osgutils::CustomPrimitivesFactory::createCylinder(complexity, connections[0].length, 5.0, osg::Vec4(0.5, 0.5, 0.5, 0.5));
+	ci->geode = new osg::Geode;
+	ci->geode->setStateSet(stateset);
+	ci->posAtt = new osg::PositionAttitudeTransform;
+	ci->geode->addDrawable(ci->cylinder.geom);
+	ci->posAtt->addChild(ci->geode);
+	ret[0] = ci;
+
+	for (unsigned int i = 1; i < connections.size(); ++i){
+		utils::shared_ptr<ConnectionInstance> lci(new ConnectionInstance);
+		lci->connectionIndices = connections[i].range;
+		lci->cylinder = osgutils::CustomPrimitivesHelper::cloneForHeightChange(ci->cylinder, connections[i].length);
+		lci->geode = new osg::Geode;
+		lci->geode->setStateSet(stateset);
+		lci->posAtt = new osg::PositionAttitudeTransform;
+		lci->geode->addDrawable(lci->cylinder.geom);
+		lci->posAtt->addChild(lci->geode);
+		ret[i] = lci;
+	}
+
+	return ret;
+}
+
+void ConnectionInstance::setSize(std::vector<utils::shared_ptr<ConnectionInstance>> & connections,
+	const double size)
+{
+	for (auto it = connections.begin(); it != connections.end(); ++it){
+		osgutils::CustomPrimitivesHelper::scaleCylinderRadius((*it)->cylinder.geomBase.verticies, size / (*it)->cylinder.radius);
+		(*it)->cylinder.radius = size;
+		(*it)->cylinder.geom->dirtyDisplayList();
+	}
+}
+
+void ConnectionInstance::setSize(osgutils::CustomCylinderDescription & cd,
+	const float size)
+{
+	osgutils::CustomPrimitivesHelper::scaleCylinderRadius(cd.geomBase.verticies, size / cd.radius);
+	cd.radius = size;
+	cd.geom->dirtyDisplayList();
+}
+
+void ConnectionInstance::setColor(std::vector<utils::shared_ptr<ConnectionInstance>> & connections,
+	const osg::Vec4 & color)
+{
+	osg::Vec4Array * newColorArray = new osg::Vec4Array;
+	newColorArray->push_back(color);
+
+	for (auto it = connections.begin(); it != connections.end(); ++it){
+		osgutils::CustomPrimitivesHelper::setColor((*it)->cylinder, newColorArray);
+	}
+}
+
+void ConnectionInstance::setColor(osgutils::CustomCylinderDescription & cd,
+	const osg::Vec4 & color)
+{
+	osg::Vec4Array * newColorArray = new osg::Vec4Array;
+	newColorArray->push_back(color);
+	osgutils::CustomPrimitivesHelper::setColor(cd, newColorArray);
+}
+
+ConnectionsDrawer::ConnectionsDrawer(const unsigned int complexity)
+: complexity(complexity)
+{
+
+}
+
+void ConnectionsDrawer::init(const SegmentsDescriptors & connections)
+{
+	std::vector<utils::shared_ptr<ConnectionInstance>> locConnsInst(ConnectionInstance::createConnectionsScheme(connections, complexity));
+	osg::ref_ptr<osg::Switch> tmpNode(new osg::Switch);
+
+	for (unsigned int i = 0; i < locConnsInst.size(); ++i){
+		tmpNode->addChild(locConnsInst[i]->posAtt, true);
+	}
+
+	std::swap(node, tmpNode);
+	std::swap(connectionsInstances, locConnsInst);
+}
+
+osg::ref_ptr<osg::Node> ConnectionsDrawer::getNode()
+{
+	return node;
+}
+
+void ConnectionsDrawer::update(const std::vector<osg::Vec3> & positions)
+{
+	for (unsigned int i = 0; i < connectionsInstances.size(); ++i){
+		if (node->getValue(i) == true){
+			connectionsInstances[i]->updatePositionOrientation(positions[connectionsInstances[i]->connectionIndices.first],
+				positions[connectionsInstances[i]->connectionIndices.second], connectionsInstances[i]->posAtt);
+		}
+		else{
+			updateCache[i] = std::make_pair(positions[connectionsInstances[i]->connectionIndices.first],
+				positions[connectionsInstances[i]->connectionIndices.second]);
+		}
+	}
+}
+
+void ConnectionsDrawer::setSize(const float size)
+{
+	ConnectionInstance::setSize(connectionsInstances, size);
+}
+
+void ConnectionsDrawer::setColor(const osg::Vec4 & color)
+{
+	ConnectionInstance::setColor(connectionsInstances, color);
+}
+
+void ConnectionsDrawer::setVisible(const bool visible)
+{
+	if (visible == true){
+		for (auto it = updateCache.begin(); it != updateCache.end(); ++it){
+			connectionsInstances[it->first]->updatePositionOrientation(it->second.first,
+				it->second.second, connectionsInstances[it->first]->posAtt);
+		}
+
+		std::map<unsigned int, std::pair<osg::Vec3, osg::Vec3>>().swap(updateCache);
+
+		node->setAllChildrenOn();
+	}
+	else{
+		node->setAllChildrenOff();
+	}
+}
+
+void ConnectionsDrawer::setSize(const unsigned int idx, const float size)
+{
+	ConnectionInstance::setSize(connectionsInstances[idx]->cylinder, size);
+}
+
+void ConnectionsDrawer::setColor(const unsigned int idx, const osg::Vec4 & color)
+{
+	ConnectionInstance::setColor(connectionsInstances[idx]->cylinder, color);
+}
+
+void ConnectionsDrawer::setVisible(const unsigned int idx, const bool visible)
+{
+	if (node->getValue(idx) != visible){
+
+		if (visible == true){
+			auto it = updateCache.find(idx);
+			if (it != updateCache.end()){
+				connectionsInstances[idx]->updatePositionOrientation(it->second.first,
+					it->second.second, connectionsInstances[idx]->posAtt);
+
+				updateCache.erase(it);
+			}
+		}
+
+		node->setValue(idx, visible);
+	}
+}
+
+const osg::Vec4 & ConnectionsDrawer::color(const unsigned int idx) const
+{
+	return connectionsInstances[idx]->cylinder.colors->at(0);
+}
+
+const bool ConnectionsDrawer::visible(const unsigned int idx) const
+{
+	return node->getValue(idx);
+}
+
+const float ConnectionsDrawer::size(const unsigned int idx) const
+{
+	return connectionsInstances[idx]->cylinder.radius;
 }

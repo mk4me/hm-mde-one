@@ -57,7 +57,9 @@ void MdeServiceWindow::createMdeDock( QString serviceName, QWidget* widget )
     coreUI::CoreDockWidget* dw = dockWrap(widget, widget->objectName(), serviceName, serviceCount[serviceName]++);
     
     if (!restoreDockWidget(dw)) {
-        addDockWidget(Qt::RightDockWidgetArea, dw);
+		static bool left = false;
+		addDockWidget(left ? Qt::RightDockWidgetArea : Qt::LeftDockWidgetArea, dw);
+		left = !left;
     }
     viewMenu->addAction(dw->toggleViewAction());
 }

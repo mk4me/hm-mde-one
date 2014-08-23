@@ -63,6 +63,9 @@ void PythonService::runScript()
     logic->getDict()["input"] = input;
     QString out = QString::fromStdString(logic->run(editor->toPlainText().toStdString()));
 	//output->setText(out);
+	if (out.isEmpty()) {
+		out = QString("Done running script (there was no output)\n");
+	}
 	console->append(out);
 }
 
@@ -84,6 +87,7 @@ void PythonService::update( double deltaTime )
 QWidgetList PythonService::getPropertiesWidgets()
 {
     QWidgetList l;
+	console->setObjectName(QObject::tr("Console"));
     l.push_back(console);
 	return l;
 }

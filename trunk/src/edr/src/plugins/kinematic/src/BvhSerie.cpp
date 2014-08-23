@@ -15,19 +15,19 @@ BvhSerie::BvhSerie(KinematicVisualizer * visualizer,
 	
 	const auto& joints = generateIds(bvhData->first->getSkeleton());
 
-	pointsDrawer = utils::make_shared<PointsDrawer>(3);
-	pointsDrawer->init(joints.size());
-	pointsDrawer->setSize(1.02);
+	//pointsDrawer = utils::make_shared<PointsDrawer>(3);
+	//pointsDrawer->init(joints.size());
+	//pointsDrawer->setSize(1.02);
 
-	connectionsDrawer = utils::make_shared<ConnectionsDrawer>(3);
+	connectionsDrawer = utils::make_shared<ConnectionsSphereDrawer>(3);
 	SegmentsDescriptors segments = generateConnections(bvhData->first->getSkeleton(), joints);
 	connectionsDrawer->init(segments);
 	connectionsDrawer->setSize(0.505);
 
-	pointsDrawer->setColor(osg::Vec4(1.0, 0.0, 0.0, 0.5));
+	//pointsDrawer->setColor(osg::Vec4(1.0, 0.0, 0.0, 0.5));
 	connectionsDrawer->setColor(osg::Vec4(0.0, 1.0, 0.0, 0.5));
 
-	localRootNode->addChild(pointsDrawer->getNode());
+	//localRootNode->addChild(pointsDrawer->getNode());
 	localRootNode->addChild(connectionsDrawer->getNode());
 	//localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
 	localRootNode->setScale(osg::Vec3(0.01, 0.01, 0.01));
@@ -89,7 +89,7 @@ void BvhSerie::traverse(kinematic::JointConstPtr joint, const osg::Matrix & pare
 	osg::Matrix t = osg::Matrix::identity();
 	t.setTrans(shift);
 
-	auto result = joint->name == "root" ? rotM : rotM * t * parentMat;
+	auto result = joint->name == "root" ? osg::Matrix::identity() : rotM * t * parentMat;
 	positions.push_back(result.getTrans());
 
 
@@ -105,10 +105,12 @@ void BvhSerie::setLocalTime(double time)
 	auto root = bvhData->first->getSkeleton().getRoot();
 	traverse(root, osg::Matrix::identity(), points);
 	auto rootP = getCurrentRootPosition(root);
-	for (auto& p : points) {
+	/*for (auto& p : points) {
 		p += rootP;
-	}
-	pointsDrawer->update(points);
+	}*/
+	localRootNode->setPosition(rootP*0.01);
+	localRootNode->setAttitude(getJointCurrentLocalRotation(root));
+	//pointsDrawer->update(points);
 	connectionsDrawer->update(points);
 }
 

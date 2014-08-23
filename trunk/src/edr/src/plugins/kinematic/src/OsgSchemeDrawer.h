@@ -107,8 +107,47 @@ public:
 };
 DEFINE_SMART_POINTERS(IConnectionsSchemeDrawer)
 typedef std::pair<IConnectionsSchemeDrawerPtr, SegmentsDescriptors> IConnectionDrawerWithDescriptors;
-class ConnectionInstance;
+class ConnectionSphereInstance;
 
+//! Drawer dla połączeń
+class ConnectionsSphereDrawer : public IConnectionsSchemeDrawer
+{
+public:
+
+	ConnectionsSphereDrawer(const unsigned int complexity);
+
+	//! \param connections Schemat połączeń
+	virtual void init(const SegmentsDescriptors & connections);
+	//! \return Zwracać węzeł drawera
+	virtual osg::ref_ptr<osg::Node> getNode();
+	//! Pozycje punktów dla których rysujemy połaczenia
+	virtual void update(const std::vector<osg::Vec3> & positions);
+
+	virtual void setSize(const float size);
+	virtual void setColor(const osg::Vec4 & color);
+	virtual void setVisible(const bool visible);
+	virtual void setSize(const unsigned int idx, const float size);
+	virtual void setColor(const unsigned int idx, const osg::Vec4 & color);
+	virtual void setVisible(const unsigned int idx, const bool visible);
+
+	virtual const osg::Vec4 & color(const unsigned int idx) const;
+	virtual const bool visible(const unsigned int idx) const;
+	virtual const float size(const unsigned int idx) const;
+
+private:
+	//! Schemat połączeń
+	std::vector<utils::shared_ptr<ConnectionSphereInstance>> connectionsInstances;
+
+	unsigned int complexity;
+
+	std::map<unsigned int, std::pair<osg::Vec3, osg::Vec3>> updateCache;
+
+	osg::ref_ptr<osg::Switch> node;
+};
+DEFINE_SMART_POINTERS(ConnectionsSphereDrawer);
+
+class ConnectionInstance;
+// TODO wydzielicz czesc wspolna dla ConnectionsDrawer i ConnectionsSphereDrawer
 //! Drawer dla połączeń
 class ConnectionsDrawer : public IConnectionsSchemeDrawer
 {

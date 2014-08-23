@@ -27,22 +27,13 @@
 
 typedef core::Filesystem fs;
 
-VectorChannelPtr createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit = std::string())
+VectorChannelPtr IMU::IMUPerspective::createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit)
 {
-    auto name = [&](const IMU::IMUConfig& conf, int idx) -> std::string {
-		auto size = conf.joints.size();
-        for (int i = 0; i < size; ++i) {
-            if (conf.joints[i].idx == idx) {
-                return conf.joints[i].name;
-            }
-        }
-		QString unknown = QObject::tr("Sensor %1").arg(idx);
-        return unknown.toStdString();
-    };
+   
 	
     auto c = utils::make_shared<VectorChannel>(hz);
     // + 1 , bo numeracja w plikach *.cfg zaczyna siê od 1
-    c->setName(name(config, i + 1));
+    c->setName(generateChannelName(config, i + 1));
 	c->setValueBaseUnit(unit);
 
     return c;
@@ -68,8 +59,6 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 			UTILS_ASSERT(configs.size() == 1);
 			(*configs.begin())->tryGet(config);
 		}
-
-
 		
         QString label(QString::fromUtf8(s->getLocalName().c_str()));
         QString desc("");
@@ -82,13 +71,16 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 
             PluginSubject::MotionConstPtr motion = motionOW->get();
             std::string trialName;
-            motionOW->getMetadata("core/source", trialName);
-            
+            //motionOW->getMetadata("core/source", trialName);
+			trialName = motion->getName();
+
+			core::HierarchyItemPtr motionItem(new core::HierarchyItem(QString::fromStdString(trialName), QString()));
+			sessionItem->appendChild(motionItem);
             if (motion->hasObject(typeid(VectorChannelCollection), false)) {
                 core::ConstVariantsList vectors;
 				hasData = true;
 				motion->getObjects(vectors, typeid(VectorChannelCollection), false);
-				createIMUBranch(vectors, sessionItem);
+				createIMUBranch(vectors, motionItem);
             }
 
 			if (motion->hasObject(typeid(IMU::Frames), false)) {
@@ -96,7 +88,7 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 				hasData = true;
 				motion->getObjects(framesV, typeid(IMU::Frames), false);
 
-				createIMUBranch(framesV, config, s->getName(), sessionItem, memoryDataManager);
+				createIMUBranch(framesV, config, s->getName(), motionItem, memoryDataManager);
 
 			}
 
@@ -113,13 +105,13 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 				kinematic::JointAnglesCollectionPtr ja = utils::make_shared<kinematic::JointAnglesCollection>();
 				ja->setSkeletal(sm, sd);
 				auto jaWrapper = utils::ObjectWrapper::create<kinematic::JointAnglesCollection>();
-				ja->setLengthRatio(0.05);
+				ja->setLengthRatio(0.1);
 				jaWrapper->set(ja);
 
 				core::VariantConstPtr joints = core::Variant::create(jaWrapper);
 				
-				auto skeletonItem = core::IHierarchyItemPtr(new core::HierarchyDataItem(joints, QString()));
-				sessionItem->appendChild(skeletonItem);
+				auto skeletonItem = core::IHierarchyItemPtr(new core::HierarchyDataItem(joints, QIcon(), QObject::tr("Kinematic"), QString()));
+				motionItem->appendChild(skeletonItem);
 			}
 
 			if (motion->hasObject(typeid(kinematic::JointAnglesCollection), false)) {
@@ -133,23 +125,9 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 
 				core::VariantConstPtr joints = jCollections.front();
 
-
-
 				auto skeletonItem = core::IHierarchyItemPtr(new core::HierarchyDataItem(joints, QIcon(), QString("3D"), desc, skeletonHelper));
-				sessionItem->appendChild(skeletonItem);
+				motionItem->appendChild(skeletonItem);
 			}
-			
-			/*try {
-				core::ConstVariantsList aCollections;
-				motion->getObjects(aCollections, typeid(AngleCollection), false);
-				core::VariantConstPtr angleCollection = aCollections.front();
-				AngleCollectionConstPtr m = angleCollection->get();
-				tryAddVectorToTree<AngleChannel>(motion, m, "Angle collection", itemIcon, skeletonItem, false);
-			}
-			catch (...) {
-
-			}*/
-
         }
     }
 
@@ -184,15 +162,6 @@ void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &framesV, IMU:
 
 	// todo przeniesc te hz do configa?
 	int hz = 50;
-	/*IMU::Frames frames;
-	if (config->imusCount != -1) {
-	frames = IMU::IMUDatParser::parse(source, config->imusCount);
-	}
-	else {
-	auto res = IMU::IMUDatParser::parse(source);
-	frames = res.first;
-	config->imusCount = res.second;
-	}*/
 
 	IMU::FramesConstPtr frms = (*framesV.begin())->get();
 	if (config->imusCount == -1 && !frms->empty()) {
@@ -253,16 +222,23 @@ void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &framesV, IMU:
 		}
 	}
 
+	for (int i = 0; i < config->imusCount; ++i) {
+		auto collectionItem = utils::make_shared<core::HierarchyItem>(QString::fromStdString(generateChannelName(*config, i+1)), QString());
+		sessionItem->appendChild(collectionItem);
 
+		collectionItem->appendChild(createChannelItem(accelerations, i, QObject::tr("Acceleration")));
+		collectionItem->appendChild(createChannelItem(magnetometers, i, QObject::tr("Magnetometer")));
+		collectionItem->appendChild(createChannelItem(gyroscopes, i, QObject::tr("Gyroscope")));
+	}
 
-	auto accItem = createImuCollectionItem(0, accelerations);
+	/*auto accItem = createImuCollectionItem(0, accelerations);
 	sessionItem->appendChild(accItem);
 
 	auto magItem = createImuCollectionItem(1, magnetometers);
 	sessionItem->appendChild(magItem);
 
 	auto gyrItem = createImuCollectionItem(2, gyroscopes);
-	sessionItem->appendChild(gyrItem);
+	sessionItem->appendChild(gyrItem);*/
 }
 
 core::IHierarchyItemPtr IMU::IMUPerspective::createImuCollectionItem(int i, VectorChannelCollectionConstPtr collection)
@@ -294,6 +270,31 @@ IMU::IMUPerspective::IMUPerspective(core::IMemoryDataManager * memoryDataManager
 	memoryDataManager(memoryDataManager)
 {
 
+}
+
+std::string IMU::IMUPerspective::generateChannelName(const IMU::IMUConfig& conf, int idx)
+{
+	auto size = conf.joints.size();
+	for (int i = 0; i < size; ++i) {
+		if (conf.joints[i].idx == idx) {
+			return conf.joints[i].name;
+		}
+	}
+	QString unknown = QObject::tr("Sensor %1").arg(idx);
+	return unknown.toStdString();
+}
+
+core::IHierarchyItemPtr IMU::IMUPerspective::createChannelItem(VectorChannelCollectionPtr collection, int i, const QString& name)
+{
+	core::VariantPtr wrapper = core::Variant::create<VectorChannel>();
+	VectorChannelConstPtr c = collection->getChannel(i);
+	wrapper->set(utils::const_pointer_cast<VectorChannel>(c));
+	static int number = 0;
+	wrapper->setMetadata("name", "Serie_" + boost::lexical_cast<std::string>(number++));
+	wrapper->setMetadata("source", "TreeBuilder");
+	NewVector3ItemHelperPtr channelHelper = utils::make_shared<NewVector3ItemHelper>(wrapper);
+	core::IHierarchyItemPtr channelItem = utils::make_shared<core::HierarchyDataItem>(wrapper, QIcon(), name, QString(), channelHelper);
+	return channelItem;
 }
 
 void IMU::IMUPerspectiveService::init(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager)
