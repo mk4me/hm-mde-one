@@ -22,7 +22,7 @@ public:
 	void wait()
 	{
 		threadingUtils::StrictSyncPolicy sync;
-		sync.lock();
+		threadingUtils::ScopedLock < threadingUtils::StrictSyncPolicy > lock(sync);
 		wait_.wait(&sync);
 	}
 

@@ -8,6 +8,7 @@
 #include <QtWidgets/QFileDialog>
 #include <OpenThreads/Thread>
 #include <corelib/Filesystem.h>
+#include "IMUCostumeCalibrationWizard.h"
 
 IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	QWidget * parent, const Qt::WindowFlags f)
@@ -31,6 +32,14 @@ void IMUCostumeWidget::onCalibrate()
 	auto ci = ui->costumesTreeWidget->currentItem();
 
 	if(ci != nullptr){
+
+		IMUCostumeCalibrationWizard wizard(this);
+		auto ret = wizard.exec();
+		if (ret == QDialog::Accepted){
+			QMessageBox::information(this, tr("Costume connection problem"), tr("Could not connect costume - please retry and follow costume initialization instructions."));
+		}
+
+		return;
 
 		unsigned int idx = ci->data(0, Qt::UserRole).toUInt();
 

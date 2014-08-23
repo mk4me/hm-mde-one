@@ -12,6 +12,7 @@ SET_PRIVATE_HEADERS (
 	IMUCFGParser.h
 	IMUPerspective.h
 	PCH.h
+	IMUCostumeCalibrationWizard.h
 )
 
 SET_SOURCE_FILES(
@@ -23,14 +24,17 @@ SET_SOURCE_FILES(
 	IMUCFGParser.cpp
 	PCH.cpp
 	Plugin.cpp
+	IMUCostumeCalibrationWizard.cpp
 )
 
 SET_MOC_FILES(
 	IMUCostumeListWidget.h
+	IMUCostumeCalibrationWizard.h
 )
 
 SET_UI_FILES(
 	IMUCostumeListWidget.ui
+	IMUCostumeCalibrationWizard.ui
 )
 
 SET_RC_FILES(

@@ -296,7 +296,7 @@
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap>../resources/embedded/images/skeletonWithDimensions.png</pixmap>
+       <pixmap resource="imuCostumeIcons.qrc">:/imuCostume/icons/skeletonWithDimensions.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -456,7 +456,7 @@ p, li { white-space: pre-wrap; }
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap>../resources/embedded/images/tpos.bmp</pixmap>
+       <pixmap resource="imuCostumeIcons.qrc">:/imuCostume/icons/tpos.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -565,7 +565,7 @@ p, li { white-space: pre-wrap; }
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap>../resources/embedded/images/npos.png</pixmap>
+       <pixmap resource="imuCostumeIcons.qrc">:/imuCostume/icons/npos.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>

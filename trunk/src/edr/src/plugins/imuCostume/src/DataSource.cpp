@@ -38,6 +38,7 @@ void IMUCostumeDataSource::init(core::IMemoryDataManager * memoryDM,
 	core::IStreamDataManager * streamDM,
 	core::IFileDataManager * fileDM)
 {
+	/*
 	core::Filesystem::Path p(plugin::getPaths()->getApplicationDataPath());
 
 	p /= "BIC";
@@ -50,6 +51,7 @@ void IMUCostumeDataSource::init(core::IMemoryDataManager * memoryDM,
 	InitializeLibrary();
 
 	InitFromCFG(p.string().c_str());
+	*/
 
 	this->memoryDM = memoryDM;
 }
@@ -61,8 +63,10 @@ bool IMUCostumeDataSource::lateInit()
 
 void IMUCostumeDataSource::finalize()
 {
+	/*
 	disconnectCostiumes();
 	DeinitializeLibrary();
+	*/
 }
 
 void IMUCostumeDataSource::update(double deltaTime)
