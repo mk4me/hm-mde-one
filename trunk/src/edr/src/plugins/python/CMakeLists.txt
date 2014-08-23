@@ -36,4 +36,8 @@ SET_PRECOMPILED_HEADER( PythonPCH.h PythonPCH.cpp)
 
 add_definitions(-DQT_NO_KEYWORDS)
 
+SET_PROJECT_ADDITIONAL_INSTALLS(
+	plugin_python.pyd
+)
+
 END_PROJECT()
