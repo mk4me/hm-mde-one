@@ -29,7 +29,7 @@ ADD_INSTALLER_GROUP_COMPONENT(plugin_newChart "newChart" "Plugin supporting data
 ADD_INSTALLER_GROUP_COMPONENT(plugin_subject "subject" "Plugin supporting motion data organisation" "" "Full Min")
 ADD_INSTALLER_GROUP_COMPONENT(plugin_newVdf "newVdf" "Plugin supporting efficient data processing with flexible GUI configuration" "" "Full")
 ADD_INSTALLER_GROUP_COMPONENT(plugin_dfElements "dfElements" "Plugin delivering universal helper classes for newVdf" "" "Full")
-ADD_INSTALLER_GROUP_COMPONENT(plugin_imu "imu" "Plugin supporting IMU costume data acquisition" "REQUIRED" "Full")
+ADD_INSTALLER_GROUP_COMPONENT(plugin_imuCostume "imuCostume" "Plugin supporting IMU costume data acquisition" "REQUIRED" "Full")
 
 END_INSTALLER_GROUP()
 
