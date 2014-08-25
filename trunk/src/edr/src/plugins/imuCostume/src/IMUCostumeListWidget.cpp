@@ -18,6 +18,10 @@ IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 
 	ui->connectPushButton->setChecked(ds->connected());
 	ui->connectPushButton->setText(ds->connected() == true ? tr("Disconnect") : tr("Connect"));
+
+#ifndef _DEBUG
+	ui->loadDatFileButton->setVisible(false);
+#endif
 }
 
 IMUCostumeWidget::~IMUCostumeWidget()

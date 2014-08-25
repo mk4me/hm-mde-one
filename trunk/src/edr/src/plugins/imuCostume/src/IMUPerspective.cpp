@@ -24,6 +24,7 @@
 #include "IMUDatParser.h"
 #include "kinematiclib/JointAnglesCollection.h"
 #include <plugins/kinematic/Wrappers.h>
+#include "kinematiclib/Skeleton.h"
 
 typedef core::Filesystem fs;
 
@@ -111,6 +112,7 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 				core::VariantConstPtr joints = core::Variant::create(jaWrapper);
 				
 				auto skeletonItem = core::IHierarchyItemPtr(new core::HierarchyDataItem(joints, QIcon(), QObject::tr("Kinematic"), QString()));
+				generateAnglesChannelBranch(ja, skeletonItem);
 				motionItem->appendChild(skeletonItem);
 			}
 
@@ -295,6 +297,33 @@ core::IHierarchyItemPtr IMU::IMUPerspective::createChannelItem(VectorChannelColl
 	NewVector3ItemHelperPtr channelHelper = utils::make_shared<NewVector3ItemHelper>(wrapper);
 	core::IHierarchyItemPtr channelItem = utils::make_shared<core::HierarchyDataItem>(wrapper, QIcon(), name, QString(), channelHelper);
 	return channelItem;
+}
+
+void IMU::IMUPerspective::generateAnglesChannelBranch(kinematic::JointAnglesCollectionPtr ja, core::IHierarchyItemPtr skeletonItem)
+{
+	VectorChannelCollectionPtr angles = utils::make_shared<VectorChannelCollection>();
+	int count = ja->getNumChannels();
+	for (int i = 0; i < count; ++i) {
+
+		kinematic::JointAngleChannelPtr channel = ja->getChannel(i);
+		auto c = utils::make_shared<VectorChannel>(channel->getSamplesPerSecond());
+		c->setName(channel->getName());
+		c->setValueBaseUnit("rad");
+
+		int size = channel->size();
+
+		for (int idx = 0; idx < size; ++idx) {
+			osg::Quat q = channel->value(idx);
+			osg::Vec3 v = kinematic::SkeletonUtils::getEulerFromQuat(q);
+			c->addPoint(v);
+		}
+
+		angles->addChannel(c);
+	}
+	
+	for (int i = 0; i < count; ++i) {
+		skeletonItem->appendChild(createChannelItem(angles, i, QString::fromStdString(ja->getChannel(i)->getName())));
+	}
 }
 
 void IMU::IMUPerspectiveService::init(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager)

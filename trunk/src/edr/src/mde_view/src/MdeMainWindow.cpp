@@ -69,6 +69,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
    trySetStyleByName("hmm");
  
    this->showFullScreen();
+   this->setFixedSize(this->width(), this->height());
    
    auto sourceManager = plugin::getSourceManager();
    for (int i = 0; i < sourceManager->getNumSources(); ++i) {

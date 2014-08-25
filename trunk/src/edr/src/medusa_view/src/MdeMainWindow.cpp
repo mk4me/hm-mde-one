@@ -79,6 +79,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
    trySetStyleByName("hmm");
  
    this->showFullScreen();
+   this->setFixedSize(this->width(), this->height());
 
    utils::shared_ptr<hmdbCommunication::IHMDBSource> icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
    plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(icomm);

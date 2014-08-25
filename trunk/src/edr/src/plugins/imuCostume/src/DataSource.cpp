@@ -45,7 +45,9 @@ void IMUCostumeDataSource::init(core::IMemoryDataManager * memoryDM,
 	p /= "BIC.cfg";
 
 	if (core::Filesystem::pathExists(p) == false){
-		throw std::runtime_error("Configuration file is missing");
+		std::string message("Configuration file is missing: ");
+		message += p.string();
+		throw std::runtime_error(message);
 	}
 
 	InitializeLibrary();
