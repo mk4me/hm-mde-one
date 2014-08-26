@@ -169,7 +169,7 @@
          <item>
           <widget class="QToolButton" name="advanceToolButton">
            <property name="text">
-            <string>&lt;&lt; Advance</string>
+            <string>&lt;&lt; Advanced</string>
            </property>
            <property name="checkable">
             <bool>true</bool>

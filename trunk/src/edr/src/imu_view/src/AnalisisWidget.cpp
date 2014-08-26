@@ -803,9 +803,9 @@ void AnalisisWidget::initReportsCombos()
     templateDir.setNameFilters(filters);
 
     templateComboBox->addItem(tr("Empty"));
-    templateComboBox->addItems(templateDir.entryList());
+    //templateComboBox->addItems(templateDir.entryList());
    
     QDir cssDir(dirPath, "*.css");
     styleComboBox->addItem(tr("Empty"));
-    styleComboBox->addItems(cssDir.entryList());
+    //styleComboBox->addItems(cssDir.entryList());
 }

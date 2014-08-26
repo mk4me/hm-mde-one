@@ -14,6 +14,7 @@
 #include <osg/Quat>
 #include <kinematiclib/Joint.h>
 #include <kinematiclib/hAnimBone.h>
+#include <utils/Debug.h>
 
 namespace kinematic {
 	class hAnimJoint;

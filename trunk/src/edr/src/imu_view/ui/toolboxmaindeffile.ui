@@ -24,7 +24,7 @@
     </size>
    </property>
    <property name="styleSheet">
-    <string notr="true">;QWidget#centralWidget{Background-color:rgb(112,146,190) };</string>
+    <string notr="true">QWidget#centralWidget&gt;QWidget{Background-color:rgb(112,146,190) };</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
@@ -51,7 +51,7 @@
        </sizepolicy>
       </property>
       <property name="styleSheet">
-       <string notr="true">QWidget#widowTitleBar{Background-color:rgb(112,146,190) };</string>
+       <string notr="true">Background-color:rgb(112,146,190)</string>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <property name="spacing">
@@ -177,7 +177,7 @@
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">QWidget#toolBar{Background-color:rgb(112,146,190) };</string>
+       <string notr="true"/>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="topMargin">

@@ -13,6 +13,7 @@
 #include <utils/SmartPtr.h>
 #include <boost/noncopyable.hpp>
 #include <osg/Vec3>
+#include <utils/Debug.h>
 
 namespace kinematic {
 	class hAnimJoint;

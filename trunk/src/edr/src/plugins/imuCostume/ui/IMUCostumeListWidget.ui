@@ -63,7 +63,7 @@
         </property>
         <property name="icon">
          <iconset resource="imuCostumeIcons.qrc">
-          <normaloff>:/imuCostume/icons/dostepny.png</normaloff>:/imuCostume/icons/dostepny.png</iconset>
+          <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
         </property>
         <property name="text">
          <string>TestCostume1</string>
@@ -135,7 +135,7 @@
         </property>
         <property name="icon">
          <iconset resource="imuCostumeIcons.qrc">
-          <normaloff>:/imuCostume/icons/czesciowodostepny.png</normaloff>:/imuCostume/icons/czesciowodostepny.png</iconset>
+          <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
         </property>
         <property name="text">
          <string>TestWalking</string>
