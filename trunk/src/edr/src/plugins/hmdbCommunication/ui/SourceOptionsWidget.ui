@@ -81,6 +81,9 @@
             <layout class="QHBoxLayout" name="horizontalLayout_8">
              <item>
               <widget class="QToolButton" name="addProfileToolButton">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="text">
                 <string>Add</string>
                </property>
@@ -88,6 +91,9 @@
              </item>
              <item>
               <widget class="QToolButton" name="removeProfileToolButton">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="text">
                 <string>Del</string>
                </property>

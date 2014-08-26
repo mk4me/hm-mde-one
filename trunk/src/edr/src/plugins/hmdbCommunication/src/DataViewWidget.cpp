@@ -335,7 +335,7 @@ void DataViewWidget::extractLocalShallowCopyAndTryUpdate()
 	if (sc != nullptr && mq != nullptr){
 		const auto dbTime = mq->dataModificationTime();
 		if (hmdbCommunication::ShallowCopyUtils::shallowCopyRequiresRefresh(*sc, dbTime) == true){
-			const auto ret = QMessageBox::question(this, tr("Synchronization required"), tr("Since last synchronization (%1) some changes were made in database (last: %2). It is suggested to synchronize data. Would You like to synchronize now?").arg(QString::fromStdString(shallowCopy_->motionShallowCopy.timestamp.toString())).arg(QString::fromStdString(dbTime.toString())));
+			const auto ret = QMessageBox::question(this, tr("Synchronization required"), tr("Since last synchronization (%1) some changes were made in database (last: %2). It is suggested to synchronize data. Would You like to synchronize now?").arg(QString::fromStdString(sc->motionShallowCopy.timestamp.toString())).arg(QString::fromStdString(dbTime.toString())));
 			if (ret == QMessageBox::StandardButton::Yes){
 				setShallow = false;
 				onSynchronize();
