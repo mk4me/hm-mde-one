@@ -10,6 +10,8 @@
 #define HEADER_GUARD_IMU__IMUCOSTUMELISTWIDGET_H__
 
 #include <QtWidgets/QWidget>
+#include "utils/ObjectWrapper.h"
+#include "corelib/Variant.h"
 
 class Ui_IMUCostumeListWidget;
 
@@ -41,6 +43,9 @@ private slots:
 	void onCalibrate();
 
     void onLoadDatFile();
+
+private:
+	core::VariantPtr createFbxWrapper();
         
 
 private:

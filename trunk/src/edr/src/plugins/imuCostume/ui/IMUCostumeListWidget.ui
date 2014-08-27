@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>559</width>
-    <height>173</height>
+    <width>710</width>
+    <height>473</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,6 +31,12 @@
      </item>
      <item>
       <widget class="QTreeWidget" name="costumesTreeWidget">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="contextMenuPolicy">
         <enum>Qt::CustomContextMenu</enum>
        </property>
@@ -146,6 +152,270 @@
        </item>
       </widget>
      </item>
+     <item>
+      <widget class="QWidget" name="widget" native="true">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QTreeWidget" name="sensorsTree">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <column>
+           <property name="text">
+            <string>ID</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Status</string>
+           </property>
+          </column>
+          <item>
+           <property name="text">
+            <string>Sensor 1</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 2</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 3</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 4</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 5</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 6</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 7</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 8</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 9</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 10</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 11</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 12</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 13</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 14</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 15</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 16</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 17</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Sensor 18</string>
+           </property>
+           <property name="text">
+            <string>offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="imuCostumeIcons.qrc">
+             <normaloff>:/imuCostume/icons/niedostepny.png</normaloff>:/imuCostume/icons/niedostepny.png</iconset>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="visualizerPlaceholder" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
@@ -171,6 +441,16 @@
       <widget class="QPushButton" name="loadDatFileButton">
        <property name="text">
         <string>Load dat file</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="RecordButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Record</string>
        </property>
       </widget>
      </item>
