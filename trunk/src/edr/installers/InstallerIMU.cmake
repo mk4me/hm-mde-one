@@ -27,6 +27,7 @@ ADD_INSTALLER_GROUP_COMPONENT(plugin_kinematic "kinematic" "Plugin offering skel
 ADD_INSTALLER_GROUP_COMPONENT(plugin_newCommunication "newCommunication" "Plugin offering motion database and services access" "" "Full Min")
 ADD_INSTALLER_GROUP_COMPONENT(plugin_newChart "newChart" "Plugin supporting data plots and visualisation" "" "Full Min")
 ADD_INSTALLER_GROUP_COMPONENT(plugin_subject "subject" "Plugin supporting motion data organisation" "" "Full Min")
+ADD_INSTALLER_GROUP_COMPONENT(plugin_python "python" "Plugin supporting scripting" "" "Full Min")
 ADD_INSTALLER_GROUP_COMPONENT(plugin_newVdf "newVdf" "Plugin supporting efficient data processing with flexible GUI configuration" "" "Full")
 ADD_INSTALLER_GROUP_COMPONENT(plugin_dfElements "dfElements" "Plugin delivering universal helper classes for newVdf" "" "Full")
 ADD_INSTALLER_GROUP_COMPONENT(plugin_imuCostume "imuCostume" "Plugin supporting IMU costume data acquisition" "REQUIRED" "Full")

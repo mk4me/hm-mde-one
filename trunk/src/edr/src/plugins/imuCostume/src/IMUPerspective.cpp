@@ -25,13 +25,12 @@
 #include "kinematiclib/JointAnglesCollection.h"
 #include <plugins/kinematic/Wrappers.h>
 #include "kinematiclib/Skeleton.h"
+#include <iomanip>
 
 typedef core::Filesystem fs;
 
 VectorChannelPtr IMU::IMUPerspective::createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit)
 {
-   
-	
     auto c = utils::make_shared<VectorChannel>(hz);
     // + 1 , bo numeracja w plikach *.cfg zaczyna siê od 1
     c->setName(generateChannelName(config, i + 1));
@@ -71,11 +70,10 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
         BOOST_FOREACH(core::VariantConstPtr motionOW, motions) {	
 
             PluginSubject::MotionConstPtr motion = motionOW->get();
-            std::string trialName;
-            //motionOW->getMetadata("core/source", trialName);
-			trialName = motion->getName();
-
-			core::HierarchyItemPtr motionItem(new core::HierarchyItem(QString::fromStdString(trialName), QString()));
+            std::ostringstream ss;
+			ss << "Trial" << std::setw(5) << std::setfill('0') << motion->getID();
+            
+			core::HierarchyItemPtr motionItem(new core::HierarchyItem(QString::fromStdString(ss.str()), QString()));
 			sessionItem->appendChild(motionItem);
             if (motion->hasObject(typeid(VectorChannelCollection), false)) {
                 core::ConstVariantsList vectors;
