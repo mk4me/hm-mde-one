@@ -75,7 +75,7 @@ namespace utils
 
 		virtual void __setData(const void * object)
 		{
-			ObjectWrapperTraits<Type>::PtrPolicy::setPtr(wrapped_, *(static_cast<const ObjectWrapperTraits<Type>::Ptr *>(object)));
+			ObjectWrapperTraits<Type>::PtrPolicy::setPtr(wrapped_, *(static_cast<const typename ObjectWrapperTraits<Type>::Ptr *>(object)));
 		}
 
 		virtual const bool __tryGetData(void * object, const TypeInfo & ptrType)
