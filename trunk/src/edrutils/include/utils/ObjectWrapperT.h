@@ -68,7 +68,7 @@ namespace utils
 				cloned->wrapped_ = wrapped_;
 			}
 			else{
-				ObjectWrapperTraits<Type>::Ptr newPtr(ObjectWrapperTraits<Type>::ClonePolicy::clone(&*wrapped_));
+				typename ObjectWrapperTraits<Type>::Ptr newPtr(ObjectWrapperTraits<Type>::ClonePolicy::clone(&*wrapped_));
 				cloned->wrapped_ = newPtr;
 			}
 		}
@@ -100,7 +100,7 @@ namespace utils
 
 		virtual const bool __isEqual(const ObjectWrapper & obj) const
 		{
-			ObjectWrapperTraits<Type>::ConstPtr w;
+			typename ObjectWrapperTraits<Type>::ConstPtr w;
 			bool res = obj.tryGet(w);
 
 			return (res == true) && (wrapped_ == w);
