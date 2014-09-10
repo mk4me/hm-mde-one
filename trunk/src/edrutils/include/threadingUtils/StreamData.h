@@ -256,7 +256,7 @@ namespace threadingUtils {
 		//! \param data Data received from the stream
 		void pushData(typename IStreamT<T>::const_ref_type data)
 		{
-			ScopedLock<RecursiveSyncPolicy> lock(synch_);
+			ScopedLock<RecursiveSyncPolicy> lock(this->synch_);
 
 			try{
 				pushBufferData(data);
@@ -275,7 +275,7 @@ namespace threadingUtils {
 		//! \param d [out]  Obiekt docelowy dla aktualnych danych ze strumienia
 		virtual void data(typename IStreamT<T>::ref_type d) const
 		{
-			ScopedLock<RecursiveSyncPolicy> lock(synch_);
+			ScopedLock<RecursiveSyncPolicy> lock(this->synch_);
 			d = data_;
 		}
 
