@@ -13,6 +13,9 @@
 
 #include <string>
 #include <vector>
+#include <list>
+#include <set>
+#include <map>
 #include <osg/Vec3>
 #include <osg/Quat>
 #include <utils/SmartPtr.h>
@@ -20,22 +23,34 @@
 
 namespace imuCostume
 {
-	//! Wewnêtrzna implementacja kostiumu
-	class CostumeImpl;
+	class CostumeRawIO;
 
 	//! Klasa obs³uguj¹ca kostium
 	class IMUCOSTUME_EXPORT Costume : boost::noncopyable
 	{
-	public:
+	private:
+		//! Wewnêtrzna implementacja kostiumu
+		class CostumeImpl;
 
-		//! Status odebranych danych z kostiumu dla pojedynczego imu
-		enum DataStatus
+	public:		
+
+		//! Struktura opisuj¹ca adres kostiumu w sieci
+		struct Address
 		{
-			NODATA,	//! Brak danych
-			DATA	//! Dane dotar³y
+			//! Adres IP
+			std::string ip;
+			//! Port
+			unsigned int port;
 		};
 
-		//! Struktura opisuj¹ca surowe dane czujnika
+		//! Typ wyliczeniowy obs³ugiwanych czujników przez kostium
+		enum SensorType
+		{
+			IMU_SENSOR,		//! Czujnik IMU
+			INSOLE_SENSOR	//! Czujnik INSOLE
+		};
+
+		//! Struktura opisuj¹ca surowe dane czujnika IMU
 		struct ImuRawData
 		{
 			//! Dane akcelerometru
@@ -46,6 +61,13 @@ namespace imuCostume
 			osg::Vec3 magnetometer;
 		};
 
+		//! Struktura opisuj¹ca surowe dane czujnika Insole
+		struct InsoleRawData
+		{
+			//! Dane si³y nacisku na pod³o¿e
+			std::vector<osg::Vec3> grfs;
+		};
+
 		//! Struktura opisuj¹ca nasze IMU - dostajemy jeszcze estymacjê orientacji
 		struct ImuData : public ImuRawData
 		{
@@ -53,46 +75,58 @@ namespace imuCostume
 			osg::Quat orientation;
 		};
 
-		//! Ostatania paczka danych kostiumu
-		typedef std::vector<ImuData> CostumeData;
+		//! Typ identyfikatora sensora
+		typedef int8_t SensorID;
 
-		//! Status danych dla wszystkich czujników IMU
-		typedef std::vector<DataStatus> CostumeStatus;
+		//! Zbiór identyfikatorów sensorów
+		typedef std::set<SensorID> SensorIDsSet;
 
-		//! Struktura opisuj¹ca stan danych i dane kostiumu
-		struct CostumePacket
+		//! Konfiguracja sensorów kostiumu
+		typedef std::map<SensorType, SensorIDsSet> SensorsConfiguration;
+		
+		//! Struktura opisuj¹ca ramkê rozpakowanych danych kostiumu
+		struct Frame
 		{
-			CostumeData data;
-			CostumeStatus status;
-		};
+			//! Typ identyfikatora czasu ramki
+			typedef unsigned long long int Timestamp;
 
-	public:
-		//! Sta³a definiuj¹ca maksumaln¹ iloœæ czujników na kostiumie
-		static const unsigned int MaxIMUsPerCostume = 32;
+			//! Status odebranych danych z kostiumu dla pojedynczego imu
+			enum Status
+			{
+				NO_FRAME,			//! Brak danych
+				COMPLETE_FRAME,		//! Dane dotar³y
+				INCOMPLETE_FRAME,	//! Dane niekompletne
+				ERROR_FRAME			//! B³êdna ramka
+			};
+
+			//! Stempel czasowy ramki
+			Timestamp timestamp;
+			//! Status ramki
+			Status status;
+			//! Dane z czujników imu
+			std::map<SensorID, ImuData> imusData;
+			//! Dane z czujników insole
+			std::map<SensorID, InsoleRawData> insolesData;
+		};		
 
 	public:
 		//! \param ip Adres kostiumu
-		Costume(const std::string & ip = std::string(),
-			const unsigned int port = 1234, const float timeout = 0.01);
+		//! \param port Port kostiumu
+		Costume(CostumeRawIO * costume);
 		//! Destruktor
 		~Costume();
 
-		//! \return Adres kostiumu
-		const std::string & ip() const;
-		//! \return Port na którym mamy kostium
-		const unsigned int port() const;
-		//! \return Iloœæ czujników IMU w kostiumie
-		const unsigned int imusNumber() const;
-		//! \return Opis odebranych danych kostiumu - odczyty IMU + stan odczytów
-		const CostumePacket costumePacket() const;
-		//! \return Czy dane gotowe do odbioru
-		const bool ready() const;
-		//! Metoda czytaj¹ca pojedynczy pakiet danych z kostiumu
-		void readPacket();
-		//! \return Czas na odbiór jednego pakietu
-		const float timeout() const;
-		//! \param timeout Czas na odbout jednego pakietu
-		void setTimeout(const float timeout);
+		//! \return Obiekt do niskopoziomowej komunikacji z kostiumem
+		CostumeRawIO * costume() const;
+
+		//! \return Konfiguracja sensorów kostiumu
+		const SensorsConfiguration sensorsConfiguration() const;
+		//! \param timeout Maksymalny czas oczekiwania na dane [ms] (wartoœc 0 oznacza blokowanie w nieskoñczonoœæ)
+		//! \return Ramka danych kostiumu
+		const Frame read(const unsigned int timeout) const;
+		//! \param listenTime Czas nas³uchiwania kostiumów [ms]
+		//! \return Lista adresów dostêpnych kostiumów
+		static const std::list<Address> availableCostumes(const unsigned int listenTime);
 
 	private:
 		//! Wewnêtrzna implementacja

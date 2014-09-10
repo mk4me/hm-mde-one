@@ -106,7 +106,7 @@ namespace threadingUtils {
 
 		//! \param lock Obiekt synchronizuj¹cy na którym czekamy
 		//! \param time Czas oczekiwania [ms], domyslnie max
-		void wait(LockingPolicy * lock, const unsigned long time = ULONG_MAX);
+		void wait(LockingPolicy * lock, const unsigned long time = std::numeric_limits<unsigned long>::max());
 		//! Wzbudza jednego z oczekuj¹cych
 		void wakeOne();
 		//! Wzbudza wszystkich oczekuj¹cych

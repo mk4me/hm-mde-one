@@ -138,6 +138,23 @@ inline static const std::string readStream(std::istream * stream)
 	return ret;
 }
 
+template<typename T>
+inline const T EndianSwap(const T value)
+{
+	union
+	{
+		T u;
+		unsigned char u8[sizeof(T)];
+	} source, dest;
+
+	source.u = value;
+
+	for (std::size_t k = 0; k < sizeof(T); k++)
+		dest.u8[k] = source.u8[sizeof(T) - k - 1];
+
+	return dest.u;
+};
+
 //------------------------------------------------------------------------------
 
 //! \tparam Typ uywany do czyszczenia przy niszczeniu - funktor z operatorem ()

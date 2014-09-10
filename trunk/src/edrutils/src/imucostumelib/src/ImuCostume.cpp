@@ -1,285 +1,240 @@
 #include <imucostumelib/ImuCostume.h>
-#include <threadingUtils/SynchronizationPolicies.h>
-#include <boost/asio.hpp>
-#include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <boost/array.hpp>
-#include <boost/bind.hpp>
+#include <imucostumelib/CostumeRawIO.h>
+
+using namespace imuCostume;
+
+//! Sta³a definiuj¹ca iloœæ czujników IMU na kostiumie
+static const unsigned int IMUS_IN_COSTUME_COUNT = 18;
+//! Sta³a definiuj¹ca iloœæ czujników insole na kostiumie
+static const unsigned int INSOLS_IN_COSTUME_COUNT = 2;
+//! Sta³a definiuj¹ca iloœæ sensorów w ramach jednego insole
+static const unsigned int SENSORS_COUNT_IN_INSOL = 4;
+
 
 //! Implementacja funkcjonalnoœci kostiumu
-class imuCostume::CostumeImpl
+class Costume::CostumeImpl
 {
 public:
-	//! Rozmiar bufora na dane z kostiumu
-	static const unsigned int ImuBufferDataSize = 1024;
-
-public:
-	CostumeImpl(const std::string & ip, const unsigned int port, const float timeout) :
-		ip_(ip), port_(port), timeout_(0.0), ready_(false), imusNumber_(Costume::MaxIMUsPerCostume),
-		io_service(), socket(io_service),
-		serverEndpoint(ip.empty() == true ? boost::asio::ip::address_v4::broadcast() :
-		boost::asio::ip::address::from_string(ip), port),
-		deadline(io_service)
+	CostumeImpl(CostumeRawIO * costume) : rawIO(costume)
 	{
-		setTimeout(timeout);
-
-		boost::system::error_code error;
-		socket.open(boost::asio::ip::udp::v4(), error);
-		if (!error) {
-			socket.bind(
-				boost::asio::ip::udp::endpoint(
-				boost::asio::ip::address_v4::any(),
-				port));
-		}
-		else{
-			throw std::runtime_error(error.message());
-		}
+		
 	}
 
 	//! Destruktor
 	~CostumeImpl()
 	{
+
 	}
 
-	const float timeout() const
+	CostumeRawIO * costume() const
 	{
-		threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch);
-		return timeout_;
+		return rawIO;
 	}
 
-	void setTimeout(const float timeout)
+	//! \return Konfiguracja sensorów kostiumu
+	const Costume::SensorsConfiguration sensorsConfiguration() const
 	{
-		threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch);
-		timeout_ = timeout;
+		//TODO - to powinien oferowaæ kostium
+		Costume::SensorsConfiguration ret;
+
+		//czujniki imu
+		{
+			Costume::SensorIDsSet imusIds;
+
+			for (int i = 1; i < IMUS_IN_COSTUME_COUNT + 1; ++i){
+				imusIds.insert(i);
+			}
+
+			ret.insert(Costume::SensorsConfiguration::value_type(Costume::IMU_SENSOR, imusIds));
+		}
+
+		//czujniki insole
+		{
+			Costume::SensorIDsSet insolsIds;
+
+			for (int i = IMUS_IN_COSTUME_COUNT + 1; i < IMUS_IN_COSTUME_COUNT + INSOLS_IN_COSTUME_COUNT + 1; ++i){
+				insolsIds.insert(i);
+			}
+
+			ret.insert(Costume::SensorsConfiguration::value_type(Costume::INSOLE_SENSOR, insolsIds));
+		}
+
+		return ret;
 	}
-
-	//! \return Adres kostiumu
-	const std::string & ip() const
+	
+	//! \param timeout Maksymalny czas oczekiwania na dane [ms] (wartoœc 0 oznacza blokowanie w nieskoñczonoœæ)
+	//! \return Ramka danych kostiumu
+	const Costume::Frame read(const unsigned int timeout) const
 	{
-		return ip_;
-	}
-	//! \return Port na którym mamy kostium
-	const unsigned int port() const
-	{
-		return port_;
-	}
-	//! \return Iloœæ czujników IMU w kostiumie
-	const unsigned int imusNumber() const
-	{
-		return imusNumber_;
-	}
-	//! \return Opis odebranych danych kostiumu - odczyty IMU + stan odczytów
-	const Costume::CostumePacket costumePacket() const
-	{
-		threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch);
-		return costumePacket_;
-	}
-	//! \return Czy dane gotowe do odbioru
-	const bool ready() const
-	{
-		threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch);
-		return ready_;
-	}
-
-	//! Metoda czytaj¹ca pojedynczy pakiet danych z kostiumu
-	void readPacket()
-	{
-		threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch);
-
-		const boost::posix_time::time_duration td(boost::posix_time::millisec(1000 * timeout_));
-
-		boost::system::error_code ec = boost::asio::error::would_block;
-
-		boost::array<char, ImuBufferDataSize> buf;
-		std::size_t length = 0;
-
-		deadline.expires_from_now(td);
-
-		// Put the actor back to sleep.
-		deadline.async_wait(boost::bind(&CostumeImpl::check_deadline, this));
-
-		socket.async_receive_from(boost::asio::buffer(buf), serverEndpoint,
-			boost::bind(&CostumeImpl::handle_receive, _1, _2, &ec, &length));
-
-		// Block until the asynchronous operation has completed.
-		do {
-			io_service.run_one();
-		} while (ec == boost::asio::error::would_block);
-
-		deadline.cancel();
-
-		costumePacket_.data.resize(Costume::MaxIMUsPerCostume);
-		costumePacket_.status.resize(Costume::MaxIMUsPerCostume);
-
-		if (length == ImuBufferDataSize){
-			ready_ = true;
-
-			// Chyba moje dane
-			// Próbuje to rozpakowaæ
-			// Jak wszystko ok to zaznaczam ¿e ready
-
-			std::fill(costumePacket_.status.begin(), costumePacket_.status.end(), Costume::DATA);
-
-			for (unsigned int i = 0; i < Costume::MaxIMUsPerCostume; ++i)
+		CostumeRawIO::Frame rawFrame;
+		Costume::Frame ret;
+		ret.status = Costume::Frame::NO_FRAME;
+		uint16_t length = 0;
+		if (rawIO->receive(rawFrame, length, timeout) == true){
+			if (length == CostumeRawIO::MaxDataSize)
 			{
-				//il.ramek, dl. ramki
-				//auto offs = 4 * 8 * i;
-				auto offs = i << 5;
+				ret.status = Costume::Frame::COMPLETE_FRAME;
+				// Chyba moje dane
+				// Próbuje to rozpakowaæ
+				// Jak wszystko ok to zaznaczam ¿e ready
 
+				for (unsigned int i = 0; i < IMUS_IN_COSTUME_COUNT; ++i)
 				{
-					osg::Vec3 acc;
-
-					acc.x() = int16_t((uint16_t(buf[offs + 1]) << 8) | uint16_t(buf[offs + 0])) / 1024.0f;
-					acc.y() = int16_t((uint16_t(buf[offs + 3]) << 8) | uint16_t(buf[offs + 2])) / 1024.0f;
-					acc.z() = int16_t((uint16_t(buf[offs + 5]) << 8) | uint16_t(buf[offs + 4])) / 1024.0f;
-
-					costumePacket_.data[i].accelerometer = acc;
-					offs += 8;
+					//il.ramek, dl. ramki
+					//auto offs = 4 * 8 * i;
+					const auto offs = i << 5;
+					Costume::ImuData imuData;
+					unpackIMU(rawFrame, offs, imuData);
+					ret.imusData[i] = imuData;
 				}
 
+				for (unsigned int i = IMUS_IN_COSTUME_COUNT; i < IMUS_IN_COSTUME_COUNT + INSOLS_IN_COSTUME_COUNT; ++i)
 				{
-					osg::Vec3 mag;
-
-					mag.x() = int16_t((uint16_t(buf[offs + 1]) << 8) | uint16_t(buf[offs + 0])) / 2048.0f;
-					mag.y() = int16_t((uint16_t(buf[offs + 3]) << 8) | uint16_t(buf[offs + 2])) / 2048.0f;
-					mag.z() = int16_t((uint16_t(buf[offs + 5]) << 8) | uint16_t(buf[offs + 4])) / 2048.0f;
-
-					costumePacket_.data[i].magnetometer = mag;
-					offs += 8;
-				}
-
-				{
-					osg::Vec3 gyro;
-
-					gyro.x() = int16_t((uint16_t(buf[offs + 1]) << 8) | uint16_t(buf[offs + 0])) / 1024.0f;
-					gyro.y() = int16_t((uint16_t(buf[offs + 3]) << 8) | uint16_t(buf[offs + 2])) / 1024.0f;
-					gyro.z() = int16_t((uint16_t(buf[offs + 5]) << 8) | uint16_t(buf[offs + 4])) / 1024.0f;
-
-					offs += 8;
-					costumePacket_.data[i].gyroscope = gyro;
-				}
-
-				{
-					osg::Quat orient;
-
-					orient.w() = float((uint16_t(buf[offs + 1]) << 8) | uint16_t(buf[offs + 0]));
-					orient.x() = float((uint16_t(buf[offs + 3]) << 8) | uint16_t(buf[offs + 2]));
-					orient.y() = float((uint16_t(buf[offs + 5]) << 8) | uint16_t(buf[offs + 4]));
-					orient.z() = float((uint16_t(buf[offs + 7]) << 8) | uint16_t(buf[offs + 6]));
-
-					costumePacket_.data[i].orientation = orient;
+					const auto offs = i << 5;
+					Costume::InsoleRawData insoleData;
+					unpackINSOLE(rawFrame, offs, insoleData);
+					ret.insolesData[i] = insoleData;
 				}
 			}
+			else{
+				ret.status = Costume::Frame::ERROR_FRAME;
+			}
 		}
-		else{
-			std::fill(costumePacket_.status.begin(), costumePacket_.status.end(), Costume::NODATA);
-		}
+
+		return ret;
+	}
+
+	//! \param listenTime Czas nas³uchiwania kostiumów [ms]
+	//! \return Lista adresów dostêpnych kostiumów
+	static const std::list<Costume::Address> availableCostumes(const unsigned int listenTime)
+	{
+		std::list<Costume::Address> ret;
+
+
+
+		return ret;
 	}
 
 private:
 
-	void check_deadline()
+	inline static const int16_t extractIntFromPacket(const CostumeRawIO::Frame & frame, unsigned int offset)
 	{
-		// Check whether the deadline has passed. We compare the deadline against
-		// the current time since a new asynchronous operation may have moved the
-		// deadline before this actor had a chance to run.
-		if (deadline.expires_at() <= boost::asio::deadline_timer::traits_type::now())
+		return int16_t((uint16_t(frame[offset + 1]) << 8) | uint16_t(frame[offset]));
+	}
+
+	inline static const int16_t extractFloatFromPacket(const CostumeRawIO::Frame & frame, unsigned int offset)
+	{
+		return float((uint16_t(frame[offset + 1]) << 8) | uint16_t(frame[offset]));
+		//return reinterpret_cast<float>((uint16_t(frame[offset + 1]) << 8) | uint16_t(frame[offset]));
+	}
+
+	static const bool unpackIMU(const CostumeRawIO::Frame & frame, unsigned int offset,
+		Costume::ImuData & imuData)
+	{
+		Costume::ImuData localData;
 		{
-			// The deadline has passed. The outstanding asynchronous operation needs
-			// to be cancelled so that the blocked receive() function will return.
-			//
-			// Please note that cancel() has portability issues on some versions of
-			// Microsoft Windows, and it may be necessary to use close() instead.
-			// Consult the documentation for cancel() for further information.
-			socket.cancel();
+			osg::Vec3 acc;
+
+			acc.x() = extractIntFromPacket(frame, offset + 0);
+			acc.y() = extractIntFromPacket(frame, offset + 2);
+			acc.z() = extractIntFromPacket(frame, offset + 4);
+			acc /= 1024.0f;
+
+			localData.accelerometer = acc;
+			offset += 8;
 		}
+
+		{
+			osg::Vec3 mag;
+
+			mag.x() = extractIntFromPacket(frame, offset + 0);
+			mag.y() = extractIntFromPacket(frame, offset + 2);
+			mag.z() = extractIntFromPacket(frame, offset + 4);
+			mag /= 2048.0f;
+
+			localData.magnetometer = mag;
+			offset += 8;
+		}
+
+		{
+			osg::Vec3 gyro;
+
+			gyro.x() = extractIntFromPacket(frame, offset + 0);
+			gyro.y() = extractIntFromPacket(frame, offset + 2);
+			gyro.z() = extractIntFromPacket(frame, offset + 4);
+			gyro /= 1024.0f;
+
+			offset += 8;
+			localData.gyroscope = gyro;
+		}
+
+		{
+			osg::Quat orient;
+
+			orient.w() = extractFloatFromPacket(frame, offset + 0);
+			orient.x() = extractFloatFromPacket(frame, offset + 2);
+			orient.y() = extractFloatFromPacket(frame, offset + 4);
+			orient.z() = extractFloatFromPacket(frame, offset + 6);
+
+			localData.orientation = orient;
+		}
+
+		imuData = localData;
+
+		return true;
 	}
 
-	static void handle_receive(
-		const boost::system::error_code& ec, std::size_t length,
-		boost::system::error_code* out_ec, std::size_t* out_length)
+	static const bool unpackINSOLE(const CostumeRawIO::Frame & frame, unsigned int offset,
+		Costume::InsoleRawData & insoleData)
 	{
-		*out_ec = ec;
-		*out_length = length;
+		Costume::InsoleRawData localData;
+		
+		for (unsigned int i = 0; i < SENSORS_COUNT_IN_INSOL; ++i)
+		{
+			osg::Vec3 force;
+			force.x() = extractIntFromPacket(frame, offset + 0);
+			force.y() = extractIntFromPacket(frame, offset + 2);
+			force.z() = extractIntFromPacket(frame, offset + 4);
+			force /= 1024.0f;
+
+			localData.grfs[i] = force;
+			offset += 8;			
+		}
+
+		insoleData = localData;
+
+		return true;
 	}
 
 private:
-	//! Timeout
-	float timeout_;
-	//! Adres IP kostiumu
-	std::string ip_;
-	//! Port kostiumy
-	unsigned int port_;
-	//! Iloœc czujników na kostiumie
-	unsigned int imusNumber_;
-	//! Dane i ich status
-	Costume::CostumePacket costumePacket_;
-	//! Czy dane gotowe
-	volatile bool ready_;
-	//! Obiekt synchronizuj¹cy odczyt danych i pobieranie danych
-	mutable threadingUtils::StrictSyncPolicy synch;
-	//! Obiekty do odbierania danych po UDP
-	//! Serwis
-	boost::asio::io_service io_service;
-	//! Socket
-	boost::asio::ip::udp::socket socket;
-	//! Endpoint
-	boost::asio::ip::udp::endpoint serverEndpoint;
-	//! Ograniczenie czasowe na odbiór danych
-	boost::asio::deadline_timer deadline;
+	
+	mutable CostumeRawIO * rawIO;
 };
 
 using namespace imuCostume;
 
-Costume::Costume(const std::string & ip /* = std::string() */,
-	const unsigned int port /* = 1234 */,
-	const float timeout /* = 0.01 */) : impl_(new CostumeImpl(ip, port, timeout))
+Costume::Costume(CostumeRawIO * costume)
+	: impl_(new CostumeImpl(costume))
 {
+
 }
 
 Costume::~Costume()
 {
+
 }
 
-const std::string & Costume::ip() const
+const Costume::SensorsConfiguration Costume::sensorsConfiguration() const
 {
-	return impl_->ip();
+	return impl_->sensorsConfiguration();
 }
 
-const unsigned int Costume::port() const
+const Costume::Frame Costume::read(const unsigned int timeout) const
 {
-	return impl_->port();
+	return impl_->read(timeout);
 }
 
-const unsigned int Costume::imusNumber() const
+const std::list<Costume::Address> Costume::availableCostumes(const unsigned int listenTime)
 {
-	return impl_->imusNumber();
-}
-
-const Costume::CostumePacket Costume::costumePacket() const
-{
-	return impl_->costumePacket();
-}
-
-const bool Costume::ready() const
-{
-	return impl_->ready();
-}
-
-void Costume::readPacket()
-{
-	return impl_->readPacket();
-}
-
-const float Costume::timeout() const
-{
-	return impl_->timeout();
-}
-
-void Costume::setTimeout(const float timeout)
-{
-	if (timeout <= 0.0){
-		throw std::invalid_argument("Non-positive timeout value");
-	}
-
-	impl_->setTimeout(timeout);
+	return CostumeImpl::availableCostumes(listenTime);
 }
