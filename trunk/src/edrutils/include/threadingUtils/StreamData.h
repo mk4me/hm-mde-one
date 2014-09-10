@@ -254,7 +254,7 @@ namespace threadingUtils {
 		StreamT() {}
 
 		//! \param data Data received from the stream
-		void pushData(const_ref_type data)
+		void pushData(typename IStreamT<T>::const_ref_type data)
 		{
 			ScopedLock<RecursiveSyncPolicy> lock(synch_);
 
@@ -273,7 +273,7 @@ namespace threadingUtils {
 		virtual ~StreamT() {}
 
 		//! \param d [out]  Obiekt docelowy dla aktualnych danych ze strumienia
-		virtual void data(ref_type d) const
+		virtual void data(typename IStreamT<T>::ref_type d) const
 		{
 			ScopedLock<RecursiveSyncPolicy> lock(synch_);
 			d = data_;
@@ -353,7 +353,7 @@ namespace threadingUtils {
 		}
 
 		//! \param d [out]  Obiekt docelowy dla aktualnych danych ze strumienia po przepakowaniu
-		virtual void data(ref_type d) const
+		virtual void data(typename IStreamT<Dest>::ref_type d) const
 		{
 			Base bd;
 			baseStream_->data(bd);
