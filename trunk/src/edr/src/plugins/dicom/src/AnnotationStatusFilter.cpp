@@ -8,7 +8,7 @@
 
 using namespace dicom;
 
-AnnotationStatusFilter::AnnotationStatusFilter(const std::string & name,
+AnnotationStatusFilter::AnnotationStatusFilter(const QString & name,
 	const bool accept, const bool missingDefault, const GeneralStatus status,
 	hmdbCommunication::IHMDBSession * session)
 	: name_(name), accept(accept), missingDefault(missingDefault),
@@ -27,7 +27,7 @@ AnnotationStatusFilter * AnnotationStatusFilter::create(hmdbCommunication::IHMDB
 	return new AnnotationStatusFilter(name_, accept, missingDefault, status, session);
 }
 
-std::string AnnotationStatusFilter::name() const
+QString AnnotationStatusFilter::name() const
 {
 	return name_;
 }

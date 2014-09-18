@@ -34,7 +34,7 @@ namespace dicom
 		//! \param missingDefault Czy dane maj¹ byæ akceptowane czy odrzucane jesli nie znajdziemy identyfikator
 		//! \param identifiers Identyfikatory na których bêdzie operowa³ filtr
 		//! \param session Sesja zdalna
-		AnnotationStatusFilter(const std::string & name, const bool accept,
+		AnnotationStatusFilter(const QString & name, const bool accept,
 			const bool missingDefault, const GeneralStatus status, hmdbCommunication::IHMDBSession * session = nullptr);
 		//! Destruktor wirtualny
 		virtual ~AnnotationStatusFilter();
@@ -44,7 +44,7 @@ namespace dicom
 		//! Metoda wywo³ywana przed filtrowaniem
 		virtual void beforeFiltering();
 		//! \return Nazwa fitlra
-		virtual std::string name() const;
+		virtual QString name() const;
 		//! Filtr dla motionów opisuj¹cych badania USG
 		virtual bool filterMotion(const hmdbServices::MotionShallowCopy::Trial* motion) const;
 
@@ -59,7 +59,7 @@ namespace dicom
 
 	private:
 		//! Nazwa filtra
-		const std::string name_;
+		const QString name_;
 		//! Identyfikatory
 		mutable Identifiers identifiers;
 		//! Czy akceptowaæ jeœli znajdziemy identyfikator

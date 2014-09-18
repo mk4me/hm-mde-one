@@ -59,9 +59,7 @@ public:
 
 		config->setPerspectiveVisible(false);
 		config->setContentVisible(false);
-		config->setFilterVisible(true);	
-
-		config->registerFilter(nullptr);
+		config->setFilterVisible(true);		
 		
 		auto fs = viewManager->filtersCount(name());
 		if (fs > 0){
@@ -290,9 +288,9 @@ void MdeMainWindow::customViewInit(QWidget * console)
 
 	   //dodajemy filtry dla adnotacji		
 	   auto as = QObject::tr("Annotation status");
-	   vm->registerFilter(new dicom::AnnotationStatusFilter(std::string((as + ": " + QObject::tr("in edition")).toStdString()), true, false, dicom::AnnotationStatusFilter::InEdition));
-	   vm->registerFilter(new dicom::AnnotationStatusFilter(std::string((as + ": " + QObject::tr("in verification")).toStdString()), true, false, dicom::AnnotationStatusFilter::InVerification));
-	   vm->registerFilter(new dicom::AnnotationStatusFilter(std::string((as + ": " + QObject::tr("verified")).toStdString()), true, false, dicom::AnnotationStatusFilter::Verified));
+	   vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("in edition")), true, false, dicom::AnnotationStatusFilter::InEdition), hmdbView->name());
+	   vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("in verification")), true, false, dicom::AnnotationStatusFilter::InVerification), hmdbView->name());
+	   vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("verified")), true, false, dicom::AnnotationStatusFilter::Verified), hmdbView->name());
    }
 
    

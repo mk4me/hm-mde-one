@@ -13,17 +13,13 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QComboBox>
 #include <utils/SmartPtr.h>
+#include <plugins/hmdbCommunication/ShallowCopyFilter.h>
+#include <plugins/hmdbCommunication/IDataSourcePerspective.h>
+#include <plugins/hmdbCommunication/IDataSourceContent.h>
 
 namespace Ui
 {
 	class DataViewConfigurationWidget;
-}
-
-namespace hmdbCommunication
-{
-	class IDataSourcePerspective;
-	class ShallowCopyFilter;
-	class IDataSourceContent;
 }
 
 class HMDBCOMMUNICATION_EXPORT DataViewConfigurationWidget : public QWidget
@@ -125,10 +121,17 @@ private:
 
 		}
 
+		void add(const QString & name)
+		{
+			++currentIDX;
+			combo->addItem(name);
+		}
+
 		void add(T * item)
 		{
 			ItemDescription id = { combo->count(), item };
 			mapping[currentIDX++] = id;
+			combo->addItem(item->name());
 		}
 
 		void clear()
@@ -141,7 +144,7 @@ private:
 
 		void addSeparator()
 		{
-			currentIDX++;
+			++currentIDX;
 			combo->insertSeparator(combo->count());
 		}
 

@@ -10,6 +10,9 @@ DataViewConfigurationWidget::DataViewConfigurationWidget(QWidget * parent,
 	filters.reset(new ItemHelper<hmdbCommunication::ShallowCopyFilter>(ui->filterLabel, ui->filterComboBox));
 	perspectives.reset(new ItemHelper<hmdbCommunication::IDataSourcePerspective>(ui->perspectiveLabel, ui->perspectiveComboBox));
 	contents.reset(new ItemHelper<hmdbCommunication::IDataSourceContent>(ui->contentLabel, ui->contentComboBox));
+
+	filters->add(QObject::tr("No filter"));
+	contents->add(QObject::tr("Default content"));
 }
 
 DataViewConfigurationWidget::~DataViewConfigurationWidget()

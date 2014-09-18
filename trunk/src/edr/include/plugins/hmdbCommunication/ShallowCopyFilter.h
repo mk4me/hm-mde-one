@@ -10,6 +10,7 @@
 #define HEADER_GUARD_HMDBCOMMUNICATION__SHALLOWCOPYFILTER_H__
 
 #include <hmdbserviceslib/ShallowCopy.h>
+#include <QtCore/QString>
 #include <utils/SmartPtr.h>
 
 namespace hmdbCommunication
@@ -33,7 +34,7 @@ namespace hmdbCommunication
 		virtual void refresh() {}
 
 		//! \return Nazwa filtra
-		virtual std::string name() const = 0;
+		virtual QString name() const = 0;
 
 		//! Metoda wywoływana przed filtrowaniem
 		virtual void beforeFiltering() {}
