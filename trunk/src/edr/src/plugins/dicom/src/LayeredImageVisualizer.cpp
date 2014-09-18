@@ -21,6 +21,12 @@
 #include <QtWidgets/QMessageBox>
 #include "IDicomService.h"
 #include <corelib/IServiceManager.h>
+#include <plugins/hmdbCommunication/IHMDBSession.h>
+#include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
+#include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
+#include <hmdbserviceslib/IBasicUpdatesWS.h>
+#include <hmdbserviceslib/IAuthorizationWS.h>
+#include "DicomSource.h"
 
 using namespace dicom;
 
@@ -32,18 +38,32 @@ LayeredImageVisualizer::LayeredImageVisualizer() : currentTrialID(-1)
 
 LayeredImageVisualizer::~LayeredImageVisualizer()
 {
+
+}
+
+hmdbCommunication::IHMDBShallowCopyContext * LayeredImageVisualizer::remoteShallowContext(const plugin::IVisualizer::ISerie * serie)
+{
+	if (serie != nullptr){
+		const LayeredSerie* lserie = dynamic_cast<const LayeredSerie*>(serie);
+		if (lserie != nullptr){
+			return lserie->sourceContext();
+		}
+	}
+
+	return nullptr;
 }
 
 const bool LayeredImageVisualizer::userIsReviewer() const
 {
-	/*
-	hmdbCommunication::ICommunicationDataSourcePtr comm = core::querySource<hmdbCommunication::ICommunicationDataSource>(plugin::getSourceManager());
-	if (comm) {
-		return comm->userIsReviewer();
-	}
-	*/
+	bool ret = false;
 
-	return false;
+	auto remoteSrcContext = remoteShallowContext(getActiveSerie());
+
+	if (remoteSrcContext != nullptr){
+		ret = DicomSource::userIsReviewer(remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->session().get());
+	}
+
+	return ret;
 }
 
 plugin::IVisualizer* LayeredImageVisualizer::create() const
@@ -53,9 +73,68 @@ plugin::IVisualizer* LayeredImageVisualizer::create() const
 
 void LayeredImageVisualizer::setStatus(const hmdbServices::xmlWsdl::AnnotationStatus::Type type,
 	const QString & comment)
-{
-	auto ds = core::queryService<IDicomService>(plugin::getServiceManager());
-	ds->setAnnotationStatus(currentLayerUser_, currentTrialID, type, comment.toStdString());
+{	
+	auto remoteSrcContext = remoteShallowContext(getActiveSerie());
+
+	try{
+
+		auto resp = remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->session()->authorization()->listUsers();
+		auto usersList = hmdbServices::xmlWsdl::parseUsersList(resp);
+
+		auto it = std::find_if(usersList.begin(), usersList.end(), [=](const hmdbServices::xmlWsdl::UserDetails & ud)
+		{
+			if (ud.login == currentLayerUser_){
+				return true;
+			}
+			else{
+				return false;
+			}
+		});
+
+		int userid = -1;
+
+		if (it != usersList.end()){
+			userid = it->id;
+			auto updateService = remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->session()->motionUpdate();
+
+			if (userIsReviewer() == true){
+				//lekarz
+				if (type == hmdbServices::xmlWsdl::AnnotationStatus::Approved ||
+					type == hmdbServices::xmlWsdl::AnnotationStatus::Rejected){
+
+					updateService->setAnnotationReview(currentTrialID, userid, hmdbServices::xmlWsdl::AnnotationStatus::UnderReview, comment.toStdString());
+				}
+
+				updateService->setAnnotationReview(currentTrialID, userid, type, comment.toStdString());
+
+			}
+			else{
+				//student
+				UTILS_ASSERT(type == hmdbServices::xmlWsdl::AnnotationStatus::ReadyForReview, "User moze tylko przekazac dane do weryfikacji");
+				//UTILS_ASSERT(userid == currentUser()->id(), "User musi sie zgadzac z aktualnie zalogowanym");
+				updateService->setMyAnnotationStatus(currentTrialID, type, comment.toStdString());
+			}
+
+		}
+	}
+	catch (...)
+	{
+
+	}
+	
+	/*
+	AnnotationStatus as;
+	as.status = status;
+
+	if (comm->userIsReviewer() == true){
+		as.note = comment;
+	}
+	else{
+		as.comment = comment;
+	}
+
+	annotations[id][trialID] = as;
+	*/
 }
 
 const std::string LayeredImageVisualizer::getCurrentLayerUserName() const
@@ -112,6 +191,9 @@ plugin::IVisualizer::ISerie * LayeredImageVisualizer::createSerie(const utils::T
 {
 	auto serie = new LayeredSerie(this, mainWidget);
 	serie->setData(requestedType, data);
+
+	//todo
+	//pobranie z hmdbsource sourcecontext dla danych i zapamietanie go
 
 	series.push_back(serie);
 
@@ -351,18 +433,36 @@ void dicom::LayeredImageVisualizer::uploadSerie()
 {
 	saveSerie();
 	if (correctIndex(currentSerie)) {
-		/*
-		hmdbCommunication::ICommunicationDataSourcePtr comm = core::querySource<hmdbCommunication::ICommunicationDataSource>(plugin::getSourceManager());
-		core::Filesystem::Path p(series[currentSerie]->getXmlOutputFilename());
-		/// TODO : pobrac dane z OW
-		if (!comm->offlineMode()) {
-			comm->uploadMotionFile(p, "");
-		}
-		else {
-			coreUI::CorePopup::showMessage(tr("Unable to upload file"), tr("Application is in offline mode"));
-		}
+		
+		try{
 
-		*/
+			core::Filesystem::Path p(series[currentSerie]->getXmlOutputFilename());
+			/// TODO : pobrac dane z OW
+
+			auto remoteSrcContext = remoteShallowContext(getActiveSerie());
+
+			hmdbCommunication::IHMDBStorageOperations::IStreamPtr stream(new std::ifstream(p.string()));
+
+			auto upload = remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->prepareFileUpload(p.filename().string(), "", stream, hmdbCommunication::IHMDBRemoteContext::Motion);
+			upload->start();
+			upload->wait();
+
+			if (upload->status() != threadingUtils::IOperation::Finished){
+				coreUI::CorePopup::showMessage(tr("Failed to upload file"), tr("Could not transfer data"));
+			}
+			else{
+				coreUI::CorePopup::showMessage(tr("Upload complete"), tr("Data transfered successfully"));
+			}
+		}
+		catch (std::exception & e){
+			PLUGIN_LOG_ERROR("Failed to upload file with error: " << e.what());
+			coreUI::CorePopup::showMessage(tr("Failed to upload file"), tr("Errors while data transfer: ") + QString::fromStdString(e.what()));
+
+		}
+		catch (...){
+			PLUGIN_LOG_ERROR("Failed to upload file - UNKNOWN error");
+			coreUI::CorePopup::showMessage(tr("Failed to upload file"), tr("UNKNOWN error while data transfer"));
+		}
 
 		//TODO
 		//zapis statusu adnotacji
@@ -371,12 +471,14 @@ void dicom::LayeredImageVisualizer::uploadSerie()
 
 std::string dicom::LayeredImageVisualizer::getUserName() const
 {
-	/*
-	hmdbCommunication::ICommunicationDataSourcePtr comm = core::querySource<hmdbCommunication::ICommunicationDataSource>(plugin::getSourceManager());
-	return comm->currentUser()->name();
-	*/
+	std::string ret;
 
-	return std::string();
+	auto remoteSrcContext = remoteShallowContext(getActiveSerie());
+	if (remoteSrcContext != nullptr){
+		ret = remoteSrcContext->shallowCopyLocalContext()->localContext()->dataContext()->userName();
+	}
+
+	return ret;
 }
 
 void dicom::LayeredImageVisualizer::removeSelectedLayers()

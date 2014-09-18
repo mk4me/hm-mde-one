@@ -4,7 +4,7 @@
 	author:	  Mateusz Janiak
 
 	purpose:
-*********************************************************************/
+	*********************************************************************/
 #ifndef __HEADER_GUARD_IMU_COSTUME__IMUSENSOR_H__
 #define __HEADER_GUARD_IMU_COSTUME__IMUSENSOR_H__
 
@@ -135,7 +135,7 @@ namespace imuCostume
 
 	public:
 
-		//! \param sensor Sensor		
+		//! \param sensor Sensor
 		IMUSensor(CANopenSensor * sensor);
 		//! Destruktor
 		virtual ~IMUSensor();

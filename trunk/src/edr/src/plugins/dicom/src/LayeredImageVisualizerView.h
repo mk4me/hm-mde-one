@@ -18,6 +18,7 @@
 #include <coreui/CoreAction.h>
 #include "AnnotationsDelegate.h"
 #include "IDicomService.h"
+#include <hmdbserviceslib/Entity.h>
 
 class QGraphicsScene;
 
@@ -32,6 +33,15 @@ namespace dicom {
 	class LayeredImageVisualizerView : public QWidget
 	{
 		Q_OBJECT
+
+	public:
+
+		struct AnnotationStatus {
+			hmdbServices::xmlWsdl::AnnotationStatus::Type status;
+			std::string comment;
+			std::string note;
+		};
+
 	public:
 		//! Standardowy konstruktor
 		LayeredImageVisualizerView(LayeredImageVisualizer* model, QWidget* parent = 0, Qt::WindowFlags f = 0);
@@ -75,7 +85,9 @@ namespace dicom {
 
 		void setActionsEnabled(const bool enable);
 
-		void refreshChat(const IDicomService::AnnotationStatus & as);
+		void refreshChat(const AnnotationStatus & as);
+
+		const AnnotationStatus annotationStatus() const;
 
 		const bool verifySerie();
 
@@ -87,6 +99,12 @@ namespace dicom {
 		QGraphicsView* lastView;
 		AdnotationsDelegate * adnotationDelegate0;
 		AdnotationsDelegate * adnotationDelegate1;
+		coreUI::CoreAction* acceptAction;
+		coreUI::CoreAction* rejectAction;
+		coreUI::CoreAction* toVerifyAction;
+
+		mutable hmdbServices::DateTime lastUpdate;
+		mutable std::map<int, std::map<int, AnnotationStatus>> annotations;
 	};
 }
 #endif

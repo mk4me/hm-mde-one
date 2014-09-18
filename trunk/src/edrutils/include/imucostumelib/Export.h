@@ -1,11 +1,11 @@
 /********************************************************************
-    created:  2014/01/09
-    created:  9:1:2014   8:29
-    filename: Export.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+	created:  2014/01/09
+	created:  9:1:2014   8:29
+	filename: Export.h
+	author:   Mateusz Janiak
+
+	purpose:
+	*********************************************************************/
 #ifndef HEADER_GUARD_IMUCOSTUME__EXPORT_H__
 #define HEADER_GUARD_IMUCOSTUME__EXPORT_H__
 

@@ -44,11 +44,11 @@ SET_PRIVATE_HEADERS(
 	HMDBShallowCopyContext.h
 	HMDBServicesVerificationHelper.h
 	MemoryStorage.h
-	DataSourceDefaultContent.h
 	HMDBSourceViewManager.h
 )
 
 SET_PUBLIC_HEADERS (
+	DataSourceDefaultContent.h
 	IDataSourceContent.h
 	IPatientCard.h
 	IPatientCardManager.h
@@ -77,6 +77,8 @@ SET_PUBLIC_HEADERS (
 	IHMDBShallowCopyContext.h
 	Types.h
 	IHMDBSourceViewManager.h
+	GeneralSourceViewWidget.h
+	DataViewConfigurationWidget.h
 )
 
 #------------------------------------------------------------------------------
@@ -131,6 +133,8 @@ SET_SOURCE_FILES(
 	DataSourceDefaultContent.cpp
 	HMDBSourceViewManager.cpp
 	OperationProgressWidget.cpp
+	GeneralSourceViewWidget.cpp
+	DataViewConfigurationWidget.cpp
 )
 
 SET_MOC_FILES(
@@ -148,6 +152,8 @@ SET_MOC_FILES(
 	HMDBSourceWidget.h
 	DataViewWidget.h
 	OperationProgressWidget.h
+	GeneralSourceViewWidget.h
+	DataViewConfigurationWidget.h
 )
 
 SET_UI_FILES(
@@ -160,6 +166,8 @@ SET_UI_FILES(
 	SourceOptionsWidget.ui
 	DataViewWidget.ui
 	OperationProgressWidget.ui
+	GeneralSourceViewWidget.ui
+	DataViewConfigurationWidget.ui
 )
 
 SET_RC_FILES (

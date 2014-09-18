@@ -20,6 +20,11 @@
 
 class DcmDirectoryRecord;
 
+namespace hmdbCommunication
+{
+	class IHMDBSession;
+}
+
 namespace dicom {
 
 //! Kalsa realizuj¹ca odczyt danych USG
@@ -73,6 +78,8 @@ public:
     virtual void getOfferedTypes( utils::TypeInfoList & offeredTypes ) const;
     void addFile( const core::Filesystem::Path& path );
     void openInternalDataMainFile( core::Filesystem::Path path );
+
+	static const bool userIsReviewer(hmdbCommunication::IHMDBSession * session);
 
 private:
     void handlePatientRecord( DcmDirectoryRecord * patientRecord, core::IHierarchyItemPtr root, std::string basePath );

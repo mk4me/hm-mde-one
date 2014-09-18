@@ -26,7 +26,7 @@ namespace hmdbCommunication
 		//! Wirtualny destruktor
 		virtual ~ShallowCopyFilter() {}
 
-		//! \param Session Sesja usług bazy danych
+		//! \param session Sesja
 		//! \return Filtr danych
 		virtual ShallowCopyFilter * create(IHMDBSession * session) const = 0;
 		//! Odświeża wewnętrzne dane filtru (np po odświeżeniu danych w bazie)
@@ -34,6 +34,11 @@ namespace hmdbCommunication
 
 		//! \return Nazwa filtra
 		virtual std::string name() const = 0;
+
+		//! Metoda wywoływana przed filtrowaniem
+		virtual void beforeFiltering() {}
+		//! Metoda wywoływana po filtrowaniu
+		virtual void afterFiltering() {}
 
 		//! \param disorder Schorzenie do weryfikacji
 		//! \return true jeżeli schorzenie pomyślnie przeszło weryfikację

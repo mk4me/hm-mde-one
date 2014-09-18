@@ -17,6 +17,11 @@
 #include <utils/ICommand.h>
 #include <QtWidgets/QScrollBar>
 #include <boost/format.hpp>
+#include <plugins/hmdbCommunication/IHMDBSource.h>
+#include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
+#include <corelib/IPlugin.h>
+#include <corelib/ISourceManager.h>
+
 
 using namespace dicom;
 
@@ -71,10 +76,31 @@ private:
 	bool wasEdited;
 };
 
+hmdbCommunication::IHMDBShallowCopyContext * LayeredSerie::sourceContext() const
+{
+	return shallowCopntext_;
+}
+
+hmdbCommunication::IHMDBShallowCopyContext * LayeredSerie::sourceContextForData(const core::VariantConstPtr data)
+{
+	hmdbCommunication::IHMDBShallowCopyContext * ret = nullptr;
+
+	auto source = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
+	if (source != nullptr){
+		auto srcContext = source->shallowContextForData(data);
+		ret = srcContext.get();
+	}
+
+	return nullptr;
+}
+
 void LayeredSerie::setupData( const core::VariantConstPtr & data )
 {
     auto cloneWrp = data->clone();
     image = cloneWrp->get();
+
+	this->shallowCopntext_ = sourceContextForData(data);
+
     if (image) {
 
         graphicsScene->addItem(image->getBackgroundLayer()->getItem());
@@ -125,7 +151,8 @@ dicom::LayeredSerie::LayeredSerie(LayeredImageVisualizer* visualizer, LayeredIma
     //pixmapItem(nullptr),
     initialized(false),
     layersModel(visualizer),
-    commandStack(new utils::CommandStack)
+    commandStack(new utils::CommandStack),
+	shallowCopntext_(nullptr)
 {
     stateMachine = utils::make_shared<LayeredStateMachine>(this, commandStack);
     graphicsScene = new coreUI::GraphicSceneWithStateMachine(stateMachine);

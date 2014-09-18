@@ -80,16 +80,23 @@ namespace hmdbCommunication
 		//! \return Manager widowkow
 		virtual const IHMDBSourceViewManager * viewManager() const = 0;
 
-		/*
-		//! \return Iloœæ kontekstów danych
-		virtual const unsigned int size() const = 0;
-		//! \param idx Indeks kontekstu danych
-		//! \return Konteks danych dla zadanego indeksu
-		virtual IHMDBSourceContext * sourceContext(const unsigned int idx) = 0;
-		//! \param idx Indeks kontekstu danych
-		//! \return Konteks danych dla zadanego indeksu
-		virtual const IHMDBSourceContext * sourceContext(const unsigned int idx) const = 0;
-		*/
+		//! \param data Dane dla których szukamy kontekstu Ÿród³a
+		//! \return Konteks Ÿród³a dla danych
+		virtual const IHMDBSourceContextPtr sourceContextForData(const core::VariantConstPtr data) const = 0;
+		//! \param data Dane dla których szukamy kontekstu p³ytkiej kopii
+		//! \return Konteks p³ytkiej kopii dla danych
+		virtual const IHMDBShallowCopyContextPtr shallowContextForData(const core::VariantConstPtr data) const = 0;
+		//! \param data Dane dla których szukamy kontekstu Ÿród³a
+		//! \return Konteks Ÿród³a dla danych
+		virtual const IHMDBSourceContextPtr sourceContextForData(const void * data) const = 0;
+		//! \param data Dane dla których szukamy kontekstu p³ytkiej kopii
+		//! \return Konteks p³ytkiej kopii dla danych
+		virtual const IHMDBShallowCopyContextPtr shallowContextForData(const void * data) const = 0;
+
+		//! \param sourceContext Konteks Ÿród³a dla danych
+		virtual void registerSourceContext(const IHMDBSourceContextPtr sourceContext) = 0;
+		//! \param shallowContext Konteks p³ytkiej kopii dla danych		
+		virtual void registerShallowContext(const IHMDBShallowCopyContextPtr shallowContext) = 0;
 	};
 }
 

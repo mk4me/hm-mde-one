@@ -44,6 +44,8 @@ private slots:
 
     void onLoadDatFile();
 
+	void testCommunication();
+
 private:
 	core::VariantPtr createFbxWrapper();
         

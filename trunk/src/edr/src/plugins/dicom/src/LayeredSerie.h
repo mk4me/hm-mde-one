@@ -28,6 +28,11 @@ class QSlider;
 class QGraphicsPixmapItem;
 class RemoveLayerCommand;
 
+namespace hmdbCommunication
+{
+	class IHMDBShallowCopyContext;
+}
+
 namespace dicom {
 
     class LayeredImageVisualizer;
@@ -45,6 +50,10 @@ namespace dicom {
         virtual ~LayeredSerie() {}
 
 		virtual void update() {}
+
+		hmdbCommunication::IHMDBShallowCopyContext * sourceContext() const;
+
+		static hmdbCommunication::IHMDBShallowCopyContext * sourceContextForData(const core::VariantConstPtr data);
 
     public:
         virtual void setupData( const core::VariantConstPtr & data );  
@@ -88,6 +97,8 @@ namespace dicom {
 		const bool isEdited()const;		
 
     private:
+		//! Kontekst zdalny danych
+		hmdbCommunication::IHMDBShallowCopyContext * shallowCopntext_;
         bool initialized;
         ILayeredImagePtr image;
         coreUI::WheelGraphicsView* graphicsView;

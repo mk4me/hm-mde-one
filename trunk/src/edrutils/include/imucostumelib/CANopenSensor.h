@@ -4,7 +4,7 @@
 	author:	  Mateusz Janiak
 
 	purpose:
-*********************************************************************/
+	*********************************************************************/
 #ifndef __HEADER_GUARD_IMU_COSTUME__CANOPENSENSOR_H__
 #define __HEADER_GUARD_IMU_COSTUME__CANOPENSENSOR_H__
 
@@ -223,7 +223,7 @@ namespace imuCostume
 		}
 
 		template<typename T>
-		const OperationStatus write(const int16_t dictID, const IODataSize dataSize, const T data, ErrorCode & errorCode, const int8_t dictSubID = 0)
+		const OperationStatus write(const int16_t dictID, const IODataSize dataSize, const T value, ErrorCode & errorCode, const int8_t dictSubID = 0)
 		{
 			return write(dictID, dataSize, formatData(value), errorCode, dictSubID);
 		}

@@ -216,28 +216,111 @@ const IHMDBSourceViewManager * HMDBSource::viewManager() const
 	return viewManager_.get();
 }
 
-/*
-const unsigned int HMDBSource::size() const
+const IHMDBSourceContextPtr HMDBSource::sourceContextForData(const core::VariantConstPtr data) const
 {
-	return sourceContexts_.size();
+	auto it = std::find_if(sourceContexts_.begin(), sourceContexts_.end(), [=](const IHMDBSourceContextWeakPtr wsc)
+	{
+		auto sc = wsc.lock();
+		if (sc != nullptr){
+			if (sc->localContext()->isMyData(data) == true){
+				return true;
+			}
+		}
+
+		return false;
+	});
+
+	if (it != sourceContexts_.end()){
+		return (*it).lock();
+	}
+	else{
+		auto sc = shallowContextForData(data);
+		if (sc != nullptr){
+			return IHMDBSourceContextPtr(new HMDBSourceContext(sc->shallowCopyLocalContext()->localContext()->dataContext(), sc->shallowCopyLocalContext()->localContext(), sc->shallowCopyRemoteContext()->remoteContext()));
+		}
+	}
+
+	return IHMDBSourceContextPtr();
 }
 
-IHMDBSourceContext * HMDBSource::sourceContext(const unsigned int idx)
+const IHMDBShallowCopyContextPtr HMDBSource::shallowContextForData(const core::VariantConstPtr data) const
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
-	auto it = sourceContexts_.begin();
-	std::advance(it, idx);
-	return *it;
+	auto it = std::find_if(shallowContexts_.begin(), shallowContexts_.end(), [=](const IHMDBShallowCopyContextWeakPtr wsc)
+	{
+		auto sc = wsc.lock();
+		if (sc != nullptr){
+			if (sc->shallowCopyLocalContext()->localContext()->isMyData(data) == true){
+				return true;
+			}
+		}
+
+		return false;
+	});
+
+	if (it != shallowContexts_.end()){
+		return (*it).lock();
+	}
+
+	return IHMDBShallowCopyContextPtr();
 }
 
-const IHMDBSourceContext * HMDBSource::sourceContext(const unsigned int idx) const
+const IHMDBSourceContextPtr HMDBSource::sourceContextForData(const void * data) const
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
-	auto it = sourceContexts_.begin();
-	std::advance(it, idx);
-	return *it;
+	auto it = std::find_if(sourceContexts_.begin(), sourceContexts_.end(), [=](const IHMDBSourceContextWeakPtr wsc)
+	{
+		auto sc = wsc.lock();
+		if (sc != nullptr){
+			if (sc->localContext()->isMyData(data) == true){
+				return true;
+			}
+		}
+
+		return false;
+	});
+
+	if (it != sourceContexts_.end()){
+		return (*it).lock();
+	}
+	else{
+		auto sc = shallowContextForData(data);
+		if (sc != nullptr){
+			return IHMDBSourceContextPtr(new HMDBSourceContext(sc->shallowCopyLocalContext()->localContext()->dataContext(), sc->shallowCopyLocalContext()->localContext(), sc->shallowCopyRemoteContext()->remoteContext()));
+		}
+	}
+
+	return IHMDBSourceContextPtr();
 }
-*/
+
+const IHMDBShallowCopyContextPtr HMDBSource::shallowContextForData(const void * data) const
+{
+	auto it = std::find_if(shallowContexts_.begin(), shallowContexts_.end(), [=](const IHMDBShallowCopyContextWeakPtr wsc)
+	{
+		auto sc = wsc.lock();
+		if (sc != nullptr){
+			if (sc->shallowCopyLocalContext()->localContext()->isMyData(data) == true){
+				return true;
+			}
+		}
+
+		return false;
+	});
+
+	if (it != shallowContexts_.end()){
+		return (*it).lock();
+	}
+
+	return IHMDBShallowCopyContextPtr();
+}
+
+void HMDBSource::registerSourceContext(const IHMDBSourceContextPtr sourceContext)
+{
+	sourceContexts_.push_back(sourceContext);
+}
+
+void HMDBSource::registerShallowContext(const IHMDBShallowCopyContextPtr shallowContext)
+{
+	shallowContexts_.push_back(shallowContext);
+}
 
 /*
 IHMDBSourceContext * HMDBSource::sourceContextForData(core::VariantConstPtr data)

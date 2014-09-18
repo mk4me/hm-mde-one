@@ -1,6 +1,11 @@
 #include "CoreLibPCH.h"
 #include <corelib/AbstractSerie.h>
 
+plugin::AbstractSerie::AbstractSerie()
+{
+
+}
+
 void plugin::AbstractSerie::setData( const utils::TypeInfo & requestedDataType, const core::VariantConstPtr & data )
 {
     this->requestedType = requestedDataType;

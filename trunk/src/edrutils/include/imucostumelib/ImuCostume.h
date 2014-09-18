@@ -32,7 +32,7 @@ namespace imuCostume
 		//! Wewnêtrzna implementacja kostiumu
 		class CostumeImpl;
 
-	public:		
+	public:
 
 		//! Struktura opisuj¹ca adres kostiumu w sieci
 		struct Address
@@ -83,10 +83,11 @@ namespace imuCostume
 
 		//! Konfiguracja sensorów kostiumu
 		typedef std::map<SensorType, SensorIDsSet> SensorsConfiguration;
-		
+
 		//! Struktura opisuj¹ca ramkê rozpakowanych danych kostiumu
 		struct Frame
 		{
+		public:
 			//! Typ identyfikatora czasu ramki
 			typedef unsigned long long int Timestamp;
 
@@ -99,6 +100,13 @@ namespace imuCostume
 				ERROR_FRAME			//! B³êdna ramka
 			};
 
+		public:
+
+			Frame() : timestamp(0), status(NO_FRAME) {}
+			~Frame() {}
+
+		public:
+
 			//! Stempel czasowy ramki
 			Timestamp timestamp;
 			//! Status ramki
@@ -107,7 +115,9 @@ namespace imuCostume
 			std::map<SensorID, ImuData> imusData;
 			//! Dane z czujników insole
 			std::map<SensorID, InsoleRawData> insolesData;
-		};		
+
+
+		};
 
 	public:
 		//! \param ip Adres kostiumu

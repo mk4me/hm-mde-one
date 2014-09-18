@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>710</width>
+    <width>521</width>
     <height>473</height>
    </rect>
   </property>
@@ -445,6 +445,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="testCommunicationPushButton">
+       <property name="text">
+        <string>Test communication</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="RecordButton">
        <property name="enabled">
         <bool>false</bool>
@@ -523,11 +530,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>testCommunicationPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>IMUCostumeListWidget</receiver>
+   <slot>testCommunication()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>460</x>
+     <y>108</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>260</x>
+     <y>236</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onConnect()</slot>
   <slot>onCostumesListContextMenu(QPoint)</slot>
   <slot>onCalibrate()</slot>
   <slot>onLoadDatFile()</slot>
+  <slot>testCommunication()</slot>
  </slots>
 </ui>

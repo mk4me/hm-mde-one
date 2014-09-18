@@ -13,6 +13,11 @@
 #include <corelib/IServiceManager.h>
 #include "MessageDialog.h"
 #include <QtWidgets/QMessageBox>
+#include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
+#include <hmdbserviceslib/IBasicQueriesWS.h>
+#include <hmdbserviceslib/IAuthorizationWS.h>
+#include <coreui/CorePopup.h>
+#include <coreui/CoreCursorChanger.h>
 
 using namespace dicom;
 
@@ -22,7 +27,8 @@ QWidget(parent, f),
 ui(new Ui::LayeredImageVisualizer()),
 adnotationDelegate0(new AdnotationsDelegate(0)),
 adnotationDelegate1(new AdnotationsDelegate(1)),
-lastView(nullptr)
+lastView(nullptr), acceptAction(nullptr),
+rejectAction(nullptr), toVerifyAction(nullptr)
 {
 	ui->setupUi(this);
 	connect(ui->prevButton, SIGNAL(clicked()), model, SLOT(setPrevSerie()));
@@ -77,23 +83,22 @@ lastView(nullptr)
 	QIcon acceptIcon(":/dicom/accept.png");
 	acceptIcon.addFile(":/dicom/acceptDisabled.png", QSize(), QIcon::Disabled);
 
-	if (model->userIsReviewer() == true){
-		coreUI::CoreAction* acceptAction = new coreUI::CoreAction(tr("Status"), acceptIcon, tr("Accept"), this, coreUI::CoreTitleBar::Left);
-		connect(acceptAction, SIGNAL(triggered()), this, SLOT(acceptAnnotation()));
+	
+	acceptAction = new coreUI::CoreAction(tr("Status"), acceptIcon, tr("Accept"), this, coreUI::CoreTitleBar::Left);
+	connect(acceptAction, SIGNAL(triggered()), this, SLOT(acceptAnnotation()));
 
-		QIcon rejectIcon(":/dicom/reject.png");
-		rejectIcon.addFile(":/dicom/rejectDisabled.png", QSize(), QIcon::Disabled);
+	QIcon rejectIcon(":/dicom/reject.png");
+	rejectIcon.addFile(":/dicom/rejectDisabled.png", QSize(), QIcon::Disabled);
 
-		coreUI::CoreAction* rejectAction = new coreUI::CoreAction(tr("Status"), rejectIcon, tr("Reject"), this, coreUI::CoreTitleBar::Left);
-		connect(rejectAction, SIGNAL(triggered()), this, SLOT(rejectAnnotation()));
-		this->addAction(acceptAction);
-		this->addAction(rejectAction);
-	}
-	else{
-		coreUI::CoreAction* toVerifyAction = new coreUI::CoreAction(tr("Status"), acceptIcon, tr("Request verification"), this, coreUI::CoreTitleBar::Left);
-		connect(toVerifyAction, SIGNAL(triggered()), this, SLOT(requestAnnotationVerification()));
-		this->addAction(toVerifyAction);
-	}
+	rejectAction = new coreUI::CoreAction(tr("Status"), rejectIcon, tr("Reject"), this, coreUI::CoreTitleBar::Left);
+	connect(rejectAction, SIGNAL(triggered()), this, SLOT(rejectAnnotation()));
+
+	toVerifyAction = new coreUI::CoreAction(tr("Status"), acceptIcon, tr("Request verification"), this, coreUI::CoreTitleBar::Left);
+	connect(toVerifyAction, SIGNAL(triggered()), this, SLOT(requestAnnotationVerification()));
+
+	this->addAction(acceptAction);
+	this->addAction(rejectAction);
+	this->addAction(toVerifyAction);
 
 	connect(undo, SIGNAL(triggered()), this, SLOT(undo()));
 	connect(redo, SIGNAL(triggered()), this, SLOT(redo()));
@@ -183,12 +188,13 @@ void dicom::LayeredImageVisualizerView::rejectAnnotation()
 
 	QString comment;
 	if (getComment(tr("Note"), QString(), comment) == true){
+		coreUI::CoreCursorChanger cc;
 		try{
 			model->uploadSerie();
 			model->setStatus(hmdbServices::xmlWsdl::AnnotationStatus::Rejected, comment);
 			setActionsEnabled(false);
 			auto service = core::queryService<IDicomService>(plugin::getServiceManager());
-			auto as = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
+			auto as = annotationStatus();
 			setAnnotationStatus(as.status);
 			refreshChat(as);
 			QMessageBox::information(this, tr("Status change"), tr("Annotation status changed successfully"));
@@ -208,12 +214,13 @@ void dicom::LayeredImageVisualizerView::requestAnnotationVerification()
 	QString comment;
 	if (getComment(tr("Comment"), QString(), comment) == true){
 		try{
+			coreUI::CoreCursorChanger cc;
 			//model->trySave();
 			model->uploadSerie();
 			model->setStatus(hmdbServices::xmlWsdl::AnnotationStatus::ReadyForReview, comment);
 			setActionsEnabled(false);
 			auto service = core::queryService<IDicomService>(plugin::getServiceManager());
-			auto as = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
+			auto as = annotationStatus();
 			setAnnotationStatus(as.status);
 			refreshChat(as);
 			QMessageBox::information(this, tr("Status change"), tr("Annotation sent for verification successfully"));
@@ -268,6 +275,26 @@ void dicom::LayeredImageVisualizerView::refresh()
 			}
 			lastView->show();
 		}
+
+		if (serie->sourceContext() != nullptr){
+
+			if (model->userIsReviewer() == true){
+				acceptAction->setVisible(true);
+				rejectAction->setVisible(true);
+				toVerifyAction->setVisible(false);
+			}
+			else{
+				acceptAction->setVisible(false);
+				rejectAction->setVisible(false);
+				toVerifyAction->setVisible(true);
+			}
+		}
+		else{
+			acceptAction->setVisible(false);
+			rejectAction->setVisible(false);
+			toVerifyAction->setVisible(false);
+		}
+
 		serie->refresh();
 		auto treeModel = serie->getLayersModel();
 		ui->treeView->setModel(treeModel);
@@ -340,7 +367,7 @@ void dicom::LayeredImageVisualizerView::setActionsEnabled(const bool enable)
 	adnotationDelegate1->setEditionActive(enable);
 }
 
-void dicom::LayeredImageVisualizerView::refreshChat(const IDicomService::AnnotationStatus & as)
+void dicom::LayeredImageVisualizerView::refreshChat(const AnnotationStatus & as)
 {
 	if (as.note.empty() == false){
 		ui->noteTextEdit->setText(QString::fromStdString(as.note));
@@ -393,6 +420,65 @@ const bool dicom::LayeredImageVisualizerView::verifySerie()
 	return true;
 }
 
+const dicom::LayeredImageVisualizerView::AnnotationStatus dicom::LayeredImageVisualizerView::annotationStatus() const
+{
+	try{
+		auto rsc = LayeredImageVisualizer::remoteShallowContext(model->getActiveSerie());
+		auto session = rsc->shallowCopyRemoteContext()->remoteContext()->session();
+
+		auto modTime = session->motionQueries()->dataModificationTime();
+		if (lastUpdate < modTime){
+			auto resp = session->motionQueries()->listAnnotationsXML();
+			auto annotations = hmdbServices::xmlWsdl::parseAnnotations(resp);
+
+			std::map<int, std::map<int, AnnotationStatus>> annotationsByUsers;
+
+			for (const hmdbServices::xmlWsdl::Annotation & a : annotations){
+				AnnotationStatus as;
+				as.status = a.status;
+				as.comment = a.comment;
+				as.note = a.note;
+				annotationsByUsers[a.trialID][a.userID] = as;
+			}
+
+			this->annotations = annotationsByUsers;
+			lastUpdate = modTime;
+		}
+
+		auto sIT = annotations.find(model->currnetTrialID());
+		if (sIT != annotations.end()){
+
+			auto resp = session->authorization()->listUsers();
+			auto usersList = hmdbServices::xmlWsdl::parseUsersList(resp);
+
+			auto it = std::find_if(usersList.begin(), usersList.end(), [=](const hmdbServices::xmlWsdl::UserDetails & ud)
+			{
+				if (ud.login == model->getCurrentLayerUserName()){
+					return true;
+				}
+				else{
+					return false;
+				}
+			});
+
+			if (it != usersList.end()){
+				auto IT = sIT->second.find(it->id);
+				if (IT != sIT->second.end()){
+					return IT->second;
+				}
+			}
+		}
+	}
+	catch (...){
+		coreUI::CorePopup::showMessage(tr("Failed to get annotation status"), tr("Annotation status request failed. Please try again or contact software developers"));
+	}
+
+	AnnotationStatus as;
+	as.status = hmdbServices::xmlWsdl::AnnotationStatus::Unspecified;
+
+	return as;
+}
+
 void dicom::LayeredImageVisualizerView::selectionChanged(const QModelIndex &)
 {
 	QModelIndexList indexes = ui->treeView->selectionModel()->selectedIndexes();
@@ -404,32 +490,37 @@ void dicom::LayeredImageVisualizerView::selectionChanged(const QModelIndex &)
 		auto ti = rows.begin();
 		model->selectLayer(ti->first, ti->second);
 
-		//odœwie¿yæ stan akcji ze wzglêdu na usera aktualnej adnotacji i jej status
-
-		auto service = core::queryService<IDicomService>(plugin::getServiceManager());
-		auto as = service->annotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID());
-		setAnnotationStatus(as.status);
-		refreshChat(as);
-
 		bool enabled = true;
 
-		if (model->userIsReviewer() == true){
-			if (as.status == hmdbServices::xmlWsdl::AnnotationStatus::Approved ||
-				as.status == hmdbServices::xmlWsdl::AnnotationStatus::Rejected){
-				enabled = false;
-			}
-		}
-		else {
-			if (model->getCurrentLayerUserName() == model->getUserName()){
+		//odœwie¿yæ stan akcji ze wzglêdu na usera aktualnej adnotacji i jej status
+		auto rsc = LayeredImageVisualizer::remoteShallowContext(model->getActiveSerie());
+		if (rsc != nullptr){
+			coreUI::CoreCursorChanger cc;
+			auto as = annotationStatus();
+			setAnnotationStatus(as.status);
+			refreshChat(as);
+
+			if (model->userIsReviewer() == true){
 				if (as.status == hmdbServices::xmlWsdl::AnnotationStatus::Approved ||
-					as.status == hmdbServices::xmlWsdl::AnnotationStatus::UnderReview ||
-					as.status == hmdbServices::xmlWsdl::AnnotationStatus::ReadyForReview){
+					as.status == hmdbServices::xmlWsdl::AnnotationStatus::Rejected){
 					enabled = false;
 				}
 			}
-			else{
-				enabled = false;
+			else {
+				if (model->getCurrentLayerUserName() == model->getUserName()){
+					if (as.status == hmdbServices::xmlWsdl::AnnotationStatus::Approved ||
+						as.status == hmdbServices::xmlWsdl::AnnotationStatus::UnderReview ||
+						as.status == hmdbServices::xmlWsdl::AnnotationStatus::ReadyForReview){
+						enabled = false;
+					}
+				}
+				else{
+					enabled = false;
+				}
 			}
+		}
+		else{
+			enabled = false;
 		}
 
 		setActionsEnabled(enabled);

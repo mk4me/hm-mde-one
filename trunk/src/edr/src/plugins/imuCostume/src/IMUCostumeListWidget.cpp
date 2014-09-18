@@ -22,6 +22,10 @@
 #include "osg/LineWidth"
 #include "osg/StateAttribute"
 #include "osg/StateSet"
+#include <imucostumelib/CostumeRawIO.h>
+#include <imucostumelib/ImuCostume.h>
+#include <imucostumelib/CANopenSensor.h>
+#include <imucostumelib/ImuSensor.h>
 
 IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	QWidget * parent, const Qt::WindowFlags f)
@@ -408,4 +412,26 @@ core::VariantPtr IMUCostumeWidget::createFbxWrapper()
 
 }
 
-
+void IMUCostumeWidget::testCommunication()
+{
+	try{
+		std::auto_ptr<imuCostume::CostumeRawIO> rawCostume(new imuCostume::CostumeRawIO("192.168.1.173"));
+		std::auto_ptr<imuCostume::Costume> costume(new imuCostume::Costume(rawCostume.get()));
+		auto data = costume->read(300);
+		imuCostume::CANopenSensor canSensor(rawCostume.get(), 1, 300);
+		imuCostume::CANopenSensor::ErrorCode error = imuCostume::CANopenSensor::NO_ERROR;
+		auto ret1 = canSensor.write(imuCostume::IMUSensor::CONFIGURATION, imuCostume::CANopenSensor::Size1B, 1, error, imuCostume::IMUSensor::CONFIGURATION_SOFT_IRON_CAL_ENABLE);
+		auto ret2 = canSensor.write(imuCostume::IMUSensor::CONFIGURATION, imuCostume::CANopenSensor::Size1B, 2, error, imuCostume::IMUSensor::CONFIGURATION_SOFT_IRON_CAL_ENABLE);
+		auto ret3 = canSensor.saveConfiguration(error);
+		bool wait = true;
+		wait = false;
+	}
+	catch (std::exception & e){
+		std::string errorcode = e.what();
+		errorcode += "_";
+	}
+	catch (...){
+		std::string errorcode = "unknown error";
+		errorcode += "_";
+	}
+}

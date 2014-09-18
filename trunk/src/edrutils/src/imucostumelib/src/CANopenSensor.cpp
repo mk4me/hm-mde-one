@@ -2,6 +2,7 @@
 #include <utils/Utils.h>
 #include <imucostumelib/CostumeRawIO.h>
 #include <imucostumelib/CostumeCANopenIO.h>
+#include <boost/detail/endian.hpp>
 
 using namespace imuCostume;
 
@@ -13,12 +14,10 @@ public:
 	SDOMessageFilter(const int16_t mask = 0xFFFF)
 		: mask_(mask)
 	{
-
 	}
 
 	~SDOMessageFilter()
 	{
-
 	}
 
 	const bool operator()(const CostumeCANopenIO::Frame & message, const unsigned int length) const
@@ -27,7 +26,7 @@ public:
 			return false;
 		}
 
-		if (message.messageID.id != mask_){
+		if (message.structure.messageID.id != mask_){
 			return false;
 		}
 
@@ -38,15 +37,12 @@ private:
 	const int16_t mask_;
 };
 
-
 CANopenSensor::Buffer::Buffer() : data_(0)
 {
-
 }
 
 CANopenSensor::Buffer::~Buffer()
 {
-
 }
 
 const uint32_t CANopenSensor::Buffer::data() const
@@ -64,39 +60,32 @@ public:
 	CANopenSensorImpl(CostumeRawIO * costume, const int8_t id, const unsigned int timeout)
 		: id(id), costume(costume), seqNumber(id), timeout_(timeout)
 	{
-
 	}
 
 	~CANopenSensorImpl()
 	{
-
 	}
 
 	//LSS
 	/*
 	const CANopenSensor::OperationStatus select(const bool select)
 	{
-
 	}
 
 	static const CANopenSensor::OperationStatus select(const bool select, const std::set<int8_t> & ids, Costume * costume)
 	{
-
 	}
 
 	static const CANopenSensor::OperationStatus selectAll(const bool select, Costume * costume)
 	{
-
 	}
 
 	const CANopenSensor::OperationStatus setID(const int8_t id)
 	{
-
 	}
 
 	const CANopenSensor::OperationStatus setSpeedLevel(const CANopenSensor::SpeedLevel speedLevel)
 	{
-
 	}
 	*/
 
@@ -135,8 +124,8 @@ public:
 	static const CANopenSensor::OperationStatus synchronize(CostumeRawIO * costume, const unsigned int timeout, const unsigned int maxRetries)
 	{
 		CostumeCANopenIO::Frame frame = { 0 };
-		frame.messageID.bytes[0] = 0x80;
-		frame.messageID.bytes[1] = 0;
+		frame.structure.messageID.bytes[0] = 0x80;
+		frame.structure.messageID.bytes[1] = 0;
 		return trySend(costume, (int8_t)costume, frame, 2, timeout, maxRetries);
 	}
 
@@ -145,24 +134,24 @@ public:
 		return trySend(costume, seqNumber, formatNMTFrame(0x82, id), 4, timeout_, 50);
 	}
 
-	//SDO			
+	//SDO
 	const CANopenSensor::OperationStatus read(const int16_t dictID, CANopenSensor::IODataSize & dataSize, Buffer & out, CANopenSensor::ErrorCode & errorCode, const int8_t dictSubID = 0) const
 	{
 		CANopenSensor::OperationStatus ret = CANopenSensor::OPERATION_OK;
 
 		CostumeCANopenIO::Frame frame = { 0 };
-		frame.frame[0] = id;	//id czujnika
+		frame.structure.frame[0] = id;	//id czujnika
 		//offset dla identyfikatorów urz¹dzeñ
-		frame.frame[1] = 0x60;	//0x60;
-		frame.frame[2] = 0x40;
+		frame.structure.frame[1] = 0x60;	//0x60;
+		frame.structure.frame[2] = 0x40;
 
 		CostumeCANopenIO::Frame::MessageID messageID;
 
 		messageID.id = dictID;
 
-		frame.frame[3] = messageID.bytes[1];
-		frame.frame[4] = messageID.bytes[0];
-		frame.frame[5] = dictSubID;
+		frame.structure.frame[3] = messageID.bytes[1];
+		frame.structure.frame[4] = messageID.bytes[0];
+		frame.structure.frame[5] = dictSubID;
 
 		ret = trySend(costume, seqNumber, frame, 10, timeout_, 50);
 
@@ -173,12 +162,11 @@ public:
 			ret = tryReceive(costume, seqNumber, response, length, timeout_, 50, mf);
 
 			if (ret == CANopenSensor::OPERATION_OK){
-
 				int32_t ret = 0;
-				std::memcmp(response.data + 4, &ret, 4);
+				std::memcmp(response.structure.data + 4, &ret, 4);
 				ret = utils::EndianSwap(ret);
 
-				if (response.data[0] & 0x80){
+				if (response.structure.data[0] & 0x80){
 					errorCode = (CANopenSensor::ErrorCode)(ret);
 				}
 				else{
@@ -197,22 +185,22 @@ public:
 		CANopenSensor::OperationStatus ret = CANopenSensor::OPERATION_OK;
 
 		CostumeCANopenIO::Frame frame = { 0 };
-		frame.frame[0] = id;	//id czujnika
+		frame.structure.frame[0] = id;	//id czujnika
 		//offset dla identyfikatorów urz¹dzeñ
-		frame.frame[1] = 0x60;	//0x60;
+		frame.structure.frame[1] = 0x60;	//0x60;
 
 		switch (dataSize)
 		{
 		case CANopenSensor::Size1B:
-			frame.data[0] = 0x2F;
+			frame.structure.data[0] = 0x2F;
 			break;
 
 		case CANopenSensor::Size2B:
-			frame.data[0] = 0x2B;
+			frame.structure.data[0] = 0x2B;
 			break;
 
 		case CANopenSensor::Size4B:
-			frame.data[0] = 0x23;
+			frame.structure.data[0] = 0x23;
 			break;
 		}
 
@@ -220,13 +208,13 @@ public:
 
 		messageID.id = dictID;
 
-		frame.data[1] = messageID.bytes[1];
-		frame.data[2] = messageID.bytes[0];
-		frame.data[3] = dictSubID;
+		frame.structure.data[1] = messageID.bytes[1];
+		frame.structure.data[2] = messageID.bytes[0];
+		frame.structure.data[3] = dictSubID;
 
 		{
 			const auto d = in.data();
-			std::memcpy(frame.data + 4, &d, 4);
+			std::memcpy(frame.structure.data + 4, &d, 4);
 		}
 
 		ret = trySend(costume, seqNumber, frame, 10, timeout_, 50);
@@ -235,16 +223,15 @@ public:
 			SDOMessageFilter mf(0x580 | id);
 			CostumeCANopenIO::Frame response = { 0 };
 			unsigned int length = 0;
-			ret = tryReceive(costume, seqNumber, response, length, timeout_, 50, mf);
+			ret = tryReceive(costume, seqNumber, response, length, timeout_, 1000, mf);
 
 			if (ret == CANopenSensor::OPERATION_OK){
-
-				if (response.data[0] & 0x60){
+				if (response.structure.data[0] & 0x60){
 					errorCode = CANopenSensor::NO_ERROR;
 				}
 				else{
 					int32_t ret = 0;
-					std::memcmp(response.data + 4, &ret, 4);
+					std::memcmp(response.structure.data + 4, &ret, 4);
 					ret = utils::EndianSwap(ret);
 					errorCode = (CANopenSensor::ErrorCode)(ret);
 				}
@@ -261,9 +248,9 @@ private:
 	static const CostumeCANopenIO::Frame formatNMTFrame(const int8_t messageID, const int8_t nodeID = 0)
 	{
 		CostumeCANopenIO::Frame ret = { 0 };
-		ret.messageID.id = 0;
-		ret.data[0] = messageID;
-		ret.data[1] = nodeID;
+		ret.structure.messageID.id = 0;
+		ret.structure.data[0] = messageID;
+		ret.structure.data[1] = nodeID;
 
 		return ret;
 	}
@@ -354,29 +341,24 @@ private:
 CANopenSensor::CANopenSensor(CostumeRawIO * costume, const int8_t id, const unsigned int timeout)
 	: impl(new CANopenSensorImpl(costume, id, timeout))
 {
-
 }
 
 CANopenSensor::~CANopenSensor()
 {
-
 }
 
 //LSS
 /*
 const CANopenSensor::OperationStatus CANopenSensor::select(const bool select)
 {
-
 }
 
 const CANopenSensor::OperationStatus CANopenSensor::setID(const char id)
 {
-
 }
 
 const CANopenSensor::OperationStatus CANopenSensor::setSpeedLevel(const SpeedLevel speedLevel)
 {
-
 }
 */
 
@@ -422,7 +404,7 @@ const CANopenSensor::OperationStatus CANopenSensor::resetCommunication()
 	return impl->resetCommunication();
 }
 
-//SDO		
+//SDO
 const CANopenSensor::OperationStatus CANopenSensor::read(const int16_t dictID, IODataSize & dataSize, Buffer & data, ErrorCode & errorCode, const int8_t dictSubID) const
 {
 	return impl->read(dictID, dataSize, data, errorCode, dictSubID);
@@ -437,7 +419,11 @@ const CANopenSensor::Buffer CANopenSensor::formatIntegralData(const int32_t valu
 {
 	Buffer ret;
 
-	ret.data_ = utils::EndianSwap(value);
+	ret.data_ = value;
+
+#ifdef BOOST_BIG_ENDIAN
+	ret.data_ = utils::EndianSwap(ret.data_);
+#endif // BOOST_BIG_ENDIAN
 
 	return ret;
 }
@@ -452,7 +438,11 @@ const CANopenSensor::Buffer CANopenSensor::formatIntegralData(const float value,
 		uint32_t v;
 	} data;
 
-	data.u = utils::EndianSwap(value);
+	data.u = value;
+	
+#ifdef BOOST_BIG_ENDIAN
+	data.v = utils::EndianSwap(data.v);
+#endif // BOOST_BIG_ENDIAN	
 
 	ret.data_ = data.v;
 

@@ -56,10 +56,7 @@ public:
 
 public:
 
-	DataViewWidget(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext,		
-		hmdbCommunication::IDataSourcePerspective * perspective = nullptr,
-		hmdbCommunication::IDataSourceContent * content = nullptr,
-		hmdbCommunication::ShallowCopyFilter * filter = nullptr,
+	DataViewWidget(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext,
 		QWidget * parent = nullptr, Qt::WindowFlags f = 0);
 
 	virtual ~DataViewWidget();
@@ -150,8 +147,6 @@ private:
 	hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext_;	
 	Ui::DataViewWidget * ui;
 	IOperationPtr operation_;
-	bool delPerspective;
-	bool delContent;
 	std::map<hmdbCommunication::DataStatus, QIcon> icons;
 };
 

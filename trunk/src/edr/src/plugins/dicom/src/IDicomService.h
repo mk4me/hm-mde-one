@@ -11,29 +11,13 @@
 
 #include <string>
 #include <corelib/IService.h>
-#include <hmdbserviceslib/Entity.h>
-#include <corelib/HierarchyDataItem.h>
 
 namespace dicom
 {
 	class IDicomService : public plugin::IService
 	{
 	public:
-
-		struct AnnotationStatus {
-			hmdbServices::xmlWsdl::AnnotationStatus::Type status;
-			std::string comment;
-			std::string note;
-		};
-
-	public:
 		virtual ~IDicomService() {}
-
-		virtual const AnnotationStatus annotationStatus(const std::string & user, const int trialID) const = 0;
-
-		virtual void setAnnotationStatus(const std::string & user, const int trialID,
-			const hmdbServices::xmlWsdl::AnnotationStatus::Type status,
-			const std::string & comment) = 0;
 
 		virtual void updateItemIcon(const std::string& filename, const QIcon& icon) = 0;
 	};

@@ -448,6 +448,7 @@ void SourceOptionsWidget::onLogin()
 				}
 
 				message = tr("Logged successfully");
+				hmdbSource->registerShallowContext(scc);
 			}
 		}
 	}

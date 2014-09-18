@@ -79,20 +79,6 @@ namespace hmdbCommunication
 		virtual void rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const ShallowCopy & shallowCopy);
 	};
 
-	//! Perspektywa medusy - tylko sesje
-	class DataSourceMedusaPerspective : public IDataSourcePerspective
-	{
-	public:
-		DataSourceMedusaPerspective();
-		virtual ~DataSourceMedusaPerspective();
-
-		virtual const QString name() const;
-		virtual void defaultHeaders(QStringList & headers) const;
-		virtual void rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const ShallowCopy & shallowCopy);
-
-		virtual const bool headers(const QTreeWidgetItem * item, QStringList & headers) const;
-	};
-
 	//! Perspektywa chorób - pacjenci pojawiają się kilka razy w zależności od choroby
 	class DataSourceDisorderPerspective : public IDataSourcePerspective
 	{

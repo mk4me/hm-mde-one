@@ -104,28 +104,34 @@ namespace hmdbCommunication
 		//! \return Manager widowkow
 		virtual const IHMDBSourceViewManager * viewManager() const;
 
-		/*
-		//! \return Iloœæ obs³ugiwanych kontekstów danych
-		virtual const unsigned int size() const;
-		//! \param idx Indeks kontekstu danych
-		//! \return Konteks danych dla zadanego indeksu
-		virtual IHMDBSourceContext * sourceContext(const unsigned int idx);
-		//! \param idx Indeks kontekstu danych
-		//! \return Konteks danych dla zadanego indeksu
-		virtual const IHMDBSourceContext * sourceContext(const unsigned int idx) const;
-		*/
-		//! \param data Dane
-		//! \return Konteks danych lub nullptr jeœli nie znaleziono
-		//virtual IHMDBSourceContext * sourceContextForData(core::VariantConstPtr data);
-		//! \param data Dane
-		//! \return Konteks danych lub nullptr jeœli nie znaleziono
-		//virtual const IHMDBSourceContext * sourceContextForData(core::VariantConstPtr data) const;
+		//! \param data Dane dla których szukamy kontekstu Ÿród³a
+		//! \return Konteks Ÿród³a dla danych
+		virtual const IHMDBSourceContextPtr sourceContextForData(const core::VariantConstPtr data) const;
+		//! \param data Dane dla których szukamy kontekstu p³ytkiej kopii
+		//! \return Konteks p³ytkiej kopii dla danych
+		virtual const IHMDBShallowCopyContextPtr shallowContextForData(const core::VariantConstPtr data) const;
+		//! \param data Dane dla których szukamy kontekstu Ÿród³a
+		//! \return Konteks Ÿród³a dla danych
+		virtual const IHMDBSourceContextPtr sourceContextForData(const void * data) const;
+		//! \param data Dane dla których szukamy kontekstu p³ytkiej kopii
+		//! \return Konteks p³ytkiej kopii dla danych
+		virtual const IHMDBShallowCopyContextPtr shallowContextForData(const void * data) const;
+
+		//! \param sourceContext Konteks Ÿród³a dla danych		
+		virtual void registerSourceContext(const IHMDBSourceContextPtr sourceContext);
+		//! \param shallowContext Konteks p³ytkiej kopii dla danych		
+		virtual void registerShallowContext(const IHMDBShallowCopyContextPtr shallowContext);
 
 	private:
 		//! Widget
 		HMDBSourceWidget * mainWidget;
 		//! Obiekt synchronizuj¹cy
 		mutable threadingUtils::RecursiveSyncPolicy sync_;
+		//! Lista kontekstów p³ytkiej kopii
+		mutable std::list<IHMDBSourceContextWeakPtr> sourceContexts_;
+		//! Lista kontekstów p³ytkiej kopii
+		mutable std::list<IHMDBShallowCopyContextWeakPtr> shallowContexts_;
+
 		//! Lista kontekstów danych
 		//std::list<IHMDBSourceContext*> sourceContexts_;
 		//! Manager pamiêci

@@ -13,6 +13,15 @@
 #include "BackgroundLayer.h"
 #include "DicomInternalStruct.h"
 #include "PointsLayer.h"
+#include <plugins/hmdbCommunication/IHMDBSession.h>
+#include <corelib/IPlugin.h>
+#include <hmdbserviceslib/IAuthorizationWS.h>
+#include <hmdbserviceslib/Entity.h>
+#include <plugins/hmdbCommunication/IHMDBSource.h>
+#include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
+#include <corelib/ISourceManager.h>
+#include "DicomPerspective.h"
+//#include "AnnotationStatusFilter.h"
 
 using namespace dicom;
 
@@ -59,7 +68,7 @@ void DicomSource::init( core::IMemoryDataManager * memoryDM, core::IStreamDataMa
 
 bool DicomSource::lateInit()
 {
-    return true;
+	return true;
 }
 
 void DicomSource::finalize()
@@ -99,7 +108,35 @@ void DicomSource::addFile( const core::Filesystem::Path& path )
     hierarchyTransaction->addRoot(root);
 }
 
+const bool DicomSource::userIsReviewer(hmdbCommunication::IHMDBSession * session)
+{
+	bool ret = false;
 
+	if (session != nullptr){
+		try{
+			auto ret = session->authorization()->listMyUserGroupsAssigned();
+			auto userGroups = hmdbServices::xmlWsdl::parseUserGroups(ret);
+			auto it = std::find_if(userGroups.begin(), userGroups.end(), [](const hmdbServices::xmlWsdl::UserGroup & ug)
+			{
+				if (ug.id == 11){
+					return true;
+				}
+
+				return false;
+			});
+
+			if (it != userGroups.end()){
+				ret = true;
+			}
+
+		}
+		catch (...){
+
+		}
+	}
+
+	return ret;
+}
 
 template <class Helper>
 core::IHierarchyItemPtr DicomSource::transactionPart( const core::Filesystem::Path &path, const QString& desc,

@@ -4,10 +4,11 @@
 	author:	  Mateusz Janiak
 
 	purpose:
-*********************************************************************/
+	*********************************************************************/
 #ifndef __HEADER_GUARD_IMU_COSTUME__COSTUMERAWIO_H__
 #define __HEADER_GUARD_IMU_COSTUME__COSTUMERAWIO_H__
 
+#include <imucostumelib/Export.h>
 #include <cstdint>
 #include <string>
 #include <utils/SmartPtr.h>
@@ -15,7 +16,7 @@
 
 namespace imuCostume
 {
-	class CostumeRawIO
+	class IMUCOSTUME_EXPORT CostumeRawIO
 	{
 	private:
 

@@ -66,9 +66,14 @@ public:
 	}
 
 	//! \return Czy dane o które pytamy pochodza z tego Ÿród³a
-	virtual const bool isMyData(core::VariantConstPtr data) const
+	virtual const bool isMyData(const core::VariantConstPtr data) const
 	{
 		return localContext->rawIsMyData(data, mdm);
+	}
+
+	virtual const bool isMyData(const void * data) const
+	{
+		return localContext->isMyData(data);
 	}
 
 	//! \param fileName Nazwa pliku ze storage
@@ -185,27 +190,28 @@ const IHMDBDataContextConstPtr HMDBLocalContext::dataContext() const
 	return dataContext_;
 }
 
-const bool HMDBLocalContext::isMyData(core::VariantConstPtr data) const
+const bool HMDBLocalContext::isMyData(const core::VariantConstPtr data) const
 {
-	//threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
+	return rawIsMyData(data, mdm->transaction());
+}
+
+const bool HMDBLocalContext::isMyData(const void * data) const
+{
 	return rawIsMyData(data, mdm->transaction());
 }
 
 const core::ConstVariantsList HMDBLocalContext::data(const std::string & fileName) const
 {
-	//threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);	
 	return rawData(fileName, sdm->transaction());
 }
 
 const bool HMDBLocalContext::load(const std::string & fileName)
 {
-	//threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
 	return rawLoad(fileName, sdm->transaction());
 }
 
 const bool HMDBLocalContext::unload(const std::string & fileName)
 {
-	//threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
 	return rawUnload(fileName, sdm->transaction());
 }
 
@@ -216,13 +222,11 @@ const bool HMDBLocalContext::isLoaded(const std::string & fileName) const
 
 const bool HMDBLocalContext::load(const core::VariantPtr data)
 {
-	//threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
 	return rawLoad(data, mdm->transaction());
 }
 
 const bool HMDBLocalContext::unload(const core::VariantConstPtr data)
 {
-	//threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
 	return rawUnload(data, mdm->transaction());
 }
 
@@ -309,9 +313,23 @@ const bool HMDBLocalContext::rawUnload(const core::VariantConstPtr data, const c
 	return ret;
 }
 
-const bool HMDBLocalContext::rawIsMyData(core::VariantConstPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction) const
+const bool HMDBLocalContext::rawIsMyData(const core::VariantConstPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction) const
 {	
 	return std::find(myData_.begin(), myData_.end(), data) != myData_.end();
+}
+
+const bool HMDBLocalContext::rawIsMyData(const void * data, const core::IMemoryDataManager::TransactionPtr memoryTransaction) const
+{
+	auto it = std::find_if(myData_.begin(), myData_.end(), [=](const core::VariantConstPtr d) -> bool {
+		if (d->getRawPtr() == data){
+			return true;
+		}
+
+		return false;
+	});
+
+
+	return it != myData_.end();
 }
 
 const core::ConstVariantsList HMDBLocalContext::rawData(const std::string & fileName, const core::IStreamDataManager::TransactionPtr streamTransaction) const

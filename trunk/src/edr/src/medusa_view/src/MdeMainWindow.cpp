@@ -29,8 +29,184 @@
 #include <corelib/Version.h>
 #include <plugins/medusaExporter/IMedusaExporterService.h>
 #include <plugins/hmdbCommunication/IHMDBSource.h>
+#include <plugins/hmdbCommunication/IHMDBSource.h>
+#include <plugins/hmdbCommunication/DataViewWidget.h>
+#include <plugins/hmdbCommunication/OperationProgressWidget.h>
+#include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
+#include <plugins/hmdbCommunication/IDataSourcePerspective.h>
+#include <corelib/PluginCommon.h>
+#include <plugins/hmdbCommunication/GeneralSourceViewWidget.h>
+#include <plugins/hmdbCommunication/DataViewWidget.h>
+#include <plugins/hmdbCommunication/DataViewConfigurationWidget.h>
+#include <plugins/hmdbCommunication/ShallowCopyFilter.h>
+#include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
+#include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
+#include <plugins/dicom/AnnotationStatusFilter.h>
 
 using namespace core;
+
+class MEDUSAHMDBSourceView : public hmdbCommunication::IHMDBSourceViewManager::IHMDBSourceContextView
+{
+public:
+	//! \return Nazwa widoku
+	virtual const QString name() const { return QObject::tr("MEDUSA view"); }
+	//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych jakim zasilamy widok
+	//! \return Widok obs³uguj¹cy kontekst
+	virtual QWidget * createView(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext, hmdbCommunication::IHMDBSourceViewManager * viewManager) {
+
+		auto ret = new GeneralSourceViewWidget(shallowCopyContext);
+		auto config = ret->dataViewConfiguration();
+
+		config->setPerspectiveVisible(false);
+		config->setContentVisible(false);
+		config->setFilterVisible(true);	
+
+		config->registerFilter(nullptr);
+		
+		auto fs = viewManager->filtersCount(name());
+		if (fs > 0){
+			config->addFilterSeparator();
+		}
+
+		for (unsigned int i = 0; i < fs; ++i){
+			auto f = viewManager->filter(i, name())->create(shallowCopyContext->shallowCopyRemoteContext()->remoteContext()->session().get());
+			config->registerFilter(f);
+		}
+
+		hmdbCommunication::IDataSourcePerspective * perspective = nullptr;
+		hmdbCommunication::IDataSourceContent * content = nullptr;
+
+		if (viewManager->perspectivesCount(name()) > 0){
+			perspective = viewManager->perspective(0, name());
+		}
+		else if (viewManager->perspectivesCount() > 0){
+			perspective = viewManager->perspective(0);
+		}
+
+		ret->dataView()->setPerspective(perspective);
+
+		if (viewManager->contentsCount(name()) > 0){
+			content = viewManager->content(0, name());
+		}
+		else if (viewManager->contentsCount() > 0){
+			content = viewManager->content(0);
+		}
+
+		ret->dataView()->setContent(content);
+
+		return ret;
+	}
+	//! \return Czy dany widok wymaga po³¹czenia z us³ugami webowymi
+	virtual const bool requiresRemoteContext() const { return true; }
+};
+
+//! Perspektywa medusy - tylko sesje
+class MEDUSAPerspective : public hmdbCommunication::IDataSourcePerspective
+{
+public:
+
+	MEDUSAPerspective()
+	{
+
+	}
+
+	virtual ~MEDUSAPerspective()
+	{
+
+	}
+
+	virtual void defaultHeaders(QStringList & headers) const
+	{
+		headers << QObject::tr("Sessions");
+	}
+
+	virtual const QString name() const
+	{
+		return QObject::tr("Sessions only");
+	}
+
+	virtual void rebuildPerspective(QTreeWidgetItem * treeWidgetItem, const hmdbCommunication::ShallowCopy & shallowCopy)
+	{
+		std::multimap<hmdbServices::ID, hmdbCommunication::TreeWidgetContentItem*> sessionItems;
+		std::list<hmdbCommunication::TreeWidgetContentItem*> unrecognizedSessionItems;
+
+		auto subjectsITEnd = shallowCopy.motionShallowCopy.performers.end();
+		for (auto subjectIT = shallowCopy.motionShallowCopy.performers.begin(); subjectIT != subjectsITEnd; ++subjectIT){
+			//jeœli pusty pacjent to go pomijamy
+			if (subjectIT->second->performerConfs.empty() == true){
+				continue;
+			}
+
+			auto perfConfsITEnd = subjectIT->second->performerConfs.end();
+			for (auto perfConfIT = subjectIT->second->performerConfs.begin(); perfConfIT != perfConfsITEnd; ++perfConfIT){
+				if (perfConfIT->second->session->trials.empty() == true){
+					continue;
+				}
+
+				//generuje item sesji
+				auto sessionItem = new hmdbCommunication::TreeWidgetContentItem(hmdbCommunication::SessionContent, perfConfIT->second->session->sessionID);
+
+				const auto sNumber = sessionLocalNumebr(perfConfIT->second->session->sessionName);
+
+				if (sNumber > -1){
+					sessionItems.insert(std::multimap<hmdbServices::ID, hmdbCommunication::TreeWidgetContentItem*>::value_type(sNumber, sessionItem));
+				}
+				else{
+					unrecognizedSessionItems.push_back(sessionItem);
+				}
+
+				auto motionsITEnd = perfConfIT->second->session->trials.end();
+				for (auto motionIT = perfConfIT->second->session->trials.begin(); motionIT != motionsITEnd; ++motionIT){
+					if (motionIT->second->files.empty() == true){
+						continue;
+					}
+
+					//generuje item motiona
+					auto motionItem = new hmdbCommunication::TreeWidgetContentItem(hmdbCommunication::MotionContent, motionIT->second->trialID);
+
+					sessionItem->addChild(motionItem);
+				}
+			}
+		}
+
+		for (auto it = sessionItems.begin(); it != sessionItems.end(); ++it){
+			treeWidgetItem->addChild(it->second);
+		}
+
+		for (auto it = unrecognizedSessionItems.begin(); it != unrecognizedSessionItems.end(); ++it){
+			treeWidgetItem->addChild(*it);
+		}
+	}
+
+	const bool MEDUSAPerspective::headers(const QTreeWidgetItem * item, QStringList & headers) const
+	{
+		headers << QObject::tr("Database");
+		return true;
+	}
+
+private:
+
+	static const int sessionLocalNumebr(const std::string & sessionName)
+	{
+		int ret = -1;
+
+		auto sIdx = sessionName.find("-S");
+		if (sIdx != std::string::npos){
+			sIdx += 2;
+			const auto indexString = sessionName.substr(sIdx, sessionName.size() - sIdx);
+			if (indexString.empty() == false){
+				try{
+					ret = boost::lexical_cast<int>(indexString);
+				}
+				catch (...){
+
+				}
+			}
+		}
+
+		return ret;
+	}
+};
 
 MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations, const std::string & appName)
 	: coreUI::CoreMainWindow(closeUpOperations), coreUI::SingleInstanceWindow(appName),
@@ -83,6 +259,42 @@ void MdeMainWindow::customViewInit(QWidget * console)
 
    utils::shared_ptr<hmdbCommunication::IHMDBSource> icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
    plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(icomm);
+
+
+   if (icomm != nullptr){
+	   auto vm = icomm->viewManager();
+	   auto hmdbView = new MEDUSAHMDBSourceView;
+
+	   vm->registerViewPrototype(hmdbView);
+
+	   {
+		   hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration ccfg;
+		   ccfg.name = tr("Default PJWSTK MEDUSA data connection");
+		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
+		   ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
+		   ccfg.motionServicesConfiguration.userConfiguration.user = "test-student";
+		   ccfg.motionServicesConfiguration.userConfiguration.password = "test-Medusa";
+		   ccfg.motionServicesConfiguration.serviceConfiguration.url = "https://v21.pjwstk.edu.pl/HMDB";
+		   ccfg.motionServicesConfiguration.serviceConfiguration.caPath = QString::fromStdString((plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string());
+
+		   ccfg.motionDataConfiguration.serviceConfiguration.url = "ftps://v21.pjwstk.edu.pl";
+		   ccfg.motionDataConfiguration.serviceConfiguration.caPath = "";
+		   ccfg.motionDataConfiguration.userConfiguration.user = "testUser";
+		   ccfg.motionDataConfiguration.userConfiguration.password = "testUser";
+
+		   vm->registerConfiguration(ccfg, hmdbView->name());
+	   }
+
+	   vm->registerPerspective(new MEDUSAPerspective, hmdbView->name());
+	   vm->registerContent(new MEDUSAPerspective, hmdbView->name());
+
+	   //dodajemy filtry dla adnotacji		
+	   auto as = QObject::tr("Annotation status");
+	   vm->registerFilter(new dicom::AnnotationStatusFilter(std::string((as + ": " + QObject::tr("in edition")).toStdString()), true, false, dicom::AnnotationStatusFilter::InEdition));
+	   vm->registerFilter(new dicom::AnnotationStatusFilter(std::string((as + ": " + QObject::tr("in verification")).toStdString()), true, false, dicom::AnnotationStatusFilter::InVerification));
+	   vm->registerFilter(new dicom::AnnotationStatusFilter(std::string((as + ": " + QObject::tr("verified")).toStdString()), true, false, dicom::AnnotationStatusFilter::Verified));
+   }
+
    
    auto sourceManager = plugin::getSourceManager();
    for (int i = 0; i < sourceManager->getNumSources(); ++i) {

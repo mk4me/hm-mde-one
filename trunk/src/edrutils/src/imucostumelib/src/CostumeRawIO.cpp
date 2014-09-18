@@ -10,8 +10,7 @@ class CostumeRawIO::CostumeRawIOImpl
 public:
 	CostumeRawIOImpl(const std::string & ip, const unsigned int port) :
 		ip_(ip), port_(port), io_service(), socket(io_service),
-		serverEndpoint(ip.empty() == true ? boost::asio::ip::address_v4::broadcast() :
-		boost::asio::ip::address::from_string(ip), port)
+		serverEndpoint(boost::asio::ip::address::from_string(ip), port)
 	{
 		boost::system::error_code error;
 		socket.open(boost::asio::ip::udp::v4(), error);
@@ -28,7 +27,6 @@ public:
 
 	~CostumeRawIOImpl()
 	{
-
 	}
 
 	const std::string ip() const
@@ -48,17 +46,14 @@ public:
 		bool transferOK = true;
 
 		if (timeout == 0){
-
 			try{
 				l = socket.receive_from(boost::asio::buffer(locFrame), serverEndpoint);
 			}
 			catch (...){
 				transferOK = false;
 			}
-
 		}
 		else{
-
 			boost::system::error_code ec = boost::asio::error::would_block;
 			//! Ograniczenie czasowe na odbiór danych
 			boost::asio::deadline_timer deadline(io_service);
@@ -75,6 +70,10 @@ public:
 				do {
 					io_service.run_one();
 				} while (ec == boost::asio::error::would_block);
+
+				if (ec == boost::asio::error::operation_aborted){
+					transferOK = false;
+				}
 			}
 			catch (...){
 				transferOK = false;
@@ -82,6 +81,8 @@ public:
 
 			deadline.cancel();
 		}
+
+		transferOK = transferOK && (l > 0);
 
 		if (transferOK == true){
 			length = l;
@@ -96,16 +97,13 @@ public:
 		std::size_t l = 0;
 
 		if (timeout == 0){
-
 			try{
 				l = socket.send_to(boost::asio::buffer(data, length), serverEndpoint);
 			}
 			catch (...){
-
 			}
 		}
 		else{
-
 			boost::system::error_code ec = boost::asio::error::would_block;
 			//! Ograniczenie czasowe na odbiór danych
 			boost::asio::deadline_timer deadline(io_service);
@@ -124,7 +122,6 @@ public:
 				} while (ec == boost::asio::error::would_block);
 			}
 			catch (...){
-
 			}
 
 			deadline.cancel();
@@ -179,14 +176,11 @@ private:
 CostumeRawIO::CostumeRawIO(const std::string & ip, const unsigned int port)
 	: impl(new CostumeRawIOImpl(ip, port))
 {
-
 }
 
 CostumeRawIO::~CostumeRawIO()
 {
-
 }
-
 
 const std::string CostumeRawIO::ip() const
 {

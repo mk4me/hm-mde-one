@@ -1,5 +1,5 @@
 #include "CommunicationPCH.h"
-#include "DataSourceDefaultContent.h"
+#include <plugins/hmdbCommunication/DataSourceDefaultContent.h>
 #include <QtCore/QObject>
 
 using namespace hmdbCommunication;

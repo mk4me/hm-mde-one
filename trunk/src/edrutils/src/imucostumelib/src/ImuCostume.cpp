@@ -10,20 +10,17 @@ static const unsigned int INSOLS_IN_COSTUME_COUNT = 2;
 //! Sta³a definiuj¹ca iloœæ sensorów w ramach jednego insole
 static const unsigned int SENSORS_COUNT_IN_INSOL = 4;
 
-
 //! Implementacja funkcjonalnoœci kostiumu
 class Costume::CostumeImpl
 {
 public:
 	CostumeImpl(CostumeRawIO * costume) : rawIO(costume)
 	{
-		
 	}
 
 	//! Destruktor
 	~CostumeImpl()
 	{
-
 	}
 
 	CostumeRawIO * costume() const
@@ -61,14 +58,14 @@ public:
 
 		return ret;
 	}
-	
+
 	//! \param timeout Maksymalny czas oczekiwania na dane [ms] (wartoœc 0 oznacza blokowanie w nieskoñczonoœæ)
 	//! \return Ramka danych kostiumu
 	const Costume::Frame read(const unsigned int timeout) const
 	{
-		CostumeRawIO::Frame rawFrame;
+		CostumeRawIO::Frame rawFrame = { 0 };
 		Costume::Frame ret;
-		ret.status = Costume::Frame::NO_FRAME;
+
 		uint16_t length = 0;
 		if (rawIO->receive(rawFrame, length, timeout) == true){
 			if (length == CostumeRawIO::MaxDataSize)
@@ -109,8 +106,6 @@ public:
 	static const std::list<Costume::Address> availableCostumes(const unsigned int listenTime)
 	{
 		std::list<Costume::Address> ret;
-
-
 
 		return ret;
 	}
@@ -175,6 +170,7 @@ private:
 			orient.x() = extractFloatFromPacket(frame, offset + 2);
 			orient.y() = extractFloatFromPacket(frame, offset + 4);
 			orient.z() = extractFloatFromPacket(frame, offset + 6);
+			orient /= orient.length();
 
 			localData.orientation = orient;
 		}
@@ -188,7 +184,8 @@ private:
 		Costume::InsoleRawData & insoleData)
 	{
 		Costume::InsoleRawData localData;
-		
+		localData.grfs.resize(SENSORS_COUNT_IN_INSOL);
+
 		for (unsigned int i = 0; i < SENSORS_COUNT_IN_INSOL; ++i)
 		{
 			osg::Vec3 force;
@@ -198,7 +195,7 @@ private:
 			force /= 1024.0f;
 
 			localData.grfs[i] = force;
-			offset += 8;			
+			offset += 8;
 		}
 
 		insoleData = localData;
@@ -207,7 +204,7 @@ private:
 	}
 
 private:
-	
+
 	mutable CostumeRawIO * rawIO;
 };
 
@@ -216,12 +213,10 @@ using namespace imuCostume;
 Costume::Costume(CostumeRawIO * costume)
 	: impl_(new CostumeImpl(costume))
 {
-
 }
 
 Costume::~Costume()
 {
-
 }
 
 const Costume::SensorsConfiguration Costume::sensorsConfiguration() const

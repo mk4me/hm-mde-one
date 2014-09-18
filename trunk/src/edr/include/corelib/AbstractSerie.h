@@ -18,6 +18,7 @@ namespace plugin {
     class CORELIB_EXPORT AbstractSerie : public plugin::IVisualizer::ISerie
     {
     public:
+		AbstractSerie();
         virtual ~AbstractSerie() {}
 
     public:

@@ -65,6 +65,8 @@ namespace dicom {
 		//! Usuwa serie z wizualizatora
 		//! \param serie seria do usuniêcia, musi nale¿eæ do wizualizatora i musi byæ przez niego stworzona
 		virtual void removeSerie(plugin::IVisualizer::ISerie *serie);
+		
+		static hmdbCommunication::IHMDBShallowCopyContext * remoteShallowContext(const plugin::IVisualizer::ISerie * serie);
 
 		virtual void setActiveSerie(plugin::IVisualizer::ISerie * serie);
 		virtual const plugin::IVisualizer::ISerie * getActiveSerie() const;

@@ -24,7 +24,9 @@ namespace hmdbCommunication
 		virtual ~IHMDBLocalContextOperations() {}
 
 		//! \return Czy dane o które pytamy pochodza z tego Ÿród³a
-		virtual const bool isMyData(core::VariantConstPtr data) const = 0;
+		virtual const bool isMyData(const core::VariantConstPtr data) const = 0;
+		//! \return Czy dane o które pytamy pochodza z tego Ÿród³a
+		virtual const bool isMyData(const void * data) const = 0;
 
 		//! \param fileName Nazwa pliku ze storage
 		//! \return Dane skojarzone z tym plikiem

@@ -8,11 +8,12 @@
 #ifndef __HEADER_GUARD_HMDBCOMMUNICATION__DATASOURCEDEFAULTCONTENT_H__
 #define __HEADER_GUARD_HMDBCOMMUNICATION__DATASOURCEDEFAULTCONTENT_H__
 
+#include <plugins/hmdbCommunication/Export.h>
 #include <plugins/hmdbCommunication/IDataSourceContent.h>
 
 namespace hmdbCommunication
 {
-	class DataSourceDefaultContent : public IDataSourceContent
+	class HMDBCOMMUNICATION_EXPORT DataSourceDefaultContent : public IDataSourceContent
 	{
 	public:
 		DataSourceDefaultContent();

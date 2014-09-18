@@ -9,37 +9,53 @@
 #ifndef HEADER_GUARD_DICOM__ANNOTATIONSTATUSFILTER_H__
 #define HEADER_GUARD_DICOM__ANNOTATIONSTATUSFILTER_H__
 
-//#include <plugins/hmdbCommunication/DataSourceFilter.h>
-#include <hmdbserviceslib/ShallowCopy.h>
+#include <plugins/dicom/Export.h>
+#include <plugins/hmdbCommunication/ShallowCopyFilter.h>
 #include <set>
 
 namespace dicom
 {
-	class AnnotationStatusFilter// : public ShallowCopyFilter
+	class PLUGIN_DICOM_EXPORT AnnotationStatusFilter : public hmdbCommunication::ShallowCopyFilter
 	{
 	public:
 		//! Zbiór identyfikatorów
 		typedef std::set<int> Identifiers;
+
+		enum GeneralStatus
+		{
+			InEdition,
+			InVerification,
+			Verified
+		};
 
 	public:
 		//! \param name Nazwa filtra
 		//! \param accept Czy dane maj¹ byæ akceptowane czy odrzucane jesli znajdziemy identyfikator
 		//! \param missingDefault Czy dane maj¹ byæ akceptowane czy odrzucane jesli nie znajdziemy identyfikator
 		//! \param identifiers Identyfikatory na których bêdzie operowa³ filtr
+		//! \param session Sesja zdalna
 		AnnotationStatusFilter(const std::string & name, const bool accept,
-			const bool missingDefault,
-			const Identifiers & identifiers = Identifiers());
+			const bool missingDefault, const GeneralStatus status, hmdbCommunication::IHMDBSession * session = nullptr);
 		//! Destruktor wirtualny
 		virtual ~AnnotationStatusFilter();
-
+		//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych
+		//! \return Filtr danych
+		virtual AnnotationStatusFilter * create(hmdbCommunication::IHMDBSession * session) const;
+		//! Metoda wywo³ywana przed filtrowaniem
+		virtual void beforeFiltering();
 		//! \return Nazwa fitlra
 		virtual std::string name() const;
-
 		//! Filtr dla motionów opisuj¹cych badania USG
 		virtual bool filterMotion(const hmdbServices::MotionShallowCopy::Trial* motion) const;
 
-		//! \param identifiers Identyfikatory na których bêdzie operowa³ filtr
-		void setIdentifiers(const Identifiers & identifiers);
+	private:
+		//! Metoda odœwie¿a identyfikatory
+		void refreshIdentifiers();
+
+		static void groupAnnotations(hmdbCommunication::IHMDBSession * session,
+			AnnotationStatusFilter::Identifiers & inEdition,
+			AnnotationStatusFilter::Identifiers & inVerification,
+			AnnotationStatusFilter::Identifiers & verified);
 
 	private:
 		//! Nazwa filtra
@@ -50,6 +66,12 @@ namespace dicom
 		const bool accept;
 		//! Czy akceptowaæ jeœli nie znajdziemy identyfikator
 		const bool missingDefault;
+		//! Sesja
+		hmdbCommunication::IHMDBSession * session;
+		//! Czas ostatniej aktualizacji
+		hmdbServices::DateTime lastUpdateTime;
+		//! Status
+		GeneralStatus status;
 	};
 }
 

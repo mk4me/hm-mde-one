@@ -70,5 +70,7 @@ private:
 DEFINE_SMART_POINTERS(DicomInternalStruct);
 }
 
+DEFINE_WRAPPER_INHERITANCE(dicom::DicomInternalStruct, dicom::IDicomInternalStruct);
+
 
 #endif

@@ -16,7 +16,7 @@ const bool CostumeCANopenIO::send(const int8_t seqNumber, const Frame & canOpenF
 	// mój unikalny identyfikator - dostanê go w potwierdzeniu
 	dataToTransmit[1] = seqNumber;
 	//przepisuje ramkê CANopen
-	std::memcpy(dataToTransmit.data()+2, canOpenFrame.frame, length);
+	std::memcpy(dataToTransmit.data() + 2, canOpenFrame.structure.frame, length);
 
 	return costume.send(dataToTransmit.data(), totalLength, timeout);
 }
@@ -29,14 +29,14 @@ const bool CostumeCANopenIO::receive(const int8_t seqNumber, Frame & canOpenFram
 
 	bool res = costume.receive(localData, localLength, timeout);
 
-	if (res == true && (((localLength - 2) > Frame::MaxFrameSize) || (localData[0] != 0x81)
-		|| (localData[1] != seqNumber))){
+	if (res == true && ((localLength < 2) || ((localLength - 2) > Frame::MaxFrameSize) ||
+		(localData[0] != CostumeRawIO::Frame::value_type(0x81)) || (localData[1] != CostumeRawIO::Frame::value_type(seqNumber)))){
 		res = false;
 	}
-	
+
 	if (res == true){
 		length = localLength - 2;
-		std::memcpy(canOpenFrame.frame, localData.data() + 2, length);
+		std::memcpy(canOpenFrame.structure.frame, localData.data() + 2, length);
 	}
 
 	return res;

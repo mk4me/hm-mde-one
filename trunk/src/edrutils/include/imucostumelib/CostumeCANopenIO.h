@@ -4,20 +4,21 @@
 	author:	  Mateusz Janiak
 
 	purpose:
-*********************************************************************/
+	*********************************************************************/
 #ifndef __HEADER_GUARD_IMU_COSTUME__COSTUMECANOPENIO_H__
 #define __HEADER_GUARD_IMU_COSTUME__COSTUMECANOPENIO_H__
 
+#include <imucostumelib/Export.h>
 #include <imucostumelib/CostumeRawIO.h>
 
 namespace imuCostume
 {
-	struct CostumeCANopenIO
+	struct IMUCOSTUME_EXPORT CostumeCANopenIO
 	{
 	public:
 
 		//! Typ opisuj¹cy ramke CANopen
-		union Frame
+		struct Frame
 		{
 			//! Minimalny rozmiar ramki [B]
 			static const int8_t MinFrameSize = 2;
@@ -33,17 +34,24 @@ namespace imuCostume
 			{
 				//! Ca³y identyfikator
 				int16_t id;
-				//! Identyfikator rozdzielony na poszczego³ne bajty
+				//! Identyfikator rozdzielony na poszczególne bajty
 				int8_t bytes[MessageIDFieldSize];
 			};
 
-			//! Pe³na ramka
-			int8_t frame[MaxFrameSize];
-			//! Sekcja identyfikatora wiadomoœci
-			MessageID messageID;
-			//! Sekcja danych
-			int8_t data[MaxDataFieldSize];
-		};		
+			//! Opis struktury ramki
+			union Structure
+			{
+				//! Pe³na ramka
+				int8_t frame[MaxFrameSize];
+				//! Sekcja identyfikatora wiadomoœci
+				MessageID messageID;
+				//! Sekcja danych
+				int8_t data[MaxDataFieldSize];
+			};
+
+			//! Struktura ramki
+			Structure structure;
+		};
 
 	public:
 		//! \param seqNumber Numer zawarty w komunikacie, powinien byæ równie¿ zawarty w odpowiadaj¹cej wiadomoœci zwrotnej

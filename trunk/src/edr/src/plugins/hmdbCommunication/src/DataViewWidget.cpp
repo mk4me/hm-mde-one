@@ -8,7 +8,7 @@
 #include <boost/bind.hpp>
 #include <corelib/IThreadPool.h>
 #include "DataSourcePerspective.h"
-#include "DataSourceDefaultContent.h"
+#include <plugins/hmdbCommunication/DataSourceDefaultContent.h>
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <plugins/hmdbCommunication/IHMDBLocalContext.h>
 #include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
@@ -214,26 +214,13 @@ const QIcon DataViewWidget::statusIcon(const DataStatus dataStatus)
 }
 
 DataViewWidget::DataViewWidget(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext,
-	hmdbCommunication::IDataSourcePerspective * perspective,
-	hmdbCommunication::IDataSourceContent * content,
-	hmdbCommunication::ShallowCopyFilter * filter,
 	QWidget * parent, Qt::WindowFlags f) : QWidget(parent, f), ui(new Ui::DataViewWidget),
-	perspective_(perspective), content_(content), filter_(filter),
-	shallowCopyContext_(shallowCopyContext), delPerspective(false)
+	perspective_(nullptr), content_(nullptr), filter_(nullptr),
+	shallowCopyContext_(shallowCopyContext)
 {
 	ui->setupUi(this);
 
 	initializeActions();
-
-	if (perspective_ == nullptr){
-		perspective_ = new hmdbCommunication::DataSourcePatientPerspective;
-		delPerspective = true;
-	}
-
-	if (content_ == nullptr){
-		content_ = new hmdbCommunication::DataSourceDefaultContent;
-		delContent = true;
-	}
 
 	setDefaultPerspectiveHeaders();	
 
@@ -249,14 +236,6 @@ DataViewWidget::DataViewWidget(hmdbCommunication::IHMDBShallowCopyContextPtr sha
 
 DataViewWidget::~DataViewWidget()
 {
-	if (delPerspective == true && perspective_ != nullptr){
-		delete perspective_;
-	}
-
-	if (delContent == true && content_ != nullptr){
-		delete content_;
-	}
-
 	if (remoteOperationThread != nullptr && remoteOperationThread->running() == true){
 		remoteOperationThread->join();
 	}
@@ -372,7 +351,7 @@ void DataViewWidget::noShallowCopyInStorage()
 void DataViewWidget::rebuildPerspective()
 {
 	ui->treeWidget->clear();
-	if (shallowCopy_ != nullptr){
+	if (shallowCopy_ != nullptr && perspective_ != nullptr && content_ != nullptr){
 		coreUI::CoreCursorChanger cc;		
 		perspective_->rebuildPerspective(ui->treeWidget->invisibleRootItem(), *shallowCopy_);		
 		refreshCurrentContent(true);
@@ -384,7 +363,7 @@ void DataViewWidget::rebuildPerspective()
 
 void DataViewWidget::refreshContent()
 {
-	if (shallowCopy_ != nullptr){
+	if (shallowCopy_ != nullptr && perspective_ != nullptr && content_ != nullptr){
 		coreUI::CoreCursorChanger cc;		
 		refreshCurrentContent(true);
 	}
@@ -538,28 +517,24 @@ const hmdbCommunication::DataStatus DataViewWidget::refrshItemContent(QTreeWidge
 void DataViewWidget::setDefaultPerspectiveHeaders()
 {
 	QStringList headers;
-	perspective_->defaultHeaders(headers);
+	if (perspective_ != nullptr){
+		perspective_->defaultHeaders(headers);
+	}
+	else{
+		headers << tr("Data");
+	}
+
 	ui->treeWidget->setHeaderLabels(headers);
 }
 
 void DataViewWidget::setPerspective(hmdbCommunication::IDataSourcePerspective * perspective)
 {
-	if (delPerspective == true && perspective_ != nullptr){
-		delete perspective_;
-		delPerspective = false;
-	}
-
 	perspective_ = perspective;
 	rebuildPerspective();
 }
 
 void DataViewWidget::setContent(hmdbCommunication::IDataSourceContent * content)
 {
-	if (delContent == true && content_ != nullptr){
-		delete content_;
-		delContent = false;
-	}
-
 	content_ = content;
 	refreshContent();
 }
@@ -1189,7 +1164,9 @@ void DataViewWidget::setShallowCopy(const hmdbCommunication::ShallowCopyConstPtr
 void DataViewWidget::rawFilterShallowCopy()
 {
 	hmdbCommunication::ShallowCopyPtr newShallowCopy(new hmdbCommunication::ShallowCopy);
+	filter_->beforeFiltering();
 	::filterShallowCopy(*shallowCopy_, *newShallowCopy, filter_);
+	filter_->afterFiltering();
 	shallowCopy_ = newShallowCopy;
 	tryRebuildDataStatus();	
 }

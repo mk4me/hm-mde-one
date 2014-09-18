@@ -22,7 +22,6 @@ SET_PRIVATE_HEADERS(
 	VisualizerEventFilter.h
     MdeServiceWindow.h
 	MdePCH.h
-	IMUSourceViewWidget.h
 )
 
 SET_SOURCE_FILES (
@@ -44,7 +43,6 @@ SET_SOURCE_FILES (
 	VisualizerEventFilter.cpp
     MdeServiceWindow.cpp
 	MdePCH.cpp
-	IMUSourceViewWidget.cpp
 )
 
 SET_MOC_FILES(
@@ -62,14 +60,12 @@ SET_MOC_FILES(
 	AnalysisTreeContext.h
 	SummaryWindow.h
     MdeServiceWindow.h
-	IMUSourceViewWidget.h
 )
 
 SET_UI_FILES(
 	AboutDialog.ui
 	toolboxmaindeffile.ui
 	AnalisisWidget.ui
-	IMUSourceViewWidget.ui
 )
 
 SET_RC_FILES (

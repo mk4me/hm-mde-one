@@ -8,6 +8,7 @@ SET_PUBLIC_HEADERS (
 	IDicomInternalStruct.h
 	Annotations.h
 	ValueLayer.h
+	AnnotationStatusFilter.h
 )
 
 SET_PRIVATE_HEADERS (
@@ -40,7 +41,6 @@ SET_PRIVATE_HEADERS (
 	LayersXmlParser.h
 	InternalXmlParser.h
     qstring_serialization.h
-	AnnotationStatusFilter.h
 )
 
 SET_SOURCE_FILES(

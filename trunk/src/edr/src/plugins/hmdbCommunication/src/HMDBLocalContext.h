@@ -47,7 +47,9 @@ namespace hmdbCommunication
 	//! ------------- Operacje --------------------------------
 
 		//! \return Czy dane o które pytamy pochodza z tego Ÿród³a
-		virtual const bool isMyData(core::VariantConstPtr data) const;
+		virtual const bool isMyData(const core::VariantConstPtr data) const;
+		//! \return Czy dane o które pytamy pochodza z tego Ÿród³a
+		virtual const bool isMyData(const void * data) const;
 		//! \param fileName Nazwa pliku z p³ytkiej kopii bazy danych
 		//! \return Za³adanowane dane z pliku
 		virtual const core::ConstVariantsList data(const std::string & fileName) const;
@@ -83,7 +85,8 @@ namespace hmdbCommunication
 		const bool rawLoad(const core::VariantPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction);
 		const bool rawUnload(const core::VariantConstPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction);
 
-		const bool rawIsMyData(core::VariantConstPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction) const;
+		const bool rawIsMyData(const core::VariantConstPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction) const;
+		const bool rawIsMyData(const void * data, const core::IMemoryDataManager::TransactionPtr memoryTransaction) const;
 
 		const bool rawIsLoaded(const std::string & fileName, const core::IStreamDataManager::TransactionPtr streamTransaction) const;
 

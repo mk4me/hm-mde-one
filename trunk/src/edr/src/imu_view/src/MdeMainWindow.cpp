@@ -29,7 +29,8 @@
 #include <plugins/hmdbCommunication/IDataSourcePerspective.h>
 #include <corelib/PluginCommon.h>
 #include <corelib/IPath.h>
-#include "IMUSourceViewWidget.h"
+#include <plugins/hmdbCommunication/GeneralSourceViewWidget.h>
+#include <plugins/hmdbCommunication/DataViewConfigurationWidget.h>
 
 using namespace core;
 
@@ -80,6 +81,8 @@ public:
 	//! \return Widok obs³uguj¹cy kontekst
 	virtual QWidget * createView(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext, hmdbCommunication::IHMDBSourceViewManager * viewManager) {
 
+		auto ret = new GeneralSourceViewWidget(shallowCopyContext);
+
 		hmdbCommunication::IDataSourcePerspective * perspective = nullptr;
 		hmdbCommunication::IDataSourceContent * content = nullptr;
 
@@ -90,6 +93,8 @@ public:
 			perspective = viewManager->perspective(0);
 		}
 
+		ret->dataView()->setPerspective(perspective);
+
 		if (viewManager->contentsCount(name()) > 0){
 			content = viewManager->content(0, name());
 		}
@@ -97,7 +102,11 @@ public:
 			content = viewManager->content(0);
 		}
 
-		return new IMUSourceViewWidget(shallowCopyContext, perspective, content);
+		ret->dataView()->setContent(content);
+
+		ret->dataViewConfiguration()->setVisible(false);
+
+		return ret;
 	}
 	//! \return Czy dany widok wymaga po³¹czenia z us³ugami webowymi
 	virtual const bool requiresRemoteContext() const { return true; }

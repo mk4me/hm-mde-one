@@ -38,24 +38,39 @@ dicom::LayersVectorConstPtr resolveLocalXml( const fs::Path& xmlPath, dicom::Lay
     return layersVector;
 }
 
-std::string getUserName()
+std::string getUserName(const void * data)
 {
-	/*
-    hmdbCommunication::ICommunicationDataSourcePtr comm = core::querySource<hmdbCommunication::ICommunicationDataSource>(plugin::getSourceManager());
-    const hmdbCommunication::IUser* usr = comm->currentUser();
-    return usr->name();
-	*/
+    auto comm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
+	if (comm != nullptr){
+		auto shallowCtx = comm->shallowContextForData(data);
+		if (shallowCtx != nullptr){
+			return shallowCtx->shallowCopyLocalContext()->localContext()->dataContext()->userName();
+		}
+	}
+
+	return std::string();
+}
+
+std::string getUserName(const core::VariantConstPtr data)
+{
+	auto comm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
+	if (comm != nullptr){
+		auto shallowCtx = comm->shallowContextForData(data);
+		if (shallowCtx != nullptr){
+			return shallowCtx->shallowCopyLocalContext()->localContext()->dataContext()->userName();
+		}
+	}
 
 	return std::string();
 }
 
 core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::SubjectPtr subject )
 {
-    std::string name = getUserName();
+    std::string name = getUserName(subject.get());
 
 	auto comm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
     
-    fs::Path tmpDir = plugin::getUserDataPath() / std::string( "MEDUSA/tmp");
+    fs::Path tmpDir = plugin::getUserDataPath() / "MEDUSA" / "tmp";
     if (!fs::pathExists(tmpDir)) {
         fs::createDirectory(tmpDir);
     }
@@ -192,7 +207,7 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 {
     UTILS_ASSERT(wrapper, "Item should be initialized");
     core::VariantPtr wrp = utils::const_pointer_cast<core::Variant>(wrapper);
-    std::string name = getUserName();
+    std::string name = getUserName(wrapper);
 	fs::Path realXmlFilename(boost::str(boost::format(xmlFilename) % name));
     wrp->setMetadata("DICOM_XML", realXmlFilename.string());
 	wrp->setMetadata("DICOM_XML_PATTERN", xmlFilename);
