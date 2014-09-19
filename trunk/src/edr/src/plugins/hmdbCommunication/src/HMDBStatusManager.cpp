@@ -237,12 +237,12 @@ void HMDBStatusManager::rawRebuild(const IHMDBStorageConstPtr storage, const Sha
 
 	{
 		auto t = plugin::getStreamDataManagerReader()->transaction();
-		auto sTransaction = storage->transaction();
+		auto keys = storage->transaction()->keys();
 
 		for (auto it = shallowCopy->motionShallowCopy.files.begin();
 			it != shallowCopy->motionShallowCopy.files.end(); ++it){
 
-			auto st = sTransaction->exists(it->second->fileName) == true ? DataStatus::Local : DataStatus::Remote;
+			auto st = keys.find(it->second->fileName) != keys.end() ? DataStatus::Local : DataStatus::Remote;
 			auto usage = DataStatus::Unloaded;
 			auto sName = core::IStreamManagerReader::streamName(storage->protocol(), it->second->fileName);
 			if (t->isManaged(sName) == true){

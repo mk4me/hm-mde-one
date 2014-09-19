@@ -12,7 +12,6 @@ DataViewConfigurationWidget::DataViewConfigurationWidget(QWidget * parent,
 	contents.reset(new ItemHelper<hmdbCommunication::IDataSourceContent>(ui->contentLabel, ui->contentComboBox));
 
 	filters->add(QObject::tr("No filter"));
-	contents->add(QObject::tr("Default content"));
 }
 
 DataViewConfigurationWidget::~DataViewConfigurationWidget()

@@ -9,30 +9,16 @@
 #ifndef HEADER_GUARD_HMDBCOMMUNICATION__DATASOURCEPERSPECTIVE_H__
 #define HEADER_GUARD_HMDBCOMMUNICATION__DATASOURCEPERSPECTIVE_H__
 
+#include <plugins/hmdbCommunication/Export.h>
 #include <plugins/hmdbCommunication/IDataSourcePerspective.h>
-#include <QtWidgets/QTreeWidget>
+
+class QTreeWidget;
 
 namespace hmdbCommunication
 {
-
-	//! Klasa widgeta drzewa, gdzie na prawy przycisk myszy nie ma zaznaczania danych w drzewie
-	class PerspectiveTreeWidget : public QTreeWidget
-	{
-		Q_OBJECT
-
-	public:
-
-		PerspectiveTreeWidget(QWidget * parent = nullptr);
-		virtual ~PerspectiveTreeWidget();
-
-	protected:
-
-		virtual void mousePressEvent(QMouseEvent *event);
-	};
-
 	//! Obiekt zarządzający perspektywą po stornie DataSource
 	//! Kontroluje czy perspektywa danych jest jeszcze ważna, jeśli nie to odświeża ją w razie potrzeby (czyści i przebudowuje)
-	class DataSourcePerspective
+	class HMDBCOMMUNICATION_EXPORT DataSourcePerspective
 	{
 	public:
 		//! Konstruktor
@@ -68,7 +54,7 @@ namespace hmdbCommunication
 	};
 
 	//! Perspektywa pacjenta pełna
-	class DataSourcePatientPerspective : public IDataSourcePerspective
+	class HMDBCOMMUNICATION_EXPORT DataSourcePatientPerspective : public IDataSourcePerspective
 	{
 	public:
 		DataSourcePatientPerspective();
@@ -80,7 +66,7 @@ namespace hmdbCommunication
 	};
 
 	//! Perspektywa chorób - pacjenci pojawiają się kilka razy w zależności od choroby
-	class DataSourceDisorderPerspective : public IDataSourcePerspective
+	class HMDBCOMMUNICATION_EXPORT DataSourceDisorderPerspective : public IDataSourcePerspective
 	{
 	public:
 		DataSourceDisorderPerspective();
@@ -92,7 +78,7 @@ namespace hmdbCommunication
 	};
 
 	//! Perspektywa płci
-	class DataSourceGenderPerspective : public IDataSourcePerspective
+	class HMDBCOMMUNICATION_EXPORT DataSourceGenderPerspective : public IDataSourcePerspective
 	{
 	public:
 		DataSourceGenderPerspective();

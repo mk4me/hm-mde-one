@@ -1,30 +1,39 @@
 #include "CommunicationPCH.h"
-#include "DataSourcePerspective.h"
+#include <plugins/hmdbCommunication/DataSourcePerspective.h>
+#include <QtWidgets/QTreeWidget>
 #include <QtGui/QMouseEvent>
 
 using namespace hmdbCommunication;
 
-PerspectiveTreeWidget::PerspectiveTreeWidget(QWidget * parent) : QTreeWidget(parent)
+class PerspectiveTreeWidget : public QTreeWidget
 {
-}
-
-PerspectiveTreeWidget::~PerspectiveTreeWidget()
-{
-}
-
-void PerspectiveTreeWidget::mousePressEvent(QMouseEvent *event)
-{
-	if (event->button() == Qt::LeftButton && event->modifiers() == Qt::ControlModifier){
-		auto item = itemAt(event->pos());
-
-		if (item == nullptr || item->isSelected() == true){
-			clearSelection();
-			return;
-		}
+public:
+	PerspectiveTreeWidget(QWidget * parent = nullptr)
+		: QTreeWidget(parent)
+	{
 	}
 
-	QTreeWidget::mousePressEvent(event);
-}
+	virtual ~PerspectiveTreeWidget()
+	{
+
+	}
+
+protected:
+
+	virtual void mousePressEvent(QMouseEvent *event)
+	{
+		if (event->button() == Qt::LeftButton && event->modifiers() == Qt::ControlModifier){
+			auto item = itemAt(event->pos());
+
+			if (item == nullptr || item->isSelected() == true){
+				clearSelection();
+				return;
+			}
+		}
+
+		QTreeWidget::mousePressEvent(event);
+	}
+};
 
 DataSourcePerspective::DataSourcePerspective(const hmdbCommunication::IDataSourcePerspectivePtr & perspective)
 : perspective_(perspective), treeWidget(new PerspectiveTreeWidget()), invalid_(true)

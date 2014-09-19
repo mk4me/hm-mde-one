@@ -7,12 +7,10 @@ SET_PRIVATE_HEADERS(
 	AntropometricDataWidget.h
 	DisordersDataWidget.h
 	PersonalDataWidget.h
-	DefaultPatientCardWidget.h
 	PatientCardManager.h
 	QMultiToolBox.h
 	ShallowCopyUtils.h
 	Patient.h
-	DataSourcePerspective.h
 	CommunicationPCH.h
 	TreeBuilder.h
 	WSDLPULLService.h
@@ -48,6 +46,8 @@ SET_PRIVATE_HEADERS(
 )
 
 SET_PUBLIC_HEADERS (
+	DataSourcePerspective.h
+	DefaultPatientCardWidget.h
 	DataSourceDefaultContent.h
 	IDataSourceContent.h
 	IPatientCard.h
@@ -146,7 +146,6 @@ SET_MOC_FILES(
 	DisordersDataWidget.h
 	NotesWidget.h
 	StatusWidget.h
-	DataSourcePerspective.h
 	ServerStatusWidget.h
 	SourceOptionsWidget.h
 	HMDBSourceWidget.h

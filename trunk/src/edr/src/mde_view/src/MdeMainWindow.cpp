@@ -21,8 +21,65 @@
 #include "AnalysisTab.h"
 #include "ui_toolboxmaindeffile.h"
 #include "MdeServiceWindow.h"
+#include <plugins/hmdbCommunication/IHMDBSource.h>
+#include <plugins/hmdbCommunication/IHMDBSource.h>
+#include <plugins/hmdbCommunication/DataViewWidget.h>
+#include <plugins/hmdbCommunication/OperationProgressWidget.h>
+#include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
+#include <plugins/hmdbCommunication/IDataSourcePerspective.h>
+#include <corelib/PluginCommon.h>
+#include <plugins/hmdbCommunication/GeneralSourceViewWidget.h>
+#include <plugins/hmdbCommunication/DataViewWidget.h>
+#include <plugins/hmdbCommunication/DataViewConfigurationWidget.h>
+#include <plugins/hmdbCommunication/ShallowCopyFilter.h>
+#include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
+#include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
+#include "MDEPerspectiveWidget.h"
+#include <plugins/hmdbCommunication/DataSourcePerspective.h>
+#include <plugins/hmdbCommunication/DataSourceDefaultContent.h>
 
 using namespace core;
+
+class MDEHMDBSourceView : public hmdbCommunication::IHMDBSourceViewManager::IHMDBSourceContextView
+{
+public:
+	//! \return Nazwa widoku
+	virtual const QString name() const { return QObject::tr("MDE view"); }
+	//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych jakim zasilamy widok
+	//! \return Widok obs³uguj¹cy kontekst
+	virtual QWidget * createView(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext, hmdbCommunication::IHMDBSourceViewManager * viewManager) {
+
+		auto ret = new MDEPerspectiveWidget(shallowCopyContext);
+		auto config = ret->generalDataView()->dataViewConfiguration();
+
+		auto fs = viewManager->filtersCount(name());
+		if (fs > 0){
+			config->addFilterSeparator();
+		}
+
+		for (unsigned int i = 0; i < fs; ++i){
+			auto f = viewManager->filter(i, name())->create(shallowCopyContext->shallowCopyRemoteContext()->remoteContext()->session().get());
+			config->registerFilter(f);
+		}
+
+		auto cs = viewManager->contentsCount(name());
+		for (int i = 0; i < cs; ++i){
+			auto c = viewManager->content(i, name());
+			config->registerContent(c);
+		}
+
+		auto ps = viewManager->perspectivesCount(name());
+		for (int i = 0; i < ps; ++i){
+			auto p = viewManager->perspective(i, name());
+			config->registerPerspective(p);
+		}
+
+		return ret;
+	}
+	//! \return Czy dany widok wymaga po³¹czenia z us³ugami webowymi
+	virtual const bool requiresRemoteContext() const { return true; }
+};
+
 
 MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations, const std::string & appName)
 	: coreUI::CoreMainWindow(closeUpOperations), coreUI::SingleInstanceWindow(appName),
@@ -70,6 +127,40 @@ void MdeMainWindow::customViewInit(QWidget * console)
  
    this->showFullScreen();
    this->setFixedSize(this->width(), this->height());
+
+   utils::shared_ptr<hmdbCommunication::IHMDBSource> icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
+   plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(icomm);
+
+
+   if (icomm != nullptr){
+	   auto vm = icomm->viewManager();
+	   auto hmdbView = new MDEHMDBSourceView;
+
+	   vm->registerViewPrototype(hmdbView);
+
+	   {
+		   hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration ccfg;
+		   ccfg.name = tr("Default PJWSTK MDE data connection");
+		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
+		   ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
+		   ccfg.motionServicesConfiguration.userConfiguration.user = "test_PJWSTK";
+		   ccfg.motionServicesConfiguration.userConfiguration.password = "PJtestP@ss";
+		   ccfg.motionServicesConfiguration.serviceConfiguration.url = "https://v21.pjwstk.edu.pl/HMDB";
+		   ccfg.motionServicesConfiguration.serviceConfiguration.caPath = QString::fromStdString((plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string());
+
+		   ccfg.motionDataConfiguration.serviceConfiguration.url = "ftps://v21.pjwstk.edu.pl";
+		   ccfg.motionDataConfiguration.serviceConfiguration.caPath = "";
+		   ccfg.motionDataConfiguration.userConfiguration.user = "testUser";
+		   ccfg.motionDataConfiguration.userConfiguration.password = "testUser";
+
+		   vm->registerConfiguration(ccfg, hmdbView->name());
+	   }
+
+	   vm->registerPerspective(new hmdbCommunication::DataSourcePatientPerspective, hmdbView->name());
+	   vm->registerPerspective(new hmdbCommunication::DataSourceGenderPerspective, hmdbView->name());
+	   vm->registerPerspective(new hmdbCommunication::DataSourceDisorderPerspective, hmdbView->name());
+	   vm->registerContent(new hmdbCommunication::DataSourceDefaultContent, hmdbView->name());
+   }
    
    auto sourceManager = plugin::getSourceManager();
    for (int i = 0; i < sourceManager->getNumSources(); ++i) {

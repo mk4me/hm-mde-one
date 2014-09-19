@@ -63,6 +63,9 @@ public:
 
 	IOperation * operation();
 
+	hmdbCommunication::ShallowCopyConstPtr currentShallowCopy() const;
+	hmdbCommunication::ShallowCopyConstPtr completeShallowCopy() const;
+
 public slots:
 
 	void selectItem(char type, int id);
@@ -101,9 +104,10 @@ signals:
 	void currentItemChanged(char currentType, int currentId, char previousType, int previousId);
 	void operationAboutToStart();
 	void operationFinished();
+	void shallowCopyChanged();
 
 private:
-	static void extractItem(const QTreeWidgetItem * item, char & id, char & type);
+	static void extractItem(const QTreeWidgetItem * item, int & id, char & type);
 
 	void doShallowCopyFiltering();
 	void rawFilterShallowCopy();
@@ -140,7 +144,8 @@ private:
 private:
 	core::IThreadPtr remoteOperationThread;
 	core::IThreadPtr filteringThread;
-	hmdbCommunication::ShallowCopyConstPtr shallowCopy_;
+	hmdbCommunication::ShallowCopyConstPtr currentShallowCopy_;
+	hmdbCommunication::ShallowCopyConstPtr completeShallowCopy_;
 	hmdbCommunication::IDataSourcePerspective * perspective_;
 	hmdbCommunication::IDataSourceContent * content_;
 	hmdbCommunication::ShallowCopyFilter * filter_;

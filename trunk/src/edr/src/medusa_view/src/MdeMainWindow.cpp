@@ -41,6 +41,7 @@
 #include <plugins/hmdbCommunication/ShallowCopyFilter.h>
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
+#include <plugins/hmdbCommunication/DataSourceDefaultContent.h>
 #include <plugins/dicom/AnnotationStatusFilter.h>
 
 using namespace core;
@@ -284,7 +285,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
 	   }
 
 	   vm->registerPerspective(new MEDUSAPerspective, hmdbView->name());
-	   vm->registerContent(new MEDUSAPerspective, hmdbView->name());
+	   vm->registerContent(new hmdbCommunication::DataSourceDefaultContent, hmdbView->name());
 
 	   //dodajemy filtry dla adnotacji		
 	   auto as = QObject::tr("Annotation status");

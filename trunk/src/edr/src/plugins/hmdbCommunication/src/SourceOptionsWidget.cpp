@@ -286,8 +286,15 @@ void SourceOptionsWidget::setConnectionProfile(const hmdbCommunication::IHMDBSou
 	ui->dataUserLineEdit->blockSignals(true);
 	ui->dataPasswordLineEdit->blockSignals(true);
 
-	ui->loginLineEdit->setText("imu-base01");
-	ui->passwordLineEdit->setText("imu-base0v");
+	if (connectionProfile.motionServicesConfiguration.userConfiguration.user.isEmpty() == false){
+		ui->loginLineEdit->setText(connectionProfile.motionServicesConfiguration.userConfiguration.user);
+		ui->passwordLineEdit->setText(connectionProfile.motionServicesConfiguration.userConfiguration.password);
+	}
+	else{
+		ui->loginLineEdit->setText(QString());
+		ui->passwordLineEdit->setText(QString());
+	}
+
 	ui->storagePathLineEdit->setText(connectionProfile.storageConfiguration.path);
 	ui->storagePasswordLineEdit->setText(connectionProfile.storageConfiguration.password);
 

@@ -7,7 +7,7 @@
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <boost/bind.hpp>
 #include <corelib/IThreadPool.h>
-#include "DataSourcePerspective.h"
+#include <plugins/hmdbCommunication/DataSourcePerspective.h>
 #include <plugins/hmdbCommunication/DataSourceDefaultContent.h>
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <plugins/hmdbCommunication/IHMDBLocalContext.h>
@@ -102,12 +102,11 @@ const QPixmap mergePixmapsHorizontal(const std::list<QPixmap> & pixmaps)
 	int maxPixmapHeight = -1;
 	int maxPixmapWidth = -1;
 
-	std::for_each(pixmaps.begin(), pixmaps.end(),
-		[&](const QPixmap & p)
+	for(const auto & p : pixmaps)
 	{
 		maxPixmapWidth = std::max(maxPixmapWidth, p.width());
 		maxPixmapHeight = std::max(maxPixmapHeight, p.height());
-	});
+	};
 	
 	const int totalWidth = pixmaps.size() * maxPixmapWidth;
 
@@ -121,15 +120,14 @@ const QPixmap mergePixmapsHorizontal(const std::list<QPixmap> & pixmaps)
 	QPoint pos(0, 0);
 	int counter = 0;
 
-	std::for_each(pixmaps.begin(), pixmaps.end(),
-		[&](const QPixmap & p)
+	for (const auto & p : pixmaps)
 	{
 		pos.rx() = counter * maxPixmapWidth + (maxPixmapWidth - p.width()) / 2;
 		pos.ry() = (maxPixmapHeight - p.height()) / 2;
 
 		painter.drawPixmap(pos, p);
 		++counter;
-	});
+	};
 
 	return ret;
 }
@@ -205,7 +203,7 @@ const QIcon DataViewWidget::statusIcon(const DataStatus dataStatus)
 		pixmaps.push_back(v);
 	}
 
-	auto ret = QIcon(mergePixmapsHorizontal(pixmaps));
+	const auto ret = QIcon(mergePixmapsHorizontal(pixmaps));
 
 	icons[dataStatus] = ret;
 
@@ -256,20 +254,24 @@ void DataViewWidget::initializeActions()
 	ui->treeWidget->addAction(ui->actionForceDownload);
 }
 
+hmdbCommunication::ShallowCopyConstPtr DataViewWidget::currentShallowCopy() const
+{
+	return currentShallowCopy_;
+}
+
+hmdbCommunication::ShallowCopyConstPtr DataViewWidget::completeShallowCopy() const
+{
+	return completeShallowCopy_;
+}
+
 const bool DataViewWidget::tryRebuildDataStatus()
 {
-	auto sc = shallowCopyContext_->shallowCopyDataContext()->shallowCopy();
-
-	if (sc == nullptr){
-		sc = shallowCopy_;
-	}
-
-	if (sc != nullptr){
+	if (currentShallowCopy_ != nullptr){
 		coreUI::CoreCursorChanger cc;
-		shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->rebuild(shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage(), sc);
+		shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->rebuild(shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage(), currentShallowCopy_);
 	}
 
-	return sc != nullptr;
+	return currentShallowCopy_ != nullptr;
 }
 
 void DataViewWidget::initializeShallowCopy()
@@ -301,6 +303,7 @@ void DataViewWidget::extractLocalShallowCopy()
 	auto sc = shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->createShallowCopy();
 	shallowCopyContext_->shallowCopyDataContext()->setShallowCopy(sc);
 	setShallowCopy(sc);
+	emit shallowCopyChanged();
 }
 
 void DataViewWidget::extractLocalShallowCopyAndTryUpdate()
@@ -325,6 +328,7 @@ void DataViewWidget::extractLocalShallowCopyAndTryUpdate()
 	if (setShallow == true){
 		shallowCopyContext_->shallowCopyDataContext()->setShallowCopy(sc);
 		setShallowCopy(sc);
+		emit shallowCopyChanged();
 	}
 }
 
@@ -351,9 +355,9 @@ void DataViewWidget::noShallowCopyInStorage()
 void DataViewWidget::rebuildPerspective()
 {
 	ui->treeWidget->clear();
-	if (shallowCopy_ != nullptr && perspective_ != nullptr && content_ != nullptr){
+	if (currentShallowCopy_ != nullptr && perspective_ != nullptr && content_ != nullptr){
 		coreUI::CoreCursorChanger cc;		
-		perspective_->rebuildPerspective(ui->treeWidget->invisibleRootItem(), *shallowCopy_);		
+		perspective_->rebuildPerspective(ui->treeWidget->invisibleRootItem(), *currentShallowCopy_);		
 		refreshCurrentContent(true);
 	}
 	else{		
@@ -363,7 +367,7 @@ void DataViewWidget::rebuildPerspective()
 
 void DataViewWidget::refreshContent()
 {
-	if (shallowCopy_ != nullptr && perspective_ != nullptr && content_ != nullptr){
+	if (currentShallowCopy_ != nullptr && perspective_ != nullptr && content_ != nullptr){
 		coreUI::CoreCursorChanger cc;		
 		refreshCurrentContent(true);
 	}
@@ -393,8 +397,8 @@ const hmdbCommunication::DataStatus DataViewWidget::refreshDataStatus(QTreeWidge
 
 	//zawartoœæ wg regu³ pierwszeñstwa i stanu wype³nienia
 	if (perspectiveFirst == true){
-		if (perspective_->fillContent(item, *shallowCopy_) == false){
-			content_->fillContent(item, *shallowCopy_);
+		if (perspective_->fillContent(item, *currentShallowCopy_) == false){
+			content_->fillContent(item, *currentShallowCopy_);
 			statusColumn = content_->statusField(item);
 			content_->headers(item, headers);
 		}
@@ -403,8 +407,8 @@ const hmdbCommunication::DataStatus DataViewWidget::refreshDataStatus(QTreeWidge
 			perspective_->headers(item, headers);
 		}
 	}
-	else if (content_->fillContent(item, *shallowCopy_) == false){
-		perspective_->fillContent(item, *shallowCopy_);
+	else if (content_->fillContent(item, *currentShallowCopy_) == false){
+		perspective_->fillContent(item, *currentShallowCopy_);
 		statusColumn = perspective_->statusField(item);
 		perspective_->headers(item, headers);
 	}
@@ -458,8 +462,8 @@ const hmdbCommunication::DataStatus DataViewWidget::refrshItemContent(QTreeWidge
 
 	//zawartoœæ wg regu³ pierwszeñstwa i stanu wype³nienia
 	if (perspectiveFirst == true){
-		if (perspective_->fillContent(item, *shallowCopy_) == false){
-			content_->fillContent(item, *shallowCopy_);
+		if (perspective_->fillContent(item, *currentShallowCopy_) == false){
+			content_->fillContent(item, *currentShallowCopy_);
 			statusColumn = content_->statusField(item);
 			content_->headers(item, headers);
 		}
@@ -468,8 +472,8 @@ const hmdbCommunication::DataStatus DataViewWidget::refrshItemContent(QTreeWidge
 			perspective_->headers(item, headers);
 		}
 	}
-	else if (content_->fillContent(item, *shallowCopy_) == false){
-		perspective_->fillContent(item, *shallowCopy_);
+	else if (content_->fillContent(item, *currentShallowCopy_) == false){
+		perspective_->fillContent(item, *currentShallowCopy_);
 		statusColumn = perspective_->statusField(item);
 		perspective_->headers(item, headers);
 	}
@@ -1144,14 +1148,14 @@ void filterShallowCopy(const hmdbCommunication::ShallowCopy & inShallow,
 void DataViewWidget::setFilter(hmdbCommunication::ShallowCopyFilter * filter)
 {
 	filter_ = filter;
-	setShallowCopy(shallowCopyContext_->shallowCopyDataContext()->shallowCopy());
+	setShallowCopy(completeShallowCopy_);
 }
 
 void DataViewWidget::setShallowCopy(const hmdbCommunication::ShallowCopyConstPtr shallowCopy)
 {	
-	shallowCopy_ = shallowCopy;
-
-	if (filter_ != nullptr && shallowCopy_ != nullptr){		
+	completeShallowCopy_ = shallowCopy;
+	currentShallowCopy_ = completeShallowCopy_;
+	if (filter_ != nullptr && completeShallowCopy_ != nullptr){
 		plugin::getJobManager()->addJob("DataView", "FilterShallowCopy",
 			threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&DataViewWidget::filterShallowCopy, this))));		
 	}
@@ -1165,12 +1169,11 @@ void DataViewWidget::rawFilterShallowCopy()
 {
 	hmdbCommunication::ShallowCopyPtr newShallowCopy(new hmdbCommunication::ShallowCopy);
 	filter_->beforeFiltering();
-	::filterShallowCopy(*shallowCopy_, *newShallowCopy, filter_);
+	::filterShallowCopy(*currentShallowCopy_, *newShallowCopy, filter_);
 	filter_->afterFiltering();
-	shallowCopy_ = newShallowCopy;
+	currentShallowCopy_ = newShallowCopy;
 	tryRebuildDataStatus();	
 }
-
 
 void DataViewWidget::filterShallowCopy()
 {
@@ -1342,15 +1345,16 @@ void DataViewWidget::onSynchronizeFinished()
 	rebuildPerspective();
 	setRemoteOperationsEnabled(true);
 	emit operationFinished();
+	emit shallowCopyChanged();
 }
 
 void DataViewWidget::synchronize(hmdbCommunication::IHMDBShallowCopyRemoteContext::SynchronizeOperationPtr sOp,
 	utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger)
 {
 	shallowCopyContext_->shallowCopyRemoteContext()->synchronize(sOp);
-	shallowCopy_ = shallowCopyContext_->shallowCopyDataContext()->shallowCopy();
+	completeShallowCopy_ = currentShallowCopy_ = shallowCopyContext_->shallowCopyDataContext()->shallowCopy();
 
-	if (filter_ != nullptr && shallowCopy_ != nullptr){
+	if (filter_ != nullptr && completeShallowCopy_ != nullptr){
 		rawFilterShallowCopy();
 	}
 
@@ -1366,11 +1370,11 @@ void DataViewWidget::onTrySynchronize()
 	if (shallowCopyContext_->shallowCopyRemoteContext() != nullptr){
 		bool synch = true;
 
-		if (shallowCopy_ != nullptr){
+		if (currentShallowCopy_ != nullptr){
 			const auto mq = shallowCopyContext_->shallowCopyRemoteContext()->remoteContext()->session()->motionQueries();
 			if (mq != nullptr){
 				const auto dbTime = mq->dataModificationTime();
-				synch = hmdbCommunication::ShallowCopyUtils::shallowCopyRequiresRefresh(*shallowCopy_, dbTime);
+				synch = hmdbCommunication::ShallowCopyUtils::shallowCopyRequiresRefresh(*currentShallowCopy_, dbTime);
 			}
 		}
 
@@ -1556,7 +1560,7 @@ void DataViewWidget::onDownload()
 {
 	const auto sItems = ui->treeWidget->selectedItems();
 
-	if (shallowCopy_ != nullptr && shallowCopyContext_->shallowCopyRemoteContext() != nullptr && sItems.empty() == false){
+	if (currentShallowCopy_ != nullptr && shallowCopyContext_->shallowCopyRemoteContext() != nullptr && sItems.empty() == false){
 
 		coreUI::CoreCursorChanger cc;
 
@@ -1564,7 +1568,7 @@ void DataViewWidget::onDownload()
 
 		std::for_each(sItems.begin(), sItems.end(), [&](const QTreeWidgetItem* i)
 		{	
-			auto sf = extractItemFiles(i, *shallowCopy_);
+			auto sf = extractItemFiles(i, *currentShallowCopy_);
 			files.insert(sf.begin(), sf.end());
 		});
 
@@ -1584,11 +1588,11 @@ void DataViewWidget::onDownload()
 
 void DataViewWidget::onDownloadAll()
 {
-	if (shallowCopy_ != nullptr && shallowCopyContext_->shallowCopyRemoteContext() != nullptr){
+	if (currentShallowCopy_ != nullptr && shallowCopyContext_->shallowCopyRemoteContext() != nullptr){
 
 		coreUI::CoreCursorChanger cc;
 
-		hmdbCommunication::StorageFileNames files = ShallowCopyUtils::files(*shallowCopy_);
+		hmdbCommunication::StorageFileNames files = ShallowCopyUtils::files(*currentShallowCopy_);
 
 		if (files.empty() == true){
 			return;
@@ -1608,7 +1612,7 @@ void DataViewWidget::onForceDownload()
 {
 	const auto sItems = ui->treeWidget->selectedItems();
 
-	if (shallowCopy_ != nullptr && shallowCopyContext_->shallowCopyRemoteContext() != nullptr && sItems.empty() == false){
+	if (currentShallowCopy_ != nullptr && shallowCopyContext_->shallowCopyRemoteContext() != nullptr && sItems.empty() == false){
 
 		coreUI::CoreCursorChanger cc;
 
@@ -1616,7 +1620,7 @@ void DataViewWidget::onForceDownload()
 
 		std::for_each(sItems.begin(), sItems.end(), [&](const QTreeWidgetItem* i)
 		{
-			auto sf = extractItemFiles(i, *shallowCopy_);
+			auto sf = extractItemFiles(i, *currentShallowCopy_);
 			files.insert(sf.begin(), sf.end());
 		});
 
@@ -1630,11 +1634,11 @@ void DataViewWidget::onForceDownload()
 
 void DataViewWidget::onForceDownloadAll()
 {
-	if (shallowCopy_ != nullptr && shallowCopyContext_->shallowCopyRemoteContext() != nullptr){
+	if (currentShallowCopy_ != nullptr && shallowCopyContext_->shallowCopyRemoteContext() != nullptr){
 
 		coreUI::CoreCursorChanger cc;
 
-		hmdbCommunication::StorageFileNames files = ShallowCopyUtils::files(*shallowCopy_);
+		hmdbCommunication::StorageFileNames files = ShallowCopyUtils::files(*currentShallowCopy_);
 
 		if (files.empty() == true){
 			return;
@@ -1644,7 +1648,7 @@ void DataViewWidget::onForceDownloadAll()
 	}
 }
 
-void DataViewWidget::extractItem(const QTreeWidgetItem * item, char & id, char & type)
+void DataViewWidget::extractItem(const QTreeWidgetItem * item, int & id, char & type)
 {
 	id = -1;
 	type = -1;
@@ -1667,15 +1671,15 @@ void DataViewWidget::extractItem(const QTreeWidgetItem * item, char & id, char &
 
 void DataViewWidget::onTreeCurrentItemChange(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
-	char currentID = -1;
+	int currentID = -1;
 	char currentType = -1;
-	char previousID = -1;
+	int previousID = -1;
 	char previousType = -1;
 
 	extractItem(current, currentID, currentType);
 	extractItem(previous, previousID, previousType);
 
-	if (currentID != previousID && currentType != previousType){
+	if (currentID != previousID || currentType != previousType){
 		emit currentItemChanged(currentType, currentID, previousType, previousID);
 	}
 }

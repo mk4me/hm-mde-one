@@ -9,22 +9,19 @@
 #ifndef HEADER_GUARD_HMDBCOMMUNICATION__DEFAULTPATIENTCARDWIDGET_H__
 #define HEADER_GUARD_HMDBCOMMUNICATION__DEFAULTPATIENTCARDWIDGET_H__
 
+#include <plugins/hmdbCommunication/Export.h>
 #include <plugins/hmdbCommunication/IPatientCard.h>
-#include "AntropometricDataWidget.h"
-#include "PersonalDataWidget.h"
-#include "DisordersDataWidget.h"
-#include "NotesWidget.h"
-#include "QMultiToolBox.h"
-
 #include <QtWidgets/QFrame>
-#include <QtWidgets/QTextEdit>
-#include <QtWidgets/QTreeWidget>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QToolButton>
-#include <QtWidgets/QListWidget>
+
+class QTreeWidget;
+class QTreeWidgetItem;
+class AntropometricDataWidget;
+class PersonalDataWidget;
+class DisordersDataWidget;
+class NotesWidget;
 
 //! domyślny widget obsługujący karte pacjenta
-class DefaultPatientCardWidget : public QFrame
+class HMDBCOMMUNICATION_EXPORT DefaultPatientCardWidget : public QFrame
 {
 	Q_OBJECT
 
@@ -35,7 +32,7 @@ public:
 	//! Wirtualny destruktor
 	virtual ~DefaultPatientCardWidget();
 
-	public slots:
+public slots:
 
 	//! \param patient Pacjent którego należy sformatować w karcie pacjenta - dla nullptr należy zresetować kartę pacjenta
 	//! \param subject Subject którego sesje będziemy czytać
@@ -45,9 +42,7 @@ public:
 		const hmdbServices::MotionShallowCopy::Performer * subject = nullptr,
 		const QPixmap & photo = QPixmap());
 
-	void innerSetPatient(const hmdbServices::MedicalShallowCopy::Patient * patient, const QPixmap & photo, const hmdbServices::MotionShallowCopy::Performer * subject);
-
-	private slots:
+private slots:
 
 	void setPersonalData(const hmdbServices::MedicalShallowCopy::Patient * patient = nullptr, const QPixmap & photo = QPixmap());
 	void setDisordersData(const hmdbServices::MedicalShallowCopy::PatientDisorders & patientDisorders);
@@ -59,6 +54,8 @@ public:
 	void currentSessionChanged(QTreeWidgetItem * prev, QTreeWidgetItem * current);
 
 private:
+
+	void innerSetPatient(const hmdbServices::MedicalShallowCopy::Patient * patient, const QPixmap & photo, const hmdbServices::MotionShallowCopy::Performer * subject);
 
 	static QString getAttribute(const hmdbServices::MotionShallowCopy::Attrs & attributes, const std::string & name, const QString & defaultVal = QString("-"));
 
@@ -77,7 +74,7 @@ private:
 	NotesWidget * notesWidget;
 };
 
-class DefaultPatientCard : public hmdbCommunication::IPatientCard
+class HMDBCOMMUNICATION_EXPORT DefaultPatientCard : public hmdbCommunication::IPatientCard
 {
 public:
 

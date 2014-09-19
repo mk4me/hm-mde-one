@@ -6,6 +6,7 @@ SET_PRIVATE_HEADERS(
 	#AbstractTab.h
 	#SimpleTab.h
 	AnalysisTab.h
+	MDEPerspectiveWidget.h
 	#ReportsTab.h
 	#ReportsThumbnailContext.h
 	#IAppUsageContext.h
@@ -25,6 +26,7 @@ SET_PRIVATE_HEADERS(
 )
 
 SET_SOURCE_FILES (
+	MDEPerspectiveWidget.cpp
 	#AbstractTab.cpp
 	#SimpleTab.cpp
 	AnalysisTab.cpp
@@ -60,6 +62,7 @@ SET_MOC_FILES(
 	AnalysisTreeContext.h
 	SummaryWindow.h
     MdeServiceWindow.h
+	MDEPerspectiveWidget.h
 )
 
 SET_UI_FILES(

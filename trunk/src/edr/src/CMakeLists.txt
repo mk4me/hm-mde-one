@@ -30,7 +30,7 @@ ADD_PROJECT(plugin_python "dflib;plugin_hmdbCommunication;plugin_c3d;coreui;plug
 
 SET_PROJECTS_GROUP("view")
 ADD_PROJECT(old_view "core;coreui;plugin_newTimeline;OPENGL;c3dlib")
-ADD_PROJECT(mde_view "core;coreui;c3dlib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf")
+ADD_PROJECT(mde_view "core;coreui;c3dlib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf;plugin_hmdbCommunication")
 ADD_PROJECT(imu_view "core;coreui;c3dlib;kinematiclib;dflib;plugin_newTimeline;plugin_newVdf;plugin_hmdbCommunication")
 ADD_PROJECT(medusa_view "core;coreui;c3dlib;kinematiclib;plugin_newTimeline;plugin_hmdbCommunication;plugin_dicom")
 #ADD_PROJECT(console_view "BOOST;utils;QT;TINYXML2;core;corelib;coreui;plugin_newTimeline")

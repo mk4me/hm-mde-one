@@ -1,5 +1,16 @@
 #include "CommunicationPCH.h"
-#include "DefaultPatientCardWidget.h"
+#include <plugins/hmdbCommunication/DefaultPatientCardWidget.h>
+#include "AntropometricDataWidget.h"
+#include "PersonalDataWidget.h"
+#include "DisordersDataWidget.h"
+#include "NotesWidget.h"
+#include "QMultiToolBox.h"
+
+#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QListWidget>
 //#include "DataSourceUserData.h"
 #include <QtWidgets/QFormLayout>
 #include <QtWidgets/QHBoxLayout>
