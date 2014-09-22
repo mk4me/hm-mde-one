@@ -1,4 +1,7 @@
+
 #include "DicomImporterPCH.h"
+#include "QtCore/QDateTime"
+
 #include "DicomImporter.h"
 
 
@@ -18,6 +21,7 @@
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/format.hpp>
 #include "DicomParser.h"
+
 
 
 using namespace dicomImporter;
@@ -187,9 +191,11 @@ void dicomImporter::DicomImporter::convertImage( internalData::ImagePtr inter, c
         parser.getObject(*object, 0);
         //utils::ObjectWrapperPtr wrapper = object->get();
 		DicomImagePtr image = object->get();
-        QPixmap pixmap = convertToPixmap(image);
-
-        inter->isPowerDoppler = testPowerDoppler(pixmap);
+		QPixmap pixmap = convertToPixmap(image);
+		if (pixmap.isNull()) {
+			image->writeBMP("temp.bmp");
+			pixmap = QPixmap("temp.bmp");
+		}
 
         core::Filesystem::Path outfile = to / (filenameBase + ".png");
     
@@ -266,6 +272,34 @@ bool dicomImporter::DicomImporter::testPowerDoppler( const QPixmap &pixmap )
     }
 
     return false;
+}
+
+dicomImporter::DicomInternalStructPtr dicomImporter::DicomImporter::importRaw(const core::Filesystem::Path& from)
+{
+	internalData::PatientPtr patient = utils::make_shared<internalData::Patient>();
+	QDateTime current = QDateTime::currentDateTime();
+	std::string date = current.toString(QString("yyyyMMdd")).toStdString();
+	std::string time = current.toString(QString("hhmmss")).toStdString();
+	auto study = utils::make_shared<internalData::Study>();
+	study->studyDate = date;
+	study->studyTime = time;
+	study->studyNumber = getStudyCurrentIndex();
+	auto serie = utils::make_shared<internalData::Serie>();
+	serie->serieDate = date;
+	serie->serieTime = time;
+	auto files = core::Filesystem::listFiles(from, true, ".dcm");
+	for (auto& path : files) {
+		auto image = utils::make_shared<internalData::Image>();
+		image->originFilePath = path.filename().string();
+		serie->images.push_back(image);
+	}
+	
+
+	study->series.push_back(serie);
+	patient->sessions.push_back(study);
+	DicomInternalStructPtr internalStruct = utils::make_shared<DicomInternalStruct>();
+	internalStruct->addPatient(patient);
+	return internalStruct;
 }
 
 void DicomSaver::save( const core::Filesystem::Path& to, DicomInternalStructPtr inter )

@@ -14,6 +14,7 @@
 #include "ShallowCopyUtils.h"
 #include "HMDBShallowCopyContext.h"
 #include "HMDBSourceViewManager.h"
+#include "TreeBuilder.h"
 
 
 using namespace hmdbCommunication;
@@ -41,6 +42,7 @@ void HMDBSource::init(core::IMemoryDataManager * memoryDM,
 
 bool HMDBSource::lateInit()
 {
+	viewManager_->addHierarchyPerspective(utils::make_shared<MotionPerspective>());
 	return true;
 }
 

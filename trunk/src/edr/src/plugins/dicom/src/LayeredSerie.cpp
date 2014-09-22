@@ -91,7 +91,7 @@ hmdbCommunication::IHMDBShallowCopyContext * LayeredSerie::sourceContextForData(
 		ret = srcContext.get();
 	}
 
-	return nullptr;
+	return ret;
 }
 
 void LayeredSerie::setupData( const core::VariantConstPtr & data )

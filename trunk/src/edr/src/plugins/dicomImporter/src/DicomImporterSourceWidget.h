@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_DICOMIMPORTER__DICOMIMPORTERSOURCEWIDGET_H__
 #define HEADER_GUARD_DICOMIMPORTER__DICOMIMPORTERSOURCEWIDGET_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <corelib/IFileDataManager.h>
 
 class QPushButton;
@@ -38,6 +38,7 @@ namespace dicomImporter {
 
     private slots:
         void onImport();
+		void onImportSingle();
         void onSelectImportDir();
         void onSelectSaveDir();
         

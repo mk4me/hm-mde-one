@@ -70,7 +70,16 @@ color: white
          <item row="1" column="0" colspan="2">
           <widget class="QWidget" name="widget_8" native="true">
            <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <property name="margin">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
              <number>0</number>
             </property>
             <item>
@@ -96,7 +105,16 @@ color: white
          <item row="5" column="0" colspan="2">
           <widget class="QWidget" name="widget_7" native="true">
            <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <property name="margin">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
              <number>0</number>
             </property>
             <item>
@@ -139,20 +157,13 @@ color: white
            </property>
           </widget>
          </item>
-         <item row="8" column="0" colspan="2">
+         <item row="9" column="0" colspan="2">
           <widget class="QTableView" name="tableView"/>
          </item>
-         <item row="9" column="0" colspan="2">
-          <widget class="QPushButton" name="convertButton">
+         <item row="8" column="0" colspan="2">
+          <widget class="QPushButton" name="importSingleButton">
            <property name="text">
-            <string>Convert</string>
-           </property>
-          </widget>
-         </item>
-         <item row="10" column="0" colspan="2">
-          <widget class="QPushButton" name="uploadButton">
-           <property name="text">
-            <string>Upload</string>
+            <string>Import single</string>
            </property>
           </widget>
          </item>

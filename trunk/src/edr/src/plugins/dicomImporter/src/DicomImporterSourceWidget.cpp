@@ -1,21 +1,21 @@
 #include "DicomImporterPCH.h"
 #include "DicomImporterSourceWidget.h"
 #include "ui_DicomSource.h"
-#include <QtGui/QWidget>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QMessageBox>
-#include <QtGui/QLayout>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QLayout>
 #include <utils/Debug.h> 
 #include <corelib/PluginCommon.h>
 #include <corelib/ILog.h>
 #include <corelib/IFileDataManager.h>
 #include <corelib/Filesystem.h>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QFileDialog>
 #include "DicomImporterSource.h"
 #include <QtCore/QDir>
-#include <QtGui/QProgressDialog>
+#include <QtWidgets/QProgressDialog>
 #include "DicomImporter.h"
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -30,6 +30,7 @@ DicomImporterSourceWidget::DicomImporterSourceWidget( DicomImporterSource* sourc
     connect(ui->importFromButton, SIGNAL(clicked()), this, SLOT(onSelectImportDir()));
     connect(ui->exportToButton, SIGNAL(clicked()), this, SLOT(onSelectSaveDir()));
     connect(ui->importButton, SIGNAL(clicked()), this, SLOT(onImport()));
+	connect(ui->importSingleButton, SIGNAL(clicked()), this, SLOT(onImportSingle()));
 }
 
 
@@ -101,6 +102,41 @@ void dicomImporter::DicomImporterSourceWidget::onSelectSaveDir()
     if ( dirPath.isNull() == false ) {
         ui->exportToEdit->setText(dirPath);
     }
+}
+
+void dicomImporter::DicomImporterSourceWidget::onImportSingle()
+{
+//	std::string filename = "E:/programming/WORK/PET_CT_dane/De_Lorme_Urbanczyk^Iwona_673675/CT_10190/2/1.2.840.113704.1.111.5596.1264074742.2380.dcm";
+//	DicomImagePtr image = object->get();
+//	QPixmap pixmap = convertToPixmap(image);
+	QString importFrom = ui->importFromEdit->text();
+	QString exportTo = ui->exportToEdit->text();
+	/*importFrom = "E:/programming/WORK/PET_CT_dane/De_Lorme_Urbanczyk^Iwona_673675/PT_10190/767120";
+	exportTo = "E:/programming/WORK/PET_CT_dane";*/
+
+	QDir dir;
+	if (dir.exists(importFrom) && dir.exists(exportTo)) {
+		core::Filesystem::Path from = importFrom.toStdString();
+		core::Filesystem::Path to = exportTo.toStdString();
+		//dicomSource->import(from, to);
+
+		DicomImporter importer(ui->startIndex->value());
+		auto inter = importer.importRaw(from);
+		QProgressDialog progress("Importing files...", "Abort", 0, inter->getNumImages(), this);
+		progress.setWindowModality(Qt::WindowModal);
+		Refresher r(&progress, &importer);
+		std::vector<DicomInternalStructPtr> splits = importer.split(inter);
+
+		DicomSaver saver;
+		for (auto it = splits.begin(); it != splits.end(); ++it) {
+			importer.convertImages(*it, from, to);
+			saver.save(to, *it);
+		}
+
+	}
+	else {
+		QMessageBox::critical(this, tr("Error"), tr("Unable to import DICOM structure, check directories"));
+	}
 }
 
 

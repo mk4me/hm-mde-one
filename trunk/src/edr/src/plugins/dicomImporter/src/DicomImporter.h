@@ -35,7 +35,8 @@ public:
 
     void setCallBack(refresher r);
 
-    static bool testPowerDoppler( const QPixmap &pixmap );
+	static bool testPowerDoppler(const QPixmap &pixmap);
+	DicomInternalStructPtr importRaw(const core::Filesystem::Path& from);
 
 private:
     void handlePatientRecord( DcmDirectoryRecord * patientRecord, internalData::PatientPtr patient, std::string basePath );
@@ -46,7 +47,6 @@ private:
 
 
     std::string getSessionDir() const;
-
 private:
     int studyCurrentIndex;
     refresher refresh;
