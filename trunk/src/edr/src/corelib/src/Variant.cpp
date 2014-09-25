@@ -226,7 +226,10 @@ void Variant::clone(Variant & dest, const CloneOp co) const
 		dest.metadata_ = metadata_;
 	}
 	else{
-		wrapper_->clone(*(dest.wrapper_), co);
+		if (wrapper_->getRawPtr() != nullptr){
+			wrapper_->clone(*(dest.wrapper_), co);
+		}
+
 		if (initializer_ != nullptr){
 			dest.initializer_.reset(initializer_->clone());
 		}

@@ -280,19 +280,11 @@ FFmpegVideoStream::FFmpegVideoStream(const utils::shared_ptr<std::istream> sourc
 FFmpegVideoStream::~FFmpegVideoStream()
 {
     VIDLIB_FUNCTION_PROLOG;
-    //av_free_packet(alignedPacket.get());
-    //av_freep(alignedPacket);
-	//av_free_packet(packet.get());
-    //av_freep(packet);
 	av_frame_free(&frame);
 
 	if(videoStream != nullptr){
 		videoStream->discard = AVDISCARD_ALL;
 	}
-
-    //avcodec_close(codecContext);
-	//av_freep(codecContext);
-	//avformat_close_input(&formatContext);
 }
 
 //------------------------------------------------------------------------------
@@ -347,11 +339,9 @@ bool FFmpegVideoStream::commonInit(const std::string & streamName, int wantedVid
 		VIDLIB_ERROR(FFmpegError("avcodec_alloc_frame error", error));
 	}
 
-	// alokacja pakietu
-	//packet.reset((AVPacket*)av_malloc(sizeof(AVPacket)), &av_free);
+	// alokacja pakietu	
 	packet.reset((AVPacket*)av_malloc(sizeof(AVPacket)), &av_free_packet);
-	av_init_packet(packet.get());
-	//alignedPacket.reset((AVPacket*)av_malloc(sizeof(AVPacket)), &av_free);
+	av_init_packet(packet.get());	
 	alignedPacket.reset((AVPacket*)av_malloc(sizeof(AVPacket)), &av_free_packet);
 	av_init_packet(alignedPacket.get());
 
@@ -403,23 +393,28 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
 }
 
 static int readFunction(void* opaque, uint8_t* buf, int buf_size) {
-	auto& me = *reinterpret_cast<std::istream*>(opaque);
-	return me.readsome(reinterpret_cast<char*>(buf), buf_size);
+	auto me = reinterpret_cast<std::istream*>(opaque);	
+	int ret = 0;
+
+	if (me->eof() == false){
+		ret = me->readsome(reinterpret_cast<char*>(buf), buf_size);
+	}
+
+	return ret;
 }
 
 int64_t seekFunction(void* opaque, int64_t offset, int whence)
 {
-	auto& me = *reinterpret_cast<std::istream*>(opaque);
-	if (whence == AVSEEK_SIZE)
-		return utils::streamSize(me); // I don't know "size of my handle in bytes"
-	
+	auto me = reinterpret_cast<std::istream*>(opaque);	
 
-	//if (stream->isSequential())
-//		return -1; // cannot seek a sequential stream
+	if (whence == AVSEEK_SIZE)
+		return utils::streamSize(*me); // I don't know "size of my handle in bytes"
 	
-	if (!me.seekg(offset, whence))
+	if (!me->seekg(offset, whence)){
 		return -1;
-	return me.tellg();
+	}
+
+	return me->tellg();
 }
 
 //http://www.codeproject.com/Tips/489450/Creating-Custom-FFmpeg-IO-Context
@@ -433,7 +428,7 @@ bool FFmpegVideoStream::init(std::istream * source, const std::string & streamNa
 
 	static const unsigned int BufferSize = 1024 * 512;
 	//inicjuję bufor
-	buffer.reset(reinterpret_cast<unsigned char*>(av_malloc(BufferSize)), &av_free);
+	buffer.reset(reinterpret_cast<unsigned char*>(av_malloc(BufferSize + FF_INPUT_BUFFER_PADDING_SIZE)), &av_free);
 	int error = 0;
 	//inicjuję kontekst własnego I/O w oparciu o strumień i bufor
 	ioContext.reset(avio_alloc_context(buffer.get(), BufferSize, 0, reinterpret_cast<void*>(source), &readFunction, nullptr, &seekFunction), &av_free);
@@ -447,12 +442,14 @@ bool FFmpegVideoStream::init(std::istream * source, const std::string & streamNa
 	probeData.buf_size = source->readsome((char*)probeData.buf, BufferSize);
 	probeData.filename = "";
 	source->seekg(0, std::ios::beg);
-
+	
 	formatContext->iformat = av_probe_input_format(&probeData, 1);
 	formatContext->flags |= (AVFMT_FLAG_CUSTOM_IO | AVFMT_FLAG_NONBLOCK);
 
 	// otwieramy strumień
 	if ((error = avformat_open_input(&formatContextPtr, streamName.c_str(), nullptr, nullptr)) != 0) {
+		char errorBuf[AV_ERROR_MAX_STRING_SIZE] = { 0 };
+		av_strerror(error, errorBuf, AV_ERROR_MAX_STRING_SIZE);
 		VIDLIB_ERROR(FFmpegError("avformat_open_input error", error));
 	}
 	// info o kodekach
@@ -616,12 +613,11 @@ bool FFmpegVideoStream::seekToKeyframe( int64_t timestamp, bool pickNextframe )
 
 #ifdef AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
         // granice
-        int64_t seekMin = pickNextframe ? seekTarget : (std::numeric_limits<int64_t>::min)();
-        int64_t seekMax = !pickNextframe ? seekTarget : (std::numeric_limits<int64_t>::max)();
+        int64_t seekMin = pickNextframe ? seekTarget : 0;
+        int64_t seekMax = !pickNextframe ? seekTarget : std::numeric_limits<int64_t>::max();
         // +- 2 wprowadzone z powodu błędu zaokrągleń
-        // seek
-        //error = avformat_seek_file(formatContext, streamIdx, seekMin, seekTarget, seekMax, AVSEEK_FLAG_ANY);
-		error = avformat_seek_file(formatContext.get(), streamIdx, seekMin, seekTarget, seekMax, 0);
+        // seek        
+		error = avformat_seek_file(formatContext.get(), streamIdx, seekMin, seekTarget, seekMax, 0);		
 #else // AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
         int flags = (pickNextframe ? 0 : AVSEEK_FLAG_BACKWARD);
         if ( av_seek_frame(formatContext.get(), streamIdx, seekTarget, flags) < 0 ) {
