@@ -123,7 +123,7 @@ void medusaExporter::MedusaExporterServiceWidget::onExtract()
     
 	QString dirPath = ui->extractToLineEdit->text();
 
-    communication::ICommunicationDataSourcePtr icomm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
+	auto icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
     if (!icomm || !icomm->isLogged()) {
         QMessageBox::critical(this, tr("Error"), tr("User is not logged"));
         return;

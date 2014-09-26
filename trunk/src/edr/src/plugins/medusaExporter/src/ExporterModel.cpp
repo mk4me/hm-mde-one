@@ -117,7 +117,7 @@ void medusaExporter::ExporterModel::addExporter(const IExporterConstPtr& exporte
 
 void medusaExporter::ExporterModel::downloadAll()
 {
-	communication::ICommunicationDataSourcePtr icomm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
+	auto icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
 	if (icomm) {
 		if (icomm->isLogged()) {
 			icomm->downloadAllFiles();
@@ -135,7 +135,7 @@ void medusaExporter::ExporterModel::extractData(const QString& path)
 
 void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFunction fun)
 {
-	communication::ICommunicationDataSourcePtr icomm = core::querySource<communication::ICommunicationDataSource>(plugin::getSourceManager());
+	auto icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
 	if (icomm) {
 		core::Filesystem::Path dir(path.toStdString());
 		if (core::Filesystem::isDirectory(dir)) {
