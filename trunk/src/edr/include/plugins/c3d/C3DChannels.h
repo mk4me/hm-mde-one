@@ -19,7 +19,7 @@
 #include <utils/DataChannelTimers.h>
 #include <c3dlib/C3DParser.h>
 #include <utils/SmartPtr.h>
-#include <utils/PtrPolicyBoost.h>
+#include <utils/PtrPolicyStd.h>
 #include <utils/ClonePolicies.h>
 #include <corelib/BaseDataTypes.h>
 #include <plugins/newChart/Wrappers.h>
@@ -357,7 +357,7 @@ DECLARE_CHANNEL(Moment);
 DECLARE_CHANNEL(Angle);
 DECLARE_CHANNEL(Power);
 
-DEFINE_WRAPPER(VectorChannelReaderInterface, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(VectorChannelReaderInterface, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
 DEFINE_WRAPPER_INHERITANCE(VectorChannel, VectorChannelReaderInterface);
 DEFINE_WRAPPER_INHERITANCE(MarkerChannel,VectorChannel);
 DEFINE_WRAPPER_INHERITANCE(ForceChannel, VectorChannel);

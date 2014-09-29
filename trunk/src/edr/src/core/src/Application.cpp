@@ -45,8 +45,8 @@
 //#define KEY_PATH TEXT("Software\\PJWSTK\\MEDUSA")
 #endif
 
-DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
-DEFINE_WRAPPER(double, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(int, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(double, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 
 const double TimeDelta = 1000.0 / 25.0;
 

@@ -4,7 +4,7 @@
 #include <dfmlib/DFLMTypes.h>
 #include <set>
 #include <vector>
-#include <boost/enable_shared_from_this.hpp>
+#include <utils/SmartPtr.h>
 #include <boost/function.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ namespace dflm {
 ////////////////////////////////////////////////////////////////////////////////
 
 //! Klasa reprezentująca punkt łączenia węzłów. Rozróżniamy 2 typy pinów - wejściowe i wyjściowe.
-class Pin : public boost::enable_shared_from_this<Pin>
+class Pin : public utils::enable_shared_from_this<Pin>
 {
 public:
 

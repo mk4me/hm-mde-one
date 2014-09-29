@@ -6,7 +6,7 @@
 #include <dfmlib/DFLMTypes.h>
 #include <dfmlib/Node.h>
 #include <dfmlib/Pin.h>
-#include <boost/enable_shared_from_this.hpp>
+#include <utils/SmartPtr.h>
 #include <OpenThreads/ReentrantMutex>
 #include <OpenThreads/ScopedLock>
 #include <set>
@@ -18,7 +18,7 @@ namespace dflm{
 	////////////////////////////////////////////////////////////////////////////////
 
 	//! Klasa opisująca model logiczny data flow. Pozwala na jego edycję - dodawanie, usuwanie węzłów oraz łączenie/rozłanczanie pinów wg ściśle określonych zasad.
-	class Model : public boost::enable_shared_from_this<Model>, public utils::Observable<Model>
+	class Model : public utils::enable_shared_from_this<Model>, public utils::Observable<Model>
 	{
 	public:
 		//! Typ opisujący pętle/cykle w połaczeniach

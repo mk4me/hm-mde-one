@@ -23,6 +23,6 @@
 //    PLUGIN_DICOM_EXPORT QPixmap convertToPixmap(DicomImagePtr image);
 //}
 //
-//DEFINE_WRAPPER(DicomImage, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
-//DEFINE_WRAPPER(DcmDataset, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
+//DEFINE_WRAPPER(DicomImage, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
+//DEFINE_WRAPPER(DcmDataset, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
 #endif

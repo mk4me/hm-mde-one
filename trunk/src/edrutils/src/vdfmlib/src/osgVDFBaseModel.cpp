@@ -1799,7 +1799,7 @@ std::vector<std::string> osgVDFBaseModel::getNodeErrors(const dflm::NPtr & node)
 	std::vector<std::string> ret;
 
 	//if(dynamic_cast<chart::DFSourceNode*>(node.get()) == 0){
-	if(boost::dynamic_pointer_cast<dflm::DFSourceNode>(node) == 0){
+	if(utils::dynamic_pointer_cast<dflm::DFSourceNode>(node) == 0){
 		if(node->beginIn() != node->endIn()){
 			if(dflm::Node::anyInPinConnected(node) == false){
 				ret.push_back("Wezel musi mieć podłączony minimum jeden pin wejściowy");

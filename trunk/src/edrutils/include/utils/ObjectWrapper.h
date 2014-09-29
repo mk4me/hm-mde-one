@@ -14,7 +14,6 @@
 #include <list>
 #include <algorithm>
 #include <utils/SmartPtr.h>
-#include <utils/PtrPolicyBoost.h>
 #include <utils/ClonePolicies.h>
 #include <utils/ObjectWrapperTraits.h>
 
@@ -411,7 +410,7 @@ bool operator!=(const utils::ObjectWrapper & a, const utils::ObjectWrapper & b);
 
 // Makro tworzące specjalizację ObjectWrapperT. Musi występować w globalnym
 // namespace. Drugim parametrem może być dowolny typ mający cechy ptrPolicy,
-// wbudowane: PtrPolicyRaw, PtrPolicyBoost, PtrPolicyOSG
+// wbudowane: PtrPolicyRaw, PtrPolicyStd, PtrPolicyBoost, PtrPolicyOSG
 #define DEFINE_WRAPPER(typeT, ptrPolicyT, clonePolicyT)\
 namespace utils {\
 	__DEFINE_WRAPPER_META(typeT, ptrPolicyT, clonePolicyT)\

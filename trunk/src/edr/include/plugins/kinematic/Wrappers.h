@@ -6,6 +6,7 @@
 #include <kinematiclib/SkeletalModel.h>
 #include <kinematiclib/JointAnglesCollection.h>
 #include <utils/PtrPolicyOSG.h>
+#include <utils/PtrPolicyStd.h>
 #include <osg/PositionAttitudeTransform>
 
 //! Typ definiuj¹cy indeksy na po³¹czonych punktach
@@ -42,13 +43,13 @@ DEFINE_SMART_POINTERS(SkeletonDataStream);
 //tymczasowy typ dla BVH
 typedef std::pair<kinematic::SkeletalModelPtr, kinematic::SkeletalDataPtr> BVHData;
 DEFINE_SMART_POINTERS(BVHData);
-DEFINE_WRAPPER(BVHData, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(BVHData, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 
-DEFINE_WRAPPER(kinematic::JointAnglesCollection, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-DEFINE_WRAPPER(kinematic::SkeletalData, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-DEFINE_WRAPPER(kinematic::SkeletalModel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-DEFINE_WRAPPER(SkeletonDataStream, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
-DEFINE_WRAPPER(std::string, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(kinematic::JointAnglesCollection, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(kinematic::SkeletalData, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(kinematic::SkeletalModel, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(SkeletonDataStream, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
+DEFINE_WRAPPER(std::string, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(osg::PositionAttitudeTransform, utils::PtrPolicyOSG, utils::ClonePolicyOsgCloneMethod);
 
 #endif  // __HEADER_GUARD_KINEMATIC__WRAPPERS_H__

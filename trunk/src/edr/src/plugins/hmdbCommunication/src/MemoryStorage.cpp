@@ -218,7 +218,7 @@ void MemoryStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStora
 
 	const auto readSize = std::min((int)streamSize, (int)MaxBufferSize);
 
-	boost::shared_array<char> memblock(new char[readSize]);
+	utils::shared_array<char> memblock(new char[readSize]);
 	input->seekg(0, std::ios::beg);
 	int offset = 0;
 	const unsigned int fullReads = (streamSize / readSize);

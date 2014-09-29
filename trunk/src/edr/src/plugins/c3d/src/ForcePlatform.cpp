@@ -50,10 +50,10 @@ float ForcePlatform::getSignY() const {
 void ForcePlatform::computeSteps(MarkerCollectionPtr markers, EventsCollectionConstPtr events )
 {
     GRFChannelConstPtr f1 = force;
-    VectorChannelPtr ltoe = boost::const_pointer_cast<VectorChannel>(markers->tryGetChannelByName("LTOE"));
-    VectorChannelPtr rtoe = boost::const_pointer_cast<VectorChannel>(markers->tryGetChannelByName("RTOE"));
-    VectorChannelPtr lhee = boost::const_pointer_cast<VectorChannel>(markers->tryGetChannelByName("LHEE"));
-    VectorChannelPtr rhee = boost::const_pointer_cast<VectorChannel>(markers->tryGetChannelByName("RHEE"));
+    VectorChannelPtr ltoe = utils::const_pointer_cast<VectorChannel>(markers->tryGetChannelByName("LTOE"));
+    VectorChannelPtr rtoe = utils::const_pointer_cast<VectorChannel>(markers->tryGetChannelByName("RTOE"));
+    VectorChannelPtr lhee = utils::const_pointer_cast<VectorChannel>(markers->tryGetChannelByName("LHEE"));
+    VectorChannelPtr rhee = utils::const_pointer_cast<VectorChannel>(markers->tryGetChannelByName("RHEE"));
 
     auto getAndRemoveLastStep = [&](std::list<Step>& steps, Context context, Step& ret) -> bool
     {

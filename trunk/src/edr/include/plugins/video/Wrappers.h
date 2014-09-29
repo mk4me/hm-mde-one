@@ -9,6 +9,7 @@
 #ifndef __HEADER_GUARD_VIDEO__WRAPPERS_H__
 #define __HEADER_GUARD_VIDEO__WRAPPERS_H__
 
+#include <utils/PtrPolicyStd.h>
 #include <corelib/BaseDataTypes.h>
 #include <vidlib/osg/VideoImageStream.h>
 #include <vidlib/osg/OsgAdapter.h>
@@ -145,8 +146,8 @@ class VideoCollection : public utils::DataChannelCollection<VideoChannel>
 typedef utils::shared_ptr<VideoCollection> VideoCollectionPtr;
 typedef utils::shared_ptr<const VideoCollection> VideoCollectionConstPtr;
 
-DEFINE_WRAPPER(VideoChannel, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-DEFINE_WRAPPER(vidlib::Picture, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(VideoChannel, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(vidlib::Picture, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
 DEFINE_WRAPPER(VideoStream, utils::PtrPolicyOSG, utils::ClonePolicyVirtualCloneMethod);
 
 #endif  // __HEADER_GUARD_VIDEO__WRAPPERS_H__

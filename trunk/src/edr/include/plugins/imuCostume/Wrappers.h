@@ -13,6 +13,7 @@
 #include <osg/Quat>
 #include <threadingUtils/StreamData.h>
 #include <utils/SmartPtr.h>
+#include <utils/PtrPolicyStd.h>
 #include <utils/ObjectWrapper.h>
 #include <kinematiclib/JointAnglesCollection.h>
 
@@ -38,7 +39,7 @@ namespace IMU
 	DEFINE_SMART_POINTERS(Vec3Stream);
 }
 
-DEFINE_WRAPPER(IMU::IMUStream, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
-DEFINE_WRAPPER(IMU::Vec3Stream, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(IMU::IMUStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(IMU::Vec3Stream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
 
 #endif	//	HEADER_GUARD_IMU__WRAPPERS_H__

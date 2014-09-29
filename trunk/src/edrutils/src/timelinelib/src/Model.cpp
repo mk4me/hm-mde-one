@@ -561,7 +561,7 @@ void Model::shiftTag(const std::string & path, double dTime)
 
 Model::TChannelConstPtr Model::toTChannel(const NamedTreeBaseConstPtr & channel)
 {
-    return boost::dynamic_pointer_cast<const TChannel>(channel);
+    return utils::dynamic_pointer_cast<const TChannel>(channel);
 }
 
 Model::TChannelConstPtr Model::getTChannelForChannel(const ChannelConstPtr & channel) const
@@ -576,7 +576,7 @@ Model::TChannelConstPtr Model::getTChannelForChannel(const ChannelConstPtr & cha
 
 Model::TChannelPtr Model::getWritableTChannel(const Model::TChannelConstPtr & channel)
 {
-    return boost::const_pointer_cast<TChannel>(channel);
+	return utils::const_pointer_cast<TChannel>(channel);
 }
 
 Model::TChannelPtr Model::getWritableTChannel(const NamedTreeBaseConstPtr & channel)
@@ -586,17 +586,17 @@ Model::TChannelPtr Model::getWritableTChannel(const NamedTreeBaseConstPtr & chan
 
 ChannelPtr Model::getWritableChannel(const Model::TChannelConstPtr & channel)
 {
-    return boost::const_pointer_cast<Channel>(channel->getData());
+	return utils::const_pointer_cast<Channel>(channel->getData());
 }
 
 ChannelPtr Model::getWritableChannel(const ChannelConstPtr & channel)
 {
-    return boost::const_pointer_cast<Channel>(channel);
+	return utils::const_pointer_cast<Channel>(channel);
 }
 
 TagPtr Model::getWritableTag(const TagConstPtr & tag)
 {
-    return boost::const_pointer_cast<Tag>(tag);
+	return utils::const_pointer_cast<Tag>(tag);
 }
 
 void Model::updateChildrenScale(const Model::TChannelConstPtr & child, double ratio)

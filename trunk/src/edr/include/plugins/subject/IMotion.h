@@ -10,6 +10,7 @@
 #define HEADER_GUARD___IMOTION_H__
 
 #include <stdexcept>
+#include <utils/PtrPolicyStd.h>
 #include <plugins/subject/Types.h>
 #include <corelib/BaseDataTypes.h>
 #include <plugins/subject/ISession.h>
@@ -59,6 +60,6 @@ public:
 
 }
 
-DEFINE_WRAPPER(PluginSubject::IMotion, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(PluginSubject::IMotion, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
 
 #endif //   HEADER_GUARD___IMOTION_H__

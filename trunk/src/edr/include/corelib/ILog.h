@@ -10,6 +10,7 @@
 #ifndef HEADER_GUARD_CORE__ILOG_H__
 #define HEADER_GUARD_CORE__ILOG_H__
 
+#include <string>
 #include <utils/SmartPtr.h>
 
 namespace core

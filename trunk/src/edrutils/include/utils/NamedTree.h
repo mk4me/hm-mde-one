@@ -10,10 +10,9 @@
 #define HEADER_GUARD_TIMELINE__DATASTRUCTURE_H__
 
 #include <utils/PtrPolicyHelper.h>
-#include <utils/PtrPolicyBoost.h>
+#include <utils/PtrPolicyStd.h>
 #include <utils/Debug.h>
 #include <utils/SmartPtr.h>
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/type_traits.hpp>
 #include <vector>
@@ -27,7 +26,7 @@ typedef utils::weak_ptr<NamedTreeBase> NamedTreeBaseWPtr;
 typedef utils::shared_ptr<const NamedTreeBase> NamedTreeBaseConstPtr;
 typedef utils::weak_ptr<const NamedTreeBase> NamedTreeBaseConstWPtr;
 
-class NamedTreeBase : public boost::enable_shared_from_this<NamedTreeBase>
+class NamedTreeBase : public utils::enable_shared_from_this<NamedTreeBase>
 {
 public:
 	typedef std::vector<NamedTreeBaseConstPtr> ConstChildren;
@@ -254,7 +253,7 @@ protected:
 			++begin;
 		}
 
-		return boost::const_pointer_cast<NamedTreeBase>(ret);
+		return utils::const_pointer_cast<NamedTreeBase>(ret);
 	}
 
 	//! \param parent Nowy rodzic aktualnej struktury danych
@@ -345,8 +344,8 @@ public:
 	//! \param data Dane do przechowania w węźle
 	void setData(const Ptr & data)
 	{
-		PtrPolicy::template setPtr<Data>(this->data, data);
-		PtrPolicy::template setPtr<const Data>(this->constData, data);
+		PtrPolicy::template setPtr(this->data, data);
+		PtrPolicy::template setPtr(this->constData, data);
 	}
 
 	virtual void addChild(const std::string & path)

@@ -124,10 +124,13 @@ void medusaExporter::MedusaExporterServiceWidget::onExtract()
 	QString dirPath = ui->extractToLineEdit->text();
 
 	auto icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
-    if (!icomm || !icomm->isLogged()) {
+	//TODO
+	/*
+	if (!icomm || !icomm->isLogged()) {
         QMessageBox::critical(this, tr("Error"), tr("User is not logged"));
         return;
     }
+	*/
 
     if (dirPath.isEmpty()) {
         QMessageBox::warning(this, tr("Error"), tr("Choose directory where files will be exported"));

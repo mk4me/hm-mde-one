@@ -22,6 +22,7 @@ SET_PUBLIC_HEADERS(
 	NamedTree.h
 	PtrPolicyRaw.h
 	PtrPolicyBoost.h
+	PtrPolicyStd.h
 	PtrPolicyOSG.h
 	PtrPolicyHelper.h
 	PtrWrapper.h

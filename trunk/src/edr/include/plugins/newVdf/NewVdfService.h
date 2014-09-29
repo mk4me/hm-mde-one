@@ -39,7 +39,7 @@ class PresetsWidget;
 class MergedWidget;
 
 class PLUGIN_NEWVDF_EXPORT NewVdfService : public QObject, public plugin::IService, public core::IMemoryDataManagerHierarchy::IHierarchyObserver,
-    public boost::enable_shared_from_this<NewVdfService>//, public IDataFlowProvider
+    public utils::enable_shared_from_this<NewVdfService>//, public IDataFlowProvider
 {
     Q_OBJECT
     UNIQUE_ID("{DF5B5B15-C591-4BCF-A205-FD995D2398DB}")

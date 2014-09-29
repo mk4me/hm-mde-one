@@ -119,11 +119,14 @@ void medusaExporter::ExporterModel::downloadAll()
 {
 	auto icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
 	if (icomm) {
+		//TODO
+		/*
 		if (icomm->isLogged()) {
 			icomm->downloadAllFiles();
 		} else {
             throw std::runtime_error("User not logged");
 		}
+		*/
 	}
 }
 
@@ -139,6 +142,8 @@ void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFun
 	if (icomm) {
 		core::Filesystem::Path dir(path.toStdString());
 		if (core::Filesystem::isDirectory(dir)) {
+			//TODO
+			/*
             if (icomm->isLogged()) {
                 fun(0.0f, QObject::tr("Extracting data"));
                 icomm->extractDataFromLocalStorage(dir);
@@ -146,6 +151,7 @@ void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFun
             } else {
                 throw std::runtime_error("User not logged");
             }
+			*/
 		} else {
 			throw std::runtime_error("Extracting error: invalid directory");
 		}

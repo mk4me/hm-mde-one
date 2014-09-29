@@ -14,6 +14,7 @@
 #include <plugins/dicom/ILayer.h>
 #include <vector>
 #include <utils/ObjectWrapper.h>
+#include <utils/PtrPolicyStd.h>
 #include <boost/range/iterator_range_core.hpp>
 #include <boost/serialization/access.hpp>
 #include "boost/serialization/assume_abstract.hpp"
@@ -59,7 +60,7 @@ typedef std::vector<dicom::ILayerItemPtr> LayersVector;
 DEFINE_SMART_POINTERS(LayersVector);
 }
 
-DEFINE_WRAPPER(dicom::ILayeredImage, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
-DEFINE_WRAPPER(dicom::LayersVector, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
+DEFINE_WRAPPER(dicom::ILayeredImage, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(dicom::LayersVector, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
 
 #endif

@@ -255,7 +255,7 @@ void DFModel::afterNodeAdd(const NPtr & node)
 {
     Model::afterNodeAdd(node);
 
-    DFSNPtr sourceNode(boost::dynamic_pointer_cast<DFSourceNode>(node));
+    DFSNPtr sourceNode(utils::dynamic_pointer_cast<DFSourceNode>(node));
     if(sourceNode != nullptr){
         sourceNodes.insert(sourceNode);
     }
@@ -265,7 +265,7 @@ void DFModel::beforeNodeRemove(const NPtr & node)
 {
     Model::beforeNodeRemove(node);
 
-    DFSNPtr sourceNode(boost::dynamic_pointer_cast<DFSourceNode>(node));
+	DFSNPtr sourceNode(utils::dynamic_pointer_cast<DFSourceNode>(node));
     if(sourceNode != nullptr){
         sourceNodes.erase(sourceNode);
     }

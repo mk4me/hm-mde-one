@@ -42,6 +42,7 @@
 
 #include <corelib/BaseDataTypes.h>
 #include <utils/SmartPtr.h>
+#include <utils/PtrPolicyStd.h>
 #include "Application.h"
 #include "ServiceManager.h"
 #include "MemoryDataManager.h"

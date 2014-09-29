@@ -10,6 +10,7 @@
 #define HEADER_GUARD___ISESSION_H__
 
 #include <stdexcept>
+#include <utils/PtrPolicyStd.h>
 #include <plugins/subject/Types.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/IMemoryDataManager.h>
@@ -63,6 +64,6 @@ public:
 
 }
 
-DEFINE_WRAPPER(PluginSubject::ISession, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(PluginSubject::ISession, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
 
 #endif //   HEADER_GUARD___ISESSION_H__

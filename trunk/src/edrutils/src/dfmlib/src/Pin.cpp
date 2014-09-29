@@ -12,7 +12,7 @@ namespace dflm{
 
 Pin::Pin(const std::string & pinName, bool required,
 	const Pin::ReqPinsSet & requiredPins)
-	: boost::enable_shared_from_this<Pin>(), pinType(UNSET),
+	: utils::enable_shared_from_this<Pin>(), pinType(UNSET),
     pinRequired(required),requiredPinsDependency(requiredPins),
     name(pinName)
 {
@@ -126,7 +126,7 @@ int Pin::getPinIndex() const
         return -1;
     }
 
-    return pinIndexFunc(boost::const_pointer_cast<Pin>(shared_from_this()));
+	return pinIndexFunc(utils::const_pointer_cast<Pin>(shared_from_this()));
 }
 
 //void Pin::setPinName(const std::string & pinName){

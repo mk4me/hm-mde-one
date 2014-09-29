@@ -346,7 +346,7 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
         std::vector<core::VariantConstPtr> wrappers;
         for (int i = 0; i < collection->getNumChannels(); ++i) {
             core::VariantPtr wrapper = core::Variant::create<Channel>();
-            wrapper->set(utils::const_pointer_cast<Channel>(boost::dynamic_pointer_cast<const Channel>(collection->getChannel(i))));
+            wrapper->set(utils::const_pointer_cast<Channel>(utils::dynamic_pointer_cast<const Channel>(collection->getChannel(i))));
 
             static int number = 0;
             std::string();

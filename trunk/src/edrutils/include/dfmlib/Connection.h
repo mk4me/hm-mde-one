@@ -1,6 +1,7 @@
 #ifndef HEADER_GUARD__CONNECTION_H__
 #define HEADER_GUARD__CONNECTION_H__
 
+#include <string>
 #include <dfmlib/DFLMTypes.h>
 
 ////////////////////////////////////////////////////////////////////////////////

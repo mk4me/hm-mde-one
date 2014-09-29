@@ -79,5 +79,5 @@ namespace IMU {
 
 }
 
-DEFINE_WRAPPER(IMU::Frames, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(IMU::Frames, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 #endif

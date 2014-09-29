@@ -17,7 +17,7 @@ TestDFPin::~TestDFPin(void)
 std::string TestDFPin::getPinFullName() const{
 	std::string fullName;
 
-	utils::shared_ptr<TestDFNodeProcessing> parent(boost::dynamic_pointer_cast<TestDFNodeProcessing>(getParent()));
+	utils::shared_ptr<TestDFNodeProcessing> parent(utils::dynamic_pointer_cast<TestDFNodeProcessing>(getParent()));
 	if (parent != 0){
 		fullName.append(parent->getName());
 	}
@@ -36,5 +36,5 @@ void TestDFPin::onUpdate(){
 }
 
 void TestDFPin::copyDataToPin(const dflm::DFPinPtr & pin){
-	std::cout << getPinFullName().c_str() << " copies data to " << boost::dynamic_pointer_cast<TestDFPin>(pin)->getPinFullName().c_str() << std::endl;
+	std::cout << getPinFullName().c_str() << " copies data to " << utils::dynamic_pointer_cast<TestDFPin>(pin)->getPinFullName().c_str() << std::endl;
 }

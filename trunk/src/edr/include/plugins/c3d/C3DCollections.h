@@ -163,10 +163,10 @@ DEFINE_CHANNEL_COLLECTION(Moment);
 DEFINE_CHANNEL_COLLECTION(Angle);
 DEFINE_CHANNEL_COLLECTION(Power);
 
-DEFINE_WRAPPER(EMGCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
-DEFINE_WRAPPER(C3DEventsCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
-DEFINE_WRAPPER(VectorChannelCollection, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
-DEFINE_WRAPPER(MovieDelays, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(EMGCollection, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(C3DEventsCollection, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(VectorChannelCollection, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(MovieDelays, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER_INHERITANCE(ForceCollection,  VectorChannelCollection);
 DEFINE_WRAPPER_INHERITANCE(AngleCollection,  VectorChannelCollection);
 DEFINE_WRAPPER_INHERITANCE(PowerCollection,  VectorChannelCollection);

@@ -10,6 +10,8 @@
 #ifndef HEADER_GUARD_DICOM__IDICOMINTERNALSTRUCT_H__
 #define HEADER_GUARD_DICOM__IDICOMINTERNALSTRUCT_H__
 
+#include <utils/SmartPtr.h>
+#include <utils/PtrPolicyStd.h>
 #include <vector>
 #include <boost/tuple/tuple.hpp>
 #include <boost/range.hpp>
@@ -182,5 +184,5 @@ public:
 DEFINE_SMART_POINTERS(IDicomInternalStruct);
 }
 
-DEFINE_WRAPPER(dicom::IDicomInternalStruct, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
+DEFINE_WRAPPER(dicom::IDicomInternalStruct, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
 #endif

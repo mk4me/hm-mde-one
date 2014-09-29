@@ -109,7 +109,7 @@ void kinematic::BvhParser::saveJoint (SkeletalModelConstPtr model, std::ostream&
         // kość rodzica jest potrzebna aby obliczyć długość,
         // dlaczego parent nie jest brany z argumentu funkcji? poniewaz argument moze być nullem
         // (sztuczka robiona w przypadku gdy parent to dummy bone)
-        JointConstPtr parent = boost::const_pointer_cast<const Joint>(joint->parent.lock());
+		JointConstPtr parent = utils::const_pointer_cast<const Joint>(joint->parent.lock());
         osg::Vec3d offset = parent->direction * parent->length * model->getLength();
         out << offset[0] << " " << offset[1] << " " << offset[2] << endl;
         saveChannelsInHierarchy(out, joint, lvl);

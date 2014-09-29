@@ -379,7 +379,7 @@ kinematic::hAnimJointPtr hAnimSkeleton::cloneHierarchy( hAnimJointConstPtr root,
 		bone->setParentJoint(hAnimJointWeak(current));
 		current->getChildrenBones().push_back(bone);
 		for (auto it2 = (*it)->getChildrenJoints().cbegin(); it2 != (*it)->getChildrenJoints().cend(); ++it2) {
-			cloneHierarchy(boost::const_pointer_cast<hAnimJoint>(*it2), bone, joints, bones);
+			cloneHierarchy(utils::const_pointer_cast<hAnimJoint>(*it2), bone, joints, bones);
 		}
 		
 	}
@@ -399,7 +399,7 @@ kinematic::hAnimJointPtr hAnimSkeleton::cloneHierarchy( hAnimJointConstPtr curre
 		bone->setParentJoint(hAnimJointWeak(current));
 		current->getChildrenBones().push_back(bone);
 		for (auto it2 = (*it)->getChildrenJoints().cbegin(); it2 != (*it)->getChildrenJoints().cend(); ++it2) {
-			cloneHierarchy(boost::const_pointer_cast<hAnimJoint>(*it2), bone, joints, bones);
+			cloneHierarchy(utils::const_pointer_cast<hAnimJoint>(*it2), bone, joints, bones);
 		}
 	}
 	return current;

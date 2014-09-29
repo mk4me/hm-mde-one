@@ -2,7 +2,7 @@
 #define HEADER_GUARD__TIMELINEMODEL_H__
 
 #include <utils/NamedTree.h>
-#include <utils/PtrPolicyBoost.h>
+#include <utils/SmartPtr.h>
 #include <timelinelib/Types.h>
 #include <timelinelib/Channel.h>
 #include <utils/ObserverPattern.h>
@@ -27,10 +27,10 @@ namespace timeline{
 		typedef utils::weak_ptr<const TChannel> TChannelConstWPtr;
 
 		//! Klasa wprowadzająca hierarchię kanałów, kolejność, obsługę ścieżek
-		class TChannel : public NamedTree<Channel, utils::PtrPolicyBoost>
+		class TChannel : public NamedTree<Channel, utils::PtrPolicyStd>
 		{
 		public:
-			TChannel(const std::string & name = "UnnamedChannel") : NamedTree<Channel, utils::PtrPolicyBoost>(name, Ptr(new Channel()))
+			TChannel(const std::string & name = "UnnamedChannel") : NamedTree<Channel, utils::PtrPolicyStd>(name, Ptr(new Channel()))
 			{
 			}
 

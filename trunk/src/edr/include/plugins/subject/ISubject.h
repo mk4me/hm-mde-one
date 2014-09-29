@@ -9,6 +9,7 @@
 #ifndef HEADER_GUARD___ISUBJECT_H__
 #define HEADER_GUARD___ISUBJECT_H__
 
+#include <utils/PtrPolicyStd.h>
 #include <plugins/subject/Types.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/IMemoryDataManager.h>
@@ -55,7 +56,7 @@ public:
 
 }
 
-DEFINE_WRAPPER(PluginSubject::ISubject, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(PluginSubject::ISubject, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
 
 #endif //   HEADER_GUARD___ISUBJECT_H__
 

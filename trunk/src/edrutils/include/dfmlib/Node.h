@@ -2,7 +2,7 @@
 #define HEADER_GUARD__NODE_H__
 
 #include <dfmlib/DFLMTypes.h>
-#include <boost/enable_shared_from_this.hpp>
+#include <utils/SmartPtr.h>
 #include <set>
 #include <vector>
 #include <stdexcept>
@@ -14,7 +14,7 @@ namespace dflm{
 	//class EditableNode;
 
 	//! Klasa reprezentująca wezeł w modelu data flow. Zarządza on pinami wejściowymi i wyjściowymi oraz
-	class Node : public boost::enable_shared_from_this<Node>
+	class Node : public utils::enable_shared_from_this<Node>
 	{
 	public:
 		//! Zaprzyjaźniona klasa modelu

@@ -22,7 +22,7 @@ DFNode::~DFNode(void)
 
 DFNPtr DFNode::getDFNode(const NPtr & node)
 {
-	return boost::dynamic_pointer_cast<DFNode>(node);
+	return utils::dynamic_pointer_cast<DFNode>(node);
 }
 
 void DFNode::allowProcessing(bool allow)

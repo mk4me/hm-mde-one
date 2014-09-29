@@ -109,7 +109,7 @@ typedef utils::shared_ptr<const IPatient> PatientConstPtr;
 
 }
 
-DEFINE_WRAPPER(hmdbCommunication::IPatient, utils::PtrPolicyBoost, utils::ClonePolicyNotImplemented);
-DEFINE_WRAPPER(hmdbCommunication::AntropometricData, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(hmdbCommunication::IPatient, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(hmdbCommunication::AntropometricData, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 
 #endif HEADER_GUARD_HMDBCOMMUNICATION__IPATIENT_H__

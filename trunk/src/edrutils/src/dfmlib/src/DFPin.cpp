@@ -30,12 +30,12 @@ bool DFPin::isDFPin(const CPinPtr & pin)
 
 DFPinPtr DFPin::getDFPin(const PinPtr & pin)
 {
-	return boost::dynamic_pointer_cast<DFPin>(pin);
+	return utils::dynamic_pointer_cast<DFPin>(pin);
 }
 
 CDFPinPtr DFPin::getDFPin(const CPinPtr & pin)
 {
-    return boost::dynamic_pointer_cast<const DFPin>(pin);
+	return utils::dynamic_pointer_cast<const DFPin>(pin);
 }
 
 bool DFPin::isUpdated() const
@@ -65,9 +65,9 @@ void DFPin::update()
 		}
 	}else if(pinType == OUT){
 		for(auto it = begin(); it != end(); ++it){
-			DFPinPtr pin(boost::dynamic_pointer_cast<DFPin>((*it)->getDest()));
+			DFPinPtr pin(utils::dynamic_pointer_cast<DFPin>((*it)->getDest()));
 			if(pin != nullptr){
-				pin->copyDataFromPin(boost::dynamic_pointer_cast<DFPin>(shared_from_this()));
+				pin->copyDataFromPin(utils::dynamic_pointer_cast<DFPin>(shared_from_this()));
 			}
 		}
 	}

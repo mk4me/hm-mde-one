@@ -12,6 +12,7 @@
 #define HEADER_GUARD_IMU__IMUCFGPARSER_H__
 
 #include <utils/SmartPtr.h>
+#include <utils/PtrPolicyStd.h>
 #include <vector>
 #include <osg/Quat>
 #include "corelib/IParser.h"
@@ -55,6 +56,6 @@ namespace IMU {
     }; 
 
 }
-DEFINE_WRAPPER(IMU::IMUConfig, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(IMU::IMUConfig, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 
 #endif
