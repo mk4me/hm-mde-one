@@ -23,6 +23,7 @@
 #include <corelib/PluginCommon.h>
 #include <corelib/IServiceManager.h>
 #include <corelib/ISourceManager.h>
+#include <corelib/IParserManagerReader.h>
 
 using namespace hmdbCommunication;
 
@@ -71,45 +72,45 @@ HMDBShallowCopyLocalContext::~HMDBShallowCopyLocalContext()
 	unloadAll();
 }
 
-void filesIDs(const hmdbServices::MotionShallowCopy::Files & files,
-	std::set<hmdbServices::ID> & fileIDs)
+void files(const hmdbServices::MotionShallowCopy::Files & files,
+	std::map<hmdbServices::ID, std::string> & fileIDs)
 {
 	for (auto it = files.begin(); it != files.end(); ++it){
-		fileIDs.insert(it->second->fileID);
+		fileIDs[it->second->fileID] = it->second->fileName;
 	}
 }
 
 void motionsToFiles(const hmdbServices::MotionShallowCopy::Trials & trials,
-	std::set<hmdbServices::ID> & files)
+	std::map<hmdbServices::ID, std::string> & filesIDs)
 {
 	for (auto it = trials.begin(); it != trials.end(); ++it){
-		filesIDs(it->second->files, files);
+		files(it->second->files, filesIDs);
 	}
 }
 
 void sessionToFiles(const hmdbServices::MotionShallowCopy::Session * session,
-	std::set<hmdbServices::ID> & files)
+	std::map<hmdbServices::ID, std::string> & filesIDs)
 {
-	filesIDs(session->files, files);
-	motionsToFiles(session->trials, files);
+	files(session->files, filesIDs);
+	motionsToFiles(session->trials, filesIDs);
 }
 
 void subjectToFiles(const hmdbServices::MotionShallowCopy::Performer * subject,
-	std::set<hmdbServices::ID> & files)
+	std::map<hmdbServices::ID, std::string> & filesIDs)
 {
 	for (auto it = subject->performerConfs.begin(); it != subject->performerConfs.end(); ++it)
 	{
-		sessionToFiles(it->second->session, files);
+		sessionToFiles(it->second->session, filesIDs);
 	}
 }
 
-const std::set<hmdbServices::ID> filesToProcess(const DataType type,
+const std::map<hmdbServices::ID, std::string> filesToProcess(const DataType type,
 	const hmdbServices::ID id, const ShallowCopyConstPtr shallowCopy)
 {
-	std::set<hmdbServices::ID> ret;
+	std::map<hmdbServices::ID, std::string> ret;
 
 	if (id < 0){
-		filesIDs(shallowCopy->motionShallowCopy.files, ret);
+		files(shallowCopy->motionShallowCopy.files, ret);
 	}
 	else{
 
@@ -120,7 +121,7 @@ const std::set<hmdbServices::ID> filesToProcess(const DataType type,
 		{
 			auto it = shallowCopy->motionShallowCopy.files.find(id);
 			if (it != shallowCopy->motionShallowCopy.files.end()){
-				ret.insert(id);
+				ret[id] = it->second->fileName;
 			}
 		}
 
@@ -131,7 +132,11 @@ const std::set<hmdbServices::ID> filesToProcess(const DataType type,
 		{
 			auto it = shallowCopy->motionShallowCopy.trials.find(id);
 			if (it != shallowCopy->motionShallowCopy.trials.end()){
-				filesIDs(it->second->files, ret);
+				files(it->second->files, ret);
+			}
+
+			if (it->second->session != nullptr){
+				files(it->second->session->files, ret);
 			}
 		}
 
@@ -465,13 +470,27 @@ const core::ConstVariantsList HMDBShallowCopyLocalContext::data(const DataType t
 	return ret;
 }
 
-const std::set<hmdbServices::ID> filterFiles(const std::set<hmdbServices::ID> & inFiles,
+const std::map<hmdbServices::ID, std::string> filterSupportedFiles(const std::map<hmdbServices::ID, std::string> & inFiles)
+{
+	auto pmr = plugin::getParserManagerReader();
+	std::map<hmdbServices::ID, std::string> ret;
+
+	for (auto f : inFiles){
+		if (pmr->sourceIsAccepted(f.second) == true){
+			ret.insert(f);
+		}
+	}
+
+	return ret;
+}
+
+const std::map<hmdbServices::ID, std::string> filterFiles(const std::map<hmdbServices::ID, std::string> & inFiles,
 	const IHMDBStatusManager::TransactionConstPtr transaction, const DataStatus & status)
 {
-	std::set<hmdbServices::ID> ret;	
+	std::map<hmdbServices::ID, std::string> ret;
 
 	for (auto it = inFiles.begin(); it != inFiles.end(); ++it){
-		auto fs = transaction->dataStatus(FileType, *it);
+		auto fs = transaction->dataStatus(FileType, it->first);
 		if (DataStatus::filter(fs, status) == true){
 			ret.insert(*it);
 		}
@@ -980,6 +999,7 @@ const bool HMDBShallowCopyLocalContext::load(const DataType type,
 	bool ret = false;
 
 	auto files = filesToProcess(type, id, shallowCopyContext_->shallowCopy());
+	files = filterSupportedFiles(files);
 
 	auto dsT = shallowCopyContext_->dataStatusManager()->transaction();
 	files = filterFiles(files, dsT, DataStatus(DataStatus::Local, DataStatus::Unloaded));
@@ -989,17 +1009,13 @@ const bool HMDBShallowCopyLocalContext::load(const DataType type,
 		IndexedData indexedData;
 		Indexes loadedFiles;
 		for (auto it = files.begin(); it != files.end(); ++it){
-			auto fIT = shallowCopyContext_->shallowCopy()->motionShallowCopy.files.find(*it);
-
-			if (fIT != shallowCopyContext_->shallowCopy()->motionShallowCopy.files.end()){
-				t->load(fIT->second->fileName);
-				dsT->updateDataStatus(FileType, fIT->second->fileID, DataStatus(DataStatus::Loaded));
-				core::ConstVariantsList loadedData = t->data(fIT->second->fileName);
-				if (loadedData.empty() == false){
-					indexedData[*it] = loadedData;
-					loadedFiles.insert(fIT->first);
-				}
-			}			
+			t->load(it->second);
+			dsT->updateDataStatus(FileType, it->first, DataStatus(DataStatus::Loaded));
+			core::ConstVariantsList loadedData = t->data(it->second);
+			if (loadedData.empty() == false){
+				indexedData[it->first] = loadedData;
+				loadedFiles.insert(it->first);
+			}						
 		}
 
 		if (indexedData.empty() == false){
@@ -1062,6 +1078,7 @@ const bool HMDBShallowCopyLocalContext::unload(const DataType type,
 	bool ret = false;
 
 	auto files = filesToProcess(type, id, shallowCopyContext_->shallowCopy());
+	files = filterSupportedFiles(files);
 
 	auto dsT = shallowCopyContext_->dataStatusManager()->transaction();
 	files = filterFiles(files, dsT, DataStatus(DataStatus::Local, DataStatus::Loaded));
@@ -1071,13 +1088,10 @@ const bool HMDBShallowCopyLocalContext::unload(const DataType type,
 		IndexedData indexedData;
 		auto t = localContext_->transaction();
 		for (auto it = files.begin(); it != files.end(); ++it){
-			auto fIT = shallowCopyContext_->shallowCopy()->motionShallowCopy.files.find(*it);
-			if (fIT != shallowCopyContext_->shallowCopy()->motionShallowCopy.files.end()){
-				indexedData[*it] = t->data(fIT->second->fileName);
-				unloadFiles.insert(fIT->second->fileID);
-				t->unload(fIT->second->fileName);
-				dsT->updateDataStatus(FileType, fIT->second->fileID, DataStatus(DataStatus::Unloaded));
-			}
+			indexedData[it->first] = t->data(it->second);
+			unloadFiles.insert(it->first);
+			t->unload(it->second);
+			dsT->updateDataStatus(FileType, it->first, DataStatus(DataStatus::Unloaded));			
 		}
 
 		if (unloadFiles.empty() == false){

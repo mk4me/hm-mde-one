@@ -252,6 +252,7 @@ void DataViewWidget::initializeActions()
 	ui->treeWidget->addAction(ui->actionDownload);
 	ui->treeWidget->addAction(ui->actionDownloadAll);
 	ui->treeWidget->addAction(ui->actionForceDownload);
+	ui->treeWidget->addAction(ui->actionForceDownloadAll);
 }
 
 hmdbCommunication::ShallowCopyConstPtr DataViewWidget::currentShallowCopy() const
@@ -1691,6 +1692,7 @@ void DataViewWidget::setRemoteOperationsEnabled(const bool enable)
 	ui->actionDownload->setEnabled(enable);
 	ui->actionDownloadAll->setEnabled(enable);
 	ui->actionForceDownload->setEnabled(enable);
+	ui->actionForceDownloadAll->setEnabled(enable);
 }
 
 void DataViewWidget::setLocalOperationsEnabled(const bool enable)
