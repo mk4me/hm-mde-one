@@ -101,7 +101,10 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                 desc = DicomSource::createDesc(*session);
             }
             //DicomInternalStructConstPtr test = (*inter.begin())->get();
-        }
+		} else {
+			PLUGIN_LOG_ERROR("No session file found!");
+			UTILS_ASSERT(false);
+		}
         core::IHierarchyItemPtr sessionItem(new core::HierarchyItem(label, desc));
         rootItem->appendChild(sessionItem);
         s->getMotions(motions);
