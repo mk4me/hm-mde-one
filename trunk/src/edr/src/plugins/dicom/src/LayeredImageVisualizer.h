@@ -133,6 +133,8 @@ namespace dicom {
 		bool correctIndex(int i) const;
 		std::pair<std::string, int> selectedLayer() const;
 
+		void gatherCommunicationInfo(const plugin::IVisualizer::ISerie*);
+
 	private:
 		LayeredImageVisualizerView* mainWidget;
 
@@ -140,6 +142,9 @@ namespace dicom {
 		int currentSerie;
 		std::string currentLayerUser_;
 		int currentTrialID;
+
+		bool isReviewer;
+		std::string userName;
 	};
 	DEFINE_SMART_POINTERS(LayeredImageVisualizer);
 }

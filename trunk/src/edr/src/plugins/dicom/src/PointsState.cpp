@@ -14,6 +14,8 @@
 #include "PointsLayer.h"
 #include <plugins/dicom/Annotations.h>
 #include "LayeredImageVisualizer.h"
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 
 
 using namespace dicom;
@@ -243,7 +245,7 @@ bool dicom::PointsState::mouseMoveEvent( QGraphicsSceneMouseEvent* e )
 
 void dicom::PointsState::resetLayer()
 {
-    layer = utils::make_shared<PointsLayer>(adnotationIdx);
+    layer = boost::make_shared<PointsLayer>(adnotationIdx);
     layer->setPointsDrawer(DrawersBuilder::createDrawer(adnotationIdx));
 }
 

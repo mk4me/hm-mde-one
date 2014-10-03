@@ -40,7 +40,8 @@ namespace annotations {
 
 	//! Mapowanie indesków adnotacji do ich nazw
     typedef boost::bimap<annotationsIdx, QString> AdnotationsType;
-    DEFINE_SMART_POINTERS(AdnotationsType);
+	typedef boost::shared_ptr<AdnotationsType> AdnotationsTypePtr;
+	typedef boost::shared_ptr<const AdnotationsType> AdnotationsTypeConstPtr;
 
 	//! Tworzy domyœlne mapowanie indeksów
 	PLUGIN_DICOM_EXPORT AdnotationsTypePtr getDefault();

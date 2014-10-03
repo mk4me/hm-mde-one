@@ -43,7 +43,7 @@ public:
 
         img->removeLayer(layer);
 
-		auto glayer = utils::dynamic_pointer_cast<ILayerGraphicItem>(layer);
+		auto glayer = boost::dynamic_pointer_cast<ILayerGraphicItem>(layer);
 
         if (glayer) {
             glayer->getItem()->setVisible(false);
@@ -56,7 +56,7 @@ public:
     virtual void undoIt() 
     {
         img->addLayer(layer, serie->visualizer->getCurrentLayerUserName());
-		auto glayer = utils::dynamic_pointer_cast<ILayerGraphicItem>(layer);
+		auto glayer = boost::dynamic_pointer_cast<ILayerGraphicItem>(layer);
 
 		if (glayer) {
 			glayer->getItem()->setVisible(true);
@@ -257,7 +257,7 @@ void dicom::LayeredSerie::save()
 	oa.register_type<FingerTypeLayer>();
 	oa.register_type<JointTypeLayer>();
 	oa.register_type<ImageQualityLayer>();
-    LayeredImageConstPtr l = utils::dynamic_pointer_cast<const LayeredImage>(getImage());
+    LayeredImageConstPtr l = boost::dynamic_pointer_cast<const LayeredImage>(getImage());
     oa << boost::serialization::make_nvp("layers", l->getLayersToSerialize(visualizer->getCurrentLayerUserName()));
     ofs.close();
 }
@@ -285,7 +285,7 @@ void dicom::LayeredSerie::editLayer( int tagIdx, int idx )
     auto tag = img->getTag(tagIdx);
     if (idx >= 0 && idx < img->getNumLayerItems(tag)) {
         auto layer = img->getLayerItem(tag, idx);
-        auto pointsLayer = utils::dynamic_pointer_cast<PointsLayer>(layer);
+        auto pointsLayer = boost::dynamic_pointer_cast<PointsLayer>(layer);
         if (pointsLayer) {
             stateMachine->getEditState()->setLayerToEdit(pointsLayer);
             stateMachine->setState(stateMachine->getEditState());
@@ -297,7 +297,7 @@ void dicom::LayeredSerie::switchCrop()
 {
     ILayeredImagePtr img = this->getImage();
     //int count = img->getNumLayerItems(TODO);
-    BackgroundLayerPtr background = utils::dynamic_pointer_cast<BackgroundLayer>(img->getBackgroundLayer());
+    BackgroundLayerPtr background = boost::dynamic_pointer_cast<BackgroundLayer>(img->getBackgroundLayer());
     if (background) {
         if (background->getPixmap().rect() == background->getCrop()) {
             //background->setCrop(QRect(56,135, 761, 493));
@@ -351,7 +351,7 @@ void dicom::LayeredSerie::setNoiseState()
 void dicom::LayeredSerie::fitToSize()
 {
     ILayeredImagePtr img = this->getImage();
-    BackgroundLayerPtr background = utils::dynamic_pointer_cast<BackgroundLayer>(img->getBackgroundLayer());
+    BackgroundLayerPtr background = boost::dynamic_pointer_cast<BackgroundLayer>(img->getBackgroundLayer());
     if (background) {
         auto rect = background->getCrop();
         auto rectW = getGraphicsView()->rect();

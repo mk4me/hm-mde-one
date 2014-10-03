@@ -15,7 +15,7 @@ LayeredModelView::LayeredModelView(LayeredImageVisualizer *parent)
     :QAbstractItemModel(parent), layeredVisualizer(parent)
 {
 #ifdef _DEBUG
-    new ModelTest(this, this);
+    //new ModelTest(this, this);
 #endif
 }
 
@@ -97,7 +97,7 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 
 					case annotations::bloodLevel:
 						{
-							auto bil = utils::dynamic_pointer_cast<const BloodLevelLayer>(itm);
+							auto bil = boost::dynamic_pointer_cast<const BloodLevelLayer>(itm);
 							if(bil != nullptr){
 
 								auto blt = annotations::instanceBloodLevels();
@@ -108,7 +108,7 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 
 					case annotations::inflammatoryLevel:
 						{
-							auto ail = utils::dynamic_pointer_cast<const InflammatoryLevelLayer>(itm);
+							auto ail = boost::dynamic_pointer_cast<const InflammatoryLevelLayer>(itm);
 							if(ail != nullptr){
 
 								auto alt = annotations::instanceInflammatoryLevels();
@@ -119,7 +119,7 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 
 					case annotations::fingerType:
 						{
-							auto fil = utils::dynamic_pointer_cast<const FingerTypeLayer>(itm);
+							auto fil = boost::dynamic_pointer_cast<const FingerTypeLayer>(itm);
 							if(fil != nullptr){
 
 								auto flt = annotations::instanceFingerTypes();
@@ -130,7 +130,7 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 
 					case annotations::jointType:
 						{
-							auto jil = utils::dynamic_pointer_cast<const JointTypeLayer>(itm);
+							auto jil = boost::dynamic_pointer_cast<const JointTypeLayer>(itm);
 							if(jil != nullptr){
 
 								auto jlt = annotations::instanceJointTypes();
@@ -141,7 +141,7 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
 
 					case annotations::imageType:
 						{
-							auto jil = utils::dynamic_pointer_cast<const ImageQualityLayer>(itm);
+							auto jil = boost::dynamic_pointer_cast<const ImageQualityLayer>(itm);
 							if(jil != nullptr){
 								auto jlt = annotations::instanceImageTypes();
 								return jlt->left.at(jil->value());
@@ -167,7 +167,7 @@ QVariant LayeredModelView::data(const QModelIndex &index, int role) const
             if (td->idx != -1) {
                 std::string tag = image->getTag(td->tag);
                 ILayerItemConstPtr itm = image->getLayerItem(tag, index.row());
-				auto gitm = utils::dynamic_pointer_cast<const ILayerGraphicItem>(itm);
+				auto gitm = boost::dynamic_pointer_cast<const ILayerGraphicItem>(itm);
                 QFont f;
 				if(gitm != nullptr){
 					f.setBold(gitm->getSelected());
@@ -224,7 +224,7 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
 
 					case annotations::bloodLevel:
 						{
-							auto bil = utils::dynamic_pointer_cast<BloodLevelLayer>(il);
+							auto bil = boost::dynamic_pointer_cast<BloodLevelLayer>(il);
 							if(bil != nullptr){
 
 								int val = value.toInt();
@@ -239,7 +239,7 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
 
 					case annotations::inflammatoryLevel:
 						{
-							auto ail = utils::dynamic_pointer_cast<InflammatoryLevelLayer>(il);
+							auto ail = boost::dynamic_pointer_cast<InflammatoryLevelLayer>(il);
 							if(ail != nullptr){
 
 								int val = value.toInt();
@@ -254,7 +254,7 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
 
 					case annotations::fingerType:
 						{
-							auto fil = utils::dynamic_pointer_cast<FingerTypeLayer>(il);
+							auto fil = boost::dynamic_pointer_cast<FingerTypeLayer>(il);
 							if(fil != nullptr){
 
 								int val = value.toInt();
@@ -269,7 +269,7 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
 
 					case annotations::jointType:
 						{
-							auto jil = utils::dynamic_pointer_cast<JointTypeLayer>(il);
+							auto jil = boost::dynamic_pointer_cast<JointTypeLayer>(il);
 							if(jil != nullptr){
 
 								int val = value.toInt();
@@ -284,7 +284,7 @@ bool LayeredModelView::setData(const QModelIndex & index, const QVariant & value
 
 					case annotations::imageType:
 						{
-							auto jil = utils::dynamic_pointer_cast<ImageQualityLayer>(il);
+							auto jil = boost::dynamic_pointer_cast<ImageQualityLayer>(il);
 							if(jil != nullptr){
 
 								int val = value.toInt();

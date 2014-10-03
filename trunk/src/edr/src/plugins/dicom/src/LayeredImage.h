@@ -79,8 +79,8 @@ private:
         ar & boost::serialization::make_nvp("layers", layers);
     }
 };
-
-DEFINE_SMART_POINTERS(LayeredImage);
+typedef boost::shared_ptr<LayeredImage> LayeredImagePtr;
+typedef boost::shared_ptr<const LayeredImage> LayeredImageConstPtr;
 }
 
 DEFINE_WRAPPER_INHERITANCE(dicom::LayeredImage, dicom::ILayeredImage);

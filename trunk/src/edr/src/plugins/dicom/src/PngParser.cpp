@@ -3,6 +3,7 @@
 #include <corelib/Filesystem.h>
 #include "LayeredImage.h"
 #include <plugins/dicom/Dicom.h>
+#include <boost/make_shared.hpp>
 
 using namespace dicom;
 
@@ -20,7 +21,7 @@ PngParser::~PngParser()
 void PngParser::parse( const std::string & source  )
 {
 	image = utils::ObjectWrapper::create<LayeredImage>();
-    LayeredImagePtr l = utils::make_shared<LayeredImage>(source);
+    LayeredImagePtr l = boost::make_shared<LayeredImage>(source);
     image->set(l);
 }
 

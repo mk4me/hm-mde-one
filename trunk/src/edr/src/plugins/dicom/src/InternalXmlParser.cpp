@@ -24,7 +24,7 @@ void InternalXmlParser::parse( const std::string & source  )
 {
 	sessionInternal = utils::ObjectWrapper::create<IDicomInternalStruct>();
     DicomInternalStructPtr inter = DicomLoader::load(source);
-	sessionInternal->set(utils::dynamic_pointer_cast<IDicomInternalStruct>(inter));
+	sessionInternal->set(boost::dynamic_pointer_cast<IDicomInternalStruct>(inter));
     //LayeredImagePtr l = utils::make_shared<LayeredImage>(source);
     //image->set(l);
 }

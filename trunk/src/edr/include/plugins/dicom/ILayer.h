@@ -13,6 +13,7 @@
 #include <utils/SmartPtr.h>
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/shared_ptr.hpp>
 #include <vector>
 
 class QPainter;
@@ -51,7 +52,8 @@ private:
         ar & BOOST_SERIALIZATION_NVP(adnotationIdx);
     }
 };
-DEFINE_SMART_POINTERS(ILayerItem);
+typedef boost::shared_ptr<ILayerItem> ILayerItemPtr;
+typedef boost::shared_ptr<const ILayerItem> ILayerItemConstPtr;
 
 class ILayerGraphicItem : public ILayerItem
 {
@@ -73,7 +75,9 @@ public:
     virtual std::vector<QPointF> getPointsCloud(int density = 0, int normalizeLength = -1) const = 0;
 
 };
-DEFINE_SMART_POINTERS(ILayerGraphicItem);
+typedef boost::shared_ptr<ILayerGraphicItem> ILayerGraphicItemPtr;
+typedef boost::shared_ptr<const ILayerGraphicItem> ILayerGraphicItemConstPtr;
+
 
 class ILayer
 {

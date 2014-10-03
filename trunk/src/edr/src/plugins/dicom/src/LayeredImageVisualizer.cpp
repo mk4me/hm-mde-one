@@ -55,15 +55,7 @@ hmdbCommunication::IHMDBShallowCopyContext * LayeredImageVisualizer::remoteShall
 
 const bool LayeredImageVisualizer::userIsReviewer() const
 {
-	bool ret = false;
-
-	auto remoteSrcContext = remoteShallowContext(getActiveSerie());
-
-	if (remoteSrcContext != nullptr){
-		ret = DicomSource::userIsReviewer(remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->session().get());
-	}
-
-	return ret;
+	return isReviewer;
 }
 
 plugin::IVisualizer* LayeredImageVisualizer::create() const
@@ -240,6 +232,7 @@ void LayeredImageVisualizer::setActiveSerie(plugin::IVisualizer::ISerie * serie)
 			currentSerie = i;
 			if (prevSerie != series[i]) {
 				mainWidget->setWindowTitle(QString::fromStdString(series[i]->getName()) + "[*]");
+				gatherCommunicationInfo(series[i]);
 				Q_EMIT serieChanged();
 			}
 			return;
@@ -372,7 +365,7 @@ void dicom::LayeredImageVisualizer::selectLayer(int tagIdx, int idx)
 			if (idx > -1){
 				auto li = img->getLayerItem(tag, idx);
 
-				auto pl = utils::dynamic_pointer_cast<PointsLayer>(li);
+				auto pl = boost::dynamic_pointer_cast<PointsLayer>(li);
 
 				if (pl == nullptr){
 					mainWidget->setDeletionButtonEnabled(false);
@@ -388,7 +381,7 @@ void dicom::LayeredImageVisualizer::selectLayer(int tagIdx, int idx)
 				for (int i = 0; i < count; ++i) {
 					auto li = img->getLayerItem(t, i);
 
-					auto gli = utils::dynamic_pointer_cast<ILayerGraphicItem>(li);
+					auto gli = boost::dynamic_pointer_cast<ILayerGraphicItem>(li);
 
 					if (gli != nullptr){
 						gli->setSelected(tag == t && i == idx);
@@ -471,14 +464,7 @@ void dicom::LayeredImageVisualizer::uploadSerie()
 
 std::string dicom::LayeredImageVisualizer::getUserName() const
 {
-	std::string ret;
-
-	auto remoteSrcContext = remoteShallowContext(getActiveSerie());
-	if (remoteSrcContext != nullptr){
-		ret = remoteSrcContext->shallowCopyLocalContext()->localContext()->dataContext()->userName();
-	}
-
-	return ret;
+	return userName;	
 }
 
 void dicom::LayeredImageVisualizer::removeSelectedLayers()
@@ -491,7 +477,7 @@ void dicom::LayeredImageVisualizer::removeSelectedLayers()
 			auto tag = image->getTag(iTag);
 			for (int itm = image->getNumLayerItems(tag) - 1; itm >= 0; --itm) {
 				auto li = image->getLayerItem(tag, itm);
-				auto pl = utils::dynamic_pointer_cast<PointsLayer>(li);
+				auto pl = boost::dynamic_pointer_cast<PointsLayer>(li);
 
 				if (pl != nullptr && pl->getSelected() == true) {
 					serie->removeLayer(iTag, itm);
@@ -534,7 +520,7 @@ const bool dicom::LayeredImageVisualizer::verifyImflamatoryLevel() const
 	for (int i = 0; i < s; ++i){
 		auto l = image->getLayerItem(currentLayerUser_, i);
 		if(l->getAdnotationIdx() == dicom::annotations::inflammatoryLevel){
-			auto il = utils::dynamic_pointer_cast<const InflammatoryLevelLayer>(l);
+			auto il = boost::dynamic_pointer_cast<const InflammatoryLevelLayer>(l);
 			return il->value() != dicom::annotations::unknownInflammatoryLevel;
 		}
 	}
@@ -557,7 +543,7 @@ const bool dicom::LayeredImageVisualizer::verifyBloodLevel() const
 	for (int i = 0; i < s; ++i){
 		auto l = image->getLayerItem(currentLayerUser_, i);
 		if(l->getAdnotationIdx() == dicom::annotations::bloodLevel){
-			auto bl = utils::dynamic_pointer_cast<const BloodLevelLayer>(l);
+			auto bl = boost::dynamic_pointer_cast<const BloodLevelLayer>(l);
 			return bl->value() != dicom::annotations::unknownBloodLevel;
 		}
 	}
@@ -576,7 +562,7 @@ const bool dicom::LayeredImageVisualizer::verifyJointType() const
 	for (int i = 0; i < s; ++i){
 		auto l = image->getLayerItem(currentLayerUser_, i);
 		if(l->getAdnotationIdx() == dicom::annotations::jointType){
-			auto jt = utils::dynamic_pointer_cast<const JointTypeLayer>(l);
+			auto jt = boost::dynamic_pointer_cast<const JointTypeLayer>(l);
 			return jt->value() != dicom::annotations::unknownJoint;
 		}
 	}
@@ -595,10 +581,22 @@ const bool dicom::LayeredImageVisualizer::verifyFingerType() const
 	for (int i = 0; i < s; ++i){
 		auto l = image->getLayerItem(currentLayerUser_, i);
 		if(l->getAdnotationIdx() == dicom::annotations::fingerType){
-			auto ft = utils::dynamic_pointer_cast<const FingerTypeLayer>(l);
+			auto ft = boost::dynamic_pointer_cast<const FingerTypeLayer>(l);
 			return ft->value() != dicom::annotations::unknownFinger;
 		}
 	}
 
 	return false;
+}
+
+void dicom::LayeredImageVisualizer::gatherCommunicationInfo(const plugin::IVisualizer::ISerie* serie)
+{
+	UTILS_ASSERT(serie);
+	auto remoteSrcContext = remoteShallowContext(serie);
+	if (remoteSrcContext != nullptr){
+		userName = remoteSrcContext->shallowCopyLocalContext()->localContext()->dataContext()->userName();
+		isReviewer = DicomSource::userIsReviewer(remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->session().get());
+	} else {
+		UTILS_ASSERT(false, "No shallow context");
+	}
 }

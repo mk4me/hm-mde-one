@@ -172,7 +172,9 @@ namespace dicom {
 
 
     };
-    DEFINE_SMART_POINTERS(PointsLayer);
+	typedef boost::shared_ptr<PointsLayer> PointsLayerPtr;
+	typedef boost::shared_ptr<const PointsLayer> PointsLayerConstPtr;
+
 
 	template<typename T>
 	class ValueLayer : public IValueLayer

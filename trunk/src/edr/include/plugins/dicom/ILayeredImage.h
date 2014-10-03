@@ -14,7 +14,7 @@
 #include <plugins/dicom/ILayer.h>
 #include <vector>
 #include <utils/ObjectWrapper.h>
-#include <utils/PtrPolicyStd.h>
+#include <utils/PtrPolicyBoost.h>
 #include <boost/range/iterator_range_core.hpp>
 #include <boost/serialization/access.hpp>
 #include "boost/serialization/assume_abstract.hpp"
@@ -55,12 +55,15 @@ public:
 
     virtual ILayeredImage* clone() const = 0;
 };
-DEFINE_SMART_POINTERS(ILayeredImage);
+typedef boost::shared_ptr<ILayeredImage> ILayeredImagePtr;
+typedef boost::shared_ptr<const ILayeredImage> ILayeredImageConstPtr;
+
 typedef std::vector<dicom::ILayerItemPtr> LayersVector;
-DEFINE_SMART_POINTERS(LayersVector);
+typedef boost::shared_ptr<LayersVector> LayersVectorPtr;
+typedef boost::shared_ptr<const LayersVector> LayersVectorConstPtr;
 }
 
-DEFINE_WRAPPER(dicom::ILayeredImage, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
-DEFINE_WRAPPER(dicom::LayersVector, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
+DEFINE_WRAPPER(dicom::ILayeredImage, utils::PtrPolicyBoost, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(dicom::LayersVector, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
 
 #endif

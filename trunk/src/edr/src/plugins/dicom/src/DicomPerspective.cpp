@@ -129,7 +129,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                         fs::Path xmlFilename(boost::str(boost::format(xmlFilenamePattern) % name));
                         
                         LayeredImageConstPtr img = wrapper->get();
-						LayeredImagePtr ncimg = utils::const_pointer_cast<LayeredImage>(img);
+						LayeredImagePtr ncimg = boost::const_pointer_cast<LayeredImage>(img);
                         
                         std::string imageFilename = stem.string();
                         if (sessionWrp) {

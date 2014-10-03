@@ -88,7 +88,7 @@ dicom::annotations::ImageTypePtr dicom::annotations::instanceImageTypes()
 
 dicom::annotations::AdnotationsTypePtr dicom::annotations::getDefault()
 {
-    AdnotationsTypePtr adn = utils::make_shared<AdnotationsType>();
+    AdnotationsTypePtr adn(new AdnotationsType);
     adn->insert(AdnotationsType::value_type(unknownAnnotation, QObject::tr("unknown annotation"))); 
     adn->insert(AdnotationsType::value_type(otherAnnotation, QObject::tr("other"))); 
     adn->insert(AdnotationsType::value_type(skin, QObject::tr("skin"))); 
@@ -112,7 +112,7 @@ dicom::annotations::AdnotationsTypePtr dicom::annotations::load( const core::Fil
     AdnotationsTypePtr adnotations;
     std::ifstream ifs(p.c_str());
     if (ifs.good()) {
-        adnotations = utils::make_shared<AdnotationsType>();
+        adnotations = AdnotationsTypePtr(new AdnotationsType);
         boost::archive::xml_iarchive xmlIn(ifs);
         xmlIn >> BOOST_SERIALIZATION_NVP(adnotations);
         ifs.close();

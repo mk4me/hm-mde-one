@@ -114,8 +114,8 @@ const bool DicomSource::userIsReviewer(hmdbCommunication::IHMDBSession * session
 
 	if (session != nullptr){
 		try{
-			auto ret = session->authorization()->listMyUserGroupsAssigned();
-			auto userGroups = hmdbServices::xmlWsdl::parseUserGroups(ret);
+			auto lst = session->authorization()->listMyUserGroupsAssigned();
+			auto userGroups = hmdbServices::xmlWsdl::parseUserGroups(lst);
 			auto it = std::find_if(userGroups.begin(), userGroups.end(), [](const hmdbServices::xmlWsdl::UserGroup & ug)
 			{
 				if (ug.id == 11){
@@ -199,7 +199,7 @@ dicom::LayersVectorPtr DicomLoader::loadLayers(const core::Filesystem::Path &p )
 	xmlIn.register_type<FingerTypeLayer>();
 	xmlIn.register_type<JointTypeLayer>();
 	xmlIn.register_type<ImageQualityLayer>();
-    LayersVectorPtr layers = utils::make_shared<LayersVector>();
+    LayersVectorPtr layers = boost::make_shared<LayersVector>();
     //xmlIn >> BOOST_SERIALIZATION_NVP(layers);
     xmlIn >> boost::serialization::make_nvp("layers", *layers);
     ifs.close();
@@ -209,7 +209,7 @@ dicom::LayersVectorPtr DicomLoader::loadLayers(const core::Filesystem::Path &p )
 
 dicom::DicomInternalStructPtr DicomLoader::load( const core::Filesystem::Path& from )
 {
-    DicomInternalStructPtr inter = utils::make_shared<DicomInternalStruct>();
+    DicomInternalStructPtr inter = boost::make_shared<DicomInternalStruct>();
     std::ifstream ifs(from.c_str());
     if (ifs.good()) {
         boost::archive::xml_iarchive xmlIn(ifs);

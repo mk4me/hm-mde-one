@@ -6,18 +6,19 @@
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/export.hpp>
 #include <QtWidgets/QGraphicsItemGroup>
+#include <boost/make_shared.hpp>
 
 
 dicom::LayeredImage::LayeredImage( const QPixmap& pixmap ) : isPowerDoppler_(false), trialID(-1)
 {
     //layers.push_back(utils::make_shared<BackgroundLayer>(pixmap));
-    backgroundLayer = utils::make_shared<BackgroundLayer>(pixmap);
+    backgroundLayer = boost::make_shared<BackgroundLayer>(pixmap);
 }
 
 dicom::LayeredImage::LayeredImage( const std::string& pixmap ) : isPowerDoppler_(false), trialID(-1)
 {
     //layers.push_back(utils::make_shared<BackgroundLayer>(QString::fromStdString(pixmap)));
-    backgroundLayer = utils::make_shared<BackgroundLayer>(QString::fromStdString(pixmap));
+    backgroundLayer = boost::make_shared<BackgroundLayer>(QString::fromStdString(pixmap));
 }
 
 dicom::LayeredImage::LayeredImage() : isPowerDoppler_(false), trialID(-1)
@@ -55,7 +56,7 @@ void dicom::LayeredImage::addLayer( ILayerItemPtr layer, const std::string& laye
     layers.insert(std::make_pair(layerName, layer));
     tags.insert(layerName);
 
-	auto graphicLayer = utils::dynamic_pointer_cast<ILayerGraphicItem>(layer);
+	auto graphicLayer = boost::dynamic_pointer_cast<ILayerGraphicItem>(layer);
 	if(graphicLayer != nullptr){
 		graphicLayers.insert(std::make_pair(layerName, graphicLayer));
 
@@ -75,7 +76,7 @@ void dicom::LayeredImage::removeLayer( ILayerItemConstPtr layer )
         }
     }
 
-	auto graphicLayer = utils::dynamic_pointer_cast<const ILayerGraphicItem>(layer);
+	auto graphicLayer = boost::dynamic_pointer_cast<const ILayerGraphicItem>(layer);
 	if(graphicLayer != nullptr){
 		for (auto it = graphicLayers.begin(); it != graphicLayers.end(); ++it) {
 			if (it->second == layer) {
@@ -226,7 +227,7 @@ void dicom::LayeredImage::setTagVisible( const std::string& tag, bool val )
 dicom::ILayeredImage* dicom::LayeredImage::clone() const
 {
     std::unique_ptr<LayeredImage> img(new LayeredImage());
-    img->backgroundLayer = utils::dynamic_pointer_cast<BackgroundLayer>(ILayerItemPtr(backgroundLayer->clone()));
+    img->backgroundLayer = boost::dynamic_pointer_cast<BackgroundLayer>(ILayerItemPtr(backgroundLayer->clone()));
     for (auto it = layers.begin(); it != layers.end(); ++it) {
         img->addLayer(ILayerItemPtr(it->second->clone()), it->first);
     }

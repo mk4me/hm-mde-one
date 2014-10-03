@@ -18,6 +18,7 @@
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <boost/smart_ptr.hpp>
 
 namespace dicom {
 
@@ -67,7 +68,8 @@ private:
 	//! Pacjenci
     std::vector<internalData::PatientPtr> patients;
 };
-DEFINE_SMART_POINTERS(DicomInternalStruct);
+typedef boost::shared_ptr<DicomInternalStruct> DicomInternalStructPtr;
+typedef boost::shared_ptr<const DicomInternalStruct> DicomInternalStructConstPtr;
 }
 
 DEFINE_WRAPPER_INHERITANCE(dicom::DicomInternalStruct, dicom::IDicomInternalStruct);

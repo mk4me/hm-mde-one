@@ -68,7 +68,8 @@ private:
     mutable QPixmap pixmap;
     mutable QPixmap cropped;
 };
-DEFINE_SMART_POINTERS(BackgroundLayer);
+typedef boost::shared_ptr<BackgroundLayer> BackgroundLayerPtr;
+typedef boost::shared_ptr<const BackgroundLayer> BackgroundLayerConstPtr;
 
 
 }

@@ -121,7 +121,7 @@ dicom::internalData::Patient::Patient( const Patient& other )
     cloneMeta(other);
     sessions.reserve(other.sessions.size());
     for (auto it = other.sessions.begin(); it != other.sessions.end(); ++it) {
-        sessions.push_back(utils::make_shared<Study>(**it));
+        sessions.push_back(boost::make_shared<Study>(**it));
     }
 }
 
@@ -149,7 +149,7 @@ studyId(other.studyId),
 {
     series.reserve(other.series.size());
     for (auto it = other.series.begin(); it != other.series.end(); ++it) {
-        series.push_back(utils::make_shared<Serie>(**it));
+        series.push_back(boost::make_shared<Serie>(**it));
     }
 }
 
@@ -178,7 +178,7 @@ serieId(other.serieId),
 {
     images.reserve(other.images.size());
     for (auto it = other.images.begin(); it != other.images.end(); ++it) {
-        images.push_back(utils::make_shared<Image>(**it));
+        images.push_back(boost::make_shared<Image>(**it));
     }
 }
 

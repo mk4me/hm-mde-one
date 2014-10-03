@@ -195,7 +195,7 @@ void dicom::NormalState::move()
 
 void dicom::NormalState::edit()
 {
-    PointsLayerPtr points = utils::dynamic_pointer_cast<PointsLayer>(getFirstSelected());
+    PointsLayerPtr points = boost::dynamic_pointer_cast<PointsLayer>(getFirstSelected());
     if (points) {
         machine->getEditState()->setLayerToEdit(points);
         machine->setState(machine->getEditState());
@@ -204,7 +204,7 @@ void dicom::NormalState::edit()
 
 void dicom::NormalState::removeLayer()
 {
-    PointsLayerPtr points = utils::dynamic_pointer_cast<PointsLayer>(getFirstSelected());
+    PointsLayerPtr points = boost::dynamic_pointer_cast<PointsLayer>(getFirstSelected());
     if (points) {
         auto image = machine->getSerie()->getImage();
         auto tags = image->getTags();

@@ -11,10 +11,12 @@
 #define HEADER_GUARD_DICOM__IDICOMINTERNALSTRUCT_H__
 
 #include <utils/SmartPtr.h>
-#include <utils/PtrPolicyStd.h>
+#include <utils/PtrPolicyBoost.h>
 #include <vector>
 #include <boost/tuple/tuple.hpp>
 #include <boost/range.hpp>
+#include <boost/shared_ptr.hpp>
+
 
 namespace dicom {
 
@@ -43,7 +45,9 @@ namespace dicom {
 				ar & boost::serialization::make_nvp("isPowerDoppler", isPowerDoppler);
 			}
 		};
-		DEFINE_SMART_POINTERS(Image);
+		typedef boost::shared_ptr<Image> ImagePtr;                 
+		typedef boost::shared_ptr<const Image> ImageConstPtr;
+
 
 
 		typedef boost::tuple<std::string, std::string, std::string> DateTuple;
@@ -91,7 +95,8 @@ namespace dicom {
 				ar & boost::serialization::make_nvp("images", images);
 			}
 		};
-		DEFINE_SMART_POINTERS(Serie)
+		typedef boost::shared_ptr<Serie> SeriePtr;
+		typedef boost::shared_ptr<const Serie> SerieConstPtr;
 
 			//! Opis wizyty
 		struct Study {
@@ -132,7 +137,9 @@ namespace dicom {
 				ar & boost::serialization::make_nvp("studyNumber", studyNumber);
 			}
 		};
-		DEFINE_SMART_POINTERS(Study)
+		typedef boost::shared_ptr<Study> StudyPtr;
+		typedef boost::shared_ptr<const Study> StudyConstPtr;
+		
 
 			//! Opis pacjenta
 		struct Patient {
@@ -164,7 +171,8 @@ namespace dicom {
 				ar & boost::serialization::make_nvp("sessions", sessions);
 			}
 		};
-		DEFINE_SMART_POINTERS(Patient);
+		typedef boost::shared_ptr<Patient> PatientPtr;
+		typedef boost::shared_ptr<const Patient> PatientConstPtr;
 	}
 
 
@@ -181,8 +189,9 @@ public:
 	//! \return Pacjent o zadanym numerze
 	virtual internalData::PatientConstPtr getPatient(int no) const = 0;
 };
-DEFINE_SMART_POINTERS(IDicomInternalStruct);
+typedef boost::shared_ptr<IDicomInternalStruct> IDicomInternalStructPtr;
+typedef boost::shared_ptr<const IDicomInternalStruct> IDicomInternalStructConstPtr;
 }
 
-DEFINE_WRAPPER(dicom::IDicomInternalStruct, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
+DEFINE_WRAPPER(dicom::IDicomInternalStruct, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
 #endif
