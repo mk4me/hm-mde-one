@@ -22,9 +22,9 @@ InternalXmlParser::~InternalXmlParser()
 
 void InternalXmlParser::parse( const std::string & source  )
 {
-	sessionInternal = utils::ObjectWrapper::create<IDicomInternalStruct>();
+	sessionInternal = utils::ObjectWrapper::create<DicomInternalStruct>();
     DicomInternalStructPtr inter = DicomLoader::load(source);
-	sessionInternal->set(boost::dynamic_pointer_cast<IDicomInternalStruct>(inter));
+	sessionInternal->set(inter);
     //LayeredImagePtr l = utils::make_shared<LayeredImage>(source);
     //image->set(l);
 }
@@ -39,7 +39,7 @@ void InternalXmlParser::acceptedExpressions(Expressions & expressions) const
     ExpressionDescription expDesc;
     expDesc.description = "Internal Dicom Xml";
 
-    expDesc.objectsTypes.push_back(typeid(IDicomInternalStruct));
+    expDesc.objectsTypes.push_back(typeid(DicomInternalStruct));
     expressions.insert(Expressions::value_type(".*[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}\\.xml$", expDesc));
 
     //std::cmatch cm;

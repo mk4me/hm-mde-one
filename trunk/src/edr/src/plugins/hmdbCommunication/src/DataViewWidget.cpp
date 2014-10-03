@@ -1430,7 +1430,9 @@ const hmdbCommunication::StorageFileNames extractItemFiles(const QTreeWidgetItem
 
 		if (mapContentTypeToDataType(contentItem->contentType(), dt) == true){
 			const auto sf = ShallowCopyUtils::files(dt, contentItem->id(), shalowCopy, true);
+			const auto esf = ShallowCopyUtils::extraFiles(dt, contentItem->id(), shalowCopy);
 			ret.insert(sf.begin(), sf.end());
+			ret.insert(esf.begin(), esf.end());
 			found = true;
 		}
 	}

@@ -293,23 +293,6 @@ const ShallowCopyUtils::StorageUserFiles ShallowCopyUtils::groupedShallowCopiesN
 	return ret;
 }
 
-const StorageFileNames ShallowCopyUtils::files(const ShallowCopy & shallowCopy)
-{
-	StorageFileNames ret;
-
-	for (auto it = shallowCopy.motionShallowCopy.files.begin();
-		it != shallowCopy.motionShallowCopy.files.end(); ++it){
-		IHMDBRemoteContext::FileDescriptor fd;
-		fd.id.fileID = it->first;
-		fd.fileName = it->second->fileName;
-		fd.fileSize = it->second->fileSize;
-		fd.id.dataReference = IHMDBRemoteContext::Motion;
-		ret[it->first] = fd;
-	}
-
-	return ret;
-}
-
 void extractFiles(StorageFileNames & storageFiles,
 	const hmdbServices::MotionShallowCopy::Files & files)
 {
@@ -359,6 +342,15 @@ void extractFiles(StorageFileNames & storageFiles,
 	}
 }
 
+const StorageFileNames ShallowCopyUtils::files(const ShallowCopy & shallowCopy)
+{
+	StorageFileNames ret;
+
+	extractFiles(ret, shallowCopy.motionShallowCopy.files);
+
+	return ret;
+}
+
 const StorageFileNames ShallowCopyUtils::files(const DataType dataType,
 	const ShallowCopy & shallowCopy, const bool recursive)
 {
@@ -374,9 +366,6 @@ const StorageFileNames ShallowCopyUtils::files(const DataType dataType,
 		for (auto it = shallowCopy.motionShallowCopy.trials.begin();
 			it != shallowCopy.motionShallowCopy.trials.end(); ++it){
 			extractFiles(ret, it->second);
-			if (it->second->session != nullptr){
-				extractFiles(ret, it->second->session, false);
-			}
 		}
 
 		break;
@@ -463,6 +452,72 @@ const StorageFileNames ShallowCopyUtils::files(const DataType dataType,
 		auto it = shallowCopy.medicalShallowCopy.patients.find(id);
 		if (it != shallowCopy.medicalShallowCopy.patients.end()){
 			extractFiles(ret, it->second, recursive);
+		}
+	}
+		break;
+	}
+
+	return ret;
+}
+
+const StorageFileNames ShallowCopyUtils::extraFiles(const DataType dataType,
+	const ShallowCopy & shallowCopy)
+{
+	StorageFileNames ret;
+
+	switch (dataType)
+	{
+	case FileType:
+	{
+		for (auto it = shallowCopy.motionShallowCopy.files.begin();
+			it != shallowCopy.motionShallowCopy.files.end(); ++it){
+			if (it->second->session != nullptr){
+				extractFiles(ret, it->second->session, false);
+			}
+		}
+	}
+		break;
+
+	case MotionType:
+	{
+		for (auto it = shallowCopy.motionShallowCopy.trials.begin();
+			it != shallowCopy.motionShallowCopy.trials.end(); ++it){
+			if (it->second->session != nullptr){
+				extractFiles(ret, it->second->session, false);
+			}
+		}
+	}
+		break;
+	}
+
+	return ret;
+}
+
+const StorageFileNames ShallowCopyUtils::extraFiles(const DataType dataType,
+	const hmdbServices::ID id, const ShallowCopy & shallowCopy)
+{
+	StorageFileNames ret;
+
+	switch (dataType)
+	{
+	case FileType:
+	{
+		auto it = shallowCopy.motionShallowCopy.files.find(id);
+		if (it != shallowCopy.motionShallowCopy.files.end()){
+			if (it->second->session != nullptr){
+				extractFiles(ret, it->second->session, false);
+			}
+		}
+	}
+		break;
+
+	case MotionType:
+	{
+		auto it = shallowCopy.motionShallowCopy.trials.find(id);
+		if (it != shallowCopy.motionShallowCopy.trials.end()){
+			if (it->second->session != nullptr){
+				extractFiles(ret, it->second->session, false);
+			}
 		}
 	}
 		break;

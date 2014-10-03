@@ -24,6 +24,7 @@
 #include <corelib/IServiceManager.h>
 #include <corelib/ISourceManager.h>
 #include <corelib/IParserManagerReader.h>
+#include <utils/Utils.h>
 
 using namespace hmdbCommunication;
 
@@ -70,117 +71,6 @@ HMDBShallowCopyLocalContext::HMDBShallowCopyLocalContext(IHMDBShallowCopyDataCon
 HMDBShallowCopyLocalContext::~HMDBShallowCopyLocalContext()
 {
 	unloadAll();
-}
-
-void files(const hmdbServices::MotionShallowCopy::Files & files,
-	std::map<hmdbServices::ID, std::string> & fileIDs)
-{
-	for (auto it = files.begin(); it != files.end(); ++it){
-		fileIDs[it->second->fileID] = it->second->fileName;
-	}
-}
-
-void motionsToFiles(const hmdbServices::MotionShallowCopy::Trials & trials,
-	std::map<hmdbServices::ID, std::string> & filesIDs)
-{
-	for (auto it = trials.begin(); it != trials.end(); ++it){
-		files(it->second->files, filesIDs);
-	}
-}
-
-void sessionToFiles(const hmdbServices::MotionShallowCopy::Session * session,
-	std::map<hmdbServices::ID, std::string> & filesIDs)
-{
-	files(session->files, filesIDs);
-	motionsToFiles(session->trials, filesIDs);
-}
-
-void subjectToFiles(const hmdbServices::MotionShallowCopy::Performer * subject,
-	std::map<hmdbServices::ID, std::string> & filesIDs)
-{
-	for (auto it = subject->performerConfs.begin(); it != subject->performerConfs.end(); ++it)
-	{
-		sessionToFiles(it->second->session, filesIDs);
-	}
-}
-
-const std::map<hmdbServices::ID, std::string> filesToProcess(const DataType type,
-	const hmdbServices::ID id, const ShallowCopyConstPtr shallowCopy)
-{
-	std::map<hmdbServices::ID, std::string> ret;
-
-	if (id < 0){
-		files(shallowCopy->motionShallowCopy.files, ret);
-	}
-	else{
-
-		switch (type)
-		{
-		case FileType:
-
-		{
-			auto it = shallowCopy->motionShallowCopy.files.find(id);
-			if (it != shallowCopy->motionShallowCopy.files.end()){
-				ret[id] = it->second->fileName;
-			}
-		}
-
-			break;
-
-		case MotionType:
-
-		{
-			auto it = shallowCopy->motionShallowCopy.trials.find(id);
-			if (it != shallowCopy->motionShallowCopy.trials.end()){
-				files(it->second->files, ret);
-			}
-
-			if (it->second->session != nullptr){
-				files(it->second->session->files, ret);
-			}
-		}
-
-			break;
-
-		case SessionType:
-
-		{
-			auto it = shallowCopy->motionShallowCopy.sessions.find(id);
-			if (it != shallowCopy->motionShallowCopy.sessions.end()){
-				sessionToFiles(it->second, ret);
-			}
-		}
-
-			break;
-
-		case SubjectType:
-
-		{
-			auto it = shallowCopy->motionShallowCopy.performers.find(id);
-			if (it != shallowCopy->motionShallowCopy.performers.end()){
-				subjectToFiles(it->second, ret);
-			}
-		}
-
-			break;
-
-		case PatientType:
-
-		{
-			auto it = shallowCopy->medicalShallowCopy.patients.find(id);
-			if (it != shallowCopy->medicalShallowCopy.patients.end()){
-				if (it->second->performer != nullptr){
-					subjectToFiles(it->second->performer, ret);
-				}
-			}
-		}
-
-			break;
-
-		}
-	}
-
-	return ret;
 }
 
 void childItems(const hmdbServices::MotionShallowCopy::Files & files,
@@ -470,13 +360,13 @@ const core::ConstVariantsList HMDBShallowCopyLocalContext::data(const DataType t
 	return ret;
 }
 
-const std::map<hmdbServices::ID, std::string> filterSupportedFiles(const std::map<hmdbServices::ID, std::string> & inFiles)
+const hmdbCommunication::StorageFileNames filterSupportedFiles(const hmdbCommunication::StorageFileNames & inFiles)
 {
 	auto pmr = plugin::getParserManagerReader();
-	std::map<hmdbServices::ID, std::string> ret;
+	hmdbCommunication::StorageFileNames ret;
 
 	for (auto f : inFiles){
-		if (pmr->sourceIsAccepted(f.second) == true){
+		if (pmr->sourceIsAccepted(f.second.fileName) == true){
 			ret.insert(f);
 		}
 	}
@@ -484,10 +374,10 @@ const std::map<hmdbServices::ID, std::string> filterSupportedFiles(const std::ma
 	return ret;
 }
 
-const std::map<hmdbServices::ID, std::string> filterFiles(const std::map<hmdbServices::ID, std::string> & inFiles,
+const hmdbCommunication::StorageFileNames filterFiles(const hmdbCommunication::StorageFileNames & inFiles,
 	const IHMDBStatusManager::TransactionConstPtr transaction, const DataStatus & status)
 {
-	std::map<hmdbServices::ID, std::string> ret;
+	hmdbCommunication::StorageFileNames ret;
 
 	for (auto it = inFiles.begin(); it != inFiles.end(); ++it){
 		auto fs = transaction->dataStatus(FileType, it->first);
@@ -993,12 +883,24 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 	}
 }
 
+const hmdbCommunication::StorageFileNames filesToProcess(const DataType type,
+	const hmdbServices::ID id, const hmdbCommunication::ShallowCopy & shallowCopy )
+{
+	auto files = hmdbCommunication::ShallowCopyUtils::files(type, id, shallowCopy);
+	auto extraFiles = hmdbCommunication::ShallowCopyUtils::extraFiles(type, id, shallowCopy);
+
+	files = utils::mergeOrdered(files, extraFiles);
+
+	return files;
+}
+
 const bool HMDBShallowCopyLocalContext::load(const DataType type,
 	const hmdbServices::ID id)
 {
 	bool ret = false;
 
-	auto files = filesToProcess(type, id, shallowCopyContext_->shallowCopy());
+	auto files = filesToProcess(type, id, *shallowCopyContext_->shallowCopy());
+
 	files = filterSupportedFiles(files);
 
 	auto dsT = shallowCopyContext_->dataStatusManager()->transaction();
@@ -1009,9 +911,9 @@ const bool HMDBShallowCopyLocalContext::load(const DataType type,
 		IndexedData indexedData;
 		Indexes loadedFiles;
 		for (auto it = files.begin(); it != files.end(); ++it){
-			t->load(it->second);
+			t->load(it->second.fileName);
 			dsT->updateDataStatus(FileType, it->first, DataStatus(DataStatus::Loaded));
-			core::ConstVariantsList loadedData = t->data(it->second);
+			core::ConstVariantsList loadedData = t->data(it->second.fileName);
 			if (loadedData.empty() == false){
 				indexedData[it->first] = loadedData;
 				loadedFiles.insert(it->first);
@@ -1077,7 +979,8 @@ const bool HMDBShallowCopyLocalContext::unload(const DataType type,
 {
 	bool ret = false;
 
-	auto files = filesToProcess(type, id, shallowCopyContext_->shallowCopy());
+	auto files = filesToProcess(type, id, *shallowCopyContext_->shallowCopy());
+
 	files = filterSupportedFiles(files);
 
 	auto dsT = shallowCopyContext_->dataStatusManager()->transaction();
@@ -1088,9 +991,9 @@ const bool HMDBShallowCopyLocalContext::unload(const DataType type,
 		IndexedData indexedData;
 		auto t = localContext_->transaction();
 		for (auto it = files.begin(); it != files.end(); ++it){
-			indexedData[it->first] = t->data(it->second);
+			indexedData[it->first] = t->data(it->second.fileName);
 			unloadFiles.insert(it->first);
-			t->unload(it->second);
+			t->unload(it->second.fileName);
 			dsT->updateDataStatus(FileType, it->first, DataStatus(DataStatus::Unloaded));			
 		}
 

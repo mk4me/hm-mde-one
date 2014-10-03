@@ -92,6 +92,19 @@ namespace hmdbCommunication
 		//! \return Zbiór plików
 		static const StorageFileNames files(const ShallowCopy & shallowCopy);
 
+		//! \param dataType Typ danych dla któego chcemy wyciągnąc pliki
+		//! \param shallowCopy Płytka kopia na bazie której wyciągamy pliki		
+		//! \return Zbiór plików
+		static const StorageFileNames extraFiles(const DataType dataType,
+			const ShallowCopy & shallowCopy);
+
+		//! \param dataType Typ danych dla któego chcemy wyciągnąc pliki
+		//! \param id Identyfikator danych
+		//! \param shallowCopy Płytka kopia na bazie której wyciągamy pliki		
+		//! \return Zbiór plików
+		static const StorageFileNames extraFiles(const DataType dataType,
+			const hmdbServices::ID id, const ShallowCopy & shallowCopy);
+
 		//! \param userHash Skrót użytkownika którego kopię sprawdzamy
 		//! \param dataReference Referencja danych
 		//! \param shallowType Typ płytkiej kopii o która pytamy

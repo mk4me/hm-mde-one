@@ -177,6 +177,26 @@ private:
 	Functor cleanup;
 };
 
+//------------------------------------------------------------------------------
+
+template<class T>
+const T mergeUnordered(const T & a, const T & b)
+{
+	T ret(a);
+	ret.insert(ret.end(), b.begin(), b.end());
+	return ret;
+}
+
+//------------------------------------------------------------------------------
+
+template<class T>
+const T mergeOrdered(const T & a, const T & b)
+{
+	T ret(a);
+	ret.insert(b.begin(), b.end());
+	return ret;
+}
+
 
 //------------------------------------------------------------------------------
 /**

@@ -306,7 +306,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
 
    QWidget* commWidget = commSource->getWidget();
    //icomm->setCompactMode(true);
-   commWidget->setMaximumWidth(304);
+   //commWidget->setMaximumWidth(304);
 
    QSplitter* compound = new QSplitter();
    AnalisisWidget* aw = new AnalisisWidget(analysisModel, contextEventFilter, nullptr);
