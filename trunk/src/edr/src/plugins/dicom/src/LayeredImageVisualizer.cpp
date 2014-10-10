@@ -24,6 +24,7 @@
 #include <plugins/hmdbCommunication/IHMDBSession.h>
 #include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
+#include <plugins/dicom/Annotations.h>
 #include <hmdbserviceslib/IBasicUpdatesWS.h>
 #include <hmdbserviceslib/IAuthorizationWS.h>
 #include "DicomSource.h"

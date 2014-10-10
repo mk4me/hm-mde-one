@@ -19,6 +19,7 @@
 #include "AnnotationsDelegate.h"
 #include "IDicomService.h"
 #include <hmdbserviceslib/Entity.h>
+#include "corelib/IVisualizer.h"
 
 class QGraphicsScene;
 
@@ -89,6 +90,8 @@ namespace dicom {
 
 		const AnnotationStatus annotationStatus() const;
 
+		const AnnotationStatus getAnnotationStatus(const plugin::IVisualizer::ISerie* serie, const std::string& user, int trialId) const;
+
 		const bool verifySerie();
 
 	private:
@@ -103,8 +106,8 @@ namespace dicom {
 		coreUI::CoreAction* rejectAction;
 		coreUI::CoreAction* toVerifyAction;
 
-		mutable hmdbServices::DateTime lastUpdate;
-		mutable std::map<int, std::map<int, AnnotationStatus>> annotations;
+		static  hmdbServices::DateTime lastUpdate;
+		static  std::map<int, std::map<int, AnnotationStatus>> annotations;
 	};
 }
 #endif

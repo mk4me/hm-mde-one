@@ -32,6 +32,23 @@ private:
 };
 DEFINE_SMART_POINTERS(DicomHelper);
 
+//! Klasa pomocnicza przy tworzeniu wizualizatorów
+class DicomMultiHelper : public core::HierarchyHelper
+{
+public:
+	DicomMultiHelper(const std::vector<DicomHelperPtr>& helpers);
+
+protected:
+	virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
+public:
+	virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
+	virtual std::vector<utils::TypeInfo> getTypeInfos() const;
+
+private:
+	std::vector<DicomHelperPtr> helpers;
+};
+DEFINE_SMART_POINTERS(DicomMultiHelper);
+
 //! Klasa realizuj¹ca perspektywe danych
 class DicomPerspective : public hmdbCommunication::IHierarchyPerspective
 {

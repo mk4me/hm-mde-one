@@ -24,6 +24,7 @@
 #include <boost/format.hpp>
 #include "LayeredSerie.h"
 #include "LayeredImageVisualizerView.h"
+#include "plugins/hmdbCommunication/IHMDBShallowCopyContext.h"
 
 typedef core::Filesystem fs;
 
@@ -105,8 +106,10 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
 			PLUGIN_LOG_ERROR("No session file found!");
 			UTILS_ASSERT(false);
 		}
-        core::IHierarchyItemPtr sessionItem(new core::HierarchyItem(label, desc));
+        core::HierarchyDataItemPtr sessionItem(new core::HierarchyDataItem(QIcon(), label, desc));
+	    
         rootItem->appendChild(sessionItem);
+		std::vector<DicomHelperPtr> helpers;
         s->getMotions(motions);
 
         BOOST_FOREACH(core::VariantConstPtr motionOW, motions) {	
@@ -143,8 +146,21 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
 								ncimg->setIsPowerDoppler(internalImage->isPowerDoppler);
                             }
                         }
-
-						//ncimg->setTrialID(comm->trialID(stem.string()));
+						int trialID = -1;
+						{
+							/*auto ss = stem.string();
+							const hmdbCommunication::IHMDBShallowCopyContextPtr shallow = comm->shallowContextForData(wrapper);
+							auto shallowCopy = shallow->shallowCopyDataContext()->shallowCopy()->motionShallowCopy;
+							auto& trials = shallowCopy.trials;
+							for (auto it = trials.begin(); it != trials.end(); ++it) {
+								auto* trial = it->second;
+								if (ss.find(trial->trialName) != std::string::npos) {
+									trialID = trial->trialID;
+									break;
+								}
+							}*/
+						}
+						ncimg->setTrialID(trialID);
                         
                         QIcon icon;
                         auto hasAnnotation = [&](const std::string& filename, const core::ConstVariantsList& layers) -> bool {
@@ -166,6 +182,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                         }
                         
                         DicomHelperPtr helper = DicomHelperPtr(new DicomHelper(wrapper, layers, xmlFilenamePattern, trialName));
+						helpers.push_back(helper);
                         core::HierarchyDataItemPtr imgItem(new core::HierarchyDataItem(icon, QString::fromStdString(imageFilename), desc, helper));
                         std::string mapName = imageFilename + ".png";
 
@@ -186,6 +203,9 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                 }
             }
         }
+
+		DicomMultiHelperPtr helper = utils::make_shared<DicomMultiHelper>(helpers);
+		sessionItem->addHelper(helper);
     }
 
     if (hasData) {
@@ -400,4 +420,27 @@ dicom::DicomHelper::DicomHelper( const core::VariantConstPtr & wrapper, const co
     trialName(trialName)
 {
 
+}
+
+void dicom::DicomMultiHelper::createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series)
+{
+	for (auto& helper : helpers) {
+		helper->createSeries(visualizer, path, series);
+	}
+}
+
+core::VisualizerPtr dicom::DicomMultiHelper::createVisualizer(core::IVisualizerManager* manager)
+{
+	return helpers[0]->createVisualizer(manager);
+}
+
+std::vector<utils::TypeInfo> dicom::DicomMultiHelper::getTypeInfos() const
+{
+	return helpers[0]->getTypeInfos();
+}
+
+dicom::DicomMultiHelper::DicomMultiHelper(const std::vector<DicomHelperPtr>& helpers)
+{
+	this->helpers = helpers;
+	UTILS_ASSERT(helpers.empty() == false);
 }

@@ -155,4 +155,3 @@ core::Filesystem::Path dicom::annotations::adnotationsFile()
 {
     return plugin::getUserApplicationDataPath("DicomAdnotations.xml");
 }
-

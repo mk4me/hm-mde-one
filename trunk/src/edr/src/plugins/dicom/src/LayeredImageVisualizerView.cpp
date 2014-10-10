@@ -20,6 +20,8 @@
 #include <coreui/CoreCursorChanger.h>
 
 using namespace dicom;
+hmdbServices::DateTime LayeredImageVisualizerView::lastUpdate;
+std::map<int, std::map<int, LayeredImageVisualizerView::AnnotationStatus>> LayeredImageVisualizerView::annotations;
 
 LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* model, QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/) :
 model(model),
@@ -423,60 +425,14 @@ const bool dicom::LayeredImageVisualizerView::verifySerie()
 const dicom::LayeredImageVisualizerView::AnnotationStatus dicom::LayeredImageVisualizerView::annotationStatus() const
 {
 	try{
-		auto rsc = LayeredImageVisualizer::remoteShallowContext(model->getActiveSerie());
-		auto session = rsc->shallowCopyRemoteContext()->remoteContext()->session();
+		return getAnnotationStatus(model->getActiveSerie(), model->getCurrentLayerUserName(), model->currnetTrialID());
 
-		auto modTime = session->motionQueries()->dataModificationTime();
-		if (lastUpdate < modTime){
-			auto resp = session->motionQueries()->listAnnotationsXML();
-			auto annotations = hmdbServices::xmlWsdl::parseAnnotations(resp);
-
-			std::map<int, std::map<int, AnnotationStatus>> annotationsByUsers;
-
-			for (const hmdbServices::xmlWsdl::Annotation & a : annotations){
-				AnnotationStatus as;
-				as.status = a.status;
-				as.comment = a.comment;
-				as.note = a.note;
-				annotationsByUsers[a.trialID][a.userID] = as;
-			}
-
-			this->annotations = annotationsByUsers;
-			lastUpdate = modTime;
-		}
-
-		auto sIT = annotations.find(model->currnetTrialID());
-		if (sIT != annotations.end()){
-
-			auto resp = session->authorization()->listUsers();
-			auto usersList = hmdbServices::xmlWsdl::parseUsersList(resp);
-
-			auto it = std::find_if(usersList.begin(), usersList.end(), [=](const hmdbServices::xmlWsdl::UserDetails & ud)
-			{
-				if (ud.login == model->getCurrentLayerUserName()){
-					return true;
-				}
-				else{
-					return false;
-				}
-			});
-
-			if (it != usersList.end()){
-				auto IT = sIT->second.find(it->id);
-				if (IT != sIT->second.end()){
-					return IT->second;
-				}
-			}
-		}
 	}
 	catch (...){
 		coreUI::CorePopup::showMessage(tr("Failed to get annotation status"), tr("Annotation status request failed. Please try again or contact software developers"));
 	}
 
-	AnnotationStatus as;
-	as.status = hmdbServices::xmlWsdl::AnnotationStatus::Unspecified;
-
-	return as;
+	
 }
 
 void dicom::LayeredImageVisualizerView::selectionChanged(const QModelIndex &)
@@ -618,4 +574,58 @@ void dicom::LayeredImageVisualizerView::changeSelection(const QModelIndex &mi)
 {
 	ui->treeView->selectionModel()->select(mi, QItemSelectionModel::ClearAndSelect);
 	selectionChanged(mi);
+}
+
+const dicom::LayeredImageVisualizerView::AnnotationStatus dicom::LayeredImageVisualizerView::getAnnotationStatus(const plugin::IVisualizer::ISerie* serie, const std::string& user, int trialId) const
+{
+	auto rsc = LayeredImageVisualizer::remoteShallowContext(serie);
+	auto session = rsc->shallowCopyRemoteContext()->remoteContext()->session();
+
+	auto modTime = session->motionQueries()->dataModificationTime();
+	if (lastUpdate < modTime){
+		auto resp = session->motionQueries()->listAnnotationsXML();
+		auto annotations = hmdbServices::xmlWsdl::parseAnnotations(resp);
+
+		std::map<int, std::map<int, AnnotationStatus>> annotationsByUsers;
+
+		for (const hmdbServices::xmlWsdl::Annotation & a : annotations){
+			AnnotationStatus as;
+			as.status = a.status;
+			as.comment = a.comment;
+			as.note = a.note;
+			annotationsByUsers[a.trialID][a.userID] = as;
+		}
+
+		this->annotations = annotationsByUsers;
+		lastUpdate = modTime;
+	}
+
+	auto sIT = annotations.find(trialId);
+	if (sIT != annotations.end()){
+
+		auto resp = session->authorization()->listUsers();
+		auto usersList = hmdbServices::xmlWsdl::parseUsersList(resp);
+
+		auto it = std::find_if(usersList.begin(), usersList.end(), [=](const hmdbServices::xmlWsdl::UserDetails & ud)
+		{
+			if (ud.login == user){
+				return true;
+			}
+			else{
+				return false;
+			}
+		});
+
+		if (it != usersList.end()){
+			auto IT = sIT->second.find(it->id);
+			if (IT != sIT->second.end()){
+				return IT->second;
+			}
+		}
+	}
+
+	AnnotationStatus as;
+	as.status = hmdbServices::xmlWsdl::AnnotationStatus::Unspecified;
+
+	return as;
 }
