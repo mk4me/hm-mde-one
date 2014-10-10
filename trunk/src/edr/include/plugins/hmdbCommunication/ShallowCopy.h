@@ -26,6 +26,22 @@ namespace hmdbCommunication
 		hmdbServices::MotionShallowCopy::ShallowCopy motionShallowCopy;
 		//! Metadane ruchu
 		hmdbServices::MotionMetaData::MetaData motionMetaData;
+
+		ShallowCopy() = default;
+		ShallowCopy(const ShallowCopy & other) = delete;
+		ShallowCopy(ShallowCopy && other) : medicalShallowCopy(std::move(other.medicalShallowCopy)),
+			medicalMetaData(std::move(other.medicalMetaData)), motionShallowCopy(std::move(other.motionShallowCopy)),
+			motionMetaData(std::move(other.motionMetaData)) {}
+
+		ShallowCopy& operator=(const ShallowCopy & other) = delete;
+		ShallowCopy& operator=(ShallowCopy && other)
+		{
+			medicalShallowCopy = std::move(other.medicalShallowCopy);
+			medicalMetaData = std::move(other.medicalMetaData);
+			motionShallowCopy = std::move(other.motionShallowCopy);
+			motionMetaData = std::move(other.motionMetaData);
+			return *this;
+		}
 	};
 
 	DEFINE_SMART_POINTERS(ShallowCopy);

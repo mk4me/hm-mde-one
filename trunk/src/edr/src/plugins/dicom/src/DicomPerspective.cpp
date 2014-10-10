@@ -148,9 +148,9 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                         }
 						int trialID = -1;
 						{
-							/*auto ss = stem.string();
+							auto ss = stem.string();
 							const hmdbCommunication::IHMDBShallowCopyContextPtr shallow = comm->shallowContextForData(wrapper);
-							auto shallowCopy = shallow->shallowCopyDataContext()->shallowCopy()->motionShallowCopy;
+							auto & shallowCopy = shallow->shallowCopyDataContext()->shallowCopy()->motionShallowCopy;
 							auto& trials = shallowCopy.trials;
 							for (auto it = trials.begin(); it != trials.end(); ++it) {
 								auto* trial = it->second;
@@ -158,7 +158,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
 									trialID = trial->trialID;
 									break;
 								}
-							}*/
+							}
 						}
 						ncimg->setTrialID(trialID);
                         

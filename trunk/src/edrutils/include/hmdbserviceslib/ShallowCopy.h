@@ -1,11 +1,11 @@
 /********************************************************************
-	created:  2013/11/05
-	created:  5:11:2013   10:19
-	filename: ShallowCopy.h
-	author:   Mateusz Janiak
+created:  2013/11/05
+created:  5:11:2013   10:19
+filename: ShallowCopy.h
+author:   Mateusz Janiak
 
-	purpose:
-	*********************************************************************/
+purpose:
+*********************************************************************/
 #ifndef HEADER_GUARD__HMDBSERVICES_SHALLOWCOPY_H__
 #define HEADER_GUARD__HMDBSERVICES_SHALLOWCOPY_H__
 
@@ -178,6 +178,11 @@ namespace hmdbServices
 
 			//! Domyœlny konstruktor
 			ShallowCopy() : timestamp(0) {}
+			ShallowCopy(const ShallowCopy & other) = delete;
+			ShallowCopy(ShallowCopy && other) : timestamp(std::move(other.timestamp)), sessions(std::move(other.sessions)),
+				groupAssigments(std::move(other.groupAssigments)), trials(std::move(other.trials)),
+				performers(std::move(other.performers)), performerConfs(std::move(other.performerConfs)),
+				files(std::move(other.files)) {}
 		};
 	}
 
@@ -242,6 +247,9 @@ namespace hmdbServices
 
 			//! Konstruktor domyœlny
 			ShallowCopy() : timestamp(0) {}
+			ShallowCopy(const ShallowCopy & other) = delete;
+			ShallowCopy(ShallowCopy && other) : timestamp(std::move(other.timestamp)),
+				disorders(std::move(other.disorders)), patients(std::move(other.patients)) {}
 		};
 	}
 
@@ -313,6 +321,10 @@ namespace hmdbServices
 
 			//! Domyœlny konstruktor
 			MetaData() : timestamp(0) {}
+			MetaData(const MetaData & other) = delete;
+			MetaData(MetaData && other) : sessionGroups(std::move(other.sessionGroups)),
+				motionKinds(std::move(other.motionKinds)), labs(std::move(other.labs)),
+				attributeGroups(std::move(other.attributeGroups)) {}
 		};
 	}
 
@@ -347,6 +359,9 @@ namespace hmdbServices
 
 			//! Domyœlny konstruktor
 			MetaData() : timestamp(0) {}
+			MetaData(const MetaData & other) = delete;
+			MetaData(MetaData && other) : examTypes(std::move(other.examTypes)),
+				disorderTypes(std::move(other.disorderTypes)) {}
 		};
 	}
 }
