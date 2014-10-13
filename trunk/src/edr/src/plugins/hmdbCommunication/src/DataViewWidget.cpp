@@ -1751,7 +1751,7 @@ void DataViewWidget::onContextMenu(QPoint position)
 				ui->actionLoad->setEnabled((ds.usage() & hmdbCommunication::DataStatus::Unloaded) && (ds.storage() & hmdbCommunication::DataStatus::Local));
 				ui->actionUnload->setEnabled(ds.usage() & hmdbCommunication::DataStatus::Loaded);
 				ui->actionDownload->setEnabled(ds.storage() & hmdbCommunication::DataStatus::Remote);
-				ui->actionForceDownload->setEnabled((ds.storage() & hmdbCommunication::DataStatus::Local) && (ds.validity() & hmdbCommunication::DataStatus::Outdated));
+				ui->actionForceDownload->setEnabled(ds.storage() & hmdbCommunication::DataStatus::Local);
 			}
 		}
 
