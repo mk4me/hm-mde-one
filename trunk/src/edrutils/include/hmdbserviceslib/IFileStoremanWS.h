@@ -150,8 +150,8 @@ namespace hmdbServices
 		//uzupełnić dokumentację
 		//! \param fileID Identyfikator pliku, który nadpisujemy
 		//! \param path Ścieżka pliku
-		//! \param filename [out] Nazwa pliku
-		virtual void replaceFile(int fileID, const std::string& path, std::string& filename) = 0;
+		//! \param filename Nazwa pliku
+		virtual void replaceFile(int fileID, const std::string& path, const std::string& filename) = 0;
 	};
 
 	typedef utils::shared_ptr<IMotionFileStoremanWS> MotionFileStoremanWSPtr;

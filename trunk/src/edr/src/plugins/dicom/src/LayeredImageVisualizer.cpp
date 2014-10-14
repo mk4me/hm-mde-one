@@ -28,6 +28,7 @@
 #include <hmdbserviceslib/IBasicUpdatesWS.h>
 #include <hmdbserviceslib/IAuthorizationWS.h>
 #include "DicomSource.h"
+#include <hmdbserviceslib/IFileStoremanWS.h>
 
 using namespace dicom;
 
@@ -427,17 +428,34 @@ void dicom::LayeredImageVisualizer::uploadSerie()
 {
 	saveSerie();
 	if (correctIndex(currentSerie)) {
+
+		if (currentTrialID < 0){
+			//TODO
+			//message coœ nie tak
+			return;
+		}
 		
-		try{
+		core::Filesystem::Path p(series[currentSerie]->getXmlOutputFilename());
+		const auto fileName = p.filename().string();
 
-			core::Filesystem::Path p(series[currentSerie]->getXmlOutputFilename());
+		hmdbServices::ID fileID = -1;
+
+		auto remoteSrcContext = remoteShallowContext(getActiveSerie());
+
+		const auto & files = remoteSrcContext->shallowCopyDataContext()->shallowCopy()->motionShallowCopy.files;
+
+		for (auto f : files)
+		{
+			if (f.second->fileName == fileName){
+				fileID = f.second->fileID;
+				break;
+			}
+		}		
+
+		try{			
 			/// TODO : pobrac dane z OW
-
-			auto remoteSrcContext = remoteShallowContext(getActiveSerie());
-
 			hmdbCommunication::IHMDBStorageOperations::IStreamPtr stream(new std::ifstream(p.string()));
-
-			auto upload = remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->prepareFileUpload(p.filename().string(), "", stream, hmdbCommunication::IHMDBRemoteContext::Motion);
+			auto upload = remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->prepareFileUpload(fileName, "/BDR/w", stream, hmdbCommunication::IHMDBRemoteContext::Motion);
 			upload->start();
 			upload->wait();
 
@@ -447,6 +465,15 @@ void dicom::LayeredImageVisualizer::uploadSerie()
 			else{
 				coreUI::CorePopup::showMessage(tr("Upload complete"), tr("Data transfered successfully"));
 			}
+
+			if (fileID < 0){
+				fileID = remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->session()->motionFilestoreman()->storeTrialFile(currentTrialID, "/BDR/w", "", fileName);
+			}
+			else{
+				remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->session()->motionFilestoreman()->replaceFile(currentTrialID, "/BDR/w", fileName);
+			}
+
+
 		}
 		catch (std::exception & e){
 			PLUGIN_LOG_ERROR("Failed to upload file with error: " << e.what());

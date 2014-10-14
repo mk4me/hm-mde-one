@@ -244,7 +244,7 @@ namespace hmdbServices
 		wsdlService->invoke();
 	}
 
-	void MotionFileStoremanWS::replaceFile(int fileID, const std::string& path, std::string& filename)
+	void MotionFileStoremanWS::replaceFile(int fileID, const std::string& path, const std::string& filename)
 	{
 		wsdlService->setOperation("ReplaceFile");
 		wsdlService->setValue("fileID", fileID);

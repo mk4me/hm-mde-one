@@ -159,7 +159,7 @@ void MotionFileStoremanWS::storeMeasurementConfFiles(const int mcID,
 		path, description);
 }
 
-void MotionFileStoremanWS::replaceFile(int fileID, const std::string& path, std::string& filename)
+void MotionFileStoremanWS::replaceFile(int fileID, const std::string& path, const std::string& filename)
 {
 	hmdbServices::MotionFileStoremanWS(creator()).replaceFile(fileID,
 		path, filename);

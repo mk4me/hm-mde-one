@@ -138,7 +138,7 @@ namespace hmdbCommunication
 		virtual void storeTrialFiles(const int trialID, const std::string & path,
 			const std::string & description);
 
-		virtual void replaceFile(int fileID, const std::string& path, std::string& filename);
+		virtual void replaceFile(int fileID, const std::string& path, const std::string& filename);
 
 	private:
 		//! Serwis obsługujący tą usługę
