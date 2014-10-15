@@ -50,14 +50,15 @@ namespace dicom {
 
 	public:
 		void setAnnotationStatus(hmdbServices::xmlWsdl::AnnotationStatus::Type status);
+		const AnnotationStatus annotationStatus(bool refresh = true) const;
 
-		public Q_SLOTS:
+	public Q_SLOTS:
 		//! odœwie¿enie ca³ego wizualizatora, np. gdy zmieni³a siê aktywna seria
 		void refresh();
 		//! \param enable Czy button do usuwania ma byc aktywny - dezaktywuje dla poziomu krwii i poziomu schorzenia
 		void setDeletionButtonEnabled(const bool enable);
 
-		private Q_SLOTS:
+	private Q_SLOTS:
 		void undo();
 		void redo();
 		void crop();
@@ -88,9 +89,8 @@ namespace dicom {
 
 		void refreshChat(const AnnotationStatus & as);
 
-		const AnnotationStatus annotationStatus() const;
 
-		const AnnotationStatus getAnnotationStatus(const plugin::IVisualizer::ISerie* serie, const std::string& user, int trialId) const;
+		const AnnotationStatus getAnnotationStatus(const plugin::IVisualizer::ISerie* serie, const std::string& user, int trialId, bool refresh = true) const;
 
 		const bool verifySerie();
 
@@ -106,8 +106,9 @@ namespace dicom {
 		coreUI::CoreAction* rejectAction;
 		coreUI::CoreAction* toVerifyAction;
 
-		static  hmdbServices::DateTime lastUpdate;
-		static  std::map<int, std::map<int, AnnotationStatus>> annotations;
+		static hmdbServices::DateTime lastUpdate;
+		static std::map<int, std::map<int, AnnotationStatus>> annotations;
+		static hmdbServices::xmlWsdl::UsersList usersList;
 	};
 }
 #endif

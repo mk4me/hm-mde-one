@@ -452,9 +452,11 @@ void dicom::LayeredImageVisualizer::uploadSerie()
 			}
 		}		
 
-		try{			
+		try{
 			/// TODO : pobrac dane z OW
 			hmdbCommunication::IHMDBStorageOperations::IStreamPtr stream(new std::ifstream(p.string()));
+
+
 			auto upload = remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->prepareFileUpload(fileName, "/BDR/w", stream, hmdbCommunication::IHMDBRemoteContext::Motion);
 			upload->start();
 			upload->wait();

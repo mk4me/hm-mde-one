@@ -165,8 +165,11 @@ dicom::LayeredSerie::LayeredSerie(LayeredImageVisualizer* visualizer, LayeredIma
 
 const bool dicom::LayeredSerie::editionEnable() const
 {
-	auto actions = view->actions();
-	return actions.empty() == false ? actions.first()->isEnabled() : false;
+	using namespace hmdbServices::xmlWsdl;
+	auto status = view->annotationStatus(false).status;
+	return  status == AnnotationStatus::UnderConstruction || status == AnnotationStatus::Unspecified || status == AnnotationStatus::Rejected;
+	//auto actions = view->actions();
+	//return actions.empty() == false ? actions.first()->isEnabled() : false;
 }
 
 coreUI::WheelGraphicsView* dicom::LayeredSerie::getGraphicsView() const

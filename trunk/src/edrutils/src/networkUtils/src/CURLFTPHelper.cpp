@@ -44,9 +44,11 @@ size_t read(void* buffer, size_t size, size_t nmemb, void* stream)
 	std::istream * istream = static_cast<std::istream*>(stream);
 	auto offset = size * nmemb;
 	try{
-		istream->read((char*)buffer, offset);
-		if (istream->bad() == true || istream->fail() == true){
+		if (istream->eof() == true){
 			offset = 0;
+		}
+		else{
+			offset = istream->readsome((char*)buffer, offset);
 		}
 	}
 	catch (...){

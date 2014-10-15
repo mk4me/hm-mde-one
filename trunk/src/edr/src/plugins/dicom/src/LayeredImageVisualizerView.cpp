@@ -22,6 +22,7 @@
 using namespace dicom;
 hmdbServices::DateTime LayeredImageVisualizerView::lastUpdate;
 std::map<int, std::map<int, LayeredImageVisualizerView::AnnotationStatus>> LayeredImageVisualizerView::annotations;
+hmdbServices::xmlWsdl::UsersList LayeredImageVisualizerView::usersList;
 
 LayeredImageVisualizerView::LayeredImageVisualizerView(LayeredImageVisualizer* model, QWidget* parent /*= 0*/, Qt::WindowFlags f /*= 0*/) :
 model(model),
@@ -422,10 +423,10 @@ const bool dicom::LayeredImageVisualizerView::verifySerie()
 	return true;
 }
 
-const dicom::LayeredImageVisualizerView::AnnotationStatus dicom::LayeredImageVisualizerView::annotationStatus() const
+const dicom::LayeredImageVisualizerView::AnnotationStatus dicom::LayeredImageVisualizerView::annotationStatus(bool refresh /*= true*/) const
 {
 	try{
-		return getAnnotationStatus(model->getActiveSerie(), model->getCurrentLayerUserName(), model->currnetTrialID());
+		return getAnnotationStatus(model->getActiveSerie(), model->getCurrentLayerUserName(), model->currnetTrialID(), refresh);
 
 	}
 	catch (...){
@@ -576,12 +577,12 @@ void dicom::LayeredImageVisualizerView::changeSelection(const QModelIndex &mi)
 	selectionChanged(mi);
 }
 
-const dicom::LayeredImageVisualizerView::AnnotationStatus dicom::LayeredImageVisualizerView::getAnnotationStatus(const plugin::IVisualizer::ISerie* serie, const std::string& user, int trialId) const
+const dicom::LayeredImageVisualizerView::AnnotationStatus dicom::LayeredImageVisualizerView::getAnnotationStatus(const plugin::IVisualizer::ISerie* serie, const std::string& user, int trialId, bool refresh /*= true*/) const
 {
 	auto rsc = LayeredImageVisualizer::remoteShallowContext(serie);
 	auto session = rsc->shallowCopyRemoteContext()->remoteContext()->session();
 
-	auto modTime = session->motionQueries()->dataModificationTime();
+	auto modTime = refresh ? session->motionQueries()->dataModificationTime() : lastUpdate;
 	if (lastUpdate < modTime){
 		auto resp = session->motionQueries()->listAnnotationsXML();
 		auto annotations = hmdbServices::xmlWsdl::parseAnnotations(resp);
@@ -596,16 +597,15 @@ const dicom::LayeredImageVisualizerView::AnnotationStatus dicom::LayeredImageVis
 			annotationsByUsers[a.trialID][a.userID] = as;
 		}
 
+		auto respUsers = session->authorization()->listUsers();
+		usersList = hmdbServices::xmlWsdl::parseUsersList(respUsers);
+
 		this->annotations = annotationsByUsers;
 		lastUpdate = modTime;
 	}
 
 	auto sIT = annotations.find(trialId);
 	if (sIT != annotations.end()){
-
-		auto resp = session->authorization()->listUsers();
-		auto usersList = hmdbServices::xmlWsdl::parseUsersList(resp);
-
 		auto it = std::find_if(usersList.begin(), usersList.end(), [=](const hmdbServices::xmlWsdl::UserDetails & ud)
 		{
 			if (ud.login == user){

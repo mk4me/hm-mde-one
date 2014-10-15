@@ -83,7 +83,7 @@ void XMLHelper::extractAnnotation(const tinyxml2::XMLElement * element, xmlWsdl:
 {
 	extractTagValue(element, "TrialID", annotation.trialID);
 	extractTagValue(element, "UserID", annotation.userID);
-	extractAndConvertAttributeValue<xmlWsdl::AnnotationStatus>(element, "Entity", annotation.status);
+	extractAndConvertTagValue<xmlWsdl::AnnotationStatus>(element, "Status", annotation.status);
 	extractTagValue(element, "Comment", annotation.comment);
 	extractTagValue(element, "Note", annotation.note);
 }

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>907</width>
-    <height>447</height>
+    <height>634</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,7 +37,16 @@
         <string notr="true">background-color: rgb(0,0,0);</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
-        <property name="margin">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
          <number>0</number>
         </property>
         <item>
@@ -48,7 +57,6 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <zorder>widget</zorder>
          </widget>
         </item>
         <item>
@@ -78,7 +86,7 @@
               <string notr="true">color:white</string>
              </property>
              <property name="text">
-              <string>TextLabel</string>
+              <string/>
              </property>
             </widget>
            </item>
