@@ -118,7 +118,7 @@ const bool DicomSource::userIsReviewer(hmdbCommunication::IHMDBSession * session
 			auto userGroups = hmdbServices::xmlWsdl::parseUserGroups(lst);
 			auto it = std::find_if(userGroups.begin(), userGroups.end(), [](const hmdbServices::xmlWsdl::UserGroup & ug)
 			{
-				if (ug.id == 11){
+				if (ug.id == 11 || ug.id == 12){
 					return true;
 				}
 

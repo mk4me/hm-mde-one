@@ -11,7 +11,7 @@ using namespace medusaExporter;
 bool isIdentical(const std::vector<dicom::ILayerItemConstPtr>& layers) 
 {
 	for (auto it = layers.begin(); it != layers.end(); ++it) {
-		auto val = utils::dynamic_pointer_cast<const dicom::IValueLayer>(*it);
+		auto val = boost::dynamic_pointer_cast<const dicom::IValueLayer>(*it);
 		if (val) {
 			if (val->valueAsString() == dicom::annotations::annotationValueAsString(dicom::annotations::identical).toStdString()){
 				return true;
@@ -53,14 +53,14 @@ void medusaExporter::CSVExporter::exportMeta(const core::Filesystem::Path& path,
         }
         file << itLayer->first.imageName << ", ";
         
-        auto pd = utils::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::bloodLevel));
+        auto pd = boost::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::bloodLevel));
         std::string doppler = pd ? pd->valueAsString() : std::string("-1");
 
-        auto infl = utils::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::inflammatoryLevel));
+        auto infl = boost::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::inflammatoryLevel));
         std::string inflammatory = infl ? infl->valueAsString() : std::string("-1");
         
-        auto joint = utils::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::jointType));
-        auto finger = utils::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::fingerType));
+		auto joint = boost::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::jointType));
+		auto finger = boost::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::fingerType));
         std::string jointType = "-1";
         if (joint && finger) {
             auto v1 = joint->valueAsString();
@@ -70,7 +70,7 @@ void medusaExporter::CSVExporter::exportMeta(const core::Filesystem::Path& path,
             }
         }
 
-        auto img = utils::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::imageType));
+		auto img = boost::dynamic_pointer_cast<const dicom::IValueLayer>(tryGetAnnotation(itLayer->second, dicom::annotations::imageType));
         std::string imageType = img ? img->valueAsString() : "-1";
 
         file << doppler << ", " << inflammatory << ", " << jointType << ", " << imageType << ", " << std::endl;
@@ -85,7 +85,7 @@ int getMaxPointsCount(const AnnotationData::Layers& layers, int density)
     int maxCount = 0;
     for (auto itLayer = layers.begin(); itLayer != layers.end(); ++itLayer) {
         for (auto it = itLayer->second.begin(); it != itLayer->second.end(); ++it) {
-            dicom::ILayerGraphicItemConstPtr graphic = utils::dynamic_pointer_cast<const dicom::ILayerGraphicItem>(*it);
+			dicom::ILayerGraphicItemConstPtr graphic = boost::dynamic_pointer_cast<const dicom::ILayerGraphicItem>(*it);
             if (graphic) {
                 int points = graphic->getPointsCloud(density).size();
                 if (points > maxCount) {
@@ -102,7 +102,7 @@ int getGraphicsLayersCount(const std::vector<dicom::ILayerItemConstPtr>& layers)
 {
     int counter = 0;
     for (auto it = layers.begin(); it != layers.end(); ++it) {
-        auto val = utils::dynamic_pointer_cast<const dicom::ILayerGraphicItem>(*it);
+		auto val = boost::dynamic_pointer_cast<const dicom::ILayerGraphicItem>(*it);
         if (val) {
             ++counter;
         }
@@ -133,7 +133,7 @@ void medusaExporter::CSVExporter::exportData(const core::Filesystem::Path& path,
         for (auto it = itLayer->second.begin(); it != itLayer->second.end(); ++it) {
             dicom::ILayerItemConstPtr itm = *it;
 
-            dicom::ILayerGraphicItemConstPtr graphic = utils::dynamic_pointer_cast<const dicom::ILayerGraphicItem>(itm);
+			dicom::ILayerGraphicItemConstPtr graphic = boost::dynamic_pointer_cast<const dicom::ILayerGraphicItem>(itm);
             if (graphic) {
                 file << names.at((dicom::annotations::annotationsIdx)itm->getAdnotationIdx()).toStdString(); // << ", " << itm->getName().toStdString();
 

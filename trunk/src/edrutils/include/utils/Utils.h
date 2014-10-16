@@ -138,6 +138,16 @@ inline static const std::string readStream(std::istream * stream)
 	return ret;
 }
 
+inline static const std::streamsize forceReadSome(std::istream * stream,
+	char * out, const std::streamsize bytesCount)
+{
+	auto state = stream->rdstate();
+	stream->read(out, bytesCount);
+	std::streamsize bytes = stream->gcount();
+	stream->clear(state | (stream->eof() == true ? std::ios_base::eofbit : 0));
+	return bytes;
+}
+
 template<typename T>
 inline const T EndianSwap(const T value)
 {

@@ -1,4 +1,5 @@
 #include <networkUtils/CURLFTPHelper.h>
+#include <utils/Utils.h>
 
 using namespace networkUtils;
 
@@ -48,7 +49,7 @@ size_t read(void* buffer, size_t size, size_t nmemb, void* stream)
 			offset = 0;
 		}
 		else{
-			offset = istream->readsome((char*)buffer, offset);
+			offset = utils::forceReadSome(istream, (char*)buffer, offset);
 		}
 	}
 	catch (...){
