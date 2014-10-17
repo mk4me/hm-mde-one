@@ -57,43 +57,43 @@ public:
 
 	virtual const bool exists(const std::string & key) const
 	{
-		return SQLCipherStorage::rawExists(key, db.get());
+		return SQLCipherStorage::rawExists(key, db);
 	}
 	
 	virtual const IOStreamPtr get(const std::string & key)
 	{
-		return SQLCipherStorage::rawGet(key, db.get(), storage->path_, storage->key_);
+		return SQLCipherStorage::rawGet(key, db, storage->path_, storage->key_);
 	}
 	
 	virtual const IStreamPtr get(const std::string & key) const
 	{
-		return SQLCipherStorage::rawGetReadOnly(key, db.get(), storage->path_, storage->key_);
+		return SQLCipherStorage::rawGetReadOnly(key, db, storage->path_, storage->key_);
 	}
 	
 	virtual const bool set(const std::string & key, IStreamPtr input)
 	{
-		return SQLCipherStorage::rawSet(key, input, db.get());
+		return SQLCipherStorage::rawSet(key, input, db);
 	}
 		
 	virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
 	{
-		return SQLCipherStorage::rawSet(key, input, progress, db.get());
+		return SQLCipherStorage::rawSet(key, input, progress, db);
 	}
 	
 	virtual const bool remove(const std::string & key)
 	{
-		return SQLCipherStorage::rawRemove(key, db.get());
+		return SQLCipherStorage::rawRemove(key, db);
 	}
 	
 	virtual const bool rename(const std::string & oldKey,
 		const std::string & newKey, const bool overwrite = false)
 	{
-		return SQLCipherStorage::rawRename(oldKey, newKey, overwrite, db.get());
+		return SQLCipherStorage::rawRename(oldKey, newKey, overwrite, db);
 	}
 	
 	virtual const Keys keys() const
 	{
-		return SQLCipherStorage::rawKeys(db.get());
+		return SQLCipherStorage::rawKeys(db);
 	}
 
 	const bool canStore(const unsigned long long size) const
@@ -152,7 +152,7 @@ const IHMDBStorage::IOStreamPtr SQLCipherStorage::rawGet(const std::string & key
 	if (query != nullptr && sqliteUtils::SQLitePreparedStatement::step(query) == SQLITE_ROW){
 		const auto rowID = sqlite3_column_int64(query, 0);
 		sqliteUtils::SQLiteBLOB::Wrapper blob(sqliteUtils::SQLiteBLOB::open(db, "files_table", "file", rowID, 0), sqliteUtils::SQLiteBLOB::Close(maxSqliteExecTries, sqliteExecWaitMS));
-		std::auto_ptr<sqliteUtils::SQLiteBLOBStreamBufferT<>> buf(new sqliteUtils::SQLiteBLOBStreamBufferT<>(path.string(), "files_table", "file", rowID, sqlite3_blob_bytes(blob.get()), "main", dbKey));
+		std::auto_ptr<sqliteUtils::SQLiteBLOBStreamBufferT<>> buf(new sqliteUtils::SQLiteBLOBStreamBufferT<>(path.string(), "files_table", "file", rowID, sqlite3_blob_bytes(blob), "main", dbKey));
 
 		return IHMDBStorage::IOStreamPtr(new std::iostream(buf.release()));
 	}
@@ -256,7 +256,7 @@ const bool SQLCipherStorage::rawSet(const std::string & key, IHMDBStorage::IStre
 	const unsigned int fullReads = (streamSize / readSize);
 	for (unsigned int i = 0; i < fullReads; ++i){	
 		input->read(memblock.get(), readSize);		
-		auto rc = sqlite3_blob_write(blob.get(), memblock.get(), readSize, offset);
+		auto rc = sqlite3_blob_write(blob, memblock.get(), readSize, offset);
 		if (rc != SQLITE_OK){
 			blob.reset();
 			rawRemove(key, db);
@@ -270,7 +270,7 @@ const bool SQLCipherStorage::rawSet(const std::string & key, IHMDBStorage::IStre
 
 	if (left > 0){
 		input->read(memblock.get(), left);
-		auto rc = sqlite3_blob_write(blob.get(), memblock.get(), left, offset);
+		auto rc = sqlite3_blob_write(blob, memblock.get(), left, offset);
 		if (rc != SQLITE_OK){
 			blob.reset();
 			rawRemove(key, db);

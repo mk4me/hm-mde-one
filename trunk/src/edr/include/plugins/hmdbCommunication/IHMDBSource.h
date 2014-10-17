@@ -97,6 +97,11 @@ namespace hmdbCommunication
 		virtual void registerSourceContext(const IHMDBSourceContextPtr sourceContext) = 0;
 		//! \param shallowContext Konteks p³ytkiej kopii dla danych		
 		virtual void registerShallowContext(const IHMDBShallowCopyContextPtr shallowContext) = 0;
+		//! \return Iloœæ zarejestrowanych kontekstów p³ytkiej kopii bazy danych
+		virtual unsigned int shallowContextsCount() const = 0;
+		//! \param idx Indeks kontekstu
+		//! \return Kontekst p³ytkiej kopii lub nullptr je¿eli nie ma
+		virtual const IHMDBShallowCopyContextPtr shallowContext(const unsigned int idx) = 0;
 	};
 }
 

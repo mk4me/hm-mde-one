@@ -324,31 +324,18 @@ void HMDBSource::registerShallowContext(const IHMDBShallowCopyContextPtr shallow
 	shallowContexts_.push_back(shallowContext);
 }
 
-/*
-IHMDBSourceContext * HMDBSource::sourceContextForData(core::VariantConstPtr data)
+unsigned int HMDBSource::shallowContextsCount() const
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
-	IHMDBSourceContext * ret = nullptr;
-	for (auto it = sourceContexts_.begin(); it != sourceContexts_.end(); ++it){
-		if ((*it)->isMyData(data) == true){
-			ret = *it;
-			break;
-		}
-	}
-
-	return ret;
+	return shallowContexts_.size();
 }
 
-const IHMDBSourceContext * HMDBSource::sourceContextForData(core::VariantConstPtr data) const
+const IHMDBShallowCopyContextPtr HMDBSource::shallowContext(const unsigned int idx)
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
-	IHMDBSourceContext * ret = nullptr;
-	for (auto it = sourceContexts_.begin(); it != sourceContexts_.end(); ++it){
-		if ((*it)->isMyData(data) == true){
-			ret = *it;
-			break;
-		}
+	if (idx >= shallowContexts_.size()){
+		return IHMDBShallowCopyContextPtr();
 	}
 
-	return ret;
-}*/
+	auto it = shallowContexts_.begin();
+	std::advance(it, idx);
+	return (*it).lock();
+}
