@@ -13,6 +13,8 @@
 #include <corelib/ISourceManager.h>
 #include <boost/bind.hpp>
 #include "CSVExporter.h"
+#include <iosfwd>
+#include "utils/Utils.h"
 
 
 using namespace medusaExporter;
@@ -142,7 +144,48 @@ void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFun
 	if (icomm) {
 		core::Filesystem::Path dir(path.toStdString());
 		if (core::Filesystem::isDirectory(dir)) {
+			int count = icomm->shallowContextsCount();
+			if (count == 0 || count > 1) {
+				throw std::runtime_error("Only one user can be logged");
+			}
+			const hmdbCommunication::IHMDBShallowCopyContextPtr context =  icomm->shallowContext(0);
+			auto& shallowCopy = context->shallowCopyDataContext()->shallowCopy()->motionShallowCopy;
+			auto& files = shallowCopy.files;
+			auto storage = context->shallowCopyLocalContext()->localContext()->dataContext()->storage();
+
+			float delta = 1.0f / files.size();
+			float progress = 0.0f;
+			for (auto file : files) {
+				auto& name = file.second->fileName;
+				fun(progress, QString::fromStdString(name));
+				progress += delta;
+				if (storage->exists(name)) {
+					const hmdbCommunication::IHMDBStorageOperations::IStreamPtr stream = storage->get(name);
+					if (stream) {
+						stream->seekg(0, std::ios::end);
+						size_t size = stream->tellg();
+						stream->seekg(0);
+
+						std::unique_ptr<char[]> buffer;
+						buffer.reset(new char[size]);
+
+						size = utils::forceReadSome(stream.get(), (char*)buffer.get(), size);
+
+						std::ofstream out((dir / name).string());
+						out.write(buffer.get(), size);
+						out.close();
+					}
+				}
+			}
+			fun(1.0f, QObject::tr("Done extracting"));
 			//TODO
+			/*
+			if (!icomm || !icomm->isLogged()) {
+			QMessageBox::critical(this, tr("Error"), tr("User is not logged"));
+			return;
+			}
+			*/
+
 			/*
             if (icomm->isLogged()) {
                 fun(0.0f, QObject::tr("Extracting data"));

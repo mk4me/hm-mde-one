@@ -124,13 +124,19 @@ void medusaExporter::MedusaExporterServiceWidget::onExtract()
 	QString dirPath = ui->extractToLineEdit->text();
 
 	auto icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
-	//TODO
-	/*
-	if (!icomm || !icomm->isLogged()) {
-        QMessageBox::critical(this, tr("Error"), tr("User is not logged"));
-        return;
-    }
-	*/
+	if (!icomm) {
+		QMessageBox::critical(this, tr("Error"), tr("Communication plugin was not found"));
+		return;
+	}
+	int count = icomm->shallowContextsCount();
+	if (count == 0) {
+		QMessageBox::critical(this, tr("Error"), tr("User is not logged"));
+		return;
+	}
+	else if (count > 1) {
+		QMessageBox::critical(this, tr("Error"), tr("More than one user logged"));
+		return;
+	}
 
     if (dirPath.isEmpty()) {
         QMessageBox::warning(this, tr("Error"), tr("Choose directory where files will be exported"));
