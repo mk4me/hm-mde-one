@@ -13,7 +13,7 @@ namespace hmdbServices
 
 	const bool IncrementalBranchShallowCopyParser::parseFile(std::istream * document, IncrementalBranchShallowCopy& shallowCopy)
 	{
-		auto s = utils::readStream(document);
+		auto s = utils::readStream(*document);
 
 		tinyxml2::XMLDocument xmlDocument;
 

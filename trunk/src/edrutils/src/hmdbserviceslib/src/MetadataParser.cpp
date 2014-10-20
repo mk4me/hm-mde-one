@@ -7,7 +7,7 @@ namespace hmdbServices
 {
 	const bool MotionMetadataParser::parseFile(std::istream * document, MotionMetaData::MetaData & metadata)
 	{
-		auto s = utils::readStream(document);
+		auto s = utils::readStream(*document);
 
 		tinyxml2::XMLDocument xmlDocument;
 
@@ -112,7 +112,7 @@ namespace hmdbServices
 
 	const bool MedicalMetadataParser::parseFile(std::istream * document, MedicalMetaData::MetaData & metadata)
 	{
-		auto s = utils::readStream(document);
+		auto s = utils::readStream(*document);
 
 		tinyxml2::XMLDocument xmlDocument;
 
