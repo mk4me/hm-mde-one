@@ -104,7 +104,7 @@ public:
 	static std::vector<Path> listFilteredFiles(const Path& path, bool recursive, Predicate filter)
 	{
 		auto ret(listFiles(path, recursive));
-		auto eIT = std::remove_if(ret.begin(), ret.end(), filter);
+		auto eIT = std::remove_if(ret.begin(), ret.end(), [&](const Path& path) { return !filter(path); });
 		ret.erase(eIT, ret.end());
 		return ret;
 	}	

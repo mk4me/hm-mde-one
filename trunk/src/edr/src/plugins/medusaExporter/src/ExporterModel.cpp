@@ -348,11 +348,17 @@ void medusaExporter::ExporterModel::exportData(const QString& outDir, const QStr
 			li.isPowerDoppler = dopplers[li.imageName];
 			try {
 				dicom::LayersVectorConstPtr lv = (*imgIt)->get();
-				for (auto it = lv->cbegin(); it != lv->cend(); ++it) {
-					annotations->addAnnotation(li, *it);
+				if (lv) {
+					for (auto it = lv->cbegin(); it != lv->cend(); ++it) {
+						annotations->addAnnotation(li, *it);
+					}
+				} else {
+					PLUGIN_LOG_WARNING("Exporter - Problem with :" << li.imageName << " - skipping");
 				}
 			}
-			catch (...) {}
+			catch (...) {
+				PLUGIN_LOG_WARNING("Exporter - Problem with :" << li.imageName << " - skipping");
+			}
 		}
 		transaction->removeFile(*it);
 	}

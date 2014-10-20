@@ -311,7 +311,7 @@ void medusaExporter::MedusaExporterServiceWidget::onOpenMedusaExport()
 void medusaExporter::MedusaExporterServiceWidget::afterExtract()
 {
     UTILS_ASSERT(this->innerExportDirPath.isEmpty() == false);
-    UTILS_ASSERT(this->tempUsers.isEmpty() == false);
+    //UTILS_ASSERT(this->tempUsers.isEmpty() == false);
     setExportFrom(this->innerExportDirPath, tempUsers);
     disabler = WidgetDisablerPtr();
 }
