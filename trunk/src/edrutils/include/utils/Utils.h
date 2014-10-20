@@ -13,6 +13,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/function.hpp>
 #include <cstring>
+#include <memory>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
@@ -121,33 +122,42 @@ inline static const std::streamsize streamSize(std::istream & stream)
 	return std::streamsize(end - start);
 }
 
+//------------------------------------------------------------------------------
+
+//! \param stream Strumień do czytania
+//! \param out Bufor do któego czytamy strumień
+//! \param bytesCount Ilość bajtów do przeczytania ze strumienia
+//! \return Faktyczna ilośc bajtów przeczytana ze strumienia
+inline static const std::streamsize forceReadSome(std::istream & stream,
+	char * out, const std::streamsize bytesCount)
+{
+	const auto state = stream.rdstate();
+	stream.read(out, bytesCount);
+	const std::streamsize bytes = stream.gcount();
+	stream.clear(state | (stream.eof() == true ? std::ios_base::eofbit : std::ios_base::goodbit));
+	return bytes;
+}
 
 //------------------------------------------------------------------------------
 
 //! \param stream Strumień do skopiowania
-//! \return Plik zapisany w stringu
-inline static const std::string readStream(std::istream * stream)
+//! \return Strumień zapisany w stringu
+inline static const std::string readStream(std::istream & stream)
 {
+	unsigned int BufferSize = 1024 * 512;
+	std::unique_ptr<char[]> buffer(new char[BufferSize] {0});
 	std::string ret;
-	static const unsigned int BufferSize = 1024 * 512;
-	char buffer[BufferSize] = { 0 };
 
-	//TODO - uruchomić metody strumienia do szybkiego czytania danych a nie iteratorami
 	std::streamsize read = 0;
-	while ((read = stream->readsome(buffer, BufferSize)) > 0) { ret.append(buffer, read); }
+	while ((read = forceReadSome(stream, buffer.get(), BufferSize)) > 0) { ret.append(buffer.get(), read); }
 	return ret;
 }
 
-inline static const std::streamsize forceReadSome(std::istream * stream,
-	char * out, const std::streamsize bytesCount)
-{
-	auto state = stream->rdstate();
-	stream->read(out, bytesCount);
-	std::streamsize bytes = stream->gcount();
-	stream->clear(state | (stream->eof() == true ? std::ios_base::eofbit : 0));
-	return bytes;
-}
+//------------------------------------------------------------------------------
 
+//! \tparam T Typ dla któego wykonujemy swap bajtów
+//! \param value Wartość dla któej wykonujemy swap bajtów
+//! \return Wartość ze zmienioną kolejnością bajtów
 template<typename T>
 inline const T EndianSwap(const T value)
 {
@@ -189,6 +199,10 @@ private:
 
 //------------------------------------------------------------------------------
 
+//! \tparam T Typ kolekcji nieuporządkowanej poddawanej łączeniu
+//! \param a Pierwsza kolekcja łączona
+//! \param b Druga kolekcja łączona
+//! \return Kolekcja będąca rezultatem dołączonia do kolekcji a kolekcji b
 template<class T>
 const T mergeUnordered(const T & a, const T & b)
 {
@@ -199,6 +213,10 @@ const T mergeUnordered(const T & a, const T & b)
 
 //------------------------------------------------------------------------------
 
+//! \tparam T Typ kolekcji uporządkowanej poddawanej łączeniu
+//! \param a Pierwsza kolekcja łączona
+//! \param b Druga kolekcja łączona
+//! \return Kolekcja będąca rezultatem dołączonia elementó kolekcji b do elementów kolekcji kolekcji a
 template<class T>
 const T mergeOrdered(const T & a, const T & b)
 {

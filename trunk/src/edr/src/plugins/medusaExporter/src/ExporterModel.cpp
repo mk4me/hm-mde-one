@@ -151,10 +151,15 @@ void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFun
 			const hmdbCommunication::IHMDBShallowCopyContextPtr context =  icomm->shallowContext(0);
 			auto& shallowCopy = context->shallowCopyDataContext()->shallowCopy()->motionShallowCopy;
 			auto& files = shallowCopy.files;
-			auto storage = context->shallowCopyLocalContext()->localContext()->dataContext()->storage();
+			auto storage = context->shallowCopyLocalContext()->localContext()->dataContext()->storage()->transaction();
 
 			float delta = 1.0f / files.size();
 			float progress = 0.0f;
+
+			std::streamsize BufferSize = 512 * 1024;
+			std::unique_ptr<char[]> buffer;
+			buffer.reset(new char[BufferSize] {0});
+
 			for (auto file : files) {
 				auto& name = file.second->fileName;
 				fun(progress, QString::fromStdString(name));
@@ -162,18 +167,24 @@ void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFun
 				if (storage->exists(name)) {
 					const hmdbCommunication::IHMDBStorageOperations::IStreamPtr stream = storage->get(name);
 					if (stream) {
-						stream->seekg(0, std::ios::end);
-						size_t size = stream->tellg();
-						stream->seekg(0);
+						const auto filePath = dir / name;
+						try{
+							std::ofstream out(filePath.string(), std::ios_base::out | std::ios_base::binary);
+							std::streamsize size = 0;
+							while (stream->eof() == false && ((size = utils::forceReadSome(*stream, (char*)buffer.get(), BufferSize)) > 0)) { out.write(buffer.get(), size); }
+							out.close();
+						}
+						catch (...){
+							try{
+								if (core::Filesystem::pathExists(filePath) == true){
+									core::Filesystem::deleteFile(filePath);
+								}
+							}
+							catch (...){
 
-						std::unique_ptr<char[]> buffer;
-						buffer.reset(new char[size]);
-
-						size = utils::forceReadSome(stream.get(), (char*)buffer.get(), size);
-
-						std::ofstream out((dir / name).string());
-						out.write(buffer.get(), size);
-						out.close();
+							}
+							throw std::runtime_error("Error while file extraction");
+						}
 					}
 				}
 			}

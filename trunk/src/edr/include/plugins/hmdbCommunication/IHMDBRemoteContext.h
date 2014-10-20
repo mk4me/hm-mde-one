@@ -125,10 +125,12 @@ namespace hmdbCommunication
 		//! \param path Œcie¿ka po stronie bazy, gdzie zostanie zpaisany plik
 		//! \param source Strumieñ z zawartoœci¹ pliku
 		//! \param dataReference Której bazy dotyczy upload
+		//! \param fileSize Rozmiar strumienia który chcemy uploadowaæ
 		//! \return Transfer
 		virtual const IHMDBFtp::TransferPtr prepareFileUpload(const std::string & fileName,
 			const std::string & path, IHMDBStorage::IStreamPtr source,
-			const DataReference dataReference) = 0;
+			const DataReference dataReference,
+			const hmdbServices::FileSize fileSize = 0) = 0;
 	};
 
 	DEFINE_SMART_POINTERS(IHMDBRemoteContext);

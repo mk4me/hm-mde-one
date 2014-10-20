@@ -37,7 +37,6 @@ SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::~SQLiteBLOBStreamBufferT
 	sync();
 }
 
-
 template<typename _Elem, typename _Traits, typename _BufferPolicy>
 typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::int_type SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::pbackfail(typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::int_type _Meta)
 {
@@ -537,7 +536,7 @@ const int SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::refillBuffer(c
 		}
 
 		SQLiteBLOB::Wrapper blob(SQLiteBLOB::open(db, table, column, rowID,
-			mode_ & std::ios_base::out, dbName), SQLiteBLOB::Close(100));
+			0, dbName), SQLiteBLOB::Close(100));
 
 		if (blob == nullptr){
 			return -1;
@@ -561,7 +560,7 @@ const bool SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::flushBuffer(c
 {
 	const unsigned int buffSize = toBlobPos(count);
 	const unsigned int newSize = blobIDX + buffSize;
-
+	
 	SQLiteDB::Wrapper db(SQLiteDB::open(path, key, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE),
 		SQLiteDB::Close(true, 10, 100));
 
@@ -569,27 +568,35 @@ const bool SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::flushBuffer(c
 		return false;
 	}
 
-	SQLiteBLOB::Wrapper blob(SQLiteBLOB::open(db.get(), table, column, rowID,
-		mode_ & std::ios_base::out, dbName), SQLiteBLOB::Close(100));
-
-	if (blob == nullptr){
-		return false;
-	}
-	
 	// zapis do bloba
 	// czy dane jeszcze sie zmieszcza?
-	if (newSize <= blobSize){
+	if (newSize <= blobSize){	
+
+		SQLiteBLOB::Wrapper blob(SQLiteBLOB::open(db, table, column, rowID,
+			1, dbName), SQLiteBLOB::Close(100));
+
+		if (blob == nullptr){
+			return false;
+		}
+
 		//pisze bezposrednio do bloba
-		return sqlite3_blob_write(blob.get(), base, buffSize, blobIDX) == SQLITE_OK;
+		return sqlite3_blob_write(blob, base, buffSize, blobIDX) == SQLITE_OK;
 	}
 	// dane sie juz nie mieszcza
 	else {
+
+		SQLiteBLOB::Wrapper blob(SQLiteBLOB::open(db, table, column, rowID,
+			0, dbName), SQLiteBLOB::Close(100));
+
+		if (blob == nullptr){
+			return false;
+		}
 
 		//przygotowuje update
 		static const auto updateQuery = (boost::format("UPDATE %1% SET %2% = ? WHERE iRow = %3%;")
 			% updateTableName(dbName, table) % column % rowID).str();
 
-		SQLitePreparedStatement::Wrapper update(SQLitePreparedStatement::prepare(db.get(), updateQuery),
+		SQLitePreparedStatement::Wrapper update(SQLitePreparedStatement::prepare(db, updateQuery),
 			SQLitePreparedStatement::Finalizer(100));
 
 		if (update == nullptr){

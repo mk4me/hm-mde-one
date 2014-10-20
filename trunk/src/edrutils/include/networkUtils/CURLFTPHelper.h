@@ -27,7 +27,6 @@ namespace networkUtils
 		virtual void setProgress(const float progress) = 0;
 	};
 
-
 	class ICURLFTPProgress : public ICURLFTPBasicProgress
 	{
 	public:

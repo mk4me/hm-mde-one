@@ -43,7 +43,8 @@ namespace hmdbCommunication
 		//! \return Transfer
 		virtual const IHMDBFtp::TransferPtr prepareFileUpload(const std::string & fileName,
 			const std::string & path, IHMDBStorage::IStreamPtr source,
-			const DataReference dataReference);
+			const DataReference dataReference,
+			const hmdbServices::FileSize fileSize);
 
 	private:
 		//! Sesja z baz¹ danych

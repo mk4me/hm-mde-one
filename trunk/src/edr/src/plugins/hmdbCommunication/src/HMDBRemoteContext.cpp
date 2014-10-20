@@ -121,13 +121,13 @@ const HMDBRemoteContext::DownloadOperationPtr HMDBRemoteContext::prepareFileDown
 
 const IHMDBFtp::TransferPtr HMDBRemoteContext::prepareFileUpload(const std::string & fileName,
 	const std::string & path, IHMDBStorage::IStreamPtr source,
-	const DataReference dataReference)
+	const DataReference dataReference, const hmdbServices::FileSize fileSize)
 {
 
 	if (dataReference == Motion){
-		return session_->motionFtp()->preparePut(path + "/" + fileName, source);
+		return session_->motionFtp()->preparePut(path + "/" + fileName, source, fileSize);
 	}
 	else{
-		return session_->medicalFtp()->preparePut(path + "/" + fileName, source);
+		return session_->medicalFtp()->preparePut(path + "/" + fileName, source, fileSize);
 	}
 }

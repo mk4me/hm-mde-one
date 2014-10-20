@@ -195,7 +195,7 @@ const IHMDBStorage::IStreamPtr MemoryStorage::rawGet(const std::string & key) co
 
 const bool MemoryStorage::rawSet(const std::string & key, IStreamPtr input)
 {
-	auto str = utils::readStream(input.get());
+	auto str = utils::readStream(*input);
 	auto it = storage.find(key);
 	if (it != storage.end()){
 		it->second = str;

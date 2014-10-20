@@ -24,7 +24,7 @@ namespace networkUtils
 
 		//! Interfejs do customowej obs³ugi progresu - metoda setProgress powinna byæ bardzo wydajna
 		class ITransfer : public threadingUtils::IAbortableOperation,
-			public threadingUtils::ITimeProgress			
+			public threadingUtils::ITimeProgress
 		{
 		public:
 			//! Wyliczenie opisuj¹ce typ transferu
@@ -57,14 +57,14 @@ namespace networkUtils
 		//! Metoda wysy³aj¹ca na serwer plik. Nazwa wys³anego pliku przechowywana jest w zmiennej filename.
 		//! \param localSource nazwa pliku który wysy³amy na serwer ftp
 		//! \param remoteDestination miejsce zapisu naszego pliku na ftp
-		//! \return Obiekt obs³uguj¹cy postêp operacji i steruj¹cy jej wykonaniem		
+		//! \return Obiekt obs³uguj¹cy postêp operacji i steruj¹cy jej wykonaniem
 		virtual const ITransfer * putFile(const std::istream * localSource,
 			const std::string & remoteDestination) = 0;
-		
+
 		//! Metoda pobieraj¹ca plik z serwera. Nazwa pobranego pliku przechowywana jest w zmiennej filename.
 		//! \param remoteSource œcia¿ka pliku na serwerze ftp który chcemy œci¹gn¹æ
 		//! \param localDestination œcia¿ka w której chcemy zpaisaæ œci¹gany plik
-		//! \return Obiekt obs³uguj¹cy postêp operacji i steruj¹cy jej wykonaniem		
+		//! \return Obiekt obs³uguj¹cy postêp operacji i steruj¹cy jej wykonaniem
 		virtual const ITransfer * getFile(const std::string& remoteSource,
 			std::ostream * localDestination) const = 0;
 		//! \param remoteFile Zdalny plik do usuniêcia

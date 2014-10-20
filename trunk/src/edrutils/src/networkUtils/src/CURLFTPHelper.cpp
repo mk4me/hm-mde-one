@@ -40,6 +40,30 @@ void CURLFTPHelper::initializeFTPConnection(CURL * curl,
 	}
 }
 
+int seek(void *stream, curl_off_t offset, int origin)
+{
+	std::istream * istream = static_cast<std::istream*>(stream);
+	std::ios_base::seekdir dir = std::ios_base::beg;
+
+	if (origin == SEEK_CUR){
+		dir = std::ios_base::cur;
+	}
+	else if (origin == SEEK_END){
+		dir = std::ios_base::end;
+	}
+
+	int ret = 0;
+
+	try{
+		istream->seekg(offset, dir);
+	}
+	catch (...){
+		ret = 2;
+	}
+
+	return ret;
+}
+
 size_t read(void* buffer, size_t size, size_t nmemb, void* stream)
 {
 	std::istream * istream = static_cast<std::istream*>(stream);
@@ -132,6 +156,8 @@ void CURLFTPHelper::initializeFTPUpload(CURL * curl,
 	curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 	curl_easy_setopt(curl, CURLOPT_READFUNCTION, read);
 	curl_easy_setopt(curl, CURLOPT_READDATA, localSource);
+	curl_easy_setopt(curl, CURLOPT_SEEKFUNCTION, seek);
+	curl_easy_setopt(curl, CURLOPT_SEEKDATA, localSource);
 
 	if (progress != nullptr){
 		// przywracamy progres
