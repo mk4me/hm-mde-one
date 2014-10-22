@@ -942,7 +942,7 @@ Section "Microsoft Visual C++ 2013 Redistributable Package (x86)"
    ; if VS 2013+ redist not installed, install it
    IfErrors 0 VSRedistInstalled
    File "@CPACK_INSTALLER_ADDITIONAL_RESOURCES@\vcredist_x86.exe" 
-ExecWait '$INSTDIR\vcredist_x86.exe /q:a /c:"VCREDI~3.EXE /q:a /c:""msiexec /i vcredist.msi /qn"" "'
+ExecWait '$INSTDIR\vcredist_x86.exe /q:a'
    StrCpy $R0 "-1"
 
 VSRedistInstalled:
