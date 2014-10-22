@@ -17,6 +17,7 @@ namespace medusaExporter {
 	struct ExportConfig
 	{
 		bool skipIdentical;
+		bool pixelByPixel;
 		int pointsDensity;
         bool normalizePointVectorsLenght;
 	};

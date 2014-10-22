@@ -73,6 +73,7 @@ public:
 	virtual ILayerGraphicItem* clone() const = 0;
 
     virtual std::vector<QPointF> getPointsCloud(int density = 0, int normalizeLength = -1) const = 0;
+	virtual std::vector<QPointF> getPixelPointsCloud() const = 0;
 
 };
 typedef boost::shared_ptr<ILayerGraphicItem> ILayerGraphicItemPtr;

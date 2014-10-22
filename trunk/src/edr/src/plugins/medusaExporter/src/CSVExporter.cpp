@@ -137,7 +137,12 @@ void medusaExporter::CSVExporter::exportData(const core::Filesystem::Path& path,
             if (graphic) {
                 file << names.at((dicom::annotations::annotationsIdx)itm->getAdnotationIdx()).toStdString(); // << ", " << itm->getName().toStdString();
 
-                auto points = config.normalizePointVectorsLenght ? graphic->getPointsCloud(config.pointsDensity, maxCount) : graphic->getPointsCloud(config.pointsDensity);
+				std::vector<QPointF> points;
+				if (config.pixelByPixel) {
+					points = graphic->getPixelPointsCloud();
+				} else {
+					points = config.normalizePointVectorsLenght ? graphic->getPointsCloud(config.pointsDensity, maxCount) : graphic->getPointsCloud(config.pointsDensity);
+				}
                 file << ", " << points.size();
                 for (auto it = points.begin(); it != points.end(); ++it) {
                     file << ", " << it->x() << ", " << it->y();

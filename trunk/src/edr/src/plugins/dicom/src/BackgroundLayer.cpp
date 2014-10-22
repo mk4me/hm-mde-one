@@ -114,3 +114,8 @@ std::vector<QPointF> dicom::BackgroundLayer::getPointsCloud(int density, int nor
 }
 
 
+
+std::vector<QPointF> dicom::BackgroundLayer::getPixelPointsCloud() const
+{
+	return std::vector<QPointF>();
+}

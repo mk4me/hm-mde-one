@@ -200,7 +200,7 @@ int dicom::PointsLayer::getPointIdx( QGraphicsItem* itm )
 
 dicom::PointsLayer* dicom::PointsLayer::clone() const
 {
-    std::unique_ptr<PointsLayer> pl(new PointsLayer(getAdnotationIdx()));    
+    std::unique_ptr<PointsLayer> pl = std::make_unique<PointsLayer>(getAdnotationIdx());    
     pl->setName(this->name);
     pl->setPointsDrawer(IPointsDrawerPtr(pointsDrawer->clone()));
 
@@ -228,6 +228,45 @@ std::vector<QPointF> dicom::PointsLayer::getPointsCloud(int density , int normal
 	} else {
 		for (auto it = points.begin(); it != points.end(); ++it) {
 			res.push_back((*it)->pos());
+		}
+	}
+	return res;
+}
+
+std::vector<QPointF> dicom::PointsLayer::getPixelPointsCloud() const
+{
+	auto point = [](const QPointF& p) { return QPoint(p.x(), p.y()); };
+	auto isSame = [](const QPoint& p1, const QPoint& p2) { return p1.x() == p2.x() && p1.y() == p2.y();  };
+	auto isDiffAdjacent = [&](const QPoint& p) {
+		if (p.isNull()) return false;
+		auto x2 = p.x() * p.x();
+		auto y2 = p.y() * p.y();
+		return (x2 + y2) <= 2 && (x2 == 1 || y2 == 1);
+	};
+
+	std::vector<QPointF> res;
+	QPainterPath path = pointsDrawer->createPath(points);
+	int count = path.elementCount();
+	double delta = 1.0 / count;
+	double progress = 0.0;
+	while (progress < 1.0) {
+		auto raw = path.pointAtPercent(progress);
+		auto e = point(raw);
+		res.push_back(e);
+		auto next = point(path.pointAtPercent(progress + delta));
+		bool adj = isDiffAdjacent(e - next);
+		bool same = isSame(e, next);
+		while (!adj && !same) {
+			delta *= 0.5;
+			next = point(path.pointAtPercent(progress + delta));
+			adj = isDiffAdjacent(e - next);
+			same = isSame(e, next);
+		}
+		progress += delta;
+		while (!adj && progress <= 1) {
+			progress += delta;
+			next = point(path.pointAtPercent(progress));
+			adj = isDiffAdjacent(e - next);
 		}
 	}
 	return res;

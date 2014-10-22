@@ -170,6 +170,8 @@ namespace dicom {
 
 		virtual std::vector<QPointF> getPointsCloud(int density = 0, int normalizeLength = -1) const;
 
+		virtual std::vector<QPointF> getPixelPointsCloud() const;
+
 
     };
 	typedef boost::shared_ptr<PointsLayer> PointsLayerPtr;

@@ -67,6 +67,7 @@ void medusaExporter::MedusaExporterServiceWidget::onExport()
 
 	ExportConfig config;
 	config.skipIdentical = ui->skipIdenticalComboBox->isChecked();
+	config.pixelByPixel = ui->curveDescriptionComboBox->currentText() == QObject::tr("Pixel by pixel");
 	config.pointsDensity = ui->curveDensitySpinBox->value();
     config.normalizePointVectorsLenght = ui->normalizePointsCheck->isChecked();
 

@@ -27,7 +27,16 @@ color: white*/
      <item>
       <widget class="QWidget" name="widget" native="true">
        <layout class="QVBoxLayout" name="verticalLayout_5">
-        <property name="margin">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
          <number>0</number>
         </property>
         <item>
@@ -177,16 +186,24 @@ color: white*/
            <string>Atributes Export</string>
           </property>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="8" column="0" colspan="3">
-            <widget class="QPushButton" name="exportButton">
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Curve density</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <widget class="QToolButton" name="exportFromButton">
+             <property name="text">
+              <string>...</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1" colspan="2">
+            <widget class="QComboBox" name="chooseUserComboBox">
              <property name="enabled">
               <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Export attributes</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -204,7 +221,7 @@ color: white*/
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
+           <item row="7" column="0">
             <widget class="QCheckBox" name="skipIdenticalComboBox">
              <property name="enabled">
               <bool>true</bool>
@@ -217,21 +234,7 @@ color: white*/
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>Choose format</string>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="0">
-            <widget class="QCheckBox" name="normalizePointsCheck">
-             <property name="text">
-              <string>Normalize annotation points</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1" colspan="2">
+           <item row="5" column="1" colspan="2">
             <widget class="QSpinBox" name="curveDensitySpinBox">
              <property name="enabled">
               <bool>false</bool>
@@ -241,31 +244,24 @@ color: white*/
              </property>
             </widget>
            </item>
-           <item row="5" column="1" colspan="2">
+           <item row="6" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Output format</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QCheckBox" name="normalizePointsCheck">
+             <property name="text">
+              <string>Normalize annotation points</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1" colspan="2">
             <widget class="QComboBox" name="chooseFormatComboBox">
              <property name="enabled">
               <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1" colspan="2">
-            <widget class="QComboBox" name="chooseUserComboBox">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>Curve density</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="2">
-            <widget class="QToolButton" name="exportFromButton">
-             <property name="text">
-              <string>...</string>
              </property>
             </widget>
            </item>
@@ -277,6 +273,40 @@ color: white*/
              <property name="readOnly">
               <bool>true</bool>
              </property>
+            </widget>
+           </item>
+           <item row="9" column="0" colspan="3">
+            <widget class="QPushButton" name="exportButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Export attributes</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Curve description</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1" colspan="2">
+            <widget class="QComboBox" name="curveDescriptionComboBox">
+             <item>
+              <property name="text">
+               <string>Pixel by pixel</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Key points</string>
+              </property>
+             </item>
             </widget>
            </item>
           </layout>

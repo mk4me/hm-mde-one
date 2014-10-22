@@ -30,7 +30,9 @@ public:
 public:
     virtual QGraphicsItem* getItem();
     virtual QString getName() const;
-    virtual QSize getSize() const;
+	virtual QSize getSize() const;
+	virtual std::vector<QPointF> getPointsCloud(int density = 0, int normalizeLength = -1) const;
+	virtual std::vector<QPointF> getPixelPointsCloud() const;
 
     QRect getCrop() const;
     void setCrop(const QRect& val);
@@ -58,7 +60,6 @@ private:
 private:
     void lazy() const;
 
-    virtual std::vector<QPointF> getPointsCloud(int density = 0, int normalizeLength = -1) const;
 
 private:
     QString pixmapPath;
