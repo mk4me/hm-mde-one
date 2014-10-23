@@ -297,6 +297,9 @@ color: white*/
            </item>
            <item row="4" column="1" colspan="2">
             <widget class="QComboBox" name="curveDescriptionComboBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <item>
               <property name="text">
                <string>Pixel by pixel</string>

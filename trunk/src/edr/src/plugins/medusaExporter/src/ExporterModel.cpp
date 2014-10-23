@@ -117,20 +117,6 @@ void medusaExporter::ExporterModel::addExporter(const IExporterConstPtr& exporte
 
 
 
-void medusaExporter::ExporterModel::downloadAll()
-{
-	auto icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
-	if (icomm) {
-		//TODO
-		/*
-		if (icomm->isLogged()) {
-			icomm->downloadAllFiles();
-		} else {
-            throw std::runtime_error("User not logged");
-		}
-		*/
-	}
-}
 
 void medusaExporter::ExporterModel::extractData(const QString& path)
 {

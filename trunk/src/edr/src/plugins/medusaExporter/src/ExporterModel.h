@@ -32,10 +32,8 @@ namespace medusaExporter {
 
 	public:
 		void addExporter(const IExporterConstPtr& exporter);
-		//AnnotationDataConstPtr gatherData(const std::string& user);
 		void packImages(const QString& dirPath, const QString& outFile);
 		void packImages(const QString& dirPath, const QString& outFile, CallbackFunction fun);
-		void downloadAll();
 		void extractData(const QString& path);
 		void extractData(const QString& path, CallbackFunction fun);
 		void packMeta(const QString& dirPath, const QString& outFile);

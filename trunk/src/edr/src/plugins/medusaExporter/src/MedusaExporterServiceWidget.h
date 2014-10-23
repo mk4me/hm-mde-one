@@ -111,7 +111,6 @@ namespace medusaExporter {
 
 	private Q_SLOTS:
 		void onExport();
-		void onDownload();
 		void onExtract();
 		void onExtractDirDialog();
 		void onExportFrom();

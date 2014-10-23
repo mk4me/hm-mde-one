@@ -90,6 +90,7 @@ void medusaExporter::MedusaExporterServiceWidget::onExport()
         disabler->addWidget(ui->skipIdenticalComboBox);
         //disabler->addWidget(ui->chooseFormatComboBox);
         disabler->addWidget(ui->curveDensitySpinBox);
+		disabler->addWidget(ui->curveDescriptionComboBox);
         disabler->addWidget(ui->chooseUserComboBox);
         disabler->addWidget(ui->exportButton);
         disabler->checkButton(ui->exportButton);
@@ -99,18 +100,6 @@ void medusaExporter::MedusaExporterServiceWidget::onExport()
 	} catch (...) {
 		QMessageBox::critical(this, tr("Error"), tr("Unknown error"));
 	}
-}
-
-void medusaExporter::MedusaExporterServiceWidget::onDownload()
-{
-	try {
-		exporterModel->downloadAll();
-	} catch (const std::exception& e) {
-		QMessageBox::critical(this, tr("Error"), tr(e.what()));
-	} catch (...) {
-		QMessageBox::critical(this, tr("Error"), tr("Unknown error"));
-	}
-	this->close();
 }
 
 
@@ -167,8 +156,8 @@ void medusaExporter::MedusaExporterServiceWidget::onExtract()
         connect(t, SIGNAL(progressChanged(double, const QString&)), this, SLOT(callback(double, const QString&)), Qt::QueuedConnection);
         connect(t, SIGNAL(finished()), this, SLOT(afterExtract()));
         connect(t, SIGNAL(finished()), t, SLOT(deleteLater()));
-        connect(t, SIGNAL(terminated()), this, SLOT(afterExtract()));
-        connect(t, SIGNAL(terminated()), t, SLOT(deleteLater()));
+        //connect(t, SIGNAL(terminated()), this, SLOT(afterExtract()));
+        //connect(t, SIGNAL(terminated()), t, SLOT(deleteLater()));
                
         
         //exporterModel->extractData(innerDataDir.absolutePath(), callbackFunction);
@@ -227,6 +216,7 @@ void medusaExporter::MedusaExporterServiceWidget::setExportFrom(const QString& d
 {
 	ui->exportFromLineEdit->setText(QDir::toNativeSeparators(dir));
     QDir d(dir);
+	ui->curveDescriptionComboBox->setEnabled(true);
     ui->curveDensitySpinBox->setEnabled(true);
 	ui->skipIdenticalComboBox->setEnabled(true);
 	ui->exportButton->setEnabled(true);
@@ -251,7 +241,7 @@ void medusaExporter::MedusaExporterServiceWidget::callback(double ratio, const Q
 	ui->progressBar->setValue(ratio * 100);
 	ui->progressBarLabel->setVisible(true);
 	ui->progressBarLabel->setText(description);
-	QApplication::processEvents();
+	//QApplication::processEvents();
 }
 
 void medusaExporter::MedusaExporterServiceWidget::onPackChecks()
@@ -281,7 +271,7 @@ void medusaExporter::MedusaExporterServiceWidget::onClearMedusaExport()
         connect(t, SIGNAL(progressChanged(double, const QString&)), this, SLOT(callback(double, const QString&)), Qt::QueuedConnection);
         connect(t, SIGNAL(finished()), this, SLOT(afterClear()));
         connect(t, SIGNAL(finished()), t, SLOT(deleteLater()));
-        connect(t, SIGNAL(terminated()), this, SLOT(afterClear()));
+        //connect(t, SIGNAL(terminated()), this, SLOT(afterClear()));
         auto op = [&](ExporterModel::CallbackFunction f) {
             f(0.0, tr("Started"));
             this->exporterModel->clearMedusaExportDir();
