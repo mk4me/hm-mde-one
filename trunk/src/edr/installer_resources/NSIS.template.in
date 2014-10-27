@@ -928,24 +928,11 @@ Section un.main main
   
 SectionEnd
 
-Section "Microsoft Visual C++ 2013 Redistributable Package (x86)"
+Section "Microsoft Visual C++ 2013 Redistributable Package (x86)" SectionVSRedist
 ;-------------------------------
-; Test if Visual Studio Redistributables 2013 installed
-; Returns -1 if there is no VC redistributables intstalled
 
-   Push $R0
-   ClearErrors
-   ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{196BB40D-1578-3D01-B289-BEFC77A11A1E}" "Version"
-   
-   ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\DevDiv\VC\Servicing\12.0\RuntimeMinimum" "Install"
-
-   ; if VS 2013+ redist not installed, install it
-   IfErrors 0 VSRedistInstalled
-   File "@CPACK_INSTALLER_ADDITIONAL_RESOURCES@\vcredist_x86.exe" 
-ExecWait '$INSTDIR\vcredist_x86.exe /q:a'
-   StrCpy $R0 "-1"
-
-VSRedistInstalled:
+	File "@CPACK_INSTALLER_ADDITIONAL_RESOURCES@\vcredist_x86.exe" 
+	ExecWait '$INSTDIR\vcredist_x86.exe /q:a'
 
 SectionEnd
 
@@ -1020,10 +1007,29 @@ uninst:
   ;Abort
 done1: 
 
-
   ; Reads components status for registry
   !insertmacro SectionList "InitSection"
 
+  ; Sprawdzam czy mam zainstalowanego runtime
+  ; Test if Visual Studio Redistributables 2013 installed
+  ; Returns -1 if there is no VC redistributables intstalled
+  Push $R0
+  ClearErrors
+  ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{196BB40D-1578-3D01-B289-BEFC77A11A1E}" "Version"
+   
+  ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\DevDiv\VC\Servicing\12.0\RuntimeMinimum" "Install"
+
+  ; if VS 2013+ redist not installed, install it
+  IfErrors 0 VSRedistInstalled
+  
+  Push $0
+  SectionGetFlags ${SectionVSRedist} $0
+  IntOp $0 $0 | ${SF_SELECTED}
+  IntOp $0 $0 | ${SF_RO}
+  SectionSetFlags ${SectionVSRedist} $0
+  Pop $0
+VSRedistInstalled:
+  
   ; check to see if /D has been used to change 
   ; the install directory by comparing it to the 
   ; install directory that is expected to be the
