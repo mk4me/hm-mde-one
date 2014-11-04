@@ -10,7 +10,6 @@
 #include <plugins/hmdbCommunication/TreeItemHelper.h>
 #include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/video/Wrappers.h>
-#include <boost/foreach.hpp>
 #include <plugins/subject/ISubject.h>
 #include <plugins/hmdbCommunication/IPatient.h>
 #include <corelib/PluginCommon.h>
@@ -63,7 +62,7 @@ core::IHierarchyItemPtr  TreeBuilder::createTree(const QString& rootItemName, co
             s->getMotions(filteredMotions);
         }
 
-        BOOST_FOREACH(core::VariantConstPtr motionOW, filteredMotions) {	
+        for(auto motionOW : filteredMotions) {	
 
             PluginSubject::MotionConstPtr motion = motionOW->get();
            
@@ -648,7 +647,7 @@ bool MotionPerspective::hasValidData(PluginSubject::SubjectPtr subject)
         PluginSubject::SessionConstPtr s = (*it)->get();
         s->getMotions(motions);
 
-        BOOST_FOREACH(core::VariantConstPtr motionOW, motions) {	
+        for(auto motionOW : motions) {	
 
             PluginSubject::MotionConstPtr motion = motionOW->get();
             for (auto it = types.begin(); it != types.end(); ++it) {

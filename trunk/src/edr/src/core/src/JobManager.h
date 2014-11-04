@@ -9,10 +9,7 @@
 #ifndef HEADER_GUARD_CORE__JOBMANAGER_H__
 #define HEADER_GUARD_CORE__JOBMANAGER_H__
 
-#include <corelib/IJobManager.h>
-#include <threadingUtils/IThread.h>
-#include <threadingUtils/JobManager.h>
-#include <threadingUtils/SynchronizationPolicies.h>
+
 #include <corelib/BaseDataTypes.h>
 
 namespace core

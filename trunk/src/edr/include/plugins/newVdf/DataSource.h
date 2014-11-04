@@ -12,7 +12,7 @@
 
 #include <plugins/newVdf/IDataSource.h>
 #include <plugins/newVdf/Export.h>
-#include <boost/function.hpp>
+#include <functional>
 
 namespace df { class ISourceNode; }
 
@@ -21,7 +21,7 @@ namespace vdf {
 class PLUGIN_NEWVDF_EXPORT DataSource : public IDataSource
 {
 public:
-	typedef boost::function<df::ISourceNode* (const df::ISourceNode*)> Creator;
+	typedef std::function<df::ISourceNode* (const df::ISourceNode*)> Creator;
 	DataSource(df::ISourceNode* impl, core::UniqueID id, const std::string& name, Creator creator);
 	//! \return Nazwa elementu logicznego
 	virtual const std::string getName() const;;

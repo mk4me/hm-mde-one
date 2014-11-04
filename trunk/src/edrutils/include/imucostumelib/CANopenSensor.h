@@ -182,10 +182,11 @@ namespace imuCostume
 		//! \param costume Kostium którego czujnikiem chcemy sterowaæ i siê komunikowaæ
 		//! \param id Identyfikator czujnika
 		//! \param timeout Maksymalny czas na wys³anie i odpowiedŸ wiadomoœci z kostiumu [ms]
-		CANopenSensor(CostumeRawIO * costume, const int8_t id, const unsigned int timeout);
+		CANopenSensor(CostumeRawIO * costume, const int8_t id, const unsigned int timeout = 300);
 		//! Destruktor
 		virtual ~CANopenSensor();
 
+		//! \return Timeout oczekiwania na odpowiedŸ z kostiumu
 		const unsigned int timeout() const;
 
 		//LSS
@@ -211,10 +212,10 @@ namespace imuCostume
 
 		//SDO
 		template<typename T>
-		const OperationStatus read(const int16_t dictID, IODataSize & dataSize, T & value, ErrorCode & errorCode, const int8_t dictSubID = 0) const
+		const OperationStatus readSDO(const int16_t dictID, IODataSize & dataSize, T & value, ErrorCode & errorCode, const int8_t dictSubID = 0) const
 		{
 			Buffer buf;
-			auto ret = read(dictID, dataSize, buf, errorCode, dictSubID);
+			auto ret = readSDO(dictID, dataSize, buf, errorCode, dictSubID);
 			if (ret == OPERATION_OK){
 				value = extractData(buf);
 			}
@@ -223,15 +224,15 @@ namespace imuCostume
 		}
 
 		template<typename T>
-		const OperationStatus write(const int16_t dictID, const IODataSize dataSize, const T value, ErrorCode & errorCode, const int8_t dictSubID = 0)
+		const OperationStatus writeSDO(const int16_t dictID, const IODataSize dataSize, const T value, ErrorCode & errorCode, const int8_t dictSubID = 0)
 		{
-			return write(dictID, dataSize, formatData(value), errorCode, dictSubID);
+			return writeSDO(dictID, dataSize, formatData(value), errorCode, dictSubID);
 		}
 
 	private:
 
-		const OperationStatus read(const int16_t dictID, IODataSize & dataSize, Buffer & data, ErrorCode & errorCode, const int8_t dictSubID = 0) const;
-		const OperationStatus write(const int16_t dictID, const IODataSize dataSize, const Buffer & data, ErrorCode & errorCode, const int8_t dictSubID = 0);
+		const OperationStatus readSDO(const int16_t dictID, IODataSize & dataSize, Buffer & data, ErrorCode & errorCode, const int8_t dictSubID = 0) const;
+		const OperationStatus writeSDO(const int16_t dictID, const IODataSize dataSize, const Buffer & data, ErrorCode & errorCode, const int8_t dictSubID = 0);
 
 		template<typename T>
 		static const Buffer formatData(const T value)

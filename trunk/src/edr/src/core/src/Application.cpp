@@ -23,8 +23,6 @@
 #include "SourceManager.h"
 #include "LogInitializer.h"
 #include "PluginLoader.h"
-#include "ThreadPool.h"
-#include "JobManager.h"
 #include "LanguagesManager.h"
 #include "LanguagesHelper.h"
 #include "LanguagesLoader.h"
@@ -277,27 +275,20 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 
 	//Wielow¹tkowoœæ
 	{
-		showSplashScreenMessage(QObject::tr("Initializing threading"));
+		showSplashScreenMessage(QObject::tr("Initializing threading"));		
 
-		threadFactory_.reset(new threadingUtils::QtThreadFactory());
+		innerThreadPool.reset(new core::ThreadPool::InnerThreadPool);
+		threadPool_.reset(new core::ThreadPool(innerThreadPool.get()));
 
-		const core::ThreadPool::size_type threadsCount = QThread::idealThreadCount();
+		innerWorkManager_.reset(new core::JobManager::InnerWorkManager);
+		innerJobManager_.reset(new core::JobManager::InnerJobManager(innerWorkManager_.get()));
+		jobManager_.reset(new core::JobManager(innerJobManager_.get()));
 
-		threadPool_.reset(new core::ThreadPool(threadFactory_, (threadsCount / 2) + 1, threadsCount * 50));
+		core::ThreadPool::Threads threads;
+		threadPool_->get(std::thread::hardware_concurrency() - 1, threads,  true, "Core", "JobManager worker thread");
 
-		core::ThreadPool::Threads ts;
-		threadPool_->getThreads("Core", ts, 1, true);
-		ts.front()->setDestination("JobManager maintenance thread");
-
-		jobManager_.reset(new core::JobManager(ts.front()));
-
-		ts.clear();
-
-		threadPool_->getThreads("Core", ts, threadsCount - 1, true);
-
-		for (auto it = ts.begin(); it != ts.end(); ++it){
-			(*it)->setDestination("JobManager worker");
-			jobManager_->addWorkerThread(*it);
+		for (auto & t : threads){			
+			innerWorkManager_->addWorkerThread(std::move(t));
 		}
 	}
 
@@ -509,6 +500,10 @@ int Application::run()
 
 Application::~Application()
 {
+
+	visualizerUpdateTimer.stop();
+	servicesUpdateTimer.stop();
+
 	if (uiInit == true){
 		CORE_LOG_INFO("Closing core application");
 
@@ -535,10 +530,11 @@ Application::~Application()
 
 		CORE_LOG_INFO("Releasing job manager");
 		jobManager_.reset();
+		innerJobManager_.reset();
+		innerWorkManager_.reset();
 		CORE_LOG_INFO("Releasing thread pool");
 		threadPool_.reset();
-		CORE_LOG_INFO("Releasing thread factory");
-		threadFactory_.reset();
+		innerThreadPool.reset();
 
 		CORE_LOG_INFO("Cleaning translations");
 		languagesManager_.reset();
@@ -622,12 +618,12 @@ SourceManager* Application::sourceManager()
 	return sourceManager_.get();
 }
 
-core::ThreadPool* Application::threadPool()
+ThreadPool* Application::threadPool()
 {
 	return threadPool_.get();
 }
 
-core::JobManager* Application::jobManager()
+JobManager* Application::jobManager()
 {
 	return jobManager_.get();
 }

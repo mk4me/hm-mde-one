@@ -32,7 +32,8 @@ const bool MRNodeImpl::paused() const
 
 void MRNodeImpl::tryPause()
 {
-	threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(syncPolicy);
+	std::unique_lock<std::mutex> lock(syncPolicy);
+	pauseVariable.wait(lock);
 }
 
 MRSourceNodeImpl::MRSourceNodeImpl(IMRSourceNode * source, unsigned int toConsume) : source_(source), toConsume(toConsume), currentlyConsumed(0)
@@ -102,6 +103,17 @@ const MROutputPin * MRSourceNodeImpl::pin(size_type idx) const
 	return outputPins[idx];
 }
 
+void MRSourceNodeImpl::wait()
+{	
+	std::unique_lock<std::mutex> lock(sync);
+	wait_.wait(lock);
+}
+
+void MRSourceNodeImpl::wakeUp()
+{
+	wait_.notify_one();
+}
+
 MRSinkNodeImpl::MRSinkNodeImpl(IMRSinkNode * sink, unsigned int toConsume) : sink_(sink), toConsume(toConsume), readyToConsume(0)
 {
 }
@@ -167,4 +179,15 @@ MRInputPin * MRSinkNodeImpl::pin(size_type idx)
 const MRInputPin * MRSinkNodeImpl::pin(size_type idx) const
 {
 	return inputPins[idx];
+}
+
+void MRSinkNodeImpl::wait()
+{
+	std::unique_lock<std::mutex> lock(sync);
+	wait_.wait(lock);
+}
+
+void MRSinkNodeImpl::wakeUp()
+{
+	wait_.notify_one();
 }

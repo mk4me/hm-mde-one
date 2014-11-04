@@ -160,7 +160,7 @@ int dicom::NormalState::getNumSelected()
 {
     int selected = 0;
     ILayeredImagePtr image = machine->getSerie()->getImage();
-    BOOST_FOREACH(std::string tag, image->getTags()) {
+    for(auto tag : image->getTags()) {
         int count = image->getNumGraphicLayerItems(tag);
         for (int i = 0; i < count; ++i) {
             auto vl = image->getLayerGraphicItem(tag, i);
@@ -176,7 +176,7 @@ dicom::ILayerGraphicItemPtr dicom::NormalState::getFirstSelected()
 {
     int selected = 0;
     ILayeredImagePtr image = machine->getSerie()->getImage();
-    BOOST_FOREACH(std::string tag, image->getTags()) {
+    for(auto tag : image->getTags()) {
         int count = image->getNumGraphicLayerItems(tag);
         for (int i = 0; i < count; ++i) {
             auto vl = image->getLayerGraphicItem(tag, i);
@@ -208,7 +208,7 @@ void dicom::NormalState::removeLayer()
     if (points) {
         auto image = machine->getSerie()->getImage();
         auto tags = image->getTags();
-        BOOST_FOREACH (std::string tag, tags) {
+        for (auto tag : tags) {
             int numItems = image->getNumLayerItems(tag);
 
             for (int i = 0; i < numItems; ++i) {

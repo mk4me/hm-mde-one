@@ -10,7 +10,7 @@
 #define HEADER_GUARD_OSG_UTILS__CUSTOMPRIMITIVESFACTORY_H__
 
 #include <utils/Debug.h>
-#include <boost/type_traits.hpp>
+#include <type_traits>
 #include <osg/StateSet>
 #include <osg/Geometry>
 

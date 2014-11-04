@@ -7,7 +7,6 @@
 #include <plugins/subject/IMotion.h>
 #include <corelib/HierarchyDataItem.h>
 #include <plugins/hmdbCommunication/TreeItemHelper.h>
-#include <boost/foreach.hpp>
 #include <plugins/subject/ISubject.h>
 #include <plugins/hmdbCommunication/IPatient.h>
 #include <corelib/PluginCommon.h>
@@ -31,7 +30,7 @@ typedef core::Filesystem fs;
 
 VectorChannelPtr IMU::IMUPerspective::createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit)
 {
-    auto c = utils::make_shared<VectorChannel>(hz);
+	auto c = utils::make_shared<VectorChannel>((float)hz);
     // + 1 , bo numeracja w plikach *.cfg zaczyna siê od 1
     c->setName(generateChannelName(config, i + 1));
 	c->setValueBaseUnit(unit);
@@ -67,7 +66,7 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
         rootItem->appendChild(sessionItem);
         s->getMotions(motions);
 
-        BOOST_FOREACH(core::VariantConstPtr motionOW, motions) {	
+        for(auto motionOW : motions) {	
 
             PluginSubject::MotionConstPtr motion = motionOW->get();
             std::ostringstream ss;

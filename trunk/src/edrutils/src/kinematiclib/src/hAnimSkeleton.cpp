@@ -72,8 +72,8 @@ hAnimBonePtr hAnimSkeleton::getBoneByName(const std::string& name)
 void hAnimSkeleton::clearActiveHierarchy( hAnimJointPtr parent )
 {
 	hAnimJointWeak emptyWeakPtr;
-	BOOST_FOREACH(hAnimBonePtr bone, parent->getChildrenBones()) {
-		BOOST_FOREACH(hAnimJointPtr joint, bone->getChildrenJoints()) {
+	for(auto bone : parent->getChildrenBones()) {
+		for(auto joint : bone->getChildrenJoints()) {
 			joint->getActiveJointChildren().clear();
 			joint->setActiveParent(emptyWeakPtr);
 		}
@@ -94,8 +94,8 @@ void hAnimSkeleton::activateJoint( const std::string& jointName, bool active )
 
 void hAnimSkeleton::createActiveHierarchy( hAnimJointPtr parent, hAnimJointPtr lastActive )
 {
-	BOOST_FOREACH(hAnimBonePtr bone, parent->getChildrenBones()) {
-		BOOST_FOREACH(hAnimJointPtr joint, bone->getChildrenJoints()) {
+	for(auto bone : parent->getChildrenBones()) {
+		for(auto joint : bone->getChildrenJoints()) {
 			if (joint->isActive()) {
 				hAnimJointWeak parentWeak(lastActive);
 				joint->setActiveParent(parentWeak);

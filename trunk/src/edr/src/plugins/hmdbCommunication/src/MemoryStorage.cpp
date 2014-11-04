@@ -65,7 +65,7 @@ public:
 	}
 
 private:
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock;
+	std::lock_guard<std::recursive_mutex> lock;
 	MemoryStorage * const storage;
 
 };
@@ -89,37 +89,37 @@ const bool MemoryStorage::isOpened() const
 
 const bool MemoryStorage::exists(const std::string & key) const
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
+	std::lock_guard<std::recursive_mutex> lock(sync_);
 	return rawExists(key);
 }
 
 const IHMDBStorage::IOStreamPtr MemoryStorage::get(const std::string & key)
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
+	std::lock_guard<std::recursive_mutex> lock(sync_);
 	return rawGet(key);
 }
 
 const IHMDBStorage::IStreamPtr MemoryStorage::get(const std::string & key) const
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
+	std::lock_guard<std::recursive_mutex> lock(sync_);
 	return rawGet(key);
 }
 
 const bool MemoryStorage::set(const std::string & key, IHMDBStorage::IStreamPtr input)
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
+	std::lock_guard<std::recursive_mutex> lock(sync_);
 	return rawSet(key, input);
 }
 
 void MemoryStorage::set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
+	std::lock_guard<std::recursive_mutex> lock(sync_);
 	rawSet(key, input, progress);
 }
 
 const bool MemoryStorage::remove(const std::string & key)
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
+	std::lock_guard<std::recursive_mutex> lock(sync_);
 	return rawRemove(key);
 }
 
@@ -131,13 +131,13 @@ void MemoryStorage::close()
 const bool MemoryStorage::rename(const std::string & oldKey,
 	const std::string & newKey, const bool overwrite)
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
+	std::lock_guard<std::recursive_mutex> lock(sync_);
 	return rawRename(oldKey, newKey, overwrite);
 }
 
 const MemoryStorage::Keys MemoryStorage::keys() const
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
+	std::lock_guard<std::recursive_mutex> lock(sync_);
 	return rawKeys();
 }
 

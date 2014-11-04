@@ -3,7 +3,6 @@
 #include <dfmlib/Connection.h>
 #include <algorithm>
 #include <vector>
-#include <boost/bind.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
@@ -273,7 +272,7 @@ void DFModel::beforeNodeRemove(const NPtr & node)
 
 void DFModel::afterLeafAdd(const NPtr & node)
 {
-    DFNode::getDFNode(node)->onLeafProcessedCallback = DFNode::OnLeafProcessedCallback(boost::bind(&DFModel::leafHasProcessedData, this));
+    DFNode::getDFNode(node)->onLeafProcessedCallback = DFNode::OnLeafProcessedCallback(std::bind(&DFModel::leafHasProcessedData, this));
 }
 
 void DFModel::beforeLeafRemove(const NPtr & node)

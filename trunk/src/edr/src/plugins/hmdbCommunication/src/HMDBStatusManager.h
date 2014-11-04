@@ -9,7 +9,7 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__HMDBSTATUSMANAGER_H__
 
 #include <plugins/hmdbCommunication/IHMDBStatusManager.h>
-#include <threadingUtils/SynchronizationPolicies.h>
+#include <mutex>
 #include <map>
 
 namespace hmdbCommunication
@@ -21,7 +21,7 @@ namespace hmdbCommunication
 	{
 	private:
 
-		typedef threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> ScopedLock;
+		typedef std::lock_guard<std::recursive_mutex> ScopedLock;
 
 		class HMDBStatusManagerTransaction;
 		friend class HMDBStatusManagerTransaction;
@@ -102,7 +102,7 @@ namespace hmdbCommunication
 		//! Statusy danych
 		Statuses statuses;
 		//! Obiekt synchronizuj¹cy
-		mutable threadingUtils::RecursiveSyncPolicy synch_;
+		mutable std::recursive_mutex synch_;
 		//! Mapa aktualizacji
 		UpdateData updateData;
 	};

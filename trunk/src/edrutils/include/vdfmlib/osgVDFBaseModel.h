@@ -1,13 +1,11 @@
 #ifndef HEADER_GUARD__VDFBASEMODEL_H__
 #define HEADER_GUARD__VDFBASEMODEL_H__
 
-#include <OpenThreads/ReentrantMutex>
-#include <OpenThreads/ScopedLock>
+#include <mutex>
 #include <osgWidget/Widget>
 #include <osgWidget/WindowManager>
 #include <osgGA/GUIEventAdapter>
 #include <osgGA/GUIEventHandler>
-#include <boost/function.hpp>
 #include <boost/bimap.hpp>
 
 #include <osgui/KeyboardMapper.h>
@@ -40,7 +38,7 @@ class osgVDFBaseModel : public osgWidget::WindowManager, public osgui::KeyboardM
 
 public:
     //! Typ akcji na potrzeby realizacji usuwania połączeń przez zewnętrzne menu kontekstowe
-    typedef boost::function<void(void)> ConnectionAction;
+    typedef std::function<void(void)> ConnectionAction;
 
     //! Para akcji - podświetlenia danego połączenia wizualnego i jego usunięcia na potrzeby realizacji tego zadania przez zewnętrzne menu kontekstowe - np Qt
     typedef std::pair<ConnectionAction, ConnectionAction> ConnectionActions;
@@ -49,14 +47,14 @@ public:
     typedef std::map<std::string, ConnectionActions> ConnectionsActionsMapping; 
 
     //! Typ akcji węzła
-    typedef boost::function<void(const osgVDFBaseNode *, const osgWidget::XYCoord &)> NodeAction;
+    typedef std::function<void(const osgVDFBaseNode *, const osgWidget::XYCoord &)> NodeAction;
 
     //! Akcja usuwająca wezel
-    typedef boost::function<void(const osgVDFBaseNode *)> NodeDeleteAction;
+    typedef std::function<void(const osgVDFBaseNode *)> NodeDeleteAction;
 
 protected:
     
-    typedef OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> ScopeLock;
+    typedef std::lock_guard<std::recursive_mutex> ScopeLock;
 
     //! Typ służący do ładowania konfiguracji węzłów
     typedef std::map<dflm::NPtr, osgWidget::XYCoord> NodesPositions;
@@ -573,7 +571,7 @@ private:
 	bool toolbarVisible;
 	Button * lastButton;
 
-    mutable OpenThreads::ReentrantMutex stateMutex;
+    mutable std::recursive_mutex stateMutex;
 
     NodeDeleteAction deleteNodeAction;
 

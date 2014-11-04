@@ -6,7 +6,6 @@
 #include <coreui/CoreCursorChanger.h>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QFileDialog>
-#include <OpenThreads/Thread>
 #include <corelib/Filesystem.h>
 #include "IMUCostumeCalibrationWizard.h"
 #include "corelib/IVisualizerManager.h"
@@ -26,6 +25,7 @@
 #include <imucostumelib/ImuCostume.h>
 #include <imucostumelib/CANopenSensor.h>
 #include <imucostumelib/ImuSensor.h>
+#include <thread>
 
 IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	QWidget * parent, const Qt::WindowFlags f)
@@ -93,8 +93,8 @@ void IMUCostumeWidget::onCalibrate()
 
 			unsigned int i = 2000;
 
-			while(--i > 0){
-				OpenThreads::Thread::microSleep(100);
+			while(--i > 0){				
+				std::this_thread::sleep_for(std::chrono::microseconds(100));
 				QCoreApplication::processEvents();
 			}
 
@@ -106,8 +106,8 @@ void IMUCostumeWidget::onCalibrate()
 
 			i = 2000;
 
-			while(--i > 0){
-				OpenThreads::Thread::microSleep(100);
+			while(--i > 0){				
+				std::this_thread::sleep_for(std::chrono::microseconds(100));
 				QCoreApplication::processEvents();
 			}
 
@@ -420,8 +420,8 @@ void IMUCostumeWidget::testCommunication()
 		auto data = costume->read(300);
 		imuCostume::CANopenSensor canSensor(rawCostume.get(), 1, 300);
 		imuCostume::CANopenSensor::ErrorCode error = imuCostume::CANopenSensor::NO_ERROR;
-		auto ret1 = canSensor.write(imuCostume::IMUSensor::CONFIGURATION, imuCostume::CANopenSensor::Size1B, 1, error, imuCostume::IMUSensor::CONFIGURATION_SOFT_IRON_CAL_ENABLE);
-		auto ret2 = canSensor.write(imuCostume::IMUSensor::CONFIGURATION, imuCostume::CANopenSensor::Size1B, 2, error, imuCostume::IMUSensor::CONFIGURATION_SOFT_IRON_CAL_ENABLE);
+		auto ret1 = canSensor.writeSDO(imuCostume::IMUSensor::CONFIGURATION, imuCostume::CANopenSensor::Size1B, 1, error, imuCostume::IMUSensor::CONFIGURATION_SOFT_IRON_CAL_ENABLE);
+		auto ret2 = canSensor.writeSDO(imuCostume::IMUSensor::CONFIGURATION, imuCostume::CANopenSensor::Size1B, 2, error, imuCostume::IMUSensor::CONFIGURATION_SOFT_IRON_CAL_ENABLE);
 		auto ret3 = canSensor.saveConfiguration(error);
 		bool wait = true;
 		wait = false;

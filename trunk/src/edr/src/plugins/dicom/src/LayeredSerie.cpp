@@ -105,7 +105,7 @@ void LayeredSerie::setupData( const core::VariantConstPtr & data )
 
         graphicsScene->addItem(image->getBackgroundLayer()->getItem());
 
-        BOOST_FOREACH(std::string tag, image->getTags()) {
+        for(auto tag : image->getTags()) {
             int count = image->getNumGraphicLayerItems(tag);
             for (int i = 0; i < count; ++i) {
                 auto vec = image->getLayerGraphicItem(tag, i);
@@ -186,7 +186,7 @@ void dicom::LayeredSerie::refresh()
 {
     getGraphicsView()->setSceneRect(0, 0, getSize().width(), getSize().height());
     getGraphicsScene()->setSceneRect( getGraphicsView()->rect() );
-    BOOST_FOREACH(std::string tag, image->getTags()) {
+    for(auto tag : image->getTags()) {
 		int count = image->getNumGraphicLayerItems(tag);
 		for (int i = 0; i < count; ++i) {
 			auto vec = image->getLayerGraphicItem(tag, i);

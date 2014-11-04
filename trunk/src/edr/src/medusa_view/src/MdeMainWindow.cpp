@@ -67,9 +67,23 @@ public:
 			config->addFilterSeparator();
 		}
 
-		for (unsigned int i = 0; i < fs; ++i){
-			auto f = viewManager->filter(i, name())->create(shallowCopyContext->shallowCopyRemoteContext()->remoteContext()->session().get());
-			config->registerFilter(f);
+		auto scrc = shallowCopyContext->shallowCopyRemoteContext();
+
+		if (scrc != nullptr){
+
+			for (unsigned int i = 0; i < fs; ++i){
+
+				auto f = viewManager->filter(i, name())->create(scrc->remoteContext()->session().get());
+				config->registerFilter(f);
+			}
+
+		}
+		else{
+			for (unsigned int i = 0; i < fs; ++i){
+
+				auto f = viewManager->filter(i, name())->create(nullptr);
+				config->registerFilter(f);
+			}
 		}
 
 		hmdbCommunication::IDataSourcePerspective * perspective = nullptr;

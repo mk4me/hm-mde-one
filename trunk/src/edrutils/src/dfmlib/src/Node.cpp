@@ -2,7 +2,6 @@
 #include <dfmlib/Pin.h>
 #include <utils/Debug.h>
 #include <iterator>
-#include <boost/bind.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
@@ -75,7 +74,7 @@ void Node::addInPin(const PinPtr & pin )
     }
 	
     pin->parentNode = shared_from_this();
-    pin->pinIndexFunc = boost::bind(&Node::indexOfInPin, this, _1);
+    pin->pinIndexFunc = std::bind(&Node::indexOfInPin, this, std::placeholders::_1);
     inPins.push_back(pin);
 	pin->setType(Pin::IN);
 }
@@ -88,7 +87,7 @@ void Node::addOutPin(const PinPtr & pin )
     }
 	
     pin->parentNode = shared_from_this();
-    pin->pinIndexFunc = boost::bind(&Node::indexOfOutPin, this, _1);
+	pin->pinIndexFunc = std::bind(&Node::indexOfOutPin, this, std::placeholders::_1);
     outPins.push_back(pin);
 	pin->setType(Pin::OUT);
 }

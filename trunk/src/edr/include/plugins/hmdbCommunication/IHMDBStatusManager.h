@@ -59,7 +59,7 @@ namespace hmdbCommunication
 	};
 
 	//! Interfejs udostêpniaj¹cy opis statusu danych
-	class IHMDBStatusManager : public threadingUtils::ITTransaction<IHMDBStatusManagerOperations>
+	class IHMDBStatusManager : public threadingUtils::ITTransactionObject<IHMDBStatusManagerOperations>
 	{
 	public:
 		//! Destruktor wirtualny

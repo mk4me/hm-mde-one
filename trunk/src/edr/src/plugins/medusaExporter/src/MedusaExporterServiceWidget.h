@@ -16,7 +16,6 @@
 #include "ExporterModel.h"
 #include <QtCore/QThread>
 #include <QtWidgets/QAbstractButton>
-#include <boost/bind.hpp>
 
 class QPushButton;
 class QLayout;
@@ -41,7 +40,7 @@ namespace medusaExporter {
         Q_OBJECT;
     public:
         ExporterThread() : 
-            cc(boost::bind(&ExporterThread::callback, this, ::_1, ::_2)) {}
+			cc(std::bind(&ExporterThread::callback, this, std::placeholders::_1, std::placeholders::_2)) {}
         void run() {
             cc.run();
         }

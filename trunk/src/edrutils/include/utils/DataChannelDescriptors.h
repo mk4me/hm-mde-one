@@ -181,7 +181,7 @@ namespace utils {
 
 		virtual ChannelWithDescriptor * create() const
 		{
-			boost::scoped_ptr<Channel> entity(this->Channel::create());
+			utils::scoped_ptr<Channel> entity(this->Channel::create());
 			return new ChannelWithDescriptor(*entity, *this);
 		}
 
@@ -245,7 +245,7 @@ namespace utils {
 
 		virtual Channel * create() const
 		{
-			boost::scoped_ptr<Impl> entity(impl.create());
+			utils::scoped_ptr<Impl> entity(impl.create());
 			return new Channel(*entity);
 		}
 

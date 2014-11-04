@@ -1,7 +1,7 @@
 #ifndef HEADER_GUARD_KINEMATICMODEL__SKELETON_H__
 #define HEADER_GUARD_KINEMATICMODEL__SKELETON_H__
 
-#include <boost/smart_ptr.hpp>
+#include <utils/SmartPtr.h>
 #include <boost/utility.hpp>
 #include "DegreeOfFreedom.h"
 #include <osg/Vec3>

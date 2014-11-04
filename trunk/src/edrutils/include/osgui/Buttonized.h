@@ -11,7 +11,7 @@
 
 #include <osgWidget/Widget>
 #include <osgWidget/Label>
-#include <boost/type_traits.hpp>
+#include <type_traits>
 #include <utils/Debug.h>
 #include <osgui/macroHacks.h>
 #include <osgWidget/WindowManager>

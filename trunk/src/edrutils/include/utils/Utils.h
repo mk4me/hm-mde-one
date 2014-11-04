@@ -11,8 +11,8 @@
 
 #include <utils/Config.h>
 #include <boost/lexical_cast.hpp>
-#include <boost/function.hpp>
 #include <cstring>
+#include <sstream>
 #include <memory>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ inline void zero(T & object)
 //------------------------------------------------------------------------------
 
 //! Zwalnia zadany wskaźnik oraz zeruje jego wartość.
-#define UTIL_DELETEPTR(ptr) UTILS_MULTISTATEMENT_BEGIN \
+#define UTILS_DELETEPTR(ptr) UTILS_MULTISTATEMENT_BEGIN \
     delete ptr; \
     ptr = nullptr; \
     UTILS_MULTISTATEMENT_END
@@ -181,7 +181,7 @@ inline const T EndianSwap(const T value)
 class Cleanup
 {
 public:
-	typedef boost::function<void()> Functor;
+	typedef std::function<void()> Functor;
 public:
 	//! \param cleanup Obiekt uywany do czyszczenia
 	Cleanup(const Functor & cleanup) : cleanup(cleanup) {}
@@ -240,7 +240,13 @@ const T mergeOrdered(const T & a, const T & b)
 #endif
 
 //------------------------------------------------------------------------------
+//! Makro pozwalające generować string z ciągu strumieni
+#define UTILS_FORMAT_STRING(ITEMS)												\
+  ( ( dynamic_cast<std::ostringstream &> (										\
+         std::ostringstream() . seekp( 0, std::ios_base::cur ) << ITEMS )		\
+    ) . str() )
 
+//------------------------------------------------------------------------------
 /**
  *	Makra zapamiętujące/odtwarzające stan warningów.
  */

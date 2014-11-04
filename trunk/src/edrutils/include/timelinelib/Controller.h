@@ -9,18 +9,14 @@
 #ifndef HEADER_GUARD_TIMELINE__CONTROLLER_H__
 #define HEADER_GUARD_TIMELINE__CONTROLLER_H__
 
-#include <OpenThreads/Thread>
-#include <OpenThreads/Mutex>
-#include <OpenThreads/ReentrantMutex>
-#include <OpenThreads/ScopedLock>
-
+#include <mutex>
+#include <thread>
+#include <condition_variable>
 #include <timelinelib/Types.h>
 #include <timelinelib/View.h>
 #include <timelinelib/Model.h>
 
 #include <utils/SmartPtr.h>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
 
 #include <utils/ObserverPattern.h>
 
@@ -71,7 +67,7 @@ namespace timeline{
 		//------------------------------- Zarzadzanie odtwarzaniem ------------------------------
 
 		//! Uruchamia timeline - odtwarzanie
-		virtual void play() = 0;
+		virtual void run() = 0;
 
 		//! Wstrzymuje odtwarzanie timeline
 		virtual void pause() = 0;
@@ -139,18 +135,18 @@ namespace timeline{
 		virtual Model::TChannelConstPtr findChannel(const std::string & path) const = 0;
 	};
 
-	class Controller : public IController, public OpenThreads::ReentrantMutex
+	class Controller : public IController, public std::recursive_mutex
 	{
 	protected:
 
 		//! Typ lokalnego lockowania mutexa
-		typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
+		typedef std::lock_guard<std::recursive_mutex> ScopedLock;
 
 	private:
 
-		typedef boost::function<double(Controller *, unsigned long int)> TimeGenerator;
+		typedef std::function<double(Controller *, unsigned long int)> TimeGenerator;
 
-		class Timer : public OpenThreads::Thread
+		class Timer
 		{
 		public:
 			Timer(unsigned long int delay)
@@ -168,7 +164,8 @@ namespace timeline{
 				while (true){
 					{
 						// czy nie ma pauzy
-						ScopedLock(controller->pauseMutex);
+						std::unique_lock<std::mutex> lock(controller->pauseMutex);
+						controller->cv.wait(lock);
 					}
 
 					//aktualizujemy czas
@@ -177,7 +174,7 @@ namespace timeline{
 					}
 
 					//zasypiamy
-					OpenThreads::Thread::microSleep(delay);
+					std::this_thread::sleep_for(std::chrono::microseconds(delay));
 				}
 			}
 
@@ -213,6 +210,8 @@ namespace timeline{
 		//! Model logiczny timeline w wersji const
 		ModelConstPtr constModel;
 
+		std::thread::id runningThreadID;
+
 		//! Wewnętrzny timer
 		TimerPtr timer;
 
@@ -223,13 +222,14 @@ namespace timeline{
 		PlaybackDirection playbackDirection;
 
 		//! Mutex do synchronizacji edycji modelu (struktura kanałów)
-		OpenThreads::ReentrantMutex modelMutex;
+		std::recursive_mutex modelMutex;
 
 		//! Mutex do edycji odtwarzania timeline
-		mutable OpenThreads::ReentrantMutex stateMutex;
+		mutable std::recursive_mutex stateMutex;
 
 		//! Mutex do zarzadzania odtwarzaniem timeline - wstrzymywania go
-		OpenThreads::Mutex pauseMutex;
+		std::mutex pauseMutex;
+		std::condition_variable cv;
 
 		//! Czy kontroler jest zajęty?
 		volatile bool busy;
@@ -287,7 +287,7 @@ namespace timeline{
 		//------------------------------- Zarzadzanie odtwarzaniem ------------------------------
 
 		//! Uruchamia timeline - odtwarzanie
-		virtual void play();
+		virtual void run();
 
 		//! Wstrzymuje odtwarzanie timeline
 		virtual void pause();

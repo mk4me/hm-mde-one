@@ -52,7 +52,7 @@ namespace hmdbCommunication
 
 		//! Interfejs operacji
 		class IOperation : public threadingUtils::IAbortableOperation,
-			public threadingUtils::IProgress
+			public threadingUtils::INormalizedProgress
 		{
 		public:
 			//! Destruktor wirtualny

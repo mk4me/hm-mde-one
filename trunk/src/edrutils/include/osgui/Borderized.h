@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD__BORDERIZED_H__
 #define HEADER_GUARD__BORDERIZED_H__
 
-#include <boost/type_traits.hpp>
+#include <type_traits>
 #include <osg/LineWidth>
 #include <osg/PrimitiveSet>
 #include <osgWidget/Widget>

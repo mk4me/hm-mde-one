@@ -127,7 +127,7 @@ void ContextMenu::hideMenu(){
 		}
 
 		while(last != this){
-			if(last->closeMenuCallback.empty() == false){
+			if(last->closeMenuCallback){
 				last->closeMenuCallback(last.get());
 			}
 
@@ -141,7 +141,7 @@ void ContextMenu::hideMenu(){
 			last = paret;
 		}
 
-		if(closeMenuCallback.empty() == false){
+		if(closeMenuCallback){
 			closeMenuCallback(this);
 		}
 
@@ -202,7 +202,7 @@ bool ContextMenu::onItemPush(osgWidget::Event& ev){
 	MenuItem * menuItem = static_cast<MenuItem *>(ev.getData());
 
 	menuItem->checked = ! menuItem->checked;
-	if(menuItem->onClickCallback.empty() == false){
+	if(menuItem->onClickCallback){
 		menuItem->onClickCallback(menuItem->menuItem->getLabel(), menuItem->checked);
 	}
 
@@ -225,7 +225,7 @@ bool ContextMenu::onItemEnter(osgWidget::Event& ev){
 
 	refreshMenuItemCheckedStyle(*menuItem, true);
 
-	if(menuItem->onHoverCallback.empty() == false){
+	if(menuItem->onHoverCallback){
 		menuItem->onHoverCallback(menuItem->menuItem->getLabel(), true);
 	}
 
@@ -244,7 +244,7 @@ bool ContextMenu::onItemLeave(osgWidget::Event& ev){
 
 	refreshMenuItemCheckedStyle(*menuItem);
 
-	if(menuItem->onHoverCallback.empty() == false){
+	if(menuItem->onHoverCallback){
 		menuItem->onHoverCallback(menuItem->menuItem->getLabel(), false);
 	}
 

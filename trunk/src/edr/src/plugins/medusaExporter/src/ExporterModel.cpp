@@ -11,7 +11,6 @@
 #include <corelib/PluginCommon.h>
 #include <corelib/IFileDataManager.h>
 #include <corelib/ISourceManager.h>
-#include <boost/bind.hpp>
 #include "CSVExporter.h"
 #include <iosfwd>
 #include "utils/Utils.h"
@@ -201,7 +200,7 @@ void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFun
 	
 }
 
-void medusaExporter::ExporterModel::pack(const QString& dirPath, const QString& outFile, boost::function<bool(const core::Filesystem::Path&)> filter, CallbackFunction fun)
+void medusaExporter::ExporterModel::pack(const QString& dirPath, const QString& outFile, std::function<bool(const core::Filesystem::Path&)> filter, CallbackFunction fun)
 {
 	fs::Path dir(dirPath.toStdString());
 	if (fs::isDirectory(dir)) {
@@ -500,7 +499,7 @@ void medusaExporter::CallbackCollector::innerCallback(double ratio, const QStrin
 void medusaExporter::CallbackCollector::run()
 {
     double sum = getWeightSum();
-    auto callback = (boost::bind(&CallbackCollector::innerCallback, this, ::_1, ::_2));
+	auto callback = (std::bind(&CallbackCollector::innerCallback, this, std::placeholders::_1, std::placeholders::_2));
     currentOperation = 0;
     for (auto it = operations.begin(); it != operations.end(); ++it) {
         Operation op = std::get<0>(*it);

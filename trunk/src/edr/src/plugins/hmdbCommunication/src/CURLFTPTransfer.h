@@ -10,7 +10,7 @@
 
 #include <networkUtils/CURLFTPHelper.h>
 #include <networkUtils/CURLManager.h>
-#include <threadingUtils/SynchronizationPolicies.h>
+#include <mutex>
 #include <plugins/hmdbCommunication/IHMDBFtp.h>
 
 namespace hmdbCommunication
@@ -23,7 +23,7 @@ namespace hmdbCommunication
 	{
 	private:
 		
-		typedef threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> ScopedLock;
+		typedef std::lock_guard<std::recursive_mutex> ScopedLock;
 
 	public:
 
@@ -39,7 +39,7 @@ namespace hmdbCommunication
 		//! \return Plik, którego dotyczy transfer - lokalny lub zdalny
 		virtual const std::string file() const;
 		//! Domyœlna implementacja postêpu
-		virtual const float progress() const;
+		virtual const float normalizedProgress() const;
 		//! \return Czas [s] jaki up³yn¹³ od rozpoczêcia zadania
 		virtual const float elapsed() const;
 		//! \return Szacowany czas [s] jaki zosta³ do zakoñczenia zadania
@@ -74,7 +74,7 @@ namespace hmdbCommunication
 		//! Rozmiar danych do przetworzenia
 		const size_t size_;
 		//! Obiekt synchronizujacy
-		mutable threadingUtils::RecursiveSyncPolicy sync_;
+		mutable std::recursive_mutex sync_;
 		//! Po³¹czenie curla
 		CURL * curl_;
 		//! Manager po³¹czeñ curlowych

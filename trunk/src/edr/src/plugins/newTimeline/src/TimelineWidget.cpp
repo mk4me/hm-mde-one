@@ -350,7 +350,7 @@ void TimelineWidget::removeSelectedChannels()
         delete it->second;
     }
 
-    if(onItemRemoveAction.empty() == false){
+    if(onItemRemoveAction){
         /*for(auto it = toDelete.begin(); it != toDelete.end(); it++){
             onItemRemoveAction((*it)->get);
         }*/
@@ -396,7 +396,8 @@ void TimelineWidget::pause(bool playTimeline)
     if(playTimeline == false){
         getController()->pause();
     }else{
-        getController()->play();
+        //getController()->play();
+		//TODO resume
     }
 }
 
@@ -642,15 +643,14 @@ QWidget * TimelineWidget::createTreeItemWidget(QWidget * widget)
 
 void TimelineWidget::onItemClicked(QTreeWidgetItem * item, int column)
 {
-    if(onItemClickAction.empty() == false && column == 0 && item != rootItem){
+    if(onItemClickAction && column == 0 && item != rootItem){
         onItemClickAction(reinterpret_cast<ChannelsTreeItem*>(item)->getChannel()->getData()->getInnerChannel());
     }
 }
 
 void TimelineWidget::onItemDblClicked(QTreeWidgetItem * item, int column)
-{
-    bool empty = onItemDblClickAction.empty();
-    if(empty == false && column == 0 && item != rootItem){
+{    
+	if (onItemDblClickAction && column == 0 && item != rootItem){
         onItemDblClickAction(reinterpret_cast<ChannelsTreeItem*>(item)->getChannel()->getData()->getInnerChannel());
     }
 }

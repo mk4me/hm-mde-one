@@ -5,8 +5,6 @@
 #include <plugins/hmdbCommunication/IDataSourcePerspective.h>
 #include <plugins/hmdbCommunication/IDataSourceContent.h>
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
-#include <boost/bind.hpp>
-#include <corelib/IThreadPool.h>
 #include <plugins/hmdbCommunication/DataSourcePerspective.h>
 #include <plugins/hmdbCommunication/DataSourceDefaultContent.h>
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
@@ -21,7 +19,6 @@
 #include "ShallowCopyUtils.h"
 #include <QtGui/QPainter>
 #include <plugins/hmdbCommunication/IHMDBStatusManager.h>
-#include <corelib/IJobManager.h>
 #include <plugins/hmdbCommunication/ShallowCopyFilter.h>
 #include <QtCore/QMetaType>
 #include "HMDBSourceContextOperations.h"
@@ -37,7 +34,7 @@ public:
 	}
 
 	virtual const QString name() const { return name_; }
-	virtual const float progress() const { return op->progress(); }
+	virtual const float normalizedProgress() const { return op->normalizedProgress(); }
 	virtual void abort() { op->abort(); }
 
 	virtual ~OperationImpl() {}
@@ -234,8 +231,8 @@ DataViewWidget::DataViewWidget(hmdbCommunication::IHMDBShallowCopyContextPtr sha
 
 DataViewWidget::~DataViewWidget()
 {
-	if (remoteOperationThread != nullptr && remoteOperationThread->running() == true){
-		remoteOperationThread->join();
+	if (remoteOperationThread.joinable() == true){
+		remoteOperationThread.join();
 	}
 }
 
@@ -1157,8 +1154,11 @@ void DataViewWidget::setShallowCopy(const hmdbCommunication::ShallowCopyConstPtr
 	completeShallowCopy_ = shallowCopy;
 	currentShallowCopy_ = completeShallowCopy_;
 	if (filter_ != nullptr && completeShallowCopy_ != nullptr){
-		plugin::getJobManager()->addJob("DataView", "FilterShallowCopy",
-			threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&DataViewWidget::filterShallowCopy, this))));		
+		auto job = plugin::getJobManager()->create("DataView", "FilterShallowCopy",
+			&DataViewWidget::filterShallowCopy, this);
+
+		job.start();
+		job.detach();
 	}
 	else{
 		tryRebuildDataStatus();
@@ -1397,20 +1397,15 @@ void DataViewWidget::onSynchronize()
 
 		auto sOp = shallowCopyContext_->shallowCopyRemoteContext()->prepareSynchronization(shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage());
 
-		threadingUtils::IRunnablePtr runnable(new threadingUtils::FunctorRunnable(boost::bind(&DataViewWidget::synchronize, this, sOp, cursorChanger)));
-
-		core::IThreadPool::Threads threads;
-		plugin::getThreadPool()->getThreads("DataViewWidget", threads, 1);
-		if (threads.empty() == false){
-			if (remoteOperationThread != nullptr && remoteOperationThread->running() == true){
-				remoteOperationThread->join();
-			}
-			remoteOperationThread = threads.front();
-			operation_.reset(new OperationImpl(tr("Synchronization"), sOp));
-			setRemoteOperationsEnabled(false);
-			emit operationAboutToStart();
-			remoteOperationThread->start(runnable);
+		auto t = plugin::getThreadPool()->get("DataViewWidget", "Synchronization");		
+		if (remoteOperationThread.joinable() == true){
+			remoteOperationThread.join();
 		}
+		remoteOperationThread = std::move(t);
+		operation_.reset(new OperationImpl(tr("Synchronization"), sOp));
+		setRemoteOperationsEnabled(false);
+		emit operationAboutToStart();
+		remoteOperationThread.run(&DataViewWidget::synchronize, this, sOp, cursorChanger);
 	}
 	catch (...){
 
@@ -1520,23 +1515,18 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 			shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage(),
 			shallowCopyContext_->shallowCopyDataContext()->dataStatusManager(), shallowCopyContext_->shallowCopyDataContext()->shallowCopy()));
 
-		threadingUtils::IRunnablePtr runnable(new threadingUtils::FunctorRunnable(boost::bind(&DataViewWidget::download, this, op, cursorChanger)));
+		core::ThreadPool::Thread t = plugin::getThreadPool()->get("DataViewWidget", "Remote operation");				
 
-		core::IThreadPool::Threads threads;
-		plugin::getThreadPool()->getThreads("DataViewWidget", threads, 1);
-		if (threads.empty() == false){
-
-			if (remoteOperationThread != nullptr && remoteOperationThread->running() == true){
-				remoteOperationThread->join();
-			}
-
-			remoteOperationThread = threads.front();
-			
-			operation_.reset(new OperationImpl(tr("Downloading"), op));
-			setRemoteOperationsEnabled(false);
-			emit operationAboutToStart();
-			remoteOperationThread->start(runnable);
+		if (remoteOperationThread.joinable() == true){
+			remoteOperationThread.join();
 		}
+
+		remoteOperationThread = std::move(t);
+			
+		operation_.reset(new OperationImpl(tr("Downloading"), op));
+		setRemoteOperationsEnabled(false);
+		emit operationAboutToStart();
+		remoteOperationThread.run(&DataViewWidget::download, this, op, cursorChanger);
 	}
 	catch (...){
 

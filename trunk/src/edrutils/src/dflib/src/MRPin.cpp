@@ -25,14 +25,14 @@ const IMRSink * MRInputPin::sink() const
 
 void MRInputPin::reset()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	dfInput_->reset();
 }
 
 void MRInputPin::update()
 {
-	ScopedLock lock(*mux);
 	consumed_ = false;
+	std::lock_guard<std::mutex> lock(mutex);
 	++outputsReady;
 	if(outputsReady == connections.size())
 	{
@@ -42,13 +42,13 @@ void MRInputPin::update()
 
 const bool MRInputPin::updated() const
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	return outputsReady == connections.size();
 }
 
 void MRInputPin::consumeData()
 {
-	ScopedLock lock(*mux);	
+	std::lock_guard<std::mutex> lock(mutex);
 	try{
 		for(auto it = connections.begin(); it != connections.end(); ++it){
 			dfInput_->copyData((*it)->source()->dfOutput());
@@ -65,7 +65,7 @@ void MRInputPin::consumeData()
 
 const bool MRInputPin::dataConsumed() const
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	return consumed_;
 }
 
@@ -141,13 +141,13 @@ const IMRSource * MROutputPin::source() const
 
 void MROutputPin::reset()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	dfOutput_->reset();
 }
 
 void MROutputPin::update()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	inputsConsumed = 0;
 	updated_ = true;
 
@@ -159,13 +159,13 @@ void MROutputPin::update()
 
 const bool MROutputPin::updated() const
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	return updated_;
 }
 
 void MROutputPin::consumeData()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	++inputsConsumed;
 	if(inputsConsumed == connections.size())
 	{
@@ -176,7 +176,7 @@ void MROutputPin::consumeData()
 
 const bool MROutputPin::dataConsumed() const
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	return inputsConsumed == connections.size();
 }
 

@@ -12,6 +12,7 @@
 #include <vidlib/Config.h>
 #include <utils/Utils.h>
 
+#include <mutex>
 #include <set>
 
 // POPa zrobimy na końcu, bo inaczej powstaną warningi związane z tym, że
@@ -21,7 +22,6 @@ UTILS_PUSH_WARNINGS
 #include <osg/ref_ptr>
 #include <osg/observer_ptr>
 #include <osg/ImageStream>
-#include <OpenThreads/Thread>
 #include <osg/Timer>
 UTILS_POP_WARNINGS
 
@@ -39,7 +39,7 @@ UTILS_DISABLE_DLL_INTERFACE_WARNING
 /**
  *	Strumień wideo.
  */
-class VIDLIB_EXPORT VideoImageStream : public osg::ImageStream, public OpenThreads::Thread
+class VIDLIB_EXPORT VideoImageStream : public osg::ImageStream
 {
 public:
     /** Domyślne implementacje */
@@ -52,11 +52,11 @@ protected:
     //! Wrapper na surowy strumień.
     typedef utils::PtrWrapper<VideoStream, utils::PtrPolicyOSG> Stream;
     //! Wrapper na mutex.
-    typedef utils::Adapter<OpenThreads::Mutex, utils::PtrPolicyOSG> Mutex;
+    typedef utils::Adapter<std::mutex, utils::PtrPolicyOSG> Mutex;
     //! Wrapper na timer.
     typedef utils::Adapter<osg::Timer, utils::PtrPolicyOSG> Timer;
     //! Typ blokady opartej na muteksie.
-    typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
+    typedef std::lock_guard<std::mutex> ScopedLock;
     //! Typ płytkich kopii strumienia.
     typedef utils::Adapter<std::set<osg::observer_ptr<VideoImageStream> >, utils::PtrPolicyOSG > Copies;
 
@@ -103,6 +103,9 @@ public:
         }
     }
 
+	/** Wątek odtwarzający */
+	void run();
+
     /** Odtwarzanie strumienia (nowy wątek!) */
     virtual void play();
     /** Zatrzymanie strumienia */
@@ -112,7 +115,7 @@ public:
     /** Wyszukiwanie w strumieniu */
     virtual void seek(double time);
     /** Zamknięcie strumienia */
-    virtual void quit(bool waitForThreadToExit = true);
+    virtual void quit();
 
     /** Czas utworzenia */
     virtual double getCreationTime() const;
@@ -130,12 +133,6 @@ public:
     virtual double getTimeMultiplier() const;
     /** Czy wideo ma kanał alpha? */
     virtual bool isImageTranslucent() const;
-
-
-
-
-    
-
 
     //!
     virtual bool requiresUpdateCall() const;
@@ -160,8 +157,6 @@ public:
 
 protected:
 
-    /** Wątek odtwarzający */
-    virtual void run();
     /** Tryb zapętlania */
     virtual void applyLoopingMode();
     /** Ustawia bieżącą ramkę (jeśli jest nowsza niż poprzednia)*/
@@ -188,7 +183,7 @@ protected:
         return *(innerStream.get());
     }
     //!
-    inline OpenThreads::Mutex& getMutex()
+    inline std::mutex& getMutex()
     {
         return mutex->get();
     }

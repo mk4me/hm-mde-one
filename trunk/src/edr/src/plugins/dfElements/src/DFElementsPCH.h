@@ -15,9 +15,8 @@
 #include <string>
 #include <iostream>
 
-#include <boost/function.hpp>
-#include <boost/foreach.hpp>
-#include <boost/type_traits.hpp>
+#include <functional>
+#include <type_traits>
 
 #include <utils/Utils.h>
 #include <utils/Debug.h>

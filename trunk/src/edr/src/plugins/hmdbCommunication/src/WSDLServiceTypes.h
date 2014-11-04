@@ -8,12 +8,12 @@
 #ifndef __HEADER_GUARD_HMDBCOMMUNICATION__WSDLSERVICETYPES_H__
 #define __HEADER_GUARD_HMDBCOMMUNICATION__WSDLSERVICETYPES_H__
 
-#include <boost/function.hpp>
+#include <functional>
 #include <networkUtils/IWSDLService.h>
 
 namespace hmdbCommunication
 {
-	typedef boost::function<networkUtils::IWSDLServicePtr()> WSDLServiceCreator;	
+	typedef std::function<networkUtils::IWSDLServicePtr()> WSDLServiceCreator;	
 }
 
 #endif	// __HEADER_GUARD_HMDBCOMMUNICATION__WSDLSERVICETYPES_H__

@@ -12,6 +12,7 @@
 #include <sstream>
 #include <stack>
 #include <iostream>
+#include <functional>
 
 #include <boost/lexical_cast.hpp>
 

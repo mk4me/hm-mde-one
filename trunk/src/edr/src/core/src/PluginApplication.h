@@ -51,11 +51,10 @@ public:
 	virtual ISourceManager * sourceManager();
 	//! \return Interfejs managera wizualizatorów
 	virtual IVisualizerManager * visualizerManager();
-	//! \return Interfejs puli w¹tków
-	virtual IThreadPool * threadPool();
-	//! \return Interfejs managera zadañ
-	virtual IJobManager * jobManager();
-
+	//! \return Interfejs managera wizualizatorów
+	virtual ThreadPool * threadPool();
+	//! \return Interfejs dostêpu do serwisów
+	virtual JobManager * jobManager();
 
 private:
 
@@ -92,11 +91,10 @@ public:
 	virtual ISourceManager * sourceManager();
 	//! \return Interfejs managera wizualizatorów
 	virtual IVisualizerManager * visualizerManager();
-	//! \return Interfejs puli w¹tków
-	virtual IThreadPool * threadPool();
-	//! \return Interfejs managera zadañ
-	virtual IJobManager * jobManager();
-
+	//! \return Interfejs managera wizualizatorów
+	virtual ThreadPool * threadPool();
+	//! \return Interfejs dostêpu do serwisów
+	virtual JobManager * jobManager();
 };
 
 }

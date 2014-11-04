@@ -10,7 +10,7 @@
 #define HEADER_GUARD__EMBEDDEDWINDOW_H__
 
 #include <string>
-#include <boost/type_traits.hpp>
+#include <type_traits>
 #include <osg/CopyOp>
 #include <osgWidget/Window>
 #include <utils/Debug.h>

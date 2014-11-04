@@ -161,6 +161,8 @@ private:
 				}
 
 				ret = true;
+			}else{
+				currentItem_ = nullptr;
 			}
 
 			return ret;

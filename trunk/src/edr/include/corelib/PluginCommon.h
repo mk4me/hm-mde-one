@@ -24,77 +24,83 @@ namespace plugin
     //! Makro definiujące zmienną przechowującą managery. Automatycznie używane w pluginach.
     #define PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR namespace plugin { core::IApplication * __coreApplication = nullptr; }
 
+	//! \return Kontekst aplikacji
+	inline core::IApplication* getApplication()
+	{
+		return __coreApplication;
+	}
+
     //! \return Bieżąca instancja data managera readera. Rozwiązanie w ten sposób, w stosunku do
     //! klasycznego upublicznienia tylko nagłówków funkcji i schowania definicji, pozwala
     //! na rozwijanie, więc jest potencjalnie szybsze.
     inline core::IDataManagerReader* getDataManagerReader()
     {
-        return __coreApplication->dataManagerReader();
+		return getApplication()->dataManagerReader();
     }
 
     inline core::IMemoryDataManagerHierarchy* getHierarchyManagerReader()
     {
-        return dynamic_cast<core::IMemoryDataManagerHierarchy*>(__coreApplication->dataManagerReader());
+		return dynamic_cast<core::IMemoryDataManagerHierarchy*>(getApplication()->dataManagerReader());
     }
 
 	inline core::IServiceManager* getServiceManager()
 	{
-		return __coreApplication->serviceManager();
+		return getApplication()->serviceManager();
 	}
 	 
 	 inline core::IFileManagerReader * getFileDataManagerReader()
 	 {
-		 return __coreApplication->fileDataManagerReader();
+		 return getApplication()->fileDataManagerReader();
 	 }
 
 	 inline core::IStreamManagerReader * getStreamDataManagerReader()
 	 {
-		 return __coreApplication->streamDataManagerReader();
+		 return getApplication()->streamDataManagerReader();
 	 }
 
 	inline core::IDataHierarchyManagerReader* getDataHierachyManagerReader()
 	{
-		return __coreApplication->dataHierarchyManagerReader();
+		return getApplication()->dataHierarchyManagerReader();
 	}
 
 	inline core::ISourceManager* getSourceManager()
 	{
-		return __coreApplication->sourceManager();
+		return getApplication()->sourceManager();
 	}
 
 	inline core::IParserManagerReader* getParserManagerReader()
 	{
-		return __coreApplication->parserManagerReader();
+		return getApplication()->parserManagerReader();
 	}
 
     //! \return Interfejs dostępu do ścieżek aplikacji
 	inline core::IPath* getPaths()
 	{
-		return __coreApplication->paths();
+		return getApplication()->paths();
 	}
 
 	//! \return Interfejs dostępu do ścieżek aplikacji
 	inline core::IVisualizerManager* getVisualizerManager()
 	{
-		return __coreApplication->visualizerManager();
-	}
-
-	//! \return Interfejs dostępu do puli wątków
-	inline core::IThreadPool* getThreadPool()
-	{
-		return __coreApplication->threadPool();
-	}
-
-	//! \return Interfejs dostępu do managera zadań
-	inline core::IJobManager* getJobManager()
-	{
-		return __coreApplication->jobManager();
+		return getApplication()->visualizerManager();
 	}
 
     //! \return Interfejs logowania informacji
 	inline core::ILog* getLogInterface()
 	{
-		return __coreApplication->log();
+		return getApplication()->log();
+	}
+
+	//! \return Interfejs logowania informacji
+	inline core::ThreadPool* getThreadPool()
+	{
+		return getApplication()->threadPool();
+	}
+
+	//! \return Interfejs logowania informacji
+	inline core::JobManager* getJobManager()
+	{
+		return getApplication()->jobManager();
 	}
 
     //! Pomocnica metoda upraszczająca odwołanie do katalogów.
@@ -160,21 +166,21 @@ namespace plugin
 } // namespace core
 
 //! Makro logujące informację testową
-#define PLUGIN_LOG_DEBUG(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityDebug, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define PLUGIN_LOG_DEBUG(msg)	LOG_DEBUG(plugin::getLogInterface(), msg)
 //! Makro logujące błąd
-#define PLUGIN_LOG_ERROR(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityError, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define PLUGIN_LOG_ERROR(msg)	LOG_ERROR(plugin::getLogInterface(), msg)
 //! Makro logujące informację
-#define PLUGIN_LOG_INFO(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityInfo, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define PLUGIN_LOG_INFO(msg)	LOG_INFO(plugin::getLogInterface(), msg)
 //! Makro logujące ostrzeżenia
-#define PLUGIN_LOG_WARNING(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->log(core::ILog::LogSeverityWarning, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define PLUGIN_LOG_WARNING(msg)	LOG_WARNING(plugin::getLogInterface(), msg)
 
 //! Makro logujące informację testową
-#define PLUGIN_LOG_NAMED_DEBUG(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityDebug, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define PLUGIN_LOG_NAMED_DEBUG(name, msg)	SUB_LOG_DEBUG(plugin::getLogInterface(), name, msg)
 //! Makro logujące błąd
-#define PLUGIN_LOG_NAMED_ERROR(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityError, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define PLUGIN_LOG_NAMED_ERROR(name, msg)	SUB_LOG_ERROR(plugin::getLogInterface(), name, msg)
 //! Makro logujące informację
-#define PLUGIN_LOG_NAMED_INFO(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityInfo, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define PLUGIN_LOG_NAMED_INFO(name, msg)	SUB_LOG_INFO(plugin::getLogInterface(), name, msg)
 //! Makro logujące ostrzeżenia
-#define PLUGIN_LOG_NAMED_WARNING(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; plugin::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityWarning, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define PLUGIN_LOG_NAMED_WARNING(name, msg)	SUB_LOG_WARNING(plugin::getLogInterface(), name, msg)
 
 #endif  // HEADER_GUARD_CORE__PLUGINCOMMON_H__

@@ -1,12 +1,8 @@
 ﻿#include "CommunicationPCH.h"
 #include "HMDBSourceContextOperations.h"
 #include <corelib/Filesystem.h>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
-#include <boost/thread.hpp>
+#include <functional>
 #include <corelib/IPlugin.h>
-#include <corelib/IJobManager.h>
-#include <corelib/IThreadPool.h>
 #include <hmdbserviceslib/IFileStoremanWS.h>
 #include <plugins/hmdbCommunication/IHMDBSession.h>
 #include <plugins/hmdbCommunication/IHMDBStorage.h>
@@ -17,6 +13,8 @@
 #include <plugins/hmdbCommunication/DataStatus.h>
 #include <utils/Utils.h>
 #include <numeric>
+#include <corelib/PluginCommon.h>
+
 
 using namespace hmdbCommunication;
 
@@ -183,7 +181,7 @@ void DownloadHelper::abort()
 
 const float DownloadHelper::progress() const
 {
-	const auto pd = std::accumulate(downloads.begin(), downloads.end(), 0.0, [](float total, IHMDBRemoteContext::DownloadOperationPtr d) { return total + d->progress(); }) / downloads.size();
+	const auto pd = std::accumulate(downloads.begin(), downloads.end(), 0.0, [](float total, IHMDBRemoteContext::DownloadOperationPtr d) { return total + d->normalizedProgress(); }) / downloads.size();
 	return (pd + storeProgress.progress()) / 2.0;
 }
 
@@ -283,16 +281,6 @@ CompoundOperation::~CompoundOperation()
 	wait();
 }
 
-void CompoundOperation::setOperations(const Operations & suboperations)
-{
-	if (status_ == IOperation::Initialized){
-		operations = suboperations;
-	}
-	else{
-		throw std::runtime_error("Compound operation already started");
-	}
-}
-
 const unsigned int CompoundOperation::size() const
 {
 	return operations.size();
@@ -329,34 +317,24 @@ void CompoundOperation::start()
 	if (ep == ICompoundOperation::Any){
 
 		if (es == ICompoundOperation::Serial){
-			auto runnable = threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&CompoundOperation::callAnySerial, this)));
-			core::IThreadPool::Threads t;
-			plugin::getThreadPool()->getThreads("HMDBSourceContext", t, 1);
-			workerThread = t.front();
-			workerThread->start(runnable);
+			job = plugin::getJobManager()->create("HMDBSource", "Compound operation", &CompoundOperation::callAnySerial, this);
 		}
 		else{
-			callAnyParallel();			
+			job = plugin::getJobManager()->create("HMDBSource", "Compound operation", &CompoundOperation::callAnyParallel, this);
 		}
 
 	}
 	else{
 
-		core::IThreadPool::Threads t;
-		plugin::getThreadPool()->getThreads("HMDBSourceContext", t, 1);
-		workerThread = t.front();
-
-		threadingUtils::IRunnablePtr runnable;
-
 		if (es == ICompoundOperation::Serial){
-			runnable = threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&CompoundOperation::callAllSerial, this)));
+			job = plugin::getJobManager()->create("HMDBSource", "Compound operation", &CompoundOperation::callAllSerial, this);
 		}
 		else{
-			runnable = threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&CompoundOperation::callAllParallel, this)));
+			job = plugin::getJobManager()->create("HMDBSource", "Compound operation", &CompoundOperation::callAllParallel, this);
 		}
-
-		workerThread->start(runnable);
 	}
+
+	job.start();
 }
 
 void CompoundOperation::abort()
@@ -439,7 +417,7 @@ void CompoundOperation::observe()
 		if (status_ != threadingUtils::IOperation::Running || opFinished == operations.size()){
 			finish = true;
 		} else {
-			boost::this_thread::sleep_for(boost::chrono::milliseconds(50));
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		}
 	}
 
@@ -469,9 +447,8 @@ void CompoundOperation::wait()
 		(*it)->wait();
 	}
 
-	if (workerThread != nullptr){
-		workerThread->join();
-		workerThread.reset();
+	if (workerThread.joinable() == true){
+		workerThread.join();		
 	}
 }
 
@@ -548,91 +525,6 @@ IHMDBRemoteContext::OperationPtr CompoundOperation::findErrorOperation() const
 	return ret;
 }
 
-FunctorOperation::FunctorOperation(threadingUtils::FunctorRunnable::Functor functor)
-	: functor_(functor), progress_(0.0),
-	status_(threadingUtils::IOperation::Initialized)
-{
-
-}
-
-FunctorOperation::~FunctorOperation()
-{
-	abort();
-	wait();
-}
-
-void FunctorOperation::setFunctor(threadingUtils::FunctorRunnable::Functor functor)
-{
-	if (functor_.empty() == false){
-		throw std::runtime_error("Functor operation already initialized");
-	}	
-}
-
-const float FunctorOperation::progress() const
-{
-	return progress_;
-}
-
-void FunctorOperation::call()
-{
-	if (status_ == threadingUtils::IOperation::Aborted){
-		return;
-	}
-
-	status_ = threadingUtils::IOperation::Running;
-	try{
-		functor_();
-		status_ = threadingUtils::IOperation::Finished;
-		progress_ = 1.0;
-	}
-	catch (std::exception & e){
-		error_ = e.what();
-		status_ = threadingUtils::IOperation::Error;
-	}
-	catch (...){
-		error_ = "Unknown functor call error";
-		status_ = threadingUtils::IOperation::Error;
-	}
-}
-
-void FunctorOperation::abort()
-{
-	if (status_ == threadingUtils::IOperation::Initialized ||
-		status_ == threadingUtils::IOperation::Pending){
-
-		status_ = threadingUtils::IOperation::Aborted;
-
-	}
-}
-
-void FunctorOperation::start()
-{
-	if (status_ != threadingUtils::IOperation::Initialized){
-		return;
-	}
-
-	status_ = threadingUtils::IOperation::Pending;
-	job = plugin::getJobManager()->addJob("HMDBSourceContext", "FunctorOperation", threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&FunctorOperation::call, this))));
-}
-
-void FunctorOperation::wait()
-{
-	if (job != nullptr){
-		job->wait();
-		job.reset();
-	}
-}
-
-const threadingUtils::IOperation::Status FunctorOperation::status() const
-{
-	return status_;
-}
-
-const std::string FunctorOperation::error() const
-{
-	return error_;
-}
-
 UploadOperation::UploadOperation(const std::string & fileName,
 	IHMDBFtp::TransferPtr transfer,
 	HMDBStore store,
@@ -641,7 +533,7 @@ UploadOperation::UploadOperation(const std::string & fileName,
 	: fileName(fileName), store(store), transfer(transfer),
 	fileDescription(fileDescription),
 	subdirectory(subdirectory), fileID_(-1),
-	fOp(boost::bind(&UploadOperation::upload, this))
+	job(plugin::getJobManager()->create("HMDBSource", "Upload operation", &UploadOperation::upload, this))
 {	
 
 }
@@ -672,18 +564,18 @@ void UploadOperation::upload()
 
 void UploadOperation::start()
 {	
-	fOp.start();
+	job.start();
 }
 
 void UploadOperation::wait()
 {
-	fOp.wait();
+	job.wait();
 }
 
 void UploadOperation::abort()
 {
 	status_ = Aborted;
-	fOp.abort();
+	job.cancel();
 }
 
 const UploadOperation::Status UploadOperation::status() const
@@ -692,17 +584,18 @@ const UploadOperation::Status UploadOperation::status() const
 		return status_;
 	}
 
-	return fOp.status();
+	//return fOp.status();
 }
 
 const std::string UploadOperation::error() const
 {
-	return fOp.error();
+	//return fOp.error();
+	return "";
 }
 
-const float UploadOperation::progress() const
+const float UploadOperation::normalizedProgress() const
 {
-	return ((float)progress_ + transfer->progress()) / 2.0;
+	return ((float)progress_ + transfer->normalizedProgress()) / 2.0;
 }
 
 const std::string retrieveData(hmdbServices::IBasicStoremanWS * service, const int id)
@@ -882,7 +775,7 @@ FileDownload::FileDownload(const IHMDBRemoteContext::FileDescriptor & fileToDown
 	IHMDBFtp * ftp)
 	: prepareHMDB(prepareHMDB), transferIO(transferIO), ftp(ftp),
 	downloaded_(false), fileID_(fileToDownload),
-	fOp(boost::bind(&FileDownload::download, this)),
+	job(plugin::getJobManager()->create("HMDBSource", "File download", &FileDownload::download, this)),
 	progress_(0)
 {	
 	
@@ -895,19 +788,19 @@ FileDownload::~FileDownload()
 
 void FileDownload::start()
 {	
-	fOp.start();
+	job.start();
 }
 
 void FileDownload::wait()
 {
-	fOp.wait();
+	job.wait();
 }
 
 void FileDownload::abort()
 {
 	if (status() != FileDownload::Aborted){
 		status_ = FileDownload::Aborted;
-		fOp.abort();
+		job.cancel();
 	}
 }
 
@@ -917,17 +810,18 @@ const FileDownload::Status FileDownload::status() const
 		return status_;
 	}
 
-	return fOp.status();
+	//return fOp.status();
 }
 
 const std::string FileDownload::error() const
 {
-	return fOp.error();
+	//return fOp.error();
+	return "";
 }
 
-const float FileDownload::progress() const
+const float FileDownload::normalizedProgress() const
 {
-	return ((float)progress_ + (transfer != nullptr ? transfer->progress() : 0.0)) / 5.0;
+	return ((float)progress_ + (transfer != nullptr ? transfer->normalizedProgress() : 0.0)) / 5.0;
 }
 
 const IHMDBRemoteContext::FileDescriptor FileDownload::fileID() const
@@ -1016,7 +910,8 @@ void FileDownload::download()
 }
 
 MultipleFilesDownloadAndStore::MultipleFilesDownloadAndStore(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads,
-	IHMDBStoragePtr storage) : status_(Initialized), downloadHelper(storage, downloads)
+	IHMDBStoragePtr storage) : status_(Initialized), downloadHelper(storage, downloads),
+	job(plugin::getJobManager()->create("HMDBSource", "Files download", &MultipleFilesDownloadAndStore::download, this))
 {
 
 }
@@ -1032,14 +927,8 @@ void MultipleFilesDownloadAndStore::start()
 		return;
 	}
 
-	try{
-		core::IThreadPool::Threads t;
-		plugin::getThreadPool()->getThreads("HMDBCommunication", t, 1);
-		thread_ = t.front();
-		threadingUtils::IRunnablePtr runnable(new threadingUtils::FunctorRunnable(boost::bind(&MultipleFilesDownloadAndStore::download, this)));
-
-		status_ = Pending;
-		thread_->start(runnable);
+	try{				
+		job.start();
 		
 	}
 	catch (std::exception & e){
@@ -1056,9 +945,7 @@ void MultipleFilesDownloadAndStore::start()
 
 void MultipleFilesDownloadAndStore::wait()
 {
-	if (thread_ != nullptr){
-		thread_->join();
-	}
+	job.wait();
 }
 
 void MultipleFilesDownloadAndStore::abort()
@@ -1079,7 +966,7 @@ const std::string MultipleFilesDownloadAndStore::error() const
 	return error_;
 }
 
-const float MultipleFilesDownloadAndStore::progress() const
+const float MultipleFilesDownloadAndStore::normalizedProgress() const
 {
 	return downloadHelper.progress();
 }
@@ -1087,7 +974,7 @@ const float MultipleFilesDownloadAndStore::progress() const
 void MultipleFilesDownloadAndStore::download()
 {
 	try{
-		utils::Cleanup release(boost::bind(&DownloadHelper::release, &downloadHelper));
+		utils::Cleanup release(std::bind(&DownloadHelper::release, &downloadHelper));
 
 		if (status_ == Aborted){
 			return;
@@ -1146,10 +1033,10 @@ void MultipleFilesDownloadStoreAndStatusUpdate::downloadFinished(const std::list
 
 	auto t = statusManager->transaction();
 
-	std::for_each(finishedDownloads.begin(), finishedDownloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	for(auto d : finishedDownloads)
 	{		
 		t->updateDataStatus(FileType, d->fileID().id.fileID, DataStatus(DataStatus::Local, DataStatus::UnknownUsage, DataStatus::Valid));
-	});
+	};
 
 	if (shallowCopy != nullptr){
 		statusManager->tryUpdate(shallowCopy);
@@ -1270,9 +1157,9 @@ void SynchronizeOperationImpl::abort()
 	MultipleFilesDownloadAndStore::abort();
 }
 
-const float SynchronizeOperationImpl::progress() const
+const float SynchronizeOperationImpl::normalizedProgress() const
 {
-	return (MultipleFilesDownloadAndStore::progress() + extractProgress.progress()) / 2.0;
+	return (MultipleFilesDownloadAndStore::normalizedProgress() + extractProgress.progress()) / 2.0;
 }
 
 const ShallowCopyConstPtr SynchronizeOperationImpl::shallowCopy() const
@@ -1332,9 +1219,9 @@ const std::string SynchronizeOperation::error() const
 	return op.error();
 }
 
-const float SynchronizeOperation::progress() const
+const float SynchronizeOperation::normalizedProgress() const
 {
-	return op.progress();
+	return op.normalizedProgress();
 }
 
 const ShallowCopyConstPtr SynchronizeOperation::shallowCopy() const

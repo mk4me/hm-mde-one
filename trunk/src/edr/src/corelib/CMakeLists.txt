@@ -46,10 +46,8 @@ SET_PUBLIC_HEADERS(
 	IFilterBundle.h
 	FilterBundle.h
 	Export.h
-	IJobManager.h
-	IThreadPool.h
-	IJob.h
-	IThread.h
+	JobManager.h	
+	ThreadPool.h
 	Version.h
 	Variant.h
 )
@@ -67,6 +65,8 @@ SET_SOURCE_FILES(
 	HierarchyItem.cpp
 	Version.cpp
 	Variant.cpp
+	ThreadPool.cpp
+	JobManager.cpp
 )
 
 SET_PRIVATE_HEADERS(

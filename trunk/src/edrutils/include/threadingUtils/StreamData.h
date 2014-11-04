@@ -11,9 +11,10 @@
 
 #include <threadingUtils/Export.h>
 #include <utils/SmartPtr.h>
-#include <boost/type_traits.hpp>
-#include <boost/function.hpp>
-#include <threadingUtils/SynchronizationPolicies.h>
+#include <type_traits>
+#include <atomic>
+#include <mutex>
+#include <functional>
 #include <utils/Debug.h>
 #include <list>
 
@@ -44,7 +45,7 @@ namespace threadingUtils {
 		//! \return Czy strumień uległ zmianie
 		const bool modified() const;
 		//! \param sb Strumień aktualizujący mój stan
-		virtual void update();
+		virtual void update() override;
 
 	private:
 		//! Implementacja
@@ -75,7 +76,7 @@ namespace threadingUtils {
 
 	protected:
 		//! Obiekt synchronizujący
-		mutable RecursiveSyncPolicy synch_;
+		mutable std::recursive_mutex synch_;
 
 	private:
 		//! Lista obserwatorów
@@ -88,17 +89,18 @@ namespace threadingUtils {
 	class StreamBufferT
 	{
 	public:
-		//! Typ rozmiaru bufora
-		typedef unsigned int size_type;
-
-		//! Typ referencji do danych
-		typedef typename boost::add_reference<T>::type ref_type;
-
-		//! Typ stałej referencji do danych
-		typedef typename boost::add_const<ref_type>::type const_ref_type;
 
 		//! Typ kolekcji danych bufora
 		typedef std::list<T> ListT;
+
+		//! Typ rozmiaru bufora
+		typedef typename ListT::size_type size_type;
+
+		//! Typ referencji do danych
+		typedef typename std::add_reference<T>::type ref_type;
+
+		//! Typ stałej referencji do danych
+		typedef typename std::add_const<ref_type>::type const_ref_type;
 
 	public:
 		//! Konstruktor domyslny
@@ -110,7 +112,7 @@ namespace threadingUtils {
 		//! (implementacja listy)
 		void setMaxBufferSize(const size_type size)
 		{
-			ScopedLock<StrictSyncPolicy> lock(synch_);
+			std::lock_guard<std::mutex> lock(synch_);
 			bufferSize_ = size;
 
 			if (verifyBufferSize() == false){
@@ -124,21 +126,20 @@ namespace threadingUtils {
 		//! \return Maksymalny rozmiar bufora
 		const size_type maxBufferSize() const
 		{
-			ScopedLock<StrictSyncPolicy> lock(synch_);
 			return bufferSize_;
 		}
 
 		//! \return Aktualny rozmiar bufora
 		const size_type size() const
 		{
-			ScopedLock<StrictSyncPolicy> lock(synch_);
+			std::lock_guard<std::mutex> lock(synch_);
 			return bufferData.size();
 		}
 
 		//! \param data Dane do włożenia do bufora
 		void pushData(const_ref_type data)
 		{
-			ScopedLock<StrictSyncPolicy> lock(synch_);
+			std::lock_guard<std::mutex> lock(synch_);
 			bufferData.push_back(data);
 
 			if (verifyBufferSize() == false){
@@ -149,7 +150,7 @@ namespace threadingUtils {
 		//! \param data [out] Obiekt docelowy dla danych bufora
 		void data(ListT & data)
 		{
-			ScopedLock<StrictSyncPolicy> lock(synch_);
+			std::lock_guard<std::mutex> lock(synch_);
 			data.insert(bufferData.begin(), bufferData.end());
 			ListT().swap(data);
 		}
@@ -164,11 +165,11 @@ namespace threadingUtils {
 
 	private:
 		//! Obiekt synchronizujący
-		StrictSyncPolicy synch_;
+		std::mutex synch_;
 		//! Bufor danych
 		ListT bufferData;
 		//! Maksymalny rozmiar bufora
-		volatile size_type bufferSize_;
+		std::atomic<size_type> bufferSize_;
 	};
 
 	template<typename T>
@@ -207,7 +208,7 @@ namespace threadingUtils {
 				throw std::runtime_error("Uninitialized buffer pointer");
 			}
 
-			ScopedLock<RecursiveSyncPolicy> lock(synch_);
+			std::lock_guard<std::mutex> lock(synch_);
 			streamBufferList.remove(bufferPtr);
 			streamBufferList.push_back(bufferPtr);
 		}
@@ -215,7 +216,7 @@ namespace threadingUtils {
 		//! \param bufferPtr Odłanczany bufor danych
 		void detachBuffer(StreamBufferPtr bufferPtr)
 		{
-			ScopedLock<RecursiveSyncPolicy> lock(synch_);
+			std::lock_guard<std::mutex> lock(synch_);
 			streamBufferList.remove(bufferPtr);
 		}
 
@@ -224,7 +225,7 @@ namespace threadingUtils {
 		//! Return Czy podłączono jakieś bufory
 		const bool buffersAttached() const
 		{
-			ScopedLock<RecursiveSyncPolicy> lock(synch_);
+			std::lock_guard<std::recursive_mutex> lock(synch_);
 			return !streamBufferList.empty();
 		}
 
@@ -233,9 +234,8 @@ namespace threadingUtils {
 		{
 			UTILS_ASSERT(streamBufferList.empty() == true, "Stream data with no buffers");
 
-			for (auto it = streamBufferList.begin();
-				it != streamBufferList.end(); ++it){
-				(*it)->pushData(data);
+			for (auto buff : streamBufferList){
+				buff->pushData(data);
 			}
 		}
 
@@ -256,7 +256,7 @@ namespace threadingUtils {
 		//! \param data Data received from the stream
 		void pushData(typename IStreamT<T>::const_ref_type data)
 		{
-			ScopedLock<RecursiveSyncPolicy> lock(this->synch_);
+			std::lock_guard<std::recursive_mutex> lock(this->synch_);
 
 			try{
 				pushBufferData(data);
@@ -273,9 +273,9 @@ namespace threadingUtils {
 		virtual ~StreamT() {}
 
 		//! \param d [out]  Obiekt docelowy dla aktualnych danych ze strumienia
-		virtual void data(typename IStreamT<T>::ref_type d) const
+		virtual void data(typename IStreamT<T>::ref_type d) const override
 		{
-			ScopedLock<RecursiveSyncPolicy> lock(this->synch_);
+			std::lock_guard<std::recursive_mutex> lock(this->synch_);
 			d = data_;
 		}
 
@@ -300,7 +300,7 @@ namespace threadingUtils {
 		typedef utils::shared_ptr<BaseStreamType> BaseStreamTypePtr;
 
 		//! Typ funktora odpowiedzialnego za wypakowanie danych
-		typedef boost::function<void(const Base &, Dest &)> ExtractorFunction;
+		typedef std::function<void(const Base &, Dest &)> ExtractorFunction;
 
 	private:
 
@@ -338,7 +338,7 @@ namespace threadingUtils {
 				throw std::invalid_argument("Uninitialized base stream");
 			}
 
-			if (extractorFunction.empty() == true){
+			if (!extractorFunction){
 				throw std::invalid_argument("Empty extractor function");
 			}
 
@@ -353,7 +353,7 @@ namespace threadingUtils {
 		}
 
 		//! \param d [out]  Obiekt docelowy dla aktualnych danych ze strumienia po przepakowaniu
-		virtual void data(typename IStreamT<Dest>::ref_type d) const
+		virtual void data(typename IStreamT<Dest>::ref_type d) const override
 		{
 			Base bd;
 			baseStream_->data(bd);

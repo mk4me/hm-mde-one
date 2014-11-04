@@ -4,9 +4,8 @@
 #include "ApplicationCommon.h"
 #include "ParserManager.h"
 #include <utils/Push.h>
-#include <boost/bind.hpp>
 #include <fstream>
-#include <boost/shared_array.hpp>
+#include <utils/SmartPtr.h>
 
 using namespace core;
 
@@ -25,14 +24,14 @@ private:
 private:
 	IMemoryDataManager::TransactionPtr mdmTransaction;
 	StreamDataManager * sdm;
-	utils::shared_ptr<threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy>> lock;
+	utils::shared_ptr<std::lock_guard<std::recursive_mutex>> lock;
 	StreamModyfications modyfications;
 	bool transactionRolledback;
 	bool oldSkipUpdate;
 
 public:
 	StreamTransaction(StreamDataManager * sdm) : mdmTransaction(getMemoryDataManager()->transaction()),
-		sdm(sdm), lock(new threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy>(sdm->sync)),
+		sdm(sdm), lock(new std::lock_guard<std::recursive_mutex>(sdm->sync)),
 		transactionRolledback(false), oldSkipUpdate(sdm->skipUpdate)
 	{		
 		sdm->skipUpdate = true;
@@ -480,7 +479,7 @@ private:
 					tmpFilePath = tmpPath;
 
 					static unsigned int BufferSize = 1024 * 1024 * 5;					
-					boost::shared_array<char> buffer(new char[BufferSize] {0});
+					utils::shared_array<char> buffer(new char[BufferSize] {0});
 					
 					int read = 0;
 					while ((read = stream->readsome(buffer.get(), BufferSize)) > 0) { output.write(buffer.get(), read); }

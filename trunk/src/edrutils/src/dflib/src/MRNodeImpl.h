@@ -9,8 +9,9 @@
 #ifndef HEADER_GUARD___MRNODEIMPL_H__
 #define HEADER_GUARD___MRNODEIMPL_H__
 
-#include <threadingUtils/SynchronizationPolicies.h>
 #include <vector>
+#include <mutex>
+#include <condition_variable>
 
 class MRInputPin;
 class MROutputPin;
@@ -32,10 +33,10 @@ public:
 
 private:
 	bool paused_;
-	threadingUtils::StrictSyncPolicy syncPolicy;
+	std::mutex syncPolicy;
 };
 
-class MRSourceNodeImpl : public threadingUtils::StrictSyncPolicy
+class MRSourceNodeImpl
 {
 private:
 
@@ -63,14 +64,18 @@ public:
 	MROutputPin * pin(size_type idx);
 	const MROutputPin * pin(size_type idx) const;
 
-private:
+	void wait();
+	void wakeUp();
+
+private:	
+	std::condition_variable wait_;
 	const unsigned int toConsume;
 	unsigned int currentlyConsumed;
 	IMRSourceNode * source_;
 	OutputPins outputPins;
 };
 
-class MRSinkNodeImpl : public threadingUtils::StrictSyncPolicy
+class MRSinkNodeImpl
 {
 private:
 
@@ -98,7 +103,12 @@ public:
 	MRInputPin * pin(size_type idx);
 	const MRInputPin * pin(size_type idx) const;
 
+	void wait();
+
+	void wakeUp();
+
 private:
+	std::condition_variable wait_;
 	const unsigned int toConsume;
 	unsigned int readyToConsume;
 	IMRSinkNode * sink_;

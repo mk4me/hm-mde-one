@@ -11,10 +11,10 @@
 
 #include <map>
 #include <list>
+#include <mutex>
 #include <corelib/IFileManagerReader.h>
 #include <corelib/IFileDataManager.h>
 #include <corelib/IDataManagerReader.h>
-#include <threadingUtils/SynchronizationPolicies.h>
 #include <corelib/IParserManagerReader.h>
 
 namespace core {
@@ -32,7 +32,7 @@ namespace core {
 		//! Forward declaration
 		class CompoundInitializer;		
 
-		//! S�ownik aktualnie obs�ugiwanych plik�w i skojarzonych z nimi parser�w
+		//! S�ownik aktualnie obsługiwanych plików i skojarzonych z nimi parserów
 		typedef std::map<Filesystem::Path, ConstVariantsList> ObjectsByFiles;
 		//! Mapowanie indeksu danych parsera do typu pod tym indeksem
 		typedef std::map<int, utils::TypeInfo> ParserTypes;
@@ -42,12 +42,12 @@ namespace core {
 		typedef std::map<Filesystem::Path, ObjectsByParser> MissingObjects;
 
 		//! Polityka synchronizacji
-		typedef threadingUtils::RecursiveSyncPolicy SyncPolicy;
-		typedef threadingUtils::ScopedLock<SyncPolicy> ScopedLock;
+		typedef std::recursive_mutex SyncPolicy;
+		typedef std::lock_guard<SyncPolicy> ScopedLock;
 
 	private:
 
-		//! Mapa parser�w wg plik�w
+		//! Mapa parserów wg plików
 		ObjectsByFiles objectsByFiles;
 		//! Dane wyładowane przez Memory DM
 		MissingObjects missingObjects;
@@ -55,7 +55,7 @@ namespace core {
 		//! Obiekt na potrzeby synchronizacji
 		mutable SyncPolicy sync;
 
-		//! Obiekty obserwuj�ce stan DM
+		//! Obiekty obserwujące stan DM
 		std::list<FileObserverPtr> observers;
 
 		//! Zmienna pozwalająca szybko opuscic update memory data managera

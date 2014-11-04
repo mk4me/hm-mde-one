@@ -9,6 +9,8 @@
 #ifndef HEADER_GUARD___IAPPLICATION_H__
 #define HEADER_GUARD___IAPPLICATION_H__
 
+#include <corelib/ThreadPool.h>
+
 namespace core {
 
 	class ILog;
@@ -22,10 +24,10 @@ namespace core {
 	class IServiceManager;	
 	class ISourceManager;
 	class IVisualizerManager;
-	class IThreadPool;
-	class IJobManager;
 	class IApplicationDescription;
 	class ILanguagesManager;
+	class JobManager;
+	class ThreadPool;
 
 	//! Interfejs klasy dostarczaj¹cej pluginom ogólnych zasobów aplikacji:
 	//! interfejs œcie¿ek, interfejs do czytania danych,
@@ -65,12 +67,12 @@ namespace core {
 		virtual ISourceManager * sourceManager() = 0;
 		//! \return Interfejs managera wizualizatorów
 		virtual IVisualizerManager * visualizerManager() = 0;
-		//! \return Interfejs puli w¹tków
-		virtual IThreadPool * threadPool() = 0;
-		//! \return Interfejs managera zadañ
-		virtual IJobManager * jobManager() = 0;
-	};
+		//! \return Interfejs dostêpu do Ÿróde³
+		virtual ThreadPool * threadPool() = 0;
+		//! \return Interfejs managera wizualizatorów
+		virtual JobManager * jobManager() = 0;
 
+	};
 }
 
 #endif	//	HEADER_GUARD___IAPPLICATION_H__

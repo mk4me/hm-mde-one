@@ -11,13 +11,13 @@
 
 #include <vector>
 #include <list>
+#include <mutex>
 
 #include <boost/range.hpp>
 #include <boost/iterator.hpp>
 #include <QtGui/QIcon>
 #include <corelib/IVisualizerManager.h>
 #include <corelib/IVisualizer.h>
-#include <threadingUtils/SynchronizationPolicies.h>
 
 namespace core {
 	class VisualizerManager : public IVisualizerManager {
@@ -38,8 +38,8 @@ namespace core {
 		//! Typ listy obserwatorów
 		typedef std::set<IVisualizerManagerObserver*> Observers;
 		//! Obsługa synchronizacji
-		typedef threadingUtils::RecursiveSyncPolicy SyncPolicy;
-		typedef threadingUtils::ScopedLock<SyncPolicy> ScopedLock;
+		typedef std::recursive_mutex SyncPolicy;
+		typedef std::lock_guard<SyncPolicy> ScopedLock;
 
 	private:
 		//! Prototypy wizualizatorów

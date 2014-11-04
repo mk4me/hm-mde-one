@@ -15,7 +15,6 @@ using namespace coreUI;
 //------------------------------------------------------------------------------
 #ifdef CORE_ENABLE_LOG4CXX
 
-#include <boost/foreach.hpp>
 #include <log4cxx/logger.h>
 #include <log4cxx/propertyconfigurator.h>
 #include <log4cxx/appenderskeleton.h>
@@ -239,16 +238,16 @@ void LogInitializer::setConsoleWidget( CoreConsoleWidget* widget )
     Logger::getRootLogger()->getLoggerRepository()->getCurrentLoggers().swap(loggers);
     loggers.push_back( Logger::getRootLogger() );
     std::set<ConsoleWidgetAppenderPtr> consoleAppenders;
-    BOOST_FOREACH(LoggerPtr logger, loggers) {
+    for(auto logger : loggers) {
         AppenderList appenders = logger->getAllAppenders();
-        BOOST_FOREACH(AppenderPtr appender, appenders) {
+        for(auto appender : appenders) {
             if ( ConsoleWidgetAppenderPtr consoleAppender = appender ) {
                 consoleAppenders.insert(consoleAppender);
             }
         }
     }
     // ustawienie konsoli
-    BOOST_FOREACH(ConsoleWidgetAppenderPtr consoleAppender, consoleAppenders) {
+    for(auto consoleAppender : consoleAppenders) {
         consoleAppender->setConsole(widget);
     }
 }
@@ -256,8 +255,7 @@ void LogInitializer::setConsoleWidget( CoreConsoleWidget* widget )
 
 #else // fallback do logowania OSG
 
-#include <OpenThreads/Mutex>
-#include <OpenThreads/ScopedLock>
+#include <mutex>
 #include <osg/ref_ptr>
 
 void QtMessageHandler(QtMsgType type, const char *msg)
@@ -287,8 +285,8 @@ private:
     //! Kolejka wiadomości dla konsoli. Używana, gdy pojawiają się zdarzenia logowania,
     //! a konsoli jeszcze nie ma (inicjalizacja).
     std::queue<CoreConsoleWidgetEntryPtr> queuedEntries;
-    typedef OpenThreads::ScopedLock<OpenThreads::Mutex> ScopedLock;
-    OpenThreads::Mutex queueMutex;
+    typedef std::lock_guard<std::mutex> ScopedLock;
+    std::mutex queueMutex;
 
 public:
     //! \param console Konsola.

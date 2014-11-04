@@ -16,9 +16,7 @@
 #include <map>
 
 #include <boost/date_time.hpp>
-#include <boost/function.hpp>
-#include <boost/foreach.hpp>
-#include <boost/bind.hpp>
+#include <functional>
 
 #include <QtCore/QObject>
 #include <QtCore/QString>

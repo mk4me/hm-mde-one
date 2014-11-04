@@ -1,6 +1,5 @@
 #include "SubjectPCH.h"
-#include <OpenThreads/Mutex>
-#include <OpenThreads/ScopedLock>
+#include <mutex>
 #include "SubjectService.h"
 #include "Session.h"
 #include "Subject.h"

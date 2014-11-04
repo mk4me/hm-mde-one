@@ -11,7 +11,7 @@
 #define HEADER_GUARD_CORE__APPINITIALIZER_H__
 
 #include <utils/SmartPtr.h>
-#include <boost/type_traits.hpp>
+#include <type_traits>
 #include <coreui/CoreMainWindow.h>
 
 namespace core {

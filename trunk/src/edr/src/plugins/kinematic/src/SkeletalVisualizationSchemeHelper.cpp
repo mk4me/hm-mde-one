@@ -102,7 +102,7 @@ void SkeletonJointsMapping::generateMappedConnectionsDescription( kinematic::hAn
 	SegmentsDescriptors & cds) const
 {
 	auto jointChildren = joint->getActiveJointChildren();
-	BOOST_FOREACH(hAnimJointPtr child, jointChildren) {
+	for(auto child : jointChildren) {
 		
 		auto idxB = jointIndex(child);
 
@@ -161,7 +161,7 @@ void SkeletalVisualizationSchemeHelper::updateJointTransforms(const std::vector<
 
 	pointsPositions[idx] = pos;
 
-	BOOST_FOREACH(hAnimJointPtr child, joint->getActiveJointChildren()) {
+	for(auto child : joint->getActiveJointChildren()) {
 		updateJointTransforms(rotations, child, rotation, pos, pointsPositions);
 	}
 }

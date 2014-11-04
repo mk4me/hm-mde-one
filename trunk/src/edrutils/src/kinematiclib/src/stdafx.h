@@ -8,9 +8,7 @@
 #include <istream>
 #include <string>
 #include <map>
-#include <boost/foreach.hpp>
 #include <boost/utility.hpp>
-#include <boost/smart_ptr.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <osg/Vec3d>
@@ -18,6 +16,7 @@
 #include <utils/Utils.h>
 #include <utils/Debug.h>
 #include <utils/Enum.h>
+#include <utils/SmartPtr.h>
 #include <tinyxml2.h>
 
 #endif

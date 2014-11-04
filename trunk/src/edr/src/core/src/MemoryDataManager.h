@@ -12,7 +12,7 @@
 #include <list>
 #include <corelib/IDataManagerReader.h>
 #include <corelib/IMemoryDataManager.h>
-#include <threadingUtils/SynchronizationPolicies.h>
+#include <mutex>
 
 namespace core {
 	class MemoryDataManager : public IDataManagerReader, public IMemoryDataManager
@@ -28,8 +28,8 @@ namespace core {
 		//! Typ mapy obiektów.
 		typedef std::map< utils::TypeInfo, VariantsSet > ObjectsByTypes;
 
-		typedef threadingUtils::RecursiveSyncPolicy SyncPolicy;
-		typedef threadingUtils::ScopedLock<SyncPolicy> ScopedLock;
+		typedef std::recursive_mutex SyncPolicy;
+		typedef std::lock_guard<SyncPolicy> ScopedLock;
 
 	protected:
 

@@ -14,7 +14,7 @@
 #include <utils/Debug.h>
 #include <utils/SmartPtr.h>
 #include <boost/tokenizer.hpp>
-#include <boost/type_traits.hpp>
+#include <type_traits>
 #include <vector>
 
 //! forward declaration

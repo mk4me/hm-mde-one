@@ -12,7 +12,6 @@
 #include <dflib/Node.h>
 #include <type_traits>
 #include <corelib/IThreadPool.h>
-#include <threadingUtils/IThreadPool.h>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>

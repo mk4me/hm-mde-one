@@ -120,7 +120,7 @@ struct PtrPolicyRaw
 	}
 };
 
-template <> struct is_ptr_policy<PtrPolicyRaw> : public __traits::true_type {};
+template <> struct is_ptr_policy<PtrPolicyRaw> : public std::true_type {};
 
 //! Klasa bazowa dla adaptera umożliwiająca wykorzystanie zwykłych wskaźników.
 //! Dodając rozszerzenie dla innych typów wskaźników należy powielić
@@ -135,7 +135,7 @@ struct PtrPolicyRawWeak : public PtrPolicyRaw
     }
 };
 
-template <> struct is_ptr_policy<PtrPolicyRawWeak> : public __traits::true_type {};
+template <> struct is_ptr_policy<PtrPolicyRawWeak> : public std::true_type {};
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace utils

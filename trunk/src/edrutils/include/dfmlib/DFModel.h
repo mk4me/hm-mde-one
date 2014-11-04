@@ -6,7 +6,6 @@
 #include <dfmlib/Model.h>
 #include <dfmlib/DFInterface.h>
 #include <map>
-#include <OpenThreads/Thread>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
@@ -21,27 +20,27 @@ namespace dflm{
 		//! Typ przechowujący zestaw źródeł na potrzeby wstrzykiwania kolejnej porcji danych do data flow
 		typedef std::set<DFSNPtr> SourceNodes;
 
-		//typedef std::set<DFNPtr> Nodes;
+		typedef std::set<DFNPtr> Nodes;
 
-		//typedef std::set<DFNPtr> Nodes;
+		typedef std::set<DFNPtr> Nodes;
 
-		//private:
-		//
-		//    class ModelRunner : public OpenThreads::Thread
-		//    {
-		//    public:
-		//        ModelRunner(DFModel * model);
-		//        ~ModelRunner();
-		//
-		//        virtual void run();
-		//        void finishProcessing();
-		//
-		//    private:
-		//        DFModel * model;
-		//        bool finish;
-		//    };
-		//
-		//    friend class ModelRunner;
+		private:
+
+			class ModelRunner
+			{
+			public:
+				ModelRunner(DFModel * model);
+				~ModelRunner();
+
+				void run();
+				void finishProcessing();
+
+			private:
+				DFModel * model;
+				bool finish;
+			};
+
+			friend class ModelRunner;
 
 	public:
 
@@ -151,16 +150,16 @@ namespace dflm{
 		unsigned int finishedLeafes;
 
 		//! mutex do kontroli wątku notyfikującego źródła
-		//OpenThreads::Mutex pauseMutex;
+		std::mutex pauseMutex;
 
 		//! mutex do synchronizacji aktualizacji ilości liści które przetworzyły dane
-		//OpenThreads::Mutex leavesMutex;
+		std::mutex leavesMutex;
 
 		//! mutex do synchronizacji operacji uruchamiania/zatrzymywania/pauzowania dataflow
-		mutable OpenThreads::ReentrantMutex runningMutex;
+		mutable std::recursive_mutex runningMutex;
 
 		//! wątek obsługujący wyzwalanie źródeł
-		//utils::shared_ptr<ModelRunner> modelRunner;
+		utils::shared_ptr<ModelRunner> modelRunner;
 	};
 }
 

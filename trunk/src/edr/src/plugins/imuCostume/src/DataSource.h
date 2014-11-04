@@ -12,15 +12,16 @@
 #include <plugins/imuCostume/Wrappers.h>
 #include <corelib/Variant.h>
 #include <corelib/ISource.h>
-#include <corelib/IThread.h>
 #include <threadingUtils/StreamData.h>
 #include <osg/Vec3>
 #include <kinematiclib/hAnimSkeleton.h>
 #include <kinematiclib/JointAnglesCollection.h>
-#include <threadingUtils/SynchronizationPolicies.h>
+#include <mutex>
 #include <imucostumelib/ImuCostume.h>
 #include <corelib/HierarchyItem.h>
 #include <plugins/kinematic/Wrappers.h>
+#include <corelib/ThreadPool.h>
+
 
 namespace IMU
 {
@@ -163,13 +164,13 @@ namespace IMU
 		//! Czy po³¹czono ju¿ z kostiumami
 		bool connected_;
 		//! Obiekt synchronizuj¹cy
-		mutable threadingUtils::RecursiveSyncPolicy synch;
+		mutable std::recursive_mutex synch;
 		//! Obiekt synchronizuj¹cy aktualizacjê danych
-		threadingUtils::RecursiveSyncPolicy updateSynch;
+		std::recursive_mutex updateSynch;
 		//! Manager danych w pamiêci
 		core::IMemoryDataManager * memoryDM;
 		//! Watek odswiezajacy dane
-		core::IThreadPtr refreshThread;
+		core::ThreadPool::Thread refreshThread;
 		//! Kostiumy
 		std::vector<CostumeConfiguration> costumesConfigurations;
 		//! Status danych

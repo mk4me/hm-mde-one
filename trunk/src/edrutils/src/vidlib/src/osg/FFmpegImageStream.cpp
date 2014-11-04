@@ -9,11 +9,11 @@ namespace vidlib {
 const int FFmpegImageStream::lockManager( void **mutex, FFmpegVideoStream::LockOp op )
 {
     // pobieramy mutexa
-    OpenThreads::Mutex **m=reinterpret_cast<OpenThreads::Mutex**>(mutex);
+	std::mutex **m = reinterpret_cast<std::mutex**>(mutex);
     // operacja na mutexie
     switch (op) {
         case FFmpegVideoStream::LockOpCreate:
-            *m=new OpenThreads::Mutex;
+			*m = new std::mutex;
             return !*m;
         case FFmpegVideoStream::LockOpDestroy:
             delete *m;

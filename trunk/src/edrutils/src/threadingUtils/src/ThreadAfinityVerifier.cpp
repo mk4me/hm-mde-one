@@ -1,12 +1,12 @@
 #include <threadingUtils/ThreadAfinityVerifier.h>
-#include <QtCore/QThread>
+#include <thread>
 
 using namespace threadingUtils;
 
 class ThreadAfinityVerifier::ThreadAfinityVerifierImpl
 {
 public:
-	ThreadAfinityVerifierImpl() : threadID(QThread::currentThreadId())
+	ThreadAfinityVerifierImpl() : id(std::this_thread::get_id())
 	{
 
 	}
@@ -18,12 +18,12 @@ public:
 
 	const bool verifyCurrentThreadAfinity() const
 	{
-		return threadID == QThread::currentThreadId();
+		return id == std::this_thread::get_id();
 	}
 
 private:
 	//! Identyfikator w¹tku tworz¹cego obiekt
-	const Qt::HANDLE threadID;
+	const std::thread::id id;
 };
 
 ThreadAfinityVerifier::ThreadAfinityVerifier() : impl(new ThreadAfinityVerifierImpl)

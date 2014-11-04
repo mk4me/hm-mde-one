@@ -14,7 +14,7 @@
 #include <list>
 #include <set>
 #include <vector>
-#include <boost/type_traits.hpp>
+#include <type_traits>
 
 namespace utils {
 
@@ -81,7 +81,7 @@ namespace utils {
 		//! \tpara T Typ dla którego chcemy pobrać rozmiar
 		//! Wersja kiedy T = void
 		template<typename T>
-		static const unsigned long long typeSize(boost::true_type)
+		static const unsigned long long typeSize(std::true_type)
 		{
 			return 0;
 		}
@@ -89,7 +89,7 @@ namespace utils {
 		//! \tpara T Typ dla którego chcemy pobrać rozmiar
 		//! Wersja kiedy T != void
 		template<typename T>
-		static const unsigned long long typeSize(boost::false_type)
+		static const unsigned long long typeSize(std::false_type)
 		{
 			return sizeof(T);
 		}
@@ -113,7 +113,7 @@ namespace utils {
 		template<typename T>
 		const ExtendedTypeInfo info(const T * dummy = nullptr)
 		{
-			return ExtendedTypeInfo(typeid(T), typeSize<T>(boost::is_void<T>::type));
+			return ExtendedTypeInfo(typeid(T), typeSize<T>(std::is_void<T>::type));
 		}
 
 		//! Destruktor

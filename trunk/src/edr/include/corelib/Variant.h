@@ -11,7 +11,7 @@
 #include <corelib/Export.h>
 #include <utils/SmartPtr.h>
 #include <utils/ObjectWrapper.h>
-#include <threadingUtils/SynchronizationPolicies.h>
+#include <mutex>
 #include <list>
 #include <set>
 #include <vector>
@@ -60,7 +60,7 @@ namespace core
 		//! Typ przechowuj¹cy metadane OW
 		typedef std::map<std::string, std::string> Metadata;
 		//! Typ loklanej synchronizacji
-		typedef threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> ScopedLock;
+		typedef std::lock_guard<std::recursive_mutex> ScopedLock;
 
 	public:
 
@@ -99,7 +99,7 @@ namespace core
 		//! Faktyczne dane
 		utils::ObjectWrapperPtr wrapper_;
 		//! Obiekt synchronizuj¹cy
-		mutable threadingUtils::RecursiveSyncPolicy sync_;
+		mutable std::recursive_mutex sync_;
 		//! Czy jesteœmy w trakcie inicjalizacji
 		mutable bool initializing_;
 

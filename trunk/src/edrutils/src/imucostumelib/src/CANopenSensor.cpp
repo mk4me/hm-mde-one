@@ -91,7 +91,7 @@ public:
 
 	const CANopenSensor::OperationStatus saveConfiguration(CANopenSensor::ErrorCode & errorCode)
 	{
-		return write(CANopenSensor::STORE_PARAMETERS, CANopenSensor::Size4B, CANopenSensor::formatData(int32_t(0x65766173)), errorCode, 1);
+		return writeSDO(CANopenSensor::STORE_PARAMETERS, CANopenSensor::Size4B, CANopenSensor::formatData(int32_t(0x65766173)), errorCode, 1);
 	}
 
 	//NMT
@@ -135,7 +135,7 @@ public:
 	}
 
 	//SDO
-	const CANopenSensor::OperationStatus read(const int16_t dictID, CANopenSensor::IODataSize & dataSize, Buffer & out, CANopenSensor::ErrorCode & errorCode, const int8_t dictSubID = 0) const
+	const CANopenSensor::OperationStatus readSDO(const int16_t dictID, CANopenSensor::IODataSize & dataSize, Buffer & out, CANopenSensor::ErrorCode & errorCode, const int8_t dictSubID = 0) const
 	{
 		CANopenSensor::OperationStatus ret = CANopenSensor::OPERATION_OK;
 
@@ -180,7 +180,7 @@ public:
 		return ret;
 	}
 
-	const CANopenSensor::OperationStatus write(const int16_t dictID, const CANopenSensor::IODataSize dataSize, const Buffer in, CANopenSensor::ErrorCode & errorCode, const int8_t dictSubID)
+	const CANopenSensor::OperationStatus writeSDO(const int16_t dictID, const CANopenSensor::IODataSize dataSize, const Buffer in, CANopenSensor::ErrorCode & errorCode, const int8_t dictSubID)
 	{
 		CANopenSensor::OperationStatus ret = CANopenSensor::OPERATION_OK;
 
@@ -405,14 +405,14 @@ const CANopenSensor::OperationStatus CANopenSensor::resetCommunication()
 }
 
 //SDO
-const CANopenSensor::OperationStatus CANopenSensor::read(const int16_t dictID, IODataSize & dataSize, Buffer & data, ErrorCode & errorCode, const int8_t dictSubID) const
+const CANopenSensor::OperationStatus CANopenSensor::readSDO(const int16_t dictID, IODataSize & dataSize, Buffer & data, ErrorCode & errorCode, const int8_t dictSubID) const
 {
-	return impl->read(dictID, dataSize, data, errorCode, dictSubID);
+	return impl->readSDO(dictID, dataSize, data, errorCode, dictSubID);
 }
 
-const CANopenSensor::OperationStatus CANopenSensor::write(const int16_t dictID, const IODataSize dataSize, const Buffer & data, ErrorCode & errorCode, const int8_t dictSubID)
+const CANopenSensor::OperationStatus CANopenSensor::writeSDO(const int16_t dictID, const IODataSize dataSize, const Buffer & data, ErrorCode & errorCode, const int8_t dictSubID)
 {
-	return impl->write(dictID, dataSize, data, errorCode, dictSubID);
+	return impl->writeSDO(dictID, dataSize, data, errorCode, dictSubID);
 }
 
 const CANopenSensor::Buffer CANopenSensor::formatIntegralData(const int32_t value, std::true_type)

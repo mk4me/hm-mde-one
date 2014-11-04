@@ -43,7 +43,6 @@
 #include <coreui/CoreTextEditWidget.h>
 #include <utils/Debug.h>
 #include <corelib/PluginCommon.h>
-#include <boost/foreach.hpp>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtGui/QClipboard>
@@ -361,7 +360,7 @@ void CoreTextEditWidget::createTextActions()
     comboSize->setEditable(true);
 
     QFontDatabase db;
-    BOOST_FOREACH(int size, db.standardSizes())
+    for(int size : db.standardSizes())
         comboSize->addItem(QString::number(size));
 
     connect(comboSize, SIGNAL(activated(QString)),

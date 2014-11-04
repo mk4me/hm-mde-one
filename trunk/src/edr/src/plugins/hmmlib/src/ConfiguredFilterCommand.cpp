@@ -4,7 +4,7 @@
 #include <plugins/subject/ISession.h>
 #include <plugins/subject/IMotion.h>
 
-__Helper::__Helper( boost::function<void (const QString&, int)> function ) :
+__Helper::__Helper( std::function<void (const QString&, int)> function ) :
 function(function) 
 {
 }

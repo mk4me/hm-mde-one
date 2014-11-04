@@ -2,9 +2,6 @@
 #include <dfmlib/Pin.h>
 #include <dfmlib/Connection.h>
 #include <utils/Debug.h>
-#include <OpenThreads/Thread>
-
-#define NO_LOCK_THREADID -1
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{

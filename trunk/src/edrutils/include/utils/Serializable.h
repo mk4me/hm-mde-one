@@ -10,7 +10,7 @@
 #define HEADER_GUARD___SERIALIZABLE_H__
 
 #include <string>
-#include <boost/type_traits.hpp>
+#include <type_traits>
 
 namespace utils{
 
@@ -23,7 +23,7 @@ public:
 	template<class T>
 	static const bool isSerializable(T * obj = nullptr)
 	{
-		return boost::is_base_of<Serializable, T>::value;
+		return std::is_base_of<Serializable, T>::value;
 	}
 };
 

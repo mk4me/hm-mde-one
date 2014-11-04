@@ -1,9 +1,6 @@
 #include "CommunicationPCH.h"
 #include "HMDBService.h"
 #include "HMDBSession.h"
-#include <corelib/IThreadPool.h>
-#include <threadingUtils/IThread.h>
-#include <boost/bind.hpp>
 #include "WSDLPULLService.h"
 #include <wsdlparser/WsdlInvoker.h>
 
@@ -42,6 +39,7 @@ HMDBService::HMDBService()
 
 HMDBService::~HMDBService()
 {
+	finalize();
 	curl_global_cleanup();
 }
 
@@ -196,14 +194,14 @@ const bool HMDBService::serverOnline(const std::string & url,
 
 void HMDBService::attach(IHMDBSessionPtr session)
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
+	std::lock_guard<std::recursive_mutex> lock(sync_);
 	//! TODO
 	//! podpi¹æ pod widget
 }
 
 void HMDBService::detach(IHMDBSessionPtr session)
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(sync_);
+	std::lock_guard<std::recursive_mutex> lock(sync_);
 	//! TODO
 	//! od³¹czyæ widgeta
 }
@@ -214,28 +212,20 @@ void HMDBService::init(core::ISourceManager * sourceManager,
 	core::IStreamDataManager * streamDataManager,
 	core::IFileDataManager * fileDataManager)
 {
-	core::IThreadPool::Threads threads;
+	core::ThreadPool::Threads threads;
 
-	plugin::getThreadPool()->getThreads("HMDB Service", threads, 2, true);
+	plugin::getThreadPool()->get(2, threads, true, "HMDB Service", "Network operations");
 
-	core::IThreadPtr st = threads.front();
-	core::IThreadPtr dt = threads.back();
-	networkUtils::CURLManagerPtr sM(new networkUtils::CURLManager);
-	utils::shared_ptr<CURLFTPManager> dM(new CURLFTPManager);
+	servicesThread = std::move(threads.front());
+	dataThread = std::move(threads.back());
+	servicesManager.reset(new networkUtils::CURLManager);
+	dataManager.reset(new CURLFTPManager);
 
-	threadingUtils::IRunnablePtr rS(new threadingUtils::FunctorRunnable(boost::bind(&HMDBService::runServices, this)));
-	threadingUtils::IRunnablePtr rD(new threadingUtils::FunctorRunnable(boost::bind(&HMDBService::runData, this)));
+	dataCurlExecutor.reset(new HMDBCURLExecutor(dataManager));
+	serviceCurlExecutor.reset(new HMDBCURLExecutor(servicesManager));
 
-	st->start(rS);
-	dt->start(rD);	
-
-	dataCurlExecutor.reset(new HMDBCURLExecutor(dM));
-	serviceCurlExecutor.reset(new HMDBCURLExecutor(sM));
-
-	servicesThread.swap(st);
-	dataThread.swap(dt);
-	servicesManager.swap(sM);
-	dataManager.swap(dM);
+	servicesThread.run(&HMDBService::runServices, this);
+	dataThread.run(&HMDBService::runData, this);
 
 	WsdlPull::SCHEMADIR = (plugin::getPaths()->getResourcesPath() / "schemas/").string();
 	PLUGIN_LOG_INFO("WSDLPULL SCHEMADIR: " << WsdlPull::SCHEMADIR);
@@ -254,8 +244,13 @@ void HMDBService::finalize()
 	servicesManager->finalize();
 	dataManager->finalize();
 
-	servicesThread->join();
-	dataThread->join();
+	if (servicesThread.joinable() == true){
+		servicesThread.join();
+	}
+
+	if (dataThread.joinable() == true){
+		dataThread.join();
+	}
 }
 
 void HMDBService::update(double deltaTime)

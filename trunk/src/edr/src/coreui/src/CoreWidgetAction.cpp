@@ -27,7 +27,7 @@ const QString CoreWidgetAction::section() const
 CoreCustomWidgetAction::CoreCustomWidgetAction(QObject *parent, WidgetCreator widgetCreator, const QString & sectionName, CoreTitleBar::SideType side)
 	: QWidgetAction(parent), sectionName_(sectionName), side_(side), widgetCreator_(widgetCreator)
 {
-	if(widgetCreator.empty() == true){
+	if(widgetCreator == false){
 		throw std::runtime_error("Empty widget creator");
 	}
 }

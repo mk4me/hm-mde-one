@@ -10,16 +10,18 @@
 #define HEADER_GUARD___APPLICATION_H__
 
 #include <utils/SmartPtr.h>
+#include <corelib/Version.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/ILog.h>
 #include <corelib/IVisualizer.h>
 #include <corelib/ISource.h>
 #include <corelib/IService.h>
 #include <corelib/IParser.h>
+#include <corelib/JobManager.h>
+#include <corelib/ThreadPool.h>
 #include "Plugin.h"
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
-#include <threadingUtils/QtThreadFactory.h>
 
 class QSplashScreen;
 class QTranslator;
@@ -41,9 +43,7 @@ namespace core {
 	class PluginLoader;
 	class VisualizerManager;
 	class SourceManager;
-	class ServiceManager;
-	class ThreadPool;
-	class JobManager;
+	class ServiceManager;	
 	class LanguagesManager;
 	class ApplicationDescription;
 
@@ -73,8 +73,10 @@ namespace core {
 		utils::shared_ptr<ServiceManager> serviceManager_;
 		utils::shared_ptr<SourceManager> sourceManager_;
 		utils::shared_ptr<VisualizerManager> visualizerManager_;
-		utils::shared_ptr<threadingUtils::IThreadFactory> threadFactory_;
+		utils::shared_ptr<ThreadPool::InnerThreadPool> innerThreadPool;
 		utils::shared_ptr<ThreadPool> threadPool_;
+		utils::shared_ptr<JobManager::InnerWorkManager> innerWorkManager_;
+		utils::shared_ptr<JobManager::InnerJobManager> innerJobManager_;
 		utils::shared_ptr<JobManager> jobManager_;
 
 		Filesystem::Path additionalPluginsPath;

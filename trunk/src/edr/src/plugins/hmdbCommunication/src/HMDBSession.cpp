@@ -9,7 +9,6 @@
 #include "FileStoremanWS.h"
 #include "UserPersonalSpaceWS.h"
 #include <networkUtils/CURLManager.h>
-#include <boost/bind.hpp>
 #include "HMDBService.h"
 
 using namespace hmdbCommunication;
@@ -23,9 +22,9 @@ const WSDLServiceCreator HMDBSession::serviceCreator(networkUtils::CURLManagerPt
 	const core::Filesystem::Path & schemaPath)
 {
 	if (CAPath.empty() == false){
-		return boost::bind(&HMDBService::createSecureWSDL, manager, executor, url, user, password, CAPath, hostVerification, schemaPath);
+		return std::bind(&HMDBService::createSecureWSDL, manager, executor, url, user, password, CAPath, hostVerification, schemaPath);
 	}else{
-		return boost::bind(&HMDBService::createUnsecureWSDL, manager, executor, url, user, password, schemaPath);
+		return std::bind(&HMDBService::createUnsecureWSDL, manager, executor, url, user, password, schemaPath);
 	}
 }
 

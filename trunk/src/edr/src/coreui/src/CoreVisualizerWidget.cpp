@@ -8,7 +8,6 @@
 #include <QtWidgets/QToolButton>
 #include <iterator>
 #include <corelib/StringTools.h>
-#include <boost/foreach.hpp>
 
 #include <corelib/DataAccessors.h>
 #include <coreui/CoreMainWindow.h>
@@ -16,7 +15,7 @@
 #include <coreui/CoreTitleBar.h>
 #include <coreui/CoreWidgetAction.h>
 #include <coreui/CoreAction.h>
-#include <boost/bind.hpp>
+#include <functional>
 
 using namespace coreUI;
 
@@ -147,7 +146,7 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 
 	CoreCustomWidgetAction * dataSelectAction = new CoreCustomWidgetAction(
 		this,
-		CoreCustomWidgetAction::WidgetCreator(boost::bind(&CoreVisualizerWidget::createSourceMenuWidget, this, _1)),
+		CoreCustomWidgetAction::WidgetCreator(std::bind(&CoreVisualizerWidget::createSourceMenuWidget, this, std::placeholders::_1)),
 		tr("Settings"),
 		CoreTitleBar::Left
 	);
@@ -161,7 +160,7 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 		persistentActiveSerieSwitch->addItem(tr("No active session"));		
 		CoreCustomWidgetAction * activeDataSelectAction = new CoreCustomWidgetAction(
 			this,
-			CoreCustomWidgetAction::WidgetCreator(boost::bind(&CoreVisualizerWidget::createActiveSerieSwitch, this, _1)),
+			CoreCustomWidgetAction::WidgetCreator(std::bind(&CoreVisualizerWidget::createActiveSerieSwitch, this, std::placeholders::_1)),
 			tr("Settings"),
 			CoreTitleBar::Left
 		);

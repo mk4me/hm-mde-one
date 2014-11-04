@@ -7,7 +7,6 @@
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QDoubleSpinBox>
-#include <boost/foreach.hpp>
 #include "NewChartVisualizer.h"
 #include "StatsTable.h"
 #include "NewChartMarker.h"
@@ -18,7 +17,6 @@
 #include "NewChartLegend.h"
 #include "NewChartLegendItem.h"
 #include <limits>
-#include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 #include <coreui/CoreAction.h>
 #include <coreui/CoreWidgetAction.h>
@@ -665,7 +663,7 @@ void NewChartVisualizer::onSerieVisible(const QVariant& info, bool visible )
                 if (!series[i]->isActive()) {
                     series[i]->setVisible(visible);
                     auto list = statsTable->getEntriesByChannel(series[i]->getStats()->getChannel());
-                    BOOST_FOREACH(QTreeWidgetItem* item, list) {
+                    for(auto item : list) {
                         item->setHidden(!visible);
                     }
                     for (auto it = statesMap.begin(); it != statesMap.end(); ++it) {

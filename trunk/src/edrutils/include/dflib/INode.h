@@ -38,7 +38,7 @@ public:
 	enum NodeType {
 		SOURCE_NODE,	//! źródło
 		SINK_NODE,		//! liść
-		PROCESSING_NODE	//! przetwarzający
+		PROCESSING_NODE	//! procesor
 	};
 
 	//! Typ opisujacy ilość pinów

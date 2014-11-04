@@ -159,30 +159,30 @@ inline core::Filesystem::Path getPluginPath(const core::Filesystem::Path & path)
 
 
 //! Makro loguj¹ce informacjê testow¹
-#define CORE_LOG_DEBUG(msg)		do { std::stringstream tmpMessage; tmpMessage << msg; core::getLogInterface()->log(core::ILog::LogSeverityDebug, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define CORE_LOG_DEBUG(msg)		LOG_DEBUG(core::getLogInterface(), msg)
 //! Makro loguj¹ce b³¹d
-#define CORE_LOG_ERROR(msg)		do { std::stringstream tmpMessage; tmpMessage << msg; core::getLogInterface()->log(core::ILog::LogSeverityError, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define CORE_LOG_ERROR(msg)		LOG_ERROR(core::getLogInterface(), msg)
 //! Makro loguj¹ce informacjê
-#define CORE_LOG_INFO(msg)		do { std::stringstream tmpMessage; tmpMessage << msg; core::getLogInterface()->log(core::ILog::LogSeverityInfo, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define CORE_LOG_INFO(msg)		LOG_INFO(core::getLogInterface(), msg)
 //! Makro loguj¹ce ostrze¿enia
-#define CORE_LOG_WARNING(msg)	do { std::stringstream tmpMessage; tmpMessage << msg; core::getLogInterface()->log(core::ILog::LogSeverityWarning, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define CORE_LOG_WARNING(msg)	LOG_WARNING(core::getLogInterface(), msg)
 
 //! Makro loguj¹ce informacjê testow¹
-#define CORE_LOG_NAMED_DEBUG(name, msg)		do { std::stringstream tmpMessage; tmpMessage << msg; core::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityDebug, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define CORE_LOG_NAMED_DEBUG(name, msg)		SUB_LOG_DEBUG(core::getLogInterface(), name, msg)
 //! Makro loguj¹ce b³¹d
-#define CORE_LOG_NAMED_ERROR(name, msg)		do { std::stringstream tmpMessage; tmpMessage << msg; core::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityError, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define CORE_LOG_NAMED_ERROR(name, msg)		SUB_LOG_ERROR(core::getLogInterface(), name, msg)
 //! Makro loguj¹ce informacjê
-#define CORE_LOG_NAMED_INFO(name, msg)		do { std::stringstream tmpMessage; tmpMessage << msg; core::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityInfo, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define CORE_LOG_NAMED_INFO(name, msg)		SUB_LOG_INFO(core::getLogInterface(), name, msg)
 //! Makro loguj¹ce ostrze¿enia
-#define CORE_LOG_NAMED_WARNING(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; core::getLogInterface()->subLog(name)->log(core::ILog::LogSeverityWarning, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define CORE_LOG_NAMED_WARNING(name, msg)	SUB_LOG_WARNING(core::getLogInterface(), name, msg)
 
 //! Makro loguj¹ce informacjê testow¹
-#define LOG_NAMED_DEBUG(name, msg)		do { std::stringstream tmpMessage; tmpMessage << msg; core::getPrototypeLogInterface()->subLog(name)->log(core::ILog::LogSeverityDebug, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define LOG_NAMED_DEBUG(name, msg)		SUB_LOG_DEBUG(core::getPrototypeLogInterface(), name, msg)
 //! Makro loguj¹ce b³¹d
-#define LOG_NAMED_ERROR(name, msg)		do { std::stringstream tmpMessage; tmpMessage << msg; core::getPrototypeLogInterface()->subLog(name)->log(core::ILog::LogSeverityError, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define LOG_NAMED_ERROR(name, msg)		SUB_LOG_ERROR(core::getPrototypeLogInterface(), name, msg)
 //! Makro loguj¹ce informacjê
-#define LOG_NAMED_INFO(name, msg)		do { std::stringstream tmpMessage; tmpMessage << msg; core::getPrototypeLogInterface()->subLog(name)->log(core::ILog::LogSeverityInfo, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define LOG_NAMED_INFO(name, msg)		SUB_LOG_INFO(core::getPrototypeLogInterface(), name, msg)
 //! Makro loguj¹ce ostrze¿enia
-#define LOG_NAMED_WARNING(name, msg)	do { std::stringstream tmpMessage; tmpMessage << msg; core::getPrototypeLogInterface()->subLog(name)->log(core::ILog::LogSeverityWarning, tmpMessage.str(), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define LOG_NAMED_WARNING(name, msg)	SUB_LOG_WARNING(core::getPrototypeLogInterface(), name, msg)
 
 #endif	//	HEADER_GUARD___APPLICATIONCOMMON_H__

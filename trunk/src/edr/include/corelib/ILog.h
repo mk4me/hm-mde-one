@@ -12,6 +12,7 @@
 
 #include <string>
 #include <utils/SmartPtr.h>
+#include <utils/Utils.h>
 
 namespace core
 {
@@ -50,5 +51,23 @@ namespace core
 		virtual LogPtr subLog(const std::string & name) const = 0;
 	};
 } // namespace core
+
+#define LOG__(logger, severity, msg) do { logger->log(severity, UTILS_FORMAT_STRING(msg), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+
+#define LOG_DEBUG(logger, msg)				LOG__(logger, core::ILog::LogSeverityDebug, msg)
+//! Makro logujące błąd
+#define LOG_ERROR(logger, msg)				LOG__(logger, core::ILog::LogSeverityError, msg)
+//! Makro logujące informację
+#define LOG_INFO(logger, msg)				LOG__(logger, core::ILog::LogSeverityInfo, msg)
+//! Makro logujące ostrzeżenia
+#define LOG_WARNING(logger, msg)			LOG__(logger, core::ILog::LogSeverityWarning, msg)
+
+#define SUB_LOG_DEBUG(logger, name, msg)	LOG_DEBUG(logger->subLog(name), msg)
+//! Makro logujące błąd
+#define SUB_LOG_ERROR(logger, name, msg)	LOG_ERROR(logger->subLog(name), msg)
+//! Makro logujące informację
+#define SUB_LOG_INFO(logger, name, msg)		LOG_INFO(logger->subLog(name), msg)
+//! Makro logujące ostrzeżenia
+#define SUB_LOG_WARNING(logger, name, msg)	LOG_WARNING(logger->subLog(name), msg)
 
 #endif

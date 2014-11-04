@@ -1,7 +1,5 @@
 #include <imucostumelib/CostumeRawIO.h>
 #include <boost/asio.hpp>
-#include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <boost/bind.hpp>
 
 using namespace imuCostume;
 
@@ -60,10 +58,10 @@ public:
 			deadline.expires_from_now(boost::posix_time::millisec(timeout));
 
 			// Put the actor back to sleep.
-			deadline.async_wait(boost::bind(&CostumeRawIOImpl::check_deadline, &deadline, &socket));
+			deadline.async_wait(std::bind(&CostumeRawIOImpl::check_deadline, &deadline, &socket));
 
 			socket.async_receive_from(boost::asio::buffer(locFrame), serverEndpoint,
-				boost::bind(&CostumeRawIOImpl::handle_operation, _1, _2, &ec, &l));
+				std::bind(&CostumeRawIOImpl::handle_operation, std::placeholders::_1, std::placeholders::_2, &ec, &l));
 
 			// Block until the asynchronous operation has completed.
 			try{
@@ -110,10 +108,10 @@ public:
 			deadline.expires_from_now(boost::posix_time::millisec(timeout));
 
 			// Put the actor back to sleep.
-			deadline.async_wait(boost::bind(&CostumeRawIOImpl::check_deadline, &deadline, &socket));
+			deadline.async_wait(std::bind(&CostumeRawIOImpl::check_deadline, &deadline, &socket));
 
 			socket.async_send_to(boost::asio::buffer(data, length), serverEndpoint,
-				boost::bind(&CostumeRawIOImpl::handle_operation, _1, _2, &ec, &l));
+				std::bind(&CostumeRawIOImpl::handle_operation, std::placeholders::_1, std::placeholders::_2, &ec, &l));
 
 			// Block until the asynchronous operation has completed.
 			try{

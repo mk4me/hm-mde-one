@@ -111,7 +111,7 @@ void DFNode::process()
 			updateOutputPins();
 		}
 
-        if(onLeafProcessedCallback.empty() == false){
+        if(onLeafProcessedCallback){
             onLeafProcessedCallback();
         }
 	}

@@ -7,6 +7,7 @@
 
 TimelineService::TimelineService() : controller(new timeline::Controller())
 {
+	thread = std::move(plugin::getThreadPool()->get("Timeline Service", "Timeline management"));
     widget = new TimelineWidget(controller);
 }
 
@@ -90,7 +91,14 @@ bool TimelineService::isPlaying() const
 void TimelineService::setPlaying(bool playing)
 {
     if(playing == true){
-        controller->play();
+		if (thread.joinable() == false){
+			thread.run([this]()->void {controller->run(); });
+		}
+		else{
+			//TODO
+			//play/resume
+		}
+        
     }else{
         controller->pause();
     } 

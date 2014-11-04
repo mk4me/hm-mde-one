@@ -35,7 +35,7 @@ void dicom::DicomSourceWidget::onOpenProject()
 		QFileInfoList fileList = fileDir.entryInfoList();
 
 		QRegExp rxlen("[0-9]{4}-[0-9]{2}-[0-9]{2}-S[0-9]{4}\\.xml");
-		BOOST_FOREACH(const QFileInfo &info, fileList) {
+		for(const auto & info : fileList) {
 			QString filename = info.fileName();
 			if (rxlen.exactMatch(filename)) {
 				core::Filesystem::Path path(info.filePath().toStdString());

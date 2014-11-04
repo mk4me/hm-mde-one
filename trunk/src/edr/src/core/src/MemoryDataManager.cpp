@@ -8,14 +8,14 @@ using namespace core;
 class MemoryDataManager::MemoryTransaction : public IMemoryDataManager::IMemoryDataTransaction
 {
 private:
-	MemoryDataManager * mdm;
-	utils::shared_ptr<threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy>> lock;
+	MemoryDataManager * mdm;	
+	utils::shared_ptr<std::lock_guard<std::recursive_mutex>> lock;
 	MemoryDataManager::ChangeList modyfications;
 	bool transactionRollbacked;
 
 public:
 	MemoryTransaction(MemoryDataManager * mdm) : mdm(mdm),
-		lock(new threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy>(mdm->sync)),
+		lock(new std::lock_guard<std::recursive_mutex>(mdm->sync)),
 		transactionRollbacked(false)
 	{		
 	}

@@ -12,7 +12,7 @@
 
 #include <plugins/newVdf/IDataProcessor.h>
 #include <plugins/newVdf/Export.h>
-#include <boost/function.hpp>
+#include <functional>
 
 namespace df { class IProcessingNode; }
 
@@ -21,7 +21,7 @@ namespace vdf {
 class PLUGIN_NEWVDF_EXPORT DataProcessor : public IDataProcessor
 {
 public:
-	typedef boost::function<df::IProcessingNode* (const df::IProcessingNode*)> Creator;
+	typedef std::function<df::IProcessingNode* (const df::IProcessingNode*)> Creator;
 
 public:
 	DataProcessor(df::IProcessingNode* impl, core::UniqueID id, const std::string& name, Creator creator);

@@ -17,9 +17,8 @@
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QCheckBox>
 
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
-#include <boost/type_traits.hpp>
+#include <functional>
+#include <type_traits>
 
 #include <utils/DataChannel.h>
 #include <utils/DataChannelCollection.h>
@@ -47,7 +46,7 @@ class __Helper : public QObject
 public:
     //! konstruktor, pobiera funkcję, która obsługuje zmianę widgeta
     //! \param function odpowiada sygnaturze checkBoxChanged
-    __Helper(boost::function<void (const QString&, int)> function);
+    __Helper(std::function<void (const QString&, int)> function);
 
     public slots:
         //! slot, które przekaże informację o zmianie checkBoxa do ownera
@@ -66,7 +65,7 @@ public:
 
 private:
     //! funkcja, która obsługuje zmianę widgeta
-    boost::function<void (const QString&, int)> function;
+    std::function<void (const QString&, int)> function;
     //! mapa z elementami konfiguratora
     NamesDictionary namesDictionary;
 };
@@ -86,7 +85,7 @@ public:
     BuilderConfiguredFilterCommand( const NamesDictionary& namesDictionary, utils::TypeInfo typeInfo,
         const QString& frontXml, const QString& backXml, const QString& name, const QIcon& icon, const QIcon& rootIcon = QIcon(), const QIcon& elementIcon = QIcon()) :
           SimpleFilterCommand(typeInfo, name, icon),
-          helper(boost::bind( &BuilderConfiguredFilterCommand::checkBoxChanged, this, _1, _2 )),
+		  helper(std::bind(&BuilderConfiguredFilterCommand::checkBoxChanged, this, std::placeholders::_1, std::placeholders::_2)),
           frontXml(frontXml),
           backXml(backXml),
           configurationWidget(nullptr),

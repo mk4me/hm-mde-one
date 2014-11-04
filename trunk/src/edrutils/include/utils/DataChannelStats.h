@@ -22,8 +22,7 @@
 #include <boost/accumulators/framework/extractor.hpp>
 #include <boost/accumulators/framework/depends_on.hpp>
 #include <boost/accumulators/statistics_fwd.hpp>
-#include <boost/type_traits.hpp>
-#include <boost/type_traits/add_reference.hpp>
+#include <type_traits>
 #include <utils/DataChannel.h>
 
 // Implementacje dodatkowych akumulatorow

@@ -11,7 +11,7 @@
 
 #include <map>
 #include <list>
-#include <threadingUtils/SynchronizationPolicies.h>
+#include <mutex>
 #include <corelib/IParserManagerReader.h>
 #include <corelib/IStreamDataManager.h>
 #include <corelib/IStreamManagerReader.h>
@@ -20,13 +20,7 @@
 //implementacja, wyciągnięcie części wspólnej fileDM i streamDM -> parsery i większa częśc logiki parsowania i inicjalizacji
 
 #include <boost/bimap.hpp>
-#include <map>
-#include <list>
-#include <corelib/IStreamDataManager.h>
-#include <corelib/IStreamManagerReader.h>
 #include <corelib/IDataManagerReader.h>
-#include <threadingUtils/SynchronizationPolicies.h>
-#include <corelib/IParserManagerReader.h>
 
 namespace core {
 
@@ -42,7 +36,7 @@ namespace core {
 
 		class CompoundInitializer;
 
-		//! S�ownik aktualnie obs�ugiwanych plik�w i skojarzonych z nimi parser�w
+		//! S�ownik aktualnie obsługiwanych plików i skojarzonych z nimi parserów
 		typedef boost::bimap<std::string, StreamGrabberPtr> Streams;
 		//! Mapowanie indeksu danych parsera do typu pod tym indeksem
 		typedef std::map<int, utils::TypeInfo> ParserTypes;
@@ -54,14 +48,14 @@ namespace core {
 		//!
 		typedef std::map<std::string, VariantsList> ObjectsByStreams;
 
-		typedef threadingUtils::RecursiveSyncPolicy SyncPolicy;
-		typedef threadingUtils::ScopedLock<SyncPolicy> ScopedLock;
+		typedef std::recursive_mutex SyncPolicy;
+		typedef std::lock_guard<SyncPolicy> ScopedLock;
 
 	private:
 		//! Zarejestrowane strumienie
 		Streams streams_;
 
-		//! Mapa parser�w wg plik�w
+		//! Mapa parserów wg plików
 		ObjectsByStreams objectsByStreams;
 
 		//! Dane wyładowane przez Memory DM
@@ -70,7 +64,7 @@ namespace core {
 		//! Obiekt na potrzeby synchronizacji
 		mutable SyncPolicy sync;
 
-		//! Obiekty obserwuj�ce stan DM
+		//! Obiekty obserwujące stan DM
 		std::list<StreamObserverPtr> observers;
 
 		//! Zmienna pozwalająca szybko opuscic update memory data managera

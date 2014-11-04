@@ -173,7 +173,7 @@ void CoreMainWindow::onClose()
 
 		writeSettings();
 
-		if(closeUpOperations_.empty() == false){
+		if(closeUpOperations_){
 			try{
 				closeUpOperations_();
 			}catch(...){

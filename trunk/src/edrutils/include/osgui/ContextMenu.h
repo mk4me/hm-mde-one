@@ -7,8 +7,6 @@
 #include <map>
 #include <vector>
 #include <utils/SmartPtr.h>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
 #include <boost/tokenizer.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -27,9 +25,9 @@ namespace osgui {
 		//! Sygnatura callbacka wywoływana przy kliknięciu w opcję menu.
 		//! Pierwszy parametr to pełna ścieżka do opcji, druga to flaga logiczna określająca,
 		//! jaki jest stan opcji (checked/unchecked)
-		typedef boost::function<void(const std::string&, bool)> OnClickCallback;
+		typedef std::function<void(const std::string&, bool)> OnClickCallback;
 		//! Sygnatura callbacka wywoływanego gdy menu zostaje zamknięte.
-		typedef boost::function<void(ContextMenu*)> OnCloseCallback;
+		typedef std::function<void(ContextMenu*)> OnCloseCallback;
 		//! Sygnatura callbacka wywoływana przy najechaniu na opcję menu.
 		//! Pierwszy parametr to pełna ścieżka do opcji, druga to flaga logiczna określająca,
 		//! czy wjechano/zjechano z opcji.

@@ -8,13 +8,13 @@
 #ifndef __HEADER_GUARD_HMDBCOMMUNICATION__HMDBSOURCECONTEXTOPERATIONS_H__
 #define __HEADER_GUARD_HMDBCOMMUNICATION__HMDBSOURCECONTEXTOPERATIONS_H__
 
+#include <corelib/JobManager.h>
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <plugins/hmdbCommunication/IHMDBFtp.h>
 #include "ShallowCopyUtils.h"
-#include <boost/atomic.hpp>
-#include <corelib/IJob.h>
-#include <corelib/IThread.h>
+#include <atomic>
 #include <corelib/Filesystem.h>
+#include <corelib/JobManager.h>
 #include <hmdbserviceslib/IncrementalBranchShallowCopy.h>
 
 namespace hmdbServices
@@ -46,8 +46,8 @@ namespace hmdbCommunication
 
 	private:
 		std::string error_;
-		boost::atomic<float> progress_;
-		boost::atomic<bool> aborted_;
+		std::atomic<float> progress_;
+		std::atomic<bool> aborted_;
 	};
 
 	class HMDBCompondStorageProgress
@@ -72,7 +72,7 @@ namespace hmdbCommunication
 		private:
 			HMDBCompondStorageProgress * parent;
 			std::string error_;
-			boost::atomic<float> progress_;
+			std::atomic<float> progress_;
 		};
 
 	public:
@@ -93,7 +93,7 @@ namespace hmdbCommunication
 		void abort();
 
 	private:
-		boost::atomic<bool> aborted_;
+		std::atomic<bool> aborted_;
 		std::vector<utils::shared_ptr<HMDBCompondStorageSubProgress>> subProgresses;
 	};	
 
@@ -151,12 +151,12 @@ namespace hmdbCommunication
 		//! Destruktor wirtualny
 		virtual ~ICompoundOperation() {}
 		//! \return Postęp
-		virtual const float progress() const
+		virtual const float normalizedProgress() const
 		{
 			const auto s = size();
 			float ret = 0.0;
 			for (unsigned int i = 0; i < s; ++i){
-				ret += operation(i)->progress();
+				ret += operation(i)->normalizedProgress();
 			}
 
 			return s > 0 ? ret / (float)s : 1.0;
@@ -218,11 +218,6 @@ namespace hmdbCommunication
 		//! \return Opis błędu
 		virtual const std::string error() const;
 
-	protected:
-
-		//! \param suboperations
-		void setOperations(const Operations & suboperations);
-
 	private:
 		//! Sposoby i polityki wykonania
 		void callAnySerial();
@@ -243,53 +238,13 @@ namespace hmdbCommunication
 		//! Schemat wykonania
 		const ExecutionSchema es;
 		//! Wątek realizujacy operacje
-		core::IThreadPtr workerThread;
+		core::ThreadPool::Thread workerThread;
 		//! Operacja która spowodowała błąd
 		mutable IHMDBRemoteContext::OperationPtr errorOperation;
 		//! Status
-		mutable boost::atomic<Status> status_;
-	};
-	
-	//! Operacja realizujca fuktora
-	class FunctorOperation : public virtual IHMDBRemoteContext::IOperation
-	{
-	public:
-		//! \param functor Zadanie do wykonania
-		FunctorOperation(threadingUtils::FunctorRunnable::Functor functor = threadingUtils::FunctorRunnable::Functor());
-		//! Destruktor wirtualny
-		virtual ~FunctorOperation();
-		//! \return Post�p realizacji przetwarzania
-		virtual const float progress() const;
-		//! Metoda anuluje aktualne zadanie
-		virtual void abort();
-		//! Metoda rozpoczyna operację
-		virtual void start();
-		//! Metoda czeka do zakończenia operacji
-		virtual void wait();
-		//! \return Stan operacji
-		virtual const Status status() const;
-		//! \return Opis błędu
-		virtual const std::string error() const;
-
-	protected:
-		//! \param functor Operacja do wykonania
-		void setFunctor(threadingUtils::FunctorRunnable::Functor functor);
-
-	private:
-		//! Woła funktor i aktualizuje status, postęp oraz błędy
-		void call();
-
-	private:
-		//! Postęp
-		boost::atomic<float> progress_;
-		//! Zadanie do wykonania
-		threadingUtils::FunctorRunnable::Functor functor_;
-		//! Job obsługujący zadanie
-		core::IJobPtr job;
-		//! Status
-		boost::atomic<Status> status_;
-		//! Opis błędu
-		std::string error_;
+		mutable std::atomic<Status> status_;
+		//! Job
+		core::JobManager::Job<void> job;
 	};
 
 	//! Klasa realizująca upload danych, dostarcza informacji o identyfikatorze pliku po zapisie w bazie
@@ -298,7 +253,7 @@ namespace hmdbCommunication
 	public:
 		//! Funktor realizujący zapis pliku do bazy danych
 		//! Zwraca identyfikator pliku
-		typedef boost::function < int(const std::string & file,
+		typedef std::function < int(const std::string & file,
 			const std::string & fileDescription,
 			const std::string & subdirectory) > HMDBStore;
 
@@ -329,7 +284,7 @@ namespace hmdbCommunication
 		//! \return Opis błędu
 		virtual const std::string error() const;
 		//! \return Psotep operacji
-		virtual const float progress() const;
+		virtual const float normalizedProgress() const;
 		//! \return Identyfikator pliku po zapisie w bazie
 		virtual const hmdbServices::ID fileID() const;
 
@@ -339,11 +294,11 @@ namespace hmdbCommunication
 
 	private:
 		//! Status
-		boost::atomic<Status> status_;
+		std::atomic<Status> status_;
 		//! Postęp
-		boost::atomic<float> progress_;
+		std::atomic<float> progress_;
 		//! ID pliku po upload
-		boost::atomic<hmdbServices::ID> fileID_;
+		std::atomic<hmdbServices::ID> fileID_;
 		//! Nazwa pliku w bazie danych
 		const std::string fileName;
 		//! Opis pliku
@@ -354,8 +309,8 @@ namespace hmdbCommunication
 		IHMDBFtp::TransferPtr transfer;
 		//! Operacja zapisująca plik do bazy
 		HMDBStore store;
-		//! Faktyczna operacja
-		FunctorOperation fOp;
+
+		core::JobManager::Job<void> job;
 	};
 
 	//! Interfejs zadania dostarczającego mapy plików do ściągnięcia
@@ -478,7 +433,7 @@ namespace hmdbCommunication
 		//! \return Opis błędu
 		virtual const std::string error() const;
 		//! \return Psotep operacji
-		virtual const float progress() const;
+		virtual const float normalizedProgress() const;
 		//! \return Identyfikator ściąganego pliku
 		virtual const IHMDBRemoteContext::FileDescriptor fileID() const;
 		//! \return Czy plik jest dostepny w storage (ściągnięto i poprawnie zapisano, choć reszta operacji mogła pójsć nie tak)
@@ -496,11 +451,11 @@ namespace hmdbCommunication
 		//! Identyfikator ściąganego pliku
 		const IHMDBRemoteContext::FileDescriptor fileID_;
 		//! Czy plik został ściągnięty - można próbowac wyciągnąc go ze storage?
-		boost::atomic<bool> downloaded_;
+		std::atomic<bool> downloaded_;
 		//! Czy plik został ściągnięty - można próbowac wyciągnąc go ze storage?
-		boost::atomic<int> progress_;		
+		std::atomic<int> progress_;		
 		//! Status ściągania
-		boost::atomic<Status> status_;
+		std::atomic<Status> status_;
 		//! Operacja przygotowujaca pliki w HMDB
 		utils::shared_ptr<PrepareHMDB> prepareHMDB;
 		//! Operacja przygotowujaca output dla sciaganego pliku
@@ -509,8 +464,8 @@ namespace hmdbCommunication
 		IHMDBFtp * ftp;
 		//! Operacja sciagajaca przygotowany plik z FTP
 		IHMDBFtp::TransferPtr transfer;
-		//! Funktor realizujący przetwarzanie operacji
-		FunctorOperation fOp;
+
+		core::JobManager::Job<void> job;
 	};
 
 	class MultipleFilesDownloadAndStore : public IHMDBRemoteContext::IOperation
@@ -533,7 +488,7 @@ namespace hmdbCommunication
 		//! \return Opis błędu
 		virtual const std::string error() const;
 		//! \return Psotep operacji
-		virtual const float progress() const;
+		virtual const float normalizedProgress() const;
 
 	private:
 		//! Faktyczna operacja ściągania uruchamiana w wątku
@@ -544,8 +499,8 @@ namespace hmdbCommunication
 	private:
 		std::string error_;
 		DownloadHelper downloadHelper;
-		boost::atomic<Status> status_;
-		core::IThreadPtr thread_;
+		std::atomic<Status> status_;
+		core::JobManager::Job<void> job;
 	};
 
 	class MultipleFilesDownloadStoreAndStatusUpdate : public MultipleFilesDownloadAndStore
@@ -575,7 +530,7 @@ namespace hmdbCommunication
 
 		virtual void abort();
 
-		virtual const float progress() const;
+		virtual const float normalizedProgress() const;
 
 		//! \return Pełna płytka kopia bazy danych - cała perspektywa dostepnych danych
 		const ShallowCopyConstPtr shallowCopy() const;
@@ -594,8 +549,6 @@ namespace hmdbCommunication
 		IncrementalBranchShallowCopyConstPtr incrementalShallowCopy_;
 		//! Postęp rozpakowywania
 		HMDBStorageProgress extractProgress;
-		//! Operacja rozpakowywania
-		FunctorOperation fOp;
 	};
 
 	class ExtractShallowcopy
@@ -634,7 +587,7 @@ namespace hmdbCommunication
 		//! \return Opis błędu
 		virtual const std::string error() const;
 		//! \return Psotep operacji
-		virtual const float progress() const;
+		virtual const float normalizedProgress() const;
 
 		//! \return Pełna płytka kopia bazy danych - cała perspektywa dostepnych danych
 		virtual const ShallowCopyConstPtr shallowCopy() const;

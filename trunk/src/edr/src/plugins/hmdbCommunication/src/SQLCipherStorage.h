@@ -10,7 +10,7 @@
 
 #include <plugins/hmdbCommunication/IHMDBStorage.h>
 #include <corelib/Filesystem.h>
-#include <threadingUtils/SynchronizationPolicies.h>
+#include <mutex>
 #include <sqlite3.h>
 
 namespace hmdbCommunication
@@ -155,7 +155,7 @@ namespace hmdbCommunication
 		//! Œcie¿ka do pliku z baz¹
 		core::Filesystem::Path path_;
 		//! Obiekt synchornizuj¹cy
-		threadingUtils::StrictSyncPolicy sync_;
+		std::mutex sync_;
 	};
 }
 

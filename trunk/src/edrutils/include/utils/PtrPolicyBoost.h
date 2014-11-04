@@ -128,7 +128,7 @@ namespace utils {
 			}
 	};
 
-	template <> struct is_ptr_policy<PtrPolicyBoost> : public __traits::true_type{};
+	template <> struct is_ptr_policy<PtrPolicyBoost> : public std::true_type{};
 
 	////////////////////////////////////////////////////////////////////////////////
 } // namespace utils

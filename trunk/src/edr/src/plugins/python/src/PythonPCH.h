@@ -19,10 +19,8 @@
 #include <stack>
 #include <iostream>
 
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
-#include <boost/foreach.hpp>
-#include <boost/type_traits.hpp>
+#include <functional>
+#include <type_traits>
 #include <boost/lexical_cast.hpp>
 #include <boost/python.hpp>
 

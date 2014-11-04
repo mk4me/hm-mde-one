@@ -30,7 +30,7 @@ class VIDLIB_EXPORT BufferedVideoImageStream : public VideoImageStream
 {
 private:
   //! Wątek buforujący.
-  class Bufferer : public OpenThreads::Thread
+  class Bufferer
   {
   private:
     //! Strumień buforowany.
@@ -39,7 +39,7 @@ private:
     //! Konstruktor.
     Bufferer(BufferedVideoImageStream * stream);
     //! Funkcja buforująca.
-    virtual void run();
+    void run();
   };
   //! Wrapper bufora ramek.
   typedef utils::PtrWrapper<VideoBuffer, utils::PtrPolicyOSG> FrameBuffer;

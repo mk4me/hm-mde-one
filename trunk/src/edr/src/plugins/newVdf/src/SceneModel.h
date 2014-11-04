@@ -16,7 +16,7 @@
 #include <dflib/IConnection.h>
 #include <dflib/IModel.h>
 #include "SceneBuilder.h"
-#include <boost/type_traits.hpp>
+#include <type_traits>
 //#include <plugins/newVdf/TreeBuilder.h>
 #include <corelib/IDataManagerReader.h>
 #include <boost/serialization/access.hpp>
@@ -88,7 +88,7 @@ namespace vdf {
 		DEFINE_SMART_POINTERS(MergedItem);
 
 	public:
-		SceneModel(CanvasStyleEditorPtr factories, core::IThreadPool* threadpool = plugin::getThreadPool());
+		SceneModel(CanvasStyleEditorPtr factories, core::ThreadPool* threadpool = plugin::getThreadPool());
 		virtual ~SceneModel() {}
 
 		public slots:

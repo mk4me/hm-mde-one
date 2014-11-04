@@ -12,7 +12,7 @@
 #include <map>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/VariantsCollection.h>
-#include <threadingUtils/SynchronizationPolicies.h>
+#include <mutex>
 
 class BasicDataStorage
 {
@@ -21,9 +21,9 @@ private:
 	//! Typ mapy obiektów.
 	typedef std::map< utils::TypeInfo, core::ConstVariantsSet > ObjectsByTypes;
 	//! Typ synchronizacji
-	typedef threadingUtils::RecursiveSyncPolicy SyncPolicy;
+	typedef std::recursive_mutex SyncPolicy;
 	//! Typ lokalnej synchronizacji
-	typedef threadingUtils::ScopedLock<SyncPolicy> ScopedLock;
+	typedef std::lock_guard<SyncPolicy> ScopedLock;
 
 private:
 

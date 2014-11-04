@@ -63,7 +63,7 @@ public:
 
 private:
 	HMDBStatusManager * manager;
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock;
+	std::lock_guard<std::recursive_mutex> lock;
 };
 
 HMDBStatusManager::HMDBStatusManager()

@@ -13,13 +13,11 @@
 #include <dflib/MRModelInterfaceVerifier.h>
 #include <dflib/IDFLogger.h>
 
-#include <threadingUtils/Synchronized.h>
-#include <threadingUtils/IThread.h>
-#include <threadingUtils/IThreadPool.h>
-
 #include <list>
 #include <vector>
 #include <map>
+#include <mutex>
+#include <condition_variable>
 
 namespace df{
 	class IPin;
@@ -50,16 +48,8 @@ class IMRSourceNode;
 class IMRSinkNode;
 class IMRProcessingNode;
 
-class df::DFModelRunner::DFModelRunnerImpl : public threadingUtils::SynchronizedT<true>
+class df::DFModelRunner::DFModelRunnerImpl
 {
-private:
-
-	typedef threadingUtils::RecursiveSyncPolicy RecursiveSyncPolicy;
-	typedef threadingUtils::ScopedLock<RecursiveSyncPolicy> RecursiveScopedLock;
-
-	typedef threadingUtils::StrictSyncPolicy StrictSyncPolicy;
-	typedef threadingUtils::ScopedLock<StrictSyncPolicy> StrictScopedLock;
-
 private:
 
 	class INodeRunner
@@ -172,8 +162,8 @@ private:
 	//! Meldujemy zakoñczenie pracy elementu nie bêd¹cego Ÿród³em
 	void waitForAllSourcesStart();
 	void waitForAllSourcesFinish();
-	void sourceFinished();
-	void sourceStarted();
+	bool sourceFinished();
+	bool sourceStarted();
 	void nonSourceFinished();
 
 	void finishDataflow();
@@ -193,15 +183,15 @@ private:
 	void wrapModelElements(df::IModelReader * model, const MRModelInterfaceVerifier::ModelVerificationData & modelElements);
 
 private:
-	StrictSyncPolicy failureMessageSync;
+	std::mutex failureMessageSync;
 
-	StrictSyncPolicy sourcesFinishSync;
-	StrictSyncPolicy sourcesFinishWait;
-	StrictSyncPolicy sourcesStartSync;
-	StrictSyncPolicy sourcesStartWait;
-	StrictSyncPolicy dataflowPauseSync;
-	StrictSyncPolicy nonSourcesSync;
-	StrictSyncPolicy dataToProcessSync;
+	std::mutex sourcesFinishSync;
+	std::condition_variable sourcesFinishWait;
+	std::mutex sourcesStartSync;
+	std::condition_variable sourcesStartWait;
+	std::mutex dataflowPauseSync;
+	std::mutex nonSourcesSync;
+	std::mutex dataToProcessSync;
 
 	WrapedSources sources_;
 	WrapedSinks sinks_;

@@ -17,7 +17,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtCore/QTimer>
 #include <corelib/Filesystem.h>
-#include <boost/function.hpp>
+#include <functional>
 
 class QSplashScreen;
 
@@ -46,7 +46,7 @@ namespace coreUI {
 
 	public:
 
-		typedef boost::function<void()> CloseUpOperations;
+		typedef std::function<void()> CloseUpOperations;
 
 	private:
 

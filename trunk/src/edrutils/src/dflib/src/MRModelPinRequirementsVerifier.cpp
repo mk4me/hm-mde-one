@@ -30,7 +30,7 @@ void MRModelPinRequirementsVerifier::verifyInputPinRequirements(df::ISinkNode * 
 	for(unsigned int i = 0; i < node->inputSize(); ++i)
 	{
 		auto * pin = node->inputPin(i);
-		df::IExtInputPin * input = dynamic_cast<df::IExtInputPin*>(pin);
+		df::IExtendedInputPin * input = dynamic_cast<df::IExtendedInputPin*>(pin);
 		if(input != nullptr && input->required() == true && input->connected() == false)
 		{
 			unsatisfiedInputs.push_back(input);
@@ -45,8 +45,8 @@ void MRModelPinRequirementsVerifier::verifyOutputPinRequirements(df::ISourceNode
 		auto * pin = node->outputPin(i);
 		if(pin->connected() == true)
 		{
-			df::IExtOutputPin * output = dynamic_cast<df::IExtOutputPin*>(pin);
-			if(output != nullptr && output->dependencyOK() == false)
+			df::IExtendedOutputPin * output = dynamic_cast<df::IExtendedOutputPin*>(pin);
+			if(output != nullptr && output->dependenciesSatisfied() == false)
 			{
 				unsatisfiedOutputs.push_back(output);
 			}

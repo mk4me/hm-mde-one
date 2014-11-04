@@ -14,9 +14,9 @@
 #include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <coreui/CoreCursorChanger.h>
-#include <corelib/IThread.h>
 #include <plugins/hmdbCommunication/DataStatus.h>
 #include <plugins/hmdbCommunication/Types.h>
+#include <corelib/ThreadPool.h>
 
 class QTreeWidgetItem;
 
@@ -45,7 +45,7 @@ class HMDBCOMMUNICATION_EXPORT DataViewWidget : public QWidget
 
 public:
 
-	class IOperation : public threadingUtils::IProgress, public threadingUtils::IAbortable
+	class IOperation : public threadingUtils::INormalizedProgress, public threadingUtils::IAbortable
 	{
 	public:
 		virtual ~IOperation() {}
@@ -142,8 +142,8 @@ private:
 	void setupDownload(const hmdbCommunication::StorageFileNames & files);
 
 private:
-	core::IThreadPtr remoteOperationThread;
-	core::IThreadPtr filteringThread;
+	core::ThreadPool::Thread remoteOperationThread;
+	core::ThreadPool::Thread filteringThread;
 	hmdbCommunication::ShallowCopyConstPtr currentShallowCopy_;
 	hmdbCommunication::ShallowCopyConstPtr completeShallowCopy_;
 	hmdbCommunication::IDataSourcePerspective * perspective_;

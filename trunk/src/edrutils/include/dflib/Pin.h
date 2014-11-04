@@ -245,7 +245,7 @@ protected:
 };
 
 //! Implementacja rozszerzonego pina wej�ciowego
-class ExtInputPin : public IExtInputPin
+class ExtInputPin : public IExtendedInputPin
 {
 public:
 
@@ -295,7 +295,7 @@ private:
 };
 
 //! Implementacja rozszerzonego pina wyj�ciowego
-class ExtOutputPin : public IExtOutputPin
+class ExtOutputPin : public IExtendedOutputPin
 {
 public:
 

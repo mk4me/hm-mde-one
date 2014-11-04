@@ -1,6 +1,7 @@
 #include "../PCH.h"
 #include <vidlib/osg/VideoImageStream.h>
 
+#include <thread>
 #include <iostream>
 
 UTILS_PUSH_WARNINGS
@@ -65,7 +66,7 @@ VideoImageStream::~VideoImageStream()
     OSG_DEBUG<<"Destructing VideoImageStream..."<<std::endl;
 
     // quit
-    quit(true);
+    quit();
 
     OSG_DEBUG<<"Have done quit"<<std::endl;
 
@@ -118,7 +119,7 @@ void VideoImageStream::run()
             double waitTime = getStream()->getFrameDuration() / timeScale - frameLength.time_s();
             if ( waitTime > 0.0 ) {
                 // czekamy
-                OpenThreads::Thread::microSleep( static_cast<unsigned>(waitTime * 1000000) );
+                std::this_thread::sleep_for(std::chrono::microseconds( static_cast<unsigned>(waitTime * 1000000)));
             }
         }
     } catch (const std::exception & error) {
@@ -134,13 +135,7 @@ void VideoImageStream::run()
 void VideoImageStream::play()
 {
     VIDLIB_FUNCTION_PROLOG;
-    if ( !isRunning() ) {
-        // uruchamiamy watek
-        _status = PLAYING;
-        start();
-    } else {
-        _status = PLAYING;
-    }
+	_status = PLAYING;
 }
 
 void VideoImageStream::pause()
@@ -166,17 +161,11 @@ void VideoImageStream::seek(double time)
     publishFrameAndNotify();
 }
 
-void VideoImageStream::quit(bool waitForThreadToExit)
+void VideoImageStream::quit()
 {
     VIDLIB_FUNCTION_PROLOG;
     ScopedLock lock(getMutex());
-    if ( isRunning() ) {
-        // zmieniamy stan...
-        _status = PAUSED;
-        if ( waitForThreadToExit ) {
-            join();
-        }
-    }
+    _status = PAUSED;
     // kasujemy
     innerStream = NULL;
     currentPicture.free();

@@ -13,7 +13,9 @@ purpose:
 //------------------------------------------------------------------------------
 
 #if _MSC_VER >= 1600 || (defined(__GNUC__) && (__cplusplus >= 201103L || defined(__GXX_EXPERIMENTAL_CXX0X__)))
-#define UTILS_CXX0X
+	#define UTILS_CXX0X
+#else
+	#error "Unsupported compiler - C++11 support required"
 #endif
 
 //------------------------------------------------------------------------------

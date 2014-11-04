@@ -128,7 +128,7 @@ struct PtrPolicyOSG
 	}
 };
 
-template <> struct is_ptr_policy<PtrPolicyOSG> : public __traits::true_type {};
+template <> struct is_ptr_policy<PtrPolicyOSG> : public std::true_type {};
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace utils

@@ -13,11 +13,10 @@
 #include <string>
 
 #include <boost/call_traits.hpp>
-#include <boost/function.hpp>
-#include <boost/type_traits.hpp>
+#include <type_traits>
 #include <boost/mpl/if.hpp>
 #include <utils/SmartPtr.h>
-#include <boost/scoped_ptr.hpp>
+#include <utils/SmartPtr.h>
 
 #include <utils/Debug.h>
 #include <utils/ObserverPattern.h>
@@ -89,7 +88,7 @@ namespace utils {
 		typedef IRawDataChannelExtendedWriter<point_type, time_type> _MyExtendedWriter;
 
 		//! Funktor do modyfikacji danych w Trackerach kanałów
-		typedef boost::function<void(_MyExtendedWriter &, const _MyRawChannelReaderType &, const _MyRawChannelReaderType &)> _MyModifierType;
+		typedef std::function<void(_MyExtendedWriter &, const _MyRawChannelReaderType &, const _MyRawChannelReaderType &)> _MyModifierType;
 
 	public:
 		//! Wirtualny destruktor

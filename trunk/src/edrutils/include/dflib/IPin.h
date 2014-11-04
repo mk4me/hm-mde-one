@@ -99,7 +99,7 @@ public:
 
 //! Interfejs rozszerzonego piny wejsciowego. Dodaje informacje o koniecznoœci
 //! pod³¹czenia danego pinu oraz ewentualnych pinach uzale¿nionych od tego pinu
-class IExtInputPin : public IInputPin
+class IExtendedInputPin : public IInputPin
 {
 public:
 	//! \return Czy pin musi byæ pod³¹czony
@@ -123,7 +123,7 @@ public:
 
 //! Interfejs rozszerzonego pinu wyjœciowego. Dodaje informacjê na temat
 //! zale¿noœci tego pinu od pinów wejœciowych.
-class IExtOutputPin : public IOutputPin
+class IExtendedOutputPin : public IOutputPin
 {
 public:
 	//! \return Iloœæ pinów od kórych zale¿ny jest pin
@@ -141,7 +141,7 @@ public:
 	//! \return Czy pin jest uzale¿niony od danego pinu
 	virtual const bool dependsOn(const IInputPin * pin) const = 0;
 	//! \return Czy zale¿noœci pinu s¹ spe³nione
-	virtual const bool dependencyOK() const = 0;
+	virtual const bool dependenciesSatisfied() const = 0;
 };
 
 }

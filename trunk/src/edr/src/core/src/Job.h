@@ -11,7 +11,7 @@
 
 #include <corelib/IJob.h>
 #include <threadingUtils/SynchronizationPolicies.h>
-#include <boost/atomic.hpp>
+#include <atomic>
 
 namespace core
 {

@@ -13,6 +13,7 @@
 
 namespace threadingUtils
 {
+	//! Klasa pomocnicza pozwalaj¹ca stwierdziæ czy dany obiekt stworzono w aktualnym w¹tku
 	class THREADINGUTILS_EXPORT ThreadAfinityVerifier
 	{
 		class ThreadAfinityVerifierImpl;
@@ -20,12 +21,12 @@ namespace threadingUtils
 	protected:
 		//! Domyœlny konstruktor
 		ThreadAfinityVerifier();
-		//! \return Zwraca prawdê jeœli aktualny w¹tek to ten sam dla któego stworzono dany obiekt
-		const bool verifyCurrentThreadAfinity() const;
 
 	public:
 		//! Destruktor wirtualny
 		virtual ~ThreadAfinityVerifier();
+		//! \return Zwraca prawdê jeœli aktualny w¹tek to ten sam dla któego stworzono dany obiekt
+		const bool verifyCurrentThreadAfinity() const;
 
 	private:
 		//! Implementacja

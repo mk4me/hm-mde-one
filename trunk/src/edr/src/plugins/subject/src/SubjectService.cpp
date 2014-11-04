@@ -2,16 +2,15 @@
 #include "SubjectService.h"
 
 #include <limits>
-#include <OpenThreads/Mutex>
-#include <OpenThreads/ScopedLock>
+#include <mutex>
 #include <corelib/BaseDataTypes.h>
 #include "Session.h"
 #include "Subject.h"
 #include "Motion.h"
 
-OpenThreads::Mutex subjectCreationMutex;
-OpenThreads::Mutex sessionCreationMutex;
-OpenThreads::Mutex motionCreationMutex;
+std::mutex subjectCreationMutex;
+std::mutex sessionCreationMutex;
+std::mutex motionCreationMutex;
 
 using namespace PluginSubject;
 
@@ -48,7 +47,7 @@ QWidgetList SubjectService::getPropertiesWidgets()
 
 core::VariantPtr SubjectService::createSubject()
 {
-    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(subjectCreationMutex);
+   std::lock_guard<std::mutex> lock(subjectCreationMutex);
 	core::VariantPtr ret = core::Variant::create<PluginSubject::ISubject>();
 	ret->set(SubjectPtr(new Subject()));
     return ret;
@@ -56,7 +55,7 @@ core::VariantPtr SubjectService::createSubject()
 
 core::VariantPtr SubjectService::createSession(const core::VariantConstPtr & subject)
 {
-	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(sessionCreationMutex);	
+	std::lock_guard<std::mutex> lock(sessionCreationMutex);
 
     if(subject == nullptr || subject->getRawPtr() == nullptr){
         throw std::runtime_error("Wrong subject for session");
@@ -85,7 +84,7 @@ core::VariantPtr SubjectService::createSession(const core::VariantConstPtr & sub
 
 core::VariantPtr SubjectService::createMotion(const core::VariantConstPtr & session)
 {
-    OpenThreads::ScopedLock<OpenThreads::Mutex> lock(motionCreationMutex);
+	std::lock_guard<std::mutex> lock(motionCreationMutex);
 
 	if(session == nullptr || session->getRawPtr() == nullptr){
 		throw std::runtime_error("Wrong session for motion");

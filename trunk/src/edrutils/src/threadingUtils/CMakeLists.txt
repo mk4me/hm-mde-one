@@ -1,36 +1,46 @@
 BEGIN_PROJECT("dynamic")
 
-SET_PRIVATE_HEADERS(
-	JobManagerImpl.h
-)
-
 SET_PUBLIC_HEADERS(
+	Future.h
 	Export.h
 	JobManager.h
-	Synchronized.h
-	SynchronizationPolicies.h
-	IThread.h
-	IThreadFactory.h
-	IThreadPool.h
+	WorkManager.h
 	ThreadPool.h
+	ThreadPoolException.h
+	InterruptibleJobManager.h
+	InterruptibleWorkManager.h
+	InterruptibleThreadPool.h
 	IProgress.h
-	Runnable.h
-	QtThreadFactory.h
 	StreamData.h
 	IOperation.h
 	ThreadAfinityVerifier.h
 	ITTransaction.h
+	HierarchicalMutex.h
+	ScopedThread.h	
+	ThreadGuard.h
+	Macros.h
+	RunnableThread.h
+	FunctionWrapper.h
+	FutureWrapper.h
+	Queue.h
+	IJob.h
+	WorkQueuePolicy.h
+	StealingQueue.h
+	InterruptiblePolicy.h
+	InterruptibleThread.h
+	InterruptibleFuture.h
+	InterruptiblePackagedTask.h
+	InterruptHandlingPolicy.h
+	InterruptFlag.h
+	ThreadPolicyHelper.h
+	CallPolicy.h
 )
 
 SET_SOURCE_FILES(
-	ThreadPool.cpp
-	JobManager.cpp
-	JobManagerImpl.cpp
-	Runnable.cpp
-	QtThreadFactory.cpp
-	SynchronizationPolicies.cpp
+	InterruptFlag.cpp
 	StreamData.cpp
 	ThreadAfinityVerifier.cpp
+	WorkQueuePolicy.cpp
 )
 
 END_PROJECT()

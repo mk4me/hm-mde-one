@@ -195,7 +195,7 @@ void dicom::PointsState::begin( coreUI::AbstractStateConstPtr lastState )
     }
     resetLayer();
     ILayeredImagePtr img = machine->getSerie()->getImage();
-    BOOST_FOREACH(std::string tag, img->getTags()) {
+    for(auto tag : img->getTags()) {
         for (int i = img->getNumGraphicLayerItems(tag) - 1; i >= 0; --i) {
             img->getLayerGraphicItem(tag, i)->setSelected(false);
         }

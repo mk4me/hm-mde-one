@@ -12,8 +12,7 @@
 
 #include <QtCore/QString>
 #include <QtWidgets/QWidget>
-#include <boost/date_time.hpp>
-#include <boost/function.hpp>
+#include <functional>
 #include <osg/Vec3>
 #include <plugins/subject/SubjectDataFilters.h>
 #include <corelib/IFilterCommand.h>

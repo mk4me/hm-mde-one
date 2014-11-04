@@ -1,6 +1,5 @@
 #include "../PCH.h"
 #include <vidlib/osg/VideoImageStreamSizeOptimizer.h>
-#include <boost/foreach.hpp>
 UTILS_PUSH_WARNINGS
 #include <osg/Uniform>
 UTILS_POP_WARNINGS
@@ -48,7 +47,7 @@ void VideoImageStreamSizeOptimizer::refreshSize()
     // aktualizacja rozmiaru
     if ( prevWidth != image->s() ) {
         imageSize->set( osg::Vec2(static_cast<coord_type>(image->s()), static_cast<coord_type>(image->t())) );
-        BOOST_FOREACH(Client* client, clients) {
+        for(auto client : clients) {
             if ( client->isValid() ) {
                 client->onImageResized(this, prevWidth, prevHeight);
             }

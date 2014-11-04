@@ -10,7 +10,7 @@
 
 #include <corelib/ISource.h>
 #include <plugins/hmdbCommunication/IHMDBSource.h>
-#include <threadingUtils/SynchronizationPolicies.h>
+#include <mutex>
 
 class HMDBSourceWidget;
 
@@ -131,7 +131,7 @@ namespace hmdbCommunication
 		//! Widget
 		HMDBSourceWidget * mainWidget;
 		//! Obiekt synchronizuj¹cy
-		mutable threadingUtils::RecursiveSyncPolicy sync_;
+		mutable std::recursive_mutex sync_;
 		//! Lista kontekstów p³ytkiej kopii
 		mutable std::list<IHMDBSourceContextWeakPtr> sourceContexts_;
 		//! Lista kontekstów p³ytkiej kopii

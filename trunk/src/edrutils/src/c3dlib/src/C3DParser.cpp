@@ -1,4 +1,4 @@
-#include <boost/smart_ptr.hpp>
+#include <utils/SmartPtr.h>
 
 #include <c3dlib/C3DParser.h>
 #include <sstream>

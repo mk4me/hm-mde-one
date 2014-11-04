@@ -437,9 +437,9 @@ void AnalysisTreeContextMenu::addAdditionMenuSection( QMenu * menu, const core::
     addTo->setEnabled(false);
     connect(addTo, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
     connect(addTo, SIGNAL(hovered(QAction*)), this, SLOT(menuHighlightVisualizer(QAction*)));
-    BOOST_FOREACH(coreUI::CoreDockWidgetSet* set, widget->topMainWindow->getDockSet()) {
+    for(auto set : widget->topMainWindow->getDockSet()) {
         QMenu* group = new QMenu(widget->topMainWindow->setText(widget->topMainWindow->indexOf(set)), menu);
-        BOOST_FOREACH(QDockWidget* dock, set->getDockWidgets()) {
+        for(auto dock : set->getDockWidgets()) {
             coreUI::CoreVisualizerWidget* vw = dynamic_cast<coreUI::CoreVisualizerWidget*>(dock->widget());
             if (vw ) {
                 core::VisualizerPtr visualizer = vw->getVisualizer();
@@ -573,7 +573,7 @@ void AnalysisTreeContextMenu::addCreationMenuSection( QMenu * menu, const core::
     QMenu* createIn = new QMenu(tr("Create in:"), menu);
     createIn->setEnabled(false);
     menu->addMenu(createIn);
-    BOOST_FOREACH(coreUI::CoreDockWidgetSet* set, widget->topMainWindow->getDockSet()) {
+    for(auto set : widget->topMainWindow->getDockSet()) {
         if (set->isAdditionPossible()) {
             //TODO, HACK
             HelperAction* action = new HelperAction(helper, 
@@ -730,8 +730,8 @@ void AnalisisWidget::onTreeItemActivated( const QModelIndex& index)
 void AnalisisWidget::highlightVisualizer( core::VisualizerPtr param1 )
 {
     auto docks = topMainWindow->getDockSet();
-    BOOST_FOREACH(coreUI::CoreDockWidgetSet* set, docks) {
-        BOOST_FOREACH(QDockWidget* dock, set->getDockWidgets()) {
+    for(auto set : docks) {
+        for(auto dock : set->getDockWidgets()) {
             coreUI::CoreVisualizerWidget* visualizerWidget = dynamic_cast<coreUI::CoreVisualizerWidget*>(dock->widget());
             if (visualizerWidget) {
                 visualizerWidget->setStyleSheet(QString());

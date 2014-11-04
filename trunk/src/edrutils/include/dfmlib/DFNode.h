@@ -1,9 +1,9 @@
 #ifndef HEADER_GUARD__DFNODE_H__
 #define HEADER_GUARD__DFNODE_H__
 
+#include <functional>
 #include <dfmlib/Node.h>
 #include <dfmlib/DFInterface.h>
-#include <boost/function.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
@@ -20,7 +20,7 @@ class DFNode :
 
 private:
 
-    typedef boost::function<void(void)> OnLeafProcessedCallback;
+    typedef std::function<void(void)> OnLeafProcessedCallback;
 
 public:
 

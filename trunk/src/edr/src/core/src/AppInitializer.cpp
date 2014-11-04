@@ -1,9 +1,7 @@
 #include "CorePCH.h"
 #include <core/AppInitializer.h>
-#include <threadingUtils/SynchronizationPolicies.h>
 #include "ApplicationCommon.h"
 #include <corelib/PluginCommon.h>
-#include <boost/bind.hpp>
 #include <QtCore/QCoreApplication>
 #include "PluginApplication.h"
 #include <coreui/SingleInstanceWindow.h>

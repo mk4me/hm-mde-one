@@ -4,8 +4,7 @@
 #include "ApplicationCommon.h"
 #include "ParserManager.h"
 #include <utils/Push.h>
-#include <boost/bind.hpp>
-#include <boost/atomic.hpp>
+#include <atomic>
 #include <fstream>
 
 using namespace core;
@@ -19,8 +18,8 @@ private:
 private:
 	IMemoryDataManager::TransactionPtr mdmTransaction;	
 	FileDataManager * fdm;
-	boost::atomic<bool> transactionRolledback;
-	utils::shared_ptr<threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy>> lock;
+	std::atomic<bool> transactionRolledback;
+	utils::shared_ptr<std::lock_guard<std::recursive_mutex>> lock;
 	const bool oldSkipUpdate;
 	FileModyfications modyfications;
 
@@ -28,7 +27,7 @@ public:
 	FileTransaction(FileDataManager * fdm)
 		: mdmTransaction(getMemoryDataManager()->transaction()),
 		fdm(fdm), transactionRolledback(false),
-		lock(new threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy>(fdm->sync)),
+		lock(new std::lock_guard<std::recursive_mutex>(fdm->sync)),
 		oldSkipUpdate(fdm->skipUpdate)
 	{
 		fdm->skipUpdate = true;
@@ -277,7 +276,7 @@ class FileDataManager::FileReaderTransaction : public IFileManagerReaderOperatio
 {
 public:
 	FileReaderTransaction(FileDataManager * fdm) : fdm(fdm),
-		lock(new threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy>(fdm->sync))
+		lock(new std::lock_guard<std::recursive_mutex>(fdm->sync))
 	{
 
 	}
@@ -316,7 +315,7 @@ public:
 
 private:
 	FileDataManager * fdm;
-	utils::shared_ptr<threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy>> lock;
+	utils::shared_ptr<std::lock_guard<std::recursive_mutex>> lock;
 };
 
 //! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.

@@ -12,11 +12,11 @@
 
 namespace threadingUtils
 {
+	//! \tparam T Typ fla którego realizujemy transakcjê
 	template<typename T>
-	class ITWritableTransaction : public virtual T
+	class ITWritableTransaction
 	{
 	public:
-
 		//! Typ wskaŸnika do transakcji
 		typedef utils::shared_ptr<T> TransactionPtr;
 
@@ -28,9 +28,17 @@ namespace threadingUtils
 		virtual const TransactionPtr transaction() = 0;
 	};
 
-
 	template<typename T>
-	class ITReadableTransaction : public virtual T
+	class ITWritableTransactionObject : public T, public ITWritableTransaction<T>
+	{
+	public:
+		//! Destruktor wirtualny
+		virtual ~ITWritableTransactionObject() {}
+	};
+
+	//! \tparam T Typ fla którego realizujemy transakcjê
+	template<typename T>
+	class ITReadableTransaction
 	{
 	public:
 		//! Typ wskaŸnika do sta³ej transakcji
@@ -45,21 +53,32 @@ namespace threadingUtils
 	};
 
 	template<typename T>
-	class ITTransaction : public virtual T
+	class ITReadableTransactionObject : public T, public ITReadableTransaction < T >
 	{
 	public:
-		//! Typ wskaŸnika do transakcji
-		typedef utils::shared_ptr<T> TransactionPtr;
-		//! Typ wskaŸnika do sta³ej transakcji
-		typedef utils::shared_ptr<const T> TransactionConstPtr;
+		//! Destruktor wirtualny
+		virtual ~ITReadableTransactionObject() {}
+	};
 
+	//! \tparam T Typ fla którego realizujemy transakcjê
+	template<typename T>
+	class ITTransaction : public ITWritableTransaction<T>, public ITReadableTransaction<T>
+	{
 	public:
 		//! Destruktor wirtualny
 		virtual ~ITTransaction() {}
-		//! \return Transakcja
-		virtual const TransactionPtr transaction() = 0;
-		//! \return Transakcja
-		virtual const TransactionConstPtr transaction() const = 0;
+
+		using ITWritableTransaction<T>::transaction;
+		using ITReadableTransaction<T>::transaction;
+	};
+
+	//! \tparam T Typ fla którego realizujemy transakcjê
+	template<typename T>
+	class ITTransactionObject : public T, public ITTransaction<T>
+	{
+	public:
+		//! Destruktor wirtualny
+		virtual ~ITTransactionObject() {}
 	};
 }
 

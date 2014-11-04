@@ -98,7 +98,7 @@ const std::string CURLFTPTransfer::error() const
 	return data_->status->error();
 }
 
-const float CURLFTPTransfer::progress() const
+const float CURLFTPTransfer::normalizedProgress() const
 {
 	return data_->progress->progress();
 }

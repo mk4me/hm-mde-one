@@ -8,7 +8,6 @@
 #include <dfmlib/Connection.h>
 #include <dfmlib/DFSourceNode.h>
 
-#include <boost/bind.hpp>
 #include <vector>
 #include <algorithm>
 #include <limits>
@@ -309,7 +308,7 @@ void osgVDFBaseModel::removeNode(const dflm::NPtr & node, bool clearEvent)
 
     osgVDFBaseNode * vnode = getVisualNode(node);
 
-    if(deleteNodeAction.empty() == false){
+    if(deleteNodeAction){
         deleteNodeAction(vnode);
     }
 
@@ -1976,7 +1975,7 @@ bool osgVDFBaseModel::UserSpaceClick::handle(const osgGA::GUIEventAdapter& gea,
         model->contextMenu->hideMenu();
     }
 
-    if(model->clickNodeAction.empty() == false && gea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && gea.getEventType() == osgGA::GUIEventAdapter::PUSH){
+    if(model->clickNodeAction && gea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && gea.getEventType() == osgGA::GUIEventAdapter::PUSH){
         //pobierz węzły pod tą pozycją
         osgWidget::XYCoord pos(gea.getX(), gea.getY());
         const osgVDFBaseNode* node = getTopNodeInPoint(pos);
@@ -1984,14 +1983,14 @@ bool osgVDFBaseModel::UserSpaceClick::handle(const osgGA::GUIEventAdapter& gea,
         if(node != nullptr){
             model->clickNodeAction(node, pos);
         }
-    }else if(model->doubleClickNodeAction.empty() == false && gea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && gea.getEventType() == osgGA::GUIEventAdapter::DOUBLECLICK){
+    }else if(model->doubleClickNodeAction && gea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && gea.getEventType() == osgGA::GUIEventAdapter::DOUBLECLICK){
         osgWidget::XYCoord pos(gea.getX(), gea.getY());
         const osgVDFBaseNode* node = getTopNodeInPoint(pos);
 
         if(node != nullptr){
             model->doubleClickNodeAction(node, pos);
         }
-    }else if(model->contextNodeAction.empty() == false && gea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON && gea.getEventType() == osgGA::GUIEventAdapter::PUSH){
+    }else if(model->contextNodeAction && gea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON && gea.getEventType() == osgGA::GUIEventAdapter::PUSH){
         osgWidget::XYCoord pos(gea.getX(), gea.getY());
         const osgVDFBaseNode* node = getTopNodeInPoint(pos);
 

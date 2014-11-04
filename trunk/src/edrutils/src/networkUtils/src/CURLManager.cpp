@@ -1,6 +1,7 @@
 #include <networkUtils/CURLManager.h>
-#include <threadingUtils/SynchronizationPolicies.h>
-#include <boost/atomic.hpp>
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
 #include <map>
 #include <set>
 #include <list>
@@ -17,13 +18,13 @@ public:
 	//! Konstruktor domyslny
 	WaitCurlImpl() : result_(CURLE_OK) {}
 	//! Destruktor
-	~WaitCurlImpl() { wait_.wakeAll(); }
+	~WaitCurlImpl() { wait_.notify_all(); }
 
 	void wait()
 	{
-		threadingUtils::StrictSyncPolicy sync;
-		threadingUtils::ScopedLock < threadingUtils::StrictSyncPolicy > lock(sync);
-		wait_.wait(&sync);
+		std::mutex sync;
+		std::unique_lock<std::mutex> lock(sync);
+		wait_.wait(lock);
 	}
 
 	//! \return Rezultat obs³ugi po³¹czenia
@@ -50,9 +51,9 @@ public:
 
 private:
 	//! Obiekt synchronizuj¹cy
-	threadingUtils::ConditionVariable wait_;
+	std::condition_variable wait_;
 	//! Rezultat obs³ugi po³aczenia
-	boost::atomic<CURLcode> result_;
+	std::atomic<CURLcode> result_;
 	//! Opis b³êdu
 	std::string error_;
 };
@@ -86,7 +87,7 @@ class CURLManager::CURLManagerImpl
 {
 private:
 	//! ScopedLock
-	typedef threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> ScopedLock;
+	typedef std::lock_guard<std::recursive_mutex> ScopedLock;
 	//! Zbiór uchwytów
 	typedef std::set<CURL*> CURLsSet;
 	//! Mapa uchwytów i obiektów na których czekamy
@@ -99,7 +100,7 @@ private:
 		auto IT = currentCurls.find(curl);
 		if (IT != currentCurls.end()){
 			if (IT->second != nullptr){
-				IT->second->impl->wait_.wakeAll();
+				IT->second->impl->wait_.notify_all();
 			}
 
 			currentCurls.erase(IT);
@@ -151,7 +152,7 @@ public:
 		innerRemove();
 
 		finalize_ = true;
-		condVar.wakeOne();
+		condVar.notify_one();
 	}
 
 	void addRequest(CURL * curl, CURLManager::WaitCurl * wait)
@@ -176,7 +177,7 @@ public:
 
 					if (IT->second != nullptr){
 						// muszê poprzedni zwolniæ
-						IT->second->impl->wait_.wakeAll();
+						IT->second->impl->wait_.notify_all();
 					}
 
 					IT->second = wait;
@@ -194,7 +195,7 @@ public:
 		toRemoveCurlsSet.erase(curl);
 
 		// budzimy przetwarzanie
-		condVar.wakeOne();
+		condVar.notify_one();
 	}
 
 	void removeRequest(CURL * curl)
@@ -214,7 +215,7 @@ public:
 				// czy by³ obiekt oczekujacy
 				if (IT->second != nullptr){
 					// zwalniamy
-					IT->second->impl->wait_.wakeAll();
+					IT->second->impl->wait_.notify_all();
 				}
 
 				toAddCurlsSet.erase(IT);
@@ -326,8 +327,8 @@ public:
 		}
 		else{
 			//wait condition variable woken up when some new handles are added or removed
-			threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(waitSync);
-			condVar.wait(&waitSync);
+			std::unique_lock<std::mutex> lock(waitSync);
+			condVar.wait(lock);
 		}
 
 		return true;
@@ -335,15 +336,15 @@ public:
 
 private:
 	//! Czy mamy ju¿ koñczyæ dzia³anie managera
-	boost::atomic<bool> finalize_;
+	std::atomic<bool> finalize_;
 	//! Czas oczekiwania na dane [ms]
 	static const int waitTime = 500;
 	//! Obiekt realizuj¹cy czekanie na nowe uchwyty
-	threadingUtils::StrictSyncPolicy waitSync;
+	std::mutex waitSync;
 	//! Conditional variable
-	threadingUtils::ConditionVariable condVar;
+	std::condition_variable condVar;
 	//! Obiekt do synchronizacji stanu obiektu
-	mutable threadingUtils::RecursiveSyncPolicy sync;
+	mutable std::recursive_mutex sync;
 	//! Uchwyt do interfejsu multi realizujacego po³¹czenia
 	CURLM * multi;
 	//! Manager dla którego funkcjonalnoœc realizujemy

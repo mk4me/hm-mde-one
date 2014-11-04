@@ -15,9 +15,7 @@
 #include <dflib/IDFNode.h>
 #include "MRNodeImpl.h"
 
-#include <threadingUtils/Synchronized.h>
-
-class MRSinkNode : public IMRSinkNode, public threadingUtils::SynchronizedT<true>
+class MRSinkNode : public IMRSinkNode
 {
 public:
 
@@ -55,7 +53,7 @@ private:
 	df::IDFSink * sink_;
 };
 
-class MRSourceNode : public IMRSourceNode, public threadingUtils::SynchronizedT<true>
+class MRSourceNode : public IMRSourceNode
 {
 public:
 
@@ -93,7 +91,7 @@ private:
 	df::IDFSource * source_;
 };
 
-class MRProcessingNode : public IMRProcessingNode, public threadingUtils::SynchronizedT<true>
+class MRProcessingNode : public IMRProcessingNode
 {
 public:
 

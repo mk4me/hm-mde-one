@@ -1,6 +1,5 @@
 #include "PCH.h"
 #include <osgui/Grid.h>
-#include <boost/foreach.hpp>
 #include <utils/Debug.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -94,7 +93,7 @@ void Grid::adjustDimensions( osgWidget::point_type width, osgWidget::point_type 
         double usedField = 0.0;
 
         // zsumowanie pól widgetów
-        BOOST_FOREACH (point_type aspectRatio, aspectRatios) {
+        for(auto aspectRatio : aspectRatios) {
             XYCoord widgetSize = cellSize;
             if ( aspectRatio > cellRatio ) {
                 widgetSize.y() = widgetSize.x() / aspectRatio;

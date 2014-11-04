@@ -6,21 +6,17 @@
 #include <corelib/Filesystem.h>
 #include <QtCore/QCoreApplication>
 #include <corelib/PluginCommon.h>
-#include <OpenThreads/Thread>
-#include <corelib/IThreadPool.h>
-#include <threadingUtils/IThread.h>
-#include <boost/bind.hpp>
 #include "IMUCostumeListWidget.h"
 #include <BIC.h>
 #include <windows.h>
 #include <QtCore/QCoreApplication>
 #include <corelib/HierarchyHelper.h>
 #include <corelib/HierarchyDataItem.h>
-#include <boost/bind.hpp>
 #include <plugins/newChart/Wrappers.h>
 #include <plugins/hmdbCommunication/TreeItemHelper.h>
 #include <iosfwd>
 #include "IMUPerspective.h"
+#include <threadingUtils/Runnable.h>
 
 using namespace IMU;
 
@@ -110,33 +106,31 @@ const IMUCostumeDataSource::CostumeConfiguration & IMUCostumeDataSource::costume
 
 const IMUCostumeDataSource::CostumeDataStatus IMUCostumeDataSource::costumeDataStatus(const unsigned int idx) const
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
+	std::lock_guard<std::recursive_mutex> lock(synch);
 	return costumesDataStatus_[idx];
 }
 
 const std::vector<IMUCostumeDataSource::CostumeDataStatus> IMUCostumeDataSource::costumesDataStatus() const
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
+	std::lock_guard<std::recursive_mutex> lock(synch);
 	return costumesDataStatus_;
 }
 
 void IMUCostumeDataSource::addToUpdate(const unsigned int idx,
 	const CostumeRawData & rd)
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(updateSynch);
+	std::lock_guard<std::recursive_mutex> lock(updateSynch);
 	rawData[idx] = rd;
 
 	if (refreshData_ == false){
-		refreshData_ = true;
-		threadingUtils::FunctorRunnable::Functor f = boost::bind(&IMUCostumeDataSource::refreshData, this);
-		threadingUtils::IRunnablePtr runnable(new threadingUtils::FunctorRunnable(f));
-		refreshThread->start(runnable);
+		refreshData_ = true;		
+		refreshThread.run(&IMUCostumeDataSource::refreshData, this);
 	}
 }
 
 void IMUCostumeDataSource::removeFromUpdate(const unsigned int idx)
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(updateSynch);
+	std::lock_guard<std::recursive_mutex> lock(updateSynch);
 	coreData.erase(idx);
 	rawData.erase(idx);
 }
@@ -429,19 +423,19 @@ void IMUCostumeDataSource::innerUnloadCostume(const unsigned int idx)
 
 const bool IMUCostumeDataSource::costumeLoaded(const unsigned int idx) const
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
+	std::lock_guard<std::recursive_mutex> lock(synch);
 	return rawData.find(idx) != rawData.end();
 }
 
 const unsigned int IMUCostumeDataSource::costumesLoadedCount() const
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
+	std::lock_guard<std::recursive_mutex> lock(synch);
 	return rawData.size();
 }
 
 void IMUCostumeDataSource::loadCostume(const unsigned int idx)
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
+	std::lock_guard<std::recursive_mutex> lock(synch);
 
 	if (rawData.find(idx) != rawData.end()){
 		return;
@@ -452,7 +446,7 @@ void IMUCostumeDataSource::loadCostume(const unsigned int idx)
 
 void IMUCostumeDataSource::unloadCostume(const unsigned int idx)
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
+	std::lock_guard<std::recursive_mutex> lock(synch);
 
 	if (rawData.find(idx) == rawData.end()){
 		return;
@@ -463,7 +457,7 @@ void IMUCostumeDataSource::unloadCostume(const unsigned int idx)
 
 void IMUCostumeDataSource::loadAllCostumes()
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
+	std::lock_guard<std::recursive_mutex> lock(synch);
 
 	if (rawData.size() == costumesConfigurations.size()){
 		return;
@@ -478,7 +472,7 @@ void IMUCostumeDataSource::loadAllCostumes()
 
 void IMUCostumeDataSource::unloadAllCostumes()
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
+	std::lock_guard<std::recursive_mutex> lock(synch);
 
 	if (rawData.empty() == true){
 		return;
@@ -519,7 +513,7 @@ kinematic::SkeletonMappingSchemePtr IMUCostumeDataSource::createMappingScheme()
 
 void IMUCostumeDataSource::connectCostiumes()
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
+	std::lock_guard<std::recursive_mutex> lock(synch);
 
 	if (connected_ == true){
 		return;
@@ -552,9 +546,7 @@ void IMUCostumeDataSource::connectCostiumes()
 			return;
 		}
 
-		core::IThreadPool::Threads t;
-		plugin::getThreadPool()->getThreads("IMUCostumeDataSource", t, 1);
-		refreshThread = t.front();
+		core::ThreadPool::Thread t = plugin::getThreadPool()->get("IMUCostumeDataSource", "Costume data processor");
 
 		connected_ = true;
 	}	
@@ -562,7 +554,7 @@ void IMUCostumeDataSource::connectCostiumes()
 
 void IMUCostumeDataSource::disconnectCostiumes()
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
+	std::lock_guard<std::recursive_mutex> lock(synch);
 
 	if (connected_ == false){
 		return;
@@ -571,10 +563,8 @@ void IMUCostumeDataSource::disconnectCostiumes()
 	//zakoñcz w¹tek pobieraj¹cy dane jeœli jest taki
 	if (refreshData_ == true){
 		refreshData_ = false;
-		refreshThread->join();
+		refreshThread.join();
 	}
-
-	refreshThread.reset();
 
 	//uzupe³niam statusy
 	std::fill(costumesDataStatus_.begin(), costumesDataStatus_.end(), NODATA);
@@ -585,14 +575,14 @@ void IMUCostumeDataSource::disconnectCostiumes()
 
 const bool IMUCostumeDataSource::connected() const
 {
-	threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch);
+	std::lock_guard<std::recursive_mutex> lock(synch);
 	return connected_;
 }
 
 void IMUCostumeDataSource::refreshData()
 {
 	while (refreshData_ == true){
-		threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(updateSynch);
+		std::lock_guard<std::recursive_mutex> lock(updateSynch);
 
 		try {
 			for (auto it = rawData.begin(); it != rawData.end(); ++it){
@@ -654,7 +644,7 @@ void IMUCostumeDataSource::refreshData()
 			PLUGIN_LOG_DEBUG("Unknown problem while getting costume data");
 		}
 		// 30 fps mi wystarczy
-		OpenThreads::Thread::microSleep(33333);
+		std::this_thread::sleep_for(std::chrono::microseconds(33333));		
 	}
 }
 

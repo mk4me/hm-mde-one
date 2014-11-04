@@ -19,13 +19,13 @@ void MRSinkNode::process()
 
 void MRSinkNode::pause()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	nodeImpl.pause();
 }
 
 void MRSinkNode::resume()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	nodeImpl.resume();
 }
 
@@ -36,13 +36,13 @@ void MRSinkNode::tryPause()
 
 const bool MRSinkNode::paused() const
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	return nodeImpl.paused();
 }
 
 void MRSinkNode::updateSnk()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	snkImpl->updateSnk();
 }
 
@@ -54,12 +54,12 @@ void MRSinkNode::reset()
 
 void MRSinkNode::lockSnkProcessing()
 {
-	snkImpl->lock();
+	snkImpl->wait();
 }
 
 void MRSinkNode::unlockSnkProcessing()
 {
-	snkImpl->unlock();
+	snkImpl->wakeUp();
 }
 
 void MRSinkNode::addInputPin(MRInputPin * pin)
@@ -105,13 +105,13 @@ void MRSourceNode::process()
 
 void MRSourceNode::pause()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	nodeImpl.pause();
 }
 
 void MRSourceNode::resume()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	nodeImpl.resume();
 }
 
@@ -122,31 +122,31 @@ void MRSourceNode::tryPause()
 
 const bool MRSourceNode::paused() const
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	return nodeImpl.paused();
 }
 
 void MRSourceNode::updateSrc()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	srcImpl->updateSrc();
 }
 
 void MRSourceNode::reset()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	source_->reset();
 	srcImpl->resetOutputs();
 }
 
 void MRSourceNode::lockSrcProcessing()
 {
-	srcImpl->lock();
+	srcImpl->wait();
 }
 
 void MRSourceNode::unlockSrcProcessing()
 {
-	srcImpl->unlock();
+	srcImpl->wakeUp();
 }
 
 void MRSourceNode::addOutputPin(MROutputPin * pin)
@@ -200,37 +200,37 @@ void MRProcessingNode::tryPause()
 
 void MRProcessingNode::pause()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	nodeImpl.pause();
 }
 
 void MRProcessingNode::resume()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	nodeImpl.resume();
 }
 
 const bool MRProcessingNode::paused() const
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	return nodeImpl.paused();
 }
 
 void MRProcessingNode::updateSnk()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	snkImpl->updateSnk();
 }
 
 void MRProcessingNode::updateSrc()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	srcImpl->updateSrc();
 }
 
 void MRProcessingNode::reset()
 {
-	ScopedLock lock(*mux);
+	std::lock_guard<std::mutex> lock(mutex);
 	processor_->reset();
 	snkImpl->resetInputs();
 	srcImpl->resetOutputs();
@@ -238,12 +238,12 @@ void MRProcessingNode::reset()
 
 void MRProcessingNode::lockSnkProcessing()
 {
-	snkImpl->lock();
+	snkImpl->wait();
 }
 
 void MRProcessingNode::unlockSnkProcessing()
 {
-	snkImpl->unlock();
+	snkImpl->wakeUp();
 }
 
 void MRProcessingNode::addInputPin(MRInputPin * pin)
@@ -273,12 +273,12 @@ const bool MRProcessingNode::inputEmpty() const
 
 void MRProcessingNode::lockSrcProcessing()
 {
-	srcImpl->lock();
+	srcImpl->wait();
 }
 
 void MRProcessingNode::unlockSrcProcessing()
 {
-	srcImpl->unlock();
+	srcImpl->wakeUp();
 }
 
 void MRProcessingNode::addOutputPin(MROutputPin * pin)

@@ -9,7 +9,6 @@
 #include <dflib/MRModelLogicVerifier.h>
 #include <dflib/MRModelPinRequirementsVerifier.h>
 #include <dflib/DFModelRunner.h>
-#include <boost/bind.hpp>
 
 df::DFModelRunner::DFModelRunnerImpl::DFModelRunnerImpl()
 {
@@ -54,17 +53,15 @@ df::DFModelRunner::DFModelRunnerImpl::SourceNodeRunner::SourceNodeRunner(IMRSour
 
 const bool df::DFModelRunner::DFModelRunnerImpl::SourceNodeRunner::dataflow()
 {
-	node_->lockSrcProcessing();
-
-	stage++;
 	if (runner_->dataflowFinished() == true)
 	{		
 		return false;
 	}
 
-	runner_->sourceStarted();
-	stage++;
-	runner_->waitForAllSourcesStart();
+	if (runner_->sourceStarted() == false){
+		stage++;
+		runner_->waitForAllSourcesStart();
+	}
 	stage++;
 	node_->tryPause();
 	stage++;
@@ -72,16 +69,22 @@ const bool df::DFModelRunner::DFModelRunnerImpl::SourceNodeRunner::dataflow()
 	stage++;
 	node_->process();
 	stage++;
-	runner_->sourceFinished();
+	if (runner_->sourceFinished() == false){
+		stage++;
+		runner_->waitForAllSourcesFinish();
+	}
 	stage++;
-	runner_->waitForAllSourcesFinish();
+
+	node_->lockSrcProcessing();
+
 	stage++;
+	
 	return true;
 }
 
 df::DFModelRunner::DFModelRunnerImpl::SinkNodeRunner::SinkNodeRunner(IMRSinkNode * node, DFModelRunnerImpl * runner, df::IDFLogger * logger) : INodeRunner(runner, logger), node_(node)
 {
-	node->lockSnkProcessing();
+
 }
 
 const bool df::DFModelRunner::DFModelRunnerImpl::SinkNodeRunner::dataflow()
@@ -106,14 +109,12 @@ const bool df::DFModelRunner::DFModelRunnerImpl::SinkNodeRunner::dataflow()
 
 df::DFModelRunner::DFModelRunnerImpl::ProcessingNodeRunner::ProcessingNodeRunner(IMRProcessingNode * node, DFModelRunnerImpl * runner, df::IDFLogger * logger) : INodeRunner(runner, logger), node_(node)
 {
-	node->lockSnkProcessing();
+	
 }
 
 const bool df::DFModelRunner::DFModelRunnerImpl::ProcessingNodeRunner::dataflow()
 {
 	node_->lockSnkProcessing();
-	stage++;
-	node_->lockSrcProcessing();
 	stage++;
 
 	if (runner_->dataflowFinished() == true)
@@ -128,6 +129,8 @@ const bool df::DFModelRunner::DFModelRunnerImpl::ProcessingNodeRunner::dataflow(
 	node_->process();
 	stage++;
 	runner_->nonSourceFinished();
+	stage++;
+	node_->lockSrcProcessing();
 	stage++;
 	return true;
 }
@@ -151,29 +154,33 @@ const bool df::DFModelRunner::DFModelRunnerImpl::sourcesHaveMore() const
 
 void df::DFModelRunner::DFModelRunnerImpl::increaseDataToProcess()
 {
-	StrictScopedLock lock(dataToProcessSync);
+	std::lock_guard<std::mutex> lock(dataToProcessSync);
 	++dataToProcess;
 }
 
 void df::DFModelRunner::DFModelRunnerImpl::decreaseDataToProcess()
 {
-	StrictScopedLock lock(dataToProcessSync);
+	std::lock_guard<std::mutex> lock(dataToProcessSync);
 	--dataToProcess;
 }
 
 void df::DFModelRunner::DFModelRunnerImpl::waitForAllSourcesFinish()
 {
-	StrictScopedLock lock(sourcesFinishWait);
+	std::mutex sync;
+	std::lock_guard<std::mutex> lock(sync);
+	sourcesFinishWait.wait(&sync);	
 }
 
 void df::DFModelRunner::DFModelRunnerImpl::waitForAllSourcesStart()
 {
-	StrictScopedLock lock(sourcesStartWait);
+	std::mutex sync;
+	std::lock_guard<std::mutex> lock(sync);
+	sourcesStartWait.wait(&sync);
 }
 
-void df::DFModelRunner::DFModelRunnerImpl::sourceFinished()
+bool df::DFModelRunner::DFModelRunnerImpl::sourceFinished()
 {
-	StrictScopedLock lock(sourcesFinishSync);
+	std::lock_guard<std::mutex> lock(sourcesFinishSync);
 
 	++sourcesFinished_;
 
@@ -181,8 +188,8 @@ void df::DFModelRunner::DFModelRunnerImpl::sourceFinished()
 	{
 		if (sourcesHaveMore() == true){
 			sourcesFinished_ = 0;
-			sourcesStartWait.lock();
-			sourcesFinishWait.unlock();
+			//sourcesStartWait.lock();
+			sourcesFinishWait.notify_all();
 		}
 		else{
 			//Ÿród³a skoñczy³y przetwarzaæ - czekamy na innych ¿eby zakoñczyæ dataflow
@@ -191,12 +198,16 @@ void df::DFModelRunner::DFModelRunnerImpl::sourceFinished()
 				stopDataflow();
 			}
 		}
+
+		return true;
 	}
+
+	return false;
 }
 
-void df::DFModelRunner::DFModelRunnerImpl::sourceStarted()
+bool df::DFModelRunner::DFModelRunnerImpl::sourceStarted()
 {
-	StrictScopedLock lock(sourcesStartSync);
+	std::lock_guard<std::mutex> lock(sourcesStartSync);
 
 	++sourcesStarted_;
 
@@ -204,14 +215,17 @@ void df::DFModelRunner::DFModelRunnerImpl::sourceStarted()
 	{
 		sourcesStarted_ = 0;
 		increaseDataToProcess();
-		sourcesFinishWait.lock();
-		sourcesStartWait.unlock();
+		//sourcesFinishWait.lock();
+		sourcesStartWait.notify_all();
+		return true;
 	}
+
+	return false;
 }
 
 void df::DFModelRunner::DFModelRunnerImpl::nonSourceFinished()
 {
-	StrictScopedLock lock(nonSourcesSync);
+	std::lock_guard<std::mutex> lock(nonSourcesSync);
 	++nonSourcesFinished_;
 
 	if (nonSourcesFinished_ == nonSourceElements)
@@ -247,7 +261,7 @@ void df::DFModelRunner::DFModelRunnerImpl::stopDataflow()
 		(*it).node->unlockSrcProcessing();
 	}
 
-	sourcesFinishWait.unlock();
+	sourcesFinishWait.notify_all();
 
 	for (auto it = sinks_.begin(); it != sinks_.end(); ++it)
 	{
@@ -303,7 +317,7 @@ const bool df::DFModelRunner::DFModelRunnerImpl::verifyModel(const df::IModelRea
 
 void df::DFModelRunner::DFModelRunnerImpl::tryPause()
 {
-	StrictScopedLock lock(dataflowPauseSync);
+	std::lock_guard<std::mutex> lock(dataflowPauseSync);
 }
 
 void df::DFModelRunner::DFModelRunnerImpl::start(df::IModelReader * model, df::IDFLogger * logger, threadingUtils::IThreadPool * tPool)
@@ -390,7 +404,7 @@ void df::DFModelRunner::DFModelRunnerImpl::join()
 	}
 
 	{
-		threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(failureMessageSync);
+		std::lock_guard<std::mutex> lock(failureMessageSync);
 
 		if (dataflowFinished_ == true){
 			dataflowFinished_ = false;
@@ -462,7 +476,7 @@ void df::DFModelRunner::DFModelRunnerImpl::wrapSourceNode(const MRModelInterface
 	auto runner = new SourceNodeRunner(srcWrapData.node, this, logger_);
 	nodeRunners_.push_back(runner);
 
-	runnables_.push_back(threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&INodeRunner::run, runner))));
+	runnables_.push_back(threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(std::bind(&INodeRunner::run, runner))));
 
 	df::IDFLoggable * loggable = dynamic_cast<df::IDFLoggable*>(sourceData.node);
 
@@ -483,7 +497,7 @@ void df::DFModelRunner::DFModelRunnerImpl::wrapSinkNode(const MRModelInterfaceVe
 	auto runner = new SinkNodeRunner(node, this, logger_);
 	nodeRunners_.push_back(runner);
 
-	runnables_.push_back(threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&INodeRunner::run, runner))));
+	runnables_.push_back(threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(std::bind(&INodeRunner::run, runner))));
 
 	df::IDFLoggable * loggable = dynamic_cast<df::IDFLoggable*>(sinkData.node);
 
@@ -513,7 +527,7 @@ void df::DFModelRunner::DFModelRunnerImpl::wrapProcessorNode(const MRModelInterf
 	}
 
 	nodeRunners_.push_back(runner);
-	runnables_.push_back(threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(boost::bind(&INodeRunner::run, runner))));
+	runnables_.push_back(threadingUtils::IRunnablePtr(new threadingUtils::FunctorRunnable(std::bind(&INodeRunner::run, runner))));
 
 	df::IDFLoggable * loggable = dynamic_cast<df::IDFLoggable*>(processorData.node);
 
@@ -558,7 +572,7 @@ void df::DFModelRunner::DFModelRunnerImpl::resetDataflowStatus()
 	failure_ = false;
 	dataflowFinished_ = false;
 	paused_ = false;
-	sourcesStartWait.lock();
+	//sourcesStartWait.lock();
 }
 
 void df::DFModelRunner::DFModelRunnerImpl::resetDataflowElements()
@@ -631,7 +645,7 @@ void df::DFModelRunner::DFModelRunnerImpl::cleanUpDataflow()
 
 void df::DFModelRunner::DFModelRunnerImpl::markFailure(const std::string & message)
 {
-	StrictScopedLock lock(failureMessageSync);
+	std::lock_guard<std::mutex> lock(failureMessageSync);
 	failureMessages_.push_back(message);
 	if (failure_ == false)
 	{

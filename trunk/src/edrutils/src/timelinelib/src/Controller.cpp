@@ -107,32 +107,28 @@ Controller::PlaybackDirection Controller::getPlaybackDirection() const
     return playbackDirection;
 }
 
-void Controller::play()
+void Controller::run()
 {
-    ScopedLock lock(stateMutex);
+	ScopedLock lock(stateMutex);
 
-    State state = getState();
+	State state = getState();
 
-    if(state.isPlaying == true){
-        return;
-    }
+	if (state.isPlaying == true){
+		return;
+	}
 
-    state.isPlaying = true;
+	state.isPlaying = true;
 
-    if(paused == false){
-        if(timer->isRunning() == true){
-            timer->cancel();
-            timer->join();
-        }
+	if (paused == false){
+		runningThreadID = std::this_thread::get_id();
+		timer->run();
+	}
+	else{
+		paused = false;
+		cv.notify_one();
+	}
 
-        timer->start();
-
-    }else{
-        paused = false;
-        pauseMutex.unlock();
-    }
-
-    setState(state);
+	setState(state);
 }
 
 void Controller::pause()
@@ -232,7 +228,7 @@ bool Controller::isWriteEnabled() const
 {
     bool ret = false;
 
-    if ( OpenThreads::Thread::CurrentThread() == timer.get() || model->getState().isPlaying == false || timeUpdateMode == AsynchTimeUpdate ) {
+    if ( std::this_thread::get_id() == runningThreadID || model->getState().isPlaying == false || timeUpdateMode == AsynchTimeUpdate ) {
         ret = true;
     }
 

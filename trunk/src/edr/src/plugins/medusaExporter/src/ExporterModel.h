@@ -12,7 +12,7 @@
 
 
 #include <corelib/IMemoryDataManager.h>
-#include <boost/function.hpp>
+#include <functional>
 #include "IExporter.h"
 #include "AnnotationData.h"
 #include <plugins/dicom/IDicomInternalStruct.h>
@@ -24,7 +24,7 @@ namespace medusaExporter {
 	class ExporterModel
 	{
 	public:
-		typedef boost::function<void(double, const QString&)> CallbackFunction;
+		typedef std::function<void(double, const QString&)> CallbackFunction;
 	public:
 		ExporterModel(core::IFileDataManager* fileManager, core::IMemoryDataManager* dataManager);
 		virtual ~ExporterModel() {}
@@ -46,7 +46,7 @@ namespace medusaExporter {
         void clearMedusaExportDir();
 
 	private:
-		void pack(const QString& dirPath, const QString& outFile, boost::function<bool(const core::Filesystem::Path&)> filter, CallbackFunction fun);
+		void pack(const QString& dirPath, const QString& outFile, std::function<bool(const core::Filesystem::Path&)> filter, CallbackFunction fun);
 		std::map<std::string, bool> gatherPowerDopplers(const QString& dirPath, CallbackFunction fun);
 		void gatherPowerDopplers(dicom::IDicomInternalStructConstPtr inter, std::map<std::string, bool>& dopplers);
 		std::vector<core::Filesystem::Path> gatherInternalSessionFiles(const QString &dirPath);
@@ -62,7 +62,7 @@ namespace medusaExporter {
     class CallbackCollector
     {
     public:
-        typedef boost::function<void(ExporterModel::CallbackFunction)> Operation;
+        typedef std::function<void(ExporterModel::CallbackFunction)> Operation;
         CallbackCollector(const ExporterModel::CallbackFunction& mainCallback);
         virtual ~CallbackCollector();
 

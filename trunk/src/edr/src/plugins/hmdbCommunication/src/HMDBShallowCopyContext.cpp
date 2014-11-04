@@ -1146,8 +1146,8 @@ void HMDBShallowCopyLocalContext::unloadSubjectHierarchy(const IndexedData & unl
 				if (pIT != it->second.end()){
 
 					auto data = pIT->second;
-					for (auto it = data.begin(); it != data.end(); ++it){
-						localContext_->unload(*it);
+					for (auto d : data){
+						localContext_->unload(d);
 					}
 
 					it->second.erase(pIT);

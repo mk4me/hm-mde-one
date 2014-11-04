@@ -10,6 +10,7 @@
 #define HEADER_GUARD___IMRNODE_H__
 
 #include <dflib/IDFFeatures.h>
+#include <mutex>
 
 class MROutputPin;
 class MRInputPin;
@@ -19,6 +20,10 @@ class IMRNode : public df::IDFResetable, public df::IDFPausable
 public:
 	virtual void process() = 0;
 	virtual void tryPause() = 0;
+
+protected:
+
+	mutable std::mutex mutex;
 };
 
 class IMRSink

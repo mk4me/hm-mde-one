@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___MRPIN_H__
 #define HEADER_GUARD___MRPIN_H__
 
-#include <threadingUtils/Synchronized.h>
+#include <mutex>
 #include <vector>
 #include <dflib/IDFFeatures.h>
 #include <dflib/IDFPin.h>
@@ -36,9 +36,13 @@ public:
 
 	virtual size_type size() const = 0;
 	virtual const bool empty() const = 0;
+
+protected:
+
+	mutable std::mutex mutex;
 };
 
-class MRInputPin : public IMRPin, public threadingUtils::SynchronizedT<true>
+class MRInputPin : public IMRPin
 {
 public:
 	MRInputPin(IMRSink * sink, df::IInputPin * pin, df::IDFInput * dfInput);
@@ -78,7 +82,7 @@ private:
 	unsigned int outputsReady;
 };
 
-class MROutputPin : public IMRPin, public threadingUtils::SynchronizedT<true>
+class MROutputPin : public IMRPin
 {
 public:
 	MROutputPin(IMRSource * source, df::IOutputPin * pin, df::IDFOutput * dfOutput);

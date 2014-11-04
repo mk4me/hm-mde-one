@@ -7,7 +7,6 @@
 #include <plugins/subject/IMotion.h>
 #include <corelib/HierarchyDataItem.h>
 #include <plugins/hmdbCommunication/TreeItemHelper.h>
-#include <boost/foreach.hpp>
 #include <plugins/subject/ISubject.h>
 #include <plugins/hmdbCommunication/IPatient.h>
 #include <corelib/PluginCommon.h>
@@ -112,7 +111,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
 		std::vector<DicomHelperPtr> helpers;
         s->getMotions(motions);
 
-        BOOST_FOREACH(core::VariantConstPtr motionOW, motions) {	
+        for(auto motionOW : motions) {	
 
             PluginSubject::MotionConstPtr motion = motionOW->get();
             std::string trialName;

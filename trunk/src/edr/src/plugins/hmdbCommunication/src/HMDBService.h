@@ -10,11 +10,9 @@
 
 #include <plugins/hmdbCommunication/IHMDBService.h>
 #include <corelib/IService.h>
-#include <corelib/IThread.h>
 #include "CURLFTPManager.h"
 #include <networkUtils/CURLManager.h>
-#include <threadingUtils/SynchronizationPolicies.h>
-#include <boost/atomic.hpp>
+#include <atomic>
 #define NOMINMAX
 #include <xmlpull/XmlUtils.h>
 
@@ -150,9 +148,9 @@ namespace hmdbCommunication
 		//! Widget
 		QWidget * mainWidget;
 		//! W¹tek us³ug
-		core::IThreadPtr servicesThread;
+		core::ThreadPool::Thread servicesThread;
 		//! W¹tek danych
-		core::IThreadPtr dataThread;
+		core::ThreadPool::Thread dataThread;
 		//! Manager us³ug
 		networkUtils::CURLManagerPtr servicesManager;
 		//! Manager danych
@@ -162,11 +160,11 @@ namespace hmdbCommunication
 		utils::shared_ptr<XmlUtils::CURLExecutor> dataCurlExecutor;
 
 		//! Obiekt synchronizuj¹cy
-		threadingUtils::RecursiveSyncPolicy sync_;
+		std::recursive_mutex sync_;
 		//! Czy zakoñczyæ dzia³anie us³ug
-		boost::atomic<bool> finalizeServices_;
+		std::atomic<bool> finalizeServices_;
 		//! Czy zakoñczyæ dzia³anie danych
-		boost::atomic<bool> finalizeData_;
+		std::atomic<bool> finalizeData_;
 	};
 }
 

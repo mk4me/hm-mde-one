@@ -10,8 +10,8 @@
 #define HEADER_GUARD_CORE__IVISUALIZER_H__
 
 #include <string>
+#include <mutex>
 #include <utils/SmartPtr.h>
-#include <threadingUtils/SynchronizationPolicies.h>
 #include <corelib/Variant.h>
 #include <corelib/IIdentifiable.h>
 #include <QtGui/QPixmap>
@@ -50,7 +50,7 @@ namespace plugin
 			//! Próbujemy odświeżać dane jeśli jest to konieczne
 			void tryUpdate()
 			{
-				threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
+				std::lock_guard<std::mutex> lock(synch_);
 				if (update_ == true){
 					update();
 					update_ = false;
@@ -60,12 +60,12 @@ namespace plugin
 			//! Metoda zaznacza potrzebę odświeżenia serii danych
 			void requestUpdate()
 			{
-				threadingUtils::ScopedLock<threadingUtils::RecursiveSyncPolicy> lock(synch_);
+				std::lock_guard<std::mutex> lock(synch_);
 				update_ = true;
 			}
 
 		private:
-			threadingUtils::RecursiveSyncPolicy synch_;
+			std::mutex synch_;
 			bool update_;
 		};
 		//! Seria o charakterze czasowym - pozwala manipulować czasem w serii danych

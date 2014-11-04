@@ -1,5 +1,4 @@
 #include "CoreLibPCH.h"
-#include <boost/foreach.hpp>
 #include <corelib/Filesystem.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -115,10 +114,10 @@ std::vector<Filesystem::Path> Filesystem::listFiles(const Path& path, bool recur
         if(recursive)
         {
             std::vector<Path> dirs = listSubdirectories(path);
-            BOOST_FOREACH(Path& dir, dirs)
+            for(const auto & dir : dirs)
             {
                 std::vector<Path> subfiles = listFiles(dir, recursive);
-                BOOST_FOREACH(Path& file, subfiles)
+                for(const auto & file : subfiles)
                 {
                     files.push_back(file);
                 }
@@ -158,10 +157,10 @@ std::vector<Filesystem::Path> Filesystem::listFiles(const Path& path, bool recur
 		if(recursive)
 		{
 			std::vector<Path> dirs = listSubdirectories(path);
-			BOOST_FOREACH(Path& dir, dirs)
+			for (const auto & dir : dirs)
 			{
 				std::vector<Path> subfiles = listFiles(dir, recursive, mask);
-				BOOST_FOREACH(Path& file, subfiles)
+				for (const auto & file : subfiles)
 				{
 					files.push_back(file);
 				}
@@ -201,10 +200,10 @@ std::vector<Filesystem::Path> Filesystem::listFiles(const Path& path, bool recur
 		if(recursive)
 		{
 			std::vector<Path> dirs = listSubdirectories(path);
-			BOOST_FOREACH(Path& dir, dirs)
+			for (const auto & dir : dirs)
 			{
 				std::vector<Path> subfiles = listFiles(dir, recursive, masks);
-				BOOST_FOREACH(Path& file, subfiles)
+				for (const auto & file : subfiles)
 				{
 					files.push_back(file);
 				}
@@ -213,7 +212,7 @@ std::vector<Filesystem::Path> Filesystem::listFiles(const Path& path, bool recur
 		Iterator end;
 		for(Iterator iter(path) ; iter != end ; ++iter)
 		{
-			BOOST_FOREACH(std::string mask, masks)
+			for(const auto & mask : masks)
 			{
 				if(isDirectory(iter->path()) == false && fileExtension(iter->path()).compare(mask) == 0)
 				{

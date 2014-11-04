@@ -13,7 +13,7 @@ FunctorRunnable::~FunctorRunnable()
 
 void FunctorRunnable::run()
 {
-	if (func.empty() == false){
+	if (func){
 		func();
 	}
 }

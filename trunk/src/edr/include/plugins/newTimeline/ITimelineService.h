@@ -12,7 +12,7 @@
 #include <corelib/IService.h>
 #include <timelinelib/IChannel.h>
 #include <timelinelib/Controller.h>
-#include <boost/function.hpp>
+#include <functional>
 
 class TimelineWidget;
 
@@ -20,7 +20,7 @@ class ITimelineService
 {
 public:
 
-    typedef boost::function<void (const timeline::IChannelConstPtr &)> UIChannelAction;
+    typedef std::function<void (const timeline::IChannelConstPtr &)> UIChannelAction;
 
 
 public:

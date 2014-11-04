@@ -4,8 +4,6 @@
 #include "PluginPath.h"
 #include "ParserManager.h"
 #include "DataHierarchyManager.h"
-#include "ThreadPool.h"
-#include "JobManager.h"
 #include "LanguagesManager.h"
 #include "ApplicationDescription.h"
 
@@ -73,12 +71,12 @@ IVisualizerManager * PluginApplication::visualizerManager()
 	return getVisualizerManager();
 }
 
-core::IThreadPool * PluginApplication::threadPool()
+ThreadPool * PluginApplication::threadPool()
 {
 	return getThreadPool();
 }
 
-core::IJobManager * PluginApplication::jobManager()
+JobManager * PluginApplication::jobManager()
 {
 	return getJobManager();
 }
@@ -158,12 +156,12 @@ IVisualizerManager * MainViewApplication::visualizerManager()
 	return getVisualizerManager();
 }
 
-core::IThreadPool * MainViewApplication::threadPool()
+ThreadPool * MainViewApplication::threadPool()
 {
 	return getThreadPool();
 }
 
-core::IJobManager * MainViewApplication::jobManager()
+JobManager * MainViewApplication::jobManager()
 {
 	return getJobManager();
 }

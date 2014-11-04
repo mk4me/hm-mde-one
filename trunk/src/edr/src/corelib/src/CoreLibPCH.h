@@ -21,11 +21,12 @@
 #include <sstream>
 #include <stack>
 #include <iostream>
+#include <mutex>
+#include <future>
+#include <condition_variable>
+#include <thread>
+#include <functional>
 
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
-#include <boost/foreach.hpp>
-#include <boost/type_traits.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/cast.hpp>
 

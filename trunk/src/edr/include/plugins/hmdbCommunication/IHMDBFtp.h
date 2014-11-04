@@ -8,6 +8,7 @@
 #ifndef __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBFTP_H__
 #define __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBFTP_H__
 
+#include <threadingUtils/IProgress.h>
 #include <networkUtils/IFTPSession.h>
 #include <plugins/hmdbCommunication/IHMDBStorage.h>
 #include <utils/SmartPtr.h>
@@ -21,13 +22,13 @@ namespace hmdbCommunication
 
 		//! Interfejs transferu
 		class ITransfer : public networkUtils::IFtpSession::ITransfer,
-			public threadingUtils::IProgress
+			public threadingUtils::INormalizedProgress
 		{
 		public:
 			//! Destruktor wirtualny
 			virtual ~ITransfer() {}
 			//! Domyœlna implementacja postêpu
-			virtual const float progress() const
+			virtual const float normalizedProgress() const
 			{
 				return (size() != 0) ? ((float)processed() / (float)size()) : 0.0;
 			}

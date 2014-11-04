@@ -10,19 +10,19 @@
 #define HEADER_GUARD_THREADINGUTILS__IPROGRESS_H__
 
 namespace threadingUtils {
-	//! Interfejs pozwalaj�cy okre�li� stan pracy w�tku
-	//! Post�p podawany jest od 0.0 do 1.0;
-	class IProgress
+	//! Interfejs pozwalający określić postęp pracy
+	//! Postęp podawany jest od 0.0 do 1.0;
+	class INormalizedProgress
 	{
 	public:
 		//! Destruktor wirtualny
-		virtual ~IProgress() {}
-		//! \return Post�p realizacji przetwarzania
-		virtual const float progress() const = 0;
+		virtual ~INormalizedProgress() {}
+		//! \return Postęp realizacji przetwarzania
+		virtual const float normalizedProgress() const = 0;
 	};
 
-	//! Interfejs pozwalaj�cy okre�li� procentowy stan pracy w�tku
-	//! Post�p podawany jest w procentach od 0% do 100%;
+	//! Interfejs pozwalający określić procentowy postęp pracy
+	//! Postęp podawany jest w procentach od 0% do 100%;
 	class IPercentageProgress
 	{
 	public:
@@ -32,7 +32,7 @@ namespace threadingUtils {
 		virtual const float percentageProgress() const = 0;
 	};
 
-	//! Interfejs pozwalaj�cy okre�li� szacowany czas do ko�ca zadania oraz czas jaki up�yn�� od momentu jego wystartowania
+	//! Interfejs pozwalający określić szacowany czas do końca zadania oraz czas jaki upłynął od momentu jego wystartowania
 	//! Czas podawany jest w sekundach
 	class ITimeProgress
 	{

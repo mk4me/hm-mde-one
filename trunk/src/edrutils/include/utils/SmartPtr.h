@@ -59,8 +59,6 @@ namespace utils {
 	using std::const_pointer_cast;
 	using std::make_shared;
 
-#else
-
 #endif
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -80,11 +78,7 @@ struct std::less < std::weak_ptr<T> >
 	}
 };
 
-#else
-
 #endif
-
-
 
 #define DEFINE_SMART_POINTERS_EXT(className, pointerName)                    \
 	typedef utils::shared_ptr<className> pointerName ## Ptr;                 \

@@ -12,7 +12,6 @@
 #include <utils/Debug.h>
 
 #include <corelib/StringTools.h>
-#include <boost/foreach.hpp>
 #include <coreui/CoreVisualizerWidget.h>
 
 #include <corelib/Visualizer.h>
@@ -181,7 +180,7 @@ void ToolboxMain::populateVisualizersMenu( QMenu* menu )
 	// dodajemy wizualizatory
 	IVisualizerManager::VisualizerPrototypes visPrototypes;
 	getVisualizerManager()->visualizerPrototypes(visPrototypes);
-	BOOST_FOREACH(VisualizerConstPtr vis, visPrototypes) {
+	for(auto vis : visPrototypes) {
 		QAction* action = new QAction(toQString(vis->getName()), menu);
 		action->setData( qVariantFromValue(vis->getID()) );
 		action->setIcon( vis->getIcon() );
@@ -189,7 +188,7 @@ void ToolboxMain::populateVisualizersMenu( QMenu* menu )
 		sortedActions.push_back(action);
 	}
 	std::sort(sortedActions.begin(), sortedActions.end(), SortActionsByNames());
-	BOOST_FOREACH(QAction* action, sortedActions) {
+	for(auto action : sortedActions) {
 		menu->addAction(action);
 	}
 }
@@ -202,11 +201,11 @@ void ToolboxMain::populateWindowMenu( QMenu* menu )
 	if ( dockwidgets.size() ) {
 		// pobranie i posortowanie akcji wg nazw
 		sortedActions.reserve(dockwidgets.size());
-		BOOST_FOREACH(QDockWidget* dockWidget, dockwidgets) {
+		for(auto dockWidget : dockwidgets) {
 			sortedActions.push_back(dockWidget->toggleViewAction());
 		}
 		std::sort(sortedActions.begin(), sortedActions.end(), SortActionsByNames());
-		BOOST_FOREACH(QAction* action, sortedActions) {
+		for(auto action : sortedActions) {
 			menu->addAction(action);
 		}
 		menu->addSeparator();
@@ -216,11 +215,11 @@ void ToolboxMain::populateWindowMenu( QMenu* menu )
 	QList<QToolBar*> toolbars = this->findChildren<QToolBar*>();
 	if (toolbars.size()) {
 		sortedActions.reserve(toolbars.size());
-		BOOST_FOREACH(QToolBar* toolbar, toolbars) {
+		for(auto toolbar : toolbars) {
 			sortedActions.push_back(toolbar->toggleViewAction());
 		}
 		std::sort(sortedActions.begin(), sortedActions.end(), SortActionsByNames());
-		BOOST_FOREACH(QAction* action, sortedActions) {
+		for(auto action : sortedActions) {
 			menu->addAction(action);
 		}
 	}

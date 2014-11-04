@@ -173,8 +173,9 @@ dicom::ILayerGraphicItemPtr dicom::LayeredImage::getLayerGraphicItem(const std::
 std::vector<dicom::ILayerItemConstPtr> dicom::LayeredImage::getLayersToSerialize( const std::string& tag ) const
 {
     std::vector<ILayerItemConstPtr> ret;
-    BOOST_FOREACH(auto layer, layers.equal_range(tag)) {
-        ret.push_back(layer.second);
+	auto r = layers.equal_range(tag);
+	for (auto it = r.first; it != r.second; ++it){
+        ret.push_back(it->second);
     }
     return ret;
 }

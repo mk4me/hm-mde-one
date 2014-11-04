@@ -9,7 +9,7 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__MEMORYSTORAGE_H__
 
 #include <plugins/hmdbCommunication/IHMDBStorage.h>
-#include <threadingUtils/SynchronizationPolicies.h>
+#include <mutex>
 #include <map>
 
 namespace hmdbCommunication
@@ -114,7 +114,7 @@ namespace hmdbCommunication
 
 	private:
 		//! Obiekt synchronizuj¹cy
-		mutable threadingUtils::RecursiveSyncPolicy sync_;
+		mutable std::recursive_mutex sync_;
 		//! Dane
 		Storage storage;
 	};

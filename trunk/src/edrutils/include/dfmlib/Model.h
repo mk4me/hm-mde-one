@@ -1,17 +1,15 @@
 #ifndef HEADER_GUARD__MODEL_H__
 #define HEADER_GUARD__MODEL_H__
 
-#include <threadingUtils/Synchronized.h>
 #include <utils/ObserverPattern.h>
 #include <dfmlib/DFLMTypes.h>
 #include <dfmlib/Node.h>
 #include <dfmlib/Pin.h>
 #include <utils/SmartPtr.h>
-#include <OpenThreads/ReentrantMutex>
-#include <OpenThreads/ScopedLock>
 #include <set>
 #include <vector>
 #include <map>
+#include <mutex>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm{
@@ -38,7 +36,7 @@ namespace dflm{
 
 	protected:
 
-		typedef OpenThreads::ScopedLock<OpenThreads::ReentrantMutex> ScopedLock;
+		typedef std::lock_guard<std::recursive_mutex> ScopedLock;
 
 	private:
 
@@ -201,7 +199,7 @@ namespace dflm{
 
 	protected:
 		//! mutex dla zmiany stanu modelu
-		mutable OpenThreads::ReentrantMutex editMutex;
+		mutable std::recursive_mutex editMutex;
 
 		const Nodes & innerGetNodes() const { return nodes; }
 		const Nodes & innerGetLeafNodes() const { return leafNodes; }

@@ -12,7 +12,7 @@
 #include <osgGA/GUIEventAdapter>
 #include <osgGA/GUIEventHandler>
 #include <osgDB/ReadFile>
-#include <boost/type_traits.hpp>
+#include <type_traits>
 #include <algorithm>
 #include <cmath>
 

@@ -1,7 +1,6 @@
 #include "../PCH.h"
 #include "../VidLibPrivate.h"
 #include <vidlib/osg/OsgAdapter.h>
-#include <boost/foreach.hpp>
 #include <utils/PtrPolicyOSG.h>
 
 namespace vidlib 
@@ -18,7 +17,7 @@ namespace vidlib
 
     void __OsgAdapter::refreshImages()
     {
-        BOOST_FOREACH( const Images::value_type& val, images ) {
+        for( const auto & val : images ) {
             osg::ref_ptr<VideoImage> img;
             if (val.second.image.lock(img)) {
                 img->refresh();

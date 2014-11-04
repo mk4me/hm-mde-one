@@ -39,7 +39,7 @@ void OperationProgressWidget::setOperation(DataViewWidget::IOperation * op)
 void OperationProgressWidget::refreshOperationStatus()
 {
 	ui->operationPlaceholder->setText(operation->name());
-	ui->progressBar->setValue(operation->progress() * 100.0);
+	ui->progressBar->setValue(operation->normalizedProgress() * 100.0);
 }
 
 void OperationProgressWidget::onCancel()

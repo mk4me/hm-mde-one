@@ -4,7 +4,6 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QTabBar>
-#include <boost/foreach.hpp>
 
 using namespace coreUI;
 
@@ -132,7 +131,7 @@ CoreDockWidgetSet* CoreDockWidgetManager::autoAddDockWidget( QDockWidget* widget
 CoreDockWidgetSet* CoreDockWidgetManager::tryGetDockSet( QDockWidget* widget )
 {
     for (auto it = dockList.begin(); it != dockList.end(); ++it) {
-        BOOST_FOREACH(const QDockWidget* dock, (*it)->getDockWidgets()) {
+        for(const auto dock : (*it)->getDockWidgets()) {
             if (dock == widget) {
                 return *it;
             }

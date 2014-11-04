@@ -5,7 +5,6 @@
 #include <dfmlib/DFPin.h>
 #include <map>
 #include <osgui/Utils2D.h>
-#include <boost/function.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace osgVDF{
@@ -21,7 +20,7 @@ class osgVDFBasePin : public osgWidget::Widget
 
 private:
 
-    typedef boost::function<void(osg::Geode *, const osgWidget::XYCoord &)> VisualConnectionsUpdater;
+    typedef std::function<void(osg::Geode *, const osgWidget::XYCoord &)> VisualConnectionsUpdater;
 
 public:
 

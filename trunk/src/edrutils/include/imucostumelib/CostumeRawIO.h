@@ -46,13 +46,13 @@ namespace imuCostume
 		//! \param length [out] D³ugoœæ odebranych danych [B]
 		//! \param timeout Dopuszczalny czas oczekiwania na dane [ms] - 0 oznacza nieskoñczonoœæ
 		//! \return Prawda jeœli odebrano poprawn¹ ramke danych
-		const bool receive(Frame & frame, uint16_t & length, const unsigned int timeout);
+		const bool receive(Frame & frame, uint16_t & length, const unsigned int timeout = 0);
 
 		//! \param data Dane do wys³ania
 		//! \param length Ile danych wys³aæ z bufora [B]
 		//! \param timeout Dopuszczalny czas oczekiwania na dane [ms] - 0 oznacza nieskoñczonoœæ
 		//! \return Prawda jeœli wys³ano dane
-		const bool send(const void * data, const uint16_t length, const unsigned int timeout);
+		const bool send(const void * data, const uint16_t length, const unsigned int timeout = 0);
 
 	private:
 		//! Obiekt implementujacy funkcjonalnoœæ kostiumu

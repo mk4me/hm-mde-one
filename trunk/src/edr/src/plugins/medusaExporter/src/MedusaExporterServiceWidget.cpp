@@ -15,7 +15,6 @@
 #include <corelib/ISourceManager.h>
 #include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <quazip/JlCompress.h>
-#include <boost/bind.hpp>
 #include <QtCore/QUrl>
 #include <tuple>
 
@@ -44,7 +43,7 @@ MedusaExporterServiceWidget::MedusaExporterServiceWidget(MedusaExporterService* 
 	ui->progressBar->setVisible(false);
 	ui->progressBarLabel->setVisible(false);
 
-	callbackFunction = boost::bind(&MedusaExporterServiceWidget::callback, this, ::_1, ::_2);
+	callbackFunction = std::bind(&MedusaExporterServiceWidget::callback, this, std::placeholders::_1, std::placeholders::_2);
 }
 
 void medusaExporter::MedusaExporterServiceWidget::onExport()
@@ -80,8 +79,8 @@ void medusaExporter::MedusaExporterServiceWidget::onExport()
         connect(t, SIGNAL(terminated()), t, SLOT(deleteLater()));
         
 		//exporterModel->exportData(outDir.absolutePath(), user, exportFrom.absolutePath(), config, callbackFunction);
-        CallbackCollector::Operation op = boost::bind(&ExporterModel::exportData, exporterModel.get(),
-                                                      outDir.absolutePath(), user, exportFrom.absolutePath(), config, ::_1);
+		CallbackCollector::Operation op = std::bind(static_cast<void(ExporterModel::*)(const QString&, const QString&, const QString&, const ExportConfig&, ExporterModel::CallbackFunction)>(&ExporterModel::exportData), exporterModel.get(),
+			outDir.absolutePath(), user, exportFrom.absolutePath(), config, std::placeholders::_1);
         t->addOperation(op, 1.0, tr("Exporting"));
 
         disabler = utils::make_shared<WidgetDisabler>(ui->miscBox, ui->dataBox);
@@ -161,25 +160,25 @@ void medusaExporter::MedusaExporterServiceWidget::onExtract()
                
         
         //exporterModel->extractData(innerDataDir.absolutePath(), callbackFunction);
-        auto extractOp = boost::bind(&ExporterModel::extractData, exporterModel.get(), innerDataDir.absolutePath(), ::_1);
+		auto extractOp = std::bind(static_cast<void(ExporterModel::*)(const QString&, ExporterModel::CallbackFunction)>(&ExporterModel::extractData), exporterModel.get(), innerDataDir.absolutePath(), std::placeholders::_1);
         t->addOperation(extractOp, 0.2, tr("Exporting"));
         QString fileName = dirPath + "/" + innerDir.dirName() + "/";
         if (ui->metaCheck->isChecked() && ui->imagesCheck->isChecked() && ui->togetherRadio->isChecked()) {
             fileName += "all.zip";
             //exporterModel->packBoth(innerDirPath, fileName, callbackFunction);
-            auto compressOp = boost::bind(&ExporterModel::packBoth, exporterModel.get(), innerDirPath, fileName, ::_1);
+			auto compressOp = std::bind(static_cast<void(ExporterModel::*)(const QString&, const QString&, ExporterModel::CallbackFunction)>(&ExporterModel::packBoth), exporterModel.get(), innerDirPath, fileName, std::placeholders::_1);
             t->addOperation(compressOp, 0.8, tr("Compressing"));
         } else {
             if (ui->metaCheck->isChecked()) {
                 QString fn = fileName + "metadata.zip";
                 //exporterModel->packMeta(innerDirPath, fn, callbackFunction);
-                auto compressOp = boost::bind(&ExporterModel::packMeta, exporterModel.get(), innerDirPath, fn, ::_1);
+				auto compressOp = std::bind(static_cast<void(ExporterModel::*)(const QString&, const QString&, ExporterModel::CallbackFunction)>(&ExporterModel::packMeta), exporterModel.get(), innerDirPath, fn, std::placeholders::_1);
                 t->addOperation(compressOp, 0.2, tr("Compressing metadata"));
             }
             if (ui->imagesCheck->isChecked()) {
                 QString fn = fileName + "images.zip";
                 //exporterModel->packImages(innerDirPath, fn, callbackFunction);
-                CallbackCollector::Operation compressOp = boost::bind(&ExporterModel::packImages, exporterModel.get(), innerDirPath, fn, ::_1);
+				CallbackCollector::Operation compressOp = std::bind(static_cast<void(ExporterModel::*)(const QString&, const QString&, ExporterModel::CallbackFunction)>(&ExporterModel::packImages), exporterModel.get(), innerDirPath, fn, std::placeholders::_1);
                 t->addOperation(compressOp, 0.6, tr("Compressing images"));
             }
         }

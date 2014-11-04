@@ -2,8 +2,7 @@
 #include "SQLCipherStorage.h"
 #include <streambuf>
 
-#include <boost/shared_array.hpp>
-#include <boost/thread.hpp>
+#include <utils/SmartPtr.h>
 #include <boost/format.hpp>
 #include <boost/array.hpp>
 #include <sqliteUtils/BufferPolicyT.h>
@@ -250,7 +249,7 @@ const bool SQLCipherStorage::rawSet(const std::string & key, IHMDBStorage::IStre
 
 	const auto readSize = std::min((int)streamSize, (int)sqliteUtils::MaxBufferSize);
 
-	boost::shared_array<char> memblock(new char[readSize]);
+	utils::shared_array<char> memblock(new char[readSize]);
 	input->seekg(0, std::ios::beg);
 	int offset = 0;
 	const unsigned int fullReads = (streamSize / readSize);
@@ -368,7 +367,7 @@ void SQLCipherStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBSt
 
 	const auto readSize = std::min((int)streamSize, (int)sqliteUtils::MaxBufferSize);
 
-	boost::shared_array<char> memblock(new char[readSize]);
+	utils::shared_array<char> memblock(new char[readSize]);
 	input->seekg(0, std::ios::beg);
 	int offset = 0;
 	const unsigned int fullReads = (streamSize / readSize);

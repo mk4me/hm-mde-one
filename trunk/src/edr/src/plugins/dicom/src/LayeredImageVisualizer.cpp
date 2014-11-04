@@ -378,7 +378,7 @@ void dicom::LayeredImageVisualizer::selectLayer(int tagIdx, int idx)
 			}
 
 			serie->getGraphicsScene()->blockSignals(true);
-			BOOST_FOREACH(std::string t, img->getTags()) {
+			for(auto t : img->getTags()) {
 				int count = img->getNumLayerItems(t);
 				for (int i = 0; i < count; ++i) {
 					auto li = img->getLayerItem(t, i);
@@ -403,7 +403,7 @@ std::pair<std::string, int> dicom::LayeredImageVisualizer::selectedLayer() const
 	const LayeredSerie* serie = dynamic_cast<const LayeredSerie*>(getActiveSerie());
 	if (serie) {
 		ILayeredImageConstPtr img = serie->getImage();
-		BOOST_FOREACH(std::string tag, img->getTags()) {
+		for(auto tag : img->getTags()) {
 			int count = img->getNumGraphicLayerItems(tag);
 			for (int i = 0; i < count; ++i) {
 				if (img->getLayerGraphicItem(tag, i)->getSelected()) {

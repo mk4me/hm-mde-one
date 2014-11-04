@@ -14,8 +14,8 @@
 //! Forward declarations
 namespace df{
 
-	class IExtInputPin;
-	class IExtOutputPin;
+	class IExtendedInputPin;
+	class IExtendedOutputPin;
 
 	class ISinkNode;
 	class ISourceNode;
@@ -30,9 +30,9 @@ class MRModelPinRequirementsVerifier
 {
 public:
 	//! Typ opisuj¹cy agregat pinów wejœciowych z niespe³nionymi zale¿noœciami (wymagane a niepodpiête)
-	typedef std::list<df::IExtInputPin*> UnsatisfiedInputs;
+	typedef std::list<df::IExtendedInputPin*> UnsatisfiedInputs;
 	//! Typ opisuj¹cy agregat pinów wyjœciowych z niespe³nionymi zale¿noœciami (niepidpiête zale¿noœci a pin podpiêty)
-	typedef std::list<df::IExtOutputPin*> UnsatisfiedOutputs;
+	typedef std::list<df::IExtendedOutputPin*> UnsatisfiedOutputs;
 
 	//! Typ opisuj¹cy weryfikacjê opisu przejœæ
 	struct UnsatisfiedPins

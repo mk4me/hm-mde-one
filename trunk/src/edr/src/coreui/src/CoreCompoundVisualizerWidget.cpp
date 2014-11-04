@@ -3,7 +3,7 @@
 #include <coreui/CoreVisualizerWidget.h>
 #include <QtWidgets/QHBoxLayout>
 #include <coreui/CoreWidgetAction.h>
-#include <boost/bind.hpp>
+#include <functional>
 
 using namespace coreUI;
 
@@ -93,7 +93,7 @@ void CoreCompoundVisualizerWidget::init()
 	setLayout(new QHBoxLayout);
 	CoreCustomWidgetAction * switchVisualizerAction = new CoreCustomWidgetAction(
 		this,
-		CoreCustomWidgetAction::WidgetCreator(boost::bind(&CoreCompoundVisualizerWidget::createVisualizerSwitch, this, _1)),
+		CoreCustomWidgetAction::WidgetCreator(std::bind(&CoreCompoundVisualizerWidget::createVisualizerSwitch, this, std::placeholders::_1)),
 		tr("Utils"),
 		CoreTitleBar::Left
 	);

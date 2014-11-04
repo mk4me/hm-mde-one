@@ -78,7 +78,7 @@ namespace hmdbCommunication
 		virtual const bool shareDiskSpace(const core::Filesystem::Path & path) const { return false; }
 	};
 
-	class IHMDBStorage : public threadingUtils::ITTransaction<IHMDBStorageOperations>
+	class IHMDBStorage : public IHMDBStorageOperations, public threadingUtils::ITTransaction<IHMDBStorageOperations>
 	{
 	public:
 		//! Destruktor wirtualny

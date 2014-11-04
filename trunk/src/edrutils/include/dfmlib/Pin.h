@@ -4,8 +4,8 @@
 #include <dfmlib/DFLMTypes.h>
 #include <set>
 #include <vector>
+#include <functional>
 #include <utils/SmartPtr.h>
-#include <boost/function.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace dflm {
@@ -55,7 +55,7 @@ public:
 private:
 
     //! Funktor zwracający indeks pinu
-    typedef boost::function<int(const PinPtr &)> PinIndexFunc;
+    typedef std::function<int(const PinPtr &)> PinIndexFunc;
 
 public:
 

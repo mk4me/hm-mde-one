@@ -14,6 +14,12 @@
 // mechanizm ten musi być wyłączony, inaczej może negatywnie wpłynąć na
 // czas kompilacji
 
+#include <atomic>
+#include <mutex>
+#include <condition_variable>
+#include <future>
+#include <thread>
+
 #include <vector>
 #include <map>
 #include <string>
@@ -24,6 +30,7 @@
 #include <iostream>
 #include <list>
 #include <typeinfo>
+#include <functional>
 
 #include <utils/Utils.h>
 #include <utils/Debug.h>
@@ -33,8 +40,6 @@
 #include <QtWidgets/QtWidgets>
 
 #include <boost/lexical_cast.hpp>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/any.hpp>
 #include <boost/range.hpp>

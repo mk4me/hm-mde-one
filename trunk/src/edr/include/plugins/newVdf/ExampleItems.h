@@ -15,7 +15,7 @@
 #include <dflib/IDFPin.h>
 #include <dflib/IDFNode.h>
 #include <dflib/Node.h>
-#include <boost/function.hpp>
+#include <functional>
 #include <corelib/ILog.h>
 #include <plugins/newVdf/INodeConfiguration.h>
 #include <QtWidgets/QLabel>

@@ -18,7 +18,7 @@
 #include <osgViewer/View>
 
 #include <boost/tuple/tuple.hpp>
-#include <boost/function.hpp>
+#include <functional>
 #include <list>
 
 //! klasa pomocnicza, dzięki niej można łatwo podpiąć się pod system pickingu
@@ -34,7 +34,7 @@ public:
     //! lista obiektów, które zostały "kliknięte"
     typedef std::list<PickerTuple> PickerList;
     //! funktor realizujący jakąś akcję po kliknięciu
-    typedef boost::function<void (const PickerList& )> HandlerFunction;
+    typedef std::function<void (const PickerList& )> HandlerFunction;
 
 public:
     //! Konstruktor

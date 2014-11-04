@@ -150,7 +150,7 @@ namespace hmdbServices
 		//uzupełnić dokumentację
 		//! \param fileID Identyfikator pliku, który nadpisujemy
 		//! \param path Ścieżka pliku
-		//! \param filename Nazwa pliku
+		//! \param filename [out] Nazwa pliku
 		virtual void replaceFile(int fileID, const std::string& path, const std::string& filename) = 0;
 	};
 
