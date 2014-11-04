@@ -120,10 +120,12 @@ namespace medusaExporter {
         void afterExtract();
         void afterExport();
         void afterClear();
+		void curveDescChanged(const QString &);
 
 	private:
         void setExportFrom(const QString& dir, const QStringList& users);
-	
+		bool isKeyPoints();
+
 
     private:
 		MedusaExporterService* medusaService;

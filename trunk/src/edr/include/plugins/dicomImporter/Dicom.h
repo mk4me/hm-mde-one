@@ -16,6 +16,7 @@
 #include <utils/ObjectWrapper.h>
 #include <QtGui/QPixmap>
 #include <plugins/dicomImporter/Export.h>
+#include "utils/PtrPolicyStd.h"
 
 namespace dicomImporter {
     DEFINE_SMART_POINTERS(DicomImage);
@@ -23,6 +24,6 @@ namespace dicomImporter {
     PLUGIN_DICOM_EXPORT QPixmap convertToPixmap(DicomImagePtr image);
 }
 
-DEFINE_WRAPPER(DicomImage, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
-DEFINE_WRAPPER(DcmDataset, utils::PtrPolicyBoost, utils::ClonePolicyForbidden);
+DEFINE_WRAPPER(DicomImage, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
+DEFINE_WRAPPER(DcmDataset, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
 #endif

@@ -3,8 +3,8 @@
 #include "QtCore/QDateTime"
 
 #include "DicomImporter.h"
-
-
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include "DicomImporterSource.h"
 #include <corelib/Filesystem.h>
 #include <corelib/HierarchyItem.h>
@@ -70,7 +70,7 @@ void DicomImporter::handleSeriesRecord( DcmDirectoryRecord * seriesRecord, inter
     DcmDirectoryRecord * fileRecord = nullptr;
     bool powerDoppler = false;
     while((fileRecord = seriesRecord->nextSub(fileRecord)) != nullptr) {
-        auto image = utils::make_shared<internalData::Image>();
+        auto image = boost::make_shared<internalData::Image>();
         handleFileRecord(fileRecord, image, basePath);
         image->isPowerDoppler = powerDoppler;
         powerDoppler = !powerDoppler;
@@ -98,7 +98,7 @@ void DicomImporter::handleStudyRecord( DcmDirectoryRecord * studyRecord, interna
 
     DcmDirectoryRecord* seriesRecord = nullptr;    
     while (((seriesRecord = studyRecord->nextSub(seriesRecord)) != nullptr)) {
-        auto serie = utils::make_shared<internalData::Serie>();
+        auto serie = boost::make_shared<internalData::Serie>();
         handleSeriesRecord(seriesRecord, serie, basePath);
         study->series.push_back(serie);
     }
@@ -119,7 +119,7 @@ void DicomImporter::handlePatientRecord( DcmDirectoryRecord * patientRecord, int
 
     DcmDirectoryRecord* studyRecord = nullptr;
     while ((studyRecord = patientRecord->nextSub(studyRecord)) != nullptr)  {
-        auto study = utils::make_shared<internalData::Study>();
+        auto study = boost::make_shared<internalData::Study>();
         handleStudyRecord(studyRecord, study, basePath);
         patient->sessions.push_back(study);
     }
@@ -128,7 +128,7 @@ void DicomImporter::handlePatientRecord( DcmDirectoryRecord * patientRecord, int
 
 dicomImporter::DicomInternalStructPtr DicomImporter::import( const core::Filesystem::Path& from )
 {
-    DicomInternalStructPtr internalStruct = utils::make_shared<DicomInternalStruct>();
+    DicomInternalStructPtr internalStruct = boost::make_shared<DicomInternalStruct>();
 
     core::Filesystem::Path dirfile = from / "DICOMDIR";
     if (core::Filesystem::pathExists(dirfile)) {
@@ -140,7 +140,7 @@ dicomImporter::DicomInternalStructPtr DicomImporter::import( const core::Filesys
         if (root) {
             DcmDirectoryRecord *patientRecord = nullptr;
             while ((patientRecord = root->nextSub(patientRecord)) != nullptr) {
-                internalData::PatientPtr patient = utils::make_shared<internalData::Patient>();
+                internalData::PatientPtr patient = boost::make_shared<internalData::Patient>();
                 handlePatientRecord(patientRecord, patient, basePath);
                 internalStruct->addPatient(patient);
             }
@@ -217,11 +217,11 @@ std::vector<DicomInternalStructPtr> dicomImporter::DicomImporter::split( DicomIn
     for (int i = 0; i < count; ++i) {
         internalData::PatientConstPtr patient = root->getPatient(i);
         for (auto it = patient->sessions.begin(); it != patient->sessions.end(); ++it) {
-            internalData::PatientPtr patientClone = utils::make_shared<internalData::Patient>();
+            internalData::PatientPtr patientClone = boost::make_shared<internalData::Patient>();
             patientClone->cloneMeta(*patient);
-            patientClone->sessions.push_back(utils::make_shared<internalData::Study>(**it));
+            patientClone->sessions.push_back(boost::make_shared<internalData::Study>(**it));
 
-            DicomInternalStructPtr inter = utils::make_shared<DicomInternalStruct>();
+            DicomInternalStructPtr inter = boost::make_shared<DicomInternalStruct>();
             inter->cloneMeta(*root);
             inter->addPatient(patientClone);
             results.push_back(inter);
@@ -276,20 +276,20 @@ bool dicomImporter::DicomImporter::testPowerDoppler( const QPixmap &pixmap )
 
 dicomImporter::DicomInternalStructPtr dicomImporter::DicomImporter::importRaw(const core::Filesystem::Path& from)
 {
-	internalData::PatientPtr patient = utils::make_shared<internalData::Patient>();
+	internalData::PatientPtr patient = boost::make_shared<internalData::Patient>();
 	QDateTime current = QDateTime::currentDateTime();
 	std::string date = current.toString(QString("yyyyMMdd")).toStdString();
 	std::string time = current.toString(QString("hhmmss")).toStdString();
-	auto study = utils::make_shared<internalData::Study>();
+	auto study = boost::make_shared<internalData::Study>();
 	study->studyDate = date;
 	study->studyTime = time;
 	study->studyNumber = getStudyCurrentIndex();
-	auto serie = utils::make_shared<internalData::Serie>();
+	auto serie = boost::make_shared<internalData::Serie>();
 	serie->serieDate = date;
 	serie->serieTime = time;
 	auto files = core::Filesystem::listFiles(from, true, ".dcm");
 	for (auto& path : files) {
-		auto image = utils::make_shared<internalData::Image>();
+		auto image = boost::make_shared<internalData::Image>();
 		image->originFilePath = path.filename().string();
 		serie->images.push_back(image);
 	}
@@ -297,7 +297,7 @@ dicomImporter::DicomInternalStructPtr dicomImporter::DicomImporter::importRaw(co
 
 	study->series.push_back(serie);
 	patient->sessions.push_back(study);
-	DicomInternalStructPtr internalStruct = utils::make_shared<DicomInternalStruct>();
+	DicomInternalStructPtr internalStruct = boost::make_shared<DicomInternalStruct>();
 	internalStruct->addPatient(patient);
 	return internalStruct;
 }
@@ -324,7 +324,7 @@ void DicomSaver::save( const core::Filesystem::Path& to, DicomInternalStructPtr 
 
 dicomImporter::DicomInternalStructPtr dicomImporter::DicomLoader::load( const core::Filesystem::Path& from )
 {
-    DicomInternalStructPtr inter = utils::make_shared<DicomInternalStruct>();
+    DicomInternalStructPtr inter = boost::make_shared<DicomInternalStruct>();
     std::ifstream ifs(from.c_str());
     if (ifs.good()) {
         boost::archive::xml_iarchive xmlIn(ifs);

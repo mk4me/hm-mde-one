@@ -82,8 +82,6 @@ void BvhParser::acceptedExpressions(Expressions & expressions) const
 {
     plugin::IParser::ExpressionDescription expDesc;
     expDesc.description = "Biovision Skeleton File format";
-
-    //expDesc.objectsTypes.push_back(typeid(kinematic::JointAnglesCollection));
 	expDesc.objectsTypes.push_back(typeid(BVHData));
     expressions[".*\\.bvh$"] = expDesc;
 }

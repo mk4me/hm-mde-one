@@ -426,6 +426,7 @@ std::pair<std::string, int> dicom::LayeredImageVisualizer::selectedLayer() const
 
 void dicom::LayeredImageVisualizer::uploadSerie()
 {
+	
 	saveSerie();
 	if (correctIndex(currentSerie)) {
 
@@ -456,7 +457,12 @@ void dicom::LayeredImageVisualizer::uploadSerie()
 			/// TODO : pobrac dane z OW
 			hmdbCommunication::IHMDBStorageOperations::IStreamPtr stream(new std::ifstream(p.string()));
 			const auto fileSize = core::Filesystem::size(p);
-			auto upload = remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->prepareFileUpload(fileName, "/BDR/w", stream, hmdbCommunication::IHMDBRemoteContext::Motion, fileSize);
+			auto remote = remoteSrcContext->shallowCopyRemoteContext()->remoteContext();
+			if (!remote) {
+				coreUI::CorePopup::showMessage(tr("Failed to upload serie"), tr("Remote context was not found"));
+				return;
+			}
+			auto upload = remote->prepareFileUpload(fileName, "/BDR/w", stream, hmdbCommunication::IHMDBRemoteContext::Motion, fileSize);
 			upload->start();
 			upload->wait();
 
@@ -624,7 +630,8 @@ void dicom::LayeredImageVisualizer::gatherCommunicationInfo(const plugin::IVisua
 	auto remoteSrcContext = remoteShallowContext(serie);
 	if (remoteSrcContext != nullptr){
 		userName = remoteSrcContext->shallowCopyLocalContext()->localContext()->dataContext()->userName();
-		isReviewer = DicomSource::userIsReviewer(remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->session().get());
+		auto remote = remoteSrcContext->shallowCopyRemoteContext();
+		isReviewer = remote ? DicomSource::userIsReviewer(remote->remoteContext()->session().get()) : false;
 	} else {
 		UTILS_ASSERT(false, "No shallow context");
 	}

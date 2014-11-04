@@ -40,7 +40,8 @@ namespace internalData {
             ar & boost::serialization::make_nvp("isPowerDoppler", isPowerDoppler);
         }
     };
-    DEFINE_SMART_POINTERS(Image);
+	typedef boost::shared_ptr<Image> ImagePtr;
+	typedef boost::shared_ptr<const Image> ImageConstPtr;
 
 
     typedef boost::tuple<std::string, std::string, std::string> DateTuple;
@@ -74,7 +75,8 @@ namespace internalData {
             ar & boost::serialization::make_nvp("images", images);
         }
      };
-     DEFINE_SMART_POINTERS(Serie)
+	typedef boost::shared_ptr<Serie> SeriePtr;
+	typedef boost::shared_ptr<const Serie> SerieConstPtr;
 
      struct Study {
          std::string studyId;
@@ -104,7 +106,8 @@ namespace internalData {
             ar & boost::serialization::make_nvp("studyNumber", studyNumber);
          }
      };
-     DEFINE_SMART_POINTERS(Study)
+	 typedef boost::shared_ptr<Study> StudyPtr;
+	 typedef boost::shared_ptr<const Study> StudyConstPtr;
 
      struct Patient {
         std::string patientID;
@@ -127,7 +130,8 @@ namespace internalData {
             ar & boost::serialization::make_nvp("sessions", sessions);
         }
      };
-     DEFINE_SMART_POINTERS(Patient);
+	 typedef boost::shared_ptr<Patient> PatientPtr;
+	 typedef boost::shared_ptr<const Patient> PatientConstPtr;
 }
 
 struct DicomInternalStruct : public IDicomInternalStruct
@@ -151,6 +155,7 @@ struct DicomInternalStruct : public IDicomInternalStruct
 
     std::vector<internalData::PatientPtr> patients;
 };
-DEFINE_SMART_POINTERS(DicomInternalStruct);
+typedef boost::shared_ptr<DicomInternalStruct> DicomInternalStructPtr;
+typedef boost::shared_ptr<const DicomInternalStruct> DicomInternalStructConstPtr;
 }
 #endif

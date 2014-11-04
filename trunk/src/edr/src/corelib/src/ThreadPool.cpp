@@ -36,10 +36,9 @@ ThreadPool::Thread::Thread()
 }
 
 ThreadPool::Thread::Thread(InnerThreadPool::Thread && innerThread, const std::string & owner,
-	const std::string & destination) : innerThread(std::move(innerThread)),
-	description(std::make_shared<Description>(Description{ owner, destination }))
+	const std::string & destination) : innerThread(std::move(innerThread))
 {
-
+	description = std::make_shared<Description>(Description{ owner, destination });
 }
 
 ThreadPool::Thread::Thread(Thread && Other) : innerThread(std::move(Other.innerThread)),

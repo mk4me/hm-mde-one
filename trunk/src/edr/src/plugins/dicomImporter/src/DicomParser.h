@@ -33,9 +33,8 @@ public:
     //! \return pusty obiekt nowego parsera
     virtual plugin::IParser* create() const;
     //! Zwraca obiekty dostarczone przez parser
-    //! \param objects kolekcja z obiektami (set)
 	virtual void getObject(core::Variant& object, const core::VariantsVector::size_type idx) const;
-    //! Zwraca rozszerzenia, które są obsługiwane przez parser (tylko c3d)
+    //! Zwraca rozszerzenia, które są obsługiwane przez parser 
     //! \param extensions kolecja z roszerzeniami
     virtual void acceptedExpressions(Expressions & expressions) const;
 

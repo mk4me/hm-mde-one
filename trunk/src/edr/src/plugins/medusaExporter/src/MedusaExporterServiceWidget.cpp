@@ -66,7 +66,7 @@ void medusaExporter::MedusaExporterServiceWidget::onExport()
 
 	ExportConfig config;
 	config.skipIdentical = ui->skipIdenticalComboBox->isChecked();
-	config.pixelByPixel = ui->curveDescriptionComboBox->currentText() == QObject::tr("Pixel by pixel");
+	config.pixelByPixel = !isKeyPoints();
 	config.pointsDensity = ui->curveDensitySpinBox->value();
     config.normalizePointVectorsLenght = ui->normalizePointsCheck->isChecked();
 
@@ -75,8 +75,7 @@ void medusaExporter::MedusaExporterServiceWidget::onExport()
         connect(t, SIGNAL(progressChanged(double, const QString&)), this, SLOT(callback(double, const QString&)), Qt::QueuedConnection);
         connect(t, SIGNAL(finished()), this, SLOT(afterExport()));
         connect(t, SIGNAL(finished()), t, SLOT(deleteLater()));
-        connect(t, SIGNAL(terminated()), this, SLOT(afterExport()));
-        connect(t, SIGNAL(terminated()), t, SLOT(deleteLater()));
+		connect(ui->curveDescriptionComboBox, SIGNAL(editTextChanged(const QString &)), this, SLOT(curveDescChanged(TODO)));
         
 		//exporterModel->exportData(outDir.absolutePath(), user, exportFrom.absolutePath(), config, callbackFunction);
 		CallbackCollector::Operation op = std::bind(static_cast<void(ExporterModel::*)(const QString&, const QString&, const QString&, const ExportConfig&, ExporterModel::CallbackFunction)>(&ExporterModel::exportData), exporterModel.get(),
@@ -315,4 +314,25 @@ void medusaExporter::MedusaExporterServiceWidget::afterExport()
 void medusaExporter::MedusaExporterServiceWidget::afterClear()
 {
     disabler = WidgetDisablerPtr();
+}
+
+bool medusaExporter::MedusaExporterServiceWidget::isKeyPoints()
+{
+	QString txt = ui->curveDescriptionComboBox->currentText();
+	if (txt == QObject::tr("Key points")) {
+		return true;
+	} else if (txt == QObject::tr("Pixel by pixel")) {
+		return false;
+	}
+	UTILS_ASSERT(false);
+	return false;
+}
+
+void medusaExporter::MedusaExporterServiceWidget::curveDescChanged(const QString &)
+{
+	if (isKeyPoints()) {
+		ui->curveDensitySpinBox->setEnabled(true);
+	} else {
+		ui->curveDensitySpinBox->setEnabled(false);
+	}
 }
