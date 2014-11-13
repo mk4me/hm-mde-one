@@ -15,6 +15,42 @@
 static const unsigned int sqliteExecWaitMS = 50;
 static const unsigned int maxSqliteExecTries = 2400;
 
+template<class Base, class Buffer>
+class StreamWrapper : public Base
+{
+public:
+
+	explicit StreamWrapper(Buffer *_Strbuf,
+		bool _Isstd) : Base(_Strbuf, _Isstd)		
+	{	// construct from stream buffer pointer		
+	}
+
+	StreamWrapper(std::_Uninitialized) : Base(std::_Uninitialized)
+	{	// construct uninitialized
+
+	}
+
+	explicit StreamWrapper(Buffer *_Strbuf)
+		: Base(_Strbuf)
+	{	// construct from stream buffer pointer
+	}
+
+	StreamWrapper(std::_Uninitialized, bool _Addit) : Base(std::_Uninitialized, _Addit)
+	{	// construct uninitialized
+
+	}
+
+	StreamWrapper(const StreamWrapper&) = delete;
+	StreamWrapper& operator=(const StreamWrapper&) = delete;
+
+	virtual ~StreamWrapper()
+	{	// destroy the object
+		auto toDelete = Base::rdbuf();
+		Base::rdbuf(nullptr);
+		delete toDelete;
+	}
+};
+
 const bool initialize(sqlite3 * db)
 {
 	return sqliteUtils::SQLiteDB::exec(db, "CREATE TABLE files_table (file_name TEXT PRIMARY KEY, file BLOB);", maxSqliteExecTries, sqliteExecWaitMS) == SQLITE_DONE;
@@ -153,7 +189,7 @@ const IHMDBStorage::IOStreamPtr SQLCipherStorage::rawGet(const std::string & key
 		sqliteUtils::SQLiteBLOB::Wrapper blob(sqliteUtils::SQLiteBLOB::open(db, "files_table", "file", rowID, 0), sqliteUtils::SQLiteBLOB::Close(maxSqliteExecTries, sqliteExecWaitMS));
 		std::auto_ptr<sqliteUtils::SQLiteBLOBStreamBufferT<>> buf(new sqliteUtils::SQLiteBLOBStreamBufferT<>(path.string(), "files_table", "file", rowID, sqlite3_blob_bytes(blob), "main", dbKey));
 
-		return IHMDBStorage::IOStreamPtr(new std::iostream(buf.release()));
+		return IHMDBStorage::IOStreamPtr(new StreamWrapper<std::iostream, sqliteUtils::SQLiteBLOBStreamBufferT<>>(buf.release()));
 	}
 
 	return IHMDBStorage::IOStreamPtr();
@@ -170,7 +206,7 @@ const IHMDBStorage::IStreamPtr SQLCipherStorage::rawGetReadOnly(const std::strin
 		sqliteUtils::SQLiteBLOB::Wrapper blob(sqliteUtils::SQLiteBLOB::open(db, "files_table", "file", rowID, 0), sqliteUtils::SQLiteBLOB::Close(maxSqliteExecTries, sqliteExecWaitMS));
 		std::auto_ptr<sqliteUtils::SQLiteBLOBStreamBufferT<>> buf(new sqliteUtils::SQLiteBLOBStreamBufferT<>(path.string(), "files_table", "file", rowID, sqlite3_blob_bytes(blob), "main", dbKey, std::ios_base::in));
 
-		return IHMDBStorage::IStreamPtr(new std::iostream(buf.release()));
+		return IHMDBStorage::IStreamPtr(new StreamWrapper<std::istream, sqliteUtils::SQLiteBLOBStreamBufferT<>>(buf.release()));
 	}
 
 	return IHMDBStorage::IStreamPtr();
