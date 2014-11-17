@@ -32,13 +32,13 @@ namespace threadingUtils
 
 	public:
 
-		//! Typ opisu¹cy rozmiar naszej kolejki
+		//! Typ opisuï¿½cy rozmiar naszej kolejki
 		typedef typename std::queue<T>::size_type size_type;
 
 	public:
 		//! Konsturktor domyslny
 		Queue() = default;
-		//! Konsturktor kopiuj¹cy
+		//! Konsturktor kopiujï¿½cy
 		//! \param other Kopiowany obiekt
 		Queue(const Queue & other)
 		{
@@ -56,7 +56,7 @@ namespace threadingUtils
 			condition.notify_one();
 		}		
 
-		//! \param value [out] Wartoœæ do której zapiszemy œci¹gany element kolejki
+		//! \param value [out] Wartoï¿½ï¿½ do ktï¿½rej zapiszemy ï¿½ciï¿½gany element kolejki
 		void waitAndPop(T& value)
 		{
 			std::unique_lock<std::mutex> lk(mutex);
@@ -65,7 +65,7 @@ namespace threadingUtils
 			queue.pop();
 		}
 
-		//! \return Œci¹gniêty element z kolejki
+		//! \return ï¿½ciï¿½gniï¿½ty element z kolejki
 		std::shared_ptr<T> waitAndPop()
 		{
 			std::unique_lock<std::mutex> lk(mutex);
@@ -77,11 +77,11 @@ namespace threadingUtils
 
 		//! \tparam Rep
 		//! \tparam Period
-		//! \param value [out] Wartoœc do której bêdzie zapisany œci¹gniêty z kolejki element
+		//! \param value [out] Wartoï¿½c do ktï¿½rej bï¿½dzie zapisany ï¿½ciï¿½gniï¿½ty z kolejki element
 		//! \param duration Czas czekania na dane
-		//! \return Czy uda³o siê œci¹gn¹c dane z kolejki
+		//! \return Czy udaï¿½o siï¿½ ï¿½ciï¿½gnï¿½c dane z kolejki
 		template<class Rep = long long,
-		class Period = std::mili>
+		class Period = std::chrono::milliseconds>
 		const bool tryWaitAndPop(T& value, const std::chrono::duration<Rep, Period> & duration)
 		{
 			std::unique_lock<std::mutex> lk(mutex);
@@ -98,9 +98,9 @@ namespace threadingUtils
 		//! \tparam Rep
 		//! \tparam Period		
 		//! \param duration Czas czekania na dane
-		//! \return Œci¹gniêta wartoœc z kolejki lub nullptr jeœli siê nie uda³o
+		//! \return ï¿½ciï¿½gniï¿½ta wartoï¿½c z kolejki lub nullptr jeï¿½li siï¿½ nie udaï¿½o
 		template<class Rep = long long,
-		class Period = std::mili>
+		class Period = std::chrono::milliseconds>
 		std::shared_ptr<T> tryWaitAndPop(const std::chrono::duration<Rep, Period> & duration)
 		{
 			std::unique_lock<std::mutex> lk(mutex);
@@ -114,8 +114,8 @@ namespace threadingUtils
 			return res;
 		}
 
-		//! \param value [out] Wartoœc do której bêdzie zapisany œci¹gniêty z kolejki element
-		//! \return Czy uda³o siê œci¹gnaæ wartoœæ
+		//! \param value [out] Wartoï¿½c do ktï¿½rej bï¿½dzie zapisany ï¿½ciï¿½gniï¿½ty z kolejki element
+		//! \return Czy udaï¿½o siï¿½ ï¿½ciï¿½gnaï¿½ wartoï¿½ï¿½
 		const bool tryPop(T& value)
 		{
 			std::lock_guard<std::mutex> lk(mutex);
@@ -126,7 +126,7 @@ namespace threadingUtils
 			return true;
 		}
 
-		//! \return Œci¹gniêta wartoœc z kolejki lub nullptr jeœli siê nie uda³o
+		//! \return ï¿½ciï¿½gniï¿½ta wartoï¿½c z kolejki lub nullptr jeï¿½li siï¿½ nie udaï¿½o
 		std::shared_ptr<T> tryPop()
 		{
 			std::lock_guard<std::mutex> lk(mutex);
@@ -150,7 +150,7 @@ namespace threadingUtils
 			return queue.size();
 		}
 		
-		//! Metoda czyœci zawartoœc kolejki
+		//! Metoda czyï¿½ci zawartoï¿½c kolejki
 		void clear()
 		{
 			std::lock_guard<std::mutex> lk(mutex);

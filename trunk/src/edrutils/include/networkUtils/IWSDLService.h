@@ -11,40 +11,40 @@ purpose:
 #include <string>
 #include <utils/SmartPtr.h>
 #include <boost/lexical_cast.hpp>
-#include <exception>
+#include <stdexcept>
 
 namespace networkUtils
 {
-	//! Wyj¹tek obs³ugi serwisu wsdl
-	class WSDLServiceException : public std::exception
+	//! Wyjï¿½tek obsï¿½ugi serwisu wsdl
+	class WSDLServiceException : public std::runtime_error
 	{
 	public:
-		//! Typ wyj¹tku
+		//! Typ wyjï¿½tku
 		enum ExceptionType
 		{
 			Unknown,		//! Nieznany typ
-			Security,		//! Wyj¹tek bezpieczeñstwa
-			Operation,		//! Wyj¹tek operacji
-			OperationValue,	//! Wyj¹tek parametru operacji
-			Initialization,	//! Wyj¹tek inicjalizacji us³ugi
-			Response,		//! Wyj¹tek odpowiedzi
-			Invoke			//! Wyj¹tek wykonania us³ugi
+			Security,		//! Wyjï¿½tek bezpieczeï¿½stwa
+			Operation,		//! Wyjï¿½tek operacji
+			OperationValue,	//! Wyjï¿½tek parametru operacji
+			Initialization,	//! Wyjï¿½tek inicjalizacji usï¿½ugi
+			Response,		//! Wyjï¿½tek odpowiedzi
+			Invoke			//! Wyjï¿½tek wykonania usï¿½ugi
 		};
 
 	public:
-		//! \param type Typ wyjatku us³ugi
-		WSDLServiceException(const ExceptionType type = Unknown) throw() : std::exception(), type_(type) {}
-		//! \param exception Wujatek który kopiujemy
-		WSDLServiceException(const WSDLServiceException & exception) throw() : std::exception(exception), type_(exception.type_) {}
+		//! \param type Typ wyjatku usï¿½ugi
+		WSDLServiceException(const ExceptionType type = Unknown) throw() : std::runtime_error(std::string()), type_(type) {}
+		//! \param exception Wujatek ktï¿½ry kopiujemy
+		WSDLServiceException(const WSDLServiceException & exception) throw() : std::runtime_error(exception), type_(exception.type_) {}
 		//! \param exception Opis wyjatku
-		//! \param type Typ wyjatku us³ugi
-		WSDLServiceException(const char * exception, const ExceptionType type = Unknown) throw() : std::exception(exception), type_(type) {}
+		//! \param type Typ wyjatku usï¿½ugi
+		WSDLServiceException(const char * exception, const ExceptionType type = Unknown) throw() : std::runtime_error(exception), type_(type) {}
 
-		//! \return Typ wyj¹tku
+		//! \return Typ wyjï¿½tku
 		inline const ExceptionType type() const { return type_; }
 
 	private:
-		//! Typ wyj¹tku
+		//! Typ wyjï¿½tku
 		const ExceptionType type_;
 	};
 
@@ -53,23 +53,23 @@ namespace networkUtils
 	public:
 		//! Desturktor wirtualny
 		virtual ~IWSDLService() {}
-		//! \param operation Metoda serwisu do wywo³ania
+		//! \param operation Metoda serwisu do wywoï¿½ania
 		virtual void setOperation(const std::string & operation) = 0;
-		//! \param name Nazwa wartoœci do ustawienia
-		//! \param value Wartoœæ zmiennej
+		//! \param name Nazwa wartoï¿½ci do ustawienia
+		//! \param value Wartoï¿½ï¿½ zmiennej
 		virtual void setValue(const std::string & name, const std::string & value) = 0;
-		//! Wykonuje operacjê na serwisie webowym
-		//! \param process Czy odpowiedŸ ma byæ przetworzona i mo¿na o rezultaty pytaæ metodami getValue
-		//! W przeciwnym wypadku nale¿y samemu parsowaæ odpowiedŸ
+		//! Wykonuje operacjï¿½ na serwisie webowym
+		//! \param process Czy odpowiedï¿½ ma byï¿½ przetworzona i moï¿½na o rezultaty pytaï¿½ metodami getValue
+		//! W przeciwnym wypadku naleï¿½y samemu parsowaï¿½ odpowiedï¿½
 		virtual void invoke(const bool process = false) = 0;
-		//! \return Pe³na odpowiedŸ serwisu webowego w formacie html/xml
+		//! \return Peï¿½na odpowiedï¿½ serwisu webowego w formacie html/xml
 		virtual const std::string xmlResponse() const = 0;
-		//! \param name Nazwa wartoœci któr¹ chcemy pobraæ
-		//! \return WskaŸnik do wartoœci, nullptr jeœli nie ma takiej wartoœci, wskaxnik pozostaje pod kontrol¹ implementacji IWSDLService
+		//! \param name Nazwa wartoï¿½ci ktï¿½rï¿½ chcemy pobraï¿½
+		//! \return Wskaï¿½nik do wartoï¿½ci, nullptr jeï¿½li nie ma takiej wartoï¿½ci, wskaxnik pozostaje pod kontrolï¿½ implementacji IWSDLService
 		virtual const void * getValue(const std::string & name) const = 0;
-		//! \tparam Typ jaki chemy ustawiæ jako parametr
-		//! \param param Nazwa parametru dla którego ustawiamy wartoœæ wywo³ania
-		//! \param value Wartoœc dla zadanego parametru
+		//! \tparam Typ jaki chemy ustawiï¿½ jako parametr
+		//! \param param Nazwa parametru dla ktï¿½rego ustawiamy wartoï¿½ï¿½ wywoï¿½ania
+		//! \param value Wartoï¿½c dla zadanego parametru
 		template<class T>
 		void setValue(const std::string& param, const T& value)
 		{
@@ -83,9 +83,9 @@ namespace networkUtils
 				throw WSDLServiceException("Unknown set operation value error", WSDLServiceException::OperationValue);
 			}
 		}
-		//! \tparam Typ jaki chemy pobraæ
-		//! \param param Nazwa parametru dla którego pobieramy wartoœæ jeœli wykonywaliœmy zapytanie z parsowanie
-		//! \param value [out] Wartoœc dla zadanego parametru
+		//! \tparam Typ jaki chemy pobraï¿½
+		//! \param param Nazwa parametru dla ktï¿½rego pobieramy wartoï¿½ï¿½ jeï¿½li wykonywaliï¿½my zapytanie z parsowanie
+		//! \param value [out] Wartoï¿½c dla zadanego parametru
 		template<class T>
 		const bool getValue(const std::string & name, T & value) const
 		{

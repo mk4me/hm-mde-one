@@ -25,17 +25,17 @@ void CURLFTPHelper::initializeFTPConnection(CURL * curl,
 
 	//czy weryfikujemy serwer
 	if (hostVerification != HVNone){
-		// czy serwer ma weryfikowaæ nasz certyfikat
+		// czy serwer ma weryfikowaï¿½ nasz certyfikat
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
 		// typ weryfikacji hosta
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, hostVerification);
-		// je¿eli jest œcie¿ka certyfikatu to j¹ podajemy
+		// jeï¿½eli jest ï¿½cieï¿½ka certyfikatu to jï¿½ podajemy
 		if (caPath.empty() == false){
 			curl_easy_setopt(curl, CURLOPT_CAINFO, caPath.c_str());
 		}
 	}
 	else{
-		// czy serwer ma weryfikowaæ nasz certyfikat
+		// czy serwer ma weryfikowaï¿½ nasz certyfikat
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 	}
 }
@@ -141,7 +141,7 @@ void CURLFTPHelper::initializeFTPDownload(CURL * curl,
 		curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, setDownloadCustomProgress);
 	}
 	else{
-		// brak progesu domyœlnie
+		// brak progesu domyï¿½lnie
 		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
 	}
 }
@@ -166,7 +166,7 @@ void CURLFTPHelper::initializeFTPUpload(CURL * curl,
 		curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, setUploadCustomProgress);		
 	}
 	else{
-		// brak progesu domyœlnie
+		// brak progesu domyï¿½lnie
 		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
 	}
 }

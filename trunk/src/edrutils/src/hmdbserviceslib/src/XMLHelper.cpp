@@ -229,3 +229,34 @@ void XMLHelper::extractShallowCopyFile(const tinyxml2::XMLElement * element, Mot
 	XMLHelper::extractAttributeValue(element, "SubdirPath", file.subdirPath);
 	XMLHelper::extractAttributeValue(element, "Size", file.fileSize);
 }
+
+
+template<>
+const bool hmdbServices::XMLHelper::extractAttributeValue(const tinyxml2::XMLElement * root, const std::string & attribute, std::string & value)
+{
+	auto attrib = root->FindAttribute(attribute.c_str());
+
+	if (attrib != nullptr){
+		value = attrib->Value();
+		return true;
+	}
+
+	return false;
+}
+
+template<>
+const bool hmdbServices::XMLHelper::extractTagValue(const tinyxml2::XMLElement * root, const std::string & tag, std::string & value)
+{
+	auto element = root->FirstChildElement(tag.c_str());
+
+	if (element != nullptr){
+		auto ret = element->GetText();
+		if (ret != nullptr){
+			value = std::string(ret);
+		}
+
+		return true;
+	}
+
+	return false;
+}

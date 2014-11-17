@@ -33,7 +33,7 @@ namespace imuCostume
 
 		private:
 
-			//! Konstruktor domyœlny
+			//! Konstruktor domyï¿½lny
 			Buffer();
 
 		public:
@@ -44,14 +44,14 @@ namespace imuCostume
 			const uint32_t data() const;
 
 		private:
-			//dane fo sformatowaniu gotowe do wys³ania
+			//dane fo sformatowaniu gotowe do wysï¿½ania
 			uint32_t data_;
 		};
 
 		/*
 		enum SpeedLevel
 		{
-		SpeedLevel0,	//! Najwy¿sza prêdkoœæ komunikacji
+		SpeedLevel0,	//! Najwyï¿½sza prï¿½dkoï¿½ï¿½ komunikacji
 		SpeedLevel1,
 		SpeedLevel2,
 		SpeedLevel3,
@@ -59,7 +59,7 @@ namespace imuCostume
 		SpeedLevel5,
 		SpeedLevel6,
 		SpeedLevel7,
-		SpeedLevel8,	//! Najni¿sza prêdkoœæ komunikacji
+		SpeedLevel8,	//! Najniï¿½sza prï¿½dkoï¿½ï¿½ komunikacji
 		};*/
 
 		enum IODataSize
@@ -179,14 +179,14 @@ namespace imuCostume
 		};
 
 	public:
-		//! \param costume Kostium którego czujnikiem chcemy sterowaæ i siê komunikowaæ
+		//! \param costume Kostium ktï¿½rego czujnikiem chcemy sterowaï¿½ i siï¿½ komunikowaï¿½
 		//! \param id Identyfikator czujnika
-		//! \param timeout Maksymalny czas na wys³anie i odpowiedŸ wiadomoœci z kostiumu [ms]
+		//! \param timeout Maksymalny czas na wysï¿½anie i odpowiedï¿½ wiadomoï¿½ci z kostiumu [ms]
 		CANopenSensor(CostumeRawIO * costume, const int8_t id, const unsigned int timeout = 300);
 		//! Destruktor
 		virtual ~CANopenSensor();
 
-		//! \return Timeout oczekiwania na odpowiedŸ z kostiumu
+		//! \return Timeout oczekiwania na odpowiedï¿½ z kostiumu
 		const unsigned int timeout() const;
 
 		//LSS
@@ -217,7 +217,7 @@ namespace imuCostume
 			Buffer buf;
 			auto ret = readSDO(dictID, dataSize, buf, errorCode, dictSubID);
 			if (ret == OPERATION_OK){
-				value = extractData(buf);
+				value = extractData<T>(buf);
 			}
 
 			return ret;

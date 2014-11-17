@@ -13,7 +13,9 @@
 #include <networkUtils/Types.h>
 #define NOMINMAX
 #include <curl/curl.h>
+#undef curl_easy_setopt
 
+#include <curl/easy.h>
 namespace networkUtils
 {
 	class ICURLFTPBasicProgress
@@ -21,9 +23,9 @@ namespace networkUtils
 	public:
 		//! Destruktor wirtualny
 		virtual ~ICURLFTPBasicProgress() {}
-		//! \return Czy nale¿y przerwaæ operacjê
+		//! \return Czy naleï¿½y przerwaï¿½ operacjï¿½
 		virtual const bool aborted() const = 0;
-		//! \param progress Postêp od 0.0 do 1.0
+		//! \param progress Postï¿½p od 0.0 do 1.0
 		virtual void setProgress(const float progress) = 0;
 	};
 
@@ -32,9 +34,9 @@ namespace networkUtils
 	public:
 		//! Destruktor wirtualny
 		virtual ~ICURLFTPProgress() {}
-		//! \return Czy nale¿y przerwaæ operacjê
+		//! \return Czy naleï¿½y przerwaï¿½ operacjï¿½
 		virtual const bool aborted() const = 0;
-		//! \param progress Postêp od 0.0 do 1.0
+		//! \param progress Postï¿½p od 0.0 do 1.0
 		virtual void setProgress(const float progress) = 0;
 		//! \param processedData Ilosc przetworzonych danych [bytes]
 		virtual void setProcessedData(const unsigned long long processedData) = 0;
@@ -43,33 +45,33 @@ namespace networkUtils
 	class NETWORKUTILS_EXPORT CURLFTPHelper
 	{
 	public:
-		//! \param curl Uchwyt do po³¹czenia z serwerem
-		//! \param user Nazwa uzytkownika jak¹ ³¹czymy siê z serwerem
-		//! \param password Has³o uzytkownika jakim ³¹czymy siê z serwerem
-		//! \param workingDirectory Katalog startowy wzglêdem homeDirecotry
-		//! \param hostVerification Sposób weryfikacji serwera
-		//! \param caPath Œcie¿ka certyfikatu jakim weryfikujemy serwer
+		//! \param curl Uchwyt do poï¿½ï¿½czenia z serwerem
+		//! \param user Nazwa uzytkownika jakï¿½ ï¿½ï¿½czymy siï¿½ z serwerem
+		//! \param password Hasï¿½o uzytkownika jakim ï¿½ï¿½czymy siï¿½ z serwerem
+		//! \param workingDirectory Katalog startowy wzglï¿½dem homeDirecotry
+		//! \param hostVerification Sposï¿½b weryfikacji serwera
+		//! \param caPath ï¿½cieï¿½ka certyfikatu jakim weryfikujemy serwer
 		static void initializeFTPConnection(CURL * curl,
 			const std::string & user = std::string(),
 			const std::string & password = std::string(),
 			const SSLHostVerification hostVerification = HVNone,
 			const std::string & caPath = std::string());
 
-		//!	Metoda pobieraj¹ca plik z serwera.
-		//! \param curl Uchwyt do po³¹czenia z serwerem
-		//! \param remoteFileUrl Adres serwera i pliku który œci¹gamy
-		//! \param localDestination Strumieñ w którym zpaisujemy œci¹gany plik
-		//! \param progress Obiekt informowany o postêpie œci¹gania, steruje przerwaniem operacji
+		//!	Metoda pobierajï¿½ca plik z serwera.
+		//! \param curl Uchwyt do poï¿½ï¿½czenia z serwerem
+		//! \param remoteFileUrl Adres serwera i pliku ktï¿½ry ï¿½ciï¿½gamy
+		//! \param localDestination Strumieï¿½ w ktï¿½rym zpaisujemy ï¿½ciï¿½gany plik
+		//! \param progress Obiekt informowany o postï¿½pie ï¿½ciï¿½gania, steruje przerwaniem operacji
 		static void initializeFTPDownload(CURL * curl,
 			const std::string & remoteFileUrl,
 			std::ostream * localDestination,
 			ICURLFTPProgress * progress = nullptr);
 
-		//!	Metoda ³aduj¹ca plik na serwer.
-		//! \param curl Uchwyt do po³¹czenia z serwerem
-		//! \param remoteFileUrl Adres serwera i pliku który ³adujemy
-		//! \param localSource Strumieñ z którego czytamy zawartoœæ pliku do wys³ania
-		//! \param progress Obiekt informowany o postêpie wysy³ania, steruje przerwaniem operacji
+		//!	Metoda ï¿½adujï¿½ca plik na serwer.
+		//! \param curl Uchwyt do poï¿½ï¿½czenia z serwerem
+		//! \param remoteFileUrl Adres serwera i pliku ktï¿½ry ï¿½adujemy
+		//! \param localSource Strumieï¿½ z ktï¿½rego czytamy zawartoï¿½ï¿½ pliku do wysï¿½ania
+		//! \param progress Obiekt informowany o postï¿½pie wysyï¿½ania, steruje przerwaniem operacji
 		static void initializeFTPUpload(CURL * curl,
 			const std::string & remoteFileUrl,
 			std::istream * localSource,
