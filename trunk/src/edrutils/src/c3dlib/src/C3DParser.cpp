@@ -24,13 +24,13 @@
 #include <utils/DataChannelCollection.h>
 namespace c3dlib {
 
-//! kana� analogowy, implementacja przykrywa obiekt btk::Analog
+//! kanał analogowy, implementacja przykrywa obiekt btk::Analog
 class Analog : public C3DParser::IAnalog
 {
 private:
-    //! przez t� warto�� zostan� przemno�one pr�bki
+    //! przez tą wartość zostaną przemnożone próbki
 	double scale;
-    //! wska�nik do obiektu z biblioteki btk
+    //! wskaźnik do obiektu z biblioteki btk
 	btk::Analog::ConstPointer analog;
 
 public:
@@ -40,18 +40,18 @@ public:
 	//! Destruktor wirtualny
 	virtual ~Analog() {}
 
-	//! ustawia kana� anaglogowy
-	//! \param val wczytany z pliku kana� w formacie btk
+	//! ustawia kanał anaglogowy
+	//! \param val wczytany z pliku kanał w formacie btk
 	void setAnalog(btk::Analog::ConstPointer val)	  { analog = val; }
-	//! \return etykieta (nazwa) danego kana�u
+	//! \return etykieta (nazwa) danego kanału
 	virtual const std::string& getLabel() const		  { return analog->GetLabel(); }
-	//! \return opis danego kana�u
+	//! \return opis danego kanału
 	virtual const std::string& getDescription() const { return analog->GetDescription(); }
-	//! \return nazwa jednostki danego kana�u
+	//! \return nazwa jednostki danego kanału
 	virtual const std::string& getUnit() const	      { return analog->GetUnit(); }
-	//! \return skala kana�u
+	//! \return skala kanału
 	virtual double getScale() const					  { return analog->GetScale(); }
-	//! \return warto�� konkretnej pr�bki
+	//! \return wartość konkretnej próbki
 	virtual double getValue(int index) const		  { return analog->GetValues()[index]; }
 };
 typedef Analog* AnalogPtr;
@@ -63,13 +63,13 @@ class Point : public C3DParser::IPoint
 private:
     //! punkt w formacie btk wczytany z pliku
 	btk::Point::ConstPointer point;
-    //! liczba dost�pnych pr�bek
+    //! liczba dostępnych próbek
 	int numOfFrames;
-    //! typ punktu c3d (marker, si�a, ...)
+    //! typ punktu c3d (marker, siła, ...)
 	Type type;
-	//! przez t� warto�� zostan� przemno�one pobierane warto�ci
+	//! przez tą wartość zostaną przemnożone pobierane wartości
 	float scale;
-    //! nazwa jednostki danego kana�u
+    //! nazwa jednostki danego kanału
     std::string unit;
 
 public:
@@ -85,17 +85,17 @@ public:
 public:
     //! \return punkt w formacie btk wczytany z pliku
 	btk::Point::ConstPointer getPoint() const { return point; }
-    //! ustawia typ punktu c3d (marker, si�a, ...)
+    //! ustawia typ punktu c3d (marker, siła, ...)
 	void setType(Point::Type type) { this->type = type; }
     //! ustawia punkt w formacie btk wczytany z pliku
 	void setPoint(btk::Point::ConstPointer val) { point = val; }
-    //! ustawia liczb� dost�pnych pr�bek
+    //! ustawia liczbę dostępnych próbek
 	void setNumberOfFrames(int val) { numOfFrames = val; }
-    //! \return skala danego kana�u
+    //! \return skala danego kanału
 	float getScale() const { return scale; }
-    //! ustawia skal� danego kana�u
+    //! ustawia skalę danego kanału
 	void setScale(float val) { scale = val; }
-    //! ustawia nazw� jednostki dla kana�u
+    //! ustawia nazwę jednostki dla kanału
     void setUnit(const std::string& val) { unit = val; }
 
 public:
@@ -103,11 +103,11 @@ public:
 	virtual const std::string& getLabel() const		  { return point->GetLabel(); }
     //! \return Opis danych akwizycji
 	virtual const std::string& getDescription() const { return point->GetDescription(); }
-    //! \return nazwa jednostki dla kana�u
+    //! \return nazwa jednostki dla kanału
     virtual const std::string& getUnit() const { return unit; }
-    //! \return typ punktu c3d (marker, si�a, ...)
+    //! \return typ punktu c3d (marker, siła, ...)
 	virtual Point::Type getType() const { return type; }
-    //! \return warto�� konkretnej pr�bki
+    //! \return wartość konkretnej próbki
 	virtual osg::Vec3 getValue(int index) const
 	{
 		const auto& value = point->GetValues();
@@ -117,13 +117,13 @@ public:
 typedef Point* PointPtr;
 typedef const Point* PointConstPtr;
 
-//! dostarcza danych o zdarzeniu zapisanym w c3d (np. dotkni�cie stop� pod�ogi)
+//! dostarcza danych o zdarzeniu zapisanym w c3d (np. dotknięcie stopą podłogi)
 class Event : public C3DParser::IEvent
 {
 private:
-    //! wka�nik na obiekt btk zawieraj�cy informacje o zdarzeniu
+    //! wkaźnik na obiekt btk zawierający informacje o zdarzeniu
 	btk::Event::ConstPointer eventPtr;
-    //! offset wynikaj�cy z przesuniecia w pliku c3d (first frame)
+    //! offset wynikający z przesuniecia w pliku c3d (first frame)
     double offset;
 
 public:
@@ -149,12 +149,12 @@ public:
 	{
 		return eventPtr->GetSubject();
 	}
-    //! \return czas, w kt�rym wyst�pi�o zdarzenie
+    //! \return czas, w którym wystąpiło zdarzenie
 	virtual double getTime() const
 	{
 		return eventPtr->GetTime() - offset;
 	}
-    //! \return nr pr�bki, dla kt�rej wyst�pi�o zdarzenie
+    //! \return nr próbki, dla której wystąpiło zdarzenie
 	virtual int getFrame() const
 	{
 		return eventPtr->GetFrame();
@@ -169,44 +169,44 @@ public:
 	{
 		return eventPtr->GetDescription();
 	}
-    //! \return g��boka kopia obiektu
+    //! \return głęboka kopia obiektu
 	virtual IEvent* clone() const
 	{
         std::auto_ptr<Event> newEvent(new Event(*this));
 		return newEvent.release();
 	}
-    //! ustawia offset wynikaj�cy z przesuniecia w pliku c3d (first frame)
+    //! ustawia offset wynikający z przesuniecia w pliku c3d (first frame)
     void setOffset(double val) 
     {
         offset = val;
     }
 public:
-    //! \return wka�nik na obiekt btk zawieraj�cy informacje o zdarzeniu
+    //! \return wkaźnik na obiekt btk zawierający informacje o zdarzeniu
 	btk::Event::ConstPointer getEventPtr() const { return eventPtr; }
-    //! ustawia wka�nik na obiekt btk zawieraj�cy informacje o zdarzeniu
+    //! ustawia wkaźnik na obiekt btk zawierający informacje o zdarzeniu
 	void setEventPtr(btk::Event::ConstPointer val) { eventPtr = val; }
 };
 typedef Event* EventPtr;
 typedef const Event* EventConstPtr;
 
 //! Pola tej klasy agreguja te dane wykorzystywane wewnatrz klasy C3DParser,
-//! kt�re nie moga by� widoczne w nag��wku
+//! które nie moga być widoczne w nagłówku
 class C3DParser::__data
 {
 public:
-    //! wska�nik do danych akwizycji
+    //! wskaźnik do danych akwizycji
     btk::Acquisition::Pointer aquisitionPointer;
-    //! wska�nik do klasy reprezentuj�cej plik c3d
+    //! wskaźnik do klasy reprezentującej plik c3d
     btk::C3DFileIO::Pointer c3dPointer;
-    //! obiekt s�u�acy do odzielenia obiekt�w (punkt�w) wyestymowanych od pomierzonych
+    //! obiekt służacy do odzielenia obiektów (punktów) wyestymowanych od pomierzonych
 	btk::SeparateKnownVirtualMarkersFilter::Pointer virtualMarkersSeparator;
-    //! obiekt s�u��cy do pobrania informacji o p�ytach pomiarowych
+    //! obiekt służący do pobrania informacji o płytach pomiarowych
 	btk::ForcePlatformsExtractor::Pointer forcePlatformsExtractor;
-    //! region of intrest (ustawiane na pierwsz� i ostatni� pr�bk�)
+    //! region of intrest (ustawiane na pierwszą i ostatnią próbkę)
     int roi[2];
-    //! obiekt pomocniczy, przechowuje nr pierwszej pr�bk�
+    //! obiekt pomocniczy, przechowuje nr pierwszej próbkę
     int firstFrame;
-    //! obiekt pomocniczy, przechowuje nr ostatniej pr�bk�
+    //! obiekt pomocniczy, przechowuje nr ostatniej próbkę
     int lastFrame;
 
     __data() :
@@ -251,7 +251,7 @@ C3DParser::~C3DParser()
     for (auto it = points.begin(); it != points.end(); ++it) {
         delete(*it);
     }
-    //! kolekcja kana��w analogowych
+    //! kolekcja kanałów analogowych
     for (auto it = analogs.begin(); it != analogs.end(); ++it) {
         delete(*it);
     }
@@ -259,7 +259,7 @@ C3DParser::~C3DParser()
     for (auto it =  events.begin(); it != events.end(); ++it) {
         delete(*it);
     }
-    //! p�yty GRF
+    //! płyty GRF
     for (auto it = forcePlatforms.begin(); it != forcePlatforms.end(); ++it) {
         delete(*it);
     }
@@ -284,7 +284,7 @@ void C3DParser::load(const std::string& filename)
 
 void C3DParser::importFrom( const std::vector<std::string>& filenames, std::string& importWarnings )
 {
-    // wczytywanie plik�w (niekoniecznie c3d)
+    // wczytywanie plików (niekoniecznie c3d)
     std::vector<btk::AcquisitionFileReader::Pointer> readers;
     try
     {
@@ -320,7 +320,7 @@ void C3DParser::importFrom( const std::vector<std::string>& filenames, std::stri
         }
     }
 
-    // ��czenie danych z plik�w
+    // łączenie danych z plików
     int shift = !this->data->aquisitionPointer ? 0 : 1;
     StringStreamBuf err(std::cerr);
     btk::MergeAcquisitionFilter::Pointer merger = btk::MergeAcquisitionFilter::New();
@@ -370,8 +370,8 @@ void C3DParser::loadAcquisition()
 	btk::ForcePlatformCollection::Pointer fp = this->data->forcePlatformsExtractor->GetOutput();
 	float scale = getUnitScale("mm");
 	for (btk::ForcePlatformCollection::ConstIterator it = fp->Begin(); it != fp->End(); ++it) {
-		// system jest przygotowany dla 4 wierzcho�k�w
-		// nie zak�ada si�, ze platformy moga by� innym wielokatem.
+		// system jest przygotowany dla 4 wierzchołków
+		// nie zakłada się, ze platformy moga być innym wielokatem.
 		if ((*it)->GetCorners().size() == 12) {
 			ForcePlatformPtr platform(new ForcePlatform());
 			platform->origin[0] = (*it)->GetOrigin()[0];

@@ -15,36 +15,36 @@ purpose:
 
 namespace networkUtils
 {
-	//! Wyj�tek obs�ugi serwisu wsdl
+	//! Wyjątek obsługi serwisu wsdl
 	class WSDLServiceException : public std::runtime_error
 	{
 	public:
-		//! Typ wyj�tku
+		//! Typ wyjątku
 		enum ExceptionType
 		{
 			Unknown,		//! Nieznany typ
-			Security,		//! Wyj�tek bezpiecze�stwa
-			Operation,		//! Wyj�tek operacji
-			OperationValue,	//! Wyj�tek parametru operacji
-			Initialization,	//! Wyj�tek inicjalizacji us�ugi
-			Response,		//! Wyj�tek odpowiedzi
-			Invoke			//! Wyj�tek wykonania us�ugi
+			Security,		//! Wyjątek bezpieczeństwa
+			Operation,		//! Wyjątek operacji
+			OperationValue,	//! Wyjątek parametru operacji
+			Initialization,	//! Wyjątek inicjalizacji usługi
+			Response,		//! Wyjątek odpowiedzi
+			Invoke			//! Wyjątek wykonania usługi
 		};
 
 	public:
-		//! \param type Typ wyjatku us�ugi
+		//! \param type Typ wyjatku usługi
 		WSDLServiceException(const ExceptionType type = Unknown) throw() : std::runtime_error(std::string()), type_(type) {}
-		//! \param exception Wujatek kt�ry kopiujemy
+		//! \param exception Wujatek który kopiujemy
 		WSDLServiceException(const WSDLServiceException & exception) throw() : std::runtime_error(exception), type_(exception.type_) {}
 		//! \param exception Opis wyjatku
-		//! \param type Typ wyjatku us�ugi
+		//! \param type Typ wyjatku usługi
 		WSDLServiceException(const char * exception, const ExceptionType type = Unknown) throw() : std::runtime_error(exception), type_(type) {}
 
-		//! \return Typ wyj�tku
+		//! \return Typ wyjątku
 		inline const ExceptionType type() const { return type_; }
 
 	private:
-		//! Typ wyj�tku
+		//! Typ wyjątku
 		const ExceptionType type_;
 	};
 
@@ -53,23 +53,23 @@ namespace networkUtils
 	public:
 		//! Desturktor wirtualny
 		virtual ~IWSDLService() {}
-		//! \param operation Metoda serwisu do wywo�ania
+		//! \param operation Metoda serwisu do wywołania
 		virtual void setOperation(const std::string & operation) = 0;
-		//! \param name Nazwa warto�ci do ustawienia
-		//! \param value Warto�� zmiennej
+		//! \param name Nazwa wartości do ustawienia
+		//! \param value Wartość zmiennej
 		virtual void setValue(const std::string & name, const std::string & value) = 0;
-		//! Wykonuje operacj� na serwisie webowym
-		//! \param process Czy odpowied� ma by� przetworzona i mo�na o rezultaty pyta� metodami getValue
-		//! W przeciwnym wypadku nale�y samemu parsowa� odpowied�
+		//! Wykonuje operację na serwisie webowym
+		//! \param process Czy odpowiedź ma być przetworzona i można o rezultaty pytać metodami getValue
+		//! W przeciwnym wypadku należy samemu parsować odpowiedź
 		virtual void invoke(const bool process = false) = 0;
-		//! \return Pe�na odpowied� serwisu webowego w formacie html/xml
+		//! \return Pełna odpowiedź serwisu webowego w formacie html/xml
 		virtual const std::string xmlResponse() const = 0;
-		//! \param name Nazwa warto�ci kt�r� chcemy pobra�
-		//! \return Wska�nik do warto�ci, nullptr je�li nie ma takiej warto�ci, wskaxnik pozostaje pod kontrol� implementacji IWSDLService
+		//! \param name Nazwa wartości którą chcemy pobrać
+		//! \return Wskaźnik do wartości, nullptr jeśli nie ma takiej wartości, wskaxnik pozostaje pod kontrolą implementacji IWSDLService
 		virtual const void * getValue(const std::string & name) const = 0;
-		//! \tparam Typ jaki chemy ustawi� jako parametr
-		//! \param param Nazwa parametru dla kt�rego ustawiamy warto�� wywo�ania
-		//! \param value Warto�c dla zadanego parametru
+		//! \tparam Typ jaki chemy ustawić jako parametr
+		//! \param param Nazwa parametru dla którego ustawiamy wartość wywołania
+		//! \param value Wartośc dla zadanego parametru
 		template<class T>
 		void setValue(const std::string& param, const T& value)
 		{
@@ -83,9 +83,9 @@ namespace networkUtils
 				throw WSDLServiceException("Unknown set operation value error", WSDLServiceException::OperationValue);
 			}
 		}
-		//! \tparam Typ jaki chemy pobra�
-		//! \param param Nazwa parametru dla kt�rego pobieramy warto�� je�li wykonywali�my zapytanie z parsowanie
-		//! \param value [out] Warto�c dla zadanego parametru
+		//! \tparam Typ jaki chemy pobrać
+		//! \param param Nazwa parametru dla którego pobieramy wartość jeśli wykonywaliśmy zapytanie z parsowanie
+		//! \param value [out] Wartośc dla zadanego parametru
 		template<class T>
 		const bool getValue(const std::string & name, T & value) const
 		{

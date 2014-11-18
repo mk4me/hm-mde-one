@@ -33,7 +33,7 @@ namespace imuCostume
 
 		private:
 
-			//! Konstruktor domy�lny
+			//! Konstruktor domyślny
 			Buffer();
 
 		public:
@@ -44,14 +44,14 @@ namespace imuCostume
 			const uint32_t data() const;
 
 		private:
-			//dane fo sformatowaniu gotowe do wys�ania
+			//dane fo sformatowaniu gotowe do wysłania
 			uint32_t data_;
 		};
 
 		/*
 		enum SpeedLevel
 		{
-		SpeedLevel0,	//! Najwy�sza pr�dko�� komunikacji
+		SpeedLevel0,	//! Najwyższa prędkość komunikacji
 		SpeedLevel1,
 		SpeedLevel2,
 		SpeedLevel3,
@@ -59,7 +59,7 @@ namespace imuCostume
 		SpeedLevel5,
 		SpeedLevel6,
 		SpeedLevel7,
-		SpeedLevel8,	//! Najni�sza pr�dko�� komunikacji
+		SpeedLevel8,	//! Najniższa prędkość komunikacji
 		};*/
 
 		enum IODataSize
@@ -179,14 +179,14 @@ namespace imuCostume
 		};
 
 	public:
-		//! \param costume Kostium kt�rego czujnikiem chcemy sterowa� i si� komunikowa�
+		//! \param costume Kostium którego czujnikiem chcemy sterować i się komunikować
 		//! \param id Identyfikator czujnika
-		//! \param timeout Maksymalny czas na wys�anie i odpowied� wiadomo�ci z kostiumu [ms]
+		//! \param timeout Maksymalny czas na wysłanie i odpowiedź wiadomości z kostiumu [ms]
 		CANopenSensor(CostumeRawIO * costume, const int8_t id, const unsigned int timeout = 300);
 		//! Destruktor
 		virtual ~CANopenSensor();
 
-		//! \return Timeout oczekiwania na odpowied� z kostiumu
+		//! \return Timeout oczekiwania na odpowiedź z kostiumu
 		const unsigned int timeout() const;
 
 		//LSS

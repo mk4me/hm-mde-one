@@ -98,7 +98,7 @@ namespace hmdbServices
 		void extractUserDetails(const tinyxml2::XMLElement * element, xmlWsdl::UserDetails & userDetails);
 
 		//! TODO
-		//! ta metoda albo poprzednia musi znikn�� po ujednoliceniu opisu usera w odpowiedzi us�ug
+		//! ta metoda albo poprzednia musi zniknąć po ujednoliceniu opisu usera w odpowiedzi usług
 		void _extractUserDetails(const tinyxml2::XMLElement * element, xmlWsdl::UserDetails & userDetails);
 
 		void extractUserData(const tinyxml2::XMLElement * element, xmlWsdl::User & user);

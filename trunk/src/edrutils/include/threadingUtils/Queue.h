@@ -32,13 +32,13 @@ namespace threadingUtils
 
 	public:
 
-		//! Typ opisu�cy rozmiar naszej kolejki
+		//! Typ opisuący rozmiar naszej kolejki
 		typedef typename std::queue<T>::size_type size_type;
 
 	public:
 		//! Konsturktor domyslny
 		Queue() = default;
-		//! Konsturktor kopiuj�cy
+		//! Konsturktor kopiujący
 		//! \param other Kopiowany obiekt
 		Queue(const Queue & other)
 		{
@@ -56,7 +56,7 @@ namespace threadingUtils
 			condition.notify_one();
 		}		
 
-		//! \param value [out] Warto�� do kt�rej zapiszemy �ci�gany element kolejki
+		//! \param value [out] Wartość do której zapiszemy ściągany element kolejki
 		void waitAndPop(T& value)
 		{
 			std::unique_lock<std::mutex> lk(mutex);
@@ -65,7 +65,7 @@ namespace threadingUtils
 			queue.pop();
 		}
 
-		//! \return �ci�gni�ty element z kolejki
+		//! \return Ściągnięty element z kolejki
 		std::shared_ptr<T> waitAndPop()
 		{
 			std::unique_lock<std::mutex> lk(mutex);
@@ -77,9 +77,9 @@ namespace threadingUtils
 
 		//! \tparam Rep
 		//! \tparam Period
-		//! \param value [out] Warto�c do kt�rej b�dzie zapisany �ci�gni�ty z kolejki element
+		//! \param value [out] Wartośc do której będzie zapisany ściągnięty z kolejki element
 		//! \param duration Czas czekania na dane
-		//! \return Czy uda�o si� �ci�gn�c dane z kolejki
+		//! \return Czy udało się ściągnąc dane z kolejki
 		template<class Rep = long long,
 		class Period = std::chrono::milliseconds>
 		const bool tryWaitAndPop(T& value, const std::chrono::duration<Rep, Period> & duration)
@@ -98,7 +98,7 @@ namespace threadingUtils
 		//! \tparam Rep
 		//! \tparam Period		
 		//! \param duration Czas czekania na dane
-		//! \return �ci�gni�ta warto�c z kolejki lub nullptr je�li si� nie uda�o
+		//! \return Ściągnięta wartośc z kolejki lub nullptr jeśli się nie udało
 		template<class Rep = long long,
 		class Period = std::chrono::milliseconds>
 		std::shared_ptr<T> tryWaitAndPop(const std::chrono::duration<Rep, Period> & duration)
@@ -114,8 +114,8 @@ namespace threadingUtils
 			return res;
 		}
 
-		//! \param value [out] Warto�c do kt�rej b�dzie zapisany �ci�gni�ty z kolejki element
-		//! \return Czy uda�o si� �ci�gna� warto��
+		//! \param value [out] Wartośc do której będzie zapisany ściągnięty z kolejki element
+		//! \return Czy udało się ściągnać wartość
 		const bool tryPop(T& value)
 		{
 			std::lock_guard<std::mutex> lk(mutex);
@@ -126,7 +126,7 @@ namespace threadingUtils
 			return true;
 		}
 
-		//! \return �ci�gni�ta warto�c z kolejki lub nullptr je�li si� nie uda�o
+		//! \return Ściągnięta wartośc z kolejki lub nullptr jeśli się nie udało
 		std::shared_ptr<T> tryPop()
 		{
 			std::lock_guard<std::mutex> lk(mutex);
@@ -150,7 +150,7 @@ namespace threadingUtils
 			return queue.size();
 		}
 		
-		//! Metoda czy�ci zawarto�c kolejki
+		//! Metoda czyści zawartośc kolejki
 		void clear()
 		{
 			std::lock_guard<std::mutex> lk(mutex);
