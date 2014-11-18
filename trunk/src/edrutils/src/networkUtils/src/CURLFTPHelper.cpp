@@ -25,17 +25,17 @@ void CURLFTPHelper::initializeFTPConnection(CURL * curl,
 
 	//czy weryfikujemy serwer
 	if (hostVerification != HVNone){
-		// czy serwer ma weryfikowaï¿½ nasz certyfikat
+		// czy serwer ma weryfikowaæ nasz certyfikat
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
 		// typ weryfikacji hosta
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, hostVerification);
-		// jeï¿½eli jest ï¿½cieï¿½ka certyfikatu to jï¿½ podajemy
+		// je¿eli jest ¶cie¿ka certyfikatu to j± podajemy
 		if (caPath.empty() == false){
 			curl_easy_setopt(curl, CURLOPT_CAINFO, caPath.c_str());
 		}
 	}
 	else{
-		// czy serwer ma weryfikowaï¿½ nasz certyfikat
+		// czy serwer ma weryfikowaæ nasz certyfikat
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 	}
 }
@@ -64,7 +64,7 @@ int seek(void *stream, curl_off_t offset, int origin)
 	return ret;
 }
 
-size_t read(void* buffer, size_t size, size_t nmemb, void* stream)
+size_t _read(void* buffer, size_t size, size_t nmemb, void* stream)
 {
 	std::istream * istream = static_cast<std::istream*>(stream);
 	auto offset = size * nmemb;
@@ -83,7 +83,7 @@ size_t read(void* buffer, size_t size, size_t nmemb, void* stream)
 	return offset;
 }
 
-size_t write(void *buffer, size_t size, size_t nmemb, void *stream)
+size_t _write(void *buffer, size_t size, size_t nmemb, void *stream)
 {
 	std::ostream * ostream = static_cast<std::ostream*>(stream);
 	char * start = static_cast<char*>(buffer);
@@ -131,7 +131,7 @@ void CURLFTPHelper::initializeFTPDownload(CURL * curl,
 {
 	curl_easy_setopt(curl, CURLOPT_URL, remoteFileUrl.c_str());
 	curl_easy_setopt(curl, CURLOPT_UPLOAD, 0L);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _write);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, localDestination);
 
 	if (progress != nullptr){
@@ -141,7 +141,7 @@ void CURLFTPHelper::initializeFTPDownload(CURL * curl,
 		curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, setDownloadCustomProgress);
 	}
 	else{
-		// brak progesu domyï¿½lnie
+		// brak progesu domy¶nie
 		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
 	}
 }
@@ -154,7 +154,7 @@ void CURLFTPHelper::initializeFTPUpload(CURL * curl,
 	curl_easy_setopt(curl, CURLOPT_URL, remoteFileUrl.c_str());
 	curl_easy_setopt(curl, CURLOPT_FTP_CREATE_MISSING_DIRS, 1L);
 	curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-	curl_easy_setopt(curl, CURLOPT_READFUNCTION, read);
+	curl_easy_setopt(curl, CURLOPT_READFUNCTION, _read);
 	curl_easy_setopt(curl, CURLOPT_READDATA, localSource);
 	curl_easy_setopt(curl, CURLOPT_SEEKFUNCTION, seek);
 	curl_easy_setopt(curl, CURLOPT_SEEKDATA, localSource);
@@ -166,7 +166,7 @@ void CURLFTPHelper::initializeFTPUpload(CURL * curl,
 		curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, setUploadCustomProgress);		
 	}
 	else{
-		// brak progesu domyï¿½lnie
+		// brak progesu domy¶lnie
 		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
 	}
 }
