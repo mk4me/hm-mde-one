@@ -199,7 +199,7 @@ void Variant::innerInitialize() const
 {
 	ScopedLock lock(sync_);
 	if (initialized() == false && initializer_ != nullptr){
-		utils::Push<mutable bool> init(initializing_, true);
+		utils::Push<bool> init(initializing_, true);
 		initializer_->initialize(const_cast<Variant*>(this));
 		initialized_ = true;
 	}
@@ -280,7 +280,7 @@ void Variant::tryInitialize()
 void Variant::forceInitialize()
 {
 	ScopedLock lock(sync_);
-	utils::Push<mutable bool> init(initializing_, true);
+	utils::Push<bool> init(initializing_, true);
 	initializer_->initialize(const_cast<Variant*>(this));
 	initialized_ = true;
 }

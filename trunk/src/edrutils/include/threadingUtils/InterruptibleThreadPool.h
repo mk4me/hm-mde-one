@@ -8,6 +8,7 @@
 #ifndef __HEADER_GUARD_THREADINGUTILS__INTERRUPTIBLETHREADPOOL_H__
 #define __HEADER_GUARD_THREADINGUTILS__INTERRUPTIBLETHREADPOOL_H__
 
+#include <list>
 #include <utils/Debug.h>
 #include <threadingUtils/InterruptibleThread.h>
 #include <threadingUtils/FutureWrapper.h>
@@ -22,16 +23,12 @@ namespace threadingUtils
 	template<class RunnableThread, typename CallPolicy, typename InterruptPolicy, typename InterruptHandlingPolicy>
 	class InterruptibleThreadPool
 	{
-	private:
-
+	public:
 		//! Typ w¹tku wielokrotnego uruchamiania
 		typedef InterruptibleMultipleRunThread<RunnableThread, CallPolicy, InterruptHandlingPolicy, InterruptPolicy> InnerThreadType;
-		//! Typ puli w¹tków
-		typedef InterruptibleThreadPool<RunnableThread, CallPolicy, InterruptPolicy, InterruptHandlingPolicy> MyThreadPoolType;
+
 		//! Typ listy w¹tków wielokrotnego uruchamiania
 		typedef std::list<InnerThreadType> InnerThreadsList;
-
-	public:
 
 		//! Typ opisuj¹cy iloœæ
 		typedef unsigned int size_type;
@@ -43,10 +40,12 @@ namespace threadingUtils
 			friend class MyThreadPoolType;
 
 		public:
+			//! Typ puli w¹tków
+			typedef InterruptibleThreadPool<RunnableThread, CallPolicy, InterruptPolicy, InterruptHandlingPolicy> MyThreadPoolType;
 
-			typedef InterruptPolicy InterruptPolicy;
+			typedef InterruptPolicy InterruptPolicyType;
 
-		private:
+		public:
 
 			//! \param threadPool Pula w¹tków do której nale¿a³ pierwotnie w¹tek
 			Thread(MyThreadPoolType * threadPool) : threadPool(threadPool)
@@ -109,7 +108,7 @@ namespace threadingUtils
 			void detach() { threadPool->detach(); threadPool = nullptr; futureWrapper.reset(); thread.detach(); }
 			std::thread::id get_id() const { return thread.get_id(); }
 			std::thread::native_handle_type native_handle() { return thread.native_handle(); }
-			void interrupt() { if (futureWrapper.valid() == false || thread.interruptible() == false) { std::_Throw_Cpp_error(std::_OPERATION_NOT_PERMITTED); } thread.interrupt(); }
+			void interrupt() { if (futureWrapper.valid() == false || thread.interruptible() == false) { throw std::logic_error("Operation not permitted"); } thread.interrupt(); }
 			const bool interruptible() const { return futureWrapper.valid() && thread.interruptible(); }
 			static void interruptionPoint() { InnerThreadType::interruptionPoint(); }
 			static void resetInterruption() { InnerThreadType::resetInterruption(); }

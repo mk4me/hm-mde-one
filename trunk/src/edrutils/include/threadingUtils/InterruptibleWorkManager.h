@@ -10,9 +10,12 @@
 
 #include <type_traits>
 #include <map>
+#include <utils/Utils.h>
 #include <threadingUtils/Macros.h>
+#include <threadingUtils/WorkQueuePolicy.h>
 #include <threadingUtils/FunctionWrapper.h>
 #include <threadingUtils/InterruptibleFuture.h>
+#include <threadingUtils/InterruptiblePolicy.h>
 #include <threadingUtils/InterruptiblePackagedTask.h>
 
 namespace threadingUtils
@@ -244,7 +247,7 @@ namespace threadingUtils
 				throw std::runtime_error("Operation not permitted");
 			}
 			
-			std::function<result_type()> intf = std::bind(std::_Decay_copy(std::forward<F>(f)), std::_Decay_copy(std::forward<Args>(arguments))...);
+			std::function<result_type()> intf = std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...);
 
 			auto ss = utils::make_shared<WorkSharedState>();
 			ss->interrupt = utils::make_shared<bool>(false);

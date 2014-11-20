@@ -93,7 +93,7 @@ namespace core
 			}
 
 			//! \param Other W¹tek którego zasoby przejmujemy
-			JobBase& operator=(JobBase&& Other) _NOEXCEPT
+			JobBase& operator=(JobBase&& Other) noexcept
 			{
 				description = std::move(Other.description);
 				return *this;
@@ -101,7 +101,7 @@ namespace core
 
 			JobBase& operator=(const JobBase&) = delete;
 
-			void swap(JobBase & Other) _NOEXCEPT
+			void swap(JobBase & Other) noexcept
 			{
 				std::swap(description, Other.description);
 			}
@@ -150,8 +150,8 @@ namespace core
 			}
 		};
 
-		template<typename T>
-		class Job : public JobBase, public InnerJobManager::InterruptibleJob<T>
+		template<typename T, typename InterruptibleWorkManager>
+		class Job : public JobBase, public threadingUtils::InterruptibleJob<T, InterruptibleWorkManager>
 		{
 		public:
 
@@ -159,14 +159,14 @@ namespace core
 
 			Job(const Job & Other) = delete;
 
-			Job(InnerJobManager::InterruptibleJob<T> && Other, utils::shared_ptr<Description> description)
-				: InnerJobManager::InterruptibleJob<T>(std::move(Other)), JobBase(description)
+			Job(threadingUtils::InterruptibleJob<T, InterruptibleWorkManager> && Other, utils::shared_ptr<Description> description)
+				: threadingUtils::InterruptibleJob<T, InterruptibleWorkManager>(std::move(Other)), JobBase(description)
 			{
 
 			}
 
 			Job(Job && Other) : JobBase(std::move(static_cast<JobBase&>(Other))),
-				InnerJobManager::InterruptibleJob<T>(std::move(static_cast<InnerJobManager::InterruptibleJob<T>&>(Other)))
+					threadingUtils::InterruptibleJob<T, InterruptibleWorkManager>(std::move(static_cast<threadingUtils::InterruptibleJob<T, InterruptibleWorkManager>&>(Other)))
 			{
 
 			}
@@ -177,19 +177,19 @@ namespace core
 			}
 
 			//! \param Other W¹tek którego zasoby przejmujemy
-			Job& operator=(Job&& Other) _NOEXCEPT
+			Job& operator=(Job&& Other) noexcept
 			{
 				JobBase::operator =(std::move(static_cast<JobBase&>(Other)));
-				InnerJobManager::InterruptibleJob<T>::operator =(std::move(static_cast<InnerJobManager::InterruptibleJob<T>&>(Other)));
+				threadingUtils::InterruptibleJob<T, InterruptibleWorkManager>::operator =(std::move(static_cast<threadingUtils::InterruptibleJob<T, InterruptibleWorkManager>&>(Other)));
 				return *this;
 			}
 
 			Job& operator=(const Job&) = delete;
 
-			void swap(Job & Other) _NOEXCEPT
+			void swap(Job & Other) noexcept
 			{
 				std::swap<JobBase>(*this, Other);
-				std::swap<InnerJobManager::InterruptibleJob<T>>(*this, Other);
+				std::swap<threadingUtils::InterruptibleJob<T, InterruptibleWorkManager>>(*this, Other);
 			}
 		};
 
@@ -201,14 +201,14 @@ namespace core
 		~JobManager() = default;
 
 		template<typename F, class ...Args>
-		Job<typename std::result_of<F(Args...)>::type> create(const std::string & owner, const std::string & name, F&& f, Args&& ...arguments)
+		Job<typename std::result_of<F(Args...)>::type, InnerWorkManager> create(const std::string & owner, const std::string & name, F&& f, Args&& ...arguments)
 		{
 			typedef typename std::result_of<F(Args...)>::type result_type;
 			auto description = utils::make_shared<Description>(Description{ owner, name });
 
-			std::function<result_type()> ff = std::bind(std::_Decay_copy(std::forward<F>(f)), std::_Decay_copy(std::forward<Args>(arguments))...);
+			std::function<result_type()> ff = std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...);
 
-			auto innerJob = jm->create(
+			auto innerJob = threadingUtils::create(
 				[=]() -> result_type
 			{
 				try{
@@ -225,7 +225,7 @@ namespace core
 				}
 			});
 
-			return Job<result_type>(std::move(innerJob), description);
+			return Job<result_type, InnerWorkManager>(std::move(innerJob), description);
 		}
 
 		template<typename JobType>

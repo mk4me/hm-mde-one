@@ -19,13 +19,13 @@
 namespace threadingUtils
 {
 	//! Wyj¹tek rzucany przy przerywaniu w¹tku
-	class ThreadInterruptedException : public std::exception
+	class ThreadInterruptedException : public std::runtime_error
 	{
 	public:
-		ThreadInterruptedException() : std::exception() {}
-		explicit ThreadInterruptedException(const char * const & e) : std::exception(e) {}
-		ThreadInterruptedException(const char * const & e, const int s) : std::exception(e, s) {}
-		ThreadInterruptedException(const ThreadInterruptedException& e) : std::exception(e) {}
+		ThreadInterruptedException() : std::runtime_error(std::string()) {}
+		explicit ThreadInterruptedException(const char * const & e) : std::runtime_error(e) {}
+		//ThreadInterruptedException(const char * const & e, const int s) : std::runtime_error(e, s) {}
+		ThreadInterruptedException(const ThreadInterruptedException& e) : std::runtime_error(e) {}
 		ThreadInterruptedException& operator=(const ThreadInterruptedException& e) { std::exception::operator=(e); return *this; }
 		virtual ~ThreadInterruptedException() {}
 	};
@@ -72,7 +72,7 @@ namespace threadingUtils
 		static void deinitializeContext(void*& privateData) {}
 
 		template<class Rep = long long,
-		class Period = std::mili>
+		class Period = std::chrono::milliseconds>
 			static void wait(std::condition_variable & cv,
 			std::unique_lock<std::mutex> & lock,
 			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(1))
@@ -81,7 +81,7 @@ namespace threadingUtils
 		}
 
 		template<typename Predicate, class Rep = long long,
-		class Period = std::mili>
+		class Period = std::chrono::milliseconds>
 			static void wait(std::condition_variable & cv,
 			std::unique_lock<std::mutex> & lock,
 			Predicate pred,
@@ -91,28 +91,28 @@ namespace threadingUtils
 		}
 
 		template<typename Lockable, class Rep = long long,
-		class Period = std::mili>
+		class Period = std::chrono::milliseconds>
 			static void wait(std::condition_variable_any & cva,
 			Lockable & lock,
 			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(1))
 		{
 			std::unique_lock<Lockable> l(lock);
-			cv.wait(lock);
+			cva.wait(lock);
 		}
 
 		template<typename Lockable, typename Predicate, class Rep = long long,
-		class Period = std::mili>
+		class Period = std::chrono::milliseconds>
 			static void wait(std::condition_variable_any & cva,
 			Lockable & lock,
 			Predicate pred,
 			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(1))
 		{
 			std::unique_lock<Lockable> l(lock);
-			cv.wait(lock, pred);
+			cva.wait(lock, pred);
 		}
 
 		template<typename T, class Rep = long long,
-		class Period = std::mili>
+		class Period = std::chrono::milliseconds>
 			static void wait(std::future<T> & f,
 			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(1))
 		{

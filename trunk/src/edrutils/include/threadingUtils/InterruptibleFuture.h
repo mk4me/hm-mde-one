@@ -69,7 +69,7 @@ namespace threadingUtils
 				}
 			}
 			else{
-				std::_Throw_future_error(std::make_error_code(std::future_errc::broken_promise));
+				throw std::runtime_error(std::make_error_code(std::future_errc::broken_promise));
 			}
 		}
 
@@ -100,7 +100,7 @@ namespace threadingUtils
 
 		InterruptibleSharedFutureHelper(InterruptibleFutureHelper<InterruptiblePolicy> && futureHelper)
 			: interruptPrivateData(std::move(futureHelper.interruptPrivateData)),
-			interruptFlag(std::move(Other.interruptFlag))
+			interruptFlag(std::move(futureHelper.interruptFlag))
 		{
 
 		}
@@ -112,7 +112,7 @@ namespace threadingUtils
 
 		}
 
-		InterruptibleSharedFutureHelper(const InterruptibleFutureHelper & Other)
+		InterruptibleSharedFutureHelper(const InterruptibleFutureHelper<InterruptiblePolicy> & Other)
 			: interruptPrivateData(Other.interruptPrivateData),
 			interruptFlag(Other.interruptFlag)
 		{
@@ -143,7 +143,7 @@ namespace threadingUtils
 				}
 			}
 			else{
-				std::_Throw_future_error(std::make_error_code(std::future_errc::broken_promise));
+				throw std::logic_error(std::make_error_code(std::future_errc::broken_promise));
 			}
 		}
 
@@ -179,7 +179,7 @@ namespace threadingUtils
 
 	public:
 
-		InterruptibleFuture() : 
+		InterruptibleFuture()
 		{
 
 		}
@@ -193,7 +193,7 @@ namespace threadingUtils
 
 		InterruptibleFuture(InterruptibleFuture&& Other) 
 			: future(std::move(Other.future)),
-			InterruptibleFutureHelper<InterruptiblePolicy>(std::move(static_cast<InterruptibleFutureHelper<InterruptiblePolicy>&>(Other))),
+			InterruptibleFutureHelper<InterruptiblePolicy>(std::move(static_cast<InterruptibleFutureHelper<InterruptiblePolicy>&>(Other)))
 		{	// construct from rvalue future object
 
 		}
@@ -260,7 +260,7 @@ namespace threadingUtils
 
 	public:
 
-		InterruptibleFuture() : 
+		InterruptibleFuture()
 		{
 
 		}
@@ -274,7 +274,7 @@ namespace threadingUtils
 
 		InterruptibleFuture(InterruptibleFuture&& Other) 
 			: future(std::move(Other.future)),
-			InterruptibleFutureHelper<InterruptiblePolicy>(std::move(static_cast<InterruptibleFutureHelper<InterruptiblePolicy>&>(Other))),
+			InterruptibleFutureHelper<InterruptiblePolicy>(std::move(static_cast<InterruptibleFutureHelper<InterruptiblePolicy>&>(Other)))
 			{	// construct from rvalue future object
 
 			}
@@ -282,7 +282,8 @@ namespace threadingUtils
 			InterruptibleFuture& operator=(InterruptibleFuture&& Right) 
 			{	// assign from rvalue future object
 				future = std::move(Right.future);
-				this->InterruptibleFutureHelper<InterruptiblePolicy>.operator=(std::move(static_cast<InterruptibleFutureHelper<InterruptiblePolicy>&>(Right)));
+				typedef InterruptibleFutureHelper<InterruptiblePolicy> Base;
+				this->Base.operator=(std::move(static_cast<InterruptibleFutureHelper<InterruptiblePolicy>&>(Right)));
 				return (*this);
 			}
 

@@ -100,7 +100,7 @@ namespace core
 
 		public:
 
-			typedef InnerThreadPool::Thread::InterruptPolicy InterruptPolicy;
+			typedef InnerThreadPool::Thread::InterruptPolicyType InterruptPolicy;
 
 		private:
 
@@ -119,15 +119,15 @@ namespace core
 			//! Destruktor
 			~Thread();
 
-			Thread& operator=(Thread&& Other) _NOEXCEPT;
+			Thread& operator=(Thread&& Other) noexcept;
 			Thread& operator=(const Thread&) = delete;
 
 			template<typename F, class ...Args>
 			void run(F&& f, Args&& ...arguments)
 			{
 
-				std::function<void()> ff = std::bind(std::_Decay_copy(std::forward<F>(f)),
-					std::_Decay_copy(std::forward<Args>(arguments))...);
+				std::function<void()> ff = std::bind(utils::decay_copy(std::forward<F>(f)),
+					utils::decay_copy(std::forward<Args>(arguments))...);
 
 				this->innerThread.run([ff](utils::shared_ptr<Description> description)
 				{
@@ -136,11 +136,11 @@ namespace core
 				}, description);
 			}
 
-			void swap(Thread& Other) _NOEXCEPT;
-			const bool joinable() const _NOEXCEPT;
+			void swap(Thread& Other) noexcept ;
+			const bool joinable() const noexcept ;
 			void join();
 			void detach();
-			std::thread::id get_id() const _NOEXCEPT;
+			std::thread::id get_id() const noexcept ;
 			std::thread::native_handle_type native_handle();
 			void interrupt();
 			const bool interruptible() const;

@@ -21,18 +21,18 @@ namespace core
 	//! Forward declaration
 	class Variant;
 
-	//! Klasa realizuj¹ca inicjalizacjê danych dla OW
+	//! Klasa realizujÅ¡ca inicjalizacjÄ™ danych dla OW
 	class IVariantInitializer
 	{
 	public:
 		//! Destruktor wirtualny
 		virtual ~IVariantInitializer() {}
-		//! \param object Obiekt który inicjujemy
+		//! \param object Obiekt ktÃ³ry inicjujemy
 		virtual void initialize(Variant * object) = 0;
 		//! \return Kopia inicjalizatora
 		virtual IVariantInitializer * clone() const = 0;
-		//! \param initializer Inicjalizator z ktorym siê porównujemy
-		//! \return Czy inicjalizatory dadz¹ takie same dane (czêœc wspólna)
+		//! \param initializer Inicjalizator z ktorym siÄ™ porÃ³wnujemy
+		//! \return Czy inicjalizatory dadzÅ¡ takie same dane (czÄ™Âœc wspÃ³lna)
 		virtual const bool isEqual(const IVariantInitializer & initializer) const { return false; }
 	};
 
@@ -57,18 +57,18 @@ namespace core
 	{
 	private:
 
-		//! Typ przechowuj¹cy metadane OW
+		//! Typ przechowujÅ¡cy metadane OW
 		typedef std::map<std::string, std::string> Metadata;
 		//! Typ loklanej synchronizacji
 		typedef std::lock_guard<std::recursive_mutex> ScopedLock;
 
 	public:
 
-		//! Proxy dostarczaj¹ce danych i synchronizuj¹ce je
+		//! Proxy dostarczajÅ¡ce danych i synchronizujÅ¡ce je
 		struct CORELIB_EXPORT data_t
 		{
 		private:
-			//! Variant dla którego bêdziemy wyci¹gaæ dane
+			//! Variant dla ktÃ³rego bÄ™dziemy wyciÅ¡gaÄ‡ dane
 			const Variant* variant;
 
 		private:
@@ -76,11 +76,11 @@ namespace core
 			data_t & operator=(const data_t &);
 
 		public:
-			//! \param variant Variant z którego wyci¹gamy dane
+			//! \param variant Variant z ktÃ³rego wyciÅ¡gamy dane
 			data_t(const Variant* variant);
 			//! Destruktor niepolimorficzny!!
 			~data_t();
-			//! Operator wyci¹gaj¹cy dane w formie sta³ej
+			//! Operator wyciÅ¡gajÅ¡cy dane w formie staÅ‚ej
 			const utils::ObjectWrapperConstPtr operator->() const;
 		};
 
@@ -92,15 +92,15 @@ namespace core
 	private:
 		//! Inicjalizator danych
 		VariantInitializerPtr initializer_;
-		//! Czy obiekt by³ ju¿ inicjalizowany
+		//! Czy obiekt byÅ‚ juÅ¼ inicjalizowany
 		mutable bool initialized_;
-		//! Metadane w formie klucz -> wartoœæ tekstowo
+		//! Metadane w formie klucz -> wartoÂœÄ‡ tekstowo
 		utils::shared_ptr<Metadata> metadata_;
 		//! Faktyczne dane
 		utils::ObjectWrapperPtr wrapper_;
-		//! Obiekt synchronizuj¹cy
+		//! Obiekt synchronizujÅ¡cy
 		mutable std::recursive_mutex sync_;
-		//! Czy jesteœmy w trakcie inicjalizacji
+		//! Czy jesteÂœmy w trakcie inicjalizacji
 		mutable bool initializing_;
 
 	private:
@@ -115,12 +115,12 @@ namespace core
 	public:
 
 		//! \param wrapper Wrapowane dane
-		//! \return Pe³ny wrapper z obs³uga metadanych i leniw¹ inicjalizacj¹
+		//! \return PeÅ‚ny wrapper z obsÅ‚uga metadanych i leniwÅ¡ inicjalizacjÅ¡
 		static const VariantPtr create(const utils::ObjectWrapperPtr & wrapper);
 
 		//! \tparam T Typ dla jakiego tworzymy wrapper
 		//! \param dummy Nieuzywany
-		//! \return Pe³ny wrapper z obs³uga metadanych i leniw¹ inicjalizacj¹
+		//! \return PeÅ‚ny wrapper z obsÅ‚uga metadanych i leniwÅ¡ inicjalizacjÅ¡
 		template<typename T>
 		static const VariantPtr create(const T * /*dummy*/ = nullptr)
 		{
@@ -143,11 +143,11 @@ namespace core
 		//! \param wrapper Obiekt z danymi
 		void set(const utils::ObjectWrapperPtr & wrapper);
 
-		//! Próba pobrania obiektu z wrappera.
+		//! PrÃ³ba pobrania obiektu z wrappera.
 		//! \tparam Ptr Wskaznik o ktory pytamy
 		//! \param object Rezultat.
-		//! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
-		//! \return Sukces/pora¿ka.
+		//! \param exact Czy ma byÄ‡ tylko i wyÅ‚Å¡cznie ten typ czy teÅ¼ moÅ¼e byÄ‡ rzutowanie w dÃ³Å‚?
+		//! \return Sukces/poraÅ¼ka.
 		template <class Ptr>
 		const bool tryGet(Ptr& object, bool exact = false)
 		{
@@ -155,11 +155,11 @@ namespace core
 			return wrapper_->tryGet(object, exact);
 		}
 
-		//! Próba pobrania obiektu z wrappera.
+		//! PrÃ³ba pobrania obiektu z wrappera.
 		//! \tparam Ptr Wskaznik o ktory pytamy
 		//! \param object Rezultat.
-		//! \param exact Czy ma byæ tylko i wy³¹cznie ten typ czy te¿ mo¿e byæ rzutowanie w dó³?
-		//! \return Sukces/pora¿ka.
+		//! \param exact Czy ma byÄ‡ tylko i wyÅ‚Å¡cznie ten typ czy teÅ¼ moÅ¼e byÄ‡ rzutowanie w dÃ³Å‚?
+		//! \return Sukces/poraÅ¼ka.
 		template <class Ptr>
 		const bool tryGet(Ptr& object, bool exact = false) const
 		{
@@ -186,15 +186,15 @@ namespace core
 
 		//! \return Pusty obiekt dla danych mojego typu
 		const VariantPtr create() const;
-		//! \param key Klucz metadanych który sprawdzamy czy istnieje
+		//! \param key Klucz metadanych ktÃ³ry sprawdzamy czy istnieje
 		//! \return Czy dany klucz istnieje
 		const bool existMetadata(const std::string & key) const;
-		//! \param key Klucz metadanych który sprawdzamy czy istnieje
-		//! \param val [out] Wartoœæ dla zadanego klucza, w przypadku braku klucza zmienna nie zostanie nadpisana
+		//! \param key Klucz metadanych ktÃ³ry sprawdzamy czy istnieje
+		//! \param val [out] WartoÂœÄ‡ dla zadanego klucza, w przypadku braku klucza zmienna nie zostanie nadpisana
 		//! \return Czy udalo sie pobrac wartosc klucza
 		const bool getMetadata(const std::string & key, std::string & val) const;
 		//! \param key Klucz metadanych
-		//! \param val Wartoœæ dla zadanego klucza
+		//! \param val WartoÂœÄ‡ dla zadanego klucza
 		void setMetadata(const std::string & key, const std::string & val);
 		//! \param key Klucz ktorego wpis usuwamy
 		void removeMetadata(const std::string & key);
@@ -203,21 +203,21 @@ namespace core
 		//! Metoda usuwa wszystkie metadane
 		void clearMetadata();
 
-		//! \param initializer Obiekt leniwie inicjuj¹cy wartoœæ OW
+		//! \param initializer Obiekt leniwie inicjujÅ¡cy wartoÂœÄ‡ OW
 		void setInitializer(const VariantInitializerPtr & initializer);
-		//! \return Obiekt leniwie inicjuj¹cy wartoœæ OW
+		//! \return Obiekt leniwie inicjujÅ¡cy wartoÂœÄ‡ OW
 		const VariantInitializerPtr initializer();
-		//! \return Obiekt leniwie inicjuj¹cy wartoœæ OW
+		//! \return Obiekt leniwie inicjujÅ¡cy wartoÂœÄ‡ OW
 		const VariantInitializerConstPtr initializer() const;
-		//! \return Czy obiekt by³ inicjalizowany
+		//! \return Czy obiekt byÅ‚ inicjalizowany
 		const bool initialized() const;
-		//! Metoda próbuje inicjalizowaæ dane
+		//! Metoda prÃ³buje inicjalizowaÄ‡ dane
 		void tryInitialize();
 		//! Metoda ponownie inicjuje dane
 		void forceInitialize();
-		//! \return Dostêp do danych do odczytu
+		//! \return DostÄ™p do danych do odczytu
 		const data_t data() const;
-		//! \return Dostêp do danych do odczytu po inicjalizacji
+		//! \return DostÄ™p do danych do odczytu po inicjalizacji
 		const data_t initializedData() const;
 		//! \param co Typ klonowania
 		//! \return Kopia naszego obiektu
@@ -225,33 +225,33 @@ namespace core
 		//! \param dest [out] Obiekt docelowy
 		//! \param co Typ klonowania
 		void clone(Variant & dest, const CloneOp co = utils::ObjectWrapper::DeepClone) const;
-		//! Zamienia zawartosc OW jesli to mo¿liwe
-		//! \param ow Obiekt z którym zamienimy przechowywane wartoœci
+		//! Zamienia zawartosc OW jesli to moÅ¼liwe
+		//! \param ow Obiekt z ktÃ³rym zamienimy przechowywane wartoÂœci
 		void swap(Variant & ow);
-		//! \param obj Obiekt z którym siê porównujemy
-		//! \return Czy obiekty s¹ takie same - trzymaj¹ te same dane
+		//! \param obj Obiekt z ktÃ³rym siÄ™ porÃ³wnujemy
+		//! \return Czy obiekty sÅ¡ takie same - trzymajÅ¡ te same dane
 		const bool isEqual(const Variant & obj) const;
 		//! \param srcWrapper Zrodlowy OW z ktorego kopiujemy dane
 		void copyData(const Variant & srcWrapper);
 
 	private:
-		//! Próbuje resetowaæ inicjalizator kiedy ustawia siê bezpoœrednio dane
+		//! PrÃ³buje resetowaÄ‡ inicjalizator kiedy ustawia siÄ™ bezpoÂœrednio dane
 		void tryResetInitializer();
-		//! Metoda próbuje inicjowac obiekt
+		//! Metoda prÃ³buje inicjowac obiekt
 		void innerInitialize() const;
-		//! Prywatny operator kopiowania - nie mo¿na kopiowaæ sync_
+		//! Prywatny operator kopiowania - nie moÅ¼na kopiowaÄ‡ sync_
 		Variant & operator=(const Variant &);
 	};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Operatory porównania dla OW
+// Operatory porÃ³wnania dla OW
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Operator poównania realizowany w oparciu o metodê isEqual
+//! Operator poÃ³wnania realizowany w oparciu o metodÄ™ isEqual
 bool operator==(const core::Variant & a, const core::Variant & b);
 
-//! Operator ró¿noœci realizowany w oparciu o operator porównania
+//! Operator rÃ³Å¼noÂœci realizowany w oparciu o operator porÃ³wnania
 bool operator!=(const core::Variant & a, const core::Variant & b);
 
 #endif	// __HEADER_GUARD_CORE__OBJECTWRAPPER_H__

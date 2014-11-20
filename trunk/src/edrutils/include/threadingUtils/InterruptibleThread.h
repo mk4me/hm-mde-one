@@ -8,11 +8,13 @@
 #ifndef __HEADER_GUARD_THREADINGUTILS__INTERRUPTIBLETHREAD_H__
 #define __HEADER_GUARD_THREADINGUTILS__INTERRUPTIBLETHREAD_H__
 
+#include <utils/Utils.h>
 #include <threadingUtils/FunctionWrapper.h>
 #include <threadingUtils/InterruptiblePolicy.h>
 #include <threadingUtils/InterruptHandlingPolicy.h>
 #include <threadingUtils/InterruptibleFuture.h>
 #include <threadingUtils/InterruptiblePackagedTask.h>
+
 
 namespace threadingUtils
 {
@@ -48,7 +50,7 @@ namespace threadingUtils
 		void run(F&& f, Args &&... arguments)
 		{
 
-			std::function<void()> ff(std::bind(std::_Decay_copy(std::forward<F>(f)), std::_Decay_copy(std::forward<Args>(arguments))...));
+			std::function<void()> ff(std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...));
 
 			thread.run([=](utils::shared_ptr<SharedState> sharedState)
 			{
@@ -118,7 +120,7 @@ namespace threadingUtils
 			typedef typename std::result_of<F(Args...)>::type result_type;
 
 			if (sharedState != nullptr && sharedState->finalize == true){
-				std::_Throw_Cpp_error(std::_OPERATION_NOT_PERMITTED);
+				throw std::logic_error("Operation not permitted");
 			}
 			else if (sharedState == nullptr){
 
@@ -159,11 +161,11 @@ namespace threadingUtils
 
 				if (sharedState->functionWrapper != nullptr){
 					if (sharedState->functionWrapper->valid() == true){
-						std::_Throw_Cpp_error(std::_OPERATION_NOT_PERMITTED);
+						throw std::logic_error("Operation not permitted");
 					}
 				}
 
-				std::function<result_type()> intf = std::bind(std::_Decay_copy(std::forward<F>(f)), std::_Decay_copy(std::forward<Args>(arguments))...);
+				std::function<result_type()> intf = std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...);
 				
 				InterruptiblePackagedTask<InteruptiblePolicy, result_type()> innerTask(intf);
 				ret = innerTask.get_future();
@@ -182,7 +184,7 @@ namespace threadingUtils
 		const bool joinable() const  {
 
 			if (sharedState != nullptr && sharedState->finalize == true){
-				std::_Throw_Cpp_error(std::_OPERATION_NOT_PERMITTED);
+				throw std::logic_error("Operation not permitted");
 			}
 
 			return thread.joinable();
@@ -202,7 +204,7 @@ namespace threadingUtils
 
 		std::thread::id get_id() const { return thread.get_id(); }
 		std::thread::native_handle_type native_handle() { return thread.native_handle(); }
-		void interrupt() { if (sharedState == nullptr) { std::_Throw_Cpp_error(std::_OPERATION_NOT_PERMITTED); } sharedState->interruptible.interrupt(); }
+		void interrupt() { if (sharedState == nullptr) { throw std::logic_error("Operation not permitted"); } sharedState->interruptible.interrupt(); }
 		const bool interruptible() const { return sharedState != nullptr && sharedState->interruptible.interruptible(); }
 		static void interruptionPoint() { InterrupltiblePolicy::interruptionPoint(); }
 		static void resetInterruption() { InterrupltiblePolicy::resetInterruption(); }

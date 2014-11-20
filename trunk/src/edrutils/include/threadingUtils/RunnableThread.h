@@ -16,7 +16,7 @@
 #include <threadingUtils/Future.h>
 #include <threadingUtils/CallPolicy.h>
 #include <threadingUtils/FunctionWrapper.h>
-
+#include <utils/Utils.h>
 namespace threadingUtils
 {
 	//! \tparam Thread Typ w¹tku jaki wrapujemy do postaci runnable
@@ -42,7 +42,7 @@ namespace threadingUtils
 		void run(F&& f, Args&&... arguments)
 		{
 			if (launched == true){
-				std::_Throw_Cpp_error(std::_OPERATION_NOT_PERMITTED);
+				std::logic_error("Operation not permitted");
 			}
 			else{
 				thread = Thread([=]
@@ -97,7 +97,7 @@ namespace threadingUtils
 			typedef typename std::result_of<F(Args...)>::type result_type;
 
 			if (sharedState != nullptr && sharedState->finalize == true){
-				std::_Throw_Cpp_error(std::_OPERATION_NOT_PERMITTED);				
+				throw std::logic_error("Operation not permitted");
 			}else if (joinable() == false){
 
 				sharedState = utils::make_shared<SharedState>();
@@ -127,10 +127,10 @@ namespace threadingUtils
 				std::lock_guard<std::mutex> lock(sharedState->functionMutex);
 
 				if (sharedState->functionWrapper != nullptr && sharedState->functionWrapper->valid() == true){
-					std::_Throw_Cpp_error(std::_OPERATION_NOT_PERMITTED);
+					throw std::logic_error("Operation not permitted");
 				}
 
-				std::packaged_task<result_type()> innerTask(std::bind(std::_Decay_copy(std::forward<F>(f)), std::_Decay_copy(std::forward<Args>(arguments))...););
+				std::packaged_task<result_type()> innerTask(std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...));
 				ret = innerTask.get_future();
 				sharedState->functionWrapper.reset(new FunctionWrapper(std::move(innerTask), std::move(arguments)...));
 			}
@@ -148,7 +148,7 @@ namespace threadingUtils
 		const bool joinable() const 
 		{
 			if (sharedState != nullptr && sharedState->finalize_ == true){
-				std::_Throw_Cpp_error(std::_OPERATION_NOT_PERMITTED);
+				throw std::logic_error("Operation not permitted");
 			}
 
 			return thread.joinable();

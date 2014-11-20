@@ -17,35 +17,35 @@
 
 namespace threadingUtils
 {
-	//! Klasa pomocnicza przy realizacji funkcjonalnoÅ›ci bezpiecznie przerywalnych wÄ…tkÃ³w
+	//! Klasa pomocnicza przy realizacji funkcjonalno¶ci bezpiecznie przerywalnych w±tków
 	class THREADINGUTILS_EXPORT InterruptFlag
 	{
 	private:
-		//! Flaga czy wÄ…tek faktycznie byÅ‚ przerwany
+		//! Flaga czy w±tek faktycznie by³ przerwany
 		std::atomic<bool> flag;
-		//! Zmienna warunkowa pozwalajÄ…ca przerywaÄ‡ oczekiwanie
+		//! Zmienna warunkowa pozwalaj±ca przerywaæ oczekiwanie
 		std::condition_variable * threadCond;
-		//! Zmienna warunkowa pozwalajÄ…ca przerywaÄ‡ oczekiwanie wÅ‚asnych struktur synchronizacyjnych
+		//! Zmienna warunkowa pozwalaj±ca przerywaæ oczekiwanie w³asnych struktur synchronizacyjnych
 		std::condition_variable_any * threadCondAny;
-		//! Obiekt synchronizujÄ…cy
+		//! Obiekt synchronizuj±cy
 		std::mutex setClearMutex;
 
-		//! \tparam Lockable Typ obiektu synchronizujÄ…cego
-		//! Klasa wpiera funkcjonalnoÅ›c przerywania oczekiwania na customowych obiektach synchronizujÄ…cych
+		//! \tparam Lockable Typ obiektu synchronizuj±cego
+		//! Klasa wpiera funkcjonalno¶c przerywania oczekiwania na customowych obiektach synchronizuj±cych
 		template<typename Lockable>
 		struct CustomLock
 		{
 		private:
-			//! Flaga synchronizujÄ…ca
+			//! Flaga synchronizuj±ca
 			InterruptFlag * self;
-			//! Obiekt synchronizujÄ…cy
+			//! Obiekt synchronizuj±cy
 			Lockable & lk;
 
 		public:
 			//! RAII
-			//! \param self Flaga synchronizujÄ…ca
+			//! \param self Flaga synchronizuj±ca
 			//! \param cond Zmienna warunkowa
-			//! \param lk Obiekt synchronizujÄ…cy
+			//! \param lk Obiekt synchronizuj±cy
 			CustomLock(InterruptFlag * self_,
 				std::condition_variable_any & cond,
 				Lockable & lk) :
@@ -55,21 +55,21 @@ namespace threadingUtils
 				self->threadCondAny = &cond;
 			}
 
-			//! Zwalnia obiekt synchronizujÄ…cy
+			//! Zwalnia obiekt synchronizuj±cy
 			void unlock()
 			{
 				lk.unlock();
 				self->setClearMutex.unlock();
 			}
 
-			//! Blokuje obiekt synchronizujÄ…cy
+			//! Blokuje obiekt synchronizuj±cy
 			void lock()
 			{
 				std::lock(self->setClearMutex, lk);
 			}
 
 			//! Destruktor
-			//! Przywraca stan zasobÃ³w flagi
+			//! Przywraca stan zasobów flagi
 			~CustomLock()
 			{
 				self->threadCondAny = 0;
@@ -77,7 +77,7 @@ namespace threadingUtils
 			}
 		};	
 
-		//! Struktura pomocnicza przy zwalnianiu zmiennej warunkowej w przypadku wyjÄ…tku przerwania
+		//! Struktura pomocnicza przy zwalnianiu zmiennej warunkowej w przypadku wyj±tku przerwania
 		struct ClearConditionVariableOnDestruct
 		{
 			//! Destruktor
@@ -86,51 +86,51 @@ namespace threadingUtils
 
 	public:
 
-		//! Konstruktor domyÅ›lny
+		//! Konstruktor domy¶lny
 		InterruptFlag();
 		//! Destruktor
 		~InterruptFlag();
 
-		//! Ustawia flagÄ™ przerwania
+		//! Ustawia flagê przerwania
 		void set();
 
-		//! Resetuje flagÄ™ przerwania
+		//! Resetuje flagê przerwania
 		void reset();
 
 		//! \return Czy flaga przerwania jest ustawiona
 		const bool isSet() const;
 
-		//! \return Czy flaga aktualnego wÄ…tku jest ustawiona
+		//! \return Czy flaga aktualnego w±tku jest ustawiona
 		static const bool threadIsSet();
 
-		//! Resetuje flage przerwania aktualnego wÄ…tku
+		//! Resetuje flage przerwania aktualnego w±tku
 		static void threadReset();
 
-		//! \return WskaÅºnik flagi przerwania aktualnego wÄ…tku
+		//! \return WskaÅºnik flagi przerwania aktualnego w±tku
 		static InterruptFlag *& threadInterruptFlag();
 
 		//! \param cv Zmienna warunkowa
 		void setConditionVariable(std::condition_variable & cv);
 
-		//! Zeruje zmiennÄ… warunkowÄ…
+		//! Zeruje zmienn± warunkow±
 		void clearConditionVariable();
 
-		//! Czekanie przerywalne na wÅ‚asnym obiekcie synchronizujÄ…cym
+		//! Czekanie przerywalne na w³asnym obiekcie synchronizuj±cym
 		template<typename Lockable>
 		void wait(std::condition_variable_any& cv, Lockable& lk)
 		{
-			CustomLock<std::mutex> cl(this, cv, lk);
+			CustomLock<Lockable> cl(this, cv, lk);
 			interruption_point();
 			cv.wait(cl);
 			interruption_point();
 		}
 
-		//! Czekanie przerywalne z predykatem na wÅ‚asnym obiekcie synchornizujÄ…cym
+		//! Czekanie przerywalne z predykatem na w³asnym obiekcie synchornizuj±cym
 		template<typename Lockable, typename Predicate>
 			void wait(std::condition_variable_any& cv, Lockable& lk, Predicate pred)
 		{
 			bool res = false;
-			CustomLock<std::mutex> cl(this, cv, lk);
+			CustomLock<Lockable> cl(this, cv, lk);
 			interruption_point();
 			while ((threadInterruptFlag()->isSet() == false) && ((res = pred()) == false))
 			{
@@ -150,7 +150,7 @@ namespace threadingUtils
 			std::chrono::duration<Rep, Period> & timeout)
 		{
 			bool res = false;
-			CustomLock<std::mutex> cl(this, cv, lk);
+			CustomLock<Lockable> cl(this, cv, lk);
 			interruption_point();
 			while ((threadInterruptFlag()->isSet() == false) && ((res = pred()) == false))
 			{

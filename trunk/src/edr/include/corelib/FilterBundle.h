@@ -11,6 +11,7 @@
 #define HEADER_GUARD_CORELIB__FILTERBUNDLE_H__
 
 #include <vector>
+#include <corelib/Export.h>
 #include <corelib/IFilterCommand.h>
 #include <corelib/IFilterBundle.h>
 

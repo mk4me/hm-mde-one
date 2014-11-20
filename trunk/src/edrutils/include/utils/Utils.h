@@ -13,6 +13,7 @@
 #include <boost/lexical_cast.hpp>
 #include <cstring>
 #include <sstream>
+#include <type_traits>
 #include <memory>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,6 +54,11 @@ inline void zero(T & object)
 }
 
 //------------------------------------------------------------------------------
+template<class T> inline
+typename std::decay<T>::type decay_copy(T && val)
+{ // forward val as value of decayed type
+return (std::forward<T>(val));
+}
 
 //! Zwalnia zadany wskaźnik oraz zeruje jego wartość.
 #define UTILS_DELETEPTR(ptr) UTILS_MULTISTATEMENT_BEGIN \

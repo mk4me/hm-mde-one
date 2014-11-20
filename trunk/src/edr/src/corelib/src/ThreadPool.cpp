@@ -52,20 +52,20 @@ ThreadPool::Thread::~Thread()
 
 }
 
-ThreadPool::Thread& ThreadPool::Thread::operator=(ThreadPool::Thread&& Other) _NOEXCEPT
+ThreadPool::Thread& ThreadPool::Thread::operator=(ThreadPool::Thread&& Other) noexcept
 {
 	innerThread = std::move(Other.innerThread);
 	description = std::move(Other.description);
 	return *this;
 }
 
-void ThreadPool::Thread::swap(ThreadPool::Thread& Other) _NOEXCEPT
+void ThreadPool::Thread::swap(ThreadPool::Thread& Other) noexcept
 {
 	std::swap(innerThread, Other.innerThread);
 	std::swap(description, Other.description);
 }
 
-const bool ThreadPool::Thread::joinable() const _NOEXCEPT
+const bool ThreadPool::Thread::joinable() const noexcept
 {
 	return innerThread.joinable();
 }
@@ -80,7 +80,7 @@ void ThreadPool::Thread::detach()
 	innerThread.detach();
 }
 
-std::thread::id ThreadPool::Thread::get_id() const _NOEXCEPT
+std::thread::id ThreadPool::Thread::get_id() const noexcept
 {
 	return innerThread.get_id();
 }
