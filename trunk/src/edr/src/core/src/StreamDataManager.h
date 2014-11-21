@@ -1,17 +1,19 @@
 ﻿/********************************************************************
-	created:  2013/01/17
-	created:  17:1:2013   16:47
-	filename: StreamDataManager.h
-	author:   Mateusz Janiak
+created:  2013/01/17
+created:  17:1:2013   16:47
+filename: StreamDataManager.h
+author:   Mateusz Janiak
 
-	purpose:
-	*********************************************************************/
+purpose:
+*********************************************************************/
 #ifndef HEADER_GUARD___STREAMDATAMANAGER_H__
 #define HEADER_GUARD___STREAMDATAMANAGER_H__
 
 #include <map>
 #include <list>
 #include <mutex>
+#include "ParserManager.h"
+#include "DataHierarchyManager.h"
 #include <corelib/IParserManagerReader.h>
 #include <corelib/IStreamDataManager.h>
 #include <corelib/IStreamManagerReader.h>
@@ -24,6 +26,8 @@
 
 namespace core {
 
+	class StParser;
+	class SimpleInitializer;
 	class StreamDataManager : public IStreamDataManager, public IStreamManagerReader, public IDataManagerReader::IObjectObserver
 	{
 	private:
@@ -34,7 +38,42 @@ namespace core {
 		class StreamReaderTransaction;
 		friend class StreamReaderTransaction;
 
-		class CompoundInitializer;
+		class CompoundInitializer : public IVariantInitializer
+		{
+		public:
+
+			struct CompoundData {
+				utils::shared_ptr<StParser> parser;
+				std::map<int, VariantWeakPtr> objects;
+			};
+
+			typedef utils::shared_ptr<CompoundData> CompoundDataPtr;
+
+		public:
+
+			CompoundInitializer(const CompoundDataPtr & data, const int idx);
+
+			virtual ~CompoundInitializer();
+
+			virtual void initialize(Variant * object);
+
+			virtual IVariantInitializer * clone() const;
+			virtual const bool isEqual(const IVariantInitializer &) const;
+
+			const plugin::IParserPtr parser() const;
+
+			//! \param object Obiekt o który pytamy
+			//! \return Indeks obiektu inicjalizowany przez parser
+			const int objectIdx(const VariantConstPtr object) const;
+
+			utils::shared_ptr<const StParser> innerParser() const;
+
+			CompoundDataPtr details();
+
+		private:
+			CompoundDataPtr data;
+			const int idx;
+		};
 
 		//! S�ownik aktualnie obsługiwanych plików i skojarzonych z nimi parserów
 		typedef boost::bimap<std::string, StreamGrabberPtr> Streams;
@@ -137,7 +176,7 @@ namespace core {
 	public:
 
 		//IDataManagerReader::IObjectObserver API
-		virtual void observe(const IDataManagerReader::ChangeList & changes);	
+		virtual void observe(const IDataManagerReader::ChangeList & changes);
 
 	private:
 		//! \param stream Strumień który weryfikujemy pod kątem dostępności danych, jeśli brak to usuwamy nieużywany plik
@@ -146,27 +185,28 @@ namespace core {
 
 		template<typename ParserT>
 		void initializeParsers(const IParserManagerReader::ParserPrototypes & parsers,
-			const IStreamDataManagerOperations::StreamGrabberPtr stream,
-			VariantsList & objects);
+							   const IStreamDataManagerOperations::StreamGrabberPtr stream,
+							   VariantsList & objects);
 	};
 
 	template<typename ParserT>
 	void StreamDataManager::initializeParsers(const IParserManagerReader::ParserPrototypes & parsers,
-		const IStreamDataManagerOperations::StreamGrabberPtr stream, VariantsList & objects)
+											  const IStreamDataManagerOperations::StreamGrabberPtr stream, VariantsList & objects)
 	{
 		auto pm = getParserManager();
 		auto hm = getDataHierarchyManager();
 
 		//je�li pliku nie ma dodaj go, stw�rz parsery i rozszerz dost�pne dane wraz z ich opisem
-		for (auto parserIT = parsers.begin(); parserIT != parsers.end(); ++parserIT){
+		for (auto parserIT = parsers.begin(); parserIT != parsers.end(); ++parserIT) {
 			// tworzymy współdzielone dane dla inicjalizatorów
-			CompoundInitializer::CompoundDataPtr cid(new CompoundInitializer::CompoundData);
+			CompoundInitializer::CompoundDataPtr cid = utils::make_shared<CompoundInitializer::CompoundData>();
 			cid->parser.reset(new ParserT((*parserIT)->create(), stream));
 
-			auto parserTypesMap = pm->parserTypes((*parserIT)->ID(), stream->name());
+			auto id = (*parserIT)->ID();
+			auto parserTypesMap = pm->parserTypes(id, stream->name());
 
 			//zarejestrowanie obiekt�w i ich zwi�zku z parserem i typami danych
-			for (auto objectIT = parserTypesMap.begin(); objectIT != parserTypesMap.end(); ++objectIT){
+			for (auto objectIT = parserTypesMap.begin(); objectIT != parserTypesMap.end(); ++objectIT) {
 				//towrzymy taki obiekt
 				auto ow = hm->createWrapper(objectIT->second);
 				//aktualizuje ow dla CompoundInitializer

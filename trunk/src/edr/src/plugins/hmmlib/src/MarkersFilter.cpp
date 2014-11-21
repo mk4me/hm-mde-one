@@ -1,5 +1,6 @@
 #include "HmmLibPCH.h"
 #include "MarkersFilter.h"
+#include <corelib/PluginCommon.h>
 
 //#include <plugins/newVdf/TreeBuilder.h>
 

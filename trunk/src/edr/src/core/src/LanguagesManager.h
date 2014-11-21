@@ -11,7 +11,9 @@
 
 #include <corelib/ILanguagesManager.h>
 #include <corelib/BaseDataTypes.h>
+#include <utils/SmartPtr.h>
 #include <map>
+#include <vector>
 
 class QTranslator;
 

@@ -1,6 +1,7 @@
 #include "CorePCH.h"
 #include "FileDataManager.h"
 #include "MemoryDataManager.h"
+#include "DataHierarchyManager.h"
 #include "ApplicationCommon.h"
 #include "ParserManager.h"
 #include <utils/Push.h>
@@ -16,7 +17,7 @@ private:
 	typedef std::map<Filesystem::Path, IFileManagerReader::FileChange> FileModyfications;
 
 private:
-	IMemoryDataManager::TransactionPtr mdmTransaction;	
+	IMemoryDataManager::TransactionPtr mdmTransaction;
 	FileDataManager * fdm;
 	std::atomic<bool> transactionRolledback;
 	utils::shared_ptr<std::lock_guard<std::recursive_mutex>> lock;
@@ -39,11 +40,11 @@ public:
 		//potem sam notyfikuje o zmianach w plikach
 		mdmTransaction.reset();
 
-		if (isRolledback() == false){
+		if (isRolledback() == false) {
 
-			if (modyfications.empty() == false){
+			if (modyfications.empty() == false) {
 				FileDataManager::ChangeList changes;
-				for (auto it = modyfications.begin(); it != modyfications.end(); ++it){
+				for (auto it = modyfications.begin(); it != modyfications.end(); ++it) {
 					FileDataManager::FileChange change;
 					change.filePath = it->first;
 					change.modyfication = it->second.modyfication;
@@ -67,39 +68,39 @@ public:
 		transactionRolledback = true;
 		mdmTransaction->rollback();
 
-		for(auto it = modyfications.begin(); it != modyfications.end(); ++it){
-			switch(it->second.modyfication){
+		for (auto it = modyfications.begin(); it != modyfications.end(); ++it) {
+			switch (it->second.modyfication) {
 			case IFileManagerReader::ADD_FILE:
-				{
-					VariantsList toRemove;
-					fdm->rawGetObjects(it->first, toRemove);
-					//usu� obiekty z MemoryDM w transakcji
-					for(auto IT = toRemove.begin(); IT != toRemove.end(); ++IT){
-						//TODO
-						//przywrócić poprzedni jeśli był
-						(*IT)->setInitializer(VariantInitializerPtr());
-					}
-					fdm->objectsByFiles.erase(it->first);
-				}
+			{
+												 VariantsList toRemove;
+												 fdm->rawGetObjects(it->first, toRemove);
+												 //usu� obiekty z MemoryDM w transakcji
+												 for (auto IT = toRemove.begin(); IT != toRemove.end(); ++IT) {
+													 //TODO
+													 //przywrócić poprzedni jeśli był
+													 (*IT)->setInitializer(VariantInitializerPtr());
+												 }
+												 fdm->objectsByFiles.erase(it->first);
+			}
 				break;
 
 			case IFileManagerReader::REMOVE_FILE:
-				{
-					//TODO
-					//przywrócić LazyInitializer!!
-					auto insRes = fdm->objectsByFiles.insert(FileDataManager::ObjectsByFiles::value_type(it->first, it->second.previousData));
+			{
+													//TODO
+													//przywrócić LazyInitializer!!
+													auto insRes = fdm->objectsByFiles.insert(FileDataManager::ObjectsByFiles::value_type(it->first, it->second.previousData));
 
-					if(insRes.second == false){
-						insRes.first->second.insert(insRes.first->second.end(), it->second.previousData.begin(), it->second.previousData.end());
-					}
-				}
+													if (insRes.second == false) {
+														insRes.first->second.insert(insRes.first->second.end(), it->second.previousData.begin(), it->second.previousData.end());
+													}
+			}
 				break;
 			}
 		}
 
 		fdm->skipUpdate = oldSkipUpdate;
 		mdmTransaction.reset();
-		lock.reset();		
+		lock.reset();
 	}
 
 	//! \param files Lista plik�w dla kt�rych zostan� utworzone parsery i z kt�rych wyci�gni�te dane
@@ -108,12 +109,12 @@ public:
 	{
 		verifyRollback();
 
-		if(fdm->rawIsManaged(file) == true){
+		if (fdm->rawIsManaged(file) == true) {
 			rollback();
 			throw std::runtime_error("File transaction tried to add file already managed by manager");
 		}
 
-		if(!Filesystem::pathExists(file) || !Filesystem::isRegularFile(file)){
+		if (!Filesystem::pathExists(file) || !Filesystem::isRegularFile(file)) {
 			rollback();
 			throw std::runtime_error("File transaction tried to add not existing or invalid file");
 		}
@@ -126,7 +127,7 @@ public:
 	{
 		verifyRollback();
 
-		if(fdm->rawIsManaged(file) == false){
+		if (fdm->rawIsManaged(file) == false) {
 			rollback();
 			throw std::runtime_error("File transaction tried to modify file not managed by manager");
 		}
@@ -135,11 +136,11 @@ public:
 	}
 
 	virtual void reloadFile(const Filesystem::Path & file,
-		const bool complete)
+							const bool complete)
 	{
 		verifyRollback();
 
-		if (fdm->rawIsManaged(file) == false){
+		if (fdm->rawIsManaged(file) == false) {
 			rollback();
 			throw std::runtime_error("File transaction tried to modify file not managed by manager");
 		}
@@ -150,7 +151,7 @@ public:
 
 	virtual const bool tryAddFile(const Filesystem::Path & file)
 	{
-		if(transactionRolledback == true || fdm->rawIsManaged(file) == true || !Filesystem::pathExists(file) || !Filesystem::isRegularFile(file)){
+		if (transactionRolledback == true || fdm->rawIsManaged(file) == true || !Filesystem::pathExists(file) || !Filesystem::isRegularFile(file)) {
 			return false;
 		}
 
@@ -161,7 +162,7 @@ public:
 
 	virtual const bool tryRemoveFile(const Filesystem::Path & file)
 	{
-		if(transactionRolledback == true || fdm->rawIsManaged(file) == false){
+		if (transactionRolledback == true || fdm->rawIsManaged(file) == false) {
 			return false;
 		}
 
@@ -171,9 +172,9 @@ public:
 	}
 
 	virtual const bool tryReloadFile(const Filesystem::Path & file,
-		const bool complete)
+									 const bool complete)
 	{
-		if (transactionRolledback == true || fdm->rawIsManaged(file) == false){
+		if (transactionRolledback == true || fdm->rawIsManaged(file) == false) {
 			return false;
 		}
 
@@ -221,7 +222,7 @@ private:
 
 	inline void verifyRollback() const
 	{
-		if (isRolledback() == true){
+		if (isRolledback() == true) {
 			throw std::runtime_error("File transaction already rolled-back");
 		}
 	}
@@ -234,7 +235,7 @@ private:
 		IFileManagerReader::FileChange mod;
 		mod.modyfication = IFileManagerReader::ADD_FILE;
 		fdm->getObjects(file, mod.currentData);
-		modyfications.insert(FileModyfications::value_type(file,mod));
+		modyfications.insert(FileModyfications::value_type(file, mod));
 	}
 
 	void rawRemoveFile(const Filesystem::Path & file)
@@ -245,13 +246,13 @@ private:
 		//dodajemy dane do dm
 		fdm->rawRemoveFile(file, mdmTransaction);
 		//aktualizujemy liste zmian
-		modyfications.insert(FileModyfications::value_type(file,mod));
+		modyfications.insert(FileModyfications::value_type(file, mod));
 	}
 
 	void rawReloadFile(const Filesystem::Path & file, const bool complete)
 	{
 		//sprawdzam czy jest co robic
-		if (complete == false && fdm->rawIsLoadedCompleately(file) == true){
+		if (complete == false && fdm->rawIsLoadedCompleately(file) == true) {
 			return;
 		}
 
@@ -259,7 +260,7 @@ private:
 		mod.modyfication = IFileManagerReader::RELOAD_FILE;
 		fdm->rawGetObjects(file, mod.previousData);
 
-		for (auto it = mod.previousData.begin(); it != mod.previousData.end(); ++it){
+		for (auto it = mod.previousData.begin(); it != mod.previousData.end(); ++it) {
 			*it = (*it)->clone();
 		}
 
@@ -283,7 +284,7 @@ public:
 
 	~FileReaderTransaction()
 	{
-		
+
 	}
 
 public:
@@ -318,6 +319,7 @@ private:
 	utils::shared_ptr<std::lock_guard<std::recursive_mutex>> lock;
 };
 
+namespace core {
 //! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
 class FParser
 {
@@ -351,12 +353,12 @@ public:
 	//! Destruktor drukuj�cy wiadomo�� o wy�adowaniu pliku.
 	virtual ~FParser()
 	{
-		if ( isParsed() ) {
-			CORE_LOG_NAMED_DEBUG("parser", "Unloading parser for file: " << path );
-		} else if ( isUsed() ) {
-			CORE_LOG_NAMED_DEBUG("parser", "Unloading invalid parser for file: " << path );
+		if (isParsed()) {
+			CORE_LOG_NAMED_DEBUG("parser", "Unloading parser for file: " << path);
+		} else if (isUsed()) {
+			CORE_LOG_NAMED_DEBUG("parser", "Unloading invalid parser for file: " << path);
 		} else {
-			CORE_LOG_NAMED_DEBUG("parser", "Unloading unused parser for file: " << path );
+			CORE_LOG_NAMED_DEBUG("parser", "Unloading unused parser for file: " << path);
 		}
 	}
 
@@ -393,11 +395,11 @@ public:
 	{
 		UTILS_ASSERT(!isUsed());
 
-		if (core::Filesystem::pathExists(path) == false){
+		if (core::Filesystem::pathExists(path) == false) {
 			throw std::runtime_error("File not exist or not available to read");
 		}
 
-		CORE_LOG_NAMED_DEBUG("parser", "Parsing file: " << path );
+		CORE_LOG_NAMED_DEBUG("parser", "Parsing file: " << path);
 		used = true;
 		_parseFile();
 		parsed = true;
@@ -412,10 +414,12 @@ public:
 		try {
 			parseFile();
 			ret = true;
-		} catch (const std::exception& e) {
-			CORE_LOG_NAMED_ERROR("parser", "Error during parsing file " << path << ": " << e.what());			
-		} catch (...) {
-			CORE_LOG_NAMED_ERROR("parser", "UNKNOWN Error during parsing file " << path);			
+		}
+		catch (const std::exception& e) {
+			CORE_LOG_NAMED_ERROR("parser", "Error during parsing file " << path << ": " << e.what());
+		}
+		catch (...) {
+			CORE_LOG_NAMED_ERROR("parser", "UNKNOWN Error during parsing file " << path);
 		}
 
 		return ret;
@@ -426,6 +430,7 @@ public:
 		parser->getObject(object, idx);
 	}
 };
+}
 
 //! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
 class FileParser : public FParser
@@ -433,7 +438,7 @@ class FileParser : public FParser
 public:
 	FileParser(plugin::IParser* parser, const Filesystem::Path & path) : FParser(parser, path), fileParser(nullptr)
 	{
-			
+
 	}
 
 	virtual ~FileParser()
@@ -444,13 +449,13 @@ public:
 private:
 	virtual void _parseFile()
 	{
-		if(fileParser == nullptr){
+		if (fileParser == nullptr) {
 			fileParser = dynamic_cast<plugin::ISourceParser*>(getParser().get());
 		}
 
-		if(fileParser != nullptr){
+		if (fileParser != nullptr) {
 			fileParser->parse(getPath().string());
-		}else{
+		} else {
 			throw std::runtime_error("Parser is expected to implement plugin::ISourceParser interface but failed to cast");
 		}
 	}
@@ -476,21 +481,21 @@ public:
 private:
 	virtual void _parseFile()
 	{
-		if(streamFileParser == nullptr){
+		if (streamFileParser == nullptr) {
 			streamFileParser = dynamic_cast<plugin::IStreamParser*>(getParser().get());
 		}
 
-		if(streamFileParser != nullptr){
+		if (streamFileParser != nullptr) {
 
 			auto path = getPath().string();
 			utils::shared_ptr<std::ifstream> localStream(new std::ifstream(path));
-			if(localStream->good() == true){
+			if (localStream->good() == true) {
 				streamFileParser->parse(localStream, path);
-			}else{
+			} else {
 				throw std::runtime_error("Failed to initialize parser stream");
 			}
-		}else{			
-			throw std::runtime_error("Parser is expected to implement plugin::IStreamParser interface but failed to cast");			
+		} else {
+			throw std::runtime_error("Parser is expected to implement plugin::IStreamParser interface but failed to cast");
 		}
 	}
 
@@ -503,14 +508,14 @@ class SimpleInitializer : public IVariantInitializer
 {
 public:
 	SimpleInitializer(const utils::shared_ptr<FParser> & parser, const int idx)
-	: parser_(parser), idx(idx) {}
+		: parser_(parser), idx(idx) {}
 	virtual ~SimpleInitializer() {}
 	virtual void initialize(Variant * object) {
 		parser_->parseFile();
 		parser_->getObject(*object, idx);
 		parser_->reset();
 	}
-	virtual SimpleInitializer * clone() const { return new SimpleInitializer(parser_, idx); }
+	virtual IVariantInitializer * clone() const { return new SimpleInitializer(parser_, idx); }
 	virtual const bool isEqual(const IVariantInitializer &) const { return false; }
 
 private:
@@ -518,113 +523,7 @@ private:
 	const int idx;
 };
 
-class FileDataManager::CompoundInitializer : public IVariantInitializer
-{
-public:
 
-	struct CompoundData {
-		utils::shared_ptr<FParser> parser;
-		std::map<int, VariantWeakPtr> objects;
-	};
-
-	typedef utils::shared_ptr<CompoundData> CompoundDataPtr;
-
-public:
-
-	CompoundInitializer(const CompoundDataPtr & data, const int idx) : data(data), idx(idx) {}
-
-	virtual ~CompoundInitializer() {}
-
-	virtual void initialize(Variant * object) {
-	
-		auto mt = getMemoryDataManager()->transaction();
-		std::list<int> toDelete;
-		if (data->parser->tryParse() == false){
-			CORE_LOG_NAMED_INFO("parser", "Parser " << data->parser->getParser()->ID() << " (" << data->parser->getParser()->shortName() << ") failed for file " << data->parser->getPath());
-			for (auto it = data->objects.begin(); it != data->objects.end(); ++it){
-				auto ow = it->second.lock();
-				if (ow != nullptr && ow->data()->getRawPtr() == nullptr){						
-					toDelete.push_back(it->first);					
-				}				
-			}
-		}
-		else{
-			for (auto it = data->objects.begin(); it != data->objects.end(); ++it){
-				auto ow = it->second.lock();
-				if (ow != nullptr){
-					if (ow->initialized() == false){
-						data->parser->getObject(*ow, it->first);
-						if (ow->data()->getRawPtr() == nullptr){
-							CORE_LOG_NAMED_INFO("parser", "Object of type " << ow->data()->getTypeInfo().name()
-								<< " not initialized properly by parser ID: " << data->parser->getParser()->ID()
-								<< " (" << data->parser->getParser()->shortName() << ") for file " << data->parser->getPath());
-							toDelete.push_back(it->first);
-						}
-					}
-				}
-				else{
-					toDelete.push_back(it->first);
-				}
-			}
-		}
-
-		data->parser->reset();
-
-		for (auto it = toDelete.begin(); it != toDelete.end(); ++it){
-			auto oit = data->objects.find(*it);
-			mt->tryRemoveData(oit->second.lock());
-			data->objects.erase(oit);
-		}
-
-		if (data->objects.empty() == true){
-			CORE_LOG_NAMED_INFO("parser", "Releasing unused parser ID: " << data->parser->getParser()->ID() << " (" << data->parser->getParser()->shortName() << ") for file " << data->parser->getPath());
-		}
-	}
-
-	virtual SimpleInitializer * clone() const { return new SimpleInitializer(data->parser, idx); }
-	virtual const bool isEqual(const IVariantInitializer &) const { return false; }
-
-	const plugin::IParserPtr parser() const
-	{
-		plugin::IParserPtr ret;
-
-		if (data != nullptr && data->parser != nullptr){
-			ret = data->parser->getParser();
-		}
-
-		return ret;
-	}
-
-	//! \param object Obiekt o który pytamy
-	//! \return Indeks obiektu inicjalizowany przez parser
-	const int objectIdx(const VariantConstPtr object) const
-	{
-		int ret = -1;
-
-		if (data != nullptr){
-
-			for (auto it = data->objects.begin(); it != data->objects.end(); ++it){
-				if (it->second.lock() == object){
-					ret = it->first;
-					break;
-				}
-			}
-		}
-
-		return ret;
-	}
-
-	utils::shared_ptr<const FParser> innerParser() const { return ((data != nullptr) ? data->parser : utils::shared_ptr<const FParser>()); }
-
-	CompoundDataPtr details()
-	{
-		return data;
-	}
-
-private:
-	CompoundDataPtr data;
-	const int idx;
-};
 
 FileDataManager::FileDataManager() : skipUpdate(false)
 {
@@ -636,7 +535,7 @@ FileDataManager::~FileDataManager()
 	skipUpdate = true;
 	auto mt = getMemoryDataManager()->transaction();
 	auto tmpObjectsByFiles = objectsByFiles;
-	for(auto it = tmpObjectsByFiles.begin(); it != tmpObjectsByFiles.end(); ++it){
+	for (auto it = tmpObjectsByFiles.begin(); it != tmpObjectsByFiles.end(); ++it) {
 		rawRemoveFile(it->first, mt);
 	}
 }
@@ -648,11 +547,11 @@ void FileDataManager::rawRemoveFile(const Filesystem::Path & file, const IMemory
 	//pobieramy obiekty do usuniecia z DM
 	rawGetObjects(file, toRemove);
 	//usu� obiekty z MemoryDM w transakcji
-	for(auto it = toRemove.begin(); it != toRemove.end(); ++it){
+	for (auto it = toRemove.begin(); it != toRemove.end(); ++it) {
 		//TODO
 		//przywrócić poprzedni jeśli był
 		(*it)->setInitializer(VariantInitializerPtr());
-		if(memTransaction->tryRemoveData(*it) == false){
+		if (memTransaction->tryRemoveData(*it) == false) {
 			ok = false;
 		}
 	}
@@ -660,9 +559,9 @@ void FileDataManager::rawRemoveFile(const Filesystem::Path & file, const IMemory
 	//usu� plik	
 	objectsByFiles.erase(file);
 	missingObjects.erase(file);
-	if(ok == true){
+	if (ok == true) {
 		CORE_LOG_INFO("File " << file << " succesfully removed from manager");
-	}else{
+	} else {
 		CORE_LOG_DEBUG("There were some problems while removing data from memory data manager for file " << file << ". Not all objects have been removed properly");
 	}
 }
@@ -685,32 +584,32 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file, const IMemoryDat
 	auto lastIT = std::set_difference(sourceParsersSet.begin(), sourceParsersSet.end(), streamParsersSet.begin(), streamParsersSet.end(), sourcesLeft.begin());
 
 	sourcesLeft.erase(lastIT, sourcesLeft.end());
-	//obiekty wyciągnięte z parserów
-	VariantsList objects;
+	//obiekty wycią	gnięte z parserów
+		VariantsList objects;
 	//preferuje uzycie parser�w z w�asn� obs�ug� I/O - wierze �e zrobi� to maksymalnie wydajnie wg w�asnych zasad
-	if (streamParsers.empty() == false){
+	if (streamParsers.empty() == false) {
 		initializeParsers<StreameFileParser>(streamParsers, file.string(), objects);
 	}
 	//teraz uzywam parser�w strumieniowych - sam dostarcz� im strumieni
-	if (sourceParsers.empty() == false){
+	if (sourceParsers.empty() == false) {
 		initializeParsers<FileParser>(sourcesLeft, file.string(), objects);
 	}
 
-	if(objects.empty() == true){
+	if (objects.empty() == true) {
 		CORE_LOG_DEBUG("None of known parsers provide any valid data for file: " << file);
-	}else{
+	} else {
 
 		int idx = 0;
 		ConstVariantsList objectsAdded;
 
-		for(auto it = objects.begin(); it != objects.end(); ++it){
-			if((*it)->existMetadata("core/name") == false){
+		for (auto it = objects.begin(); it != objects.end(); ++it) {
+			if ((*it)->existMetadata("core/name") == false) {
 				std::stringstream name;
 				name << file.filename().string() << "_" << idx++;
 				(*it)->setMetadata("core/name", name.str());
 			}
 
-			if((*it)->existMetadata("core/source") == false){
+			if ((*it)->existMetadata("core/source") == false) {
 				(*it)->setMetadata("core/source", file.filename().string());
 			}
 
@@ -726,13 +625,13 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file, const IMemoryDat
 
 void FileDataManager::rawReloadFile(const Filesystem::Path & file, const bool compleately, const IMemoryDataManager::TransactionPtr & memTransaction)
 {
-	if (compleately == true){
+	if (compleately == true) {
 
 		auto it = objectsByFiles.find(file);
 
-		for (auto oIT = it->second.begin(); oIT != it->second.end(); ++oIT){
+		for (auto oIT = it->second.begin(); oIT != it->second.end(); ++oIT) {
 			auto ow = *oIT;
-			if (ow->getRawPtr() != nullptr){
+			if (ow->getRawPtr() != nullptr) {
 				auto newOW = ow->clone();
 				newOW->forceInitialize();
 				memTransaction->updateData(ow, newOW);
@@ -742,17 +641,17 @@ void FileDataManager::rawReloadFile(const Filesystem::Path & file, const bool co
 
 	auto it = missingObjects.find(file);
 
-	if (it != missingObjects.end()){
+	if (it != missingObjects.end()) {
 
 		auto dhm = core::getDataHierarchyManager();
 
 		VariantsList objectsAdded;
 
-		for (auto iIT = it->second.begin(); iIT != it->second.end(); ++iIT){
+		for (auto iIT = it->second.begin(); iIT != it->second.end(); ++iIT) {
 			//inicjalizator
 			auto init = iIT->first;
 			auto initDetails = init->details();
-			for (auto dIT = iIT->second.begin(); dIT != iIT->second.end(); ++dIT){
+			for (auto dIT = iIT->second.begin(); dIT != iIT->second.end(); ++dIT) {
 				//idx + typ
 				auto ow = dhm->createWrapper(dIT->second);
 				initDetails->objects[dIT->first] = ow;
@@ -778,7 +677,7 @@ const bool FileDataManager::rawIsLoadedCompleately(const Filesystem::Path & file
 
 void FileDataManager::rawGetFiles(Files & files) const
 {
-	for(auto it = objectsByFiles.begin(); it != objectsByFiles.end(); ++it){
+	for (auto it = objectsByFiles.begin(); it != objectsByFiles.end(); ++it) {
 		files.insert(it->first);
 	}
 }
@@ -786,49 +685,49 @@ void FileDataManager::rawGetFiles(Files & files) const
 void FileDataManager::rawGetObjects(const Filesystem::Path & file, ConstVariantsList & objects) const
 {
 	auto it = objectsByFiles.find(file);
-    if (it != objectsByFiles.end()) {
-	    objects.insert(objects.end(), it->second.begin(), it->second.end());
-    } else {
-        throw std::runtime_error("File not managed");
-    }
+	if (it != objectsByFiles.end()) {
+		objects.insert(objects.end(), it->second.begin(), it->second.end());
+	} else {
+		throw std::runtime_error("File not managed");
+	}
 }
 
 void FileDataManager::rawGetObjects(const Filesystem::Path & file, VariantsList & objects)
 {
 	auto it = objectsByFiles.find(file);
-    if (it != objectsByFiles.end()) {
+	if (it != objectsByFiles.end()) {
 
-		for (auto fIT = it->second.begin(); fIT != it->second.end(); ++fIT){
+		for (auto fIT = it->second.begin(); fIT != it->second.end(); ++fIT) {
 			objects.push_back(utils::const_pointer_cast<Variant>(*fIT));
 		}
 
-    } else {
-        throw std::runtime_error("File not managed");
-    }
+	} else {
+		throw std::runtime_error("File not managed");
+	}
 }
 
 void FileDataManager::rawGetObjects(const Filesystem::Path & file, VariantsCollection & objects) const
 {
 	auto it = objectsByFiles.find(file);
 
-	for(auto objectIT = it->second.begin(); objectIT != it->second.end(); ++objectIT){
-		if(objects.exactTypes() == true){
-			if ((*objectIT)->data()->getTypeInfo() == objects.getTypeInfo()){
+	for (auto objectIT = it->second.begin(); objectIT != it->second.end(); ++objectIT) {
+		if (objects.exactTypes() == true) {
+			if ((*objectIT)->data()->getTypeInfo() == objects.getTypeInfo()) {
 				objects.push_back(*objectIT);
 			}
-		}
-		else if ((*objectIT)->data()->isSupported(objects.getTypeInfo()) == true){
+		} else if ((*objectIT)->data()->isSupported(objects.getTypeInfo()) == true) {
 			objects.push_back(*objectIT);
 		}
 	}
 }
 
-void FileDataManager::updateObservers(const ChangeList & changes )
+void FileDataManager::updateObservers(const ChangeList & changes)
 {
-	for(auto it = observers.begin(); it != observers.end(); ++it){
-		try{
+	for (auto it = observers.begin(); it != observers.end(); ++it) {
+		try {
 			(*it)->observe(changes);
-		}catch(...){
+		}
+		catch (...) {
 			//TODO
 			//rozwin�� obserwator�w aby si� jako� identyfikowali!! ewentualnie robi� to przez w�asn� implementacj� dostarczan� konretnym obiektom
 			//(osobne interfejsy reader�w dla ka�dego elemnentu �adowanego do aplikacji - service, source, datasink, itp)
@@ -841,7 +740,7 @@ void FileDataManager::removeFile(const Filesystem::Path & file)
 {
 	ScopedLock lock(sync);
 
-	if(rawIsManaged(file) == false){
+	if (rawIsManaged(file) == false) {
 		throw std::runtime_error("File not managed");
 	}
 
@@ -863,15 +762,15 @@ void FileDataManager::addFile(const Filesystem::Path & file)
 {
 	ScopedLock lock(sync);
 
-	if(rawIsManaged(file) == true){
+	if (rawIsManaged(file) == true) {
 		throw std::runtime_error("File already managed");
 	}
 
-	if (getParserManager()->sourceIsAccepted(file.string()) == false){
+	if (getParserManager()->sourceIsAccepted(file.string()) == false) {
 		throw std::runtime_error("Source not accepted by any parser");
 	}
 
-	if(!Filesystem::pathExists(file) || !Filesystem::isRegularFile(file)){
+	if (!Filesystem::pathExists(file) || !Filesystem::isRegularFile(file)) {
 		throw std::runtime_error("Source not exists, is not a file or is not accessible");
 	}
 
@@ -894,7 +793,7 @@ void FileDataManager::reloadFile(const Filesystem::Path & file, const bool compl
 {
 	ScopedLock lock(sync);
 
-	if (rawIsManaged(file) == false){
+	if (rawIsManaged(file) == false) {
 		throw std::runtime_error("File not managed");
 	}
 
@@ -902,9 +801,9 @@ void FileDataManager::reloadFile(const Filesystem::Path & file, const bool compl
 
 	rawGetObjects(file, change.previousData);
 
-	for (auto it = change.previousData.begin(); it != change.previousData.end(); ++it){
+	for (auto it = change.previousData.begin(); it != change.previousData.end(); ++it) {
 		*it = (*it)->clone();
-	}	
+	}
 
 	{
 		utils::Push<volatile bool> _skipUpdate(skipUpdate, true);
@@ -916,7 +815,7 @@ void FileDataManager::reloadFile(const Filesystem::Path & file, const bool compl
 
 	//notyfikuj
 	ChangeList changes;
-	
+
 	change.filePath = file;
 	change.modyfication = IFileManagerReader::RELOAD_FILE;
 	changes.push_back(change);
@@ -926,9 +825,10 @@ void FileDataManager::reloadFile(const Filesystem::Path & file, const bool compl
 const bool FileDataManager::tryAddFile(const core::Filesystem::Path & file)
 {
 	bool ret = true;
-	try{
+	try {
 		addFile(file);
-	}catch(...){
+	}
+	catch (...) {
 		ret = false;
 	}
 
@@ -938,9 +838,10 @@ const bool FileDataManager::tryAddFile(const core::Filesystem::Path & file)
 const bool FileDataManager::tryRemoveFile(const core::Filesystem::Path & file)
 {
 	bool ret = true;
-	try{
+	try {
 		removeFile(file);
-	}catch(...){
+	}
+	catch (...) {
 		ret = false;
 	}
 
@@ -948,13 +849,13 @@ const bool FileDataManager::tryRemoveFile(const core::Filesystem::Path & file)
 }
 
 const bool FileDataManager::tryReloadFile(const core::Filesystem::Path & file,
-	const bool complete)
+										  const bool complete)
 {
 	bool ret = true;
-	try{
+	try {
 		reloadFile(file, complete);
 	}
-	catch (...){
+	catch (...) {
 		ret = false;
 	}
 
@@ -974,21 +875,21 @@ const IFileManagerReader::TransactionConstPtr FileDataManager::transaction() con
 void FileDataManager::observe(const IDataManagerReader::ChangeList & changes)
 {
 
-	if (skipUpdate == true){
+	if (skipUpdate == true) {
 		return;
 	}
 
 	std::set<core::Filesystem::Path> pathsToCheck;
-	for (auto it = changes.begin(); it != changes.end(); ++it){
+	for (auto it = changes.begin(); it != changes.end(); ++it) {
 		if ((*it).modyfication == IDataManagerReader::REMOVE_OBJECT &&
 			(*it).previousValue != nullptr &&
-			(*it).previousValue->initializer() != nullptr){
+			(*it).previousValue->initializer() != nullptr) {
 
 			auto cinitializer = utils::dynamic_pointer_cast<const CompoundInitializer>((*it).previousValue->initializer());
-			if (cinitializer != nullptr){
+			if (cinitializer != nullptr) {
 				auto initializer = utils::const_pointer_cast<CompoundInitializer>(cinitializer);
 				auto parser = initializer->innerParser();
-				if (parser != nullptr){
+				if (parser != nullptr) {
 					const auto & path = parser->getPath();
 					pathsToCheck.insert(path);
 					objectsByFiles[path].remove(utils::const_pointer_cast<Variant>((*it).previousValue));
@@ -996,16 +897,15 @@ void FileDataManager::observe(const IDataManagerReader::ChangeList & changes)
 					const auto idx = initializer->objectIdx((*it).previousValue);
 
 					if ((*it).previousValue->initialized() == false ||
-						(*it).previousValue->getRawPtr() != nullptr){
+						(*it).previousValue->getRawPtr() != nullptr) {
 
 						missingObjects[path][initializer][idx] = (*it).previousValue->data()->getTypeInfo();
-					}
-					else{
+					} else {
 						missingObjects[path][initializer].erase(idx);
 
-						if (missingObjects[path][initializer].empty() == true){
+						if (missingObjects[path][initializer].empty() == true) {
 							missingObjects[path].erase(initializer);
-							if (missingObjects[path].empty() == true){
+							if (missingObjects[path].empty() == true) {
 								missingObjects.erase(path);
 							}
 						}
@@ -1017,11 +917,11 @@ void FileDataManager::observe(const IDataManagerReader::ChangeList & changes)
 
 	ChangeList fchanges;
 
-	for (auto it = pathsToCheck.begin(); it != pathsToCheck.end(); ++it){
+	for (auto it = pathsToCheck.begin(); it != pathsToCheck.end(); ++it) {
 		tryRemoveUnusedFile(*it, fchanges);
 	}
 
-	if (changes.empty() == false){
+	if (changes.empty() == false) {
 		updateObservers(fchanges);
 	}
 }
@@ -1029,7 +929,7 @@ void FileDataManager::observe(const IDataManagerReader::ChangeList & changes)
 void FileDataManager::addObserver(const FileObserverPtr & fileWatcher)
 {
 	ScopedLock lock(sync);
-	if(std::find(observers.begin(), observers.end(), fileWatcher) != observers.end()){
+	if (std::find(observers.begin(), observers.end(), fileWatcher) != observers.end()) {
 		throw std::runtime_error("Watcher already registered");
 	}
 
@@ -1040,7 +940,7 @@ void FileDataManager::removeObserver(const FileObserverPtr & fileWatcher)
 {
 	ScopedLock lock(sync);
 	auto it = std::find(observers.begin(), observers.end(), fileWatcher);
-	if(it == observers.end()){
+	if (it == observers.end()) {
 		throw std::runtime_error("Watcher not registered");
 	}
 
@@ -1050,7 +950,7 @@ void FileDataManager::removeObserver(const FileObserverPtr & fileWatcher)
 void FileDataManager::getFiles(Files & files) const
 {
 	ScopedLock lock(sync);
-	for(auto it = objectsByFiles.begin(); it != objectsByFiles.end(); ++it){
+	for (auto it = objectsByFiles.begin(); it != objectsByFiles.end(); ++it) {
 		files.insert(it->first);
 	}
 }
@@ -1080,11 +980,11 @@ void FileDataManager::getObjects(const Filesystem::Path & file, VariantsCollecti
 }
 
 void core::FileDataManager::tryRemoveUnusedFile(const core::Filesystem::Path & file,
-	ChangeList & changes)
+												ChangeList & changes)
 {
 	auto it = objectsByFiles.find(file);
-	//sprawdzam czy nie moge juz usunąć pliku i notyfikowć o zmianie
-	if (it != objectsByFiles.end() && it->second.empty() == true){
+	//sprawdzam czy nie moge juz usun�� pliku i notyfikowć o zmianie
+	if (it != objectsByFiles.end() && it->second.empty() == true) {
 		CORE_LOG_INFO("Removing unused file " << file << " because of lack of delivered objects to memory data manager.");
 		FileChange change;
 		change.filePath = it->first;
@@ -1094,3 +994,105 @@ void core::FileDataManager::tryRemoveUnusedFile(const core::Filesystem::Path & f
 		objectsByFiles.erase(it);
 	}
 }
+
+core::FileDataManager::CompoundInitializer::CompoundDataPtr core::FileDataManager::CompoundInitializer::details()
+{
+	return data;
+}
+	utils::shared_ptr<const FParser> core::FileDataManager::CompoundInitializer::innerParser() const
+	{
+		return ((data != nullptr) ? data->parser : utils::shared_ptr<const FParser>());
+	}
+
+	const int core::FileDataManager::CompoundInitializer::objectIdx(const VariantConstPtr object) const
+	{
+		int ret = -1;
+
+		if (data != nullptr) {
+
+			for (auto it = data->objects.begin(); it != data->objects.end(); ++it) {
+				if (it->second.lock() == object) {
+					ret = it->first;
+					break;
+				}
+			}
+		}
+
+		return ret;
+	}
+
+	const plugin::IParserPtr core::FileDataManager::CompoundInitializer::parser() const
+	{
+		plugin::IParserPtr ret;
+
+		if (data != nullptr && data->parser != nullptr) {
+			ret = data->parser->getParser();
+		}
+
+		return ret;
+	}
+
+	const bool core::FileDataManager::CompoundInitializer::isEqual(const IVariantInitializer &) const
+	{
+		return false;
+	}
+
+	IVariantInitializer * core::FileDataManager::CompoundInitializer::clone() const
+	{
+		return new SimpleInitializer(data->parser, idx);
+	}
+
+	void core::FileDataManager::CompoundInitializer::initialize(Variant * object)
+	{
+		auto mt = getMemoryDataManager()->transaction();
+		std::list<int> toDelete;
+		if (data->parser->tryParse() == false) {
+			CORE_LOG_NAMED_INFO("parser", "Parser " << data->parser->getParser()->ID() << " (" << data->parser->getParser()->shortName() << ") failed for file " << data->parser->getPath());
+			for (auto it = data->objects.begin(); it != data->objects.end(); ++it) {
+				auto ow = it->second.lock();
+				if (ow != nullptr && ow->data()->getRawPtr() == nullptr) {
+					toDelete.push_back(it->first);
+				}
+			}
+		} else {
+			for (auto it = data->objects.begin(); it != data->objects.end(); ++it) {
+				auto ow = it->second.lock();
+				if (ow != nullptr) {
+					if (ow->initialized() == false) {
+						data->parser->getObject(*ow, it->first);
+						if (ow->data()->getRawPtr() == nullptr) {
+							CORE_LOG_NAMED_INFO("parser", "Object of type " << ow->data()->getTypeInfo().name()
+												<< " not initialized properly by parser ID: " << data->parser->getParser()->ID()
+												<< " (" << data->parser->getParser()->shortName() << ") for file " << data->parser->getPath());
+							toDelete.push_back(it->first);
+						}
+					}
+				} else {
+					toDelete.push_back(it->first);
+				}
+			}
+		}
+
+		data->parser->reset();
+
+		for (auto it = toDelete.begin(); it != toDelete.end(); ++it) {
+			auto oit = data->objects.find(*it);
+			mt->tryRemoveData(oit->second.lock());
+			data->objects.erase(oit);
+		}
+
+		if (data->objects.empty() == true) {
+			CORE_LOG_NAMED_INFO("parser", "Releasing unused parser ID: " << data->parser->getParser()->ID() << " (" << data->parser->getParser()->shortName() << ") for file " << data->parser->getPath());
+		}
+	}
+
+	core::FileDataManager::CompoundInitializer::~CompoundInitializer()
+	{
+
+	}
+
+	core::FileDataManager::CompoundInitializer::CompoundInitializer(const CompoundDataPtr & data, const int idx) : data(data), idx(idx)
+	{
+
+	}
+

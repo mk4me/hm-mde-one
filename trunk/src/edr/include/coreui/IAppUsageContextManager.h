@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___IAPPUSAGECONTEXTMANAGER_H__
 #define HEADER_GUARD___IAPPUSAGECONTEXTMANAGER_H__
 
-#include <coreUI/IAppUsageContext.h>
+#include <coreui/IAppUsageContext.h>
 #include <queue>
 #include <vector>
 #include <set>

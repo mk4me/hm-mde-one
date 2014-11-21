@@ -10,7 +10,7 @@
 #include <coreui/IAppUsageContextManager.h>
 #include "ContextEventFilter.h"
 #include "AnalisisModel.h"
-#include <coreUI/SingleInstanceWindow.h>
+#include <coreuI/SingleInstanceWindow.h>
 #include <coreui/SingleInstanceWindow.h>
 
 class QWidget;

@@ -1,5 +1,5 @@
 #include "CoreUiPCH.h"
-#include <coreUi/MultiCommand.h>
+#include <coreui/MultiCommand.h>
 
 using namespace coreUI;
 

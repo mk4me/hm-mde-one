@@ -192,7 +192,6 @@ namespace utils
 #define __DEFINE_WRAPPER_CLASS(typeT)\
 template <> class ObjectWrapperT<typeT> : public __ObjectWrapperT<typeT>\
 {\
-	friend class ImplType;\
 	friend class ObjectWrapper;\
 private:\
 	ObjectWrapperT() : ImplType() {}\

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iterator>
+#include <vector>
 #include <utils/SmartPtr.h>
 #include <osg/Vec3>
 #include <osg/Vec4>

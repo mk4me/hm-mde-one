@@ -1,5 +1,6 @@
 #include "CorePCH.h"
 #include "HierarchyDataManager.h"
+#include "ApplicationCommon.h"
 
 using namespace core;
 

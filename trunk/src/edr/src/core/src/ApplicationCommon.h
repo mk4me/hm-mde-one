@@ -15,6 +15,7 @@
 #include <corelib/Filesystem.h>
 #include "Application.h"
 #include <utils/Macros.h>
+#include <boost/uuid/uuid.hpp>
 
 namespace core {
 

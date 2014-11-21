@@ -10,6 +10,8 @@
 #define HEADER_GUARD_CORE__LANGUAGESLOADER_H__
 
 #include <string>
+#include <vector>
+#include <corelib/Filesystem.h>
 
 namespace core
 {

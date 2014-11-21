@@ -78,9 +78,9 @@ const utils::TypeInfo & BvhSerie::getRequestedDataType() const
 void BvhSerie::traverse(kinematic::JointConstPtr joint, const osg::Matrix & parentMat, std::vector<osg::Vec3> & positions)
 {	
 	int idx = joint->id;
-	auto dir = joint->direction;
-
-	osg::Vec3 shift = joint->name == "root" ? getCurrentRootPosition(joint) : dir * joint->length;
+	osg::Vec3 dir = joint->direction;
+	double len = joint->length;
+	osg::Vec3 shift = joint->name == "root" ? getCurrentRootPosition(joint) : dir * len;
 	osg::Quat pc = getJointCurrentLocalRotation(joint);
 	
 
@@ -93,8 +93,8 @@ void BvhSerie::traverse(kinematic::JointConstPtr joint, const osg::Matrix & pare
 	positions.push_back(result.getTrans());
 
 
-	for(auto& joint : joint->children) {
-		traverse(joint, result, positions);
+	for(auto& j : joint->children) {
+		traverse(j, result, positions);
 	}
 }
 

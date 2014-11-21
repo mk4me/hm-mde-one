@@ -1,5 +1,5 @@
 #include "CoreUiPCH.h"
-#include <coreUI/ContextAutoPlacer.h>
+#include <coreui/ContextAutoPlacer.h>
 #include <QtWidgets/QWidgetAction>
 #include <QtWidgets/QToolBar>
 #include <coreui/ICoreActionSection.h>
@@ -19,12 +19,12 @@ QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions, const QList<Q
     //jak nie potrafie wyciagnac sekcji to wrzucam do common
     std::map<QString, std::list<QAction*>> sections;
 
-    for(auto it = actions.begin(); it != actions.end(); ++it){
-        auto coreSectionAction = dynamic_cast<coreUI::ICoreActionSection*>(*it);
+    for(auto iter = actions.begin(); iter != actions.end(); ++iter){
+        auto coreSectionAction = dynamic_cast<coreUI::ICoreActionSection*>(*iter);
         if(coreSectionAction != nullptr){
-            sections[coreSectionAction->section()].push_back(*it);
+            sections[coreSectionAction->section()].push_back(*iter);
         }else {
-            sections[QObject::tr("Common")].push_back(*it);
+            sections[QObject::tr("Common")].push_back(*iter);
         }
     }
 
@@ -79,18 +79,18 @@ QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions, const QList<Q
 
         std::map<int, QAction*> leftActions;
 
-        auto it = sideActions.find(coreUI::CoreTitleBar::Left);
-        if(it != sideActions.end()){
-            leftActions = it->second.first;
-            leftActions.insert(it->second.second.begin(), it->second.second.end());
+        auto itSide = sideActions.find(coreUI::CoreTitleBar::Left);
+        if(itSide != sideActions.end()){
+            leftActions = itSide->second.first;
+            leftActions.insert(itSide->second.second.begin(), itSide->second.second.end());
         }
 
         std::map<int, QAction*> rightActions;
 
-        it = sideActions.find(coreUI::CoreTitleBar::Right);
-        if(it != sideActions.end()){
-            rightActions = it->second.first;
-            rightActions.insert(it->second.second.begin(), it->second.second.end());
+        itSide = sideActions.find(coreUI::CoreTitleBar::Right);
+        if(itSide != sideActions.end()){
+            rightActions = itSide->second.first;
+            rightActions.insert(itSide->second.second.begin(), itSide->second.second.end());
         }
 
         double ratio = std::max(leftActions.size(), rightActions.size()) / (double)(leftActions.size() + rightActions.size());
@@ -108,8 +108,8 @@ QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions, const QList<Q
             QToolBar * upperBar = new QToolBar(section);
             upperBar->setMovable(false);
             upperBar->setFloatable(false);
-            for(auto it = leftActions.begin(); it != leftActions.end(); ++it){
-                upperBar->addAction(it->second);
+            for(auto itA = leftActions.begin(); itA != leftActions.end(); ++itA){
+                upperBar->addAction(itA->second);
             }
 
             vLayout->addWidget(upperBar);
@@ -119,8 +119,8 @@ QWidget* ContextAutoPlacer::create(const QList<QAction*>& actions, const QList<Q
             QToolBar * lowerBar = new QToolBar(section);
             lowerBar->setMovable(false);
             lowerBar->setFloatable(false);
-            for(auto it = rightActions.begin(); it != rightActions.end(); ++it){
-                lowerBar->addAction(it->second);
+            for(auto itA = rightActions.begin(); itA != rightActions.end(); ++itA){
+                lowerBar->addAction(itA->second);
             }
 
             vLayout->addWidget(lowerBar);

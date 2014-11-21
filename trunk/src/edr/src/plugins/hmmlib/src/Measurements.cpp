@@ -1,8 +1,10 @@
 #include "HmmLibPCH.h"
 #include <iostream>
 #include <tinyxml2.h>
+#include <utils/Debug.h>
 #include "Measurements.h"
 #include <corelib/ILog.h>
+#include <corelib/PluginCommon.h>
 
 MeasurementConfig::MeasurementConfig() : 
     number(-1)

@@ -11,6 +11,7 @@
 #define HEADER_GUARD_HMM__MEASUREMENTS_H__
 
 #include <QtCore/QString>
+#include <map>
 #include <vector>
 #include <utils/SmartPtr.h>
 //#include <boost/bimap.hpp>

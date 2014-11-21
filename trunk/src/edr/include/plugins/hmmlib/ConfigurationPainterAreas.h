@@ -10,6 +10,8 @@
 #ifndef HEADER_GUARD_HMM__CONFIGURATIONPAINTERAREAS_H__
 #define HEADER_GUARD_HMM__CONFIGURATIONPAINTERAREAS_H__
 
+#include <QtCore/QString>
+#include <QtGui/QPainter>
 #include <utils/SmartPtr.h>
 #include <plugins/hmmlib/Export.h>
 

@@ -7,7 +7,7 @@
 #include <QtWidgets/QMenu>
 #include <coreui/AbstractStateMachine.h>
 #include <coreui/MoveCommand.h>
-#include <coreUi/MultiCommand.h>
+#include <coreui/MultiCommand.h>
 #include "LayeredStateMachine.h"
 #include "BackgroundLayer.h"
 #include "LayeredSerie.h"

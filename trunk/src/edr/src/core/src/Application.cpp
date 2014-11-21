@@ -7,6 +7,7 @@
 #include <QtCore/QLocale>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QDir>
+#include <utils/PtrPolicyStd.h>
 #include "Config.h"
 #include <coreui/CoreMainWindow.h>
 #include <QtWidgets/QSplashScreen>

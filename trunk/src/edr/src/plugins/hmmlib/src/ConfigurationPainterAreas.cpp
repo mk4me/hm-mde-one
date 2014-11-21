@@ -1,6 +1,7 @@
 #include "HmmLibPCH.h"
 #include <plugins/hmmlib/ConfigurationPainterAreas.h>
 #include <QtGui/QPainter>
+#include <QtCore/QFileInfo>
 #include <QtGui/QPen>
 
 IArea::IArea() : 

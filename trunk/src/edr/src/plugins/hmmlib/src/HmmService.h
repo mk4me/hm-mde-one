@@ -11,6 +11,7 @@
 #define HEADER_GUARD_HMMLIB__HMMSERVICE_H__
 
 #include <list>
+#include <utils/TypeInfo.h>
 #include <corelib/IService.h>
 #include <corelib/IFilterProvider.h>
 								  

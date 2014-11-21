@@ -33,7 +33,7 @@ public:
 	StreamTransaction(StreamDataManager * sdm) : mdmTransaction(getMemoryDataManager()->transaction()),
 		sdm(sdm), lock(new std::lock_guard<std::recursive_mutex>(sdm->sync)),
 		transactionRolledback(false), oldSkipUpdate(sdm->skipUpdate)
-	{		
+	{
 		sdm->skipUpdate = true;
 	}
 
@@ -43,10 +43,10 @@ public:
 		//potem sam notyfikuje o zmianach w plikach
 		mdmTransaction.reset();
 
-		if (isRolledback() == false){
-			if (modyfications.empty() == false){
+		if (isRolledback() == false) {
+			if (modyfications.empty() == false) {
 				StreamDataManager::ChangeList changes;
-				for (auto it = modyfications.begin(); it != modyfications.end(); ++it){
+				for (auto it = modyfications.begin(); it != modyfications.end(); ++it) {
 					StreamDataManager::StreamChange change;
 					change.stream = it->first;
 					change.modyfication = it->second.modyfication;
@@ -56,7 +56,7 @@ public:
 				sdm->updateObservers(changes);
 			}
 
-			sdm->skipUpdate = oldSkipUpdate;			
+			sdm->skipUpdate = oldSkipUpdate;
 		}
 	}
 
@@ -72,30 +72,30 @@ public:
 		transactionRolledback = true;
 		mdmTransaction->rollback();
 
-		for (auto it = modyfications.begin(); it != modyfications.end(); ++it){
-			switch (it->second.modyfication){
+		for (auto it = modyfications.begin(); it != modyfications.end(); ++it) {
+			switch (it->second.modyfication) {
 			case IStreamManagerReader::ADD_STREAM:
 			{
-				VariantsList toRemove;
-				sdm->rawGetObjects(it->first, toRemove);
-				//usu� obiekty z MemoryDM w transakcji
-				for (auto IT = toRemove.begin(); IT != toRemove.end(); ++IT){
-					//TODO
-					//przywrócić poprzedni jeśli był
-					(*IT)->setInitializer(VariantInitializerPtr());
-				}
-				sdm->objectsByStreams.erase(it->first);
+													 VariantsList toRemove;
+													 sdm->rawGetObjects(it->first, toRemove);
+													 //usu� obiekty z MemoryDM w transakcji
+													 for (auto IT = toRemove.begin(); IT != toRemove.end(); ++IT) {
+														 //TODO
+														 //przywrócić poprzedni jeśli był
+														 (*IT)->setInitializer(VariantInitializerPtr());
+													 }
+													 sdm->objectsByStreams.erase(it->first);
 			}
 				break;
 
 			case IStreamManagerReader::REMOVE_STREAM:
 			{
-				//TODO
-				//przywrócić LazyInitializer!!
-				auto insRes = sdm->objectsByStreams.insert(StreamDataManager::ObjectsByStreams::value_type(it->first, it->second.objects));
-				if (insRes.second == false){
-					insRes.first->second.insert(insRes.first->second.end(), it->second.objects.begin(), it->second.objects.end());
-				}
+														//TODO
+														//przywrócić LazyInitializer!!
+														auto insRes = sdm->objectsByStreams.insert(StreamDataManager::ObjectsByStreams::value_type(it->first, it->second.objects));
+														if (insRes.second == false) {
+															insRes.first->second.insert(insRes.first->second.end(), it->second.objects.begin(), it->second.objects.end());
+														}
 			}
 				break;
 			}
@@ -112,12 +112,12 @@ public:
 	{
 		verifyRollback();
 
-		if (stream == nullptr || stream->name().empty() == true){
+		if (stream == nullptr || stream->name().empty() == true) {
 			rollback();
 			throw std::runtime_error("Uninitialized or anonymous stream");
 		}
 
-		if (sdm->rawIsManaged(stream->name()) == true){
+		if (sdm->rawIsManaged(stream->name()) == true) {
 			rollback();
 			throw std::runtime_error("Stream transaction tried to add stream already managed by manager");
 		}
@@ -130,7 +130,7 @@ public:
 	{
 		verifyRollback();
 
-		if (sdm->rawIsManaged(stream) == false){
+		if (sdm->rawIsManaged(stream) == false) {
 			rollback();
 			throw std::runtime_error("Stream transaction tried to modify stream not managed by manager");
 		}
@@ -140,7 +140,7 @@ public:
 
 	virtual const bool tryAddStream(const StreamGrabberPtr stream)
 	{
-		if (transactionRolledback == true || stream == nullptr || stream->name().empty() == true || sdm->rawIsManaged(stream->name()) == true){
+		if (transactionRolledback == true || stream == nullptr || stream->name().empty() == true || sdm->rawIsManaged(stream->name()) == true) {
 			return false;
 		}
 
@@ -151,7 +151,7 @@ public:
 
 	virtual const bool tryRemoveStream(const std::string & stream)
 	{
-		if (transactionRolledback == true || sdm->rawIsManaged(stream) == false){
+		if (transactionRolledback == true || sdm->rawIsManaged(stream) == false) {
 			return false;
 		}
 
@@ -199,7 +199,7 @@ private:
 
 	inline void verifyRollback() const
 	{
-		if (isRolledback() == true){
+		if (isRolledback() == true) {
 			throw std::runtime_error("Stream transaction already rolled-back");
 		}
 	}
@@ -270,8 +270,9 @@ private:
 	StreamDataManager * sdm;
 };
 
+namespace core {
 //! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
-class SParser
+class StParser
 {
 private:
 	//! Prawdziwy wewn�trzny parser.
@@ -293,7 +294,7 @@ public:
 	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
 	//!     czas �ycia.
 	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
-	SParser(plugin::IParser * parser, const IStreamDataManagerOperations::StreamGrabberPtr sg) :
+	StParser(plugin::IParser * parser, const IStreamDataManagerOperations::StreamGrabberPtr sg) :
 		parser(parser), parsed(false), used(false), sg(sg)
 	{
 		UTILS_ASSERT(parser != nullptr);
@@ -301,15 +302,13 @@ public:
 	}
 
 	//! Destruktor drukuj�cy wiadomo�� o wy�adowaniu pliku.
-	virtual ~SParser()
+	virtual ~StParser()
 	{
 		if (isParsed()) {
 			CORE_LOG_NAMED_DEBUG("parser", "Unloading parser for stream: " << sg->name());
-		}
-		else if (isUsed()) {
+		} else if (isUsed()) {
 			CORE_LOG_NAMED_DEBUG("parser", "Unloading invalid parser for stream: " << sg->name());
-		}
-		else {
+		} else {
 			CORE_LOG_NAMED_DEBUG("parser", "Unloading unused parser for stream: " << sg->name());
 		}
 	}
@@ -382,9 +381,10 @@ public:
 		parser->getObject(object, idx);
 	}
 };
+}
 
 //! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
-class StreamParser : public SParser
+class StreamParser : public core::StParser
 {
 private:
 	//! Prawdziwy wewn�trzny parser.
@@ -395,42 +395,40 @@ public:
 	//!     czas �ycia.
 	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
 	StreamParser(plugin::IParser * parser, const IStreamDataManagerOperations::StreamGrabberPtr sg)
-		: SParser(parser, sg), streamParser(nullptr)
+		: StParser(parser, sg), streamParser(nullptr)
 	{
-		
+
 	}
 
 	//! Destruktor drukuj�cy wiadomo�� o wy�adowaniu pliku.
 	virtual ~StreamParser()
 	{
-		
+
 	}
 
 private:
 
 	virtual void _parseStream()
 	{
-		if (streamParser == nullptr){
+		if (streamParser == nullptr) {
 			streamParser = dynamic_cast<plugin::IStreamParser*>(getParser().get());
 		}
 
-		if (streamParser != nullptr){
+		if (streamParser != nullptr) {
 			auto stream = getStream();
-			if (stream != nullptr){
+			if (stream != nullptr) {
 				streamParser->parse(stream, getStreamName());
-			}
-			else{
+			} else {
 				std::string("Uninitialized stream for parsing");
 			}
-		}
-		else{
+		} else {
 			throw std::runtime_error("Parser is expected to implement plugin::ISourceParser interface but failed to cast");
 		}
 	}
 };
 
 //! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
-class FileStreamParser : public SParser
+class FileStreamParser : public StParser
 {
 private:
 	//! Prawdziwy wewn�trzny parser.
@@ -442,7 +440,7 @@ public:
 	//!     czas �ycia.
 	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
 	FileStreamParser(plugin::IParser * parser, const IStreamDataManagerOperations::StreamGrabberPtr sg)
-		: SParser(parser, sg), sourceParser(nullptr)
+		: StParser(parser, sg), sourceParser(nullptr)
 	{
 
 	}
@@ -450,11 +448,11 @@ public:
 	//! Destruktor drukuj�cy wiadomo�� o wy�adowaniu pliku.
 	virtual ~FileStreamParser()
 	{
-		if (tmpFilePath.empty() == false){
-			try{
+		if (tmpFilePath.empty() == false) {
+			try {
 				core::Filesystem::deleteFile(tmpFilePath);
 			}
-			catch (...){
+			catch (...) {
 			}
 		}
 	}
@@ -463,24 +461,24 @@ private:
 
 	virtual void _parseStream()
 	{
-		if (sourceParser == nullptr){
+		if (sourceParser == nullptr) {
 			sourceParser = dynamic_cast<plugin::ISourceParser*>(getParser().get());
 		}
 
-		if (sourceParser != nullptr){
+		if (sourceParser != nullptr) {
 			auto stream = getStream();
-			if (stream != nullptr){
+			if (stream != nullptr) {
 
 				const auto tmpPath = plugin::getPaths()->getTmpPath() / plugin::getPaths()->generateTempFileName();
 				std::ofstream output(tmpPath.string(), std::ios_base::out | std::ios_base::binary);
 
-				if (output.is_open() == true){
+				if (output.is_open() == true) {
 
 					tmpFilePath = tmpPath;
 
-					static unsigned int BufferSize = 1024 * 1024 * 5;					
+					static unsigned int BufferSize = 1024 * 1024 * 5;
 					utils::shared_array<char> buffer(new char[BufferSize] {0});
-					
+
 					int read = 0;
 					while ((read = stream->readsome(buffer.get(), BufferSize)) > 0) { output.write(buffer.get(), read); }
 
@@ -488,25 +486,23 @@ private:
 					output.close();
 
 					sourceParser->parse(tmpPath.string());
-				}
-				else{
+				} else {
 					throw std::runtime_error("Failed to create temporary file for stream");
 				}
-			}
-			else{
+			} else {
 				std::string("Uninitialized stream for parsing");
 			}
-		}
-		else{
+		} else {
 			throw std::runtime_error("Parser is expected to implement plugin::ISourceParser interface but failed to cast");
 		}
 	}
 };
 
+namespace core {
 class SimpleInitializer : public IVariantInitializer
 {
 public:
-	SimpleInitializer(const utils::shared_ptr<SParser> & parser, const int idx)
+	SimpleInitializer(const utils::shared_ptr<StParser> & parser, const int idx)
 		: parser(parser), idx(idx) {}
 	virtual ~SimpleInitializer() {}
 	virtual void initialize(Variant * object) {
@@ -514,121 +510,15 @@ public:
 		parser->getObject(*object, idx);
 		parser->reset();
 	}
-	virtual SimpleInitializer * clone() const { return new SimpleInitializer(parser, idx); }
+	virtual IVariantInitializer * clone() const { return new SimpleInitializer(parser, idx); }
 	virtual const bool isEqual(const IVariantInitializer &) const { return false; }
 
 private:
-	utils::shared_ptr<SParser> parser;
+	utils::shared_ptr<StParser> parser;
 	const int idx;
 };
+}
 
-class StreamDataManager::CompoundInitializer : public IVariantInitializer
-{
-public:
-
-	struct CompoundData {
-		utils::shared_ptr<SParser> parser;
-		std::map<int, VariantWeakPtr> objects;
-	};
-
-	typedef utils::shared_ptr<CompoundData> CompoundDataPtr;
-
-public:
-
-	CompoundInitializer(const CompoundDataPtr & data, const int idx) : data(data), idx(idx) {}
-
-	virtual ~CompoundInitializer() {}
-
-	virtual void initialize(Variant * object) {
-
-		auto mt = getMemoryDataManager()->transaction();
-		std::list<int> toDelete;
-		if (data->parser->tryParse() == false){
-			CORE_LOG_NAMED_INFO("parser", "Parser " << data->parser->getParser()->ID() << " (" << data->parser->getParser()->shortName() << ") failed for stream " << data->parser->getStreamName());
-			for (auto it = data->objects.begin(); it != data->objects.end(); ++it){
-				auto ow = it->second.lock();
-				if (ow != nullptr && ow->data()->getRawPtr() == nullptr){
-					toDelete.push_back(it->first);
-				}
-			}
-		}
-		else{
-			for (auto it = data->objects.begin(); it != data->objects.end(); ++it){
-				auto ow = it->second.lock();
-				if (ow != nullptr){
-					if (ow->initialized() == false){
-						data->parser->getObject(*ow, it->first);
-						if (ow->data()->getRawPtr() == nullptr){
-							CORE_LOG_NAMED_INFO("parser", "Object of type " << ow->data()->getTypeInfo().name()
-								<< " not initialized properly by parser ID: " << data->parser->getParser()->ID()
-								<< " (" << data->parser->getParser()->shortName() << ") for stream " << data->parser->getStreamName());
-							toDelete.push_back(it->first);
-						}
-					}
-				}
-				else{
-					toDelete.push_back(it->first);
-				}
-			}
-		}
-
-		data->parser->reset();
-
-		for (auto it = toDelete.begin(); it != toDelete.end(); ++it){
-			auto oit = data->objects.find(*it);
-			mt->tryRemoveData(oit->second.lock());
-			data->objects.erase(oit);
-		}
-
-		if (data->objects.empty() == true){
-			CORE_LOG_NAMED_INFO("parser", "Releasing unused parser ID: " << data->parser->getParser()->ID() << " (" << data->parser->getParser()->shortName() << ") for stream " << data->parser->getStreamName());
-		}
-	}
-
-	virtual SimpleInitializer * clone() const { return new SimpleInitializer(data->parser, idx); }
-	virtual const bool isEqual(const IVariantInitializer &) const { return false; }
-
-	const plugin::IParserPtr parser() const
-	{
-		plugin::IParserPtr ret;
-
-		if (data != nullptr && data->parser != nullptr){
-			ret = data->parser->getParser();
-		}
-
-		return ret;
-	}
-
-	//! \param object Obiekt o który pytamy
-	//! \return Indeks obiektu inicjalizowany przez parser
-	const int objectIdx(const VariantConstPtr object) const
-	{
-		int ret = -1;
-
-		if (data != nullptr){
-
-			for (auto it = data->objects.begin(); it != data->objects.end(); ++it){
-				if (it->second.lock() == object){
-					ret = it->first;
-					break;
-				}
-			}
-		}
-
-		return ret;
-	}
-
-	utils::shared_ptr<const SParser> innerParser() const { return ((data != nullptr) ? data->parser : utils::shared_ptr<const SParser>()); }
-
-	CompoundDataPtr details()
-	{
-		return data;
-	}
-
-private:
-	CompoundDataPtr data;
-	const int idx;
-};
 
 StreamDataManager::StreamDataManager() : skipUpdate(false)
 {
@@ -640,7 +530,7 @@ StreamDataManager::~StreamDataManager()
 	skipUpdate = true;
 	auto mt = getMemoryDataManager()->transaction();
 	auto tmpObjectsByStreams = objectsByStreams;
-	for (auto it = tmpObjectsByStreams.begin(); it != tmpObjectsByStreams.end(); ++it){
+	for (auto it = tmpObjectsByStreams.begin(); it != tmpObjectsByStreams.end(); ++it) {
 		rawRemoveStream(it->first, mt);
 	}
 }
@@ -652,11 +542,11 @@ void StreamDataManager::rawRemoveStream(const std::string & stream, const IMemor
 	//pobieramy obiekty do usuniecia z DM
 	rawGetObjects(stream, toRemove);
 	//usu� obiekty z MemoryDM w transakcji
-	for (auto it = toRemove.begin(); it != toRemove.end(); ++it){
+	for (auto it = toRemove.begin(); it != toRemove.end(); ++it) {
 		//TODO
 		//przywrócić poprzedni jeśli był
 		(*it)->setInitializer(VariantInitializerPtr());
-		if (memTransaction->tryRemoveData(*it) == false){
+		if (memTransaction->tryRemoveData(*it) == false) {
 			ok = false;
 		}
 	}
@@ -664,10 +554,9 @@ void StreamDataManager::rawRemoveStream(const std::string & stream, const IMemor
 	//usu� plik	
 	objectsByStreams.erase(stream);
 	streams_.left.erase(stream);
-	if (ok == true){
+	if (ok == true) {
 		CORE_LOG_INFO("Stream " << stream << " successfully removed from manager");
-	}
-	else{
+	} else {
 		CORE_LOG_DEBUG("There were some problems while removing data from memory data manager for stream " << stream << ". Not all objects have been removed properly");
 	}
 }
@@ -694,30 +583,29 @@ void StreamDataManager::rawAddStream(const StreamGrabberPtr stream, const IMemor
 	//obiekty wyciągnięte z parserów
 	VariantsList objects;
 	//preferuje uzycie parser�w z w�asn� obs�ug� I/O - wierze �e zrobi� to maksymalnie wydajnie wg w�asnych zasad
-	if (streamParsers.empty() == false){
+	if (streamParsers.empty() == false) {
 		initializeParsers<StreamParser>(streamParsers, stream, objects);
 	}
 	//teraz uzywam parser�w strumieniowych - sam dostarcz� im strumieni
-	if (sourceParsers.empty() == false){
+	if (sourceParsers.empty() == false) {
 		initializeParsers<FileStreamParser>(sourcesLeft, stream, objects);
 	}
 
-	if (objects.empty() == true){
+	if (objects.empty() == true) {
 		CORE_LOG_DEBUG("Any of known parsers did not provide any valid data for stream: " << streamName);
-	}
-	else{
+	} else {
 
 		int idx = 0;
 		VariantsList objectsAdded;
 
-		for (auto it = objects.begin(); it != objects.end(); ++it){
-			if ((*it)->existMetadata("core/name") == false){
+		for (auto it = objects.begin(); it != objects.end(); ++it) {
+			if ((*it)->existMetadata("core/name") == false) {
 				std::stringstream name;
 				name << streamName << "_" << idx++;
 				(*it)->setMetadata("core/name", name.str());
 			}
 
-			if ((*it)->existMetadata("core/source") == false){
+			if ((*it)->existMetadata("core/source") == false) {
 				(*it)->setMetadata("core/source", streamName);
 			}
 
@@ -746,7 +634,7 @@ const bool StreamDataManager::rawIsLoadedCompleately(const std::string & stream)
 
 void StreamDataManager::rawGetStreams(StreamsList & streams) const
 {
-	for (auto it = streams_.left.begin(); it != streams_.left.end(); ++it){
+	for (auto it = streams_.left.begin(); it != streams_.left.end(); ++it) {
 		streams.push_back(it->get_left());
 	}
 }
@@ -756,8 +644,7 @@ void StreamDataManager::rawGetObjects(const std::string & stream, ConstVariantsL
 	auto it = objectsByStreams.find(stream);
 	if (it != objectsByStreams.end()) {
 		objects.insert(objects.end(), it->second.begin(), it->second.end());
-	}
-	else {
+	} else {
 		throw std::runtime_error("Stream not managed");
 	}
 }
@@ -767,8 +654,7 @@ void StreamDataManager::rawGetObjects(const std::string & stream, VariantsList &
 	auto it = objectsByStreams.find(stream);
 	if (it != objectsByStreams.end()) {
 		objects.insert(objects.end(), it->second.begin(), it->second.end());
-	}
-	else {
+	} else {
 		throw std::runtime_error("Stream not managed");
 	}
 }
@@ -777,13 +663,12 @@ void StreamDataManager::rawGetObjects(const std::string & stream, VariantsCollec
 {
 	auto it = objectsByStreams.find(stream);
 
-	for (auto objectIT = it->second.begin(); objectIT != it->second.end(); ++objectIT){
-		if (objects.exactTypes() == true){
-			if ((*objectIT)->data()->getTypeInfo() == objects.getTypeInfo()){
+	for (auto objectIT = it->second.begin(); objectIT != it->second.end(); ++objectIT) {
+		if (objects.exactTypes() == true) {
+			if ((*objectIT)->data()->getTypeInfo() == objects.getTypeInfo()) {
 				objects.push_back(*objectIT);
 			}
-		}
-		else if ((*objectIT)->data()->isSupported(objects.getTypeInfo()) == true){
+		} else if ((*objectIT)->data()->isSupported(objects.getTypeInfo()) == true) {
 			objects.push_back(*objectIT);
 		}
 	}
@@ -791,11 +676,11 @@ void StreamDataManager::rawGetObjects(const std::string & stream, VariantsCollec
 
 void StreamDataManager::updateObservers(const ChangeList & changes)
 {
-	for (auto it = observers.begin(); it != observers.end(); ++it){
-		try{
+	for (auto it = observers.begin(); it != observers.end(); ++it) {
+		try {
 			(*it)->observe(changes);
 		}
-		catch (...){
+		catch (...) {
 			//TODO
 			//rozwin�� obserwator�w aby si� jako� identyfikowali!! ewentualnie robi� to przez w�asn� implementacj� dostarczan� konretnym obiektom
 			//(osobne interfejsy reader�w dla ka�dego elemnentu �adowanego do aplikacji - service, source, datasink, itp)
@@ -808,7 +693,7 @@ void StreamDataManager::removeStream(const std::string & stream)
 {
 	ScopedLock lock(sync);
 
-	if (rawIsManaged(stream) == false){
+	if (rawIsManaged(stream) == false) {
 		throw std::runtime_error("Stream not managed");
 	}
 
@@ -832,11 +717,11 @@ void StreamDataManager::addStream(const StreamGrabberPtr stream)
 
 	auto streamName = stream->name();
 
-	if (rawIsManaged(streamName) == true){
+	if (rawIsManaged(streamName) == true) {
 		throw std::runtime_error("Stream already managed");
 	}
 
-	if (getParserManager()->sourceIsAccepted(streamName) == false){
+	if (getParserManager()->sourceIsAccepted(streamName) == false) {
 		throw std::runtime_error("Source not accepted by any parser");
 	}
 
@@ -858,10 +743,10 @@ void StreamDataManager::addStream(const StreamGrabberPtr stream)
 const bool StreamDataManager::tryAddStream(const StreamGrabberPtr stream)
 {
 	bool ret = true;
-	try{
+	try {
 		addStream(stream);
 	}
-	catch (...){
+	catch (...) {
 		ret = false;
 	}
 
@@ -871,10 +756,10 @@ const bool StreamDataManager::tryAddStream(const StreamGrabberPtr stream)
 const bool StreamDataManager::tryRemoveStream(const std::string & stream)
 {
 	bool ret = true;
-	try{
+	try {
 		removeStream(stream);
 	}
-	catch (...){
+	catch (...) {
 		ret = false;
 	}
 
@@ -893,21 +778,21 @@ const IStreamManagerReader::TransactionPtr StreamDataManager::transaction() cons
 
 void StreamDataManager::observe(const IDataManagerReader::ChangeList & changes)
 {
-	if (skipUpdate == true){
+	if (skipUpdate == true) {
 		return;
 	}
 
 	std::set<std::string> streamsToCheck;
-	for (auto it = changes.begin(); it != changes.end(); ++it){
+	for (auto it = changes.begin(); it != changes.end(); ++it) {
 		if ((*it).modyfication == IDataManagerReader::REMOVE_OBJECT &&
 			(*it).previousValue != nullptr &&
-			(*it).previousValue->initializer() != nullptr){
+			(*it).previousValue->initializer() != nullptr) {
 
 			auto cinitializer = utils::dynamic_pointer_cast<const CompoundInitializer>((*it).previousValue->initializer());
-			if (cinitializer != nullptr){
+			if (cinitializer != nullptr) {
 				auto initializer = utils::const_pointer_cast<CompoundInitializer>(cinitializer);
 				auto parser = initializer->innerParser();
-				if (parser != nullptr){
+				if (parser != nullptr) {
 					const auto & stream = parser->getStreamName();
 					streamsToCheck.insert(stream);
 					objectsByStreams[stream].remove(utils::const_pointer_cast<Variant>((*it).previousValue));
@@ -915,16 +800,15 @@ void StreamDataManager::observe(const IDataManagerReader::ChangeList & changes)
 					const auto idx = initializer->objectIdx((*it).previousValue);
 
 					if ((*it).previousValue->initialized() == false ||
-						(*it).previousValue->getRawPtr() != nullptr){
+						(*it).previousValue->getRawPtr() != nullptr) {
 
 						missingObjects[stream][initializer][idx] = (*it).previousValue->data()->getTypeInfo();
-					}
-					else{
+					} else {
 						missingObjects[stream][initializer].erase(idx);
 
-						if (missingObjects[stream][initializer].empty() == true){
+						if (missingObjects[stream][initializer].empty() == true) {
 							missingObjects[stream].erase(initializer);
-							if (missingObjects[stream].empty() == true){
+							if (missingObjects[stream].empty() == true) {
 								missingObjects.erase(stream);
 							}
 						}
@@ -936,11 +820,11 @@ void StreamDataManager::observe(const IDataManagerReader::ChangeList & changes)
 
 	ChangeList schanges;
 
-	for (auto it = streamsToCheck.begin(); it != streamsToCheck.end(); ++it){
+	for (auto it = streamsToCheck.begin(); it != streamsToCheck.end(); ++it) {
 		tryRemoveUnusedStream(*it, schanges);
 	}
 
-	if (schanges.empty() == false){
+	if (schanges.empty() == false) {
 		updateObservers(schanges);
 	}
 }
@@ -948,7 +832,7 @@ void StreamDataManager::observe(const IDataManagerReader::ChangeList & changes)
 void StreamDataManager::addObserver(const StreamObserverPtr & streamWatcher)
 {
 	ScopedLock lock(sync);
-	if (std::find(observers.begin(), observers.end(), streamWatcher) != observers.end()){
+	if (std::find(observers.begin(), observers.end(), streamWatcher) != observers.end()) {
 		throw std::runtime_error("Watcher already registered");
 	}
 
@@ -959,7 +843,7 @@ void StreamDataManager::removeObserver(const StreamObserverPtr & streamWatcher)
 {
 	ScopedLock lock(sync);
 	auto it = std::find(observers.begin(), observers.end(), streamWatcher);
-	if (it == observers.end()){
+	if (it == observers.end()) {
 		throw std::runtime_error("Watcher not registered");
 	}
 
@@ -969,7 +853,7 @@ void StreamDataManager::removeObserver(const StreamObserverPtr & streamWatcher)
 void StreamDataManager::getStreams(StreamsList & streams) const
 {
 	ScopedLock lock(sync);
-	for (auto it = streams_.left.begin(); it != streams_.left.end(); ++it){
+	for (auto it = streams_.left.begin(); it != streams_.left.end(); ++it) {
 		streams.push_back(it->get_left());
 	}
 }
@@ -1002,7 +886,7 @@ void StreamDataManager::tryRemoveUnusedStream(const std::string & stream, Change
 {
 	auto it = objectsByStreams.find(stream);
 	//sprawdzam czy nie moge juz usunąć strumienia i notyfikowć o zmianie
-	if (it != objectsByStreams.end() && it->second.empty() == true){
+	if (it != objectsByStreams.end() && it->second.empty() == true) {
 		CORE_LOG_INFO("Removing unused stream " << stream << " because of lack of delivered objects to memory data manager.");
 		StreamChange change;
 		change.stream = it->first;
@@ -1012,4 +896,106 @@ void StreamDataManager::tryRemoveUnusedStream(const std::string & stream, Change
 		objectsByStreams.erase(it);
 		streams_.left.erase(stream);
 	}
+}
+
+void core::StreamDataManager::CompoundInitializer::initialize(Variant * object)
+{
+	auto mt = getMemoryDataManager()->transaction();
+	std::list<int> toDelete;
+	if (data->parser->tryParse() == false) {
+		CORE_LOG_NAMED_INFO("parser", "Parser " << data->parser->getParser()->ID() << " (" << data->parser->getParser()->shortName() << ") failed for stream " << data->parser->getStreamName());
+		for (auto it = data->objects.begin(); it != data->objects.end(); ++it) {
+			auto ow = it->second.lock();
+			if (ow != nullptr && ow->data()->getRawPtr() == nullptr) {
+				toDelete.push_back(it->first);
+			}
+		}
+	} else {
+		for (auto it = data->objects.begin(); it != data->objects.end(); ++it) {
+			auto ow = it->second.lock();
+			if (ow != nullptr) {
+				if (ow->initialized() == false) {
+					data->parser->getObject(*ow, it->first);
+					if (ow->data()->getRawPtr() == nullptr) {
+						CORE_LOG_NAMED_INFO("parser", "Object of type " << ow->data()->getTypeInfo().name()
+											<< " not initialized properly by parser ID: " << data->parser->getParser()->ID()
+											<< " (" << data->parser->getParser()->shortName() << ") for stream " << data->parser->getStreamName());
+						toDelete.push_back(it->first);
+					}
+				}
+			} else {
+				toDelete.push_back(it->first);
+			}
+		}
+	}
+
+	data->parser->reset();
+
+	for (auto it = toDelete.begin(); it != toDelete.end(); ++it) {
+		auto oit = data->objects.find(*it);
+		mt->tryRemoveData(oit->second.lock());
+		data->objects.erase(oit);
+	}
+
+	if (data->objects.empty() == true) {
+		CORE_LOG_NAMED_INFO("parser", "Releasing unused parser ID: " << data->parser->getParser()->ID() << " (" << data->parser->getParser()->shortName() << ") for stream " << data->parser->getStreamName());
+	}
+}
+
+core::IVariantInitializer* core::StreamDataManager::CompoundInitializer::clone() const
+{
+	return new SimpleInitializer(data->parser, idx);
+}
+
+core::StreamDataManager::CompoundInitializer::CompoundDataPtr core::StreamDataManager::CompoundInitializer::details()
+{
+	return data;
+}
+
+utils::shared_ptr<const StParser> core::StreamDataManager::CompoundInitializer::innerParser() const
+{
+	return ((data != nullptr) ? data->parser : utils::shared_ptr<const StParser>());
+}
+
+const int core::StreamDataManager::CompoundInitializer::objectIdx(const VariantConstPtr object) const
+{
+	int ret = -1;
+
+	if (data != nullptr) {
+
+		for (auto it = data->objects.begin(); it != data->objects.end(); ++it) {
+			if (it->second.lock() == object) {
+				ret = it->first;
+				break;
+			}
+		}
+	}
+
+	return ret;
+}
+
+const plugin::IParserPtr core::StreamDataManager::CompoundInitializer::parser() const
+{
+	plugin::IParserPtr ret;
+
+	if (data != nullptr && data->parser != nullptr) {
+		ret = data->parser->getParser();
+	}
+
+	return ret;
+}
+
+const bool core::StreamDataManager::CompoundInitializer::isEqual(const IVariantInitializer &) const
+{
+	return false;
+}
+
+core::StreamDataManager::CompoundInitializer::~CompoundInitializer()
+{
+
+}
+
+core::StreamDataManager::CompoundInitializer::CompoundInitializer(const CompoundDataPtr & data, const int idx) : data(data), idx(idx)
+{
+
 }

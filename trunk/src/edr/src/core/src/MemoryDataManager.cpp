@@ -101,12 +101,12 @@ public:
 
     virtual const bool tryAddHierarchy( const IHierarchyItemConstPtr root, bool unpack )
     {
-        throw std::exception("The method or operation is not implemented.");
+        throw std::logic_error("The method or operation is not implemented.");
     }
 
     virtual void addHierarchy( const IHierarchyItemConstPtr root, bool unpack )
     {
-        throw std::exception("The method or operation is not implemented.");
+        throw std::logic_error("The method or operation is not implemented.");
     }
 
 

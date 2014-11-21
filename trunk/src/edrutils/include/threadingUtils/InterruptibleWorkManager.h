@@ -300,7 +300,7 @@ namespace threadingUtils
 
 			WorkExecutor workExecutor(this, std::move(thread));
 			const auto ret = workExecutor.get_id();
-			workExecutors.insert(WorkExecutorsMap::value_type(ret, std::move(workExecutor)));
+			workExecutors.insert(std::make_pair(ret, std::move(workExecutor)));
 			++activeCounter;
 			return ret;
 		}

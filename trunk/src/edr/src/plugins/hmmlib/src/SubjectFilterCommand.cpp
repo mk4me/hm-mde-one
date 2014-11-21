@@ -1,4 +1,4 @@
-#include "hmmLibPCH.h"
+#include "HmmLibPCH.h"
 #include "SubjectFilterCommand.h"
 #include <corelib/HierarchyItem.h>
 #include <corelib/IHierarchyDataItem.h>
