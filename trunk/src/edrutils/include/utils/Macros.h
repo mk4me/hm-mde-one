@@ -20,6 +20,13 @@ purpose:
 
 //------------------------------------------------------------------------------
 
+// Visual studio jeszcze nie wspiera noexcept, stad to makro
+#ifndef _MSC_VER
+	#define NOEXCEPT noexcept
+#else
+	#define NOEXCEPT
+#endif
+
 // Makro podstawiające nazwę aktualnej funkcji
 #if defined __GNUC__
 	#define __UTILS_PORTABLE_FUNCTION_NAME __func__
