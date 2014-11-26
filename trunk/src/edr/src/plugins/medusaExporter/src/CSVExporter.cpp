@@ -1,5 +1,6 @@
 #include "MedusaExporterPCH.h"
 #include "CSVExporter.h"
+#include <fstream>
 #include "AnnotationData.h"
 #include <plugins/dicom/Annotations.h>
 #include <plugins/dicom/ValueLayer.h>

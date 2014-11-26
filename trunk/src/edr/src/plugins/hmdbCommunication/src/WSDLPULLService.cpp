@@ -20,27 +20,27 @@ public:
 
 	void setOperation(const std::string & operation)
 	{
-		impl->setOperation(operation);
+		invoker_->setOperation(operation);
 	}
 
 	void setValue(const std::string & name, const std::string & value)
 	{
-		impl->setValue(name, value);
+		invoker_->setValue(name, value);
 	}
 
 	void invoke(const bool process = false)
 	{
-		impl->invoke(process);
+		invoker_->invoke(process);
 	}
 
 	const std::string xmlResponse() const
 	{
-		return impl->xmlResponse();
+		return invoker_->xmlResponse();
 	}
 
 	const void * getValue(const std::string & name) const
 	{
-		return impl->getValue(name);
+		return invoker_->getValue(name);
 	}
 
 private:

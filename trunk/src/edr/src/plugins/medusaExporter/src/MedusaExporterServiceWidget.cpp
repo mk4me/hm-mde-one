@@ -1,6 +1,6 @@
 #include "MedusaExporterPCH.h"
 #include "MedusaExporterServiceWidget.h"
-#include "ui_MedusaExporter.h"
+#include "ui_medusaExporter.h"
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLayout>

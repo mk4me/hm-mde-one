@@ -5,6 +5,7 @@
 #include <utils/SmartPtr.h>
 #include <boost/format.hpp>
 #include <boost/array.hpp>
+#include <sqlite3.h>
 #include <sqliteUtils/BufferPolicyT.h>
 #include <sqliteUtils/SQLiteBLOB.h>
 #include <sqliteUtils/SQLiteDB.h>
@@ -25,19 +26,9 @@ public:
 	{	// construct from stream buffer pointer		
 	}
 
-	StreamWrapper(std::_Uninitialized) : Base(std::_Uninitialized)
-	{	// construct uninitialized
-
-	}
-
 	explicit StreamWrapper(Buffer *_Strbuf)
 		: Base(_Strbuf)
 	{	// construct from stream buffer pointer
-	}
-
-	StreamWrapper(std::_Uninitialized, bool _Addit) : Base(std::_Uninitialized, _Addit)
-	{	// construct uninitialized
-
 	}
 
 	StreamWrapper(const StreamWrapper&) = delete;

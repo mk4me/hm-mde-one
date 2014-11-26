@@ -1,5 +1,6 @@
 #include "DicomPCH.h"
 #include "LayeredImageVisualizer.h"
+#include <fstream>
 #include <plugins/dicom/ILayeredImage.h>
 #include <QtGui/QPixmap>
 #include <QtWidgets/QLabel>
@@ -55,7 +56,7 @@ public:
     //! cofa wykonane ju¿ polecenie
     virtual void undoIt() 
     {
-        img->addLayer(layer, serie->visualizer->getCurrentLayerUserName());
+        img->addLayer(layer, serie->getCurrentLayerUserName());
 		auto glayer = boost::dynamic_pointer_cast<ILayerGraphicItem>(layer);
 
 		if (glayer) {
@@ -96,8 +97,9 @@ hmdbCommunication::IHMDBShallowCopyContext * LayeredSerie::sourceContextForData(
 
 void LayeredSerie::setupData( const core::VariantConstPtr & data )
 {
-    auto cloneWrp = data->clone();
-    image = cloneWrp->get();
+	core::VariantPtr cloneWrp = data->clone();
+    dicom::ILayeredImagePtr img = cloneWrp->get();
+    this->image = img;
 
 	this->shallowCopntext_ = sourceContextForData(data);
 
@@ -260,8 +262,9 @@ void dicom::LayeredSerie::save()
 	oa.register_type<FingerTypeLayer>();
 	oa.register_type<JointTypeLayer>();
 	oa.register_type<ImageQualityLayer>();
-    LayeredImageConstPtr l = boost::dynamic_pointer_cast<const LayeredImage>(getImage());
-    oa << boost::serialization::make_nvp("layers", l->getLayersToSerialize(visualizer->getCurrentLayerUserName()));
+    LayeredImageConstPtr l = boost::const_pointer_cast<const LayeredImage>(boost::dynamic_pointer_cast<LayeredImage>(getImage()));
+    auto v = l->getLayersToSerialize(visualizer->getCurrentLayerUserName());
+    oa << boost::serialization::make_nvp("layers", v);
     ofs.close();
 }
 
@@ -320,6 +323,13 @@ std::string dicom::LayeredSerie::getLoggedUserName() const
 {
     return visualizer->getUserName();
 }
+
+std::string dicom::LayeredSerie::getCurrentLayerUserName() const
+{
+    return visualizer->getCurrentLayerUserName();
+}
+
+
 
 void dicom::LayeredSerie::setBoneState()
 {

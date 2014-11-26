@@ -16,6 +16,8 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/range.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
 
 
 namespace dicom {

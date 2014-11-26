@@ -10,6 +10,7 @@
 #ifndef __HEADER_GUARD_THREADINGUTILS__INTERRUPTIBLEFUTURE_H__
 #define __HEADER_GUARD_THREADINGUTILS__INTERRUPTIBLEFUTURE_H__
 
+#include <system_error>
 #include <threadingUtils/Future.h>
 
 namespace threadingUtils
@@ -69,7 +70,7 @@ namespace threadingUtils
 				}
 			}
 			else{
-				throw std::runtime_error(std::make_error_code(std::future_errc::broken_promise));
+				throw std::system_error(std::make_error_code(std::future_errc::broken_promise));
 			}
 		}
 

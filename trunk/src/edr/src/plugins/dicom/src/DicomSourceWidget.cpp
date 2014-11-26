@@ -1,6 +1,6 @@
 #include "DicomPCH.h"
 #include "DicomSourceWidget.h"
-#include "ui_DicomSource.h"
+#include "ui_dicomSource.h"
 #include <QtWidgets/QFileDialog>
 #include <corelib/Filesystem.h>
 #include "DicomSource.h"

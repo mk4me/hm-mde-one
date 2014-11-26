@@ -1,5 +1,6 @@
 #include "DicomPCH.h"
 #include "PointsLayer.h"
+#include <memory>
 #include <QtWidgets/QGraphicsItemGroup>
 #include <QtWidgets/QGraphicsPathItem>
 #include <QtGui/QPen>

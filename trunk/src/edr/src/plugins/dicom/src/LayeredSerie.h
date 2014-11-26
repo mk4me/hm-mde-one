@@ -65,6 +65,7 @@ namespace dicom {
         std::string getImageFilename() const;
         std::string getXmlOutputFilename() const;
         std::string getLoggedUserName() const;
+        std::string getCurrentLayerUserName() const;
         ILayeredImagePtr getImage();
         ILayeredImageConstPtr getImage() const;
         coreUI::WheelGraphicsView* getGraphicsView() const;

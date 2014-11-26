@@ -11,6 +11,7 @@
 
 #include <string>
 #include <utils/SmartPtr.h>
+#include <hmdbserviceslib/Export.h>
 
 namespace hmdbServices
 {

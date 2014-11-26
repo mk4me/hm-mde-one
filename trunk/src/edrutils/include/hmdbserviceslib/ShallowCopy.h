@@ -183,6 +183,18 @@ namespace hmdbServices
 				groupAssigments(std::move(other.groupAssigments)), trials(std::move(other.trials)),
 				performers(std::move(other.performers)), performerConfs(std::move(other.performerConfs)),
 				files(std::move(other.files)) {}
+			ShallowCopy& operator=(ShallowCopy && other)
+			{
+				timestamp = std::move(other.timestamp);
+				sessions = std::move(other.sessions);
+				groupAssigments = std::move(other.groupAssigments);
+				trials = std::move(other.trials);
+				performers = std::move(other.performers);
+				performerConfs = std::move(other.performerConfs);
+				files = std::move(other.files);
+				return *this;
+			}
+
 		};
 	}
 
@@ -250,6 +262,13 @@ namespace hmdbServices
 			ShallowCopy(const ShallowCopy & other) = delete;
 			ShallowCopy(ShallowCopy && other) : timestamp(std::move(other.timestamp)),
 				disorders(std::move(other.disorders)), patients(std::move(other.patients)) {}
+			ShallowCopy& operator=(ShallowCopy && other)
+			{
+				timestamp = std::move(other.timestamp);
+				disorders = std::move(other.disorders);
+				patients = std::move(other.patients);
+				return *this;
+			}
 		};
 	}
 
@@ -325,6 +344,14 @@ namespace hmdbServices
 			MetaData(MetaData && other) : sessionGroups(std::move(other.sessionGroups)),
 				motionKinds(std::move(other.motionKinds)), labs(std::move(other.labs)),
 				attributeGroups(std::move(other.attributeGroups)) {}
+			MetaData& operator=(MetaData && other)
+			{
+				sessionGroups = std::move(other.sessionGroups);
+				motionKinds = std::move(other.motionKinds);
+				labs = std::move(other.labs);
+				attributeGroups = std::move(other.attributeGroups);
+				return *this;
+			}
 		};
 	}
 
@@ -362,6 +389,12 @@ namespace hmdbServices
 			MetaData(const MetaData & other) = delete;
 			MetaData(MetaData && other) : examTypes(std::move(other.examTypes)),
 				disorderTypes(std::move(other.disorderTypes)) {}
+			MetaData& operator=(MetaData && other)
+			{
+				examTypes = std::move(other.examTypes);
+				disorderTypes = std::move(other.disorderTypes);
+				return *this;
+			}
 		};
 	}
 }

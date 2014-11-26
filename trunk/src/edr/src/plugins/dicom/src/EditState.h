@@ -13,7 +13,7 @@
 #include <coreui/AbstractState.h>
 #include "PointsLayer.h"
 #include <utils/ICommand.h>
-#include <coreUI/MoveCommand.h>
+#include <coreui/MoveCommand.h>
 namespace dicom {
 
     //! Polecenie dodaje punkt do obszaru

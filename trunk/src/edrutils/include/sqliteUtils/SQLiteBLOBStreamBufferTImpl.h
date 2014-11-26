@@ -16,7 +16,11 @@
 #include <sqliteUtils/SQLiteDB.h>
 #include <sqliteUtils/SQLiteBLOB.h>
 #include <sqliteUtils/SQLitePreparedStatement.h>
+#include <sqliteUtils/SQLiteBLOBStreamBufferT.h>
+#include <streambuf>
+#include <iosfwd>
 //#include <boost/format.hpp>
+
 
 template<typename _Elem, typename _Traits, typename _BufferPolicy>
 SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::SQLiteBLOBStreamBufferT(const std::string & path, const std::string & table,
@@ -109,7 +113,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::int_type SQLite
 		blobWriteBase += toBlobPos(offset);
 
 		//ustawiam nowy bufor i jego stan
-		_Mysb::setp(buffer.begin(), buffer.begin(), buffer.end());
+		_Mysb::setp(buffer.begin(), buffer.end());
 	}
 	//nie pisa³em do bufora zapisu
 	else{
@@ -153,14 +157,14 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::int_type SQLite
 				_Mysb::setg(buffer.begin(), nullptr, buffer.end());
 
 				//ustawiam nowy bufor i jego stan
-				_Mysb::setp(buffer.begin(), buffer.begin(), buffer.end());
+				_Mysb::setp(buffer.begin(), buffer.end());
 			}
 			else{
 				//obszary pokrywaj¹ siê - wystarczy poprzestawiaæ wskaŸniki
 				auto diff = blobWriteBase - blobReadBase;
 				blobWriteBase = blobReadBase;
 				//poprawiam obszar do zapisu
-				_Mysb::setp(buffer.begin(), buffer.begin() + diff, buffer.end());
+				_Mysb::setp(buffer.begin() + diff, buffer.end());
 			}
 		}
 		else{
@@ -177,11 +181,12 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::int_type SQLite
 			}
 
 			//ustawiam nowy bufor i jego stan
-			setp(buffer.begin(), buffer.begin(), buffer.end());
+			setp(buffer.begin(), buffer.end());
 		}
 	}
 	//zapisujemy
-	*_Mysb::_Pninc() = _Traits::to_char_type(_Meta);
+	*_Mysb::pptr() = _Traits::to_char_type(_Meta);
+	 _Mysb::pbump(1);
 	//aktualizuje koniec strumienia dla poprawnego odczytu ca³ego strumienia podczas zapisu
 	updateBlobStreamEnd();
 
@@ -222,7 +227,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::int_type SQLite
 			//wypadam poza
 			blobWriteBase = blobGlobalWriteIDX();
 
-			_Mysb::setp(buffer.begin(), nullptr, buffer.end());
+			_Mysb::setp(buffer.begin(), buffer.end());
 		}
 		else{
 			//zazêbiaj¹ siê obszary, wystarczy wska¿niki poprawiæ
@@ -316,9 +321,10 @@ template<typename _Elem, typename _Traits, typename _BufferPolicy>
 typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::pos_type SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::seekoff(off_type _Off,
 	std::ios_base::seekdir _Way, std::ios_base::openmode _Which)
 {	
-	SQLiteBLOBStreamBufferT::pos_type ret(std::_BADOFF);
 
-	if (_Off != std::_BADOFF){
+	SQLiteBLOBStreamBufferT::pos_type ret(_BADOFF);
+
+	if (_Off != _BADOFF){
 
 		switch (_Way)
 		{
@@ -334,7 +340,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::pos_type SQLite
 
 			if ((_Which & std::ios_base::in) && (_Which & std::ios_base::out) &&
 				(blobGlobalReadIDX() != blobGlobalWriteIDX())){
-				_Off = std::_BADOFF;
+				_Off = _BADOFF;
 			}
 			else{
 				_Off += toStreamPos(blobGlobalReadIDX());
@@ -345,7 +351,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::pos_type SQLite
 			break;
 		}
 
-		if (_Off != std::_BADOFF){
+		if (_Off != _BADOFF){
 			ret = seekpos(_Off, _Which);
 		}
 	}
@@ -365,9 +371,9 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::pos_type SQLite
 	std::streamoff _BlobPos = toBlobPos(_StreamPos);
 
 	//! sprawdzam czy pozycja jest prawid³owa, czy wybrano jakis bufor
-	if (_BlobPos == std::_BADOFF || _BlobPos < 0 || _BlobPos > blobSeekhigh ||
+	if (_BlobPos == _BADOFF || _BlobPos < 0 || _BlobPos > blobSeekhigh ||
 		!(_Mode & std::ios_base::in || _Mode & std::ios_base::out)){
-		return std::_BADOFF;
+		return _BADOFF;
 	}
 	else{
 
@@ -376,11 +382,11 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::pos_type SQLite
 			if ((_Mysb::pptr() == nullptr) || (blobWriteBase > _BlobPos) || (_BlobPos > blobWriteMaxIDX())){
 				if (_Mysb::pptr() != nullptr){
 					if (sync() < 0){
-						return std::_BADOFF;
+						return _BADOFF;
 					}
 				}
 				blobWriteBase = _BlobPos;
-				_Mysb::setp(buffer.begin(), nullptr, buffer.end());
+				_Mysb::setp(buffer.begin(), buffer.end());
 			}
 			else{
 				_Mysb::pbump((int)(_StreamPos - toStreamPos(blobGlobalWriteIDX())));
@@ -392,7 +398,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::pos_type SQLite
 			if ((_Mysb::gptr() == nullptr) || (blobReadBase > _BlobPos) || (_BlobPos > blobReadMaxIDX())){
 				if (_Mysb::gptr() != nullptr){
 					if (sync() < 0){
-						return std::_BADOFF;
+						return _BADOFF;
 					}
 				}
 
@@ -422,7 +428,7 @@ int SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::sync()
 					auto ss = streamBufferSize();
 					if (ss < buffer.updateSize(toStreamPos(blobSize))){
 						blobWriteBase = blobGlobalWriteIDX();
-						_Mysb::setp(buffer.begin(), nullptr, buffer.end());
+						_Mysb::setp(buffer.begin(), buffer.end());
 						blobReadBase = blobGlobalReadIDX();
 						_Mysb::setg(buffer.begin(), nullptr, buffer.end());
 					}
@@ -439,7 +445,7 @@ int SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::sync()
 					auto ss = streamBufferSize();
 					if (ss < buffer.updateSize(toStreamPos(blobSize))){
 						blobWriteBase = blobGlobalWriteIDX();
-						_Mysb::setp(buffer.begin(), nullptr, buffer.end());
+						_Mysb::setp(buffer.begin(), buffer.end());
 						blobReadBase = blobGlobalReadIDX();
 						_Mysb::setg(buffer.begin(), nullptr, buffer.end());
 					}

@@ -9,7 +9,7 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBFTP_H__
 
 #include <threadingUtils/IProgress.h>
-#include <networkUtils/IFTPSession.h>
+#include <networkUtils/IFtpSession.h>
 #include <plugins/hmdbCommunication/IHMDBStorage.h>
 #include <utils/SmartPtr.h>
 

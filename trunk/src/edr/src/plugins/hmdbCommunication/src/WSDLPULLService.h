@@ -8,6 +8,7 @@
 #ifndef __HEADER_GUARD_HMDBCOMMUNICATION__WSDLPULLSERVICE_H__
 #define __HEADER_GUARD_HMDBCOMMUNICATION__WSDLPULLSERVICE_H__
 
+#include <schemaparser/Schema.h>
 #include <networkUtils/IWSDLService.h>
 
 using namespace networkUtils;

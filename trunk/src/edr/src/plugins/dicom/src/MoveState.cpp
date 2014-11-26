@@ -4,7 +4,7 @@
 #include <coreui/AbstractStateMachine.h>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include "LayeredStateMachine.h"
-#include <coreUI/MoveCommand.h>
+#include <coreui/MoveCommand.h>
 #include "LayeredSerie.h"
 
 using namespace dicom;

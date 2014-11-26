@@ -12,6 +12,7 @@
 //#include <utils/Debug.h>
 #include <boost/array.hpp>
 #include <vector>
+#include <utils/Utils.h>
 
 namespace sqliteUtils
 {

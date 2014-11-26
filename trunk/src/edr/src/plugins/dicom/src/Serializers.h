@@ -15,7 +15,8 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/serialization/string.hpp>
-#include "boost/tokenizer.hpp"
+#include <boost/tokenizer.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace boost {
     namespace serialization {

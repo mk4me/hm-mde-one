@@ -170,9 +170,9 @@ dicom::ILayerGraphicItemPtr dicom::LayeredImage::getLayerGraphicItem(const std::
 	return (it->second);
 }
 
-std::vector<dicom::ILayerItemConstPtr> dicom::LayeredImage::getLayersToSerialize( const std::string& tag ) const
+std::vector<dicom::ILayerItemPtr> dicom::LayeredImage::getLayersToSerialize( const std::string& tag ) const
 {
-    std::vector<ILayerItemConstPtr> ret;
+    std::vector<ILayerItemPtr> ret;
 	auto r = layers.equal_range(tag);
 	for (auto it = r.first; it != r.second; ++it){
         ret.push_back(it->second);

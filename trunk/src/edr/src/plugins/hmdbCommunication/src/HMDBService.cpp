@@ -3,6 +3,7 @@
 #include "HMDBSession.h"
 #include "WSDLPULLService.h"
 #include <wsdlparser/WsdlInvoker.h>
+#include <corelib/PluginCommon.h>
 
 using namespace hmdbCommunication;
 
@@ -227,8 +228,12 @@ void HMDBService::init(core::ISourceManager * sourceManager,
 	servicesThread.run(&HMDBService::runServices, this);
 	dataThread.run(&HMDBService::runData, this);
 
+#if ((defined _WIN32) || (defined _WIN64))
 	WsdlPull::SCHEMADIR = (plugin::getPaths()->getResourcesPath() / "schemas/").string();
 	PLUGIN_LOG_INFO("WSDLPULL SCHEMADIR: " << WsdlPull::SCHEMADIR);
+#else
+	UTILS_ASSERT(false); // co zrobic z tym SCHEMADIR??
+#endif
 }
 
 const bool HMDBService::lateInit()

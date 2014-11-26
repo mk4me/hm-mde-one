@@ -21,6 +21,7 @@
 #include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
 #include <corelib/ISourceManager.h>
 #include "DicomPerspective.h"
+#include <fstream>
 //#include "AnnotationStatusFilter.h"
 
 using namespace dicom;

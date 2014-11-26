@@ -1,5 +1,6 @@
 #include "CommunicationPCH.h"
 #include "CURLFTPProgress.h"
+#include <utils/Debug.h>
 
 using namespace hmdbCommunication;
 

@@ -1,4 +1,5 @@
 #include "DicomPCH.h"
+#include <fstream>
 #include <plugins/dicom/Annotations.h>
 #include <boost/serialization/shared_ptr.hpp>
 #include "qstring_serialization.h"

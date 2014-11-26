@@ -815,15 +815,16 @@ void AnalisisWidget::createVisualizerInNewSet()
     // dla meduzy : 1 widget - 1 set
     set->setMaxWidgetsNumber(1);
     topMainWindow->addDockWidgetSet(set, setName.arg(topMainWindow->count()+1));
-
-    createAndAddDockVisualizer(action->getHelper(), set, tr("...TEST..."));
+    QString path = tr("...TEST...");
+    createAndAddDockVisualizer(action->getHelper(), set, path);
 }
 
 void AnalisisWidget::createNewVisualizer()
 {
     HelperAction* action = qobject_cast<HelperAction*>(sender());
     try{
-        createAndAddDockVisualizer(action->getHelper(), action->getDockSet(), QString("...TEST2..."));
+    	 QString str("...TEST2...");
+        createAndAddDockVisualizer(action->getHelper(), action->getDockSet(), str);
     }catch(std::exception& e ){
         PLUGIN_LOG_ERROR("Error creating visualizer: " << e.what());
     } catch (...) {

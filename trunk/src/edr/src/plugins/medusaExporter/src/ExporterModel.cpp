@@ -1,6 +1,7 @@
 #include "MedusaExporterPCH.h"
 #include "ExporterModel.h"
 #include "IExporter.h"
+#include <fstream>
 #include <plugins/dicom/ILayeredImage.h>
 #include <quazip/quazip.h>
 #include <QtCore/QFile>

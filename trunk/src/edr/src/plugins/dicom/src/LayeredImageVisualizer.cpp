@@ -29,6 +29,7 @@
 #include <hmdbserviceslib/IAuthorizationWS.h>
 #include "DicomSource.h"
 #include <hmdbserviceslib/IFileStoremanWS.h>
+#include <fstream>
 
 using namespace dicom;
 

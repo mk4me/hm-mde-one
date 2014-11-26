@@ -178,8 +178,14 @@ namespace threadingUtils {
 	{
 	public:
 
+		//! Typ interfejsu strumienia do czytania
+		typedef IStreamT<T> stream_reader_type;
+
 		//! Typ bufora
 		typedef StreamBufferT<T> StreamBufferType;
+
+		//! Typ danych mojego strumienia
+		typedef T value_type;
 
 		//! Typ referencji do danych
 		typedef typename StreamBufferType::ref_type ref_type;
@@ -286,22 +292,19 @@ namespace threadingUtils {
 	};
 
 	//! Klasa zmieniająca reprezentację strumienia
-	template<typename Base, typename Dest>
+	template<typename Base, typename Dest, typename Extractor>
 	class StreamAdapterT : public IStreamT<Dest>
 	{
 	public:
 
 		//! Typ adaptera
-		typedef StreamAdapterT<Base, Dest> StreamAdapterType;
+		typedef StreamAdapterT<Base, Dest, Extractor> StreamAdapterType;
 
 		//! Typ strumienia bazowego
 		typedef IStreamT<Base> BaseStreamType;
 
 		//! Wskaźnik na strumień bazowy
 		typedef utils::shared_ptr<BaseStreamType> BaseStreamTypePtr;
-
-		//! Typ funktora odpowiedzialnego za wypakowanie danych
-		typedef std::function<void(const Base &, Dest &)> ExtractorFunction;
 
 	private:
 
@@ -332,16 +335,12 @@ namespace threadingUtils {
 		//! \param baseStream Strumień którego reprezentację zmieniamy
 		//! \param extractorFunction Funktor realizujące przepakowanie typów danych
 		StreamAdapterT(BaseStreamTypePtr baseStream,
-			const ExtractorFunction & extractorFunction)
-			: baseStream_(baseStream), extractorFunction_(extractorFunction)
+			Extractor extractor)
+			: baseStream_(baseStream), extractor_(extractor)
 		{
 			if (baseStream_ == nullptr){
 				throw std::invalid_argument("Uninitialized base stream");
-			}
-
-			if (!extractorFunction){
-				throw std::invalid_argument("Empty extractor function");
-			}
+			}			
 
 			sourceStreamObserver.reset(new BaseStreamUpdater(this));
 			baseStream_->attachObserver(sourceStreamObserver);
@@ -358,7 +357,7 @@ namespace threadingUtils {
 		{
 			Base bd;
 			baseStream_->data(bd);
-			extractorFunction_(bd, d);
+			extractor_(bd, d);
 		}
 
 	private:
@@ -379,7 +378,7 @@ namespace threadingUtils {
 		//! Strumień który przykrywam
 		BaseStreamTypePtr baseStream_;
 		//! Funktor do wypakowywania danych
-		ExtractorFunction extractorFunction_;
+		Extractor extractor_;
 		//! Obserwator strumienia bazowego
 		StreamStatusObserverPtr sourceStreamObserver;
 	};

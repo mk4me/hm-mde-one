@@ -4,6 +4,7 @@
 #include <functional>
 #include <corelib/IPlugin.h>
 #include <hmdbserviceslib/IFileStoremanWS.h>
+#include <hmdbserviceslib/MetadataParser.h>
 #include <plugins/hmdbCommunication/IHMDBSession.h>
 #include <plugins/hmdbCommunication/IHMDBStorage.h>
 #include <hmdbserviceslib/IncrementalBranchShallowCopyParser.h>
@@ -13,6 +14,7 @@
 #include <plugins/hmdbCommunication/DataStatus.h>
 #include <utils/Utils.h>
 #include <numeric>
+#include <fstream>
 #include <corelib/PluginCommon.h>
 
 

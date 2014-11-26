@@ -23,6 +23,7 @@
 #include <QtCore/QMetaType>
 #include "HMDBSourceContextOperations.h"
 #include <QtWidgets/QMenu>
+#include <corelib/PluginCommon.h>
 
 class OperationImpl : public DataViewWidget::IOperation
 {

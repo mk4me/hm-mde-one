@@ -46,7 +46,7 @@ public:
     QSize getSize() const;
 
     // workaround
-    std::vector<ILayerItemConstPtr> getLayersToSerialize(const std::string& tag) const;
+    std::vector<ILayerItemPtr> getLayersToSerialize(const std::string& tag) const;
     dicom::ILayerGraphicItemPtr getBackgroundLayer() const;
     void setBackgroundLayer(dicom::BackgroundLayerPtr val);
     virtual int getNumTags() const;

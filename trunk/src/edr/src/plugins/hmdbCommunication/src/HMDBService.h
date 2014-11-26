@@ -10,6 +10,7 @@
 
 #include <plugins/hmdbCommunication/IHMDBService.h>
 #include <corelib/IService.h>
+#include <corelib/ThreadPool.h>
 #include "CURLFTPManager.h"
 #include <networkUtils/CURLManager.h>
 #include <atomic>

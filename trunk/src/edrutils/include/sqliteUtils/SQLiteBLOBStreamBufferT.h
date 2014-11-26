@@ -48,9 +48,12 @@ namespace sqliteUtils
 		//! Typ mojego bufora
 		typedef SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy> _Myt;
 		//! Typ bufora strumienia
-		typedef basic_streambuf<_Elem, _Traits> _Mysb;
+		typedef std::basic_streambuf<_Elem, _Traits> _Mysb;
 		//! Typ mojego stanu
 		typedef typename _Traits::state_type _Myst;
+
+		const pos_type _BADOFF = (-1); //za cppreference, -1 jest uzywane do okreslania wadliwych offsetow;
+
 
 	public:
 		//! Konstruktor

@@ -1,5 +1,8 @@
 #include "CommunicationPCH.h"
 #include "MemoryStorage.h"
+#include <streambuf>
+#include <sstream>
+#include <utils/Utils.h>
 
 using namespace hmdbCommunication;
 

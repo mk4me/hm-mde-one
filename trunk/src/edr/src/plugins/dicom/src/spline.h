@@ -14,8 +14,7 @@
 #include "qwt_global.h"
 #include <qpolygon.h>
 #include <qrect.h>
-
-class QwtSpline;
+#include <qwt_spline.h>
 
 //! Jest to nieco przerobiona klasa QwtSplineCurveFitter. Dodano do niej wsparcie dla zamkniêtych polygonów.
 class SplineCurveFitter

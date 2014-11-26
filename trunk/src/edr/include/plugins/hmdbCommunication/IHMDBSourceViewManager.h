@@ -8,10 +8,10 @@
 #ifndef __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBSOURCEVIEWMANAGER_H__
 #define __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBSOURCEVIEWMANAGER_H__
 
-#include <QtCore\QString>
-#include <QtGui\QIcon>
-#include <plugins\hmdbCommunication\IHMDBShallowCopyContext.h>
-#include <plugins\hmdbCommunication\IHierarchyPerspective.h>
+#include <QtCore/QString>
+#include <QtGui/QIcon>
+#include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
+#include <plugins/hmdbCommunication/IHierarchyPerspective.h>
 
 class QWidget;
 
