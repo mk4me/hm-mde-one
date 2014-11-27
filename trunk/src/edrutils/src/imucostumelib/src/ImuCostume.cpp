@@ -1,235 +1,318 @@
 #include <imucostumelib/ImuCostume.h>
 #include <imucostumelib/CostumeRawIO.h>
+#include <imucostumelib/ProtocolReadBufferHelper.h>
+#include <imucostumelib/CANopenSensor.h>
+
 
 using namespace imuCostume;
 
-//! Sta³a definiuj¹ca iloœæ czujników IMU na kostiumie
-static const unsigned int IMUS_IN_COSTUME_COUNT = 18;
-//! Sta³a definiuj¹ca iloœæ czujników insole na kostiumie
-static const unsigned int INSOLS_IN_COSTUME_COUNT = 2;
-//! Sta³a definiuj¹ca iloœæ sensorów w ramach jednego insole
-static const unsigned int SENSORS_COUNT_IN_INSOL = 4;
-
-//! Implementacja funkcjonalnoœci kostiumu
-class Costume::CostumeImpl
+Costume::SensorsConfiguration Costume::sensorsConfiguration(const void * data, const uint16_t length)
 {
-public:
-	CostumeImpl(CostumeRawIO * costume) : rawIO(costume)
-	{
-	}
+	Costume::SensorsConfiguration localConfiguration;
 
-	//! Destruktor
-	~CostumeImpl()
-	{
-	}
+	ProtocolReadBufferHelper pd = ProtocolReadBufferHelper::create(data, length);
+	for (uint16_t j = 0; j < pd.size(); ++j){
+		auto d = pd[j];
 
-	CostumeRawIO * costume() const
-	{
-		return rawIO;
-	}
+		const auto cobID = d.header().cobID();
 
-	//! \return Konfiguracja sensorów kostiumu
-	const Costume::SensorsConfiguration sensorsConfiguration() const
-	{
-		//TODO - to powinien oferowaæ kostium
-		Costume::SensorsConfiguration ret;
-
-		//czujniki imu
-		{
-			Costume::SensorIDsSet imusIds;
-
-			for (int i = 1; i < IMUS_IN_COSTUME_COUNT + 1; ++i){
-				imusIds.insert(i);
+		if (cobID.value != 0xFFF){
+			uint8_t nodeID = 0;
+			
+			if (cobID.value > 0x500 && cobID.value < 0x580)
+				nodeID = (cobID.value - 0x500) / 4;
+			else if (cobID.value > 0x700 && cobID.value < 0x780) {
+				nodeID = (cobID.value - 0x700) / 4;
 			}
 
-			ret.insert(Costume::SensorsConfiguration::value_type(Costume::IMU_SENSOR, imusIds));
-		}
-
-		//czujniki insole
-		{
-			Costume::SensorIDsSet insolsIds;
-
-			for (int i = IMUS_IN_COSTUME_COUNT + 1; i < IMUS_IN_COSTUME_COUNT + INSOLS_IN_COSTUME_COUNT + 1; ++i){
-				insolsIds.insert(i);
+			if (nodeID > 0 && nodeID < 0x80){
+				localConfiguration[Costume::IMU].insert(nodeID);
 			}
-
-			ret.insert(Costume::SensorsConfiguration::value_type(Costume::INSOLE_SENSOR, insolsIds));
 		}
-
-		return ret;
 	}
 
-	//! \param timeout Maksymalny czas oczekiwania na dane [ms] (wartoœc 0 oznacza blokowanie w nieskoñczonoœæ)
-	//! \return Ramka danych kostiumu
-	const Costume::Frame read(const unsigned int timeout) const
-	{
-		CostumeRawIO::Frame rawFrame = { 0 };
-		Costume::Frame ret;
+	return localConfiguration;
+}
 
-		uint16_t length = 0;
-		if (rawIO->receive(rawFrame, length, timeout) == true){
-			if (length == CostumeRawIO::MaxDataSize)
+std::list<Costume::SensorDataPtr> Costume::extractSensorsData(const std::list<CANopenFrame> & data)
+{
+	std::list<Costume::SensorDataPtr> ret;
+
+	std::map<Costume::SensorID, std::list<const CANopenFrame*>> groupedData;
+
+	//filtrujemy ramki CANopen i grupujemy je wg czujnika
+	for (const auto & f : data){
+		
+		const auto cobID = f.structure.cobID;
+
+		auto msgid = cobID.value;
+		if (msgid >= 0x500 && msgid < 0x580)
+		{
+			const int imuID = (msgid - 0x500) / 4;
+			//const int imuID = cobID.nodeID();
+			groupedData[imuID].push_back(&f);
+		}
+	}
+
+	for (auto & sd : groupedData){
+
+		int dataStatus = 0;
+
+		osg::Vec3 acc;
+		osg::Vec3 mag;
+		osg::Vec3 gyro;
+		osg::Quat orient;
+
+		for (auto it = sd.second.rbegin(); it != sd.second.rend(); ++it){
+
+			const auto fd = **it;
+			const int data_type = (fd.structure.cobID.value - 0x500) % 4;
+
+			if (data_type == 0 && !(dataStatus & Costume::IMUSensor::ACC_DATA))
 			{
-				ret.status = Costume::Frame::COMPLETE_FRAME;
-				// Chyba moje dane
-				// Próbuje to rozpakowaæ
-				// Jak wszystko ok to zaznaczam ¿e ready
-
-				for (unsigned int i = 0; i < IMUS_IN_COSTUME_COUNT; ++i)
-				{
-					//il.ramek, dl. ramki
-					//auto offs = 4 * 8 * i;
-					const auto offs = i << 5;
-					Costume::ImuData imuData;
-					unpackIMU(rawFrame, offs, imuData);
-					ret.imusData[i] = imuData;
-				}
-
-				for (unsigned int i = IMUS_IN_COSTUME_COUNT; i < IMUS_IN_COSTUME_COUNT + INSOLS_IN_COSTUME_COUNT; ++i)
-				{
-					const auto offs = i << 5;
-					Costume::InsoleRawData insoleData;
-					unpackINSOLE(rawFrame, offs, insoleData);
-					ret.insolesData[i] = insoleData;
-				}
+				dataStatus |= Costume::IMUSensor::ACC_DATA;
+				acc[0] = int16_t((uint16_t(fd.structure.data[1]) << 8) | uint16_t(fd.structure.data[0])) / 1024.0f;
+				acc[1] = int16_t((uint16_t(fd.structure.data[3]) << 8) | uint16_t(fd.structure.data[2])) / 1024.0f;
+				acc[2] = int16_t((uint16_t(fd.structure.data[5]) << 8) | uint16_t(fd.structure.data[4])) / 1024.0f;
 			}
-			else{
-				ret.status = Costume::Frame::ERROR_FRAME;
+			else if (data_type == 1 && !(dataStatus & Costume::IMUSensor::MAG_DATA))
+			{
+				dataStatus |= Costume::IMUSensor::MAG_DATA;
+				mag[0] = int16_t((uint16_t(fd.structure.data[1]) << 8) | uint16_t(fd.structure.data[0])) / 1024.0f;
+				mag[1] = int16_t((uint16_t(fd.structure.data[3]) << 8) | uint16_t(fd.structure.data[2])) / 1024.0f;
+				mag[2] = int16_t((uint16_t(fd.structure.data[5]) << 8) | uint16_t(fd.structure.data[4])) / 1024.0f;
+			}
+			else if (data_type == 2 && !(dataStatus & Costume::IMUSensor::GYRO_DATA))
+			{
+				dataStatus |= Costume::IMUSensor::GYRO_DATA;
+				gyro[0] = int16_t((uint16_t(fd.structure.data[1]) << 8) | uint16_t(fd.structure.data[0])) / 2048.0f;
+				gyro[1] = int16_t((uint16_t(fd.structure.data[3]) << 8) | uint16_t(fd.structure.data[2])) / 2048.0f;
+				gyro[2] = int16_t((uint16_t(fd.structure.data[5]) << 8) | uint16_t(fd.structure.data[4])) / 2048.0f;
+			}
+			else if (data_type == 3 && !(dataStatus & Costume::IMUSensor::ORIENT_DATA))
+			{
+				dataStatus |= Costume::IMUSensor::ORIENT_DATA;
+				orient[0] = float((uint16_t(fd.structure.data[1]) << 8) | uint16_t(fd.structure.data[0]));
+				orient[1] = float((uint16_t(fd.structure.data[3]) << 8) | uint16_t(fd.structure.data[2]));
+				orient[2] = float((uint16_t(fd.structure.data[5]) << 8) | uint16_t(fd.structure.data[4]));
+				orient[3] = float((uint16_t(fd.structure.data[7]) << 8) | uint16_t(fd.structure.data[6]));
+				orient /= orient.length();
+			}
+
+			if (dataStatus == 0x7){
+				break;
 			}
 		}
 
-		return ret;
+		ret.push_back(Costume::SensorDataPtr(new Costume::IMUSensor(sd.first, (int)Costume::IMU, dataStatus, acc, mag, gyro, orient)));
 	}
 
-	//! \param listenTime Czas nas³uchiwania kostiumów [ms]
-	//! \return Lista adresów dostêpnych kostiumów
-	static const std::list<Costume::Address> availableCostumes(const unsigned int listenTime)
-	{
-		std::list<Costume::Address> ret;
-
-		return ret;
-	}
-
-private:
-
-	inline static const int16_t extractIntFromPacket(const CostumeRawIO::Frame & frame, unsigned int offset)
-	{
-		return int16_t((uint16_t(frame[offset + 1]) << 8) | uint16_t(frame[offset]));
-	}
-
-	inline static const int16_t extractFloatFromPacket(const CostumeRawIO::Frame & frame, unsigned int offset)
-	{
-		return float((uint16_t(frame[offset + 1]) << 8) | uint16_t(frame[offset]));
-		//return reinterpret_cast<float>((uint16_t(frame[offset + 1]) << 8) | uint16_t(frame[offset]));
-	}
-
-	static const bool unpackIMU(const CostumeRawIO::Frame & frame, unsigned int offset,
-		Costume::ImuData & imuData)
-	{
-		Costume::ImuData localData;
-		{
-			osg::Vec3 acc;
-
-			acc.x() = extractIntFromPacket(frame, offset + 0);
-			acc.y() = extractIntFromPacket(frame, offset + 2);
-			acc.z() = extractIntFromPacket(frame, offset + 4);
-			acc /= 1024.0f;
-
-			localData.accelerometer = acc;
-			offset += 8;
-		}
-
-		{
-			osg::Vec3 mag;
-
-			mag.x() = extractIntFromPacket(frame, offset + 0);
-			mag.y() = extractIntFromPacket(frame, offset + 2);
-			mag.z() = extractIntFromPacket(frame, offset + 4);
-			mag /= 2048.0f;
-
-			localData.magnetometer = mag;
-			offset += 8;
-		}
-
-		{
-			osg::Vec3 gyro;
-
-			gyro.x() = extractIntFromPacket(frame, offset + 0);
-			gyro.y() = extractIntFromPacket(frame, offset + 2);
-			gyro.z() = extractIntFromPacket(frame, offset + 4);
-			gyro /= 1024.0f;
-
-			offset += 8;
-			localData.gyroscope = gyro;
-		}
-
-		{
-			osg::Quat orient;
-
-			orient.w() = extractFloatFromPacket(frame, offset + 0);
-			orient.x() = extractFloatFromPacket(frame, offset + 2);
-			orient.y() = extractFloatFromPacket(frame, offset + 4);
-			orient.z() = extractFloatFromPacket(frame, offset + 6);
-			orient /= orient.length();
-
-			localData.orientation = orient;
-		}
-
-		imuData = localData;
-
-		return true;
-	}
-
-	static const bool unpackINSOLE(const CostumeRawIO::Frame & frame, unsigned int offset,
-		Costume::InsoleRawData & insoleData)
-	{
-		Costume::InsoleRawData localData;
-		localData.grfs.resize(SENSORS_COUNT_IN_INSOL);
-
-		for (unsigned int i = 0; i < SENSORS_COUNT_IN_INSOL; ++i)
-		{
-			osg::Vec3 force;
-			force.x() = extractIntFromPacket(frame, offset + 0);
-			force.y() = extractIntFromPacket(frame, offset + 2);
-			force.z() = extractIntFromPacket(frame, offset + 4);
-			force /= 1024.0f;
-
-			localData.grfs[i] = force;
-			offset += 8;
-		}
-
-		insoleData = localData;
-
-		return true;
-	}
-
-private:
-
-	mutable CostumeRawIO * rawIO;
-};
-
-using namespace imuCostume;
-
-Costume::Costume(CostumeRawIO * costume)
-	: impl_(new CostumeImpl(costume))
-{
+	return ret;
 }
 
-Costume::~Costume()
+std::list<Costume::SensorDataPtr> Costume::extractSensorsData(const void * buffer, const uint16_t length)
 {
+	std::list<Costume::SensorDataPtr> ret;
+
+	std::map<Costume::SensorID, std::list<unsigned int>> groupedData;
+
+	auto rh = ProtocolReadBufferHelper::create(buffer, length);
+
+	//filtrujemy ramki CANopen i grupujemy je wg czujnika
+	for (unsigned int i = 0; i < rh.size(); ++i){
+
+		auto pd = rh[i];
+		const auto cobID = pd.header().cobID();
+		auto msgid = cobID.value;
+		if (msgid >= 0x500 && msgid < 0x580)
+		{
+			//const int imuID = (msgid - 0x500) / 4;
+			const int imuID = cobID.nodeID();
+			groupedData[imuID].push_back(i);
+		}
+	}
+
+	for (auto & sd : groupedData){
+
+		int dataStatus = 0;
+
+		osg::Vec3 acc;
+		osg::Vec3 mag;
+		osg::Vec3 gyro;
+		osg::Quat orient;
+
+		for (auto it = sd.second.rbegin(); it != sd.second.rend(); ++it){
+
+			const auto fd = rh[*it];
+			const int data_type = (fd.header().cobID().value - 0x500) % 4;
+
+			if (data_type == 0 && !(dataStatus & Costume::IMUSensor::ACC_DATA))
+			{
+				dataStatus |= Costume::IMUSensor::ACC_DATA;
+				acc[0] = int16_t((uint16_t(fd.data()[1]) << 8) | uint16_t(fd.data()[0])) / 1024.0f;
+				acc[1] = int16_t((uint16_t(fd.data()[3]) << 8) | uint16_t(fd.data()[2])) / 1024.0f;
+				acc[2] = int16_t((uint16_t(fd.data()[5]) << 8) | uint16_t(fd.data()[4])) / 1024.0f;
+			}
+			else if (data_type == 1 && !(dataStatus & Costume::IMUSensor::MAG_DATA))
+			{
+				dataStatus |= Costume::IMUSensor::MAG_DATA;
+				mag[0] = int16_t((uint16_t(fd.data()[1]) << 8) | uint16_t(fd.data()[0])) / 1024.0f;
+				mag[1] = int16_t((uint16_t(fd.data()[3]) << 8) | uint16_t(fd.data()[2])) / 1024.0f;
+				mag[2] = int16_t((uint16_t(fd.data()[5]) << 8) | uint16_t(fd.data()[4])) / 1024.0f;
+			}
+			else if (data_type == 2 && !(dataStatus & Costume::IMUSensor::GYRO_DATA))
+			{
+				dataStatus |= Costume::IMUSensor::GYRO_DATA;
+				gyro[0] = int16_t((uint16_t(fd.data()[1]) << 8) | uint16_t(fd.data()[0])) / 2048.0f;
+				gyro[1] = int16_t((uint16_t(fd.data()[3]) << 8) | uint16_t(fd.data()[2])) / 2048.0f;
+				gyro[2] = int16_t((uint16_t(fd.data()[5]) << 8) | uint16_t(fd.data()[4])) / 2048.0f;
+			}
+			else if (data_type == 3 && !(dataStatus & Costume::IMUSensor::ORIENT_DATA))
+			{
+				dataStatus |= Costume::IMUSensor::ORIENT_DATA;
+				orient[0] = float((uint16_t(fd.data()[1]) << 8) | uint16_t(fd.data()[0]));
+				orient[1] = float((uint16_t(fd.data()[3]) << 8) | uint16_t(fd.data()[2]));
+				orient[2] = float((uint16_t(fd.data()[5]) << 8) | uint16_t(fd.data()[4]));
+				orient[3] = float((uint16_t(fd.data()[7]) << 8) | uint16_t(fd.data()[6]));
+			}
+
+			if (dataStatus == 0x7){
+				break;
+			}
+		}
+
+		ret.push_back(Costume::SensorDataPtr(new Costume::IMUSensor(sd.first, (int)Costume::IMU, dataStatus, acc, mag, gyro, orient)));
+	}
+
+	return ret;
 }
 
-const Costume::SensorsConfiguration Costume::sensorsConfiguration() const
+Costume::Data Costume::convert(const CostumeCANopenIO::Data & data)
 {
-	return impl_->sensorsConfiguration();
+	Data ret;
+	ret.timestamp = data.timestamp;
+	ret.sensorsData = extractSensorsData(data.CANopenFrames);
+
+	return ret;
 }
 
-const Costume::Frame Costume::read(const unsigned int timeout) const
+void Costume::prepareCostumeConfiguration(ProtocolSendBufferHelper & sendBuffer)
 {
-	return impl_->read(timeout);
+	CANopenFrame disableHeartbeatFrame = CANopenSensor::formatExpeditedSDOWriteFrame(0, CANopenSensor::PRODUCED_HEARTBEAT_TIME, 0, (uint32_t)0);
+	CANopenFrame storeParametersFrame = CANopenSensor::formatExpeditedSDOWriteFrame(0, CANopenSensor::STORE_PARAMETERS, CANopenSensor::STORE_PARAMETERS_SAVE_ALL, (uint32_t)0x65766173);
+	ProtocolSendBufferHelper::updateFrameLength(disableHeartbeatFrame, 10);
+	ProtocolSendBufferHelper::updateFrameLength(storeParametersFrame, 10);
+
+	for (uint8_t i = 0; i < 127; ++i){		
+
+		auto dhf = disableHeartbeatFrame;
+		auto spf = storeParametersFrame;
+		dhf.buffer[0] = (dhf.buffer[0] & 0x80 | i & 0x7F);
+		spf.buffer[0] = (spf.buffer[0] & 0x80 | i & 0x7F);
+		sendBuffer.add(dhf);
+		sendBuffer.add(spf);		
+	}
 }
 
-const std::list<Costume::Address> Costume::availableCostumes(const unsigned int listenTime)
+void Costume::prepareCostumeConfiguration(ProtocolSendBufferHelper & sendBuffer,
+	const SensorsConfiguration & sensorsConfiguration)
 {
-	return CostumeImpl::availableCostumes(listenTime);
+	if (sensorsConfiguration.empty() == false){
+		CANopenFrame disableHeartbeatFrame = CANopenSensor::formatExpeditedSDOWriteFrame(0, CANopenSensor::PRODUCED_HEARTBEAT_TIME, 0, (uint32_t)0);
+		CANopenFrame storeParametersFrame = CANopenSensor::formatExpeditedSDOWriteFrame(0, CANopenSensor::STORE_PARAMETERS, CANopenSensor::STORE_PARAMETERS_SAVE_ALL, (uint32_t)0x65766173);
+		ProtocolSendBufferHelper::updateFrameLength(disableHeartbeatFrame, 10);
+		ProtocolSendBufferHelper::updateFrameLength(storeParametersFrame, 10);
+
+		for (auto & cc : sensorsConfiguration){
+			for (auto sid : cc.second){
+
+				auto dhf = disableHeartbeatFrame;
+				auto spf = storeParametersFrame;
+				dhf.buffer[0] = (dhf.buffer[0] & 0x80 | sid & 0x7F);
+				spf.buffer[0] = (spf.buffer[0] & 0x80 | sid & 0x7F);
+				sendBuffer.add(dhf);
+				sendBuffer.add(spf);
+			}
+		}
+	}
+}
+
+Costume::GenericSensor::GenericSensor(const SensorID id, const int type)
+	: id_(id), type_(type)
+{
+
+}
+
+Costume::GenericSensor::~GenericSensor()
+{
+
+}
+
+const Costume::SensorID Costume::GenericSensor::id() const
+{
+	return id_;
+}	
+
+const int Costume::GenericSensor::type() const
+{
+	return type_;
+}
+
+Costume::IMUSensor::IMUSensor(const SensorID id, const int type,
+	const int status, const osg::Vec3 & accelerometer,
+	const osg::Vec3 & magnetometer, const osg::Vec3 & gyroscope,
+	const osg::Quat & orientation)
+	: Costume::GenericSensor(id, type),	dataStatus_(status),
+	accelerometer_(accelerometer), gyroscope_(gyroscope),
+	magnetometer_(magnetometer), orientation_(orientation)
+{
+
+}
+
+Costume::IMUSensor::~IMUSensor()
+{
+
+}
+
+//! \return Dane akcelerometru 
+const osg::Vec3 & Costume::IMUSensor::accelerometer() const
+{
+	return accelerometer_;
+}
+
+const osg::Vec3 & Costume::IMUSensor::magnetometer() const
+{
+	return magnetometer_;
+}
+
+const osg::Vec3 & Costume::IMUSensor::gyroscope() const
+{
+	return gyroscope_;
+}
+
+const osg::Quat & Costume::IMUSensor::orientation() const
+{
+	return orientation_;
+}
+
+const int Costume::IMUSensor::dataStatus() const
+{
+	return dataStatus_;
+}
+
+Costume::INSOLESensor::INSOLESensor(const SensorID id, const int type,
+	const INSOLESData & insolesData)
+	: Costume::GenericSensor(id, type),	insolesData_(insolesData)
+{
+
+}
+
+Costume::INSOLESensor::~INSOLESensor()
+{
+
+}
+
+const Costume::INSOLESensor::INSOLESData & Costume::INSOLESensor::insolesData() const
+{
+	return insolesData_;
 }

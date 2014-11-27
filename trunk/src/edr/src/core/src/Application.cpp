@@ -278,13 +278,15 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	{
 		showSplashScreenMessage(QObject::tr("Initializing threading"));		
 
+		core::ThreadPool::setLog(logger_->subLog("threadPool"));
 		innerThreadPool.reset(new core::ThreadPool::InnerThreadPool);
 		threadPool_.reset(new core::ThreadPool(innerThreadPool.get()));
 
+		core::JobManager::setLog(logger_->subLog("jobManager"));
 		innerWorkManager_.reset(new core::JobManager::InnerWorkManager);
 		innerJobManager_.reset(new core::JobManager::InnerJobManager(innerWorkManager_.get()));
 		jobManager_.reset(new core::JobManager(innerJobManager_.get()));
-
+			
 		core::ThreadPool::Threads threads;
 		threadPool_->get(std::thread::hardware_concurrency() - 1, threads,  true, "Core", "JobManager worker thread");
 
@@ -532,11 +534,12 @@ Application::~Application()
 		CORE_LOG_INFO("Releasing job manager");
 		jobManager_.reset();
 		innerJobManager_.reset();
-		innerWorkManager_.reset();
+		innerWorkManager_.reset();		
+		core::JobManager::setLog(LogPtr());
 		CORE_LOG_INFO("Releasing thread pool");
 		threadPool_.reset();
 		innerThreadPool.reset();
-
+		core::ThreadPool::setLog(LogPtr());
 		CORE_LOG_INFO("Cleaning translations");
 		languagesManager_.reset();
 
@@ -796,33 +799,33 @@ void Application::safeRegisterVisualizer(const plugin::IVisualizerPtr & visualiz
 
 void Application::unpackPlugin(CoreMainWindow * mainWindow, const core::PluginPtr & plugin)
 {
-	auto message = QObject::tr("Loading plugin %1 content: %2").arg(QString::fromStdString(plugin->name()));
+	//auto message = QObject::tr("Loading plugin %1 content: %2").arg(QString::fromStdString(plugin->name()));
 
-	showSplashScreenMessage(message.arg(QObject::tr("domain objects")));
+	//showSplashScreenMessage(message.arg(QObject::tr("domain objects")));
 
 	for (int j = 0; j < plugin->getNumObjectWrapperPrototypes(); ++j) {
 		safeRegisterObjectWrapperPrototype(plugin->getObjectWrapperPrototype(j));
 	}
 
-	showSplashScreenMessage(message.arg(QObject::tr("services")));
+	//showSplashScreenMessage(message.arg(QObject::tr("services")));
 
 	for (int j = 0; j < plugin->getNumServices(); ++j) {
 		safeRegisterService(plugin->getService(j));
 	}
 
-	showSplashScreenMessage(message.arg(QObject::tr("sources")));
+	//showSplashScreenMessage(message.arg(QObject::tr("sources")));
 
 	for (int j = 0; j < plugin->getNumSources(); ++j) {
 		safeRegisterSource(plugin->getSource(j));
 	}
 
-	showSplashScreenMessage(message.arg(QObject::tr("parsers")));
+	//showSplashScreenMessage(message.arg(QObject::tr("parsers")));
 
 	for (int j = 0; j < plugin->getNumParsersPrototypes(); ++j) {
 		safeRegisterParser(plugin->getParserPrototype(j));
 	}
 
-	showSplashScreenMessage(message.arg(QObject::tr("visualizers")));
+	//showSplashScreenMessage(message.arg(QObject::tr("visualizers")));
 
 	for (int j = 0; j < plugin->getNumVisualizerPrototypes(); ++j) {
 		safeRegisterVisualizer(plugin->getVisualizerPrototype(j));

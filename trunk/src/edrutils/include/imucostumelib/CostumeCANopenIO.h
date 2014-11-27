@@ -10,66 +10,93 @@
 
 #include <imucostumelib/Export.h>
 #include <imucostumelib/CostumeRawIO.h>
+#include <imucostumelib/CANopenFrame.h>
+#include <imucostumelib/ProtocolSendBufferHelper.h>
+#include <list>
 
 namespace imuCostume
 {
+	//! Klasa obs³uguj¹ca protoku³ kostiumu (odczyt danych z CANopen i zapis danych na CANopen)
 	struct IMUCOSTUME_EXPORT CostumeCANopenIO
 	{
 	public:
 
-		//! Typ opisuj¹cy ramke CANopen
-		struct Frame
+		//! Struktura opisuj¹ca strukturê nag³ówka protoko³u
+		struct HeaderStructure
 		{
-			//! Minimalny rozmiar ramki [B]
-			static const int8_t MinFrameSize = 2;
-			//! Maksymalny rozmiar ramki [B]
-			static const int8_t MaxFrameSize = 10;
-			//! Rozmiar pola identyfokatora wiadomoœci [B]
-			static const int8_t MessageIDFieldSize = 2;
-			//! Maxymalny rozmiar pola danych [B]
-			static const int8_t MaxDataFieldSize = 8;
+			//! Typ ramki
+			uint8_t type;
+			//! Numer sekwencyjny ramki
+			uint8_t sequenceNumber;
+		};
 
-			//! Identyfikator wiadomoœci
-			union MessageID
-			{
-				//! Ca³y identyfikator
-				int16_t id;
-				//! Identyfikator rozdzielony na poszczególne bajty
-				int8_t bytes[MessageIDFieldSize];
-			};
+		//! Unia realizuj¹ca ró¿ne reprezentacje nag³ówka
+		union Header
+		{
+			//! Forma bufora
+			std::array<uint8_t, 2> buffer;
+			//! Forma poszczególnych pól
+			HeaderStructure structure;
+			//! Zwiêz³a reprezentacja
+			uint16_t value;
+		};
 
-			//! Opis struktury ramki
-			union Structure
-			{
-				//! Pe³na ramka
-				int8_t frame[MaxFrameSize];
-				//! Sekcja identyfikatora wiadomoœci
-				MessageID messageID;
-				//! Sekcja danych
-				int8_t data[MaxDataFieldSize];
-			};
+		//! Struktura opisuj¹ca strukturê ca³ej ramki
+		struct FrameStructure
+		{
+			//! Nag³ówek
+			Header header;
+			//! Sekcja danych
+			std::array<uint8_t, CostumeRawIO::MaxDataSize - 2> data;
+		};
 
-			//! Struktura ramki
-			Structure structure;
+		//! Unia realizuj¹ca ró¿ne reprezentacje ramki
+		union Frame
+		{
+			//! Forma bufora
+			CostumeRawIO::Buffer buffer;
+			//! Forma poszczególnych pól
+			FrameStructure structure;
+		};
+
+		//! Typ identyfikatora czasu ramki
+		typedef uint32_t Timestamp;
+
+		//! Struktura opisuj¹ca wypakowane dane z protoko³u
+		struct IMUCOSTUME_EXPORT Data
+		{
+			//! Znacnik czasowy
+			Timestamp timestamp;
+			//! Ramki CANopen
+			std::list<CANopenFrame> CANopenFrames;
 		};
 
 	public:
+
 		//! \param seqNumber Numer zawarty w komunikacie, powinien byæ równie¿ zawarty w odpowiadaj¹cej wiadomoœci zwrotnej
-		//! \param canOpenFrame Dane do wys³ania - ramka powinna byæ poprawn¹ dla CANopen
+		//! \param data Dane do wys³ania - ramka powinna byæ poprawn¹ zgodnie ze specyfikacj¹ protoko³u komunikacyjnego
 		//! \param length Rozmiar ramki CANopen [B]
 		//! \param timeout Timeout dla wysy³ania danych
 		//! \param costume Kostium dla którego wysy³amy dane na CANopen
 		//! \return Czy transmisja siê powiod³a (tylko transfer danych do kostiumu a nie na CANopen)
-		static const bool send(const int8_t seqNumber, const Frame & canOpenFrame,
-			const uint8_t length, const unsigned int timeout, CostumeRawIO & costume);
-		//! \param seqNumber Numer jaki powinien znaleŸæ siê w odbieranym komunikacie
-		//! \param canOpenFrame [out] Bufor dla odbieranych danych z CANopen
-		//! \param length [out] Rozmiar odebranych danych [B]
-		//! \param timeout Timeout dla odbioru danych
-		//! \param costume Kostium dla którego wysy³amy dane na CANopen
-		//! \return Czy transmisja siê powiod³a (tylko transfer danych z kostiumu)
-		static const bool receive(const int8_t seqNumber, Frame & canOpenFrame,
-			unsigned int & length, const unsigned int timeout, CostumeRawIO & costume);
+		static const bool send(const uint8_t seqNumber, const void * data,
+			const uint16_t length, const uint16_t timeout, CostumeRawIO & costume);
+
+		//! \param seqNumber Numer zawarty w komunikacie, powinien byæ równie¿ zawarty w odpowiadaj¹cej wiadomoœci zwrotnej
+		//! \param data Dane do wys³ania - ramka powinna byæ poprawn¹ zgodnie ze specyfikacj¹ protoko³u komunikacyjnego
+		//! \param length Rozmiar ramki CANopen [B]
+		//! \return Czy odebrany komunikat jest potwierdzeniem odbioru
+		static const bool verifyReceiveConfirmation(const uint8_t seqNumber,
+			const void * data, const uint16_t length);
+
+		//! \param data Dane wyci¹gniête z naszego prtoko³u
+		//! \param length D³ugoœæ danych [B]
+		//! \return Wypakowane dane
+		static Data extractData(const void * data, const uint16_t length);
+
+		//! Metoda przygotowuje kostium do dzia³ania (w³¹cza wszystkie sensory w tryb operational przez NMT)
+		//! \param sendBuffer Bufor w którym umieszczamy sformatowane ramki CANopen zgodnie z protoko³em
+		static void prepareCostumeConfiguration(ProtocolSendBufferHelper & sendBuffer);
 	};
 }
 

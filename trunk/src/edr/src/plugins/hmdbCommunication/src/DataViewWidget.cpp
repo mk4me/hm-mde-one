@@ -1406,7 +1406,11 @@ void DataViewWidget::onSynchronize()
 		operation_.reset(new OperationImpl(tr("Synchronization"), sOp));
 		setRemoteOperationsEnabled(false);
 		emit operationAboutToStart();
-		remoteOperationThread.run(&DataViewWidget::synchronize, this, sOp, cursorChanger);
+		//remoteOperationThread.run(&DataViewWidget::synchronize, this, sOp, cursorChanger);
+		std::thread th(&DataViewWidget::synchronize, this, sOp, cursorChanger);
+		if (th.joinable() == true){
+			th.join();
+		}
 	}
 	catch (...){
 

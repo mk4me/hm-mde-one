@@ -42,6 +42,16 @@ namespace threadingUtils
 
 		struct SharedState
 		{
+			SharedState()
+			{
+			
+			}
+
+			~SharedState()
+			{
+
+			}
+
 			std::function<T()> functionWrapper;
 			std::atomic<Status> status_;
 			std::recursive_mutex statusMutex;
@@ -225,6 +235,16 @@ namespace threadingUtils
 
 		struct SharedState
 		{
+			SharedState()
+			{
+
+			}
+
+			~SharedState()
+			{
+
+			}
+
 			std::function<T&()> functionWrapper;
 			std::atomic<Status> status_;
 			std::recursive_mutex statusMutex;
@@ -407,6 +427,16 @@ namespace threadingUtils
 
 		struct SharedState
 		{
+			SharedState()
+			{
+
+			}
+
+			~SharedState()
+			{
+
+			}
+
 			std::function<void()> functionWrapper;
 			std::atomic<Status> status_;
 			std::recursive_mutex statusMutex;
@@ -564,7 +594,7 @@ namespace threadingUtils
 
 		virtual const Status status() const override
 		{
-			return (sharedState == nullptr) ? Initialized : static_cast<Status>(sharedState->status_);
+			return (sharedState == nullptr) ? Initialized : sharedState->status_;
 		}
 
 		void get()

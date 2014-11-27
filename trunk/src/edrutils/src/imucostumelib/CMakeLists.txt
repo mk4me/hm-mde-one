@@ -6,7 +6,10 @@ SET_PUBLIC_HEADERS(
 	CostumeRawIO.h
 	CostumeCANopenIO.h
 	CANopenSensor.h
-	Export.h
+	Export.h	
+	CANopenFrame.h
+	ProtocolSendBufferHelper.h
+	ProtocolReadBufferHelper.h
 )
 
 SET_SOURCE_FILES( 
@@ -15,6 +18,8 @@ SET_SOURCE_FILES(
 	CostumeRawIO.cpp
 	CostumeCANopenIO.cpp
 	CANopenSensor.cpp
+	ProtocolSendBufferHelper.cpp
+	ProtocolReadBufferHelper.cpp
 )
 
 END_PROJECT()

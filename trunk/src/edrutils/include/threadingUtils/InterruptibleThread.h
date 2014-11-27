@@ -28,6 +28,16 @@ namespace threadingUtils
 
 		struct SharedState
 		{
+			SharedState()
+			{
+
+			}
+
+			~SharedState()
+			{
+
+			}
+
 			InterrupltiblePolicy interruptible;			
 		};
 
@@ -49,7 +59,6 @@ namespace threadingUtils
 		template<class F, class... Args>
 		void run(F&& f, Args &&... arguments)
 		{
-
 			std::function<void()> ff(std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...));
 
 			thread.run([=](utils::shared_ptr<SharedState> sharedState)
@@ -92,6 +101,16 @@ namespace threadingUtils
 
 		struct SharedState
 		{
+			SharedState()
+			{
+
+			}
+
+			~SharedState()
+			{
+
+			}
+
 			std::atomic<bool> finalize;
 			std::mutex functionMutex;
 			std::condition_variable functionCondition;

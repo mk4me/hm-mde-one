@@ -1039,7 +1039,7 @@ core::FileDataManager::CompoundInitializer::CompoundDataPtr core::FileDataManage
 
 	IVariantInitializer * core::FileDataManager::CompoundInitializer::clone() const
 	{
-		return new SimpleInitializer(data->parser, idx);
+		return new ::SimpleInitializer(data->parser, idx);
 	}
 
 	void core::FileDataManager::CompoundInitializer::initialize(Variant * object)

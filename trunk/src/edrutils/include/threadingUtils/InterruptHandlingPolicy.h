@@ -8,6 +8,8 @@
 #ifndef __HEADER_GUARD_THREADINGUTILS__INTERRUPTHANDLINGPOLICY_H__
 #define __HEADER_GUARD_THREADINGUTILS__INTERRUPTHANDLINGPOLICY_H__
 
+#include <threadingUtils/InterruptiblePolicy.h>
+
 namespace threadingUtils
 {
 	//! Wszystkie polityki obs³ugi przerwania w¹tku realizowane s¹ w ramach przerywanego w¹tku

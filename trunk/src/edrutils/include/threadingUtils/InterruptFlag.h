@@ -144,6 +144,7 @@ namespace threadingUtils
 			}
 		}
 
+		//! Czekanie przerywalne z predykatem na w³asnym obiekcie synchornizuj±cym z customowym timeoutem
 		template<typename Lockable, typename Predicate, class Rep = long long,
 		class Period = std::chrono::milliseconds>
 		void wait(std::condition_variable_any& cv, Lockable& lk, Predicate pred,

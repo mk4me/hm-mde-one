@@ -52,20 +52,20 @@ ThreadPool::Thread::~Thread()
 
 }
 
-ThreadPool::Thread& ThreadPool::Thread::operator=(ThreadPool::Thread&& Other) noexcept
+ThreadPool::Thread& ThreadPool::Thread::operator=(ThreadPool::Thread&& Other) NOEXCEPT
 {
 	innerThread = std::move(Other.innerThread);
 	description = std::move(Other.description);
 	return *this;
 }
 
-void ThreadPool::Thread::swap(ThreadPool::Thread& Other) noexcept
+void ThreadPool::Thread::swap(ThreadPool::Thread& Other) NOEXCEPT
 {
 	std::swap(innerThread, Other.innerThread);
 	std::swap(description, Other.description);
 }
 
-const bool ThreadPool::Thread::joinable() const noexcept
+const bool ThreadPool::Thread::joinable() const NOEXCEPT
 {
 	return innerThread.joinable();
 }
@@ -80,7 +80,7 @@ void ThreadPool::Thread::detach()
 	innerThread.detach();
 }
 
-std::thread::id ThreadPool::Thread::get_id() const noexcept
+std::thread::id ThreadPool::Thread::get_id() const NOEXCEPT
 {
 	return innerThread.get_id();
 }
@@ -155,15 +155,14 @@ const ThreadPool::size_type ThreadPool::threadsCount() const
 }
 
 ThreadPool::Thread ThreadPool::get(const std::string & who, const std::string & destination)
-{
+{	
 	return std::move(Thread(std::move(tp->get()), who, destination));
 }
 
 const ThreadPool::size_type ThreadPool::get(const size_type groupSize,
 	Threads & threads, const bool exact, const std::string & who,
 	const std::string & destination)
-{
-
+{	
 	InnerThreadPool::Threads innerThreads;
 	auto ret = tp->get(groupSize, innerThreads, exact);
 
@@ -183,9 +182,7 @@ const ThreadPool::size_type ThreadPool::get(const size_type groupSize,
 
 void ThreadPool::setLog(LogPtr log)
 {
-	if (log_ == nullptr){
-		log_ = log;
-	}	
+	log_ = log;	
 }
 
 void ThreadPool::logError(const std::string & message)

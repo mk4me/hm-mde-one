@@ -31,9 +31,16 @@ namespace threadingUtils
 
 	public:
 		//! Konstruktor domyœlny
-		StealingQueue() = default;
+		StealingQueue()
+		{
+
+		}
+
 		//! Destruktor
-		~StealingQueue() = default;
+		~StealingQueue()
+		{
+
+		}
 
 		StealingQueue(const StealingQueue& other) = delete;
 		StealingQueue& operator=(const StealingQueue& other) = delete;

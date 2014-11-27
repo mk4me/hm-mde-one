@@ -128,9 +128,16 @@ namespace threadingUtils
 
 	public:
 
-		InterrupltiblePolicy() {}
-		//InterrupltiblePolicy(InterrupltiblePolicy && Other) : interuptible_(std::move(Other.interuptible_)), flag(std::move(Other.flag)) {}
-		~InterrupltiblePolicy() = default;
+		InterrupltiblePolicy()
+		{
+		
+		}
+
+		~InterrupltiblePolicy()
+		{
+
+		}
+
 		InterrupltiblePolicy(const InterrupltiblePolicy & Other) = delete;
 
 		void interrupt()

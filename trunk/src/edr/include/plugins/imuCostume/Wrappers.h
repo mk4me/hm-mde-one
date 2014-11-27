@@ -15,7 +15,7 @@
 #include <utils/SmartPtr.h>
 #include <utils/PtrPolicyStd.h>
 #include <utils/ObjectWrapper.h>
-#include <kinematiclib/JointAnglesCollection.h>
+#include <plugins/newChart/Wrappers.h>
 
 namespace IMU
 {
@@ -25,18 +25,24 @@ namespace IMU
 		osg::Vec3 accelerometer;
 		osg::Vec3 gyroscope;
 		osg::Vec3 magnetometer;
-		//osg::Quat orientation;
+		osg::Quat orientation;
+		int status;
 	};
 
 	//! Strumieñ danych jednego czujnika IMU
-	typedef threadingUtils::IStreamT<IMUData> IMUStream;
+	typedef threadingUtils::StreamT<IMUData> IMUStream;
 
 	DEFINE_SMART_POINTERS(IMUStream);
 
 	//! Strumieñ danych 3D
-	typedef threadingUtils::IStreamT<osg::Vec3> Vec3Stream;
+	typedef threadingUtils::StreamT<osg::Vec3> Vec3Stream;
 
 	DEFINE_SMART_POINTERS(Vec3Stream);
+
+	//! Strumieñ danych 3D
+	typedef threadingUtils::StreamT<osg::Quat> QuatStream;
+
+	DEFINE_SMART_POINTERS(QuatStream);
 }
 
 DEFINE_WRAPPER(IMU::IMUStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);

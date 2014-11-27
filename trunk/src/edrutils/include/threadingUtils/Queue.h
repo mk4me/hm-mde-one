@@ -37,7 +37,11 @@ namespace threadingUtils
 
 	public:
 		//! Konsturktor domyslny
-		Queue() = default;
+		Queue()
+		{
+
+		}
+
 		//! Konsturktor kopiujący
 		//! \param other Kopiowany obiekt
 		Queue(const Queue & other)
@@ -46,7 +50,10 @@ namespace threadingUtils
 			queue = other.queue;
 		}
 		//! Destruktor
-		~Queue() = default;
+		~Queue()
+		{
+
+		};
 
 		//! \param value Dane wrzucane do kolejki
 		void push(T value)

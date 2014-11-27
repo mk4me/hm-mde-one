@@ -207,8 +207,7 @@ namespace core
 
 		template<typename F, class ...Args>
 		Job<typename std::result_of<F(Args...)>::type> create(const std::string & owner, const std::string & name, F&& f, Args&& ...arguments)
-		{
-			log_->log(core::ILog::LogSeverityInfo, "Sending job to job manager");
+		{			
 			typedef typename std::result_of<F(Args...)>::type result_type;
 			auto description = utils::make_shared<Description>(Description{ owner, name });
 

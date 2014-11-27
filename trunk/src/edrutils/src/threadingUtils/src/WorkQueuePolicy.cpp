@@ -1,9 +1,23 @@
 #include <threadingUtils/WorkQueuePolicy.h>
 
 using namespace threadingUtils;
+
+StealingMultipleWorkQueuePolicy::StealingMultipleWorkQueuePolicy()
+{
+	initializeThread();
+}
+
+StealingMultipleWorkQueuePolicy::~StealingMultipleWorkQueuePolicy()
+{
+	deinitializeThread();
+}
 			
 void StealingMultipleWorkQueuePolicy::initializeThread()
 {
+	if (localWorkQueue() != nullptr){
+		return;
+	}
+
 	utils::shared_ptr<WorkStealingQueue> localQueue(utils::make_shared<WorkStealingQueue>());
 	const std::thread::id myID = std::this_thread::get_id();
 	{

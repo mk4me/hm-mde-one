@@ -10,73 +10,129 @@
 #define HEADER_GUARD_IMUCOSTUME__IMUCOSTUME_H__
 
 #include <imucostumelib/Export.h>
-
-#include <string>
-#include <vector>
 #include <list>
 #include <set>
 #include <map>
 #include <osg/Vec3>
 #include <osg/Quat>
 #include <utils/SmartPtr.h>
-#include <boost/noncopyable.hpp>
+#include <imucostumelib/CostumeCANopenIO.h>
+#include <imucostumelib/ProtocolSendBufferHelper.h>
 
 namespace imuCostume
 {
-	class CostumeRawIO;
-
 	//! Klasa obs³uguj¹ca kostium
-	class IMUCOSTUME_EXPORT Costume : boost::noncopyable
+	class IMUCOSTUME_EXPORT Costume
 	{
-	private:
-		//! Wewnêtrzna implementacja kostiumu
-		class CostumeImpl;
-
 	public:
 
-		//! Struktura opisuj¹ca adres kostiumu w sieci
-		struct Address
-		{
-			//! Adres IP
-			std::string ip;
-			//! Port
-			unsigned int port;
-		};
+		//! Typ identyfikatora sensora
+		typedef uint8_t SensorID;
 
 		//! Typ wyliczeniowy obs³ugiwanych czujników przez kostium
 		enum SensorType
 		{
-			IMU_SENSOR,		//! Czujnik IMU
-			INSOLE_SENSOR	//! Czujnik INSOLE
+			UNKNOWN = -1,	//! Nieznany typ
+			IMU = 1,		//! Czujnik IMU
+			INSOLE = 2		//! Czujnik INSOLE
 		};
 
-		//! Struktura opisuj¹ca surowe dane czujnika IMU
-		struct ImuRawData
+		//! Generyczny sensor - baza dla pozosta³ych
+		class IMUCOSTUME_EXPORT GenericSensor
 		{
-			//! Dane akcelerometru
-			osg::Vec3 accelerometer;
-			//! Dane ¿yroskopu
-			osg::Vec3 gyroscope;
-			//! Dane magnetometru
-			osg::Vec3 magnetometer;
+		protected:
+			//! \param id Identyfikator CANopen sensora
+			//! \param type Typ sensora
+			GenericSensor(const SensorID id, const int type);
+
+		public:
+			//! Destruktor wirtualny
+			virtual ~GenericSensor();
+			//! \return Identyfikator czujnika
+			const SensorID id() const;
+			//! \return Typ czujnika
+			const int type() const;
+
+		private:
+			//! Identyfikator wêz³a
+			SensorID id_;
+			//! Typ czujnika
+			int type_;
 		};
 
-		//! Struktura opisuj¹ca surowe dane czujnika Insole
-		struct InsoleRawData
+		typedef utils::shared_ptr<GenericSensor> SensorDataPtr;
+
+		//! Klasa opisuj¹ca dane czujników IMU
+		class IMUCOSTUME_EXPORT IMUSensor : public GenericSensor
 		{
-			//! Dane si³y nacisku na pod³o¿e
-			std::vector<osg::Vec3> grfs;
+		public:
+
+			//! Flagi statusu danych - czy poszczególne dane s¹ dostepne do odczytu w aktualnej ramce
+			enum DataStatus
+			{
+				ACC_DATA = 0x01,	//! Akcelerometr
+				GYRO_DATA = 0x02,	//! Gyroskop
+				MAG_DATA = 0x04,	//! Magnetometer
+				ORIENT_DATA = 0x08	//! Orientacja
+			};
+
+		public:
+
+			//! \param id Identyfikator CANopen sensora
+			//! \param type Typ sensora
+			//! \param accelerometer
+			//! \param magnetometer
+			//! \param gyroscope
+			//! \param orientation
+			IMUSensor(const SensorID id, const int type,
+				const int dataStatus, const osg::Vec3 & accelerometer,
+				const osg::Vec3 & magnetometer,	const osg::Vec3 & gyroscope,
+				const osg::Quat & orientation);
+
+			//! Destruktor wirtualny
+			virtual ~IMUSensor();
+
+			//! \return Dane akcelerometru 
+			const osg::Vec3 & accelerometer() const;
+			const osg::Vec3 & magnetometer() const;
+			const osg::Vec3 & gyroscope() const;
+			const osg::Quat & orientation() const;
+			//! \return Status danych
+			const int dataStatus() const;
+
+		private:
+			const int dataStatus_;
+			const osg::Vec3 accelerometer_;
+			const osg::Vec3 magnetometer_;
+			const osg::Vec3 gyroscope_;
+			const osg::Quat orientation_;
 		};
 
-		//! Struktura opisuj¹ca nasze IMU - dostajemy jeszcze estymacjê orientacji
-		struct ImuData : public ImuRawData
+		class IMUCOSTUME_EXPORT INSOLESensor : public GenericSensor
 		{
-			//! Orientacja
-			osg::Quat orientation;
-		};
+		public:
 
-		//! Typ identyfikatora sensora
-		typedef int8_t SensorID;
+			struct INSOLEData
+			{
+				unsigned int id;
+				osg::Vec3 grf;
+			};
+
+			typedef std::list<INSOLEData> INSOLESData;
+
+		public:
+
+			INSOLESensor(const SensorID id, const int type,
+				const INSOLESData & insolesData);
+
+			virtual ~INSOLESensor();
+
+			const INSOLESData & insolesData() const;
+
+		private:
+
+			const INSOLESData insolesData_;
+		};		
 
 		//! Zbiór identyfikatorów sensorów
 		typedef std::set<SensorID> SensorIDsSet;
@@ -84,63 +140,39 @@ namespace imuCostume
 		//! Konfiguracja sensorów kostiumu
 		typedef std::map<SensorType, SensorIDsSet> SensorsConfiguration;
 
-		//! Struktura opisuj¹ca ramkê rozpakowanych danych kostiumu
-		struct Frame
+		//! Struktura opisuj¹ca rozpakowane dane sensorów
+		struct IMUCOSTUME_EXPORT Data
 		{
-		public:
-			//! Typ identyfikatora czasu ramki
-			typedef unsigned long long int Timestamp;
-
-			//! Status odebranych danych z kostiumu dla pojedynczego imu
-			enum Status
-			{
-				NO_FRAME,			//! Brak danych
-				COMPLETE_FRAME,		//! Dane dotar³y
-				INCOMPLETE_FRAME,	//! Dane niekompletne
-				ERROR_FRAME			//! B³êdna ramka
-			};
-
-		public:
-
-			Frame() : timestamp(0), status(NO_FRAME) {}
-			~Frame() {}
-
-		public:
-
-			//! Stempel czasowy ramki
-			Timestamp timestamp;
-			//! Status ramki
-			Status status;
-			//! Dane z czujników imu
-			std::map<SensorID, ImuData> imusData;
-			//! Dane z czujników insole
-			std::map<SensorID, InsoleRawData> insolesData;
-
-
+			//! Znacznik czasu ramki
+			CostumeCANopenIO::Timestamp timestamp;
+			//! Dane sensorów
+			std::list<SensorDataPtr> sensorsData;
 		};
 
 	public:
-		//! \param ip Adres kostiumu
-		//! \param port Port kostiumu
-		Costume(CostumeRawIO * costume);
-		//! Destruktor
-		~Costume();
 
-		//! \return Obiekt do niskopoziomowej komunikacji z kostiumem
-		CostumeRawIO * costume() const;
-
+		//! \param data WskaŸnik bufora danych do analizy z surowymi ramkami
+		//! \param length Rozmiar bufora z danymi [B]
 		//! \return Konfiguracja sensorów kostiumu
-		const SensorsConfiguration sensorsConfiguration() const;
-		//! \param timeout Maksymalny czas oczekiwania na dane [ms] (wartoœc 0 oznacza blokowanie w nieskoñczonoœæ)
-		//! \return Ramka danych kostiumu
-		const Frame read(const unsigned int timeout) const;
-		//! \param listenTime Czas nas³uchiwania kostiumów [ms]
-		//! \return Lista adresów dostêpnych kostiumów
-		static const std::list<Address> availableCostumes(const unsigned int listenTime);
-
-	private:
-		//! Wewnêtrzna implementacja
-		utils::shared_ptr<CostumeImpl> impl_;
+		static SensorsConfiguration sensorsConfiguration(const void * data, const uint16_t length);
+		//! \param data Surowe dane CANopen
+		//! \return Dane sensorów
+		static std::list<SensorDataPtr> extractSensorsData(const std::list<CANopenFrame> & data);
+		//! \param data WskaŸnik bufora danych do analizy z surowymi ramkami
+		//! \param length Rozmiar bufora z danymi [B]
+		//! \return Dane sensorów
+		static std::list<SensorDataPtr> extractSensorsData(const void * buffer, const uint16_t length);
+		//! Metoda przygotowuje kostium do dzia³ania - wy³¹cza komunikaty heartbeat,
+		//! przestawia TPDO w trym asynchroniczny (zrzut z danych niezale¿nie od dostêpnoœci pozosta³ych
+		//! czujników + brak zrzucania wartoœci domyœlnych)
+		//! \param sendBuffer Bufor danych do wysy³ki
+		static void prepareCostumeConfiguration(ProtocolSendBufferHelper & sendBuffer);
+		//! To samo co poprzednia metoda ale konfigurujemy ju¿ tylko specyficzne sensory a nie wszystkie
+		static void prepareCostumeConfiguration(ProtocolSendBufferHelper & sendBuffer,
+			const SensorsConfiguration & sensorsConfiguration);
+		//! \param data Dane rozpakowane z protoko³u (w formie ramek CANopen)
+		//! \return Rozpakowane dane sensorów
+		static Data convert(const CostumeCANopenIO::Data & data);
 	};
 }
 

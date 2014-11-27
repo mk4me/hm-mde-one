@@ -34,6 +34,7 @@ void SourceManager::finalizeSources()
 {
 	for(auto it = sourcesList.begin(); it != sourcesList.end(); ++it){
 		try{
+			CORE_LOG_DEBUG("SourceManager: finalizing " << (*it)->name() << " service");
 			(*it)->finalize();
 			CORE_LOG_DEBUG("SourceManager: finalized correctly " << (*it)->name() << " service");
 		}

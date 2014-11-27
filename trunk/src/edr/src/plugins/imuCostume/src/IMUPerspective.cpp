@@ -13,7 +13,6 @@
 #include <utils/ObjectWrapper.h>
 #include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
-//#include <plugins/hmdbCommunication/IDataSourceUser.h>
 #include <corelib/ISourceManager.h>
 #include <corelib/PluginCommon.h>
 #include <corelib/ISourceManager.h>

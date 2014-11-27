@@ -14,13 +14,13 @@
 #include <corelib/ISource.h>
 #include <threadingUtils/StreamData.h>
 #include <osg/Vec3>
-#include <kinematiclib/hAnimSkeleton.h>
-#include <kinematiclib/JointAnglesCollection.h>
 #include <mutex>
 #include <imucostumelib/ImuCostume.h>
+#include <imucostumelib/CostumeCANopenIO.h>
+#include <imucostumelib/ProtocolSendBufferHelper.h>
 #include <corelib/HierarchyItem.h>
-#include <plugins/kinematic/Wrappers.h>
 #include <corelib/ThreadPool.h>
+#include <corelib/HierarchyDataItem.h>
 
 
 namespace IMU
@@ -31,32 +31,57 @@ namespace IMU
 		CLASS_DESCRIPTION("IMUCostume", "IMU Costume Data Source");
 
 	public:
-		//! Struktura opisuj¹ca konfiguracjê kostiumu
-		struct CostumeConfiguration
+
+		enum 
 		{
-			std::string name;						//! Nazwa
-			unsigned int id;						//! Identyfikator
-			unsigned int imusCount;					//! Ilosæ czujników
-			unsigned int jointsCount;				//! Ilosc stawow w modelu
+			AccIdx = 0,
+			GyroIdx = 1,
+			MagIdx = 2
 		};
 
-		//! Wyliczenie opisuj¹ce status danych kostiumu
-		enum CostumeDataStatus {
-			NODATA,	//! Inicjalny status kiedy jeszcze nic nie odebrano
-			OK,		//! Odebrano dane
-			ERROR	//! B³¹d odbioru danych
+		enum ConnectionStatus
+		{
+			ONLINE,
+			OFFLINE,
+			CONNECTION_PROBLEMS,
+			UNKNOWN
 		};
+
+		typedef threadingUtils::StreamT<imuCostume::ProtocolSendBufferHelper::Buffer> RawDataStream;
+
+		DEFINE_SMART_POINTERS(RawDataStream);
+
+		typedef threadingUtils::StreamT<imuCostume::CostumeCANopenIO::Data> CANopenFramesStream;
+
+		DEFINE_SMART_POINTERS(CANopenFramesStream);
+
+		typedef threadingUtils::IStreamT<imuCostume::Costume::Data> CostumeStream;
+
+		DEFINE_SMART_POINTERS(CostumeStream);
 
 	private:
 
-		typedef threadingUtils::StreamT<IMUData> RIMUStream;
-
-		DEFINE_SMART_POINTERS(RIMUStream);
-
-		struct CostumeRawData
+		struct SensorData
 		{
-			SkeletonDataStreamPtr skeletonDataStream;
-			std::vector<RIMUStreamPtr> imuDataStreams;
+			utils::shared_ptr<std::atomic<ConnectionStatus>> status;
+			utils::shared_ptr<IMUStream> dataStream;
+			std::vector<utils::shared_ptr<Vec3Stream>> vec3dStreams;
+			utils::shared_ptr<QuatStream> orientationStream;
+			std::list<utils::shared_ptr<ScalarStream>> scalarStreams;
+		};
+
+		struct CostumeData
+		{
+			imuCostume::Costume::SensorsConfiguration sensorsConfiguration;
+			utils::shared_ptr<imuCostume::CostumeRawIO> rawCostume;
+			utils::shared_ptr<std::atomic<ConnectionStatus>> status;
+			std::map<imuCostume::Costume::SensorID, SensorData> sensorsData;
+			RawDataStreamPtr rawDataStream;
+			CANopenFramesStreamPtr CANopenStream;	
+			CostumeStreamPtr costumeStream;
+
+			core::HierarchyDataItemPtr hierarchyRootItem;
+			core::VariantsList domainData;
 		};
 
 	public:
@@ -94,12 +119,15 @@ namespace IMU
 		//! \param offeredTypes Typy oferowane przez to Ÿród³o
 		virtual void getOfferedTypes(utils::TypeInfoList & offeredTypes) const;
 
+		const bool refreshCostumes();
+
 		const unsigned int costumesCout() const;
 
-		const CostumeConfiguration & costumeConfiguration(const unsigned int idx) const;
-
-		const CostumeDataStatus costumeDataStatus(const unsigned int idx) const;
-		const std::vector<CostumeDataStatus> costumesDataStatus() const;
+		const imuCostume::Costume::SensorsConfiguration & costumeConfiguration(const unsigned int idx) const;
+		const imuCostume::CostumeRawIO::CostumeAddress costumeAddress(const unsigned int idx) const;
+		const ConnectionStatus costumeStatus(const unsigned int idx) const;
+		const RawDataStreamPtr costumeRawDataStream(const unsigned int idx) const;
+		const core::VariantsList costumeData(const unsigned int idx) const;
 
 		void loadCostume(const unsigned int idx);
 		void unloadCostume(const unsigned int idx);
@@ -109,30 +137,18 @@ namespace IMU
 		void loadAllCostumes();
 		void unloadAllCostumes();
 
-		void connectCostiumes();
-
-		void disconnectCostiumes();
-
-		const bool connected() const;
-
-		void callibrateFirstPass(const unsigned int idx);
-		void callibrateSecondPass(const unsigned int idx);
-		void finalizeCalibration(const unsigned int idx);
-		const bool isCalibrated(const unsigned int idx) const;
-
-		static kinematic::SkeletonMappingSchemePtr createMappingScheme();
-
 	private:
+
+		static void configureCostume(CostumeData & cd);
+		static void refreshCostumeSensorsConfiguration(CostumeData & cd);
+
+		static std::string sensorParameterName(const unsigned int idx);
+		static std::string vectorParameterName(const unsigned int idx);
 
 		void refreshData();
 
 		void innerLoadCostume(const unsigned int idx);
-		void innerUnloadCostume(const unsigned int idx);
-
-		void addToUpdate(const unsigned int idx,
-			const CostumeRawData & rd);
-
-		void removeFromUpdate(const unsigned int idx);
+		void innerUnloadCostume(const unsigned int idx);		
 
 		static core::HierarchyItemPtr createRootItem();
 		static core::HierarchyItemPtr createStreamItem();
@@ -148,21 +164,9 @@ namespace IMU
 		void tryCreateStreamItem();
 		void tryCreateRecordedItem();
 
-		static const core::VariantsList generateCoreData(const CostumeRawData crd);
-
-		static const std::string imuName(const unsigned int idx);
-
-		static void extractAccelerometer(const IMUData & data, osg::Vec3 & ret);
-		static void extractGyroscope(const IMUData & data, osg::Vec3 & ret);
-		static void extractMagnetometer(const IMUData & data, osg::Vec3 & ret);
-
-		static void extractScalar(const osg::Vec3 & data, float & ret, const unsigned int idx);
-
 	private:
 		//! Czy odœwie¿amy dane
-		volatile bool refreshData_;
-		//! Czy po³¹czono ju¿ z kostiumami
-		bool connected_;
+		std::atomic<bool> refreshData_;
 		//! Obiekt synchronizuj¹cy
 		mutable std::recursive_mutex synch;
 		//! Obiekt synchronizuj¹cy aktualizacjê danych
@@ -171,21 +175,20 @@ namespace IMU
 		core::IMemoryDataManager * memoryDM;
 		//! Watek odswiezajacy dane
 		core::ThreadPool::Thread refreshThread;
-		//! Kostiumy
-		std::vector<CostumeConfiguration> costumesConfigurations;
-		//! Status danych
-		std::vector<CostumeDataStatus> costumesDataStatus_;
-		//! Mapowanie kostiumu do dostarczanych danych
-		std::map<unsigned int, core::VariantsList> coreData;
-		//! Mapowanie kostiumu do danych surowych
-		std::map<unsigned int, CostumeRawData> rawData;
 		//! Korzen drzewa dla analiz
 		core::HierarchyItemPtr root;
 		//! Dane strumieniowe
 		core::HierarchyItemPtr streamItems;
 		//! Dane nagrane
 		core::HierarchyItemPtr recordedItems;
+
+		std::map<std::string, CostumeData> costumesData;
 	};
 }
+
+DEFINE_WRAPPER(threadingUtils::IStreamT<imuCostume::ProtocolSendBufferHelper::Buffer>, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER_INHERITANCE(IMU::IMUCostumeDataSource::RawDataStream, threadingUtils::IStreamT<imuCostume::ProtocolSendBufferHelper::Buffer>);
+DEFINE_WRAPPER(IMU::IMUCostumeDataSource::CANopenFramesStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(IMU::IMUCostumeDataSource::CostumeStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
 
 #endif	//	HEADER_GUARD_IMU_COSTUME__DATASOURCE_H__

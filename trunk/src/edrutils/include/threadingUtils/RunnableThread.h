@@ -42,13 +42,15 @@ namespace threadingUtils
 		void run(F&& f, Args&&... arguments)
 		{
 			if (launched == true){
-				std::logic_error("Operation not permitted");
+				throw std::logic_error("Operation not permitted");
 			}
-			else{
-				thread = Thread([=]
-				{
-					CallPolicy::call(std::move(f), std::move(arguments)...);
-				});
+			else{				
+
+				std::function<void()> ff = std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...);
+
+				thread = Thread([=](){
+					CallPolicy::call(ff);
+					});
 				launched = true;
 			}
 		}
@@ -65,15 +67,25 @@ namespace threadingUtils
 		Thread thread;
 	};
 
-	template<typename Thread, typename CallPolicy = RawCallPolicy>
+	template<typename Thread, typename ThreadCallPolicy = RawCallPolicy, typename RunCallPolicy = RawCallPolicy>
 	class MultipleRunThread
 	{
 	private:
 
-		typedef MultipleRunThread<Thread, CallPolicy> MyMultipleRunThread;
+		typedef MultipleRunThread<Thread> MyMultipleRunThread;
 
 		struct SharedState
 		{
+			SharedState()
+			{
+
+			}
+
+			~SharedState()
+			{
+
+			}
+
 			std::atomic<bool> finalize;
 			std::mutex functionMutex;
 			std::condition_variable functionCondition;
@@ -85,7 +97,7 @@ namespace threadingUtils
 		MultipleRunThread() = default;
 		MultipleRunThread(MultipleRunThread&& Other)  : sharedState(std::move(Other.sharedState)), thread(std::move(Other.thread)) {}
 		MultipleRunThread(const MultipleRunThread&) = delete;
-		virtual ~MultipleRunThread() { tryFinalize(); }
+		virtual ~MultipleRunThread() { }
 
 
 		MultipleRunThread& operator=(MultipleRunThread&& Other) { sharedState = std::move(Other.sharedState); thread = std::move(Other.thread); }
@@ -103,22 +115,25 @@ namespace threadingUtils
 				sharedState = utils::make_shared<SharedState>();
 				sharedState->finalize = false;
 
-				thread = Thread([=]{
+				thread = Thread([](utils::shared_ptr<SharedState> sharedState){
 
-					while (sharedState->finalize == false){
-						std::unique_lock<std::mutex> lock(sharedState->functionMutex);
-						if (sharedState->finalize == true){
-							break;
-						}
-						sharedState->functionCondition.wait(lock);
-						if (sharedState->functionWrapper != nullptr){
-							auto fw = sharedState->functionWrapper;
-							sharedState->functionWrapper.reset();
+					ThreadCallPolicy::call([=]{
 
-							fw();
+						while (sharedState->finalize == false){
+							std::unique_lock<std::mutex> lock(sharedState->functionMutex);
+							if (sharedState->finalize == true){
+								break;
+							}
+							sharedState->functionCondition.wait(lock);
+							if (sharedState->functionWrapper != nullptr){
+								auto fw = sharedState->functionWrapper;
+								sharedState->functionWrapper.reset();
+
+								(*fw)();
+							}
 						}
-					}
-				});
+					});
+				}, sharedState);
 			}
 
 			std::future<result_type> ret;
@@ -130,9 +145,16 @@ namespace threadingUtils
 					throw std::logic_error("Operation not permitted");
 				}
 
-				std::packaged_task<result_type()> innerTask(std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...));
+				std::function<result_type()> ff = std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...);
+
+				auto l = [=]()->result_type
+				{
+					return RawCallPolicy::call(ff);
+				};
+
+				std::packaged_task<result_type()> innerTask(l);
 				ret = innerTask.get_future();
-				sharedState->functionWrapper.reset(new FunctionWrapper(std::move(innerTask), std::move(arguments)...));
+				sharedState->functionWrapper.reset(new FunctionWrapper(std::move(innerTask)));
 			}
 
 			sharedState->functionCondition.notify_one();
@@ -147,7 +169,7 @@ namespace threadingUtils
 
 		const bool joinable() const 
 		{
-			if (sharedState != nullptr && sharedState->finalize_ == true){
+			if (sharedState != nullptr && sharedState->finalize == true){
 				throw std::logic_error("Operation not permitted");
 			}
 

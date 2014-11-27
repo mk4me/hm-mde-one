@@ -9,6 +9,8 @@
 #define __HEADER_GUARD_CORELIB__THREADPOOL_H__
 
 #include <thread>
+#include <iostream>
+#include <utils/Macros.h>
 #include <threadingUtils/RunnableThread.h>
 #include <threadingUtils/InterruptiblePolicy.h>
 #include <threadingUtils/InterruptibleThreadPool.h>
@@ -119,13 +121,12 @@ namespace core
 			//! Destruktor
 			~Thread();
 
-			Thread& operator=(Thread&& Other) noexcept;
+			Thread& operator=(Thread&& Other) NOEXCEPT;
 			Thread& operator=(const Thread&) = delete;
 
 			template<typename F, class ...Args>
 			void run(F&& f, Args&& ...arguments)
-			{
-
+			{				
 				std::function<void()> ff = std::bind(utils::decay_copy(std::forward<F>(f)),
 					utils::decay_copy(std::forward<Args>(arguments))...);
 
@@ -136,11 +137,11 @@ namespace core
 				}, description);
 			}
 
-			void swap(Thread& Other) noexcept ;
-			const bool joinable() const noexcept ;
+			void swap(Thread& Other) NOEXCEPT ;
+			const bool joinable() const NOEXCEPT ;
 			void join();
 			void detach();
-			std::thread::id get_id() const noexcept ;
+			std::thread::id get_id() const NOEXCEPT ;
 			std::thread::native_handle_type native_handle();
 			void interrupt();
 			const bool interruptible() const;

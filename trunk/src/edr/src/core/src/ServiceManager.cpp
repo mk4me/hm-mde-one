@@ -31,6 +31,7 @@ void ServiceManager::finalizeServices()
 {
     for(auto it = servicesList.begin(); it != servicesList.end(); ++it){
         try{
+			CORE_LOG_DEBUG("ServiceManager: finalizing " << (*it)->name() << " service");
             (*it)->finalize();
             CORE_LOG_DEBUG("ServiceManager: finalized correctly " << (*it)->name() << " service");
         }

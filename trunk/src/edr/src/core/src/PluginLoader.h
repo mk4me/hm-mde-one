@@ -4,6 +4,7 @@
 #include <vector>
 #include "Plugin.h"
 #include <utils/SmartPtr.h>
+#include <mutex>
 
 // rev
 #ifdef WIN32
@@ -43,6 +44,7 @@ private:
     Plugins plugins;
     //! Ścieżki wyszukiwania.
     Paths paths;
+	mutable std::mutex sync;
 
 public:
     PluginLoader(const Filesystem::Path & pluginsPath);

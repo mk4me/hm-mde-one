@@ -44,6 +44,10 @@ namespace threadingUtils
 		typedef Queue<FunctionWrapper>::size_type size_type;
 
 	public:
+
+		StealingMultipleWorkQueuePolicy();
+
+		~StealingMultipleWorkQueuePolicy();
 		
 		void initializeThread();
 

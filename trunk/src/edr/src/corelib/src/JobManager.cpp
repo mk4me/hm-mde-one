@@ -13,9 +13,7 @@ void JobManager::logError(const std::string & message)
 
 void JobManager::setLog(LogPtr log)
 {
-	if (log != nullptr){
-		log_ = log;
-	}
+	log_ = log;
 }
 
 JobManager::JobManager(InnerJobManager * jm) : jm(jm)

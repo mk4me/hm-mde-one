@@ -1,43 +1,78 @@
 #include <imucostumelib/CostumeCANopenIO.h>
+#include <imucostumelib/CANopenSensor.h>
+#include <imucostumelib/ProtocolReadBufferHelper.h>
 #include <utils/Debug.h>
 #include <vector>
 
 using namespace imuCostume;
 
-const bool CostumeCANopenIO::send(const int8_t seqNumber, const Frame & canOpenFrame,
-	const uint8_t length, const unsigned int timeout, CostumeRawIO & costume)
+const bool CostumeCANopenIO::send(const uint8_t seqNumber, const void * data,
+	const uint16_t length, const uint16_t timeout, CostumeRawIO & costume)
 {
-	UTILS_ASSERT((length >= Frame::MinFrameSize && length <= Frame::MaxFrameSize), "Niepoprawny rozmowar ramki CANopen");
 	const auto totalLength = 2 + length;
-	std::vector<int8_t> dataToTransmit(totalLength, 0);
+	utils::scoped_ptr<uint8_t[]> dataToTransmit(new uint8_t[totalLength]);
 
 	// nag³ówek ramki - wymusza wys³anie reszty na CAN
-	dataToTransmit[0] = 0x01;
+	dataToTransmit[0] = 0x02;
 	// mój unikalny identyfikator - dostanê go w potwierdzeniu
 	dataToTransmit[1] = seqNumber;
 	//przepisuje ramkê CANopen
-	std::memcpy(dataToTransmit.data() + 2, canOpenFrame.structure.frame, length);
+	std::memcpy(dataToTransmit.get() + 2, data, length);
 
-	return costume.send(dataToTransmit.data(), totalLength, timeout);
+	return costume.send(dataToTransmit.get(), totalLength, timeout);	
 }
 
-const bool CostumeCANopenIO::receive(const int8_t seqNumber, Frame & canOpenFrame,
-	unsigned int & length, const unsigned int timeout, CostumeRawIO & costume)
+const bool CostumeCANopenIO::verifyReceiveConfirmation(const uint8_t seqNumber,
+	const void * data, const uint16_t length)
 {
-	CostumeRawIO::Frame localData = { 0 };
-	uint16_t localLength = 0;
+	const uint8_t * locFrame = static_cast<const uint8_t*>(data);
 
-	bool res = costume.receive(localData, localLength, timeout);
-
-	if (res == true && ((localLength < 2) || ((localLength - 2) > Frame::MaxFrameSize) ||
-		(localData[0] != CostumeRawIO::Frame::value_type(0x81)) || (localData[1] != CostumeRawIO::Frame::value_type(seqNumber)))){
-		res = false;
+	if (length > 1 && locFrame[0] == (uint8_t)0x82 &&
+		locFrame[1] == (uint8_t)seqNumber){
+		return true;
 	}
 
-	if (res == true){
-		length = localLength - 2;
-		std::memcpy(canOpenFrame.structure.frame, localData.data() + 2, length);
+	return false;
+}
+
+CostumeCANopenIO::Data CostumeCANopenIO::extractData(const void * data, const uint16_t length)
+{
+	Data ret;
+	ret.timestamp = 0;
+	bool wasTime = false;
+
+	auto rh = ProtocolReadBufferHelper::create(data, length);
+
+	//filtrujemy ramki CANopen i grupujemy je wg czujnika
+	for (unsigned int i = 0; i < rh.size(); ++i){		
+
+		auto pd = rh[i];
+		const auto cobID = pd.header().cobID();
+		auto msgid = cobID.value;
+
+		if (cobID.value == 0xFFF){
+			wasTime = true;
+			std::memcpy(&ret.timestamp, pd.data(), 4);
+			
+		} else
+		{
+			CANopenFrame frame = { 0 };
+			frame.structure.cobID = cobID;
+			std::memcpy(frame.structure.data.data(), pd.data(), pd.header().length());
+			ret.CANopenFrames.push_back(frame);
+		}
 	}
 
-	return res;
+	if (wasTime == false){
+		ret.CANopenFrames.resize(0);
+	}
+
+	return ret;
+}
+
+void CostumeCANopenIO::prepareCostumeConfiguration(ProtocolSendBufferHelper & sendBuffer)
+{	
+	CANopenFrame frame = { 0 };
+	CANopenSensor::formatNMTFrame(0x01, 0x00);
+	sendBuffer.add(frame, 4);	
 }

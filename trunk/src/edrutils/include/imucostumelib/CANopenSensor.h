@@ -9,72 +9,42 @@
 #define __HEADER_GUARD_IMU_COSTUME__CANOPENSENSOR_H__
 
 #include <imucostumelib/Export.h>
+#include <imucostumelib/CANopenFrame.h>
 #include <cstdint>
 #include <type_traits>
-//#include <set>
-#include <utils/SmartPtr.h>
-#include <utils/Debug.h>
 
 namespace imuCostume
 {
-	class CostumeRawIO;
-
+	//! Klasa opisuj¹ca generyczne urz¹dzenie CANopen
 	class IMUCOSTUME_EXPORT CANopenSensor
 	{
-	private:
-
-		class CANopenSensorImpl;
-
 	public:
 
-		struct IMUCOSTUME_EXPORT Buffer
-		{
-			friend class CANopenSensor;
-
-		private:
-
-			//! Konstruktor domyÅ›lny
-			Buffer();
-
-		public:
-
-			//! Destruktor niepolimorficzny
-			~Buffer();
-			//! \return Dane w buforze
-			const uint32_t data() const;
-
-		private:
-			//dane fo sformatowaniu gotowe do wysÅ‚ania
-			uint32_t data_;
-		};
-
-		/*
 		enum SpeedLevel
 		{
-		SpeedLevel0,	//! NajwyÅ¼sza prÄ™dkoÅ›Ä‡ komunikacji
-		SpeedLevel1,
-		SpeedLevel2,
-		SpeedLevel3,
-		SpeedLevel4,
-		SpeedLevel5,
-		SpeedLevel6,
-		SpeedLevel7,
-		SpeedLevel8,	//! NajniÅ¼sza prÄ™dkoÅ›Ä‡ komunikacji
-		};*/
-
-		enum IODataSize
-		{
-			Size1B,
-			Size2B,
-			Size4B
+			SpeedLevel0,	//! Najwy¿sza prêdkoœæ komunikacji
+			SpeedLevel1,
+			SpeedLevel2,
+			SpeedLevel3,
+			SpeedLevel4,
+			SpeedLevel5,
+			SpeedLevel6,
+			SpeedLevel7,
+			SpeedLevel8,	//! Najni¿sza prêdkoœæ komunikacji
 		};
 
-		enum OperationStatus
+		enum IDataSize
 		{
-			OPERATION_OK,
-			OPERATION_ERROR,
-			OPERATION_SEND_FAILURE,
-			OPERATION_RECEIVE_FAILURE
+			ISize1B = 0x4F,
+			ISize2B = 0x4B,
+			ISize4B = 0x43
+		};
+
+		enum ODataSize
+		{
+			OSize1B = 0x2F,
+			OSize2B = 0x2B,
+			OSize4B = 0x23
 		};
 
 		enum ErrorCode
@@ -179,83 +149,61 @@ namespace imuCostume
 		};
 
 	public:
-		//! \param costume Kostium ktÃ³rego czujnikiem chcemy sterowaÄ‡ i siÄ™ komunikowaÄ‡
-		//! \param id Identyfikator czujnika
-		//! \param timeout Maksymalny czas na wysÅ‚anie i odpowiedÅº wiadomoÅ›ci z kostiumu [ms]
-		CANopenSensor(CostumeRawIO * costume, const int8_t id, const unsigned int timeout = 300);
-		//! Destruktor
-		virtual ~CANopenSensor();
 
-		//! \return Timeout oczekiwania na odpowiedÅº z kostiumu
-		const unsigned int timeout() const;
+		//! \param messageID Identyfikator wiadomoœci NMT
+		//! \param nodeID Identyfikator wêz³a (0 - broadcast)
+		//! \return Sformatowana ramka CANopen
+		static const CANopenFrame formatNMTFrame(const uint8_t messageID,
+			const uint8_t nodeID = 0);
 
-		//LSS
-		/*
-		const OperationStatus select(const bool select);
-		static const OperationStatus select(const bool select, const std::set<int8_t> & ids, Costume * costume);
-		static const OperationStatus selectAll(const bool select, Costume * costume);
-		const OperationStatus setID(const int8_t id);
-		const OperationStatus setSpeedLevel(const SpeedLevel speedLevel);
-		*/
-		const OperationStatus saveConfiguration(ErrorCode & errorCode);
+		//! \param size Rozmiar danych do wysy³ki SDO w trybie krótkim		
+		//! \return Odpowiadaj¹ca wartoœc wyliczenia opisuj¹ca parametr d³ugoœci danych
+		static const ODataSize dataSize(const std::size_t size);
 
-		//NMT
-		const OperationStatus start();
-		const OperationStatus stop();
-		const OperationStatus prepare();
+		//! \param size Typ wyliczenia wielkœci danych do wysy³ki
+		//! \return Faktyczna iloœæ [B] do wysy³ki
+		static const std::size_t dataBytes(const ODataSize size);
 
-		const OperationStatus reset();
-		static const OperationStatus resetAllSensors(CostumeRawIO * costume, const unsigned int timeout, const unsigned int maxRetries);
-		static const OperationStatus synchronize(CostumeRawIO * costume, const unsigned int timeout, const unsigned int maxRetries);
-
-		const OperationStatus resetCommunication();
-
-		//SDO
+		//! \tparam T Typ który chcemy zapisaæ SDO w trybie krótkim
 		template<typename T>
-		const OperationStatus readSDO(const int16_t dictID, IODataSize & dataSize, T & value, ErrorCode & errorCode, const int8_t dictSubID = 0) const
+		//! \param nodeID Identyfikator wêz³a do któego maj¹ trafiæ dane
+		//! \param dictID Identyfikator obiektu danych
+		//! \param dictSubID Pod-identyfikator obiektu danych
+		//! \praram value Wartoœæ któr¹ wysy³amy
+		//! \return Sformatowana ramka danych
+		static const CANopenFrame formatExpeditedSDOWriteFrame(const uint8_t nodeID,
+			const uint16_t dictID, const uint8_t dictSubID, const T value)
 		{
-			Buffer buf;
-			auto ret = readSDO(dictID, dataSize, buf, errorCode, dictSubID);
-			if (ret == OPERATION_OK){
-				value = extractData<T>(buf);
-			}
+			static_assert(std::is_pod<T>::value, "Data is not POD");
+			static_assert(sizeof(T) < 5, "Data size exceeds 4B limit");
+			static_assert(sizeof(T) != 3, "Invalid data size");
 
-			return ret;
+			union{
+				T v;
+				uint32_t u;
+			} data;
+
+			data.v = value;
+
+			return formatExpeditedSDOWriteFrame(nodeID, dictID, dictSubID, data.u, dataSize(sizeof(T)));
 		}
+		
+		//! \param nodeID Identyfikator wêz³a do któego maj¹ trafiæ dane
+		//! \param dictID Identyfikator obiektu danych
+		//! \param dictSubID Pod-identyfikator obiektu danych
+		//! \praram value Wartoœæ któr¹ wysy³amy
+		//! \praram dataSize Faktyczny rozmiar do wysy³ki (mo¿na obc¹æ do wê¿szego lub rozszerzyæ)
+		//! \return Sformatowana ramka danych
+		static const CANopenFrame formatExpeditedSDOWriteFrame(const uint8_t nodeID,
+			const uint16_t dictID, const uint8_t dictSubID, const uint32_t value,
+			const ODataSize dataSize);
 
-		template<typename T>
-		const OperationStatus writeSDO(const int16_t dictID, const IODataSize dataSize, const T value, ErrorCode & errorCode, const int8_t dictSubID = 0)
-		{
-			return writeSDO(dictID, dataSize, formatData(value), errorCode, dictSubID);
-		}
-
-	private:
-
-		const OperationStatus readSDO(const int16_t dictID, IODataSize & dataSize, Buffer & data, ErrorCode & errorCode, const int8_t dictSubID = 0) const;
-		const OperationStatus writeSDO(const int16_t dictID, const IODataSize dataSize, const Buffer & data, ErrorCode & errorCode, const int8_t dictSubID = 0);
-
-		template<typename T>
-		static const Buffer formatData(const T value)
-		{
-			UTILS_STATIC_ASSERT((std::is_floating_point<T>::value | std::is_integral<T>::value), "Wrong parameter type - should be POD integral or floating point");
-			return formatIntegralData(value, std::is_integral<T>());
-		}
-
-		template<typename T>
-		static const T extractData(const Buffer buffer)
-		{
-			UTILS_STATIC_ASSERT((std::is_floating_point<T>::value | std::is_integral<T>::value), "Wrong parameter type - should be POD integral or floating point");
-			return (T)(extractData(buffer, std::is_integral<T>()));
-		}
-
-		static const Buffer formatIntegralData(const int32_t value, std::true_type);
-		static const Buffer formatIntegralData(const float value, std::false_type);
-		static const uint32_t extractIntegralData(const Buffer buffer, std::true_type);
-		static const float extractIntegralData(const Buffer buffer, std::false_type);
-
-	private:
-
-		utils::shared_ptr<CANopenSensorImpl> impl;
+		//! \param nodeID Identyfikator wêz³a z któego czytamy dane
+		//! \param dictID Identyfikator obiektu danych
+		//! \param dictSubID Pod-identyfikator obiektu danych
+		//! \return Sformatowana ramka z komend¹ do odczytu
+		static const CANopenFrame formatExpeditedSDOReadFrame(const uint8_t nodeID,
+			const uint16_t dictID, const uint8_t dictSubID);
 	};
 }
 

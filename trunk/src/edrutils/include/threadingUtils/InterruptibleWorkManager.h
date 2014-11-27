@@ -94,6 +94,16 @@ namespace threadingUtils
 			//! Struktura opisuj¹ca wspólny stan w¹tku i obiektu zarz¹dzaj¹cego jego prac¹ przy przetwarzaniu zleconych zadañ
 			struct SharedState
 			{
+				SharedState()
+				{
+
+				}
+
+				~SharedState()
+				{
+
+				}
+
 				//! Manager zadañ
 				InterruptibleWorkManager * workManager;
 				//! Czy w¹tek ma zakoñczyæ przetwarzanie zadañ
@@ -130,7 +140,10 @@ namespace threadingUtils
 			WorkExecutor(const WorkExecutor & Other) = delete;
 
 			//! Destruktor
-			~WorkExecutor() {}
+			~WorkExecutor()
+			{
+			
+			}
 
 			void finalize()
 			{
@@ -190,7 +203,7 @@ namespace threadingUtils
 			//! Metoda przetwarzaj¹ca zlecone zadania
 			static void run(utils::shared_ptr<SharedState> sharedState)
 			{
-				ThreadLocalWorkQueueController(sharedState->workManager->workQueue);
+				ThreadLocalWorkQueueController tlwqc(sharedState->workManager->workQueue);
 				while (sharedState->forceFinalize == false && sharedState->workManager->forceFinalize_ == false){
 					sharedState->workManager->runPendingTask();					
 				}
@@ -209,6 +222,16 @@ namespace threadingUtils
 
 		struct WorkSharedState
 		{
+			WorkSharedState()
+			{
+
+			}
+
+			~WorkSharedState()
+			{
+
+			}
+
 			std::promise<void*> interruptPrivateData;
 			utils::shared_ptr<bool> interrupt;
 		};

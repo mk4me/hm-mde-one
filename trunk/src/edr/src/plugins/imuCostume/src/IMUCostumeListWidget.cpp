@@ -33,23 +33,19 @@ IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 {
 	ui->setupUi(this);
 
-	ui->connectPushButton->setChecked(ds->connected());
-	ui->connectPushButton->setText(ds->connected() == true ? tr("Disconnect") : tr("Connect"));
+	ui->costumesTreeWidget->clear();
+	for (unsigned int i = 0; i < ds->costumesCout(); ++i){
+		auto ci = new QTreeWidgetItem;
+		const auto a = ds->costumeAddress(i);
+		ci->setText(0, QString::fromStdString(a.ip));
+		ci->setData(0, Qt::UserRole, i);
+		auto s = ds->costumeStatus(i);
+		ci->setText(1, QString("%1").arg(s));
+		ui->costumesTreeWidget->addTopLevelItem(ci);
+	}
 
-#ifndef _DEBUG
-	ui->loadDatFileButton->setVisible(false);
-#endif
-
-	const auto cid = core::UID::GenerateUniqueID("{E8B5DEB2-5C57-4323-937D-1FFD288B65B9}");
-	auto proto = plugin::getVisualizerManager()->getVisualizerPrototype(cid);
-	QHBoxLayout* bl = new QHBoxLayout();
-	static core::Visualizer* vis = proto->create();
-	core::VariantPtr wrapper = createFbxWrapper();
-
-	
-	bl->addWidget(vis->getOrCreateWidget());
-	ui->visualizerPlaceholder->setLayout(bl);
-	auto *serie = vis->createSerie(typeid(osg::PositionAttitudeTransform), wrapper);
+	connect(&refreshTimer, SIGNAL(timeout()), this, SLOT(refreshData()));
+	refreshTimer.start(100);
 }
 
 IMUCostumeWidget::~IMUCostumeWidget()
@@ -57,123 +53,22 @@ IMUCostumeWidget::~IMUCostumeWidget()
 	delete ui;
 }
 
-void IMUCostumeWidget::onCalibrate()
+void IMUCostumeWidget::onCostumeChange(QTreeWidgetItem * current, QTreeWidgetItem * previous)
 {
-	coreUI::CoreCursorChanger cc;
+	ui->sensorsTree->clear();
+	auto idx = ui->costumesTreeWidget->indexOfTopLevelItem(current);
 
-	auto ci = ui->costumesTreeWidget->currentItem();
+	if (idx < ds->costumesCout()){
+		auto cc = ds->costumeConfiguration(idx);
 
-	if(ci != nullptr){
-
-		IMUCostumeCalibrationWizard wizard(this);
-		auto ret = wizard.exec();
-		if (ret == QDialog::Accepted){
-			QMessageBox::information(this, tr("Costume connection problem"), tr("Could not connect costume - please retry and follow costume initialization instructions."));
-		}
-
-		return;
-
-		unsigned int idx = ci->data(0, Qt::UserRole).toUInt();
-
-		if(ds->isCalibrated(idx) == true &&
-			QMessageBox::information(this, tr("Calibration status"), tr("Selected Costume already calibrated. Do You want to re-calibrate it?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::No){
-
-			return;
-		}
-			
-
-		bool retry = false;
-
-		do {
-			retry = true;
-
-			QMessageBox::information(this, tr("Calibration - first step"), tr("Please stand still with Your hands along the body and press OK"), QMessageBox::Ok);
-
-			ds->callibrateFirstPass(idx);
-
-			unsigned int i = 2000;
-
-			while(--i > 0){				
-				std::this_thread::sleep_for(std::chrono::microseconds(100));
-				QCoreApplication::processEvents();
+		for (const auto & st : cc){
+			for (const auto sid : st.second){
+				auto sItem = new QTreeWidgetItem;
+				sItem->setText(0, QObject::tr("Sensor %1").arg(sid));
+				ui->sensorsTree->addTopLevelItem(sItem);
 			}
-
-			QApplication::beep();
-
-			QMessageBox::information(this, tr("Calibration - second step"), tr("Please stand in 'T' pose and press OK"), QMessageBox::Ok);
-
-			ds->callibrateSecondPass(idx);
-
-			i = 2000;
-
-			while(--i > 0){				
-				std::this_thread::sleep_for(std::chrono::microseconds(100));
-				QCoreApplication::processEvents();
-			}
-
-			ds->finalizeCalibration(idx);
-
-			if(ds->isCalibrated(idx) == false){
-
-				if(QMessageBox::question(this, tr("Costume calibration failed"), tr("Costume calibration failed. Would You like to retry calibration?"),
-					QMessageBox::Yes, QMessageBox::No) == QMessageBox::No){
-
-					retry = false;
-				}else{
-
-					QMessageBox::information(this, tr("Calibration - summary"), tr("Calibration failed for the given costume."), QMessageBox::Ok);
-
-				}
-
-			}else{
-
-				QMessageBox::information(this, tr("Calibration - summary"), tr("Calibration successful for the given costume."), QMessageBox::Ok);
-
-				retry = false;
-			}
-
-		}while(retry == true);
-
-	}else{
-		QMessageBox::warning(this, tr("Warning - no costume"), tr("No costume selected for configuration. Chose costume from the list and retry"), QMessageBox::Ok, QMessageBox::NoButton);
-	}
-}
-
-void IMUCostumeWidget::onConnect()
-{
-	coreUI::CoreCursorChanger cc;
-
-	ui->costumesTreeWidget->clear();
-
-	bool connected = ds->connected();
-
-	if(connected == true){
-		ds->disconnectCostiumes();
-	}else{
-		ds->connectCostiumes();
-	}
-
-	if(connected == false && connected == ds->connected()){
-
-		QMessageBox::information(this, tr("Costume connection problem"), tr("Could not connect costume - please retry and follow costume initialization instructions."));
-		return;
-	}
-
-	ui->connectPushButton->setText(ds->connected() == true ? tr("Disconnect") : tr("Connect"));
-
-	//teraz wype³niam kostiumami je¿eli s¹
-	auto s = ds->costumesCout();
-
-	if(s > 0){
-		for(unsigned int i = 0; i < s; ++i){
-
-			QTreeWidgetItem * lwi = new QTreeWidgetItem;
-			lwi->setText(1, QString::fromStdString(ds->costumeConfiguration(i).name));
-			lwi->setData(0, Qt::UserRole, i);
-
-			ui->costumesTreeWidget->addTopLevelItem(lwi);
 		}
-	}	
+	}
 }
 
 void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
@@ -229,13 +124,40 @@ void IMUCostumeWidget::onLoad()
 	const unsigned int idx = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).toUInt();
 
 	ds->loadCostume(idx);
+	auto data = ds->costumeData(idx);
+
+	if (data.empty() == false){
+
+		CostumeStreams cs;
+
+		for (auto & d : data){
+			if (d->data()->isSupported(typeid(threadingUtils::IStreamT<imuCostume::ProtocolSendBufferHelper::Buffer>)) == true){
+				cs.rawStream = d->get();
+				cs.rawStreamObserver.reset(new threadingUtils::ResetableStreamStatusObserver);
+				cs.rawStream->attachObserver(cs.rawStreamObserver);
+			}
+			else if (d->data()->isSupported(typeid(threadingUtils::IStreamT<imuCostume::Costume::Data>)) == true){
+				cs.costumeStream = d->get();
+				cs.costumeStreamObserver.reset(new threadingUtils::ResetableStreamStatusObserver);
+				cs.costumeStream->attachObserver(cs.costumeStreamObserver);
+			}
+		}
+
+		auto address = ds->costumeAddress(idx).ip;
+
+		costumeStreams[address] = cs;
+	}
 }
 
 void IMUCostumeWidget::onUnload()
 {
 	const unsigned int idx = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).toUInt();
 
+	auto address = ds->costumeAddress(idx).ip;
+
 	ds->unloadCostume(idx);
+
+	costumeStreams.erase(address);
 }
 
 void IMUCostumeWidget::onLoadAll()
@@ -260,171 +182,17 @@ void IMUCostumeWidget::onLoadDatFile()
     
 }
 
-osg::Geometry* createLine(osg::Vec3 a, osg::Vec3 b, osg::Vec4 color){
-
-	osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
-	vertices->push_back(a);
-	vertices->push_back(b);
-
-	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-	colors->push_back(color);
-
-	osg::Geometry* lineGeometry = new osg::Geometry;
-	lineGeometry->setVertexArray(vertices.get());
-	lineGeometry->setColorArray(colors);
-
-	lineGeometry->setColorBinding(osg::Geometry::BIND_OVERALL);
-
-	lineGeometry->addPrimitiveSet(new osg::DrawArrays(GL_LINES, 0, 2));
-	return lineGeometry;
-}
-
-osg::Geometry* createCoordinate(osg::Vec3 center, int size){
-
-	osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
-	vertices->push_back(center);
-	vertices->push_back(center + osg::Vec3(size, 0, 0));
-	vertices->push_back(center + osg::Vec3(0, size, 0));
-	vertices->push_back(center + osg::Vec3(0, 0, size));
-	osg::ref_ptr<osg::Vec4Array> color = new osg::Vec4Array;
-	color->push_back(osg::Vec4(1, 0, 0, 1));
-	color->push_back(osg::Vec4(0, 1, 0, 1));
-	color->push_back(osg::Vec4(0, 0, 1, 1));
-	osg::Geometry* lineGeometry = new osg::Geometry;
-	lineGeometry->setVertexArray(vertices.get());
-	lineGeometry->setColorArray(color);
-
-	lineGeometry->setColorBinding(osg::Geometry::BIND_PER_PRIMITIVE_SET);
-
-	lineGeometry->addPrimitiveSet(new osg::DrawArrays(GL_LINES, 0, 4));
-	return lineGeometry;
-}
-
-double scaleFactor = 1;
-void updateStickmanScheleton(osg::Group* ref, kinematic::JointConstPtr joint, osg::Vec3 currentPos, osg::Geode* parentNode) {
-	//getting joint translation:
-	osg::MatrixTransform* m = new osg::MatrixTransform;
-
-	osg::Geode* jointNode = new osg::Geode;
-	osg::Vec3 jointTrans = joint->direction*joint->length*scaleFactor;
-	osg::Vec3 jointPos = currentPos + jointTrans;
-
-	//joint
-	osg::ShapeDrawable* jointShape = new osg::ShapeDrawable;
-	//jointShape->setShape(new osg::Sphere(osg::Vec3(0,0,0), 4));
-	jointShape->setShape(new osg::Box(osg::Vec3(0, 0, 0), 2));
-	jointShape->setColor(osg::Vec4(0, 0.2, 1, 0.8));
-
-	//bone
-	osg::Geometry* bone = createLine(osg::Vec3(0, 0, 0), jointTrans, osg::Vec4(1, 1, 1, 1));
-	parentNode->addDrawable(bone);
-
-	//coordinate system:
-	int size = 15;
-	osg::Geometry* xAxis = createLine(osg::Vec3(0, 0, 0), osg::Vec3(size, 0, 0), osg::Vec4(1, 0, 0, 1));
-	osg::Geometry* yAxis = createLine(osg::Vec3(0, 0, 0), osg::Vec3(0, size, 0), osg::Vec4(0, 1, 0, 1));
-	osg::Geometry* zAxis = createLine(osg::Vec3(0, 0, 0), osg::Vec3(0, 0, size), osg::Vec4(0, 0, 1, 1));
-	/*jointNode->addDrawable(xAxis);
-	jointNode->addDrawable(yAxis);
-	jointNode->addDrawable(zAxis);*/
-
-
-
-	jointNode->addDrawable(jointShape);
-	m->addChild(jointNode);
-	m->setMatrix(osg::Matrix::translate(jointPos));
-	m->setName(joint->name);
-	ref->addChild(m);
-	for (int i = 0; i < joint->children.size(); ++i)
-		updateStickmanScheleton(ref, joint->children[i], jointPos, jointNode);
-}
-osg::PositionAttitudeTransform* createStickman(kinematic::SkeletalModelPtr modelBVH) {
-	osg::Group* ref = new osg::Group;
-	osg::PositionAttitudeTransform* sm = new osg::PositionAttitudeTransform;
-	osg::Geode* root = new osg::Geode;
-	osg::ShapeDrawable* rootShape = new osg::ShapeDrawable;
-	rootShape->setShape(new osg::Sphere(osg::Vec3(0, 0, 0), 2));
-	rootShape->setColor(osg::Vec4(0.2, 1, 0.2, 0.8));
-	root->addDrawable(rootShape);
-	osg::MatrixTransform* m = new osg::MatrixTransform;
-	m->addChild(root);
-	m->setName("root");
-	m->setMatrix(osg::Matrix::translate(osg::Vec3(0, 0, 0)));
-	ref->addChild(m);
-
-	osg::LineWidth* linewidth = new osg::LineWidth();
-	linewidth->setWidth(5.0f);
-	osg::StateSet* stateSet = ref->getOrCreateStateSet();
-	stateSet->setAttributeAndModes(linewidth,	osg::StateAttribute::ON);
-
-	updateStickmanScheleton(ref, modelBVH->getJointByName("root"), osg::Vec3(0, 0, 0), root);
-	sm->addChild(ref);
-	return sm;
-}
-
-
-core::VariantPtr IMUCostumeWidget::createFbxWrapper()
-{
-	kinematic::SkeletalModelPtr modelBVH = utils::make_shared<kinematic::SkeletalModel>();
-	kinematic::SkeletalDataPtr data = utils::make_shared<kinematic::SkeletalData>();
-	kinematic::BvhParser parser;
-	std::string bvhPath = (plugin::getPaths()->getResourcesPath() / "imu3d" / "imu_sk.bvh").string();
-	
-	parser.parse(modelBVH, data, bvhPath);
-
-	osg::Vec3 modelPos(0, 0, -5);
-	osg::PositionAttitudeTransform* BVHStickman = createStickman(modelBVH);
-
-	size_t id = 0;
-	size_t jointsCount = data->getFrames().operator[](0)->jointsData.size();
-	std::string fbxPath = (plugin::getPaths()->getResourcesPath() / "imu3d" /"imu_mesh.FBX").string();
-	osg::Node* model = osgDB::readNodeFile(fbxPath);
-
-	//FbxStickSolver fbxSticlSolver(model);
-	//FbxSolver4 fbxSolver(model);
-	osg::PositionAttitudeTransform* paModel = new osg::PositionAttitudeTransform;
-
-	osg::PolygonMode * polygonMode = new osg::PolygonMode;
-
-	polygonMode->setMode(osg::PolygonMode::Face::FRONT_AND_BACK, osg::PolygonMode::Mode::LINE);
-	osg::StateSet* stateSet = paModel->getOrCreateStateSet();
-	stateSet->setAttributeAndModes(polygonMode, osg::StateAttribute::Values::PROTECTED | osg::StateAttribute::ON);
-	paModel->setStateSet(stateSet);
-	paModel->addChild(model);
-	paModel->setPosition(osg::Vec3(0, 0, 0));
-	BVHStickman->setPosition(osg::Vec3(0, 0, 35));
-	paModel->setAttitude(osg::Quat(3.14 / 2, osg::Vec3(1, 0, 0), 0, osg::Vec3(0, 1, 0), 0, osg::Vec3(0, 0, 1)));
-	BVHStickman->setAttitude(osg::Quat(3.14 / 2, osg::Vec3(1, 0, 0), 0, osg::Vec3(0, 1, 0), 0, osg::Vec3(0, 0, 1)));
-
-	//auto bonem = createBoneMap(model);
-
-
-	osg::Group* rootF = new osg::Group;
-
-	auto fbxWrapper = core::Variant::create<osg::PositionAttitudeTransform>();
-	osg::ref_ptr<osg::PositionAttitudeTransform> root = new osg::PositionAttitudeTransform;
-	root->addChild(paModel);
-	root->addChild(BVHStickman);
-	root->setScale(osg::Vec3(0.03f, 0.03f, 0.03f));
-	fbxWrapper->set(root);
-
-	return fbxWrapper;
-
-}
-
 void IMUCostumeWidget::testCommunication()
 {
 	try{
-		std::auto_ptr<imuCostume::CostumeRawIO> rawCostume(new imuCostume::CostumeRawIO("192.168.1.173"));
-		std::auto_ptr<imuCostume::Costume> costume(new imuCostume::Costume(rawCostume.get()));
-		auto data = costume->read(300);
-		imuCostume::CANopenSensor canSensor(rawCostume.get(), 1, 300);
-		imuCostume::CANopenSensor::ErrorCode error = imuCostume::CANopenSensor::NO_ERROR;
-		auto ret1 = canSensor.writeSDO(imuCostume::IMUSensor::CONFIGURATION, imuCostume::CANopenSensor::Size1B, 1, error, imuCostume::IMUSensor::CONFIGURATION_SOFT_IRON_CAL_ENABLE);
-		auto ret2 = canSensor.writeSDO(imuCostume::IMUSensor::CONFIGURATION, imuCostume::CANopenSensor::Size1B, 2, error, imuCostume::IMUSensor::CONFIGURATION_SOFT_IRON_CAL_ENABLE);
-		auto ret3 = canSensor.saveConfiguration(error);
-		bool wait = true;
-		wait = false;
+
+		auto costumeList = imuCostume::CostumeRawIO::listAvailableCostumes();
+
+		if (costumeList.empty() == false){
+			auto costumeAddress = costumeList.front();
+
+			std::unique_ptr<imuCostume::CostumeRawIO> rawCostume(new imuCostume::CostumeRawIO(costumeAddress.ip));
+		}
 	}
 	catch (std::exception & e){
 		std::string errorcode = e.what();
@@ -433,5 +201,97 @@ void IMUCostumeWidget::testCommunication()
 	catch (...){
 		std::string errorcode = "unknown error";
 		errorcode += "_";
+	}
+}
+
+void IMUCostumeWidget::refreshData()
+{
+	QString message;
+
+	bool change = false;
+
+	for (const auto & cd : costumeStreams){
+		message += "<B>Costume " + QString::fromStdString(cd.first) + "</B><BR>";
+
+		if (cd.second.rawStreamObserver->modified() == true){
+			change = true;
+			imuCostume::ProtocolSendBufferHelper::Buffer buffer;
+			cd.second.rawStream->data(buffer);
+			message += QString("<U>Raw data:</U><BR><UL><LI>Length: %1</LI><LI>Data:<BR>").arg(buffer.length);
+			uint8_t * c = buffer.buffer.get();
+			for (unsigned int i = 0; i < buffer.length; ++i){				
+				message += QString("%1").arg(*c++, 2, 16, QLatin1Char('0'));
+			}
+			message += "<BR></LI></UL><BR>";
+
+			change = true;
+		}
+
+		if (cd.second.costumeStreamObserver->modified() == true){
+			change = true;
+			imuCostume::Costume::Data data;
+			cd.second.costumeStream->data(data);
+			message += QString("<U>Unpacked costume data:</U><UL><LI>Timestamp: %1</LI><LI>Data:<UL>").arg(data.timestamp);
+
+			if (data.sensorsData.empty() == true){
+				message += "<LI>No data</LI>";
+			}
+			else{
+				for (const auto & sd : data.sensorsData){
+					message += QString("<LI>Sensor %1:<UL><LI>Type: %2</LI>").arg(sd->id()).arg(sd->type());
+
+					auto imuData = utils::dynamic_pointer_cast<const imuCostume::Costume::IMUSensor>(sd);
+					if (imuData == nullptr){
+						message += "<LI>No data or unknown data</LI>";
+					}
+					else{
+						message += QString("<LI>Status: %1</LI><LI>Accelerometer: ").arg(imuData->dataStatus());
+						if (imuData->dataStatus() & imuCostume::Costume::IMUSensor::ACC_DATA){
+							message += QString("[%1, %2, %3]").arg(imuData->accelerometer().x()).arg(imuData->accelerometer().y()).arg(imuData->accelerometer().z());
+						}
+						else{
+							message += "No data";
+						}
+						message += "</LI>";
+
+						message += QString("<LI>Gyroscope: ");
+						if (imuData->dataStatus() & imuCostume::Costume::IMUSensor::GYRO_DATA){
+							message += QString("[%1, %2, %3]").arg(imuData->gyroscope().x()).arg(imuData->gyroscope().y()).arg(imuData->gyroscope().z());
+						}
+						else{
+							message += "No data";
+						}
+						message += "</LI>";
+
+						message += QString("<LI>Magnetometer: ");
+						if (imuData->dataStatus() & imuCostume::Costume::IMUSensor::MAG_DATA){
+							message += QString("[%1, %2, %3]").arg(imuData->magnetometer().x()).arg(imuData->magnetometer().y()).arg(imuData->magnetometer().z());
+						}
+						else{
+							message += "No data";
+						}
+						message += "</LI>";
+
+						message += QString("<LI>Orientation: ");
+						if (imuData->dataStatus() & imuCostume::Costume::IMUSensor::ORIENT_DATA){
+							message += QString("[(%1, %2, %3), %4]").arg(imuData->orientation().x()).arg(imuData->orientation().y()).arg(imuData->orientation().z()).arg(imuData->orientation().w());
+						}
+						else{
+							message += "No data";
+						}
+						message += "</LI></UL></LI>";
+					}
+				}
+			}
+
+			message += "</UL></LI></UL>";
+		}
+	}
+
+	if (change == true){
+		ui->textEdit->setText(message);
+	}
+	else{
+		ui->textEdit->setText("No data");
 	}
 }

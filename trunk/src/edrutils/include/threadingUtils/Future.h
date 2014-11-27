@@ -9,25 +9,27 @@
 #define __HEADER_GUARD_THREADINGUTILS__FUTURE_H__
 
 #include <threadingUtils/Macros.h>
-#include <utils/SmartPtr.h>
+#include <memory>
 #include <future>
 
 #ifdef FIX_VOID_RET_PACKAGED_TASK
 
 namespace std
 {
+
+	//! Specjalizacja poprawiaj¹ca b³¹d implementacji dla VS
 	template<class... _ArgTypes>
 	class packaged_task < void(_ArgTypes...) >
 	{
 		promise<void> _my_promise;
-		utils::shared_ptr<function<void(_ArgTypes...)>> _my_func;
+		shared_ptr<function<void(_ArgTypes...)>> _my_func;
 
 	public:
 		packaged_task() {}
 
 		template<class _Fty2>
 		explicit packaged_task(_Fty2&& _Fnarg)
-			: _my_func(utils::make_shared<function<void(_ArgTypes...)>>(_Fnarg)) {
+			: _my_func(make_shared<function<void(_ArgTypes...)>>(_Fnarg)) {
 		}
 
 		packaged_task(packaged_task&& _Other)

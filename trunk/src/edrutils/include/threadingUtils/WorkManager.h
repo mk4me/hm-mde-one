@@ -155,7 +155,7 @@ namespace threadingUtils {
 			//! Metoda przetwarzaj¹ca zlecone zadania
 			static void run(std::shared_ptr<SharedState> sharedState)
 			{
-				LocalWorkQueueGuard(sharedState->workManager->workQueue);
+				LocalWorkQueueGuard lqqg(sharedState->workManager->workQueue);
 				while (sharedState->forceFinalize == false && sharedState->workManager->forceFinalize == false){					
 					sharedState->workManager->runPendingTask();
 				}				
@@ -183,7 +183,10 @@ namespace threadingUtils {
 	public:
 
 		//! Konstruktor domyœlny
-		WorkManager() = default;
+		WorkManager()
+		{
+
+		}
 		//! Destruktor
 		~WorkManager()
 		{

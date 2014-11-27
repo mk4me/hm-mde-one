@@ -10,7 +10,6 @@
 #include <corelib/HierarchyHelper.h>
 #include <coreui/HierarchyTreeModel.h>
 #include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
-#include <plugins/newVdf/NewVdfService.h>
 #include <coreui/CoreTitleBar.h>
 #include <QtWidgets/QMenu>
 #include <coreui/ContextAutoPlacer.h>

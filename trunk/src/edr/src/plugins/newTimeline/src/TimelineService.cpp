@@ -20,6 +20,9 @@ TimelineService::~TimelineService()
  void TimelineService::finalize()
  {
      setPlaying(false);
+	 if (thread.joinable() == true){
+		 thread.join();
+	 }
  }
 
 void TimelineService::setChannelTooltip(const std::string & path, const std::string & tooltip)

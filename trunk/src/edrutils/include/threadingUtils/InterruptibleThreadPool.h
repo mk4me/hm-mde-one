@@ -45,6 +45,23 @@ namespace threadingUtils
 
 			typedef InterruptPolicy InterruptPolicyType;
 
+		private:
+
+			void finalize()
+			{
+				if (joinable() == true){
+					join();
+				}
+
+				if (threadPool != nullptr){
+					threadPool->tryReturn(thread);
+				}
+
+				if (thread.joinable() == true){
+					thread.join();
+				}
+			}
+
 		public:
 
 			//! \param threadPool Pula w¹tków do której nale¿a³ pierwotnie w¹tek
@@ -80,20 +97,10 @@ namespace threadingUtils
 			//! Destruktor
 			~Thread()
 			{
-				if (joinable() == true){
-					join();
-				}
-
-				if (threadPool != nullptr){
-					threadPool->tryReturn(thread);
-				}
-
-				if (thread.joinable() == true){
-					thread.join();
-				}
+				finalize();
 			}
 
-			Thread& operator=(Thread&& Other) { threadPool = std::move(Other.threadPool); Other.threadPool = nullptr; thread = std::move(Other.thread); futureWrapper = std::move(Other.futureWrapper); return *this; }
+			Thread& operator=(Thread&& Other) { finalize(); threadPool = std::move(Other.threadPool); Other.threadPool = nullptr; thread = std::move(Other.thread); futureWrapper = std::move(Other.futureWrapper); return *this; }
 			Thread& operator=(const Thread&) = delete;
 
 			template<typename F, class ...Args>
@@ -142,7 +149,6 @@ namespace threadingUtils
 		//! Desturktor
 		~InterruptibleThreadPool()
 		{
-			std::lock_guard<std::mutex> lock(mutex);
 			UTILS_ASSERT((threadsCount_ == 0), "ThreadPool finished while some threads are still alive");
 			for (auto & t : innerThreads){
 				if (t.joinable() == true){
@@ -197,6 +203,12 @@ namespace threadingUtils
 		const size_type minThreads() const { return minThreads_; }
 		//! \return Iloœæ aktualnie zajêtych w¹tków
 		const size_type threadsCount() const { return threadsCount_; }
+		//! \return Iloœæ w¹tków w cache
+		const size_type cachedThreadsCount() const
+		{
+			std::lock_guard<std::mutex> lock(mutex);
+			return innerThreads.size();
+		}
 		//! \return Nowy w¹tek		
 		Thread get()
 		{
@@ -224,7 +236,7 @@ namespace threadingUtils
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
-			if (exact == true && groupSize + threadsCount_ >= maxThreads_){
+			if (exact == true && groupSize + threadsCount_ > maxThreads_){
 				throw std::runtime_error("ThreadPool limited resources");
 			}
 
@@ -262,7 +274,7 @@ namespace threadingUtils
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			detach();
-			if (threadsCount_ < minThreads_){
+			if (threadsCount_ < minThreads_ && innerThread.joinable() == true){
 				innerThreads.push_back(std::move(innerThread));
 			}
 		}
@@ -277,7 +289,7 @@ namespace threadingUtils
 		//! W¹tki wielokrotnego uruchamiania czekaj¹ce na ponowne wyko¿ystanie
 		InnerThreadsList innerThreads;
 		//! Obiekt synchronizuj¹cy pobieraj¹cych
-		std::mutex mutex;
+		mutable std::mutex mutex;
 	};
 }
 

@@ -59,6 +59,15 @@ namespace utils {
 	using std::const_pointer_cast;
 	using std::make_shared;
 
+	template< typename T >
+	struct array_deleter
+	{
+		void operator ()(T const * p)
+		{
+			delete[] p;
+		}
+	};
+
 #endif
 
 	////////////////////////////////////////////////////////////////////////////////

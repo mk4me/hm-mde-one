@@ -1,12 +1,12 @@
 #include "CorePCH.h"
 
-
 #include <corelib/Version.h>
 #include "PluginLoader.h"
 #include <corelib/IPlugin.h>
 #include <corelib/PluginCommon.h>
 #include "PluginApplication.h"
 #include "ApplicationCommon.h"
+
 #include <regex>
 
 #if defined(__WIN32__)
@@ -74,16 +74,41 @@ void PluginLoader::load()
 	static const std::regex pluginFilter("libplugin_.*\\.so");
 #endif
 
+	std::list<core::JobManager::Job<void>> jobsList;
+
+	auto jm = core::getJobManager();
+
 	for(auto pathIT = paths.begin(); pathIT != paths.end(); ++pathIT) {
-		auto localFiles = core::Filesystem::listFiles(*pathIT, true);
 
-		for(auto fileIT = localFiles.begin(); fileIT != localFiles.end(); ++fileIT){
+		jobsList.push_back(jm->create("core", "Plugin loader", [this, jm](core::Filesystem::Path path){
 
-			// Skip if no match
-			if( !std::regex_match( (*fileIT).leaf().string(), pluginFilter) ) continue;
+			auto localFiles = core::Filesystem::listFiles(path, true);
+			std::list<core::JobManager::Job<bool>> jobsList;
 
-			addPlugIn(*fileIT);
-		}
+			for (auto fileIT = localFiles.begin(); fileIT != localFiles.end(); ++fileIT){
+
+				// Skip if no match
+				if (!std::regex_match((*fileIT).leaf().string(), pluginFilter)) continue;
+				
+				jobsList.push_back(jm->create("core", "Plugin loader", &PluginLoader::addPlugIn, this, *fileIT));
+			}
+
+			for (auto & job : jobsList){
+				job.start();
+			}
+
+			for (auto & job : jobsList){
+				job.wait();
+			}
+		}, *pathIT));
+	}
+
+	for (auto & job : jobsList){
+		job.start();
+	}
+
+	for (auto & job : jobsList){
+		job.wait();
 	}
 }
 
@@ -212,6 +237,9 @@ bool PluginLoader::onAddPlugin( PluginPtr plugin, HMODULE library, Plugin::Initi
 
     bool pluginIDFound = false;
     core::PluginPtr collidingPlugin;
+
+	std::lock_guard<std::mutex> lock(sync);
+
     //szukamy pluginu o podanym ID - jeśli nie ma ladujemy, w przeciwnym wypadku info i nie dodajemy
     for(auto it = plugins.begin(); it != plugins.end(); ++it){
         if( (*it).plugin->ID() == pData.plugin->ID()){
