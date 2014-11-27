@@ -33,9 +33,9 @@
 
 using namespace dicom;
 
-LayeredImageVisualizer::LayeredImageVisualizer() : currentTrialID(-1)
+LayeredImageVisualizer::LayeredImageVisualizer() : currentTrialID(-1), mainWidget(nullptr)
 {
-	mainWidget = new LayeredImageVisualizerView(this);
+	
 	currentSerie = -1;
 }
 
@@ -255,6 +255,9 @@ plugin::IVisualizer::ISerie * dicom::LayeredImageVisualizer::getActiveSerie()
 
 QWidget* LayeredImageVisualizer::createWidget()
 {
+	if (mainWidget == nullptr){
+		mainWidget = new LayeredImageVisualizerView(this);
+	}
 	return mainWidget;
 }
 

@@ -40,7 +40,6 @@ HMDBService::HMDBService()
 
 HMDBService::~HMDBService()
 {
-	finalize();
 	curl_global_cleanup();
 }
 

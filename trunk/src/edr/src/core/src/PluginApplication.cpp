@@ -16,6 +16,11 @@ PluginApplication::PluginApplication(const std::string & pluginName)
 
 }
 
+PluginApplication::~PluginApplication()
+{
+
+}
+
 IPath * PluginApplication::paths()
 {
 	return path_.get();
@@ -89,6 +94,16 @@ IApplicationDescription * PluginApplication::description()
 ILanguagesManager * PluginApplication::languagesManager()
 {
 	return getLanguageManager();
+}
+
+MainViewApplication::MainViewApplication()
+{
+
+}
+
+MainViewApplication::~MainViewApplication()
+{
+
 }
 
 IApplicationDescription * MainViewApplication::description()

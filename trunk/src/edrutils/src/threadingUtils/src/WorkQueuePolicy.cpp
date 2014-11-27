@@ -4,12 +4,12 @@ using namespace threadingUtils;
 
 StealingMultipleWorkQueuePolicy::StealingMultipleWorkQueuePolicy()
 {
-	initializeThread();
+	//initializeThread();
 }
 
 StealingMultipleWorkQueuePolicy::~StealingMultipleWorkQueuePolicy()
 {
-	deinitializeThread();
+	//deinitializeThread();
 }
 			
 void StealingMultipleWorkQueuePolicy::initializeThread()

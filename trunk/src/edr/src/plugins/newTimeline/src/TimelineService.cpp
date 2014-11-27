@@ -5,10 +5,10 @@
 #include "TimelineService.h"
 #include "TimelineWidget.h"
 
-TimelineService::TimelineService() : controller(new timeline::Controller())
+TimelineService::TimelineService() : controller(new timeline::Controller()),
+	widget(nullptr)
 {
 	thread = std::move(plugin::getThreadPool()->get("Timeline Service", "Timeline management"));
-    widget = new TimelineWidget(controller);
 }
 
 
@@ -67,6 +67,9 @@ const TimelineService::UIChannelAction & TimelineService::getOnChannelRemove() c
   
  QWidget* TimelineService::getWidget()
  {
+	 if (widget == nullptr){
+		 widget = new TimelineWidget(controller);
+	 }
      return widget;
  }
 

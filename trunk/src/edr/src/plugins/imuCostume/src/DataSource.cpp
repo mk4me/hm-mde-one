@@ -89,6 +89,8 @@ void IMUCostumeDataSource::finalize()
 	if (refreshThread.joinable() == true){
 		refreshThread.join();
 	}
+
+	std::map<std::string, CostumeData>().swap(costumesData);
 }
 
 void IMUCostumeDataSource::update(double deltaTime)

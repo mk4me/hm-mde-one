@@ -187,7 +187,7 @@ namespace threadingUtils
 
 		InterruptibleFuture(MyFuture && future, std::future<void*> && interruptPrivateData,
 		utils::shared_ptr<bool> interruptFlag) : future(std::move(future)),
-		InterruptibleFutureHelper<InterruptiblePolicy>(interruptPrivateData, interruptFlag)
+		InterruptibleFutureHelper<InterruptiblePolicy>(std::move(interruptPrivateData), interruptFlag)
 		{
 
 		}	

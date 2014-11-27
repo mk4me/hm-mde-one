@@ -37,23 +37,25 @@ void PythonService::init( core::ISourceManager * sourceManager, core::IVisualize
 	bridge = utils::make_shared<MdeBridge>();
 	bridge->setManagers(sourceManager, visualizerManager, memoryDataManager, streamDataManager, fileDataManager);
 	logic = utils::make_shared<PythonLogic>(bridge);
-	console = new python::PythonConsole(logic);
-
-	editor = PythonEditor::createPythonEditor();
-	QList<QAction*> actions;
-
-	coreUI::CoreAction*  run = new coreUI::CoreAction(tr("Run"), QIcon(":/newVdf/icons/run.png"), tr("Run"), this, coreUI::CoreTitleBar::Left);
-	connect(run, SIGNAL(triggered()), this, SLOT(runScript()));
-	actions.push_back(run);
-
-	editor->addActions(actions);
-	QString text("print \"Hello world\"\nresult = 5 * 4");
-	editor->setPlainText(text);
-
 }
 
 QWidget* PythonService::getWidget( )
 {
+	if (editor == nullptr){
+		console = new python::PythonConsole(logic);
+
+		editor = PythonEditor::createPythonEditor();
+		QList<QAction*> actions;
+
+		coreUI::CoreAction*  run = new coreUI::CoreAction(tr("Run"), QIcon(":/newVdf/icons/run.png"), tr("Run"), this, coreUI::CoreTitleBar::Left);
+		connect(run, SIGNAL(triggered()), this, SLOT(runScript()));
+		actions.push_back(run);
+
+		editor->addActions(actions);
+		QString text("print \"Hello world\"\nresult = 5 * 4");
+		editor->setPlainText(text);
+	}
+
     return editor;
 }
 

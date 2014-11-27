@@ -24,6 +24,7 @@ class PluginApplication : public IApplication
 public:
 
 	PluginApplication(const std::string & pluginName);
+	virtual ~PluginApplication();
 
 	//! \return Opis aplikacji
 	IApplicationDescription * description();
@@ -65,6 +66,10 @@ private:
 class MainViewApplication : public IApplication
 {
 public:
+
+	MainViewApplication();
+	virtual ~MainViewApplication();
+
 	//! \return Opis aplikacji
 	virtual IApplicationDescription * description();
 	//! \return Manager translacji aplikacji - pozwala zmieniaæ jêzyk

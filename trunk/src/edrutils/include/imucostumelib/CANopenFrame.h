@@ -18,20 +18,23 @@ namespace imuCostume
 	union CANopenFrame
 	{
 	public:
-		//! Minimalny rozmiar ramki [B]
-		static const uint8_t MinSize = 2;
-		//! Maksymalny rozmiar ramki [B]
-		static const uint8_t MaxSize = 10;
-		//! Rozmiar pola identyfokatora wiadomoœci [B]
-		static const uint8_t COBIDSize = 2;
-		//! Maxymalny rozmiar pola danych [B]
-		static const uint8_t MaxDataSize = 8;
+
+		struct SizeLimits {
+			//! Minimalny rozmiar ramki [B]
+			static const uint8_t MinSize = 2;
+			//! Maksymalny rozmiar ramki [B]
+			static const uint8_t MaxSize = 10;
+			//! Rozmiar pola identyfokatora wiadomoœci [B]
+			static const uint8_t COBIDSize = 2;
+			//! Maxymalny rozmiar pola danych [B]
+			static const uint8_t MaxDataSize = 8;
+		};
 
 	public:
 
 		//! Typ opisuj¹cy sekcjê danych protoko³u komunikacyjnego
-		typedef std::array<uint8_t, MaxSize> Buffer;
-		typedef std::array<uint8_t, MaxDataSize> Data;
+		typedef std::array<uint8_t, SizeLimits::MaxSize> Buffer;
+		typedef std::array<uint8_t, SizeLimits::MaxDataSize> Data;
 
 		//! Identyfikator wiadomoœci
 		union COBID
@@ -39,7 +42,7 @@ namespace imuCostume
 			//! Ca³y identyfikator
 			uint16_t value;
 			//! Identyfikator rozdzielony na poszczególne bajty
-			std::array<uint8_t, 2> buffer;
+			std::array<uint8_t, SizeLimits::COBIDSize> buffer;
 			//! Identyfikator funkcji
 			inline const uint8_t functionID() const { return (buffer[1] >> 7) & 0x0F; };
 			//! Identyfikator wêz³a

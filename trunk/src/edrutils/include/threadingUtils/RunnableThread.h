@@ -119,12 +119,17 @@ namespace threadingUtils
 
 					ThreadCallPolicy::call([=]{
 
-						while (sharedState->finalize == false){
+						while (true){
 							std::unique_lock<std::mutex> lock(sharedState->functionMutex);
+
+							while (sharedState->functionCondition.wait_for(lock,
+								std::chrono::milliseconds(100),
+								[=]() { return (sharedState->functionWrapper != nullptr) || (sharedState->finalize == true); }) == false) {}
+
 							if (sharedState->finalize == true){
 								break;
 							}
-							sharedState->functionCondition.wait(lock);
+
 							if (sharedState->functionWrapper != nullptr){
 								auto fw = sharedState->functionWrapper;
 								sharedState->functionWrapper.reset();
@@ -196,10 +201,7 @@ namespace threadingUtils
 		void tryFinalize()
 		{
 			if (sharedState != nullptr){
-				{
-					std::lock_guard<std::mutex> lock(sharedState->functionMutex);
-					sharedState->finalize = true;
-				}
+				sharedState->finalize = true;
 				sharedState->functionCondition.notify_one();
 			}
 		}

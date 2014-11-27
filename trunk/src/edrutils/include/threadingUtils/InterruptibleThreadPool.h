@@ -25,7 +25,7 @@ namespace threadingUtils
 	{
 	public:
 		//! Typ w¹tku wielokrotnego uruchamiania
-		typedef InterruptibleMultipleRunThread<RunnableThread, CallPolicy, InterruptHandlingPolicy, InterruptPolicy> InnerThreadType;
+		typedef InterruptibleMultipleRunThread<RunnableThread, CallPolicy, CallPolicy, InterruptHandlingPolicy, InterruptPolicy> InnerThreadType;
 
 		//! Typ listy w¹tków wielokrotnego uruchamiania
 		typedef std::list<InnerThreadType> InnerThreadsList;

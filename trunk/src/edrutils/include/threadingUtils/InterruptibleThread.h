@@ -92,12 +92,12 @@ namespace threadingUtils
 		utils::shared_ptr<SharedState> sharedState;
 	};
 
-	template<typename RunnableThread, typename CallPolicy = RawCallPolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InteruptiblePolicy = NoInterrupltiblePolicy>
+	template<typename RunnableThread, typename ThreadCallPolicy = RawCallPolicy, typename RunCallPolicy = RawCallPolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InteruptiblePolicy = NoInterrupltiblePolicy>
 	class InterruptibleMultipleRunThread
 	{
 	private:
 
-		typedef InterruptibleMultipleRunThread<RunnableThread, CallPolicy, InterruptHandlingPolicy, InteruptiblePolicy> MyThreadType;
+		typedef InterruptibleMultipleRunThread<RunnableThread, ThreadCallPolicy, RunCallPolicy, InterruptHandlingPolicy, InteruptiblePolicy> MyThreadType;
 
 		struct SharedState
 		{
@@ -127,7 +127,7 @@ namespace threadingUtils
 		InterruptibleMultipleRunThread() {}
 		InterruptibleMultipleRunThread(InterruptibleMultipleRunThread&& Other) : sharedState(std::move(Other.sharedState)), thread(std::move(Other.thread)) {}
 		InterruptibleMultipleRunThread(const InterruptibleMultipleRunThread&) = delete;
-		virtual ~InterruptibleMultipleRunThread() { tryFinalize(); }
+		virtual ~InterruptibleMultipleRunThread() { }
 
 
 		InterruptibleMultipleRunThread& operator=(InterruptibleMultipleRunThread&& Other) { sharedState = std::move(Other.sharedState); thread = std::move(Other.thread); return *this; }
@@ -148,28 +148,36 @@ namespace threadingUtils
 
 				thread.run([](utils::shared_ptr<SharedState> sharedState){
 
-					InterruptibleThreadGuard<InterrupltiblePolicy> guard(sharedState->interruptible);
+					ThreadCallPolicy::call([=]{
 
-					while (sharedState->finalize == false){
-						std::unique_lock<std::mutex> lock(sharedState->functionMutex);
-						if (sharedState->finalize == true){
-							break;
+						InterruptibleThreadGuard<InterrupltiblePolicy> guard(sharedState->interruptible);
+
+						while (true){
+							std::unique_lock<std::mutex> lock(sharedState->functionMutex);
+
+							while (sharedState->functionCondition.wait_for(lock,
+								std::chrono::milliseconds(100),
+								[=]() { return (sharedState->functionWrapper != nullptr) || (sharedState->finalize == true); }) == false) {}
+
+							if (sharedState->finalize == true){
+								break;
+							}
+
+							if (sharedState->functionWrapper != nullptr){
+
+								auto fw = sharedState->functionWrapper;
+								sharedState->functionWrapper.reset();
+
+								(*fw)();
+
+								InterrupltiblePolicy::resetInterruption();
+
+								//TODO
+								//dodaæ RAII dla resetu przerwania i uchwytu funktora
+
+							}
 						}
-						sharedState->functionCondition.wait(lock);
-						if (sharedState->functionWrapper != nullptr){
-
-							auto fw = sharedState->functionWrapper;
-							sharedState->functionWrapper.reset();
-
-							(*fw)();
-
-							InterrupltiblePolicy::resetInterruption();
-
-							//TODO
-							//dodaæ RAII dla resetu przerwania i uchwytu funktora
-							
-						}
-					}
+					});
 				}, sharedState);
 			}
 
@@ -184,9 +192,14 @@ namespace threadingUtils
 					}
 				}
 
-				std::function<result_type()> intf = std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...);
+				std::function<result_type()> ff = std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...);
+
+				auto l = [=]()->result_type
+				{
+					return RawCallPolicy::call(ff);
+				};
 				
-				InterruptiblePackagedTask<InteruptiblePolicy, result_type()> innerTask(intf);
+				InterruptiblePackagedTask<InteruptiblePolicy, result_type()> innerTask(l);
 				ret = innerTask.get_future();
 				sharedState->functionWrapper.reset(new FunctionWrapper(std::move(innerTask)));
 			}
@@ -233,10 +246,7 @@ namespace threadingUtils
 		void tryFinalize()
 		{
 			if (sharedState != nullptr){
-				{
-					std::lock_guard<std::mutex> lock(sharedState->functionMutex);
-					sharedState->finalize = true;
-				}
+				sharedState->finalize = true;
 				sharedState->functionCondition.notify_one();
 			}
 		}

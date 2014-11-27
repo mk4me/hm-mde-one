@@ -22,6 +22,8 @@
 class MotionPerspective : public hmdbCommunication::IHierarchyPerspective
 {
 public:
+	virtual ~MotionPerspective() {}
+
     virtual core::IHierarchyItemPtr getPerspective( PluginSubject::SubjectPtr subject );
 private:
     bool hasValidData( PluginSubject::SubjectPtr subject );
