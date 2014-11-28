@@ -17,6 +17,7 @@ class PluginPath : public IPath
 {
 public:
 	PluginPath(const std::string & pluginName);
+	virtual ~PluginPath();
 
 	//! \return Zwraca pelna sciezke do folderu "MyDocuments\APP"
 	virtual const Filesystem::Path& getUserDataPath() const;

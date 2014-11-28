@@ -12,6 +12,11 @@ PluginPath::PluginPath(const std::string & pluginName)
 	Filesystem::createDirectory(pluginTmpPath);
 }
 
+PluginPath::~PluginPath()
+{
+
+}
+
 const Filesystem::Path& PluginPath::getUserDataPath() const
 {
 	return getPaths()->getUserDataPath();

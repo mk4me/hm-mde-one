@@ -50,6 +50,7 @@ IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 
 IMUCostumeWidget::~IMUCostumeWidget()
 {
+	refreshTimer.stop();
 	delete ui;
 }
 
