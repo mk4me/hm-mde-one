@@ -703,15 +703,16 @@ void AnalisisWidget::createVisualizerInNewSet()
     HelperAction* action = qobject_cast<HelperAction*>(sender());
     coreUI::CoreDockWidgetSet* set = new coreUI::CoreDockWidgetSet(topMainWindow);
     topMainWindow->addDockWidgetSet(set, setName.arg(topMainWindow->count()+1));
-
-    createAndAddDockVisualizer(action->getHelper(), set, tr("...TEST..."));
+    QString st = tr("...TEST...");
+    createAndAddDockVisualizer(action->getHelper(), set, st);
 }
 
 void AnalisisWidget::createNewVisualizer()
 {
     HelperAction* action = qobject_cast<HelperAction*>(sender());
     try{
-        createAndAddDockVisualizer(action->getHelper(), action->getDockSet(), QString("...TEST2..."));
+    	QString s = QString("...TEST2...");
+        createAndAddDockVisualizer(action->getHelper(), action->getDockSet(), s);
     }catch(std::exception& e ){
         PLUGIN_LOG_ERROR("Error creating visualizer: " << e.what());
     } catch (...) {

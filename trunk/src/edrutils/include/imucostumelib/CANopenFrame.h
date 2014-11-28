@@ -18,7 +18,6 @@ namespace imuCostume
 	union CANopenFrame
 	{
 	public:
-
 		struct SizeLimits {
 			//! Minimalny rozmiar ramki [B]
 			static const uint8_t MinSize = 2;

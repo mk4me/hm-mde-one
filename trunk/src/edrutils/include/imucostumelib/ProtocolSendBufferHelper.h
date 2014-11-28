@@ -30,6 +30,10 @@ namespace imuCostume
 
 			Buffer(Buffer && Other);
 			Buffer() = default;
+			Buffer(const Buffer& other) = default;
+
+			Buffer& operator=(Buffer&& Other);
+			Buffer& operator=(const Buffer& other) = default;
 		};
 
 	public:

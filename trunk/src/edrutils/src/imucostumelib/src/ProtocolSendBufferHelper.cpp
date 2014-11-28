@@ -1,4 +1,5 @@
 #include <imucostumelib/ProtocolSendBufferHelper.h>
+#include <cstring>
 
 using namespace imuCostume;
 
@@ -66,6 +67,14 @@ ProtocolSendBufferHelper::Buffer::Buffer(Buffer && Other)
 	: buffer(std::move(Other.buffer)), length(Other.length)
 {
 	Other.length = 0;
+}
+
+ProtocolSendBufferHelper::Buffer& ProtocolSendBufferHelper::Buffer::operator=(Buffer && Other)
+{
+	buffer = std::move(Other.buffer);
+	length = Other.length;
+	Other.length = 0;
+	return *this;
 }
 
 void ProtocolSendBufferHelper::updateFrameLength(CANopenFrame & frame, const uint8_t length)

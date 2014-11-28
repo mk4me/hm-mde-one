@@ -210,7 +210,7 @@ namespace threadingUtils
 
 		virtual const Status status() const override
 		{
-			return (sharedState == nullptr) ? Initialized : sharedState->status_;
+			return (sharedState == nullptr) ? Initialized : static_cast<Status>(sharedState->status_);
 		}
 
 		const T get()
@@ -594,7 +594,7 @@ namespace threadingUtils
 
 		virtual const Status status() const override
 		{
-			return (sharedState == nullptr) ? Initialized : sharedState->status_;
+			return (sharedState == nullptr) ? Initialized : static_cast<Status>(sharedState->status_);
 		}
 
 		void get()
