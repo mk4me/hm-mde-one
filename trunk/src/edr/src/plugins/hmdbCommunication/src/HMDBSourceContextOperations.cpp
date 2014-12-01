@@ -9,6 +9,7 @@
 #include <plugins/hmdbCommunication/IHMDBStorage.h>
 #include <hmdbserviceslib/IncrementalBranchShallowCopyParser.h>
 #include <hmdbserviceslib/ShallowCopyParser.h>
+#include <hmdbserviceslib/DateTimeUtils.h>
 #include <plugins/hmdbCommunication/IHMDBDataContext.h>
 #include <plugins/hmdbCommunication/IHMDBStatusManager.h>
 #include <plugins/hmdbCommunication/DataStatus.h>
@@ -619,7 +620,7 @@ const std::string retrievePerspective(hmdbServices::IShallowStoremanWS * service
 		break;
 
 	case ShallowCopyUtils::IncrementalShallowCopyFileID:
-		ret = service->getShallowCopyIncrement(hmdbServices::DateTime::now().toString());
+		ret = service->getShallowCopyIncrement(hmdbServices::toString(hmdbServices::DateTime::now()));
 		break;
 
 	case ShallowCopyUtils::IncrementalMetadataFileID:
@@ -795,7 +796,7 @@ void FileDownload::start()
 
 void FileDownload::wait()
 {
-	job.wait();
+	plugin::getJobManager()->waitForOtherJob(job);
 }
 
 void FileDownload::abort()

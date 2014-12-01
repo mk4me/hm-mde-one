@@ -203,7 +203,7 @@ namespace core
 		//! Domyœlny konstruktor
 		JobManager(InnerJobManager * jm);
 		//! Desturktor
-		~JobManager() = default;
+		~JobManager();
 
 		template<typename F, class ...Args>
 		Job<typename std::result_of<F(Args...)>::type> create(const std::string & owner, const std::string & name, F&& f, Args&& ...arguments)

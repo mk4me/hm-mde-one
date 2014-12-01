@@ -27,6 +27,7 @@
 #include <plugins/hmdbCommunication/OperationProgressWidget.h>
 #include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
 #include <plugins/hmdbCommunication/IDataSourcePerspective.h>
+#include <plugins/hmdbCommunication/DataSourceDefaultContent.h>
 #include <corelib/PluginCommon.h>
 #include <corelib/IPath.h>
 #include <plugins/hmdbCommunication/GeneralSourceViewWidget.h>
@@ -225,6 +226,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
 	   }
 
 	   vm->registerPerspective(new IMUPerspective, hmdbView->name());
+	   vm->registerContent(new hmdbCommunication::DataSourceDefaultContent, hmdbView->name());
    }
    
    for (int i = 0; i < sourceManager->getNumSources(); ++i) {

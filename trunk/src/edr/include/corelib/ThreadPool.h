@@ -168,7 +168,7 @@ namespace core
 		//! Domyœlny konstruktor
 		ThreadPool(InnerThreadPool * tp);
 		//! Desturktor
-		~ThreadPool() = default;
+		~ThreadPool();
 
 		//! \return Maksymalna iloœc w¹tków jakie mo¿na utworzyæ
 		const size_type maxThreads() const;

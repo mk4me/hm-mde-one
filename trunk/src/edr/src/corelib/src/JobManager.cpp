@@ -20,3 +20,8 @@ JobManager::JobManager(InnerJobManager * jm) : jm(jm)
 {
 
 }
+
+JobManager::~JobManager()
+{
+
+}

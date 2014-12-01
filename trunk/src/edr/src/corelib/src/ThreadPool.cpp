@@ -139,6 +139,11 @@ ThreadPool::ThreadPool(InnerThreadPool * tp) : tp(tp)
 	}
 }
 
+ThreadPool::~ThreadPool()
+{
+
+}
+
 const ThreadPool::size_type ThreadPool::maxThreads() const
 {
 	return tp->maxThreads();

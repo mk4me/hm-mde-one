@@ -279,7 +279,17 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 		showSplashScreenMessage(QObject::tr("Initializing threading"));		
 
 		core::ThreadPool::setLog(logger_->subLog("threadPool"));
-		innerThreadPool.reset(new core::ThreadPool::InnerThreadPool);
+		auto minThreads = std::thread::hardware_concurrency();
+		if (minThreads < 2){
+			//tyle by wypada³o ¿eby nowe maszyny dawa³y radê - 2xCore x2 threads per core
+			minThreads = 3;
+		}
+		else{
+			//jeden dla gui natywnie
+			--minThreads;
+		}
+
+		innerThreadPool.reset(new core::ThreadPool::InnerThreadPool(minThreads, minThreads * 10));
 		threadPool_.reset(new core::ThreadPool(innerThreadPool.get()));
 
 		core::JobManager::setLog(logger_->subLog("jobManager"));
@@ -503,10 +513,6 @@ int Application::run()
 
 Application::~Application()
 {
-
-	visualizerUpdateTimer.stop();
-	servicesUpdateTimer.stop();
-
 	if (uiInit == true){
 		CORE_LOG_INFO("Closing core application");
 
@@ -835,6 +841,10 @@ void Application::unpackPlugin(CoreMainWindow * mainWindow, const core::PluginPt
 void Application::finalizeUI(){
 	if (uiInit == true){
 		try{
+
+			visualizerUpdateTimer.stop();
+			servicesUpdateTimer.stop();
+
 			CORE_LOG_INFO("Finalizing sources");
 			sourceManager_->finalizeSources();
 
