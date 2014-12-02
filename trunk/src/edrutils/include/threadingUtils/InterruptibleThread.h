@@ -21,7 +21,7 @@ namespace threadingUtils
 	//! \tparam RunnableThread Polityka w¹tku z metod¹ uruchamiania zadañ run
 	//! \tparam InterruptHandlingPolicy Polityka obs³ugi przerwania w w¹tku
 	//! \tparam InteruptiblePolicy Polityka realizuj¹ca przerywanie w¹tku
-	template<typename RunnableThread, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InteruptiblePolicy = NoInterrupltiblePolicy>
+	template<typename RunnableThread, typename ExceptionHandlePolicy = RawCallPolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InterruptiblePolicy = NoInterruptiblePolicy>
 	class InterrubtibleThread
 	{
 	private:
@@ -38,12 +38,12 @@ namespace threadingUtils
 
 			}
 
-			InterrupltiblePolicy interruptible;			
+			InterruptiblePolicy interruptible;
 		};
 
 	public:
 
-		typedef InteruptiblePolicy InterruptPolicy;
+		typedef InterruptiblePolicy InterruptiblePolicy;
 
 	public:
 
@@ -69,7 +69,10 @@ namespace threadingUtils
 				}
 				catch (ThreadInterruptedException & e)
 				{
-					InteruptiblePolicy::handle(e);
+					InterruptHandlingPolicy::handle(e);
+				}
+				catch (...){
+					ExceptionHandlePolicy::handle(std::current_exception());
 				}
 			}, sharedState);
 		}
@@ -82,8 +85,8 @@ namespace threadingUtils
 		std::thread::native_handle_type native_handle() { return thread.native_handle(); }
 		void interrupt() { interruptible.interrupt(); }
 		const bool interruptible() const { return sharedState->interruptible.interruptible(); }
-		static void interruptionPoint() { InterrupltiblePolicy::interruptionPoint(); }
-		static void resetInterruption() { InterrupltiblePolicy::resetInterruption(); }
+		static void interruptionPoint() { InterruptiblePolicy::interruptionPoint(); }
+		static void resetInterruption() { InterruptiblePolicy::resetInterruption(); }
 
 	protected:
 		RunnableThread thread;
@@ -92,12 +95,12 @@ namespace threadingUtils
 		utils::shared_ptr<SharedState> sharedState;
 	};
 
-	template<typename RunnableThread, typename ThreadCallPolicy = RawCallPolicy, typename RunCallPolicy = RawCallPolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InteruptiblePolicy = NoInterrupltiblePolicy>
+	template<typename RunnableThread, typename ExceptionHandlePolicy = RawCallPolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InterruptiblePolicy = NoInterruptiblePolicy>
 	class InterruptibleMultipleRunThread
 	{
 	private:
 
-		typedef InterruptibleMultipleRunThread<RunnableThread, ThreadCallPolicy, RunCallPolicy, InterruptHandlingPolicy, InteruptiblePolicy> MyThreadType;
+		typedef InterruptibleMultipleRunThread<RunnableThread, ExceptionHandlePolicy, InterruptHandlingPolicy, InterruptiblePolicy> MyThreadType;
 
 		struct SharedState
 		{
@@ -115,12 +118,12 @@ namespace threadingUtils
 			std::mutex functionMutex;
 			std::condition_variable functionCondition;
 			utils::shared_ptr<FunctionWrapper> functionWrapper;
-			InterrupltiblePolicy interruptible;			
+			InterruptiblePolicy interruptible;
 		};
 
 	public:
 
-		typedef InteruptiblePolicy InterruptPolicy;	
+		typedef InterruptiblePolicy InterruptiblePolicy;
 
 	public:
 
@@ -134,7 +137,7 @@ namespace threadingUtils
 		InterruptibleMultipleRunThread& operator=(const InterruptibleMultipleRunThread&) = delete;
 
 		template<typename F, class ...Args>
-		InterruptibleFuture<typename std::result_of<F(Args...)>::type, InteruptiblePolicy> run(F&& f, Args&& ...arguments)
+		InterruptibleFuture<typename std::result_of<F(Args...)>::type, InterruptiblePolicy> run(F&& f, Args&& ...arguments)
 		{
 			typedef typename std::result_of<F(Args...)>::type result_type;
 
@@ -148,40 +151,34 @@ namespace threadingUtils
 
 				thread.run([](utils::shared_ptr<SharedState> sharedState){
 
-					ThreadCallPolicy::call([=]{
+					InterruptibleThreadGuard<InterruptiblePolicy> guard(sharedState->interruptible);
 
-						InterruptibleThreadGuard<InterrupltiblePolicy> guard(sharedState->interruptible);
+					while (true){
+						std::unique_lock<std::mutex> lock(sharedState->functionMutex);
 
-						while (true){
-							std::unique_lock<std::mutex> lock(sharedState->functionMutex);
-
-							while (sharedState->functionCondition.wait_for(lock,
-								std::chrono::milliseconds(100),
-								[=]() { return (sharedState->functionWrapper != nullptr) || (sharedState->finalize == true); }) == false) {}
-
-							if (sharedState->finalize == true){
-								break;
-							}
-
-							if (sharedState->functionWrapper != nullptr){
-
-								auto fw = sharedState->functionWrapper;
-								sharedState->functionWrapper.reset();
-
-								(*fw)();
-
-								InterrupltiblePolicy::resetInterruption();
-
-								//TODO
-								//dodaæ RAII dla resetu przerwania i uchwytu funktora
-
-							}
+						while (sharedState->functionCondition.wait_for(lock,
+							std::chrono::milliseconds(100),
+							[=]() { return (sharedState->functionWrapper != nullptr) || (sharedState->finalize == true); }) == false) {
 						}
-					});
+
+						if (sharedState->finalize == true){
+							break;
+						}
+
+						if (sharedState->functionWrapper != nullptr){
+
+							auto fw = sharedState->functionWrapper;
+							sharedState->functionWrapper.reset();
+
+							(*fw)();
+
+							InterruptiblePolicy::resetInterruption();
+						}
+					}
 				}, sharedState);
 			}
 
-			InterruptibleFuture<result_type, InteruptiblePolicy> ret;
+			InterruptibleFuture<result_type, InterruptiblePolicy> ret;
 
 			{
 				std::lock_guard<std::mutex> lock(sharedState->functionMutex);
@@ -196,10 +193,21 @@ namespace threadingUtils
 
 				auto l = [=]()->result_type
 				{
-					return RawCallPolicy::call(ff);
+					try{
+						return ff();
+					}
+					catch (ThreadInterruptedException & e){
+						InterruptHandlingPolicy::handle(e);
+						throw;
+					}
+					catch (...){
+						auto e = std::current_exception();
+						ExceptionHandlePolicy::handle(e);
+						std::rethrow_exception(e);
+					}					
 				};
 				
-				InterruptiblePackagedTask<InteruptiblePolicy, result_type()> innerTask(l);
+				InterruptiblePackagedTask<InterruptiblePolicy, result_type()> innerTask(l);
 				ret = innerTask.get_future();
 				sharedState->functionWrapper.reset(new FunctionWrapper(std::move(innerTask)));
 			}
@@ -238,8 +246,8 @@ namespace threadingUtils
 		std::thread::native_handle_type native_handle() { return thread.native_handle(); }
 		void interrupt() { if (sharedState == nullptr) { throw std::logic_error("Operation not permitted"); } sharedState->interruptible.interrupt(); }
 		const bool interruptible() const { return sharedState != nullptr && sharedState->interruptible.interruptible(); }
-		static void interruptionPoint() { InterrupltiblePolicy::interruptionPoint(); }
-		static void resetInterruption() { InterrupltiblePolicy::resetInterruption(); }
+		static void interruptionPoint() { InterruptiblePolicy::interruptionPoint(); }
+		static void resetInterruption() { InterruptiblePolicy::resetInterruption(); }
 
 	private:
 

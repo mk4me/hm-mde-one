@@ -25,10 +25,28 @@ namespace threadingUtils
 	//! \tparam CallPolicy Typ polityki wo³ania zadañ
 	//! Klasa realizuj¹ca funkcjonalnoœæ managera prac, zarz¹dzaj¹cego zleconymi zadaniami i ich realizacj¹
 	//! na zarz¹dzanych w¹tkach
-	template<class WorkQueue, class InterruptibleThread, typename CallPolicy>
+	template<class WorkQueue, class InterruptibleThread, typename WorkExceptionHandlePolicy, typename InterruptHandlePolicy>
 	class InterruptibleWorkManager
 	{
 	private:
+
+		//! RAII pomocne przy wyznaczaniu iloœci bezrobotnych, wisz¹cych na zmiennej warunkowej
+		template<typename T>
+		struct ThreadGuard
+		{
+		public:
+			ThreadGuard(T & counter) : counter(counter)
+			{
+
+			}
+
+			~ThreadGuard()
+			{
+				--counter;
+			}
+		private:
+			T & counter;
+		};
 
 		//! RAII pomocne przy wyznaczaniu iloœci bezrobotnych, wisz¹cych na zmiennej warunkowej
 		template<typename T>
@@ -120,14 +138,11 @@ namespace threadingUtils
 				sharedState->forceFinalize = false;
 				this->thread.run([](utils::shared_ptr<SharedState> sharedState){
 					LocalThreadGuard localThreadGuard;
-					try{
-						WorkExecutor::run(sharedState);
-						--(sharedState->workManager->activeCounter);
+					ThreadGuard<std::atomic<size_type>> guard(sharedState->workManager->activeCounter);
+					ThreadLocalWorkQueueController tlwqc(sharedState->workManager->workQueue);
+					while (sharedState->forceFinalize == false && sharedState->workManager->forceFinalize_ == false){
+						sharedState->workManager->runPendingTask();
 					}
-					catch (...){
-						--(sharedState->workManager->activeCounter);
-					}
-
 				}, sharedState);
 			}
 
@@ -200,16 +215,6 @@ namespace threadingUtils
 			}
 
 		private:
-			//! Metoda przetwarzaj¹ca zlecone zadania
-			static void run(utils::shared_ptr<SharedState> sharedState)
-			{
-				ThreadLocalWorkQueueController tlwqc(sharedState->workManager->workQueue);
-				while (sharedState->forceFinalize == false && sharedState->workManager->forceFinalize_ == false){
-					sharedState->workManager->runPendingTask();					
-				}
-			}
-
-		private:
 			//! Wspó³dzielony stan przez który kontrolujemy w¹tek obs³uguj¹cy zlecone zadania
 			utils::shared_ptr<SharedState> sharedState;
 			//! W¹tek obs³uguj¹cy zlecone zadania
@@ -238,11 +243,24 @@ namespace threadingUtils
 
 	public:
 
+		struct InteruptGuard
+		{
+			~InteruptGuard()
+			{
+				InterruptibleThread::resetInterruption();
+			}
+		};
+
 		template<typename T>
-		struct FutureType
+		using FutureType = InterruptibleFuture < T, typename InterruptibleThread::InterruptiblePolicy >;
+
+		/*
+		template<typename T>
+		struct FutureType = InterruptibleFuture < T, typename InterruptibleThread::InterruptPolicy > ;
 		{
 			typedef InterruptibleFuture<T, typename InterruptibleThread::InterruptPolicy> type;
 		};
+		*/
 
 	public:
 
@@ -261,7 +279,7 @@ namespace threadingUtils
 		//! \param arguments Argumenty z jakimi chcemy wykonaæ funkcjê
 		//! \return Future pozwalaj¹cy czekaæ na rezultat zleconego zadania
 		template<typename F, class ...Args>
-		typename FutureType<typename std::result_of<F(Args...)>::type>::type submit(F&& f, Args&& ...arguments)
+		FutureType<typename std::result_of<F(Args...)>::type> submit(F&& f, Args&& ...arguments)
 		{
 			typedef typename std::result_of<F(Args...)>::type result_type;
 
@@ -277,7 +295,7 @@ namespace threadingUtils
 			
 			auto innerFuture = submitWork(ss, intf);
 
-			InterruptibleFuture<result_type, typename InterruptibleThread::InterruptPolicy> ret(std::move(innerFuture), ss->interruptPrivateData.get_future(), ss->interrupt);
+			InterruptibleFuture<result_type, typename InterruptibleThread::InterruptiblePolicy> ret(std::move(innerFuture), ss->interruptPrivateData.get_future(), ss->interrupt);
 
 			auto s = workQueue.size();
 
@@ -307,8 +325,20 @@ namespace threadingUtils
 					throw ThreadInterruptedException();
 				}
 
-				InterruptibleTaskGuard<typename InterruptibleThread::InterruptPolicy> taskGuard(sharedState->interruptPrivateData);
-				return intf();
+				InteruptGuard intGuard;
+				InterruptibleTaskGuard<typename InterruptibleThread::InterruptiblePolicy> taskGuard(sharedState->interruptPrivateData);
+				try{
+					return intf();
+				}
+				catch (ThreadInterruptedException & e){
+					InterruptHandlePolicy::handle(e);
+					throw;
+				}
+				catch (...){
+					auto e = std::current_exception();
+					WorkExceptionHandlePolicy::handle(e);
+					std::rethrow_exception(e);
+				}
 			});
 		}
 
@@ -400,22 +430,7 @@ namespace threadingUtils
 		{
 			Task task;
 			if (workQueue.tryGet(task) == true){
-				try{
-					CallPolicy::call([&]{
-						try{
-							task.functionWrapper();
-							InterruptibleThread::resetInterruption();
-						}
-						catch (ThreadInterruptedException & e)
-						{
-							workQueue.clearLocalQueue();
-							InterruptibleThread::resetInterruption();
-						}
-					});
-				}
-				catch (...){
-
-				}
+				task.functionWrapper();
 			}
 			else if (isLocalThread == true){
 				std::unique_lock<std::mutex> lock(taskMutex);
@@ -450,8 +465,8 @@ namespace threadingUtils
 		static thread_local bool isLocalThread;
 	};
 
-	template<class WorkQueue, class InterruptibleThread, typename CallPolicy>	
-	thread_local bool InterruptibleWorkManager<WorkQueue, InterruptibleThread, CallPolicy>::isLocalThread = false;
+	template<class WorkQueue, class InterruptibleThread, typename WorkExceptionHandlePolicy, typename InterruptHandlePolicy>
+	thread_local bool InterruptibleWorkManager<WorkQueue, InterruptibleThread, WorkExceptionHandlePolicy, InterruptHandlePolicy>::isLocalThread = false;
 }
 
 #endif	// __HEADER_GUARD_THREADINGUTILS__INTERRUPTIBLEWORKMANAGER_H__

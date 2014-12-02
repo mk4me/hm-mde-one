@@ -20,11 +20,29 @@ namespace threadingUtils {
 	//! \tparam RunnableThread Typ w¹tku który mo¿na uruchamiaæ (run)
 	//! Klasa realizuj¹ca funkcjonalnoœæ managera prac, zarz¹dzaj¹cego zleconymi zadaniami i ich realizacj¹
 	//! na zarz¹dzanych w¹tkach
-	template<class WorkQueue, class RunnableThread, typename CallPolicy>
+	template<class WorkQueue, class RunnableThread, typename WorkExceptionHandlePolicy = RawCallPolicy>
 	class WorkManager
 	{
 
 	private:
+
+		//! RAII pomocne przy wyznaczaniu iloœci bezrobotnych, wisz¹cych na zmiennej warunkowej
+		template<typename T>
+		struct ThreadGuard
+		{
+		public:
+			ThreadGuard(T & counter) : counter(counter)
+			{
+				
+			}
+
+			~ThreadGuard()
+			{
+				--counter;
+			}
+		private:
+			T & counter;
+		};
 
 		//! RAII pomocne przy wyznaczaniu iloœci bezrobotnych, wisz¹cych na zmiennej warunkowej
 		template<typename T>
@@ -104,13 +122,10 @@ namespace threadingUtils {
 			{
 				this->thread.run([](utils::shared_ptr<SharedState> sharedState) {
 					WorkerThreadGuard localThreadGuard;
-					try{
-						WorkExecutor::run(sharedState);
-						--(sharedState->workManager->activeCounter);
-					}
-					catch (...){
-						--(sharedState->workManager->activeCounter);
-						throw;
+					ThreadGuard<std::atomic<size_type>> guard(sharedState->workManager->activeCounter);
+					LocalWorkQueueGuard lqqg(sharedState->workManager->workQueue);
+					while (sharedState->forceFinalize == false && sharedState->workManager->forceFinalize == false){
+						sharedState->workManager->runPendingTask();
 					}
 				}, sharedState);
 			}
@@ -149,16 +164,6 @@ namespace threadingUtils {
 			void detach()
 			{
 				thread.detach();
-			}
-
-		private:
-			//! Metoda przetwarzaj¹ca zlecone zadania
-			static void run(std::shared_ptr<SharedState> sharedState)
-			{
-				LocalWorkQueueGuard lqqg(sharedState->workManager->workQueue);
-				while (sharedState->forceFinalize == false && sharedState->workManager->forceFinalize == false){					
-					sharedState->workManager->runPendingTask();
-				}				
 			}
 
 		private:
@@ -201,12 +206,25 @@ namespace threadingUtils {
 		template<typename F, class ...Args>
 		typename FutureType<typename std::result_of<F(Args)>::type>::type submit(F&& f, Args&& arguments...)
 		{
+			typedef typename std::result_of<F(Args)>::type result_type;
+
 			std::lock_guard<std::mutex> lock(taskMutex);
 			if (isLocalThread == false && finalize_ == true){
 				throw std::runtime_error("Operation not permitted");				
 			}
 
-			auto ret = workQueue.submit(std::bind(std::_Decay_copy(std::forward<F>(f)), std::_Decay_copy(std::forward<Args>(arguments))...));
+			std::function<result_type()> ff = std::bind(std::_Decay_copy(std::forward<F>(f)), std::_Decay_copy(std::forward<Args>(arguments))...);
+
+			auto ret = workQueue.submit([=]()->result_type {
+				try{
+					return ff();
+				}
+				catch (...){
+					auto e = std::current_exception();
+					WorkExceptionHandlePolicy::handle(e);
+					std::rethrow_exception(e);
+				}
+			});
 
 			auto s = workQueue.size();
 
@@ -315,15 +333,7 @@ namespace threadingUtils {
 		{
 			Task task;
 			if (workQueue.tryGet(task) == true){
-				try{
-					CallPolicy::call([&]{
-						task.functionWrapper();
-					});
-				}
-				catch (...)
-				{
-
-				}
+				task.functionWrapper();
 			}
 			else if (isLocalThread == true){
 				std::unique_lock<std::mutex> lock(taskMutex);
@@ -358,8 +368,8 @@ namespace threadingUtils {
 		static thread_local bool isLocalThread;
 	};
 
-	template<class WorkQueue, class RunnableThread, typename CallPolicy>
-	thread_local bool WorkManager<WorkQueue, RunnableThread, CallPolicy>::isLocalThread = false;
+	template<class WorkQueue, class InterruptibleThread, typename WorkExceptionHandlePolicy, typename InterruptHandlePolicy>
+	thread_local bool InterruptibleWorkManager<WorkQueue, InterruptibleThread, WorkExceptionHandlePolicy, InterruptHandlePolicy>::isLocalThread = false;
 }
 
 #endif	// __HEADER_GUARD_THREADINGUTILS__WORKMANAGER_H__

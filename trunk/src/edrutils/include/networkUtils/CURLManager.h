@@ -10,6 +10,7 @@
 
 #include <networkUtils/Export.h>
 #include <string>
+#include <future>
 #include <utils/SmartPtr.h>
 #define NOMINMAX
 #include <curl/curl.h>
@@ -24,34 +25,6 @@ namespace networkUtils
 		friend class CURLManagerImpl;
 
 	public:
-
-		//! Obiekt pozwalaj¹cy zaczekaæ na zakoñczenie zadania
-		class NETWORKUTILS_EXPORT WaitCurl
-		{
-			friend class CURLManagerImpl;
-
-		private:
-			//! Forward declaration
-			class WaitCurlImpl;
-
-		public:
-			//! Konstruktor domyslny
-			WaitCurl();
-			//! Destruktor
-			~WaitCurl();
-			//! Metoda czeka na zakoñczenie operacji curla
-			void wait();
-			//! \return Rezultat obs³ugi po³¹czenia
-			const CURLcode result() const;
-			//! \return Opis b³êdu jesli wyst¹pi³
-			const std::string error() const;
-
-		private:
-			//! Implementacja
-			utils::shared_ptr<WaitCurlImpl> impl;
-		};
-
-	public:
 		//! Domyœlny konstruktor
 		CURLManager();
 		//! \param multi Uchwyt dla obs³ugiwanych po³¹czeñ
@@ -60,7 +33,7 @@ namespace networkUtils
 		virtual ~CURLManager();
 		//! \param curl Skonfigurowany uchwyt do obs³u¿enia
 		//! \param wait Obiekt pozwalaj¹cy zaczekaæ na zakoñæenie operacji curla
-		void addRequest(CURL * curl, WaitCurl * wait = nullptr);
+		std::future<CURLcode> addRequest(CURL * curl);
 		//! \param curl Uchwyt do usuniêcia
 		void removeRequest(CURL * curl);
 		//! Metoda wo³ana w ramach w¹tku przetwarzaj¹cego uchwyty po³¹czeñ

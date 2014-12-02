@@ -66,12 +66,10 @@ void CURLFTPTransfer::start()
 		data_->status->setError("Transfer manager expired");
 		data_->status->setStatus(Error);
 		return;
-	}
-
-	data_->wait.reset(new networkUtils::CURLManager::WaitCurl);
+	}	
 	
 	data_->status->setStatus(Pending);
-	l->addRequest(curl_, data_->wait.get());
+	data_->wait = l->addRequest(curl_);
 }
 
 void CURLFTPTransfer::abort()
@@ -84,7 +82,7 @@ void CURLFTPTransfer::wait()
 	if (status() != CURLFTPTransfer::Finished
 		&& status() != CURLFTPTransfer::Error
 		&& status() != CURLFTPTransfer::Aborted){
-		data_->wait->wait();
+		data_->wait.wait();
 	}
 }
 

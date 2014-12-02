@@ -51,12 +51,12 @@ namespace threadingUtils
 	};
 
 	//! Polityka bez przerywalnoœci
-	class NoInterrupltiblePolicy
+	class NoInterruptiblePolicy
 	{
 	public:
 
-		NoInterrupltiblePolicy() = default;
-		~NoInterrupltiblePolicy() = default;
+		NoInterruptiblePolicy() = default;
+		~NoInterruptiblePolicy() = default;
 
 		void interrupt() {}
 		static void interrupt(void*& privateData) {}

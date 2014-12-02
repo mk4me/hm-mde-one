@@ -31,33 +31,27 @@ namespace core
 
 		struct ErrorLogCallPolicy
 		{
-			//! \tparam F Typ metody jak¹ wo³amy
-			//! \tparam Args Typy argumentów z jakimi wo³amy metodê
-			//! \param f Wo³ana metoda
-			//! \param arguments Argumenty metody
-			template<class F, class... Args>
-			static void call(F&& f, Args&&... arguments)
+			//! \param eptr Wskaznik do wyjatku
+			static void handle(std::exception_ptr eptr)
 			{
 				try{
-					f(arguments...);
+					std::rethrow_exception(eptr);
 				}
 				catch (std::exception & e){
-					ThreadPool::logError(UTILS_FORMAT_STRING(" failed while calling work with error: " << e.what()));
+					ThreadPool::logError(e.what());
 				}
 				catch (...){
-					ThreadPool::logError(" failed with UNKNOWN error.");
+					ThreadPool::logError();
 				}
 			}			
 		};
 
 		//! Polityka braku obs³ugi przerwania - ponownie rzuca ten sam wyj¹tek
 		struct LogResetableInterruptHandlingPolicy
-		{
-			template<typename InterruptPolicy>
+		{			
 			static void handle(const threadingUtils::ThreadInterruptedException & e)
 			{
 				ThreadPool::logError(" canceled.");
-				InterruptPolicy::resetInterrupt();
 			}			
 		};
 
@@ -66,8 +60,10 @@ namespace core
 
 	public:
 
+		typedef threadingUtils::InterruptibleMultipleRunThread<InnerRunnableThread, ErrorLogCallPolicy, LogResetableInterruptHandlingPolicy, threadingUtils::InterrupltiblePolicy> InnerInterruptibleMultipleRunThread;
+
 		//! Wewnêtrza realizacja puli w¹tków
-		typedef threadingUtils::InterruptibleThreadPool<InnerRunnableThread, ErrorLogCallPolicy, threadingUtils::InterrupltiblePolicy, LogResetableInterruptHandlingPolicy> InnerThreadPool;
+		typedef threadingUtils::InterruptibleThreadPool<InnerInterruptibleMultipleRunThread> InnerThreadPool;
 
 		//! 
 		typedef InnerThreadPool::size_type size_type;
@@ -102,7 +98,7 @@ namespace core
 
 		public:
 
-			typedef InnerThreadPool::Thread::InterruptPolicyType InterruptPolicy;
+			typedef InnerInterruptibleMultipleRunThread::InterruptiblePolicy InterruptiblePolicy;
 
 		private:
 
@@ -190,7 +186,7 @@ namespace core
 
 	private:
 
-		static void logError(const std::string & message);
+		static void logError(const std::string & message = std::string());
 
 	private:
 		//! Wewnêtrzny tp

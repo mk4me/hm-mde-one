@@ -19,30 +19,9 @@ namespace threadingUtils
 	//! Polityka braku obs³ugi przerwania - ponownie rzuca ten sam wyj¹tek
 	struct NoInterruptHandlingPolicy
 	{
-		template<typename InterruptPolicy>
 		void handle(const ThreadInterruptedException & e)
 		{
-			throw e;
-		}
-	};
-
-	//! Polityka gasz¹ca przerwanie
-	struct ConsumeInterruptHandlingPolicy
-	{
-		template<typename InterruptPolicy>
-		void handle(const ThreadInterruptedException & e)
-		{
-
-		}
-	};
-
-	//! Polityka gasz¹ca i resetuj¹ca przerwanie, aby móc ponownie przerwaæ
-	struct ResetInterruptHandlingPolicy
-	{
-		template<typename InterruptPolicy>
-		void handle(const ThreadInterruptedException & e)
-		{
-			InterruptPolicy::resetInterruption();
+			
 		}
 	};
 }

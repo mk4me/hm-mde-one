@@ -28,7 +28,7 @@ namespace hmdbCommunication
 		}
 
 		//! Obiekt do czekania
-		utils::shared_ptr<networkUtils::CURLManager::WaitCurl> wait;
+		std::future<CURLcode> wait;
 		//! Obiekt postêpu
 		utils::shared_ptr<CURLFTPProgress> progress;
 		//! Obiekt statusu

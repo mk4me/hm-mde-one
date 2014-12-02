@@ -20,15 +20,13 @@ namespace threadingUtils
 	//! \tparam InterruptPolicy Polityka przerywania dzia³ania w¹tku
 	//! \tparam InterruptHandlingPolicy Polityka obs³ugi przerwania w¹tku
 	//! Klasa realizuj¹ca funkcjonalnoœæ puli w¹tków
-	template<class RunnableThread, typename CallPolicy, typename InterruptPolicy, typename InterruptHandlingPolicy>
+	template<class InterruptibleMultipleRunThread>
 	class InterruptibleThreadPool
 	{
-	public:
-		//! Typ w¹tku wielokrotnego uruchamiania
-		typedef InterruptibleMultipleRunThread<RunnableThread, CallPolicy, CallPolicy, InterruptHandlingPolicy, InterruptPolicy> InnerThreadType;
+	public:		
 
 		//! Typ listy w¹tków wielokrotnego uruchamiania
-		typedef std::list<InnerThreadType> InnerThreadsList;
+		typedef std::list<InterruptibleMultipleRunThread> InnerThreadsList;
 
 		//! Typ opisuj¹cy iloœæ
 		typedef unsigned int size_type;
@@ -41,9 +39,7 @@ namespace threadingUtils
 
 		public:
 			//! Typ puli w¹tków
-			typedef InterruptibleThreadPool<RunnableThread, CallPolicy, InterruptPolicy, InterruptHandlingPolicy> MyThreadPoolType;
-
-			typedef InterruptPolicy InterruptPolicyType;
+			typedef InterruptibleThreadPool<InterruptibleMultipleRunThread> MyThreadPoolType;			
 
 		private:
 
@@ -72,7 +68,7 @@ namespace threadingUtils
 
 			//! \param threadPool Pula w¹tków do której nale¿a³ pierwotnie w¹tek
 			//! \param thread W¹tek wielokrotnego uruchamiania
-			Thread(MyThreadPoolType * threadPool, InnerThreadType && thread)
+			Thread(MyThreadPoolType * threadPool, InterruptibleMultipleRunThread && thread)
 				: threadPool(threadPool), thread(std::move(thread))
 			{
 
@@ -117,14 +113,14 @@ namespace threadingUtils
 			std::thread::native_handle_type native_handle() { return thread.native_handle(); }
 			void interrupt() { if (futureWrapper.valid() == false || thread.interruptible() == false) { throw std::logic_error("Operation not permitted"); } thread.interrupt(); }
 			const bool interruptible() const { return futureWrapper.valid() && thread.interruptible(); }
-			static void interruptionPoint() { InnerThreadType::interruptionPoint(); }
-			static void resetInterruption() { InnerThreadType::resetInterruption(); }
+			static void interruptionPoint() { InterruptibleMultipleRunThread::interruptionPoint(); }
+			static void resetInterruption() { InterruptibleMultipleRunThread::resetInterruption(); }
 
 		private:
 			//! Pula w¹tków do której nale¿y w¹tek
 			MyThreadPoolType * threadPool;
 			//! Wewnêtrzny w¹tek wielokrotnego uruchamiania
-			InnerThreadType thread;
+			InterruptibleMultipleRunThread thread;
 			//! Wrapper dla future celem okreœlenia czy w¹tek zakoñczy³ przetwarzanie zleconego zadania
 			FutureWrapper futureWrapper;
 		};
@@ -144,7 +140,7 @@ namespace threadingUtils
 		//! \param maxThreads Maksymalna iloœæ w¹tków do utrzymania
 		InterruptibleThreadPool(const size_type minThreads, const size_type maxThreads) : minThreads_(minThreads), maxThreads_(maxThreads), threadsCount_(0) {}
 		//! Domyœlny konstruktor
-		InterruptibleThreadPool() : InterruptibleThreadPool(std::max<unsigned int>(std::thread::hardware_concurrency(), 1), std::thread::hardware_concurrency() == 0 ? 1 : std::thread::hardware_concurrency() * 8) {}
+		InterruptibleThreadPool() : InterruptibleThreadPool((std::thread::hardware_concurrency() > 1 ? std::thread::hardware_concurrency() - 1 : 1), std::max<unsigned int>(std::thread::hardware_concurrency() * 8, 4)) {}
 		
 		//! Desturktor
 		~InterruptibleThreadPool()
@@ -214,7 +210,7 @@ namespace threadingUtils
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			if (threadsCount_ < maxThreads_){
-				InnerThreadType ith;
+				InterruptibleMultipleRunThread ith;
 				if (innerThreads.empty() == false){
 					ith = std::move(innerThreads.front());
 					innerThreads.pop_front();
@@ -270,7 +266,7 @@ namespace threadingUtils
 		void detach() { --threadsCount_; }
 
 		//! \param innerThread Wewnêtrzny w¹tek wielokrotnego uruchamiania, który próbujemy zwróciæ przy niszczeniu dostarczonego w¹tku
-		void tryReturn(InnerThreadType & innerThread)
+		void tryReturn(InterruptibleMultipleRunThread & innerThread)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			detach();

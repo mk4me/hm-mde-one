@@ -27,8 +27,7 @@ namespace threadingUtils
 	template<typename T, typename InterruptibleWorkManager>
 	struct FutureType
 	{
-		typedef typename InterruptibleWorkManager::template FutureType<T> FTR;
-		typedef typename FTR::type type;
+		typedef typename InterruptibleWorkManager::template FutureType<T> type;
 	};
 
 
@@ -250,7 +249,7 @@ namespace threadingUtils
 			std::recursive_mutex statusMutex;
 		};
 
-		typedef typename FutureType<void, InterruptibleWorkManager>::type FutureType;
+		typedef typename FutureType<T&, InterruptibleWorkManager>::type FutureType;
 
 	private:
 

@@ -28,24 +28,27 @@ namespace core
 
 		struct ErrorLogCallPolicy
 		{
-			//! \tparam F Typ metody jak¹ wo³amy
-			//! \tparam Args Typy argumentów z jakimi wo³amy metodê
-			//! \param f Wo³ana metoda
-			//! \param arguments Argumenty metody
-			template<class F, class... Args>
-			static typename std::result_of<F(Args...)>::type call(F&& f, Args&&... arguments)
+			//! \param eptr Wskaznik do wyjatku
+			static void handle(std::exception_ptr eptr)
 			{
 				try{
-					return f(arguments...);
+					std::rethrow_exception(eptr);
 				}
 				catch (std::exception & e){
-					JobManager::logError(UTILS_FORMAT_STRING(" failed with error: " << e.what()));
-					throw;
+					JobManager::logError(e.what());
 				}
 				catch (...){
-					JobManager::logError(" failed with UNKNOWN error");
-					throw;
+					JobManager::logError();
 				}
+			}
+		};
+
+		//! Polityka braku obs³ugi przerwania - ponownie rzuca ten sam wyj¹tek
+		struct LogResetableInterruptHandlingPolicy
+		{
+			static void handle(const threadingUtils::ThreadInterruptedException & e)
+			{
+				JobManager::logError(" canceled.");
 			}
 		};
 
@@ -60,7 +63,7 @@ namespace core
 		};
 
 	public:
-		typedef threadingUtils::InterruptibleWorkManager<threadingUtils::StealingMultipleWorkQueuePolicy, ThreadPool::Thread, ErrorLogCallPolicy> InnerWorkManager;
+		typedef threadingUtils::InterruptibleWorkManager<threadingUtils::StealingMultipleWorkQueuePolicy, ThreadPool::Thread, ErrorLogCallPolicy, LogResetableInterruptHandlingPolicy> InnerWorkManager;
 		typedef threadingUtils::InterruptibleJobManager<InnerWorkManager> InnerJobManager;
 
 		class CORELIB_EXPORT JobBase
@@ -244,7 +247,7 @@ namespace core
 
 	private:
 
-		static void logError(const std::string & message);
+		static void logError(const std::string & message = std::string());
 
 	private:
 

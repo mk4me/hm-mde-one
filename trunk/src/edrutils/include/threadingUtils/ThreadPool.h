@@ -22,17 +22,14 @@ namespace threadingUtils {
 	//! \tparam InterruptPolicy Polityka przerywania działania wątku
 	//! \tparam InterruptHandlingPolicy Polityka obsługi przerwania wątku
 	//! Klasa realizująca funkcjonalność puli wątków
-	template<class RunnableThread>
+	template<class MultipleRunThread>
 	class ThreadPool
 	{
 	private:
-
-		//! Typ wątku wielokrotnego uruchamiania
-		typedef MultipleRunThread<RunnableThread> InnerThreadType;
 		//! Typ puli wątków
-		typedef ThreadPool<RunnableThread> MyThreadPoolType;
+		typedef ThreadPool<MultipleRunThread> MyThreadPoolType;
 		//! Typ listy wątków wielokrotnego uruchamiania
-		typedef std::list<InnerThreadType> InnerThreadsList;
+		typedef std::list<MultipleRunThread> InnerThreadsList;
 
 	public:
 		//! Typ opisujący ilość
@@ -54,7 +51,7 @@ namespace threadingUtils {
 
 			//! \param threadPool Pula wątków do której należał pierwotnie wątek
 			//! \param thread Wątek wielokrotnego uruchamiania
-			Thread(MyThreadPoolType * threadPool, InnerThreadType && thread)
+			Thread(MyThreadPoolType * threadPool, MultipleRunThread && thread)
 				: threadPool(threadPool), thread(std::move(thread))
 			{
 
@@ -109,7 +106,7 @@ namespace threadingUtils {
 			//! Pula wątków do której należy wątek
 			MyThreadPoolType * threadPool;
 			//! Wewnętrzny wątek wielokrotnego uruchamiania
-			InnerThreadType thread;
+			MultipleRunThread thread;
 			//! Wrapper dla future celem określenia czy wątek zakończył przetwarzanie zleconego zadania
 			FutureWrapper futureWrapper;
 		};
@@ -126,7 +123,7 @@ namespace threadingUtils {
 		ThreadPool(ThreadPool && other) = delete;
 
 		//! Domyślny konstruktor
-		ThreadPool() : ThreadPool(std::thread::hardware_concurrency(), std::thread::hardware_concurrency() * 8) {}
+		ThreadPool() : ThreadPool((std::thread::hardware_concurrency() > 1 ? std::thread::hardware_concurrency() - 1 : 1), std::max<unsigned int>(std::thread::hardware_concurrency() * 8, 4)) {}
 		//! \param minThreads Minimalna ilość wątków do utrzymania
 		//! \param maxThreads Maksymalna ilość wątków do utrzymania
 		ThreadPool(size_type minThreads, size_type maxThreads) : minThreads(minThreads), maxThreads(maxThreads), threadsCount_(0)
@@ -203,7 +200,7 @@ namespace threadingUtils {
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			if (threadsCount_ < maxThreads_){
-				InnerThreadType ith;
+				MultipleRunThread ith;
 				if (innerThreads.empty() == false){
 					ith = std::move(innerThreads.front());
 					innerThreads.pop_front();
@@ -259,7 +256,7 @@ namespace threadingUtils {
 		void detach() { --threadsCount_; }
 
 		//! \param innerThread Wewnętrzny wątek wielokrotnego uruchamiania, który próbujemy zwrócić przy niszczeniu dostarczonego wątku
-		void tryReturn(InnerThreadType & innerThread)
+		void tryReturn(MultipleRunThread & innerThread)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			detach();

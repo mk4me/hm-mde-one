@@ -21,7 +21,7 @@ namespace threadingUtils
 {
 	//! \tparam Thread Typ w¹tku jaki wrapujemy do postaci runnable
 	//! \tparam CallPolicy Sposób wo³ania metod przez w¹tek
-	template<typename Thread, typename CallPolicy = RawCallPolicy>
+	template<typename Thread, typename ExceptionHandlePolicy = RawCallPolicy>
 	class RunnableThread
 	{
 	public:
@@ -48,8 +48,14 @@ namespace threadingUtils
 
 				std::function<void()> ff = std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...);
 
-				thread = Thread([=](){
-					CallPolicy::call(ff);
+				thread = Thread([=]{
+
+					try{
+						ff();
+					}
+					catch (...){
+						ExceptionHandlePolicy::handle(std::current_exception());
+					}
 					});
 				launched = true;
 			}
@@ -67,12 +73,12 @@ namespace threadingUtils
 		Thread thread;
 	};
 
-	template<typename Thread, typename ThreadCallPolicy = RawCallPolicy, typename RunCallPolicy = RawCallPolicy>
+	template<typename Thread, typename ExceptionHandlePolicy = RawCallPolicy>
 	class MultipleRunThread
 	{
 	private:
 
-		typedef MultipleRunThread<Thread> MyMultipleRunThread;
+		typedef MultipleRunThread<Thread, ExceptionHandlePolicy> MyMultipleRunThread;
 
 		struct SharedState
 		{
@@ -95,7 +101,7 @@ namespace threadingUtils
 	public:
 
 		MultipleRunThread() = default;
-		MultipleRunThread(MultipleRunThread&& Other)  : sharedState(std::move(Other.sharedState)), thread(std::move(Other.thread)) {}
+		MultipleRunThread(MultipleRunThread&& Other) : sharedState(std::move(Other.sharedState)), thread(std::move(Other.thread)) {}
 		MultipleRunThread(const MultipleRunThread&) = delete;
 		virtual ~MultipleRunThread() { }
 
@@ -117,27 +123,24 @@ namespace threadingUtils
 
 				thread = Thread([](utils::shared_ptr<SharedState> sharedState){
 
-					ThreadCallPolicy::call([=]{
+					while (true){
+						std::unique_lock<std::mutex> lock(sharedState->functionMutex);
 
-						while (true){
-							std::unique_lock<std::mutex> lock(sharedState->functionMutex);
+						while (sharedState->functionCondition.wait_for(lock,
+							std::chrono::milliseconds(100),
+							[=]() { return (sharedState->functionWrapper != nullptr) || (sharedState->finalize == true); }) == false) {}
 
-							while (sharedState->functionCondition.wait_for(lock,
-								std::chrono::milliseconds(100),
-								[=]() { return (sharedState->functionWrapper != nullptr) || (sharedState->finalize == true); }) == false) {}
-
-							if (sharedState->finalize == true){
-								break;
-							}
-
-							if (sharedState->functionWrapper != nullptr){
-								auto fw = sharedState->functionWrapper;
-								sharedState->functionWrapper.reset();
-
-								(*fw)();
-							}
+						if (sharedState->finalize == true){
+							break;
 						}
-					});
+
+						if (sharedState->functionWrapper != nullptr){
+							auto fw = sharedState->functionWrapper;
+							sharedState->functionWrapper.reset();
+
+							(*fw)();
+						}
+					}
 				}, sharedState);
 			}
 
@@ -154,7 +157,14 @@ namespace threadingUtils
 
 				auto l = [=]()->result_type
 				{
-					return RawCallPolicy::call(ff);
+					try{
+						return ff();
+					}
+					catch (...){
+						auto e = std::current_exception()
+						ExceptionHandlePolicy::handle(e);
+						std::rethrow_exception(e);
+					}
 				};
 
 				std::packaged_task<result_type()> innerTask(l);

@@ -19,52 +19,10 @@ namespace threadingUtils
 		//! \tparam Args Typy argumentów z jakimi wo³amy metodê
 		//! \param f Wo³ana metoda
 		//! \param arguments Argumenty metody
-		template<class F, class... Args>
-		static typename std::result_of<F(Args...)>::type call(F&& f, Args&&... arguments)
+		template<typename T>
+		static void handle(const T & e)
 		{
-			return std::forward<F>(f)(std::forward<Args>(arguments)...);
-		}
-	};
 
-	//! Polityka wo³ania metod gasz¹ca wszelkie wyj¹tki
-	struct ExceptionSafeCallPolicy
-	{
-		//! \tparam F Typ metody jak¹ wo³amy
-		//! \tparam Args Typy argumentów z jakimi wo³amy metodê
-		//! \param f Wo³ana metoda
-		//! \param arguments Argumenty metody
-		template<class F, class... Args>
-		static typename std::result_of<F(Args...)>::type call(F&& f, Args&&... arguments)
-		{
-			typedef typename std::result_of<F(Args...)>::type result_type;
-
-			try{
-				return std::forward<F>(f)(std::forward<Args>(arguments)...);
-			}
-			catch (...){
-
-			}
-
-			return result_type();
-		}
-
-		//! \tparam F Typ metody jak¹ wo³amy
-		//! \tparam Args Typy argumentów z jakimi wo³amy metodê
-		//! \param f Wo³ana metoda
-		//! \param arguments Argumenty metody
-		template<class F, class... Args>
-		static typename std::result_of<F(Args...)>::type call(typename std::result_of<F(Args...)>::type && failReturn, F&& f, Args&&... arguments)
-		{
-			typedef typename std::result_of<F(Args...)>::type result_type;
-
-			try{
-				return std::forward<F>(f)(std::forward<Args>(arguments)...);
-			}
-			catch (...){
-
-			}
-
-			return std::forward<result_type>(failReturn);
 		}
 	};
 }

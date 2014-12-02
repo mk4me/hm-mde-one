@@ -9,80 +9,6 @@
 using namespace networkUtils;
 using namespace utils;
 
-
-class CURLManager::WaitCurl::WaitCurlImpl
-{
-	friend class CURLManagerImpl;
-
-public:
-	//! Konstruktor domyslny
-	WaitCurlImpl() : result_(CURLE_OK) {}
-	//! Destruktor
-	~WaitCurlImpl() { wait_.notify_all(); }
-
-	void wait()
-	{
-		std::mutex sync;
-		std::unique_lock<std::mutex> lock(sync);
-		wait_.wait(lock);
-	}
-
-	//! \return Rezultat obs³ugi po³¹czenia
-	const CURLcode result() const
-	{
-		return result_;
-	}
-
-	//! \return Rezultat obs³ugi po³¹czenia
-	void setResult(const CURLcode result)
-	{
-		result_ = result;
-	}
-
-	const std::string error() const
-	{
-		return error_;
-	}
-
-	void setError(const std::string error)
-	{
-		error_ = error;
-	}
-
-private:
-	//! Obiekt synchronizuj¹cy
-	std::condition_variable wait_;
-	//! Rezultat obs³ugi po³aczenia
-	std::atomic<CURLcode> result_;
-	//! Opis b³êdu
-	std::string error_;
-};
-
-CURLManager::WaitCurl::WaitCurl() : impl(new CURLManager::WaitCurl::WaitCurlImpl)
-{
-
-}
-
-CURLManager::WaitCurl::~WaitCurl()
-{
-
-}
-
-void CURLManager::WaitCurl::wait()
-{
-	impl->wait();
-}
-
-const CURLcode CURLManager::WaitCurl::result() const
-{
-	return impl->result();
-}
-
-const std::string CURLManager::WaitCurl::error() const
-{
-	return impl->error();
-}
-
 class CURLManager::CURLManagerImpl
 {
 private:
@@ -91,21 +17,13 @@ private:
 	//! Zbiór uchwytów
 	typedef std::set<CURL*> CURLsSet;
 	//! Mapa uchwytów i obiektów na których czekamy
-	typedef std::map<CURL*, CURLManager::WaitCurl*> CURLsWaitMap;
+	typedef std::map<CURL*, std::promise<CURLcode>> CURLsWaitMap;
 
 private:
 
 	void tryUnlockAndRemove(CURL * curl)
 	{
-		auto IT = currentCurls.find(curl);
-		if (IT != currentCurls.end()){
-			if (IT->second != nullptr){
-				IT->second->impl->wait_.notify_all();
-			}
-
-			currentCurls.erase(IT);
-		}
-		
+		currentCurls.erase(curl);		
 		manager->onRemoveRequest(curl);
 	}
 
@@ -118,8 +36,6 @@ private:
 			}
 		}
 	}
-
-
 
 public:
 	CURLManagerImpl(CURLM * multi, CURLManager * manager, const bool releaseCurl) : multi(multi),
@@ -155,7 +71,7 @@ public:
 		condVar.notify_one();
 	}
 
-	void addRequest(CURL * curl, CURLManager::WaitCurl * wait)
+	std::future<CURLcode> addRequest(CURL * curl)
 	{
 		ScopedLock lock(sync);
 
@@ -164,31 +80,10 @@ public:
 		}
 
 		// czy jest ju¿ dodany do obs³ugi?
-		auto it = currentCurls.find(curl);
-		if (it == currentCurls.end()){
+		if (currentCurls.find(curl) != currentCurls.end() ||
+			toAddCurlsSet.find(curl) != toAddCurlsSet.end()){
 
-			bool lock = true;
-
-			// czy ju¿ go czasem nie prubuje dodaæ?
-			auto IT = toAddCurlsSet.find(curl);
-			if (IT != toAddCurlsSet.end()){
-				// jeszcze raz dodaje ten sam uchwyt, mo¿e inny wait?
-				if (IT->second != wait){
-
-					if (IT->second != nullptr){
-						// muszê poprzedni zwolniæ
-						IT->second->impl->wait_.notify_all();
-					}
-
-					IT->second = wait;
-				}
-				else{
-					lock = false;
-				}
-			}
-			else{
-				toAddCurlsSet[curl] = wait;
-			}
+			throw std::runtime_error("CURL handle already managed");
 		}
 		
 		// usuwam jeœli by³ w kolejce do usuniêcia
@@ -196,6 +91,8 @@ public:
 
 		// budzimy przetwarzanie
 		condVar.notify_one();
+
+		return toAddCurlsSet[curl].get_future();
 	}
 
 	void removeRequest(CURL * curl)
@@ -212,12 +109,6 @@ public:
 			// czy w kolejce do dowania
 			auto IT = toAddCurlsSet.find(curl);
 			if(IT != toAddCurlsSet.end()){
-				// czy by³ obiekt oczekujacy
-				if (IT->second != nullptr){
-					// zwalniamy
-					IT->second->impl->wait_.notify_all();
-				}
-
 				toAddCurlsSet.erase(IT);
 			}
 		}
@@ -251,7 +142,7 @@ public:
 				auto curl = it->first;
 				if (curl_multi_add_handle(multi, curl) == CURLM_OK){
 					manager->onAddRequest(curl);
-					currentCurls.insert(*it);
+					currentCurls.insert(std::move(*it));
 				}
 			}
 
@@ -284,8 +175,8 @@ public:
 				if (info->msg == CURLMSG_DONE){
 
 					auto it = currentCurls.find(info->easy_handle);
-					if (it != currentCurls.end() && it->second != nullptr){
-						it->second->impl->setResult(info->data.result);
+					if (it != currentCurls.end()){
+						it->second.set_value(info->data.result);
 					}
 
 					// jaki jest stan uchwytu
@@ -299,10 +190,6 @@ public:
 					default:
 					{
 						std::string e(curl_easy_strerror(info->data.result));
-						auto it = currentCurls.find(info->easy_handle);
-						if (it != currentCurls.end() && it->second != nullptr){
-							it->second->impl->setError(e);
-						}
 						manager->onErrorRequest(info->easy_handle, e);
 					}
 						
@@ -373,9 +260,9 @@ CURLManager::~CURLManager()
 {
 }
 
-void CURLManager::addRequest(CURL * curl, WaitCurl * wait)
+std::future<CURLcode> CURLManager::addRequest(CURL * curl)
 {
-	impl->addRequest(curl, wait);
+	return impl->addRequest(curl);
 }
 
 void CURLManager::removeRequest(CURL * curl)

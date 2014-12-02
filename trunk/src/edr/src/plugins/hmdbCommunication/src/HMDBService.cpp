@@ -16,10 +16,8 @@ public:
 
 	virtual CURLcode execute(CURL * curl)
 	{
-		utils::shared_ptr<networkUtils::CURLManager::WaitCurl> wait(new networkUtils::CURLManager::WaitCurl);
-		manager->addRequest(curl, wait.get());
-		wait->wait();
-		return wait->result();
+		auto f = manager->addRequest(curl);
+		return f.get();
 	}
 
 private:
@@ -168,12 +166,9 @@ const bool HMDBService::serverOnline(const std::string & url,
 
 	bool ret = false;
 
-	try{
-		networkUtils::CURLManager::WaitCurl  wait;
-		servicesManager->addRequest(curl, &wait);
-		wait.wait();
-
-		if (wait.result() == CURLE_OK){
+	try{		
+		auto f = servicesManager->addRequest(curl);
+		if (f.get() == CURLE_OK){
 
 			long retcode = -1;
 			//kiedys CURLINFO_HTTP_CODE
