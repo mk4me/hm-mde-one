@@ -46,7 +46,7 @@ namespace core
 			}			
 		};
 
-		//! Polityka braku obs³ugi przerwania - ponownie rzuca ten sam wyj¹tek
+		//! Polityka braku obsï¿½ugi przerwania - ponownie rzuca ten sam wyjï¿½tek
 		struct LogResetableInterruptHandlingPolicy
 		{			
 			static void handle(const threadingUtils::ThreadInterruptedException & e)
@@ -55,20 +55,20 @@ namespace core
 			}			
 		};
 
-		//! Przerywalny w¹tek z funkcj¹ runnable
+		//! Przerywalny wï¿½tek z funkcjï¿½ runnable
 		typedef threadingUtils::RunnableThread<std::thread, ErrorLogCallPolicy> InnerRunnableThread;
 
 	public:
 
 		typedef threadingUtils::InterruptibleMultipleRunThread<InnerRunnableThread, ErrorLogCallPolicy, LogResetableInterruptHandlingPolicy, threadingUtils::InterrupltiblePolicy> InnerInterruptibleMultipleRunThread;
 
-		//! Wewnêtrza realizacja puli w¹tków
+		//! Wewnï¿½trza realizacja puli wï¿½tkï¿½w
 		typedef threadingUtils::InterruptibleThreadPool<InnerInterruptibleMultipleRunThread> InnerThreadPool;
 
 		//! 
 		typedef InnerThreadPool::size_type size_type;
 
-		//! Klasa w¹tku oferowanego z puli
+		//! Klasa wï¿½tku oferowanego z puli
 		class CORELIB_EXPORT Thread
 		{
 
@@ -76,12 +76,12 @@ namespace core
 
 		private:
 
-			//! Struktura opisuj¹ca w¹tek
+			//! Struktura opisujï¿½ca wï¿½tek
 			struct Description
 			{
-				//! Kto zarz¹dza w¹tkiem
+				//! Kto zarzï¿½dza wï¿½tkiem
 				std::string owner;
-				//! Co jest realizowane w w¹tku
+				//! Co jest realizowane w wï¿½tku
 				std::string destination;
 			};
 
@@ -98,20 +98,20 @@ namespace core
 
 		public:
 
-			typedef InnerInterruptibleMultipleRunThread::InterruptiblePolicy InterruptiblePolicy;
+			typedef typename InnerInterruptibleMultipleRunThread::InterruptiblePolicy InterruptiblePolicy;
 
 		private:
 
-			//! \param threadPool Pula w¹tków do której nale¿a³ pierwotnie w¹tek
+			//! \param threadPool Pula wï¿½tkï¿½w do ktï¿½rej naleï¿½aï¿½ pierwotnie wï¿½tek
 			Thread(InnerThreadPool::Thread && innerThread, const std::string & owner,
 				const std::string & destination);
 
 		public:
 
-			//! Domyœlny konstruktor
+			//! Domyï¿½lny konstruktor
 			Thread();
 
-			//! \param Other W¹tek którego zasoby przejmujemy
+			//! \param Other Wï¿½tek ktï¿½rego zasoby przejmujemy
 			Thread(Thread && Other);
 
 			//! Destruktor
@@ -150,38 +150,38 @@ namespace core
 			static const std::string currentDestination();
 
 		private:
-			//! Wewnêtrzny w¹tek wielokrotnego uruchamiania
+			//! Wewnï¿½trzny wï¿½tek wielokrotnego uruchamiania
 			InnerThreadPool::Thread innerThread;
-			//! Opis w¹tku
+			//! Opis wï¿½tku
 			utils::shared_ptr<Description> description;
-			//! Opis w¹tku
+			//! Opis wï¿½tku
 			static TLS tlsTD;
 		};
 
 		typedef std::list<Thread> Threads;
 
 	public:
-		//! Domyœlny konstruktor
+		//! Domyï¿½lny konstruktor
 		ThreadPool(InnerThreadPool * tp);
 		//! Desturktor
 		~ThreadPool();
 
-		//! \return Maksymalna iloœc w¹tków jakie mo¿na utworzyæ
+		//! \return Maksymalna iloï¿½c wï¿½tkï¿½w jakie moï¿½na utworzyï¿½
 		const size_type maxThreads() const;
-		//! \return Minimalna iloœæ w¹tków utrzymywana przez manager
+		//! \return Minimalna iloï¿½ï¿½ wï¿½tkï¿½w utrzymywana przez manager
 		const size_type minThreads() const;
-		//! \return Iloœæ aktualnie zajêtych w¹tków
+		//! \return Iloï¿½ï¿½ aktualnie zajï¿½tych wï¿½tkï¿½w
 		const size_type threadsCount() const;
-		//! \return Nowy w¹tek		
+		//! \return Nowy wï¿½tek		
 		Thread get(const std::string & who, const std::string & destination);
 
-		//! \param groupSize Iloœæ w¹tków w grupie
-		//! \param threads [out] Lista z nowymi w¹tkami, dopisujemy zawsze na koñcu
-		//! \return Iloœæ faktycznie dostarczonych w¹tków
+		//! \param groupSize Iloï¿½ï¿½ wï¿½tkï¿½w w grupie
+		//! \param threads [out] Lista z nowymi wï¿½tkami, dopisujemy zawsze na koï¿½cu
+		//! \return Iloï¿½ï¿½ faktycznie dostarczonych wï¿½tkï¿½w
 		const size_type get(const size_type groupSize, Threads & threads, const bool exact,
 			const std::string & who, const std::string & destination = std::string());
 
-		//! \param log Logger którego u¿ywamy do logowania
+		//! \param log Logger ktï¿½rego uï¿½ywamy do logowania
 		static void setLog(LogPtr log);
 
 	private:
@@ -189,7 +189,7 @@ namespace core
 		static void logError(const std::string & message = std::string());
 
 	private:
-		//! Wewnêtrzny tp
+		//! Wewnï¿½trzny tp
 		InnerThreadPool * tp;
 		//! Logger
 		static LogPtr log_;

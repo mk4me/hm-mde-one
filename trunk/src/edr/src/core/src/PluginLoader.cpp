@@ -74,7 +74,21 @@ void PluginLoader::load()
 	static const std::regex pluginFilter("libplugin_.*\\.so");
 #endif
 
-	std::list<core::JobManager::Job<void>> jobsList;
+	for(auto pathIT = paths.begin(); pathIT != paths.end(); ++pathIT) {
+
+		auto localFiles = core::Filesystem::listFiles(*pathIT, true);
+
+		for (auto fileIT = localFiles.begin(); fileIT != localFiles.end(); ++fileIT){
+
+			// Skip if no match
+			if (!std::regex_match((*fileIT).leaf().string(), pluginFilter)) continue;
+
+			addPlugIn(*fileIT);
+		}
+
+	}
+
+	/*std::list<core::JobManager::Job<void>> jobsList;
 
 	auto jm = core::getJobManager();
 
@@ -109,7 +123,7 @@ void PluginLoader::load()
 
 	for (auto & job : jobsList){
 		job.wait();
-	}
+	}*/
 }
 
 HMODULE PluginLoader::loadSharedLibrary(const Filesystem::Path & path)

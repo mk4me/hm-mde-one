@@ -19,22 +19,22 @@
 #include <utils/Utils.h>
 namespace threadingUtils
 {
-	//! \tparam Thread Typ w¹tku jaki wrapujemy do postaci runnable
-	//! \tparam CallPolicy Sposób wo³ania metod przez w¹tek
+	//! \tparam Thread Typ wï¿½tku jaki wrapujemy do postaci runnable
+	//! \tparam CallPolicy Sposï¿½b woï¿½ania metod przez wï¿½tek
 	template<typename Thread, typename ExceptionHandlePolicy = RawCallPolicy>
 	class RunnableThread
 	{
 	public:
 
-		//! Konstruktor domyœlny
+		//! Konstruktor domyï¿½lny
 		RunnableThread()  : launched(false) {}
-		//! \param Other W¹tek którego zasoby przejmujemy
+		//! \param Other Wï¿½tek ktï¿½rego zasoby przejmujemy
 		RunnableThread(RunnableThread&& Other)  : launched(std::move(Other.launched)), thread(std::move(Other.thread)) {}
 		RunnableThread(const RunnableThread&) = delete;
 		//! Destruktor
 		~RunnableThread() {}
 		
-		//! \param Other W¹tek którego zasoby przejmujemy
+		//! \param Other Wï¿½tek ktï¿½rego zasoby przejmujemy
 		RunnableThread& operator=(RunnableThread&& Other) { launched = std::move(Other.launched); thread = std::move(Other.thread); return *this; }
 		RunnableThread& operator=(const RunnableThread&) = delete;
 
@@ -161,7 +161,7 @@ namespace threadingUtils
 						return ff();
 					}
 					catch (...){
-						auto e = std::current_exception()
+						auto e = std::current_exception();
 						ExceptionHandlePolicy::handle(e);
 						std::rethrow_exception(e);
 					}

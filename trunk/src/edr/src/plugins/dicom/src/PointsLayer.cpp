@@ -201,7 +201,7 @@ int dicom::PointsLayer::getPointIdx( QGraphicsItem* itm )
 
 dicom::PointsLayer* dicom::PointsLayer::clone() const
 {
-    std::unique_ptr<PointsLayer> pl = std::make_unique<PointsLayer>(getAdnotationIdx());    
+    std::unique_ptr<PointsLayer> pl(new PointsLayer(getAdnotationIdx()));    
     pl->setName(this->name);
     pl->setPointsDrawer(IPointsDrawerPtr(pointsDrawer->clone()));
 

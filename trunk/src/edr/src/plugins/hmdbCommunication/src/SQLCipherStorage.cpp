@@ -44,7 +44,8 @@ public:
 
 const bool initialize(sqlite3 * db)
 {
-	return sqliteUtils::SQLiteDB::exec(db, "CREATE TABLE files_table (file_name TEXT PRIMARY KEY, file BLOB);", maxSqliteExecTries, sqliteExecWaitMS) == SQLITE_DONE;
+	auto ret = sqliteUtils::SQLiteDB::exec(db, "CREATE TABLE files_table (file_name TEXT PRIMARY KEY, file BLOB);", maxSqliteExecTries, sqliteExecWaitMS);
+	return ret == SQLITE_DONE || ret == SQLITE_OK;
 }
 
 const bool checkStructure(sqlite3 * db)
@@ -528,9 +529,17 @@ const bool SQLCipherStorage::create(const core::Filesystem::Path & path,
 		return false;
 	}	
 	
-	sqliteUtils::SQLiteDB::Wrapper db(sqliteUtils::SQLiteDB::open(path.string(), key, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_SHAREDCACHE), sqliteUtils::SQLiteDB::Close(maxSqliteExecTries, sqliteExecWaitMS));	
+	sqliteUtils::SQLiteDB::Wrapper db(sqliteUtils::SQLiteDB::open(path.string(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_SHAREDCACHE), sqliteUtils::SQLiteDB::Close(maxSqliteExecTries, sqliteExecWaitMS));
 	if (db != nullptr){
-		return initialize(db);
+		auto ret = initialize(db);
+		if (ret == true) {
+			if (sqlite3_key(db, key.c_str(), key.size()) == SQLITE_OK) {
+				return ret;
+			} else {
+				return false;
+			}
+		}
+		return ret;
 	}
 
 	return false;

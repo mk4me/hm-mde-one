@@ -261,7 +261,7 @@ void MdeMainWindow::addPropertiesToServiceWindow( plugin::IServicePtr service, M
 
 void MdeMainWindow::onAbout()
 {
-	std::unique_ptr<AboutDialog> dialog = std::make_unique<AboutDialog>();
+	std::unique_ptr<AboutDialog> dialog(new AboutDialog);
 	dialog->exec();
 }
 

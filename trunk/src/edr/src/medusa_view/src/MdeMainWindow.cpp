@@ -51,8 +51,8 @@ class MEDUSAHMDBSourceView : public hmdbCommunication::IHMDBSourceViewManager::I
 public:
 	//! \return Nazwa widoku
 	virtual const QString name() const { return QObject::tr("MEDUSA view"); }
-	//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych jakim zasilamy widok
-	//! \return Widok obs³uguj¹cy kontekst
+	//! \param shallowCopyContext Kontekst pï¿½ytkiej kopii bazy danych jakim zasilamy widok
+	//! \return Widok obsï¿½ugujï¿½cy kontekst
 	virtual QWidget * createView(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext, hmdbCommunication::IHMDBSourceViewManager * viewManager) {
 
 		auto ret = new GeneralSourceViewWidget(shallowCopyContext);
@@ -109,7 +109,7 @@ public:
 
 		return ret;
 	}
-	//! \return Czy dany widok wymaga po³¹czenia z us³ugami webowymi
+	//! \return Czy dany widok wymaga poï¿½ï¿½czenia z usï¿½ugami webowymi
 	virtual const bool requiresRemoteContext() const { return true; }
 };
 
@@ -145,7 +145,7 @@ public:
 
 		auto subjectsITEnd = shallowCopy.motionShallowCopy.performers.end();
 		for (auto subjectIT = shallowCopy.motionShallowCopy.performers.begin(); subjectIT != subjectsITEnd; ++subjectIT){
-			//jeœli pusty pacjent to go pomijamy
+			//jeï¿½li pusty pacjent to go pomijamy
 			if (subjectIT->second->performerConfs.empty() == true){
 				continue;
 			}
@@ -191,9 +191,9 @@ public:
 		}
 	}
 
-	const bool MEDUSAPerspective::headers(const QTreeWidgetItem * item, QStringList & headers) const
+	const bool headers(const QTreeWidgetItem * item, QStringList & _headers) const
 	{
-		headers << QObject::tr("Database");
+		_headers << QObject::tr("Database");
 		return true;
 	}
 

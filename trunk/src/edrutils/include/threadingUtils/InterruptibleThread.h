@@ -18,12 +18,15 @@
 
 namespace threadingUtils
 {
-	//! \tparam RunnableThread Polityka w¹tku z metod¹ uruchamiania zadañ run
-	//! \tparam InterruptHandlingPolicy Polityka obs³ugi przerwania w w¹tku
-	//! \tparam InteruptiblePolicy Polityka realizuj¹ca przerywanie w¹tku
-	template<typename RunnableThread, typename ExceptionHandlePolicy = RawCallPolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InterruptiblePolicy = NoInterruptiblePolicy>
+	//! \tparam RunnableThread Polityka wï¿½tku z metodï¿½ uruchamiania zadaï¿½ run
+	//! \tparam InterruptHandlingPolicy Polityka obsï¿½ugi przerwania w wï¿½tku
+	//! \tparam InteruptiblePolicy Polityka realizujï¿½ca przerywanie wï¿½tku
+	template<typename RunnableThread, typename ExceptionHandlePolicy = RawCallPolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InterruptiblePolicyT = NoInterruptiblePolicy>
 	class InterrubtibleThread
 	{
+	public:
+		typedef InterruptiblePolicyT InterruptiblePolicy;
+
 	private:
 
 		struct SharedState
@@ -41,9 +44,6 @@ namespace threadingUtils
 			InterruptiblePolicy interruptible;
 		};
 
-	public:
-
-		typedef InterruptiblePolicy InterruptiblePolicy;
 
 	public:
 
@@ -95,9 +95,12 @@ namespace threadingUtils
 		utils::shared_ptr<SharedState> sharedState;
 	};
 
-	template<typename RunnableThread, typename ExceptionHandlePolicy = RawCallPolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InterruptiblePolicy = NoInterruptiblePolicy>
+	template<typename RunnableThread, typename ExceptionHandlePolicy = RawCallPolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InterruptiblePolicyT = NoInterruptiblePolicy>
 	class InterruptibleMultipleRunThread
 	{
+	public:
+
+			typedef InterruptiblePolicyT InterruptiblePolicy;
 	private:
 
 		typedef InterruptibleMultipleRunThread<RunnableThread, ExceptionHandlePolicy, InterruptHandlingPolicy, InterruptiblePolicy> MyThreadType;
@@ -121,9 +124,7 @@ namespace threadingUtils
 			InterruptiblePolicy interruptible;
 		};
 
-	public:
 
-		typedef InterruptiblePolicy InterruptiblePolicy;
 
 	public:
 

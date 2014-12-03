@@ -447,6 +447,6 @@ void MdeMainWindowController::handleContext( coreUI::IMdeTabPtr tab, QToolButton
 
 void MdeMainWindow::onAbout()
 {
-	std::unique_ptr<AboutDialog> dialog = std::make_unique<AboutDialog>();
+	std::unique_ptr<AboutDialog> dialog(new AboutDialog);
 	dialog->exec();
 }

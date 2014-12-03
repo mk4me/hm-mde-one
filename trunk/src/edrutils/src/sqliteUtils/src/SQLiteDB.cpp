@@ -61,11 +61,11 @@ const int SQLiteDB::exec(sqlite3 * db, const std::string & query, unsigned int r
 	do{
 		rc = sqlite3_exec(db, query.c_str(), nullptr, nullptr, nullptr);
 
-		if (rc != SQLITE_OK && rc != SQLITE_ROW && retriesCount > 0 && stepWaitTime > 0){
+		if (rc != SQLITE_DONE && rc != SQLITE_OK && rc != SQLITE_ROW && retriesCount > 0 && stepWaitTime > 0){
 			std::this_thread::sleep_for(std::chrono::milliseconds(stepWaitTime));
 		}
 
-	} while (rc != SQLITE_OK && rc != SQLITE_ROW && (tries++ < retriesCount));
+	} while (rc != SQLITE_DONE && rc != SQLITE_OK && rc != SQLITE_ROW && (tries++ < retriesCount));
 
 	return rc;
 }
@@ -81,7 +81,7 @@ sqlite3 * SQLiteDB::open(const std::string & path, const std::string & key,
 	sqlite3 * db = open(path, flags);	
 
 	if (db != nullptr && key.empty() == false){
-		auto rc = sqlite3_key(db, key.c_str(), key.size());		
+		auto rc = sqlite3_key(db, key.c_str(), key.size());
 		if (rc != SQLITE_OK){
 			close(db);
 			db = nullptr;

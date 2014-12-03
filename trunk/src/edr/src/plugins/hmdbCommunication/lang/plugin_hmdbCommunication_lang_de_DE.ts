@@ -1,47 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de_DE">
-<context>
-    <name>AccountActivationWidget</name>
-    <message>
-        <location filename="../ui/AccountActivationWidget.ui" line="14"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/AccountActivationWidget.ui" line="20"/>
-        <source>Login:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/AccountActivationWidget.ui" line="30"/>
-        <source>Activation code:</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>AccountRegistrationWidget</name>
-    <message>
-        <location filename="../ui/AccountRegistrationWidget.ui" line="14"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/AccountRegistrationWidget.ui" line="20"/>
-        <source>Repeat password:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/AccountRegistrationWidget.ui" line="34"/>
-        <source>Name:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/AccountRegistrationWidget.ui" line="51"/>
-        <source>Surname:</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
+<TS version="2.1" language="de_DE">
 <context>
     <name>AntropometricDataWidget</name>
     <message>
@@ -155,39 +114,6 @@
     <message>
         <location filename="../src/AntropometricDataWidget.cpp" line="286"/>
         <source>Hand Thickness</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>DataConfigurationWidget</name>
-    <message>
-        <location filename="../ui/DataConfigurationWidget.ui" line="14"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/DataConfigurationWidget.ui" line="20"/>
-        <source>Data FTP URL:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/DataConfigurationWidget.ui" line="30"/>
-        <source>Data FTP SSL Certificate:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/DataConfigurationWidget.ui" line="42"/>
-        <source>Open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DataConfigurationWidget.cpp" line="52"/>
-        <source>Open certificate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/DataConfigurationWidget.cpp" line="52"/>
-        <source>Certificate File (*.crt)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -716,6 +642,29 @@
     </message>
 </context>
 <context>
+    <name>DataViewConfigurationWidget</name>
+    <message>
+        <location filename="../ui/DataViewConfigurationWidget.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/DataViewConfigurationWidget.ui" line="20"/>
+        <source>Filter:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/DataViewConfigurationWidget.ui" line="30"/>
+        <source>Perspective:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/DataViewConfigurationWidget.ui" line="40"/>
+        <source>Content:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DataViewWidget</name>
     <message>
         <location filename="../ui/DataViewWidget.ui" line="14"/>
@@ -723,53 +672,120 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/DataViewWidget.ui" line="29"/>
+        <location filename="../ui/DataViewWidget.ui" line="38"/>
         <source>Load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/DataViewWidget.ui" line="34"/>
+        <location filename="../ui/DataViewWidget.ui" line="43"/>
         <source>Load All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/DataViewWidget.ui" line="39"/>
+        <location filename="../ui/DataViewWidget.ui" line="48"/>
         <source>Unload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/DataViewWidget.ui" line="44"/>
+        <location filename="../ui/DataViewWidget.ui" line="53"/>
         <source>Unload All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/DataViewWidget.ui" line="49"/>
+        <location filename="../ui/DataViewWidget.ui" line="58"/>
         <source>Rebuild</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/DataViewWidget.ui" line="54"/>
+        <location filename="../ui/DataViewWidget.ui" line="63"/>
         <source>Refresh status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/DataViewWidget.ui" line="59"/>
+        <location filename="../ui/DataViewWidget.ui" line="68"/>
         <source>Synchronize</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/DataViewWidget.ui" line="64"/>
+        <location filename="../ui/DataViewWidget.ui" line="73"/>
         <source>Download</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/DataViewWidget.ui" line="69"/>
+        <location filename="../ui/DataViewWidget.ui" line="78"/>
         <source>Download All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/DataViewWidget.ui" line="74"/>
+        <location filename="../ui/DataViewWidget.ui" line="83"/>
         <source>Force download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/DataViewWidget.ui" line="88"/>
+        <source>Force download all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/DataViewWidget.ui" line="93"/>
+        <source>Force synchronize</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DataViewWidget.cpp" line="319"/>
+        <location filename="../src/DataViewWidget.cpp" line="343"/>
+        <source>Synchronization required</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DataViewWidget.cpp" line="319"/>
+        <source>Since last synchronization (%1) some changes were made in database (last: %2). It is suggested to synchronize data. Would You like to synchronize now?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DataViewWidget.cpp" line="338"/>
+        <source>No data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DataViewWidget.cpp" line="338"/>
+        <source>You are working in offline mode and there is no data for You in the storage. All operations are disabled. Try to switch to online mode or change storage.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DataViewWidget.cpp" line="343"/>
+        <source>You must synchronize with database to gain access to data. Do You want to synchronize?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DataViewWidget.cpp" line="527"/>
+        <source>Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DataViewWidget.cpp" line="1406"/>
+        <source>Synchronization</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DataViewWidget.cpp" line="1500"/>
+        <location filename="../src/DataViewWidget.cpp" line="1511"/>
+        <source>Download disk space requirements</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DataViewWidget.cpp" line="1500"/>
+        <source>Requested download requires %1 to store and it exceeds capability of the storage. Please limit amount of elements for download and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DataViewWidget.cpp" line="1511"/>
+        <source>Requested download requires %1 to store the data while only %2 is available. Please ensure there is enough space on the disk for download and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/DataViewWidget.cpp" line="1527"/>
+        <source>Downloading</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -786,89 +802,89 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="53"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="64"/>
         <source>Session Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="63"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="74"/>
         <source>Personal data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="71"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="82"/>
         <source>Disorders</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="77"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="88"/>
         <source>Sessions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="81"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="92"/>
         <source>Notes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="100"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="111"/>
         <source>Anthropometric Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="176"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="187"/>
         <source>Session group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="177"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="188"/>
         <source>Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="182"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="193"/>
         <source>Session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="183"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="194"/>
         <source>Laboratory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="184"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="195"/>
         <source>Owner ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="185"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="196"/>
         <source>Motion kind</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="186"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="197"/>
         <source>Tags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="187"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="198"/>
         <source>Attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="218"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="229"/>
         <source>After treatment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="246"/>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="267"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="257"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="278"/>
         <source>Upper body</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="263"/>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="291"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="274"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="302"/>
         <source>Lower body</source>
         <translation type="unfinished"></translation>
     </message>
@@ -911,6 +927,14 @@
     <message>
         <location filename="../ui/DownloadStatusWidget.ui" line="52"/>
         <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GeneralSourceViewWidget</name>
+    <message>
+        <location filename="../ui/GeneralSourceViewWidget.ui" line="14"/>
+        <source>GeneralSourceView</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1134,6 +1158,34 @@
     </message>
 </context>
 <context>
+    <name>OperationProgressWidget</name>
+    <message>
+        <location filename="../ui/OperationProgressWidget.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/OperationProgressWidget.ui" line="20"/>
+        <source>Operation:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/OperationProgressWidget.ui" line="27"/>
+        <source>OPERATION_NAME</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/OperationProgressWidget.ui" line="34"/>
+        <source>Progress:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/OperationProgressWidget.ui" line="51"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PersonalDataWidget</name>
     <message>
         <location filename="../ui/PersonalDataWidget.ui" line="20"/>
@@ -1193,213 +1245,206 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceBaseContent.cpp" line="45"/>
-        <location filename="../src/DataSourceBaseContent.cpp" line="99"/>
+        <location filename="../src/DataSourceDefaultContent.cpp" line="43"/>
+        <location filename="../src/DataSourceDefaultContent.cpp" line="94"/>
         <source>Subject</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourcePerspective.cpp" line="233"/>
-        <source>Disorder</source>
+        <location filename="../src/DataSourceDefaultContent.cpp" line="19"/>
+        <source>Default Content</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceBaseContent.cpp" line="95"/>
-        <location filename="../src/DataSourcePerspective.cpp" line="79"/>
+        <location filename="../src/DataSourceDefaultContent.cpp" line="90"/>
         <source>Patient</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceBaseContent.cpp" line="103"/>
+        <location filename="../src/DataSourceDefaultContent.cpp" line="98"/>
         <source>Session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceBaseContent.cpp" line="107"/>
+        <location filename="../src/DataSourceDefaultContent.cpp" line="102"/>
         <source>Motion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourceBaseContent.cpp" line="111"/>
+        <location filename="../src/DataSourceDefaultContent.cpp" line="106"/>
         <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourcePerspective.cpp" line="140"/>
-        <source>Sessions only</source>
+        <location filename="../src/DataSourcePerspective.cpp" line="90"/>
+        <source>Patients</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourcePerspective.cpp" line="219"/>
-        <source>Data base</source>
+        <location filename="../src/DataSourcePerspective.cpp" line="149"/>
+        <source>Disorders</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DataSourcePerspective.cpp" line="278"/>
-        <location filename="../src/DataSourcePerspective.cpp" line="322"/>
+        <location filename="../src/DataSourcePerspective.cpp" line="195"/>
+        <location filename="../src/DataSourcePerspective.cpp" line="239"/>
         <source>Gender</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/DefaultPatientCardWidget.cpp" line="213"/>
+        <location filename="../src/DefaultPatientCardWidget.cpp" line="224"/>
         <source>Before treatment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="84"/>
+        <location filename="../src/TreeBuilder.cpp" line="83"/>
         <source>Analog data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="87"/>
+        <location filename="../src/TreeBuilder.cpp" line="86"/>
         <source>EMG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="91"/>
+        <location filename="../src/TreeBuilder.cpp" line="90"/>
         <source>GRF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="98"/>
+        <location filename="../src/TreeBuilder.cpp" line="97"/>
         <source>Kinetic data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="107"/>
+        <location filename="../src/TreeBuilder.cpp" line="106"/>
         <source>Forces</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="110"/>
+        <location filename="../src/TreeBuilder.cpp" line="109"/>
         <source>Moments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="114"/>
+        <location filename="../src/TreeBuilder.cpp" line="113"/>
         <source>Powers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="123"/>
+        <location filename="../src/TreeBuilder.cpp" line="122"/>
         <source>Kinematic data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="135"/>
+        <location filename="../src/TreeBuilder.cpp" line="134"/>
         <source>Markers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="139"/>
+        <location filename="../src/TreeBuilder.cpp" line="138"/>
         <source>Joints</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="144"/>
+        <location filename="../src/TreeBuilder.cpp" line="143"/>
         <source>Videos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="471"/>
+        <location filename="../src/TreeBuilder.cpp" line="470"/>
         <source>Multichart/Normalized left from motion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="473"/>
+        <location filename="../src/TreeBuilder.cpp" line="472"/>
         <source>Multichart/Normalized right from motion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="546"/>
+        <location filename="../src/TreeBuilder.cpp" line="545"/>
         <source>Multichart/Normalized left from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="548"/>
+        <location filename="../src/TreeBuilder.cpp" line="547"/>
         <source>Multichart/Normalized right from session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="566"/>
+        <location filename="../src/TreeBuilder.cpp" line="565"/>
         <source>Motion: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="567"/>
+        <location filename="../src/TreeBuilder.cpp" line="566"/>
         <source>Session: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="568"/>
+        <location filename="../src/TreeBuilder.cpp" line="567"/>
         <source>Subject: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="576"/>
+        <location filename="../src/TreeBuilder.cpp" line="575"/>
         <source>Owner: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="585"/>
+        <location filename="../src/TreeBuilder.cpp" line="584"/>
         <source>Date: %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="595"/>
+        <location filename="../src/TreeBuilder.cpp" line="594"/>
         <source>Patient: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TreeBuilder.cpp" line="603"/>
+        <location filename="../src/TreeBuilder.cpp" line="602"/>
         <source>Weight: </source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>ResetPasswordWidget</name>
     <message>
-        <location filename="../ui/ResetPasswordWidget.ui" line="14"/>
-        <source>Form</source>
+        <location filename="../src/DataViewConfigurationWidget.cpp" line="14"/>
+        <source>No filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/ResetPasswordWidget.ui" line="20"/>
-        <source>E-mail:</source>
+        <location filename="../src/DataViewWidget.cpp" line="1468"/>
+        <source>KB(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ResetPasswordWidget.cpp" line="63"/>
-        <source>Password reset successful</source>
+        <location filename="../src/DataViewWidget.cpp" line="1468"/>
+        <source>MB(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ResetPasswordWidget.cpp" line="66"/>
-        <source>Password reset failed with the following error: </source>
+        <location filename="../src/DataViewWidget.cpp" line="1468"/>
+        <source>GB(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ResetPasswordWidget.cpp" line="69"/>
-        <source>Password reset failed with UNKNOWN error</source>
+        <location filename="../src/DataViewWidget.cpp" line="1468"/>
+        <source>TB(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ResetPasswordWidget.cpp" line="72"/>
-        <source>Password reset status</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ServerStatusCheckConfigurationWidget</name>
-    <message>
-        <location filename="../ui/ServerStatusCheckConfigurationWidget.ui" line="14"/>
-        <source>Form</source>
+        <location filename="../src/DataViewWidget.cpp" line="1471"/>
+        <source>byte(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/ServerStatusCheckConfigurationWidget.ui" line="20"/>
-        <source>Timeout [ms]:</source>
+        <location filename="../src/SourceOptionsWidget.cpp" line="376"/>
+        <source>UNKNOWN error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="392"/>
+        <source>Error(s)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1474,7 +1519,7 @@
     </message>
     <message>
         <location filename="../ui/SourceOptionsWidget.ui" line="27"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="377"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="434"/>
         <source>Login</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1489,418 +1534,603 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="70"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="88"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="77"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="98"/>
         <source>Del</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="101"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="124"/>
         <source>User credentials</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="107"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="130"/>
         <source>Login:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="117"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="174"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="342"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="516"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="140"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="227"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="399"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="573"/>
         <source>Password:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="147"/>
-        <source>Storage</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="153"/>
-        <source>Path:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="165"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="286"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="455"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="839"/>
-        <source>Browse</source>
+        <location filename="../ui/SourceOptionsWidget.ui" line="172"/>
+        <source>&lt;&lt; Advanced</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ui/SourceOptionsWidget.ui" line="200"/>
-        <source>Source mode</source>
+        <source>Storage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ui/SourceOptionsWidget.ui" line="206"/>
+        <source>Path:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/SourceOptionsWidget.ui" line="218"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="343"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="512"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="900"/>
+        <source>Browse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/SourceOptionsWidget.ui" line="257"/>
+        <source>Source mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/SourceOptionsWidget.ui" line="263"/>
         <source>Online</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="242"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="299"/>
         <source>Connections</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="248"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="305"/>
         <source>Services</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="254"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="304"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="311"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="361"/>
         <source>Motion URL:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="264"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="318"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="321"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="375"/>
         <source>Medical URL:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="274"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="443"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="827"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="331"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="500"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="888"/>
         <source>SSL certificate:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="298"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="355"/>
         <source>Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="332"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="506"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="637"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="389"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="563"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="698"/>
         <source>User:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="400"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="457"/>
         <source>Account operations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="408"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="465"/>
         <source>Connection:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="427"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="484"/>
         <source>Service</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="433"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="817"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="490"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="878"/>
         <source>URL:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="464"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="521"/>
         <source>Propagate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="494"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="602"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="551"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="663"/>
         <source>Register</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="500"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="557"/>
         <source>User data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="526"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="587"/>
         <source>Repeat password:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="540"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="601"/>
         <source>Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="557"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="618"/>
         <source>Surname:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="574"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="635"/>
         <source>Email</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="625"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="675"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="686"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="736"/>
         <source>Activate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="631"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="692"/>
         <source>Activation data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="647"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="708"/>
         <source>Activation code:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="698"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="759"/>
         <source>Reset password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="704"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="765"/>
         <source>Password reset data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="710"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="771"/>
         <source>Email:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="738"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="799"/>
         <source>Reset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="786"/>
-        <location filename="../ui/SourceOptionsWidget.ui" line="811"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="847"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="872"/>
         <source>Server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="864"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="925"/>
         <source>Status check parameters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="870"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="931"/>
         <source>Timeout [ms]:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="901"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="962"/>
         <source>Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="921"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="982"/>
         <source>Check</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/SourceOptionsWidget.ui" line="778"/>
+        <location filename="../ui/SourceOptionsWidget.ui" line="839"/>
         <source>Server status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="101"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="352"/>
         <source>Open storage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="101"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="352"/>
         <source>Storage File (*.dat)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="109"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="362"/>
         <source>Chose service certificate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="109"/>
-        <location filename="../src/SourceOptionsWidget.cpp" line="233"/>
-        <location filename="../src/SourceOptionsWidget.cpp" line="360"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="362"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="480"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="609"/>
         <source>Certificate File (*.crt)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="129"/>
-        <source>Login operation failed. Storage file not exists or was not chosen.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="139"/>
-        <source>Login operation failed. Could not open storage.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="186"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="457"/>
         <source>Logged successfully</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="191"/>
-        <location filename="../src/SourceOptionsWidget.cpp" line="208"/>
-        <source>Login operation failed with the following error: </source>
+        <location filename="../src/SourceOptionsWidget.cpp" line="104"/>
+        <source>Custom connection profile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="194"/>
-        <location filename="../src/SourceOptionsWidget.cpp" line="211"/>
-        <source>Login operation failed with UNKNOWN error</source>
+        <location filename="../src/SourceOptionsWidget.cpp" line="210"/>
+        <source>Simple</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="198"/>
-        <source>Login operation failed. Could not find HMDBSource.</source>
+        <location filename="../src/SourceOptionsWidget.cpp" line="210"/>
+        <source>Advance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="202"/>
-        <source>Login operation failed. Uninitialized source manager.</source>
+        <location filename="../src/SourceOptionsWidget.cpp" line="404"/>
+        <source>Login failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="215"/>
-        <source>Login operation failed. Could not find HMDBService.</source>
+        <location filename="../src/SourceOptionsWidget.cpp" line="466"/>
+        <source>UNKNOWN login error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="219"/>
-        <source>Login operation failed. Uninitialized service manager.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="222"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="469"/>
         <source>Login status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="233"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="480"/>
         <source>Chose account service certificate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="258"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="507"/>
         <source>Registration successful</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="261"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="510"/>
         <source>Registration failed with the following error: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="264"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="513"/>
         <source>Registration failed with UNKNOWN error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="267"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="516"/>
         <source>Registration status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="284"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="533"/>
         <source>Account %1 activation failed for service %2 with UNKNOWN error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="295"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="544"/>
         <source>Activation successful for account %1 within service %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="298"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="547"/>
         <source>Account %1 activation failed for service %2 with error: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="305"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="554"/>
         <source>Account %1 activation failed for service %2 with error: Could not find HMDBService</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="309"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="558"/>
         <source>Account %1 activation failed for service %2 with error: Uninitialized service manager</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="312"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="561"/>
         <source>Account activation status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="321"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="570"/>
         <source>Password reset for email %1 failed within service %2 with UNKNOWN error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="332"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="581"/>
         <source>Password reset successful for email %1 within service %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="335"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="584"/>
         <source>Password reset for email %1 failed for service %2 with error: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="342"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="591"/>
         <source>Password reset for email %1 failed for service %2 with error: Could not find HMDBService</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="346"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="595"/>
         <source>Password reset for email %1 failed for service %2 with error: Uninitialized service manager</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="349"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="598"/>
         <source>Password reset status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="360"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="609"/>
         <source>Chose server certificate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="384"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="635"/>
         <source>Server status: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="384"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="635"/>
         <source>On line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="384"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="635"/>
         <source>Off line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="389"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="640"/>
         <source>Server status check failed with the following error: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="392"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="643"/>
         <source>Server status check failed with UNKNOWN error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/SourceOptionsWidget.cpp" line="395"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="646"/>
         <source>Server status check</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="673"/>
+        <source>Uninitialized service manager</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="678"/>
+        <source>Uninitialized source manager</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="685"/>
+        <source>HMDBService not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="693"/>
+        <source>HMDBSource not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="700"/>
+        <source>Storage file was not not chosen.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="703"/>
+        <source>Storage file path is not the absolute path.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="707"/>
+        <source>Storage file path is not a file path. Both: file name and extension are required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="711"/>
+        <source>Storage not exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="711"/>
+        <source>Given storage does not exist. Would You like to create storage with the given parameters?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="728"/>
+        <source>Failed to create storage in the given directory - do You have required permissions?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="731"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="735"/>
+        <source>Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="731"/>
+        <source>Storage successfully created</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="735"/>
+        <location filename="../src/SourceOptionsWidget.cpp" line="736"/>
+        <source>Failed to create storage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="740"/>
+        <source>Storage file not exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="751"/>
+        <source>Could not open storage. Probably incorrect password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="762"/>
+        <source>Empty login</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="763"/>
+        <source>Empty password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="766"/>
+        <source>Empty services URLs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="772"/>
+        <source>Empty motion service URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="773"/>
+        <source>Empty motion data URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="777"/>
+        <source>Empty medical service URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="778"/>
+        <source>Empty medical data URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="797"/>
+        <source>Incorrect login or password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="802"/>
+        <source>Error while verifying user: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="805"/>
+        <source>UNKNOWN rrror while verifying user</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="832"/>
+        <source>Single-account factory service failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="837"/>
+        <source>Multi-account factory service failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="842"/>
+        <source>Administration service failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="847"/>
+        <source>Authorization service failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="852"/>
+        <source>General queries service failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="857"/>
+        <source>Motion queries service failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="862"/>
+        <source>Motion update service failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="867"/>
+        <source>Medical update service failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="872"/>
+        <source>Motion filestoreman service failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="877"/>
+        <source>Medical filestoreman service failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="882"/>
+        <source>User personal space service failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="895"/>
+        <source>Configuration error(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="898"/>
+        <source>Configuration status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/SourceOptionsWidget.cpp" line="898"/>
+        <source>Correct configuration</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1923,73 +2153,19 @@
     </message>
 </context>
 <context>
-    <name>StorageConfigurationWidget</name>
-    <message>
-        <location filename="../ui/StorageConfigurationWidget.ui" line="14"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/StorageConfigurationWidget.ui" line="20"/>
-        <source>Storage:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/StorageConfigurationWidget.ui" line="32"/>
-        <source>Open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/StorageConfigurationWidget.ui" line="41"/>
-        <source>Password:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/StorageConfigurationWidget.cpp" line="57"/>
-        <source>Open storage</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/StorageConfigurationWidget.cpp" line="57"/>
-        <source>Storage File (*.dat)</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>UserLoginDataWidget</name>
-    <message>
-        <location filename="../ui/UserLoginWidget.ui" line="14"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/UserLoginWidget.ui" line="20"/>
-        <source>Login:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/UserLoginWidget.ui" line="30"/>
-        <source>Password:</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ViewConfigurationWidget</name>
     <message>
         <location filename="../ui/ViewConfiguration.ui" line="14"/>
-        <location filename="../ui/ViewConfigurationWidget.ui" line="14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ui/ViewConfiguration.ui" line="20"/>
-        <location filename="../ui/ViewConfigurationWidget.ui" line="20"/>
         <source>View:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ui/ViewConfiguration.ui" line="30"/>
-        <location filename="../ui/ViewConfigurationWidget.ui" line="30"/>
         <source>Connection:</source>
         <translation type="unfinished"></translation>
     </message>
