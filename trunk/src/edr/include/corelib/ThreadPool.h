@@ -98,7 +98,7 @@ namespace core
 
 		public:
 
-			typedef typename InnerInterruptibleMultipleRunThread::InterruptiblePolicy InterruptiblePolicy;
+			typedef InnerInterruptibleMultipleRunThread::InterruptiblePolicy InterruptiblePolicy;
 
 		private:
 
