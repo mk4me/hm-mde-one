@@ -26,33 +26,28 @@ int curlLogDebugCallback(CURL *handle,
 		message = "header out => " + std::string(data, size);
 		break;
 	case CURLINFO_DATA_OUT:
-		message = "data out => ";
-		message.reserve(message.size() + size * 2 + 1);
-		boost::algorithm::hex(data, data + size, message.end());
+		message = "data out => ";		
+		boost::algorithm::hex(data, data + size, std::back_inserter(message));
 		break;
 	case CURLINFO_SSL_DATA_OUT:
-		message = "SSL data out #?=> ";
-		message.reserve(message.size() + size * 2 + 1);
-		boost::algorithm::hex(data, data + size, message.end());
+		message = "SSL data out #?=> ";		
+		boost::algorithm::hex(data, data + size, std::back_inserter(message));
 		break;
 	case CURLINFO_HEADER_IN:
 		message = "header in <= " + std::string(data, size);
 		break;
 	case CURLINFO_DATA_IN:
-		message = "data in <= ";
-		message.reserve(message.size() + size * 2 + 1);
-		boost::algorithm::hex(data, data + size, message.end());
+		message = "data in <= ";		
+		boost::algorithm::hex(data, data + size, std::back_inserter(message));
 		break;
 	case CURLINFO_SSL_DATA_IN:
-		message = "SSL data in <=#? ";
-		message.reserve(message.size() + size * 2 + 1);
-		boost::algorithm::hex(data, data + size, message.end());
+		message = "SSL data in <=#? ";		
+		boost::algorithm::hex(data, data + size, std::back_inserter(message));
 		break;
 
 	default:
-		message = "Unrecognized info type -> ";
-		message.reserve(message.size() + size * 2 + 1);
-		boost::algorithm::hex(data, data + size, message.end());
+		message = "Unrecognized info type -> ";		
+		boost::algorithm::hex(data, data + size, std::back_inserter(message));
 		break;
 	}
 

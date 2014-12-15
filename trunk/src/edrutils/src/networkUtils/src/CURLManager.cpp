@@ -167,17 +167,14 @@ public:
 			int messages_info = 0;
 			CURLMsg * info = nullptr;
 
-			//lista uchwytów które zakoñczy³y dzia³anie (ok, anulowano lub b³¹d)
-			std::list<CURL*> toRemove;
+			//rezultaty zakoñczonych transferów
+			std::map<CURL*, CURLcode> results;
 
 			while ((info = curl_multi_info_read(multi, &messages_info)) != nullptr) {
 				// czy uchwyt skoñczy³ ¿¹dane operacje
 				if (info->msg == CURLMSG_DONE){
 
-					auto it = currentCurls.find(info->easy_handle);
-					if (it != currentCurls.end()){
-						it->second.set_value(info->data.result);
-					}
+					results.insert(std::map<CURL*, CURLcode>::value_type(info->easy_handle, info->data.result));
 
 					// jaki jest stan uchwytu
 					switch (info->data.result){
@@ -188,21 +185,22 @@ public:
 						manager->onCancelRequest(info->easy_handle);
 						break;
 					default:
-					{
-						std::string e(curl_easy_strerror(info->data.result));
-						manager->onErrorRequest(info->easy_handle, e);
-					}
-						
+						{
+							std::string e(curl_easy_strerror(info->data.result));
+							manager->onErrorRequest(info->easy_handle, e);
+						}
 						break;					
-					}
-					toRemove.push_back(info->easy_handle);
+					}					
 				}
 			}
 
 			//usuwamy zakoñczone
-			for (auto it = toRemove.begin(); it != toRemove.end(); ++it){
-				if (curl_multi_remove_handle(multi, *it) == CURLM_OK){
-					tryUnlockAndRemove(*it);
+			for (const auto & res : results){
+				if (curl_multi_remove_handle(multi, res.first) == CURLM_OK){
+
+					auto cIT = currentCurls.find(res.first);
+					cIT->second.set_value(res.second);
+					tryUnlockAndRemove(res.first);
 				}
 			}
 		}
