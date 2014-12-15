@@ -459,7 +459,7 @@ void dicom::LayeredImageVisualizer::uploadSerie()
 
 		try{
 			/// TODO : pobrac dane z OW
-			hmdbCommunication::IHMDBStorageOperations::IStreamPtr stream(new std::ifstream(p.string()));
+			hmdbCommunication::IHMDBStorageOperations::IStreamPtr stream(new std::ifstream(p.string(), std::ios::binary));
 			const auto fileSize = core::Filesystem::size(p);
 			auto remote = remoteSrcContext->shallowCopyRemoteContext()->remoteContext();
 			if (!remote) {
