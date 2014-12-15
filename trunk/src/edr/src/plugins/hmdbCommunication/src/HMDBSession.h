@@ -42,7 +42,7 @@ namespace hmdbCommunication
 	{
 	public:
 
-		static const WSDLServiceCreator serviceCreator(const networkUtils::CURLManagerPtr manager,
+		static const WSDLServiceCreator serviceCreator(
 			const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 			const std::string & user,
 			const std::string & password,
@@ -50,7 +50,7 @@ namespace hmdbCommunication
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone,
 			const core::Filesystem::Path & schemaPath = core::Filesystem::Path());
 
-		static const WSDLServiceCreator systemServiceCreator(const networkUtils::CURLManagerPtr manager,
+		static const WSDLServiceCreator systemServiceCreator(
 			const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 			const core::Filesystem::Path & CAPath = core::Filesystem::Path(),
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone,

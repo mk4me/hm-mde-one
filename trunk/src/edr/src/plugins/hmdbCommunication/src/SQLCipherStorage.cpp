@@ -277,7 +277,7 @@ const bool SQLCipherStorage::rawSet(const std::string & key, IHMDBStorage::IStre
 
 	const auto readSize = std::min((int)streamSize, (int)sqliteUtils::MaxBufferSize);
 
-	utils::shared_array<char> memblock(new char[readSize]);
+	utils::shared_array<char> memblock(new char[readSize] {0}, utils::array_deleter<char>());
 	input->seekg(0, std::ios::beg);
 	int offset = 0;
 	const unsigned int fullReads = (streamSize / readSize);
@@ -395,7 +395,7 @@ void SQLCipherStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBSt
 
 	const auto readSize = std::min((int)streamSize, (int)sqliteUtils::MaxBufferSize);
 
-	utils::shared_array<char> memblock(new char[readSize]);
+	utils::shared_array<char> memblock(new char[readSize] {0}, utils::array_deleter<char>());
 	input->seekg(0, std::ios::beg);
 	int offset = 0;
 	const unsigned int fullReads = (streamSize / readSize);

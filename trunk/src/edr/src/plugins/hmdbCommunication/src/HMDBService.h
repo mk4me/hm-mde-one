@@ -27,9 +27,12 @@ namespace hmdbCommunication
 
 	public:
 
+		static void curlEnableLog(CURL * curl);
+		static void curlDisableLog(CURL * curl);
+
 		static const utils::shared_ptr<XmlUtils::CURLExecutor> createCurlExecutor(const networkUtils::CURLManagerPtr manager);
 
-		static const networkUtils::IWSDLServicePtr createSecureWSDL(const networkUtils::CURLManagerPtr manager,
+		static const networkUtils::IWSDLServicePtr createSecureWSDL(
 			const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 			const std::string & user,
 			const std::string & password,
@@ -37,7 +40,7 @@ namespace hmdbCommunication
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone,
 			const core::Filesystem::Path & schemaPath = core::Filesystem::Path());
 
-		static const networkUtils::IWSDLServicePtr createUnsecureWSDL(const networkUtils::CURLManagerPtr manager,
+		static const networkUtils::IWSDLServicePtr createUnsecureWSDL(
 			const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 			const std::string & user,
 			const std::string & password,

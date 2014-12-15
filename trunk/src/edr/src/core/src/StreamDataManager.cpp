@@ -477,7 +477,7 @@ private:
 					tmpFilePath = tmpPath;
 
 					static unsigned int BufferSize = 1024 * 1024 * 5;
-					utils::shared_array<char> buffer(new char[BufferSize] {0});
+					utils::shared_array<char> buffer(new char[BufferSize] {0}, utils::array_deleter<char>());
 
 					int read = 0;
 					while ((read = stream->readsome(buffer.get(), BufferSize)) > 0) { output.write(buffer.get(), read); }

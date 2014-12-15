@@ -5,6 +5,7 @@
 #include "CURLFTPTransfer.h"
 #include "CURLFTPProgress.h"
 #include "CURLFTPTransferData.h"
+#include "HMDBService.h"
 
 using namespace hmdbCommunication;
 using namespace networkUtils;
@@ -43,6 +44,7 @@ const HMDBFTP::TransferPtr HMDBFTP::preparePut(const std::string & destinationFi
 		curl_easy_setopt(curl, CURLOPT_PRIVATE, td);
 		curl_easy_setopt(curl, CURLOPT_INFILESIZE, size);
 		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, size);
+		HMDBService::curlEnableLog(curl);
 		ret.reset(new CURLFTPTransfer(CURLFTPTransfer::Upload, curl, m, destinationFileName, size));
 	}
 

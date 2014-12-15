@@ -13,7 +13,7 @@
 
 using namespace hmdbCommunication;
 
-const WSDLServiceCreator HMDBSession::serviceCreator(networkUtils::CURLManagerPtr manager,
+const WSDLServiceCreator HMDBSession::serviceCreator(
 	utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 	const std::string & user,
 	const std::string & password,
@@ -22,19 +22,19 @@ const WSDLServiceCreator HMDBSession::serviceCreator(networkUtils::CURLManagerPt
 	const core::Filesystem::Path & schemaPath)
 {
 	if (CAPath.empty() == false){
-		return std::bind(&HMDBService::createSecureWSDL, manager, executor, url, user, password, CAPath, hostVerification, schemaPath);
+		return std::bind(&HMDBService::createSecureWSDL, executor, url, user, password, CAPath, hostVerification, schemaPath);
 	}else{
-		return std::bind(&HMDBService::createUnsecureWSDL, manager, executor, url, user, password, schemaPath);
+		return std::bind(&HMDBService::createUnsecureWSDL, executor, url, user, password, schemaPath);
 	}
 }
 
-const WSDLServiceCreator HMDBSession::systemServiceCreator(networkUtils::CURLManagerPtr manager,
+const WSDLServiceCreator HMDBSession::systemServiceCreator(
 	utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 	const core::Filesystem::Path & CAPath,
 	const networkUtils::SSLHostVerification hostVerification,
 	const core::Filesystem::Path & schemaPath)
 {
-	return serviceCreator(manager, executor, url, "hmdbServiceUser", "4accountCreation", CAPath, hostVerification);
+	return serviceCreator(executor, url, "hmdbServiceUser", "4accountCreation", CAPath, hostVerification);
 }
 
 HMDBSession::HMDBSession(utils::shared_ptr<CURLFTPManager> ftpManager,
@@ -53,18 +53,18 @@ HMDBSession::HMDBSession(utils::shared_ptr<CURLFTPManager> ftpManager,
 	medicalFtpUrl_(medicalFtp),
 	ftpManager_(ftpManager),
 	wsdlManager_(wsdlManager),
-	motionAccountFactory_(motionUrl.empty() == false ? new SingleAccountFactoryWS(serviceCreator(wsdlManager, wsdlExecutor, motionUrl_ + "/AccountFactoryWS.svc?wsdl", "hmdbServiceUser", "4accountCreation", CAPath, hostVerification)) : nullptr),
-	medicalAccountFactory_(medicalUrl.empty() == false ? new SingleAccountFactoryWS(serviceCreator(wsdlManager, wsdlExecutor, medicalUrl_ + "/AccountFactoryWS.svc?wsdl", "hmdbServiceUser", "4accountCreation", CAPath, hostVerification)) : nullptr),
-	multiAccountFactory_((motionUrl.empty() == false && medicalUrl.empty() == false) ? new MultiAccountFactoryWS(serviceCreator(wsdlManager, wsdlExecutor, medicalUrl_ + "/AccountFactoryWS.svc?wsdl", "hmdbServiceUser", "4accountCreation", CAPath, hostVerification)) : nullptr),
-	administration_(motionUrl.empty() == false ? new AdministrationWS(serviceCreator(wsdlManager, wsdlExecutor, motionUrl_ + "/AdministrationWS.svc?wsdl", user, password, CAPath, hostVerification)) : nullptr),
-	authorization_(motionUrl.empty() == false ? new AuthorizationWS(serviceCreator(wsdlManager, wsdlExecutor, motionUrl_ + "/AuthorizationWS.svc?wsdl", user, password, CAPath, hostVerification)) : nullptr),
-	motionBasicQueries_(motionUrl.empty() == false ? new MotionBasicQueriesWS(serviceCreator(wsdlManager, wsdlExecutor, motionUrl_ + "/res/BasicQueriesWSStandalone.wsdl", user, password, CAPath, hostVerification)) : nullptr),
-	medicalBasicQueries_(medicalUrl.empty() == false ? new MedicalBasicQueriesWS(serviceCreator(wsdlManager, wsdlExecutor, medicalUrl_ + "/res/BasicQueriesWSStandalone.wsdl", user, password, CAPath, hostVerification)) : nullptr),
-	motionBasicUpdate_(motionUrl.empty() == false ? new MotionBasicUpdatesWS(serviceCreator(wsdlManager, wsdlExecutor, motionUrl_ + "/BasicUpdatesWS.svc?wsdl", user, password, CAPath, hostVerification)) : nullptr),
-	medicalBasicUpdate_(medicalUrl.empty() == false ? new MedicalBasicUpdatesWS(serviceCreator(wsdlManager, wsdlExecutor, medicalUrl_ + "/BasicUpdatesWS.svc?wsdl", user, password, CAPath, hostVerification)) : nullptr),
-	motionFileStoreman_(motionUrl.empty() == false ? new MotionFileStoremanWS(serviceCreator(wsdlManager, wsdlExecutor, motionUrl_ + "/FileStoremanWS.svc?wsdl", user, password, CAPath, hostVerification)) : nullptr),
-	medicalFileStoreman_(medicalUrl.empty() == false ? new MedicalFileStoremanWS(serviceCreator(wsdlManager, wsdlExecutor, medicalUrl_ + "/FileStoremanWS.svc?wsdl", user, password, CAPath, hostVerification)) : nullptr),
-	userPersonalSpace_(motionUrl.empty() == false ? new UserPersonalSpaceWS(serviceCreator(wsdlManager, wsdlExecutor, motionUrl_ + "/res/UserPersonalSpaceWSStandalone.wsdl", user, password, CAPath, hostVerification)) : nullptr),
+	motionAccountFactory_(motionUrl.empty() == false ? new SingleAccountFactoryWS(serviceCreator(wsdlExecutor, motionUrl_ + "/AccountFactoryWS.svc?wsdl", "hmdbServiceUser", "4accountCreation", CAPath, hostVerification)) : nullptr),
+	medicalAccountFactory_(medicalUrl.empty() == false ? new SingleAccountFactoryWS(serviceCreator(wsdlExecutor, medicalUrl_ + "/AccountFactoryWS.svc?wsdl", "hmdbServiceUser", "4accountCreation", CAPath, hostVerification)) : nullptr),
+	multiAccountFactory_((motionUrl.empty() == false && medicalUrl.empty() == false) ? new MultiAccountFactoryWS(serviceCreator(wsdlExecutor, medicalUrl_ + "/AccountFactoryWS.svc?wsdl", "hmdbServiceUser", "4accountCreation", CAPath, hostVerification)) : nullptr),
+	administration_(motionUrl.empty() == false ? new AdministrationWS(serviceCreator(wsdlExecutor, motionUrl_ + "/AdministrationWS.svc?wsdl", user, password, CAPath, hostVerification)) : nullptr),
+	authorization_(motionUrl.empty() == false ? new AuthorizationWS(serviceCreator(wsdlExecutor, motionUrl_ + "/AuthorizationWS.svc?wsdl", user, password, CAPath, hostVerification)) : nullptr),
+	motionBasicQueries_(motionUrl.empty() == false ? new MotionBasicQueriesWS(serviceCreator(wsdlExecutor, motionUrl_ + "/res/BasicQueriesWSStandalone.wsdl", user, password, CAPath, hostVerification)) : nullptr),
+	medicalBasicQueries_(medicalUrl.empty() == false ? new MedicalBasicQueriesWS(serviceCreator(wsdlExecutor, medicalUrl_ + "/res/BasicQueriesWSStandalone.wsdl", user, password, CAPath, hostVerification)) : nullptr),
+	motionBasicUpdate_(motionUrl.empty() == false ? new MotionBasicUpdatesWS(serviceCreator(wsdlExecutor, motionUrl_ + "/BasicUpdatesWS.svc?wsdl", user, password, CAPath, hostVerification)) : nullptr),
+	medicalBasicUpdate_(medicalUrl.empty() == false ? new MedicalBasicUpdatesWS(serviceCreator(wsdlExecutor, medicalUrl_ + "/BasicUpdatesWS.svc?wsdl", user, password, CAPath, hostVerification)) : nullptr),
+	motionFileStoreman_(motionUrl.empty() == false ? new MotionFileStoremanWS(serviceCreator(wsdlExecutor, motionUrl_ + "/FileStoremanWS.svc?wsdl", user, password, CAPath, hostVerification)) : nullptr),
+	medicalFileStoreman_(medicalUrl.empty() == false ? new MedicalFileStoremanWS(serviceCreator(wsdlExecutor, medicalUrl_ + "/FileStoremanWS.svc?wsdl", user, password, CAPath, hostVerification)) : nullptr),
+	userPersonalSpace_(motionUrl.empty() == false ? new UserPersonalSpaceWS(serviceCreator(wsdlExecutor, motionUrl_ + "/res/UserPersonalSpaceWSStandalone.wsdl", user, password, CAPath, hostVerification)) : nullptr),
 	motionFtp_(motionFtp.empty() == false ? new HMDBFTP("testUser", "testUser", motionFtpUrl_, ftpManager) : nullptr),
 	medicalFtp_(medicalFtp.empty() == false ? new HMDBFTP("testUser", "testUser", medicalFtpUrl_, ftpManager) : nullptr)
 {

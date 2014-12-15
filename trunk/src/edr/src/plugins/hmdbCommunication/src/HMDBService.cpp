@@ -4,8 +4,62 @@
 #include "WSDLPULLService.h"
 #include <wsdlparser/WsdlInvoker.h>
 #include <corelib/PluginCommon.h>
+#include <boost/algorithm/hex.hpp>
 
 using namespace hmdbCommunication;
+
+int curlLogDebugCallback(CURL *handle,
+	curl_infotype type,
+	char *data,
+	size_t size,
+	void *userptr)
+{
+	std::string message;
+
+	switch (type)
+	{
+	case CURLINFO_TEXT:
+		message = "text -> " + std::string(data, size);
+		break;
+
+	case CURLINFO_HEADER_OUT:
+		message = "header out => " + std::string(data, size);
+		break;
+	case CURLINFO_DATA_OUT:
+		message = "data out => ";
+		message.reserve(message.size() + size * 2 + 1);
+		boost::algorithm::hex(data, data + size, message.end());
+		break;
+	case CURLINFO_SSL_DATA_OUT:
+		message = "SSL data out #?=> ";
+		message.reserve(message.size() + size * 2 + 1);
+		boost::algorithm::hex(data, data + size, message.end());
+		break;
+	case CURLINFO_HEADER_IN:
+		message = "header in <= " + std::string(data, size);
+		break;
+	case CURLINFO_DATA_IN:
+		message = "data in <= ";
+		message.reserve(message.size() + size * 2 + 1);
+		boost::algorithm::hex(data, data + size, message.end());
+		break;
+	case CURLINFO_SSL_DATA_IN:
+		message = "SSL data in <=#? ";
+		message.reserve(message.size() + size * 2 + 1);
+		boost::algorithm::hex(data, data + size, message.end());
+		break;
+
+	default:
+		message = "Unrecognized info type -> ";
+		message.reserve(message.size() + size * 2 + 1);
+		boost::algorithm::hex(data, data + size, message.end());
+		break;
+	}
+
+	PLUGIN_LOG_NAMED_DEBUG("curl", message);
+
+	return 0;
+}
 
 class HMDBCURLExecutor : public XmlUtils::CURLExecutor
 {
@@ -16,6 +70,7 @@ public:
 
 	virtual CURLcode execute(CURL * curl)
 	{
+		HMDBService::curlEnableLog(curl);
 		auto f = manager->addRequest(curl);
 		return f.get();
 	}
@@ -28,6 +83,19 @@ const utils::shared_ptr<XmlUtils::CURLExecutor> HMDBService::createCurlExecutor(
 {
 	return utils::shared_ptr<XmlUtils::CURLExecutor>(new HMDBCURLExecutor(manager));
 }
+
+void HMDBService::curlEnableLog(CURL * curl)
+{
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+	curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, curlLogDebugCallback);
+	curl_easy_setopt(curl, CURLOPT_DEBUGDATA, 0L);
+}
+
+void HMDBService::curlDisableLog(CURL * curl)
+{
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
+}
+
 
 HMDBService::HMDBService()
 	: mainWidget(nullptr), finalizeServices_(false),
@@ -79,7 +147,7 @@ const IHMDBSessionPtr HMDBService::createSession(const bool motion,
 	return ret;
 }
 
-const networkUtils::IWSDLServicePtr HMDBService::createSecureWSDL(const networkUtils::CURLManagerPtr manager,
+const networkUtils::IWSDLServicePtr HMDBService::createSecureWSDL(
 	const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 	const std::string & user,
 	const std::string & password,
@@ -97,8 +165,9 @@ const networkUtils::IWSDLServicePtr HMDBService::createSecureWSDL(const networkU
 	return networkUtils::IWSDLServicePtr(new WSDLPULLServiceT<WsdlPull::CustomSSLWsdlInvoker>(invoker));
 }
 
-const networkUtils::IWSDLServicePtr HMDBService::createUnsecureWSDL(const networkUtils::CURLManagerPtr manager,
-	const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
+const networkUtils::IWSDLServicePtr HMDBService::createUnsecureWSDL(
+	const utils::shared_ptr<XmlUtils::CURLExecutor> executor,
+	const std::string & url,
 	const std::string & user,
 	const std::string & password,
 	const core::Filesystem::Path & schemaPath)
@@ -118,10 +187,10 @@ const networkUtils::IWSDLServicePtr HMDBService::createHMDBService(
 	const core::Filesystem::Path & schemaPath)
 {
 	if (CAPath.empty() == true){
-		return createSecureWSDL(servicesManager, serviceCurlExecutor, url, user, password, CAPath, hostVerification, schemaPath);
+		return createSecureWSDL(serviceCurlExecutor, url, user, password, CAPath, hostVerification, schemaPath);
 	}
 	else{
-		return createUnsecureWSDL(servicesManager, serviceCurlExecutor, url, user, password, schemaPath);
+		return createUnsecureWSDL(serviceCurlExecutor, url, user, password, schemaPath);
 	}
 }
 
