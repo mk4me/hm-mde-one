@@ -60,6 +60,7 @@
 
 #include <corelib/BaseDataTypes.h>
 #include <corelib/IService.h>
+#include <corelib/Exceptions.h>
 #include <corelib/PluginCommon.h>
 #include <corelib/IDataManagerReader.h>
 #include <corelib/Filesystem.h>

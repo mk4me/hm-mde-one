@@ -36,6 +36,7 @@
 #include <utils/SmartPtr.h>
 #include <utils/Export.h>
 
+#include <corelib/Exceptions.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/VariantsCollection.h>
 #include <corelib/Filesystem.h>

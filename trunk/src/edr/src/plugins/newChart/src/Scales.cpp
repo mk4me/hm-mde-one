@@ -16,6 +16,6 @@ void Scales::merge( const Scales& scales )
         yMax = scales.getYMax();
         initialized = true;
     } else if (!initialized || !scales.isInitialized()) {
-        throw std::runtime_error("Both scales uninitialized");
+        throw core::runtime_error("Both scales uninitialized");
     }
 }

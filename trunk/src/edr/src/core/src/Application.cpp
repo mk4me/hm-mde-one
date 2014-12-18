@@ -142,7 +142,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 
 		//sprawdzamy czy uda?o si? wygenerowac poprawne sciezki alikacji
 		if (paths_ == nullptr){
-			throw std::runtime_error("Could not initialize application path interface");
+			throw core::runtime_error("Could not initialize application path interface");
 		}
 	}
 
@@ -156,6 +156,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 	}
 
 	//! DOPIERO OD TEGO MOMENTU MOGÊ LOGOWAC INFORMACJE!!
+	ExceptionLogger::setLog(logger_);
 
 	CORE_LOG_INFO("UserDataPath: " << paths_->getUserDataPath());
 	CORE_LOG_INFO("ApplicationDataPath: " << paths_->getApplicationDataPath());

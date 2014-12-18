@@ -58,20 +58,20 @@ core::VariantPtr SubjectService::createSession(const core::VariantConstPtr & sub
 	std::lock_guard<std::mutex> lock(sessionCreationMutex);
 
     if(subject == nullptr || subject->getRawPtr() == nullptr){
-        throw std::runtime_error("Wrong subject for session");
+        throw core::runtime_error("Wrong subject for session");
     }
 
 	PluginSubject::SubjectConstPtr unpackedSubject;
 	bool ok = subject->tryGet(unpackedSubject, false);
 
 	if(!ok || unpackedSubject == nullptr){
-		throw std::runtime_error("Subject not passed in wrapper");
+		throw core::runtime_error("Subject not passed in wrapper");
 	}
 
 	auto subImpl = utils::dynamic_pointer_cast<const Subject>(unpackedSubject);
 
 	if(subImpl == nullptr){
-		throw std::runtime_error("Other subject implementation passed in wrapper");
+		throw core::runtime_error("Other subject implementation passed in wrapper");
 	}
 
 	core::VariantPtr ret = core::Variant::create<PluginSubject::ISession>();
@@ -87,20 +87,20 @@ core::VariantPtr SubjectService::createMotion(const core::VariantConstPtr & sess
 	std::lock_guard<std::mutex> lock(motionCreationMutex);
 
 	if(session == nullptr || session->getRawPtr() == nullptr){
-		throw std::runtime_error("Wrong session for motion");
+		throw core::runtime_error("Wrong session for motion");
 	}
 
 	PluginSubject::SessionConstPtr unpackedSession;
 	bool ok = session->tryGet(unpackedSession, false);
 
 	if(!ok || unpackedSession == nullptr){
-		throw std::runtime_error("Session not passed in wrapper");
+		throw core::runtime_error("Session not passed in wrapper");
 	}
 
 	auto sessionImpl = utils::dynamic_pointer_cast<const Session>(unpackedSession);
 
 	if(sessionImpl == nullptr){
-		throw std::runtime_error("Other session implementation passed in wrapper");
+		throw core::runtime_error("Other session implementation passed in wrapper");
 	}
 
 	core::VariantPtr ret = core::Variant::create<PluginSubject::IMotion>();

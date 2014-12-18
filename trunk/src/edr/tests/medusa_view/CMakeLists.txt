@@ -1,8 +1,8 @@
 BEGIN_PROJECT("executable")
 
-FILE(GLOB objFiles  "${CMAKE_BINARY_DIR}/src/mde_view/mde_view.dir/Debug/*.obj")
+FILE(GLOB objFiles  "${CMAKE_BINARY_DIR}/src/medusa_view/medusa_view.dir/Debug/*.obj")
 
-list(REMOVE_ITEM objFiles "${CMAKE_BINARY_DIR}/src/mde_view/mde_view.dir/Debug/main.obj")
+list(REMOVE_ITEM objFiles "${CMAKE_BINARY_DIR}/src/medusa_view/medusa_view.dir/Debug/main.obj")
 
 SET_SOURCE_FILES(
 	test.cpp

@@ -71,13 +71,13 @@ namespace core
 			//! Variant dla którego będziemy wycišgać dane
 			const Variant* variant;
 
-		private:
-			//! Prywatny operator przypisania
-			data_t & operator=(const data_t &);
-
 		public:
 			//! \param variant Variant z którego wycišgamy dane
 			data_t(const Variant* variant);
+			//! Prywatny operator przypisania
+			data_t & operator=(const data_t &) = delete;
+			//! Konstruktor kopiuj�cy 
+			data_t(const data_t&) = delete;
 			//! Destruktor niepolimorficzny!!
 			~data_t();
 			//! Operator wycišgajšcy dane w formie stałej

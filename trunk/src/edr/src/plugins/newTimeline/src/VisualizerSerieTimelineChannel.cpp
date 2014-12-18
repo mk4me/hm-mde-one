@@ -7,7 +7,7 @@ VisualizerSerieTimelineChannel::VisualizerSerieTimelineChannel(core::Visualizer 
 	timeEditableSerieFeatures(serie->serieFeatures<plugin::IVisualizer::ITimeEditableSerieFeatures>())
 {
 	if(timeAvareSerieFeatures == nullptr){
-		throw std::runtime_error("Serie not aware of time");
+		throw core::runtime_error("Serie not aware of time");
 	}
 }
 
@@ -71,7 +71,7 @@ VisualizerSerieTimelineMultiChannel::VisualizerSerieTimelineMultiChannel(const V
 		auto tasf = (*it)->serieFeatures<plugin::IVisualizer::ITimeAvareSerieFeatures>();
 
 		if(tasf == nullptr){
-			throw std::runtime_error("Serie not aware of time");
+			throw core::runtime_error("Serie not aware of time");
 		}
 
 		locTasfs.push_back(tasf);

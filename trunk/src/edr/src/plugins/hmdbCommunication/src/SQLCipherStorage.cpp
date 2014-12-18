@@ -73,7 +73,7 @@ public:
 		sqliteUtils::SQLiteDB::Close(maxSqliteExecTries, sqliteExecWaitMS))
 	{		
 		if (db == nullptr){
-			throw std::runtime_error("Failed to create transaction");
+			throw core::runtime_error("Failed to create transaction");
 		}
 	}
 

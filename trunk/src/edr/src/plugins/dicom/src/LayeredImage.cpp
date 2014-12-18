@@ -96,7 +96,7 @@ dicom::LayeredImage::layers_const_range dicom::LayeredImage::getLayerItems( cons
 
 QPixmap dicom::LayeredImage::getPixmap() const
 {
-    throw std::runtime_error("Not implemented");
+    throw core::runtime_error("Not implemented");
     /*QSize size = getSize();
     QRect rect(QPoint(0, 0), size);
     QPixmap pix(size);
@@ -213,7 +213,7 @@ bool dicom::LayeredImage::getTagVisible( const std::string& tag ) const
     if (vis != tagsVisibility.end()) {
         return vis->second;
     } else {
-        throw std::runtime_error("Unknown tag");
+        throw core::runtime_error("Unknown tag");
     }
 }
 

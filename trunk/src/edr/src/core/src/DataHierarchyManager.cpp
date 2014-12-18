@@ -72,7 +72,7 @@ void DataHierarchyManager::registerObjectWrapperPrototype(const utils::ObjectWra
 		th.prototype = owp->create();
 		it = typesHierarchy.insert(TypesHierarchy::value_type(typeInfo, th)).first;
 	}else if(it->second.prototype != nullptr) {
-		throw std::runtime_error("Type already registered");
+		throw core::runtime_error("Type already registered");
 	}else{
 		it->second.prototype = owp->create();
 	}

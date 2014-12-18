@@ -41,8 +41,9 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QWidget>
 #include <QtGui/QCloseEvent>
+#include <utils/SmartPtr.h>
 
 #include <corelib/IPlugin.h>
-#include <utils/SmartPtr.h>
+#include <corelib/Exceptions.h>
 
 #endif

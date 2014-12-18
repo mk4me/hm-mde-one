@@ -12,7 +12,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <utils/SmartPtr.h>
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 
 
 class SaveSceneTest : public CppUnit::TestFixture

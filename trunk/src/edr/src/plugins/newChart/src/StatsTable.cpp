@@ -27,7 +27,7 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
  QTreeWidgetItem* StatsTable::addEntry(const QString& group, const QString& name, ScalarChannelStatsConstPtr stats, const QColor& backgroundColor )
  {
      if (group.isEmpty()) {
-         throw std::runtime_error("StatsTable: Passed empty group");
+         throw core::runtime_error("StatsTable: Passed empty group");
      }
 
      // zapelnienie elementu statystykami
@@ -72,7 +72,7 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
      if (item) {
          setActive(item);
      } else {
-         throw std::runtime_error("Unable to find statistic item");
+         throw core::runtime_error("Unable to find statistic item");
      }
  }
 

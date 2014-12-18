@@ -2,6 +2,8 @@
 #include <QtCore/QThread>
 #include <coreui/CoreConsoleWidget.h>
 #include "ui_CoreConsoleWidget.h"
+#include<QtGui/QtEvents>
+#include "coreui/finddialog.h"
 
 using namespace coreUI;
 
@@ -74,4 +76,15 @@ void CoreConsoleWidget::logOrQueueEntry( CoreConsoleWidgetEntryPtr entry )
 void CoreConsoleWidget::setWordWrap( bool wrap )
 {
     ui->textEdit->setWordWrapMode( wrap ? QTextOption::WrapAtWordBoundaryOrAnywhere : QTextOption::NoWrap );
+}
+
+void coreUI::CoreConsoleWidget::keyPressEvent(QKeyEvent *e)
+{
+	if (e->type() == QKeyEvent::KeyPress) {
+		if (e->matches(QKeySequence::Find)) {
+			FindDialog fd;
+			fd.setTextEdit(ui->textEdit);
+			fd.exec();
+		}
+	}
 }

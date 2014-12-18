@@ -53,6 +53,7 @@
 #include <utils/SmartPtr.h>
 
 #include <corelib/IVisualizer.h>
+#include <corelib/Exceptions.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <utils/Push.h>
 //#include <timelinelib/IChannel.h>

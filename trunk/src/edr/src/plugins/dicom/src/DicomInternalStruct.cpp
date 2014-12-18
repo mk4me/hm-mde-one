@@ -39,7 +39,7 @@ std::string dicom::DicomInternalStruct::getSingleSessionOutputDir() const
 {
     if (!isSingle()) {
         UTILS_ASSERT(false);
-        throw std::runtime_error("Unable to get single output directory, multiple sessions are present");
+        throw core::runtime_error("Unable to get single output directory, multiple sessions are present");
     }
 
     return patients[0]->sessions[0]->getOutputDirectory();
@@ -70,7 +70,7 @@ internalData::StudyConstPtr dicom::DicomInternalStruct::getSession( const std::s
         }
     }
 
-    throw std::runtime_error("session not found");
+    throw core::runtime_error("session not found");
 }
 
 internalData::ImageConstPtr dicom::DicomInternalStruct::getImage( const std::string& imageFilename ) const
@@ -92,7 +92,7 @@ internalData::ImageConstPtr dicom::DicomInternalStruct::getImage( const std::str
         }
     }
 
-    throw std::runtime_error("serie not found");
+    throw core::runtime_error("serie not found");
 }
 
 internalData::StudyConstPtr dicom::DicomInternalStruct::tryGetSession( const std::string& sessionName ) const

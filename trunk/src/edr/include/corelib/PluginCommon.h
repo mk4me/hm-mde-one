@@ -15,6 +15,7 @@
 #include <corelib/ILog.h>
 #include <utils/Macros.h>
 #include <corelib/IMemoryDataManager.h>
+#include <corelib/IPlugin.h>
 
 namespace plugin 
 {

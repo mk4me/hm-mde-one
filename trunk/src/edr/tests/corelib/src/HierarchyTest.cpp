@@ -3,13 +3,14 @@
 #include <corelib/HierarchyItem.h>
 #include <corelib/HierarchyDataItem.h>
 #include "coreui/HierarchyTreeModel.h"
-#include <QtGui/QTreeView>
+#include <QtWidgets/QTreeView>
+#include "utils/PtrPolicyStd.h"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( HierarchyTest );
 
 
-DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(int, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 
 void HierarchyTest::setUp()
 {
@@ -29,7 +30,7 @@ void HierarchyTest::testHierarchyHelper()
     rootItem->appendChild(child1);
     CPPUNIT_ASSERT(rootItem->getNumChildren() == 1);
 
-    utils::ObjectWrapperPtr wrapper = utils::ObjectWrapper::create<int>();
+	core::VariantPtr wrapper = core::Variant::create<int>();
     wrapper->set(utils::make_shared<int>(20));
     core::IHierarchyItemPtr child2 = utils::make_shared<core::HierarchyDataItem>(wrapper, QIcon(), "CHILD2", "CHILD2_DESC");
     rootItem->appendChild(child2);
@@ -70,7 +71,7 @@ void HierarchyTest::testHierarchyHelper()
 
     core::IHierarchyDataItemPtr dataItem = utils::dynamic_pointer_cast<core::IHierarchyDataItem>(child2);
     std::list<core::HierarchyHelperPtr> helpers = dataItem->getHelpers();
-    utils::ObjectWrapperConstPtr data = dataItem->getData();
+    const core::VariantConstPtr data = dataItem->getData();
     CPPUNIT_ASSERT(data == wrapper);
     CPPUNIT_ASSERT(helpers.size() == 1);
     CPPUNIT_ASSERT(utils::dynamic_pointer_cast<core::WrappedItemHelper>(*helpers.begin()));
@@ -117,13 +118,13 @@ core::IHierarchyItemPtr HierarchyTest::createSimpleTree()
     core::IHierarchyItemPtr child1 = utils::make_shared<core::HierarchyItem>("CHILD1", "CHILD1_DESC", QIcon());
     rootItem->appendChild(child1);
 
-    utils::ObjectWrapperPtr wrapper11 = utils::ObjectWrapper::create<int>();
+	core::VariantPtr wrapper11 = core::Variant::create<int>();
     wrapper11->set(utils::make_shared<int>(11));
     core::HierarchyHelperPtr helper = utils::make_shared<core::WrappedItemHelper>(wrapper11);
     core::HierarchyDataItemPtr child11 = utils::make_shared<core::HierarchyDataItem>(QIcon(), "CHILD11", "CHILD11_DESC", helper);
     child1->appendChild(child11);
 
-    utils::ObjectWrapperPtr wrapper = utils::ObjectWrapper::create<int>();
+	core::VariantPtr wrapper = core::Variant::create<int>();
     wrapper->set(utils::make_shared<int>(2));
     core::HierarchyDataItemPtr child2 = utils::make_shared<core::HierarchyDataItem>(wrapper, QIcon(), "CHILD2", "CHILD2_DESC");
     rootItem->appendChild(child2);

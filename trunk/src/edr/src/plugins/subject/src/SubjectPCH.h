@@ -10,12 +10,15 @@
 #ifndef HEADER_GUARD_SUBJECT__SUBJECTPCH_H__
 #define HEADER_GUARD_SUBJECT__SUBJECTPCH_H__
 
-#include <corelib/IPlugin.h>
-#include <boost/utility.hpp>
-#include <utils/SmartPtr.h>
-
 #include <vector>
 #include <map>
 #include <string>
+
+#include <boost/utility.hpp>
+#include <utils/SmartPtr.h>
+
+#include <corelib/Exceptions.h>
+#include <corelib/IPlugin.h>
+
 
 #endif

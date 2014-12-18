@@ -215,7 +215,7 @@ const std::list<IHMDBRemoteContext::DownloadOperationPtr> & DownloadHelper::down
 void DownloadHelper::store()
 {	
 	if (downloaded_.empty() == true){
-		throw std::runtime_error("Downloads failed. Could not synchronize");
+		throw core::runtime_error("Downloads failed. Could not synchronize");
 	}
 
 	auto t = storage->transaction();
@@ -856,7 +856,7 @@ void FileDownload::download()
 	auto const filePath = prepareHMDB->prepareFilePath();
 
 	if (filePath.empty() == true){
-		throw std::runtime_error("Empty file path to retrieve");
+		throw core::runtime_error("Empty file path to retrieve");
 	}
 	++progress_;
 
@@ -871,7 +871,7 @@ void FileDownload::download()
 	if (output == nullptr){
 		prepareHMDB->clearHMDB();
 		++progress_;
-		throw std::runtime_error("Uninitialized output stream");
+		throw core::runtime_error("Uninitialized output stream");
 	}
 	++progress_;
 
@@ -892,7 +892,7 @@ void FileDownload::download()
 		++progress_;
 		prepareHMDB->clearHMDB();
 		++progress_;
-		throw std::runtime_error("Uninitialized data transfer");
+		throw core::runtime_error("Uninitialized data transfer");
 	}
 	
 	transfer->start();

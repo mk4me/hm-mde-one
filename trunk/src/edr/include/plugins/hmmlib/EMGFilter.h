@@ -37,7 +37,7 @@ public:
         UTILS_ASSERT((channel != nullptr), "Wrong channel for Tracker");
 
         if(channel == nullptr){
-            throw std::runtime_error("Wrong channel for Tracker");
+            throw core::runtime_error("Wrong channel for Tracker");
         }
     }
     virtual ~ChannelNoCopyModifier() {}
@@ -64,7 +64,7 @@ public:
     virtual void setObservedChannel(const _MyChannelPtr & channel)
     {
         if(channel == nullptr){
-            throw std::runtime_error("Wrong channel for Tracker");
+            throw core::runtime_error("Wrong channel for Tracker");
         }
 
         //this->channel->detach(notifier.get());

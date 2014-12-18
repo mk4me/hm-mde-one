@@ -95,7 +95,7 @@ IMemoryDataManager::HierarchyTransactionPtr core::HierarchyDataManager::hierarch
 void core::HierarchyDataManager::addRoot( IHierarchyItemConstPtr ptr )
 {
     if (roots.find(ptr) != roots.end()) {
-        throw std::runtime_error("HierarchyDataManager - root is already added");
+        throw core::runtime_error("HierarchyDataManager - root is already added");
     }
 
     roots.insert(ptr);
@@ -105,7 +105,7 @@ void core::HierarchyDataManager::removeRoot( IHierarchyItemConstPtr ptr )
 {
     auto it = roots.find(ptr);
     if (it == roots.end()) {
-        throw std::runtime_error("HierarchyDataManager - root was not found");
+        throw core::runtime_error("HierarchyDataManager - root was not found");
     }
 
     roots.erase(it);
@@ -121,7 +121,7 @@ void core::HierarchyDataManager::addObserver( const HierarchyObserverPtr & objec
 {
     ScopedLock lock(sync);
     if(std::find(observers.begin(), observers.end(), objectWatcher) != observers.end()){
-        throw std::runtime_error("Watcher already registered");
+        throw core::runtime_error("Watcher already registered");
     }
 
     observers.push_back(objectWatcher);
@@ -132,7 +132,7 @@ void core::HierarchyDataManager::removeObserver( const HierarchyObserverPtr & ob
     ScopedLock lock(sync);
     auto it = std::find(observers.begin(), observers.end(), objectWatcher);
     if(it == observers.end()){
-        throw std::runtime_error("Watcher not registered");
+        throw core::runtime_error("Watcher not registered");
     }
 
     observers.erase(it);

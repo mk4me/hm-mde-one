@@ -32,7 +32,7 @@ void SkeletonJointsMapping::init(kinematic::hAnimSkeletonPtr skeleton,
 				}else{
 
 					missing[it->first] = it->second;
-					//throw std::runtime_error("Could not perform joints mapping");
+					//throw core::runtime_error("Could not perform joints mapping");
 				}
 			}else{
 				++index;

@@ -18,20 +18,20 @@ int PatientCardManager::registerPatientCard(hmdbCommunication::IPatientCard * pa
 
 	for(auto it = patientCards.begin(); it != patientCards.end(); ++it){
 		if((*it).patientCard.get() == patientCard){
-			throw std::runtime_error("Patient card already registered");
+			throw core::runtime_error("Patient card already registered");
 		}
 	}
 
 	std::string name(patientCard->name());
 
 	if(name.empty() == true){
-		throw std::runtime_error("Unnamed patient card");
+		throw core::runtime_error("Unnamed patient card");
 	}
 
 	QWidget * widget = patientCard->widget();
 
 	if(widget == nullptr){
-		throw std::runtime_error("Patient card without widget");
+		throw core::runtime_error("Patient card without widget");
 	}
 
 	int ret = patientCards.size();

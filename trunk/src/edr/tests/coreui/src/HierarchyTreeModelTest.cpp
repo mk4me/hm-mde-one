@@ -3,14 +3,15 @@
 #include <corelib/HierarchyItem.h>
 #include <corelib/HierarchyDataItem.h>
 #include "coreui/HierarchyTreeModel.h"
-#include <QtGui/QApplication>
-#include <QtGui/QTreeView>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QTreeView>
+#include "utils/PtrPolicyStd.h"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION(HierarchyTreeModelTest);
 
 
-DEFINE_WRAPPER(int, utils::PtrPolicyBoost, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(int, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 
 
 
@@ -99,13 +100,13 @@ core::IHierarchyItemPtr HierarchyTreeModelTest::createSimpleTree()
     core::IHierarchyItemPtr child1 = utils::make_shared<core::HierarchyItem>("CHILD1", "CHILD1_DESC", QIcon());
     rootItem->appendChild(child1);
 
-    utils::ObjectWrapperPtr wrapper11 = utils::ObjectWrapper::create<int>();
+	core::VariantPtr wrapper11 = core::Variant::create<int>();
     wrapper11->set(utils::make_shared<int>(11));
     core::HierarchyHelperPtr helper = utils::make_shared<core::WrappedItemHelper>(wrapper11);
     core::HierarchyDataItemPtr child11 = utils::make_shared<core::HierarchyDataItem>(QIcon(), "CHILD11", "CHILD11_DESC", helper);
     child1->appendChild(child11);
 
-    utils::ObjectWrapperPtr wrapper = utils::ObjectWrapper::create<int>();
+	core::VariantPtr wrapper = core::Variant::create<int>();
     wrapper->set(utils::make_shared<int>(2));
     core::HierarchyDataItemPtr child2 = utils::make_shared<core::HierarchyDataItem>(wrapper, QIcon(), "CHILD2", "CHILD2_DESC");
     rootItem->appendChild(child2);

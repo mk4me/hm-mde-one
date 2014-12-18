@@ -18,6 +18,8 @@
 #include <QtCore/QMutex>
 #include <QtCore/QMetaType>
 
+
+class QKeyEvent;
 namespace Ui {
 
 	class CoreConsoleWidget;
@@ -65,8 +67,6 @@ public:
     //! \param entry Komunikat do zakolejkowania.
     void queueEntry(CoreConsoleWidgetEntryPtr entry);
 
-private:
-    void init();
 
 public slots:
 
@@ -77,6 +77,11 @@ public slots:
     //! \param wrap Czy zawijać tekst?
     void setWordWrap(bool wrap);
 
+protected:
+	virtual void keyPressEvent(QKeyEvent *e);
+
+private:
+	void init();
 private:
     //! Zakolejkowane wpisy.
     std::queue< CoreConsoleWidgetEntryPtr > queuedEntries;

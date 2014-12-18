@@ -30,7 +30,7 @@ void MeasurementsParser::parse( const std::string& filename )
         }
     } else {
         // oczyt nie udal się z jakiegoś powodu
-        throw std::runtime_error(std::string("Unable to load : ") + filename);
+        throw core::runtime_error(std::string("Unable to load : ") + filename);
     }
 
     // jeśli plik zawiera odpowiedni korzen (root)
@@ -43,7 +43,7 @@ void MeasurementsParser::parse( const std::string& filename )
             }
         }
     } else {
-        std::runtime_error(filename + " does not have root element");
+        core::runtime_error(filename + " does not have root element");
     }
     loaded = true;
 }
@@ -62,7 +62,7 @@ void MeasurementsParser::readMeasurment( tinyxml2::XMLElement* element, Measurem
     }
     if (attrs && strcmp(attrs->Value(), "Attrs") == 0) {
         if (attrs->NextSiblingElement()) {
-            throw std::runtime_error("Wrong measurments xml file");
+            throw core::runtime_error("Wrong measurments xml file");
         }
         for (tinyxml2::XMLElement* a = attrs->FirstChildElement(); a != nullptr; a = a->NextSiblingElement()) {
             if (a && strcmp(a->Value(), "A") == 0) {
@@ -111,10 +111,10 @@ void Measurements::addConfig( MeasurementConfigPtr config )
             configsByName[name] = config;
             configsByNumber[number] = config;
         } else {
-            throw std::runtime_error("Config already added");
+            throw core::runtime_error("Config already added");
         }
     } else {
-        throw std::runtime_error("Null config was passed");
+        throw core::runtime_error("Null config was passed");
     }
 }
 
@@ -125,7 +125,7 @@ MeasurementConfigConstPtr Measurements::getConfig( const QString& name ) const
         return it->second;
     }
     
-    throw std::runtime_error("Config not found");
+    throw core::runtime_error("Config not found");
 }
 
 MeasurementConfigConstPtr Measurements::getConfig( int number ) const
@@ -135,7 +135,7 @@ MeasurementConfigConstPtr Measurements::getConfig( int number ) const
         return it->second;
     } 
 
-    throw std::runtime_error("Config not found");
+    throw core::runtime_error("Config not found");
 }
 
 MeasurementConfigConstPtr Measurements::tryGetConfig( const QString& name ) const
@@ -176,7 +176,7 @@ MeasurementsConstPtr Measurements::get()
             MeasurementsParser parser;
             parser.parse(p);
             measurements = parser.getMeasurments();
-        } catch (std::runtime_error& e) {
+        } catch (core::runtime_error& e) {
             PLUGIN_LOG_ERROR(e.what());
         }
     }

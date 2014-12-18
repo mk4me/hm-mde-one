@@ -10,6 +10,7 @@ SET_PUBLIC_HEADERS(
 	DataAccessors.h
 	Filesystem.h
 	StringTools.h
+	Exceptions.h
 	Visualizer.h
 	VariantsCollection.h
 	PluginCommon.h
@@ -67,6 +68,7 @@ SET_SOURCE_FILES(
 	Variant.cpp
 	ThreadPool.cpp
 	JobManager.cpp
+	Exceptions.cpp
 )
 
 SET_PRIVATE_HEADERS(

@@ -11,7 +11,7 @@ PluginSubject::SubjectID Session::globalID = 0;
 PluginSubject::SubjectID Session::nextGlobalID()
 {
 	if(globalID == std::numeric_limits<PluginSubject::SubjectID>::max()){
-		throw std::runtime_error("Session overflow");
+		throw core::runtime_error("Session overflow");
 	}
 
 	return globalID++;
@@ -80,7 +80,7 @@ void Session::addMotion(const core::VariantConstPtr & motion)
 	utils::ObjectWrapper::Types types;
 	motion->data()->getSupportedTypes(types);
 	if (std::find(types.begin(), types.end(), typeid(PluginSubject::IMotion)) == types.end()){
-		throw std::runtime_error("Data type does not support PluginSubject::IMotion type");
+		throw core::runtime_error("Data type does not support PluginSubject::IMotion type");
 	}
 
 	motionStorage.addData(motion);

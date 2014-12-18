@@ -40,7 +40,7 @@ std::string dicomImporter::DicomInternalStruct::getSingleSessionOutputDir() cons
 {
     if (!isSingle()) {
         UTILS_ASSERT(false);
-        throw std::runtime_error("Unable to get single output directory, multiple sessions are present");
+        throw core::runtime_error("Unable to get single output directory, multiple sessions are present");
     }
 
     return patients[0]->sessions[0]->getOutputDirectory();

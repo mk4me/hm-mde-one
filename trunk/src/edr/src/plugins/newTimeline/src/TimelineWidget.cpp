@@ -229,7 +229,7 @@ void TimelineWidget::setChannelTooltip(const std::string & path, const std::stri
     auto channel = getController()->findChannel(path);
 
     if(channel == nullptr){
-        throw std::runtime_error("Could not set channel tooltip - channel with given path not exist");
+        throw core::runtime_error("Could not set channel tooltip - channel with given path not exist");
     }
 
     modelToUIChannels[channel]->setToolTip(0, QString(tooltip.c_str()));
@@ -240,7 +240,7 @@ std::string TimelineWidget::getChannelTooltip(const std::string & path) const
     auto channel = getController()->findChannel(path);
 
     if(channel == nullptr){
-        throw std::runtime_error("Could not get channel tooltip - channel with given path not exist");
+        throw core::runtime_error("Could not get channel tooltip - channel with given path not exist");
     }
 
     return modelToUIChannels.find(channel)->second->toolTip(0).toStdString();

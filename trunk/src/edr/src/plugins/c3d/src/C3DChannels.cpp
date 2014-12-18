@@ -205,7 +205,7 @@ float ScalarWithTimeSegment::getSampleDuration() const
 		return 1.0 / getSamplesPerSecond();
 	}
 
-	throw std::runtime_error("empty channel");
+	throw core::runtime_error("empty channel");
 }
 
 const std::string& ScalarWithTimeSegment::getTimeBaseUnit() const
@@ -289,7 +289,7 @@ C3DAnalogChannel::C3DAnalogChannel( const c3dlib::C3DParser& c3dData, int channe
 	ScalarChannel( static_cast<int>(c3dData.getNumberAnalogSamplePerFrame() * c3dData.getPointFrequency()) )
 	{
 		if ( c3dData.getNumAnalogFrames() == 0) {
-			throw std::runtime_error("Incorrect number of frames.");
+			throw core::runtime_error("Incorrect number of frames.");
 		}
 
 		c3dlib::C3DParser::IAnalogConstPtr analog = c3dData.getAnalog(channelNo);
@@ -354,7 +354,7 @@ GRFChannel::GRFChannel( const c3dlib::C3DParser& data, int channelNo, float tres
 	dataEnd(-1.0f)
 {
 	if ( data.getNumAnalogFrames() == 0) {
-		throw std::runtime_error("Incorrect number of frames.");
+		throw core::runtime_error("Incorrect number of frames.");
 	}
 
 	float treshold2 = treshold * treshold;

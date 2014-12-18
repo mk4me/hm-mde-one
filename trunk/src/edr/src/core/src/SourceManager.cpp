@@ -54,7 +54,7 @@ void SourceManager::registerSource(const plugin::ISourcePtr & source)
 		sourcesList.push_back(source);
 		CORE_LOG_INFO("Source " << source->name() << " registered.");
 	} else {
-		throw std::runtime_error("Source with this ID already registered.");
+		throw core::runtime_error("Source with this ID already registered.");
 	}
 };
 

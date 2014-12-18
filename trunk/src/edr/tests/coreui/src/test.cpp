@@ -2,7 +2,7 @@
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
 #include <utils/Debug.h>
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 
 int main(int argc, char* argv[])
 {

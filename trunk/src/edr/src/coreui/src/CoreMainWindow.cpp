@@ -29,7 +29,7 @@ void CoreMainWindow::setStyle( const core::Filesystem::Path& path )
         file.close();
         setStyleSheet(style);
     } else {
-        throw std::runtime_error(std::string("Problem loading file : ") + path.string() );
+        throw core::runtime_error(std::string("Problem loading file : ") + path.string() );
     }
 }
 
@@ -57,7 +57,7 @@ void CoreMainWindow::setStyleByName( const std::string& styleName )
         }
     }
 
-    throw std::runtime_error(std::string("Unable to set style : ") + styleName);
+    throw core::runtime_error(std::string("Unable to set style : ") + styleName);
 }
 
 bool CoreMainWindow::trySetStyleByName( const std::string& styleName )

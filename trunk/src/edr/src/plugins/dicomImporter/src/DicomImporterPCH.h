@@ -21,8 +21,9 @@
 
 #include <utils/Utils.h>
 #include <utils/Debug.h>
+#include <utils/SmartPtr.h>
 
 #include <corelib/IPlugin.h>
-#include <utils/SmartPtr.h>
+#include <corelib/Exceptions.h>
 
 #endif

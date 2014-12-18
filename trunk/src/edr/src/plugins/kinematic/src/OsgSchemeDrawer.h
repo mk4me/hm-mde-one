@@ -4,6 +4,8 @@
 #include <osg/Node>
 #include <osg/Switch>
 #include <plugins/kinematic/Wrappers.h>
+#include "osg/ShapeDrawable"
+#include "osg/ref_ptr"
 
 osg::Vec3Array * convert(const std::vector<osg::Vec3> & input);
 
@@ -135,14 +137,10 @@ public:
 	virtual const float size(const unsigned int idx) const;
 
 private:
-	//! Schemat połączeń
-	std::vector<utils::shared_ptr<ConnectionSphereInstance>> connectionsInstances;
-
-	unsigned int complexity;
-
-	std::map<unsigned int, std::pair<osg::Vec3, osg::Vec3>> updateCache;
-
+	typedef osg::ref_ptr<osg::ShapeDrawable> ShapeDrawablePtr;
+	std::vector<ShapeDrawablePtr> connectionsInstances;
 	osg::ref_ptr<osg::Switch> node;
+	unsigned int complexity;
 };
 DEFINE_SMART_POINTERS(ConnectionsSphereDrawer);
 

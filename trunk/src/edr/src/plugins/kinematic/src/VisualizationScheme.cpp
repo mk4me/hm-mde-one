@@ -33,6 +33,6 @@ kinematic::VskParserConstPtr Vsk::get( MarkersCount count )
         return Count53;
 
     default:
-        throw std::runtime_error("Wrong VSK scheme was requested");
+        throw core::runtime_error("Wrong VSK scheme was requested");
     }
 }

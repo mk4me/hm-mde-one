@@ -13,7 +13,7 @@ PluginSubject::SubjectID Motion::globalID = 0;
 PluginSubject::SubjectID Motion::nextGlobalID()
 {
 	if(globalID == std::numeric_limits<PluginSubject::SubjectID>::max()){
-		throw std::runtime_error("Motion overflow");
+		throw core::runtime_error("Motion overflow");
 	}
 
 	return globalID++;

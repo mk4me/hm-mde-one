@@ -194,7 +194,7 @@ void DicomImporterSource::getOfferedTypes( utils::TypeInfoList & offeredTypes ) 
 //        } 
 //
 //    } else {
-//        throw std::runtime_error("file not found");
+//        throw core::runtime_error("file not found");
 //    }
 //}
 //

@@ -29,7 +29,7 @@ void ConfigurationPainter::addArea( const IAreaPtr & data )
 {
     for (auto it = areas.begin(); it != areas.end(); ++it) {
         if ((*it)->getName() == data->getName()) {
-            throw std::runtime_error("Picture already added!");
+            throw core::runtime_error("Picture already added!");
         }
     }
     data->setScale(scale);
@@ -45,7 +45,7 @@ void ConfigurationPainter::removeArea( const QString& name )
         }
     }
 
-    throw std::runtime_error("Picture not found!");
+    throw core::runtime_error("Picture not found!");
 }
 
 void ConfigurationPainter::mouseMoveEvent( QMouseEvent * event )

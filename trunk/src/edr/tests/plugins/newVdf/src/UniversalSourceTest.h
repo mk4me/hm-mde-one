@@ -11,7 +11,7 @@
 #define HEADER_GUARD_DFELEMENTS_TEST__UNIVERSALSOURCETEST_H__
 
 #include <cppunit/extensions/HelperMacros.h>
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 
 class UniversalSourceTest : public CppUnit::TestFixture
 {

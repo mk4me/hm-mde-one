@@ -93,6 +93,7 @@ UTILS_POP_WARNINGS
 #include <corelib/IParserManagerReader.h>
 #include <corelib/IVisualizerManager.h>
 #include <corelib/Visualizer.h>
+#include <corelib/Exceptions.h>
 
 // przywrócenie warningów wyłączonych przez OSG
 #if defined(_MSC_VER)

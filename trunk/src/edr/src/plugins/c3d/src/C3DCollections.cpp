@@ -160,7 +160,7 @@ GRFChannelConstPtr GRFCollection::getGRFChannel(GRFChannel::Type type) const
 		}
 	}
 
-	throw std::runtime_error("Wrong GRF channel type");
+	throw core::runtime_error("Wrong GRF channel type");
 }
 
 MarkerCollection::MarkerCollection(kinematic::VskParserPtr vsk) :

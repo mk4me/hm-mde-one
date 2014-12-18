@@ -4,6 +4,7 @@
 #ifndef DISABLE_PRECOMPILED_HEADERS
 
 #include <corelib/IPlugin.h>
+#include <corelib/Exceptions.h>
 
 #include <hmdbserviceslib/ShallowCopyParser.h>
 #include <hmdbserviceslib/MetadataParser.h>

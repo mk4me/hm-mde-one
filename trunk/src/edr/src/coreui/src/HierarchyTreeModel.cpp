@@ -139,7 +139,7 @@ void HierarchyTreeModel::addRootItem(core::IHierarchyItemConstPtr root)
 {
 	auto it = std::find(rootOrigins.begin(), rootOrigins.end(), root);
 	if (it != rootOrigins.end()) {
-		throw std::runtime_error("Root item is already present in tree model");
+		throw core::runtime_error("Root item is already present in tree model");
 	}
 	else {
 		//Q_EMIT layoutAboutToBeChanged();
@@ -197,7 +197,7 @@ void HierarchyTreeModel::removeRootItem(core::IHierarchyItemConstPtr root)
 		rebuildFilteredRoots();
 	}
 	else {
-		throw std::runtime_error("Unable to remove root item from hierarchy tree model");
+		throw core::runtime_error("Unable to remove root item from hierarchy tree model");
 	}
 }
 

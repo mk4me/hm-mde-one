@@ -81,7 +81,7 @@ namespace boost {
                     v.push_back(QPointF(numbers[i], numbers[i + 1]));
                 }
             } else {
-                throw std::runtime_error("Wrong points number in xml file");
+                throw core::runtime_error("Wrong points number in xml file");
             }
         }
 

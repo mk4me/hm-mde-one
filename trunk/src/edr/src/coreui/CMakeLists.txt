@@ -41,6 +41,12 @@ SET_PUBLIC_HEADERS(
 	IMdeTab.h
 	SimpleTab.h
 	IContextRoot.h
+	
+	findreplacedialog.h
+	finddialog.h
+	
+	findform.h
+	findreplaceform.h
 )
 
 SET_SOURCE_FILES(
@@ -78,11 +84,17 @@ SET_SOURCE_FILES(
 	SimpleTab.cpp
 	ReportsThumbnailContext.cpp
 	ReportsTab.cpp
+	
+	findreplacedialog.cpp
+	finddialog.cpp
+	findform.cpp
+	findreplaceform.cpp
 )
 
 SET_PRIVATE_HEADERS(
 	CoreUiPCH.h
 	CorePopupPrivate.h
+	
 )
 
 SET_MOC_FILES(
@@ -113,6 +125,11 @@ SET_MOC_FILES(
 	ReportsThumbnailContext.h
 	ReportsTab.h
 	SimpleTab.h
+	
+	findform.h
+	findreplaceform.h
+	findreplacedialog.h
+	finddialog.h
 )
 
 SET_UI_FILES(
@@ -124,6 +141,8 @@ SET_UI_FILES(
 	filter.ui
 	FilterConfiguratorWidget.ui
 	filterEntry.ui
+	findreplacedialog.ui
+	findreplaceform.ui
 )
 
 SET_RC_FILES (

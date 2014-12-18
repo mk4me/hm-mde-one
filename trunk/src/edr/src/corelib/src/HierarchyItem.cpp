@@ -1,5 +1,6 @@
 #include "CoreLibPCH.h"
 #include <corelib/HierarchyItem.h>
+
 #include <QtCore/QStringList>
 
 using namespace core;
@@ -89,7 +90,7 @@ void HierarchyItem::removeChild( IHierarchyItemPtr child )
         //auto ptr = utils::const_pointer_cast<IHierarchyItem>(child);
         child->setParent(IHierarchyItemPtr());
     } else {
-        throw std::runtime_error("HierarchyItem : child was not found");
+        throw core::runtime_error("HierarchyItem : child was not found");
     }
 }
 

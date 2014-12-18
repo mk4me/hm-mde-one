@@ -230,7 +230,7 @@ const std::vector<utils::shared_ptr<ConnectionSphereInstance>> ConnectionSphereI
 {
 	if (connections.empty()) {
 		UTILS_ASSERT(false);
-		throw std::runtime_error("No connections");
+		throw core::runtime_error("No connections");
 	}
 	std::vector<utils::shared_ptr<ConnectionSphereInstance>> ret(connections.size());
 
@@ -315,15 +315,36 @@ ConnectionsSphereDrawer::ConnectionsSphereDrawer(const unsigned int complexity)
 
 void ConnectionsSphereDrawer::init(const SegmentsDescriptors & connections)
 {
-	std::vector<utils::shared_ptr<ConnectionSphereInstance>> locConnsInst(ConnectionSphereInstance::createConnectionsScheme(connections, complexity));	
-	osg::ref_ptr<osg::Switch> tmpNode(new osg::Switch);
-
-	for(unsigned int i = 0; i < locConnsInst.size(); ++i){		
-		tmpNode->addChild(locConnsInst[i]->posAtt, true);
+	if (connections.empty()) {
+		UTILS_ASSERT(false);
+		throw core::runtime_error("No connections");
 	}
 
+	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
+	stateset->setMode(GL_LIGHTING, osg::StateAttribute::ON);
+	stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
+
+	for (unsigned int i = 0; i < connections.size(); ++i){
+		utils::shared_ptr<ConnectionSphereInstance> lci(new ConnectionSphereInstance);
+		lci->connectionIndices = connections[i].range;
+		float r = connections[i].length / 2;
+		osg::Sphere* sphere= new osg::Sphere(osg::Vec3(), r > 0 ? r : 0.001);
+		osg::ShapeDrawable* sd = new osg::ShapeDrawable(sphere);
+		osg::Geode* geode = new osg::Geode();
+		geode->addDrawable(sd);
+		auto posAtt = new osg::PositionAttitudeTransform;
+		posAtt->setScale(osg::Vec3(0.3, 0.3, 1.0));
+		posAtt->addChild(lci->geode);
+		//ret[i] = sd;
+	}
+
+	osg::ref_ptr<osg::Switch> tmpNode(new osg::Switch);
+
+	/*for(unsigned int i = 0; i < locConnsInst.size(); ++i){		
+		tmpNode->addChild(locConnsInst[i]->posAtt, true);
+	}*/
+
 	std::swap(node, tmpNode);
-	std::swap(connectionsInstances, locConnsInst);
 }
 
 osg::ref_ptr<osg::Node> ConnectionsSphereDrawer::getNode()
@@ -333,7 +354,7 @@ osg::ref_ptr<osg::Node> ConnectionsSphereDrawer::getNode()
 
 void ConnectionsSphereDrawer::update(const std::vector<osg::Vec3> & positions)
 {
-	for(unsigned int i = 0; i < connectionsInstances.size(); ++i){
+	/*for(unsigned int i = 0; i < connectionsInstances.size(); ++i){
 		if(node->getValue(i) == true){
 			connectionsInstances[i]->updatePositionOrientation(positions[connectionsInstances[i]->connectionIndices.first],
 				positions[connectionsInstances[i]->connectionIndices.second], connectionsInstances[i]->posAtt);
@@ -341,22 +362,22 @@ void ConnectionsSphereDrawer::update(const std::vector<osg::Vec3> & positions)
 			updateCache[i] = std::make_pair(positions[connectionsInstances[i]->connectionIndices.first],
 				positions[connectionsInstances[i]->connectionIndices.second]);
 		}
-	}
+	}*/
 }
 
 void ConnectionsSphereDrawer::setSize(const float size)
 {
-	ConnectionSphereInstance::setSize(connectionsInstances, size);
+//	ConnectionSphereInstance::setSize(connectionsInstances, size);
 }
 
 void ConnectionsSphereDrawer::setColor(const osg::Vec4 & color)
 {
-	ConnectionSphereInstance::setColor(connectionsInstances, color);
+	//ConnectionSphereInstance::setColor(connectionsInstances, color);
 }
 
 void ConnectionsSphereDrawer::setVisible(const bool visible)
 {
-	if(visible == true){
+	/*if(visible == true){
 		for(auto it = updateCache.begin(); it != updateCache.end(); ++it){
 			connectionsInstances[it->first]->updatePositionOrientation(it->second.first,
 				it->second.second, connectionsInstances[it->first]->posAtt);
@@ -367,22 +388,22 @@ void ConnectionsSphereDrawer::setVisible(const bool visible)
 		node->setAllChildrenOn();
 	}else{
 		node->setAllChildrenOff();
-	}
+	}*/
 }
 
 void ConnectionsSphereDrawer::setSize(const unsigned int idx, const float size)
 {
-	ConnectionSphereInstance::setSize(connectionsInstances[idx]->sphere, size);
+	//ConnectionSphereInstance::setSize(connectionsInstances[idx]->sphere, size);
 }
 
 void ConnectionsSphereDrawer::setColor(const unsigned int idx, const osg::Vec4 & color)
 {
-	ConnectionSphereInstance::setColor(connectionsInstances[idx]->sphere, color);
+	//ConnectionSphereInstance::setColor(connectionsInstances[idx]->sphere, color);
 }
 
 void ConnectionsSphereDrawer::setVisible(const unsigned int idx, const bool visible)
 {
-	if(node->getValue(idx) != visible){
+	/*if(node->getValue(idx) != visible){
 
 		if(visible == true){		
 			auto it = updateCache.find(idx);
@@ -395,22 +416,25 @@ void ConnectionsSphereDrawer::setVisible(const unsigned int idx, const bool visi
 		}
 
 		node->setValue(idx, visible);
-	}	
+	}*/	
 }
 
 const osg::Vec4 & ConnectionsSphereDrawer::color(const unsigned int idx) const
 {
-	return connectionsInstances[idx]->sphere.colors->at(0);
+	//return connectionsInstances[idx]->sphere.colors->at(0);
+	return osg::Vec4();
 }
 
 const bool ConnectionsSphereDrawer::visible(const unsigned int idx) const
 {
-	return node->getValue(idx);
+	//return node->getValue(idx);
+	return true;
 }
 
 const float ConnectionsSphereDrawer::size(const unsigned int idx) const
 {
-	return connectionsInstances[idx]->sphere.radius;
+	//return connectionsInstances[idx]->sphere.radius;
+	return 1.0f;
 }
 
 class TrajectoryInstance

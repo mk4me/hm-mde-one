@@ -16,7 +16,7 @@ void ImuParsersTest::testSplit()
 {
     IMU::IMUConfig conf;
     conf.imusCount = 18;
-    IMU::Frames frames = IMU::IMUDatParser::parse("E:/IMU/nagranie.dat", conf);
+    IMU::Frames frames = IMU::IMUDatParser::parse("E:/IMU/nagranie.dat", conf.imusCount);
     std::vector<std::pair<int, int>> splits;
     splits.push_back(std::make_pair(0, 2100));
     splits.push_back(std::make_pair(2101, 3670));

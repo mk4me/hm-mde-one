@@ -96,12 +96,12 @@ void ConfigurationWidget::loadXml(ConfigurationPainter& painter, const QString &
     QString path = fileInfo.absolutePath();
     tinyxml2::XMLDocument document;
 	if (document.LoadFile(filename.toStdString().c_str()) != tinyxml2::XML_SUCCESS) {
-        throw std::runtime_error("Unable to load file");
+        throw core::runtime_error("Unable to load file");
     }
     tinyxml2::XMLHandle hDocument(&document);
     tinyxml2::XMLElement* root = hDocument.FirstChildElement().ToElement();
     if (!root) {
-        throw std::runtime_error("Unable to load file");
+        throw core::runtime_error("Unable to load file");
     }
 
     QString background(root->Attribute("BackgroundFilename"));

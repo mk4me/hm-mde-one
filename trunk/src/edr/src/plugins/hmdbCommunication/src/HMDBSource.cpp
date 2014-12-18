@@ -136,15 +136,15 @@ const networkUtils::IWSDLServicePtr createSystemService(const std::string & url,
 			ret = hmdbService->createHMDBSystemService(url, caPath, networkUtils::HVMatch);
 
 			if (ret == nullptr){
-				throw std::runtime_error("Could not create system service");
+				throw core::runtime_error("Could not create system service");
 			}
 		}
 		else{
-			throw std::runtime_error("Could not find HMDBService");
+			throw core::runtime_error("Could not find HMDBService");
 		}
 	}
 	else{
-		throw std::runtime_error("Uninitialized service manager");
+		throw core::runtime_error("Uninitialized service manager");
 	}
 
 	return ret;

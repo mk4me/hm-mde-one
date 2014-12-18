@@ -14,7 +14,7 @@ PluginSubject::SubjectID Subject::globalID = 0;
 PluginSubject::SubjectID Subject::nextGlobalID()
 {
 	if(globalID == std::numeric_limits<PluginSubject::SubjectID>::max()){
-		throw std::runtime_error("Subjects overflow");
+		throw core::runtime_error("Subjects overflow");
 	}
 
 	return globalID++;
@@ -65,7 +65,7 @@ void Subject::addSession(const core::VariantConstPtr & session)
 	utils::TypeInfoList types;
 	session->data()->getSupportedTypes(types);
 	if (std::find(types.begin(), types.end(), typeid(PluginSubject::ISession)) == types.end()){
-		throw std::runtime_error("Data type does not support PluginSubject::ISession type");
+		throw core::runtime_error("Data type does not support PluginSubject::ISession type");
 	}
 
 	sessionStorage.addData(session);

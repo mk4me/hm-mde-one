@@ -112,7 +112,7 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 
 	if (parsers_.find(parser->ID()) != parsers_.end()){
 		CORE_LOG_NAMED_WARNING("parser", "Parser with given ID: " + boost::lexical_cast<std::string>(parser->ID()) + " already registered - skipping registration");
-		throw std::runtime_error("Parser with similar ID already registered");
+		throw core::runtime_error("Parser with similar ID already registered");
 	}
 
 	//! Weryfikujemy możliwości parsowania parsera
@@ -122,7 +122,7 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 
 	if (!(pData.sourceParser || pData.streamParser)){
 		CORE_LOG_NAMED_WARNING("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->ID()) + " does not support any of known capabilities to parse");
-		throw std::runtime_error("Parser does not support any known parse capabilities");
+		throw core::runtime_error("Parser does not support any known parse capabilities");
 	}
 
 	//! Weryfikujemy wspierane wyrażenia
@@ -131,7 +131,7 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 
 	if (expressions.empty() == true){
 		CORE_LOG_NAMED_WARNING("parser", "Parser with ID: " + boost::lexical_cast<std::string>(parser->ID()) + " does not support any sources");
-		throw std::runtime_error("Parser does not support any sources");
+		throw core::runtime_error("Parser does not support any sources");
 	}
 
 	auto typesHierarchy = getDataHierarchyManager();

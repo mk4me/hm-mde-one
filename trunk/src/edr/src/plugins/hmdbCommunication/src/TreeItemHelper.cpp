@@ -22,7 +22,7 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 				s->serie()->setName(path.toStdString());
 				tmpSeries.push_back(s);
 			}else{
-				throw std::runtime_error("Empty object - markers");
+				throw core::runtime_error("Empty object - markers");
 			}
 		}
 		if (motion->hasObject(typeid(kinematic::JointAnglesCollection), false)) {
@@ -33,7 +33,7 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 				s->serie()->setName(path.toStdString());
 				tmpSeries.push_back(s);
 			}else{
-				throw std::runtime_error("Empty object - joints");
+				throw core::runtime_error("Empty object - joints");
 			}
 		}
 		if (motion->hasObject(typeid(GRFCollection), false)) {
@@ -44,7 +44,7 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 				s->serie()->setName(path.toStdString());
 				tmpSeries.push_back(s);
 			}else{
-				throw std::runtime_error("Empty object - grfs");
+				throw core::runtime_error("Empty object - grfs");
 			}
 		}
 	}catch(...){
@@ -93,7 +93,7 @@ void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QSt
 		s->serie()->setName(path.toStdString());
         series.push_back(s);
     } else {
-        throw std::runtime_error("Empty object - joints");
+        throw core::runtime_error("Empty object - joints");
     }
 }
 
@@ -121,7 +121,7 @@ VisualizerPtr NewChartItemHelper::createVisualizer(core::IVisualizerManager* man
     INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
     if (!chart) {
         UTILS_ASSERT(false);
-        throw std::runtime_error("Wrong visualizer type!");
+        throw core::runtime_error("Wrong visualizer type!");
     } else {
         std::string title;
         ScalarChannelReaderInterfaceConstPtr scalar = wrapper->get();
@@ -167,7 +167,7 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer(core::IVisualizerManager* m
     INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
     if (!chart) {
         UTILS_ASSERT(false);
-        throw std::runtime_error("Wrong visualizer type!");
+        throw core::runtime_error("Wrong visualizer type!");
     } else {
         std::string title;
         VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
@@ -279,7 +279,7 @@ VisualizerPtr NewMultiserieHelper::createVisualizer(core::IVisualizerManager* ma
     INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
     if (!chart) {
         UTILS_ASSERT(false);
-        throw std::runtime_error("Wrong visualizer type!");
+        throw core::runtime_error("Wrong visualizer type!");
     } else {
         chart->setTitle(title);
         //chart->setShowLegend(false);

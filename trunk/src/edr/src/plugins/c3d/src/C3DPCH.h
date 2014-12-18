@@ -20,10 +20,10 @@
 
 #include <utils/Utils.h>
 #include <utils/Debug.h>
-
-#include <corelib/IPlugin.h>
 #include <utils/SmartPtr.h>
 
+#include <corelib/IPlugin.h>
+#include <corelib/Exceptions.h>
 //UTILS_PUSH_WARNINGS
 
 //UTILS_POP_WARNINGS

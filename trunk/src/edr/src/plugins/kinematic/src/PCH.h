@@ -14,6 +14,7 @@
 #include <type_traits>
 #include <boost/lexical_cast.hpp>
 
+#include <corelib/Exceptions.h>
 #include <corelib/IPlugin.h>
 #include <kinematiclib/SkeletalParsers.h>
 #include <utils/SmartPtr.h>

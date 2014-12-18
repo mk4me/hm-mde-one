@@ -20,9 +20,10 @@ int curlLogDebugCallback(CURL *handle,
 	{
 	case CURLINFO_TEXT:
 		message = "text -> " + std::string(data, size);
+		PLUGIN_LOG_NAMED_DEBUG("curl", message);
 		break;
 
-	case CURLINFO_HEADER_OUT:
+	/*case CURLINFO_HEADER_OUT:
 		message = "header out => " + std::string(data, size);
 		break;
 	case CURLINFO_DATA_OUT:
@@ -48,10 +49,9 @@ int curlLogDebugCallback(CURL *handle,
 	default:
 		message = "Unrecognized info type -> ";		
 		boost::algorithm::hex(data, data + size, std::back_inserter(message));
-		break;
+		break;*/
 	}
 
-	PLUGIN_LOG_NAMED_DEBUG("curl", message);
 
 	return 0;
 }

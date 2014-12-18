@@ -68,7 +68,7 @@ TPtr coreUI::AbstractStateMachine::getState()
         }
     }
 
-    throw std::runtime_error("coreUI::AbstractStateMachine::getState() - Unable to find state");
+    throw core::runtime_error("coreUI::AbstractStateMachine::getState() - Unable to find state");
 }
 
 }

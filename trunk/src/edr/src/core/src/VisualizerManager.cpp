@@ -121,7 +121,7 @@ void VisualizerManager::notify(Visualizer * visualizer, VisuzalizerOperation mod
 void VisualizerManager::registerVisualizerPrototype(plugin::IVisualizerPtr visualizerPrototype)
 {
 	if(visualizerPrototypes_.find(visualizerPrototype->ID()) != visualizerPrototypes_.end()){
-		throw std::runtime_error("Visualizer with given ID already registered");
+		throw core::runtime_error("Visualizer with given ID already registered");
 	}
 
 	VisualizerPrototypeData protoData;

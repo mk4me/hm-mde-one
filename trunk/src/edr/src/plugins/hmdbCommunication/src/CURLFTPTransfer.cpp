@@ -15,7 +15,7 @@ CURLFTPTransfer::CURLFTPTransfer(const Direction direction, CURL * curl,
 	utils::shared_ptr<CURLFTPTransferData> * td = nullptr;
 	auto ret = curl_easy_getinfo(curl, CURLINFO_PRIVATE, &td);
 	if (ret != CURLE_OK || td == nullptr){
-		throw std::runtime_error("Improperly configured connection");
+		throw core::runtime_error("Improperly configured connection");
 	}
 
 	data_ = *td;

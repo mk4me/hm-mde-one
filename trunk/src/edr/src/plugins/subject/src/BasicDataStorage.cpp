@@ -47,7 +47,7 @@ void BasicDataStorage::getObjects(core::VariantsCollection& objects) const
 const bool BasicDataStorage::isManaged(const core::VariantConstPtr & object) const
 {
 	if(plugin::getDataHierachyManagerReader()->isRegistered(object->data()->getTypeInfo()) == false){
-		throw std::runtime_error("Type not registered");
+		throw core::runtime_error("Type not registered");
 	}
 
 	ScopedLock lock(sync);
@@ -84,14 +84,14 @@ const bool BasicDataStorage::hasObject(const utils::TypeInfo & type, bool exact)
 void BasicDataStorage::addData(const core::VariantConstPtr & data)
 {
 	if (plugin::getDataHierachyManagerReader()->isRegistered(data->data()->getTypeInfo()) == false){
-		throw std::runtime_error("Type not registered");
+		throw core::runtime_error("Type not registered");
 	}
 
 	ScopedLock lock(sync);
 
 	auto found = find(data);
 	if(found.first != objectsByTypes.end() && found.second != found.first->second.end()){
-		throw std::runtime_error("Object already managed");
+		throw core::runtime_error("Object already managed");
 	}
 
 	if(found.first != objectsByTypes.end()){
@@ -104,14 +104,14 @@ void BasicDataStorage::addData(const core::VariantConstPtr & data)
 void BasicDataStorage::removeData(const core::VariantConstPtr & data)
 {
 	if (plugin::getDataHierachyManagerReader()->isRegistered(data->data()->getTypeInfo()) == false){
-		throw std::runtime_error("Type not registered");
+		throw core::runtime_error("Type not registered");
 	}
 
 	ScopedLock lock(sync);
 
 	auto found = find(data);
 	if(found.first == objectsByTypes.end() || found.second == found.first->second.end()){
-		throw std::runtime_error("Object not managed");
+		throw core::runtime_error("Object not managed");
 	}
 
 	found.first->second.erase(found.second);
