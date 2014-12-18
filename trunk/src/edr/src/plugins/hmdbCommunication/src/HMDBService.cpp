@@ -50,7 +50,9 @@ int curlLogDebugCallback(CURL *handle,
 		message = "Unrecognized info type -> ";		
 		boost::algorithm::hex(data, data + size, std::back_inserter(message));
 		break;*/
+
 	}
+
 
 
 	return 0;
@@ -255,14 +257,14 @@ void HMDBService::attach(IHMDBSessionPtr session)
 {
 	std::lock_guard<std::recursive_mutex> lock(sync_);
 	//! TODO
-	//! podpi¹æ pod widget
+	//! podpiï¿½ï¿½ pod widget
 }
 
 void HMDBService::detach(IHMDBSessionPtr session)
 {
 	std::lock_guard<std::recursive_mutex> lock(sync_);
 	//! TODO
-	//! od³¹czyæ widgeta
+	//! odï¿½ï¿½czyï¿½ widgeta
 }
 
 void HMDBService::init(core::ISourceManager * sourceManager,
@@ -285,10 +287,10 @@ void HMDBService::init(core::ISourceManager * sourceManager,
 
 	servicesThread.run(&HMDBService::runServices, this);
 	dataThread.run(&HMDBService::runData, this);
-
-#if ((defined _WIN32) || (defined _WIN64))
 	WsdlPull::SCHEMADIR = (plugin::getPaths()->getResourcesPath() / "schemas/").string();
 	PLUGIN_LOG_INFO("WSDLPULL SCHEMADIR: " << WsdlPull::SCHEMADIR);
+
+#if ((defined _WIN32) || (defined _WIN64))
 	XmlUtils::TMPFILESDIR = (plugin::getPaths()->getTmpPath()).string();
 	PLUGIN_LOG_INFO("XmlUtils TMPFILESDIR: " << XmlUtils::TMPFILESDIR);
 

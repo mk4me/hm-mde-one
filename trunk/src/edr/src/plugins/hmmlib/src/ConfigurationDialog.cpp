@@ -4,6 +4,7 @@
 #include <QtWidgets/QListWidgetItem>
 #include <utils/Debug.h>
 #include <tinyxml2.h>
+#include <corelib/Exceptions.h>
 #include "ui_FilterConfiguratorWidget.h"
 
 const float SCALE = 0.6f;

@@ -9,6 +9,7 @@
 #include <QtCore/QDir>
 #include <utils/PtrPolicyStd.h>
 #include "Config.h"
+#include <corelib/Exceptions.h>
 #include <coreui/CoreMainWindow.h>
 #include <QtWidgets/QSplashScreen>
 #include <QtWidgets/QMessageBox>
@@ -86,7 +87,7 @@ void Application::updateServices()
 	serviceManager_->update(servicesTimeDelta);
 }
 
-Application::Application() : vendor_("Polsko-Japoñska Wy¿sza Szko³a Technik Komputerowych, Oddzia³ zamiejscowy w Bytomiu",
+Application::Application() : vendor_("Polsko-Japoï¿½ska Wyï¿½sza Szkoï¿½a Technik Komputerowych, Oddziaï¿½ zamiejscowy w Bytomiu",
 	"PJWSTK Bytom", "Uczelnia prywatna", "marek.kulbacki@gmail.com"),
 	visualizerTimeDelta(TimeDelta), servicesTimeDelta(TimeDelta), mainWindow(nullptr), uiInit(false)
 {
@@ -127,7 +128,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 	{
 		uiApplication_.reset(new coreUI::UIApplication(argc, argv));
 		QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
-		//TODO - przejrzec w Qt jak to edytowaæ
+		//TODO - przejrzec w Qt jak to edytowaï¿½
 		//QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins/platforms");
 
 		//ustawienia aplikacji
@@ -146,7 +147,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 		}
 	}
 
-	//teraz inicjujemy logger zeby moc juz wszystko logowaæ
+	//teraz inicjujemy logger zeby moc juz wszystko logowaï¿½
 	//potem moge dolaczyc widget
 	{
 		logInitializer_.reset(new LogInitializer((paths_->getApplicationDataPath() / "resources" / "settings" / "log.ini").string()));
@@ -155,7 +156,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 		logger_ = loggerPrototype_->subLog("core");
 	}
 
-	//! DOPIERO OD TEGO MOMENTU MOGÊ LOGOWAC INFORMACJE!!
+	//! DOPIERO OD TEGO MOMENTU MOGï¿½ LOGOWAC INFORMACJE!!
 	ExceptionLogger::setLog(logger_);
 
 	CORE_LOG_INFO("UserDataPath: " << paths_->getUserDataPath());
@@ -193,7 +194,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 
 		//ustawiamy jezyk
 		//TODO
-		// powinienem sprawdziæ w lokalnej bazie/rejestrze/jakims konfigu
+		// powinienem sprawdziï¿½ w lokalnej bazie/rejestrze/jakims konfigu
 		// czy user juz nie wybral jezyka, jesli tak to ten jezyk ustawic,
 		// a jak nie to probowac go pobrac z systemu i jak ten sie nie
 		// powiedzie to domyslnie angielski
@@ -275,14 +276,14 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	memoryDataManager_->addObserver(fileDataManager_);
 	memoryDataManager_->addObserver(streamDataManager_);
 
-	//Wielow¹tkowoœæ
+	//Wielowï¿½tkowoï¿½ï¿½
 	{
 		showSplashScreenMessage(QObject::tr("Initializing threading"));		
 
 		core::ThreadPool::setLog(logger_->subLog("threadPool"));
 		auto minThreads = std::thread::hardware_concurrency();
 		if (minThreads < 2){
-			//tyle by wypada³o ¿eby nowe maszyny dawa³y radê - 2xCore x2 threads per core
+			//tyle by wypadaï¿½o ï¿½eby nowe maszyny dawaï¿½y radï¿½ - 2xCore x2 threads per core
 			minThreads = 3;
 		}
 		else{
@@ -345,8 +346,8 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 			auto plugin = pluginLoader_->getPlugin(i);
 			auto pluginName = plugin->getPath().stem().string();
 
-			// je¿eli jestesmy w debug to pluginy maj¹ d na koñcu a t³umaczenia nie!!
-			// muszê siê pozbyæ d
+			// jeï¿½eli jestesmy w debug to pluginy majï¿½ d na koï¿½cu a tï¿½umaczenia nie!!
+			// muszï¿½ siï¿½ pozbyï¿½ d
 #ifdef _DEBUG
 
 			if (pluginName.back() == 'd'){
@@ -649,7 +650,7 @@ bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path,
 {
 #ifdef WIN32
 	//TODO
-	//u¿yæ vendor info do generowania sciezki
+	//uï¿½yï¿½ vendor info do generowania sciezki
 #define KEY_PATH TEXT("Software\\PJWSTK\\")
 #define PATH_BUFFER_SIZE 1024
 	HKEY hKey;
@@ -717,14 +718,14 @@ void Application::setDefaultPaths(utils::shared_ptr<Path> & path, const std::str
 	//mie? na uwadze nazw? aplikacji i PJWSTK
 	auto userPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0).toStdString()) / "PJWSTK" / appName;
 #ifdef WIN32
-	//HACK ¿eby dostaæ siê do œcie¿ek roaming dla usera, Qt w innych przypadkach podaje œciezki w local
+	//HACK ï¿½eby dostaï¿½ siï¿½ do ï¿½cieï¿½ek roaming dla usera, Qt w innych przypadkach podaje ï¿½ciezki w local
 	QString settingsPath = QFileInfo(QSettings().fileName()).absolutePath();
 	auto userAppDataPath = Filesystem::Path(settingsPath.toStdString()).parent_path() / "PJWSTK" / appName;
 
 #else
 	auto userAppDataPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DataLocation).at(0).toStdString()).parent_path() / "PJWSTK" / appName;
 #endif // WIN32
-	//TODO - czy pod linux taka konwencja jest ok? jak tam dzia³aj¹ takie wspólne foldery?
+	//TODO - czy pod linux taka konwencja jest ok? jak tam dziaï¿½ajï¿½ takie wspï¿½lne foldery?
 	auto appDataPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::GenericConfigLocation).at(1).toStdString()) / "PJWSTK" / appName;
 
 	path.reset(new Path(userPath, appDataPath, userAppDataPath, resourcesPath(), userPath / "tmp", appDataPath / "plugins"));

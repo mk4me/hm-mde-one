@@ -1,6 +1,7 @@
 #include "CommunicationPCH.h"
 #include "PatientCardManager.h"
 #include <utils/Debug.h>
+#include <corelib/Exceptions.h>
 
 PatientCardManager::PatientCardManager() :currentPatientCard_(-1)
 {

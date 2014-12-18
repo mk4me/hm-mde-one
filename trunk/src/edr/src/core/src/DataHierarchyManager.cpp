@@ -2,6 +2,7 @@
 #include "DataHierarchyManager.h"
 #include "ApplicationCommon.h"
 #include <utils/Debug.h>
+#include <corelib/Exceptions.h>
 
 namespace core {
 

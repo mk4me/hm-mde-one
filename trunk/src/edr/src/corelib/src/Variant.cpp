@@ -1,6 +1,7 @@
 #include "CoreLibPCH.h"
 #include <corelib/Variant.h>
 #include <utils/Push.h>
+#include <corelib/Exceptions.h>
 
 using namespace core;
 
@@ -57,7 +58,7 @@ Variant::Variant(const Variant & ow, const CloneOp co)
 Variant::Variant(const utils::ObjectWrapperPtr & wrapper)
 : wrapper_(wrapper), initialized_(false), initializing_(false)
 {
-	UTILS_ASSERT((wrapper_ != nullptr), "Wrapper dla danych nie mo¿e byæ pusty");
+	UTILS_ASSERT((wrapper_ != nullptr), "Wrapper dla danych nie moï¿½e byï¿½ pusty");
 }
 
 void Variant::set(const utils::ObjectWrapperPtr & wrapper)
@@ -257,17 +258,17 @@ void Variant::swap(Variant & ow)
 
 const bool Variant::isEqual(const Variant & obj) const
 {
-	//czy zgadza siê meta - wskaŸniki
+	//czy zgadza siï¿½ meta - wskaï¿½niki
 	return ((metadata_ == obj.metadata_) ||
-		//czy zgadza siê meta - zawartoœæ
+		//czy zgadza siï¿½ meta - zawartoï¿½ï¿½
 		((metadata_ != nullptr) && (obj.metadata_ != nullptr) && (*metadata_ == *(obj.metadata_)))) &&
-		//czy zgadzaj¹ siê dane - wskaŸniki
+		//czy zgadzajï¿½ siï¿½ dane - wskaï¿½niki
 		(((wrapper_ != nullptr) && (wrapper_ == obj.wrapper_)) ||
-		// czy zgadzaj¹ siê dane - zawartoœæ
+		// czy zgadzajï¿½ siï¿½ dane - zawartoï¿½ï¿½
 		(wrapper_->isEqual(*(obj.wrapper_)) == true) ||
-		//czy maj¹ ten sam inicjalizator jeœli brak danych - po wskaŸniki
+		//czy majï¿½ ten sam inicjalizator jeï¿½li brak danych - po wskaï¿½niki
 		(((wrapper_->getRawPtr() == nullptr) || (obj.wrapper_->getRawPtr() == nullptr)) && (((initializer_ != nullptr) && (initializer_ == obj.initializer_)) ||
-		//czy ten sam inicjalizator jeœli chodzi o efekt dzia³ania
+		//czy ten sam inicjalizator jeï¿½li chodzi o efekt dziaï¿½ania
 		((initializer_ != nullptr) && (obj.initializer_ != nullptr) && initializer_->isEqual(*(obj.initializer_))))));
 }
 

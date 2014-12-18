@@ -6,6 +6,7 @@
 #include <utils/Debug.h>
 #include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/hmmlib/EMGFilter.h>
+#include <corelib/Exceptions.h>
 
 using namespace core;
 

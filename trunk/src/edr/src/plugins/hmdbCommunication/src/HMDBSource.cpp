@@ -15,7 +15,7 @@
 #include "HMDBShallowCopyContext.h"
 #include "HMDBSourceViewManager.h"
 #include "TreeBuilder.h"
-
+#include <corelib/Exceptions.h>
 
 using namespace hmdbCommunication;
 
@@ -49,8 +49,8 @@ bool HMDBSource::lateInit()
 void HMDBSource::finalize()
 {
 	//TODO
-	//zamkn¹æ wszystkie widgety z kontekstami,
-	//posprz¹taæ po nich - usuwamy
+	//zamknï¿½ï¿½ wszystkie widgety z kontekstami,
+	//posprzï¿½taï¿½ po nich - usuwamy
 }
 
 void HMDBSource::update(double deltaTime)

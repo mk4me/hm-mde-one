@@ -267,9 +267,10 @@ void MdeMainWindow::customViewInit(QWidget * console)
    memoryManager->addObserver(analysisModel);
    trySetStyleByName("hmm");
  
+#ifdef WIN32
    this->showFullScreen();
    this->setFixedSize(this->width(), this->height());
-
+#endif
    utils::shared_ptr<hmdbCommunication::IHMDBSource> icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
    plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(icomm);
 
@@ -490,19 +491,20 @@ void MdeMainWindow::closeEvent(QCloseEvent* event)
 
 	auto visManager = plugin::getVisualizerManager();
 
-	core::IVisualizerManager::VisualizerInstances visInstances;
+	if (visManager) {
+		core::IVisualizerManager::VisualizerInstances visInstances;
 
-	visManager->getVisualizersInstances(visInstances);
+		visManager->getVisualizersInstances(visInstances);
 
-	for(auto it = visInstances.begin(); it != visInstances.end(); ++it){
+		for(auto it = visInstances.begin(); it != visInstances.end(); ++it){
 
-		auto w = (*it)->getWidget();
-		if(w != nullptr && w->isWindowModified() == true){
-			close = false;
-			break;
+			auto w = (*it)->getWidget();
+			if(w != nullptr && w->isWindowModified() == true){
+				close = false;
+				break;
+			}
 		}
 	}
-
 	if(close == false){
 		if(QMessageBox::question( this, tr("Confirm exit"), tr("There are some unsaved data changes. Do You want to close application and discard them?"),
 			QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) == QMessageBox::No){

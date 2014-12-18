@@ -5,6 +5,7 @@
 #include "Measurements.h"
 #include <corelib/ILog.h>
 #include <corelib/PluginCommon.h>
+#include <corelib/Exceptions.h>
 
 MeasurementConfig::MeasurementConfig() : 
     number(-1)

@@ -17,6 +17,7 @@
 #include <boost/serialization/string.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
+#include <corelib/Exceptions.h>
 
 namespace boost {
     namespace serialization {

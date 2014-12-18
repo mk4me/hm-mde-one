@@ -2,6 +2,7 @@
 #include "MemoryDataManager.h"
 #include "DataHierarchyManager.h"
 #include "ApplicationCommon.h"
+#include <corelib/Exceptions.h>
 
 using namespace core;
 

@@ -3,6 +3,7 @@
 #include <corelib/PluginCommon.h>
 #include <corelib/IApplication.h>
 #include <corelib/ILog.h>
+#include <corelib/Exceptions.h>
 
 using namespace core;
 

@@ -2,6 +2,7 @@
 #include <QtGui/QCloseEvent>
 #include <stdexcept>
 #include <utils/Debug.h>
+#include <corelib/Exceptions.h>
 
 ConfigurationPainter::ConfigurationPainter( QWidget* parent ) :
 QWidget(parent),

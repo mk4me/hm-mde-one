@@ -10,6 +10,7 @@
 #include <corelib/ILog.h>
 #include <osg/ImageSequence>
 #include <osgDB/ReadFile>
+#include <corelib/Exceptions.h>
 
 using namespace vidlib;
 

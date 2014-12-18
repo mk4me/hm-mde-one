@@ -15,6 +15,7 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/INewChartSerie.h>
 #include <plugins/hmmlib/Export.h>
+#include <corelib/Exceptions.h>
 
 using namespace core;
 

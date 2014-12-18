@@ -17,6 +17,7 @@
 #include <numeric>
 #include <fstream>
 #include <corelib/PluginCommon.h>
+#include <corelib/Exceptions.h>
 
 
 using namespace hmdbCommunication;

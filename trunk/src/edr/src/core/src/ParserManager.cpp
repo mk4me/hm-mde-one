@@ -2,6 +2,7 @@
 #include "ParserManager.h"
 #include "DataHierarchyManager.h"
 #include "ApplicationCommon.h"
+#include <corelib/Exceptions.h>
 #include <boost/lexical_cast.hpp>
 
 using namespace core;

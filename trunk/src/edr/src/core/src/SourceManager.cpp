@@ -4,6 +4,7 @@
 #include <corelib/ILog.h>
 #include <corelib/PluginCommon.h>
 #include "ApplicationCommon.h"
+#include <corelib/Exceptions.h>
 
 namespace core{
 

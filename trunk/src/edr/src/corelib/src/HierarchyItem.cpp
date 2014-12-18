@@ -2,6 +2,7 @@
 #include <corelib/HierarchyItem.h>
 
 #include <QtCore/QStringList>
+#include <corelib/Exceptions.h>
 
 using namespace core;
 

@@ -81,11 +81,11 @@ sqlite3 * SQLiteDB::open(const std::string & path, const std::string & key,
 	sqlite3 * db = open(path, flags);	
 
 	if (db != nullptr && key.empty() == false){
-		auto rc = sqlite3_key(db, key.c_str(), key.size());
+		/*auto rc = sqlite3_key(db, key.c_str(), key.size());
 		if (rc != SQLITE_OK){
 			close(db);
 			db = nullptr;
-		}
+		}*/
 	}
 
 	return db;

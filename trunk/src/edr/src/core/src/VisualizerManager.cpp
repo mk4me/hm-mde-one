@@ -4,6 +4,7 @@
 #include "MemoryDataManager.h"
 #include <utils/Push.h>
 #include "ApplicationCommon.h"
+#include <corelib/Exceptions.h>
 
 using namespace core;
 

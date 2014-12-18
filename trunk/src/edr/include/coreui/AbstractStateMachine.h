@@ -14,10 +14,11 @@
 #include <QtGui/QWheelEvent>
 #include <coreui/Export.h>
 #include <coreui/AbstractState.h>
+#include <corelib/Exceptions.h>
 
 namespace coreUI {
     
-//! Prosta maszyna stanów do obs³ugi UI
+//! Prosta maszyna stanï¿½w do obsï¿½ugi UI
 class COREUI_EXPORT AbstractStateMachine : public QObject
 {
     Q_OBJECT;

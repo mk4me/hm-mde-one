@@ -4,6 +4,7 @@
 #include "CURLFTPProgress.h"
 #include "CURLFTPTransferData.h"
 #include <curl/curl.h>
+#include <corelib/Exceptions.h>
 
 using namespace hmdbCommunication;
 

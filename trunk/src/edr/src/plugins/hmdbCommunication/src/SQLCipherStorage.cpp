@@ -11,7 +11,7 @@
 #include <sqliteUtils/SQLiteDB.h>
 #include <sqliteUtils/SQLitePreparedStatement.h>
 #include <sqliteUtils/SQLiteBLOBStreamBufferT.h>
-
+#include <corelib/Exceptions.h>
 
 static const unsigned int sqliteExecWaitMS = 50;
 static const unsigned int maxSqliteExecTries = 2400;
@@ -533,11 +533,11 @@ const bool SQLCipherStorage::create(const core::Filesystem::Path & path,
 	if (db != nullptr){
 		auto ret = initialize(db);
 		if (ret == true) {
-			if (sqlite3_key(db, key.c_str(), key.size()) == SQLITE_OK) {
+			/*if (sqlite3_key(db, key.c_str(), key.size()) == SQLITE_OK) {
 				return ret;
 			} else {
 				return false;
-			}
+			}*/
 		}
 		return ret;
 	}
@@ -557,11 +557,11 @@ const bool SQLCipherStorage::changeKey(const core::Filesystem::Path & path,
 	sqliteUtils::SQLiteDB::Wrapper db(sqliteUtils::SQLiteDB::open(path.string(), oldKey, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE), sqliteUtils::SQLiteDB::Close(maxSqliteExecTries, sqliteExecWaitMS));	
 
 	if (db != nullptr){
-		auto rc = sqlite3_rekey(db, newKey.c_str(), newKey.size());
-		if (rc == SQLITE_OK){
+		//auto rc = sqlite3_rekey(db, newKey.c_str(), newKey.size());
+		//if (rc == SQLITE_OK){
 			db.reset(sqliteUtils::SQLiteDB::open(path.string(), newKey, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE));
 			ret = (db != nullptr);
-		}		
+		//}
 	}	
 
 	return ret;
@@ -579,10 +579,10 @@ const bool SQLCipherStorage::setKey(const core::Filesystem::Path & path,
 	sqliteUtils::SQLiteDB::Wrapper db(sqliteUtils::SQLiteDB::open(path.string(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE), sqliteUtils::SQLiteDB::Close(maxSqliteExecTries, sqliteExecWaitMS));	
 
 	if (db != nullptr){
-		auto rc = sqlite3_rekey(db, key.c_str(), key.size());
-		if (rc == SQLITE_OK){
+		//auto rc = sqlite3_rekey(db, key.c_str(), key.size());
+		//if (rc == SQLITE_OK){
 			ret = sqliteUtils::SQLiteDB::verify(db);
-		}
+		//}
 	}	
 
 	return ret;

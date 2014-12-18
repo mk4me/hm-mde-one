@@ -1,6 +1,7 @@
 #include "CorePCH.h"
 #include "ServiceManager.h"
 #include "ApplicationCommon.h"
+#include <corelib/Exceptions.h>
 
 namespace core {
 

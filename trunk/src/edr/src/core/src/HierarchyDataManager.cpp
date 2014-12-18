@@ -1,6 +1,7 @@
 #include "CorePCH.h"
 #include "HierarchyDataManager.h"
 #include "ApplicationCommon.h"
+#include <corelib/Exceptions.h>
 
 using namespace core;
 
