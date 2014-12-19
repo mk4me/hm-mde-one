@@ -195,14 +195,14 @@ void FFmpegVideoStream::setLogCallback( LogCallback callback )
 
 VideoStream* FFmpegVideoStream::clone() const
 {
-	std::auto_ptr<FFmpegVideoStream> cloned;
+	std::unique_ptr<FFmpegVideoStream> cloned;
 	if (stream != nullptr){
 		//TODO
 		//klonowanie strumienia!!
-		cloned = std::auto_ptr<FFmpegVideoStream>(new FFmpegVideoStream(stream, getSource(), wantedStream));
+		cloned = std::unique_ptr<FFmpegVideoStream>(new FFmpegVideoStream(stream, getSource(), wantedStream));
 	}
 	else{
-		cloned = std::auto_ptr<FFmpegVideoStream>(new FFmpegVideoStream(getSource(), wantedStream));
+		cloned = std::unique_ptr<FFmpegVideoStream>(new FFmpegVideoStream(getSource(), wantedStream));
 	}
     if ( getTime() != INVALID_TIMESTAMP ) {
         cloned->setTime( getTime() );

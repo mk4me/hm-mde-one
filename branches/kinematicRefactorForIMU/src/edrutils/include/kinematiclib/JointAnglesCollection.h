@@ -9,13 +9,13 @@
 #include <osg/Vec4>
 #include <utils/Debug.h>
 #include <utils/DataChannelCollection.h>
-#include <kinematiclib/SkeletalParsers.h>
-#include <kinematiclib/hAnimBone.h>
+/*
+#include <kinematiclib/hAnimSegment.h>
 #include <kinematiclib/hAnimJoint.h>
 #include <kinematiclib/SkeletalMappingScheme.h>
-#include <kinematiclib/hAnimSkeleton.h>
+#include <kinematiclib/hAnimHumanoid.h>
 #include <kinematiclib/QuaternionManipulators.h>
-#include <kinematiclib/SkeletalModel.h>
+*/
 
 namespace kinematic
 {
@@ -49,9 +49,9 @@ public:
     //! \param skeletalModel struktura szkieletu w postaci pełnego szkieletu h-anim
     //! \param rootPositions kolekcja danych pozycji korzenia szkieletu
     //! \param channels kolekcja z danymi w postaci DataChannel
-    void setSkeletal(kinematic::hAnimSkeletonPtr skeletalModel, const std::vector<osg::Vec3>& rootPositions, const std::vector<JointAngleChannelPtr>& channels);
+    void setSkeletal(kinematic::hAnimHumanoidPtr skeletalModel, const std::vector<osg::Vec3>& rootPositions, const std::vector<JointAngleChannelPtr>& channels);
     //! \brief zwraca szkielet zgodny z h-anim
-    const kinematic::hAnimSkeletonPtr & getHAnimSkeleton() const { return haSkeleton; }
+	const kinematic::hAnimHumanoidPtr & getHAnimSkeleton() const { return haSkeleton; }
 	
    	//! zwraca indeks kanału lub rzuca wyjątkiem w przypadku niepowodzenia
    	//! \param name nazwa szukanego kanału
@@ -82,7 +82,7 @@ public:
 
 	private:
 		//! pełny szkielet h-anim
-		kinematic::hAnimSkeletonPtr haSkeleton;
+		kinematic::hAnimHumanoidPtr haSkeleton;
 		//! pozycje dla roota
 		std::vector<osg::Vec3> rootPositions;
 		//! długość przez którą należy pomnożyc aby uzyskać początkowe długości kości
@@ -108,9 +108,9 @@ public:
 		//! \param skeletalModel struktura szkieletu w postaci pełnego szkieletu h-anim
 		//! \param rootPositions kolekcja danych pozycji korzenia szkieletu
 		//! \param channels kolekcja z danymi w postaci DataChannel
-		void setSkeletal(kinematic::hAnimSkeletonPtr skeletalModel, kinematic::SkeletalDataStreamPtr skeletalDataStream);
+		void setSkeletal(kinematic::hAnimHumanoidPtr skeletalModel, kinematic::SkeletalDataStreamPtr skeletalDataStream);
 		//! \brief zwraca szkielet zgodny z h-anim
-		const kinematic::hAnimSkeletonPtr & getHAnimSkeleton() const { return haSkeleton; }
+		const kinematic::hAnimHumanoidPtr & getHAnimSkeleton() const { return haSkeleton; }
 		//! \return długość przez którą należy pomnożyc aby uzyskać początkowe długości kości
 		double getLengthRatio() const { return lengthRatio; }
 		//! ustawia długość przez którą należy pomnożyc aby uzyskać początkowe długości kości
@@ -128,7 +128,7 @@ public:
 
 	private:
 		//! pełny szkielet h-anim
-		kinematic::hAnimSkeletonPtr haSkeleton;
+		kinematic::hAnimHumanoidPtr haSkeleton;
 		//! Strumień z danymi dla szkieletu
 		kinematic::SkeletalDataStreamPtr skeletalDataStream;
 		//! długość przez którą należy pomnożyc aby uzyskać początkowe długości kości

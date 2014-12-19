@@ -1,8 +1,6 @@
-#include "stdafx.h"
 #include <algorithm>
 #include <osg/Quat>
 #include <osg/Vec3>
-#include <kinematiclib/SkeletalParsers.h>
 #include <kinematiclib/JointAnglesCollection.h>
 
 using namespace std;
@@ -19,7 +17,7 @@ void JointAnglesCollection::setSkeletal(kinematic::SkeletalModelConstPtr skeleta
 {
     UTILS_ASSERT(!initialized);
     
-   this->haSkeleton = hAnimSkeleton::create();
+   this->haSkeleton = hAnimHumanoid::create();
    this->haSkeleton->registerMappingScheme(mapping);
    this->haSkeleton->doSkeletonMapping(skeletalModel);
    this->haSkeleton->createActiveHierarchy();
@@ -62,7 +60,7 @@ void JointAnglesCollection::setSkeletal(kinematic::SkeletalModelConstPtr skeleta
    initialized = true;
 }
 
-void JointAnglesCollection::setSkeletal( kinematic::hAnimSkeletonPtr skeletalModel, const std::vector<osg::Vec3>& rootPositions, const Collection& channels )
+void JointAnglesCollection::setSkeletal( kinematic::hAnimHumanoidPtr skeletalModel, const std::vector<osg::Vec3>& rootPositions, const Collection& channels )
 {
     UTILS_ASSERT(!initialized);
     this->haSkeleton = skeletalModel;
@@ -180,14 +178,14 @@ int JointAnglesCollection::tryGetIndex(const std::string& name ) const
 
 JointAnglesCollection* JointAnglesCollection::clone() const
 {
-	std::auto_ptr<JointAnglesCollection> obj(new JointAnglesCollection());
-	int count = static_cast<int>(channels.size());
+	std::unique_ptr<JointAnglesCollection> obj(new JointAnglesCollection());
+	const int count = static_cast<int>(channels.size());
 	obj->channels.resize(count);
 	for (int i = 0; i < count; ++i) {
 		obj->channels[i] = JointAngleChannelPtr(this->channels[i]->clone());
 	}
 	obj->configurationID = this->configurationID;
-	obj->haSkeleton = this->haSkeleton ? hAnimSkeletonPtr(this->haSkeleton->clone()) : hAnimSkeletonPtr();
+	obj->haSkeleton = this->haSkeleton ? hAnimHumanoidPtr(this->haSkeleton->clone()) : hAnimHumanoidPtr();
 	obj->lengthRatio = this->lengthRatio;
     obj->initialized = this->initialized;
     obj->rootPositions = this->rootPositions;
@@ -211,7 +209,7 @@ void JointAnglesCollectionStream::setSkeletal(kinematic::SkeletalModelConstPtr s
 {
 	UTILS_ASSERT(!initialized);
 
-	this->haSkeleton = hAnimSkeleton::create();
+	this->haSkeleton = hAnimHumanoid::create();
 	this->haSkeleton->doSkeletonMapping(skeletalModel);
 	this->haSkeleton->createActiveHierarchy();
 
@@ -253,7 +251,7 @@ void JointAnglesCollectionStream::setSkeletal(kinematic::SkeletalModelConstPtr s
 	initialized = true;
 }
 	
-void JointAnglesCollectionStream::setSkeletal(kinematic::hAnimSkeletonPtr skeletalModel,
+void JointAnglesCollectionStream::setSkeletal(kinematic::hAnimHumanoidPtr skeletalModel,
 	kinematic::SkeletalDataStreamPtr skeletalDataStream)
 {
 	this->haSkeleton = skeletalModel;

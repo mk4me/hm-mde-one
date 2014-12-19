@@ -1,47 +1,20 @@
 BEGIN_PROJECT("static")
 
 SET_PUBLIC_HEADERS(
-	AmcParser.h
-	AsfParser.h
-	BvhParser.h
-	VskParser.h
-	DegreeOfFreedom.h
-	hmException.h
 	Joint.h
-	hAnimJoint.h
-	hAnimBone.h
-	hAnimSkeleton.h
 	SkeletalMappingScheme.h
 	QuaternionManipulators.h
-	JointAnglesCollection.h
-	SkeletalModel.h
+	JointAnglesCollection.h	
 	SkeletalData.h
-	SkeletalParsers.h
 	Skeleton.h
-	Logger.h
+	SkeletonState.h
 )	
 
-SET_PRIVATE_HEADERS(
-	stdafx.h
-)
-
-SET_SOURCE_FILES( 
-	AmcParser.cpp
-	AsfParser.cpp
-	BvhParser.cpp
-	VskParser.cpp
-	DegreeOfFreedom.cpp
-	hmException.cpp
-	Joint.cpp
-	hAnimJoint.cpp
-	hAnimSkeleton.cpp
+SET_SOURCE_FILES( 	
 	SkeletalMappingScheme.cpp
-	JointAnglesCollection.cpp
-	SkeletalModel.cpp
+	JointAnglesCollection.cpp	
 	Skeleton.cpp
-	stdafx.cpp
+	SkeletonState.cpp
 )
-
-SET_PRECOMPILED_HEADER(stdafx.h stdafx.cpp)
 
 END_PROJECT()

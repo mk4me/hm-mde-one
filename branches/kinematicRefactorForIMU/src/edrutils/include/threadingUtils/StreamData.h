@@ -17,7 +17,6 @@
 #include <functional>
 #include <utils/Debug.h>
 #include <list>
-#include <boost/type_traits.hpp>
 
 namespace threadingUtils {
 	//! Interfejs obiektu obserwującego strumień
@@ -98,10 +97,10 @@ namespace threadingUtils {
 		typedef typename ListT::size_type size_type;
 
 		//! Typ referencji do danych
-		typedef typename boost::add_reference<T>::type ref_type;
+		typedef typename std::add_lvalue_reference<T>::type ref_type;
 
 		//! Typ stałej referencji do danych
-		typedef typename boost::add_const<ref_type>::type const_ref_type;
+		typedef typename std::add_const<ref_type>::type const_ref_type;
 
 	public:
 		//! Konstruktor domyslny

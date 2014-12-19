@@ -171,9 +171,8 @@ public:
 	}
     //! \return głęboka kopia obiektu
 	virtual IEvent* clone() const
-	{
-        std::auto_ptr<Event> newEvent(new Event(*this));
-		return newEvent.release();
+	{        
+		return new Event(*this);
 	}
     //! ustawia offset wynikający z przesuniecia w pliku c3d (first frame)
     void setOffset(double val) 

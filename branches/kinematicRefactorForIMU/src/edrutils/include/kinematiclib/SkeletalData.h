@@ -1,7 +1,6 @@
 #ifndef HEADER_GUARD_KINEMATICDATA__SKELETALMODEL_H__
 #define HEADER_GUARD_KINEMATICDATA__SKELETALMODEL_H__
 
-#include <boost/utility.hpp>
 #include <kinematiclib/Joint.h>
 #include <kinematiclib/Skeleton.h>
 #include <threadingUtils/StreamData.h>
@@ -9,93 +8,23 @@
 namespace kinematic
 {
 	//! klasa przechowuje wczytane dane animacji
-	class SkeletalData : boost::noncopyable
+	struct SkeletalData
 	{
-	public:
-		/// \brief  Struktura zawiera wartości kanałów dla
-		/// 	    konkretnej kości i konkretnego kanału
-		struct singleJointState : boost::noncopyable
-		{
-			//! nazwa stawu
-			std::string name;
-			/// \brief  wartości kanałów dla tej stawu (ich liczba powinna być rowna stopniom swobody stawu)
-			std::vector<double> channelValues;
-			//! konstruktor ustawia domyślny rozmiar dla kolekcji (6 stopni swobody)
-			singleJointState()
-			{
-				channelValues.reserve(6);
-			}
-			//! \return głęboka kopia obiektu
-			singleJointState* clone() const
-			{
-				std::auto_ptr<singleJointState> clone(new singleJointState());
-				clone->channelValues = this->channelValues;
-				clone->name = this->name;
-				return clone.release();
-			}
-		};
-
-		typedef utils::shared_ptr<singleJointState> singleJointStatePtr;
-		typedef utils::shared_ptr<const singleJointState> singleJointStateConstPtr;
-
 		/// \brief  struktura przechowuje wartości kanałów dla wszystkich kości w pojedynczej klatce animacji
-		struct singleFrame : boost::noncopyable
+		struct Frame
 		{
-			int frameNo; //!< numer klatki animacji
-			std::vector<singleJointStatePtr> jointsData; //!< wartości kanałów
-			//! \return głęboka kopia obiektu
-			singleFrame* clone() const
-			{
-				std::auto_ptr<singleFrame> clone(new singleFrame());
-				clone->frameNo = this->frameNo;
-				int count = this->jointsData.size();
-				clone->jointsData.resize(count);
-				for (int i = 0; i < count; ++i) {
-					clone->jointsData[i] = singleJointStatePtr(this->jointsData[i]->clone());
-				}
-				return clone.release();
-			}
+			osg::Vec3 translation;
+			std::vector<osg::Quat> rotations;
 		};
-
-		typedef utils::shared_ptr<singleFrame> singleFramePtr;
-
-	public:
+	
 		//! konstruktor, ustawia domyślny okres pojedynczej ramki (1/100)
-		SkeletalData() :
-			frameTime(0.01)
-		{}
-		virtual ~SkeletalData() {}
-
-	public:
-		//! \return kolecja z danymi
-		const std::vector<singleFramePtr>& getFrames() const { return frames; }
-		//! \return kolecja z danymi
-		std::vector<singleFramePtr>& getFrames() { return frames; }
-		//! ustawia kolekcję z danymi
-		void setFrames(std::vector<singleFramePtr> val) { frames = val; }
-		//! return okres pojedynczej ramki
-		double getFrameTime() const { return frameTime; }
-		//! ustawia okres pojedynczej ramki
-		void setFrameTime(double val) { UTILS_ASSERT(val > 0.0); frameTime = val; }
-
-	public:
-		//! \return głęboka kopia obiektu
-		virtual SkeletalData* clone() const
-		{
-			std::auto_ptr<SkeletalData> clone(new SkeletalData());
-			int count = this->frames.size();
-			clone->frames.resize(count);
-			for (int i = 0; i < count; ++i) {
-				clone->frames[i] = singleFramePtr(frames[i]->clone());
-			}
-			return clone.release();
-		}
-
-	private:
+		SkeletalData(const float duration = 0.01) :	frameTime(duration)	{}
+		~SkeletalData() {}
+		
 		//! kolecja z danymi
-		std::vector<singleFramePtr>  frames;
+		std::vector<Frame>  frames;
 		//! okres pojedynczej ramki
-		double frameTime;
+		float frameTime;
 	};
 	typedef utils::shared_ptr<SkeletalData> SkeletalDataPtr;
 	typedef utils::shared_ptr<const SkeletalData> SkeletalDataConstPtr;
@@ -110,10 +39,10 @@ namespace kinematic
 
 		StreamSingleFrame* clone() const
 		{
-			std::auto_ptr<StreamSingleFrame> clone(new StreamSingleFrame());
+			std::unique_ptr<StreamSingleFrame> clone(new StreamSingleFrame());
 			clone->rootPosition = this->rootPosition;
 			clone->frameNo = this->frameNo;
-			int count = this->jointsData.size();
+			const int count = this->jointsData.size();
 			clone->jointsData.resize(count);
 			for (int i = 0; i < count; ++i) {
 				clone->jointsData[i] = SkeletalData::singleJointStatePtr(this->jointsData[i]->clone());
