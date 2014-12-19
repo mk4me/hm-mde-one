@@ -1,4 +1,4 @@
-SET_PROJECTS_GROUP("core")
+BEGIN_PROJECTS_GROUP("core")
 
 CONFIG_OPTION(CORE_ENABLE_LOGGING "Enable logging?" ON)
 CONFIG_OPTION(CORE_ENABLE_LOG4CXX "Enable logging with LOG4CXX?" ON)
@@ -7,8 +7,9 @@ ADD_PROJECT(core "corelib;OPENGL")
 
 ADD_PROJECT(corelib "BOOST;OSG;threadingUtils;OPENTHREADS;QT;TINYXML2;utils")
 ADD_PROJECT(coreui "OPENGL;corelib")
+END_PROJECTS_GROUP()
 
-SET_PROJECTS_GROUP("plugins")
+BEGIN_PROJECTS_GROUP("plugins")
 ADD_PROJECT(plugin_c3d "corelib;c3dlib;kinematiclib" "plugins/c3d")
 ADD_PROJECT(plugin_dicom "plugin_hmdbCommunication;plugin_subject;CURL;WSDLPULL;QT;BOOST;coreui;QWT;hmdbserviceslib" "plugins/dicom")
 ADD_PROJECT(plugin_dicomImporter "BOOST;coreui;corelib;DCMTK;STDINT" "plugins/dicomImporter")
@@ -27,10 +28,12 @@ ADD_PROJECT(plugin_hmm "corelib;coreui;c3dlib;QWT;vidlib;kinematiclib;plugin_sub
 ADD_PROJECT(plugin_imuCostume "corelib;coreui;BOOST;QT;OSG;plugin_c3d;plugin_hmdbCommunication;imucostumelib" "plugins/imuCostume")
 #ADD_PROJECT(plugin_python "dflib;plugin_hmdbCommunication;plugin_c3d;coreui;plugin_newVdf;BOOST;PYTHON;QT;corelib" "plugins/python")
 #ADD_PROJECT(plugin_orientationsFit "corelib;GeneralAlgorithms;OSG;BOOST;utils;IMU;QuatUtils;QT" "plugins/orientationsFit")
+END_PROJECTS_GROUP()
 
-SET_PROJECTS_GROUP("view")
+BEGIN_PROJECTS_GROUP("view")
 #ADD_PROJECT(old_view "core;coreui;plugin_newTimeline;OPENGL;c3dlib")
 #ADD_PROJECT(mde_view "core;coreui;c3dlib;kinematiclib;plugin_newTimeline;plugin_hmdbCommunication")
 ADD_PROJECT(imu_view "core;coreui;c3dlib;kinematiclib;plugin_newTimeline;plugin_hmdbCommunication")
 ADD_PROJECT(medusa_view "core;coreui;c3dlib;kinematiclib;plugin_newTimeline;plugin_hmdbCommunication;plugin_dicom")
 #ADD_PROJECT(console_view "BOOST;utils;QT;TINYXML2;core;corelib;coreui;plugin_newTimeline")
+END_PROJECTS_GROUP()
