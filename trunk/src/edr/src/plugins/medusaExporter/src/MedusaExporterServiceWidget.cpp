@@ -50,7 +50,7 @@ void medusaExporter::MedusaExporterServiceWidget::onExport()
 {    
     
     QString user = ui->chooseUserComboBox->currentText();
-    QDir exportFrom(ui->exportFromLineEdit->text() + "/data");
+    QDir exportFrom(ui->exportFromLineEdit->text() + "/Data");
     QDir outDir(ui->exportFromLineEdit->text());
 
     if (!exportFrom.exists()) {
