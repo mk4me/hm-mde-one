@@ -13,129 +13,129 @@ JointAnglesCollection::JointAnglesCollection(void) :
 {
 }
 
-void JointAnglesCollection::setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData, SkeletonMappingSchemePtr mapping)
+void JointAnglesCollection::setSkeletal(kinematic::SkeletonConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData, const SkeletonMappingScheme::MappingDict& mapping)
 {
-    UTILS_ASSERT(!initialized);
-    
-   this->haSkeleton = hAnimHumanoid::create();
-   this->haSkeleton->registerMappingScheme(mapping);
-   this->haSkeleton->doSkeletonMapping(skeletalModel);
-   this->haSkeleton->createActiveHierarchy();
+  //  UTILS_ASSERT(!initialized);
+  //  
 
-   std::map<std::string, hAnimJointPtr>& joints = this->haSkeleton->getJoints();
-   std::for_each(joints.begin(), joints.end(), [&](std::pair<string, hAnimJointPtr> p) 
-    {   
-        hAnimJointPtr joint = p.second;
-		if (joint->isActive()) {
+  // std::map<std::string, kinematic::JointPtr> joints = kinematic::Skeleton::getJoints(*skeletalModel);
+  // std::for_each(joints.begin(), joints.end(), [&](std::pair<string, JointPtr> p) 
+  // {   
+  //      /*JointPtr joint = p.second;
+		//double totalLength = 0.0;
 
-			double totalLength = 0.0;
+		//for(auto it = joint->getChildrenBones().begin(); it != joint->getChildrenBones().end(); ++it){
 
-			for(auto it = joint->getChildrenBones().begin(); it != joint->getChildrenBones().end(); ++it){
+		//	auto bone = *it;
 
-				auto bone = *it;
+		//	bone->setLength(bone->getLength() / lengthRatio);
 
-				bone->setLength(bone->getLength() / lengthRatio);
+		//	totalLength += bone->getLength();
+		//}
+  //                  
+		//osg::Vec3 shift = joint->getDirection() * totalLength / joint->getChildrenBones().size();
+		//shift = SkeletonUtils::vectorRotation(shift, 
+		//	osg::DegreesToRadians(-joint->getAxis()[0]),
+		//	osg::DegreesToRadians(-joint->getAxis()[1]),
+		//	osg::DegreesToRadians(-joint->getAxis()[2]));
+		//joint->setLocalShift(shift);			
 
-				totalLength += bone->getLength();
-			}
-                    
-			osg::Vec3 shift = joint->getDirection() * totalLength / joint->getChildrenBones().size();
-			shift = SkeletonUtils::vectorRotation(shift, 
-				osg::DegreesToRadians(-joint->getAxis()[0]),
-				osg::DegreesToRadians(-joint->getAxis()[1]),
-				osg::DegreesToRadians(-joint->getAxis()[2]));
-			joint->setLocalShift(shift);			
-
-			osg::Quat pc;
-			hAnimJointPtr parent = joint->getActiveParent().lock();
-			if (parent) {
-				pc = SkeletonUtils::rotationParentChild(parent, joint);
-			}
-			joint->setChildParentRotation(pc);
-		}
-    } 
-   );
-   
-   createQuaternionRepresentation(skeletalModel, skeletalData);
-   initialized = true;
+		//osg::Quat pc;
+		//JointPtr parent = joint->getActiveParent().lock();
+		//if (parent) {
+		//	pc = SkeletonUtils::rotationParentChild(parent, joint);
+		//}
+		//joint->setChildParentRotation(pc);*/
+  //  } 
+  // );
+  // 
+  // createQuaternionRepresentation(skeletalModel, skeletalData);
+  // initialized = true;
 }
 
-void JointAnglesCollection::setSkeletal( kinematic::hAnimHumanoidPtr skeletalModel, const std::vector<osg::Vec3>& rootPositions, const Collection& channels )
+void JointAnglesCollection::setSkeletal( kinematic::SkeletonPtr skeletalModel, const std::vector<osg::Vec3>& rootPositions, const Collection& channels )
 {
     UTILS_ASSERT(!initialized);
-    this->haSkeleton = skeletalModel;
+    this->skeleton = skeletalModel;
     this->rootPositions = rootPositions;
     this->channels = channels;
     initialized = true;
 }
 
-void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletalModelConstPtr& skeletalModel, kinematic::SkeletalDataConstPtr & data )
+void JointAnglesCollection::createQuaternionRepresentation( kinematic::SkeletonConstPtr skeletalModel, kinematic::SkeletalDataConstPtr data )
 {
-    UTILS_ASSERT(lengthRatio > 0.0);
-	const std::vector<SkeletalData::singleFramePtr>& frames = data->getFrames();
-    int framesNo = frames.size();
-    if (framesNo == 0) {
-        throw kinematic::KinematicModelException("No frames loaded");
-    }
+ //   UTILS_ASSERT(lengthRatio > 0.0);
+	//auto jointsMap = Skeleton::getJoints(*skeletalModel);
+	//std::vector<JointPtr> jointsByIndex;
+	//for (auto& j : jointsMap) {
+	//	jointsByIndex.push_back(j.second);
+	//}
 
-	vector<SkeletalData::singleJointStatePtr>& jointsData = frames[0]->jointsData;
-	std::map<std::string, JointAngleChannelPtr> channelsMap;
+	//const auto& frames = data->frames;
+ //   int framesNo = frames.size();
+ //   if (framesNo == 0) {
+ //       throw std::runtime_error("No frames loaded");
+ //   }
 
-	int fps = static_cast<int> (1.0 / data->getFrameTime());
+	//auto& jointsData = frames[0];
+	//std::map<std::string, JointAngleChannelPtr> channelsMap;
 
-	for (unsigned int i = 0; i < jointsData.size(); ++i) {
-		JointAngleChannelPtr channel(new JointAngleChannel(static_cast<float>(fps))); 
-		std::string name = haSkeleton->mapJointName(jointsData[i]->name);
-		channel->setName(name);
-		channelsMap[name] = channel;
-		addChannel(channel);
-	}
+	//int fps = static_cast<int> (1.0 / data->frameTime);
 
-    this->rootPositions.resize(framesNo);
-        
-    int bdataSize = jointsData.size();
+	//for (auto& j : jointsMap) {
+	//	JointAngleChannelPtr channel(new JointAngleChannel(static_cast<float>(fps))); 
+	//	std::string name = j.first;
+	//	channel->setName(name);
+	//	channelsMap[name] = channel;
+	//	addChannel(channel);
+	//}
 
-    for (int i = 0; i < framesNo; ++i) {
-        if (frames[i]->jointsData.size() != bdataSize) {
-            throw(KinematicModelException("Wrong data format"));
-        }
-    }
+ //   this->rootPositions.resize(framesNo);
+ //       
+ //   int bdataSize = jointsData.rotations.size();
 
-    for (int i = 0; i < framesNo; ++i) {
-        int jointStatesNo = frames[i]->jointsData.size();
-        for (int j = 0; j < jointStatesNo; ++j) {
-            double rx, ry, rz;
-            int index;
-            std::string name = haSkeleton->mapJointName(frames[i]->jointsData[j]->name);
-            hAnimJointPtr joint = haSkeleton->getJoints()[name];
-            if (!joint) {
-                kinematic::WrongFileException("Joint " + name + " not found");
-            }
-            SkeletalData::singleJointStatePtr jointState = frames[i]->jointsData[j];
-            index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RZ, joint->getDofs());
-            rz = (index != -1 ? jointState->channelValues[index] : 0.0);
-            index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RX, joint->getDofs());
-            rx = (index != -1 ? jointState->channelValues[index] : 0.0);
-            index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RY, joint->getDofs());
-            ry = (index != -1 ? jointState->channelValues[index] : 0.0);
-            double mul = skeletalModel->getAngle() == SkeletalModel::radians ? 1.0 : osg::DegreesToRadians(1.0);
-            
-            osg::Quat mX; mX.makeRotate(mul * (rx), osg::Vec3(1,0,0));
-            osg::Quat mY; mY.makeRotate(mul * (ry), osg::Vec3(0,1,0));
-            osg::Quat mZ; mZ.makeRotate(mul * (rz), osg::Vec3(0,0,1));
-            
-            if (name == "HumanoidRoot" || name == "root") {
-                index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TX, joint->getDofs());
-                rootPositions[i][0] = (index != -1 ? jointState->channelValues[index] : 0.0);
-                index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TY, joint->getDofs());
-                rootPositions[i][1] = (index != -1 ? jointState->channelValues[index] : 0.0);
-                index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TZ, joint->getDofs());
-                rootPositions[i][2] = (index != -1 ? jointState->channelValues[index] : 0.0);
-                rootPositions[i] /= lengthRatio;
-			} 
-			channelsMap[name]->addPoint(SkeletonUtils::createRotation(mX, mY, mZ, joint->getOrder()));
-        }
-    }
+ //   for (int i = 0; i < framesNo; ++i) {
+ //       if (frames[i].rotations.size() != bdataSize) {
+ //           throw(std::runtime_error("Wrong data format"));
+ //       }
+ //   }
+
+ //   for (int i = 0; i < framesNo; ++i) {
+ //       int jointStatesNo = frames[i].rotations.size();
+ //       for (int j = 0; j < jointStatesNo; ++j) {
+ //           double rx, ry, rz;
+ //           int index;
+ //           JointPtr joint = jointsByIndex[j];
+ //           if (!joint) {
+ //               std::runtime_error("Joint not found");
+ //           }
+	//		std::string name = joint->name;
+	//	
+	//		SkeletalData::singleJointStatePtr jointState = frames[i]->jointsData[j];
+	//		index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RZ, joint->getDofs());
+	//		rz = (index != -1 ? jointState->channelValues[index] : 0.0);
+	//		index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RX, joint->getDofs());
+	//		rx = (index != -1 ? jointState->channelValues[index] : 0.0);
+	//		index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::RY, joint->getDofs());
+	//		ry = (index != -1 ? jointState->channelValues[index] : 0.0);
+	//		double mul = skeletalModel->getAngle() == SkeletalModel::radians ? 1.0 : osg::DegreesToRadians(1.0);
+
+	//		osg::Quat mX; mX.makeRotate(mul * (rx), osg::Vec3(1, 0, 0));
+	//		osg::Quat mY; mY.makeRotate(mul * (ry), osg::Vec3(0, 1, 0));
+	//		osg::Quat mZ; mZ.makeRotate(mul * (rz), osg::Vec3(0, 0, 1));
+
+	//		/*if (name == "HumanoidRoot" || name == "root") {
+	//			index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TX, joint->getDofs());
+	//			rootPositions[i][0] = (index != -1 ? jointState->channelValues[index] : 0.0);
+	//			index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TY, joint->getDofs());
+	//			rootPositions[i][1] = (index != -1 ? jointState->channelValues[index] : 0.0);
+	//			index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TZ, joint->getDofs());
+	//			rootPositions[i][2] = (index != -1 ? jointState->channelValues[index] : 0.0);
+	//			rootPositions[i] /= lengthRatio;
+	//		}*/
+	//		channelsMap[name]->addPoint(SkeletonUtils::createRotation(mX, mY, mZ, joint->getOrder()));
+ //       }
+ //   }
 }
 
 osg::Vec3 JointAnglesCollection::getRootPosition( int frame ) const
@@ -158,7 +158,7 @@ int JointAnglesCollection::getIndex(const std::string& name ) const
 		std::string info("Name: ");
 		info += name;
 		info += " does not exist";
-		throw kinematic::UnableToMapJointException(info);
+		throw std::runtime_error(info);
 	}
 
 	return index;
@@ -185,7 +185,7 @@ JointAnglesCollection* JointAnglesCollection::clone() const
 		obj->channels[i] = JointAngleChannelPtr(this->channels[i]->clone());
 	}
 	obj->configurationID = this->configurationID;
-	obj->haSkeleton = this->haSkeleton ? hAnimHumanoidPtr(this->haSkeleton->clone()) : hAnimHumanoidPtr();
+	obj->skeleton = this->skeleton ? utils::make_shared<Skeleton>(*this->skeleton) : SkeletonPtr();
 	obj->lengthRatio = this->lengthRatio;
     obj->initialized = this->initialized;
     obj->rootPositions = this->rootPositions;
@@ -204,60 +204,54 @@ JointAnglesCollectionStream::~JointAnglesCollectionStream()
 
 }
 
-void JointAnglesCollectionStream::setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel,
+void JointAnglesCollectionStream::setSkeletal(kinematic::SkeletonConstPtr skeletalModel,
 	kinematic::SkeletalDataStreamPtr skeletalDataStream)
 {
-	UTILS_ASSERT(!initialized);
+	//UTILS_ASSERT(!initialized);
 
-	this->haSkeleton = hAnimHumanoid::create();
-	this->haSkeleton->doSkeletonMapping(skeletalModel);
-	this->haSkeleton->createActiveHierarchy();
+	//this->haSkeleton = hAnimHumanoid::create();
+	//this->haSkeleton->doSkeletonMapping(skeletalModel);
+	//this->haSkeleton->createActiveHierarchy();
 
-	std::map<std::string, hAnimJointPtr>& joints = this->haSkeleton->getJoints();
-	std::for_each(joints.begin(), joints.end(), [&](std::pair<string, hAnimJointPtr> p) 
-	{   
-		hAnimJointPtr joint = p.second;
-		if (joint->isActive()) {
+	//std::map<std::string, hAnimJointPtr>& joints = this->haSkeleton->getJoints();
+	//std::for_each(joints.begin(), joints.end(), [&](std::pair<string, hAnimJointPtr> p) 
+	//{   
+	//	hAnimJointPtr joint = p.second;
+	//	if (joint->isActive()) {
 
-			double totalLength = 0.0;
+	//		double totalLength = 0.0;
 
-			for(auto it = joint->getChildrenBones().begin(); it != joint->getChildrenBones().end(); ++it){
-				auto bone = *it;
-				
-				bone->setLength(bone->getLength() / lengthRatio);
+	//		for(auto it = joint->getChildrenBones().begin(); it != joint->getChildrenBones().end(); ++it){
+	//			auto bone = *it;
+	//			
+	//			bone->setLength(bone->getLength() / lengthRatio);
 
-				totalLength += bone->getLength();
-			}
+	//			totalLength += bone->getLength();
+	//		}
 
-			osg::Vec3 shift = joint->getDirection() * totalLength / joint->getChildrenBones().size();
-			shift = SkeletonUtils::vectorRotation(shift, 
-				osg::DegreesToRadians(-joint->getAxis()[0]),
-				osg::DegreesToRadians(-joint->getAxis()[1]),
-				osg::DegreesToRadians(-joint->getAxis()[2]));
-			joint->setLocalShift(shift);			
+	//		osg::Vec3 shift = joint->getDirection() * totalLength / joint->getChildrenBones().size();
+	//		shift = SkeletonUtils::vectorRotation(shift, 
+	//			osg::DegreesToRadians(-joint->getAxis()[0]),
+	//			osg::DegreesToRadians(-joint->getAxis()[1]),
+	//			osg::DegreesToRadians(-joint->getAxis()[2]));
+	//		joint->setLocalShift(shift);			
 
-			osg::Quat pc;
-			hAnimJointPtr parent = joint->getActiveParent().lock();
-			if (parent) {
-				pc = SkeletonUtils::rotationParentChild(parent, joint);
-			}
-			joint->setChildParentRotation(pc);
-		}
-	} 
-	);
+	//		osg::Quat pc;
+	//		hAnimJointPtr parent = joint->getActiveParent().lock();
+	//		if (parent) {
+	//			pc = SkeletonUtils::rotationParentChild(parent, joint);
+	//		}
+	//		joint->setChildParentRotation(pc);
+	//	}
+	//} 
+	//);
 
-	createQuaternionRepresentation(skeletalModel, skeletalDataStream);
-	this->skeletalDataStream = skeletalDataStream;
-	initialized = true;
+	//createQuaternionRepresentation(skeletalModel, skeletalDataStream);
+	//this->skeletalDataStream = skeletalDataStream;
+	//initialized = true;
 }
 	
-void JointAnglesCollectionStream::setSkeletal(kinematic::hAnimHumanoidPtr skeletalModel,
-	kinematic::SkeletalDataStreamPtr skeletalDataStream)
-{
-	this->haSkeleton = skeletalModel;
-	this->skeletalDataStream = skeletalDataStream;
-	initialized = true;
-}
+
 
 osg::Vec3 JointAnglesCollectionStream::getRootPosition() const
 {
@@ -272,19 +266,14 @@ const std::vector<osg::Vec3> JointAnglesCollectionStream::getRotations() const
 	skeletalDataStream->data(data);
 
 	std::vector<osg::Vec3> ret;
-	ret.reserve(data.rotations.size());
+	//ret.reserve(data.rotations.size());
 
-	for(auto it = data.rotations.begin(); it != data.rotations.end(); ++it){
-		ret.push_back(SkeletonUtils::getEulerFromQuat(*it));
-	}
+	//for(auto it = data.rotations.begin(); it != data.rotations.end(); ++it){
+	//	ret.push_back(SkeletonUtils::getEulerFromQuat(*it));
+	//}
 
 	return ret;
 }
 
-void JointAnglesCollectionStream::createQuaternionRepresentation(kinematic::SkeletalModelConstPtr& skeletalModel,
-	kinematic::SkeletalDataStreamPtr skeletalDataStream)
-{
-
-}
 
 } //kinematic

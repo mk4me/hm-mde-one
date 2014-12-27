@@ -44,5 +44,6 @@ namespace acclaim
 		//! kolejność rotacji (sekcja order)
 		std::vector<kinematicUtils::Channel> dataOrder;
 	};
+	DEFINE_SMART_POINTERS(Skeleton);
 }
 #endif

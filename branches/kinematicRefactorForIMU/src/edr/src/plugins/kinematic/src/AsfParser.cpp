@@ -1,8 +1,8 @@
 #include "PCH.h"
 #include <corelib/Filesystem.h>
 #include <plugins/kinematic/Wrappers.h>
-#include <kinematiclib/SkeletalModel.h>
-#include <kinematiclib/SkeletalParsers.h>
+#include <acclaimformatslib/AsfParser.h>
+//#include <kinematiclib/SkeletalParsers.h>
 #include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/kinematic/Wrappers.h>
@@ -20,13 +20,11 @@ AsfParser::~AsfParser()
 
 void AsfParser::parse( const std::string & source )
 {
-	skeletalModel = utils::ObjectWrapper::create<kinematic::SkeletalModel>();
+	skeletalModel = utils::ObjectWrapper::create<acclaim::Skeleton>();
 	core::Filesystem::Path path(source);
-    //path = std::string("C:/Users/Wojciech/Desktop/nowyTest/KrakowiakAdam.asf");
-  
-    kinematic::SkeletalModelPtr modelPtr(new kinematic::SkeletalModel);
-    kinematic::AsfParser asf;
-    asf.parse(modelPtr, path.string());
+	acclaim::AsfParser asf;
+	auto skeleton = asf.parse(path.string());
+	acclaim::SkeletonPtr modelPtr = utils::make_shared<acclaim::Skeleton>(std::move(skeleton));
     skeletalModel->set(modelPtr);
 }
 
@@ -40,7 +38,7 @@ void AsfParser::acceptedExpressions(Expressions & expressions) const
     plugin::IParser::ExpressionDescription expDesc;
     expDesc.description = "Acclaim Skeleton File format";
 
-	expDesc.objectsTypes.push_back(typeid(kinematic::SkeletalModel));
+	expDesc.objectsTypes.push_back(typeid(acclaim::Skeleton));
 
     expressions[".*\\.asf$"] = expDesc;
 }

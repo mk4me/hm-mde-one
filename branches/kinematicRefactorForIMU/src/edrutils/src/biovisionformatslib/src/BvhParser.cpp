@@ -226,7 +226,8 @@ void BvhParser::save(const Skeleton & model, const MotionData & data, const std:
  //   out.close();
 }
 //----------------------------------------------------------------------------------
-void BvhParser::parse(Skeleton & model, MotionData & data, const std::string& filename ) {
+BVHData BvhParser::parse(const std::string& filename ) {
+	
     // tutaj trafiaja jointy w kolejności wystapienia w pliku
     std::list<JointPtr> jointList;
 
@@ -273,10 +274,11 @@ void BvhParser::parse(Skeleton & model, MotionData & data, const std::string& fi
     }
 
     in.close();
-
-	model = tmpModel;
-	model.sourceOrderJoints.insert(model.sourceOrderJoints.end(), jointList.begin(), jointList.end());
-	data = tmpData;
+	BVHData bvh;
+	bvh.model = tmpModel;
+	bvh.model.sourceOrderJoints.insert(bvh.model.sourceOrderJoints.end(), jointList.begin(), jointList.end());
+	bvh.data = tmpData;
+	return bvh;
 }
 //----------------------------------------------------------------------------------
 BvhParser::BvhParser()

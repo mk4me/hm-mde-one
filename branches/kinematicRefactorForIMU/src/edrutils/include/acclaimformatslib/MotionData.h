@@ -43,5 +43,6 @@ namespace acclaim
 		//! Czas trwania pojedynczej ramki
 		float frameTime;
 	};
+	DEFINE_SMART_POINTERS(MotionData);
 }
 #endif

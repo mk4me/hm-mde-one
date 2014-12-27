@@ -6,40 +6,45 @@ using namespace osg;
 using namespace boost;
 using namespace kinematic;
 
-void SkeletonJointsMapping::init(kinematic::hAnimSkeletonPtr skeleton,
+void getJoints(kinematic::JointPtr j, std::map<std::string, kinematic::JointPtr>& mp) {
+	mp[j->name] = j;
+	for (auto& c : j->children) {
+		getJoints(c, mp);
+	}
+}
+
+void SkeletonJointsMapping::init(kinematic::SkeletonPtr skeleton,
 	const std::vector<std::string> & indices)
 {
-	std::map<kinematic::hAnimJointPtr, unsigned int> locVisJoints;
+	std::map<kinematic::JointPtr, unsigned int> locVisJoints;
 	std::map<std::string, unsigned int> locNamedVisJoints;
-	std::map<std::string,kinematic::hAnimJointPtr> missing;
+	std::map<std::string,kinematic::JointPtr> missing;
 
-	const auto& jointMap = skeleton->getJoints();
+	std::map<std::string, kinematic::JointPtr> jointMap = kinematic::Skeleton::getJoints(*skeleton);
+	
 
 	int index = -1;
 
 	for(auto it = jointMap.begin(); it != jointMap.end(); ++it) {
-		if (it->second->isActive()) {
+		if(indices.empty() == false){
+			auto idxIT = std::find(indices.begin(), indices.end(), it->first);
 
-			if(indices.empty() == false){
-				auto idxIT = std::find(indices.begin(), indices.end(), it->first);
+			if(idxIT != indices.end()){
 
-				if(idxIT != indices.end()){
-
-					index = std::distance(indices.begin(), idxIT);
-					locVisJoints[it->second] = index;
-					locNamedVisJoints[it->first] = index;	
-
-				}else{
-
-					missing[it->first] = it->second;
-					//throw core::runtime_error("Could not perform joints mapping");
-				}
-			}else{
-				++index;
+				index = std::distance(indices.begin(), idxIT);
 				locVisJoints[it->second] = index;
 				locNamedVisJoints[it->first] = index;	
-			}		
-		}
+
+			}else{
+
+				missing[it->first] = it->second;
+				//throw core::runtime_error("Could not perform joints mapping");
+			}
+		}else{
+			++index;
+			locVisJoints[it->second] = index;
+			locNamedVisJoints[it->first] = index;	
+		}		
 	}
 
 	if(missing.empty() == false){
@@ -56,7 +61,7 @@ void SkeletonJointsMapping::init(kinematic::hAnimSkeletonPtr skeleton,
 	skeleton_ = skeleton;
 }
 
-kinematic::hAnimSkeletonPtr SkeletonJointsMapping::skeleton() const
+kinematic::SkeletonPtr SkeletonJointsMapping::skeleton() const
 {
 	return skeleton_;
 }
@@ -77,7 +82,7 @@ const int SkeletonJointsMapping::jointIndex(const std::string & jointName) const
 	return -1;
 }
 
-const int SkeletonJointsMapping::jointIndex(kinematic::hAnimJointPtr joint) const
+const int SkeletonJointsMapping::jointIndex(kinematic::JointPtr joint) const
 {
 	auto it = visJoints.find(joint);
 
@@ -91,17 +96,17 @@ const int SkeletonJointsMapping::jointIndex(kinematic::hAnimJointPtr joint) cons
 const SegmentsDescriptors SkeletonJointsMapping::generateMappedConnectionsDescription() const
 {
 	SegmentsDescriptors cds;
-	auto idx = jointIndex(skeleton_->getRoot());
-	generateMappedConnectionsDescription(skeleton_->getRoot(), idx == -1 ? 0 : idx, cds);
+	auto idx = jointIndex(skeleton_->root);
+	generateMappedConnectionsDescription(skeleton_->root, idx == -1 ? 0 : idx, cds);
 
 	return cds;
 }
 
-void SkeletonJointsMapping::generateMappedConnectionsDescription( kinematic::hAnimJointPtr joint,
+void SkeletonJointsMapping::generateMappedConnectionsDescription( kinematic::JointPtr joint,
 	const unsigned int idx,
 	SegmentsDescriptors & cds) const
 {
-	auto jointChildren = joint->getActiveJointChildren();
+	auto jointChildren = joint->children;
 	for(auto child : jointChildren) {
 		
 		auto idxB = jointIndex(child);
@@ -112,17 +117,8 @@ void SkeletonJointsMapping::generateMappedConnectionsDescription( kinematic::hAn
 
 			cd.range.first = idx;
 			cd.range.second = idxB;
-			//TODO - wyznaczyc odleglosci czy to wystarczy?
-
-			auto cb = child->getChildrenBones();
-
-			cd.length = 0.0;
-
-			for(auto it = cb.begin(); it != cb.end(); ++it){
-				cd.length += (*it)->getLength();
-			}
-
-			cd.length /= cb.size();
+			
+			cd.length = (joint->position - child->position).length();
 
 			cds.push_back(cd);
 		}else{
@@ -146,13 +142,13 @@ SkeletalVisualizationSchemeHelper::~SkeletalVisualizationSchemeHelper()
 }
 
 void SkeletalVisualizationSchemeHelper::updateJointTransforms(const std::vector<osg::Quat> & rotations,
-	hAnimJointPtr joint, const Quat & parentRot, const Vec3 & parentPos,
+	JointPtr joint, const Quat & parentRot, const Vec3 & parentPos,
 	std::vector<osg::Vec3> & pointsPositions)
 {
     // zapewnienie zgodności indeksów (między tablicami connections i states)	
-    int idx = jointsMapping->jointIndex(joint->getName());
-    Vec3 shift = joint->getLocalShift();
-    Quat pc = joint->getChildParentRotation();	    
+    int idx = jointsMapping->jointIndex(joint->name);
+    Vec3 shift = parentPos - joint->position;
+    Quat pc = joint->orientation;	    
     Quat rotation = idx < rotations.size() ? rotations[idx] * pc  * parentRot : pc * parentRot;
 
     shift = rotation * shift;
@@ -161,7 +157,7 @@ void SkeletalVisualizationSchemeHelper::updateJointTransforms(const std::vector<
 
 	pointsPositions[idx] = pos;
 
-	for(auto child : joint->getActiveJointChildren()) {
+	for(auto child : joint->children) {
 		updateJointTransforms(rotations, child, rotation, pos, pointsPositions);
 	}
 }
@@ -199,7 +195,7 @@ void SkeletalVisualizationSchemeHelper::innerCalculatePointsPositions(std::vecto
 {
 	osg::Quat q;
 
-	updateJointTransforms(rotations, jointsMapping->skeleton()->getRoot(), q, rootPosition, pointsPositions);	
+	updateJointTransforms(rotations, jointsMapping->skeleton()->root, q, rootPosition, pointsPositions);	
 }
 
 void SkeletalVisualizationSchemeHelper::init(const SkeletonJointsMapping * jointsMapping)

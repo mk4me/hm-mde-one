@@ -3,11 +3,13 @@
 
 #include <corelib/BaseDataTypes.h>
 #include <threadingUtils/StreamData.h>
-#include <kinematiclib/SkeletalModel.h>
+//#include <kinematiclib/SkeletalModel.h>
 #include <kinematiclib/JointAnglesCollection.h>
 #include <utils/PtrPolicyOSG.h>
 #include <utils/PtrPolicyStd.h>
 #include <osg/PositionAttitudeTransform>
+#include <acclaimformatslib/Skeleton.h>
+#include <acclaimformatslib/MotionData.h>
 
 //! Typ definiuj¹cy indeksy na po³¹czonych punktach
 typedef std::pair<unsigned int, unsigned int> SegmentRange;
@@ -40,14 +42,10 @@ struct SkeletonDataStream
 
 DEFINE_SMART_POINTERS(SkeletonDataStream);
 
-//tymczasowy typ dla BVH
-typedef std::pair<kinematic::SkeletalModelPtr, kinematic::SkeletalDataPtr> BVHData;
-DEFINE_SMART_POINTERS(BVHData);
-DEFINE_WRAPPER(BVHData, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 
 DEFINE_WRAPPER(kinematic::JointAnglesCollection, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
-DEFINE_WRAPPER(kinematic::SkeletalData, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
-DEFINE_WRAPPER(kinematic::SkeletalModel, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(acclaim::MotionData, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(acclaim::Skeleton, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(SkeletonDataStream, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
 DEFINE_WRAPPER(std::string, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(osg::PositionAttitudeTransform, utils::PtrPolicyOSG, utils::ClonePolicyOsgCloneMethod);

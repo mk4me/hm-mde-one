@@ -163,7 +163,7 @@ GRFChannelConstPtr GRFCollection::getGRFChannel(GRFChannel::Type type) const
 	throw core::runtime_error("Wrong GRF channel type");
 }
 
-MarkerCollection::MarkerCollection(kinematic::VskParserPtr vsk) :
+MarkerCollection::MarkerCollection(vicon::VskPtr vsk) :
 	VectorChannelCollection(), vsk(vsk)
 {
 
@@ -185,7 +185,7 @@ VectorChannelConstPtr MarkerCollection::tryGetChannelByName(const std::string& n
 	return VectorChannelConstPtr();
 }
 
-kinematic::VskParserConstPtr MarkerCollection::getVsk() const
+vicon::VskConstPtr MarkerCollection::getVsk() const
 {
 	return vsk;
 }

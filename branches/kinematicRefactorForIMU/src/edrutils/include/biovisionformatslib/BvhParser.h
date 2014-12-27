@@ -8,6 +8,14 @@
 namespace biovision
 {
 
+struct BVHData
+{
+	Skeleton model;
+	MotionData data;
+};
+DEFINE_SMART_POINTERS(BVHData);
+
+
 /// \brief Klasa realizuje odczyt i zapis plików *.bvh
 class BvhParser
 {
@@ -21,9 +29,7 @@ public:
     /// \param  filename nazwa pliku, do którego zostaną zapisane dane
     void save(const Skeleton & model, const MotionData & data, const std::string& filename );
     /// \brief  Parsuje podany plik. 
-    /// \param  model reprezentacja wewnętrzna animacji
-    /// \param  filename  Nazwa pliku do parsowania. 
-	void parse(Skeleton & model, MotionData & data, const std::string& filename);
+	BVHData parse(const std::string& filename);
 
 private:			
 	//! jeśli true, to wymuszony zostaje format kanałów (3 RZ,RX,RY lub 6 TX,TY,TZ,RZ,RX,RY)

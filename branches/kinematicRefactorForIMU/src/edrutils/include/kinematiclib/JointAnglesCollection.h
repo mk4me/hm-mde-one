@@ -16,6 +16,8 @@
 #include <kinematiclib/hAnimHumanoid.h>
 #include <kinematiclib/QuaternionManipulators.h>
 */
+#include <kinematiclib/Skeleton.h>
+#include <kinematiclib/SkeletalData.h>
 
 namespace kinematic
 {
@@ -32,7 +34,7 @@ namespace kinematic
 	public:
 		ENABLE_PRIVATE_TESTS
 
-			JointAnglesCollection(void);
+		JointAnglesCollection(void);
 		virtual ~JointAnglesCollection() {}
 
 public:
@@ -43,15 +45,15 @@ public:
     //! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
     //! \param skeletalModel struktura szkieletu
     //! \param skeletalData dane szkieletu
-	void setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData, 
-		SkeletonMappingSchemePtr mapping = SkeletonMappingScheme::createDefault());
+	void setSkeletal(kinematic::SkeletonConstPtr skeletalModel, kinematic::SkeletalDataConstPtr skeletalData, 
+					 const SkeletonMappingScheme::MappingDict& mapping = SkeletonMappingScheme::defaultAcclaimToHAnimMappingScheme());
     //! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
     //! \param skeletalModel struktura szkieletu w postaci pełnego szkieletu h-anim
     //! \param rootPositions kolekcja danych pozycji korzenia szkieletu
     //! \param channels kolekcja z danymi w postaci DataChannel
-    void setSkeletal(kinematic::hAnimHumanoidPtr skeletalModel, const std::vector<osg::Vec3>& rootPositions, const std::vector<JointAngleChannelPtr>& channels);
+    void setSkeletal(kinematic::SkeletonPtr skeletalModel, const std::vector<osg::Vec3>& rootPositions, const std::vector<JointAngleChannelPtr>& channels);
     //! \brief zwraca szkielet zgodny z h-anim
-	const kinematic::hAnimHumanoidPtr & getHAnimSkeleton() const { return haSkeleton; }
+	const kinematic::SkeletonPtr & getSkeleton() const { return skeleton; }
 	
    	//! zwraca indeks kanału lub rzuca wyjątkiem w przypadku niepowodzenia
    	//! \param name nazwa szukanego kanału
@@ -78,11 +80,11 @@ public:
 
 	private:
 		/// \brief  Na podstawie danych z parsera tworzy tablicę z kwaternionami
-		void createQuaternionRepresentation(kinematic::SkeletalModelConstPtr& skeletalModel, SkeletalDataConstPtr & skeletalData);
+		void createQuaternionRepresentation(kinematic::SkeletonConstPtr skeletalModel, SkeletalDataConstPtr skeletalData);
 
 	private:
-		//! pełny szkielet h-anim
-		kinematic::hAnimHumanoidPtr haSkeleton;
+		//! pełny szkielet 
+		kinematic::SkeletonPtr skeleton;
 		//! pozycje dla roota
 		std::vector<osg::Vec3> rootPositions;
 		//! długość przez którą należy pomnożyc aby uzyskać początkowe długości kości
@@ -103,14 +105,9 @@ public:
 		//! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
 		//! \param skeletalModel struktura szkieletu
 		//! \param skeletalData dane szkieletu
-		void setSkeletal(kinematic::SkeletalModelConstPtr skeletalModel, kinematic::SkeletalDataStreamPtr skeletalDataStream);
-		//! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
-		//! \param skeletalModel struktura szkieletu w postaci pełnego szkieletu h-anim
-		//! \param rootPositions kolekcja danych pozycji korzenia szkieletu
-		//! \param channels kolekcja z danymi w postaci DataChannel
-		void setSkeletal(kinematic::hAnimHumanoidPtr skeletalModel, kinematic::SkeletalDataStreamPtr skeletalDataStream);
+		void setSkeletal(kinematic::SkeletonConstPtr skeletalModel, kinematic::SkeletalDataStreamPtr skeletalDataStream);
 		//! \brief zwraca szkielet zgodny z h-anim
-		const kinematic::hAnimHumanoidPtr & getHAnimSkeleton() const { return haSkeleton; }
+		const kinematic::SkeletonPtr & getSkeleton() const { return skeleton; }
 		//! \return długość przez którą należy pomnożyc aby uzyskać początkowe długości kości
 		double getLengthRatio() const { return lengthRatio; }
 		//! ustawia długość przez którą należy pomnożyc aby uzyskać początkowe długości kości
@@ -123,12 +120,12 @@ public:
 		const std::vector<osg::Vec3> getRotations() const;
 
 	private:
-		/// \brief  Na podstawie danych z parsera tworzy tablicę z kwaternionami
-		void createQuaternionRepresentation(kinematic::SkeletalModelConstPtr& skeletalModel, kinematic::SkeletalDataStreamPtr skeletalDataStream);
+		// \brief  Na podstawie danych z parsera tworzy tablicę z kwaternionami
+	    void createQuaternionRepresentation(kinematic::Skeleton& skeletalModel, kinematic::SkeletalDataStreamPtr skeletalDataStream);
 
 	private:
 		//! pełny szkielet h-anim
-		kinematic::hAnimHumanoidPtr haSkeleton;
+	    kinematic::SkeletonPtr skeleton;
 		//! Strumień z danymi dla szkieletu
 		kinematic::SkeletalDataStreamPtr skeletalDataStream;
 		//! długość przez którą należy pomnożyc aby uzyskać początkowe długości kości

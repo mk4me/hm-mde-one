@@ -1,15 +1,15 @@
-/********************************************************************
-    created:  2013/11/29
-    created:  29:11:2013   10:58
-    filename: SkeletalVisualizationSchemeHelper.h
-    author:   Mateusz Janiak
-    
-    purpose:  
-*********************************************************************/
+///********************************************************************
+//    created:  2013/11/29
+//    created:  29:11:2013   10:58
+//    filename: SkeletalVisualizationSchemeHelper.h
+//    author:   Mateusz Janiak
+//    
+//    purpose:  
+//*********************************************************************/
 #ifndef HEADER_GUARD_KINEMATIC__SKELETALVISUALIZATIONSCHEMEHELPER_H__
 #define HEADER_GUARD_KINEMATIC__SKELETALVISUALIZATIONSCHEMEHELPER_H__
 
-#include <kinematiclib/hAnimSkeleton.h>
+#include <kinematiclib/Skeleton.h>
 #include "OsgSchemeDrawer.h"
 
 class SkeletonJointsMapping
@@ -18,7 +18,7 @@ public:
 	SkeletonJointsMapping() {}
 	~SkeletonJointsMapping() {}
 
-	void init(kinematic::hAnimSkeletonPtr skeleton,
+	void init(kinematic::SkeletonPtr skeleton,
 		const std::vector<std::string> & indices = std::vector<std::string>());
 
 	//! Metoda pomocnicza przy wypelnianiu wektora rotacji
@@ -28,27 +28,27 @@ public:
 	//! Metoda pomocnicza przy wypelnianiu wektora rotacji
 	//! \param joint Joint o ktorego indeks pytamy
 	//! \return indeks jointa lub -1 jezeli jointa nie ma
-	const int jointIndex(kinematic::hAnimJointPtr joint) const;
+	const int jointIndex(kinematic::JointPtr joint) const;
 
 	const unsigned int mappedJointsNumber() const;
 
-	kinematic::hAnimSkeletonPtr skeleton() const;
+	kinematic::SkeletonPtr skeleton() const;
 
 	const SegmentsDescriptors generateMappedConnectionsDescription() const;
 
 private:
 
-	void generateMappedConnectionsDescription( kinematic::hAnimJointPtr join,
+	void generateMappedConnectionsDescription( kinematic::JointPtr join,
 		const unsigned int idx,
 		SegmentsDescriptors & cds) const;
 
 private:
 	//! Szkielet dla którego generowano mapowanie
-	kinematic::hAnimSkeletonPtr skeleton_;
+	kinematic::SkeletonPtr skeleton_;
 	//! ułatwia ineksowanie jointów
 	std::map<std::string, unsigned int> namedVisJoints;
 	//! ułatwia ineksowanie jointów
-	std::map<kinematic::hAnimJointPtr, unsigned int> visJoints;
+	std::map<kinematic::JointPtr, unsigned int> visJoints;
 };
 
 
@@ -65,7 +65,7 @@ public:
 
 	//! Inicjuje połączenia i mapowanie jointow
 	void init(const SkeletonJointsMapping * jointsMapping);
-
+	
 	void init(const SkeletonJointsMapping * jointsMapping,
 		const SegmentsDescriptors & connections);
 
@@ -86,14 +86,14 @@ private:
 		const osg::Vec3 & rootPosition,
 		const std::vector<osg::Quat> & rotations);
 
-    //! obliczenie transformacji dla podanego czasu
-    //! \param rotations rotacje jointów dla konkretnej klatki
-    //! \param joint przetwarzany staw
-    //! \param parentRot rotacja rodzica
-    //! \param parentPos pozycja rodzica
-    void updateJointTransforms(const std::vector<osg::Quat> & rotations, kinematic::hAnimJointPtr joint, 
-        const osg::Quat & parentRot, const osg::Vec3 & parentPos,
-		std::vector<osg::Vec3> & pointsPositions);
+  //  //! obliczenie transformacji dla podanego czasu
+  //  //! \param rotations rotacje jointów dla konkretnej klatki
+  //  //! \param joint przetwarzany staw
+  //  //! \param parentRot rotacja rodzica
+  //  //! \param parentPos pozycja rodzica
+	void updateJointTransforms(const std::vector<osg::Quat> & rotations, kinematic::JointPtr joint,
+							   const osg::Quat & parentRot, const osg::Vec3 & parentPos,
+							   std::vector<osg::Vec3> & pointsPositions);
 
 private:
 	//! Drawer chmury punktow

@@ -148,3 +148,17 @@ bool Skeleton::convert(const hAnim::Humanoid & srcSkeleton, Skeleton & destSkele
 
 	return true;
 }
+
+
+void getJointsRecursive(kinematic::JointPtr j, std::map<std::string, kinematic::JointPtr>& mp) {
+	mp[j->name] = j;
+	for (auto& c : j->children) {
+		getJointsRecursive(c, mp);
+	}
+}
+std::map<std::string, kinematic::JointPtr> kinematic::Skeleton::getJoints(const Skeleton& s)
+{
+	std::map<std::string, kinematic::JointPtr> ret;
+	getJointsRecursive(s.root, ret);
+	return ret;
+}

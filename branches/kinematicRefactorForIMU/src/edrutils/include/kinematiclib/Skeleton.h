@@ -23,6 +23,9 @@ namespace kinematic
 		static bool convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSkeleton, const SkeletonMappingScheme::MappingDict & mapping = SkeletonMappingScheme::MappingDict());
 		static bool convert(const biovision::Skeleton & srcSkeleton, Skeleton & destSkeleton, const SkeletonMappingScheme::MappingDict & mapping = SkeletonMappingScheme::MappingDict());
 		static bool convert(const hAnim::Humanoid & srcSkeleton, Skeleton & destSkeleton, const SkeletonMappingScheme::MappingDict & mapping = SkeletonMappingScheme::MappingDict());
+
+		static std::map<std::string, kinematic::JointPtr> getJoints(const Skeleton& s);
 	};	
+	DEFINE_SMART_POINTERS(Skeleton);
 }
 #endif

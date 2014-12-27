@@ -3,7 +3,9 @@
 
 #include <kinematiclib/Joint.h>
 #include <kinematiclib/Skeleton.h>
+#include <kinematiclib/SkeletonState.h>
 #include <threadingUtils/StreamData.h>
+
 #include <utils/Debug.h>
 namespace kinematic
 {
@@ -29,13 +31,29 @@ namespace kinematic
 	typedef utils::shared_ptr<SkeletalData> SkeletalDataPtr;
 	typedef utils::shared_ptr<const SkeletalData> SkeletalDataConstPtr;
 
+	
+	struct StreamSkeletonDataFrame
+	{
+		//! Pozycja roota
+		osg::Vec3 rootPosition;
+		int frameNo; //!< numer klatki animacji
+		std::vector<osg::Quat> rotations; //!< rotacje
+	};
+	DEFINE_SMART_POINTERS(StreamSkeletonDataFrame);
+
+
+	typedef threadingUtils::StreamT<StreamSkeletonDataFrame> SkeletalDataStream;
+
+	typedef utils::shared_ptr<SkeletalDataStream> SkeletalDataStreamPtr;
+	typedef utils::shared_ptr<const SkeletalDataStream> SkeletalDataStreamConstPtr;
+
 	//! Klatka dla danych strumieniowych
 	struct StreamSingleFrame
 	{
 		//! Pozycja roota
 		osg::Vec3 rootPosition;
 		int frameNo; //!< numer klatki animacji
-		std::vector<SkeletalData::singleJointStatePtr> jointsData; //!< wartości kanałów
+		std::vector<StreamSkeletonDataFramePtr> jointsData; //!< wartości kanałów
 
 		StreamSingleFrame* clone() const
 		{
@@ -45,25 +63,12 @@ namespace kinematic
 			const int count = this->jointsData.size();
 			clone->jointsData.resize(count);
 			for (int i = 0; i < count; ++i) {
-				clone->jointsData[i] = SkeletalData::singleJointStatePtr(this->jointsData[i]->clone());
+				clone->jointsData[i] = this->jointsData[i];
 			}
 			return clone.release();
 		}
 	};
 
-	struct StreamSkeletonDataFrame
-	{
-		//! Pozycja roota
-		osg::Vec3 rootPosition;
-		int frameNo; //!< numer klatki animacji
-		std::vector<osg::Quat> rotations; //!< rotacje
-	};
-
 	typedef threadingUtils::StreamT<StreamSingleFrame> SkeletalFramesStream;
-
-	typedef threadingUtils::StreamT<StreamSkeletonDataFrame> SkeletalDataStream;
-
-	typedef utils::shared_ptr<SkeletalDataStream> SkeletalDataStreamPtr;
-	typedef utils::shared_ptr<const SkeletalDataStream> SkeletalDataStreamConstPtr;
 }
 #endif

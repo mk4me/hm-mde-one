@@ -32,7 +32,7 @@ SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer,
 		mapping.push_back(jointAngles->getChannel(i)->getName());
 	}
 
-	jointsMapping->init(jointAngles->getHAnimSkeleton(), mapping);
+	jointsMapping->init(jointAngles->getSkeleton(), mapping);
 
 	skeletonSchemeHelper.reset(new SkeletalVisualizationSchemeHelper(pointsDrawer.get(),
 		connectionsDrawer.get()));

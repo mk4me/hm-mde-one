@@ -44,13 +44,13 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 			mapping.push_back(markersCollection->getChannel(i)->getName());
 		}
 
-		auto sticks = vsk->getSticks();
-		auto connectionsNumber = std::distance(sticks.first, sticks.second);
+		const auto& sticks = vsk->sticks;
+		auto connectionsNumber = sticks.size();
 
 		connectionsConfigurations.reserve(connectionsNumber);
 		connectionsColors.reserve(connectionsNumber);
 
-		for (auto it = sticks.first; it != sticks.second; ++it) {
+		for (auto it = sticks.begin(); it != sticks.end(); ++it) {
 			
 			auto it1 = std::find(mapping.begin(), mapping.end(),it->name1);
 			auto it2 = std::find(mapping.begin(), mapping.end(),it->name2);
@@ -77,9 +77,9 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 		}
 
 		//kolorowanie
-		auto vskMarkers = vsk->getMarkers();		
+		const auto& vskMarkers = vsk->markers;		
 
-		for (auto it = vskMarkers.first; it != vskMarkers.second; ++it) {
+		for (auto it = vskMarkers.begin(); it != vskMarkers.end(); ++it) {
 			auto found = std::find(mapping.begin(), mapping.end(), it->name);
 			if (found != mapping.end()) {
 				auto d = std::distance(mapping.begin(), found);

@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_KINEMATIC__VISUALIZATIONSCHEME_H__
 #define HEADER_GUARD_KINEMATIC__VISUALIZATIONSCHEME_H__
 
-#include <kinematiclib/VskParser.h>
+#include <viconformatslib/VskParser.h>
 
 //! Pomocnicza klasa do obsługi plików vsk. Likwiduje konieczność ich wielokrotnego parsowania
 class Vsk
@@ -29,15 +29,15 @@ public:
 	//! dzięki tej metodzie można pobrać przeparsowany plik vsk z obsługiwanych schematów. W przypadku niepowodzenia rzucany jest wyjątek
 	//! \param count dostępny schemat
     //! \return Parser z wczytaną strukturą
-	static kinematic::VskParserConstPtr get(MarkersCount count);
+	static vicon::VskConstPtr get(MarkersCount count);
 
 private:
     //! przygotowany schemat dla 16 markerów
-    static kinematic::VskParserPtr Count16;
+	static vicon::VskPtr Count16;
     //! przygotowany schemat dla 39 markerów
-	static kinematic::VskParserPtr Count39;
+	static vicon::VskPtr Count39;
     //! przygotowany schemat dla 53 markerów
-	static kinematic::VskParserPtr Count53;
+	static vicon::VskPtr Count53;
 };
 
 #endif

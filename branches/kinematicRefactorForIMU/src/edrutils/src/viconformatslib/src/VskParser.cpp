@@ -77,9 +77,7 @@ void readMarkers(tinyxml2::XMLElement* markersElement, std::vector<Marker> & mar
 	}
 }
 
-void VskParser::parse(const std::string& filename,
-	std::vector<Stick> & sticks,
-	std::vector<Marker> & markers)
+void VskParser::parse(const std::string& filename, Vsk& vsk)
 {
 	std::vector<Marker> tmpMarkers;
 	std::vector<Stick> tmpSticks;
@@ -122,13 +120,13 @@ void VskParser::parse(const std::string& filename,
             }
         }
 
-        if (sticks.size() == 0 || markers.size() == 0) {
+		if (tmpSticks.size() == 0 || tmpMarkers.size() == 0) {
             throw std::runtime_error(filename + " has no sticks or markers");
         }
     } else {
         throw std::runtime_error(filename + " does not have root element");
     }
 
-	markers.insert(markers.end(), tmpMarkers.begin(), tmpMarkers.end());
-	sticks.insert(sticks.end(), tmpSticks.begin(), tmpSticks.end());
+	vsk.markers.insert(vsk.markers.end(), tmpMarkers.begin(), tmpMarkers.end());
+	vsk.sticks.insert(vsk.sticks.end(), tmpSticks.begin(), tmpSticks.end());
 }

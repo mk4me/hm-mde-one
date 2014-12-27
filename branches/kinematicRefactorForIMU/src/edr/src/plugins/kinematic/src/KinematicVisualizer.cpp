@@ -11,6 +11,7 @@
 #include <kinematiclib/Skeleton.h>
 #include <plugins/kinematic/Wrappers.h>
 #include <QtWidgets/QToolButton>
+#include <kinematicUtils/RotationConverter.h>
 #include "OsgSerie.h"
 #include "BvhSerie.h"
 
@@ -35,7 +36,7 @@ void KinematicVisualizer::getSupportedTypes(utils::TypeInfoList & supportedTypes
 	supportedTypes.push_back(typeid(kinematic::JointAnglesCollection));
 	supportedTypes.push_back(typeid(SkeletonDataStream));
 	supportedTypes.push_back(typeid(osg::PositionAttitudeTransform));
-	supportedTypes.push_back(typeid(BVHData));
+//	supportedTypes.push_back(typeid(BVHData));
 }
 
 int KinematicVisualizer::getMaxDataSeries() const
@@ -67,9 +68,9 @@ plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const utils::TypeI
 	}
 	else if (requestedType == typeid(SkeletonDataStream)) {
 		ret = new SkeletonStreamSerie(this, requestedType, data);
-	} else if (requestedType == typeid (BVHData)) {
+	} /*else if (requestedType == typeid (biovision::BVHData)) {
 		ret = new BvhSerie(this, requestedType, data);
-	} else if (requestedType == typeid (osg::PositionAttitudeTransform)) {
+	} */else if (requestedType == typeid (osg::PositionAttitudeTransform)) {
 		ret = new OsgSerie(this, requestedType, data);
 	}else {
 		UTILS_ASSERT(false);
@@ -731,7 +732,7 @@ void KinematicVisualizer::refreshRotateSpinboxes()
     auto serie = tryGetCurrentSerie();
     if (serie) {
         auto q = serie->getMatrixTransformNode()->getMatrix().getRotate();
-        osg::Vec3 v = kinematic::SkeletonUtils::getEulerFromQuat(q);
+        osg::Vec3 v = kinematicUtils::convertXYZ(q);
         rotateSpinWidgetX.second->setValue(osg::RadiansToDegrees(v.x()));
         rotateSpinWidgetY.second->setValue(osg::RadiansToDegrees(v.y()));
         rotateSpinWidgetZ.second->setValue(osg::RadiansToDegrees(v.z()));
@@ -809,9 +810,9 @@ void KinematicVisualizer::setRotation( KinematicSerieBase* serie, int index, dou
 
 		auto m = serie->getMatrixTransformNode()->getMatrix();
         osg::Quat q = m.getRotate();
-        osg::Vec3 euler = kinematic::SkeletonUtils::getEulerFromQuat(q);
+        osg::Vec3 euler = kinematicUtils::convertXYZ(q);
         euler[index] = osg::DegreesToRadians(d);
-        q = kinematic::SkeletonUtils::getQuatFromEuler(euler);
+		q = kinematicUtils::convertXYZ(euler);
 
         m.setRotate(q);
 		serie->getMatrixTransformNode()->setMatrix(m);
@@ -823,7 +824,7 @@ void KinematicVisualizer::setRotation( KinematicSerieBase* serie, const osg::Vec
 {
 	if (serie) {
 		auto m = serie->getMatrixTransformNode()->getMatrix();
-		auto q = kinematic::SkeletonUtils::getQuatFromEuler(osg::Vec3(osg::DegreesToRadians(r[0]),
+		auto q = kinematicUtils::convertXYZ(osg::Vec3(osg::DegreesToRadians(r[0]),
 							osg::DegreesToRadians(r[1]),
 							osg::DegreesToRadians(r[2])));
 
