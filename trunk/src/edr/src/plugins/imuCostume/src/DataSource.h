@@ -9,12 +9,12 @@
 #ifndef HEADER_GUARD_IMU_COSTUME__DATASOURCE_H__
 #define HEADER_GUARD_IMU_COSTUME__DATASOURCE_H__
 
+#include <plugins/imuCostume/IIMUDataSource.h>
 #include <plugins/imuCostume/Wrappers.h>
-#include <corelib/Variant.h>
 #include <corelib/ISource.h>
-#include <threadingUtils/StreamData.h>
 #include <osg/Vec3>
 #include <mutex>
+#include <list>
 #include <imucostumelib/ImuCostume.h>
 #include <imucostumelib/CostumeCANopenIO.h>
 #include <imucostumelib/ProtocolSendBufferHelper.h>
@@ -25,39 +25,10 @@
 
 namespace IMU
 {
-	class IMUCostumeDataSource : public plugin::ISource
+	class IMUCostumeDataSource : public plugin::ISource, public IIMUDataSource
 	{
 		UNIQUE_ID("{441BB894-1019-4382-97EE-F18A511A49CB}");
 		CLASS_DESCRIPTION("IMUCostume", "IMU Costume Data Source");
-
-	public:
-
-		enum 
-		{
-			AccIdx = 0,
-			GyroIdx = 1,
-			MagIdx = 2
-		};
-
-		enum ConnectionStatus
-		{
-			ONLINE,
-			OFFLINE,
-			CONNECTION_PROBLEMS,
-			UNKNOWN
-		};
-
-		typedef threadingUtils::StreamT<imuCostume::ProtocolSendBufferHelper::Buffer> RawDataStream;
-
-		DEFINE_SMART_POINTERS(RawDataStream);
-
-		typedef threadingUtils::StreamT<imuCostume::CostumeCANopenIO::Data> CANopenFramesStream;
-
-		DEFINE_SMART_POINTERS(CANopenFramesStream);
-
-		typedef threadingUtils::IStreamT<imuCostume::Costume::Data> CostumeStream;
-
-		DEFINE_SMART_POINTERS(CostumeStream);
 
 	private:
 
@@ -82,7 +53,7 @@ namespace IMU
 
 			core::HierarchyDataItemPtr hierarchyRootItem;
 			core::VariantsList domainData;
-		};
+		};	
 
 	public:
 		//! Konstruktor
@@ -119,23 +90,31 @@ namespace IMU
 		//! \param offeredTypes Typy oferowane przez to Ÿród³o
 		virtual void getOfferedTypes(utils::TypeInfoList & offeredTypes) const;
 
-		const bool refreshCostumes();
+		virtual const bool refreshCostumes() override;
 
-		const unsigned int costumesCout() const;
+		virtual const unsigned int costumesCout() const override;
 
-		const imuCostume::Costume::SensorsConfiguration & costumeConfiguration(const unsigned int idx) const;
-		const imuCostume::CostumeRawIO::CostumeAddress costumeAddress(const unsigned int idx) const;
-		const ConnectionStatus costumeStatus(const unsigned int idx) const;
-		const RawDataStreamPtr costumeRawDataStream(const unsigned int idx) const;
-		const core::VariantsList costumeData(const unsigned int idx) const;
+		virtual const imuCostume::Costume::SensorsConfiguration & costumeConfiguration(const unsigned int idx) const override;
+		virtual const imuCostume::CostumeRawIO::CostumeAddress costumeAddress(const unsigned int idx) const override;
+		virtual const ConnectionStatus costumeStatus(const unsigned int idx) const override;
+		virtual const RawDataStreamPtr costumeRawDataStream(const unsigned int idx) const override;
+		virtual const core::VariantsList costumeData(const unsigned int idx) const override;
 
-		void loadCostume(const unsigned int idx);
-		void unloadCostume(const unsigned int idx);
-		const bool costumeLoaded(const unsigned int idx) const;
-		const unsigned int costumesLoadedCount() const;
+		virtual void loadCostume(const unsigned int idx) override;
+		virtual void unloadCostume(const unsigned int idx) override;
+		virtual const bool costumeLoaded(const unsigned int idx) const override;
+		virtual const unsigned int costumesLoadedCount() const override;
 
-		void loadAllCostumes();
-		void unloadAllCostumes();
+		virtual void loadAllCostumes() override;
+		virtual void unloadAllCostumes() override;
+
+		virtual void registerOrientationEstimationAlgorithm(IIMUOrientationEstimationAlgorithm * algorithm) override;
+		virtual void registerCostumeCalibrationAlgorithm(IMUCostumeCalibrationAlgorithm * algorithm) override;
+		virtual void registerMotionEstimationAlgorithm(IMUCostumeMotionEstimationAlgorithm * algorithm) override;
+
+		virtual std::list<IIMUOrientationEstimationAlgorithmConstPtr> orientationEstimationAlgorithms() const override;
+		virtual std::list<IMUCostumeCalibrationAlgorithmConstPtr> calibrationAlgorithms() const override;
+		virtual std::list<IMUCostumeMotionEstimationAlgorithmConstPtr> motionEstimationAlgorithms() const override;
 
 	private:
 
@@ -183,12 +162,11 @@ namespace IMU
 		core::HierarchyItemPtr recordedItems;
 
 		std::map<std::string, CostumeData> costumesData;
+
+		std::list<IIMUOrientationEstimationAlgorithmConstPtr> orientationEstimationAlgorithms_;
+		std::list<IMUCostumeCalibrationAlgorithmConstPtr> calibrationAlgorithms_;
+		std::list<IMUCostumeMotionEstimationAlgorithmConstPtr> motionEstimationAlgorithms_;
 	};
 }
-
-DEFINE_WRAPPER(threadingUtils::IStreamT<imuCostume::ProtocolSendBufferHelper::Buffer>, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
-DEFINE_WRAPPER_INHERITANCE(IMU::IMUCostumeDataSource::RawDataStream, threadingUtils::IStreamT<imuCostume::ProtocolSendBufferHelper::Buffer>);
-DEFINE_WRAPPER(IMU::IMUCostumeDataSource::CANopenFramesStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
-DEFINE_WRAPPER(IMU::IMUCostumeDataSource::CostumeStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
 
 #endif	//	HEADER_GUARD_IMU_COSTUME__DATASOURCE_H__

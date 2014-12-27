@@ -2,6 +2,11 @@ BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS (
 	Wrappers.h
+	IIMUDataSource.h
+	IIMUOrientationEstimationAlgorithm.h
+	IMUCostumeCalibrationAlgorithm.h
+	IMUCostumeMotionEstimationAlgorithm.h
+	Types.h
 )
 
 SET_PRIVATE_HEADERS (
@@ -13,6 +18,7 @@ SET_PRIVATE_HEADERS (
 	IMUPerspective.h
 	PCH.h
 	IMUCostumeCalibrationWizard.h
+	IMUCostumeConfigurationWizard.h
 )
 
 SET_SOURCE_FILES(
@@ -25,16 +31,19 @@ SET_SOURCE_FILES(
 	PCH.cpp
 	Plugin.cpp
 	IMUCostumeCalibrationWizard.cpp
+	IMUCostumeConfigurationWizard.cpp
 )
 
 SET_MOC_FILES(
 	IMUCostumeListWidget.h
 	IMUCostumeCalibrationWizard.h
+	IMUCostumeConfigurationWizard.h
 )
 
 SET_UI_FILES(
 	IMUCostumeListWidget.ui
 	IMUCostumeCalibrationWizard.ui
+	IMUCostumeConfigurationWizard.ui
 )
 
 SET_RC_FILES(

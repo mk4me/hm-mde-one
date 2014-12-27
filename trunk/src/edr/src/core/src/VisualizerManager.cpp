@@ -141,6 +141,7 @@ void VisualizerManager::registerVisualizerPrototype(plugin::IVisualizerPtr visua
 	}
 
 	visualizerPrototypes_.insert(VisualizerPrototypes::value_type(visualizerPrototype->ID(), protoData));
+	CORE_LOG_NAMED_INFO("visualizer", "Visualizer ID: " + boost::lexical_cast<std::string>(visualizerPrototype->ID()) + "(" + visualizerPrototype->shortName() + ") successfully registered");	
 }
 
 void VisualizerManager::update(double deltaTime)

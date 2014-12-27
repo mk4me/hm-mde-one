@@ -25,11 +25,13 @@
 #include <imucostumelib/ImuCostume.h>
 #include <imucostumelib/CANopenSensor.h>
 #include <imucostumelib/ImuSensor.h>
+#include <boost/algorithm/hex.hpp>
 #include <thread>
+#include "IMUCostumeConfigurationWizard.h"
 
 IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	QWidget * parent, const Qt::WindowFlags f)
-	: QWidget(parent, f), ui(new Ui_IMUCostumeListWidget), ds(ds)
+	: QWidget(parent, f), ui(new Ui::IMUCostumeListWidget), ds(ds)
 {
 	ui->setupUi(this);
 
@@ -118,6 +120,13 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 	}
 			
 	menu->exec(mapToGlobal(position));
+}
+
+void IMUCostumeWidget::onRefresh()
+{
+	IMUCostumeConfigurationWizard w(utils::shared_ptr<imuCostume::CostumeRawIO>(), 12, 0);
+
+	w.exec();
 }
 
 void IMUCostumeWidget::onLoad()
@@ -220,9 +229,12 @@ void IMUCostumeWidget::refreshData()
 			cd.second.rawStream->data(buffer);
 			message += QString("<U>Raw data:</U><BR><UL><LI>Length: %1</LI><LI>Data:<BR>").arg(buffer.length);
 			uint8_t * c = buffer.buffer.get();
-			for (unsigned int i = 0; i < buffer.length; ++i){				
+
+			boost::algorithm::hex(c, c + buffer.length, std::back_inserter(message));
+
+			/*for (unsigned int i = 0; i < buffer.length; ++i){				
 				message += QString("%1").arg(*c++, 2, 16, QLatin1Char('0'));
-			}
+			}*/
 			message += "<BR></LI></UL><BR>";
 
 			change = true;

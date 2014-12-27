@@ -426,7 +426,7 @@
    <sender>refreshPushButton</sender>
    <signal>clicked()</signal>
    <receiver>IMUCostumeListWidget</receiver>
-   <slot>onConnect()</slot>
+   <slot>onRefresh()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>311</x>
@@ -472,11 +472,8 @@
   </connection>
  </connections>
  <slots>
-  <slot>onConnect()</slot>
   <slot>onCostumesListContextMenu(QPoint)</slot>
-  <slot>onDisconnect()</slot>
   <slot>onRefresh()</slot>
-  <slot>onRecord()</slot>
   <slot>onCostumeChange(QTreeWidgetItem*,QTreeWidgetItem*)</slot>
  </slots>
 </ui>
