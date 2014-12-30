@@ -26,19 +26,19 @@ class AnalisisModel : public QObject, public core::IMemoryDataManagerHierarchy::
 {
     Q_OBJECT
 public:
-    //! s³u¿y do przechowywania informacji o utworzonych wizualizatorach i ich seriach, u¿ywane w mapie itemHelper -> itemDesc
+    //! sï¿½uï¿½y do przechowywania informacji o utworzonych wizualizatorach i ich seriach, uï¿½ywane w mapie itemHelper -> itemDesc
     struct DataItemDescription 
     {
         DataItemDescription() {}
 
 		virtual ~DataItemDescription() {}
 
-        //! Konstruktor wype³nia wszystkie pola struktury 
+        //! Konstruktor wypeï¿½nia wszystkie pola struktury 
         //! \param visualizer 
         //! \param series 
         //! \param widget 
         DataItemDescription(coreUI::CoreVisualizerWidget* widget, QDockWidget * dockWidget);
-        //! widget, w który reprezentuje wizualizator
+        //! widget, w ktï¿½ry reprezentuje wizualizator
         coreUI::CoreVisualizerWidget* visualizerWidget;
 
         QDockWidget * visualizerDockWidget;
@@ -47,12 +47,12 @@ public:
     };
     DEFINE_SMART_POINTERS(DataItemDescription)
 
-		//! s³u¿y do przechowywania informacji o utworzonych wizualizatorach i ich seriach, u¿ywane w mapie itemHelper -> itemDesc
+		//! sï¿½uï¿½y do przechowywania informacji o utworzonych wizualizatorach i ich seriach, uï¿½ywane w mapie itemHelper -> itemDesc
 	struct TimeDataItemDescription : public DataItemDescription
 	{
 		TimeDataItemDescription() {}
 
-		//! Konstruktor wype³nia wszystkie pola struktury 
+		//! Konstruktor wypeï¿½nia wszystkie pola struktury 
 		//! \param visualizer 
 		//! \param series 
 		//! \param widget 
@@ -78,7 +78,7 @@ public:
     core::HierarchyHelperPtr getHelper(const DataItemDescriptionConstPtr& desc);
 
     virtual void update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication );
-    void addSeriesToVisualizer(core::VisualizerPtr visualizer, core::HierarchyHelperPtr helper, QString &path, QDockWidget * visualizerDockWidget );
+    void addSeriesToVisualizer(core::VisualizerPtr visualizer, core::HierarchyHelperPtr helper, const QString &path, QDockWidget * visualizerDockWidget );
 
 Q_SIGNALS:
     void filterBundleAdded(core::IFilterBundlePtr);
@@ -96,7 +96,7 @@ private:
     core::IHierarchyItemPtr dataManagerTreeItem; 
     core::IFilterProvider::FilterBundles filters;
     std::vector<core::IHierarchyItemConstPtr> itms;
-    //! struktura z informacjami o stworzonych wizualizatorach, ich seriach oraz z którego elementu powsta³y
+    //! struktura z informacjami o stworzonych wizualizatorach, ich seriach oraz z ktï¿½rego elementu powstaï¿½y
     std::multimap<core::HierarchyHelperWeakPtr, DataItemDescriptionPtr> items2Descriptions;
     std::map<core::HierarchyHelperWeakPtr, core::IHierarchyDataItemConstWeakPtr> helper2hierarchyItem;
 

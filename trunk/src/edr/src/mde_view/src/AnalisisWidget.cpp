@@ -189,11 +189,11 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::IHierarchyDataIte
 
 }
 
-QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet, QString &path )
+QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet, const QString &path )
 {
-    auto visualizer = helper->createVisualizer(plugin::getVisualizerManager());
+    core::VisualizerPtr visualizer = helper->createVisualizer(plugin::getVisualizerManager());
     visualizer->addObserver(this->model.get());
-    auto visualizerDockWidget = createDockVisualizer(visualizer, path);
+    QDockWidget* visualizerDockWidget = createDockVisualizer(visualizer, path);
 
     if (dockSet) {
         dockSet->addDockWidget(visualizerDockWidget);
