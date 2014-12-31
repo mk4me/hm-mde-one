@@ -32,7 +32,7 @@ namespace  core {
 	template <typename BaseException>
 	class Exception : public BaseException, private ExceptionLogger
 	{
-		//UTILS_STATIC_ASSERT((boost::is_base_of<std::exception, Exception>::value), "Base class should inherit from std::exception");
+		//static_assert((std::is_base_of<std::exception, Exception>::value), "Base class should inherit from std::exception");
 	public:
 		explicit Exception(const std::string& message) : BaseException(message){
 

@@ -23,22 +23,22 @@ namespace utils {
 
 		struct PtrPolicy
 		{
-			UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
 		};
 
 		struct Ptr
 		{
-			UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
 		};
 
 		struct ConstPtr
 		{
-			UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
 		};
 
 		struct ClonePolicy
 		{
-			UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
 		};
 	};
 
@@ -114,8 +114,8 @@ namespace utils {
 #define __DEFINE_WRAPPER_DERIVED_META(typeT, baseTypeT)\
 	template <> struct ObjectWrapperTraits<typeT>\
 {\
-	UTILS_STATIC_ASSERT((ObjectWrapperTraits<baseTypeT>::isDefinitionVisible == true), "Missing wrapper definition for type baseTypeT");\
-	UTILS_STATIC_ASSERT((boost::is_base_of<baseTypeT, typeT>::value), "Type typeT must inherit from baseTypeT");\
+	static_assert((ObjectWrapperTraits<baseTypeT>::isDefinitionVisible == true), "Missing wrapper definition for type baseTypeT");\
+	static_assert((std::is_base_of<baseTypeT, typeT>::value), "Type typeT must inherit from baseTypeT");\
 	static const bool isDefinitionVisible = true;\
 	typedef ObjectWrapperTraits<baseTypeT>::PtrPolicy PtrPolicy;\
 	typedef PtrPolicy::Ptr<typeT>::Type Ptr;\

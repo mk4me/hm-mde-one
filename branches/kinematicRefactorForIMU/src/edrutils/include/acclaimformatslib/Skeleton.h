@@ -40,7 +40,7 @@ namespace acclaim
 		//! początkowa orientacja w globalnym układzie odniesienia
 		osg::Vec3 orientation;
 		//! kolejność rotacji (sekcja axis)
-		kinematicUtils::AxisOrder axisOrder;
+		kinematicUtils::AxisOrder::Type axisOrder;
 		//! kolejność rotacji (sekcja order)
 		std::vector<kinematicUtils::Channel> dataOrder;
 	};

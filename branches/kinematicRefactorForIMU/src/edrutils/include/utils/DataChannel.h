@@ -14,7 +14,6 @@
 
 #include <boost/call_traits.hpp>
 #include <type_traits>
-#include <boost/mpl/if.hpp>
 #include <utils/SmartPtr.h>
 #include <utils/SmartPtr.h>
 
@@ -29,13 +28,13 @@ namespace utils {
 	template<class PointType>
 	struct ConstReferenceType
 	{
-		typedef typename boost::mpl::if_<typename boost::is_pod<PointType>::type, PointType, typename boost::call_traits<PointType>::const_reference>::type type;
+		typedef typename std::conditional<std::is_pod<PointType>::value, PointType, typename boost::call_traits<PointType>::const_reference>::type type;
 	};
 
 	template<class PointType>
 	struct ReferenceType
 	{
-		typedef typename boost::mpl::if_<typename boost::is_pod<PointType>::type, PointType, typename boost::call_traits<PointType>::reference>::type type;
+		typedef typename std::conditional<std::is_pod<PointType>::value, PointType, typename boost::call_traits<PointType>::reference>::type type;
 	};
 
 	//! Klasa pozwalająca obserwować obiekty z danymi i modyfikować własne wartości

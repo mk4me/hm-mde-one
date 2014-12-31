@@ -2,7 +2,6 @@
 #include "DataSource.h"
 #include <kinematiclib/JointAnglesCollection.h>
 #include <boost/lexical_cast.hpp>
-#include <kinematiclib/BvhParser.h>
 #include <corelib/Filesystem.h>
 #include <QtCore/QCoreApplication>
 #include <corelib/PluginCommon.h>
@@ -13,6 +12,13 @@
 #include <plugins/hmdbCommunication/TreeItemHelper.h>
 #include <iosfwd>
 #include "IMUPerspective.h"
+
+enum
+{
+	AccIdx = 0,
+	GyroIdx = 1,
+	MagIdx = 2
+};
 
 class ArrayExtractor
 {
@@ -535,6 +541,66 @@ void IMUCostumeDataSource::unloadAllCostumes()
 			innerUnloadCostume(i);
 		}
 	}
+}
+
+void IMUCostumeDataSource::registerOrientationEstimationAlgorithm(IIMUOrientationEstimationAlgorithm * algorithm)
+{
+	std::lock_guard<std::recursive_mutex> lock(synch);
+	auto it = std::find_if(orientationEstimationAlgorithms_.begin(), orientationEstimationAlgorithms_.end(), [algorithm](std::list<IIMUOrientationEstimationAlgorithmConstPtr>::value_type val)
+	{
+		return val.get() == algorithm;
+	});
+	if (it != orientationEstimationAlgorithms_.end()){
+		throw std::runtime_error("Orientation estimation algorithm already registered");
+	}
+
+	orientationEstimationAlgorithms_.push_back(IIMUOrientationEstimationAlgorithmConstPtr(algorithm));
+}
+
+void IMUCostumeDataSource::registerCostumeCalibrationAlgorithm(IMUCostumeCalibrationAlgorithm * algorithm)
+{
+	std::lock_guard<std::recursive_mutex> lock(synch);
+	auto it = std::find_if(calibrationAlgorithms_.begin(), calibrationAlgorithms_.end(), [algorithm](std::list<IMUCostumeCalibrationAlgorithmConstPtr>::value_type val)
+	{
+		return val.get() == algorithm;
+	});
+	if (it != calibrationAlgorithms_.end()){
+		throw std::runtime_error("Costume calibration algorithm already registered");
+	}
+
+	calibrationAlgorithms_.push_back(IMUCostumeCalibrationAlgorithmConstPtr(algorithm));
+}
+
+void IMUCostumeDataSource::registerMotionEstimationAlgorithm(IMUCostumeMotionEstimationAlgorithm * algorithm)
+{
+	std::lock_guard<std::recursive_mutex> lock(synch);
+	auto it = std::find_if(motionEstimationAlgorithms_.begin(), motionEstimationAlgorithms_.end(), [algorithm](std::list<IMUCostumeMotionEstimationAlgorithmConstPtr>::value_type val)
+	{
+		return val.get() == algorithm;
+	});
+	if (it != motionEstimationAlgorithms_.end()){
+		throw std::runtime_error("Motion estimation algorithm already registered");
+	}
+
+	motionEstimationAlgorithms_.push_back(IMUCostumeMotionEstimationAlgorithmConstPtr(algorithm));
+}
+
+std::list<IMUCostumeDataSource::IIMUOrientationEstimationAlgorithmConstPtr> IMUCostumeDataSource::orientationEstimationAlgorithms() const
+{
+	std::lock_guard<std::recursive_mutex> lock(synch);
+	return orientationEstimationAlgorithms_;
+}
+
+std::list<IMUCostumeDataSource::IMUCostumeCalibrationAlgorithmConstPtr> IMUCostumeDataSource::calibrationAlgorithms() const
+{
+	std::lock_guard<std::recursive_mutex> lock(synch);
+	return calibrationAlgorithms_;
+}
+
+std::list<IMUCostumeDataSource::IMUCostumeMotionEstimationAlgorithmConstPtr> IMUCostumeDataSource::motionEstimationAlgorithms() const
+{
+	std::lock_guard<std::recursive_mutex> lock(synch);
+	return motionEstimationAlgorithms_;
 }
 
 /*

@@ -108,7 +108,7 @@ public:
 	template<typename T>
 	static T loadProcedure(HMODULE library, const char * procName)
 	{
-		//UTILS_STATIC_ASSERT((std::is_member_function_pointer<T>::value || std::is_function<T>::value), "Casting type must be member funtion pointer or function");
+		//static_assert((std::is_member_function_pointer<T>::value || std::is_function<T>::value), "Casting type must be member funtion pointer or function");
 		#if defined(__WIN32__)
 			return reinterpret_cast<T>(::GetProcAddress(library, procName));
 		#elif defined(__UNIX__)

@@ -15,8 +15,9 @@
 #include <vector>
 #include <utils/SmartPtr.h>
 //#include <boost/bimap.hpp>
+#include <tinyxml2.h>
 
-class tinyxml2::XMLElement;
+//class tinyxml2::XMLElement;
 
 //! W klasie przechowywana jest konkretna konfiguracja EMG
 class MeasurementConfig

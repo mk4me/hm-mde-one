@@ -34,7 +34,7 @@ namespace osgui {
 template <class Base, osg::PrimitiveSet::Mode Primitives = osg::PrimitiveSet::QUADS>
 class Borderized : public Base, public osgui::IBorderized
 {
-    UTILS_STATIC_ASSERT((boost::is_base_of<osgWidget::Widget, Base>::value), "Base class should inherit from osgWidget::Widget");
+    static_assert((std::is_base_of<osgWidget::Widget, Base>::value), "Base class should inherit from osgWidget::Widget");
 
 public:
     //META_Object(osgui, Borderized);
@@ -43,7 +43,7 @@ public:
 private:
     //! Typ używany do wyróżniania wariantów.
     template <osg::PrimitiveSet::Mode M>
-    struct Mode : public boost::integral_constant<osg::PrimitiveSet::Mode, M>
+	struct Mode : public std::integral_constant<osg::PrimitiveSet::Mode, M>
     {};
     //! Geometria ramki.
     osg::ref_ptr<osg::Geometry> border;
@@ -313,7 +313,7 @@ private:
     void positionBorder( Mode<P> )
     {
         // rev - jak to ma dzialac?, wywalana
-        //UTILS_STATIC_ASSERT(false, "Not supported");
+        //static_assert(false, "Not supported");
     }
 };
 

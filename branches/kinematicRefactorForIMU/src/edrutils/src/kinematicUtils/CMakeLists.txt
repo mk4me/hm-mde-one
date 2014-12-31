@@ -6,6 +6,7 @@ SET_PUBLIC_HEADERS(
 )
 
 SET_SOURCE_FILES( 
+	Types.cpp
 	RotationConverter.cpp
 )
 

@@ -10,11 +10,11 @@
 #define HEADER_GUARD__UTILS_H__
 
 #include <utils/Config.h>
-#include <boost/lexical_cast.hpp>
 #include <cstring>
 #include <sstream>
 #include <type_traits>
 #include <memory>
+#include <functional>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
@@ -101,16 +101,6 @@ inline size_t length(const T (&fixedArray)[Size])
 //------------------------------------------------------------------------------
 
 struct NullType {};
-
-//------------------------------------------------------------------------------
-
-//! Konwersja danego typu do łańcucha.
-//! \param source
-template <class T>
-inline std::string toString(const T& source)
-{
-    return boost::lexical_cast<std::string>(source);
-}
 
 //------------------------------------------------------------------------------
 

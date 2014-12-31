@@ -23,17 +23,17 @@ namespace acclaim
 		//! określa początkową orientację dla kości
 		osg::Vec3 axis;
 		//! określa kolejność rotacji
-		kinematicUtils::AxisOrder axisOrder;
+		kinematicUtils::AxisOrder::Type axisOrder;
 		//! stopnie swobody dla kości (razem z limitami)
 		std::vector<DegreeOfFreedom> dofs;
 		//! określa kolejność rotacji
-		kinematicUtils::AxisOrder rotationOrder;
+		kinematicUtils::AxisOrder::Type rotationOrder;
 
 		Bone() : id(-1),
 			axis(0.0, 0.0, 0.0),
 			length(-1),
-			axisOrder(kinematicUtils::XYZ),
-			rotationOrder(kinematicUtils::XYZ),
+			axisOrder(kinematicUtils::AxisOrder::XYZ),
+			rotationOrder(kinematicUtils::AxisOrder::XYZ),
 			direction(0.0, 0.0, 0.0),
 			name(name)
 		{}

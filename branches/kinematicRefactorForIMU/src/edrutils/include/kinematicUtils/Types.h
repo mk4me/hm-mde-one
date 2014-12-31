@@ -9,38 +9,56 @@
 #define __HEADER_GUARD_KINEMATICUTILS__TYPES_H__
 
 #include <array>
+#include <string>
 
 namespace kinematicUtils
 {
-	enum ChannelType
+	struct ChannelType
 	{
-		TX,
-		TY,
-		TZ,
-		RX,
-		RY,
-		RZ,
-		CUSTOM_CHANNEL_BASE = 100
+		enum Type
+		{
+			TX,
+			TY,
+			TZ,
+			RX,
+			RY,
+			RZ,
+			CUSTOM_CHANNEL_BASE = 100
+		};
+
+		static std::string toString(const Type type);
+		static Type fromString(const std::string & name);
 	};
 
 	typedef int Channel;
 
 	typedef std::array<Channel, 3> ChannelTriplet;
 
-	enum AxisOrder
+	struct AxisOrder
 	{
-		XYX,
-		XYZ,
-		XZX,
-		XZY,
-		YXY,
-		YXZ,
-		YZX,
-		YZY,
-		ZXY,
-		ZXZ,		
-		ZYX,
-		ZYZ
+		enum Type
+		{
+			XYX,
+			XYZ,
+			XZX,
+			XZY,
+			YXY,
+			YXZ,
+			YZX,
+			YZY,
+			ZXY,
+			ZXZ,
+			ZYX,
+			ZYZ
+		};
+
+		static std::string toString(const AxisOrder::Type axisOrder);
+
+		static Type fromString(const std::string & axisOrderName);
+
+		static Type fromChannelTriplet(const ChannelTriplet & channelTriplet);
+
+		static ChannelTriplet toChannelTriplet(const Type axisOrder);
 	};
 }
 

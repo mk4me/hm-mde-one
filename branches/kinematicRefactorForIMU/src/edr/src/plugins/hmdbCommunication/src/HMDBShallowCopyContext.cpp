@@ -25,6 +25,7 @@
 #include <corelib/ISourceManager.h>
 #include <corelib/IParserManagerReader.h>
 #include <utils/Utils.h>
+#include <boost/lexical_cast.hpp>
 
 using namespace hmdbCommunication;
 
@@ -405,13 +406,14 @@ public:
 
 	virtual void initialize(core::Variant * object)
 	{
-		kinematic::SkeletalDataConstPtr data;
-		kinematic::SkeletalModelConstPtr model;
-		if (dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr){
+		//TODO
+		//kinematic::SkeletalDataConstPtr data;
+		//kinematic::SkeletalModelConstPtr model;
+		//if (dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr){
 			kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
-			joints->setSkeletal(model, data);
+			//joints->setSkeletal(model, data);
 			object->set(joints);
-		}
+		//}
 	}
 
 	virtual IVariantInitializer * clone() const
@@ -665,6 +667,8 @@ const core::VariantPtr createJointsAngles(const core::ConstVariantsList objects,
 		}
 	}
 
+	//TODO
+	/*
 	core::VariantsCollection modelWrappers(typeid(kinematic::SkeletalModel), false);
 	session->getObjects(modelWrappers);	
 
@@ -676,6 +680,7 @@ const core::VariantPtr createJointsAngles(const core::ConstVariantsList objects,
 			ret->setInitializer(core::VariantInitializerPtr(new JointsInitializer(dataWrapper, modelWrapper)));
 		}
 	}
+	*/
 
 	return ret;
 }

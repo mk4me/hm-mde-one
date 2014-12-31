@@ -14,7 +14,6 @@
 #include <vector>
 #include <map>
 #include <set>
-#include <boost/noncopyable.hpp>
 #include <osg/Vec3>
 #include <c3dlib/Export.h>
 

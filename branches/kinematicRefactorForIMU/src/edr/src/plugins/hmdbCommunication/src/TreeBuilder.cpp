@@ -14,6 +14,7 @@
 #include <plugins/hmdbCommunication/IPatient.h>
 #include <corelib/PluginCommon.h>
 #include <utils/ObjectWrapper.h>
+#include <boost/lexical_cast.hpp>
 
 using namespace PluginSubject;
 core::IHierarchyItemPtr TreeBuilder::createTree(const QString& rootItemName, const core::ConstVariantsList& sessions)

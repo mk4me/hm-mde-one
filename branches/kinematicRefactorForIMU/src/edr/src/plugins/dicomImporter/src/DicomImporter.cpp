@@ -183,7 +183,7 @@ void dicomImporter::DicomImporter::convertImages( DicomInternalStructPtr inter, 
 void dicomImporter::DicomImporter::convertImage( internalData::ImagePtr inter, const core::Filesystem::Path& from, const core::Filesystem::Path& to, const std::string& filenameBase )
 {
     core::Filesystem::Path origin = from / inter->originFilePath;
-
+	
     if (core::Filesystem::pathExists(origin)) {
         DicomParser parser;
         parser.parse(origin.string());
@@ -203,7 +203,7 @@ void dicomImporter::DicomImporter::convertImage( internalData::ImagePtr inter, c
 
         inter->imageFile = filenameBase + ".png";
         inter->adnotationsFile = filenameBase + ".xml";
-
+		inter->isPowerDoppler = testPowerDoppler(pixmap);
         refresh(filenameBase);
     }
 }
@@ -248,6 +248,7 @@ void dicomImporter::DicomImporter::setCallBack( refresher r )
 
 bool dicomImporter::DicomImporter::testPowerDoppler( const QPixmap &pixmap )
 {
+	// badamy napisy po prawej stronie obrazu. Te z power dopplerem maja ich wiecej.
     int x1 = 855, y1 = 130, x2 = 950, y2 = 400, grey = 140;
     if (!pixmap.isNull() && pixmap.width() >= x2 && pixmap.height() >= y2) {
         QImage cut = (pixmap.copy(x1, y1, x2 - x1, y2 - y1)).toImage();

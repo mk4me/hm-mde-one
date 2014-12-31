@@ -147,7 +147,7 @@ namespace utils {
 		template <class Ptr>
 		const bool tryGet(Ptr& object, bool exact = false) const
 		{
-			return __tryGetRawPtr(object, exact, boost::is_pointer<Ptr>());
+			return __tryGetRawPtr(object, exact, std::is_pointer<Ptr>());
 		}
 
 		//! Pobiera obiekt z wrappera. W razie błędu rzuca bad_castem.
@@ -197,7 +197,7 @@ namespace utils {
 		template <class Ptr>
 		const bool trySet(const Ptr& object)
 		{
-			return __trySetRawPtr(object, boost::is_pointer<Ptr>());
+			return __trySetRawPtr(object, std::is_pointer<Ptr>());
 		}
 
 		//! Pusty polimorficzny destruktor.
@@ -258,9 +258,9 @@ namespace utils {
 		//! \param object Obiekt.
 		//! \return Sukces/porażka.
 		template <class Ptr>
-		const bool __trySetRawPtr(const Ptr& object, boost::true_type)
+		const bool __trySetRawPtr(const Ptr& object, std::true_type)
 		{
-			UTILS_STATIC_ASSERT((!boost::is_const<typename boost::remove_pointer<Ptr>::type>::value), "Nalezy zapisywac dane bez modyfikatora const");
+			static_assert((!std::is_const<typename std::remove_pointer<Ptr>::type>::value), "Nalezy zapisywac dane bez modyfikatora const");
 			if (getPtrTypeInfo().first == typeid(Ptr)){
 				__setData(&object);
 				return true;
@@ -273,9 +273,9 @@ namespace utils {
 		//! \param object Obiekt.
 		//! \return Sukces/porażka.
 		template <class Ptr>
-		const bool __trySetRawPtr(const Ptr& object, boost::false_type)
+		const bool __trySetRawPtr(const Ptr& object, std::false_type)
 		{
-			UTILS_STATIC_ASSERT((!boost::is_const<typename Ptr::element_type>::value), "Nalezy zapisywac dane bez modyfikatora const");
+			static_assert((!std::is_const<typename Ptr::element_type>::value), "Nalezy zapisywac dane bez modyfikatora const");
 			if (getPtrTypeInfo().first == typeid(Ptr)){
 				__setData(&object);
 				return true;
@@ -310,9 +310,9 @@ namespace utils {
 		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
 		//! \return Sukces/porażka.
 		template <class Ptr>
-		const bool __tryGetRawPtr(Ptr& object, bool exact, boost::true_type) const
+		const bool __tryGetRawPtr(Ptr& object, bool exact, std::true_type) const
 		{
-			UTILS_STATIC_ASSERT((boost::is_const<typename boost::remove_pointer<Ptr>::type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");
+			static_assert((std::is_const<typename std::remove_pointer<Ptr>::type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");
 
 			TypeInfo ptrInfo(typeid(Ptr));
 			if (ptrInfo == getPtrTypeInfo().second) {
@@ -332,9 +332,9 @@ namespace utils {
 		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
 		//! \return Sukces/porażka.
 		template <class Ptr>
-		const bool __tryGetRawPtr(Ptr& object, bool exact, boost::false_type) const
+		const bool __tryGetRawPtr(Ptr& object, bool exact, std::false_type) const
 		{
-			UTILS_STATIC_ASSERT((boost::is_const<typename Ptr::element_type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");
+			static_assert((std::is_const<typename Ptr::element_type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");
 
 			TypeInfo ptrInfo(typeid(Ptr));
 			if (ptrInfo == getPtrTypeInfo().second) {

@@ -15,18 +15,18 @@ namespace acclaim
         /// \brief  Zwraca kolejność rotacji na podstawie nazwy. 
         /// \param  axis Napis określający kolejność rotacji. 
         /// \return Kolejność rotacji. 
-        static kinematicUtils::AxisOrder getAxisOrder(const std::string& axis);
+        static kinematicUtils::AxisOrder::Type getAxisOrder(const std::string& axis);
 
         /// \brief  Zwraca nazwę określająca kolejność rotacji. 
         /// \param  order kolejność rotacji 
         /// \return The axis order name. 
-		static std::string getAxisOrderName(kinematicUtils::AxisOrder order);
+		static std::string getAxisOrderName(kinematicUtils::AxisOrder::Type order);
     };
 
     /// \brief  Struktura przechowuje pojedynczy stopien swobody dla kości.
     struct DegreeOfFreedom
     {
-		static const int L = kinematicUtils::CUSTOM_CHANNEL_BASE + 1;
+		static const int L = kinematicUtils::ChannelType::CUSTOM_CHANNEL_BASE + 1;
 
 		kinematicUtils::Channel channel; //<! kanał, dla którego definiowany jest stopien swobody
         double minLimit; //<! minimalna wartość dla kanału (domyślnie -nieskonczoność)

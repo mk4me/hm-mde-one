@@ -1,6 +1,12 @@
 BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS(
+	CoreQtMetaTypes.h
+	CoreUnitQuaternionValidator.h
+	CoreQuaternionValidator.h
+	CoreRotationWidgetEditor.h
+	CoreEulerAnglesEditorWidget.h
+	CoreQuaternionEditorWidget.h
 	AbstractTab.h
 	AbstractState.h
 	AbstractStateMachine.h
@@ -11,6 +17,7 @@ SET_PUBLIC_HEADERS(
 	CoreMainWindow.h	
 	CoreAction.h
 	CoreDockWidget.h
+	CoreVectorInputDelegate.h
 	CoreSplitableDockWidget.h
 	CoreSplitableDockWidgetT.h
 	CoreFlexiToolBar.h
@@ -50,9 +57,15 @@ SET_PUBLIC_HEADERS(
 )
 
 SET_SOURCE_FILES(
+	CoreUnitQuaternionValidator.cpp
+	CoreQuaternionValidator.cpp
+	CoreRotationWidgetEditor.cpp
+	CoreEulerAnglesEditorWidget.cpp
+	CoreQuaternionEditorWidget.cpp
 	AbstractTab.cpp
 	AbstractState.cpp
 	AbstractStateMachine.cpp
+	CoreVectorInputDelegate.cpp
 	GraphicSceneWithStateMachine.cpp
 	CoreDockWidgetSet.cpp
 	CoreDockWidgetManager.cpp
@@ -94,10 +107,15 @@ SET_SOURCE_FILES(
 SET_PRIVATE_HEADERS(
 	CoreUiPCH.h
 	CorePopupPrivate.h
-	
 )
 
 SET_MOC_FILES(
+	CoreUnitQuaternionValidator.h
+	CoreQuaternionValidator.h
+	CoreRotationWidgetEditor.h
+	CoreEulerAnglesEditorWidget.h
+	CoreQuaternionEditorWidget.h
+	CoreVectorInputDelegate.h
 	AbstractTab.h
 	AbstractStateMachine.h
 	GraphicSceneWithStateMachine.h
@@ -133,6 +151,8 @@ SET_MOC_FILES(
 )
 
 SET_UI_FILES(
+	CoreEulerAnglesEditorWidget.ui
+	CoreQuaternionEditorWidget.ui
 	CoreConsoleWidget.ui
 	CoreFlexiToolBarSection.ui
 	CoreTitleBar.ui

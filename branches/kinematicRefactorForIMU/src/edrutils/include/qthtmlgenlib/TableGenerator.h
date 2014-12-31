@@ -15,7 +15,7 @@
 #include <QtGui/QTextTable>
 #include <boost/any.hpp>
 #include <utils/Debug.h>
-#include <boost/array.hpp>
+#include <array>
 
 namespace htmlGen {
 
@@ -468,7 +468,7 @@ private:
     static void closeRow(QString & table);
 };
 
-typedef boost::array<boost::array<std::pair<QTextTableCellFormat, QTextBlockFormat>,4>,4> TableCellsFormat;
+typedef std::array<std::array<std::pair<QTextTableCellFormat, QTextBlockFormat>,4>,4> TableCellsFormat;
 
 //! Kalsa pomocnicza przy wypełnianiu tabeli wg standardów Qt
 class QTextTableViewHelper

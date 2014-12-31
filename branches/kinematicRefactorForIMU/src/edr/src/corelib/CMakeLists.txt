@@ -8,8 +8,7 @@ SET_PUBLIC_HEADERS(
 	AbstractSerie.h
 	BaseDataTypes.h
 	DataAccessors.h
-	Filesystem.h
-	StringTools.h
+	Filesystem.h	
 	Exceptions.h
 	Visualizer.h
 	VariantsCollection.h

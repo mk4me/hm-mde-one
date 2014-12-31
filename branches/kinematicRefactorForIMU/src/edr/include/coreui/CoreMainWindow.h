@@ -33,7 +33,7 @@ namespace coreUI {
 
     template<class T>
     T* createNamedObject(const QString & objectName) {
-        UTILS_STATIC_ASSERT((boost::is_base_of<QObject, T>::value), "Object must be derrived from QtCore::QObject");
+        static_assert((std::is_base_of<QObject, T>::value), "Object must be derrived from QtCore::QObject");
         UTILS_ASSERT(objectName.isEmpty() == false);
         T* ret = new T();
         ret->setObjectName(objectName);

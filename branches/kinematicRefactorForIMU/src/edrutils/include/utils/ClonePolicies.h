@@ -49,7 +49,7 @@ namespace utils {
     {
         template <typename T>
 		static T* clone(const T* s) {
-            //UTILS_STATIC_ASSERT(false, "Cloning forbidden!");
+            //static_assert(false, "Cloning forbidden!");
             throw std::runtime_error("Cloning forbidden!");
         }
     };

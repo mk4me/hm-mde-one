@@ -26,7 +26,7 @@ namespace biovision
 		std::string name;
 		osg::Vec3 offset;
 		std::vector<kinematicUtils::Channel> channels;
-		kinematicUtils::AxisOrder rotationOrder;
+		kinematicUtils::AxisOrder::Type rotationOrder;
 		std::list<JointPtr> joints;
 	};
 }

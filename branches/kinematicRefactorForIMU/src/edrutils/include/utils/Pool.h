@@ -123,7 +123,7 @@ public:
         // tworzymy kopię w naszych surowych danych
         // jeśli wystąpi błąd oznacza to, że rozmiar struktury jest większy niż rozmiar bufora
         UTILS_POOL_ALIGNS1(T1);
-        UTILS_STATIC_ASSERT(Align1st::value+sizeof(T1)<=sizeof(rawData), "Overflow");
+        static_assert(Align1st::value+sizeof(T1)<=sizeof(rawData), "Overflow");
         new (rawData + Align1st::value) T1(data);
         destructor = new Destructor1<T1>();
     }
@@ -136,7 +136,7 @@ public:
         // tworzymy kopię w naszych surowych danych
         // jeśli wystąpi błąd oznacza to, że rozmiar struktury jest większy niż rozmiar bufora
         UTILS_POOL_ALIGNS2(T1, T2);
-        UTILS_STATIC_ASSERT(Align2nd::value+sizeof(T2)<=sizeof(rawData), "Overflow");
+        static_assert(Align2nd::value+sizeof(T2)<=sizeof(rawData), "Overflow");
         new (rawData+Align1st::value) T1(data1);
         new (rawData+Align2nd::value) T2(data2);
         destructor = new Destructor2<T1, T2>();
@@ -150,7 +150,7 @@ public:
         // tworzymy kopię w naszych surowych danych
         // jeśli wystąpi błąd oznacza to, że rozmiar struktury jest większy niż rozmiar bufora
         UTILS_POOL_ALIGNS3(T1, T2, T3);
-        UTILS_STATIC_ASSERT(Align3rd::value+sizeof(T3)<=sizeof(rawData), "Overflow");
+        static_assert(Align3rd::value+sizeof(T3)<=sizeof(rawData), "Overflow");
         new (rawData+Align1st::value) T1(data1);
         new (rawData+Align2nd::value) T2(data2);
         new (rawData+Align3rd::value) T3(data3);
@@ -165,7 +165,7 @@ public:
     {
         // tworzymy kopię w naszych surowych danych
         // jeśli wystąpi błąd oznacza to, że rozmiar struktury jest większy niż rozmiar bufora
-        UTILS_STATIC_ASSERT(sizeof(T) * Size <= sizeof(rawData), "Overflow");
+        static_assert(sizeof(T) * Size <= sizeof(rawData), "Overflow");
         for (int i = 0; i < Size; ++i) {
             new (rawData+i*sizeof(T)) T(data[i]);
         }

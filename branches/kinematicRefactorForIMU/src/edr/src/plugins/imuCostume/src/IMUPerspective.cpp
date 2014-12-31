@@ -20,10 +20,12 @@
 #include <QtCore/QObject>
 #include "IMUCFGParser.h"
 #include "IMUDatParser.h"
-#include "kinematiclib/JointAnglesCollection.h"
+#include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/kinematic/Wrappers.h>
-#include "kinematiclib/Skeleton.h"
+#include <kinematiclib/Skeleton.h>
+#include <kinematicUtils/RotationConverter.h>
 #include <iomanip>
+#include <boost/lexical_cast.hpp>
 
 typedef core::Filesystem fs;
 
@@ -90,14 +92,14 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 			}
 
 			if (motion->hasObject(typeid(kinematic::SkeletalData), false) && 
-				motion->hasObject(typeid(kinematic::SkeletalModel), false)) {
+				motion->hasObject(typeid(kinematic::Skeleton), false)) {
 				
 				core::ConstVariantsList sdl, sml;
 				motion->getObjects(sdl, typeid(kinematic::SkeletalData), false);
-				motion->getObjects(sml, typeid(kinematic::SkeletalModel), false);
+				motion->getObjects(sml, typeid(kinematic::Skeleton), false);
 
 				kinematic::SkeletalDataConstPtr sd = sdl.front()->get();
-				kinematic::SkeletalModelConstPtr sm = sml.front()->get();
+				kinematic::SkeletonConstPtr sm = sml.front()->get();
 
 				kinematic::JointAnglesCollectionPtr ja = utils::make_shared<kinematic::JointAnglesCollection>();
 				ja->setSkeletal(sm, sd);
@@ -310,7 +312,8 @@ void IMU::IMUPerspective::generateAnglesChannelBranch(kinematic::JointAnglesColl
 
 		for (int idx = 0; idx < size; ++idx) {
 			osg::Quat q = channel->value(idx);
-			osg::Vec3 v = kinematic::SkeletonUtils::getEulerFromQuat(q);
+			//TODO - weryfikacja konwencji konwersji euler->quat
+			osg::Vec3 v = kinematicUtils::convertXYX(q);
 			c->addPoint(v);
 		}
 

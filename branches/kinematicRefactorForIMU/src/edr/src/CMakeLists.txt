@@ -6,7 +6,7 @@ CONFIGURE_PROJECT_DEPENDENCIES("CORE_ENABLE_LOGGING;CORE_ENABLE_LOG4CXX" "LOG4CX
 ADD_PROJECT(core "corelib;OPENGL")
 
 ADD_PROJECT(corelib "BOOST;OSG;threadingUtils;OPENTHREADS;QT;TINYXML2;utils")
-ADD_PROJECT(coreui "OPENGL;corelib")
+ADD_PROJECT(coreui "OPENGL;corelib;kinematicUtils")
 END_PROJECTS_GROUP()
 
 BEGIN_PROJECTS_GROUP("plugins")
@@ -25,7 +25,7 @@ ADD_PROJECT(plugin_subject "corelib;vidlib;plugin_c3d" "plugins/subject")
 ADD_PROJECT(plugin_hmm "corelib;coreui;c3dlib;QWT;vidlib;kinematiclib;plugin_subject" "plugins/hmmlib")
 #ADD_PROJECT(plugin_newVdf "dflib;coreui;corelib" "plugins/newVdf")
 #ADD_PROJECT(plugin_dfElements "dflib;coreui;plugin_newVdf;plugin_c3d" "plugins/dfElements")
-ADD_PROJECT(plugin_imuCostume "corelib;coreui;BOOST;QT;OSG;plugin_c3d;plugin_hmdbCommunication;imucostumelib" "plugins/imuCostume")
+ADD_PROJECT(plugin_imuCostume "corelib;coreui;kinematiclib;kinematicUtils;BOOST;QT;OSG;plugin_c3d;plugin_hmdbCommunication;imucostumelib" "plugins/imuCostume")
 #ADD_PROJECT(plugin_python "dflib;plugin_hmdbCommunication;plugin_c3d;coreui;plugin_newVdf;BOOST;PYTHON;QT;corelib" "plugins/python")
 #ADD_PROJECT(plugin_orientationsFit "corelib;GeneralAlgorithms;OSG;BOOST;utils;IMU;QuatUtils;QT" "plugins/orientationsFit")
 END_PROJECTS_GROUP()

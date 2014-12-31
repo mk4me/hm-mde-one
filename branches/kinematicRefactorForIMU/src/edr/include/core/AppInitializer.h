@@ -37,7 +37,7 @@ public:
 	static int runApp(int & argc, char *argv[], const std::string & appName)
 	{
 		try{
-			UTILS_STATIC_ASSERT((boost::is_base_of<coreUI::CoreMainWindow, FrontPageWidget>::value), "FrontPageWidget class should inherit from coreUI::CoreMainWindow");
+			static_assert((std::is_base_of<coreUI::CoreMainWindow, FrontPageWidget>::value), "FrontPageWidget class should inherit from coreUI::CoreMainWindow");
 			//we create application UI context and initialize everything
 			AppInitializer application(argc, argv, appName);
 			//now it is safe to create view widget

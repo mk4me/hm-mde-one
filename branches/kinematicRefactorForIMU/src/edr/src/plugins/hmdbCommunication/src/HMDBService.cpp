@@ -293,7 +293,6 @@ void HMDBService::init(core::ISourceManager * sourceManager,
 #if ((defined _WIN32) || (defined _WIN64))
 	XmlUtils::TMPFILESDIR = (plugin::getPaths()->getTmpPath()).string();
 	PLUGIN_LOG_INFO("XmlUtils TMPFILESDIR: " << XmlUtils::TMPFILESDIR);
-
 #else
 	UTILS_ASSERT(false); // co zrobic z tym SCHEMADIR??
 #endif

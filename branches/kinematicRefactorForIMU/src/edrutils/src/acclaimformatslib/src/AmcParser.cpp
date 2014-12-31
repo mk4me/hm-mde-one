@@ -23,17 +23,17 @@ void AmcParser::save (const Skeleton & model, const MotionData & data, const std
 			out << data.frames[i].bonesData[j].name;
 			if (data.frames[i].bonesData[j].name == "root" && forceRootXYZ == true) {
                  const std::vector<DegreeOfFreedom>& dofs = model.bones.find(model.root)->second.dofs;
-				 int index = DegreeOfFreedom::getChannelIndex(kinematicUtils::TX, dofs);
+				 int index = DegreeOfFreedom::getChannelIndex(kinematicUtils::ChannelType::TX, dofs);
 				 out << " " << data.frames[i].bonesData[j].channelValues[index];
-				 index = DegreeOfFreedom::getChannelIndex(kinematicUtils::TY, dofs);
+				 index = DegreeOfFreedom::getChannelIndex(kinematicUtils::ChannelType::TY, dofs);
 				 out << " " << data.frames[i].bonesData[j].channelValues[index];
-				 index = DegreeOfFreedom::getChannelIndex(kinematicUtils::TZ, dofs);
+				 index = DegreeOfFreedom::getChannelIndex(kinematicUtils::ChannelType::TZ, dofs);
 				 out << " " << data.frames[i].bonesData[j].channelValues[index];
-				 index = DegreeOfFreedom::getChannelIndex(kinematicUtils::RX, dofs);
+				 index = DegreeOfFreedom::getChannelIndex(kinematicUtils::ChannelType::RX, dofs);
 				 out << " " << data.frames[i].bonesData[j].channelValues[index];
-				 index = DegreeOfFreedom::getChannelIndex(kinematicUtils::RY, dofs);
+				 index = DegreeOfFreedom::getChannelIndex(kinematicUtils::ChannelType::RY, dofs);
 				 out << " " << data.frames[i].bonesData[j].channelValues[index];
-				 index = DegreeOfFreedom::getChannelIndex(kinematicUtils::RZ, dofs);
+				 index = DegreeOfFreedom::getChannelIndex(kinematicUtils::ChannelType::RZ, dofs);
 				 out << " " << data.frames[i].bonesData[j].channelValues[index];
              } else {
 				for (unsigned int k = 0; k < data.frames[i].bonesData[j].channelValues.size(); ++k) {

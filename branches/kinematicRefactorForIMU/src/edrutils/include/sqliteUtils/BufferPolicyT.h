@@ -10,7 +10,7 @@
 
 //#include <utils/Utils.h>
 //#include <utils/Debug.h>
-#include <boost/array.hpp>
+#include <array>
 #include <vector>
 #include <utils/Utils.h>
 
@@ -28,11 +28,11 @@ namespace sqliteUtils
 	template<typename T, int Size = DefaultBufferSize>
 	class FixedBufferPolicy
 	{
-		//UTILS_STATIC_ASSERT((Size > 0), "Fixed buffer size must be greater than 0");
+		//static_assert((Size > 0), "Fixed buffer size must be greater than 0");
 
 	private:
 		//! Typ kolekcji przechowujacej dane
-		typedef boost::array<T, Size> Data;
+		typedef std::array<T, Size> Data;
 
 	public:
 		//! Domyœlny konsturktor

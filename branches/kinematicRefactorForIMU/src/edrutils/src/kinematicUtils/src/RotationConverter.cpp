@@ -4,71 +4,24 @@
 
 using namespace kinematicUtils;
 
-AxisOrder axisOrder(const ChannelTriplet & channelTriplet)
+template<osg::Vec3d::value_type Transform(osg::Vec3d::value_type)>
+osg::Vec3d transform(const osg::Vec3d & rotation)
 {
-	AxisOrder ret = XYZ;
-
-	if (channelTriplet[0] == RX && channelTriplet[1] == RY && channelTriplet[2] == RZ){
-		ret = XYZ;
-	}
-	else if (channelTriplet[0] == RX && channelTriplet[1] == RY && channelTriplet[2] == RX){
-		ret = XYX;
-	}
-	else if(channelTriplet[0] == RX && channelTriplet[1] == RZ && channelTriplet[2] == RX){
-		ret = XZX;
-	}
-	else if (channelTriplet[0] == RX && channelTriplet[1] == RZ && channelTriplet[2] == RY){
-		ret = XZY;
-	}
-	else if (channelTriplet[0] == RY && channelTriplet[1] == RX && channelTriplet[2] == RY){
-		ret = YXY;
-	}
-	else if (channelTriplet[0] == RY && channelTriplet[1] == RX && channelTriplet[2] == RZ){
-		ret = YXZ;
-	}
-	else if (channelTriplet[0] == RY && channelTriplet[1] == RZ && channelTriplet[2] == RX){
-		ret = YZX;
-	}
-	else if (channelTriplet[0] == RY && channelTriplet[1] == RZ && channelTriplet[2] == RY){
-		ret = YZY;
-	}
-	else if (channelTriplet[0] == RZ && channelTriplet[1] == RX && channelTriplet[2] == RY){
-		ret = ZXY;
-	}
-	else if (channelTriplet[0] == RZ && channelTriplet[1] == RX && channelTriplet[2] == RZ){
-		ret = ZXZ;
-	}
-	else if (channelTriplet[0] == RZ && channelTriplet[1] == RY && channelTriplet[2] == RX){
-		ret = ZYX;
-	}
-	else if (channelTriplet[0] == RZ && channelTriplet[1] == RY && channelTriplet[2] == RZ){
-		ret = ZYZ;
-	}
-	else {	
-		throw std::runtime_error("Invalid channel type or axis configuration for decoding axis order: " + boost::lexical_cast<std::string>(channelTriplet[0]));
-	}
-
-	return ret;
-}
-
-template<osg::Vec3::value_type Transform(osg::Vec3::value_type)>
-osg::Vec3 transform(const osg::Vec3 & rotation)
-{
-	return osg::Vec3(Transform(rotation.x()),
+	return osg::Vec3d(Transform(rotation.x()),
 		Transform(rotation.y()),
 		Transform(rotation.z()));
 }
 
-osg::Vec3::value_type mulReduce(const osg::Vec3 & rotation)
+osg::Vec3d::value_type mulReduce(const osg::Vec3d & rotation)
 {
 	return rotation.x() * rotation.y() * rotation.z();
 }
 
-osg::Quat kinematicUtils::convertXYX(const osg::Vec3 & rotation)
+osg::Quat kinematicUtils::convertXYX(const osg::Vec3d & rotation)
 {
-	const osg::Vec3 halfAngle(rotation / 2.0);
-	const osg::Vec3 cosHalfAngle(transform<std::cos>(halfAngle));
-	const osg::Vec3 sinHalfAngle(transform<std::sin>(halfAngle));
+	const osg::Vec3d halfAngle(rotation / 2.0);
+	const osg::Vec3d cosHalfAngle(transform<std::cos>(halfAngle));
+	const osg::Vec3d sinHalfAngle(transform<std::sin>(halfAngle));
 	return osg::Quat(
 		cosHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z() + cosHalfAngle.y() * cosHalfAngle.z() * sinHalfAngle.x(),
 		cosHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y() + mulReduce(sinHalfAngle),
@@ -77,38 +30,38 @@ osg::Quat kinematicUtils::convertXYX(const osg::Vec3 & rotation)
 		);
 }
 
-osg::Quat kinematicUtils::convertXYZ(const osg::Vec3 & rotation)
+osg::Quat kinematicUtils::convertXYZ(const osg::Vec3d & rotation)
 {
-	const osg::Vec3 halfAngle(rotation / 2.0);
-	const osg::Vec3 cosHalfAngle(transform<std::cos>(halfAngle));
-	const osg::Vec3 sinHalfAngle(transform<std::sin>(halfAngle));
+	const osg::Vec3d halfAngle(rotation / 2.0);
+	const osg::Vec3d cosHalfAngle(transform<std::cos>(halfAngle));
+	const osg::Vec3d sinHalfAngle(transform<std::sin>(halfAngle));
 	return osg::Quat(	
-		-cosHalfAngle.x() * sinHalfAngle.y() * sinHalfAngle.z() + cosHalfAngle.y() * cosHalfAngle.z() * sinHalfAngle.y(),
-		cosHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.y() + sinHalfAngle.y() * cosHalfAngle.y() * sinHalfAngle.z(),
+		-cosHalfAngle.x() * sinHalfAngle.y() * sinHalfAngle.z() + cosHalfAngle.y() * cosHalfAngle.z() * sinHalfAngle.x(),
+		cosHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y() + sinHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z(),
 		cosHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z() - sinHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y(),
 		mulReduce(cosHalfAngle) + mulReduce(sinHalfAngle)
 		);
 }
 
 
-osg::Quat kinematicUtils::convertXZX(const osg::Vec3 & rotation)
+osg::Quat kinematicUtils::convertXZX(const osg::Vec3d & rotation)
 {
-	const osg::Vec3 halfAngle(rotation / 2.0);
-	const osg::Vec3 cosHalfAngle(transform<std::cos>(halfAngle));
-	const osg::Vec3 sinHalfAngle(transform<std::sin>(halfAngle));
+	const osg::Vec3d halfAngle(rotation / 2.0);
+	const osg::Vec3d cosHalfAngle(transform<std::cos>(halfAngle));
+	const osg::Vec3d sinHalfAngle(transform<std::sin>(halfAngle));
 	return osg::Quat(
 		cosHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z() + cosHalfAngle.y() * cosHalfAngle.z() * sinHalfAngle.x(),
+		-cosHalfAngle.x() * sinHalfAngle.y() * sinHalfAngle.z() + sinHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y(),
 		cosHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y() + mulReduce(sinHalfAngle),
-		cosHalfAngle.x() * sinHalfAngle.y() * sinHalfAngle.z() - sinHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y(),
 		mulReduce(cosHalfAngle) - sinHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z()
 		);
 }
 
-osg::Quat kinematicUtils::convertXZY(const osg::Vec3 & rotation)
+osg::Quat kinematicUtils::convertXZY(const osg::Vec3d & rotation)
 {
-	const osg::Vec3 halfAngle(rotation / 2.0);
-	const osg::Vec3 cosHalfAngle(transform<std::cos>(halfAngle));
-	const osg::Vec3 sinHalfAngle(transform<std::sin>(halfAngle));
+	const osg::Vec3d halfAngle(rotation / 2.0);
+	const osg::Vec3d cosHalfAngle(transform<std::cos>(halfAngle));
+	const osg::Vec3d sinHalfAngle(transform<std::sin>(halfAngle));
 	return osg::Quat(
 		cosHalfAngle.x() * sinHalfAngle.y() * sinHalfAngle.z() + cosHalfAngle.y() * cosHalfAngle.z() * sinHalfAngle.x(),
 		cosHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z() + sinHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y(),
@@ -117,11 +70,11 @@ osg::Quat kinematicUtils::convertXZY(const osg::Vec3 & rotation)
 		);
 }
 
-osg::Quat kinematicUtils::convertYXY(const osg::Vec3 & rotation)
+osg::Quat kinematicUtils::convertYXY(const osg::Vec3d & rotation)
 {
-	const osg::Vec3 halfAngle(rotation / 2.0);
-	const osg::Vec3 cosHalfAngle(transform<std::cos>(halfAngle));
-	const osg::Vec3 sinHalfAngle(transform<std::sin>(halfAngle));
+	const osg::Vec3d halfAngle(rotation / 2.0);
+	const osg::Vec3d cosHalfAngle(transform<std::cos>(halfAngle));
+	const osg::Vec3d sinHalfAngle(transform<std::sin>(halfAngle));
 	return osg::Quat(
 		cosHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y() + mulReduce(sinHalfAngle),
 		cosHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z() + cosHalfAngle.y() * cosHalfAngle.z() * sinHalfAngle.x(),
@@ -130,11 +83,11 @@ osg::Quat kinematicUtils::convertYXY(const osg::Vec3 & rotation)
 		);
 }
 
-osg::Quat kinematicUtils::convertYXZ(const osg::Vec3 & rotation)
+osg::Quat kinematicUtils::convertYXZ(const osg::Vec3d & rotation)
 {
-	const osg::Vec3 halfAngle(rotation / 2.0);
-	const osg::Vec3 cosHalfAngle(transform<std::cos>(halfAngle));
-	const osg::Vec3 sinHalfAngle(transform<std::sin>(halfAngle));
+	const osg::Vec3d halfAngle(rotation / 2.0);
+	const osg::Vec3d cosHalfAngle(transform<std::cos>(halfAngle));
+	const osg::Vec3d sinHalfAngle(transform<std::sin>(halfAngle));
 	return osg::Quat(
 		cosHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y() - sinHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z(),
 		cosHalfAngle.x() * sinHalfAngle.y() * sinHalfAngle.z() + cosHalfAngle.y() * cosHalfAngle.z() * sinHalfAngle.x(),
@@ -143,24 +96,24 @@ osg::Quat kinematicUtils::convertYXZ(const osg::Vec3 & rotation)
 		);
 }
 
-osg::Quat kinematicUtils::convertYZX(const osg::Vec3 & rotation)
+osg::Quat kinematicUtils::convertYZX(const osg::Vec3d & rotation)
 {
-	const osg::Vec3 halfAngle(rotation / 2.0);
-	const osg::Vec3 cosHalfAngle(transform<std::cos>(halfAngle));
-	const osg::Vec3 sinHalfAngle(transform<std::sin>(halfAngle));
+	const osg::Vec3d halfAngle(rotation / 2.0);
+	const osg::Vec3d cosHalfAngle(transform<std::cos>(halfAngle));
+	const osg::Vec3d sinHalfAngle(transform<std::sin>(halfAngle));
 	return osg::Quat(
 		cosHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z() - sinHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y(),
 		-cosHalfAngle.x() * sinHalfAngle.y() * sinHalfAngle.z() + cosHalfAngle.y() * cosHalfAngle.z() * sinHalfAngle.x(),
-		cosHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y() + sinHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.z(),
+		cosHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y() + sinHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z(),
 		mulReduce(cosHalfAngle) + mulReduce(sinHalfAngle)
 		);
 }
 
-osg::Quat kinematicUtils::convertYZY(const osg::Vec3 & rotation)
+osg::Quat kinematicUtils::convertYZY(const osg::Vec3d & rotation)
 {
-	const osg::Vec3 halfAngle(rotation / 2.0);
-	const osg::Vec3 cosHalfAngle(transform<std::cos>(halfAngle));
-	const osg::Vec3 sinHalfAngle(transform<std::sin>(halfAngle));
+	const osg::Vec3d halfAngle(rotation / 2.0);
+	const osg::Vec3d cosHalfAngle(transform<std::cos>(halfAngle));
+	const osg::Vec3d sinHalfAngle(transform<std::sin>(halfAngle));
 	return osg::Quat(
 		cosHalfAngle.x() * sinHalfAngle.y() * sinHalfAngle.z() - sinHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y(),
 		cosHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z() + cosHalfAngle.y() * cosHalfAngle.z() * sinHalfAngle.x(),
@@ -169,11 +122,11 @@ osg::Quat kinematicUtils::convertYZY(const osg::Vec3 & rotation)
 		);
 }
 
-osg::Quat kinematicUtils::convertZXY(const osg::Vec3 & rotation)
+osg::Quat kinematicUtils::convertZXY(const osg::Vec3d & rotation)
 {
-	const osg::Vec3 halfAngle(rotation / 2.0);
-	const osg::Vec3 cosHalfAngle(transform<std::cos>(halfAngle));
-	const osg::Vec3 sinHalfAngle(transform<std::sin>(halfAngle));
+	const osg::Vec3d halfAngle(rotation / 2.0);
+	const osg::Vec3d cosHalfAngle(transform<std::cos>(halfAngle));
+	const osg::Vec3d sinHalfAngle(transform<std::sin>(halfAngle));
 	return osg::Quat(
 		cosHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y() + sinHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z(),
 		cosHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z() - sinHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y(),
@@ -182,11 +135,11 @@ osg::Quat kinematicUtils::convertZXY(const osg::Vec3 & rotation)
 		);
 }
 
-osg::Quat kinematicUtils::convertZXZ(const osg::Vec3 & rotation)
+osg::Quat kinematicUtils::convertZXZ(const osg::Vec3d & rotation)
 {
-	const osg::Vec3 halfAngle(rotation / 2.0);
-	const osg::Vec3 cosHalfAngle(transform<std::cos>(halfAngle));
-	const osg::Vec3 sinHalfAngle(transform<std::sin>(halfAngle));
+	const osg::Vec3d halfAngle(rotation / 2.0);
+	const osg::Vec3d cosHalfAngle(transform<std::cos>(halfAngle));
+	const osg::Vec3d sinHalfAngle(transform<std::sin>(halfAngle));
 	return osg::Quat(
 		cosHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y() + mulReduce(sinHalfAngle),
 		cosHalfAngle.x() * sinHalfAngle.y() * sinHalfAngle.z() - sinHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y(),
@@ -195,11 +148,11 @@ osg::Quat kinematicUtils::convertZXZ(const osg::Vec3 & rotation)
 		);
 }
 
-osg::Quat kinematicUtils::convertZYX(const osg::Vec3 & rotation)
+osg::Quat kinematicUtils::convertZYX(const osg::Vec3d & rotation)
 {
-	const osg::Vec3 halfAngle(rotation / 2.0);
-	const osg::Vec3 cosHalfAngle(transform<std::cos>(halfAngle));
-	const osg::Vec3 sinHalfAngle(transform<std::sin>(halfAngle));
+	const osg::Vec3d halfAngle(rotation / 2.0);
+	const osg::Vec3d cosHalfAngle(transform<std::cos>(halfAngle));
+	const osg::Vec3d sinHalfAngle(transform<std::sin>(halfAngle));
 	return osg::Quat(
 		cosHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z() + sinHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y(),
 		cosHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y() - sinHalfAngle.x() * cosHalfAngle.y() * sinHalfAngle.z(),
@@ -208,11 +161,11 @@ osg::Quat kinematicUtils::convertZYX(const osg::Vec3 & rotation)
 		);
 }
 
-osg::Quat kinematicUtils::convertZYZ(const osg::Vec3 & rotation)
+osg::Quat kinematicUtils::convertZYZ(const osg::Vec3d & rotation)
 {
-	const osg::Vec3 halfAngle(rotation / 2.0);
-	const osg::Vec3 cosHalfAngle(transform<std::cos>(halfAngle));
-	const osg::Vec3 sinHalfAngle(transform<std::sin>(halfAngle));
+	const osg::Vec3d halfAngle(rotation / 2.0);
+	const osg::Vec3d cosHalfAngle(transform<std::cos>(halfAngle));
+	const osg::Vec3d sinHalfAngle(transform<std::sin>(halfAngle));
 	return osg::Quat(	
 		-cosHalfAngle.x() * sinHalfAngle.y() * sinHalfAngle.z() + sinHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y(),
 		cosHalfAngle.x() * cosHalfAngle.z() * sinHalfAngle.y() + mulReduce(sinHalfAngle),
@@ -221,68 +174,68 @@ osg::Quat kinematicUtils::convertZYZ(const osg::Vec3 & rotation)
 		);
 }
 
-osg::Quat convert(const osg::Vec3 & rotation, const AxisOrder axisOrder)
+osg::Quat kinematicUtils::convert(const osg::Vec3d & rotation, const AxisOrder::Type axisOrder)
 {
 	osg::Quat ret(0, 0, 0, 1);
 
 	switch (axisOrder)
 	{
-	case XYX:
+	case AxisOrder::XYX:
 
 		ret = convertXYX(rotation);
 		break;
 
-	case XYZ:
+	case AxisOrder::XYZ:
 
 		ret = convertXYZ(rotation);
 		break;
 
-	case XZX:
+	case AxisOrder::XZX:
 
 		ret = convertXZX(rotation);
 		break;
 
-	case XZY:
+	case AxisOrder::XZY:
 
 		ret = convertXZY(rotation);
 		break;
 
-	case YXY:
+	case AxisOrder::YXY:
 
 		ret = convertYXY(rotation);
 		break;
 
-	case YXZ:
+	case AxisOrder::YXZ:
 
 		ret = convertYXZ(rotation);
 		break;
 
-	case YZX:
+	case AxisOrder::YZX:
 
 		ret = convertYZX(rotation);
 		break;
 
-	case YZY:
+	case AxisOrder::YZY:
 
 		ret = convertYZY(rotation);
 		break;
 		
-	case ZXY:
+	case AxisOrder::ZXY:
 
 		ret = convertZXY(rotation);
 		break;
 
-	case ZXZ:
+	case AxisOrder::ZXZ:
 
 		ret = convertZXZ(rotation);
 		break;
 
-	case ZYX:
+	case AxisOrder::ZYX:
 
 		ret = convertZYX(rotation);
 		break;
 
-	case ZYZ:
+	case AxisOrder::ZYZ:
 
 		ret = convertZYZ(rotation);
 		break;
@@ -291,176 +244,176 @@ osg::Quat convert(const osg::Vec3 & rotation, const AxisOrder axisOrder)
 	return ret;
 }
 
-osg::Vec3 kinematicUtils::convertXYX(const osg::Quat & rotation)
+osg::Vec3d kinematicUtils::convertXYX(const osg::Quat & rotation)
 {
-	return osg::Vec3(
-		std::atan2f(2 * (rotation.x() * rotation.y() - rotation.w() * rotation.z()), 2 * (rotation.x() * rotation.z() + rotation.w() * rotation.y())),
-		std::acosf(std::powf(rotation.x(), 2) + std::powf(rotation.w(), 2) - std::powf(rotation.z(), 2) - std::powf(rotation.y(), 2)),
-		std::atan2f(2 * (rotation.x() * rotation.y() + rotation.w() * rotation.z()), 2 * (-rotation.x() * rotation.z() + rotation.w() * rotation.y()))
+	return osg::Vec3d(
+		std::atan2(2 * (rotation.x() * rotation.y() - rotation.w() * rotation.z()), 2 * (rotation.x() * rotation.z() + rotation.w() * rotation.y())),
+		std::acos(std::pow(rotation.x(), 2) + std::pow(rotation.w(), 2) - std::pow(rotation.z(), 2) - std::pow(rotation.y(), 2)),
+		std::atan2(2 * (rotation.x() * rotation.y() + rotation.w() * rotation.z()), 2 * (-rotation.x() * rotation.z() + rotation.w() * rotation.y()))
 		);
 }
 
-osg::Vec3 kinematicUtils::convertXYZ(const osg::Quat & rotation)
+osg::Vec3d kinematicUtils::convertXYZ(const osg::Quat & rotation)
 {
-	return osg::Vec3(
-		std::atan2f(2 * (rotation.y() * rotation.z() + rotation.w() * rotation.x()), std::powf(rotation.z(), 2) - std::powf(rotation.y(), 2) - std::powf(rotation.x(), 2) + std::powf(rotation.w(), 2)),
-		-std::asinf(2 * (rotation.x() * rotation.z() - rotation.w() * rotation.y())),
-		std::atan2f(2 * (rotation.x() * rotation.y() + rotation.w() * rotation.z()), std::powf(rotation.x(), 2) + std::powf(rotation.w(), 2) - std::powf(rotation.z(), 2) + std::powf(rotation.y(), 2))
+	return osg::Vec3d(
+		std::atan2(2 * (rotation.y() * rotation.z() + rotation.w() * rotation.x()), std::pow(rotation.z(), 2) - std::pow(rotation.y(), 2) - std::pow(rotation.x(), 2) + std::pow(rotation.w(), 2)),
+		-std::asin(2 * (rotation.x() * rotation.z() - rotation.w() * rotation.y())),
+		std::atan2(2 * (rotation.x() * rotation.y() + rotation.w() * rotation.z()), std::pow(rotation.x(), 2) + std::pow(rotation.w(), 2) - std::pow(rotation.z(), 2) - std::pow(rotation.y(), 2))
 		);
 }
 
-osg::Vec3 kinematicUtils::convertXZX(const osg::Quat & rotation)
+osg::Vec3d kinematicUtils::convertXZX(const osg::Quat & rotation)
 {
-	return osg::Vec3(
-		std::atan2f(2 * (rotation.x() * rotation.z() + rotation.w() * rotation.y()), 2 * (-rotation.x() * rotation.y() + rotation.w() * rotation.z())),
-		std::acosf(std::powf(rotation.x(), 2) + std::powf(rotation.w(), 2) - std::powf(rotation.z(), 2) + std::powf(rotation.y(), 2)),
-		std::atan2f(2 * (rotation.x() * rotation.z() - rotation.w() * rotation.y()), 2 * (rotation.x() * rotation.y() + rotation.w() * rotation.z()))
+	return osg::Vec3d(
+		std::atan2(2 * (rotation.x() * rotation.z() + rotation.w() * rotation.y()), 2 * (-rotation.x() * rotation.y() + rotation.w() * rotation.z())),
+		std::acos(std::pow(rotation.x(), 2) + std::pow(rotation.w(), 2) - std::pow(rotation.z(), 2) - std::pow(rotation.y(), 2)),
+		std::atan2(2 * (rotation.x() * rotation.z() - rotation.w() * rotation.y()), 2 * (rotation.x() * rotation.y() + rotation.w() * rotation.z()))
 		);
 }
 
-osg::Vec3 kinematicUtils::convertXZY(const osg::Quat & rotation)
+osg::Vec3d kinematicUtils::convertXZY(const osg::Quat & rotation)
 {
-	return osg::Vec3(
-		std::atan2f(2 * (-rotation.y() * rotation.z() + rotation.w() * rotation.x()), std::powf(rotation.y(), 2) - std::powf(rotation.z(), 2) + std::powf(rotation.w(), 2) - std::powf(rotation.x(), 2)),
-		std::asinf(2 * (rotation.x() * rotation.y() + rotation.w() * rotation.z())),
-		std::atan2f(2 * (-rotation.x() * rotation.z() + rotation.w() * rotation.y()), std::powf(rotation.x(), 2) + std::powf(rotation.w(), 2) - std::powf(rotation.z(), 2) - std::powf(rotation.y(), 2))
+	return osg::Vec3d(
+		std::atan2(2 * (-rotation.y() * rotation.z() + rotation.w() * rotation.x()), std::pow(rotation.y(), 2) - std::pow(rotation.z(), 2) + std::pow(rotation.w(), 2) - std::pow(rotation.x(), 2)),
+		std::asin(2 * (rotation.x() * rotation.y() + rotation.w() * rotation.z())),
+		std::atan2(2 * (-rotation.x() * rotation.z() + rotation.w() * rotation.y()), std::pow(rotation.x(), 2) + std::pow(rotation.w(), 2) - std::pow(rotation.z(), 2) - std::pow(rotation.y(), 2))
 		);
 }
 
-osg::Vec3 kinematicUtils::convertYXY(const osg::Quat & rotation)
+osg::Vec3d kinematicUtils::convertYXY(const osg::Quat & rotation)
 {
-	return osg::Vec3(
-		std::atan2f(2 * (rotation.x() * rotation.y() + rotation.w() * rotation.z()), 2 * (-rotation.y() * rotation.z() + rotation.w() * rotation.x())),
-		std::acosf(std::powf(rotation.y(), 2) - std::powf(rotation.z(), 2) + std::powf(rotation.w(), 2) - std::powf(rotation.x(), 2)),
-		std::atan2f(2 * (rotation.x() * rotation.y() - rotation.w() * rotation.z()), 2 * (rotation.y() * rotation.z() + rotation.w() * rotation.x()))
+	return osg::Vec3d(
+		std::atan2(2 * (rotation.x() * rotation.y() + rotation.w() * rotation.z()), 2 * (-rotation.y() * rotation.z() + rotation.w() * rotation.x())),
+		std::acos(std::pow(rotation.y(), 2) - std::pow(rotation.z(), 2) + std::pow(rotation.w(), 2) - std::pow(rotation.x(), 2)),
+		std::atan2(2 * (rotation.x() * rotation.y() - rotation.w() * rotation.z()), 2 * (rotation.y() * rotation.z() + rotation.w() * rotation.x()))
 		);
 }
 
-osg::Vec3 kinematicUtils::convertYXZ(const osg::Quat & rotation)
+osg::Vec3d kinematicUtils::convertYXZ(const osg::Quat & rotation)
 {
-	return osg::Vec3(
-		std::atan2f(2 * (-rotation.x() * rotation.z() + rotation.w() * rotation.y()), std::powf(rotation.z(), 2) - std::powf(rotation.y(), 2) - std::powf(rotation.x(), 2) - std::powf(rotation.w(), 2)),
-		std::asinf(2 * (rotation.y() * rotation.z() + rotation.w() * rotation.x())),
-		std::atan2f(2 * (-rotation.x() * rotation.y() + rotation.w() * rotation.z()), std::powf(rotation.y(), 2) - std::powf(rotation.z(), 2) + std::powf(rotation.w(), 2) - std::powf(rotation.x(), 2))
+	return osg::Vec3d(
+		std::atan2(2 * (-rotation.x() * rotation.z() + rotation.w() * rotation.y()), std::pow(rotation.z(), 2) - std::pow(rotation.y(), 2) - std::pow(rotation.x(), 2) + std::pow(rotation.w(), 2)),
+		std::asin(2 * (rotation.y() * rotation.z() + rotation.w() * rotation.x())),
+		std::atan2(2 * (-rotation.x() * rotation.y() + rotation.w() * rotation.z()), std::pow(rotation.y(), 2) - std::pow(rotation.z(), 2) + std::pow(rotation.w(), 2) - std::pow(rotation.x(), 2))
 		);
 }
 
-osg::Vec3 kinematicUtils::convertYZX(const osg::Quat & rotation)
+osg::Vec3d kinematicUtils::convertYZX(const osg::Quat & rotation)
 {
-	return osg::Vec3(
-		std::atan2f(2 * (rotation.x() * rotation.z() + rotation.w() * rotation.y()), std::powf(rotation.x(), 2) + std::powf(rotation.w(), 2) - std::powf(rotation.z(), 2) - std::powf(rotation.y(), 2)),
-		-std::asinf(2 * (rotation.x() * rotation.y() - rotation.w() * rotation.z())),
-		std::atan2f(2 * (rotation.y() * rotation.z() + rotation.w() * rotation.x()), std::powf(rotation.y(), 2) - std::powf(rotation.z(), 2) + std::powf(rotation.w(), 2) - std::powf(rotation.x(), 2))
+	return osg::Vec3d(
+		std::atan2(2 * (rotation.x() * rotation.z() + rotation.w() * rotation.y()), std::pow(rotation.x(), 2) + std::pow(rotation.w(), 2) - std::pow(rotation.z(), 2) - std::pow(rotation.y(), 2)),
+		-std::asin(2 * (rotation.x() * rotation.y() - rotation.w() * rotation.z())),
+		std::atan2(2 * (rotation.y() * rotation.z() + rotation.w() * rotation.x()), std::pow(rotation.y(), 2) - std::pow(rotation.z(), 2) + std::pow(rotation.w(), 2) - std::pow(rotation.x(), 2))
 		);
 }
 
-osg::Vec3 kinematicUtils::convertYZY(const osg::Quat & rotation)
+osg::Vec3d kinematicUtils::convertYZY(const osg::Quat & rotation)
 {
-	return osg::Vec3(
-		std::atan2f(2 * (rotation.y() * rotation.z() - rotation.w() * rotation.x()), 2 * (rotation.x() * rotation.y() + rotation.w() * rotation.z())),
-		std::acosf(std::powf(rotation.y(), 2) - std::powf(rotation.z(), 2) + std::powf(rotation.w(), 2) - std::powf(rotation.x(), 2)),
-		std::atan2f(2 * (rotation.y() * rotation.z() + rotation.w() * rotation.x()), 2 * (-rotation.x() * rotation.y() + rotation.w() * rotation.z()))
+	return osg::Vec3d(
+		std::atan2(2 * (rotation.y() * rotation.z() - rotation.w() * rotation.x()), 2 * (rotation.x() * rotation.y() + rotation.w() * rotation.z())),
+		std::acos(std::pow(rotation.y(), 2) - std::pow(rotation.z(), 2) + std::pow(rotation.w(), 2) - std::pow(rotation.x(), 2)),
+		std::atan2(2 * (rotation.y() * rotation.z() + rotation.w() * rotation.x()), 2 * (-rotation.x() * rotation.y() + rotation.w() * rotation.z()))
 		);
 }
 
-osg::Vec3 kinematicUtils::convertZXY(const osg::Quat & rotation)
+osg::Vec3d kinematicUtils::convertZXY(const osg::Quat & rotation)
 {
-	return osg::Vec3(
-		std::atan2f(2 * (rotation.x() * rotation.y() + rotation.w() * rotation.z()), std::powf(rotation.y(), 2) - std::powf(rotation.z(), 2) + std::powf(rotation.w(), 2) - std::powf(rotation.x(), 2)),
-		-std::asinf(2 * (rotation.y() * rotation.z() - rotation.w() * rotation.x())),
-		std::atan2f(2 * (rotation.x() * rotation.z() + rotation.w() * rotation.y()), std::powf(rotation.z(), 2) - std::powf(rotation.y(), 2) - std::powf(rotation.x(), 2) + std::powf(rotation.w(), 2))
+	return osg::Vec3d(
+		std::atan2(2 * (rotation.x() * rotation.y() + rotation.w() * rotation.z()), std::pow(rotation.y(), 2) - std::pow(rotation.z(), 2) + std::pow(rotation.w(), 2) - std::pow(rotation.x(), 2)),
+		-std::asin(2 * (rotation.y() * rotation.z() - rotation.w() * rotation.x())),
+		std::atan2(2 * (rotation.x() * rotation.z() + rotation.w() * rotation.y()), std::pow(rotation.z(), 2) - std::pow(rotation.y(), 2) - std::pow(rotation.x(), 2) + std::pow(rotation.w(), 2))
 		);
 }
 
-osg::Vec3 kinematicUtils::convertZXZ(const osg::Quat & rotation)
+osg::Vec3d kinematicUtils::convertZXZ(const osg::Quat & rotation)
 {
-	return osg::Vec3(
-		std::atan2f(2 * (rotation.x() * rotation.z() - rotation.w() * rotation.y()), 2 * (rotation.y() * rotation.z() + rotation.w() * rotation.x())),
-		std::acosf(std::powf(rotation.z(), 2) - std::powf(rotation.y(), 2) - std::powf(rotation.x(), 2) + std::powf(rotation.w(), 2)),
-		std::atan2f(2 * (rotation.x() * rotation.z() + rotation.w() * rotation.y()), 2 * (-rotation.y() * rotation.z() + rotation.w() * rotation.x()))
+	return osg::Vec3d(
+		std::atan2(2 * (rotation.x() * rotation.z() - rotation.w() * rotation.y()), 2 * (rotation.y() * rotation.z() + rotation.w() * rotation.x())),
+		std::acos(std::pow(rotation.z(), 2) - std::pow(rotation.y(), 2) - std::pow(rotation.x(), 2) + std::pow(rotation.w(), 2)),
+		std::atan2(2 * (rotation.x() * rotation.z() + rotation.w() * rotation.y()), 2 * (-rotation.y() * rotation.z() + rotation.w() * rotation.x()))
 		);
 }
 
-osg::Vec3 kinematicUtils::convertZYX(const osg::Quat & rotation)
+osg::Vec3d kinematicUtils::convertZYX(const osg::Quat & rotation)
 {
-	return osg::Vec3(
-		std::atan2f(2 * (-rotation.x() * rotation.y() + rotation.w() * rotation.z()), std::powf(rotation.x(), 2) + std::powf(rotation.w(), 2) - std::powf(rotation.z(), 2) - std::powf(rotation.y(), 2)),
-		std::asinf(2 * (rotation.x() * rotation.z() + rotation.w() * rotation.y())),
-		std::atan2f(2 * (-rotation.y() * rotation.z() + rotation.w() * rotation.x()), std::powf(rotation.z(), 2) - std::powf(rotation.y(), 2) - std::powf(rotation.x(), 2) + std::powf(rotation.w(), 2))
+	return osg::Vec3d(
+		std::atan2(2 * (-rotation.x() * rotation.y() + rotation.w() * rotation.z()), std::pow(rotation.x(), 2) + std::pow(rotation.w(), 2) - std::pow(rotation.z(), 2) - std::pow(rotation.y(), 2)),
+		std::asin(2 * (rotation.x() * rotation.z() + rotation.w() * rotation.y())),
+		std::atan2(2 * (-rotation.y() * rotation.z() + rotation.w() * rotation.x()), std::pow(rotation.z(), 2) - std::pow(rotation.y(), 2) - std::pow(rotation.x(), 2) + std::pow(rotation.w(), 2))
 		);
 }
 
-osg::Vec3 kinematicUtils::convertZYZ(const osg::Quat & rotation)
+osg::Vec3d kinematicUtils::convertZYZ(const osg::Quat & rotation)
 {
-	return osg::Vec3(
-		std::atan2f(2 * (rotation.y() * rotation.z() + rotation.w() * rotation.x()), 2 * (-rotation.x() * rotation.z() + rotation.w() * rotation.y())),
-		std::acosf(std::powf(rotation.z(), 2) - std::powf(rotation.y(), 2) - std::powf(rotation.x(), 2) + std::powf(rotation.w(), 2)),
-		std::atan2f(2 * (rotation.y() * rotation.z() - rotation.w() * rotation.x()), 2 * (rotation.x() * rotation.z() + rotation.w() * rotation.y()))
+	return osg::Vec3d(
+		std::atan2(2 * (rotation.y() * rotation.z() + rotation.w() * rotation.x()), 2 * (-rotation.x() * rotation.z() + rotation.w() * rotation.y())),
+		std::acos(std::pow(rotation.z(), 2) - std::pow(rotation.y(), 2) - std::pow(rotation.x(), 2) + std::pow(rotation.w(), 2)),
+		std::atan2(2 * (rotation.y() * rotation.z() - rotation.w() * rotation.x()), 2 * (rotation.x() * rotation.z() + rotation.w() * rotation.y()))
 		);
 }
 
-osg::Vec3 convert(const osg::Quat & rotation, const AxisOrder axisOrder)
+osg::Vec3d kinematicUtils::convert(const osg::Quat & rotation, const AxisOrder::Type axisOrder)
 {
-	osg::Vec3 ret(0, 0, 0);
+	osg::Vec3d ret(0, 0, 0);
 
 	switch (axisOrder)
 	{
-	case XYX:
+	case AxisOrder::XYX:
 
 		ret = convertXYX(rotation);
 		break;
 
-	case XYZ:
+	case AxisOrder::XYZ:
 
 		ret = convertXYZ(rotation);
 		break;
 
-	case XZX:
+	case AxisOrder::XZX:
 
 		ret = convertXZX(rotation);
 		break;
 
-	case XZY:
+	case AxisOrder::XZY:
 
 		ret = convertXZY(rotation);
 		break;
 
-	case YXY:
+	case AxisOrder::YXY:
 
 		ret = convertYXY(rotation);
 		break;
 
-	case YXZ:
+	case AxisOrder::YXZ:
 
 		ret = convertYXZ(rotation);
 		break;
 
-	case YZX:
+	case AxisOrder::YZX:
 
 		ret = convertYZX(rotation);
 		break;
 
-	case YZY:
+	case AxisOrder::YZY:
 
 		ret = convertYZY(rotation);
 		break;
 
-	case ZXY:
+	case AxisOrder::ZXY:
 
 		ret = convertZXY(rotation);
 		break;
 
-	case ZXZ:
+	case AxisOrder::ZXZ:
 
 		ret = convertZXZ(rotation);
 		break;
 
-	case ZYX:
+	case AxisOrder::ZYX:
 
 		ret = convertZYX(rotation);
 		break;
 
-	case ZYZ:
+	case AxisOrder::ZYZ:
 
 		ret = convertZYZ(rotation);
 		break;
@@ -469,12 +422,12 @@ osg::Vec3 convert(const osg::Quat & rotation, const AxisOrder axisOrder)
 	return ret;
 }
 
-osg::Vec3 toRadians(const osg::Vec3 & rotation)
+osg::Vec3d kinematicUtils::toRadians(const osg::Vec3d & rotation)
 {
 	return transform<&osg::DegreesToRadians>(rotation);
 }
 
-osg::Vec3 toDegrees(const osg::Vec3 & rotation)
+osg::Vec3d kinematicUtils::toDegrees(const osg::Vec3d & rotation)
 {
 	return transform<&osg::RadiansToDegrees>(rotation);
 }

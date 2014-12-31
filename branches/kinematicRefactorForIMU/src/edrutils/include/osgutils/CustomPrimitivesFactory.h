@@ -116,7 +116,7 @@ namespace osgutils
 		template<typename T>
 		static const T cloneForColorChange(const T & primitiveDesription, const osg::Vec4 & color)
 		{
-			UTILS_STATIC_ASSERT((boost::is_base_of<CustonGeometryDescriptionBase,T>::value), "Klonowany obiekt musi byæ pochodn¹ CustonGeometryDescriptionBase");
+			static_assert((std::is_base_of<CustonGeometryDescriptionBase,T>::value), "Klonowany obiekt musi byæ pochodn¹ CustonGeometryDescriptionBase");
 
 			T ret = primitiveDesription;
 			ret.geom = dynamic_cast<osg::Geometry*>(ret.geom->clone(osg::CopyOp::SHALLOW_COPY));

@@ -13,7 +13,7 @@ ADD_PROJECT(hanimlib "OSG;utils")
 END_PROJECTS_GROUP()
 
 ADD_PROJECT(kinematicUtils "OSG;utils")
-ADD_PROJECT(kinematiclib "BOOST;TINYXML2;OSG;utils")
+ADD_PROJECT(kinematiclib "BOOST;TINYXML2;OSG;utils;hanimlib;acclaimformatslib;biovisionformatslib")
 ADD_PROJECT(imucostumelib "BOOST;threadingUtils;utils;OSG")
 ADD_PROJECT(osgui "utils;OSG;QT;BOOST")
 ADD_PROJECT(osgutils "utils;OSG;BOOST")

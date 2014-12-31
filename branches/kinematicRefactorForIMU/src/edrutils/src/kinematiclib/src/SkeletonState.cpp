@@ -437,30 +437,30 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 	{
 		switch (dof.channel)
 		{
-		case kinematicUtils::TX:
+		case kinematicUtils::ChannelType::TX:
 			ret.translation.x() = boneData.channelValues[i];
 			++transi;
 			break;
 
-		case kinematicUtils::TY:
+		case kinematicUtils::ChannelType::TY:
 			ret.translation.y() = boneData.channelValues[i];
 			++transi;
 			break;
 
-		case kinematicUtils::TZ:
+		case kinematicUtils::ChannelType::TZ:
 			ret.translation.z() = boneData.channelValues[i];
 			++transi;
 			break;
 
-		case kinematicUtils::RX:
+		case kinematicUtils::ChannelType::RX:
 			rot[roti++] = boneData.channelValues[i];
 			break;
 
-		case kinematicUtils::RY:
+		case kinematicUtils::ChannelType::RY:
 			rot[roti++] = boneData.channelValues[i];
 			break;
 
-		case kinematicUtils::RZ:
+		case kinematicUtils::ChannelType::RZ:
 			rot[roti++] = boneData.channelValues[i];
 			break;
 
@@ -530,27 +530,27 @@ SkeletonState::JointStateChange convert(biovision::JointConstPtr joint, const bi
 	{
 		switch (channel)
 		{
-		case kinematicUtils::TX:
+		case kinematicUtils::ChannelType::TX:
 			ret.translation.x() = frameData[i];
 			break;
 
-		case kinematicUtils::TY:
+		case kinematicUtils::ChannelType::TY:
 			ret.translation.y() = frameData[i];
 			break;
 
-		case kinematicUtils::TZ:
+		case kinematicUtils::ChannelType::TZ:
 			ret.translation.z() = frameData[i];
 			break;
 
-		case kinematicUtils::RX:
+		case kinematicUtils::ChannelType::RX:
 			rot[roti++] = osg::DegreesToRadians(frameData[i]);
 			break;
 
-		case kinematicUtils::RY:
+		case kinematicUtils::ChannelType::RY:
 			rot[roti++] = osg::DegreesToRadians(frameData[i]);
 			break;
 
-		case kinematicUtils::RZ:
+		case kinematicUtils::ChannelType::RZ:
 			rot[roti++] = osg::DegreesToRadians(frameData[i]);
 			break;
 

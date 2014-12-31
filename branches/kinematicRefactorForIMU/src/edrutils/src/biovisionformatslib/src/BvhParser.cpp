@@ -9,12 +9,12 @@ using namespace biovision;
 //----------------------------------------------------------------------------------
 std::string BvhParser::getChannelName(const kinematicUtils::Channel channel) {
     switch (channel) {
-	case kinematicUtils::TX: return "Xposition";
-	case kinematicUtils::TY: return "Yposition";
-	case kinematicUtils::TZ: return "Zposition";
-	case kinematicUtils::RX: return "Xrotation";
-	case kinematicUtils::RY: return "Yrotation";
-	case kinematicUtils::RZ: return "Zrotation";
+	case kinematicUtils::ChannelType::TX: return "Xposition";
+	case kinematicUtils::ChannelType::TY: return "Yposition";
+	case kinematicUtils::ChannelType::TZ: return "Zposition";
+	case kinematicUtils::ChannelType::RX: return "Xrotation";
+	case kinematicUtils::ChannelType::RY: return "Yrotation";
+	case kinematicUtils::ChannelType::RZ: return "Zrotation";
     }
     
     throw std::runtime_error("Unsupported biovision channel");
@@ -22,25 +22,25 @@ std::string BvhParser::getChannelName(const kinematicUtils::Channel channel) {
 
 kinematicUtils::Channel BvhParser::getChannel(const std::string & channelName)
 {
-	kinematicUtils::Channel ret = kinematicUtils::CUSTOM_CHANNEL_BASE;
+	kinematicUtils::Channel ret = kinematicUtils::ChannelType::CUSTOM_CHANNEL_BASE;
 
 	if (boost::iequals(channelName, "Xposition ")){
-		ret = kinematicUtils::TX;
+		ret = kinematicUtils::ChannelType::TX;
 	}
 	else if (boost::iequals(channelName, "Yposition ")){
-		ret = kinematicUtils::TY;
+		ret = kinematicUtils::ChannelType::TY;
 	}
 	else if (boost::iequals(channelName, "Zposition ")){
-		ret = kinematicUtils::TZ;
+		ret = kinematicUtils::ChannelType::TZ;
 	}
 	else if (boost::iequals(channelName, "Xrotation ")){
-		ret = kinematicUtils::RX;
+		ret = kinematicUtils::ChannelType::RX;
 	}
 	else if (boost::iequals(channelName, "Yrotation ")){
-		ret = kinematicUtils::RY;
+		ret = kinematicUtils::ChannelType::RY;
 	}
 	else if (boost::iequals(channelName, "Zrotation ")){
-		ret = kinematicUtils::RZ;
+		ret = kinematicUtils::ChannelType::RZ;
 	}
 	else {
 		throw std::runtime_error("Unsupported biovision channel name");
@@ -64,9 +64,9 @@ bool BvhParser::hasTranslation(const std::vector<kinematicUtils::Channel>& chann
 	
 	return std::find_if(channels.begin(), channels.end(), [](const kinematicUtils::Channel channel)
 	{
-		if (channel == kinematicUtils::TX ||
-			channel == kinematicUtils::TY ||
-			channel == kinematicUtils::TZ) {
+		if (channel == kinematicUtils::ChannelType::TX ||
+			channel == kinematicUtils::ChannelType::TY ||
+			channel == kinematicUtils::ChannelType::TZ) {
 			return true;
 		}
 
@@ -376,13 +376,13 @@ void BvhParser::readSingleJoint(Skeleton & model, std::istream& in, std::list<Jo
 				in >> token;
 				auto channel = getChannel(token);
 
-				if (channel == kinematicUtils::TX || channel == kinematicUtils::TY
-					|| channel == kinematicUtils::TZ)
+				if (channel == kinematicUtils::ChannelType::TX || channel == kinematicUtils::ChannelType::TY
+					|| channel == kinematicUtils::ChannelType::TZ)
 				{
 					++transi;
 				}
-				else if (channel == kinematicUtils::RX || channel == kinematicUtils::RY
-					|| channel == kinematicUtils::RZ)
+				else if (channel == kinematicUtils::ChannelType::RX || channel == kinematicUtils::ChannelType::RY
+					|| channel == kinematicUtils::ChannelType::RZ)
 				{
 					rt[roti++] = channel;
 				}				
@@ -395,7 +395,7 @@ void BvhParser::readSingleJoint(Skeleton & model, std::istream& in, std::list<Jo
 				throw std::runtime_error("Invalid BVH channels description - incomplete translation or rotation description");
 			}
 
-			j->rotationOrder = kinematicUtils::axisOrder(rt);
+			j->rotationOrder = kinematicUtils::AxisOrder::fromChannelTriplet(rt);
 
 			jointList.push_back(j);
 

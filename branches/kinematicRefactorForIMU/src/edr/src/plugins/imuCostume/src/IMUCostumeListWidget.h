@@ -17,7 +17,9 @@
 #include <imucostumelib/ImuCostume.h>
 #include <corelib/Variant.h>
 
-class Ui_IMUCostumeListWidget;
+namespace Ui {
+	class IMUCostumeListWidget;
+}
 class QTreeWidgetItem;
 
 namespace IMU {
@@ -60,9 +62,11 @@ private slots:
 
 	void refreshData();
 
+	void onRefresh();
+
 private:
 	IMU::IMUCostumeDataSource * ds;
-	Ui_IMUCostumeListWidget * ui;
+	Ui::IMUCostumeListWidget * ui;
 	QTimer refreshTimer;
 	std::map<std::string, CostumeStreams> costumeStreams;
 };

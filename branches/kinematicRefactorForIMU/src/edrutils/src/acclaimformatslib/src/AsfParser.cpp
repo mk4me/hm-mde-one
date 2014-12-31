@@ -117,7 +117,7 @@ bool AsfParser::parseSingleBone(const std::string& singleBone, Bone& bone) {
 	std::istringstream is(singleBone);
 
 	std::vector<std::string> rawBones;
-	kinematicUtils::AxisOrder order = kinematicUtils::YXZ;
+	kinematicUtils::AxisOrder::Type order = kinematicUtils::AxisOrder::XYZ;
 
 	std::string token;
     // todo sprawdzic kopiowanie wektorow
@@ -158,12 +158,13 @@ bool AsfParser::parseSingleBone(const std::string& singleBone, Bone& bone) {
             while (dofs >> token) {
 				auto channel = DegreeOfFreedom::getChannel(token);
                 channels.push_back(channel);
-				if (channel == kinematicUtils::TX || channel == kinematicUtils::TY
-					|| channel == kinematicUtils::TZ)
+				if (channel == kinematicUtils::ChannelType::TX || channel == kinematicUtils::ChannelType::TY
+					|| channel == kinematicUtils::ChannelType::TZ)
 				{
 					++ti;
-				}else if (channel == kinematicUtils::RX || channel == kinematicUtils::RY
-					|| channel == kinematicUtils::RZ)
+				}
+				else if (channel == kinematicUtils::ChannelType::RX || channel == kinematicUtils::ChannelType::RY
+					|| channel == kinematicUtils::ChannelType::RZ)
 				{
 					rotOrder += token;
 					++ri;
@@ -295,7 +296,7 @@ bool AsfParser::parseRoot(const std::string& root, Skeleton& skeleton) {
     osg::Vec3 position(0.0, 0.0, 0.0);
     osg::Vec3 orientation(0.0, 0.0, 0.0);
 
-	kinematicUtils::AxisOrder order = kinematicUtils::XYZ;
+	kinematicUtils::AxisOrder::Type order = kinematicUtils::AxisOrder::XYZ;
     std::istringstream lines(root);
     std::string token;
     std::string line;
