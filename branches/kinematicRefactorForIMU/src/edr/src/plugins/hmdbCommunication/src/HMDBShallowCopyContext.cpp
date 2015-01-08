@@ -406,13 +406,28 @@ public:
 
 	virtual void initialize(core::Variant * object)
 	{
-		//TODO
-		//kinematic::SkeletalDataConstPtr data;
-		//kinematic::SkeletalModelConstPtr model;
-		//if (dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr){
-			kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
-			//joints->setSkeletal(model, data);
-			object->set(joints);
+		acclaim::MotionDataConstPtr data;
+		acclaim::SkeletonConstPtr model;
+		if (dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr) {
+			if (!data->frames.empty()) {
+				kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
+				kinematic::SkeletonPtr skeleton = utils::make_shared<kinematic::Skeleton>();
+				kinematic::Skeleton::convert(*model, *skeleton);
+				kinematic::SkeletonStatesPtr states = utils::make_shared<kinematic::SkeletonStates>();
+				states->frameTime = data->frameTime;
+				auto firstFrame = data->frames[0];
+				for (auto& bone : firstFrame.bonesData) {
+					states->jointNames.push_back(bone.name);
+				}
+				for (auto& frame : data->frames) {
+					states->frames.push_back(kinematic::SkeletonState::convert(*model, frame));
+				}
+				
+				joints->setSkeletal(skeleton, *states);
+				object->set(joints);
+			} else {
+				// 
+			}
 		//}
 	}
 
@@ -661,15 +676,13 @@ const core::VariantPtr createJointsAngles(const core::ConstVariantsList objects,
 		if ((*it)->data()->isSupported(typeid(kinematic::JointAnglesCollection))) {
 			return ret;
 		}
-		else if ((*it)->data()->isSupported(typeid(kinematic::SkeletalData))) {
+		else if ((*it)->data()->isSupported(typeid(acclaim::MotionData))) {
 			dataWrapper = *it;
 			break;
 		}
 	}
 
-	//TODO
-	/*
-	core::VariantsCollection modelWrappers(typeid(kinematic::SkeletalModel), false);
+	core::VariantsCollection modelWrappers(typeid(acclaim::Skeleton), false);
 	session->getObjects(modelWrappers);	
 
 	if (modelWrappers.empty() == false){

@@ -41,7 +41,7 @@ namespace kinematic
 		};
 
 		//! Typ opisuj¹cy pe³n¹ zmianê stanu szkieletu
-		typedef std::list<JointStateChange> FullStateChange;
+		typedef std::vector<JointStateChange> FullStateChange;
 
 		//! Forward declaration
 		class Joint;
@@ -172,7 +172,15 @@ namespace kinematic
 		JointPtr root_;
 		//! Iloœæ wêz³ów aktywnych (nie end effectorów) stanu
 		unsigned int activeJointsCount;
-	};	
+	};
+	
+	struct SkeletonStates
+	{
+		std::vector<SkeletonState::FullStateChange> frames;
+		std::vector<std::string> jointNames;
+		double frameTime;
+	};
+	DEFINE_SMART_POINTERS(SkeletonStates);
 }
 
 #endif	// __HEADER_GUARD_KINEMATIC__SKELETONSTATE_H__

@@ -33,7 +33,7 @@ namespace acclaim
 
 	public:
 		//! konstruktor, ustawia domyślny okres pojedynczej ramki (1/100)
-		MotionData(const float frameTime = 0.01) :
+		MotionData(const double frameTime = 0.01) :
 			frameTime(frameTime)
 		{}
 		~MotionData() {}
@@ -41,7 +41,7 @@ namespace acclaim
 		//! kolecja z danymi
 		std::vector<FrameData>  frames;
 		//! Czas trwania pojedynczej ramki
-		float frameTime;
+		double frameTime;
 	};
 	DEFINE_SMART_POINTERS(MotionData);
 }

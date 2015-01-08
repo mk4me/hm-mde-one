@@ -16,8 +16,10 @@ CORE_PLUGIN_BEGIN("kinematic", core::UID::GenerateUniqueID("{3C0CD7AF-9351-46CC-
 	CORE_PLUGIN_ADD_VISUALIZER(KinematicVisualizer);
 	//CORE_PLUGIN_ADD_OBJECT_WRAPPER(BVHData);
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::JointAnglesCollection);
-    CORE_PLUGIN_ADD_OBJECT_WRAPPER(acclaim::Skeleton);
-    CORE_PLUGIN_ADD_OBJECT_WRAPPER(acclaim::MotionData);
+    CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::Skeleton);
+    CORE_PLUGIN_ADD_OBJECT_WRAPPER(kinematic::SkeletonStates);
+	CORE_PLUGIN_ADD_OBJECT_WRAPPER(acclaim::Skeleton);
+	CORE_PLUGIN_ADD_OBJECT_WRAPPER(acclaim::MotionData);
 	CORE_PLUGIN_ADD_OBJECT_WRAPPER(SkeletonDataStream);
 	CORE_PLUGIN_ADD_OBJECT_WRAPPER(osg::PositionAttitudeTransform);
 CORE_PLUGIN_END;

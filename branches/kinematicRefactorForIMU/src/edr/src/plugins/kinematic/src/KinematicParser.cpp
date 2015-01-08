@@ -34,6 +34,7 @@ void KinematicParser::parse( const std::string & source)
 		acclaim::AmcParser amc;
 		std::string amcFilename = path.string();
 		amc.parse(*dataPtr, amcFilename);
+				
 	//} 
 	// bvh chwilowo wylaczone
 	/*else if (core::Filesystem::fileExtension(path).compare(".bvh") == 0)  {
@@ -41,7 +42,7 @@ void KinematicParser::parse( const std::string & source)
 		bvh.parse(modelPtr, dataPtr, path.string());
 	}*/
 	
-	if (  dataPtr && dataPtr->frames.size() > 0) {
+	if (  dataPtr && !dataPtr->frames.empty()) {
 		skeletonData->set(dataPtr);
 	}
 }
@@ -66,7 +67,7 @@ void KinematicParser::acceptedExpressions(Expressions & extensions) const
     plugin::IParser::ExpressionDescription expDesc;
 
     expDesc.description = "Acclaim Motion Capture format";
-	expDesc.objectsTypes.push_back(typeid(acclaim::Skeleton));
+	expDesc.objectsTypes.push_back(typeid(acclaim::MotionData));
     extensions[".*\\.amc$"] = expDesc;
 
     //expDesc.description = "Biovision Hierarchical Data format";

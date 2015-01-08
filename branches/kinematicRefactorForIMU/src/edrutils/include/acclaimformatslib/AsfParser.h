@@ -27,7 +27,7 @@ namespace acclaim
 		//! \param flag czy wymuszać kolejność rotacji XYZ przy zapisie
 		void setForceXYZRoot(bool flag) { forceRootXYZ = flag; }
 
-	protected:
+	private:
 		/** Dzieli wejściowy plik na poszczegolne sekcje.
 			\param asf lancuch z całym plikiem asf*/
 		bool splitAsf(const std::string& asf);
@@ -63,6 +63,8 @@ namespace acclaim
 		//! \param out strumień wyjściowy
 		//! \param bone zapisywana hierarchia
 		void saveBoneInHierarchy(std::ostream& out, const Bone & bone) const;
+		//! Prosta zamiana tokenu do nazwy osi (np. 'rx' -> 'X')
+		std::string tokenToAxis(const std::string& token);
 
 	protected:
 		std::string                     version;        //!< wersja wg której został zapisany plik

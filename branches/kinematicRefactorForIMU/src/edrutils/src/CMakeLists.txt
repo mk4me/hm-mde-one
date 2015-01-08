@@ -5,6 +5,7 @@ ADD_PROJECT_VARIABLE_DEPENDENCIES(VIDLIB_ENABLE_LOG4CXX "Enable logging with LOG
 ADD_PROJECT_VARIABLE_DEPENDENCIES(VIDLIB_ENABLE_OSG "Enable osg for vidlib?" ON "OSG")
 ADD_PROJECT(vidlib "BOOST;FFMPEG;utils;STDINT;OPENTHREADS")
 
+ADD_PROJECT(kinematicUtils "OSG;utils")
 BEGIN_PROJECTS_GROUP("motion file formats")
 ADD_PROJECT(acclaimformatslib "OSG;utils;kinematicUtils")
 ADD_PROJECT(biovisionformatslib "OSG;utils;kinematicUtils")

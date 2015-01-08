@@ -18,7 +18,7 @@ public:
 	SkeletonJointsMapping() {}
 	~SkeletonJointsMapping() {}
 
-	void init(kinematic::SkeletonPtr skeleton,
+	void init(kinematic::SkeletonConstPtr skeleton,
 		const std::vector<std::string> & indices = std::vector<std::string>());
 
 	//! Metoda pomocnicza przy wypelnianiu wektora rotacji
@@ -32,7 +32,7 @@ public:
 
 	const unsigned int mappedJointsNumber() const;
 
-	kinematic::SkeletonPtr skeleton() const;
+	kinematic::SkeletonConstPtr skeleton() const;
 
 	const SegmentsDescriptors generateMappedConnectionsDescription() const;
 
@@ -44,7 +44,7 @@ private:
 
 private:
 	//! Szkielet dla którego generowano mapowanie
-	kinematic::SkeletonPtr skeleton_;
+	kinematic::SkeletonConstPtr skeleton_;
 	//! ułatwia ineksowanie jointów
 	std::map<std::string, unsigned int> namedVisJoints;
 	//! ułatwia ineksowanie jointów

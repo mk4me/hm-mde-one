@@ -17,7 +17,8 @@ void AmcParser::save (const Skeleton & model, const MotionData & data, const std
     out << ":FULLY-SPECIFIED" << std::endl;
     out << ":DEGREES" << std::endl;    
 
-	for (int i = 0; i < data.frames.size(); ++i) {
+	auto framesSize = data.frames.size();
+	for (auto i = 0; i < framesSize; ++i) {
 		out << data.frames[i].id << std::endl;                
 		for (int j = 0; j < data.frames[i].bonesData.size(); ++j) {
 			out << data.frames[i].bonesData[j].name;
@@ -71,14 +72,16 @@ void AmcParser::parse(MotionData & data, const std::string& filename )
     }
 
 	std::vector<MotionData::FrameData> frames;
-	MotionData::FrameData frame;
+	MotionData::FrameData* frame = nullptr;
 	MotionData locData;
 
     while (getline(ifs, line)) {
         std::istringstream iss(line);
         int frameNo = -1;
-        if (iss >> frameNo){            
-            frame.id = frameNo;
+        if (iss >> frameNo) {
+			frames.push_back(MotionData::FrameData());
+			frame = &frames.back();
+            frame->id = frameNo;
         } else {
             iss.clear();
 			MotionData::BoneData boneData;
@@ -91,11 +94,10 @@ void AmcParser::parse(MotionData & data, const std::string& filename )
 					boneData.channelValues.push_back(val);
 				}
 
-				frame.bonesData.push_back(boneData);
+				frame->bonesData.push_back(boneData);
 			}
         }
-     }
-	frames.push_back(frame);
+    }
 
     ifs.close();
     if (frames.empty() == true) {

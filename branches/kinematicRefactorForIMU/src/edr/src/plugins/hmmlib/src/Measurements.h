@@ -14,6 +14,7 @@
 #include <map>
 #include <vector>
 #include <utils/SmartPtr.h>
+#include "tinyxml2.h"
 //#include <boost/bimap.hpp>
 #include <tinyxml2.h>
 

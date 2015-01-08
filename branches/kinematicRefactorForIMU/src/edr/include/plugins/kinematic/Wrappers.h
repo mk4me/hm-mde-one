@@ -10,6 +10,8 @@
 #include <osg/PositionAttitudeTransform>
 #include <acclaimformatslib/Skeleton.h>
 #include <acclaimformatslib/MotionData.h>
+#include <kinematiclib/Skeleton.h>
+#include <kinematiclib/SkeletonState.h>
 
 //! Typ definiuj¹cy indeksy na po³¹czonych punktach
 typedef std::pair<unsigned int, unsigned int> SegmentRange;
@@ -44,7 +46,9 @@ DEFINE_SMART_POINTERS(SkeletonDataStream);
 
 
 DEFINE_WRAPPER(kinematic::JointAnglesCollection, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(kinematic::SkeletonStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(acclaim::MotionData, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(kinematic::Skeleton, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(acclaim::Skeleton, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(SkeletonDataStream, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
 DEFINE_WRAPPER(std::string, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);

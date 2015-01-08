@@ -38,11 +38,11 @@ void createJoint(JointPtr parentJoint, const acclaim::Skeleton & skeleton,
 
 	parentJoint->children.push_back(joint);
 
-	auto lIT = skeleton.hierarchy.left.lower_bound(currentBoneID);
-	auto uIT = skeleton.hierarchy.left.upper_bound(currentBoneID);
+	auto range = skeleton.hierarchy.left.equal_range(currentBoneID);
+	
 
-	for (; lIT != uIT; ++lIT){
-		createJoint(joint, skeleton, lIT->get_right(), mapping, hAnimHierarchy, names);
+	for (auto it = range.first; it != range.second; ++it){
+		createJoint(joint, skeleton, it->second, mapping, hAnimHierarchy, names);
 	}
 }
 
@@ -50,12 +50,12 @@ bool Skeleton::convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSke
 	const SkeletonMappingScheme::MappingDict & mapping)
 {
 	
-	if (srcSkeleton.bones.empty() == false){
+	if (srcSkeleton.bones.empty()){
 		return false;
 	}
 
 	int currentID = srcSkeleton.root;
-	if (currentID != -1){
+	if (currentID == -1){
 
 		const auto & humanoidHierarchy = hAnim::Humanoid::defaultHumanHierarchy();
 
@@ -70,7 +70,7 @@ bool Skeleton::convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSke
 
 		names.insert(joint->name);
 		createJoint(joint, srcSkeleton, currentID, mapping, humanoidHierarchy, names);		
-
+		
 		destSkeleton.name = srcSkeleton.name;
 		destSkeleton.root = joint;
 		

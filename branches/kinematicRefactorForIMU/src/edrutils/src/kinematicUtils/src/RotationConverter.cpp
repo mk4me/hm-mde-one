@@ -2,7 +2,8 @@
 #include <osg/Math>
 #include <boost/lexical_cast.hpp>
 
-using namespace kinematicUtils;
+namespace kinematicUtils
+{
 
 template<osg::Vec3d::value_type Transform(osg::Vec3d::value_type)>
 osg::Vec3d transform(const osg::Vec3d & rotation)
@@ -430,4 +431,5 @@ osg::Vec3d kinematicUtils::toRadians(const osg::Vec3d & rotation)
 osg::Vec3d kinematicUtils::toDegrees(const osg::Vec3d & rotation)
 {
 	return transform<&osg::RadiansToDegrees>(rotation);
+}
 }

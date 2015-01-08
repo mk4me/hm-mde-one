@@ -17,7 +17,7 @@ namespace acclaim
 	{	
 
 		typedef std::map<int, Bone> Bones;
-		typedef boost::bimap<boost::bimaps::set_of<int>, boost::bimaps::multiset_of<int>> Hierarchy;
+		typedef boost::bimap<boost::bimaps::multiset_of<int>, boost::bimaps::set_of<int>> Hierarchy;
 
 		struct Units
 		{

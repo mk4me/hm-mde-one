@@ -485,7 +485,12 @@ void orderChanges(const acclaim::Skeleton & skeleton, const int currentBoneID,
 	SkeletonState::FullStateChange & change)
 {
 	const auto & b = skeleton.bones.find(currentBoneID)->second;	
-	change.push_back(changes.find(b.name)->second);
+	auto changeIT = changes.find(b.name);
+	if (changeIT != changes.end()) {
+		change.push_back(changeIT->second);
+	} else {
+		change.push_back(SkeletonState::JointStateChange());
+	}
 
 	auto lIT = skeleton.hierarchy.left.lower_bound(currentBoneID);
 	auto uIT = skeleton.hierarchy.left.upper_bound(currentBoneID);
@@ -494,6 +499,7 @@ void orderChanges(const acclaim::Skeleton & skeleton, const int currentBoneID,
 	{
 		orderChanges(skeleton, lIT->get_right(), changes, change);
 	}
+	
 }
 
 SkeletonState::FullStateChange SkeletonState::convert(const acclaim::Skeleton & skeleton,

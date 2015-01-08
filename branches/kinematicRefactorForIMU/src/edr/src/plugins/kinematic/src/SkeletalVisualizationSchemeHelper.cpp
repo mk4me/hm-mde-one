@@ -6,14 +6,8 @@ using namespace osg;
 using namespace boost;
 using namespace kinematic;
 
-void getJoints(kinematic::JointPtr j, std::map<std::string, kinematic::JointPtr>& mp) {
-	mp[j->name] = j;
-	for (auto& c : j->children) {
-		getJoints(c, mp);
-	}
-}
 
-void SkeletonJointsMapping::init(kinematic::SkeletonPtr skeleton,
+void SkeletonJointsMapping::init(kinematic::SkeletonConstPtr skeleton,
 	const std::vector<std::string> & indices)
 {
 	std::map<kinematic::JointPtr, unsigned int> locVisJoints;
@@ -61,7 +55,7 @@ void SkeletonJointsMapping::init(kinematic::SkeletonPtr skeleton,
 	skeleton_ = skeleton;
 }
 
-kinematic::SkeletonPtr SkeletonJointsMapping::skeleton() const
+kinematic::SkeletonConstPtr SkeletonJointsMapping::skeleton() const
 {
 	return skeleton_;
 }

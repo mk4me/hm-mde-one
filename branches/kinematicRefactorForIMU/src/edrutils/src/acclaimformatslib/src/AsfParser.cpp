@@ -166,7 +166,7 @@ bool AsfParser::parseSingleBone(const std::string& singleBone, Bone& bone) {
 				else if (channel == kinematicUtils::ChannelType::RX || channel == kinematicUtils::ChannelType::RY
 					|| channel == kinematicUtils::ChannelType::RZ)
 				{
-					rotOrder += token;
+					rotOrder += tokenToAxis(token);
 					++ri;
 				}
             }
@@ -391,17 +391,13 @@ bool AsfParser::parseHierarchy(const std::string& hierarchyString, Skeleton& ske
     model.root = -1;
 	model.bones[root.id] = root;
     
-    for (int i = 0; i < linesCount; ++i) {
-        hierarchyLine line = hierarchy[i];
-
+    for (auto& line : hierarchy) {
 		auto parentID = std::find_if(model.bones.begin(), model.bones.end(), [&line](const Skeleton::Bones::value_type & val)
 		{
 			return val.second.name == line.first;
 		})->first;
 
-        for (int j = line.second.size() - 1; j >= 0; --j) {
-
-			auto name = line.second[j];
+        for (auto& name : line.second) {
 			auto boneID = std::find_if(model.bones.begin(), model.bones.end(), [&name](const Skeleton::Bones::value_type & val)
 			{
 				return val.second.name == name;
@@ -618,6 +614,17 @@ void acclaim::AsfParser::saveUnits( std::ostream& out ) const
     }
 	*/
 	out << std::endl;
+}
+
+std::string acclaim::AsfParser::tokenToAxis(const std::string& token)
+{
+	if (token == "rx") return "X";
+	if (token == "ry") return "Y";
+	if (token == "rz") return "Z";
+	if (token == "tx") return "X";
+	if (token == "ty") return "Y";
+	if (token == "tz") return "Z";
+	throw std::runtime_error("Wrong token passed");
 }
 
 void AsfParser::save(const Skeleton & model, const std::string& filename ) {

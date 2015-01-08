@@ -45,6 +45,7 @@ namespace acclaim
 			length(Other.length),
 			axis(Other.axis),
 			axisOrder(Other.axisOrder),
+			rotationOrder(Other.rotationOrder),
 			dofs(Other.dofs)
 		{}
 
