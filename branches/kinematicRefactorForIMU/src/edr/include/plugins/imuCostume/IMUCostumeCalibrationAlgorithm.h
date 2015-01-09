@@ -55,8 +55,8 @@ namespace IMU
 		//! \param mapping Mapowanie sensorów do szkieletu
 		//! \param sensorsAdjustment Wstêpne ustawienie sensorów - pozwala zadaæ stan pocz¹tkowy bardziej zbli¿ony do rzeczywistoœci
 		//! \param calibrationData Dane kalibracyjne
-		virtual void initialize(void * skeleton, const SensorsMapping & mapping,
-			const SensorsAdjustemnts  & sensorsAdjustment) = 0;
+		virtual void initialize(kinematic::SkeletonConstPtr skeleton, const SensorsMapping & mapping,
+			const SensorsAdjustemnts  & sensorsAdjustment = SensorsAdjustemnts()) = 0;
 
 		//! Calculates orientation from sensor fusion
 		/*!
@@ -67,11 +67,16 @@ namespace IMU
 		virtual bool calibrate(const SensorsData & data, const double inDeltaT) = 0;
 
 		// Not used
+		virtual QWidget* configurationWidget() { return nullptr; }
+
+		// Not used
 		virtual QWidget* calibrationWidget() { return nullptr; }
 
 		//! \return Dane kalibracyjne szkieletu, poprawki dla sensorów
 		virtual SensorsAdjustemnts sensorsAdjustemnts() const = 0;
 	};
+
+	DEFINE_SMART_POINTERS(IMUCostumeCalibrationAlgorithm);
 }
 
 #endif	// __HEADER_GUARD_IMU__IMUCOSTUMECALIBRATIONALGORITHM_H__

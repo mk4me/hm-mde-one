@@ -32,6 +32,26 @@ namespace kinematic
 		std::string name;
 		//! Dzieci
 		std::list<JointPtr> children;
+
+		template<typename T>
+		static void visit(JointPtr joint, T & visitor)
+		{
+			visitor(joint);
+			for (auto c : joint->children)
+			{
+				visit(c, visitor);
+			}
+		}
+
+		template<typename T>
+		static void visit(JointConstPtr joint, T & visitor)
+		{
+			visitor(joint);
+			for (auto c : joint->children)
+			{
+				visit(c, visitor);
+			}
+		}
 	};	
 }
 

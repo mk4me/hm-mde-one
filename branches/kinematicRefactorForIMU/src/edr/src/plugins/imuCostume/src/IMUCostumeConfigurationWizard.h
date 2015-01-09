@@ -29,21 +29,36 @@ private:
 
 public:
 
-	IMUCostumeConfigurationWizard(utils::shared_ptr<imuCostume::CostumeRawIO> costume,
+	//! Szczegó³y mapowania sensora
+	struct SensorMappingDetails
+	{
+		//! Nazwa jointa z którym skojarzony jest sensor
+		std::string jointName;
+		//! Prototyp algorytmu estymacji orientacji czujnika
+		IMU::IIMUOrientationEstimationAlgorithmConstPtr estimationAlgorithm;
+		//! Opis sensora wzglêdem skojarzonego jointa - lokalne przesuniêcie i skrêcenie
+		IMU::IMUCostumeCalibrationAlgorithm::SensorAdjustment sensorAdjustment;
+	};
+
+	//! Mapa identyfokatorw sensorów do szczegó³ów ich mapowania
+	typedef std::map<imuCostume::Costume::SensorID, SensorMappingDetails> SensorsMappingDetails;	
+
+public:
+
+	IMUCostumeConfigurationWizard(const std::string & name,
+		const std::string & ip,
 		const unsigned int imusCount = 0,
 		const unsigned int insolesCount = 0);
 
 	virtual ~IMUCostumeConfigurationWizard();
 
-	virtual bool eventFilter(QObject * watched, QEvent * event) override;
+	virtual bool eventFilter(QObject * watched, QEvent * event) override;	
 
-	void * configuredCostumeStream();
+	SensorsMappingDetails mappingDetails() const;
 
-	IMU::IIMUDataSource::SensorsMappingDetails mappingDetails() const;
+	IMU::IMUCostumeCalibrationAlgorithmConstPtr calibrationAlgorithm() const;
 
-	IMU::IIMUDataSource::IMUCostumeCalibrationAlgorithmConstPtr calibrationAlgorithm() const;
-
-	IMU::IIMUDataSource::IMUCostumeMotionEstimationAlgorithmConstPtr motionEstimationAlgorithm() const;
+	IMU::IMUCostumeMotionEstimationAlgorithmConstPtr motionEstimationAlgorithm() const;
 
 	kinematic::SkeletonConstPtr skeleton() const;
 
@@ -56,6 +71,7 @@ private slots:
 	void verifyEstimationAlgorithms(int row, int col);
 	void verifyCalibrationAlgorithm(int idx);
 	void verifyMotionEstimationAlgorithm(int idx);
+	void onOneToOneMappingChanged(int state);
 
 private:
 
@@ -64,6 +80,8 @@ private:
 	Ui::IMUCostumeConfigurationWizard * ui;
 
 	JointsItemDelegate * jointsItemDelegate;
+
+	std::map<unsigned int, std::list<kinematic::SkeletonConstPtr>> skeletons;
 };
 
 #endif	// __HEADER_GUARD_IMU__IMUCOSTUMECONFIGURATIONWIZARD_H__

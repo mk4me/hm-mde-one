@@ -12,6 +12,41 @@
 #include <plugins/hmdbCommunication/TreeItemHelper.h>
 #include <iosfwd>
 #include "IMUPerspective.h"
+#include "CostumeSkeletonMotionHelper.h"
+
+class OrientationEstimator
+{
+public:
+
+	OrientationEstimator(const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping & orientationAlgorithms)
+		: orientationAlgorithms(orientationAlgorithms), previousTime(0)
+	{
+
+	}
+
+	void operator()(IMU::SensorsStreamData & data) const
+	{
+		double deltaTime = (data.timestamp > previousTime) ? (data.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + data.timestamp);
+		previousTime = data.timestamp;
+
+		for (auto & d : data.sensorsData)
+		{
+			auto it = orientationAlgorithms.find(d.first);
+
+			d.second.orientation = it->second->estimate(d.second.accelerometer, d.second.gyroscope, d.second.magnetometer, deltaTime);
+		}
+	}
+
+	~OrientationEstimator()
+	{
+
+	}
+
+private:
+	mutable imuCostume::CostumeCANopenIO::Timestamp previousTime;
+	const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping orientationAlgorithms;
+};
+
 
 enum
 {
@@ -27,10 +62,39 @@ public:
 	ArrayExtractor(const ArrayExtractor & Other) : idx(Other.idx) {}
 	~ArrayExtractor() {}
 
+	template<typename AT>
+	bool verify(const AT & a) const
+	{
+		return true;
+	}
+
 	template<typename AT, typename Ret>
-	void operator()(const AT & a, Ret & ret) const
+	void extract(const AT & a, Ret & ret) const
 	{
 		ret = a[idx];
+	}
+
+private:
+	const unsigned int idx;
+};
+
+class OrientationExtractor
+{
+public:
+	OrientationExtractor(const unsigned int idx) : idx(idx) {}
+	OrientationExtractor(const OrientationExtractor & Other) : idx(Other.idx) {}
+	~OrientationExtractor() {}
+	
+	bool verify(const IMU::SkeletonMotionState & a) const
+	{
+		return true;
+	}
+
+	void extract(const IMU::SkeletonMotionState & a, osg::Quat & ret) const
+	{
+		auto it = a.jointsOrientations.begin();
+		std::advance(it, idx);
+		ret = it->second;
 	}
 
 private:
@@ -43,12 +107,16 @@ public:
 
 	CANopenDataExtractor() {}
 
-	void operator()(const IMU::IMUCostumeDataSource::CANopenFramesStream::value_type & a, IMU::IMUCostumeDataSource::CostumeStream::value_type & ret) const
+	bool verify(const IMU::CANopenFramesStream::value_type & a)
 	{
-		ret = imuCostume::Costume::convert(a);
+		return true;
+	}
+
+	void extract(const IMU::CANopenFramesStream::value_type & a, IMU::CostumeStream::value_type & ret) const
+	{
+		ret = imuCostume::Costume::convert(a);		
 	}
 };
-
 
 class ArrayStreamAdapter
 {
@@ -61,11 +129,80 @@ public:
 	}	
 };
 
+class ExtractCostumeMotion
+{
+public:
+	ExtractCostumeMotion(
+		kinematic::SkeletonConstPtr skeleton,
+		const IMU::SensorsMapping & sensorsMapping,
+		const IMU::DataIndexToJointMapping & dataMapping,
+		const IMU::IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts & sensorsAdjustments,
+		IMU::IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm)
+		: motionEstimationAlgorithm(motionEstimationAlgorithm),
+		sensorsMapping(sensorsMapping), dataMapping(dataMapping), sensorsAdjustments(sensorsAdjustments),
+		skeleton(skeleton)
+	{
+
+	}
+
+	virtual ~ExtractCostumeMotion()
+	{
+
+	}
+
+	bool verify(const IMU::SensorsStreamData & input) const
+	{
+		return true;
+	}
+
+	void extract(const IMU::SensorsStreamData & input, IMU::SkeletonMotionState & output) const
+	{
+		double deltaTime = deltaTime = (input.timestamp > previousTime) ? (input.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + input.timestamp);
+		previousTime = input.timestamp;
+
+		IMU::IMUCostumeMotionEstimationAlgorithm::MotionState motionState;
+		motionState.position = osg::Vec3(0, 0, 0);		
+
+		for (const auto & i : input.sensorsData)
+		{
+			const auto & adjustment = sensorsAdjustments.find(i.first)->second;			
+			motionState.jointsOrientations.insert(std::map<std::string, osg::Quat>::value_type(sensorsMapping.left.find(i.first)->get_right(), i.second.orientation * adjustment.rotation.inverse()));
+		}
+
+		kinematic::SkeletonState ss(kinematic::SkeletonState::create(*skeleton));
+
+		kinematic::SkeletonState::Joint::visit(ss.root(), [&motionState](kinematic::SkeletonState::JointPtr joint) -> void
+		{
+			joint->setGlobal(motionState.jointsOrientations.find(joint->name())->second);
+		});
+
+		try{
+			auto ret = motionEstimationAlgorithm->estimate(motionState, input.sensorsData, deltaTime);
+			output.position = ret.position;
+			output.jointsOrientations = ret.jointsOrientations;
+			output.timestamp = (double)previousTime / 1000.0;
+		}
+		catch (...){
+
+		}
+	}
+
+private:
+	kinematic::SkeletonConstPtr skeleton;	
+	IMU::IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts sensorsAdjustments;
+	const IMU::SensorsMapping sensorsMapping;
+	const IMU::DataIndexToJointMapping dataMapping;
+	mutable imuCostume::CostumeCANopenIO::Timestamp previousTime;
+	const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping orientationAlgorithms;
+	const IMU::IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm;
+};
+
+typedef threadingUtils::StreamAdapterT<IMU::SensorsStreamData, IMU::SkeletonMotionState, ExtractCostumeMotion> RealMotionStream;
 
 using namespace IMU;
 
 IMUCostumeDataSource::IMUCostumeDataSource()
-: refreshData_(true), memoryDM(nullptr)
+	: memoryDM(nullptr), finish(false)
 {
 
 }
@@ -79,24 +216,68 @@ void IMUCostumeDataSource::init(core::IMemoryDataManager * memoryDM,
 	core::IFileDataManager * fileDM)
 {
 	this->memoryDM = memoryDM;
-	refreshCostumes();
-	refreshThread = plugin::getThreadPool()->get("IMUCostumeDataSource", "Costumes communication");
-	refreshThread.run(&IMUCostumeDataSource::refreshData, this);
+	refreshThread = plugin::getThreadPool()->get(name(), "Costumes data reader");
+}
+
+void IMUCostumeDataSource::resfreshCostumesData()
+{
+	while (finish == false){
+		std::map<std::string, CostumeDescription> locCostumesDescription;
+		{
+			std::lock_guard<std::recursive_mutex > lock(synch);
+			locCostumesDescription = costumesDescription;
+		}
+
+		if (locCostumesDescription.empty() == true){
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
+		else{
+
+			imuCostume::CostumeRawIO::Buffer buffer;
+			uint16_t length;
+
+			for (const auto & cd : locCostumesDescription)
+			{
+				try{
+					bool success = cd.second.rawCostume->receive(buffer, length, 100);
+					if (success == true){
+						imuCostume::ProtocolSendBufferHelper::Buffer streamBuffer;
+						streamBuffer.buffer.reset(new uint8_t[length], utils::array_deleter<uint8_t>());
+						streamBuffer.length = length;
+						std::memcpy(streamBuffer.buffer.get(), buffer.data(), length);
+						//raw data
+						cd.second.rawDataStream->pushData(streamBuffer);						
+					}
+					else{
+						PLUGIN_LOG_DEBUG("Costume " << cd.second.rawCostume->ip() << " timeout on data receive");
+					}
+				}
+				catch (...){
+					PLUGIN_LOG_DEBUG("Costume " << cd.second.rawCostume->ip() << " critically failed to receive data");
+				}
+			}
+		}
+	}
 }
 
 bool IMUCostumeDataSource::lateInit()
 {
+	refreshThread.run(&IMUCostumeDataSource::resfreshCostumesData, this);
 	return true;
 }
 
 void IMUCostumeDataSource::finalize()
 {
-	refreshData_ = false;
+	finish = true;
+
 	if (refreshThread.joinable() == true){
 		refreshThread.join();
 	}
 
-	std::map<std::string, CostumeData>().swap(costumesData);
+	std::list<IIMUOrientationEstimationAlgorithmConstPtr>().swap(orientationEstimationAlgorithms_);
+	std::list<IMUCostumeCalibrationAlgorithmConstPtr>().swap(calibrationAlgorithms_);
+	std::list<IMUCostumeMotionEstimationAlgorithmConstPtr>().swap(motionEstimationAlgorithms_);
+	std::list<kinematic::SkeletonConstPtr>().swap(skeletonModels_);
 }
 
 void IMUCostumeDataSource::update(double deltaTime)
@@ -130,6 +311,7 @@ void IMUCostumeDataSource::getOfferedTypes(utils::TypeInfoList & offeredTypes) c
 
 const bool IMUCostumeDataSource::refreshCostumes()
 {
+	std::lock_guard<std::recursive_mutex > lock(synch);
 	auto costumes = imuCostume::CostumeRawIO::listAvailableCostumes();
 	if (costumes.empty() == true){
 		costumes = imuCostume::CostumeRawIO::listAvailableCostumes();
@@ -158,25 +340,28 @@ const bool IMUCostumeDataSource::refreshCostumes()
 	auto it = toRemove.begin();
 
 	while (it != toRemove.end()){
-		auto cIT = costumesData.find(*it);
-		if (cIT != costumesData.end()){
+		auto cIT = costumesDescription.find(*it);
+		if (cIT != costumesDescription.end()){
+			//TODO - unload jak by³ za³adowany
+			/*
 			if (cIT->second.domainData.empty() == false){
 				it = toRemove.erase(it);
 			}
 			else{
 				++it;
 			}
+			*/
 		}
 		else{
 			it = toRemove.erase(it);
 		}
 	}
 
-	std::map<std::string, CostumeData> additionalCostumesData;
+	std::map<std::string, CostumeDescription> additionalCostumesData;
 
 	for (const auto & ip : toAdd){
 		try{
-			CostumeData cd;
+			CostumeDescription cd;
 			cd.rawCostume.reset(new imuCostume::CostumeRawIO(ip, 1234));
 			cd.status.reset(new std::atomic<ConnectionStatus>(ONLINE));
 			configureCostume(cd);
@@ -184,11 +369,11 @@ const bool IMUCostumeDataSource::refreshCostumes()
 
 			for (const auto & st : cd.sensorsConfiguration){
 				for (const auto sid : st.second){
-					cd.sensorsData[sid].status.reset(new std::atomic<ConnectionStatus>(UNKNOWN));
+					cd.sensorsStatus[sid].status.reset(new std::atomic<ConnectionStatus>(UNKNOWN));
 				}
 			}
 
-			additionalCostumesData.insert(std::map<std::string, CostumeData>::value_type(ip, cd));
+			additionalCostumesData.insert(std::map<std::string, CostumeDescription>::value_type(ip, cd));
 		}
 		catch (...){
 			//TODO
@@ -196,18 +381,16 @@ const bool IMUCostumeDataSource::refreshCostumes()
 		}
 	}
 
-	std::lock_guard<std::recursive_mutex> lock(updateSynch);
-
 	for (const auto & ip : toRemove){
-		costumesData.erase(ip);
+		costumesDescription.erase(ip);
 	}
 
-	costumesData.insert(additionalCostumesData.begin(), additionalCostumesData.end());
+	costumesDescription.insert(additionalCostumesData.begin(), additionalCostumesData.end());
 
 	return costumes.empty() == false;
 }
 
-void IMUCostumeDataSource::configureCostume(CostumeData & cd)
+void IMUCostumeDataSource::configureCostume(CostumeDescription & cd)
 {
 	imuCostume::ProtocolSendBufferHelper psbh;
 	imuCostume::CostumeCANopenIO::prepareCostumeConfiguration(psbh);
@@ -220,7 +403,7 @@ void IMUCostumeDataSource::configureCostume(CostumeData & cd)
 	}
 }
 
-void IMUCostumeDataSource::refreshCostumeSensorsConfiguration(CostumeData & cd)
+void IMUCostumeDataSource::refreshCostumeSensorsConfiguration(CostumeDescription & cd)
 {
 	static const uint8_t MaxSamplesCount = 25;
 	imuCostume::CostumeCANopenIO::Frame frame = { 0 };
@@ -246,39 +429,17 @@ void IMUCostumeDataSource::refreshCostumeSensorsConfiguration(CostumeData & cd)
 
 const unsigned int IMUCostumeDataSource::costumesCout() const
 {
-	return costumesData.size();
+	std::lock_guard<std::recursive_mutex > lock(synch);
+	return costumesDescription.size();
 }
 
-const imuCostume::Costume::SensorsConfiguration & IMUCostumeDataSource::costumeConfiguration(unsigned int idx) const
+bool IMUCostumeDataSource::costumeLoaded(const unsigned int idx) const
 {
-	std::lock_guard<std::recursive_mutex> lock(synch);
-	auto it = costumesData.begin();
-	std::advance(it, idx);
-	return it->second.sensorsConfiguration;
-}
-
-const imuCostume::CostumeRawIO::CostumeAddress IMUCostumeDataSource::costumeAddress(const unsigned int idx) const
-{
-	std::lock_guard<std::recursive_mutex> lock(synch);
-	auto it = costumesData.begin();
-	std::advance(it, idx);
-	return imuCostume::CostumeRawIO::CostumeAddress({ it->first, 1234 });
-}
-
-const IMUCostumeDataSource::ConnectionStatus IMUCostumeDataSource::costumeStatus(const unsigned int idx) const
-{
-	std::lock_guard<std::recursive_mutex> lock(synch);
-	auto it = costumesData.begin();
-	std::advance(it, idx);
-	return *(it->second.status);
-}
-
-const IMUCostumeDataSource::RawDataStreamPtr IMUCostumeDataSource::costumeRawDataStream(const unsigned int idx) const
-{
-	std::lock_guard<std::recursive_mutex> lock(synch);
-	auto it = costumesData.begin();
-	std::advance(it, idx);
-	return it->second.rawDataStream;
+	std::lock_guard<std::recursive_mutex > lock(synch);
+	const auto & cd = costumeDescription(idx);
+	auto ip = cd.rawCostume->ip();
+	auto it = costumesData.find(ip);
+	return it != costumesData.end();
 }
 
 std::string IMUCostumeDataSource::sensorParameterName(const unsigned int idx)
@@ -304,103 +465,284 @@ std::string IMUCostumeDataSource::vectorParameterName(const unsigned int idx)
 	}
 }
 
-void IMUCostumeDataSource::innerLoadCostume(const unsigned int idx)
+class RawToCANopenExtractor
 {
-	auto it = costumesData.begin();
-	std::advance(it, idx);
-	const auto & sc = it->second.sensorsConfiguration;
+public:
 
-	core::VariantsList ows;
+	RawToCANopenExtractor() {}
+	~RawToCANopenExtractor() {}
 
-	it->second.rawDataStream.reset(new RawDataStream);
+	bool verify(const RawDataStream::value_type & val) const
+	{
+		return true;
+	}
+
+	void extract(const RawDataStream::value_type & in, CANopenFramesStream::value_type & out) const
+	{
+		out = imuCostume::CostumeCANopenIO::extractData(in.buffer.get(), in.length);
+	}
+};
+
+void IMUCostumeDataSource::fillRawCostumeData(CostumeData & cData, const CostumeDescription & cd)
+{
+	const auto & sc = cd.sensorsConfiguration;
 	auto ow = core::Variant::create<RawDataStream>();
 	ow->setMetadata("core/name", QObject::tr("Raw Data").toStdString());
-	ow->set(it->second.rawDataStream);
-	ows.push_back(ow);
+	ow->set(cd.rawDataStream);
+	cData.domainData.push_back(ow);
 
-	it->second.CANopenStream.reset(new CANopenFramesStream);
+	//new CANopenFramesStream
+	cData.CANopenStream.reset(new threadingUtils::StreamAdapterT<RawDataStream::value_type, CANopenFramesStream::value_type, RawToCANopenExtractor>(cd.rawDataStream, RawToCANopenExtractor()));
 	ow = core::Variant::create<CANopenFramesStream>();
 	ow->setMetadata("core/name", QObject::tr("CANopen Data").toStdString());
-	ow->set(it->second.CANopenStream);
-	ows.push_back(ow);
+	ow->set(cData.CANopenStream);
+	cData.domainData.push_back(ow);
 
-	it->second.costumeStream.reset(new threadingUtils::StreamAdapterT<CANopenFramesStream::value_type, CostumeStream::value_type, CANopenDataExtractor>(it->second.CANopenStream, CANopenDataExtractor()));
+	cData.costumeStream.reset(new threadingUtils::StreamAdapterT<CANopenFramesStream::value_type, CostumeStream::value_type, CANopenDataExtractor>(cData.CANopenStream, CANopenDataExtractor()));
 	ow = core::Variant::create<CostumeStream>();
 	ow->setMetadata("core/name", QObject::tr("Costume Data").toStdString());
-	ow->set(it->second.costumeStream);
-	ows.push_back(ow);
+	ow->set(cData.costumeStream);
+	cData.domainData.push_back(ow);
 
-	for (auto & sd : it->second.sensorsData){
-		sd.second.dataStream.reset(new threadingUtils::StreamT<IMUData>);
+	auto sIT = sc.find(imuCostume::Costume::IMU);
+	if (sIT != sc.end()){
 
-		ow = core::Variant::create<IMUStream>();
-		ow->setMetadata("core/name", QObject::tr("IMU %1 Data").arg(sd.first).toStdString());
-		ow->set(sd.second.dataStream);
-		ows.push_back(ow);
+		std::map<imuCostume::Costume::SensorID, SensorData> sData;
 
-		for (unsigned int i = 0; i < 3; ++i){
-			sd.second.vec3dStreams.push_back(utils::shared_ptr<Vec3Stream>(new threadingUtils::StreamT<osg::Vec3>));
+		for (auto & sID : sIT->second){
+			SensorData sd;
+			sd.dataStream.reset(new threadingUtils::StreamT<IMUData>);
 
-			ow = core::Variant::create<Vec3Stream>();
-			ow->setMetadata("core/name", sensorParameterName(i));
-			ow->set(sd.second.vec3dStreams.back());
-			ows.push_back(ow);
+			ow = core::Variant::create<IMUStream>();
+			ow->setMetadata("core/name", QObject::tr("IMU %1 Data").arg(sID).toStdString());
+			ow->set(sd.dataStream);
+			cData.domainData.push_back(ow);
 
-			for (unsigned int j = 0; j < 3; ++j){
-				sd.second.scalarStreams.push_back(utils::shared_ptr<ScalarStream>(ArrayStreamAdapter::create<osg::Vec3, osg::Vec3::value_type>(sd.second.vec3dStreams.back(), j)));
+			for (unsigned int i = 0; i < 3; ++i){
+				sd.vec3dStreams.push_back(utils::shared_ptr<Vec3Stream>(new threadingUtils::StreamT<osg::Vec3>));
 
-				ow = core::Variant::create<ScalarStream>();
-				ow->setMetadata("core/name", vectorParameterName(j));
-				ow->set(sd.second.scalarStreams.back());
-				ows.push_back(ow);
+				ow = core::Variant::create<Vec3Stream>();
+				ow->setMetadata("core/name", sensorParameterName(i));
+				ow->set(sd.vec3dStreams.back());
+				cData.domainData.push_back(ow);
+
+				for (unsigned int j = 0; j < 3; ++j){
+					sd.scalarStreams.push_back(utils::shared_ptr<ScalarStream>(ArrayStreamAdapter::create<osg::Vec3, osg::Vec3::value_type>(sd.vec3dStreams.back(), j)));
+
+					ow = core::Variant::create<ScalarStream>();
+					ow->setMetadata("core/name", vectorParameterName(j));
+					ow->set(sd.scalarStreams.back());
+					cData.domainData.push_back(ow);
+				}
 			}
+
+			sd.orientationStream.reset(new threadingUtils::StreamT<osg::Quat>);
+
+			for (unsigned int j = 0; j < 4; ++j){
+				sd.scalarStreams.push_back(utils::shared_ptr<ScalarStream>(ArrayStreamAdapter::create<osg::Quat, float>(sd.orientationStream, j)));
+				ow = core::Variant::create<ScalarStream>();
+				ow->setMetadata("core/name", "Orientation");
+				ow->set(sd.scalarStreams.back());
+				cData.domainData.push_back(ow);
+			}
+
+			sData.insert(std::map<imuCostume::Costume::SensorID, SensorData>::value_type(sID, sd));
 		}
 
-		sd.second.orientationStream.reset(new threadingUtils::StreamT<osg::Quat>);
-
-		for (unsigned int j = 0; j < 4; ++j){
-			sd.second.scalarStreams.push_back(utils::shared_ptr<ScalarStream>(ArrayStreamAdapter::create<osg::Quat, float>(sd.second.orientationStream, j)));
-			ow = core::Variant::create<ScalarStream>();
-			ow->setMetadata("core/name", vectorParameterName(j));
-			ow->set(sd.second.scalarStreams.back());
-			ows.push_back(ow);
-		}
+		cData.sensorsData = std::move(sData);
 	}
+}
+
+void IMUCostumeDataSource::loadRawCostume(const unsigned int idx)
+{
+	std::lock_guard<std::recursive_mutex > lock(synch);	
+	const auto & cd = costumeDescription(idx);
+	auto ip = cd.rawCostume->ip();
+	auto it = costumesData.find(ip);
+	if (it != costumesData.end()){
+		throw std::runtime_error("Costume already loaded");
+	}
+
+	CostumeData cData;
+	fillRawCostumeData(cData, cd);
 
 	try{
 		auto t = memoryDM->transaction();
-		for (const auto & ow : ows){
+		for (const auto & ow : cData.domainData){
 			t->addData(ow);
 		}
 
+		costumesData.insert(std::map<std::string, CostumeData>::value_type(ip, cData));
+	}
+	catch (std::exception & e){
+		PLUGIN_LOG_ERROR(e.what());		
+	}
+	catch (...){
+		PLUGIN_LOG_ERROR("Unknown error while loading raw costume data");
+	}
+}
 
-		it->second.domainData = ows;
+void IMUCostumeDataSource::loadCalibratedCostume(const unsigned int idx,
+	kinematic::SkeletonConstPtr skeleton,
+	const SensorsMapping & sensorsMapping,
+	const IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts & sensorsAdjustments,
+	const OrientationEstimationAlgorithmsMapping & orientationAlgorithms,
+	IMU::IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm)
+{
+	std::lock_guard<std::recursive_mutex > lock(synch);	
+	
+	const auto & cd = costumeDescription(idx);
+
+	if (orientationAlgorithms.size() != cd.sensorsStatus.size())
+	{
+		throw std::runtime_error("Mismatch in number of loaded sensors orientation estimation algorithms and costume configuration");
+	}
+
+	auto ip = cd.rawCostume->ip();
+	auto it = costumesData.find(ip);
+	if (it != costumesData.end()){
+		throw std::runtime_error("Costume already loaded");
+	}
+
+	CostumeData cData;
+	fillRawCostumeData(cData, cd);
+
+	//adapter na pe³ne dane z kostiumu napêdzaj¹ce strumieñ z estymacj¹
+	cData.completeImuStream.reset(new ExtractedCostumeStreamAdapter(cData.costumeStream, CostumeIMUExtractor(cd.sensorsConfiguration)));
+
+	auto ow = core::Variant::create<CostumeSkeletonMotionHelper::SensorsStream>();
+	ow->setMetadata("core/name", QObject::tr("Complete unpacked IMU data").toStdString());
+	ow->set(cData.completeImuStream);
+	cData.domainData.push_back(ow);
+
+	auto estimatedData = utils::make_shared<threadingUtils::StreamProcessorT<IMU::SensorsStreamData, OrientationEstimator>>(cData.completeImuStream, OrientationEstimator(orientationAlgorithms));
+
+	ow = core::Variant::create<CostumeSkeletonMotionHelper::SensorsStream>();
+	ow->setMetadata("core/name", QObject::tr("Complete filtered IMU data").toStdString());
+	ow->set(estimatedData);
+	cData.domainData.push_back(ow);
+
+	//TODO dodaæ kwaterniony po estymacji + skalary
+
+	cData.skeletonMotion = utils::make_shared<IMU::CostumeSkeletonMotion>();
+	ow = core::Variant::create<IMU::CostumeSkeletonMotion>();
+	ow->setMetadata("core/name", QObject::tr("Complete skeleton motion stream").toStdString());
+	ow->set(cData.skeletonMotion);
+	cData.domainData.push_back(ow);
+
+	//mapowanie pozycji wektora do nazwy jointa w szkielecie i stanie
+
+	kinematic::Joint::visit(skeleton->root, [cData](kinematic::JointPtr joint) -> void
+	{
+		cData.skeletonMotion->dataToModelMapping.insert(DataIndexToJointMapping::value_type(cData.skeletonMotion->dataToModelMapping.size(), joint->name));
+	});
+
+	cData.skeletonMotion->skeleton = skeleton;
+	cData.skeletonMotion->stream.reset(new RealMotionStream(estimatedData, ExtractCostumeMotion(skeleton, sensorsMapping, cData.skeletonMotion->dataToModelMapping, sensorsAdjustments, motionEstimationAlgorithm)));
+	ow = core::Variant::create<MotionStream>();
+	ow->setMetadata("core/name", QObject::tr("Calibrated skeleton motion stream").toStdString());
+	ow->set(cData.skeletonMotion);
+	cData.domainData.push_back(ow);
+
+	//adapter na orientacje po estymacji
+
+	auto sIT = cd.sensorsConfiguration.find(imuCostume::Costume::IMU);
+	if (sIT != cd.sensorsConfiguration.end()){
+
+		for (auto & sID : sIT->second){
+
+			auto it = sensorsMapping.left.find(sID);
+
+			//znaleŸæ mapowanie i indeks iteratora
+			auto idx = cData.skeletonMotion->dataToModelMapping.right.find(it->second)->get_left();
+
+			auto processedOrientation = utils::make_shared<threadingUtils::StreamAdapterT<IMU::SkeletonMotionState, osg::Quat, OrientationExtractor>>(cData.skeletonMotion->stream, OrientationExtractor(idx));
+			ow = core::Variant::create<threadingUtils::IStreamT<osg::Quat>>();
+			ow->setMetadata("core/name", "Orientation");
+			ow->set(processedOrientation);
+			cData.domainData.push_back(ow);
+			//TODO - podzia³ kwaternionu na skalary
+			/*
+			for (unsigned int j = 0; j < 4; ++j){
+				sd.scalarStreams.push_back(utils::shared_ptr<ScalarStream>(ArrayStreamAdapter::create<osg::Quat, float>(sd.orientationStream, j)));
+				ow = core::Variant::create<ScalarStream>();
+				ow->setMetadata("core/name", "Orientation");
+				ow->set(sd.scalarStreams.back());
+				cData.domainData.push_back(ow);
+			}
+
+			sData.insert(std::map<imuCostume::Costume::SensorID, SensorData>::value_type(sID, sd));
+			*/
+
+			cData.domainData.push_back(ow);
+		}
+
+		//cData.sensorsData = std::move(sData);
+	}
+
+
+
+
+
+	try{
+		auto t = memoryDM->transaction();
+		for (const auto & ow : cData.domainData){
+			t->addData(ow);
+		}
+
+		costumesData.insert(std::map<std::string, CostumeData>::value_type(ip, cData));
 	}
 	catch (std::exception & e){
 		PLUGIN_LOG_ERROR(e.what());
-		it->second.rawDataStream.reset();
-		it->second.CANopenStream.reset();
-		it->second.costumeStream.reset();
-
-		for (auto & sd : it->second.sensorsData){
-			sd.second.dataStream.reset();
-			sd.second.orientationStream.reset();
-			std::vector<utils::shared_ptr<Vec3Stream>>().swap(sd.second.vec3dStreams);
-			std::list<utils::shared_ptr<ScalarStream>>().swap(sd.second.scalarStreams);
-		}
 	}
 	catch (...){
-		it->second.rawDataStream.reset();
-		it->second.CANopenStream.reset();
-		it->second.costumeStream.reset();
+		PLUGIN_LOG_ERROR("Unknown error while loading raw costume data");
+	}
+}
 
-		for (auto & sd : it->second.sensorsData){
-			sd.second.dataStream.reset();
-			sd.second.orientationStream.reset();
-			std::vector<utils::shared_ptr<Vec3Stream>>().swap(sd.second.vec3dStreams);			
-			std::list<utils::shared_ptr<ScalarStream>>().swap(sd.second.scalarStreams);			
+void IMUCostumeDataSource::unloadCostume(const unsigned int idx)
+{
+	std::lock_guard<std::recursive_mutex > lock(synch);
+	const auto & cd = costumeDescription(idx);
+	auto ip = cd.rawCostume->ip();
+	auto it = costumesData.find(ip);
+	if (it != costumesData.end()){
+		auto transaction = memoryDM->transaction();
+
+		for (const auto & d : it->second.domainData){
+			transaction->tryRemoveData(d);
+		}
+
+		//TODO - update hierarchy in analysis
+		costumesData.erase(it);
+	}
+	else{
+		throw std::runtime_error("Costume not loaded");
+	}
+}
+
+unsigned int IMUCostumeDataSource::loadedCostumesCount() const
+{
+	std::lock_guard<std::recursive_mutex > lock(synch);
+	return costumesData.size();
+}
+
+core::ConstVariantsList IMUCostumeDataSource::costumeData(const unsigned int idx) const
+{
+	std::lock_guard<std::recursive_mutex > lock(synch);
+
+	core::ConstVariantsList ret;
+
+	const auto & cd = costumeDescription(idx);
+	auto ip = cd.rawCostume->ip();
+	auto it = costumesData.find(ip);
+	if (it != costumesData.end()){
+		for (const auto & d : it->second.domainData){
+			ret.push_back(d);
 		}
 	}
+
+	return ret;
 }
 
 core::HierarchyItemPtr IMUCostumeDataSource::createRootItem()
@@ -449,78 +791,7 @@ void IMUCostumeDataSource::tryCreateRecordedItem()
 		root->appendChild(recordedItems);
 	}
 }
-
-void IMUCostumeDataSource::innerUnloadCostume(const unsigned int idx)
-{
-	auto it = costumesData.begin();
-	std::advance(it, idx);
-	//usuwam dane z DM
-	{
-		auto t = memoryDM->transaction();
-
-		for (auto dIT = it->second.domainData.begin(); dIT != it->second.domainData.end(); ++it){
-			t->removeData(*dIT);
-		}
-	}
-
-	{
-		std::lock_guard<std::recursive_mutex> lock(synch);
-		core::VariantsList().swap(it->second.domainData);
-		it->second.rawDataStream.reset();
-		it->second.CANopenStream.reset();
-		it->second.costumeStream.reset();
-	}
-}
-
-const bool IMUCostumeDataSource::costumeLoaded(const unsigned int idx) const
-{
-	std::lock_guard<std::recursive_mutex> lock(synch);
-
-	auto it = costumesData.begin();
-	std::advance(it, idx);
-
-	it->second.domainData.empty();
-
-	return !(it->second.domainData.empty());
-}
-
-const unsigned int IMUCostumeDataSource::costumesLoadedCount() const
-{
-	std::lock_guard<std::recursive_mutex> lock(synch);
-
-	unsigned int count = 0;
-
-	for (const auto & c : costumesData){
-		if (c.second.domainData.empty() == false){
-			++count;
-		}
-	}
-
-	return count;
-}
-
-void IMUCostumeDataSource::loadCostume(const unsigned int idx)
-{
-	std::lock_guard<std::recursive_mutex> lock(synch);
-
-	if (costumeLoaded(idx) == true){
-		return;
-	}
-
-	innerLoadCostume(idx);
-}
-
-void IMUCostumeDataSource::unloadCostume(const unsigned int idx)
-{
-	std::lock_guard<std::recursive_mutex> lock(synch);
-
-	if (costumeLoaded(idx) == false){
-		return;
-	}
-
-	innerUnloadCostume(idx);
-}
-
+/*
 void IMUCostumeDataSource::loadAllCostumes()
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
@@ -542,6 +813,7 @@ void IMUCostumeDataSource::unloadAllCostumes()
 		}
 	}
 }
+*/
 
 void IMUCostumeDataSource::registerOrientationEstimationAlgorithm(IIMUOrientationEstimationAlgorithm * algorithm)
 {
@@ -585,22 +857,35 @@ void IMUCostumeDataSource::registerMotionEstimationAlgorithm(IMUCostumeMotionEst
 	motionEstimationAlgorithms_.push_back(IMUCostumeMotionEstimationAlgorithmConstPtr(algorithm));
 }
 
-std::list<IMUCostumeDataSource::IIMUOrientationEstimationAlgorithmConstPtr> IMUCostumeDataSource::orientationEstimationAlgorithms() const
+void IMUCostumeDataSource::registerSkeletonModel(kinematic::SkeletonConstPtr skeleton)
+{
+	std::lock_guard<std::recursive_mutex> lock(synch);
+	//TODO - weryfikacja czy model ju¿ istnieje
+	skeletonModels_.push_back(skeleton);
+}
+
+std::list<IIMUOrientationEstimationAlgorithmConstPtr> IMUCostumeDataSource::orientationEstimationAlgorithms() const
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
 	return orientationEstimationAlgorithms_;
 }
 
-std::list<IMUCostumeDataSource::IMUCostumeCalibrationAlgorithmConstPtr> IMUCostumeDataSource::calibrationAlgorithms() const
+std::list<IMUCostumeCalibrationAlgorithmConstPtr> IMUCostumeDataSource::calibrationAlgorithms() const
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
 	return calibrationAlgorithms_;
 }
 
-std::list<IMUCostumeDataSource::IMUCostumeMotionEstimationAlgorithmConstPtr> IMUCostumeDataSource::motionEstimationAlgorithms() const
+std::list<IMUCostumeMotionEstimationAlgorithmConstPtr> IMUCostumeDataSource::motionEstimationAlgorithms() const
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
 	return motionEstimationAlgorithms_;
+}
+
+std::list<kinematic::SkeletonConstPtr> IMUCostumeDataSource::skeletonModels() const
+{
+	std::lock_guard<std::recursive_mutex> lock(synch);
+	return skeletonModels_;
 }
 
 /*
@@ -631,16 +916,17 @@ kinematic::SkeletonMappingSchemePtr IMUCostumeDataSource::createMappingScheme()
 }
 */
 
-const core::VariantsList IMUCostumeDataSource::costumeData(const unsigned int idx) const
+const IMUCostumeDataSource::CostumeDescription & IMUCostumeDataSource::costumeDescription(const unsigned int idx) const
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
 
-	auto it = costumesData.begin();
+	auto it = costumesDescription.begin();
 	std::advance(it, idx);
 
-	return it->second.domainData;
+	return it->second;
 }
 
+/*
 void IMUCostumeDataSource::refreshData()
 {
 	imuCostume::CostumeCANopenIO::Frame frame = { 0 };
@@ -727,6 +1013,7 @@ void IMUCostumeDataSource::refreshData()
 
 	PLUGIN_LOG_DEBUG("Finished thread loop");
 }
+*/
 
 /*
 void IMU::IMUCostumeDataSource::loadDatFile(const core::Filesystem::Path& path)

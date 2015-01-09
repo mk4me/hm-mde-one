@@ -91,18 +91,19 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 
 			}
 
-			if (motion->hasObject(typeid(kinematic::SkeletalData), false) && 
+			if (motion->hasObject(typeid(kinematic::SkeletonStates), false) &&
 				motion->hasObject(typeid(kinematic::Skeleton), false)) {
 				
 				core::ConstVariantsList sdl, sml;
-				motion->getObjects(sdl, typeid(kinematic::SkeletalData), false);
+				motion->getObjects(sdl, typeid(kinematic::SkeletonStates), false);
 				motion->getObjects(sml, typeid(kinematic::Skeleton), false);
 
-				kinematic::SkeletalDataConstPtr sd = sdl.front()->get();
+				kinematic::SkeletonStatesConstPtr sd = sdl.front()->get();
 				kinematic::SkeletonConstPtr sm = sml.front()->get();
 
 				kinematic::JointAnglesCollectionPtr ja = utils::make_shared<kinematic::JointAnglesCollection>();
-				ja->setSkeletal(sm, sd);
+				//TODO - uzype³niæ szkielet + dane
+				ja->setSkeletal(sm, *sd);
 				auto jaWrapper = utils::ObjectWrapper::create<kinematic::JointAnglesCollection>();
 				ja->setLengthRatio(0.1);
 				jaWrapper->set(ja);

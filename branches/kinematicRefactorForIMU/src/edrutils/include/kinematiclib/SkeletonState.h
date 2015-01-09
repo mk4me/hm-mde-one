@@ -94,22 +94,49 @@ namespace kinematic
 			//! \return Globalna orientacja
 			osg::Quat globalOrientation() const;
 
-			//! \param translation Lokalne przesuniêcie
+			//! \param translation Przesuniêcie
 			void update(const osg::Vec3 & translation);
 			//! \param position Globalna pozycja
-			void set(const osg::Vec3 & position);
+			void setGlobal(const osg::Vec3 & position);
+			//! \param position Lokalna pozycja
+			void setLocal(const osg::Vec3 & position);
 
-			//! \param rotation Lokalna rotacja
+			//! \param rotation Rotacja
 			void update(const osg::Quat & rotation);
 			//! \param orientation Globalna orientacja
-			void set(const osg::Quat & orientation);
+			void setGlobal(const osg::Quat & orientation);
+			//! \param orientation Lokalna orientacja
+			void setLocal(const osg::Quat & orientation);
 
 			//! \param translation Lokalne przesuniêcie
 			//! \param rotation Lokalna rotacja
 			void update(const osg::Vec3 & translation, const osg::Quat & rotation);
 			//! \param position Globalna pozycja
 			//! \param orientation Globalna orientacja
-			void set(const osg::Vec3 & position, const osg::Quat & orientation);
+			void setGlobal(const osg::Vec3 & position, const osg::Quat & orientation);
+			//! \param position Lokalna pozycja
+			//! \param orientation Lokalna orientacja
+			void setLocal(const osg::Vec3 & position, const osg::Quat & orientation);
+
+			template<typename T>
+			static void visit(JointPtr joint, T & visitor)
+			{
+				visitor(joint);
+				for (unsigned int i = 0; i < joint->childrenCount(); ++i)
+				{
+					visit(joint->child(i), visitor);
+				}
+			}
+
+			template<typename T>
+			static void visit(JointConstPtr joint, T & visitor)
+			{
+				visitor(joint.get());
+				for (unsigned int i = 0; i < joint->childrenCount(); ++i)
+				{
+					visit(joint->child(i), visitor);
+				}
+			}
 
 		private:
 			//! Prywatna implementacja
@@ -122,10 +149,10 @@ namespace kinematic
 		//! \param activeJointsCount Iloœæ aktywnych stawów które maja dzieci
 		SkeletonState(JointPtr root, const unsigned int activeJointsCount);
 
+	public:
+
 		//! \param Other Stan który przejmujemy
 		SkeletonState(SkeletonState && Other);
-
-	public:
 
 		//! \param skeleton Szkielet dla któego tworzymy stan
 		//! \return Stan bazowy szkieletu
@@ -146,10 +173,12 @@ namespace kinematic
 
 		//! \param skeletonState [out] Aktualizowany stan szkieletu
 		//! \param newState Nowy stan szkieletu
-		static void set(SkeletonState & skeletonState, const SimpleStateChange & newState);
+		static void setLocal(SkeletonState & skeletonState, const SimpleStateChange & newState);
+		static void setGlobal(SkeletonState & skeletonState, const SimpleStateChange & newState);
 		//! \param skeletonState [out] Aktualizowany stan szkieletu
 		//! \param newState Nowy stan szkieletu
-		static void set(SkeletonState & skeletonState, const FullStateChange & newState);
+		static void setLocal(SkeletonState & skeletonState, const FullStateChange & newState);
+		static void setGlobal(SkeletonState & skeletonState, const FullStateChange & newState);
 
 		//! \param skeletonState Stan szkieletu
 		//! \return Globalny opis stanu szkieletu

@@ -145,7 +145,7 @@ private:
 	//! \param library Uchwyt do zwalnianej biblioteki z pluginem
 	//! \param path  Ścieżka biblioteki z pluginem
     //! \param createFunction Funkcja tworząca plugin
-    bool onAddPlugin(PluginPtr plugin, HMODULE library, Plugin::InitializeAndLoadFunction fillFunction);
+	bool onAddPlugin(PluginPtr plugin, HMODULE library, Plugin::InitializePluginContextFunction initializePluginContext);
 };
 
 typedef utils::shared_ptr<PluginLoader> PluginLoaderPtr;

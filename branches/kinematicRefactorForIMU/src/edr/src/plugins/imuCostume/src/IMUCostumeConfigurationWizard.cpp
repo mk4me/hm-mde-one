@@ -13,9 +13,9 @@
 #include <QtWidgets/QDialogButtonBox>
 #include "OrientationDelegate.h"
 
-Q_DECLARE_METATYPE(IMU::IIMUDataSource::IIMUOrientationEstimationAlgorithmConstPtr);
-Q_DECLARE_METATYPE(IMU::IIMUDataSource::IMUCostumeCalibrationAlgorithmConstPtr);
-Q_DECLARE_METATYPE(IMU::IIMUDataSource::IMUCostumeMotionEstimationAlgorithmConstPtr);
+Q_DECLARE_METATYPE(IMU::IIMUOrientationEstimationAlgorithmConstPtr);
+Q_DECLARE_METATYPE(IMU::IMUCostumeCalibrationAlgorithmConstPtr);
+Q_DECLARE_METATYPE(IMU::IMUCostumeMotionEstimationAlgorithmConstPtr);
 
 Q_DECLARE_METATYPE(kinematic::JointConstPtr);
 
@@ -154,7 +154,8 @@ public:
 			{
 				if (i != index.row())
 				{
-					locJoints.erase(index.model()->data(index.model()->index(i, 1)).toString().toStdString());
+					auto jointName = index.model()->data(index.model()->index(i, 1)).toString().toStdString();
+					locJoints.erase(jointName);
 				}
 			}
 		}
@@ -165,12 +166,12 @@ public:
 
 		item->setFlags(item->flags() & ~(Qt::ItemIsSelectable | Qt::ItemIsEnabled));
 
-		if (joints.empty() == false)
+		if (locJoints.empty() == false)
 		{
 			editor->insertSeparator(1);
 		}
 
-		for (const auto & j : joints)
+		for (const auto & j : locJoints)
 		{
 			editor->addItem(QString::fromStdString(j.first), QVariant::fromValue(j.second));
 		}
@@ -271,19 +272,16 @@ private:
 };
 
 
-IMUCostumeConfigurationWizard::IMUCostumeConfigurationWizard(utils::shared_ptr<imuCostume::CostumeRawIO> costume,
-	const unsigned int imusCount, const unsigned int insolesCount)
-	: costume(costume), jointsItemDelegate(nullptr)
+IMUCostumeConfigurationWizard::IMUCostumeConfigurationWizard(const std::string & name,
+	const std::string & ip,
+	const unsigned int imusCount,
+	const unsigned int insolesCount)
+	: jointsItemDelegate(nullptr)
 {
-	/*
-	if (costume == nullptr){
-		throw std::runtime_error("Uninitialized costume");
-	}*/
-
 	ui = new Ui::IMUCostumeConfigurationWizard;
 	ui->setupUi(this);
 
-	//ui->ipPlaceholderLabel->setText(QString::fromStdString(costume->ip()));
+	ui->ipPlaceholderLabel->setText(QString::fromStdString(ip));
 	
 	ui->imuSensorsCountPlaceholderLabel->setText(QString("%1").arg(imusCount));
 	ui->grfSensorsCountPlaceholderLabel->setText(QString("%1").arg(insolesCount));
@@ -294,6 +292,39 @@ IMUCostumeConfigurationWizard::IMUCostumeConfigurationWizard(utils::shared_ptr<i
 
 	ui->sensorsMappingTableWidget->setRowCount(imusCount);
 	ui->sensorsEstimationAlgorithmsTableWidget->setRowCount(imusCount);
+
+	ui->modelComboBox->addItem(tr("Select model..."));
+
+	const QStandardItemModel* model = qobject_cast<const QStandardItemModel*>(ui->modelComboBox->model());
+	QStandardItem* item = model->item(0);
+
+	item->setFlags(item->flags() & ~(Qt::ItemIsSelectable | Qt::ItemIsEnabled));
+	// visually disable by greying out - works only if combobox has been painted already and palette returns the wanted color
+	item->setData(ui->modelComboBox->palette().color(QPalette::Disabled, QPalette::Text));
+
+	auto source = core::querySource<IMU::IIMUDataSource>(plugin::getSourceManager());
+	if (source != nullptr){
+		auto models = source->skeletonModels();
+
+		if (models.empty() == false){
+			ui->modelComboBox->insertSeparator(1);
+		}
+
+		for (auto m : models)
+		{
+
+			unsigned int jointsCount = 0;
+
+			kinematic::Joint::visit(m->root, [&jointsCount](kinematic::JointConstPtr joint) -> void
+			{
+				if (joint->children.empty() == false){
+					++jointsCount;
+				}
+			});
+
+			ui->modelComboBox->addItem(tr("Model %1: %2 joints").arg(QString::fromStdString(m->name)).arg(jointsCount), QVariant::fromValue(m));
+		}
+	}
 
 	for (unsigned int i = 0; i < imusCount; ++i)
 	{		
@@ -314,13 +345,11 @@ IMUCostumeConfigurationWizard::IMUCostumeConfigurationWizard(utils::shared_ptr<i
 
 	jointsItemDelegate = new JointsItemDelegate(ui->oneToOneMappingCheckBox, ui->sensorsMappingTableWidget);
 	ui->sensorsMappingTableWidget->setItemDelegateForColumn(1, jointsItemDelegate);
-	//delegat dla offsetu czujnika
-	//ui->sensorsMappingTableWidget->setItemDelegateForColumn(2, new coreUI::CoreVectorInputDelegateImpl<float, 3>(coreUI::CoreVectorEditor::vectorPattern(3)));
+	//delegat dla offsetu czujnika	
 	ui->sensorsMappingTableWidget->setItemDelegateForColumn(2, new SensorJointOffsetDelegate);	
-	//delegat dla orientacji
-	//ui->sensorsMappingTableWidget->setItemDelegateForColumn(3, new coreUI::CoreVectorInputDelegateImpl<float, 4>(coreUI::CoreVectorEditor::quaternionPattern()));
+	//delegat dla orientacji	
 	ui->sensorsMappingTableWidget->setItemDelegateForColumn(3, new OrientationDelegate);
-
+	
 	ui->sensorsEstimationAlgorithmsTableWidget->setItemDelegateForColumn(1, new OrientationEstimationAlgorithmsDelegate(ui->sensorsEstimationAlgorithmsTableWidget));
 
 	ui->sensorsEstimationAlgorithmsTableWidget->setVisible(false);
@@ -417,11 +446,6 @@ bool IMUCostumeConfigurationWizard::eventFilter(QObject * watched, QEvent * even
 	return false;
 }
 
-void * IMUCostumeConfigurationWizard::configuredCostumeStream()
-{
-	return nullptr;
-}
-
 void IMUCostumeConfigurationWizard::onEstimationAlgorithmSelectionModeChange(int state)
 {
 	bool singleAlgorithmMode = (state == Qt::Checked);
@@ -431,7 +455,7 @@ void IMUCostumeConfigurationWizard::onEstimationAlgorithmSelectionModeChange(int
 }
 
 void IMUCostumeConfigurationWizard::pageChanged(int idx)
-{
+{	
 	auto w = page(idx);
 
 	if (w == ui->modelConfigurationPage)
@@ -453,14 +477,19 @@ void IMUCostumeConfigurationWizard::pageChanged(int idx)
 	else if (w == ui->motionEstimationPage)
 	{
 		verifyMotionEstimationAlgorithm(-1);
-	}
+	}	
 }
 
 void IMUCostumeConfigurationWizard::verifyModel(int idx)
 {
 	bool enable = (ui->modelComboBox->currentIndex() > 0);
 
-	button(QWizard::NextButton)->setEnabled(enable);
+	if (enable == true){
+		auto skeleton = ui->modelComboBox->currentData(Qt::UserRole).value<kinematic::SkeletonConstPtr>();
+		jointsItemDelegate->setJoints(skeleton->root);
+	}
+
+	//button(QWizard::NextButton)->setEnabled(enable);
 }
 
 void IMUCostumeConfigurationWizard::verifySensorsMapping(int row, int col)
@@ -485,7 +514,7 @@ void IMUCostumeConfigurationWizard::verifySensorsMapping(int row, int col)
 		}
 	}
 
-	button(QWizard::NextButton)->setEnabled(enable);
+	//button(QWizard::NextButton)->setEnabled(enable);
 }
 
 void IMUCostumeConfigurationWizard::verifyEstimationAlgorithms(int row, int col)
@@ -497,8 +526,8 @@ void IMUCostumeConfigurationWizard::verifyEstimationAlgorithms(int row, int col)
 	for (unsigned int i = 0; i < model->rowCount(); ++i)
 	{
 		auto data = model->data(model->index(i, 1), Qt::UserRole);
-		if (data.canConvert<IMU::IIMUDataSource::IIMUOrientationEstimationAlgorithmConstPtr>() == true){
-			auto e = data.value<IMU::IIMUDataSource::IIMUOrientationEstimationAlgorithmConstPtr>();
+		if (data.canConvert<IMU::IIMUOrientationEstimationAlgorithmConstPtr>() == true){
+			auto e = data.value<IMU::IIMUOrientationEstimationAlgorithmConstPtr>();
 			if (e == nullptr){
 				enable = false;
 				break;
@@ -510,26 +539,46 @@ void IMUCostumeConfigurationWizard::verifyEstimationAlgorithms(int row, int col)
 		}
 	}
 
-	button(QWizard::NextButton)->setEnabled(enable);
+	//button(QWizard::NextButton)->setEnabled(enable);
 }
 
 void IMUCostumeConfigurationWizard::verifyCalibrationAlgorithm(int idx)
 {
 	bool enable = (ui->calibrationAlgorithmComboBox->currentIndex() > 0);
 
-	button(QWizard::NextButton)->setEnabled(enable);
+	//button(QWizard::NextButton)->setEnabled(enable);
 }
 
 void IMUCostumeConfigurationWizard::verifyMotionEstimationAlgorithm(int idx)
 {
 	bool enable = (ui->motionEstimationAglorithmComboBox->currentIndex() > 0);
 
-	button(QWizard::NextButton)->setEnabled(enable);
+	//button(QWizard::NextButton)->setEnabled(enable);
 }
 
-IMU::IIMUDataSource::SensorsMappingDetails IMUCostumeConfigurationWizard::mappingDetails() const
+void IMUCostumeConfigurationWizard::onOneToOneMappingChanged(int state)
 {
-	IMU::IIMUDataSource::SensorsMappingDetails ret;
+	if (state == Qt::Checked){
+		auto model = ui->sensorsMappingTableWidget->model();
+		std::set<std::string> jointsNames;
+		for (unsigned int i = 0; i < model->rowCount(); ++i){
+			auto jointName = model->data(model->index(i, 1)).toString().toStdString();
+			if (jointsNames.find(jointName) != jointsNames.end()){
+				//ju¿ mamy taki joint
+				model->setData(model->index(i, 1), tr("Select joint..."));
+				model->setData(model->index(i, 1), QVariant::fromValue(kinematic::JointConstPtr()), Qt::UserRole);
+			}
+			else{
+				//jointa nie by³o - zapamiêtujemy
+				jointsNames.insert(jointName);
+			}
+		}
+	}	
+}
+
+IMUCostumeConfigurationWizard::SensorsMappingDetails IMUCostumeConfigurationWizard::mappingDetails() const
+{
+	SensorsMappingDetails ret;
 
 	auto modelMapping = ui->sensorsMappingTableWidget->model();
 	auto modelEstimating = ui->sensorsEstimationAlgorithmsTableWidget->model();
@@ -539,26 +588,26 @@ IMU::IIMUDataSource::SensorsMappingDetails IMUCostumeConfigurationWizard::mappin
 	for (unsigned int i = 0; i < modelMapping->rowCount(); ++i)
 	{		
 		imuCostume::Costume::SensorID sID = modelMapping->data(modelMapping->index(i, 0)).toInt();
-		IMU::IIMUDataSource::SensorMappingDetails smd;
+		SensorMappingDetails smd;
 		smd.jointName = modelMapping->data(modelMapping->index(i, 1)).toString().toStdString();
-		smd.offset = modelMapping->data(modelMapping->index(i, 2), Qt::UserRole).value<osg::Vec3d>();
-		smd.rotation = modelMapping->data(modelMapping->index(i, 3), Qt::UserRole).value<osg::Quat>();
-		smd.estimationAlgorithm = modelEstimating->data(modelEstimating->index(i, 1), Qt::UserRole).value<IMU::IIMUDataSource::IIMUOrientationEstimationAlgorithmConstPtr>();
+		smd.sensorAdjustment.offset = modelMapping->data(modelMapping->index(i, 2), Qt::UserRole).value<osg::Vec3d>();
+		smd.sensorAdjustment.rotation = modelMapping->data(modelMapping->index(i, 3), Qt::UserRole).value<osg::Quat>();
+		smd.estimationAlgorithm = modelEstimating->data(modelEstimating->index(i, 1), Qt::UserRole).value<IMU::IIMUOrientationEstimationAlgorithmConstPtr>();
 
-		ret.insert(IMU::IIMUDataSource::SensorsMappingDetails::value_type(sID, smd));
+		ret.insert(SensorsMappingDetails::value_type(sID, smd));
 	}
 
 	return std::move(ret);
 }
 
-IMU::IIMUDataSource::IMUCostumeCalibrationAlgorithmConstPtr IMUCostumeConfigurationWizard::calibrationAlgorithm() const
+IMU::IMUCostumeCalibrationAlgorithmConstPtr IMUCostumeConfigurationWizard::calibrationAlgorithm() const
 {
-	return ui->calibrationAlgorithmComboBox->currentData(Qt::UserRole).value<IMU::IIMUDataSource::IMUCostumeCalibrationAlgorithmConstPtr>();
+	return ui->calibrationAlgorithmComboBox->currentData(Qt::UserRole).value<IMU::IMUCostumeCalibrationAlgorithmConstPtr>();
 }
 
-IMU::IIMUDataSource::IMUCostumeMotionEstimationAlgorithmConstPtr IMUCostumeConfigurationWizard::motionEstimationAlgorithm() const
+IMU::IMUCostumeMotionEstimationAlgorithmConstPtr IMUCostumeConfigurationWizard::motionEstimationAlgorithm() const
 {
-	return ui->motionEstimationAglorithmComboBox->currentData(Qt::UserRole).value<IMU::IIMUDataSource::IMUCostumeMotionEstimationAlgorithmConstPtr>();
+	return ui->motionEstimationAglorithmComboBox->currentData(Qt::UserRole).value<IMU::IMUCostumeMotionEstimationAlgorithmConstPtr>();
 }
 
 kinematic::SkeletonConstPtr IMUCostumeConfigurationWizard::skeleton() const

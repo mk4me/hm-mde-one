@@ -10,7 +10,7 @@
 
 #include <string>
 #include <osg/Quat>
-#include <osg/Vec3>
+#include <osg/Vec3d>
 
 class QWidget;
 
@@ -36,6 +36,9 @@ namespace IMU
 		//! Returns number (n) of frames that are probably unstable after filter create() / reset() - call estimate() at least (n) times
 		virtual unsigned int approximateEstimationDelay() const { return 0; }
 
+		//! \param orientation Orientacja z której mo¿e zacz¹æ algorytm
+		virtual void initialize(const osg::Quat & orientation) {}
+
 		//! Calculates orientation from sensor fusion
 		/*!
 		\param inAcc accelerometer vector from IMU
@@ -44,13 +47,15 @@ namespace IMU
 		\param inDeltaT time between acquisitions in seconds [s] from IMU sensor
 		\return Returns estimated orientation.
 		*/
-		virtual osg::Quat estimate(const osg::Vec3& inAcc,
-			const osg::Vec3& inGyro, const osg::Vec3& inMag,
+		virtual osg::Quat estimate(const osg::Vec3d& inAcc,
+			const osg::Vec3d& inGyro, const osg::Vec3d& inMag,
 			const double inDeltaT) = 0;
 
 		// Not used
 		virtual QWidget* configurationWidget() { return nullptr; }
 	};
+
+	DEFINE_SMART_POINTERS(IIMUOrientationEstimationAlgorithm);
 }
 
 #endif	// __HEADER_GUARD_IMU__IIMUORIENTATIONESTIMATIONALGORITHM_H__

@@ -1,0 +1,80 @@
+/********************************************************************
+	created:  2015/01/02	14:04:01
+	filename: CostumeSkeletonMotionHelper.h
+	author:	  Mateusz Janiak
+
+	purpose:
+*********************************************************************/
+#ifndef __HEADER_GUARD_IMU__COSTUMESKELETONMOTIONHELPER_H__
+#define __HEADER_GUARD_IMU__COSTUMESKELETONMOTIONHELPER_H__
+
+#include <QtCore/QObject>
+#include <QtCore/QTimer>
+#include <plugins/imuCostume/IIMUDataSource.h>
+
+class QProgressDialog;
+
+//! Obiekt realizuj¹cy wizualny postêp inicjalizacji kostiumu
+//! inicjalizacjê algorytmów estyamcji orientacji dla czujników oraz kalibracjê
+//! Procedurê mo¿na anulowaæ
+class CostumeSkeletonMotionHelper : public QObject
+{
+	Q_OBJECT
+
+public:
+
+	typedef threadingUtils::IStreamT<IMU::SensorsStreamData> SensorsStream;
+
+	DEFINE_SMART_POINTERS(SensorsStream);
+
+public:
+	//! \param sensorsStream Sturmieñ danych sensorów
+	//! \param estimationAlgorithms [out] Algorytmy estymacji orientacji czujników
+	//! \param calibrationAlgorithm [out] Algorytm kalibrajci kostiumu
+	//! \param maxSamples Maksymalna iloœæ próbek w ca³ej fazie inicjalizacji
+	//! \param calibratinStageChangeValue Iloœæ próbek po któych rozpoczynamy kalibracjê (algorytmy estymacji orientacji zosta³y zainicjowane)
+	//! \param parent Obiekt rodzic
+	CostumeSkeletonMotionHelper(SensorsStreamPtr sensorsStream,
+		const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping & estimationAlgorithms,
+		IMU::IMUCostumeCalibrationAlgorithmPtr calibrationAlgorithm,
+		const unsigned int maxSamples,
+		const unsigned int calibratinStageChangeValue, QWidget * parent = nullptr);
+
+	//! Destruktor wirtualny
+	virtual ~CostumeSkeletonMotionHelper();
+
+	//! Metoda blokuj¹ca odpalaj¹ca dialog z postêpem
+	//! \return Wartoœæ zwrócona przez dialog
+	int exec();
+
+private slots:
+
+	//! Cykliczne odpalana metoda czytaj¹ca dane ze strumienia, jeœli s¹, i realizuj¹ca inicjalizacjê kostiumu
+	void perform();
+	//! Metoda anuluj¹ca inicjalizacjê kostiumu
+	void cancel();
+
+private:
+	//! Strumieñ danych z kostiumu
+	SensorsStreamPtr sensorsStream;
+	//! Obserwator strumienia kostiumu
+	utils::shared_ptr<threadingUtils::ResetableStreamStatusObserver> observer;
+	//! Algorytmy estymacji orientacji czujników
+	IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping estimationAlgorithms;
+	//! Algorytm kalibracji
+	IMU::IMUCostumeCalibrationAlgorithmPtr calibrationAlgorithm;
+	//! Numer próbki przy której przechodzimy do fazy kalibracji
+	unsigned int calibratinStageChangeValue;
+	//! Poprzednia próbka czasu
+	unsigned int previousTime;
+	//! Czy to pierwsza próbka
+	bool first;
+	//! Timer realizuj¹cy odpytywanie strumienia z danych
+	QTimer timer;
+	//! Dialog z postepem inicjalizacji kostiumu
+	QProgressDialog * pd;
+};
+
+DEFINE_WRAPPER(CostumeSkeletonMotionHelper::SensorsStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
+
+#endif	// __HEADER_GUARD_IMU__COSTUMESKELETONMOTIONHELPER_H__

@@ -5,6 +5,7 @@
 using namespace core;
 
 Plugin::Plugin()
+	: initFunc(nullptr), deinitFunc(nullptr)
 {
 
 }
@@ -68,6 +69,42 @@ void Plugin::setVersion(const core::Version::VersionNumberType major,
 	}
 
 	version_.reset(new Version(major, minor, patch));
+}
+
+void Plugin::setLoadDescription(
+	initializeFunc init,
+	deinitializeFunc deinit)
+{
+	initFunc = init;
+	deinitFunc = deinit;
+}
+
+bool Plugin::initialize()
+{
+	bool ret = true;
+
+	if (initFunc != nullptr){
+		try{
+			ret = initFunc();
+		}
+		catch (...){
+			ret = false;
+		}
+	}
+
+	return ret;
+}
+
+void Plugin::deinitialize()
+{
+	if (deinitFunc != nullptr){
+		try{
+			deinitFunc();
+		}
+		catch (...){
+
+		}
+	}
 }
 
 void Plugin::setVendor(const std::string & name,
@@ -183,8 +220,13 @@ const utils::ObjectWrapperPtr & Plugin::getObjectWrapperPrototype(int i)
 	return this->objectWrapperPrototypes[i];
 }
 
-const bool Plugin::empty() const
+const bool Plugin::logicEmpty() const
 {
 	return services.empty() && sources.empty() && parsers.empty()
 		&& visualizers.empty() && objectWrapperPrototypes.empty();
+}
+
+const bool Plugin::empty() const
+{
+	return (initFunc == nullptr) && (logicEmpty() == true);
 }

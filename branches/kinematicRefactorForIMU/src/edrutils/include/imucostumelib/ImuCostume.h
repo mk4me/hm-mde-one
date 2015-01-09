@@ -55,9 +55,9 @@ namespace imuCostume
 
 		private:
 			//! Identyfikator wêz³a
-			SensorID id_;
+			const SensorID id_;
 			//! Typ czujnika
-			int type_;
+			const int type_;
 		};
 
 		typedef utils::shared_ptr<GenericSensor> SensorDataPtr;
@@ -84,18 +84,20 @@ namespace imuCostume
 			//! \param magnetometer
 			//! \param gyroscope
 			//! \param orientation
-			IMUSensor(const SensorID id, const int type,
-				const int dataStatus, const osg::Vec3 & accelerometer,
-				const osg::Vec3 & magnetometer,	const osg::Vec3 & gyroscope,
-				const osg::Quat & orientation);
+			IMUSensor(const SensorID id, const int dataStatus,
+				const osg::Vec3 & accelerometer, const osg::Vec3 & magnetometer,
+				const osg::Vec3 & gyroscope, const osg::Quat & orientation);
 
 			//! Destruktor wirtualny
 			virtual ~IMUSensor();
 
 			//! \return Dane akcelerometru 
 			const osg::Vec3 & accelerometer() const;
+			//! \return Dane magnetometru 
 			const osg::Vec3 & magnetometer() const;
+			//! \return Dane ¿yroskopu 
 			const osg::Vec3 & gyroscope() const;
+			//! \return Estymowana orientacja na czujniku
 			const osg::Quat & orientation() const;
 			//! \return Status danych
 			const int dataStatus() const;
@@ -108,29 +110,36 @@ namespace imuCostume
 			const osg::Quat orientation_;
 		};
 
+		//! Klasa opisuj¹ca dane czujników INSOLE
 		class IMUCOSTUME_EXPORT INSOLESensor : public GenericSensor
 		{
 		public:
 
+			//! Struktura danych czujnika
 			struct INSOLEData
 			{
+				//! Identyfikator punktu nacisku
 				unsigned int id;
+				//! Wektor si³y
 				osg::Vec3 grf;
 			};
 
+			//! Lista punktów nacisku
 			typedef std::list<INSOLEData> INSOLESData;
 
 		public:
 
-			INSOLESensor(const SensorID id, const int type,
-				const INSOLESData & insolesData);
+			//! \param id Identyfikator sensora
+			//! \param insolesData Dane punktów naciskowych
+			INSOLESensor(const SensorID id, const INSOLESData & insolesData);
 
+			//! Destruktor wirtualny
 			virtual ~INSOLESensor();
-
+			//! \return Dane punktów naciskowych
 			const INSOLESData & insolesData() const;
 
 		private:
-
+			//! Dane punktów naciskowych
 			const INSOLESData insolesData_;
 		};		
 

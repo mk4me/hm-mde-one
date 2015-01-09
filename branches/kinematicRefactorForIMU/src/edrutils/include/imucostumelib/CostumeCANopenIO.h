@@ -21,7 +21,7 @@ namespace imuCostume
 	{
 	public:
 
-		//! Struktura opisuj¹ca strukturê nag³ówka protoko³u
+		//! Struktura opisuj¹ca nag³ówek protoko³u
 		struct HeaderStructure
 		{
 			//! Typ ramki

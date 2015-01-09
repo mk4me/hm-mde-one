@@ -58,17 +58,13 @@ private slots:
 
     void onLoadDatFile();
 
-	void testCommunication();        
-
-	void refreshData();
+	void testCommunication();
 
 	void onRefresh();
 
 private:
 	IMU::IMUCostumeDataSource * ds;
 	Ui::IMUCostumeListWidget * ui;
-	QTimer refreshTimer;
-	std::map<std::string, CostumeStreams> costumeStreams;
 };
 
 #endif	//	HEADER_GUARD_IMU__IMUCOSTUMELISTWIDGET_H__

@@ -3,7 +3,6 @@
 #include <imucostumelib/ProtocolReadBufferHelper.h>
 #include <imucostumelib/CANopenSensor.h>
 
-
 using namespace imuCostume;
 
 Costume::SensorsConfiguration Costume::sensorsConfiguration(const void * data, const uint16_t length)
@@ -104,7 +103,7 @@ std::list<Costume::SensorDataPtr> Costume::extractSensorsData(const std::list<CA
 			}
 		}
 
-		ret.push_back(Costume::SensorDataPtr(new Costume::IMUSensor(sd.first, (int)Costume::IMU, dataStatus, acc, mag, gyro, orient)));
+		ret.push_back(Costume::SensorDataPtr(new Costume::IMUSensor(sd.first, dataStatus, acc, mag, gyro, orient)));
 	}
 
 	return ret;
@@ -181,7 +180,7 @@ std::list<Costume::SensorDataPtr> Costume::extractSensorsData(const void * buffe
 			}
 		}
 
-		ret.push_back(Costume::SensorDataPtr(new Costume::IMUSensor(sd.first, (int)Costume::IMU, dataStatus, acc, mag, gyro, orient)));
+		ret.push_back(Costume::SensorDataPtr(new Costume::IMUSensor(sd.first, dataStatus, acc, mag, gyro, orient)));
 	}
 
 	return ret;
@@ -258,11 +257,10 @@ const int Costume::GenericSensor::type() const
 	return type_;
 }
 
-Costume::IMUSensor::IMUSensor(const SensorID id, const int type,
-	const int status, const osg::Vec3 & accelerometer,
-	const osg::Vec3 & magnetometer, const osg::Vec3 & gyroscope,
-	const osg::Quat & orientation)
-	: Costume::GenericSensor(id, type),	dataStatus_(status),
+Costume::IMUSensor::IMUSensor(const SensorID id, const int status,
+	const osg::Vec3 & accelerometer, const osg::Vec3 & magnetometer,
+	const osg::Vec3 & gyroscope, const osg::Quat & orientation)
+	: Costume::GenericSensor(id, Costume::IMU),	dataStatus_(status),
 	accelerometer_(accelerometer), gyroscope_(gyroscope),
 	magnetometer_(magnetometer), orientation_(orientation)
 {
@@ -300,9 +298,8 @@ const int Costume::IMUSensor::dataStatus() const
 	return dataStatus_;
 }
 
-Costume::INSOLESensor::INSOLESensor(const SensorID id, const int type,
-	const INSOLESData & insolesData)
-	: Costume::GenericSensor(id, type),	insolesData_(insolesData)
+Costume::INSOLESensor::INSOLESensor(const SensorID id, const INSOLESData & insolesData)
+	: Costume::GenericSensor(id, Costume::INSOLE), insolesData_(insolesData)
 {
 
 }

@@ -487,6 +487,18 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 		}
 	}
 
+	//póżna inicjalizacja pluginów
+	for (int i = 0; i < pluginLoader_->getNumPlugins(); ++i){
+		auto plugin = pluginLoader_->getPlugin(i);
+		auto pluginName = plugin->getPath().stem().string();
+
+		if (plugin->initialize() == false){
+			CORE_LOG_ERROR("Plugin " << pluginName << " loaded from " << plugin->getPath() << " failed to perform initialization");
+			//TODO - teoretycznie należałoby wyłaodwac wszystkie dostarczone przez niego elementy i wyładować go samego, to może pociągnąc rekurencyjnie wyładowywanie innych
+			//TODO - mechanizm do swobodnego ładowania, wyładowywania pluginów
+		}
+	}
+
 	showSplashScreenMessage(QObject::tr("Initializing console"));
 
 	logInitializer_->setConsoleWidget(mainWindow->getConsole());

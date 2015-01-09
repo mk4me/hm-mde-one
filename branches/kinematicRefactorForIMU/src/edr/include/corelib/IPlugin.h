@@ -46,28 +46,14 @@
 #define CORE_GET_PLUGIN_API_VERSION_FUNCTION_NAME CoreGetPluginAPIVersion
 //! Nazwa funkcji pobierającej typ builda pluginu - debug/release
 #define CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME CoreGetPluginBuildType
-//! Nazwa funkcji rozpoczynającej ładowanie pluginu dostarczanymi elementami aplikacji
-#define CORE_INITIALIZE_AND_LOAD_PLUGIN_FUNCTION_NAME CoreCreatePluginInstance
+//! Nazwa funkcji inicjującej kontekst pluginu - opis, język, dostęp do zasobów aplikacji
+#define CORE_INITIALIZE_PLUGIN_CONTEXT_FUNCTION_NAME CoreInitializePluginContext
+//! Nazwa funkcji ładującej elementy logiki pluginu
+#define CORE_PLUGIN_LOAD_LOGIC_CONTENT_FUNCTION_NAME CoreLoadLogicContent
 //! Nazwa funkcji pobierającej wersję bibliotek od których zależny jest również core
 #define CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME CoreGetLibrariesVersions
 //! Nazwa fucnkji inicjującej opis pluginu
 #define CORE_INITIALIZE_PLUGIN_DESCRIPTION_FUNCTION_NAME CoreInitializePluginDescription
-
-//! Ustawia wersję pluginu
-#define CORE_PLUGIN_SET_VERSION(major, minor, patch)					\
-{																		\
-	plugin->setVersion(major, minor, patch);							\
-}
-
-//! Ustawia dostawce pluginu
-#define CORE_PLUGIN_SET_VENDOR(name, shortName, description, contact)	\
-{																		\
-	plugin->setVendor(name, shortName, description, contact);			\
-}
-
-//! Ustawia dostawce pluginu jako PJWSTK - domyślnie
-#define CORE_PLUGIN_SET_PJWSTK_VENDOR									\
-	CORE_PLUGIN_SET_VENDOR("Polsko-Japońska Wyższa Szkoła Technik Komputerowych, Oddział zamiejscowy w Bytomiu", "PJWSTK Bytom", "Uczelnia prywatna", "marek.kulbacki@gmail.com")
 
 //! Ustawia dodatkowy opis pluginu
 #define CORE_PLUGIN_SET_DESCRIPTION(shortName, description)	\
@@ -78,47 +64,22 @@
 //! Rozpoczyna rejestrację pluginu
 //! \param name Nazwa pluginu
 //! \param id ID pluginu
-#define CORE_PLUGIN_BEGIN(name, id)			                           \
+//! \param id langCode Kod domyślnego języka pluginy wg ISO639
+//! \param init Funkcja inicjująca plugin
+//! \param deinit Funkcja deinicjująca plugin - odłancza go od wszystkich zewnętrznych zasobów
+//! \param vendorName Nazwa dostawcy plugninu
+//! \param vendorShortName Krótka nazwa dostawcy pluginu
+//! \param vendorDescription Opis dostawcy pluginu
+//! \param vendorContact Kontakt do dostawcy pluginu
+//! \param versionMajor Nr główny wersji pluginu
+//! \param versionMinor Nr dodatkowy wersji pluginu
+//! \param versionPatch Nr wersji patcha wersji pluginu
+#define CORE_EXT_PLUGIN_BEGIN(name, id, langCode, \
+	init, deinit, \
+	vendorName, vendorShortName, vendorDescription, vendorContact, \
+	versionMajor, versionMinor, versionPatch) \
 PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR                                 \
 extern "C" UTILS_DECL_EXPORT void CORE_GET_PLUGIN_API_VERSION_FUNCTION_NAME( \
-	int* major, int* minor, int* patch)									\
-{                                                                       \
-	*major = CORE_API_MAJOR;				                            \
-	*minor = CORE_API_MINOR;			                              \
-	*patch = CORE_API_PATCH;			                               \
-}                                                                       \
-extern "C" UTILS_DECL_EXPORT unsigned CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME() \
-{                                                                       \
-    return CORE_PLUGIN_BUILD_TYPE;                                      \
-}                                                                       \
-extern "C" UTILS_DECL_EXPORT void CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME(  \
-    int* boostVersion, int* qtVersion, int* stlVersion)                 \
-{                                                                       \
-    *boostVersion = BOOST_VERSION;                                      \
-    *qtVersion = QT_VERSION;                                            \
-    *stlVersion = CORE_CPPLIB_VER;                                      \
-}                                                                       \
-extern "C" UTILS_DECL_EXPORT void CORE_INITIALIZE_PLUGIN_DESCRIPTION_FUNCTION_NAME(core::IPlugin * plugin) \
-{																		\
-	plugin->setName(name);												\
-	plugin->setID(id);													\
-	plugin->setDefaultLanguageCode("en");								\
-}																		\
-extern "C" UTILS_DECL_EXPORT void CORE_INITIALIZE_AND_LOAD_PLUGIN_FUNCTION_NAME(core::IPlugin * plugin, \
-	core::IApplication* coreApplication)								\
-{                                                                       \
-    plugin::__coreApplication = coreApplication;						\
-	CORE_PLUGIN_SET_PJWSTK_VENDOR										\
-	CORE_PLUGIN_SET_VERSION(1, 0, 0)									\
-
-
-//! Rozpoczyna rejestrację pluginu z innym domyslnym językiem tłumaczeń niz angielski
-//! \param name Nazwa pluginu
-//! \param id ID pluginu
-//! \param id langCode Kod domyślnego języka pluginy wg ISO639
-#define CORE_EXT_PLUGIN_BEGIN(name, id, langCode)                           \
-	PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR                                 \
-	extern "C" UTILS_DECL_EXPORT void CORE_GET_PLUGIN_API_VERSION_FUNCTION_NAME( \
 	int* major, int* minor, int* patch)									\
 {                                                                       \
 	*major = CORE_API_MAJOR;				                            \
@@ -140,21 +101,30 @@ extern "C" UTILS_DECL_EXPORT void CORE_INITIALIZE_PLUGIN_DESCRIPTION_FUNCTION_NA
 {																		\
 	plugin->setName(name);												\
 	plugin->setID(id);													\
-	plugin->setDefaultLanguageCode(langCode);								\
+	plugin->setDefaultLanguageCode(langCode);							\
+	plugin->setVendor(vendorName, vendorShortName, vendorDescription, vendorContact); \
+	plugin->setVersion(versionMajor, versionMinor, versionPatch);		\
 }																		\
-extern "C" UTILS_DECL_EXPORT void CORE_INITIALIZE_AND_LOAD_PLUGIN_FUNCTION_NAME(core::IPlugin * plugin, \
+extern "C" UTILS_DECL_EXPORT void CORE_INITIALIZE_PLUGIN_CONTEXT_FUNCTION_NAME(core::IPlugin * plugin, \
 	core::IApplication* coreApplication)								\
 {                                                                       \
 	plugin::__coreApplication = coreApplication;						\
-	CORE_PLUGIN_SET_PJWSTK_VENDOR										\
-	CORE_PLUGIN_SET_VERSION(1, 0, 0)									\
+	plugin->setLoadDescription(init, deinit);						\
+}																		\
+extern "C" UTILS_DECL_EXPORT void CORE_PLUGIN_LOAD_LOGIC_CONTENT_FUNCTION_NAME(core::IPlugin * plugin) \
+{
 
-
+//! Rozpoczyna rejestrację pluginu
+//! \param name Nazwa pluginu
+//! \param id ID pluginu
+#define CORE_PLUGIN_BEGIN(name, id)	CORE_EXT_PLUGIN_BEGIN(name, id, "en", \
+	nullptr, nullptr, \
+	"Polsko-Japońska Wyższa Szkoła Technik Komputerowych, Oddział zamiejscowy w Bytomiu", "PJWSTK Bytom", "Uczelnia prywatna", "marek.kulbacki@gmail.com", \
+	1, 0, 0)
 
 //! Kończy rejestrację pluginu.
 #define CORE_PLUGIN_END                                                 \
 }
-
 
 //! Dodaje usługę zadanego typu do pluginu.
 #define CORE_PLUGIN_ADD_SERVICE(className)                              \
@@ -205,6 +175,11 @@ namespace core {
 class IPlugin : public plugin::IIdentifiable, public plugin::IPluginDescription
 {
 public:
+
+	typedef bool(*initializeFunc)();
+	typedef void(*deinitializeFunc)();
+
+public:
 	//! Pusty destruktor wirtualny
 	virtual ~IPlugin() {}
 
@@ -220,6 +195,12 @@ public:
 	virtual void setVersion(const core::Version::VersionNumberType major,
 		const core::Version::VersionNumberType minor,
 		const core::Version::VersionNumberType patch) = 0;
+
+	//! \param init Funkcja wołana przy inicjalizacji pluginu
+	//! \param deinit Funkcja wołana przy deinicjalizacji pluginu - odłączenie sie od wszystkich zewnętrznych zasobów
+	virtual void setLoadDescription(
+		initializeFunc init,
+		deinitializeFunc deinit) = 0;
 
 	//! \param name Nazwa dostawcy
 	//! \param shortName Skrócona nazwa dostawcy

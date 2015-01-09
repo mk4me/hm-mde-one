@@ -28,31 +28,25 @@
 #include <boost/algorithm/hex.hpp>
 #include <thread>
 #include "IMUCostumeConfigurationWizard.h"
+#include <plugins/imuCostume/IIMUDataSource.h>
+#include <QtWidgets/QProgressDialog>
+#include <QtWidgets/QProgressBar>
+#include "CostumeSkeletonMotionHelper.h"
+#include <plugins/imuCostume/CostumeIMUExtractor.h>
+
+typedef threadingUtils::StreamAdapterT<IMU::CostumeStream::value_type, IMU::SensorsStreamData, IMU::CostumeIMUExtractor> ExtractedCostumeStreamAdapter;
 
 IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	QWidget * parent, const Qt::WindowFlags f)
 	: QWidget(parent, f), ui(new Ui::IMUCostumeListWidget), ds(ds)
 {
 	ui->setupUi(this);
-
 	ui->costumesTreeWidget->clear();
-	for (unsigned int i = 0; i < ds->costumesCout(); ++i){
-		auto ci = new QTreeWidgetItem;
-		const auto a = ds->costumeAddress(i);
-		ci->setText(0, QString::fromStdString(a.ip));
-		ci->setData(0, Qt::UserRole, i);
-		auto s = ds->costumeStatus(i);
-		ci->setText(1, QString("%1").arg(s));
-		ui->costumesTreeWidget->addTopLevelItem(ci);
-	}
-
-	connect(&refreshTimer, SIGNAL(timeout()), this, SLOT(refreshData()));
-	refreshTimer.start(100);
+	QTimer::singleShot(0, this, SLOT(onRefresh()));
 }
 
 IMUCostumeWidget::~IMUCostumeWidget()
 {
-	refreshTimer.stop();
 	delete ui;
 }
 
@@ -62,7 +56,7 @@ void IMUCostumeWidget::onCostumeChange(QTreeWidgetItem * current, QTreeWidgetIte
 	auto idx = ui->costumesTreeWidget->indexOfTopLevelItem(current);
 
 	if (idx < ds->costumesCout()){
-		auto cc = ds->costumeConfiguration(idx);
+		const auto & cc = ds->costumeDescription(idx).sensorsConfiguration;
 
 		for (const auto & st : cc){
 			for (const auto sid : st.second){
@@ -77,7 +71,6 @@ void IMUCostumeWidget::onCostumeChange(QTreeWidgetItem * current, QTreeWidgetIte
 void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 {
 	QMenu * menu = new QMenu(this);
-
 	const auto cc = ds->costumesCout();
 
 	if(cc > 0){
@@ -85,14 +78,14 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 		auto loadAll = menu->addAction(tr("Load all"));
 		auto unloadAll = menu->addAction(tr("Unload all"));	
 
-		if(cc != ds->costumesLoadedCount()){
+		if (cc != ds->loadedCostumesCount()){
 			loadAll->setEnabled(true);
 			connect(loadAll, SIGNAL(triggered()), this, SLOT(onLoadAll()));
 		}else{
 			loadAll->setEnabled(false);
 		}
 
-		if(ds->costumesLoadedCount() > 0){
+		if (ds->loadedCostumesCount() > 0){
 			unloadAll->setEnabled(true);
 			connect(unloadAll, SIGNAL(triggered()), this, SLOT(onUnloadAll()));
 		}else{
@@ -119,65 +112,292 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 		menu->addAction("--- " + tr("No options") + " ---");
 	}
 			
-	menu->exec(mapToGlobal(position));
+	menu->exec(ui->costumesTreeWidget->mapToGlobal(position));
 }
 
 void IMUCostumeWidget::onRefresh()
 {
-	IMUCostumeConfigurationWizard w(utils::shared_ptr<imuCostume::CostumeRawIO>(), 12, 0);
+	IMUCostumeConfigurationWizard w("", "5", 6, 7);
 
-	w.exec();
+	auto r = w.exec();
+
+	bool failed = false;
+	QString message;
+	try{
+		ds->refreshCostumes();
+		ui->costumesTreeWidget->clear();
+
+		for (unsigned int i = 0; i < ds->costumesCout(); ++i){
+			const auto & cd = ds->costumeDescription(i);
+			auto ci = new QTreeWidgetItem;
+			ci->setText(0, QString::fromStdString(cd.rawCostume->ip()));
+			ci->setData(0, Qt::UserRole, i);
+			ci->setText(1, QString("%1").arg(cd.status->load()));
+			ui->costumesTreeWidget->addTopLevelItem(ci);
+		}
+	}
+	catch (std::exception & e)
+	{
+		failed = true;
+		message = tr("Error while refreshing costumes list: ") + QString::fromStdString(e.what());
+	}
+	catch (...){
+		failed = true;
+		message = tr("Unknown error while refreshing costumes list - probably network failure");
+	}
+
+	if (failed == true)
+	{
+		QMessageBox::critical(this, tr("Refresh error"), message);
+	}
+}
+
+bool configureCostume(IMU::IMUCostumeDataSource * ds, const unsigned int idx,
+	IMUCostumeConfigurationWizard::SensorsMappingDetails & mappingDetails,
+	IMU::IMUCostumeCalibrationAlgorithmConstPtr & calibrationAlgorithm,
+	IMU::IMUCostumeMotionEstimationAlgorithmConstPtr & motionEstimationAlgorithm,
+	kinematic::SkeletonConstPtr & skeleton)
+{
+	const auto & cd = ds->costumeDescription(idx);
+	const auto & cfg = cd.sensorsConfiguration;
+	auto imuIT = cfg.find(imuCostume::Costume::IMU);
+	auto grfIT = cfg.find(imuCostume::Costume::INSOLE);
+
+	IMUCostumeConfigurationWizard w("", cd.rawCostume->ip(), imuIT != cfg.end() ? imuIT->second.size() : 0, grfIT != cfg.end() ? grfIT->second.size() : 0);
+
+	if (w.exec() == QDialog::Accepted)
+	{
+		mappingDetails = w.mappingDetails();
+		calibrationAlgorithm = w.calibrationAlgorithm();
+		motionEstimationAlgorithm = w.motionEstimationAlgorithm();
+		skeleton = w.skeleton();
+		return true;
+	}
+
+	return false;
+}
+
+bool configureAlgorithms(QWidget * parent, const IMUCostumeConfigurationWizard::SensorsMappingDetails & mappingDetails,
+	IMU::IMUCostumeCalibrationAlgorithmConstPtr calibrationAlgorithmProto,
+	IMU::IMUCostumeCalibrationAlgorithmPtr & calibrationAlgorithm,
+	IMU::IMUCostumeMotionEstimationAlgorithmConstPtr motionEstimationAlgorithmProto,
+	IMU::IMUCostumeMotionEstimationAlgorithmPtr & motionEstimationAlgorithm,
+	kinematic::SkeletonConstPtr skeleton,
+	IMU::IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts &sensorsAdjustment,
+	IMU::SensorsMapping &sensorsMapping,
+	IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping & estimationAlgorithms,
+	unsigned int & initEstimationAlgorithmsSamples,
+	unsigned int & calibrationAlgorithmMaxSamples)
+{
+	struct WizzardPageDetails
+	{
+		QString title;
+		QString subTitle;
+		QWidget * widget;
+	};
+
+	std::list<WizzardPageDetails> pages;
+
+	initEstimationAlgorithmsSamples = 50;
+
+	for (const auto & md : mappingDetails)
+	{
+		sensorsAdjustment.insert(IMU::IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts::value_type(md.first, { md.second.sensorAdjustment.rotation, md.second.sensorAdjustment.offset }));
+		sensorsMapping.insert(IMU::SensorsMapping::value_type(md.first, md.second.jointName));
+
+		IMU::IIMUOrientationEstimationAlgorithmPtr algorithm(md.second.estimationAlgorithm->create());
+
+		estimationAlgorithms.insert(IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping::value_type(md.first, algorithm));
+
+		auto w = algorithm->configurationWidget();
+
+		if (w != nullptr){
+			WizzardPageDetails pd;
+			pd.title = QObject::tr("Orientation estimation algorithms configuration");
+			pd.subTitle = QObject::tr("Sensor %1 -> Joint %2 : %3 algorithm").arg(md.first).arg(QString::fromStdString(md.second.jointName)).arg(QString::fromStdString(algorithm->name()));
+			pd.widget = w;
+			pages.push_back(pd);
+		}
+
+		initEstimationAlgorithmsSamples = std::max(initEstimationAlgorithmsSamples, algorithm->approximateEstimationDelay());
+	}
+
+	calibrationAlgorithm.reset(calibrationAlgorithmProto->create());
+	calibrationAlgorithm->initialize(skeleton, sensorsMapping, sensorsAdjustment);
+
+	calibrationAlgorithmMaxSamples = std::max<unsigned int>(100, calibrationAlgorithm->maxCalibrationSteps());
+	calibrationAlgorithmMaxSamples = std::min<unsigned int>(calibrationAlgorithmMaxSamples, 1000);
+
+	auto w = calibrationAlgorithm->configurationWidget();
+	if (w != nullptr){
+		WizzardPageDetails pd;
+		pd.title = QObject::tr("Calibration configuration");
+		pd.subTitle = QObject::tr("Algorithm %1").arg(QString::fromStdString(calibrationAlgorithm->name()));
+		pd.widget = w;
+		pages.push_back(pd);
+	}
+
+	motionEstimationAlgorithm.reset(motionEstimationAlgorithmProto->create());	
+
+	w = motionEstimationAlgorithm->configurationWidget();
+	if (w != nullptr){
+		WizzardPageDetails pd;
+		pd.title = QObject::tr("Motion estimation configuration");
+		pd.subTitle = QObject::tr("Algorithm %1").arg(QString::fromStdString(motionEstimationAlgorithm->name()));
+		pd.widget = w;
+		pages.push_back(pd);
+	}
+
+	if (pages.empty() == false){
+
+		QWizard wizard(parent);
+
+		QWizardPage * wp = nullptr;
+
+		for (const auto & p : pages)
+		{
+			wp = new QWizardPage(&wizard);
+			auto layout = new QVBoxLayout;
+			layout->addWidget(p.widget);
+			wp->setLayout(layout);
+			wp->setTitle(p.title);
+			wp->setSubTitle(p.subTitle);
+			wizard.addPage(wp);
+		}
+
+		wp->setFinalPage(true);
+
+		return wizard.exec() == QDialog::Accepted;
+	}
+
+	return true;
 }
 
 void IMUCostumeWidget::onLoad()
 {
 	const unsigned int idx = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).toUInt();
 
-	ds->loadCostume(idx);
-	auto data = ds->costumeData(idx);
+	IMUCostumeConfigurationWizard::SensorsMappingDetails mappingDetails;
 
-	if (data.empty() == false){
+	IMU::IMUCostumeCalibrationAlgorithmConstPtr calibrationAlgorithmProto;
 
-		CostumeStreams cs;
+	IMU::IMUCostumeMotionEstimationAlgorithmConstPtr motionEstimationAlgorithmProto;
 
-		for (auto & d : data){
-			if (d->data()->isSupported(typeid(threadingUtils::IStreamT<imuCostume::ProtocolSendBufferHelper::Buffer>)) == true){
-				cs.rawStream = d->get();
-				cs.rawStreamObserver.reset(new threadingUtils::ResetableStreamStatusObserver);
-				cs.rawStream->attachObserver(cs.rawStreamObserver);
-			}
-			else if (d->data()->isSupported(typeid(threadingUtils::IStreamT<imuCostume::Costume::Data>)) == true){
-				cs.costumeStream = d->get();
-				cs.costumeStreamObserver.reset(new threadingUtils::ResetableStreamStatusObserver);
-				cs.costumeStream->attachObserver(cs.costumeStreamObserver);
-			}
+	kinematic::SkeletonConstPtr skeleton;
+
+	if (configureCostume(ds, idx, mappingDetails, calibrationAlgorithmProto,
+		motionEstimationAlgorithmProto, skeleton) == false){
+
+		return;
+	}
+
+	IMU::IMUCostumeCalibrationAlgorithmPtr calibrationAlgorithm;
+
+	IMU::IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm;
+
+	IMU::IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts sensorsAdjustment;
+	IMU::SensorsMapping sensorsMapping;
+	std::map<imuCostume::Costume::SensorID, IMU::IIMUOrientationEstimationAlgorithmPtr> estimationAlgorithms;
+
+	unsigned int initEstimationAlgorithmsSamples = 0;
+	unsigned int calibrationAlgorithmMaxSamples = 0;
+
+	if (configureAlgorithms(this, mappingDetails, calibrationAlgorithmProto, calibrationAlgorithm,
+		motionEstimationAlgorithmProto, motionEstimationAlgorithm,
+		skeleton, sensorsAdjustment, sensorsMapping, estimationAlgorithms,
+		initEstimationAlgorithmsSamples, calibrationAlgorithmMaxSamples) == false){
+
+		return;
+	}
+
+	PLUGIN_LOG_DEBUG("Configure done");
+
+	const auto cd = ds->costumeDescription(idx);
+
+	const auto & sc = cd.sensorsConfiguration;	
+
+	//! TODO - adaptor
+	class RawToCANopenExtractor
+	{
+	public:
+
+		RawToCANopenExtractor() {}
+		~RawToCANopenExtractor() {}
+
+		bool verify(const IMU::RawDataStream::value_type & val) const
+		{
+			return true;
 		}
 
-		auto address = ds->costumeAddress(idx).ip;
+		void extract(const IMU::RawDataStream::value_type & in, IMU::CANopenFramesStream::value_type & out) const
+		{
+			out = imuCostume::CostumeCANopenIO::extractData(in.buffer.get(), in.length);
+		}
+	};
 
-		costumeStreams[address] = cs;
+	auto canOpenStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::RawDataStream::value_type, IMU::CANopenFramesStream::value_type, RawToCANopenExtractor>>(cd.rawDataStream, RawToCANopenExtractor());
+
+	class CANopenDataExtractor
+	{
+	public:
+
+		CANopenDataExtractor() {}
+
+		bool verify(const IMU::CANopenFramesStream::value_type & a)
+		{
+			return true;
+		}
+
+		void extract(const IMU::CANopenFramesStream::value_type & a, IMU::CostumeStream::value_type & ret) const
+		{
+			ret = imuCostume::Costume::convert(a);
+		}
+	};
+
+	auto costumeStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::CANopenFramesStream::value_type, IMU::CostumeStream::value_type, CANopenDataExtractor>>(canOpenStream, CANopenDataExtractor());
+
+	//TODO - mamy wszystko, jesteœmy po konfiguracji wszystkiego
+	//mo¿na dalej konfigurowaæ kostium - inicjalizowaæ filtry, kalibrowaæ i ³adowaæ ca³oœæ do DataManager
+	//utils::shared_ptr<ExtractedCostumeStreamAdapter> extractorAdapter(new ExtractedCostumeStreamAdapter());
+	auto extractorAdapter = utils::make_shared<ExtractedCostumeStreamAdapter>(costumeStream, IMU::CostumeIMUExtractor(cd.sensorsConfiguration));
+
+	CostumeSkeletonMotionHelper csmh(extractorAdapter,
+		estimationAlgorithms,
+		calibrationAlgorithm,
+		initEstimationAlgorithmsSamples + calibrationAlgorithmMaxSamples,
+		initEstimationAlgorithmsSamples, this);
+
+	PLUGIN_LOG_DEBUG("Calib done");
+
+	int res = csmh.exec();
+
+	if (res == QDialog::Rejected){
+		return;
+	}
+
+	try{
+		motionEstimationAlgorithm->initialize(skeleton, calibrationAlgorithm->sensorsAdjustemnts(), sensorsMapping);
+		ds->loadCalibratedCostume(idx, skeleton, sensorsMapping, sensorsAdjustment, estimationAlgorithms, motionEstimationAlgorithm);
+	}
+	catch (...){
+		QMessageBox::critical(this, tr("Failed to load calibrated costume"), tr("Internal error"));
 	}
 }
 
 void IMUCostumeWidget::onUnload()
 {
 	const unsigned int idx = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).toUInt();
-
-	auto address = ds->costumeAddress(idx).ip;
-
 	ds->unloadCostume(idx);
-
-	costumeStreams.erase(address);
 }
 
 void IMUCostumeWidget::onLoadAll()
 {
-	ds->loadAllCostumes();
+	//ds->loadAllCostumes();
 }
 
 void IMUCostumeWidget::onUnloadAll()
 {
-	ds->unloadAllCostumes();
+	//ds->unloadAllCostumes();
 }
 
 void IMUCostumeWidget::onLoadDatFile()
@@ -214,6 +434,7 @@ void IMUCostumeWidget::testCommunication()
 	}
 }
 
+/*
 void IMUCostumeWidget::refreshData()
 {
 	QString message;
@@ -232,9 +453,9 @@ void IMUCostumeWidget::refreshData()
 
 			boost::algorithm::hex(c, c + buffer.length, std::back_inserter(message));
 
-			/*for (unsigned int i = 0; i < buffer.length; ++i){				
-				message += QString("%1").arg(*c++, 2, 16, QLatin1Char('0'));
-			}*/
+			//for (unsigned int i = 0; i < buffer.length; ++i){				
+			//	message += QString("%1").arg(*c++, 2, 16, QLatin1Char('0'));
+			//}
 			message += "<BR></LI></UL><BR>";
 
 			change = true;
@@ -308,3 +529,4 @@ void IMUCostumeWidget::refreshData()
 		ui->textEdit->setText("No data");
 	}
 }
+*/

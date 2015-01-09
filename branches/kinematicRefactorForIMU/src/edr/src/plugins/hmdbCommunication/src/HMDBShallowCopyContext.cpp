@@ -428,7 +428,7 @@ public:
 			} else {
 				// 
 			}
-		//}
+		}
 	}
 
 	virtual IVariantInitializer * clone() const
@@ -689,11 +689,10 @@ const core::VariantPtr createJointsAngles(const core::ConstVariantsList objects,
 		modelWrapper = modelWrappers.front();
 
 		if (dataWrapper && modelWrapper) {
-			ret = core::Variant::create<kinematic::JointAnglesCollection>();
+			ret = core::Variant::create<kinematic::JointAnglesCollection>();			
 			ret->setInitializer(core::VariantInitializerPtr(new JointsInitializer(dataWrapper, modelWrapper)));
 		}
-	}
-	*/
+	}	
 
 	return ret;
 }

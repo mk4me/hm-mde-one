@@ -591,6 +591,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>oneToOneMappingCheckBox</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>IMUCostumeConfigurationWizard</receiver>
+   <slot>onOneToOneMappingChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>320</x>
+     <y>667</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>365</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onEstimationAlgorithmSelectionModeChange(int)</slot>
@@ -601,5 +617,6 @@
   <slot>verifyEstimationAlgorithms(int,int)</slot>
   <slot>verifyCalibrationAlgorithm(int)</slot>
   <slot>verifyMotionEstimationAlgorithm(int)</slot>
+  <slot>onOneToOneMappingChanged(int)</slot>
  </slots>
 </ui>

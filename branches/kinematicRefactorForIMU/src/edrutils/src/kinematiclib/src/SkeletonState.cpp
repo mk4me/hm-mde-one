@@ -117,10 +117,17 @@ public:
 	}
 
 	//! \param position Globalna pozycja
-	void set(const osg::Vec3 & position)
+	void setGlobal(const osg::Vec3 & position)
 	{
 		node->setPosition(node->getPosition() + position - globalPosition());
 		globalMatrix.setTrans(position);
+	}
+
+	//! \param position Globalna pozycja
+	void setLocal(const osg::Vec3 & position)
+	{
+		node->setPosition(position);
+		globalRequiresRefresh = true;
 	}
 
 	//! \param rotation Lokalna rotacja
@@ -131,10 +138,17 @@ public:
 	}
 
 	//! \param orientation Globalna orientacja
-	void set(const osg::Quat & orientation)
+	void setGlobal(const osg::Quat & orientation)
 	{
 		node->setAttitude(node->getAttitude() * orientation / globalOrientation());
 		globalMatrix.setRotate(orientation);
+	}
+
+	//! \param orientation Globalna orientacja
+	void setLocal(const osg::Quat & orientation)
+	{
+		node->setAttitude(orientation);
+		globalRequiresRefresh = true;
 	}
 
 	//! \param translation Lokalne przesuniêcie
@@ -148,10 +162,18 @@ public:
 
 	//! \param position Globalna pozycja
 	//! \param orientation Globalna orientacja
-	void set(const osg::Vec3 & position, const osg::Quat & orientation)
+	void setGlobal(const osg::Vec3 & position, const osg::Quat & orientation)
 	{
-		set(position);
-		set(orientation);
+		setGlobal(position);
+		setGlobal(orientation);
+	}
+
+	//! \param position Globalna pozycja
+	//! \param orientation Globalna orientacja
+	void setLocal(const osg::Vec3 & position, const osg::Quat & orientation)
+	{
+		setLocal(position);
+		setLocal(orientation);
 	}
 
 private:
@@ -233,9 +255,14 @@ void SkeletonState::Joint::update(const osg::Vec3 & translation)
 	impl->update(translation);
 }
 
-void SkeletonState::Joint::set(const osg::Vec3 & position)
+void SkeletonState::Joint::setGlobal(const osg::Vec3 & position)
 {
-	impl->set(position);
+	impl->setGlobal(position);
+}
+
+void SkeletonState::Joint::setLocal(const osg::Vec3 & position)
+{
+	impl->setLocal(position);
 }
 
 void SkeletonState::Joint::update(const osg::Quat & rotation)
@@ -243,9 +270,14 @@ void SkeletonState::Joint::update(const osg::Quat & rotation)
 	impl->update(rotation);
 }
 
-void SkeletonState::Joint::set(const osg::Quat & orientation)
+void SkeletonState::Joint::setGlobal(const osg::Quat & orientation)
 {
-	impl->set(orientation);
+	impl->setGlobal(orientation);
+}
+
+void SkeletonState::Joint::setLocal(const osg::Quat & orientation)
+{
+	impl->setLocal(orientation);
 }
 
 void SkeletonState::Joint::update(const osg::Vec3 & translation, const osg::Quat & rotation)
@@ -253,9 +285,14 @@ void SkeletonState::Joint::update(const osg::Vec3 & translation, const osg::Quat
 	impl->update(translation, rotation);
 }
 
-void SkeletonState::Joint::set(const osg::Vec3 & position, const osg::Quat & orientation)
+void SkeletonState::Joint::setGlobal(const osg::Vec3 & position, const osg::Quat & orientation)
 {
-	impl->set(position, orientation);
+	impl->setGlobal(position, orientation);
+}
+
+void SkeletonState::Joint::setLocal(const osg::Vec3 & position, const osg::Quat & orientation)
+{
+	impl->setLocal(position, orientation);
 }
 
 SkeletonState::JointPtr SkeletonState::create(kinematic::JointConstPtr joint, unsigned int & activeJointsCount)
@@ -343,12 +380,22 @@ void SkeletonState::update(SkeletonState & skeletonState, const FullStateChange 
 	updateOrientationsAndPosition<decltype(stateChange.begin())>(skeletonState.root(), it);
 }
 
-void SkeletonState::set(SkeletonState & skeletonState, const SimpleStateChange & newState)
+void SkeletonState::setGlobal(SkeletonState & skeletonState, const SimpleStateChange & newState)
 {
 
 }
 
-void SkeletonState::set(SkeletonState & skeletonState, const FullStateChange & newState)
+void SkeletonState::setLocal(SkeletonState & skeletonState, const SimpleStateChange & newState)
+{
+
+}
+
+void SkeletonState::setGlobal(SkeletonState & skeletonState, const FullStateChange & newState)
+{
+
+}
+
+void SkeletonState::setLocal(SkeletonState & skeletonState, const FullStateChange & newState)
 {
 
 }
