@@ -11,13 +11,14 @@
 #include <string>
 #include <osg/Quat>
 #include <osg/Vec3d>
+#include <corelib/IIdentifiable.h>
 
 class QWidget;
 
 namespace IMU
 {
 	//! Generic quaternion-based orientation filter - generates orientation as a quaternion using IMU sensor fusion
-	class IIMUOrientationEstimationAlgorithm
+	class IIMUOrientationEstimationAlgorithm : public plugin::IIdentifiable
 	{
 	public:
 		//! Make it polymorphic
@@ -25,33 +26,30 @@ namespace IMU
 
 		//! \return Nowy algorytm estymacji
 		virtual IIMUOrientationEstimationAlgorithm * create() const = 0;
-
-		// Public Interface
-		//! Returns internal filter name
+		
+		//! \return Internal filter name
 		virtual std::string name() const = 0;
 
 		//! Resets filter internal state
 		virtual void reset() = 0;
 
-		//! Returns number (n) of frames that are probably unstable after filter create() / reset() - call estimate() at least (n) times
+		//! \return Number (n) of frames that are probably unstable after filter create() / reset() - call estimate() at least (n) times
 		virtual unsigned int approximateEstimationDelay() const { return 0; }
 
 		//! \param orientation Orientacja z której mo¿e zacz¹æ algorytm
 		virtual void initialize(const osg::Quat & orientation) {}
 
-		//! Calculates orientation from sensor fusion
-		/*!
-		\param inAcc accelerometer vector from IMU
-		\param inGyro gyroscope vector from IMU
-		\param inMag magnetometer vector from IMU
-		\param inDeltaT time between acquisitions in seconds [s] from IMU sensor
-		\return Returns estimated orientation.
-		*/
-		virtual osg::Quat estimate(const osg::Vec3d& inAcc,
-			const osg::Vec3d& inGyro, const osg::Vec3d& inMag,
+		//! Calculates orientation from sensor fusion		
+		//! \param accelerometer accelerometer vector from IMU
+		//! \param gyroscope gyroscope vector from IMU
+		//! \param magnetometer magnetometer vector from IMU
+		//! \param inDeltaT time between acquisitions in seconds [s] from IMU sensor
+		//! \return Returns estimated orientation.		
+		virtual osg::Quat estimate(const osg::Vec3d& accelerometer,
+			const osg::Vec3d& gyroscope, const osg::Vec3d& magnetometer,
 			const double inDeltaT) = 0;
 
-		// Not used
+		//! \return Widget konfiguracyjny
 		virtual QWidget* configurationWidget() { return nullptr; }
 	};
 

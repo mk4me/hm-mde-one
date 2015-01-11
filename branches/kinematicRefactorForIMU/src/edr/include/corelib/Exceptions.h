@@ -30,44 +30,59 @@ namespace  core {
 
 	//! klasa dodaje logowanie do standardowych wyj¹tków z stl-a
 	template <typename BaseException>
-	class Exception : public BaseException, private ExceptionLogger
+	class ExceptionImpl : public BaseException, private ExceptionLogger
 	{
 		//static_assert((std::is_base_of<std::exception, Exception>::value), "Base class should inherit from std::exception");
 	public:
-		explicit Exception(const std::string& message) : BaseException(message){
+		template<class... Args>
+		ExceptionImpl(Args &&... arguments)
+			: BaseException(std::forward<Args>(arguments)...)
+		{
 
 		}
 
 		//! destruktor wykonuje faktyczne logowanie
-		virtual ~Exception() {
+		virtual ~ExceptionImpl()
+		{
 			if (ExceptionLogger::_log) {
 				LOG_DEBUG(ExceptionLogger::_log, "First chance exception: " << BaseException::what());
 			}
 		}
 	};
 
+	class Exception
+	{
+	public:
+
+		template<typename ExceptionType, class... Args>
+		void Throw(Args &&... arguments)
+		{
+			throw ExceptionImpl<ExceptionType>(arguments...);
+		}
+	};	
+
 	// rozszerzone wyj¹tki z stl-a, u¿ycie: throw core::runtime_error("whatever...");
 	
-	typedef Exception<std::bad_cast> bad_cast;
-	typedef Exception<std::bad_alloc> bad_alloc;
-	typedef Exception<std::bad_array_new_length> bad_array_new_length;
-	typedef Exception<std::bad_exception> bad_exception;
-	typedef Exception<std::bad_function_call> bad_function_call;
-	typedef Exception<std::invalid_argument> bad_typeid;
-	typedef Exception<std::invalid_argument> bad_weak_ptr;
+	typedef ExceptionImpl<std::bad_cast> bad_cast;
+	typedef ExceptionImpl<std::bad_alloc> bad_alloc;
+	typedef ExceptionImpl<std::bad_array_new_length> bad_array_new_length;
+	typedef ExceptionImpl<std::bad_exception> bad_exception;
+	typedef ExceptionImpl<std::bad_function_call> bad_function_call;
+	typedef ExceptionImpl<std::invalid_argument> bad_typeid;
+	typedef ExceptionImpl<std::invalid_argument> bad_weak_ptr;
 
-	typedef Exception<std::logic_error> logic_error;
-	typedef Exception<std::out_of_range> out_of_range;
-	typedef Exception<std::domain_error> domain_error;
-	typedef Exception<std::future_error> future_error;
-	typedef Exception<std::invalid_argument> invalid_argument;
-	typedef Exception<std::length_error> length_error;
+	typedef ExceptionImpl<std::logic_error> logic_error;
+	typedef ExceptionImpl<std::out_of_range> out_of_range;
+	typedef ExceptionImpl<std::domain_error> domain_error;
+	typedef ExceptionImpl<std::future_error> future_error;
+	typedef ExceptionImpl<std::invalid_argument> invalid_argument;
+	typedef ExceptionImpl<std::length_error> length_error;
 
-	typedef Exception<std::runtime_error> runtime_error;
-	typedef Exception<std::overflow_error> overflow_error;
-	typedef Exception<std::range_error> range_error;
-	typedef Exception<std::system_error> system_error;
-	typedef Exception<std::underflow_error> underflow_error;
+	typedef ExceptionImpl<std::runtime_error> runtime_error;
+	typedef ExceptionImpl<std::overflow_error> overflow_error;
+	typedef ExceptionImpl<std::range_error> range_error;
+	typedef ExceptionImpl<std::system_error> system_error;
+	typedef ExceptionImpl<std::underflow_error> underflow_error;
 
 }
 

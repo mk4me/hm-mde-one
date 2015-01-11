@@ -14,39 +14,7 @@
 #include "IMUPerspective.h"
 #include "CostumeSkeletonMotionHelper.h"
 
-class OrientationEstimator
-{
-public:
-
-	OrientationEstimator(const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping & orientationAlgorithms)
-		: orientationAlgorithms(orientationAlgorithms), previousTime(0)
-	{
-
-	}
-
-	void operator()(IMU::SensorsStreamData & data) const
-	{
-		double deltaTime = (data.timestamp > previousTime) ? (data.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + data.timestamp);
-		previousTime = data.timestamp;
-
-		for (auto & d : data.sensorsData)
-		{
-			auto it = orientationAlgorithms.find(d.first);
-
-			d.second.orientation = it->second->estimate(d.second.accelerometer, d.second.gyroscope, d.second.magnetometer, deltaTime);
-		}
-	}
-
-	~OrientationEstimator()
-	{
-
-	}
-
-private:
-	mutable imuCostume::CostumeCANopenIO::Timestamp previousTime;
-	const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping orientationAlgorithms;
-};
-
+typedef threadingUtils::StreamAdapterT<IMU::SensorsStreamData, IMU::SkeletonMotionState, IMU::ExtractCostumeMotion> RealMotionStream;
 
 enum
 {
@@ -54,150 +22,6 @@ enum
 	GyroIdx = 1,
 	MagIdx = 2
 };
-
-class ArrayExtractor
-{
-public:
-	ArrayExtractor(const unsigned int idx) : idx(idx) {}
-	ArrayExtractor(const ArrayExtractor & Other) : idx(Other.idx) {}
-	~ArrayExtractor() {}
-
-	template<typename AT>
-	bool verify(const AT & a) const
-	{
-		return true;
-	}
-
-	template<typename AT, typename Ret>
-	void extract(const AT & a, Ret & ret) const
-	{
-		ret = a[idx];
-	}
-
-private:
-	const unsigned int idx;
-};
-
-class OrientationExtractor
-{
-public:
-	OrientationExtractor(const unsigned int idx) : idx(idx) {}
-	OrientationExtractor(const OrientationExtractor & Other) : idx(Other.idx) {}
-	~OrientationExtractor() {}
-	
-	bool verify(const IMU::SkeletonMotionState & a) const
-	{
-		return true;
-	}
-
-	void extract(const IMU::SkeletonMotionState & a, osg::Quat & ret) const
-	{
-		auto it = a.jointsOrientations.begin();
-		std::advance(it, idx);
-		ret = it->second;
-	}
-
-private:
-	const unsigned int idx;
-};
-
-class CANopenDataExtractor
-{
-public:
-
-	CANopenDataExtractor() {}
-
-	bool verify(const IMU::CANopenFramesStream::value_type & a)
-	{
-		return true;
-	}
-
-	void extract(const IMU::CANopenFramesStream::value_type & a, IMU::CostumeStream::value_type & ret) const
-	{
-		ret = imuCostume::Costume::convert(a);		
-	}
-};
-
-class ArrayStreamAdapter
-{
-public:
-
-	template<typename Base, typename Dest>
-	static threadingUtils::StreamAdapterT<Base, Dest, ArrayExtractor> * create(typename threadingUtils::StreamAdapterT<Base, Dest, ArrayExtractor>::BaseStreamTypePtr baseStream, const unsigned int idx)
-	{
-		return new threadingUtils::StreamAdapterT<Base, Dest, ArrayExtractor>(baseStream, ArrayExtractor(idx));
-	}	
-};
-
-class ExtractCostumeMotion
-{
-public:
-	ExtractCostumeMotion(
-		kinematic::SkeletonConstPtr skeleton,
-		const IMU::SensorsMapping & sensorsMapping,
-		const IMU::DataIndexToJointMapping & dataMapping,
-		const IMU::IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts & sensorsAdjustments,
-		IMU::IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm)
-		: motionEstimationAlgorithm(motionEstimationAlgorithm),
-		sensorsMapping(sensorsMapping), dataMapping(dataMapping), sensorsAdjustments(sensorsAdjustments),
-		skeleton(skeleton)
-	{
-
-	}
-
-	virtual ~ExtractCostumeMotion()
-	{
-
-	}
-
-	bool verify(const IMU::SensorsStreamData & input) const
-	{
-		return true;
-	}
-
-	void extract(const IMU::SensorsStreamData & input, IMU::SkeletonMotionState & output) const
-	{
-		double deltaTime = deltaTime = (input.timestamp > previousTime) ? (input.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + input.timestamp);
-		previousTime = input.timestamp;
-
-		IMU::IMUCostumeMotionEstimationAlgorithm::MotionState motionState;
-		motionState.position = osg::Vec3(0, 0, 0);		
-
-		for (const auto & i : input.sensorsData)
-		{
-			const auto & adjustment = sensorsAdjustments.find(i.first)->second;			
-			motionState.jointsOrientations.insert(std::map<std::string, osg::Quat>::value_type(sensorsMapping.left.find(i.first)->get_right(), i.second.orientation * adjustment.rotation.inverse()));
-		}
-
-		kinematic::SkeletonState ss(kinematic::SkeletonState::create(*skeleton));
-
-		kinematic::SkeletonState::Joint::visit(ss.root(), [&motionState](kinematic::SkeletonState::JointPtr joint) -> void
-		{
-			joint->setGlobal(motionState.jointsOrientations.find(joint->name())->second);
-		});
-
-		try{
-			auto ret = motionEstimationAlgorithm->estimate(motionState, input.sensorsData, deltaTime);
-			output.position = ret.position;
-			output.jointsOrientations = ret.jointsOrientations;
-			output.timestamp = (double)previousTime / 1000.0;
-		}
-		catch (...){
-
-		}
-	}
-
-private:
-	kinematic::SkeletonConstPtr skeleton;	
-	IMU::IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts sensorsAdjustments;
-	const IMU::SensorsMapping sensorsMapping;
-	const IMU::DataIndexToJointMapping dataMapping;
-	mutable imuCostume::CostumeCANopenIO::Timestamp previousTime;
-	const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping orientationAlgorithms;
-	const IMU::IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm;
-};
-
-typedef threadingUtils::StreamAdapterT<IMU::SensorsStreamData, IMU::SkeletonMotionState, ExtractCostumeMotion> RealMotionStream;
 
 using namespace IMU;
 
@@ -246,7 +70,8 @@ void IMUCostumeDataSource::resfreshCostumesData()
 						streamBuffer.length = length;
 						std::memcpy(streamBuffer.buffer.get(), buffer.data(), length);
 						//raw data
-						cd.second.rawDataStream->pushData(streamBuffer);						
+						cd.second.rawDataStream->pushData(streamBuffer);
+						PLUGIN_LOG_DEBUG("Costume " << cd.second.rawCostume->ip() << " data received");
 					}
 					else{
 						PLUGIN_LOG_DEBUG("Costume " << cd.second.rawCostume->ip() << " timeout on data receive");
@@ -274,10 +99,11 @@ void IMUCostumeDataSource::finalize()
 		refreshThread.join();
 	}
 
-	std::list<IIMUOrientationEstimationAlgorithmConstPtr>().swap(orientationEstimationAlgorithms_);
-	std::list<IMUCostumeCalibrationAlgorithmConstPtr>().swap(calibrationAlgorithms_);
-	std::list<IMUCostumeMotionEstimationAlgorithmConstPtr>().swap(motionEstimationAlgorithms_);
-	std::list<kinematic::SkeletonConstPtr>().swap(skeletonModels_);
+	OrientationEstimationAlgorithms().swap(orientationEstimationAlgorithms_);
+	CostumeCalibrationAlgorithms().swap(calibrationAlgorithms_);
+	CostumeMotionEstimationAlgorithms().swap(motionEstimationAlgorithms_);
+	SkeletonModels().swap(skeletonModels_);
+	CostumesProfiles().swap(costumesProfiles_);
 }
 
 void IMUCostumeDataSource::update(double deltaTime)
@@ -363,6 +189,7 @@ const bool IMUCostumeDataSource::refreshCostumes()
 		try{
 			CostumeDescription cd;
 			cd.rawCostume.reset(new imuCostume::CostumeRawIO(ip, 1234));
+			cd.rawDataStream.reset(new RawDataStream);
 			cd.status.reset(new std::atomic<ConnectionStatus>(ONLINE));
 			configureCostume(cd);
 			refreshCostumeSensorsConfiguration(cd);
@@ -479,6 +306,7 @@ public:
 
 	void extract(const RawDataStream::value_type & in, CANopenFramesStream::value_type & out) const
 	{
+		PLUGIN_LOG_ERROR("RawToCANopenExtractor");
 		out = imuCostume::CostumeCANopenIO::extractData(in.buffer.get(), in.length);
 	}
 };
@@ -562,6 +390,14 @@ void IMUCostumeDataSource::loadRawCostume(const unsigned int idx)
 	if (it != costumesData.end()){
 		throw std::runtime_error("Costume already loaded");
 	}
+	
+	/*
+	CostumeDescription cd;
+	cd.rawDataStream.reset(new IMU::RawDataStream);
+	CostumeData cData;
+	fillRawCostumeData(cData, cd);
+	cd.rawDataStream->pushData(imuCostume::ProtocolSendBufferHelper::Buffer());
+	*/
 
 	CostumeData cData;
 	fillRawCostumeData(cData, cd);
@@ -581,19 +417,14 @@ void IMUCostumeDataSource::loadRawCostume(const unsigned int idx)
 		PLUGIN_LOG_ERROR("Unknown error while loading raw costume data");
 	}
 }
-
 void IMUCostumeDataSource::loadCalibratedCostume(const unsigned int idx,
-	kinematic::SkeletonConstPtr skeleton,
-	const SensorsMapping & sensorsMapping,
-	const IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts & sensorsAdjustments,
-	const OrientationEstimationAlgorithmsMapping & orientationAlgorithms,
-	IMU::IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm)
+	const CostumeProfileInstance & profileInstance)
 {
 	std::lock_guard<std::recursive_mutex > lock(synch);	
 	
 	const auto & cd = costumeDescription(idx);
 
-	if (orientationAlgorithms.size() != cd.sensorsStatus.size())
+	if (profileInstance.sensorsOrientationEstimationAlgorithms.size() != cd.sensorsStatus.size())
 	{
 		throw std::runtime_error("Mismatch in number of loaded sensors orientation estimation algorithms and costume configuration");
 	}
@@ -615,7 +446,8 @@ void IMUCostumeDataSource::loadCalibratedCostume(const unsigned int idx,
 	ow->set(cData.completeImuStream);
 	cData.domainData.push_back(ow);
 
-	auto estimatedData = utils::make_shared<threadingUtils::StreamProcessorT<IMU::SensorsStreamData, OrientationEstimator>>(cData.completeImuStream, OrientationEstimator(orientationAlgorithms));
+	auto estimatedData = utils::make_shared<threadingUtils::StreamProcessorT<IMU::SensorsStreamData, OrientationEstimator>>(cData.completeImuStream,
+		OrientationEstimator(profileInstance.sensorsOrientationEstimationAlgorithms));
 
 	ow = core::Variant::create<CostumeSkeletonMotionHelper::SensorsStream>();
 	ow->setMetadata("core/name", QObject::tr("Complete filtered IMU data").toStdString());
@@ -632,13 +464,19 @@ void IMUCostumeDataSource::loadCalibratedCostume(const unsigned int idx,
 
 	//mapowanie pozycji wektora do nazwy jointa w szkielecie i stanie
 
-	kinematic::Joint::visit(skeleton->root, [cData](kinematic::JointPtr joint) -> void
+	kinematic::Joint::visit(profileInstance.skeleton->root, [cData](kinematic::JointPtr joint) -> void
 	{
 		cData.skeletonMotion->dataToModelMapping.insert(DataIndexToJointMapping::value_type(cData.skeletonMotion->dataToModelMapping.size(), joint->name));
 	});
 
-	cData.skeletonMotion->skeleton = skeleton;
-	cData.skeletonMotion->stream.reset(new RealMotionStream(estimatedData, ExtractCostumeMotion(skeleton, sensorsMapping, cData.skeletonMotion->dataToModelMapping, sensorsAdjustments, motionEstimationAlgorithm)));
+	cData.skeletonMotion->skeleton = profileInstance.skeleton;
+	cData.skeletonMotion->stream.reset(new RealMotionStream(estimatedData,
+		ExtractCostumeMotion(profileInstance.skeleton,
+		profileInstance.sensorsMapping,
+		cData.skeletonMotion->dataToModelMapping,
+		profileInstance.sensorsAdjustments,
+		profileInstance.motionEstimationAlgorithm)));
+
 	ow = core::Variant::create<MotionStream>();
 	ow->setMetadata("core/name", QObject::tr("Calibrated skeleton motion stream").toStdString());
 	ow->set(cData.skeletonMotion);
@@ -651,7 +489,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const unsigned int idx,
 
 		for (auto & sID : sIT->second){
 
-			auto it = sensorsMapping.left.find(sID);
+			auto it = profileInstance.sensorsMapping.left.find(sID);
 
 			//znaleŸæ mapowanie i indeks iteratora
 			auto idx = cData.skeletonMotion->dataToModelMapping.right.find(it->second)->get_left();
@@ -679,10 +517,6 @@ void IMUCostumeDataSource::loadCalibratedCostume(const unsigned int idx,
 
 		//cData.sensorsData = std::move(sData);
 	}
-
-
-
-
 
 	try{
 		auto t = memoryDM->transaction();
@@ -815,77 +649,167 @@ void IMUCostumeDataSource::unloadAllCostumes()
 }
 */
 
-void IMUCostumeDataSource::registerOrientationEstimationAlgorithm(IIMUOrientationEstimationAlgorithm * algorithm)
+void IMUCostumeDataSource::registerOrientationEstimationAlgorithm(const IIMUOrientationEstimationAlgorithm * algorithm)
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
-	auto it = std::find_if(orientationEstimationAlgorithms_.begin(), orientationEstimationAlgorithms_.end(), [algorithm](std::list<IIMUOrientationEstimationAlgorithmConstPtr>::value_type val)
-	{
-		return val.get() == algorithm;
-	});
-	if (it != orientationEstimationAlgorithms_.end()){
+
+	if (algorithm == nullptr){
+		throw std::runtime_error("Uninitialized orientation estimation algorithm");
+	}
+
+	if (orientationEstimationAlgorithms_.find(algorithm->ID()) == orientationEstimationAlgorithms_.end()){
+		orientationEstimationAlgorithms_.insert(OrientationEstimationAlgorithms::value_type(algorithm->ID(), IIMUOrientationEstimationAlgorithmConstPtr(algorithm)));
+	}
+	else{
 		throw std::runtime_error("Orientation estimation algorithm already registered");
 	}
-
-	orientationEstimationAlgorithms_.push_back(IIMUOrientationEstimationAlgorithmConstPtr(algorithm));
 }
 
-void IMUCostumeDataSource::registerCostumeCalibrationAlgorithm(IMUCostumeCalibrationAlgorithm * algorithm)
+void IMUCostumeDataSource::registerCostumeCalibrationAlgorithm(const IMUCostumeCalibrationAlgorithm * algorithm)
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
-	auto it = std::find_if(calibrationAlgorithms_.begin(), calibrationAlgorithms_.end(), [algorithm](std::list<IMUCostumeCalibrationAlgorithmConstPtr>::value_type val)
-	{
-		return val.get() == algorithm;
-	});
-	if (it != calibrationAlgorithms_.end()){
+
+	if (algorithm == nullptr){
+		throw std::runtime_error("Uninitialized costume calibration algorithm");
+	}
+
+	if (calibrationAlgorithms_.find(algorithm->ID()) == calibrationAlgorithms_.end()){
+		calibrationAlgorithms_.insert(CostumeCalibrationAlgorithms::value_type(algorithm->ID(), IMUCostumeCalibrationAlgorithmConstPtr(algorithm)));
+	}
+	else{
 		throw std::runtime_error("Costume calibration algorithm already registered");
 	}
-
-	calibrationAlgorithms_.push_back(IMUCostumeCalibrationAlgorithmConstPtr(algorithm));
 }
 
-void IMUCostumeDataSource::registerMotionEstimationAlgorithm(IMUCostumeMotionEstimationAlgorithm * algorithm)
+void IMUCostumeDataSource::registerMotionEstimationAlgorithm(const IMUCostumeMotionEstimationAlgorithm * algorithm)
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
-	auto it = std::find_if(motionEstimationAlgorithms_.begin(), motionEstimationAlgorithms_.end(), [algorithm](std::list<IMUCostumeMotionEstimationAlgorithmConstPtr>::value_type val)
-	{
-		return val.get() == algorithm;
-	});
-	if (it != motionEstimationAlgorithms_.end()){
-		throw std::runtime_error("Motion estimation algorithm already registered");
+
+	if (algorithm == nullptr){
+		throw std::runtime_error("Uninitialized motion estimation algorithm");
 	}
 
-	motionEstimationAlgorithms_.push_back(IMUCostumeMotionEstimationAlgorithmConstPtr(algorithm));
+	if (motionEstimationAlgorithms_.find(algorithm->ID()) == motionEstimationAlgorithms_.end()){
+		motionEstimationAlgorithms_.insert(CostumeMotionEstimationAlgorithms::value_type(algorithm->ID(), IMUCostumeMotionEstimationAlgorithmConstPtr(algorithm)));
+	}
+	else{
+		throw std::runtime_error("Motion estimation algorithm already registered");
+	}
 }
 
 void IMUCostumeDataSource::registerSkeletonModel(kinematic::SkeletonConstPtr skeleton)
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
-	//TODO - weryfikacja czy model ju¿ istnieje
-	skeletonModels_.push_back(skeleton);
+
+	if (skeleton == nullptr){
+		throw std::runtime_error("Uninitialized skeleton model");
+	}
+
+	auto it = std::find_if(skeletonModels_.begin(), skeletonModels_.end(), [skeleton](kinematic::SkeletonConstPtr s) -> bool
+	{
+		return s == skeleton;
+	});
+
+	if (it == skeletonModels_.end()){
+		skeletonModels_.push_back(skeleton);
+	}
+	else{
+		throw std::runtime_error("Skeleton model already registered");
+	}
+}	
+
+bool verifyProfile(const IMUCostumeDataSource::CostumeProfile & profile)
+{
+	bool ret = true;
+
+	if (profile.name.empty() == true || profile.calibrationAlgorithm == nullptr ||
+		profile.motionEstimationAlgorithm == nullptr ||
+		profile.skeleton == nullptr || profile.sensorsMapping.empty() == true ||
+		profile.sensorsMapping.size() != profile.sensorsOrientationEstimationAlgorithms.size() ||
+		profile.sensorsMapping.size() != profile.sensorsAdjustments.size()){
+
+		ret = false;
+	}
+
+	return ret;
 }
 
-std::list<IIMUOrientationEstimationAlgorithmConstPtr> IMUCostumeDataSource::orientationEstimationAlgorithms() const
+void IMUCostumeDataSource::registerCostumeProfile(const CostumeProfile & profile)
+{
+	if (verifyProfile(profile) == false){
+		throw std::runtime_error("Incomplete profile");
+	}
+
+	std::lock_guard<std::recursive_mutex> lock(synch);
+
+	if (costumesProfiles_.find(profile.name) != costumesProfiles_.end()){
+		throw std::runtime_error("Profile already registered");
+	}
+
+	//produjemy rejestrowac brakujace elementy profilu
+
+	//szkielet
+	auto it = std::find_if(skeletonModels_.begin(), skeletonModels_.end(), [profile](kinematic::SkeletonConstPtr s) -> bool
+	{
+		return s == profile.skeleton;
+	});
+
+	if (it == skeletonModels_.end()){
+		skeletonModels_.push_back(profile.skeleton);
+	}
+
+	//algorytm kalibracji
+	if (calibrationAlgorithms_.find(profile.calibrationAlgorithm->ID()) == calibrationAlgorithms_.end())
+	{
+		calibrationAlgorithms_.insert(CostumeCalibrationAlgorithms::value_type(profile.calibrationAlgorithm->ID(), profile.calibrationAlgorithm));
+	}
+
+	//algorytm estymacji ruchu
+	if (motionEstimationAlgorithms_.find(profile.motionEstimationAlgorithm->ID()) == motionEstimationAlgorithms_.end())
+	{
+		motionEstimationAlgorithms_.insert(CostumeMotionEstimationAlgorithms::value_type(profile.motionEstimationAlgorithm->ID(), profile.motionEstimationAlgorithm));
+	}
+
+	// algorytmy estymacji
+	for (const auto & ea : profile.sensorsOrientationEstimationAlgorithms)
+	{
+		if (orientationEstimationAlgorithms_.find(ea.second->ID()) == orientationEstimationAlgorithms_.end()){
+			orientationEstimationAlgorithms_.insert(OrientationEstimationAlgorithms::value_type(ea.second->ID(), ea.second));
+		}
+	}
+
+	//rejestrujemy profil
+	costumesProfiles_.insert(CostumesProfiles::value_type(profile.name, profile));
+}
+
+IMUCostumeDataSource::OrientationEstimationAlgorithms IMUCostumeDataSource::orientationEstimationAlgorithms() const
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
 	return orientationEstimationAlgorithms_;
 }
 
-std::list<IMUCostumeCalibrationAlgorithmConstPtr> IMUCostumeDataSource::calibrationAlgorithms() const
+IMUCostumeDataSource::CostumeCalibrationAlgorithms IMUCostumeDataSource::calibrationAlgorithms() const
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
 	return calibrationAlgorithms_;
 }
 
-std::list<IMUCostumeMotionEstimationAlgorithmConstPtr> IMUCostumeDataSource::motionEstimationAlgorithms() const
+IMUCostumeDataSource::CostumeMotionEstimationAlgorithms IMUCostumeDataSource::motionEstimationAlgorithms() const
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
 	return motionEstimationAlgorithms_;
 }
 
-std::list<kinematic::SkeletonConstPtr> IMUCostumeDataSource::skeletonModels() const
+IMUCostumeDataSource::SkeletonModels IMUCostumeDataSource::skeletonModels() const
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
 	return skeletonModels_;
+}
+
+IMUCostumeDataSource::CostumesProfiles IMUCostumeDataSource::costumesProfiles() const
+{
+	std::lock_guard<std::recursive_mutex> lock(synch);
+	return costumesProfiles_;
 }
 
 /*

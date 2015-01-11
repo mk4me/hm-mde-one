@@ -1,7 +1,9 @@
 BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS (
-	Wrappers.h
+	Export.h
+	Streams.h
+	CostumeIMUExtractor.h	
 	IIMUDataSource.h
 	IIMUOrientationEstimationAlgorithm.h
 	IMUCostumeCalibrationAlgorithm.h
@@ -10,6 +12,7 @@ SET_PUBLIC_HEADERS (
 )
 
 SET_PRIVATE_HEADERS (
+	CostumeSkeletonMotionHelper.h
 	OrientationDelegate.h
 	IMUCostumeListWidget.h
 	DataSource.h
@@ -19,10 +22,13 @@ SET_PRIVATE_HEADERS (
 	IMUPerspective.h
 	PCH.h
 	IMUCostumeCalibrationWizard.h
-	IMUCostumeConfigurationWizard.h
+	IMUCostumeProfileEditionWizard.h
+	IMUCostumeProfileConfigurationWizard.h
 )
 
 SET_SOURCE_FILES(
+	CostumeIMUExtractor.cpp
+	CostumeSkeletonMotionHelper.cpp
 	OrientationDelegate.cpp
 	IMUCostumeListWidget.cpp
 	DataSource.cpp
@@ -33,20 +39,22 @@ SET_SOURCE_FILES(
 	PCH.cpp
 	Plugin.cpp
 	IMUCostumeCalibrationWizard.cpp
-	IMUCostumeConfigurationWizard.cpp
+	IMUCostumeProfileEditionWizard.cpp
+	IMUCostumeProfileConfigurationWizard.cpp
 )
 
 SET_MOC_FILES(
+	CostumeSkeletonMotionHelper.h
 	OrientationDelegate.h
 	IMUCostumeListWidget.h
 	IMUCostumeCalibrationWizard.h
-	IMUCostumeConfigurationWizard.h
+	IMUCostumeProfileEditionWizard.h
 )
 
 SET_UI_FILES(
 	IMUCostumeListWidget.ui
 	IMUCostumeCalibrationWizard.ui
-	IMUCostumeConfigurationWizard.ui
+	IMUCostumeProfileEditionWizard.ui
 )
 
 SET_RC_FILES(

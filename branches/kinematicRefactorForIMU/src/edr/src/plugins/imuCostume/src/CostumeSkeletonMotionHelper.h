@@ -35,8 +35,7 @@ public:
 	//! \param calibratinStageChangeValue Iloœæ próbek po któych rozpoczynamy kalibracjê (algorytmy estymacji orientacji zosta³y zainicjowane)
 	//! \param parent Obiekt rodzic
 	CostumeSkeletonMotionHelper(SensorsStreamPtr sensorsStream,
-		const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping & estimationAlgorithms,
-		IMU::IMUCostumeCalibrationAlgorithmPtr calibrationAlgorithm,
+		IMU::IIMUDataSource::CostumeProfileInstance * costumeProfile,
 		const unsigned int maxSamples,
 		const unsigned int calibratinStageChangeValue, QWidget * parent = nullptr);
 
@@ -59,10 +58,8 @@ private:
 	SensorsStreamPtr sensorsStream;
 	//! Obserwator strumienia kostiumu
 	utils::shared_ptr<threadingUtils::ResetableStreamStatusObserver> observer;
-	//! Algorytmy estymacji orientacji czujników
-	IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping estimationAlgorithms;
-	//! Algorytm kalibracji
-	IMU::IMUCostumeCalibrationAlgorithmPtr calibrationAlgorithm;
+	//! Profil wg którego bêdziemy siê konfigurowaæ
+	IMU::IIMUDataSource::CostumeProfileInstance * costumeProfile;
 	//! Numer próbki przy której przechodzimy do fazy kalibracji
 	unsigned int calibratinStageChangeValue;
 	//! Poprzednia próbka czasu

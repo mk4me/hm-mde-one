@@ -3,6 +3,8 @@
 #include <chrono>
 #include <thread>
 #include <QtWidgets/QProgressDialog>
+#include <corelib/ILog.h>
+#include <corelib/IPlugin.h>
 
 void estimate(IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping & mapping,
 	const IMU::SensorsData & sensorsData, const double deltaT)
@@ -14,12 +16,10 @@ void estimate(IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping & mapp
 }
 
 CostumeSkeletonMotionHelper::CostumeSkeletonMotionHelper(SensorsStreamPtr sensorsStream,
-	const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping & estimationAlgorithms,
-	IMU::IMUCostumeCalibrationAlgorithmPtr calibrationAlgorithm,
+	IMU::IIMUDataSource::CostumeProfileInstance * costumeProfile,
 	const unsigned int maxSamples,
 	const unsigned int calibratinStageChangeValue, QWidget * parent)
-	: sensorsStream(sensorsStream), estimationAlgorithms(estimationAlgorithms),
-	calibrationAlgorithm(calibrationAlgorithm),
+	: sensorsStream(sensorsStream), costumeProfile(costumeProfile),
 	observer(new threadingUtils::ResetableStreamStatusObserver),
 	calibratinStageChangeValue(calibratinStageChangeValue), previousTime(0), first(true)
 {
@@ -46,7 +46,9 @@ int CostumeSkeletonMotionHelper::exec()
 
 void CostumeSkeletonMotionHelper::perform()
 {
+	PLUGIN_LOG_DEBUG("Performing data check");
 	if (observer->modified() == true){
+		PLUGIN_LOG_DEBUG("New data processing");
 		IMU::SensorsStreamData data;
 		sensorsStream->data(data);
 		double deltaTime = deltaTime = (data.timestamp > previousTime) ? (data.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + data.timestamp);
@@ -60,9 +62,9 @@ void CostumeSkeletonMotionHelper::perform()
 		}
 
 		if (pd->value() < calibratinStageChangeValue){
-			estimate(estimationAlgorithms, data.sensorsData, deltaTime);
+			estimate(costumeProfile->sensorsOrientationEstimationAlgorithms, data.sensorsData, deltaTime);
 		} else{
-			bool ret = calibrationAlgorithm->calibrate(data.sensorsData, deltaTime);
+			bool ret = costumeProfile->calibrationAlgorithm->calibrate(data.sensorsData, deltaTime);
 			if (ret == true){
 				pd->setValue(pd->maximum());
 			}

@@ -97,12 +97,9 @@ namespace IMU
 		virtual const CostumeDescription & costumeDescription(const unsigned int idx) const override;
 
 		virtual void loadRawCostume(const unsigned int idx) override;
+
 		virtual void loadCalibratedCostume(const unsigned int idx,
-			kinematic::SkeletonConstPtr skeleton,
-			const SensorsMapping & sensorsMapping,
-			const IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts & sensorsAdjustments,
-			const OrientationEstimationAlgorithmsMapping & orientationAlgorithms,
-			IMU::IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm) override;
+			const CostumeProfileInstance & profileInstance) override;
 
 		virtual void unloadCostume(const unsigned int idx);
 
@@ -112,15 +109,17 @@ namespace IMU
 
 		virtual core::ConstVariantsList costumeData(const unsigned int idx) const override;
 
-		virtual void registerOrientationEstimationAlgorithm(IIMUOrientationEstimationAlgorithm * algorithm) override;
-		virtual void registerCostumeCalibrationAlgorithm(IMUCostumeCalibrationAlgorithm * algorithm) override;
-		virtual void registerMotionEstimationAlgorithm(IMUCostumeMotionEstimationAlgorithm * algorithm) override;
+		virtual void registerOrientationEstimationAlgorithm(const IIMUOrientationEstimationAlgorithm * algorithm) override;
+		virtual void registerCostumeCalibrationAlgorithm(const IMUCostumeCalibrationAlgorithm * algorithm) override;
+		virtual void registerMotionEstimationAlgorithm(const IMUCostumeMotionEstimationAlgorithm * algorithm) override;
 		virtual void registerSkeletonModel(kinematic::SkeletonConstPtr skeleton) override;
-
-		virtual std::list<IIMUOrientationEstimationAlgorithmConstPtr> orientationEstimationAlgorithms() const override;
-		virtual std::list<IMUCostumeCalibrationAlgorithmConstPtr> calibrationAlgorithms() const override;
-		virtual std::list<IMUCostumeMotionEstimationAlgorithmConstPtr> motionEstimationAlgorithms() const override;
-		virtual std::list<kinematic::SkeletonConstPtr> skeletonModels() const override;
+		virtual void registerCostumeProfile(const CostumeProfile & profile) override;
+		
+		virtual OrientationEstimationAlgorithms orientationEstimationAlgorithms() const override;
+		virtual CostumeCalibrationAlgorithms calibrationAlgorithms() const override;
+		virtual CostumeMotionEstimationAlgorithms motionEstimationAlgorithms() const override;
+		virtual SkeletonModels skeletonModels() const override;
+		virtual CostumesProfiles costumesProfiles() const override;
 
 	private:
 
@@ -171,10 +170,11 @@ namespace IMU
 		std::map<std::string, CostumeData> costumesData;
 		std::map<std::string, CostumeDescription> costumesDescription;
 
-		std::list<IIMUOrientationEstimationAlgorithmConstPtr> orientationEstimationAlgorithms_;
-		std::list<IMUCostumeCalibrationAlgorithmConstPtr> calibrationAlgorithms_;
-		std::list<IMUCostumeMotionEstimationAlgorithmConstPtr> motionEstimationAlgorithms_;
-		std::list<kinematic::SkeletonConstPtr> skeletonModels_;
+		OrientationEstimationAlgorithms orientationEstimationAlgorithms_;
+		CostumeCalibrationAlgorithms calibrationAlgorithms_;
+		CostumeMotionEstimationAlgorithms motionEstimationAlgorithms_;
+		SkeletonModels skeletonModels_;
+		CostumesProfiles costumesProfiles_;
 	};
 }
 

@@ -612,13 +612,14 @@ namespace threadingUtils {
 				if (buffersAttached() == true){
 					extractor_.extract(bd, currentData_);
 					unpackRequired_ = false;
-					pushBufferData(currentData_);
-					notify();					
+					pushBufferData(currentData_);					
 				}
 				else{
 					unpackRequired_ = true;
 					baseData_ = bd;
 				}
+
+				notify();
 			}
 		}
 
