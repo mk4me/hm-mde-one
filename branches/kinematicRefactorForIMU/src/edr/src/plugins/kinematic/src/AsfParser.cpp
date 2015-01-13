@@ -2,7 +2,6 @@
 #include <corelib/Filesystem.h>
 #include <plugins/kinematic/Wrappers.h>
 #include <acclaimformatslib/AsfParser.h>
-//#include <kinematiclib/SkeletalParsers.h>
 #include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/kinematic/Wrappers.h>

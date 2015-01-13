@@ -144,13 +144,13 @@ void SkeletalVisualizationSchemeHelper::updateJointTransforms(const std::vector<
     Vec3 shift = parentPos - joint->position;
     Quat pc = joint->orientation;	    
     Quat rotation = idx < rotations.size() ? rotations[idx] * pc  * parentRot : pc * parentRot;
+	shift = rotation * shift;
 
-    shift = rotation * shift;
-
-	auto pos = parentPos + shift;
+    auto pos = parentPos + shift;
 
 	pointsPositions[idx] = pos;
 
+	
 	for(auto child : joint->children) {
 		updateJointTransforms(rotations, child, rotation, pos, pointsPositions);
 	}

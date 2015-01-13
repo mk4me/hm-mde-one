@@ -377,24 +377,15 @@ QIcon* KinematicVisualizer::createIcon()
     return new QIcon(QString::fromUtf8(":/kinematic/icons/3D.png"));
 }
 
-//void KinematicVisualizer::actionTriggered( QAction* action )
-//{
-//    resetScene();
-//    currentDrawer = drawersByAction[action];
-//    transformNode->addChild(currentDrawer->getNode());
-//}
 
 void KinematicVisualizer::resetScene()
 {
     if (rootNode) {
-        for (int i = rootNode->getNumChildren() - 1; i >= 0; --i) {
-            rootNode->removeChild(i);
-        }
+		rootNode->removeChildren(0, rootNode->getNumChildren());
+		transformNode = new osg::PositionAttitudeTransform();
+		rootNode->addChild(createFloor());
+		rootNode->addChild(transformNode);
     }
-
-    transformNode = new osg::PositionAttitudeTransform();
-    rootNode->addChild(createFloor());
-    rootNode->addChild(transformNode);
 }
 
 void KinematicVisualizer::setRight()
@@ -488,16 +479,8 @@ void KinematicVisualizer::updateIndicator()
 void KinematicVisualizer::setActiveSerie( plugin::IVisualizer::ISerie *serie )
 {
 	auto ks = dynamic_cast<KinematicSerieBase*>(serie);
-
-	int idx = -1;
-
-    for (unsigned int i = 0; i < series.size(); ++i) {
-        if (series[i] == ks) {
-            idx = i;
-            break;
-        }
-    }
-    
+	auto it = std::find(series.begin(), series.end(), ks);
+    int idx = it != series.end() ? std::distance(series.begin(), it) : -1;
 	setActiveSerie(idx);
 }
 

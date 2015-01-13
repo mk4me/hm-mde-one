@@ -24,7 +24,6 @@ void KinematicParser::parse( const std::string & source)
 {
 	skeletonData = utils::ObjectWrapper::create<acclaim::MotionData>();
 	core::Filesystem::Path path(source);
-    //path = std::string("C:/Users/Wojciech/Desktop/nowyTest/2011-10-28-B0047-S02-T04.amc");
 	using namespace kinematic;
 	using acclaim::AsfParser;
 

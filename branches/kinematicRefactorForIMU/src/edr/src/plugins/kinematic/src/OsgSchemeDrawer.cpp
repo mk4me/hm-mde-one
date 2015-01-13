@@ -940,20 +940,12 @@ const std::vector<utils::shared_ptr<ConnectionInstance>> ConnectionInstance::cre
 	stateset->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 	stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
 
-	utils::shared_ptr<ConnectionInstance> ci(new ConnectionInstance);
-	ci->connectionIndices = connections[0].range;
-	ci->cylinder = osgutils::CustomPrimitivesFactory::createCylinder(complexity, connections[0].length, 5.0, osg::Vec4(0.5, 0.5, 0.5, 0.5));
-	ci->geode = new osg::Geode;
-	ci->geode->setStateSet(stateset);
-	ci->posAtt = new osg::PositionAttitudeTransform;
-	ci->geode->addDrawable(ci->cylinder.geom);
-	ci->posAtt->addChild(ci->geode);
-	ret[0] = ci;
 
-	for (unsigned int i = 1; i < connections.size(); ++i){
+	auto cylinder = osgutils::CustomPrimitivesFactory::createCylinder(complexity, 1.0, 5.0, osg::Vec4(0.5, 0.5, 0.5, 0.5));
+	for (unsigned int i = 0; i < connections.size(); ++i){
 		utils::shared_ptr<ConnectionInstance> lci(new ConnectionInstance);
 		lci->connectionIndices = connections[i].range;
-		lci->cylinder = osgutils::CustomPrimitivesHelper::cloneForHeightChange(ci->cylinder, connections[i].length);
+		lci->cylinder = osgutils::CustomPrimitivesHelper::cloneForHeightChange(cylinder, connections[i].length);
 		lci->geode = new osg::Geode;
 		lci->geode->setStateSet(stateset);
 		lci->posAtt = new osg::PositionAttitudeTransform;

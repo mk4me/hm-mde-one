@@ -412,7 +412,9 @@ public:
 			if (!data->frames.empty()) {
 				kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
 				kinematic::SkeletonPtr skeleton = utils::make_shared<kinematic::Skeleton>();
-				kinematic::Skeleton::convert(*model, *skeleton);
+				if (!kinematic::Skeleton::convert(*model, *skeleton)) {
+					throw std::runtime_error("Unable to convert skeleton");
+				}
 				kinematic::SkeletonStatesPtr states = utils::make_shared<kinematic::SkeletonStates>();
 				states->frameTime = data->frameTime;
 				auto firstFrame = data->frames[0];

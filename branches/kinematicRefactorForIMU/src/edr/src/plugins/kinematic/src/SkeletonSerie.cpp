@@ -17,7 +17,7 @@ SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer,
 	xyzAxis(false),
 	name("Skeleton"),
 	pointsDrawer(new PointsDrawer(3)),
-	connectionsDrawer(new ConnectionsSphereDrawer(3)),
+	connectionsDrawer(new ConnectionsDrawer(3)),
 	jointsMapping(new SkeletonJointsMapping),
 	localRootNode(new osg::PositionAttitudeTransform)
 {
@@ -44,7 +44,7 @@ SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer,
 	float ratio = jointAngles->getLengthRatio();
 	if (ratio > 0) {
 		pointsDrawer->setSize(0.02 / ratio);
-		connectionsDrawer->setSize(0.005 / ratio);
+		connectionsDrawer->setSize(0.05 / ratio);
 		localRootNode->setScale(osg::Vec3(ratio, ratio, ratio));
 	}
 	pointsDrawer->setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
@@ -175,31 +175,31 @@ void SkeletonSerie::createGhostAndTrajectories()
 		pointsPositions[i] = allPointsPositions[i * 30];
 	}
 
-	//ghostDrawer->init(pointsPositions,
-	//	jointsMapping->generateMappedConnectionsDescription());
-	//ghostDrawer->pointsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
-	//ghostDrawer->connectionsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
-	//ghostDrawer->pointsDrawer()->setSize(0.02);
-	//ghostDrawer->connectionsDrawer()->setSize(0.005);
-	//ghostDrawer->getNode()->setNodeMask(false);
-	//
-	//localRootNode->addChild(ghostDrawer->getNode());
+	ghostDrawer->init(pointsPositions,
+		jointsMapping->generateMappedConnectionsDescription());
+	ghostDrawer->pointsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
+	ghostDrawer->connectionsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
+	ghostDrawer->pointsDrawer()->setSize(0.02);
+	ghostDrawer->connectionsDrawer()->setSize(0.005);
+	ghostDrawer->getNode()->setNodeMask(false);
+	
+	localRootNode->addChild(ghostDrawer->getNode());
 
 	// teraz punkty dla ducha przerabiam na punkty dla trajektorii
 	// przechodzę z klatek po czasie do klatek po stawach - generalnie transpozycja
 
-	//std::vector<std::vector<osg::Vec3>> trajectories(jointsMapping->mappedJointsNumber());
-	//
-	//for (auto it = allPointsPositions.begin(); it != allPointsPositions.end(); ++it){
-	//	for (unsigned int i = 0; i < jointsMapping->mappedJointsNumber(); ++i){
-	//		trajectories[i].push_back((*it)[i]);
-	//	}
-	//}
-	//
-	//trajectoriesManager->initialize(trajectories);
-	//trajectoriesManager->setVisible(false);
-	//trajectoriesManager->setColor(osg::Vec4(1.0, 0.0, 0.0, 0.5));
-	//localRootNode->addChild(trajectoriesManager->getNode());
+	std::vector<std::vector<osg::Vec3>> trajectories(jointsMapping->mappedJointsNumber());
+	
+	for (auto it = allPointsPositions.begin(); it != allPointsPositions.end(); ++it){
+		for (unsigned int i = 0; i < jointsMapping->mappedJointsNumber(); ++i){
+			trajectories[i].push_back((*it)[i]);
+		}
+	}
+	
+	trajectoriesManager->initialize(trajectories);
+	trajectoriesManager->setVisible(false);
+	trajectoriesManager->setColor(osg::Vec4(1.0, 0.0, 0.0, 0.5));
+	localRootNode->addChild(trajectoriesManager->getNode());
 }
 
 void SkeletonSerie::setGhostVisible(const bool visible)
