@@ -47,6 +47,7 @@ SET_PUBLIC_HEADERS(
 	dynamictreemodel.h
 	modeltest.h
 	StringConversionTools.h
+	SamplesStatus.h
 )
 
 #------------------------------------------------------------------------------
@@ -61,6 +62,7 @@ SET_SOURCE_FILES(
 	CommandStack.cpp
 	dynamictreemodel.cpp
 	modeltest.cpp
+	SamplesStatus.cpp
 )
 
 SET_CONFIGURATION_INPUT_FILES(

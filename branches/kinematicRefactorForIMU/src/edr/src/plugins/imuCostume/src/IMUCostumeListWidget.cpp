@@ -44,6 +44,7 @@ IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	ui->setupUi(this);
 	ui->costumesTreeWidget->clear();
 	ui->sensorsTree->clear();
+	connect(&statusRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshStatus()));
 	QTimer::singleShot(0, this, SLOT(onRefresh()));
 }
 
@@ -58,12 +59,14 @@ void IMUCostumeWidget::onCostumeChange(QTreeWidgetItem * current, QTreeWidgetIte
 	auto idx = ui->costumesTreeWidget->indexOfTopLevelItem(current);
 
 	if (idx < ds->costumesCout()){
-		const auto & cc = ds->costumeDescription(idx).sensorsConfiguration;
+		const auto & cd = ds->costumeDescription(idx);
+		const auto & cc = cd.sensorsConfiguration;
 
 		for (const auto & st : cc){
 			for (const auto sid : st.second){
 				auto sItem = new QTreeWidgetItem;
 				sItem->setText(0, QObject::tr("Sensor %1").arg(sid));
+				sItem->setText(1, QString("%1").arg(cd.sensorsStatus.find(sid)->second.status));
 				ui->sensorsTree->addTopLevelItem(sItem);
 			}
 		}
@@ -117,119 +120,13 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 	menu->exec(ui->costumesTreeWidget->mapToGlobal(position));
 }
 
+void IMUCostumeWidget::refreshStatus()
+{
+
+}
+
 void IMUCostumeWidget::onRefresh()
 {
-	/*
-	auto idx = -1;
-	{
-		imuCostume::Costume::SensorIDsSet ids;
-		for (unsigned int i = 0; i < 5; ++i)
-		{
-			ids.insert(i);
-		}
-
-		IMUCostumeProfileEditionWizard ew(ids, tr("New profile"), this);
-
-		auto res = ew.exec();
-
-		if (res != QDialog::Accepted){
-			return;
-		}
-
-		PLUGIN_LOG_DEBUG("Profile creation done");
-
-		auto profileInstance = IMU::IIMUDataSource::CostumeProfileInstance::create(ew.costumeProfile());
-		auto cw = IMU::IMUCostumeProfileConfigurationWizard::create(profileInstance);
-		if (cw != nullptr){
-			res = cw->exec();
-			if (res != QDialog::Accepted){
-				return;
-			}
-
-			PLUGIN_LOG_DEBUG("Profile configuration done");
-		}
-
-		//! TODO - adaptor
-		class RawToCANopenExtractor
-		{
-		public:
-
-			RawToCANopenExtractor() {}
-			~RawToCANopenExtractor() {}
-
-			bool verify(const IMU::RawDataStream::value_type & val) const
-			{
-				return true;
-			}
-
-			void extract(const IMU::RawDataStream::value_type & in, IMU::CANopenFramesStream::value_type & out) const
-			{
-				PLUGIN_LOG_DEBUG("RawToCANopenExtractor");
-				out = imuCostume::CostumeCANopenIO::extractData(in.buffer.get(), in.length);
-			}
-		};
-
-		auto rawDataStream = utils::make_shared < IMU::RawDataStream > ();
-
-		auto canOpenStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::RawDataStream::value_type, IMU::CANopenFramesStream::value_type, RawToCANopenExtractor>>(rawDataStream, RawToCANopenExtractor());
-
-		class CANopenDataExtractor
-		{
-		public:
-
-			CANopenDataExtractor() {}
-
-			bool verify(const IMU::CANopenFramesStream::value_type & a)
-			{
-				return true;
-			}
-
-			void extract(const IMU::CANopenFramesStream::value_type & a, IMU::CostumeStream::value_type & ret) const
-			{
-				PLUGIN_LOG_DEBUG("CANopenDataExtractor");
-				ret = imuCostume::Costume::convert(a);
-			}
-		};
-
-		unsigned int initializeFramesCount = 50;
-
-		for (const auto & sa : profileInstance.sensorsOrientationEstimationAlgorithms)
-		{
-			initializeFramesCount = std::max(initializeFramesCount, sa.second->approximateEstimationDelay());
-		}
-
-		auto costumeStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::CANopenFramesStream::value_type, IMU::CostumeStream::value_type, CANopenDataExtractor>>(canOpenStream, CANopenDataExtractor());
-
-		//TODO - mamy wszystko, jesteœmy po konfiguracji wszystkiego
-		//mo¿na dalej konfigurowaæ kostium - inicjalizowaæ filtry, kalibrowaæ i ³adowaæ ca³oœæ do DataManager
-		utils::shared_ptr<ExtractedCostumeStreamAdapter> extractorAdapter; // (new ExtractedCostumeStreamAdapter());
-		//auto extractorAdapter = utils::make_shared<ExtractedCostumeStreamAdapter>(costumeStream, IMU::CostumeIMUExtractor(cd.sensorsConfiguration));
-
-		CostumeSkeletonMotionHelper csmh(extractorAdapter,
-			&profileInstance, initializeFramesCount + profileInstance.calibrationAlgorithm->maxCalibrationSteps(),
-			initializeFramesCount, this);
-
-		res = csmh.exec();
-
-		if (res == QDialog::Rejected){
-			return;
-		}
-
-		PLUGIN_LOG_DEBUG("Costume initialization");
-
-		try{
-			profileInstance.motionEstimationAlgorithm->initialize(profileInstance.skeleton,
-				profileInstance.calibrationAlgorithm->sensorsAdjustemnts(), profileInstance.sensorsMapping);
-
-			ds->loadCalibratedCostume(idx, profileInstance);
-		}
-		catch (...){
-			QMessageBox::critical(this, tr("Failed to load calibrated costume"), tr("Internal error"));
-		}
-
-		PLUGIN_LOG_DEBUG("Costume loaded");
-	}*/
-
 	bool failed = false;
 	QString message;
 	try{
@@ -241,8 +138,8 @@ void IMUCostumeWidget::onRefresh()
 			const auto & cd = ds->costumeDescription(i);
 			auto ci = new QTreeWidgetItem;
 			ci->setText(0, QString::fromStdString(cd.rawCostume->ip()));
-			ci->setData(0, Qt::UserRole, i);
-			ci->setText(1, QString("%1").arg(cd.status->load()));
+			ci->setData(0, Qt::UserRole, QString::fromStdString(cd.rawCostume->ip()));
+			ci->setText(1, QString("%1").arg(cd.status));
 			ui->costumesTreeWidget->addTopLevelItem(ci);
 		}
 	}
@@ -293,27 +190,9 @@ void IMUCostumeWidget::onLoad()
 			PLUGIN_LOG_DEBUG("Profile configuration done");
 		}
 
-		//! TODO - adaptor
-		class RawToCANopenExtractor
-		{
-		public:
+		profileInstance.calibrationAlgorithm->initialize(profileInstance.skeleton, profileInstance.sensorsMapping, profileInstance.sensorsAdjustments);		
 
-			RawToCANopenExtractor() {}
-			~RawToCANopenExtractor() {}
-
-			bool verify(const IMU::RawDataStream::value_type & val) const
-			{
-				return true;
-			}
-
-			void extract(const IMU::RawDataStream::value_type & in, IMU::CANopenFramesStream::value_type & out) const
-			{
-				PLUGIN_LOG_DEBUG("RawToCANopenExtractor");
-				out = imuCostume::CostumeCANopenIO::extractData(in.buffer.get(), in.length);
-			}
-		};
-
-		auto canOpenStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::RawDataStream::value_type, IMU::CANopenFramesStream::value_type, RawToCANopenExtractor>>(cd.rawDataStream, RawToCANopenExtractor());
+		auto canOpenStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::RawDataStream::value_type, IMU::CANopenFramesStream::value_type, IMU::RawToCANopenExtractor>>(cd.rawDataStream, IMU::RawToCANopenExtractor());
 
 		class CANopenDataExtractor
 		{
@@ -340,11 +219,10 @@ void IMUCostumeWidget::onLoad()
 			initializeFramesCount = std::max(initializeFramesCount, sa.second->approximateEstimationDelay());
 		}
 
-		auto costumeStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::CANopenFramesStream::value_type, IMU::CostumeStream::value_type, CANopenDataExtractor>>(canOpenStream, CANopenDataExtractor());
+		auto costumeStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::CANopenFramesStream::value_type, IMU::CostumeStream::value_type, IMU::CANopenDataExtractor>>(canOpenStream, IMU::CANopenDataExtractor());
 
-		//TODO - mamy wszystko, jesteœmy po konfiguracji wszystkiego
+		//mamy wszystko, jesteœmy po konfiguracji wszystkiego
 		//mo¿na dalej konfigurowaæ kostium - inicjalizowaæ filtry, kalibrowaæ i ³adowaæ ca³oœæ do DataManager
-		//utils::shared_ptr<ExtractedCostumeStreamAdapter> extractorAdapter(new ExtractedCostumeStreamAdapter());
 		auto extractorAdapter = utils::make_shared<ExtractedCostumeStreamAdapter>(costumeStream, IMU::CostumeIMUExtractor(cd.sensorsConfiguration));
 
 		CostumeSkeletonMotionHelper csmh(extractorAdapter,
@@ -425,100 +303,3 @@ void IMUCostumeWidget::testCommunication()
 		errorcode += "_";
 	}
 }
-
-/*
-void IMUCostumeWidget::refreshData()
-{
-	QString message;
-
-	bool change = false;
-
-	for (const auto & cd : costumeStreams){
-		message += "<B>Costume " + QString::fromStdString(cd.first) + "</B><BR>";
-
-		if (cd.second.rawStreamObserver->modified() == true){
-			change = true;
-			imuCostume::ProtocolSendBufferHelper::Buffer buffer;
-			cd.second.rawStream->data(buffer);
-			message += QString("<U>Raw data:</U><BR><UL><LI>Length: %1</LI><LI>Data:<BR>").arg(buffer.length);
-			uint8_t * c = buffer.buffer.get();
-
-			boost::algorithm::hex(c, c + buffer.length, std::back_inserter(message));
-
-			//for (unsigned int i = 0; i < buffer.length; ++i){				
-			//	message += QString("%1").arg(*c++, 2, 16, QLatin1Char('0'));
-			//}
-			message += "<BR></LI></UL><BR>";
-
-			change = true;
-		}
-
-		if (cd.second.costumeStreamObserver->modified() == true){
-			change = true;
-			imuCostume::Costume::Data data;
-			cd.second.costumeStream->data(data);
-			message += QString("<U>Unpacked costume data:</U><UL><LI>Timestamp: %1</LI><LI>Data:<UL>").arg(data.timestamp);
-
-			if (data.sensorsData.empty() == true){
-				message += "<LI>No data</LI>";
-			}
-			else{
-				for (const auto & sd : data.sensorsData){
-					message += QString("<LI>Sensor %1:<UL><LI>Type: %2</LI>").arg(sd->id()).arg(sd->type());
-
-					auto imuData = utils::dynamic_pointer_cast<const imuCostume::Costume::IMUSensor>(sd);
-					if (imuData == nullptr){
-						message += "<LI>No data or unknown data</LI>";
-					}
-					else{
-						message += QString("<LI>Status: %1</LI><LI>Accelerometer: ").arg(imuData->dataStatus());
-						if (imuData->dataStatus() & imuCostume::Costume::IMUSensor::ACC_DATA){
-							message += QString("[%1, %2, %3]").arg(imuData->accelerometer().x()).arg(imuData->accelerometer().y()).arg(imuData->accelerometer().z());
-						}
-						else{
-							message += "No data";
-						}
-						message += "</LI>";
-
-						message += QString("<LI>Gyroscope: ");
-						if (imuData->dataStatus() & imuCostume::Costume::IMUSensor::GYRO_DATA){
-							message += QString("[%1, %2, %3]").arg(imuData->gyroscope().x()).arg(imuData->gyroscope().y()).arg(imuData->gyroscope().z());
-						}
-						else{
-							message += "No data";
-						}
-						message += "</LI>";
-
-						message += QString("<LI>Magnetometer: ");
-						if (imuData->dataStatus() & imuCostume::Costume::IMUSensor::MAG_DATA){
-							message += QString("[%1, %2, %3]").arg(imuData->magnetometer().x()).arg(imuData->magnetometer().y()).arg(imuData->magnetometer().z());
-						}
-						else{
-							message += "No data";
-						}
-						message += "</LI>";
-
-						message += QString("<LI>Orientation: ");
-						if (imuData->dataStatus() & imuCostume::Costume::IMUSensor::ORIENT_DATA){
-							message += QString("[(%1, %2, %3), %4]").arg(imuData->orientation().x()).arg(imuData->orientation().y()).arg(imuData->orientation().z()).arg(imuData->orientation().w());
-						}
-						else{
-							message += "No data";
-						}
-						message += "</LI></UL></LI>";
-					}
-				}
-			}
-
-			message += "</UL></LI></UL>";
-		}
-	}
-
-	if (change == true){
-		ui->textEdit->setText(message);
-	}
-	else{
-		ui->textEdit->setText("No data");
-	}
-}
-*/

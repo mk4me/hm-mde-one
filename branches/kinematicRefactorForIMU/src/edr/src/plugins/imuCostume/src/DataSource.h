@@ -20,6 +20,7 @@
 #include <corelib/ThreadPool.h>
 #include <corelib/HierarchyDataItem.h>
 #include <plugins/imuCostume/CostumeIMUExtractor.h>
+#include <utils/SamplesStatus.h>
 
 typedef threadingUtils::StreamAdapterT<IMU::CostumeStream::value_type, IMU::SensorsStreamData, IMU::CostumeIMUExtractor> ExtractedCostumeStreamAdapter;
 
@@ -34,8 +35,17 @@ namespace IMU
 
 	private:
 
+		struct ExtendedCostumeDescription : public CostumeDescription
+		{
+			ExtendedCostumeDescription();
+			~ExtendedCostumeDescription();
+
+			utils::SamplesStatus samplesStatus;
+			std::map<imuCostume::Costume::SensorID, utils::SamplesStatus> sensorsSamplesStatus;
+		};
+
 		struct SensorData
-		{			
+		{
 			utils::shared_ptr<IMUStream> dataStream;
 			std::vector<utils::shared_ptr<Vec3Stream>> vec3dStreams;
 			utils::shared_ptr<QuatStream> orientationStream;
@@ -43,7 +53,7 @@ namespace IMU
 		};
 
 		struct CostumeData
-		{						
+		{
 			std::map<imuCostume::Costume::SensorID, SensorData> sensorsData;
 			CANopenFramesStreamPtr CANopenStream;
 			CostumeStreamPtr costumeStream;
@@ -52,7 +62,7 @@ namespace IMU
 			CostumeSkeletonMotionPtr skeletonMotion;
 
 			core::HierarchyDataItemPtr hierarchyRootItem;
-			core::VariantsList domainData;
+			core::VariantsList domainData;			
 		};
 
 	public:
@@ -168,7 +178,7 @@ namespace IMU
 		core::HierarchyItemPtr recordedItems;
 
 		std::map<std::string, CostumeData> costumesData;
-		std::map<std::string, CostumeDescription> costumesDescription;
+		std::map<std::string, ExtendedCostumeDescription> costumesDescription;
 
 		OrientationEstimationAlgorithms orientationEstimationAlgorithms_;
 		CostumeCalibrationAlgorithms calibrationAlgorithms_;

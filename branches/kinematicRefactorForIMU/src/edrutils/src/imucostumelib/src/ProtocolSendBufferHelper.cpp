@@ -46,6 +46,7 @@ ProtocolSendBufferHelper::Buffer ProtocolSendBufferHelper::createBuffer()
 
 	while (frames.begin() != frames.end()){
 		const auto l = 2 + ((frames.front().buffer[1] & 0xF0) >> 4);
+		UTILS_DEBUG(l <= CANopenFrame::SizeLimits::MaxSize);
 		if (l + ret.length > localBuffer.max_size()){
 			break;
 		}
@@ -79,5 +80,6 @@ ProtocolSendBufferHelper::Buffer& ProtocolSendBufferHelper::Buffer::operator=(Bu
 
 void ProtocolSendBufferHelper::updateFrameLength(CANopenFrame & frame, const uint8_t length)
 {
+	UTILS_DEBUG(length <= CANopenFrame::SizeLimits::MaxSize);
 	frame.buffer[1] |= ((length - 2) << 4);
 }

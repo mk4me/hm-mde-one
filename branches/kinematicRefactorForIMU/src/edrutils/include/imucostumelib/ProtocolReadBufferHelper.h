@@ -26,7 +26,12 @@ namespace imuCostume
 			//! Ca³y identyfikator
 			const uint8_t * base;
 			//! \return d³ugoœæ danych
-			inline const uint8_t length() const { return base[1] >> 4; };
+			inline const uint8_t length() const
+			{
+				const auto length = base[1] >> 4;
+				UTILS_DEBUG(length <= CANopenFrame::SizeLimits::MaxSize);
+				return length;
+			};
 			//! Identyfikator wêz³a
 			inline const CANopenFrame::COBID cobID() const { return CANopenFrame::COBID{ uint16_t(((uint8_t)base[1] & 0x0F) << 8) | (uint16_t)base[0] }; };
 		};

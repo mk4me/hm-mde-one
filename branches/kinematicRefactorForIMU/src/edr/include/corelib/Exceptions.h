@@ -12,6 +12,7 @@
 
 #include <corelib/PluginCommon.h>
 #include "ILog.h"
+#include <type_traits>
 
 namespace  core {
 
@@ -32,7 +33,7 @@ namespace  core {
 	template <typename BaseException>
 	class ExceptionImpl : public BaseException, private ExceptionLogger
 	{
-		//static_assert((std::is_base_of<std::exception, Exception>::value), "Base class should inherit from std::exception");
+		static_assert((std::is_pod<BaseException>::value == false), "Base exception type should be compound type");
 	public:
 		template<class... Args>
 		ExceptionImpl(Args &&... arguments)
@@ -57,7 +58,16 @@ namespace  core {
 		template<typename ExceptionType, class... Args>
 		void Throw(Args &&... arguments)
 		{
-			throw ExceptionImpl<ExceptionType>(arguments...);
+			ExceptionType e(std::forward<Args>(arguments)...);
+			LOG_DEBUG(ExceptionLogger::_log, "First chance exception type [" << std::type_info(ExceptionType).name << "] what : " << e.what());
+			throw e;
+		}
+
+		template<typename T>
+		void Throw(const T & val)
+		{
+			LOG_DEBUG(ExceptionLogger::_log, "First chance exception type [" << std::type_info(T).name << "] value : " << val );
+			throw val;
 		}
 	};	
 

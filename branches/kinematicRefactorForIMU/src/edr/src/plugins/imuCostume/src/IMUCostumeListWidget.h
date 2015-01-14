@@ -61,8 +61,10 @@ private slots:
 	void testCommunication();
 
 	void onRefresh();
+	void refreshStatus();
 
 private:
+	QTimer statusRefreshTimer;
 	IMU::IMUCostumeDataSource * ds;
 	Ui::IMUCostumeListWidget * ui;
 };

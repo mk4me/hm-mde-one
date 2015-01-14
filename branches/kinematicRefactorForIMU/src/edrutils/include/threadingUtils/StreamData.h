@@ -479,13 +479,11 @@ namespace threadingUtils {
 		void localUpdate()
 		{
 			std::lock_guard<std::recursive_mutex> lock(this->synch_);
-
-			T d;
-			baseStream_->data(d);
+			
+			baseStream_->data(currentData_);
 
 			if (buffersAttached() == true){
-				process_(d);
-				currentData_ = d;
+				process_(currentData_);				
 				pushBufferData(currentData_);
 				processReuired = false;
 			}
@@ -493,7 +491,7 @@ namespace threadingUtils {
 				processReuired = true;
 			}
 
-			notify();			
+			notify();		
 		}
 
 	private:

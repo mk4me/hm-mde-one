@@ -179,6 +179,18 @@ namespace IMU
 		const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping orientationAlgorithms;
 		const IMU::IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm;
 	};
+
+	class IMU_EXPORT RawToCANopenExtractor
+	{
+	public:
+
+		RawToCANopenExtractor();
+		~RawToCANopenExtractor();
+
+		bool verify(const IMU::RawDataStream::value_type & val) const;
+
+		void extract(const IMU::RawDataStream::value_type & in, IMU::CANopenFramesStream::value_type & out) const;
+	};
 }
 
 #endif	// __HEADER_GUARD_IMU__COSTUMEIMUEXTRACTOR_H__

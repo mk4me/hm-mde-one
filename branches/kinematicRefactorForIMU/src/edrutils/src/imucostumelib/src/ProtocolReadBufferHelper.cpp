@@ -1,4 +1,6 @@
 #include <imucostumelib/ProtocolReadBufferHelper.h>
+#include <imucostumelib/CostumeCANopenIO.h>
+#include <utils/Debug.h>
 
 using namespace imuCostume;
 
@@ -63,12 +65,16 @@ ProtocolReadBufferHelper ProtocolReadBufferHelper::create(const void * buffer, c
 {
 	std::vector<const uint8_t*> frameBasis;
 	if (length > 0){
+		//pomijam nag³ówek danych - seqNumber + typ ramki!!
 		auto pos = static_cast<const uint8_t*>(buffer);
-		const auto end = pos + length - 1;
+		const auto end = pos + length;
 
+		//! wyci¹gam kolejne pozycje ramek
 		while (pos < end){
 			frameBasis.push_back(pos);
-			pos += (2 + (*(pos+1) >> 4));
+			const auto length = (2 + (*(pos + 1) >> 4));
+			UTILS_ASSERT(length <= CANopenFrame::SizeLimits::MaxSize);
+			pos += length;
 		}
 	}
 

@@ -34,7 +34,7 @@ namespace IMU
 		//! Struktura opisuj¹ca status czujnika
 		struct SensorDescription
 		{
-			utils::shared_ptr<std::atomic<ConnectionStatus>> status;
+			volatile ConnectionStatus status;
 		};
 
 		//! Struktura opisuj¹ca kostium
@@ -45,7 +45,7 @@ namespace IMU
 			//! Obiekt obs³uguj¹cy komunikacjê z kostirumem w trybie raw (wyslij/odbierz surowe pakiety danych)
 			utils::shared_ptr<imuCostume::CostumeRawIO> rawCostume;
 			//! Status po³¹czenie z kostiumem
-			utils::shared_ptr<std::atomic<ConnectionStatus>> status;
+			volatile ConnectionStatus status;
 			//! Status poszczególnych czujników
 			std::map<imuCostume::Costume::SensorID, SensorDescription> sensorsStatus;
 			//! Strumieñ surowych danych

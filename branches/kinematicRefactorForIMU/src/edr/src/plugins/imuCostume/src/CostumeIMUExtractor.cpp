@@ -95,7 +95,7 @@ bool CostumeIMUExtractor::verify(const IMU::CostumeStream::value_type & streamDa
 void CostumeIMUExtractor::extract(const IMU::CostumeStream::value_type & streamData, IMU::SensorsStreamData & sensorsData) const
 {
 	IMU::SensorsData locData;
-	PLUGIN_LOG_DEBUG("CostumeIMUExtractor");
+	//PLUGIN_LOG_DEBUG("CostumeIMUExtractor");
 	for (const auto & d : streamData.sensorsData)
 	{
 		auto imuData = utils::static_pointer_cast<const imuCostume::Costume::IMUSensor>(d);		
@@ -121,16 +121,16 @@ OrientationEstimator::OrientationEstimator(const IMU::IIMUDataSource::Orientatio
 
 void OrientationEstimator::operator()(IMU::SensorsStreamData & data) const
 {
-	PLUGIN_LOG_DEBUG("OrientationEstimator");
+	//PLUGIN_LOG_DEBUG("OrientationEstimator");
 
 	double deltaTime = (data.timestamp > previousTime) ? (data.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + data.timestamp);
 	previousTime = data.timestamp;
 
-	for (auto & d : data.sensorsData)
+	for (auto & o : orientationAlgorithms)
 	{
-		auto it = orientationAlgorithms.find(d.first);
+		auto it = data.sensorsData.find(o.first);		
 
-		d.second.orientation = it->second->estimate(d.second.accelerometer, d.second.gyroscope, d.second.magnetometer, deltaTime);
+		it->second.orientation = o.second->estimate(it->second.accelerometer, it->second.gyroscope, it->second.magnetometer, deltaTime);
 	}
 }
 
@@ -202,7 +202,7 @@ bool CANopenDataExtractor::verify(const IMU::CANopenFramesStream::value_type & a
 
 void CANopenDataExtractor::extract(const IMU::CANopenFramesStream::value_type & a, IMU::CostumeStream::value_type & ret) const
 {
-	PLUGIN_LOG_ERROR("CANopenDataExtractor");
+	//PLUGIN_LOG_ERROR("CANopenDataExtractor");
 	ret = imuCostume::Costume::convert(a);
 }
 
@@ -247,7 +247,10 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Sk
 
 	kinematic::SkeletonState::Joint::visit(ss.root(), [&motionState](kinematic::SkeletonState::JointPtr joint) -> void
 	{
-		joint->setGlobal(motionState.jointsOrientations.find(joint->name())->second);
+		auto it = motionState.jointsOrientations.find(joint->name());
+		if (it != motionState.jointsOrientations.end()){
+			joint->setGlobal(it->second);
+		}
 	});
 
 	try{
@@ -259,4 +262,26 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Sk
 	catch (...){
 
 	}
+}
+
+RawToCANopenExtractor::RawToCANopenExtractor()
+{
+
+
+}
+
+RawToCANopenExtractor::~RawToCANopenExtractor()
+{
+
+}
+
+bool RawToCANopenExtractor::verify(const IMU::RawDataStream::value_type & val) const
+{
+	return true;
+}
+
+void RawToCANopenExtractor::extract(const IMU::RawDataStream::value_type & in, IMU::CANopenFramesStream::value_type & out) const
+{
+	//PLUGIN_LOG_DEBUG("RawToCANopenExtractor");
+	out = imuCostume::CostumeCANopenIO::extractData(in.buffer.get() + sizeof(imuCostume::CostumeCANopenIO::Header), in.length - sizeof(imuCostume::CostumeCANopenIO::Header));
 }

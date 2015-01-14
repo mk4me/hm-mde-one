@@ -9,9 +9,10 @@
 void estimate(IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping & mapping,
 	const IMU::SensorsData & sensorsData, const double deltaT)
 {
-	for (auto & d : sensorsData)
+	for (auto & m : mapping)
 	{
-		mapping.find(d.first)->second->estimate(d.second.accelerometer, d.second.gyroscope, d.second.magnetometer, deltaT);
+		const auto & d = sensorsData.find(m.first)->second;
+		m.second->estimate(d.accelerometer, d.gyroscope, d.magnetometer, deltaT);
 	}
 }
 
@@ -36,19 +37,22 @@ CostumeSkeletonMotionHelper::CostumeSkeletonMotionHelper(SensorsStreamPtr sensor
 CostumeSkeletonMotionHelper::~CostumeSkeletonMotionHelper()
 {
 	sensorsStream->detachObserver(observer);
+	delete pd;
 }
 
 int CostumeSkeletonMotionHelper::exec()
 {
 	timer.start(0);
-	return pd->exec();
+	pd->exec();
+
+	return pd->wasCanceled() == true ? QDialog::Rejected : QDialog::Accepted;
 }
 
 void CostumeSkeletonMotionHelper::perform()
 {
-	PLUGIN_LOG_DEBUG("Performing data check");
+	//PLUGIN_LOG_DEBUG("Performing data check");
 	if (observer->modified() == true){
-		PLUGIN_LOG_DEBUG("New data processing");
+		//PLUGIN_LOG_DEBUG("New data processing");
 		IMU::SensorsStreamData data;
 		sensorsStream->data(data);
 		double deltaTime = deltaTime = (data.timestamp > previousTime) ? (data.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + data.timestamp);
@@ -70,13 +74,13 @@ void CostumeSkeletonMotionHelper::perform()
 			}
 		}
 
-		pd->setValue(pd->value() + 1);
-
-		previousTime = data.timestamp;
-
 		if (pd->value() == pd->maximum()){
-			cancel();
-			pd->accept();
+			cancel();			
+		}
+		else{
+
+			pd->setValue(pd->value() + 1);
+			previousTime = data.timestamp;
 		}
 	}
 }
