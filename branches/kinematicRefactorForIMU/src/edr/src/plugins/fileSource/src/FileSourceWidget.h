@@ -31,6 +31,7 @@ public:
 
 private slots:
     void onLoadFiles();
+	void onLoadAsfAmc();
     
 private:
     FileSource *fileSource;

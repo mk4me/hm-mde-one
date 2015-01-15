@@ -47,6 +47,7 @@ DEFINE_SMART_POINTERS(SkeletonDataStream);
 
 DEFINE_WRAPPER(kinematic::JointAnglesCollection, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
 DEFINE_WRAPPER(kinematic::SkeletonStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(kinematic::SkeletonWithStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(acclaim::MotionData, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(kinematic::Skeleton, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(acclaim::Skeleton, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);

@@ -18,10 +18,16 @@ FileSourceWidget::FileSourceWidget( FileSource* source ) :
 {
     QLayout* layout = new QVBoxLayout();
     this->setLayout(layout);
+
     QPushButton* loadFile = new QPushButton();
     loadFile->setText(tr("Load files"));
     layout->addWidget(loadFile);
     connect(loadFile, SIGNAL(clicked()), this, SLOT(onLoadFiles()));
+
+	QPushButton* loadAsfAmcButton = new QPushButton();
+	loadAsfAmcButton->setText(tr("ASF AMC"));
+	layout->addWidget(loadAsfAmcButton);
+	connect(loadAsfAmcButton, SIGNAL(clicked()), this, SLOT(onLoadAsfAmc()));
 }
 
 void FileSourceWidget::onLoadFiles()
@@ -31,5 +37,10 @@ void FileSourceWidget::onLoadFiles()
         core::Filesystem::Path path = it->toStdString();
         fileSource->addFile(path);
     }    
+}
+
+void FileSourceWidget::onLoadAsfAmc()
+{
+	fileSource->loadAsfAmc();
 }
 

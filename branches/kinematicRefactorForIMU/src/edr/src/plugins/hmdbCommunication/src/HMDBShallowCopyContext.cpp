@@ -410,7 +410,6 @@ public:
 		acclaim::SkeletonConstPtr model;
 		if (dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr) {
 			if (!data->frames.empty()) {
-				kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
 				kinematic::SkeletonPtr skeleton = utils::make_shared<kinematic::Skeleton>();
 				if (!kinematic::Skeleton::convert(*model, *skeleton)) {
 					throw std::runtime_error("Unable to convert skeleton");
@@ -425,8 +424,13 @@ public:
 					states->frames.push_back(kinematic::SkeletonState::convert(*model, frame));
 				}
 				
-				joints->setSkeletal(skeleton, *states);
-				object->set(joints);
+				auto sws = utils::make_shared<kinematic::SkeletonWithStates>();
+				sws->skeleton = skeleton;
+				sws->states = states;
+				object->set(sws);
+				//kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
+				//joints->setSkeletal(skeleton, *states);
+				//object->set(joints);
 			} else {
 				// 
 			}
@@ -675,7 +679,7 @@ const core::VariantPtr createJointsAngles(const core::ConstVariantsList objects,
 	core::VariantConstPtr dataWrapper;
 	core::VariantConstPtr modelWrapper;
 	for (auto it = objects.begin(); it != objects.end(); ++it) {
-		if ((*it)->data()->isSupported(typeid(kinematic::JointAnglesCollection))) {
+		if ((*it)->data()->isSupported(typeid(kinematic::SkeletonWithStates))) {
 			return ret;
 		}
 		else if ((*it)->data()->isSupported(typeid(acclaim::MotionData))) {
@@ -691,7 +695,7 @@ const core::VariantPtr createJointsAngles(const core::ConstVariantsList objects,
 		modelWrapper = modelWrappers.front();
 
 		if (dataWrapper && modelWrapper) {
-			ret = core::Variant::create<kinematic::JointAnglesCollection>();			
+			ret = core::Variant::create<kinematic::SkeletonWithStates>();			
 			ret->setInitializer(core::VariantInitializerPtr(new JointsInitializer(dataWrapper, modelWrapper)));
 		}
 	}	

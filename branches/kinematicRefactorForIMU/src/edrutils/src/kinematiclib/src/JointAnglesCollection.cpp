@@ -78,10 +78,9 @@ void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletonCo
 	auto& jointsData = data.frames[0];
 	std::map<std::string, JointAngleChannelPtr> channelsMap;
 
-	int fps = static_cast<int> (1.0 / data.frameTime);
-
+	float fps = 1.0f / data.frameTime;
 	for (auto& name : data.jointNames) {
-		JointAngleChannelPtr channel(new JointAngleChannel(static_cast<float>(fps))); 
+		JointAngleChannelPtr channel(new JointAngleChannel(fps)); 
 		channel->setName(name);
 		channelsMap[name] = channel;
 		addChannel(channel);
@@ -90,15 +89,11 @@ void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletonCo
 	auto framesNo = data.frames.size();
     this->rootPositions.resize(framesNo);
      
-
-    for (int i = 0; i < framesNo; ++i) {
-        //int jointStatesNo = data.frames[i].size();
+	for (auto& frame : data.frames) {
 		for (auto& joint : jointsByIndex) {
-        //for (int j = 0; j < jointStatesNo; ++j) {
             double rx, ry, rz;
             int index;
-			//JointPtr joint = jointsByIndex[j];
-            if (!joint) {
+		    if (!joint) {
                 std::runtime_error("Joint not found");
             }
 			std::string name = joint->name;
@@ -116,15 +111,6 @@ void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletonCo
 			//osg::Quat mY; mY.makeRotate(mul * (ry), osg::Vec3(0, 1, 0));
 			//osg::Quat mZ; mZ.makeRotate(mul * (rz), osg::Vec3(0, 0, 1));
 
-			/*if (name == "HumanoidRoot" || name == "root") {
-				index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TX, joint->getDofs());
-				rootPositions[i][0] = (index != -1 ? jointState->channelValues[index] : 0.0);
-				index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TY, joint->getDofs());
-				rootPositions[i][1] = (index != -1 ? jointState->channelValues[index] : 0.0);
-				index = DegreeOfFreedom::getChannelIndex(DegreeOfFreedom::TZ, joint->getDofs());
-				rootPositions[i][2] = (index != -1 ? jointState->channelValues[index] : 0.0);
-				rootPositions[i] /= lengthRatio;
-			}*/
 			//channelsMap[name]->addPoint(SkeletonUtils::createRotation(mX, mY, mZ, joint->getOrder()));
 			// hack
 			if (name == "HumanoidRoot") continue;
@@ -132,7 +118,7 @@ void JointAnglesCollection::createQuaternionRepresentation(kinematic::SkeletonCo
 			auto nameIt = std::find(data.jointNames.begin(), data.jointNames.end(), name);
 			if (nameIt != data.jointNames.end()) {
 				auto j = std::distance(data.jointNames.begin(), nameIt);
-				channelsMap[name]->addPoint(data.frames[i][j].rotation);
+				channelsMap[name]->addPoint(frame[j].rotation);
 			}
 			
         }

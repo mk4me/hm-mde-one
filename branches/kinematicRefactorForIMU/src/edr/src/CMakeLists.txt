@@ -14,7 +14,7 @@ ADD_PROJECT(plugin_c3d "corelib;c3dlib;kinematiclib;viconformatslib" "plugins/c3
 ADD_PROJECT(plugin_dicom "plugin_hmdbCommunication;plugin_subject;CURL;WSDLPULL;QT;BOOST;coreui;QWT;hmdbserviceslib" "plugins/dicom")
 ADD_PROJECT(plugin_dicomImporter "BOOST;coreui;corelib;DCMTK;STDINT" "plugins/dicomImporter")
 ADD_PROJECT(plugin_medusaExporter "BOOST;coreui;corelib;plugin_hmdbCommunication;plugin_dicom" "plugins/medusaExporter")
-ADD_PROJECT(plugin_fileSource "BOOST;corelib" "plugins/fileSource")
+ADD_PROJECT(plugin_fileSource "BOOST;corelib;kinematiclib;kinematicUtils;hanimlib;acclaimformatslib;biovisionformatslib;viconformatslib" "plugins/fileSource")
 #ADD_PROJECT(plugin_sampleService "BOOST;corelib" "plugins/sampleService")
 ADD_PROJECT(plugin_video "vidlib;FFMPEG;corelib;osgui" "plugins/video")
 ADD_PROJECT(plugin_newTimeline "QWT;corelib;timelinelib;OPENTHREADS" "plugins/newTimeline")

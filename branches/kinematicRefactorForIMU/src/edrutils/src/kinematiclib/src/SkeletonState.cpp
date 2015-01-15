@@ -535,10 +535,8 @@ void orderChanges(const acclaim::Skeleton & skeleton, const int currentBoneID,
 	auto changeIT = changes.find(b.name);
 	if (changeIT != changes.end()) {
 		change.push_back(changeIT->second);
-	} else {
-		change.push_back(SkeletonState::JointStateChange());
 	}
-
+	
 	auto lIT = skeleton.hierarchy.left.lower_bound(currentBoneID);
 	auto uIT = skeleton.hierarchy.left.upper_bound(currentBoneID);
 
@@ -646,5 +644,21 @@ SkeletonState::FullStateChange SkeletonState::convert(const biovision::Skeleton 
 
 	orderChanges(skeleton.root, changes, ret);
 
+	return ret;
+}
+
+
+void getJointsRec(kinematic::SkeletonState::JointConstPtr parent, std::vector<kinematic::SkeletonState::JointConstPtr>& joints)
+{
+	joints.push_back(parent);
+	int count = parent->childrenCount();
+	for (int i = 0; i < count; ++i) {
+		getJointsRec(parent->child(i), joints);
+	}
+}
+std::vector<kinematic::SkeletonState::JointConstPtr> kinematic::SkeletonState::getJoints(const SkeletonState & skeletonState)
+{
+	std::vector<JointConstPtr> ret;
+	getJointsRec(skeletonState.root(), ret);
 	return ret;
 }

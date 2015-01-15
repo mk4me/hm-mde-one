@@ -40,6 +40,8 @@ public:
     virtual void getOfferedTypes( utils::TypeInfoList & offeredTypes ) const;
     void addFile( const core::Filesystem::Path& path );
 
+	void loadAsfAmc();
+
 private:
     core::IMemoryDataManager* memoryDM;
     core::IFileDataManager* fileDM;

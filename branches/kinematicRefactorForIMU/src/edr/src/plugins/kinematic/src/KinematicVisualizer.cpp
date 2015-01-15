@@ -2,6 +2,7 @@
 #include "KinematicVisualizer.h"
 #include "GRFSerie.h"
 #include "SkeletonSerie.h"
+#include "SkeletonSerie2.h"
 #include "MarkerSerie.h"
 #include "PickHandler.h"
 #include "Manipulators.h"
@@ -36,6 +37,7 @@ void KinematicVisualizer::getSupportedTypes(utils::TypeInfoList & supportedTypes
 	supportedTypes.push_back(typeid(kinematic::JointAnglesCollection));
 	supportedTypes.push_back(typeid(SkeletonDataStream));
 	supportedTypes.push_back(typeid(osg::PositionAttitudeTransform));
+	supportedTypes.push_back(typeid(kinematic::SkeletonWithStates));
 //	supportedTypes.push_back(typeid(BVHData));
 }
 
@@ -65,6 +67,14 @@ plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const utils::TypeI
         }
         trajectoriesDialog->setDrawer(ss->getTrajectoriesManager(), getRootName(data, tr("Skeleton")), names); //getSkeletonNames(data->get()));
         ret = ss;
+	} else if (requestedType == typeid(kinematic::SkeletonWithStates)) {
+		auto ss = new SkeletonSerie2(this, requestedType, data);
+		QStringList names;
+		for (int i = 1; i <= ss->getTrajectoriesManager()->count(); ++i) {
+			names.push_back(QString("Joint %1").arg(i));
+		}
+		trajectoriesDialog->setDrawer(ss->getTrajectoriesManager(), getRootName(data, tr("Skeleton")), names); //getSkeletonNames(data->get()));
+		ret = ss;
 	}
 	else if (requestedType == typeid(SkeletonDataStream)) {
 		ret = new SkeletonStreamSerie(this, requestedType, data);

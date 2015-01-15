@@ -187,6 +187,8 @@ namespace kinematic
 		//! \return Lokalny opis stanu szkieletu
 		static FullStateChange localState(const SkeletonState & skeletonState);
 
+		static std::vector<JointConstPtr> getJoints(const SkeletonState & skeletonState);
+
 		//! \return Staw - root stanu
 		JointPtr root();
 		//! \return Staw - root stanu
@@ -208,8 +210,18 @@ namespace kinematic
 		std::vector<SkeletonState::FullStateChange> frames;
 		std::vector<std::string> jointNames;
 		double frameTime;
+		double getLength() const {
+			return frameTime * frames.size();
+		}
 	};
 	DEFINE_SMART_POINTERS(SkeletonStates);
+
+	struct SkeletonWithStates
+	{
+		SkeletonStatesConstPtr states;
+		SkeletonConstPtr skeleton;
+	};
+	DEFINE_SMART_POINTERS(SkeletonWithStates);
 }
 
 #endif	// __HEADER_GUARD_KINEMATIC__SKELETONSTATE_H__
