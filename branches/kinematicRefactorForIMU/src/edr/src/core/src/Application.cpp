@@ -39,10 +39,6 @@
 #ifdef WIN32
 #define NOMINMAX
 #include <Windows.h>
-//#define KEY_PATH1 TEXT("Software\\Wow6432Node\\PJWSTK\\EDR")
-// Od Visty dodawane s? przedrostki typu Wow6432Node do sciezki w rejestrach
-// adres podawany do oczytu klucza powinien by? automatycznie konwertowany.
-//#define KEY_PATH TEXT("Software\\PJWSTK\\MEDUSA")
 #endif
 
 DEFINE_WRAPPER(int, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
@@ -864,6 +860,9 @@ void Application::finalizeUI(){
 
 			CORE_LOG_INFO("Finalizing services");
 			serviceManager_->finalizeServices();
+
+			CORE_LOG_INFO("Deinitializing plugins");
+			pluginLoader_->deinitialize();
 
 			CORE_LOG_INFO("Closing log widget console");
 			logInitializer_->setConsoleWidget(nullptr);

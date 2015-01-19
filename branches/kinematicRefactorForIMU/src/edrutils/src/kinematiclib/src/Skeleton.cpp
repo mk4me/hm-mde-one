@@ -7,49 +7,35 @@
 
 using namespace kinematic;
 
-std::string resolveMapping(const SkeletonMappingScheme::MappingDict & mapping, const std::string & name)
-{
-	auto it = mapping.find(name);
-	if (it != mapping.end()){
-		return it->second;
-	}
-
-	return name;
-}
-
 void createJoint(JointPtr parentJoint, const acclaim::Skeleton & skeleton,
-	const int currentBoneID, const SkeletonMappingScheme::MappingDict & mapping,
-	const hAnim::Humanoid::Hierarchy & hAnimHierarchy,
+	const int currentBoneID, const hAnim::Humanoid::Hierarchy & hAnimHierarchy,
 	std::set<std::string> & names)
 {
-	auto joint = utils::make_shared<Joint>();
+	JointData jointData;
 	const auto & bone = skeleton.bones.find(currentBoneID)->second;
 
-	joint->name = resolveMapping(mapping, bone.name);
+	jointData.name = bone.name;
 
-	if (names.find(joint->name) != names.end()){
-		throw std::runtime_error("Joint with given name already exists: " + joint->name + ". Improper skeleton hierarchy - names must be unique.");
+	if (names.find(jointData.name) != names.end()){
+		throw std::runtime_error("Joint with given name already exists: " + jointData.name + ". Improper skeleton hierarchy - names must be unique.");
 	}
 
-	names.insert(joint->name);
+	jointData.position = bone.direction * bone.length;
+	jointData.orientation = kinematicUtils::convert(bone.axis, bone.axisOrder);
 
-	joint->position = bone.direction * bone.length;
-	joint->orientation = kinematicUtils::convert(bone.axis, bone.axisOrder);
+	auto joint = Joint::addChild(parentJoint, jointData);
 
-	parentJoint->children.push_back(joint);
+	names.insert(jointData.name);	
 
-	auto range = skeleton.hierarchy.left.equal_range(currentBoneID);
-	
+	auto range = skeleton.hierarchy.left.equal_range(currentBoneID);	
 
 	for (auto it = range.first; it != range.second; ++it){
-		createJoint(joint, skeleton, it->second, mapping, hAnimHierarchy, names);
+		createJoint(joint, skeleton, it->second, hAnimHierarchy, names);
 	}
 }
 
-bool Skeleton::convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSkeleton,
-	const SkeletonMappingScheme::MappingDict & mapping)
+bool Skeleton::convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSkeleton)
 {
-	
 	if (srcSkeleton.bones.empty()){
 		return false;
 	}
@@ -62,14 +48,14 @@ bool Skeleton::convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSke
 		std::set<std::string> names;
 
 		//root
-		JointPtr joint(new Joint);
+		JointData jointData;
+		jointData.name = "HumanoidRoot";
+		jointData.position = srcSkeleton.position;
+		jointData.orientation = kinematicUtils::convert(srcSkeleton.orientation, srcSkeleton.axisOrder);
+		names.insert(jointData.name);
 
-		joint->name = "HumanoidRoot";
-		joint->position = srcSkeleton.position;
-		joint->orientation = kinematicUtils::convert(srcSkeleton.orientation, srcSkeleton.axisOrder);
-
-		names.insert(joint->name);
-		createJoint(joint, srcSkeleton, currentID, mapping, humanoidHierarchy, names);		
+		JointPtr joint = Joint::create(jointData);		
+		createJoint(joint, srcSkeleton, currentID, humanoidHierarchy, names);		
 		
 		destSkeleton.name = srcSkeleton.name;
 		destSkeleton.root = joint;
@@ -81,33 +67,30 @@ bool Skeleton::convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSke
 }
 
 void createJoint(JointPtr parentJoint, const biovision::JointPtr & srcJoint,
-	const SkeletonMappingScheme::MappingDict & mapping,
 	const hAnim::Humanoid::Hierarchy & hAnimHierarchy,
 	std::set<std::string> & names)
 {
-	auto joint = utils::make_shared<Joint>();
+	JointData jointData;
+	
+	jointData.name = srcJoint->name;
 
-	joint->name = resolveMapping(mapping, srcJoint->name);
-
-	if (names.find(joint->name) != names.end()){
-		throw std::runtime_error("Joint with given name already exists: " + joint->name + ". Improper skeleton hierarchy - names must be unique.");
+	if (names.find(jointData.name) != names.end()){
+		throw std::runtime_error("Joint with given name already exists: " + jointData.name + ". Improper skeleton hierarchy - names must be unique.");
 	}
 
-	names.insert(joint->name);
+	jointData.position = srcJoint->offset;
+	jointData.orientation = osg::Quat(0, 0, 0, 1);
 
-	joint->position = srcJoint->offset;
-	joint->orientation = osg::Quat(0, 0, 0, 1);
-
-	parentJoint->children.push_back(joint);
+	auto joint = Joint::addChild(parentJoint, jointData);
+	names.insert(jointData.name);	
 
 	for (auto j : srcJoint->joints)
 	{
-		createJoint(joint, j, mapping, hAnimHierarchy, names);
+		createJoint(joint, j, hAnimHierarchy, names);
 	}
 }
 
-bool Skeleton::convert(const biovision::Skeleton & srcSkeleton, Skeleton & destSkeleton,
-	const SkeletonMappingScheme::MappingDict & mapping)
+bool Skeleton::convert(const biovision::Skeleton & srcSkeleton, Skeleton & destSkeleton)
 {
 	if (srcSkeleton.root == nullptr){
 		return false;
@@ -116,15 +99,17 @@ bool Skeleton::convert(const biovision::Skeleton & srcSkeleton, Skeleton & destS
 	const auto humanoidHierarchy = hAnim::Humanoid::defaultHumanHierarchy();
 	std::set<std::string> names;
 
-	JointPtr root(new Joint);
+	JointData jointData;
 
-	root->name = "HumanoidRoot";
-	root->position = osg::Vec3(0, 0, 0);
-	root->orientation = osg::Quat(0, 0, 0, 1);
+	jointData.name = "HumanoidRoot";
+	jointData.position = osg::Vec3(0, 0, 0);
+	jointData.orientation = osg::Quat(0, 0, 0, 1);
 
-	names.insert(root->name);
+	names.insert(jointData.name);
 
-	createJoint(root, srcSkeleton.root, mapping, humanoidHierarchy, names);
+	auto root = Joint::create(jointData);
+
+	createJoint(root, srcSkeleton.root, humanoidHierarchy, names);
 
 	destSkeleton.name = "biovision_model";
 	destSkeleton.root = root;
@@ -132,8 +117,7 @@ bool Skeleton::convert(const biovision::Skeleton & srcSkeleton, Skeleton & destS
 	return true;	
 }
 
-bool Skeleton::convert(const hAnim::Humanoid & srcSkeleton, Skeleton & destSkeleton,
-	const SkeletonMappingScheme::MappingDict & mapping)
+bool Skeleton::convert(const hAnim::Humanoid & srcSkeleton, Skeleton & destSkeleton)
 {
 	if (srcSkeleton.joints.empty() == true){
 		return false;
@@ -149,9 +133,8 @@ bool Skeleton::convert(const hAnim::Humanoid & srcSkeleton, Skeleton & destSkele
 	return true;
 }
 
-
 void getJointsRecursive(kinematic::JointPtr j, std::map<std::string, kinematic::JointPtr>& mp) {
-	mp[j->name] = j;
+	mp[j->value.name] = j;
 	for (auto& c : j->children) {
 		getJointsRecursive(c, mp);
 	}

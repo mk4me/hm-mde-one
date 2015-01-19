@@ -14,6 +14,7 @@
 #include <map>
 #include <list>
 #include <utils/SmartPtr.h>
+#include <kinematiclib/Joint.h>
 
 namespace kinematic
 {
@@ -25,9 +26,41 @@ namespace kinematic
 		//! statyczna metoda wczytuje schematy z pliku XML
 		//! \param filename nazwa pliku do wczytania
 		//! \return kolekcja schematów mapowania
-		static void loadFromXML(const std::string& filename, std::list<SkeletonMappingScheme::MappingDict>& outSchemes);
+		static void loadFromXML(const std::string& filename, std::list<MappingDict>& outSchemes);
 		//! \return Domyślne mapowanie
 		static const MappingDict& defaultAcclaimToHAnimMappingScheme();
+
+		struct MappingSchemeVisitor
+		{
+			MappingSchemeVisitor(const MappingDict & mappingDict)
+				: mappingDict(mappingDict)
+			{
+
+			}
+
+			MappingSchemeVisitor(MappingDict && mappingDict)
+				: mappingDict(std::move(mappingDict))
+			{
+
+			}
+
+			~MappingSchemeVisitor()
+			{
+
+			}
+
+			void operator()(JointPtr joint)
+			{
+				if (joint != nullptr){
+					auto it = mappingDict.find(joint->value.name);
+					if (it != mappingDict.end()){
+						joint->value.name = it->second;
+					}
+				}
+			}
+
+			MappingDict mappingDict;
+		};
 	};
 }
 

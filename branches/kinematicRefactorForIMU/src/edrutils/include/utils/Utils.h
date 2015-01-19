@@ -138,7 +138,7 @@ inline static const std::streamsize forceReadSome(std::istream & stream,
 
 //! \param stream Strumień do skopiowania
 //! \return Strumień zapisany w stringu
-inline static const std::string readStream(std::istream & stream)
+inline static std::string readStream(std::istream & stream)
 {
 	unsigned int BufferSize = 1024 * 512;
 	std::unique_ptr<char[]> buffer(new char[BufferSize] {0});
@@ -146,7 +146,7 @@ inline static const std::string readStream(std::istream & stream)
 
 	std::streamsize read = 0;
 	while ((read = forceReadSome(stream, buffer.get(), BufferSize)) > 0) { ret.append(buffer.get(), read); }
-	return ret;
+	return std::move(ret);
 }
 
 //------------------------------------------------------------------------------

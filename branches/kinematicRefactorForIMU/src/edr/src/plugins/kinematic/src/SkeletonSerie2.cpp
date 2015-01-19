@@ -24,7 +24,8 @@ SkeletonSerie2::SkeletonSerie2(KinematicVisualizer * visualizer,
 	skeletonWithStates = data->get();
 		
 	auto ratio = 1.0;
-	pointsDrawer->init(skeletonWithStates->states->jointNames.size());
+	//pointsDrawer->init(skeletonWithStates->states->jointNames.size());
+	pointsDrawer->init(skeletonWithStates->states->frames.front().size());
 	pointsDrawer->setSize(0.02 / ratio);
 	//connectionsDrawer->setSize(0.05 / ratio);
 	localRootNode->setScale(osg::Vec3(ratio, ratio, ratio));
@@ -104,10 +105,10 @@ void SkeletonSerie2::update()
 	int frameNo = lastUpdateTime / skeletonWithStates->states->frameTime;
 	auto frame = skeletonWithStates->states->frames[frameNo];
 	kinematic::SkeletonState::update(ss,frame);
-	auto joints = kinematic::SkeletonState::getJoints(ss);
-	for (auto& j : joints) {
-		pos.push_back(j->globalPosition());
-	}
+	kinematic::SkeletonState::Joint::visitLevelOrder(ss.root(), [&pos](kinematic::SkeletonState::JointConstPtr node, kinematic::SkeletonState::Joint::size_type level)
+	{				
+		pos.push_back(node->value.globalPosition());		
+	});
 
 	pointsDrawer->update(pos);
 //	auto rotations = skeletonWithStates->getValues(lastUpdateTime);

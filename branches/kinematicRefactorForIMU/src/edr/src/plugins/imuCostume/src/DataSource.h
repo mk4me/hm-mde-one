@@ -35,17 +35,12 @@ namespace IMU
 
 	private:
 
-		struct ExtendedCostumeDescription : public CostumeDescription
-		{
-			ExtendedCostumeDescription();
-			~ExtendedCostumeDescription();
-
-			utils::SamplesStatus samplesStatus;
-			std::map<imuCostume::Costume::SensorID, utils::SamplesStatus> sensorsSamplesStatus;
-		};
-
 		struct SensorData
 		{
+			SensorData();
+			~SensorData();
+
+			utils::shared_ptr<utils::SamplesStatus> samplesStatus;
 			utils::shared_ptr<IMUStream> dataStream;
 			std::vector<utils::shared_ptr<Vec3Stream>> vec3dStreams;
 			utils::shared_ptr<QuatStream> orientationStream;
@@ -54,6 +49,10 @@ namespace IMU
 
 		struct CostumeData
 		{
+			CostumeData();
+			~CostumeData();
+
+			utils::shared_ptr<utils::SamplesStatus> samplesStatus;
 			std::map<imuCostume::Costume::SensorID, SensorData> sensorsData;
 			CANopenFramesStreamPtr CANopenStream;
 			CostumeStreamPtr costumeStream;
@@ -64,6 +63,8 @@ namespace IMU
 			core::HierarchyDataItemPtr hierarchyRootItem;
 			core::VariantsList domainData;			
 		};
+
+		typedef std::map<CostumeID, CostumeData> CostumesData;
 
 	public:
 		//! Konstruktor
@@ -104,20 +105,32 @@ namespace IMU
 
 		virtual const unsigned int costumesCout() const override;
 
-		virtual const CostumeDescription & costumeDescription(const unsigned int idx) const override;
+		virtual const bool costumesEmpty() const override;
 
-		virtual void loadRawCostume(const unsigned int idx) override;
+		virtual CostumeStatus costumeStatus(const CostumeID & id) const override;
 
-		virtual void loadCalibratedCostume(const unsigned int idx,
+		virtual CostumeDetails costumeDetails(const CostumeID & id) const override;
+
+		virtual CostumesDescriptions costumesDescriptions() const override;
+
+		virtual CostumesStatus costumesStatus() const override;
+
+		virtual CostumesDetails costumesDetails() const override;
+
+		virtual CostumeDescription costumeDescription(const CostumeID & id) const override;
+
+		virtual void loadRawCostume(const CostumeID & id) override;
+
+		virtual void loadCalibratedCostume(const CostumeID & id,
 			const CostumeProfileInstance & profileInstance) override;
 
-		virtual void unloadCostume(const unsigned int idx);
+		virtual void unloadCostume(const CostumeID & id);
 
 		virtual unsigned int loadedCostumesCount() const override;
 
-		virtual bool costumeLoaded(const unsigned int idx) const override;
+		virtual bool costumeLoaded(const CostumeID & id) const override;
 
-		virtual core::ConstVariantsList costumeData(const unsigned int idx) const override;
+		virtual core::ConstVariantsList costumeData(const CostumeID & id) const override;
 
 		virtual void registerOrientationEstimationAlgorithm(const IIMUOrientationEstimationAlgorithm * algorithm) override;
 		virtual void registerCostumeCalibrationAlgorithm(const IMUCostumeCalibrationAlgorithm * algorithm) override;
@@ -177,8 +190,8 @@ namespace IMU
 		//! Dane nagrane
 		core::HierarchyItemPtr recordedItems;
 
-		std::map<std::string, CostumeData> costumesData;
-		std::map<std::string, ExtendedCostumeDescription> costumesDescription;
+		CostumesData costumesData;
+		CostumesDetails costumesDetails_;
 
 		OrientationEstimationAlgorithms orientationEstimationAlgorithms_;
 		CostumeCalibrationAlgorithms calibrationAlgorithms_;

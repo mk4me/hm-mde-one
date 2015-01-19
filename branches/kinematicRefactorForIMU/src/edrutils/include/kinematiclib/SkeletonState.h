@@ -14,6 +14,7 @@
 #include <osg/Vec3>
 #include <osg/Quat>
 #include <list>
+#include <boost/bimap.hpp>
 
 namespace kinematic
 {
@@ -22,13 +23,29 @@ namespace kinematic
 	{
 	public:
 
+		//! Typ indeksu wêz³a
+		typedef unsigned int NodeIDX;
+		//! Typ bimapy indeksów wêz³ów do nazw wêz³ów
+		typedef boost::bimap<NodeIDX, std::string> LinearizedNodesMapping;
+
 		//! Struktura opisuj¹ca prosta zmianê w szkielecie - translacja roota i lokalne rotacje stawów
-		struct SimpleStateChange
+		//! pozycje rotacji w wektorze wg mapowania
+		struct RigidCompleteStateChange
 		{
 			//! Translacja roota
 			osg::Vec3 translation;
-			//! Lokalne rotacje stawów
-			std::list<osg::Quat> rotations;
+			//! Lokalne rotacje wszystkich stawów
+			std::vector<osg::Quat> rotations;
+		};
+
+		//! Struktura opisuj¹ca prosta zmianê w szkielecie - translacja roota i lokalne rotacje stawów
+		//! rotacje wg mapowania
+		struct RigidPartialStateChange
+		{
+			//! Translacja roota
+			osg::Vec3 translation;
+			//! Lokalne rotacje wybranych stawów
+			std::map<NodeIDX, osg::Quat> rotations;
 		};
 
 		//! Struktura opisuj¹ca zmianê stawu
@@ -41,18 +58,19 @@ namespace kinematic
 		};
 
 		//! Typ opisuj¹cy pe³n¹ zmianê stanu szkieletu
-		typedef std::vector<JointStateChange> FullStateChange;
+		//! pozycja zmian wg mapowania
+		typedef std::vector<JointStateChange> NonRigidCompleteStateChange;
 
-		//! Forward declaration
-		class Joint;
-		DEFINE_SMART_POINTERS(Joint);
+		//! Typ opisuj¹cy pe³n¹ zmianê stanu szkieletu
+		//! zmiany wg mapowania
+		typedef std::map<NodeIDX, JointStateChange> NonRigidPartialStateChange;
 
 		//! Klasa reprezentuj¹ca staw
-		class Joint
+		class JointData
 		{
 		private:
 			//! Forward declaration
-			class JointImpl;
+			class JointDataImpl;
 
 			friend class SkeletonState;
 
@@ -60,29 +78,16 @@ namespace kinematic
 			//! \param name Nazwa wêz³a odpowiadaj¹ca szkieletowi
 			//! \param translation Pozycja|Translacja lokalna stawu
 			//! \param rotation Orientacja|Rotacja lokalna stawu			
-			Joint(const std::string & name, const osg::Vec3 & translation,
+			JointData(const std::string & name, const osg::Vec3 & translation,
 				const osg::Quat & rotation);
 
 		public:
 
 			//! Destruktor
-			~Joint();
+			~JointData();
 
-			//! \return Staw rodzic
-			JointPtr parent();
-
-			//! \return Staw rodzic
-			JointConstPtr parent() const;
 			//! \return Nazwa stawu
 			std::string name() const;
-			//! \param idx Indeks stawu dziecka do pobrania
-			//! \return Staw dziecko
-			JointPtr child(const unsigned int idx);
-			//! \param idx Indeks stawu dziecka do pobrania
-			//! \return Staw dziecko
-			JointConstPtr child(const unsigned int idx) const;
-			//! \return Iloœæ stawów dzieci
-			const unsigned int childrenCount() const;
 
 			//! \return Lokalna pzycja wzglêdem rodzica
 			osg::Vec3 localPosition() const;
@@ -118,36 +123,21 @@ namespace kinematic
 			//! \param orientation Lokalna orientacja
 			void setLocal(const osg::Vec3 & position, const osg::Quat & orientation);
 
-			template<typename T>
-			static void visit(JointPtr joint, T & visitor)
-			{
-				visitor(joint);
-				for (unsigned int i = 0; i < joint->childrenCount(); ++i)
-				{
-					visit(joint->child(i), visitor);
-				}
-			}
-
-			template<typename T>
-			static void visit(JointConstPtr joint, T & visitor)
-			{
-				visitor(joint.get());
-				for (unsigned int i = 0; i < joint->childrenCount(); ++i)
-				{
-					visit(joint->child(i), visitor);
-				}
-			}
-
 		private:
 			//! Prywatna implementacja
-			utils::shared_ptr<JointImpl> impl;
+			utils::shared_ptr<JointDataImpl> impl;
 		};
+		
+		//! Typ jointa stanu
+		typedef utils::TreeNode<JointData> Joint;
+		//! Typ wskaŸników do jointów
+		DEFINE_SMART_POINTERS(Joint);
 
 	private:
 
 		//! \param root Staw rodzic stanu
 		//! \param activeJointsCount Iloœæ aktywnych stawów które maja dzieci
-		SkeletonState(JointPtr root, const unsigned int activeJointsCount);
+		SkeletonState(JointPtr root);
 
 	public:
 
@@ -158,36 +148,44 @@ namespace kinematic
 		//! \return Stan bazowy szkieletu
 		static SkeletonState create(const Skeleton & skeleton);
 
-		static FullStateChange convert(const acclaim::Skeleton & skeleton,
-			const acclaim::MotionData::FrameData & motionData);
+		static RigidPartialStateChange convert(const acclaim::Skeleton & skeleton,
+			const acclaim::MotionData::FrameData & motionData,
+			const LinearizedNodesMapping & mapping);
 
-		static FullStateChange convert(const biovision::Skeleton & skeleton,
+		static RigidCompleteStateChange convert(const biovision::Skeleton & skeleton,
 			const biovision::MotionData::FrameJointData & motionData);
 
+		static LinearizedNodesMapping createMapping(const Skeleton & skeleton);
+
 		//! \param skeletonState [out] Aktualizowany stan szkieletu
 		//! \param stateChange Zmiana stanu szkieletu
-		static void update(SkeletonState & skeletonState, const SimpleStateChange & stateChange);
+		static void update(SkeletonState & skeletonState, const RigidCompleteStateChange & stateChange);
 		//! \param skeletonState [out] Aktualizowany stan szkieletu
 		//! \param stateChange Zmiana stanu szkieletu
-		static void update(SkeletonState & skeletonState, const FullStateChange & stateChange);
+		static void update(SkeletonState & skeletonState, const NonRigidCompleteStateChange & stateChange);
+
+		//! \param skeletonState [out] Aktualizowany stan szkieletu
+		//! \param stateChange Zmiana stanu szkieletu
+		static void update(SkeletonState & skeletonState, const RigidPartialStateChange & stateChange);
+		//! \param skeletonState [out] Aktualizowany stan szkieletu
+		//! \param stateChange Zmiana stanu szkieletu
+		static void update(SkeletonState & skeletonState, const NonRigidPartialStateChange & stateChange);
 
 		//! \param skeletonState [out] Aktualizowany stan szkieletu
 		//! \param newState Nowy stan szkieletu
-		static void setLocal(SkeletonState & skeletonState, const SimpleStateChange & newState);
-		static void setGlobal(SkeletonState & skeletonState, const SimpleStateChange & newState);
+		static void setLocal(SkeletonState & skeletonState, const RigidCompleteStateChange & newState);
+		static void setGlobal(SkeletonState & skeletonState, const RigidCompleteStateChange & newState);
 		//! \param skeletonState [out] Aktualizowany stan szkieletu
 		//! \param newState Nowy stan szkieletu
-		static void setLocal(SkeletonState & skeletonState, const FullStateChange & newState);
-		static void setGlobal(SkeletonState & skeletonState, const FullStateChange & newState);
+		static void setLocal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState);
+		static void setGlobal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState);
 
 		//! \param skeletonState Stan szkieletu
 		//! \return Globalny opis stanu szkieletu
-		static FullStateChange globalState(const SkeletonState & skeletonState);
+		static NonRigidCompleteStateChange globalState(const SkeletonState & skeletonState);
 		//! \param skeletonState Stan szkieletu
 		//! \return Lokalny opis stanu szkieletu
-		static FullStateChange localState(const SkeletonState & skeletonState);
-
-		static std::vector<JointConstPtr> getJoints(const SkeletonState & skeletonState);
+		static NonRigidCompleteStateChange localState(const SkeletonState & skeletonState);
 
 		//! \return Staw - root stanu
 		JointPtr root();
@@ -196,19 +194,17 @@ namespace kinematic
 
 	private:
 
-		static JointPtr create(kinematic::JointConstPtr joint, unsigned int & activeJointsCount);
+		static JointPtr create(kinematic::JointConstPtr joint);
 
 	private:
 		//! Staw - root stanu
 		JointPtr root_;
-		//! Iloœæ wêz³ów aktywnych (nie end effectorów) stanu
-		unsigned int activeJointsCount;
 	};
 	
 	struct SkeletonStates
 	{
-		std::vector<SkeletonState::FullStateChange> frames;
-		std::vector<std::string> jointNames;
+		std::vector<SkeletonState::NonRigidCompleteStateChange> frames;
+		//std::vector<std::string> jointNames;
 		double frameTime;
 		double getLength() const {
 			return frameTime * frames.size();
@@ -220,6 +216,7 @@ namespace kinematic
 	{
 		SkeletonStatesConstPtr states;
 		SkeletonConstPtr skeleton;
+		SkeletonState::LinearizedNodesMapping nodesMapping;
 	};
 	DEFINE_SMART_POINTERS(SkeletonWithStates);
 }

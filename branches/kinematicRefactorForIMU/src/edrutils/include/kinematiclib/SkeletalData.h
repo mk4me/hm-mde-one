@@ -18,6 +18,13 @@ namespace kinematic
 			osg::Vec3 translation;
 			std::vector<osg::Quat> rotations;
 		};
+
+		/// \brief  struktura przechowuje wartości kanałów dla wszystkich kości w pojedynczej klatce animacji
+		struct PartialFrame
+		{
+			osg::Vec3 translation;
+			std::map<std::string, osg::Quat> rotations;
+		};
 	
 		//! konstruktor, ustawia domyślny okres pojedynczej ramki (1/100)
 		SkeletalData(const float duration = 0.01) :	frameTime(duration)	{}

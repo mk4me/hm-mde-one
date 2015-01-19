@@ -39,6 +39,18 @@ namespace imuCostume
 		{
 			std::string ip;		//! Adres IP
 			unsigned int port;	//! Port
+
+			bool operator<(const imuCostume::CostumeRawIO::CostumeAddress & b) const
+			{
+				if (ip < b.ip){
+					return true;
+				}
+				else if (ip == b.ip && port < b.port){
+					return true;
+				}
+
+				return false;
+			}
 		};	
 
 	public:

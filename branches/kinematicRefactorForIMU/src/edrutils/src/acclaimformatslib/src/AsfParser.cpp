@@ -1,6 +1,7 @@
 #include <acclaimformatslib/AsfParser.h>
 #include <boost/lexical_cast.hpp>
 #include <fstream>
+#include <utils/Utils.h>
 
 #define PARSER_VERSION "0.12"
 
@@ -24,15 +25,18 @@ Skeleton AsfParser::parse(const std::string& filename)
     if (!in) {
        throw std::runtime_error("Unable to open file: " + filename);
     }
-    // skopiowanie zawartości pliku do pojedynczego stringa
-	std::string storage;
     // nie omijaj bialych znakow
 	in.unsetf(std::ios::skipws);
+	// skopiowanie zawartości pliku do pojedynczego stringa
+	auto storage = utils::readStream(in);
+
+	/*
 	std::copy(
         std::istream_iterator<char>(in),
         std::istream_iterator<char>(),
         std::back_inserter(storage)
         );
+		*/
     in.close();
     // usun komentarze z pliku
     storage = removeComments(storage);

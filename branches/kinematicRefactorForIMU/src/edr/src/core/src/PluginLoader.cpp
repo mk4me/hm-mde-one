@@ -34,6 +34,14 @@ PluginLoader::~PluginLoader()
     unloadPlugins();
 }
 
+void PluginLoader::deinitialize()
+{
+	for (auto & p : plugins)
+	{		
+		p.plugin->deinitialize();		
+	}
+}
+
 void PluginLoader::clear()
 {
     // wyczyszczenie ścieżek
@@ -42,7 +50,6 @@ void PluginLoader::clear()
 	for(auto it = plugins.begin(); it != plugins.end(); ++it)
 	{
 		CORE_LOG_DEBUG("Unloading plugin " << (*it).plugin->ID() << " name " << (*it).plugin->name() << " from " << (*it).plugin->getPath());
-		(*it).plugin->deinitialize();
 		(*it).plugin.reset();
 		unloadSharedLibrary((*it).handle);
 		(*it).coreApplication.reset();

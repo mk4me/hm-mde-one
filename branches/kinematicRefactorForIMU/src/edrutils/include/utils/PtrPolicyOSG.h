@@ -126,6 +126,40 @@ struct PtrPolicyOSG
 	{
 		return (ptr != nullptr) ? ptr->referenceCount() : 0;
 	}
+
+	template<typename T>
+	struct enable_shared_from_this
+	{
+	public:
+		enable_shared_from_this()
+		{
+		}
+
+		enable_shared_from_this(enable_shared_from_this const &)
+		{
+		}
+
+		enable_shared_from_this & operator=(enable_shared_from_this const &)
+		{
+			return *this;
+		}
+
+		~enable_shared_from_this()
+		{
+		}
+
+	public:
+
+		osg::ref_ptr<T> shared_from_this()
+		{
+			return osg::ref_ptr<T>(dynamic_cast<T*>(this));
+		}
+
+		osg::ref_ptr<const T> shared_from_this() const
+		{
+			return osg::ref_ptr<const T>(dynamic_cast<const T*>(this));
+		}
+	};
 };
 
 template <> struct is_ptr_policy<PtrPolicyOSG> : public std::true_type {};

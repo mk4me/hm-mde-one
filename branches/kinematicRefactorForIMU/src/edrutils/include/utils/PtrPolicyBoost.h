@@ -10,6 +10,7 @@
 #define __AVINOUT_POLCIESBOOST_H__
 
 #include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <utils/Utils.h>
 #include <utils/PtrPolicyHelper.h>
 
@@ -35,97 +36,100 @@ namespace utils {
 			typedef typename boost::shared_ptr<T>::element_type Type;
 		};
 
-			//! Klasa bazowa.
-			typedef NullType Base;
+		//! Klasa bazowa.
+		typedef NullType Base;
 
-			//! Zerowanie wskaźnika.
-			//! \param ptr
-			template <typename T>
-			static void initPtr(T & ptr)
-			{}
+		//! Zerowanie wskaźnika.
+		//! \param ptr
+		template <typename T>
+		static void initPtr(T & ptr)
+		{}
 
-			//! Ustawienie wartości wskaźnika surowymi danymi.
-			//! \param ptr
-			//! \param data
-			template<typename T, typename Y>
-			static void setPtr(boost::shared_ptr<T> & ptr, Y * data)
-			{
-				ptr.reset(data);
-			}
+		//! Ustawienie wartości wskaźnika surowymi danymi.
+		//! \param ptr
+		//! \param data
+		template<typename T, typename Y>
+		static void setPtr(boost::shared_ptr<T> & ptr, Y * data)
+		{
+			ptr.reset(data);
+		}
 
-			//! Ustawienie wartości wskaźnika poprzes kopiowanie z innego mądrego wskaźnika.
-			//! \param ptr
-			//! \param data
-			template<typename T, typename Y>
-			static void setPtr(boost::shared_ptr<T> & ptr, const boost::shared_ptr<Y> & data)
-			{
-				ptr = data;
-			}
+		//! Ustawienie wartości wskaźnika poprzes kopiowanie z innego mądrego wskaźnika.
+		//! \param ptr
+		//! \param data
+		template<typename T, typename Y>
+		static void setPtr(boost::shared_ptr<T> & ptr, const boost::shared_ptr<Y> & data)
+		{
+			ptr = data;
+		}
 
-			template<typename T>
-			static void swapPtr(boost::shared_ptr<T> & ptr, boost::shared_ptr<T> & data)
-			{
-				std::swap(ptr, data);
-			}
+		template<typename T>
+		static void swapPtr(boost::shared_ptr<T> & ptr, boost::shared_ptr<T> & data)
+		{
+			std::swap(ptr, data);
+		}
 
-			template<typename T, typename Y>
-			static const boost::shared_ptr<Y> dynamicCastPtr(const boost::shared_ptr<T> & ptr)
-			{
-				return boost::dynamic_pointer_cast<Y>(ptr);
-			}
+		template<typename T, typename Y>
+		static const boost::shared_ptr<Y> dynamicCastPtr(const boost::shared_ptr<T> & ptr)
+		{
+			return boost::dynamic_pointer_cast<Y>(ptr);
+		}
 
-			template<typename T, typename Y>
-			static const boost::shared_ptr<Y> constCastPtr(const boost::shared_ptr<T> & ptr)
-			{
-				return boost::const_pointer_cast<Y>(ptr);
-			}
+		template<typename T, typename Y>
+		static const boost::shared_ptr<Y> constCastPtr(const boost::shared_ptr<T> & ptr)
+		{
+			return boost::const_pointer_cast<Y>(ptr);
+		}
 
-			//! Zwraca surowy wskaźnik
-			//! \param ptr
-			template<typename T>
-			static void* getRawPtr(const boost::shared_ptr<T> & ptr)
-			{
-				return ptr.get();
-			}
+		//! Zwraca surowy wskaźnik
+		//! \param ptr
+		template<typename T>
+		static void* getRawPtr(const boost::shared_ptr<T> & ptr)
+		{
+			return ptr.get();
+		}
 
-			//! Zwraca surowy wskaźnik
-			//! \param ptr
-			template<typename T>
-			static const void* getConstRawPtr(const boost::shared_ptr<T> & ptr)
-			{
-				return ptr.get();
-			}
+		//! Zwraca surowy wskaźnik
+		//! \param ptr
+		template<typename T>
+		static const void* getConstRawPtr(const boost::shared_ptr<T> & ptr)
+		{
+			return ptr.get();
+		}
 
-			//! Zwraca surowy wskaźnik
-			//! \param ptr
-			template<typename T>
-			static T* getPtr(const boost::shared_ptr<T> & ptr)
-			{
-				return ptr.get();
-			}
+		//! Zwraca surowy wskaźnik
+		//! \param ptr
+		template<typename T>
+		static T* getPtr(const boost::shared_ptr<T> & ptr)
+		{
+			return ptr.get();
+		}
 
-			//! Zwraca surowy wskaźnik
-			//! \param ptr
-			template<typename T>
-			static const T* getConstPtr(const boost::shared_ptr<T> & ptr)
-			{
-				return ptr.get();
-			}
+		//! Zwraca surowy wskaźnik
+		//! \param ptr
+		template<typename T>
+		static const T* getConstPtr(const boost::shared_ptr<T> & ptr)
+		{
+			return ptr.get();
+		}
 
-			//! Czy wskaźnik jest unikatowy?
-			//! \param ptr
-			template<typename T>
-			static const bool isUnique(const boost::shared_ptr<T> & ptr)
-			{
-				return ptr.unique();
-			}
+		//! Czy wskaźnik jest unikatowy?
+		//! \param ptr
+		template<typename T>
+		static const bool isUnique(const boost::shared_ptr<T> & ptr)
+		{
+			return ptr.unique();
+		}
 
-			//! \return Ilość referencji do tego wskaźnika
-			template<typename T>
-			static const long referenceCount(const boost::shared_ptr<T> & ptr)
-			{
-				return ptr.use_count();
-			}
+		//! \return Ilość referencji do tego wskaźnika
+		template<typename T>
+		static const long referenceCount(const boost::shared_ptr<T> & ptr)
+		{
+			return ptr.use_count();
+		}
+
+		template<typename T>
+		using enable_shared_from_this = boost::enable_shared_from_this < T > ;
 	};
 
 	template <> struct is_ptr_policy<PtrPolicyBoost> : public std::true_type{};

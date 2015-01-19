@@ -35,7 +35,43 @@
 #include <plugins/imuCostume/CostumeIMUExtractor.h>
 #include "IMUCostumeProfileConfigurationWizard.h"
 
+Q_DECLARE_METATYPE(imuCostume::CostumeRawIO::CostumeAddress);
+
 typedef threadingUtils::StreamAdapterT<IMU::CostumeStream::value_type, IMU::SensorsStreamData, IMU::CostumeIMUExtractor> ExtractedCostumeStreamAdapter;
+
+QIcon statusIcon(IMU::IIMUDataSource::ConnectionStatus connectionStatus)
+{
+	switch (connectionStatus)
+	{
+	case IMU::IIMUDataSource::ONLINE:
+		return QIcon(QString::fromUtf8(":/imuCostume/icons/dostepny.png"));		
+	case IMU::IIMUDataSource::OFFLINE:
+		return QIcon(QString::fromUtf8(":/imuCostume/icons/niedostepny.png"));		
+	case IMU::IIMUDataSource::CONNECTION_PROBLEMS:
+		return QIcon(QString::fromUtf8(":/imuCostume/icons/czesciowodostepny.png"));
+	case IMU::IIMUDataSource::UNKNOWN:
+		return QIcon(QString::fromUtf8(":/imuCostume/icons/nieznanydostepny.png"));
+	default:
+		return QIcon(QString::fromUtf8(":/imuCostume/icons/nieznanydostepny.png"));
+	}
+}
+
+QString statusDescription(IMU::IIMUDataSource::ConnectionStatus connectionStatus)
+{
+	switch (connectionStatus)
+	{
+	case IMU::IIMUDataSource::ONLINE:
+		return QObject::tr("online");
+	case IMU::IIMUDataSource::OFFLINE:
+		return QObject::tr("offline");
+	case IMU::IIMUDataSource::CONNECTION_PROBLEMS:
+		return QObject::tr("problematic");
+	case IMU::IIMUDataSource::UNKNOWN:
+		return QObject::tr("unknown");
+	default:
+		return QObject::tr("unknown");
+	}
+}
 
 IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	QWidget * parent, const Qt::WindowFlags f)
@@ -45,6 +81,7 @@ IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	ui->costumesTreeWidget->clear();
 	ui->sensorsTree->clear();
 	connect(&statusRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshStatus()));
+	statusRefreshTimer.start(1000 / 25);
 	QTimer::singleShot(0, this, SLOT(onRefresh()));
 }
 
@@ -56,21 +93,21 @@ IMUCostumeWidget::~IMUCostumeWidget()
 void IMUCostumeWidget::onCostumeChange(QTreeWidgetItem * current, QTreeWidgetItem * previous)
 {
 	ui->sensorsTree->clear();
-	auto idx = ui->costumesTreeWidget->indexOfTopLevelItem(current);
+	auto id = current->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
 
-	if (idx < ds->costumesCout()){
-		const auto & cd = ds->costumeDescription(idx);
-		const auto & cc = cd.sensorsConfiguration;
+	auto cd = ds->costumeDetails(id);	
 
-		for (const auto & st : cc){
-			for (const auto sid : st.second){
-				auto sItem = new QTreeWidgetItem;
-				sItem->setText(0, QObject::tr("Sensor %1").arg(sid));
-				sItem->setText(1, QString("%1").arg(cd.sensorsStatus.find(sid)->second.status));
-				ui->sensorsTree->addTopLevelItem(sItem);
-			}
+	for (const auto & st : cd.descriptionDetails.sensorsConfiguration){
+		for (const auto sid : st.second){
+			auto sstatus = cd.statusDetails.sensorsStatus.find(sid)->second;
+			auto sItem = new QTreeWidgetItem;
+			sItem->setText(0, QObject::tr("Sensor %1").arg(sid));
+			sItem->setData(0, Qt::UserRole, QVariant::fromValue(sid));
+			sItem->setIcon(1, statusIcon(sstatus));
+			sItem->setText(1, statusDescription(sstatus));
+			ui->sensorsTree->addTopLevelItem(sItem);
 		}
-	}
+	}	
 }
 
 void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
@@ -99,13 +136,13 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 
 		if(ui->costumesTreeWidget->currentItem() != nullptr){
 
-			const unsigned int idx = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).toUInt();
+			const auto id = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
 
 			menu->addSeparator();
 
 			auto load = menu->addAction(tr("Load"));
 			auto unload = menu->addAction(tr("Unload"));
-			auto cl = ds->costumeLoaded(idx);
+			auto cl = ds->costumeLoaded(id);
 
 			load->setEnabled(cl == false);
 			unload->setEnabled(cl == true);
@@ -122,7 +159,37 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 
 void IMUCostumeWidget::refreshStatus()
 {
+	auto cStatus = ds->costumesStatus();
+	for (unsigned int i = 0; i < ui->costumesTreeWidget->topLevelItemCount(); ++i)
+	{
+		auto item = ui->costumesTreeWidget->topLevelItem(i);
+		auto id = item->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+		auto it = cStatus.find(id);
 
+		auto iS = IMU::IIMUDataSource::UNKNOWN;
+
+		if (it != cStatus.end()){
+			iS = it->second.status;
+
+			for (unsigned int j = 0; j < ui->sensorsTree->topLevelItemCount(); ++j)
+			{
+				auto sItem = ui->sensorsTree->topLevelItem(j);
+				auto id = sItem->data(0, Qt::UserRole).value<imuCostume::Costume::SensorID>();
+				auto iSS = IMU::IIMUDataSource::UNKNOWN;
+				auto sit = it->second.sensorsStatus.find(id);
+				if (sit != it->second.sensorsStatus.end())
+				{
+					iSS = sit->second;
+				}
+
+				sItem->setIcon(1, statusIcon(iS));
+				sItem->setText(1, statusDescription(iS));
+			}
+		}
+
+		item->setIcon(1, statusIcon(iS));
+		item->setText(1, statusDescription(iS));
+	}
 }
 
 void IMUCostumeWidget::onRefresh()
@@ -134,12 +201,14 @@ void IMUCostumeWidget::onRefresh()
 		ui->costumesTreeWidget->clear();
 		ui->sensorsTree->clear();
 
-		for (unsigned int i = 0; i < ds->costumesCout(); ++i){
-			const auto & cd = ds->costumeDescription(i);
+		auto cDetails = ds->costumesDetails();
+
+		for (const auto & cd : cDetails){
 			auto ci = new QTreeWidgetItem;
-			ci->setText(0, QString::fromStdString(cd.rawCostume->ip()));
-			ci->setData(0, Qt::UserRole, QString::fromStdString(cd.rawCostume->ip()));
-			ci->setText(1, QString("%1").arg(cd.status));
+			ci->setText(0, QString("%1:%2").arg(QString::fromStdString(cd.second.descriptionDetails.rawCostume->ip())).arg(cd.second.descriptionDetails.rawCostume->port()));
+			ci->setData(0, Qt::UserRole, QVariant::fromValue(imuCostume::CostumeRawIO::CostumeAddress({ cd.second.descriptionDetails.rawCostume->ip(), cd.second.descriptionDetails.rawCostume->port() })));
+			ci->setIcon(1, statusIcon(cd.second.statusDetails.status));
+			ci->setText(1, statusDescription(cd.second.statusDetails.status));
 			ui->costumesTreeWidget->addTopLevelItem(ci);
 		}
 	}
@@ -161,9 +230,9 @@ void IMUCostumeWidget::onRefresh()
 
 void IMUCostumeWidget::onLoad()
 {
-	const unsigned int idx = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).toUInt();
+	const auto id = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
 
-	auto cd = ds->costumeDescription(idx);
+	auto cd = ds->costumeDescription(id);
 	const auto & sc = cd.sensorsConfiguration;
 	imuCostume::Costume::SensorIDsSet sIDs;
 
@@ -241,7 +310,7 @@ void IMUCostumeWidget::onLoad()
 			profileInstance.motionEstimationAlgorithm->initialize(profileInstance.skeleton,
 				profileInstance.calibrationAlgorithm->sensorsAdjustemnts(), profileInstance.sensorsMapping);
 
-			ds->loadCalibratedCostume(idx, profileInstance);
+			ds->loadCalibratedCostume(id, profileInstance);
 		}
 		catch (...){
 			QMessageBox::critical(this, tr("Failed to load calibrated costume"), tr("Internal error"));
@@ -256,8 +325,8 @@ void IMUCostumeWidget::onLoad()
 
 void IMUCostumeWidget::onUnload()
 {
-	const unsigned int idx = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).toUInt();
-	ds->unloadCostume(idx);
+	const auto id = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+	ds->unloadCostume(id);
 }
 
 void IMUCostumeWidget::onLoadAll()

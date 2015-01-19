@@ -55,6 +55,9 @@ public:
     void clear();
     //! Ładuje pluginy.
     void load();
+	//deinicjalizujemy pluginy
+	void deinitialize();
+
 	//! \param path Ścieżka gdzie szukać wtyczek
 	void addPath(const Filesystem::Path& path)
 	{

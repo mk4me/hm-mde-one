@@ -55,7 +55,8 @@ void CostumeSkeletonMotionHelper::perform()
 		//PLUGIN_LOG_DEBUG("New data processing");
 		IMU::SensorsStreamData data;
 		sensorsStream->data(data);
-		double deltaTime = deltaTime = (data.timestamp > previousTime) ? (data.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + data.timestamp);
+		double deltaTime = (data.timestamp > previousTime) ? (data.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + data.timestamp);
+		deltaTime /= 1000.0;
 		if (first == true){
 			first = false;
 			deltaTime = 0.0;

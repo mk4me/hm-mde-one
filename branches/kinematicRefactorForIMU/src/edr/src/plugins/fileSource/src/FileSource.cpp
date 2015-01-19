@@ -99,12 +99,16 @@ void FileSource::loadAsfAmc()
 	}
 	kinematic::SkeletonStatesPtr states = utils::make_shared<kinematic::SkeletonStates>();
 	states->frameTime = data->frameTime;
-	auto firstFrame = data->frames[0];
-	for (auto& bone : firstFrame.bonesData) {
-		states->jointNames.push_back(bone.name);
-	}
+
+	const auto mapping = kinematic::SkeletonState::createMapping(*skeleton);
+	
+
+
 	for (auto& frame : data->frames) {
-		states->frames.push_back(kinematic::SkeletonState::convert(*model, frame));
+		auto sChange = kinematic::SkeletonState::convert(*model, frame, mapping);
+		//TODO
+		//konwersja z czesiowego do pelnego stanu
+		//states->frames.push_back();
 	}
 
 	auto sws = utils::make_shared<kinematic::SkeletonWithStates>();

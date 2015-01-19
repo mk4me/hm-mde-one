@@ -50,7 +50,7 @@ public:
 				if (joint->children.size() == 1){
 					std::unique_ptr<QDoubleSpinBox> editor(new QDoubleSpinBox(parent));
 					editor->setMinimum(0);
-					editor->setMaximum(joint->children.front()->position.length());					
+					editor->setMaximum(joint->children.front()->value.position.length());					
 					const auto val = index.model()->data(index, Qt::UserRole).value<osg::Vec3d>();
 					editor->setValue(val.length());
 					return editor.release();
@@ -73,7 +73,7 @@ public:
 			if (joint != nullptr){
 				if (joint->children.size() == 1){
 					QDoubleSpinBox * e = qobject_cast<QDoubleSpinBox*>(editor);
-					auto direction = joint->children.front()->position;				
+					auto direction = joint->children.front()->value.position;				
 					e->setValue(direction.length());
 				}
 				else{
@@ -92,7 +92,7 @@ public:
 			if (joint != nullptr){
 				if (joint->children.size() == 1){
 					QDoubleSpinBox * e = qobject_cast<QDoubleSpinBox*>(editor);
-					osg::Vec3d direction = joint->children.front()->position;
+					osg::Vec3d direction = joint->children.front()->value.position;
 					direction.normalize();
 					direction *= e->value();
 					model->setData(index, QVariant::fromValue(direction), Qt::UserRole);
@@ -130,7 +130,7 @@ public:
 
 	static void fillMap(std::map<std::string, kinematic::JointConstPtr> & map, kinematic::JointConstPtr joint)
 	{
-		map.insert(std::map<std::string, kinematic::JointConstPtr>::value_type(joint->name, joint));
+		map.insert(std::map<std::string, kinematic::JointConstPtr>::value_type(joint->value.name, joint));
 		for (const auto & j : joint->children)
 		{
 			fillMap(map, j);
@@ -311,7 +311,7 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(
 
 			unsigned int jointsCount = 0;
 
-			kinematic::Joint::visit(m->root, [&jointsCount](kinematic::JointConstPtr joint) -> void
+			kinematic::Joint::visitPostOrder(m->root, [&jointsCount](kinematic::JointConstPtr joint) -> void
 			{
 				if (joint->children.empty() == false){
 					++jointsCount;
@@ -775,7 +775,7 @@ IMU::IIMUDataSource::CostumeProfile IMUCostumeProfileEditionWizard::costumeProfi
 	{
 		auto sensorID = seam->data(seam->index(i, 0)).toUInt();
 		auto algo = seam->data(seam->index(i, 1), Qt::UserRole).value<IMU::IIMUOrientationEstimationAlgorithmConstPtr>();
-		ret.sensorsOrientationEstimationAlgorithms.insert(IMU::IIMUDataSource::ConstOrientationEstimationAlgorithmsMapping::value_type(sensorID, algo));
+		ret.sensorsOrientationEstimationAlgorithms.insert(IMU::IIMUDataSource::OrientationEstimationPrototypeAlgorithmsMapping::value_type(sensorID, algo));
 	}
 
 	return ret;

@@ -124,6 +124,7 @@ void OrientationEstimator::operator()(IMU::SensorsStreamData & data) const
 	//PLUGIN_LOG_DEBUG("OrientationEstimator");
 
 	double deltaTime = (data.timestamp > previousTime) ? (data.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + data.timestamp);
+	deltaTime /= 1000.0;
 	previousTime = data.timestamp;
 
 	for (auto & o : orientationAlgorithms)
@@ -231,25 +232,26 @@ bool ExtractCostumeMotion::verify(const IMU::SensorsStreamData & input) const
 
 void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::SkeletonMotionState & output) const
 {
-	double deltaTime = deltaTime = (input.timestamp > previousTime) ? (input.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + input.timestamp);
+	double deltaTime = (input.timestamp > previousTime) ? (input.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + input.timestamp);
+	deltaTime /= 1000.0;
 	previousTime = input.timestamp;
 
 	IMU::IMUCostumeMotionEstimationAlgorithm::MotionState motionState;
 	motionState.position = osg::Vec3(0, 0, 0);
 
-	for (const auto & i : input.sensorsData)
+	for (const auto & a : sensorsAdjustments)
 	{
-		const auto & adjustment = sensorsAdjustments.find(i.first)->second;
-		motionState.jointsOrientations.insert(std::map<std::string, osg::Quat>::value_type(sensorsMapping.left.find(i.first)->get_right(), i.second.orientation * adjustment.rotation.inverse()));
+		auto i = input.sensorsData.find(a.first);
+		motionState.jointsOrientations.insert(std::map<std::string, osg::Quat>::value_type(sensorsMapping.left.find(i->first)->get_right(), i->second.orientation * a.second.rotation.inverse()));
 	}
 
 	kinematic::SkeletonState ss(kinematic::SkeletonState::create(*skeleton));
 
-	kinematic::SkeletonState::Joint::visit(ss.root(), [&motionState](kinematic::SkeletonState::JointPtr joint) -> void
+	kinematic::SkeletonState::Joint::visitLevelOrder(ss.root(), [&motionState](kinematic::SkeletonState::JointPtr joint, const kinematic::SkeletonState::Joint::size_type) -> void
 	{
-		auto it = motionState.jointsOrientations.find(joint->name());
+		auto it = motionState.jointsOrientations.find(joint->value.name());
 		if (it != motionState.jointsOrientations.end()){
-			joint->setGlobal(it->second);
+			joint->value.setGlobal(it->second);
 		}
 	});
 

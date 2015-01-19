@@ -112,7 +112,7 @@ void SkeletonJointsMapping::generateMappedConnectionsDescription( kinematic::Joi
 			cd.range.first = idx;
 			cd.range.second = idxB;
 			
-			cd.length = (joint->position - child->position).length();
+			cd.length = (joint->value.position - child->value.position).length();
 
 			cds.push_back(cd);
 		}else{
@@ -140,9 +140,9 @@ void SkeletalVisualizationSchemeHelper::updateJointTransforms(const std::vector<
 	std::vector<osg::Vec3> & pointsPositions)
 {
     // zapewnienie zgodności indeksów (między tablicami connections i states)	
-    int idx = jointsMapping->jointIndex(joint->name);
-    Vec3 shift = parentPos - joint->position;
-    Quat pc = joint->orientation;	    
+    int idx = jointsMapping->jointIndex(joint->value.name);
+	Vec3 shift = parentPos - joint->value.position;
+	Quat pc = joint->value.orientation;
     Quat rotation = idx < rotations.size() ? rotations[idx] * pc  * parentRot : pc * parentRot;
 	shift = rotation * shift;
 

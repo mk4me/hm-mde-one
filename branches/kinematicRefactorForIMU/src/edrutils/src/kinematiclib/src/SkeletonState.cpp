@@ -5,7 +5,7 @@
 
 using namespace kinematic;
 
-class SkeletonState::Joint::JointImpl
+class SkeletonState::JointData::JointDataImpl
 {
 	friend class SkeletonState;
 
@@ -40,7 +40,7 @@ private:
 
 public:
 
-	JointImpl(const std::string & name, const osg::Vec3 & translation,
+	JointDataImpl(const std::string & name, const osg::Vec3 & translation,
 		const osg::Quat & rotation) : node(new osg::PositionAttitudeTransform),
 		globalRequiresRefresh(true)
 	{
@@ -51,39 +51,14 @@ public:
 		globalMatrix.makeIdentity();		
 	}
 
-	~JointImpl()
+	~JointDataImpl()
 	{
 
-	}
-
-	JointPtr parent()
-	{
-		return parent_.lock();
-	}
-	
-	JointConstPtr parent() const
-	{
-		return parent_.lock();
 	}
 
 	std::string name() const
 	{
 		return node->getName();
-	}
-
-	JointPtr child(const unsigned int idx)
-	{
-		return children[idx];
-	}
-
-	JointConstPtr child(const unsigned int idx) const
-	{
-		return children[idx];
-	}
-
-	const unsigned int childrenCount() const
-	{
-		return children.size();
 	}
 
 	osg::Vec3 localPosition() const
@@ -177,10 +152,6 @@ public:
 	}
 
 private:
-	//! Staw rodzic
-	SkeletonState::JointWeakPtr parent_;
-	//! Stawy dzieci
-	std::vector<SkeletonState::JointPtr> children;
 	//! Wêze³ osg
 	osg::ref_ptr<osg::PositionAttitudeTransform> node;
 	//! Czy stan globalny wymaga odœwie¿enia
@@ -189,158 +160,158 @@ private:
 	mutable osg::Matrix globalMatrix;
 };
 
-SkeletonState::Joint::Joint(const std::string & name, const osg::Vec3 & translation,
-	const osg::Quat & rotation) : impl(new JointImpl(name, translation, rotation))
+SkeletonState::JointData::JointData(const std::string & name, const osg::Vec3 & translation,
+	const osg::Quat & rotation) : impl(new JointDataImpl(name, translation, rotation))
 {
 
 }
 
-SkeletonState::Joint::~Joint()
+SkeletonState::JointData::~JointData()
 {
 
 }
 
-SkeletonState::JointConstPtr SkeletonState::Joint::parent() const
-{
-	return impl->parent();
-}
-
-SkeletonState::JointPtr SkeletonState::Joint::parent()
-{
-	return impl->parent();
-}
-
-std::string SkeletonState::Joint::name() const
+std::string SkeletonState::JointData::name() const
 {
 	return impl->name();
 }
 
-SkeletonState::JointConstPtr SkeletonState::Joint::child(const unsigned int idx) const
-{
-	return impl->child(idx);
-}
-
-SkeletonState::JointPtr SkeletonState::Joint::child(const unsigned int idx)
-{
-	return impl->child(idx);
-}
-
-const unsigned int SkeletonState::Joint::childrenCount() const
-{
-	return impl->childrenCount();
-}
-
-osg::Vec3 SkeletonState::Joint::localPosition() const
+osg::Vec3 SkeletonState::JointData::localPosition() const
 {
 	return impl->localPosition();
 }
 
-osg::Vec3 SkeletonState::Joint::globalPosition() const
+osg::Vec3 SkeletonState::JointData::globalPosition() const
 {
 	return impl->globalPosition();
 }
 
-osg::Quat SkeletonState::Joint::localOrientation() const
+osg::Quat SkeletonState::JointData::localOrientation() const
 {
 	return impl->localOrientation();
 }
 
-osg::Quat SkeletonState::Joint::globalOrientation() const
+osg::Quat SkeletonState::JointData::globalOrientation() const
 {
 	return impl->globalOrientation();
 }
 
-void SkeletonState::Joint::update(const osg::Vec3 & translation)
+void SkeletonState::JointData::update(const osg::Vec3 & translation)
 {
 	impl->update(translation);
 }
 
-void SkeletonState::Joint::setGlobal(const osg::Vec3 & position)
+void SkeletonState::JointData::setGlobal(const osg::Vec3 & position)
 {
 	impl->setGlobal(position);
 }
 
-void SkeletonState::Joint::setLocal(const osg::Vec3 & position)
+void SkeletonState::JointData::setLocal(const osg::Vec3 & position)
 {
 	impl->setLocal(position);
 }
 
-void SkeletonState::Joint::update(const osg::Quat & rotation)
+void SkeletonState::JointData::update(const osg::Quat & rotation)
 {
 	impl->update(rotation);
 }
 
-void SkeletonState::Joint::setGlobal(const osg::Quat & orientation)
+void SkeletonState::JointData::setGlobal(const osg::Quat & orientation)
 {
 	impl->setGlobal(orientation);
 }
 
-void SkeletonState::Joint::setLocal(const osg::Quat & orientation)
+void SkeletonState::JointData::setLocal(const osg::Quat & orientation)
 {
 	impl->setLocal(orientation);
 }
 
-void SkeletonState::Joint::update(const osg::Vec3 & translation, const osg::Quat & rotation)
+void SkeletonState::JointData::update(const osg::Vec3 & translation, const osg::Quat & rotation)
 {
 	impl->update(translation, rotation);
 }
 
-void SkeletonState::Joint::setGlobal(const osg::Vec3 & position, const osg::Quat & orientation)
+void SkeletonState::JointData::setGlobal(const osg::Vec3 & position, const osg::Quat & orientation)
 {
 	impl->setGlobal(position, orientation);
 }
 
-void SkeletonState::Joint::setLocal(const osg::Vec3 & position, const osg::Quat & orientation)
+void SkeletonState::JointData::setLocal(const osg::Vec3 & position, const osg::Quat & orientation)
 {
 	impl->setLocal(position, orientation);
 }
 
-SkeletonState::JointPtr SkeletonState::create(kinematic::JointConstPtr joint, unsigned int & activeJointsCount)
+SkeletonState::JointPtr SkeletonState::create(kinematic::JointConstPtr joint)
 {
-	SkeletonState::JointPtr j(new SkeletonState::Joint(joint->name, joint->position, joint->orientation));
+	auto j = Joint::create(JointData(joint->value.name, joint->value.position, joint->value.orientation));	
 
 	for (auto jj : joint->children)
 	{
-		j->impl->children.push_back(create(jj, activeJointsCount));
-	}
-
-	if (joint->children.empty() == false){
-		++activeJointsCount;
+		auto jjj = create(jj);
+		j->children.push_back(jjj);
+		jjj->parent = j;
+		// hierarchia osg!!
+		j->value.impl->node->addChild(jjj->value.impl->node);
 	}
 
 	return j;
 }
 
-SkeletonState::SkeletonState(JointPtr root, const unsigned int activeJointsCount)
-	: root_(root), activeJointsCount(activeJointsCount)
+SkeletonState::SkeletonState(JointPtr root)
+	: root_(root)
 {
 
 }
 
 SkeletonState::SkeletonState(SkeletonState && Other)
-	: root_(std::move(Other.root_)), activeJointsCount(Other.activeJointsCount)
+	: root_(std::move(Other.root_))
 {
-	Other.activeJointsCount = 0;
+
 }
 
 SkeletonState SkeletonState::create(const Skeleton & skeleton)
 {
 	if (skeleton.root != nullptr){
-		unsigned int activeJointsCount = 0;
-		auto root = create(skeleton.root, activeJointsCount);
-		return SkeletonState(root, activeJointsCount);
+		return SkeletonState(create(skeleton.root));
 	}
 
-	return SkeletonState(JointPtr(), 0);
+	return SkeletonState(JointPtr());
+}
+
+class LevelOrderVisitor
+{
+public:
+	LevelOrderVisitor() : currentIDX(0) {}
+	~LevelOrderVisitor() {}
+
+	void operator()(JointConstPtr joint, const Joint::size_type level)
+	{
+		if (joint != nullptr && joint->isLeaf() == false){
+			mapping.insert(SkeletonState::LinearizedNodesMapping::value_type(currentIDX++, joint->value.name));
+		}
+	}
+
+	SkeletonState::LinearizedNodesMapping mapping;
+
+private:
+
+	SkeletonState::NodeIDX currentIDX;
+};
+
+SkeletonState::LinearizedNodesMapping SkeletonState::createMapping(const Skeleton & skeleton)
+{
+	LevelOrderVisitor lov;
+	::Joint::visitLevelOrder(skeleton.root, lov);
+	return std::move(lov.mapping);
 }
 
 template<typename T>
 void updateOrientations(SkeletonState::JointPtr joint, T & valIT)
 {
-	joint->update(*valIT++);
-	for (unsigned int i = 0; i < joint->childrenCount(); ++i){
-		auto j = joint->child(i);
-		if (j->childrenCount() > 0){
+	joint->value.update(*valIT++);
+
+	for (auto j : joint->children){		
+		if (j->isLeaf() == false){
 			updateOrientations(j, valIT);
 		}
 	}
@@ -349,82 +320,100 @@ void updateOrientations(SkeletonState::JointPtr joint, T & valIT)
 template<typename T>
 void updateOrientationsAndPosition(SkeletonState::JointPtr joint, T & valIT)
 {
-	joint->update((*valIT).translation, (*valIT).rotation);
+	joint->value.update((*valIT).translation, (*valIT).rotation);
 	++valIT;
-	for (unsigned int i = 0; i < joint->childrenCount(); ++i){
-		auto j = joint->child(i);
-		if (j->childrenCount() > 0){
+	for (auto j : joint->children){		
+		if (j->isLeaf() == false){
 			updateOrientationsAndPosition(j, valIT);
 		}
 	}
 }
 
-void SkeletonState::update(SkeletonState & skeletonState, const SimpleStateChange & stateChange)
+void SkeletonState::update(SkeletonState & skeletonState, const RigidCompleteStateChange & stateChange)
 {
-	if (stateChange.rotations.size() != skeletonState.activeJointsCount){
-		throw std::runtime_error("StateChange size differs from state active joints count");
-	}
-
-	skeletonState.root()->update(stateChange.translation);
+	skeletonState.root()->value.update(stateChange.translation);
 	auto it = stateChange.rotations.begin();
 	updateOrientations<decltype(stateChange.rotations.begin())>(skeletonState.root(), it);
 }
 
-void SkeletonState::update(SkeletonState & skeletonState, const FullStateChange & stateChange)
+void SkeletonState::update(SkeletonState & skeletonState, const NonRigidCompleteStateChange & stateChange)
 {
-	if (stateChange.size() != skeletonState.activeJointsCount){
-		throw std::runtime_error("StateChange size differs from state active joints count");
-	}
-
 	auto it = stateChange.begin();
 	updateOrientationsAndPosition<decltype(stateChange.begin())>(skeletonState.root(), it);
 }
 
-void SkeletonState::setGlobal(SkeletonState & skeletonState, const SimpleStateChange & newState)
+void SkeletonState::update(SkeletonState & skeletonState, const RigidPartialStateChange & stateChange)
+{
+	auto it = stateChange.rotations.begin();
+	if (it == stateChange.rotations.end()){
+		return;
+	}
+
+	skeletonState.root()->value.update(stateChange.translation);
+
+	NodeIDX nodeIDX = 0;
+	Joint::visitLevelOrderWhile(skeletonState.root(), [&it, &stateChange, &nodeIDX](JointPtr node, Joint::size_type level)
+	{
+		if (it->first == nodeIDX){
+
+			node->value.update(it->second);
+			++it;
+		}
+		++nodeIDX;
+		return it != stateChange.rotations.end();
+	});
+}
+
+void SkeletonState::update(SkeletonState & skeletonState, const NonRigidPartialStateChange & stateChange)
 {
 
 }
 
-void SkeletonState::setLocal(SkeletonState & skeletonState, const SimpleStateChange & newState)
+void SkeletonState::setGlobal(SkeletonState & skeletonState, const RigidCompleteStateChange & newState)
 {
 
 }
 
-void SkeletonState::setGlobal(SkeletonState & skeletonState, const FullStateChange & newState)
+void SkeletonState::setLocal(SkeletonState & skeletonState, const RigidCompleteStateChange & newState)
 {
 
 }
 
-void SkeletonState::setLocal(SkeletonState & skeletonState, const FullStateChange & newState)
+void SkeletonState::setGlobal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState)
 {
 
 }
 
-void updateGlobalState(SkeletonState::JointConstPtr joint, SkeletonState::FullStateChange & state)
+void SkeletonState::setLocal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState)
+{
+
+}
+
+void updateGlobalState(SkeletonState::JointConstPtr joint, SkeletonState::NonRigidCompleteStateChange & state)
 {
 	SkeletonState::JointStateChange jsc;
-	jsc.rotation = joint->globalOrientation();
-	jsc.translation = joint->globalPosition();
+	jsc.rotation = joint->value.globalOrientation();
+	jsc.translation = joint->value.globalPosition();
 	state.push_back(jsc);
-	for (unsigned int i = 0; i < joint->childrenCount(); ++i){
-		updateGlobalState(joint->child(i), state);
+	for (auto j : joint->children){
+		updateGlobalState(j, state);
 	}
 }
 
-void updateLocalState(SkeletonState::JointConstPtr joint, SkeletonState::FullStateChange & state)
+void updateLocalState(SkeletonState::JointConstPtr joint, SkeletonState::NonRigidCompleteStateChange & state)
 {
 	SkeletonState::JointStateChange jsc;
-	jsc.rotation = joint->localOrientation();
-	jsc.translation = joint->localPosition();
+	jsc.rotation = joint->value.localOrientation();
+	jsc.translation = joint->value.localPosition();
 	state.push_back(jsc);
-	for (unsigned int i = 0; i < joint->childrenCount(); ++i){
-		updateLocalState(joint->child(i), state);
+	for (auto j : joint->children){
+		updateLocalState(j, state);
 	}
 }
 
-SkeletonState::FullStateChange SkeletonState::globalState(const SkeletonState & skeletonState)
+SkeletonState::NonRigidCompleteStateChange SkeletonState::globalState(const SkeletonState & skeletonState)
 {
-	FullStateChange ret;
+	NonRigidCompleteStateChange ret;
 
 	if (skeletonState.root() != nullptr){
 		updateGlobalState(skeletonState.root(), ret);
@@ -433,9 +422,9 @@ SkeletonState::FullStateChange SkeletonState::globalState(const SkeletonState & 
 	return ret;
 }
 
-SkeletonState::FullStateChange SkeletonState::localState(const SkeletonState & skeletonState)
+SkeletonState::NonRigidCompleteStateChange SkeletonState::localState(const SkeletonState & skeletonState)
 {
-	FullStateChange ret;
+	NonRigidCompleteStateChange ret;
 
 	if (skeletonState.root() != nullptr){
 		updateLocalState(skeletonState.root(), ret);
@@ -529,7 +518,7 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 
 void orderChanges(const acclaim::Skeleton & skeleton, const int currentBoneID,
 	const std::map<std::string, SkeletonState::JointStateChange> & changes,
-	SkeletonState::FullStateChange & change)
+	SkeletonState::NonRigidCompleteStateChange & change)
 {
 	const auto & b = skeleton.bones.find(currentBoneID)->second;	
 	auto changeIT = changes.find(b.name);
@@ -547,19 +536,26 @@ void orderChanges(const acclaim::Skeleton & skeleton, const int currentBoneID,
 	
 }
 
-SkeletonState::FullStateChange SkeletonState::convert(const acclaim::Skeleton & skeleton,
-	const acclaim::MotionData::FrameData & motionData)
+SkeletonState::RigidPartialStateChange SkeletonState::convert(const acclaim::Skeleton & skeleton,
+	const acclaim::MotionData::FrameData & motionData, const LinearizedNodesMapping & mapping)
 {
-	FullStateChange ret;
-
-	std::map<std::string, JointStateChange> changes;
+	RigidPartialStateChange ret;
 
 	for (const auto & bd : motionData.bonesData)
 	{
-		changes.insert(std::map<std::string, JointStateChange>::value_type(bd.name, ::convert(skeleton, bd)));
+		auto it = mapping.right.find(bd.name);
+		if (it != mapping.right.end()){
+			auto nodeID = it->get_left();
+			auto jointStateChange = ::convert(skeleton, bd);
+			ret.rotations.insert(std::map<NodeIDX, osg::Quat>::value_type(nodeID, jointStateChange.rotation));
+
+			if (nodeID == 0){
+				ret.translation = jointStateChange.translation;
+			}
+		}
 	}
 
-	orderChanges(skeleton, skeleton.root, changes, ret);
+	//orderChanges(skeleton, skeleton.root, changes, ret);
 
 	return ret;
 }
@@ -619,9 +615,9 @@ SkeletonState::JointStateChange convert(biovision::JointConstPtr joint, const bi
 
 void orderChanges(biovision::JointConstPtr joint,
 	const std::map<std::string, SkeletonState::JointStateChange> & changes,
-	SkeletonState::FullStateChange & change)
+	SkeletonState::RigidCompleteStateChange & change)
 {
-	change.push_back(changes.find(joint->name)->second);
+	change.rotations.push_back(changes.find(joint->name)->second.rotation);
 
 	for (auto j : joint->joints)
 	{
@@ -629,10 +625,10 @@ void orderChanges(biovision::JointConstPtr joint,
 	}
 }
 
-SkeletonState::FullStateChange SkeletonState::convert(const biovision::Skeleton & skeleton,
+SkeletonState::RigidCompleteStateChange SkeletonState::convert(const biovision::Skeleton & skeleton,
 	const biovision::MotionData::FrameJointData & motionData)
 {
-	FullStateChange ret;
+	RigidCompleteStateChange ret;
 
 	std::map<std::string, JointStateChange> changes;	
 
@@ -644,21 +640,11 @@ SkeletonState::FullStateChange SkeletonState::convert(const biovision::Skeleton 
 
 	orderChanges(skeleton.root, changes, ret);
 
-	return ret;
-}
+	auto rIT = changes.find(skeleton.root->name);
 
-
-void getJointsRec(kinematic::SkeletonState::JointConstPtr parent, std::vector<kinematic::SkeletonState::JointConstPtr>& joints)
-{
-	joints.push_back(parent);
-	int count = parent->childrenCount();
-	for (int i = 0; i < count; ++i) {
-		getJointsRec(parent->child(i), joints);
+	if (rIT != changes.end()){
+		ret.translation = rIT->second.translation;
 	}
-}
-std::vector<kinematic::SkeletonState::JointConstPtr> kinematic::SkeletonState::getJoints(const SkeletonState & skeletonState)
-{
-	std::vector<JointConstPtr> ret;
-	getJointsRec(skeletonState.root(), ret);
+
 	return ret;
 }

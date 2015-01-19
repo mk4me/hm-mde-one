@@ -13,46 +13,23 @@
 #include <string>
 #include <list>
 #include <utils/SmartPtr.h>
+#include <utils/TreeNode.h>
 
 namespace kinematic
 {
-	struct Joint;
-	DEFINE_SMART_POINTERS(Joint);
-
 	//! Struktura opisuje staw modelu
-	struct Joint
-	{
-		//! Rodzic
-		JointWeakPtr parent;
+	struct JointData
+	{		
 		//! Lokalna pozycja
 		osg::Vec3 position;
 		//! Lokalna orientacja
 		osg::Quat orientation;
 		//! Unikalna nazwa
 		std::string name;
-		//! Dzieci
-		std::list<JointPtr> children;
-
-		template<typename T>
-		static void visit(JointPtr joint, T & visitor)
-		{
-			visitor(joint);
-			for (auto c : joint->children)
-			{
-				visit(c, visitor);
-			}
-		}
-
-		template<typename T>
-		static void visit(JointConstPtr joint, T & visitor)
-		{
-			visitor(joint);
-			for (auto c : joint->children)
-			{
-				visit(c, visitor);
-			}
-		}
 	};	
+
+	typedef utils::TreeNode<JointData> Joint;
+	DEFINE_SMART_POINTERS(Joint);
 }
 
 #endif	// __HEADER_GUARD_KINEMATIC__JOINT_H__
