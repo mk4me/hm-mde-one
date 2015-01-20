@@ -79,6 +79,9 @@ private:
 	const std::vector<std::vector<osg::Vec3>> createPointsPositions(const unsigned int density) const;
 
 	void createGhostAndTrajectories();
+	SegmentsDescriptors createConnections(const kinematic::SkeletonState& skeleton);
+
+	std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> createJoint2IndexMapping(const kinematic::SkeletonState &skeleton) const;
 
 private:
 
@@ -96,7 +99,9 @@ private:
 	//! wrapper przekazany serii
 	core::VariantConstPtr data;
 	//! Dane rozpakowane
-	kinematic::SkeletonWithStatesConstPtr skeletonWithStates;
+	SkeletonWithStatesConstPtr skeletonWithStates;
+	//! Stan szieletu na podstawie danych z OW
+	utils::scoped_ptr<kinematic::SkeletonState> skeletonState;
 	//! Typ danych
 	utils::TypeInfo requestedType;
 	//! nazwa serii
@@ -111,6 +116,10 @@ private:
 	utils::shared_ptr<GhostSchemeDrawer> ghostDrawer;
 	//! Klasa pomocnicza przy rysowaniu trajektorii
 	TrajectoryDrawerManagerPtr trajectoriesManager;
+	//! stworzone połączenia między punktami
+	SegmentsDescriptors connections;
+	//! mapowanie joint -> index
+	std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> joint2Index;
 };
 
 

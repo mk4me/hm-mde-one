@@ -45,7 +45,7 @@ public:
     //! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
     //! \param skeletalModel struktura szkieletu
     //! \param skeletalData dane szkieletu
-	void setSkeletal(kinematic::SkeletonConstPtr skeletalModel, const kinematic::SkeletonStates& skeletalData);// ,
+//	void setSkeletal(kinematic::SkeletonConstPtr skeletalModel, const kinematic::SkeletonStates& skeletalData);// ,
 					 //const SkeletonMappingScheme::MappingDict& mapping = SkeletonMappingScheme::defaultAcclaimToHAnimMappingScheme());
     //! Ustawia dane z parsera, w tym miejscu tworzony jest pełny szkielet h-anim, robiona jest normalizacja danych
     //! \param skeletalModel struktura szkieletu w postaci pełnego szkieletu h-anim
@@ -80,7 +80,7 @@ public:
 
 	private:
 		/// \brief  Na podstawie danych z parsera tworzy tablicę z kwaternionami
-		void createQuaternionRepresentation(kinematic::SkeletonConstPtr skeletalModel, const kinematic::SkeletonStates& skeletalData);
+//		void createQuaternionRepresentation(kinematic::SkeletonConstPtr skeletalModel, const kinematic::SkeletonStates& skeletalData);
 
 	private:
 		//! pełny szkielet 

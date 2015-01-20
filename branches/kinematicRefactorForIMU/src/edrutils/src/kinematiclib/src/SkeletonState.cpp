@@ -286,7 +286,7 @@ public:
 
 	void operator()(JointConstPtr joint, const Joint::size_type level)
 	{
-		if (joint != nullptr && joint->isLeaf() == false){
+		if (joint != nullptr){
 			mapping.insert(SkeletonState::LinearizedNodesMapping::value_type(currentIDX++, joint->value.name));
 		}
 	}

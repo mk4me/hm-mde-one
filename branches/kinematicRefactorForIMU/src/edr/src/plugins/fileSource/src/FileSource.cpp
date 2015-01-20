@@ -97,7 +97,7 @@ void FileSource::loadAsfAmc()
 	if (!kinematic::Skeleton::convert(*model, *skeleton)) {
 		throw std::runtime_error("Unable to convert skeleton");
 	}
-	kinematic::SkeletonStatesPtr states = utils::make_shared<kinematic::SkeletonStates>();
+	SkeletonStatesPtr states = utils::make_shared<SkeletonStates>();
 	states->frameTime = data->frameTime;
 
 	const auto mapping = kinematic::SkeletonState::createMapping(*skeleton);
@@ -105,17 +105,23 @@ void FileSource::loadAsfAmc()
 
 
 	for (auto& frame : data->frames) {
-		auto sChange = kinematic::SkeletonState::convert(*model, frame, mapping);
-		//TODO
+		kinematic::SkeletonState::RigidPartialStateChange sChange = kinematic::SkeletonState::convert(*model, frame, mapping);
 		//konwersja z czesiowego do pelnego stanu
-		//states->frames.push_back();
+		kinematic::SkeletonState::NonRigidCompleteStateChange nc;
+		auto count = mapping.size();
+		nc.push_back(kinematic::SkeletonState::JointStateChange{ sChange.translation, osg::Quat() });
+		for (int i = 1; i < count; i++) {
+			// jesli sChange.rotations nie ma odpowiedniego indeksu, to stworzy sie osg::Quat()
+			nc.push_back(kinematic::SkeletonState::JointStateChange{ osg::Vec3(), sChange.rotations[i] });
+		}
+		states->frames.push_back(nc);
 	}
 
-	auto sws = utils::make_shared<kinematic::SkeletonWithStates>();
+	auto sws = utils::make_shared<SkeletonWithStates>();
 	sws->skeleton = skeleton;
 	sws->states = states;
-
-	auto object = core::Variant::create<kinematic::SkeletonWithStates>();
+	sws->nodesMapping = mapping;
+	auto object = core::Variant::create<SkeletonWithStates>();
 	object->set(sws);
 	
 	auto hierarchyTransaction = memoryDM->hierarchyTransaction();

@@ -201,24 +201,6 @@ namespace kinematic
 		JointPtr root_;
 	};
 	
-	struct SkeletonStates
-	{
-		std::vector<SkeletonState::NonRigidCompleteStateChange> frames;
-		//std::vector<std::string> jointNames;
-		double frameTime;
-		double getLength() const {
-			return frameTime * frames.size();
-		}
-	};
-	DEFINE_SMART_POINTERS(SkeletonStates);
-
-	struct SkeletonWithStates
-	{
-		SkeletonStatesConstPtr states;
-		SkeletonConstPtr skeleton;
-		SkeletonState::LinearizedNodesMapping nodesMapping;
-	};
-	DEFINE_SMART_POINTERS(SkeletonWithStates);
 }
 
 #endif	// __HEADER_GUARD_KINEMATIC__SKELETONSTATE_H__

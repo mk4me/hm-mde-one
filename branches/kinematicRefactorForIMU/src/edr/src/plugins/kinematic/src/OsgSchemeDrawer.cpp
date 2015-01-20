@@ -238,23 +238,9 @@ const std::vector<utils::shared_ptr<ConnectionSphereInstance>> ConnectionSphereI
 	stateset->setMode( GL_LIGHTING, osg::StateAttribute::ON );
 	stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
 
-	//utils::shared_ptr<ConnectionInstance> ci(new ConnectionInstance);
-	//ci->connectionIndices = connections[0].range;
-	////ci->cylinder = osgutils::CustomPrimitivesFactory::createCylinder(complexity, connections[0].length, 5.0, osg::Vec4(0.5, 0.5, 0.5, 0.5));
-	//float r = connections[0].length / 2;
-	//ci->sphere = osgutils::CustomPrimitivesFactory::createSphere(complexity, r > 0 ? r : 0.001, osg::Vec4(0.5, 0.5, 0.5, 0.5));
-	//ci->geode = new osg::Geode;
-	//ci->geode->setStateSet(stateset);
-	//ci->posAtt = new osg::PositionAttitudeTransform;
-	//
-	//ci->geode->addDrawable(ci->sphere.geom);
-	//ci->posAtt->addChild(ci->geode);	
-	//ret[0] = ci;
-
 	for(unsigned int i = 0; i < connections.size(); ++i){
 		utils::shared_ptr<ConnectionSphereInstance> lci(new ConnectionSphereInstance);
 		lci->connectionIndices = connections[i].range;
-		//lci->cylinder = osgutils::CustomPrimitivesHelper::cloneForHeightChange(ci->cylinder, connections[i].length);
 		float r = connections[i].length / 2;
 		lci->sphere = osgutils::CustomPrimitivesFactory::createSphere(complexity, r > 0 ? r : 0.001, osg::Vec4(0.5, 0.5, 0.5, 0.5));
 		lci->geode = new osg::Geode;

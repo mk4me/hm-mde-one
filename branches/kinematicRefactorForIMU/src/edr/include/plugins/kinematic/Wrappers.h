@@ -13,6 +13,27 @@
 #include <kinematiclib/Skeleton.h>
 #include <kinematiclib/SkeletonState.h>
 
+
+struct SkeletonStates
+{
+	std::vector<kinematic::SkeletonState::NonRigidCompleteStateChange> frames;
+	//std::vector<std::string> jointNames;
+	double frameTime;
+	double getLength() const {
+		return frameTime * frames.size();
+	}
+};
+DEFINE_SMART_POINTERS(SkeletonStates);
+
+struct SkeletonWithStates
+{
+	SkeletonStatesConstPtr states;
+	kinematic::SkeletonConstPtr skeleton;
+	kinematic::SkeletonState::LinearizedNodesMapping nodesMapping;
+};
+DEFINE_SMART_POINTERS(SkeletonWithStates);
+
+
 //! Typ definiuj¹cy indeksy na po³¹czonych punktach
 typedef std::pair<unsigned int, unsigned int> SegmentRange;
 
@@ -46,8 +67,8 @@ DEFINE_SMART_POINTERS(SkeletonDataStream);
 
 
 DEFINE_WRAPPER(kinematic::JointAnglesCollection, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
-DEFINE_WRAPPER(kinematic::SkeletonStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
-DEFINE_WRAPPER(kinematic::SkeletonWithStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(SkeletonStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(SkeletonWithStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(acclaim::MotionData, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(kinematic::Skeleton, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(acclaim::Skeleton, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
