@@ -4,7 +4,6 @@ SET_PUBLIC_HEADERS(
 	Joint.h
 	SkeletalMappingScheme.h
 	QuaternionManipulators.h
-	JointAnglesCollection.h	
 	SkeletalData.h
 	Skeleton.h
 	SkeletonState.h
@@ -12,7 +11,6 @@ SET_PUBLIC_HEADERS(
 
 SET_SOURCE_FILES( 	
 	SkeletalMappingScheme.cpp
-	JointAnglesCollection.cpp	
 	Skeleton.cpp
 	SkeletonState.cpp
 )

@@ -3,8 +3,6 @@
 
 #include <corelib/BaseDataTypes.h>
 #include <threadingUtils/StreamData.h>
-//#include <kinematiclib/SkeletalModel.h>
-#include <kinematiclib/JointAnglesCollection.h>
 #include <utils/PtrPolicyOSG.h>
 #include <utils/PtrPolicyStd.h>
 #include <osg/PositionAttitudeTransform>
@@ -65,8 +63,6 @@ struct SkeletonDataStream
 
 DEFINE_SMART_POINTERS(SkeletonDataStream);
 
-
-DEFINE_WRAPPER(kinematic::JointAnglesCollection, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
 DEFINE_WRAPPER(SkeletonStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(SkeletonWithStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(acclaim::MotionData, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);

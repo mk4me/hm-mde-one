@@ -172,7 +172,7 @@ private:
 	//! \param idx indeks serii, która ma stac się aktywna. Musi być z zakresu <0, liczbaSerii)
     void setActiveSerie(int idx);
     QStringList getMarkersNames( const MarkerCollectionConstPtr& ms ) const;
-    QStringList getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ms ) const;
+    //QStringList getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ms ) const;
 
 private slots:
     //! Dialog z ustawieniami trajektorii stanie się widoczny

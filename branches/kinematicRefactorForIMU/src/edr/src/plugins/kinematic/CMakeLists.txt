@@ -19,7 +19,7 @@ SET_PRIVATE_HEADERS(
 	KinematicSerie.h
 	SchemeDialog.h
 	SkeletonSerie.h
-	SkeletonSerie2.h
+	SkeletonStreamSerie.h
 	TrajectoriesDialog.h
 	TrajectoriesDrawer.h
 	PickHandler.h
@@ -49,7 +49,7 @@ SET_SOURCE_FILES(
 	OsgSerie.cpp
 	BvhSerie.cpp
 	SkeletonSerie.cpp
-	SkeletonSerie2.cpp
+	SkeletonStreamSerie.cpp
 	TrajectoriesDialog.cpp
 	TrajectoriesDrawer.cpp
 	SchemeDialog.cpp
@@ -64,7 +64,7 @@ SET_MOC_FILES(
 	KinematicVisualizer.h
 	#SchemeDrawerContainer.h
 	SkeletonSerie.h
-	SkeletonSerie2.h
+	SkeletonStreamSerie.h
 	MarkerSerie.h
 	TrajectoriesDialog.h
 	SchemeDialog.h

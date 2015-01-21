@@ -4,7 +4,6 @@
 #include <plugins/kinematic/Wrappers.h>
 #include <acclaimformatslib/AmcParser.h>
 #include <acclaimformatslib/MotionData.h>
-#include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/kinematic/Wrappers.h>
 #include "acclaimformatslib/AsfParser.h"

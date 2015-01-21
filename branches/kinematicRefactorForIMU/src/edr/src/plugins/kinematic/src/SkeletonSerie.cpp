@@ -3,7 +3,7 @@
 #include "OsgSchemeDrawer.h"
 #include "TrajectoriesDrawer.h"
 #include "SkeletalVisualizationSchemeHelper.h"
-#include <kinematiclib/JointAnglesCollection.h>
+//#include <kinematiclib/JointAnglesCollection.h>
 #include <threadingUtils/StreamData.h>
 
 static const osg::Quat invQXYZ = osg::Quat(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f)) * osg::Quat(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
@@ -18,39 +18,22 @@ SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer,
 	name("Skeleton"),
 	pointsDrawer(new PointsDrawer(3)),
 	connectionsDrawer(new ConnectionsDrawer(3)),
-	jointsMapping(new SkeletonJointsMapping),
 	localRootNode(new osg::PositionAttitudeTransform)
 {
-	UTILS_ASSERT(data->data()->getTypeInfo() == typeid(kinematic::JointAnglesCollection));
 	data->getMetadata("core/name", name);
-	jointAngles = data->get();
-
-	std::vector<std::string> mapping;
-	mapping.reserve(jointAngles->getNumChannels());
-
-	for (unsigned int i = 0; i < jointAngles->getNumChannels(); ++i){
-		mapping.push_back(jointAngles->getChannel(i)->getName());
-	}
-
-	jointsMapping->init(jointAngles->getSkeleton(), mapping);
-
-	skeletonSchemeHelper.reset(new SkeletalVisualizationSchemeHelper(pointsDrawer.get(),
-		connectionsDrawer.get()));
-
-	auto connections = jointsMapping->generateMappedConnectionsDescription();
-
-	skeletonSchemeHelper->init(jointsMapping.get(), connections);
-
-	float ratio = jointAngles->getLengthRatio();
-	if (ratio > 0) {
-		pointsDrawer->setSize(0.02 / ratio);
-		connectionsDrawer->setSize(0.05 / ratio);
-		localRootNode->setScale(osg::Vec3(ratio, ratio, ratio));
-	}
+	skeletonWithStates = data->get();
+	skeletonState.reset(new kinematic::SkeletonState(kinematic::SkeletonState::create(*skeletonWithStates->skeleton)));
+	joint2Index = createJoint2IndexMapping(*skeletonState);
+	auto ratio = 1.0;
+	localRootNode->setScale(osg::Vec3(ratio, ratio, ratio));
+	pointsDrawer->init(skeletonWithStates->states->frames.front().size());
+	pointsDrawer->setSize(0.02 / ratio);
 	pointsDrawer->setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
-	connectionsDrawer->setColor(osg::Vec4(0.7, 0.7, 0.7, 0.5));
-
 	localRootNode->addChild(pointsDrawer->getNode());
+	connections = createConnections(*skeletonState);
+	connectionsDrawer->init(connections);
+	connectionsDrawer->setColor(osg::Vec4(0.7, 0.7, 0.7, 0.5));
+	connectionsDrawer->setSize(0.05 / ratio);
 	localRootNode->addChild(connectionsDrawer->getNode());
 	localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
 
@@ -58,7 +41,7 @@ SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer,
 
 	setTime(0.0);
 
-	rootPosition = jointAngles->getRootPosition(0.0);
+	rootPosition = osg::Vec3();// skeletonWithStates->getRootPosition(0.0);
 
 	setAxis(true);
 }
@@ -67,21 +50,22 @@ const std::vector<std::vector<osg::Vec3>> SkeletonSerie::createPointsPositions(c
 {
 	std::vector<std::vector<osg::Vec3>> ret(density);
 
-	const double delta = jointAngles->getLength() / (double)density;
+	const double delta = this->getLength() / (double)density;
 
 	double time = 0.0;
-
-	for (unsigned int i = 0; i < density; ++i, time = delta * i){
-		auto rotations = jointAngles->getValues(time);
-		auto rootPosition = jointAngles->getRootPosition(time / jointAngles->getLength());
-		std::vector<osg::Vec3> positions;
-		skeletonSchemeHelper->calculatePointsPositions(positions,
-			rootPosition,
-			rotations);
-
-		ret[i] = positions;
+	kinematic::SkeletonState sstate = kinematic::SkeletonState::create(*this->skeletonWithStates->skeleton);
+	auto j2i = createJoint2IndexMapping(sstate);
+	for (unsigned int i = 0; i < density; ++i, time = delta * i) {
+		int frameNo = time * this->skeletonWithStates->states->frameTime;
+		auto& frame = skeletonWithStates->states->frames[frameNo];
+		kinematic::SkeletonState::update(sstate, frame);
+		std::vector<osg::Vec3> position(j2i.size());
+		for (auto& j : j2i) {
+			position[j.second] = j.first->value.globalPosition() + frame[0].translation;
+		}
+		ret[i] = position;
 	}
-
+		
 	return ret;
 }
 
@@ -110,7 +94,7 @@ const core::VariantConstPtr & SkeletonSerie::getData() const
 
 double SkeletonSerie::getLength() const
 {
-	return jointAngles->getLength();
+	return skeletonWithStates->states->getLength();
 }
 
 double SkeletonSerie::getBegin() const
@@ -131,17 +115,23 @@ const osg::Vec3 SkeletonSerie::pivotPoint() const
 void SkeletonSerie::update()
 {
 	auto t = std::max(lastUpdateTime, 0.0);
+	std::vector<osg::Vec3> pos(joint2Index.size());
+	int frameNo = lastUpdateTime / skeletonWithStates->states->frameTime;
+	auto& frame = skeletonWithStates->states->frames[frameNo];
+	kinematic::SkeletonState::update(*skeletonState, frame);
+	kinematic::SkeletonState::Joint::visitLevelOrder(skeletonState->root(), [&](kinematic::SkeletonState::JointConstPtr node, kinematic::SkeletonState::Joint::size_type level)
+	{				
+		pos[joint2Index.at(node)] = node->value.globalPosition() + frame[0].translation;		
+	});
 
-	auto rotations = jointAngles->getValues(lastUpdateTime);
-	rootPosition = jointAngles->getRootPosition(lastUpdateTime / jointAngles->getLength());
-
-	skeletonSchemeHelper->updateJointTransforms(rootPosition, rotations);
+	pointsDrawer->update(pos);
+	connectionsDrawer->update(pos);
 }
 
 void SkeletonSerie::setLocalTime(double time)
 {
 	if ((lastUpdateTime == std::numeric_limits<double>::min()) ||
-		(std::abs(time - lastUpdateTime) >= jointAngles->getChannel(0)->getSampleDuration())){
+		(std::abs(time - lastUpdateTime) >= skeletonWithStates->states->frameTime)){
 		lastUpdateTime = time;
 		requestUpdate();
 	}
@@ -175,8 +165,7 @@ void SkeletonSerie::createGhostAndTrajectories()
 		pointsPositions[i] = allPointsPositions[i * 30];
 	}
 
-	ghostDrawer->init(pointsPositions,
-		jointsMapping->generateMappedConnectionsDescription());
+	ghostDrawer->init(pointsPositions, connections);
 	ghostDrawer->pointsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
 	ghostDrawer->connectionsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
 	ghostDrawer->pointsDrawer()->setSize(0.02);
@@ -187,12 +176,12 @@ void SkeletonSerie::createGhostAndTrajectories()
 
 	// teraz punkty dla ducha przerabiam na punkty dla trajektorii
 	// przechodzę z klatek po czasie do klatek po stawach - generalnie transpozycja
-
-	std::vector<std::vector<osg::Vec3>> trajectories(jointsMapping->mappedJointsNumber());
+	auto jointCount = skeletonWithStates->nodesMapping.size();
+	std::vector<std::vector<osg::Vec3>> trajectories(jointCount);
 	
-	for (auto it = allPointsPositions.begin(); it != allPointsPositions.end(); ++it){
-		for (unsigned int i = 0; i < jointsMapping->mappedJointsNumber(); ++i){
-			trajectories[i].push_back((*it)[i]);
+	for (auto& positions : allPointsPositions) {
+		for (unsigned int i = 0; i < jointCount; ++i){
+			trajectories[i].push_back(positions[i]);
 		}
 	}
 	
@@ -219,134 +208,34 @@ utils::shared_ptr<TrajectoryDrawerManager> SkeletonSerie::getTrajectoriesManager
 	return trajectoriesManager;
 }
 
-//---------------------------------------------------------------------
 
-class SkeletonStreamSerieUpdater : public threadingUtils::IStreamStatusObserver
+void createConnectionRec(kinematic::SkeletonState::JointConstPtr parent, const std::map<kinematic::SkeletonState::JointConstPtr, unsigned int>& indices, SegmentsDescriptors& sd)
 {
-public:
-	SkeletonStreamSerieUpdater(SkeletonStreamSerie * serie)
-		: serie(serie)
+	for (auto& child : parent->children) {
+		SegmentDescriptor d;
+		d.length = (parent->value.globalPosition() - child->value.globalPosition()).length();
+		d.range = std::make_pair(indices.at(parent), indices.at(child));
+		sd.push_back(d);
+		createConnectionRec(child, indices, sd);
+	}
+}
+
+SegmentsDescriptors SkeletonSerie::createConnections(const kinematic::SkeletonState& skeleton)
+{
+	SegmentsDescriptors sd;
+	createConnectionRec(skeleton.root(), joint2Index, sd);
+	return sd;
+}
+
+std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> SkeletonSerie::createJoint2IndexMapping(const kinematic::SkeletonState &skeleton) const
+{
+	auto& joints = skeletonWithStates->nodesMapping;
+	std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> m;
+	kinematic::SkeletonState::Joint::visitLevelOrder(skeleton.root(), [&](kinematic::SkeletonState::JointConstPtr joint, kinematic::SkeletonState::Joint::size_type lvl)
 	{
-	}
-
-	virtual ~SkeletonStreamSerieUpdater() {}
-
-	//! Metoda wołana kiedy faktycznie stan strumienia się zmieni
-	virtual void update()
-	{
-		//serie->requestUpdate();
-		serie->myUpdate();
-	}
-
-private:
-
-	SkeletonStreamSerie * serie;
-};
-
-SkeletonStreamSerie::SkeletonStreamSerie(KinematicVisualizer * visualizer,
-	const utils::TypeInfo & requestedType,
-	const core::VariantConstPtr & data) :
-	visualizer(visualizer),
-	data(data), requestedType(requestedType),
-	xyzAxis(false),
-	name("SkeletonData"),
-	pointsDrawer(new PointsDrawer(3)),
-	connectionsDrawer(new ConnectionsSphereDrawer(10)),
-	heightCompensation(false),
-	localRootNode(new osg::PositionAttitudeTransform)
-{
-	UTILS_ASSERT(data->data()->getTypeInfo() == typeid(SkeletonDataStream));
-	data->getMetadata("core/name", name);
-	skeletalData = data->get();
-
-	pointsDrawer->init(skeletalData->jointsCount);
-	pointsDrawer->setSize(0.02);
-
-	connectionsDrawer->init(skeletalData->connections);
-	connectionsDrawer->setSize(0.005);
-
-	pointsDrawer->setColor(osg::Vec4(1.0, 0.0, 0.0, 0.5));
-	connectionsDrawer->setColor(osg::Vec4(0.0, 1.0, 0.0, 0.5));
-
-	localRootNode->addChild(pointsDrawer->getNode());
-	localRootNode->addChild(connectionsDrawer->getNode());
-	localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
-
-	matrixTransform->addChild(localRootNode);
-
-	//setAxis(true);
-
-	updater.reset(new SkeletonStreamSerieUpdater(this));
-
-	skeletalData->jointsStream->attachObserver(updater);
-}
-
-SkeletonStreamSerie::~SkeletonStreamSerie()
-{
-	if (skeletalData != nullptr){
-		skeletalData->jointsStream->detachObserver(updater);
-	}
-}
-
-void SkeletonStreamSerie::setAxis(bool xyz)
-{
-	//TODO - sprawdzic jak to dziala
-	xyzAxis = xyz;
-	localRootNode->setAttitude(xyz == true ? invQXYZ : osg::Quat());
-	localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
-}
-
-void SkeletonStreamSerie::setName(const std::string & name)
-{
-	this->name = name;
-}
-
-const std::string SkeletonStreamSerie::getName() const
-{
-	return name;
-}
-
-const core::VariantConstPtr & SkeletonStreamSerie::getData() const
-{
-	return data;
-}
-
-void SkeletonStreamSerie::update()
-{
-	std::vector<osg::Vec3> points;
-	skeletalData->jointsStream->data(points);
-
-	if (heightCompensation == false){
-		heightCompensation = true;
-		float minZ = std::numeric_limits<float>::max();
-		for (auto it = points.begin(); it != points.end(); ++it){
-			minZ = std::min(minZ, (*it).z());
-		}
-
-		minZ -= pointsDrawer->size(0);
-
-		localRootNode->setPosition(osg::Vec3(0, 0, -minZ));
-		localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
-	}
-
-	rootPosition = osg::Vec3(0, 0, 0);
-
-	for (auto it = points.begin(); it != points.end(); ++it){
-		rootPosition += *it;
-	}
-
-	rootPosition /= points.size();
-
-	pointsDrawer->update(points);
-	connectionsDrawer->update(points);
-}
-
-const utils::TypeInfo & SkeletonStreamSerie::getRequestedDataType() const
-{
-	return requestedType;
-}
-
-const osg::Vec3 SkeletonStreamSerie::pivotPoint() const
-{
-	return rootPosition * lToW;
+		auto i = joints.right.at(joint->value.name());
+		std::pair<kinematic::SkeletonState::JointConstPtr, unsigned int> p = std::make_pair(joint, i);
+		m.insert(p);
+	});
+	return m;
 }
