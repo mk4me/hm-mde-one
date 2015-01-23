@@ -10,7 +10,34 @@ SamplesStatus::SamplesStatus(const unsigned int windowSize,
 {
 	if (windowSize <= 0){
 		throw std::runtime_error("Invalid windows size - must be greater than 0");
-	}	
+	}
+
+	if (statusMap.empty() == true)
+	{
+		throw std::runtime_error("Invalid status map - empty");
+	}
+
+	for (const auto & val : statusMap)
+	{
+		if (val.first < 0.0 || val.first > 1.0){
+			throw std::runtime_error("Invalid status range value - [0, 1)");
+		}
+	}
+}
+
+SamplesStatus::SamplesStatus(const unsigned int windowSize,
+	StatusMap && statusMap)
+	: acc(boost::accumulators::tag::rolling_window::window_size = windowSize),
+	statusMap(statusMap)
+{
+	if (windowSize <= 0){
+		throw std::runtime_error("Invalid windows size - must be greater than 0");
+	}
+
+	if (statusMap.empty() == true)
+	{
+		throw std::runtime_error("Invalid status map - empty");
+	}
 
 	for (const auto & val : statusMap)
 	{
@@ -59,8 +86,14 @@ void SamplesStatus::sample(const SampleType val)
 
 int SamplesStatus::status() const
 {
-	auto val = boost::accumulators::rolling_mean(acc);
-	return statusMap.lower_bound(val)->second;
+	const auto val = boost::accumulators::rolling_mean(acc);
+	auto it = statusMap.lower_bound(val);
+	if (it != statusMap.end()){
+		return it->second;
+	}
+	else {
+		return statusMap.rbegin()->second;
+	}	
 }
 
 SamplesStatus SamplesStatus::createBinaryStatus(const int statusLower, const int statusHigher,

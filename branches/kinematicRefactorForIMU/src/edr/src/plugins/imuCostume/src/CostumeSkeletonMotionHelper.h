@@ -21,6 +21,15 @@ class CostumeSkeletonMotionHelper : public QObject
 {
 	Q_OBJECT
 
+private:
+
+	struct AlgoProgress
+	{
+		IMU::IIMUOrientationEstimationAlgorithmPtr algo;
+		uint32_t lastTime;
+		unsigned int counter;
+	};
+
 public:
 
 	typedef threadingUtils::IStreamT<IMU::SensorsStreamData> SensorsStream;
@@ -54,12 +63,24 @@ private slots:
 	void cancel();
 
 private:
+
+	static void estimate(std::map<imuCostume::Costume::SensorID, AlgoProgress> & algos,
+		const IMU::SensorsData & sensorsData, const uint32_t currentTime);
+
+	unsigned int minCounter() const;
+
+	void resetCounters();
+
+private:
 	//! Strumieñ danych z kostiumu
 	SensorsStreamPtr sensorsStream;
 	//! Obserwator strumienia kostiumu
 	utils::shared_ptr<threadingUtils::ResetableStreamStatusObserver> observer;
 	//! Profil wg którego bêdziemy siê konfigurowaæ
 	IMU::IIMUDataSource::CostumeProfileInstance * costumeProfile;
+
+	std::map<imuCostume::Costume::SensorID, AlgoProgress> algorithmsProgress;
+
 	//! Numer próbki przy której przechodzimy do fazy kalibracji
 	unsigned int calibratinStageChangeValue;
 	//! Poprzednia próbka czasu

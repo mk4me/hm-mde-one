@@ -16,6 +16,7 @@
 #include <imucostumelib/ProtocolSendBufferHelper.h>
 #include <imucostumelib/ImuCostume.h>
 #include <corelib/Variant.h>
+#include <plugins/imuCostume/IIMUDataSource.h>
 
 namespace Ui {
 	class IMUCostumeListWidget;
@@ -47,14 +48,23 @@ public:
 
 private slots:	
 
+	void onSensoresListContextMenu(const QPoint & position);
 	void onCostumesListContextMenu(const QPoint & position);
 	void onCostumeChange(QTreeWidgetItem * current, QTreeWidgetItem * previous);
 
+	void onRecord(const bool record);
 	void onLoad();
 	void onUnload();
+	void onSetSamplingRate();
+	void onRefreshSensorsConfiguration();
+	void onResetCostumeConnectionStatus();
+	void onResetSensorConnectionStatus();
 
 	void onLoadAll();
 	void onUnloadAll();	
+	void onSetSamplingRateAll();
+	void onRefreshSensorsConfigurationAll();
+	void onResetCostumeConnectionStatusAll();
 
     void onLoadDatFile();
 
@@ -63,7 +73,19 @@ private slots:
 	void onRefresh();
 	void refreshStatus();
 
+	void watchRecordedData();
+
 private:
+
+	unsigned int getSamplingRate();
+	unsigned int getSensorsConfigurationSamplesCount();
+
+	void innerCostumeChange(const imuCostume::CostumeRawIO::CostumeAddress & costumeID);
+
+private:
+	utils::shared_ptr<std::ofstream> outputFile;
+	IMU::IIMUDataSource::RecordingOutputPtr recordOutput;	
+	QTimer recordTimer;
 	QTimer statusRefreshTimer;
 	IMU::IMUCostumeDataSource * ds;
 	Ui::IMUCostumeListWidget * ui;

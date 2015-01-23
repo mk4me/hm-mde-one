@@ -34,6 +34,10 @@
 #include "CostumeSkeletonMotionHelper.h"
 #include <plugins/imuCostume/CostumeIMUExtractor.h>
 #include "IMUCostumeProfileConfigurationWizard.h"
+#include <QtWidgets/QInputDialog>
+#include "RecordingWizard.h"
+#include <fstream>
+#include "CostumeParser.h"
 
 Q_DECLARE_METATYPE(imuCostume::CostumeRawIO::CostumeAddress);
 
@@ -81,6 +85,7 @@ IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	ui->costumesTreeWidget->clear();
 	ui->sensorsTree->clear();
 	connect(&statusRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshStatus()));
+	connect(&recordTimer, SIGNAL(timeout()), this, SLOT(watchRecordedData()));
 	statusRefreshTimer.start(1000 / 25);
 	QTimer::singleShot(0, this, SLOT(onRefresh()));
 }
@@ -90,12 +95,11 @@ IMUCostumeWidget::~IMUCostumeWidget()
 	delete ui;
 }
 
-void IMUCostumeWidget::onCostumeChange(QTreeWidgetItem * current, QTreeWidgetItem * previous)
+void IMUCostumeWidget::innerCostumeChange(const imuCostume::CostumeRawIO::CostumeAddress & costumeID)
 {
 	ui->sensorsTree->clear();
-	auto id = current->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
 
-	auto cd = ds->costumeDetails(id);	
+	auto cd = ds->costumeDetails(costumeID);
 
 	for (const auto & st : cd.descriptionDetails.sensorsConfiguration){
 		for (const auto sid : st.second){
@@ -107,54 +111,96 @@ void IMUCostumeWidget::onCostumeChange(QTreeWidgetItem * current, QTreeWidgetIte
 			sItem->setText(1, statusDescription(sstatus));
 			ui->sensorsTree->addTopLevelItem(sItem);
 		}
-	}	
+	}
+}
+
+void IMUCostumeWidget::onCostumeChange(QTreeWidgetItem * current, QTreeWidgetItem * previous)
+{
+	if (current != nullptr){
+		auto id = current->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+		innerCostumeChange(id);
+	}
+}
+
+void IMUCostumeWidget::onSensoresListContextMenu(const QPoint & position)
+{
+	auto cItem = ui->costumesTreeWidget->currentItem();
+	auto sItem = ui->sensorsTree->currentItem();
+
+	if (sItem != nullptr && cItem != nullptr){
+		QMenu menu(this);
+
+		auto resetStatus = menu.addAction(tr("Reset status"));
+		connect(resetStatus, SIGNAL(triggered()), this, SLOT(onResetSensorConnectionStatus()));
+
+		menu.exec(ui->sensorsTree->mapToGlobal(position));
+	}
 }
 
 void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 {
-	QMenu * menu = new QMenu(this);
 	const auto cc = ds->costumesCout();
 
 	if(cc > 0){
+		QMenu menu(this);
+		auto lcc = ds->loadedCostumesCount();
 
-		auto loadAll = menu->addAction(tr("Load all"));
-		auto unloadAll = menu->addAction(tr("Unload all"));	
+		auto loadAll = menu.addAction(tr("Load all"));
+		auto unloadAll = menu.addAction(tr("Unload all"));
+		auto setSamplingRateAll = menu.addAction(tr("Set sampling rate all"));
+		auto rsConfigAll = menu.addAction(tr("Refresh sensors configuration all"));
+		auto resetStatusAll = menu.addAction(tr("Reset connection status all"));
 
-		if (cc != ds->loadedCostumesCount()){
-			loadAll->setEnabled(true);
+		if (cc > ds->loadedCostumesCount()){
 			connect(loadAll, SIGNAL(triggered()), this, SLOT(onLoadAll()));
+			connect(setSamplingRateAll, SIGNAL(triggered()), this, SLOT(onSetSamplingRateAll()));
+			connect(rsConfigAll, SIGNAL(triggered()), this, SLOT(onRefreshSensorsConfigurationAll()));
+			connect(resetStatusAll, SIGNAL(triggered()), this, SLOT(onResetCostumeConnectionStatusAll()));
 		}else{
 			loadAll->setEnabled(false);
+			setSamplingRateAll->setEnabled(false);
+			rsConfigAll->setEnabled(false);
+			resetStatusAll->setEnabled(false);			
 		}
 
-		if (ds->loadedCostumesCount() > 0){
-			unloadAll->setEnabled(true);
+		if (lcc > 0){			
 			connect(unloadAll, SIGNAL(triggered()), this, SLOT(onUnloadAll()));
 		}else{
 			unloadAll->setEnabled(false);
-		}
+		}		
 
 		if(ui->costumesTreeWidget->currentItem() != nullptr){
 
 			const auto id = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
 
-			menu->addSeparator();
+			menu.addSeparator();
 
-			auto load = menu->addAction(tr("Load"));
-			auto unload = menu->addAction(tr("Unload"));
+			auto load = menu.addAction(tr("Load"));
+			auto unload = menu.addAction(tr("Unload"));
+			auto setSamplingRate = menu.addAction(tr("Set sampling rate"));
+			auto rsConfig = menu.addAction(tr("Refresh sensors configuration"));
+			auto resetStatus = menu.addAction(tr("Reset connection status"));
+
 			auto cl = ds->costumeLoaded(id);
 
-			load->setEnabled(cl == false);
-			unload->setEnabled(cl == true);
-
-			connect(load, SIGNAL(triggered()), this, SLOT(onLoad()));
-			connect(unload, SIGNAL(triggered()), this, SLOT(onUnload()));
+			if (cl == false){
+				connect(load, SIGNAL(triggered()), this, SLOT(onLoad()));
+				connect(setSamplingRateAll, SIGNAL(triggered()), this, SLOT(onSetSamplingRate()));
+				connect(rsConfig, SIGNAL(triggered()), this, SLOT(onRefreshSensorsConfiguration()));
+				connect(resetStatus, SIGNAL(triggered()), this, SLOT(onResetCostumeConnectionStatus()));
+				unload->setEnabled(false);
+			}
+			else{
+				connect(unload, SIGNAL(triggered()), this, SLOT(onUnload()));
+				load->setEnabled(false);
+				setSamplingRate->setEnabled(false);
+				rsConfig->setEnabled(false);
+				resetStatus->setEnabled(false);
+			}		
 		}
-	}else{
-		menu->addAction("--- " + tr("No options") + " ---");
+
+		menu.exec(ui->costumesTreeWidget->mapToGlobal(position));
 	}
-			
-	menu->exec(ui->costumesTreeWidget->mapToGlobal(position));
 }
 
 void IMUCostumeWidget::refreshStatus()
@@ -171,19 +217,22 @@ void IMUCostumeWidget::refreshStatus()
 		if (it != cStatus.end()){
 			iS = it->second.status;
 
-			for (unsigned int j = 0; j < ui->sensorsTree->topLevelItemCount(); ++j)
-			{
-				auto sItem = ui->sensorsTree->topLevelItem(j);
-				auto id = sItem->data(0, Qt::UserRole).value<imuCostume::Costume::SensorID>();
-				auto iSS = IMU::IIMUDataSource::UNKNOWN;
-				auto sit = it->second.sensorsStatus.find(id);
-				if (sit != it->second.sensorsStatus.end())
-				{
-					iSS = sit->second;
-				}
+			if (item == ui->costumesTreeWidget->currentItem()){
 
-				sItem->setIcon(1, statusIcon(iS));
-				sItem->setText(1, statusDescription(iS));
+				for (unsigned int j = 0; j < ui->sensorsTree->topLevelItemCount(); ++j)
+				{
+					auto sItem = ui->sensorsTree->topLevelItem(j);
+					auto id = sItem->data(0, Qt::UserRole).value<imuCostume::Costume::SensorID>();
+					auto iSS = IMU::IIMUDataSource::UNKNOWN;
+					auto sit = it->second.sensorsStatus.find(id);
+					if (sit != it->second.sensorsStatus.end())
+					{
+						iSS = sit->second;
+					}
+
+					sItem->setIcon(1, statusIcon(iSS));
+					sItem->setText(1, statusDescription(iSS));
+				}
 			}
 		}
 
@@ -197,11 +246,14 @@ void IMUCostumeWidget::onRefresh()
 	bool failed = false;
 	QString message;
 	try{
+		coreUI::CoreCursorChanger cc;
 		ds->refreshCostumes();
 		ui->costumesTreeWidget->clear();
 		ui->sensorsTree->clear();
 
 		auto cDetails = ds->costumesDetails();
+
+		ui->recordPushButton->setEnabled(cDetails.empty() == false);
 
 		for (const auto & cd : cDetails){
 			auto ci = new QTreeWidgetItem;
@@ -249,6 +301,9 @@ void IMUCostumeWidget::onLoad()
 		PLUGIN_LOG_DEBUG("Profile creation done");
 
 		auto profileInstance = IMU::IIMUDataSource::CostumeProfileInstance::create(ew.costumeProfile());
+
+		PLUGIN_LOG_DEBUG("Profile instantiation done");
+
 		auto cw = IMU::IMUCostumeProfileConfigurationWizard::create(profileInstance);
 		if (cw != nullptr){
 			res = cw->exec();
@@ -259,27 +314,13 @@ void IMUCostumeWidget::onLoad()
 			PLUGIN_LOG_DEBUG("Profile configuration done");
 		}
 
-		profileInstance.calibrationAlgorithm->initialize(profileInstance.skeleton, profileInstance.sensorsMapping, profileInstance.sensorsAdjustments);		
+		profileInstance.calibrationAlgorithm->initialize(profileInstance.skeleton, profileInstance.sensorsMapping, profileInstance.sensorsAdjustments);
+
+		PLUGIN_LOG_DEBUG("Calibration initialized");
 
 		auto canOpenStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::RawDataStream::value_type, IMU::CANopenFramesStream::value_type, IMU::RawToCANopenExtractor>>(cd.rawDataStream, IMU::RawToCANopenExtractor());
 
-		class CANopenDataExtractor
-		{
-		public:
-
-			CANopenDataExtractor() {}
-
-			bool verify(const IMU::CANopenFramesStream::value_type & a)
-			{
-				return true;
-			}
-
-			void extract(const IMU::CANopenFramesStream::value_type & a, IMU::CostumeStream::value_type & ret) const
-			{
-				PLUGIN_LOG_DEBUG("CANopenDataExtractor");
-				ret = imuCostume::Costume::convert(a);
-			}
-		};
+		PLUGIN_LOG_DEBUG("canOpenStream created");
 
 		unsigned int initializeFramesCount = 50;
 
@@ -288,11 +329,17 @@ void IMUCostumeWidget::onLoad()
 			initializeFramesCount = std::max(initializeFramesCount, sa.second->approximateEstimationDelay());
 		}
 
+		PLUGIN_LOG_DEBUG("Minimum samples for estimation algorithms done");
+
 		auto costumeStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::CANopenFramesStream::value_type, IMU::CostumeStream::value_type, IMU::CANopenDataExtractor>>(canOpenStream, IMU::CANopenDataExtractor());
+
+		PLUGIN_LOG_DEBUG("costumeStream created");
 
 		//mamy wszystko, jesteœmy po konfiguracji wszystkiego
 		//mo¿na dalej konfigurowaæ kostium - inicjalizowaæ filtry, kalibrowaæ i ³adowaæ ca³oœæ do DataManager
 		auto extractorAdapter = utils::make_shared<ExtractedCostumeStreamAdapter>(costumeStream, IMU::CostumeIMUExtractor(cd.sensorsConfiguration));
+
+		PLUGIN_LOG_DEBUG("extractorAdapter created");
 
 		CostumeSkeletonMotionHelper csmh(extractorAdapter,
 			&profileInstance, initializeFramesCount + profileInstance.calibrationAlgorithm->maxCalibrationSteps(),
@@ -304,19 +351,20 @@ void IMUCostumeWidget::onLoad()
 			return;
 		}
 
-		PLUGIN_LOG_DEBUG("Costume initialization");
+		PLUGIN_LOG_DEBUG("Costume initialization done");
+
+		coreUI::CoreCursorChanger cc;
 
 		try{
 			profileInstance.motionEstimationAlgorithm->initialize(profileInstance.skeleton,
 				profileInstance.calibrationAlgorithm->sensorsAdjustemnts(), profileInstance.sensorsMapping);
 
 			ds->loadCalibratedCostume(id, profileInstance);
+			PLUGIN_LOG_DEBUG("Costume loaded");
 		}
 		catch (...){
 			QMessageBox::critical(this, tr("Failed to load calibrated costume"), tr("Internal error"));
-		}
-
-		PLUGIN_LOG_DEBUG("Costume loaded");
+		}		
 	}
 	else{
 
@@ -325,6 +373,7 @@ void IMUCostumeWidget::onLoad()
 
 void IMUCostumeWidget::onUnload()
 {
+	coreUI::CoreCursorChanger cc;
 	const auto id = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
 	ds->unloadCostume(id);
 }
@@ -370,5 +419,211 @@ void IMUCostumeWidget::testCommunication()
 	catch (...){
 		std::string errorcode = "unknown error";
 		errorcode += "_";
+	}
+}
+
+unsigned int IMUCostumeWidget::getSamplingRate()
+{
+	return QInputDialog::getInt(this, tr("Data sampling rate"), tr("Enter sampling rate in milliseconds [ms]: "), 20, 10, 2550, 1);
+}
+
+void IMUCostumeWidget::onSetSamplingRate()
+{
+	coreUI::CoreCursorChanger cc;
+	auto id = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+	try{
+		auto desc = ds->costumeDescription(id);
+		auto delay = getSamplingRate();
+		desc.rawCostume->setSamplingDelay(delay);
+	}
+	catch (...){
+
+	}
+}
+
+void IMUCostumeWidget::onSetSamplingRateAll()
+{
+	auto delay = getSamplingRate();
+	coreUI::CoreCursorChanger cc;
+
+	for (unsigned int i = 0; i < ui->costumesTreeWidget->topLevelItemCount(); ++i)
+	{
+		auto id = ui->costumesTreeWidget->topLevelItem(i)->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+		try{
+			auto desc = ds->costumeDescription(id);
+			desc.rawCostume->setSamplingDelay(delay);
+		}
+		catch (...){
+
+		}
+	}
+}
+
+unsigned int IMUCostumeWidget::getSensorsConfigurationSamplesCount()
+{
+	return QInputDialog::getInt(this, tr("Refresh sensors configuration"), tr("Enter number of samples used for detecting sensors configuration: "), 50, 1, 200, 1);
+}
+
+void IMUCostumeWidget::onRefreshSensorsConfiguration()
+{
+	auto id = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+	auto sc = getSensorsConfigurationSamplesCount();
+	coreUI::CoreCursorChanger cc;
+	try{
+		bool res = ds->refreshCostumeSensorsConfiguration(id, sc);
+		if (res == true){
+			innerCostumeChange(id);
+		}
+	}
+	catch (...){
+
+	}
+}
+
+void IMUCostumeWidget::onRefreshSensorsConfigurationAll()
+{
+	imuCostume::CostumeRawIO::CostumeAddress currentID;
+	auto ci = ui->costumesTreeWidget->currentItem();
+	if (ci != nullptr){
+		if (ci->data(0, Qt::UserRole).canConvert<imuCostume::CostumeRawIO::CostumeAddress>() == true){
+			currentID = ci->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+		}
+	}
+
+	auto sc = getSensorsConfigurationSamplesCount();
+	coreUI::CoreCursorChanger cc;
+	for (unsigned int i = 0; i < ui->costumesTreeWidget->topLevelItemCount(); ++i)
+	{
+		auto id = ui->costumesTreeWidget->topLevelItem(i)->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+		try{
+			bool res = ds->refreshCostumeSensorsConfiguration(id, sc);
+			if (res == true && id == currentID){
+				innerCostumeChange(id);
+			}
+		}
+		catch (...){
+
+		}
+	}
+}
+
+void IMUCostumeWidget::onResetCostumeConnectionStatus()
+{
+	auto id = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();	
+	coreUI::CoreCursorChanger cc;
+	try{
+		ds->resetCostumeStatus(id);		
+	}
+	catch (...){
+
+	}
+
+	refreshStatus();
+}
+
+void IMUCostumeWidget::onResetSensorConnectionStatus()
+{
+	auto ci = ui->sensorsTree->currentItem();
+	auto costumeID = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+	auto sensorID = ci->data(0, Qt::UserRole).value<imuCostume::Costume::SensorID>();
+	coreUI::CoreCursorChanger cc;
+	try{
+		ds->resetSensorStatus(costumeID, sensorID);
+		ci->setIcon(1, statusIcon(IMU::IIMUDataSource::UNKNOWN));
+		ci->setText(1, statusDescription(IMU::IIMUDataSource::UNKNOWN));
+	}
+	catch (...){
+
+	}	
+}
+
+void IMUCostumeWidget::onResetCostumeConnectionStatusAll()
+{
+	coreUI::CoreCursorChanger cc;
+	for (unsigned int i = 0; i < ui->costumesTreeWidget->topLevelItemCount(); ++i)
+	{
+		auto id = ui->costumesTreeWidget->topLevelItem(i)->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+		try{
+			ds->resetCostumeStatus(id);			
+		}
+		catch (...){
+
+		}
+	}
+
+	refreshStatus();
+}
+
+void IMUCostumeWidget::watchRecordedData()
+{
+	if (recordOutput->costumesDataBuffer.size() > 0.5 * recordOutput->costumesDataBuffer.maxBufferSize())
+	{
+		IMU::IIMUDataSource::CostumesRecordingDataBuffer::ListT data;
+		recordOutput->costumesDataBuffer.data(data);
+
+		IMU::CostumeParser::save(*outputFile, data);
+		outputFile->flush();
+	}
+}
+
+void IMUCostumeWidget::onRecord(const bool record)
+{
+	if (record == true){
+
+		std::set<IMU::IIMUDataSource::CostumeID> costumes;
+
+		for (unsigned int i = 0; i < ui->costumesTreeWidget->topLevelItemCount(); ++i)
+		{
+			costumes.insert(ui->costumesTreeWidget->topLevelItem(i)->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>());
+		}
+
+		RecordingWizard w(costumes, this);
+
+		auto ret = w.exec();
+
+		if (ret == QWizard::Accepted){
+
+			coreUI::CoreCursorChanger cc;
+			outputFile = utils::make_shared<std::ofstream>(w.outputPath().toStdString().c_str());			
+
+			if (outputFile->is_open() == true){
+				recordOutput = utils::make_shared<IMU::IIMUDataSource::RecordingOutput>();
+				recordOutput->costumesDataBuffer.setMaxBufferSize(10000);
+				recordOutput->costumesToRecord = w.costumes();		
+
+				recordTimer.start(500);
+
+				ds->startRecording(recordOutput);
+			}
+			else{
+
+				//TODO - info ¿e siê nie uda³o jednak pliku stworzyæ do zapisu
+				ui->recordPushButton->blockSignals(true);
+				ui->recordPushButton->setChecked(!record);
+				ui->recordPushButton->blockSignals(false);
+			}
+		}
+		else{
+			ui->recordPushButton->blockSignals(true);
+			ui->recordPushButton->setChecked(!record);
+			ui->recordPushButton->blockSignals(false);
+		}
+
+	}
+	else{
+		coreUI::CoreCursorChanger cc;
+		recordTimer.stop();
+		ds->stopRecording(recordOutput);
+
+		//koñczymy zapis danych
+
+		IMU::IIMUDataSource::CostumesRecordingDataBuffer::ListT data;
+		recordOutput->costumesDataBuffer.data(data);
+
+		IMU::CostumeParser::save(*outputFile, data);
+
+		outputFile->close();
+		outputFile.reset();
+		recordOutput.reset();
 	}
 }

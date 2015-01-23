@@ -29,10 +29,22 @@ namespace IMU
 			OFFLINE,			//! Brak po³¹czenia
 			CONNECTION_PROBLEMS,//! Problemy z po³¹czeniem - gubimy pakiety
 			UNKNOWN				//! Nieznany stan - jeszcze siê nie próbowlaiœmy pod³anczaæ
-		};
+		};	
 
 		//! Typ opisuj¹cy identyfikator kostiumy
 		typedef imuCostume::CostumeRawIO::CostumeAddress CostumeID;
+
+		typedef std::map<CostumeID, imuCostume::ProtocolSendBufferHelper::Buffer> CostumesDataFrame;
+
+		typedef threadingUtils::StreamBufferT<CostumesDataFrame> CostumesRecordingDataBuffer;
+
+		struct RecordingOutput
+		{
+			CostumesRecordingDataBuffer costumesDataBuffer;
+			std::set<CostumeID> costumesToRecord;
+		};
+
+		DEFINE_SMART_POINTERS(RecordingOutput);
 
 		//! Struktura opisuj¹ca status po³¹czenia kostiumu i czujników
 		struct CostumeStatus
@@ -158,42 +170,50 @@ namespace IMU
 		virtual const unsigned int costumesCout() const = 0;
 		//! \return Iloœæ dostepnych kostiumów
 		virtual const bool costumesEmpty() const = 0;
-		//! \param idx Indeks kostiumu
+		//! \param id Indeks kostiumu
 		//! \return Czy dany kostium jest za³adowany
 		virtual bool costumeLoaded(const CostumeID & id) const = 0;
 		//! \return Iloœæ za³adowanych kostiumóe
 		virtual unsigned int loadedCostumesCount() const = 0;
-		//! \param idx Indeks kostiumu
+		//! \param id Identyfikator kosstiumu
+		//! \param samplesCount iloœæ prób pozyskania danych do wyciagniecia konfiguracji kostiumu
+		//! \return Czy uda³o siê chocia¿ z jednej próbki wyci¹gnaæ konfiguracjê
+		virtual bool refreshCostumeSensorsConfiguration(const CostumeID & id, const uint8_t samplesCount) = 0;
+		//! \param id Indeks kostiumu
 		//! \return Opis kostiumu
 		virtual CostumeDescription costumeDescription(const CostumeID & id) const = 0;
-		//! \param idx Indeks kostiumu
+
+		//! \param id Indeks kostiumu
+		virtual void resetCostumeStatus(const CostumeID & id) = 0;
+		//! \param costumeID Indeks kostiumu
+		//! \param sensorID Indeks kostiumu
+		virtual void resetSensorStatus(const CostumeID & costumeID,
+			const imuCostume::Costume::SensorID sensorID) = 0;
+		//! \param id Indeks kostiumu
 		//! \return Opis kostiumu
 		virtual CostumeStatus costumeStatus(const CostumeID & id) const = 0;
-		//! \param idx Indeks kostiumu
+		//! \param id Indeks kostiumu
 		//! \return Opis kostiumu
 		virtual CostumeDetails costumeDetails(const CostumeID & id) const = 0;
-		//! \param idx Indeks kostiumu
 		//! \return Opis kostiumu
 		virtual CostumesDescriptions costumesDescriptions() const = 0;
-		//! \param idx Indeks kostiumu
 		//! \return Opis kostiumu
 		virtual CostumesStatus costumesStatus() const = 0;
-		//! \param idx Indeks kostiumu
 		//! \return Opis kostiumu
 		virtual CostumesDetails costumesDetails() const = 0;
 		//! Metoda ³aduj¹ca kostium do DM - tylko surowe dane + konwersja
-		//! \param idx Indeks kostiumu
+		//! \param id Indeks kostiumu
 		virtual void loadRawCostume(const CostumeID & id) = 0;
 		//! Metoda ³aduj¹ca kostium do DM - surowe dane + konwersja + estymacja ruchu po kalibracji
-		//! \param idx Indeks kostiumu
+		//! \param id Indeks kostiumu
 		//! \param profileInstance Profil kostiumu
 		virtual void loadCalibratedCostume(const CostumeID & id,
 			const CostumeProfileInstance & profileInstance) = 0;
 
 		//! Metoda wy³¹dowywujê dane z DM dla kostiumu
-		//! \param idx Indeks kostiumu
+		//! \param id Indeks kostiumu
 		virtual void unloadCostume(const CostumeID & id) = 0;
-		//! \param idx Indeks kostiumu
+		//! \param id Indeks kostiumu
 		//! \return Dane domenowe kostiumu z DM
 		virtual core::ConstVariantsList costumeData(const CostumeID & id) const = 0;
 
@@ -207,6 +227,9 @@ namespace IMU
 		virtual void registerSkeletonModel(kinematic::SkeletonConstPtr skeleton) = 0;
 		//! \param profile Profil kostiumu
 		virtual void registerCostumeProfile(const CostumeProfile & profile) = 0;
+
+		virtual void startRecording(RecordingOutputPtr recording) = 0;
+		virtual void stopRecording(RecordingOutputPtr recording) = 0;
 
 		//! \return Lista prototypów algorytmów estymacji orientacji czujnika
 		virtual OrientationEstimationAlgorithms orientationEstimationAlgorithms() const = 0;

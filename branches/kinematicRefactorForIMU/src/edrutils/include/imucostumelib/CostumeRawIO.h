@@ -51,6 +51,11 @@ namespace imuCostume
 
 				return false;
 			}
+
+			bool operator==(const imuCostume::CostumeRawIO::CostumeAddress & b) const
+			{
+				return ((port == b.port) && (ip == b.ip));
+			}
 		};	
 
 	public:

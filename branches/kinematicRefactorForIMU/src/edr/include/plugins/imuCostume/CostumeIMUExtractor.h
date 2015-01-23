@@ -74,10 +74,10 @@ namespace IMU
 		void operator()(IMU::SensorsStreamData & data) const;		
 
 	private:
-		//! Poprzedni czas próbki
-		mutable imuCostume::CostumeCANopenIO::Timestamp previousTime;
 		//! Algorytmy estymuj¹ce orientacje czujników
 		const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping orientationAlgorithms;
+
+		mutable std::map<imuCostume::Costume::SensorID, uint32_t> lastUpdateTime;
 	};
 
 	//! Klasa pozwalaj¹ca wypakowywaæ dane z wektorów

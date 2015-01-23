@@ -35,6 +35,11 @@ namespace utils
 		SamplesStatus(const unsigned int windowSize,
 			const StatusMap & statusMap);
 
+		//! \param windowSize Historia próbek
+		//! \param statusMap Mapa statusów
+		SamplesStatus(const unsigned int windowSize,
+			StatusMap && statusMap);
+
 		//! Destruktor
 		~SamplesStatus();
 
@@ -60,7 +65,7 @@ namespace utils
 		//! Akumulator dla danych
 		mutable boost::accumulators::accumulator_set<float, boost::accumulators::stats<boost::accumulators::tag::rolling_mean>> acc;
 		//! Mapa statusów
-		StatusMap statusMap;
+		const StatusMap statusMap;
 	};
 }
 

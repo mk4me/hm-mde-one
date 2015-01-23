@@ -24,6 +24,8 @@ SET_PRIVATE_HEADERS (
 	IMUCostumeCalibrationWizard.h
 	IMUCostumeProfileEditionWizard.h
 	IMUCostumeProfileConfigurationWizard.h
+	RecordingWizard.h
+	CostumeParser.h
 )
 
 SET_SOURCE_FILES(
@@ -41,6 +43,8 @@ SET_SOURCE_FILES(
 	IMUCostumeCalibrationWizard.cpp
 	IMUCostumeProfileEditionWizard.cpp
 	IMUCostumeProfileConfigurationWizard.cpp
+	RecordingWizard.cpp
+	CostumeParser.cpp
 )
 
 SET_MOC_FILES(
@@ -49,12 +53,14 @@ SET_MOC_FILES(
 	IMUCostumeListWidget.h
 	IMUCostumeCalibrationWizard.h
 	IMUCostumeProfileEditionWizard.h
+	RecordingWizard.h
 )
 
 SET_UI_FILES(
 	IMUCostumeListWidget.ui
 	IMUCostumeCalibrationWizard.ui
 	IMUCostumeProfileEditionWizard.ui
+	RecordingWizard.ui
 )
 
 SET_RC_FILES(

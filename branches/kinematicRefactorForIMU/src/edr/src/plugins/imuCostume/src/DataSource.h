@@ -37,9 +37,6 @@ namespace IMU
 
 		struct SensorData
 		{
-			SensorData();
-			~SensorData();
-
 			utils::shared_ptr<utils::SamplesStatus> samplesStatus;
 			utils::shared_ptr<IMUStream> dataStream;
 			std::vector<utils::shared_ptr<Vec3Stream>> vec3dStreams;
@@ -47,11 +44,8 @@ namespace IMU
 			std::list<utils::shared_ptr<ScalarStream>> scalarStreams;
 		};
 
-		struct CostumeData
+		struct CostumeData : public CostumeDescription
 		{
-			CostumeData();
-			~CostumeData();
-
 			utils::shared_ptr<utils::SamplesStatus> samplesStatus;
 			std::map<imuCostume::Costume::SensorID, SensorData> sensorsData;
 			CANopenFramesStreamPtr CANopenStream;
@@ -107,6 +101,13 @@ namespace IMU
 
 		virtual const bool costumesEmpty() const override;
 
+		virtual bool refreshCostumeSensorsConfiguration(const CostumeID & id, const uint8_t samplesCount) override;
+		
+		virtual void resetCostumeStatus(const CostumeID & id) override;
+
+		virtual void resetSensorStatus(const CostumeID & costumeID,
+			const imuCostume::Costume::SensorID sensorID) override;
+
 		virtual CostumeStatus costumeStatus(const CostumeID & id) const override;
 
 		virtual CostumeDetails costumeDetails(const CostumeID & id) const override;
@@ -132,6 +133,9 @@ namespace IMU
 
 		virtual core::ConstVariantsList costumeData(const CostumeID & id) const override;
 
+		virtual void startRecording(RecordingOutputPtr recording) override;
+		virtual void stopRecording(RecordingOutputPtr recording) override;
+
 		virtual void registerOrientationEstimationAlgorithm(const IIMUOrientationEstimationAlgorithm * algorithm) override;
 		virtual void registerCostumeCalibrationAlgorithm(const IMUCostumeCalibrationAlgorithm * algorithm) override;
 		virtual void registerMotionEstimationAlgorithm(const IMUCostumeMotionEstimationAlgorithm * algorithm) override;
@@ -146,10 +150,12 @@ namespace IMU
 
 	private:
 
-		void fillRawCostumeData(CostumeData & cData, const CostumeDescription & cd);
+		static CostumeStatus innerCreateCostumeStatus(const IMUCostumeDataSource::CostumeData & cData);
+
+		void fillRawCostumeData(CostumeData & cData);
 
 		static void configureCostume(CostumeDescription & cd);
-		static void refreshCostumeSensorsConfiguration(CostumeDescription & cd);
+		static bool innerRefreshCostumeSensorsConfiguration(CostumeData & data, const uint8_t MaxSamplesCount);
 
 		static std::string sensorParameterName(const unsigned int idx);
 		static std::string vectorParameterName(const unsigned int idx);
@@ -191,7 +197,7 @@ namespace IMU
 		core::HierarchyItemPtr recordedItems;
 
 		CostumesData costumesData;
-		CostumesDetails costumesDetails_;
+		std::set<RecordingOutputPtr> recordings;
 
 		OrientationEstimationAlgorithms orientationEstimationAlgorithms_;
 		CostumeCalibrationAlgorithms calibrationAlgorithms_;

@@ -89,7 +89,8 @@ CostumeIMUExtractor::~CostumeIMUExtractor()
 
 bool CostumeIMUExtractor::verify(const IMU::CostumeStream::value_type & streamData) const
 {
-	return completeDataFilter(streamData);
+	//return completeDataFilter(streamData);
+	return true;
 }
 
 void CostumeIMUExtractor::extract(const IMU::CostumeStream::value_type & streamData, IMU::SensorsStreamData & sensorsData) const
@@ -114,7 +115,7 @@ void CostumeIMUExtractor::extract(const IMU::CostumeStream::value_type & streamD
 }
 
 OrientationEstimator::OrientationEstimator(const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping & orientationAlgorithms)
-	: orientationAlgorithms(orientationAlgorithms), previousTime(0)
+	: orientationAlgorithms(orientationAlgorithms)
 {
 
 }
@@ -122,16 +123,26 @@ OrientationEstimator::OrientationEstimator(const IMU::IIMUDataSource::Orientatio
 void OrientationEstimator::operator()(IMU::SensorsStreamData & data) const
 {
 	//PLUGIN_LOG_DEBUG("OrientationEstimator");
-
-	double deltaTime = (data.timestamp > previousTime) ? (data.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + data.timestamp);
-	deltaTime /= 1000.0;
-	previousTime = data.timestamp;
-
-	for (auto & o : orientationAlgorithms)
+	for (auto & d : data.sensorsData)
 	{
-		auto it = data.sensorsData.find(o.first);		
+		auto oIT = orientationAlgorithms.find(d.first);
 
-		it->second.orientation = o.second->estimate(it->second.accelerometer, it->second.gyroscope, it->second.magnetometer, deltaTime);
+		if (oIT != orientationAlgorithms.end()){
+
+			double deltaT = 0;
+			auto tIT = lastUpdateTime.find(d.first);
+
+			if (tIT == lastUpdateTime.end()){
+				lastUpdateTime.insert(std::map<imuCostume::Costume::SensorID, uint32_t>::value_type(d.first, data.timestamp));
+			}
+			else{
+				deltaT = (data.timestamp > tIT->second) ? (data.timestamp - tIT->second) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - tIT->second + data.timestamp);
+				deltaT /= 1000.0;
+				tIT->second = data.timestamp;
+			}
+
+			d.second.orientation = oIT->second->estimate(d.second.accelerometer, d.second.gyroscope, d.second.magnetometer, deltaT);
+		}
 	}
 }
 
@@ -215,7 +226,7 @@ ExtractCostumeMotion::ExtractCostumeMotion(
 	IMU::IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm)
 	: motionEstimationAlgorithm(motionEstimationAlgorithm),
 	sensorsMapping(sensorsMapping), dataMapping(dataMapping), sensorsAdjustments(sensorsAdjustments),
-	skeleton(skeleton)
+	skeleton(skeleton), previousTime(0)
 {
 
 }
@@ -234,24 +245,38 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Sk
 {
 	double deltaTime = (input.timestamp > previousTime) ? (input.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + input.timestamp);
 	deltaTime /= 1000.0;
+
+	if (previousTime == 0)
+	{
+		deltaTime = 0;
+	}
+
 	previousTime = input.timestamp;
 
 	IMU::IMUCostumeMotionEstimationAlgorithm::MotionState motionState;
 	motionState.position = osg::Vec3(0, 0, 0);
 
-	for (const auto & a : sensorsAdjustments)
+	std::map<std::string, osg::Quat> jointsGlobalOrientations;
+
+	for (const auto & i : input.sensorsData)
 	{
-		auto i = input.sensorsData.find(a.first);
-		motionState.jointsOrientations.insert(std::map<std::string, osg::Quat>::value_type(sensorsMapping.left.find(i->first)->get_right(), i->second.orientation * a.second.rotation.inverse()));
+		const auto & adj = sensorsAdjustments.find(i.first)->second;
+		jointsGlobalOrientations.insert(std::map<std::string, osg::Quat>::value_type(sensorsMapping.left.find(i.first)->get_right(), i.second.orientation * adj.rotation.inverse()));
 	}
 
 	kinematic::SkeletonState ss(kinematic::SkeletonState::create(*skeleton));
 
-	kinematic::SkeletonState::Joint::visitLevelOrder(ss.root(), [&motionState](kinematic::SkeletonState::JointPtr joint, const kinematic::SkeletonState::Joint::size_type) -> void
+	kinematic::SkeletonState::Joint::visitLevelOrder(ss.root(),
+		[&motionState, &jointsGlobalOrientations](kinematic::SkeletonState::JointPtr joint,
+		const kinematic::SkeletonState::Joint::size_type) -> void
 	{
-		auto it = motionState.jointsOrientations.find(joint->value.name());
-		if (it != motionState.jointsOrientations.end()){
+		auto it = jointsGlobalOrientations.find(joint->value.name());
+		if (it != jointsGlobalOrientations.end()){
 			joint->value.setGlobal(it->second);
+		}
+
+		if (joint->isLeaf() == false){
+			motionState.jointsOrientations.insert(std::map<std::string, osg::Quat>::value_type(joint->value.name(), joint->value.globalOrientation()));
 		}
 	});
 

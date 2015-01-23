@@ -35,12 +35,12 @@ void SourceManager::finalizeSources()
 {
 	for(auto it = sourcesList.begin(); it != sourcesList.end(); ++it){
 		try{
-			CORE_LOG_DEBUG("SourceManager: finalizing " << (*it)->name() << " service");
+			CORE_LOG_DEBUG("SourceManager: finalizing " << (*it)->name() << " source");
 			(*it)->finalize();
-			CORE_LOG_DEBUG("SourceManager: finalized correctly " << (*it)->name() << " service");
+			CORE_LOG_DEBUG("SourceManager: finalized correctly " << (*it)->name() << " source");
 		}
 		catch(std::exception & e){
-			CORE_LOG_ERROR("SourceManager: Error finalizing " << (*it)->name() << " service with error " << e.what());
+			CORE_LOG_ERROR("SourceManager: Error finalizing " << (*it)->name() << " source with error " << e.what());
 		}
 		catch(...){
 			CORE_LOG_ERROR("ServiceManager: Unknown error");

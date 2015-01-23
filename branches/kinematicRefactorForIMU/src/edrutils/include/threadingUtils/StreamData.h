@@ -18,7 +18,6 @@ purpose:  Baza dla danych strumieniowych
 #include <functional>
 #include <utils/Debug.h>
 #include <list>
-#include <boost/circular_buffer.hpp>
 
 namespace threadingUtils {
 	//! Interfejs obiektu obserwującego strumień
@@ -107,21 +106,24 @@ namespace threadingUtils {
 	public:
 		//! Konstruktor domyslny
 		//! \param size Rozmiar bufora cyklicznego - domyślnie 50, 0 oznacza brak ograniczeń na bufor, 1 - wartość niedozwolona
-		StreamBufferT(const size_type size) : bufferData(size) {}
+		StreamBufferT(const size_type size = 50) : maxSize(size) {}
 		//! Destruktor wirtualny
 		~StreamBufferT() {}
 		//! \param size Maksymalny rozmiar bufora - 0 lub mniej oznacza brak ograniczeń		
 		void setMaxBufferSize(const size_type size)
 		{
 			std::lock_guard<std::mutex> lock(synch_);
-			bufferData.set_capacity(size <= 0 ? std::numeric_limits<boost::circular_buffer<T>::capacity_type>::max() : size);
+			maxSize = size;
+			if (maxSize > 0){
+				while (bufferData.size() > maxSize) { bufferData.pop_front(); }
+			}
 		}
 
 		//! \return Maksymalny rozmiar bufora
 		const size_type maxBufferSize() const
 		{
 			std::lock_guard<std::mutex> lock(synch_);			
-			return bufferData.capacity();
+			return maxSize;
 		}
 
 		//! \return Aktualny rozmiar bufora
@@ -135,6 +137,24 @@ namespace threadingUtils {
 		void pushData(const_ref_type data)
 		{
 			std::lock_guard<std::mutex> lock(synch_);
+
+			if (maxSize > 0 && bufferData.size() == maxSize){
+				bufferData.pop_front();
+			}
+
+			bufferData.push_back(data);
+
+		}
+
+		//! \param data Dane do włożenia do bufora
+		void pushData(T && data)
+		{
+			std::lock_guard<std::mutex> lock(synch_);
+
+			if (maxSize > 0 && bufferData.size() == maxSize){
+				bufferData.pop_front();
+			}
+
 			bufferData.push_back(data);
 		}
 
@@ -142,15 +162,17 @@ namespace threadingUtils {
 		void data(ListT & data)
 		{
 			std::lock_guard<std::mutex> lock(synch_);
-			data.insert(bufferData.begin(), bufferData.end());
-			boost::circular_buffer<T>().swap(data);
+			data.insert(data.end(), bufferData.begin(), bufferData.end());
+			ListT().swap(bufferData);
 		}
 
 	private:
 		//! Obiekt synchronizujący
 		mutable std::mutex synch_;
 		//! Bufor danych
-		boost::circular_buffer<T> bufferData;		
+		ListT bufferData;
+		//! Rozmiar bufora
+		volatile size_type maxSize;
 	};
 
 	template<typename T>
@@ -247,6 +269,22 @@ namespace threadingUtils {
 
 			try{
 				pushBufferData(data);
+			}
+			catch (...){
+			}
+
+			data_ = data;
+
+			notify();
+		}
+
+		//! \param data Data received from the stream
+		void pushData(T && data)
+		{
+			std::lock_guard<std::recursive_mutex> lock(this->synch_);
+
+			try{
+				pushBufferData(std::forward<T>(data));
 			}
 			catch (...){
 			}
@@ -499,8 +537,8 @@ namespace threadingUtils {
 		mutable T currentData_;
 		//! Strumień który przykrywam
 		BaseStreamTypePtr baseStream_;
-		//! Obiekt do filtrowania danych danych
-		Process process_;
+		//! Obiekt do przetwarzania danych danych
+		mutable Process process_;
 		//! Obserwator strumienia bazowego
 		StreamStatusObserverPtr sourceStreamObserver;
 		//! Czy należy przetworzyć dane czy zostały już przetworzone
@@ -628,7 +666,7 @@ namespace threadingUtils {
 		mutable Dest currentData_;
 		//! Strumień który przykrywam
 		BaseStreamTypePtr baseStream_;
-		//! Funktor do wypakowywania danych
+		//! Funktor do weryfikacji i wypakowywania danych
 		Extractor extractor_;
 		//! Obserwator strumienia bazowego
 		StreamStatusObserverPtr sourceStreamObserver;

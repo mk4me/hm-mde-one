@@ -131,7 +131,7 @@ public:
 	//OK
 	void setSamplingDelay(const uint32_t delay, const uint16_t timeout)
 	{
-		auto d = utils::clamp<uint32_t>(delay / 10, 1, 255);
+		auto d = utils::clamp<uint8_t>(delay / 10, 1, 255);
 		std::array<uint8_t, 19> buffer;
 		buffer[0] = 0x04;
 		buffer[1] = (uint8_t)this;
