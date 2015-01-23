@@ -12,7 +12,7 @@ void createJoint(JointPtr parentJoint, const acclaim::Skeleton & skeleton,
 	std::set<std::string> & names)
 {
 	JointData jointData;
-	const auto & bone = skeleton.bones.find(currentBoneID)->second;
+	const auto & bone = skeleton.bones.at(currentBoneID);
 
 	jointData.name = bone.name;
 
@@ -22,11 +22,9 @@ void createJoint(JointPtr parentJoint, const acclaim::Skeleton & skeleton,
 
 	jointData.position = bone.direction * bone.length;
 	jointData.orientation = kinematicUtils::convert(bone.axis, bone.axisOrder);
+	names.insert(jointData.name);
 
 	auto joint = Joint::addChild(parentJoint, jointData);
-
-	names.insert(jointData.name);	
-
 	auto range = skeleton.hierarchy.left.equal_range(currentBoneID);	
 
 	for (auto it = range.first; it != range.second; ++it){
@@ -49,13 +47,17 @@ bool Skeleton::convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSke
 
 		//root
 		JointData jointData;
-		jointData.name = "HumanoidRoot";
+		jointData.name = "root";
 		jointData.position = srcSkeleton.position;
 		jointData.orientation = kinematicUtils::convert(srcSkeleton.orientation, srcSkeleton.axisOrder);
 		names.insert(jointData.name);
 
-		JointPtr joint = Joint::create(jointData);		
-		createJoint(joint, srcSkeleton, currentID, humanoidHierarchy, names);		
+		JointPtr joint = Joint::create(jointData);
+		auto range = srcSkeleton.hierarchy.left.equal_range(currentID);
+		for (auto it = range.first; it != range.second; ++it) {
+			createJoint(joint, srcSkeleton, it->second, humanoidHierarchy, names);
+		}
+		//createJoint(joint, srcSkeleton, currentID, humanoidHierarchy, names);		
 		
 		destSkeleton.name = srcSkeleton.name;
 		destSkeleton.root = joint;

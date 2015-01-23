@@ -3,7 +3,7 @@
 #include <fstream>
 #include <utils/Utils.h>
 
-#define PARSER_VERSION "0.12"
+#define PARSER_VERSION "0.13"
 
 using namespace acclaim;
 

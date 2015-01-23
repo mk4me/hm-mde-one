@@ -121,7 +121,7 @@ void SkeletonSerie::update()
 	kinematic::SkeletonState::update(*skeletonState, frame);
 	kinematic::SkeletonState::Joint::visitLevelOrder(skeletonState->root(), [&](kinematic::SkeletonState::JointConstPtr node, kinematic::SkeletonState::Joint::size_type level)
 	{				
-		pos[joint2Index.at(node)] = node->value.globalPosition() + frame[0].translation;		
+		pos[joint2Index.at(node)] = node->value.globalPosition();		
 	});
 
 	pointsDrawer->update(pos);
