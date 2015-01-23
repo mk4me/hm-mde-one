@@ -40,7 +40,7 @@ namespace acclaim
 
 		//! kolecja z danymi
 		std::vector<FrameData>  frames;
-		//! Czas trwania pojedynczej ramki
+		////! Czas trwania pojedynczej ramki
 		double frameTime;
 	};
 	DEFINE_SMART_POINTERS(MotionData);

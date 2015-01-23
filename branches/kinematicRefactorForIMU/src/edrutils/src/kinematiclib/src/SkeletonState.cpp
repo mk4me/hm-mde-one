@@ -511,7 +511,8 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 		++i;
 	}
 
-	ret.rotation = kinematicUtils::convert(rot, bone.rotationOrder);
+	//ret.rotation = kinematicUtils::convert(rot, bone.rotationOrder);
+	ret.rotation = kinematicUtils::convert(rot, bone.axisOrder);
 
 	return ret;
 }

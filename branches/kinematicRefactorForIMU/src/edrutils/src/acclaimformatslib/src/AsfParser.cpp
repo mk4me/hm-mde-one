@@ -43,6 +43,9 @@ Skeleton AsfParser::parse(const std::string& filename)
     // podziel plik na sekcje
     bool result = splitAsf(storage);
     if (result) {
+		model.name = name;
+		model.version = version;
+		model.documentation = documentation;
         result &= parseUnits(units);
         result &= parseRoot(root, model);
         result &= parseBones(bonedata);
@@ -162,7 +165,7 @@ bool AsfParser::parseSingleBone(const std::string& singleBone, Bone& bone) {
             while (dofs >> token) {
 				auto channel = DegreeOfFreedom::getChannel(token);
                 channels.push_back(channel);
-				if (channel == kinematicUtils::ChannelType::TX || channel == kinematicUtils::ChannelType::TY
+				/*if (channel == kinematicUtils::ChannelType::TX || channel == kinematicUtils::ChannelType::TY
 					|| channel == kinematicUtils::ChannelType::TZ)
 				{
 					++ti;
@@ -172,15 +175,15 @@ bool AsfParser::parseSingleBone(const std::string& singleBone, Bone& bone) {
 				{
 					rotOrder += tokenToAxis(token);
 					++ri;
-				}
+				}*/
             }
 
-			if (!(ti == 0 || ti == 3) || !(ri == 0 || ri == 3))
-			{
-				throw std::runtime_error("Invalid acclaim degrees of freedom configuration. Incomplete rotation or translation");
-			}
-
-			bone.rotationOrder = Axis::getAxisOrder(rotOrder);
+			//if (!(ti == 0 || ti == 3) || !(ri == 0 || ri == 3))
+			//{
+			//	throw std::runtime_error("Invalid acclaim degrees of freedom configuration. Incomplete rotation or translation");
+			//}
+			//
+			//bone.rotationOrder = Axis::getAxisOrder(rotOrder);
 
         } else if (token.compare("limits") == 0) {
             for (int i = channels.size() - 1; i >= 0; --i) {

@@ -40,6 +40,21 @@ namespace acclaim
             {
             }
 
+		DegreeOfFreedom(const kinematicUtils::Channel channel, double minLimit, double maxLimit) :
+			channel(channel),
+			minLimit(minLimit),
+			maxLimit(maxLimit)
+		{
+		}
+
+		bool operator ==(const DegreeOfFreedom& b) const
+		{
+			const double epsilon = 0.0000001;
+			return channel == b.channel &&
+				std::abs(minLimit - b.minLimit) < epsilon &&
+				std::abs(maxLimit - b.maxLimit) < epsilon;
+		}
+
         /// \brief  Zwraca indeks (w tablicy wartości kanałów dla pojedynczej klatki kości)
         /// \param  Kanał dla którego powinnien być zwrócony indeks 
         /// \param  dofs lista ze stopniami swobody (na jej podstawie ustalany jest indeks)
@@ -56,6 +71,7 @@ namespace acclaim
         /// \return Nazwa kanału. 
 		static std::string getChannelName(kinematicUtils::Channel channel, bool uppercase = false);
     };
+	
 }
 
 #endif

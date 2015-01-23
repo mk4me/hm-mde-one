@@ -2,21 +2,23 @@ BEGIN_PROJECT("executable")
 
 SET_SOURCE_FILES(
 	test.cpp
-	AsfParserTest.cpp
-	AmcParserTest.cpp
-	BvhParserTest.cpp
-	MiscTest.cpp
-	KinematicModelTest.cpp
-	JointAnglesCollectionTest.cpp
+	JointTest.cpp
+	QuaternionManipulatorsTest.cpp
+	SkeletalDataTest.cpp
+	SkeletonTest.cpp
+	SkeletonStateTest.cpp
 )
 
 SET_PRIVATE_HEADERS(
-	AsfParserTest.h
-	AmcParserTest.h
-	BvhParserTest.h
-	MiscTest.h
-	KinematicModelTest.h
-	JointAnglesCollectionTest.h
+	JointTest.h
+	QuaternionManipulatorsTest.h
+	SkeletalDataTest.h
+	SkeletonTest.h
+	SkeletonStateTest.h
 )
+
+
+#TODO moze warto to jakos uniwersalnie zrobic..
+file(COPY "testFiles" DESTINATION "${CMAKE_BINARY_DIR}/tests/kinematiclib")
 
 END_PROJECT()

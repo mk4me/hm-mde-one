@@ -26,14 +26,14 @@ namespace acclaim
 		kinematicUtils::AxisOrder::Type axisOrder;
 		//! stopnie swobody dla kości (razem z limitami)
 		std::vector<DegreeOfFreedom> dofs;
-		//! określa kolejność rotacji
-		kinematicUtils::AxisOrder::Type rotationOrder;
+		////! określa kolejność rotacji
+		//kinematicUtils::AxisOrder::Type rotationOrder;
 
 		Bone() : id(-1),
 			axis(0.0, 0.0, 0.0),
 			length(-1),
 			axisOrder(kinematicUtils::AxisOrder::XYZ),
-			rotationOrder(kinematicUtils::AxisOrder::XYZ),
+			//rotationOrder(kinematicUtils::AxisOrder::XYZ),
 			direction(0.0, 0.0, 0.0),
 			name(name)
 		{}
@@ -45,7 +45,7 @@ namespace acclaim
 			length(Other.length),
 			axis(Other.axis),
 			axisOrder(Other.axisOrder),
-			rotationOrder(Other.rotationOrder),
+			//rotationOrder(Other.rotationOrder),
 			dofs(Other.dofs)
 		{}
 

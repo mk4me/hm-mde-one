@@ -30,6 +30,7 @@ SET_PUBLIC_HEADERS(
 	Macros.h
 	Utils.h
 	Debug.h
+	Test.h
 	Profiler.h
 	System.h
 	LeakDetection.h
