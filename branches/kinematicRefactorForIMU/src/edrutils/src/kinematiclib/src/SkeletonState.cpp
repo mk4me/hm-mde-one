@@ -10,6 +10,8 @@ class SkeletonState::JointData::JointDataImpl
 	friend class SkeletonState;
 
 private:
+	osg::Vec3 originTranslation;
+	osg::Quat originRotation;
 
 	void refreshGlobal() const
 	{
@@ -30,19 +32,19 @@ private:
 
 	void localUpdate(const osg::Vec3 & translation)
 	{
-		node->setPosition(node->getPosition() + translation);
+		node->setPosition(originTranslation + translation);
 	}
 
 	void localUpdate(const osg::Quat & rotation)
 	{
-		node->setAttitude(node->getAttitude() * rotation);
+		node->setAttitude(originRotation * rotation);
 	}
 
 public:
 
-	JointDataImpl(const std::string & name, const osg::Vec3 & translation,
-		const osg::Quat & rotation) : node(new osg::PositionAttitudeTransform),
-		globalRequiresRefresh(true)
+	JointDataImpl(const std::string & name, const osg::Vec3 & translation, const osg::Quat & rotation) :
+		node(new osg::PositionAttitudeTransform), originRotation(rotation), 
+		originTranslation(translation), globalRequiresRefresh(true)
 	{
 		node->setName(name);		
 		node->setPosition(translation);
@@ -323,9 +325,9 @@ void updateOrientationsAndPosition(SkeletonState::JointPtr joint, T & valIT)
 	joint->value.update((*valIT).translation, (*valIT).rotation);
 	++valIT;
 	for (auto j : joint->children){		
-		if (j->isLeaf() == false){
+		//if (j->isLeaf() == false){
 			updateOrientationsAndPosition(j, valIT);
-		}
+		//}
 	}
 }
 
@@ -511,8 +513,8 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 		++i;
 	}
 
-	//ret.rotation = kinematicUtils::convert(rot, bone.rotationOrder);
-	ret.rotation = kinematicUtils::convert(rot, bone.axisOrder);
+	
+	ret.rotation = kinematicUtils::convert(skeleton.units.isAngleInRadians() ? rot : kinematicUtils::toRadians(rot), bone.axisOrder);
 
 	return ret;
 }

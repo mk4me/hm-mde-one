@@ -1,5 +1,6 @@
 #include <acclaimformatslib/AsfParser.h>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <utils/Utils.h>
 
@@ -260,13 +261,13 @@ bool AsfParser::parseUnits(const std::string& units) {
     while (is >> token) {
 
 		is >> value;
-
+		boost::to_lower(token);
 		try{
 			number = boost::lexical_cast<float>(value);
 			model.units.defaultValues[token] = number;
 		}
 		catch (...){
-			model.units.typeValueUnits[token] = value;
+			model.units.typeValueUnits[token] = boost::to_lower_copy(value);
 		}
 
 		/*

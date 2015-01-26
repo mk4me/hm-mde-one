@@ -23,6 +23,11 @@ namespace acclaim
 		{
 			std::map<std::string, std::string> typeValueUnits;
 			std::map<std::string, float> defaultValues;
+
+			bool isAngleInRadians() const {
+				auto angleIt = typeValueUnits.find("angle");
+				return angleIt != typeValueUnits.end() && angleIt->second == "rad";
+			}
 		};
 
 		std::string version;
