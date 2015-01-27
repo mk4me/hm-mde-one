@@ -3,6 +3,8 @@
 
 #include <kinematicUtils/Types.h>
 #include <vector>
+#include <cmath>
+#include <limits>
 
 namespace acclaim
 {

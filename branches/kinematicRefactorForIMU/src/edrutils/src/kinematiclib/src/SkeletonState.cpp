@@ -2,6 +2,8 @@
 #include <osg/PositionAttitudeTransform>
 #include <boost/lexical_cast.hpp>
 #include <kinematicUtils/RotationConverter.h>
+#include <kinematiclib/Joint.h>
+#include <utils/TreeNode.h>
 
 using namespace kinematic;
 
@@ -86,7 +88,7 @@ public:
 		return globalMatrix.getRotate();
 	}
 
-	//! \param translation Lokalne przesuniêcie
+	//! \param translation Lokalne przesuniï¿½cie
 	void update(const osg::Vec3 & translation)
 	{
 		localUpdate(translation);
@@ -128,7 +130,7 @@ public:
 		globalRequiresRefresh = true;
 	}
 
-	//! \param translation Lokalne przesuniêcie
+	//! \param translation Lokalne przesuniï¿½cie
 	//! \param rotation Lokalna rotacja
 	void update(const osg::Vec3 & translation, const osg::Quat & rotation)
 	{
@@ -154,11 +156,11 @@ public:
 	}
 
 private:
-	//! Wêze³ osg
+	//! Wï¿½zeï¿½ osg
 	osg::ref_ptr<osg::PositionAttitudeTransform> node;
-	//! Czy stan globalny wymaga odœwie¿enia
+	//! Czy stan globalny wymaga odï¿½wieï¿½enia
 	mutable bool globalRequiresRefresh;
-	//! Macierz opisuj¹ca stan globalny
+	//! Macierz opisujï¿½ca stan globalny
 	mutable osg::Matrix globalMatrix;
 };
 
@@ -354,16 +356,18 @@ void SkeletonState::update(SkeletonState & skeletonState, const RigidPartialStat
 	skeletonState.root()->value.update(stateChange.translation);
 
 	NodeIDX nodeIDX = 0;
-	Joint::visitLevelOrderWhile(skeletonState.root(), [&it, &stateChange, &nodeIDX](JointPtr node, Joint::size_type level)
-	{
-		if (it->first == nodeIDX){
+	JointPtr root = skeletonState.root();
+	auto visitorL = [&it, &stateChange, &nodeIDX](JointPtr node, Joint::size_type level)
+			{
+				if (it->first == nodeIDX){
 
-			node->value.update(it->second);
-			++it;
-		}
-		++nodeIDX;
-		return it != stateChange.rotations.end();
-	});
+					node->value.update(it->second);
+					++it;
+				}
+				++nodeIDX;
+				return it != stateChange.rotations.end();
+			};
+	Joint::visitLevelOrderWhile(root, visitorL);
 }
 
 void SkeletonState::update(SkeletonState & skeletonState, const NonRigidPartialStateChange & stateChange)
@@ -503,7 +507,7 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 			break;
 
 		case acclaim::DegreeOfFreedom::L:
-			//TODO - przesun¹æ dziecko
+			//TODO - przesunï¿½ï¿½ dziecko
 			break;
 
 		default:
@@ -514,7 +518,7 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 	}
 
 	
-	ret.rotation = kinematicUtils::convert(skeleton.units.isAngleInRadians() ? rot : kinematicUtils::toRadians(rot), bone.axisOrder);
+	ret.rotation = kinematicUtils::convert(skeleton.units.isAngleInRadians() ? static_cast<osg::Vec3d>(rot) : kinematicUtils::toRadians(rot), bone.axisOrder);
 
 	return ret;
 }

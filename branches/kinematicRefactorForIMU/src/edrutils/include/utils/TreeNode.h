@@ -11,10 +11,11 @@
 #include <utils/SmartPtr.h>
 #include <algorithm>
 #include <list>
+#include <set>
 
 namespace utils
 {
-	//! \tparam NPtr Typ wskaŸnika wêz³a
+	//! \tparam NPtr Typ wskaï¿½nika wï¿½zï¿½a
 	template<typename NPtr>
 	class TreeLinearizeVisitor
 	{
@@ -28,7 +29,7 @@ namespace utils
 		//! Destruktor
 		~TreeLinearizeVisitor() {}
 
-		//! \param node odwiedzany wêze³
+		//! \param node odwiedzany wï¿½zeï¿½
 		void operator()(NPtr node)
 		{
 			linearizedTree.push_back(node);
@@ -38,7 +39,7 @@ namespace utils
 		LinearizedTree linearizedTree;
 	};
 
-	//! \tparam NPtr Typ wskaŸnika wêz³a
+	//! \tparam NPtr Typ wskaï¿½nika wï¿½zï¿½a
 	template<typename NPtr>
 	class MaxLevelVisitor
 	{
@@ -47,8 +48,8 @@ namespace utils
 		MaxLevelVisitor() : level(0) {}
 		//! Destruktor
 		~MaxLevelVisitor() {}
-		//! \param node Odwiedzany wêze³
-		//! \param level Aktualnie odwiedzany poziom (wzgledem wêz³a z którego startowaliœmy)
+		//! \param node Odwiedzany wï¿½zeï¿½
+		//! \param level Aktualnie odwiedzany poziom (wzgledem wï¿½zï¿½a z ktï¿½rego startowaliï¿½my)
 		void operator()(NPtr node, const unsigned int level)
 		{
 			this->level = std::max(this->level, level);
@@ -58,33 +59,33 @@ namespace utils
 		unsigned int level;
 	};
 
-	//! \tparam ValueType Typ rpzechowywanej wartoœci
+	//! \tparam ValueType Typ rpzechowywanej wartoï¿½ci
 	template<typename ValueType>
 	struct TreeNode
 	{
 	public:
-		//! Typ przechowywanych w wêz³ach wartoœci
+		//! Typ przechowywanych w wï¿½zï¿½ach wartoï¿½ci
 		typedef ValueType value_type;
-		//! Typ naszego wêz³a
+		//! Typ naszego wï¿½zï¿½a
 		typedef TreeNode<value_type> node_type;
 		//! Wskazniki do naszego wezla
 		DEFINE_SMART_POINTERS_EXT(node_type, Node);	
 		//! Dzieci wezla
 		typedef std::list<NodePtr> Children;	
-		//! Typ iloœci
+		//! Typ iloï¿½ci
 		typedef typename Children::size_type size_type;
-		//! Typ œcie¿ki pomiêdzy wêz³ami
+		//! Typ ï¿½cieï¿½ki pomiï¿½dzy wï¿½zï¿½ami
 		typedef Children Path;
 
 	private:
 
-		//! \param value Wartoœc przechowywana w wêŸle (kopiowanie)
+		//! \param value Wartoï¿½c przechowywana w wï¿½le (kopiowanie)
 		TreeNode(const value_type & value) : value(value) {}
-		//! \param value Wartoœc przechowywana w wêŸle (move semantics)
+		//! \param value Wartoï¿½c przechowywana w wï¿½le (move semantics)
 		TreeNode(value_type && value) : value(std::move(value)) {}
 
-		//! \param node Wêze³ który sprawdzamy pod k¹tem bycia naszym przodkiem
-		//! \return Czy dany wezê³ jest naszym przodkiem (id¹c w górê po parentach trafimy do niego)
+		//! \param node Wï¿½zeï¿½ ktï¿½ry sprawdzamy pod kï¿½tem bycia naszym przodkiem
+		//! \return Czy dany wezï¿½ jest naszym przodkiem (idï¿½c w gï¿½rï¿½ po parentach trafimy do niego)
 		bool rawIsAncestor(const node_type * node) const
 		{
 			if (node == nullptr || node == this){
@@ -100,50 +101,50 @@ namespace utils
 
 	public:
 		
-		//! \param value Wartoœæ z jak¹ tworzymy wêze³
-		//! \return Nowy wêze³ z zadan¹ wartoœci¹
+		//! \param value Wartoï¿½ï¿½ z jakï¿½ tworzymy wï¿½zeï¿½
+		//! \return Nowy wï¿½zeï¿½ z zadanï¿½ wartoï¿½ciï¿½
 		static NodePtr create(const value_type & value = value_type())
 		{
 			return NodePtr(new node_type(value));
 		}
 
-		//! \param value Wartoœæ z jak¹ tworzymy wêze³
-		//! \return Nowy wêze³ z zadan¹ wartoœci¹
+		//! \param value Wartoï¿½ï¿½ z jakï¿½ tworzymy wï¿½zeï¿½
+		//! \return Nowy wï¿½zeï¿½ z zadanï¿½ wartoï¿½ciï¿½
 		static NodePtr create(value_type && value)
 		{
 			return NodePtr(new node_type(std::move(value)));
 		}
 
-		//! \tparam NPtr Typ wskaŸnika wêz³a
+		//! \tparam NPtr Typ wskaï¿½nika wï¿½zï¿½a
 		template<typename NPtr>
-		//! \param Œcie¿ka której d³ugoœæ obliczam
-		//! \return D³ugoœæ œcie¿ki
+		//! \param ï¿½cieï¿½ka ktï¿½rej dï¿½ugoï¿½ï¿½ obliczam
+		//! \return Dï¿½ugoï¿½ï¿½ ï¿½cieï¿½ki
 		static size_type distance(const std::list<NPtr> & path)
 		{
 			return path.size() - 1;
 		}
 
-		//! \param startNode Weze³ z którego ma wystartowaæ œcie¿ka
-		//! \param endNode Weze³ do którego dojœæ œcie¿ka
-		//! \return D³ugoœæ œcie¿ki pomiêdzy wêz³ami
+		//! \param startNode Wezeï¿½ z ktï¿½rego ma wystartowaï¿½ ï¿½cieï¿½ka
+		//! \param endNode Wezeï¿½ do ktï¿½rego dojï¿½ï¿½ ï¿½cieï¿½ka
+		//! \return Dï¿½ugoï¿½ï¿½ ï¿½cieï¿½ki pomiï¿½dzy wï¿½zï¿½ami
 		static size_type distance(NodeConstPtr startNode, NodeConstPtr endNode)
 		{			
 			return distance(findPath(startNode, endNode));
 		}
 
-		//! \tparam NPtr Typ wskaŸnika wêz³a
+		//! \tparam NPtr Typ wskaï¿½nika wï¿½zï¿½a
 		template<typename NPtr>
-		//! \param path [out] Œcie¿ka któr¹ odwracamy
+		//! \param path [out] ï¿½cieï¿½ka ktï¿½rï¿½ odwracamy
 		static void reversePath(std::list<NPtr> & path)
 		{
 			std::reverse(path.begin(), path.end());
 		}
 
-		//! \tparam NPtr Typ wskaŸnika wêz³a
+		//! \tparam NPtr Typ wskaï¿½nika wï¿½zï¿½a
 		template<typename NPtr>
-		//! \param startNode Wêze³ z którego ma siê rozpocz¹æ œcie¿ka
-		//! \param endNode Wêze³ w którym ma siê koñczyæ œcie¿ka
-		//! \return Œcie¿ka pomiêdzy wêz³ami - kolejne wêz³y
+		//! \param startNode Wï¿½zeï¿½ z ktï¿½rego ma siï¿½ rozpoczï¿½ï¿½ ï¿½cieï¿½ka
+		//! \param endNode Wï¿½zeï¿½ w ktï¿½rym ma siï¿½ koï¿½czyï¿½ ï¿½cieï¿½ka
+		//! \return ï¿½cieï¿½ka pomiï¿½dzy wï¿½zï¿½ami - kolejne wï¿½zï¿½y
 		static std::list<NPtr> findPath(NPtr startNode, NPtr endNode)
 		{
 			std::list<NPtr> ret;		
@@ -181,7 +182,7 @@ namespace utils
 					auto retIT = std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), intersectResult.begin());
 
 					if (retIT != intersectResult.end()){
-						//mamy punkt przeciecia - drogi siê schodz¹
+						//mamy punkt przeciecia - drogi siï¿½ schodzï¿½
 						
 						ret.insert(ret.end(), p2.begin(), std::find(p2.begin(), p2.end(), intersectResult.front()));
 						reversePath(ret);
@@ -196,9 +197,9 @@ namespace utils
 			return ret;
 		}
 
-		//! \tparam NPtr Typ wskaŸnika wêz³a
+		//! \tparam NPtr Typ wskaï¿½nika wï¿½zï¿½a
 		template<typename NPtr>
-		//! \param node Wêze³ z którego chcemy pobraæ œcie¿kê do roota
+		//! \param node Wï¿½zeï¿½ z ktï¿½rego chcemy pobraï¿½ ï¿½cieï¿½kï¿½ do roota
 		static std::list<NPtr> upPath(NPtr startNode)
 		{
 			std::list<NPtr> ret;			
@@ -206,11 +207,11 @@ namespace utils
 			return ret;
 		}
 
-		//! \tparam NPtr Typ wskaŸnika wêz³a
-		//! \tparam Visitor Typ odwiedzaj¹cego wêz³y
+		//! \tparam NPtr Typ wskaï¿½nika wï¿½zï¿½a
+		//! \tparam Visitor Typ odwiedzajï¿½cego wï¿½zï¿½y
 		template<typename NPtr, typename Visitor>
-		//! \param node Wêze³ w którym zaczynamy przegl¹danie drzewa
-		//! \param visitor Obiekt przegl¹daj¹cy wez³y
+		//! \param node Wï¿½zeï¿½ w ktï¿½rym zaczynamy przeglï¿½danie drzewa
+		//! \param visitor Obiekt przeglï¿½dajï¿½cy wezï¿½y
 		static void visitPreOrder(NPtr node, Visitor & visitor)
 		{
 			if (node != nullptr){
@@ -222,11 +223,11 @@ namespace utils
 			}
 		}
 
-		//! \tparam NPtr Typ wskaŸnika wêz³a
-		//! \tparam Visitor Typ odwiedzaj¹cego wêz³y
+		//! \tparam NPtr Typ wskaï¿½nika wï¿½zï¿½a
+		//! \tparam Visitor Typ odwiedzajï¿½cego wï¿½zï¿½y
 		template<typename NPtr, typename Visitor>
-		//! \param node Wêze³ w którym zaczynamy przegl¹danie drzewa
-		//! \param visitor Obiekt przegl¹daj¹cy wez³y
+		//! \param node Wï¿½zeï¿½ w ktï¿½rym zaczynamy przeglï¿½danie drzewa
+		//! \param visitor Obiekt przeglï¿½dajï¿½cy wezï¿½y
 		static void visitPostOrder(NPtr node, Visitor & visitor)
 		{
 			if (node != nullptr){
@@ -238,11 +239,11 @@ namespace utils
 			}
 		}
 
-		//! \tparam NPtr Typ wskaŸnika wêz³a
-		//! \tparam Visitor Typ odwiedzaj¹cego wêz³y
+		//! \tparam NPtr Typ wskaï¿½nika wï¿½zï¿½a
+		//! \tparam Visitor Typ odwiedzajï¿½cego wï¿½zï¿½y
 		template<typename Visitor>
-		//! \param node Wêze³ w którym zaczynamy przegl¹danie drzewa
-		//! \param visitor Obiekt przegl¹daj¹cy wez³y i poziomy
+		//! \param node Wï¿½zeï¿½ w ktï¿½rym zaczynamy przeglï¿½danie drzewa
+		//! \param visitor Obiekt przeglï¿½dajï¿½cy wezï¿½y i poziomy
 		static void visitLevelOrder(NodePtr node, Visitor & visitor)
 		{
 			if (node != nullptr){
@@ -252,7 +253,7 @@ namespace utils
 				size_type level = 0;
 				while (children.empty() == false)
 				{
-					//pobieramy dla nastêpnego poziomu dzieci
+					//pobieramy dla nastï¿½pnego poziomu dzieci
 					Children nextLevelChildren;
 					for (auto & child : children)
 					{
@@ -269,11 +270,11 @@ namespace utils
 			}
 		}
 
-		//! \tparam NPtr Typ wskaŸnika wêz³a
-		//! \tparam Visitor Typ odwiedzaj¹cego wêz³y
+		//! \tparam NPtr Typ wskaï¿½nika wï¿½zï¿½a
+		//! \tparam Visitor Typ odwiedzajï¿½cego wï¿½zï¿½y
 		template<typename Visitor>
-		//! \param node Wêze³ w którym zaczynamy przegl¹danie drzewa
-		//! \param visitor Obiekt przegl¹daj¹cy wez³y i poziomy
+		//! \param node Wï¿½zeï¿½ w ktï¿½rym zaczynamy przeglï¿½danie drzewa
+		//! \param visitor Obiekt przeglï¿½dajï¿½cy wezï¿½y i poziomy
 		static void visitLevelOrder(NodeConstPtr node, Visitor & visitor)
 		{
 			if (node != nullptr){
@@ -283,7 +284,7 @@ namespace utils
 				size_type level = 0;
 				while (children.empty() == false)
 				{
-					//pobieramy dla nastêpnego poziomu dzieci
+					//pobieramy dla nastï¿½pnego poziomu dzieci
 					std::list<NodeConstPtr> nextLevelChildren;
 					for (auto & child : children)
 					{
@@ -302,13 +303,13 @@ namespace utils
 			}
 		}
 
-		//! \tparam VisitOrder Sposób oryginalnego odwiedzania, które chcemy odwróciæ
-		//! \tparam NPtr Typ wskaŸnika wêz³a
-		//! \tparam Visitor Typ odwiedzaj¹cego wêz³y
+		//! \tparam VisitOrder Sposï¿½b oryginalnego odwiedzania, ktï¿½re chcemy odwrï¿½ciï¿½
+		//! \tparam NPtr Typ wskaï¿½nika wï¿½zï¿½a
+		//! \tparam Visitor Typ odwiedzajï¿½cego wï¿½zï¿½y
 		template<typename VisitOrder, typename NPtr, typename Visitor>
-		//! \param visitOrder Sposób przegl¹dania w kierunku który bêdziemy odwracaæ
-		//! \param node Wêze³ w którym zaczynamy przegl¹danie drzewa
-		//! \param visitor Obiekt przegl¹daj¹cy wez³y i poziomy
+		//! \param visitOrder Sposï¿½b przeglï¿½dania w kierunku ktï¿½ry bï¿½dziemy odwracaï¿½
+		//! \param node Wï¿½zeï¿½ w ktï¿½rym zaczynamy przeglï¿½danie drzewa
+		//! \param visitor Obiekt przeglï¿½dajï¿½cy wezï¿½y i poziomy
 		static void visitReverseOrder(VisitOrder visitOrder, NPtr node, Visitor & visitor)
 		{
 			TreeLinearizeVisitor<NPtr> hv;
@@ -316,14 +317,14 @@ namespace utils
 			reversePath(hv.linearizedTree);
 			for (auto & val : hv.linearizedTree)
 			{
-				visitor(*it);
+				visitor(val);
 			}
 		}
 
-		//! \tparam CondVisitor Typ odwiedzaj¹cego wêz³y
+		//! \tparam CondVisitor Typ odwiedzajï¿½cego wï¿½zï¿½y
 		template<typename CondVisitor>
-		//! \param node Wêze³ w którym zaczynamy przegl¹danie drzewa
-		//! \param condVisitor Obiekt przegl¹daj¹cy wez³y i poziomy z warunkiem
+		//! \param node Wï¿½zeï¿½ w ktï¿½rym zaczynamy przeglï¿½danie drzewa
+		//! \param condVisitor Obiekt przeglï¿½dajï¿½cy wezï¿½y i poziomy z warunkiem
 		static bool visitLevelOrderWhile(NodePtr node, CondVisitor & condVisitor)
 		{
 			if (node != nullptr){
@@ -333,7 +334,7 @@ namespace utils
 				size_type level = 0;
 				while (children.empty() == false)
 				{
-					//pobieramy dla nastêpnego poziomu dzieci
+					//pobieramy dla nastï¿½pnego poziomu dzieci
 					Children nextLevelChildren;
 					for (auto & child : children)
 					{
@@ -357,11 +358,11 @@ namespace utils
 			}
 		}
 
-		//! \tparam CondVisitor Typ odwiedzaj¹cego wêz³y
+		//! \tparam CondVisitor Typ odwiedzajï¿½cego wï¿½zï¿½y
 		template<typename CondVisitor>
-		//! \param node Wêze³ w którym zaczynamy przegl¹danie drzewa
-		//! \param condVisitor Obiekt przegl¹daj¹cy wez³y i poziomy z warunkiem
-		//! \return Czy nast¹pi³a przerwa przy przechodzeniu drzewa
+		//! \param node Wï¿½zeï¿½ w ktï¿½rym zaczynamy przeglï¿½danie drzewa
+		//! \param condVisitor Obiekt przeglï¿½dajï¿½cy wezï¿½y i poziomy z warunkiem
+		//! \return Czy nastï¿½piï¿½a przerwa przy przechodzeniu drzewa
 		static bool visitLevelOrderWhile(NodeConstPtr node, CondVisitor & condVisitor)
 		{
 			if (node != nullptr){
@@ -371,7 +372,7 @@ namespace utils
 				size_type level = 0;
 				while (children.empty() == false)
 				{
-					//pobieramy dla nastêpnego poziomu dzieci
+					//pobieramy dla nastï¿½pnego poziomu dzieci
 					std::list<NodeConstPtr> nextLevelChildren;
 					for (auto & child : children)
 					{
@@ -399,12 +400,12 @@ namespace utils
 			}
 		}
 
-		//! \tparam NPtr Typ wskaŸnika wêz³a
-		//! \tparam CondVisitor Typ odwiedzaj¹cego wêz³y
+		//! \tparam NPtr Typ wskaï¿½nika wï¿½zï¿½a
+		//! \tparam CondVisitor Typ odwiedzajï¿½cego wï¿½zï¿½y
 		template<typename NPtr, typename CondVisitor>
-		//! \param node Wêze³ w którym zaczynamy przegl¹danie drzewa
-		//! \param condVisitor Obiekt przegl¹daj¹cy wez³y i poziomy z warunkiem
-		//! \return Czy nast¹pi³a przerwa przy przechodzeniu drzewa
+		//! \param node Wï¿½zeï¿½ w ktï¿½rym zaczynamy przeglï¿½danie drzewa
+		//! \param condVisitor Obiekt przeglï¿½dajï¿½cy wezï¿½y i poziomy z warunkiem
+		//! \return Czy nastï¿½piï¿½a przerwa przy przechodzeniu drzewa
 		static bool visitPreOrderWhile(NPtr node, CondVisitor & condVisitor)
 		{
 			if (node != nullptr){
@@ -427,12 +428,12 @@ namespace utils
 			}
 		}
 
-		//! \tparam NPtr Typ wskaŸnika wêz³a
-		//! \tparam CondVisitor Typ odwiedzaj¹cego wêz³y
+		//! \tparam NPtr Typ wskaï¿½nika wï¿½zï¿½a
+		//! \tparam CondVisitor Typ odwiedzajï¿½cego wï¿½zï¿½y
 		template<typename NPtr, typename CondVisitor>
-		//! \param node Wêze³ w którym zaczynamy przegl¹danie drzewa
-		//! \param condVisitor Obiekt przegl¹daj¹cy wez³y i poziomy z warunkiem
-		//! \return Czy nast¹pi³a przerwa przy przechodzeniu drzewa
+		//! \param node Wï¿½zeï¿½ w ktï¿½rym zaczynamy przeglï¿½danie drzewa
+		//! \param condVisitor Obiekt przeglï¿½dajï¿½cy wezï¿½y i poziomy z warunkiem
+		//! \return Czy nastï¿½piï¿½a przerwa przy przechodzeniu drzewa
 		static bool visitPostOrderWhile(NPtr node, CondVisitor & condVisitor)
 		{
 			if (node != nullptr){
@@ -449,13 +450,13 @@ namespace utils
 			}
 		}
 
-		//! \tparam VisitOrder Sposób oryginalnego odwiedzania, które chcemy odwróciæ
-		//! \tparam NPtr Typ wskaŸnika wêz³a
-		//! \tparam CondVisitor Typ odwiedzaj¹cego wêz³y
+		//! \tparam VisitOrder Sposï¿½b oryginalnego odwiedzania, ktï¿½re chcemy odwrï¿½ciï¿½
+		//! \tparam NPtr Typ wskaï¿½nika wï¿½zï¿½a
+		//! \tparam CondVisitor Typ odwiedzajï¿½cego wï¿½zï¿½y
 		template<typename VisitOrder, typename NPtr, typename CondVisitor>
-		//! \param visitOrder Sposób przegl¹dania w kierunku który bêdziemy odwracaæ
-		//! \param node Wêze³ w którym zaczynamy przegl¹danie drzewa
-		//! \param condVisitor Obiekt przegl¹daj¹cy wez³y i poziomy z warunkiem
+		//! \param visitOrder Sposï¿½b przeglï¿½dania w kierunku ktï¿½ry bï¿½dziemy odwracaï¿½
+		//! \param node Wï¿½zeï¿½ w ktï¿½rym zaczynamy przeglï¿½danie drzewa
+		//! \param condVisitor Obiekt przeglï¿½dajï¿½cy wezï¿½y i poziomy z warunkiem
 		static void visitReverseOrderWhile(VisitOrder visitOrder, NPtr node, CondVisitor & condVisitor)
 		{
 			TreeLinearizeVisitor<NPtr> hv;
@@ -463,7 +464,7 @@ namespace utils
 			reversePath(hv.linearizedTree);
 			for (auto & val : hv.linearizedTree)
 			{
-				if (condVisitor(*it) == false){
+				if (condVisitor(val) == false){
 					return false;
 				}
 			}
@@ -471,9 +472,9 @@ namespace utils
 			return !hv.linearizedTree.empty();
 		}
 
-		//! \param parentNode Wêze³ do którego dodajemy wartoœæ dziecka
-		//! \param value Wartoœc dodawanego wêz³a
-		//! \return Wêze³ dziecko z zadan¹ wartoœci¹
+		//! \param parentNode Wï¿½zeï¿½ do ktï¿½rego dodajemy wartoï¿½ï¿½ dziecka
+		//! \param value Wartoï¿½c dodawanego wï¿½zï¿½a
+		//! \return Wï¿½zeï¿½ dziecko z zadanï¿½ wartoï¿½ciï¿½
 		static NodePtr addChild(NodePtr parentNode, const value_type & value)
 		{
 			NodePtr ret;
@@ -487,9 +488,9 @@ namespace utils
 			return ret;
 		}
 
-		//! \param parentNode Wêze³ do którego dodajemy wartoœæ dziecka
-		//! \param value Wartoœc dodawanego wêz³a
-		//! \return Wêze³ dziecko z zadan¹ wartoœci¹
+		//! \param parentNode Wï¿½zeï¿½ do ktï¿½rego dodajemy wartoï¿½ï¿½ dziecka
+		//! \param value Wartoï¿½c dodawanego wï¿½zï¿½a
+		//! \return Wï¿½zeï¿½ dziecko z zadanï¿½ wartoï¿½ciï¿½
 		static NodePtr addChild(NodePtr parentNode, value_type && value)
 		{
 			NodePtr ret;
@@ -522,7 +523,7 @@ namespace utils
 			return ret;
 		}
 
-		//! \return Ca³e rodzeñstwo - razem z moim wêz³em
+		//! \return Caï¿½e rodzeï¿½stwo - razem z moim wï¿½zï¿½em
 		Children allSiblings() const
 		{
 			auto p = parent.lock();
@@ -533,39 +534,39 @@ namespace utils
 			return Children();
 		}
 
-		//! \param node Weze³ który sprawdzamy czy jest naszym przodkiem
-		//! \return Prawda jeœli wêze³ jest naszym przodkiem (znajdziemy go id¹c w góre po parentach)
+		//! \param node Wezeï¿½ ktï¿½ry sprawdzamy czy jest naszym przodkiem
+		//! \return Prawda jeï¿½li wï¿½zeï¿½ jest naszym przodkiem (znajdziemy go idï¿½c w gï¿½re po parentach)
 		bool isAncestor(NodeConstPtr node) const
 		{
 			return rawIsAncestor(node.get());
 		}
 
-		//! \param node Weze³ który sprawdzamy czy jest naszym potomkiem
-		//! \return Prawda jeœli wêze³ jest naszym potomkiem (nasz wêze³ znajdziemy go id¹c w góre po parentach tego wêz³a)
+		//! \param node Wezeï¿½ ktï¿½ry sprawdzamy czy jest naszym potomkiem
+		//! \return Prawda jeï¿½li wï¿½zeï¿½ jest naszym potomkiem (nasz wï¿½zeï¿½ znajdziemy go idï¿½c w gï¿½re po parentach tego wï¿½zï¿½a)
 		bool isDescendant(NodeConstPtr node) const
 		{
 			return node->rawIsAncestor(this);
 		}
 
-		//! \return Czy wêze³ jest liœciem - nie ma dzieci
+		//! \return Czy wï¿½zeï¿½ jest liï¿½ciem - nie ma dzieci
 		bool isLeaf() const
 		{
 			return children.empty();
 		}
 
-		//! \return Czy wêze³ jest rootem - nie ma parenta
+		//! \return Czy wï¿½zeï¿½ jest rootem - nie ma parenta
 		bool isRoot() const
 		{
 			return parent.expired();
 		}
 
-		//! \return Stopieñ wêz³a - Iloœæ po³¹czeñ jakie tworzy
+		//! \return Stopieï¿½ wï¿½zï¿½a - Iloï¿½ï¿½ poï¿½ï¿½czeï¿½ jakie tworzy
 		size_type degree() const
 		{
 			return children.size() + ((isRoot() == true) ? 0 : 1);
 		}
 
-		//! \return Wysokoœc wêz³a - odleg³oœæ do roota
+		//! \return Wysokoï¿½c wï¿½zï¿½a - odlegï¿½oï¿½ï¿½ do roota
 		size_type height() const
 		{
 			size_type l = 0;
@@ -576,7 +577,7 @@ namespace utils
 			return l;
 		}
 
-		//! \return G³êbokoœæ wêz³a - poziom najdalej oddalonego dziecka
+		//! \return Gï¿½ï¿½bokoï¿½ï¿½ wï¿½zï¿½a - poziom najdalej oddalonego dziecka
 		size_type depth() const
 		{
 			size_type l = 0;
@@ -603,7 +604,7 @@ namespace utils
 
 		//! Rodzic
 		NodeWeakPtr parent;
-		//! Wartoœæ
+		//! Wartoï¿½ï¿½
 		value_type value;
 		//! Dzieci
 		Children children;

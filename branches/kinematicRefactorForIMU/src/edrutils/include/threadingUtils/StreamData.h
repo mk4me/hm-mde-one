@@ -399,7 +399,7 @@ namespace threadingUtils {
 		{
 			std::lock_guard<std::recursive_mutex> lock(this->synch_);
 
-			Base bd;
+			T bd;
 			baseStream_->data(bd);
 
 			if (filter(bd) == true){

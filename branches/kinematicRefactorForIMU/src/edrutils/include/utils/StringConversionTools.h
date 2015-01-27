@@ -138,7 +138,7 @@ namespace utils {
 		template<typename T>
 		static inline toString_t toString(const T & val)
 		{
-			return toString_t<T>(val);
+			return toString_t(val);
 		}
 
 	};

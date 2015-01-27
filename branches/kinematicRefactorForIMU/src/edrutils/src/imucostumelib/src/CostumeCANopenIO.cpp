@@ -12,11 +12,11 @@ const bool CostumeCANopenIO::send(const uint8_t seqNumber, const void * data,
 	const auto totalLength = sizeof(Header) + length;
 	utils::scoped_ptr<uint8_t[]> dataToTransmit(new uint8_t[totalLength]);
 
-	// nag³ówek ramki - wymusza wys³anie reszty na CAN
+	// nagï¿½ï¿½wek ramki - wymusza wysï¿½anie reszty na CAN
 	dataToTransmit[0] = 0x02;
-	// mój unikalny identyfikator - dostanê go w potwierdzeniu
+	// mï¿½j unikalny identyfikator - dostanï¿½ go w potwierdzeniu
 	dataToTransmit[1] = seqNumber;
-	//przepisuje ramkê CANopen
+	//przepisuje ramkï¿½ CANopen
 	std::memcpy(dataToTransmit.get() + sizeof(Header), data, length);
 
 	return costume.send(dataToTransmit.get(), totalLength, timeout);	
@@ -59,7 +59,7 @@ CostumeCANopenIO::Data CostumeCANopenIO::extractData(const void * data, const ui
 			CANopenFrame frame = { 0 };
 			frame.structure.cobID = cobID;
 			auto length = pd.header().length();
-			UTILS_DEBUG(length <= CANopenFrame::SizeLimits::MaxSize);
+			UTILS_ASSERT(length <= CANopenFrame::SizeLimits::MaxSize);
 			std::memcpy(frame.structure.data.data(), pd.data(), length);
 			ret.CANopenFrames.push_back(frame);
 		}
