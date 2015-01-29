@@ -4,7 +4,6 @@
 #include "IMUCFGParser.h"
 #include <corelib/Filesystem.h>
 #include <plugins/c3d/C3DChannels.h>
-#include <kinematiclib/JointAnglesCollection.h>
 #include <plugins/c3d/C3DCollections.h>
 
 using namespace IMU;
@@ -112,7 +111,7 @@ using namespace IMU;
 //    };
 //
 //    auto c = utils::make_shared<VectorChannel>(hz);
-//    // + 1 , bo numeracja w plikach *.cfg zaczyna siê od 1
+//    // + 1 , bo numeracja w plikach *.cfg zaczyna siï¿½ od 1
 //    c->setName(name(config, i + 1));
 //
 //    return c;

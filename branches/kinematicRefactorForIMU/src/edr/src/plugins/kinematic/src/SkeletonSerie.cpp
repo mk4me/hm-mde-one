@@ -119,10 +119,12 @@ void SkeletonSerie::update()
 	int frameNo = lastUpdateTime / skeletonWithStates->states->frameTime;
 	auto& frame = skeletonWithStates->states->frames[frameNo];
 	kinematic::SkeletonState::update(*skeletonState, frame);
-	kinematic::SkeletonState::Joint::visitLevelOrder(skeletonState->root(), [&](kinematic::SkeletonState::JointConstPtr node, kinematic::SkeletonState::Joint::size_type level)
-	{				
-		pos[joint2Index.at(node)] = node->value.globalPosition();		
-	});
+	kinematic::SkeletonState::JointConstPtr root = skeletonState->root();
+	auto visitor = [&](kinematic::SkeletonState::JointConstPtr node, kinematic::SkeletonState::Joint::size_type level)
+		{
+			pos[joint2Index.at(node)] = node->value.globalPosition();
+		};
+	kinematic::SkeletonState::Joint::visitLevelOrder(root, visitor);
 
 	pointsDrawer->update(pos);
 	connectionsDrawer->update(pos);
@@ -231,11 +233,13 @@ std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> SkeletonSerie::c
 {
 	auto& joints = skeletonWithStates->nodesMapping;
 	std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> m;
-	kinematic::SkeletonState::Joint::visitLevelOrder(skeleton.root(), [&](kinematic::SkeletonState::JointConstPtr joint, kinematic::SkeletonState::Joint::size_type lvl)
-	{
-		auto i = joints.right.at(joint->value.name());
-		std::pair<kinematic::SkeletonState::JointConstPtr, unsigned int> p = std::make_pair(joint, i);
-		m.insert(p);
-	});
+	kinematic::SkeletonState::JointConstPtr root = skeleton.root();
+	auto visitor = [&](kinematic::SkeletonState::JointConstPtr joint, kinematic::SkeletonState::Joint::size_type lvl)
+			{
+				auto i = joints.right.at(joint->value.name());
+				std::pair<kinematic::SkeletonState::JointConstPtr, unsigned int> p = std::make_pair(joint, i);
+				m.insert(p);
+			};
+	kinematic::SkeletonState::Joint::visitLevelOrder(root, visitor);
 	return m;
 }

@@ -15,6 +15,7 @@
 //#include "qstring_serialization.h"
 #include <corelib/Filesystem.h>
 #include <plugins/dicom/Export.h>
+#include <boost/lexical_cast.hpp>
 
 namespace dicom {
 
@@ -38,23 +39,23 @@ namespace annotations {
 		imageType = 12
     };
 
-	//! Mapowanie indesków adnotacji do ich nazw
+	//! Mapowanie indeskï¿½w adnotacji do ich nazw
     typedef boost::bimap<annotationsIdx, QString> AdnotationsType;
 	typedef boost::shared_ptr<AdnotationsType> AdnotationsTypePtr;
 	typedef boost::shared_ptr<const AdnotationsType> AdnotationsTypeConstPtr;
 
-	//! Tworzy domyœlne mapowanie indeksów
+	//! Tworzy domyï¿½lne mapowanie indeksï¿½w
 	PLUGIN_DICOM_EXPORT AdnotationsTypePtr getDefault();
-	//! \param p Œciazka pliku do którego zapisujemy  typy adnotacji
+	//! \param p ï¿½ciazka pliku do ktï¿½rego zapisujemy  typy adnotacji
 	//! \param adnotations Zapisywane typy adnotacji
 	PLUGIN_DICOM_EXPORT void save(const core::Filesystem::Path& p, AdnotationsTypeConstPtr adnotations);
-	//! \param p Œcie¿ka z której wczytujemy typy adnotacji
+	//! \param p ï¿½cieï¿½ka z ktï¿½rej wczytujemy typy adnotacji
 	PLUGIN_DICOM_EXPORT AdnotationsTypePtr load(const core::Filesystem::Path& p);
-	//! Zwraca instancje typów adnotacji
+	//! Zwraca instancje typï¿½w adnotacji
 	PLUGIN_DICOM_EXPORT AdnotationsTypePtr instance();
 	//! Zapisuje aktualne typy adnotacji
 	PLUGIN_DICOM_EXPORT void autoSave();
-	//! \return Œcie¿ka pliku z typami adnotacji
+	//! \return ï¿½cieï¿½ka pliku z typami adnotacji
 	PLUGIN_DICOM_EXPORT core::Filesystem::Path adnotationsFile();
 	
 	//! Typ poziomu krwi
@@ -67,16 +68,16 @@ namespace annotations {
 		bloodLevel3
 	};
 
-	//! Mapowanie indeksów do nazw z ich opisem
+	//! Mapowanie indeksï¿½w do nazw z ich opisem
 	typedef boost::bimap<bloodLevelDescriptor, QString> BloodLevelsType;
 	DEFINE_SMART_POINTERS(BloodLevelsType);
 
-	//! \return Zwraca domyœlne poziomy krwi
+	//! \return Zwraca domyï¿½lne poziomy krwi
 	PLUGIN_DICOM_EXPORT BloodLevelsTypePtr getDefaultBloodLevels();
-	//! Zwracaj instancjê poziomów krwi
+	//! Zwracaj instancjï¿½ poziomï¿½w krwi
 	PLUGIN_DICOM_EXPORT BloodLevelsTypePtr instanceBloodLevels();
 
-	//! Typy poziomów schorzenia
+	//! Typy poziomï¿½w schorzenia
 	enum inflammatoryLevelDescriptor {
 
 		unknownInflammatoryLevel = -1,
@@ -86,13 +87,13 @@ namespace annotations {
 		inflammatoryLevel3
 	};
 
-	//! Mapowanie typów poziomów schorzenia do ich opisów
+	//! Mapowanie typï¿½w poziomï¿½w schorzenia do ich opisï¿½w
 	typedef boost::bimap<inflammatoryLevelDescriptor, QString> InflammatoryLevelsType;
 	DEFINE_SMART_POINTERS(InflammatoryLevelsType);
 
-	//! \return Domyœlne typy poziomów schorzenia
+	//! \return Domyï¿½lne typy poziomï¿½w schorzenia
 	PLUGIN_DICOM_EXPORT InflammatoryLevelsTypePtr getDefaultInflammatoryLevels();
-	//! \return Instancja poziomów schorzenia
+	//! \return Instancja poziomï¿½w schorzenia
 	PLUGIN_DICOM_EXPORT InflammatoryLevelsTypePtr instanceInflammatoryLevels();
 
 	//! Nowe rzeczy
@@ -108,13 +109,13 @@ namespace annotations {
 		finger5
 	};
 
-	//! Mapiowanie indeksów do nazw z ich opisem
+	//! Mapiowanie indeksï¿½w do nazw z ich opisem
 	typedef boost::bimap<fingerTypeDescriptor, QString> FingerType;
 	DEFINE_SMART_POINTERS(FingerType);
 
-	//! \return Zwraca domyœlne poziomy krwi
+	//! \return Zwraca domyï¿½lne poziomy krwi
 	PLUGIN_DICOM_EXPORT FingerTypePtr getDefaultFingerTypes();
-	//! Zwracaj instancjê poziomów krwi
+	//! Zwracaj instancjï¿½ poziomï¿½w krwi
 	PLUGIN_DICOM_EXPORT FingerTypePtr instanceFingerTypes();
 
 	//! Typ jointa
@@ -127,29 +128,29 @@ namespace annotations {
 		RMCP		
 	};
 
-	//! Mapiowanie indeksów do nazw z ich opisem
+	//! Mapiowanie indeksï¿½w do nazw z ich opisem
 	typedef boost::bimap<jointTypeDescriptor, QString> JointType;
 	DEFINE_SMART_POINTERS(JointType);
 
-	//! \return Zwraca domyœlne poziomy krwi
+	//! \return Zwraca domyï¿½lne poziomy krwi
 	PLUGIN_DICOM_EXPORT JointTypePtr getDefaultJointTypes();
-	//! Zwracaj instancjê poziomów krwi
+	//! Zwracaj instancjï¿½ poziomï¿½w krwi
 	PLUGIN_DICOM_EXPORT JointTypePtr instanceJointTypes();
 
-	//! Typ jakoœci obrazu
+	//! Typ jakoï¿½ci obrazu
 	enum imageTypeDescriptor {
 		incorrect = 0,
 		different = 1,
 		identical = 2,
 	};
 
-	//! Mapiowanie indeksów do nazw z ich opisem
+	//! Mapiowanie indeksï¿½w do nazw z ich opisem
 	typedef boost::bimap<imageTypeDescriptor, QString> ImageType;
 	DEFINE_SMART_POINTERS(ImageType);
 
-	//! \return Zwraca domyœlne poziomy krwi
+	//! \return Zwraca domyï¿½lne poziomy krwi
 	PLUGIN_DICOM_EXPORT ImageTypePtr getDefaultImageTypes();
-	//! Zwracaj instancjê poziomów krwi
+	//! Zwracaj instancjï¿½ poziomï¿½w krwi
 	PLUGIN_DICOM_EXPORT ImageTypePtr instanceImageTypes();
 
 	template <typename T>

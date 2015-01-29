@@ -17,11 +17,11 @@
 #include "corelib/IService.h"
 #include "plugins/c3d/C3DCollections.h"
 #include "IMUCFGParser.h"
-#include "kinematiclib/JointAnglesCollection.h"
+//#include "kinematiclib/JointAnglesCollection.h"
 
 namespace IMU {
 
-////! Klasa pomocnicza przy tworzeniu wizualizatorów
+////! Klasa pomocnicza przy tworzeniu wizualizatorï¿½w
 //class DicomHelper : public core::WrappedItemHelper
 //{
 //public:
@@ -36,7 +36,7 @@ namespace IMU {
 //};
 //DEFINE_SMART_POINTERS(DicomHelper);
 
-//! Klasa realizuj¹ca perspektywe danych
+//! Klasa realizujï¿½ca perspektywe danych
 class IMUPerspective : public hmdbCommunication::IHierarchyPerspective
 {
 public:
@@ -58,7 +58,7 @@ public:
 private:
 	static std::string generateChannelName(const IMU::IMUConfig&, int i);
 	static VectorChannelPtr createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit = std::string());
-	void generateAnglesChannelBranch(kinematic::JointAnglesCollectionPtr ja, core::IHierarchyItemPtr skeletonItem);
+	//void generateAnglesChannelBranch(kinematic::JointAnglesCollectionPtr ja, core::IHierarchyItemPtr skeletonItem);
 private:
     std::map<std::string, core::HierarchyDataItemWeakPtr> name2hierarchy;
 	core::IMemoryDataManager * memoryDataManager;

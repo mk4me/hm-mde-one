@@ -310,13 +310,13 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(
 		{
 
 			unsigned int jointsCount = 0;
-
-			kinematic::Joint::visitPostOrder(m->root, [&jointsCount](kinematic::JointConstPtr joint) -> void
+			auto visitor = [&jointsCount](kinematic::JointConstPtr joint) -> void
 			{
 				if (joint->children.empty() == false){
 					++jointsCount;
 				}
-			});
+			};
+			kinematic::Joint::visitPostOrder(m->root, visitor);
 
 			ui->modelComboBox->addItem(tr("Model %1: %2 joints").arg(QString::fromStdString(m->name)).arg(jointsCount), QVariant::fromValue(m));
 		}
@@ -523,8 +523,8 @@ bool IMUCostumeProfileEditionWizard::eventFilter(QObject * watched, QEvent * eve
 		}
 		else if (watched == ui->singleEstimationAlgorithmComboBox)
 		{
-			//musze sprawdziæ czy to co jest wybrane jest te¿ ustawione we wszystkich pozycjach tabeli,
-			//jeœli tak to ok, mo¿e zostaæ jako domyœlna wartoœæ, w przeciwnym wypadku musimy wybieraæ
+			//musze sprawdziï¿½ czy to co jest wybrane jest teï¿½ ustawione we wszystkich pozycjach tabeli,
+			//jeï¿½li tak to ok, moï¿½e zostaï¿½ jako domyï¿½lna wartoï¿½ï¿½, w przeciwnym wypadku musimy wybieraï¿½
 			auto val = ui->singleEstimationAlgorithmComboBox->currentText();
 
 			auto m = ui->sensorsEstimationAlgorithmsTableWidget->model();
@@ -692,12 +692,12 @@ void IMUCostumeProfileEditionWizard::onOneToOneMappingChanged(int state)
 		for (unsigned int i = 0; i < model->rowCount(); ++i){
 			auto jointName = model->data(model->index(i, 1)).toString().toStdString();
 			if (jointsNames.find(jointName) != jointsNames.end()){
-				//ju¿ mamy taki joint
+				//juï¿½ mamy taki joint
 				model->setData(model->index(i, 1), tr("Select joint..."));
 				model->setData(model->index(i, 1), QVariant::fromValue(kinematic::JointConstPtr()), Qt::UserRole);
 			}
 			else{
-				//jointa nie by³o - zapamiêtujemy
+				//jointa nie byï¿½o - zapamiï¿½tujemy
 				jointsNames.insert(jointName);
 			}
 		}

@@ -266,19 +266,20 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Sk
 
 	kinematic::SkeletonState ss(kinematic::SkeletonState::create(*skeleton));
 
-	kinematic::SkeletonState::Joint::visitLevelOrder(ss.root(),
-		[&motionState, &jointsGlobalOrientations](kinematic::SkeletonState::JointPtr joint,
-		const kinematic::SkeletonState::Joint::size_type) -> void
-	{
-		auto it = jointsGlobalOrientations.find(joint->value.name());
-		if (it != jointsGlobalOrientations.end()){
-			joint->value.setGlobal(it->second);
-		}
+	kinematic::SkeletonState::JointConstPtr root = ss.root();
+	auto visitor = [&motionState, &jointsGlobalOrientations](kinematic::SkeletonState::JointConstPtr joint,
+			const kinematic::SkeletonState::Joint::size_type) -> void
+		{
+			auto it = jointsGlobalOrientations.find(joint->value.name());
+			if (it != jointsGlobalOrientations.end()){
+				joint->value.setGlobal(it->second);
+			}
 
-		if (joint->isLeaf() == false){
-			motionState.jointsOrientations.insert(std::map<std::string, osg::Quat>::value_type(joint->value.name(), joint->value.globalOrientation()));
-		}
-	});
+			if (joint->isLeaf() == false){
+				motionState.jointsOrientations.insert(std::map<std::string, osg::Quat>::value_type(joint->value.name(), joint->value.globalOrientation()));
+			}
+		};
+	kinematic::SkeletonState::Joint::visitLevelOrder(root, visitor);
 
 	try{
 		auto ret = motionEstimationAlgorithm->estimate(motionState, input.sensorsData, deltaTime);

@@ -5,6 +5,7 @@
 #include <utils/Push.h>
 #include "ApplicationCommon.h"
 #include <corelib/Exceptions.h>
+#include <boost/lexical_cast.hpp>
 
 using namespace core;
 

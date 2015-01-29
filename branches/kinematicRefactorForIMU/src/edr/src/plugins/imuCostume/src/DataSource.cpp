@@ -1,6 +1,5 @@
 #include "PCH.h"
 #include "DataSource.h"
-#include <kinematiclib/JointAnglesCollection.h>
 #include <boost/lexical_cast.hpp>
 #include <corelib/Filesystem.h>
 #include <QtCore/QCoreApplication>
@@ -283,7 +282,7 @@ const bool IMUCostumeDataSource::refreshCostumes()
 	while (it != toRemove.end()){
 		auto cIT = costumesData.find(*it);
 		if (cIT != costumesData.end()){
-			//TODO - unload jak by³ za³adowany
+			//TODO - unload jak byï¿½ zaï¿½adowany
 			
 			//if (cIT->second.domainData.empty() == false){
 			//	it = toRemove.erase(it);
@@ -316,7 +315,7 @@ const bool IMUCostumeDataSource::refreshCostumes()
 		}
 		catch (...){
 			//TODO
-			//info o nieudanej probie za³adowania kostiumu
+			//info o nieudanej probie zaï¿½adowania kostiumu
 		}
 	}
 
@@ -548,7 +547,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 
 	fillRawCostumeData(cData);
 
-	//adapter na pe³ne dane z kostiumu napêdzaj¹ce strumieñ z estymacj¹
+	//adapter na peï¿½ne dane z kostiumu napï¿½dzajï¿½ce strumieï¿½ z estymacjï¿½
 	cData.completeImuStream.reset(new ExtractedCostumeStreamAdapter(cData.costumeStream, CostumeIMUExtractor(cData.sensorsConfiguration)));
 
 	auto ow = core::Variant::create<CostumeSkeletonMotionHelper::SensorsStream>();
@@ -564,7 +563,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 	ow->set(CostumeSkeletonMotionHelper::SensorsStreamPtr(estimatedData));
 	cData.domainData.push_back(ow);
 
-	//TODO dodaæ kwaterniony po estymacji + skalary
+	//TODO dodaï¿½ kwaterniony po estymacji + skalary
 
 	cData.skeletonMotion = utils::make_shared<IMU::CostumeSkeletonMotion>();
 	ow = core::Variant::create<IMU::CostumeSkeletonMotion>();
@@ -574,10 +573,12 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 
 	//mapowanie pozycji wektora do nazwy jointa w szkielecie i stanie
 
-	kinematic::Joint::visitLevelOrder(profileInstance.skeleton->root, [&cData](kinematic::JointPtr joint, kinematic::Joint::size_type) -> void
-	{
-		cData.skeletonMotion->dataToModelMapping.insert(DataIndexToJointMapping::value_type(cData.skeletonMotion->dataToModelMapping.size(), joint->value.name));
-	});
+	auto visitor = [&cData](kinematic::JointConstPtr joint, kinematic::Joint::size_type) -> void
+			{
+				cData.skeletonMotion->dataToModelMapping.insert(DataIndexToJointMapping::value_type(cData.skeletonMotion->dataToModelMapping.size(), joint->value.name));
+			};
+
+	kinematic::Joint::visitLevelOrder(profileInstance.skeleton->root, visitor);
 
 	cData.skeletonMotion->skeleton = profileInstance.skeleton;
 	cData.skeletonMotion->stream.reset(new RealMotionStream(estimatedData,
@@ -601,7 +602,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 
 	//		auto it = profileInstance.sensorsMapping.left.find(sID);
 
-	//		//znaleŸæ mapowanie i indeks iteratora
+	//		//znaleï¿½ï¿½ mapowanie i indeks iteratora
 	//		auto idx = cData.skeletonMotion->dataToModelMapping.right.find(it->second)->get_left();
 
 	//		auto processedOrientation = utils::make_shared<threadingUtils::StreamAdapterT<IMU::SkeletonMotionState, osg::Quat, OrientationExtractor>>(cData.skeletonMotion->stream, OrientationExtractor(idx));
@@ -609,7 +610,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 	//		ow->setMetadata("core/name", "Orientation");
 	//		ow->set(processedOrientation);
 	//		cData.domainData.push_back(ow);
-	//		//TODO - podzia³ kwaternionu na skalary
+	//		//TODO - podziaï¿½ kwaternionu na skalary
 	//		/*
 	//		for (unsigned int j = 0; j < 4; ++j){
 	//			sd.scalarStreams.push_back(utils::shared_ptr<ScalarStream>(ArrayStreamAdapter::create<osg::Quat, float>(sd.orientationStream, j)));

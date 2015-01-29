@@ -13,10 +13,12 @@
 #include <corelib/PluginCommon.h>
 #include "ILog.h"
 #include <type_traits>
+#include <typeinfo>
+
 
 namespace  core {
 
-	//! Logger dla wyj¹tków, domyœlnie nie jest ustawiony, powinien byæ ustawiony, gdy zainicjalizowany zostanie system logowania
+	//! Logger dla wyjï¿½tkï¿½w, domyï¿½lnie nie jest ustawiony, powinien byï¿½ ustawiony, gdy zainicjalizowany zostanie system logowania
 	struct CORELIB_EXPORT ExceptionLogger
 	{
 	public:
@@ -25,11 +27,11 @@ namespace  core {
 			_log = log;
 		}
 	protected:
-		//! globalny log dla wyj¹tków
+		//! globalny log dla wyjï¿½tkï¿½w
 		static LogPtr _log;
 	};
 
-	//! klasa dodaje logowanie do standardowych wyj¹tków z stl-a
+	//! klasa dodaje logowanie do standardowych wyjï¿½tkï¿½w z stl-a
 	template <typename BaseException>
 	class ExceptionImpl : public BaseException, private ExceptionLogger
 	{
@@ -59,19 +61,19 @@ namespace  core {
 		void Throw(Args &&... arguments)
 		{
 			ExceptionType e(std::forward<Args>(arguments)...);
-			LOG_DEBUG(ExceptionLogger::_log, "First chance exception type [" << std::type_info(ExceptionType).name << "] what : " << e.what());
+			LOG_DEBUG(ExceptionLogger::_log, "First chance exception type [" << typeid(ExceptionType).name() << "] what : " << e.what());
 			throw e;
 		}
 
 		template<typename T>
 		void Throw(const T & val)
 		{
-			LOG_DEBUG(ExceptionLogger::_log, "First chance exception type [" << std::type_info(T).name << "] value : " << val );
+			LOG_DEBUG(ExceptionLogger::_log, "First chance exception type [" << typeid(T).name() << "] value : " << val );
 			throw val;
 		}
 	};	
 
-	// rozszerzone wyj¹tki z stl-a, u¿ycie: throw core::runtime_error("whatever...");
+	// rozszerzone wyjï¿½tki z stl-a, uï¿½ycie: throw core::runtime_error("whatever...");
 	
 	typedef ExceptionImpl<std::bad_cast> bad_cast;
 	typedef ExceptionImpl<std::bad_alloc> bad_alloc;

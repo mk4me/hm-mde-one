@@ -3,6 +3,7 @@
 #include "HMDBSession.h"
 #include "WSDLPULLService.h"
 #include <wsdlparser/WsdlInvoker.h>
+#include <wsdlparser/WsdlExtension.h>
 #include <corelib/PluginCommon.h>
 #include <boost/algorithm/hex.hpp>
 

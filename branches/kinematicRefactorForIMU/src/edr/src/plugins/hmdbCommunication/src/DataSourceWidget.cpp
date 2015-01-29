@@ -80,7 +80,7 @@ void LocalDataLoader::run()
 
 		if (synch == false){
 			sourceWidget->downloadCrashed = true;
-			sourceWidget->downloadError = tr("Synchronization data corrupted");
+			sourceWidget->downloadError = QObject::tr("Synchronization data corrupted");
 		}
 	}
 
