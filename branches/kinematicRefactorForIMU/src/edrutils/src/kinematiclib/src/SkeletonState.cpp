@@ -14,6 +14,7 @@ class SkeletonState::JointData::JointDataImpl
 private:
 	osg::Vec3 originTranslation;
 	osg::Quat originRotation;
+	osg::Quat prerot;
 
 	void refreshGlobal() const
 	{
@@ -39,13 +40,13 @@ private:
 
 	void localUpdate(const osg::Quat & rotation)
 	{
-		node->setAttitude(originRotation * rotation);
+		node->setAttitude(prerot * rotation);
 	}
 
 public:
 
-	JointDataImpl(const std::string & name, const osg::Vec3 & translation, const osg::Quat & rotation) :
-		node(new osg::PositionAttitudeTransform), originRotation(rotation), 
+	JointDataImpl(const std::string & name, const osg::Vec3 & translation, const osg::Quat & rotation, const osg::Quat& prerot) :
+		node(new osg::PositionAttitudeTransform), prerot(prerot), originRotation(rotation),
 		originTranslation(translation), globalRequiresRefresh(true)
 	{
 		node->setName(name);		
@@ -134,9 +135,26 @@ public:
 	//! \param rotation Lokalna rotacja
 	void update(const osg::Vec3 & translation, const osg::Quat & rotation)
 	{
-		localUpdate(translation);
-		localUpdate(rotation);
+		//localUpdate(translation);
+
+		osg::Matrix C;	C.set(prerot);
+		osg::Matrix Cinv = osg::Matrix::inverse(C);
+		osg::Matrix M; M.set(rotation);
+		osg::Matrix res = Cinv * M * C;
+		
+		if (node->getNumParents()) {
+			auto parent = node->getParent(0);
+			auto patparent = dynamic_cast<osg::PositionAttitudeTransform*>(parent);
+			auto shift = originTranslation;
+			osg::Vec3 localT = res * shift;
+			localUpdate(localT);
+			osg::Quat resQ; resQ.set(res);
+			localUpdate(resQ);
+		}
+		
 		globalRequiresRefresh = true;
+
+
 	}
 
 	//! \param position Globalna pozycja
@@ -165,7 +183,8 @@ private:
 };
 
 SkeletonState::JointData::JointData(const std::string & name, const osg::Vec3 & translation,
-	const osg::Quat & rotation) : impl(new JointDataImpl(name, translation, rotation))
+	const osg::Quat & rotation, const osg::Quat & prerotation) :
+	impl(new JointDataImpl(name, translation, rotation, prerotation))
 {
 
 }
@@ -247,7 +266,7 @@ void SkeletonState::JointData::setLocal(const osg::Vec3 & position, const osg::Q
 
 SkeletonState::JointPtr SkeletonState::create(kinematic::JointConstPtr joint)
 {
-	auto j = Joint::create(JointData(joint->value.name, joint->value.position, joint->value.orientation));	
+	auto j = Joint::create(JointData(joint->value.name, joint->value.position, joint->value.orientation, joint->value.prerot));	
 
 	for (auto jj : joint->children)
 	{
@@ -654,4 +673,36 @@ SkeletonState::RigidCompleteStateChange SkeletonState::convert(const biovision::
 	}
 
 	return ret;
+}
+
+kinematic::SkeletonState::Joint2Index kinematic::SkeletonState::createJoint2IndexMapping(const kinematic::SkeletonState &skeleton, const kinematic::SkeletonState::LinearizedNodesMapping& mapping)
+{
+	kinematic::SkeletonState::Joint2Index m;
+	kinematic::SkeletonState::JointConstPtr root = skeleton.root();
+	auto visitor = [&](kinematic::SkeletonState::JointConstPtr joint, kinematic::SkeletonState::Joint::size_type lvl)
+	{
+		auto i = mapping.right.at(joint->value.name());
+		std::pair<kinematic::SkeletonState::JointConstPtr, unsigned int> p = std::make_pair(joint, i);
+		m.insert(p);
+	};
+	kinematic::SkeletonState::Joint::visitLevelOrder(root, visitor);
+	return m;
+}
+
+void createConnectionRec(kinematic::SkeletonState::JointConstPtr parent, const std::map<kinematic::SkeletonState::JointConstPtr, unsigned int>& indices, osgutils::SegmentsDescriptors& sd)
+{
+	for (auto& child : parent->children) {
+		osgutils::SegmentDescriptor d;
+		d.length = (parent->value.globalPosition() - child->value.globalPosition()).length();
+		d.range = std::make_pair(indices.at(parent), indices.at(child));
+		sd.push_back(d);
+		createConnectionRec(child, indices, sd);
+	}
+}
+
+osgutils::SegmentsDescriptors kinematic::SkeletonState::createConnections(const kinematic::SkeletonState& skeleton, const Joint2Index& mapping)
+{
+	osgutils::SegmentsDescriptors sd;
+	createConnectionRec(skeleton.root(), mapping, sd);
+	return sd;
 }

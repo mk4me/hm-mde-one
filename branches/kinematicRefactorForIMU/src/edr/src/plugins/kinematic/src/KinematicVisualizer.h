@@ -22,7 +22,7 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QComboBox>
-#include "OsgSchemeDrawer.h"
+#include "osgutils/OsgSchemeDrawer.h"
 #include "Manipulators.h"
 #include "TrajectoriesDialog.h"
 #include "KinematicSerie.h"

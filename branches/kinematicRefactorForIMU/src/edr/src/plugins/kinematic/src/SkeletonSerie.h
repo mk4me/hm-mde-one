@@ -78,9 +78,6 @@ private:
 	const std::vector<std::vector<osg::Vec3>> createPointsPositions(const unsigned int density) const;
 
 	void createGhostAndTrajectories();
-	SegmentsDescriptors createConnections(const kinematic::SkeletonState& skeleton);
-
-	std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> createJoint2IndexMapping(const kinematic::SkeletonState &skeleton) const;
 
 private:
 
@@ -108,15 +105,15 @@ private:
 	//! czy operujemy na układzie XYZ czy innym
 	bool xyzAxis;
 	//! Obiekt rysujący punkty
-	utils::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
+	utils::shared_ptr<osgutils::IPointsSchemeDrawer> pointsDrawer;
 	//! Obiekt rysujący połączenia
-	utils::shared_ptr<IConnectionsSchemeDrawer> connectionsDrawer;
+	utils::shared_ptr<osgutils::IConnectionsSchemeDrawer> connectionsDrawer;
 	//! Klasa pomocnicza przy rysowaniu ducha
-	utils::shared_ptr<GhostSchemeDrawer> ghostDrawer;
+	utils::shared_ptr<osgutils::GhostSchemeDrawer> ghostDrawer;
 	//! Klasa pomocnicza przy rysowaniu trajektorii
 	TrajectoryDrawerManagerPtr trajectoriesManager;
 	//! stworzone połączenia między punktami
-	SegmentsDescriptors connections;
+	osgutils::SegmentsDescriptors connections;
 	//! mapowanie joint -> index
 	std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> joint2Index;
 };

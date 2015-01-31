@@ -1,7 +1,11 @@
 #include "PCH.h"
-#include "OsgSchemeDrawer.h"
+#include <osgutils/OsgSchemeDrawer.h>
 #include <osgutils/CustomPrimitivesFactory.h>
 #include <osg/LineWidth>
+#include <osg/PositionAttitudeTransform>
+
+namespace osgutils
+{
 
 osg::Vec3Array * convert(const std::vector<osg::Vec3> & input)
 {
@@ -230,7 +234,7 @@ const std::vector<utils::shared_ptr<ConnectionSphereInstance>> ConnectionSphereI
 {
 	if (connections.empty()) {
 		UTILS_ASSERT(false);
-		throw core::runtime_error("No connections");
+		throw std::runtime_error("No connections");
 	}
 	std::vector<utils::shared_ptr<ConnectionSphereInstance>> ret(connections.size());
 
@@ -303,7 +307,7 @@ void ConnectionsSphereDrawer::init(const SegmentsDescriptors & connections)
 {
 	if (connections.empty()) {
 		UTILS_ASSERT(false);
-		throw core::runtime_error("No connections");
+		throw std::runtime_error("No connections");
 	}
 
 	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
@@ -1086,4 +1090,6 @@ const bool ConnectionsDrawer::visible(const unsigned int idx) const
 const float ConnectionsDrawer::size(const unsigned int idx) const
 {
 	return connectionsInstances[idx]->cylinder.radius;
+}
+
 }

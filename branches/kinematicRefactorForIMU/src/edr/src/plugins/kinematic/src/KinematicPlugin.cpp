@@ -1,7 +1,7 @@
 #include "PCH.h"
 #include "KinematicVisualizer.h"
 #include <utils/DataChannel.h>
-#include "OsgSchemeDrawer.h"
+#include <osgutils/OsgSchemeDrawer.h>
 #include "KinematicParser.h"
 #include "AsfParser.h"
 #include "FbxParser.h"

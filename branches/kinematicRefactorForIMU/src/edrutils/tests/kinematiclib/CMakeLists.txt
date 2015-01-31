@@ -7,6 +7,7 @@ SET_SOURCE_FILES(
 	SkeletalDataTest.cpp
 	SkeletonTest.cpp
 	SkeletonStateTest.cpp
+	Viewer.cpp
 )
 
 SET_PRIVATE_HEADERS(
@@ -15,6 +16,7 @@ SET_PRIVATE_HEADERS(
 	SkeletalDataTest.h
 	SkeletonTest.h
 	SkeletonStateTest.h
+	Viewer.h
 )
 
 

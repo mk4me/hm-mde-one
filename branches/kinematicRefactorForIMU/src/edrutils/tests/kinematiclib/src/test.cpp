@@ -6,6 +6,7 @@
 #include "SkeletalDataTest.h"
 #include "SkeletonStateTest.h"
 #include "SkeletonTest.h"
+#include "Viewer.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(JointTest);
 CPPUNIT_TEST_SUITE_REGISTRATION(QuaternionManipulatorsTest);
@@ -16,6 +17,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(SkeletonTest);
 
 int main(int argc, char* argv[])
 {
+	kinematicTest::Viewer::start();
     // Get the top level suite from the registry
     CppUnit::Test *suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
 

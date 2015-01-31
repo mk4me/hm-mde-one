@@ -96,9 +96,9 @@ private:
 	//! czy operujemy na układzie XYZ czy innym
 	bool xyzAxis;
 	//! Obiekt rysujący punkty
-	utils::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
+	utils::shared_ptr<osgutils::IPointsSchemeDrawer> pointsDrawer;
 	//! Obiekt rysujący połączenia
-	utils::shared_ptr<IConnectionsSchemeDrawer> connectionsDrawer;
+	utils::shared_ptr<osgutils::IConnectionsSchemeDrawer> connectionsDrawer;
 
 	std::map<std::string, osgAnimation::Bone*> boneMap;
 	osgAnimation::Bone* root;

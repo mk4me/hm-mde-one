@@ -21,7 +21,7 @@ void createJoint(JointPtr parentJoint, const acclaim::Skeleton & skeleton,
 	}
 
 	jointData.position = bone.direction * bone.length;
-	jointData.orientation = kinematicUtils::convert(skeleton.units.isAngleInRadians() ? static_cast<osg::Vec3d>(bone.axis) : kinematicUtils::toRadians(bone.axis), bone.axisOrder);
+	jointData.prerot = kinematicUtils::convert(skeleton.units.isAngleInRadians() ? static_cast<osg::Vec3d>(bone.axis) : kinematicUtils::toRadians(bone.axis), bone.axisOrder);
 	names.insert(jointData.name);
 
 	auto joint = Joint::addChild(parentJoint, jointData);

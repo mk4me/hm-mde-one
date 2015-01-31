@@ -10,13 +10,13 @@
 #ifndef HEADER_GUARD_TRAJECTORIES_DRAWER__TRAJECTORIESDRAWER_H__
 #define HEADER_GUARD_TRAJECTORIES_DRAWER__TRAJECTORIESDRAWER_H__
 
-#include "OsgSchemeDrawer.h"
+#include <osgutils/OsgSchemeDrawer.h>
 
-class TrajectoryDrawerManager : public IBaseDrawerScheme, public IOsgSchemeDrawer, public IRangeDrawer
+class TrajectoryDrawerManager : public osgutils::IBaseDrawerScheme, public osgutils::IOsgSchemeDrawer, public osgutils::IRangeDrawer
 {
 private:
 
-	typedef std::vector<utils::shared_ptr<TrajectorySchemeDrawer>> FeaturesDescriptors;
+	typedef std::vector<utils::shared_ptr<osgutils::TrajectorySchemeDrawer>> FeaturesDescriptors;
 
 public:
 	TrajectoryDrawerManager();

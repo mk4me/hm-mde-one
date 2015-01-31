@@ -87,9 +87,9 @@ const int SkeletonJointsMapping::jointIndex(kinematic::JointPtr joint) const
 	return -1;
 }
 
-const SegmentsDescriptors SkeletonJointsMapping::generateMappedConnectionsDescription() const
+const osgutils::SegmentsDescriptors SkeletonJointsMapping::generateMappedConnectionsDescription() const
 {
-	SegmentsDescriptors cds;
+	osgutils::SegmentsDescriptors cds;
 	auto idx = jointIndex(skeleton_->root);
 	generateMappedConnectionsDescription(skeleton_->root, idx == -1 ? 0 : idx, cds);
 
@@ -98,7 +98,7 @@ const SegmentsDescriptors SkeletonJointsMapping::generateMappedConnectionsDescri
 
 void SkeletonJointsMapping::generateMappedConnectionsDescription( kinematic::JointPtr joint,
 	const unsigned int idx,
-	SegmentsDescriptors & cds) const
+	osgutils::SegmentsDescriptors & cds) const
 {
 	auto jointChildren = joint->children;
 	for(auto child : jointChildren) {
@@ -107,7 +107,7 @@ void SkeletonJointsMapping::generateMappedConnectionsDescription( kinematic::Joi
 
 		if(idxB != -1){
 
-			SegmentDescriptor cd;
+			osgutils::SegmentDescriptor cd;
 
 			cd.range.first = idx;
 			cd.range.second = idxB;
@@ -123,8 +123,8 @@ void SkeletonJointsMapping::generateMappedConnectionsDescription( kinematic::Joi
 	}
 }
 
-SkeletalVisualizationSchemeHelper::SkeletalVisualizationSchemeHelper(IPointsSchemeDrawer * pointsSchemeDrawer,
-	IConnectionsSchemeDrawer * connectionsSchemeDrawer) : pointsSchemeDrawer(pointsSchemeDrawer),
+SkeletalVisualizationSchemeHelper::SkeletalVisualizationSchemeHelper(osgutils::IPointsSchemeDrawer * pointsSchemeDrawer,
+	osgutils::IConnectionsSchemeDrawer * connectionsSchemeDrawer) : pointsSchemeDrawer(pointsSchemeDrawer),
 	connectionsSchemeDrawer(connectionsSchemeDrawer)
 {
 
@@ -200,7 +200,7 @@ void SkeletalVisualizationSchemeHelper::init(const SkeletonJointsMapping * joint
 }
 
 void SkeletalVisualizationSchemeHelper::init(const SkeletonJointsMapping * jointsMapping,
-	const SegmentsDescriptors & connections)
+											 const osgutils::SegmentsDescriptors & connections)
 {
 	this->jointsMapping = jointsMapping;
 	pointsSchemeDrawer->init(jointsMapping->mappedJointsNumber());

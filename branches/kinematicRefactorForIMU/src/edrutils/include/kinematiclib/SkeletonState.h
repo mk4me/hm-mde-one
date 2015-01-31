@@ -15,6 +15,7 @@
 #include <osg/Quat>
 #include <list>
 #include <boost/bimap.hpp>
+#include "osgutils/OsgSchemeDrawer.h"
 
 namespace kinematic
 {
@@ -79,7 +80,7 @@ namespace kinematic
 			//! \param translation Pozycja|Translacja lokalna stawu
 			//! \param rotation Orientacja|Rotacja lokalna stawu			
 			JointData(const std::string & name, const osg::Vec3 & translation,
-				const osg::Quat & rotation);
+					  const osg::Quat & rotation, const osg::Quat & prerotation );
 
 		public:
 
@@ -99,6 +100,11 @@ namespace kinematic
 			//! \return Globalna orientacja
 			osg::Quat globalOrientation() const;
 
+			//! \param translation Lokalne przesuniêcie
+			//! \param rotation Lokalna rotacja
+			void update(const osg::Vec3 & translation, const osg::Quat & rotation);
+
+
 			//! \param translation Przesuniêcie
 			void update(const osg::Vec3 & translation);
 			//! \param position Globalna pozycja
@@ -113,9 +119,6 @@ namespace kinematic
 			//! \param orientation Lokalna orientacja
 			void setLocal(const osg::Quat & orientation);
 
-			//! \param translation Lokalne przesuniêcie
-			//! \param rotation Lokalna rotacja
-			void update(const osg::Vec3 & translation, const osg::Quat & rotation);
 			//! \param position Globalna pozycja
 			//! \param orientation Globalna orientacja
 			void setGlobal(const osg::Vec3 & position, const osg::Quat & orientation);
@@ -133,6 +136,7 @@ namespace kinematic
 		//! Typ wskaŸników do jointów
 		DEFINE_SMART_POINTERS(Joint);
 
+		typedef std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> Joint2Index;
 	private:
 
 		//! \param root Staw rodzic stanu
@@ -186,6 +190,11 @@ namespace kinematic
 		//! \param skeletonState Stan szkieletu
 		//! \return Lokalny opis stanu szkieletu
 		static NonRigidCompleteStateChange localState(const SkeletonState & skeletonState);
+
+
+		static osgutils::SegmentsDescriptors createConnections(const kinematic::SkeletonState& skeleton, const Joint2Index& mapping);
+
+		static Joint2Index createJoint2IndexMapping(const kinematic::SkeletonState &skeleton, const LinearizedNodesMapping& mapping);
 
 		//! \return Staw - root stanu
 		JointPtr root();

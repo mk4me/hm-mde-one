@@ -1,6 +1,6 @@
 #include "PCH.h"
 #include "SkeletonStreamSerie.h"
-#include "OsgSchemeDrawer.h"
+#include <osgutils/OsgSchemeDrawer.h>
 #include "TrajectoriesDrawer.h"
 #include "SkeletalVisualizationSchemeHelper.h"
 #include <threadingUtils/StreamData.h>
@@ -37,8 +37,8 @@ SkeletonStreamSerie::SkeletonStreamSerie(KinematicVisualizer * visualizer,
 	data(data), requestedType(requestedType),
 	xyzAxis(false),
 	name("SkeletonData"),
-	pointsDrawer(new PointsDrawer(3)),
-	connectionsDrawer(new ConnectionsSphereDrawer(10)),
+	pointsDrawer(new osgutils::PointsDrawer(3)),
+	connectionsDrawer(new osgutils::ConnectionsSphereDrawer(10)),
 	heightCompensation(false),
 	localRootNode(new osg::PositionAttitudeTransform)
 {

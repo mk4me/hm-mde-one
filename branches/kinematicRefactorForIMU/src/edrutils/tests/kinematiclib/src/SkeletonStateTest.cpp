@@ -107,7 +107,7 @@ void SkeletonStateTest::testFrameConvert()
 
 	// lowerback -6.90483 0.869314 0.0870155
 	// lowerback ma index 3 w mapping...
-	osg::Vec3 rad = kinematicUtils::toRadians(osg::Vec3(-6.90483, 0.869314, 0.0870155));
+	osg::Vec3d rad = kinematicUtils::toRadians(osg::Vec3d(-6.90483, 0.869314, 0.0870155));
 	osg::Quat q = kinematicUtils::convertXYZ(rad);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.x(), sChange.rotations[3].x(), epsilon);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.y(), sChange.rotations[3].y(), epsilon);
@@ -119,4 +119,17 @@ void SkeletonStateTest::testFrameConvert()
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(-7.58606, sChange.translation.x(), epsilon);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(4.3173, sChange.translation.y(), epsilon);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.476158, sChange.translation.z(), epsilon);
+
+	osg::Vec3d axis{ -180.00000000000000, 5.1447700000000002e-009, -151.00000000000000 };
+	osg::Vec3d shift{ 0.0418060236, -0.0754254982, -0.0142621007 };
+	osg::Vec3d after{ 2.63005631e-006, -0.0862365887, 0.0142621007 };
+
+	osg::Vec3d v = shift;
+	osg::Vec3d r = kinematicUtils::toRadians(-axis);
+	osg::Quat rot; rot.makeRotate(r.z(), osg::Vec3(0, 0, 1),
+								  r.y(), osg::Vec3(0, 1, 0),
+								  r.x(), osg::Vec3(1, 0, 0));
+	v = rot * v;
+	after = after;
+
 }

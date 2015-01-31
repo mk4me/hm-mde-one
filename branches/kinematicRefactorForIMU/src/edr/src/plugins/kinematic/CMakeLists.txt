@@ -10,7 +10,7 @@ SET_PRIVATE_HEADERS(
 	AsfParser.h
 	BvhParser.h
 	KinematicVisualizer.h
-	OsgSchemeDrawer.h
+	#OsgSchemeDrawer.h
 	GRFSerie.h
 	FbxParser.h
 	MarkerSerie.h
@@ -36,7 +36,7 @@ SET_PUBLIC_HEADERS (
 
 SET_SOURCE_FILES(
 	SkeletalVisualizationSchemeHelper.cpp
-	OsgSchemeDrawer.cpp
+	#OsgSchemeDrawer.cpp
 	KinematicPlugin.cpp
 	AsfParser.cpp
 	BvhParser.cpp

@@ -9,8 +9,8 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 	visualizer(visualizer), requestedType(requestedType),
 	data(data), lastUpdateTime(std::numeric_limits<double>::min()),
 	name("Markers"),
-	pointsDrawer(new PointsDrawer(3)),
-	ghostDrawer(new GhostSchemeDrawer(3, 10)),	
+	pointsDrawer(new osgutils::PointsDrawer(3)),
+	ghostDrawer(new osgutils::GhostSchemeDrawer(3, 10)),
 	trajectoriesManager(new TrajectoryDrawerManager)
 {
 	markersCollection = data->get();
@@ -57,7 +57,7 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 
 			if (it1 != mapping.end() && it2 != mapping.end()) {
 
-				SegmentDescriptor cd;
+				osgutils::SegmentDescriptor cd;
 				cd.range.first = std::distance(mapping.begin(), it1);
 				cd.range.second = std::distance(mapping.begin(), it2);				
 				cd.length = getStickLength(markersCollection->getChannel(cd.range.first),
@@ -68,7 +68,7 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 		}
 
 		if(connectionsNumber > 0){
-			connectionsDrawer.reset(new ConnectionsDrawer(10));
+			connectionsDrawer.reset(new osgutils::ConnectionsDrawer(10));
 			connectionsDrawer->init(connectionsConfigurations);
 			connectionsDrawer->setSize(0.005);
 			for(unsigned int i = 0; i < connectionsColors.size(); ++i){
@@ -284,12 +284,12 @@ TrajectoryDrawerManagerPtr MarkerSerie::getTrajectoriesManager() const
     return trajectoriesManager;
 }
 
-IConnectionDrawerWithDescriptors MarkerSerie::getConnectionsDrawer() const
+osgutils::IConnectionDrawerWithDescriptors MarkerSerie::getConnectionsDrawer() const
 {
     return std::make_pair(connectionsDrawer, connectionsConfigurations);
 }
 
-IPointsSchemeDrawerPtr MarkerSerie::getPointsDrawer() const
+osgutils::IPointsSchemeDrawerPtr MarkerSerie::getPointsDrawer() const
 {
     return pointsDrawer;
 }

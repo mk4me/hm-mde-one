@@ -32,7 +32,7 @@ public:
     //! Dodanie do dialogu drawera, który będzie modyfikowany
     //! \param drawer obiekt drawera osg
     //! \param rootName wyświetlana nazwa
-	void setDrawer(IBaseDrawerSchemePtr drawer, const QString& rootName, const QStringList& names, const IConnectionDrawerWithDescriptors& connections);
+	void setDrawer(osgutils::IBaseDrawerSchemePtr drawer, const QString& rootName, const QStringList& names, const osgutils::IConnectionDrawerWithDescriptors& connections);
 
 private slots:
     //! zmieniono widoczność pojedynczego węzła
@@ -67,9 +67,9 @@ private:
 
 private:
     //! mapa (element drzewa - > krotka(punkty, linie, nr markera))
-    std::map<QTreeWidgetItem*, std::pair<IBaseDrawerSchemePtr, int>> item2Drawer;
+	std::map<QTreeWidgetItem*, std::pair<osgutils::IBaseDrawerSchemePtr, int>> item2Drawer;
 
-    std::map<IBaseDrawerSchemePtr, IConnectionDrawerWithDescriptors> drawer2Connections;
+	std::map<osgutils::IBaseDrawerSchemePtr, osgutils::IConnectionDrawerWithDescriptors> drawer2Connections;
     ////! mapa (element drzewa -> głowny drawer obiektu powiązanego z elementem drzewa)
     //std::map<QTreeWidgetItem*, IBaseDrawerSchemePtr> item2Root;
 };

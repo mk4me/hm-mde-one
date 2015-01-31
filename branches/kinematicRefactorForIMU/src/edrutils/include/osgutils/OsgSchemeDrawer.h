@@ -3,9 +3,24 @@
 
 #include <osg/Node>
 #include <osg/Switch>
-#include <plugins/kinematic/Wrappers.h>
-#include "osg/ShapeDrawable"
-#include "osg/ref_ptr"
+#include <osg/ShapeDrawable>
+#include <osg/ref_ptr>
+#include <utils/SmartPtr.h>
+
+namespace osgutils
+{
+
+//! Typ definiujący indeksy na połączonych punktach
+typedef std::pair<unsigned int, unsigned int> SegmentRange;
+
+//! Opis segmentu
+struct SegmentDescriptor
+{
+	float length;			//! Długość połączenia
+	SegmentRange range;		//! indeksy punktów opisujacych segment
+};
+
+typedef std::vector<SegmentDescriptor> SegmentsDescriptors;
 
 osg::Vec3Array * convert(const std::vector<osg::Vec3> & input);
 
@@ -252,5 +267,5 @@ private:
 	const unsigned int connectionComplexity;
 	utils::shared_ptr<GhostInstance> ghostInstance;
 };
-
+}
 #endif //HEADER_GUARD_OSGSCHEMEDRAWER_H__

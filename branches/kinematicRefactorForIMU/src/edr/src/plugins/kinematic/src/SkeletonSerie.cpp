@@ -1,10 +1,11 @@
 #include "PCH.h"
 #include "SkeletonSerie.h"
-#include "OsgSchemeDrawer.h"
+#include <osgutils/OsgSchemeDrawer.h>
 #include "TrajectoriesDrawer.h"
 #include "SkeletalVisualizationSchemeHelper.h"
 //#include <kinematiclib/JointAnglesCollection.h>
 #include <threadingUtils/StreamData.h>
+#include <kinematiclib/SkeletonState.h>
 
 static const osg::Quat invQXYZ = osg::Quat(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f)) * osg::Quat(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
 
@@ -16,21 +17,21 @@ SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer,
 	lastUpdateTime(std::numeric_limits<double>::min()),
 	xyzAxis(false),
 	name("Skeleton"),
-	pointsDrawer(new PointsDrawer(3)),
-	connectionsDrawer(new ConnectionsDrawer(3)),
+	pointsDrawer(new osgutils::PointsDrawer(3)),
+	connectionsDrawer(new osgutils::ConnectionsDrawer(3)),
 	localRootNode(new osg::PositionAttitudeTransform)
 {
 	data->getMetadata("core/name", name);
 	skeletonWithStates = data->get();
 	skeletonState.reset(new kinematic::SkeletonState(kinematic::SkeletonState::create(*skeletonWithStates->skeleton)));
-	joint2Index = createJoint2IndexMapping(*skeletonState);
+	joint2Index = kinematic::SkeletonState::createJoint2IndexMapping(*skeletonState, skeletonWithStates->nodesMapping);
 	auto ratio = 1.0;
 	localRootNode->setScale(osg::Vec3(ratio, ratio, ratio));
 	pointsDrawer->init(skeletonWithStates->states->frames.front().size());
 	pointsDrawer->setSize(0.02 / ratio);
 	pointsDrawer->setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
 	localRootNode->addChild(pointsDrawer->getNode());
-	connections = createConnections(*skeletonState);
+	connections = kinematic::SkeletonState::createConnections(*skeletonState, joint2Index);
 	connectionsDrawer->init(connections);
 	connectionsDrawer->setColor(osg::Vec4(0.7, 0.7, 0.7, 0.5));
 	connectionsDrawer->setSize(0.05 / ratio);
@@ -54,7 +55,7 @@ const std::vector<std::vector<osg::Vec3>> SkeletonSerie::createPointsPositions(c
 
 	double time = 0.0;
 	kinematic::SkeletonState sstate = kinematic::SkeletonState::create(*this->skeletonWithStates->skeleton);
-	auto j2i = createJoint2IndexMapping(sstate);
+	auto j2i = kinematic::SkeletonState::createJoint2IndexMapping(sstate, skeletonWithStates->nodesMapping);
 	for (unsigned int i = 0; i < density; ++i, time = delta * i) {
 		int frameNo = time * this->skeletonWithStates->states->frameTime;
 		auto& frame = skeletonWithStates->states->frames[frameNo];
@@ -117,8 +118,13 @@ void SkeletonSerie::update()
 	auto t = std::max(lastUpdateTime, 0.0);
 	std::vector<osg::Vec3> pos(joint2Index.size());
 	int frameNo = lastUpdateTime / skeletonWithStates->states->frameTime;
-	auto& frame = skeletonWithStates->states->frames[frameNo];
-	kinematic::SkeletonState::update(*skeletonState, frame);
+	int maxSize = skeletonWithStates->states->frames.size();
+	frameNo = frameNo >= maxSize ? maxSize - 1 : frameNo;
+	// tymczasowy hack - pierwsza klatka to surowy szkielet
+	if (frameNo > 0) {
+		auto& frame = skeletonWithStates->states->frames[frameNo];
+		kinematic::SkeletonState::update(*skeletonState, frame);
+	}
 	kinematic::SkeletonState::JointConstPtr root = skeletonState->root();
 	auto visitor = [&](kinematic::SkeletonState::JointConstPtr node, kinematic::SkeletonState::Joint::size_type level)
 		{
@@ -156,7 +162,7 @@ const bool SkeletonSerie::ghostVisible() const
 void SkeletonSerie::createGhostAndTrajectories()
 {
 	trajectoriesManager.reset(new TrajectoryDrawerManager);
-	ghostDrawer.reset(new GhostSchemeDrawer(3, 10));
+	ghostDrawer.reset(new osgutils::GhostSchemeDrawer(3, 10));
 
 	//punkty dla ducha i trajektorii
 	auto allPointsPositions = createPointsPositions(300);
@@ -170,8 +176,8 @@ void SkeletonSerie::createGhostAndTrajectories()
 	ghostDrawer->init(pointsPositions, connections);
 	ghostDrawer->pointsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
 	ghostDrawer->connectionsDrawer()->setColor(osg::Vec4(1.0f, 1.0f, 0.9f, 0.25f));
-	ghostDrawer->pointsDrawer()->setSize(0.02);
-	ghostDrawer->connectionsDrawer()->setSize(0.005);
+	ghostDrawer->pointsDrawer()->setSize(0.05);
+	ghostDrawer->connectionsDrawer()->setSize(0.01);
 	ghostDrawer->getNode()->setNodeMask(false);
 	
 	localRootNode->addChild(ghostDrawer->getNode());
@@ -211,35 +217,6 @@ utils::shared_ptr<TrajectoryDrawerManager> SkeletonSerie::getTrajectoriesManager
 }
 
 
-void createConnectionRec(kinematic::SkeletonState::JointConstPtr parent, const std::map<kinematic::SkeletonState::JointConstPtr, unsigned int>& indices, SegmentsDescriptors& sd)
-{
-	for (auto& child : parent->children) {
-		SegmentDescriptor d;
-		d.length = (parent->value.globalPosition() - child->value.globalPosition()).length();
-		d.range = std::make_pair(indices.at(parent), indices.at(child));
-		sd.push_back(d);
-		createConnectionRec(child, indices, sd);
-	}
-}
 
-SegmentsDescriptors SkeletonSerie::createConnections(const kinematic::SkeletonState& skeleton)
-{
-	SegmentsDescriptors sd;
-	createConnectionRec(skeleton.root(), joint2Index, sd);
-	return sd;
-}
 
-std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> SkeletonSerie::createJoint2IndexMapping(const kinematic::SkeletonState &skeleton) const
-{
-	auto& joints = skeletonWithStates->nodesMapping;
-	std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> m;
-	kinematic::SkeletonState::JointConstPtr root = skeleton.root();
-	auto visitor = [&](kinematic::SkeletonState::JointConstPtr joint, kinematic::SkeletonState::Joint::size_type lvl)
-			{
-				auto i = joints.right.at(joint->value.name());
-				std::pair<kinematic::SkeletonState::JointConstPtr, unsigned int> p = std::make_pair(joint, i);
-				m.insert(p);
-			};
-	kinematic::SkeletonState::Joint::visitLevelOrder(root, visitor);
-	return m;
-}
+

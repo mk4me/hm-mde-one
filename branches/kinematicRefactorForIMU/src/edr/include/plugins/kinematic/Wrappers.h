@@ -10,6 +10,7 @@
 #include <acclaimformatslib/MotionData.h>
 #include <kinematiclib/Skeleton.h>
 #include <kinematiclib/SkeletonState.h>
+#include <osgutils/OsgSchemeDrawer.h>
 
 
 struct SkeletonStates
@@ -32,17 +33,7 @@ struct SkeletonWithStates
 DEFINE_SMART_POINTERS(SkeletonWithStates);
 
 
-//! Typ definiuj¹cy indeksy na po³¹czonych punktach
-typedef std::pair<unsigned int, unsigned int> SegmentRange;
 
-//! Opis segmentu
-struct SegmentDescriptor
-{
-	float length;			//! D³ugoœæ po³¹czenia
-	SegmentRange range;		//! indeksy punktów opisujacych segment
-};
-
-typedef std::vector<SegmentDescriptor> SegmentsDescriptors;
 
 //! Strumieñ danych szkieletu
 typedef threadingUtils::StreamT<std::vector<osg::Vec3>> PointsCloudStream;
@@ -57,7 +48,7 @@ struct SkeletonDataStream
 	unsigned int jointsCount;				//! Ilosc jointów w modelu
 	PointsCloudStreamPtr jointsStream;		//! Strumieñ dla pozycji jointów
 	QuaternionStreamPtr quatStream;			//! Strumieñ globalnych kwaternionów jointów
-	SegmentsDescriptors connections;	//! Schemat po³¹czeñ
+	osgutils::SegmentsDescriptors connections;	//! Schemat po³¹czeñ
 	std::map<std::string, int> segmentNames; 
 };
 

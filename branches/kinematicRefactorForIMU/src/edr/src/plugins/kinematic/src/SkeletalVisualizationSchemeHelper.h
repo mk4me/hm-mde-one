@@ -10,7 +10,7 @@
 #define HEADER_GUARD_KINEMATIC__SKELETALVISUALIZATIONSCHEMEHELPER_H__
 
 #include <kinematiclib/Skeleton.h>
-#include "OsgSchemeDrawer.h"
+#include <osgutils/OsgSchemeDrawer.h>
 
 class SkeletonJointsMapping
 {
@@ -34,13 +34,13 @@ public:
 
 	kinematic::SkeletonConstPtr skeleton() const;
 
-	const SegmentsDescriptors generateMappedConnectionsDescription() const;
+	const osgutils::SegmentsDescriptors generateMappedConnectionsDescription() const;
 
 private:
 
 	void generateMappedConnectionsDescription( kinematic::JointPtr join,
 		const unsigned int idx,
-		SegmentsDescriptors & cds) const;
+		osgutils::SegmentsDescriptors & cds) const;
 
 private:
 	//! Szkielet dla którego generowano mapowanie
@@ -58,8 +58,8 @@ class SkeletalVisualizationSchemeHelper
 public:
 
 	//! Konstruktor ustawia domyślne wartości w tym kolory
-	SkeletalVisualizationSchemeHelper(IPointsSchemeDrawer * pointsSchemeDrawer,
-		IConnectionsSchemeDrawer * connectionsSchemeDrawer);
+	SkeletalVisualizationSchemeHelper(osgutils::IPointsSchemeDrawer * pointsSchemeDrawer,
+		osgutils::IConnectionsSchemeDrawer * connectionsSchemeDrawer);
 	//! Destrutkor wirtualny
 	~SkeletalVisualizationSchemeHelper();
 
@@ -67,7 +67,7 @@ public:
 	void init(const SkeletonJointsMapping * jointsMapping);
 	
 	void init(const SkeletonJointsMapping * jointsMapping,
-		const SegmentsDescriptors & connections);
+		const osgutils::SegmentsDescriptors & connections);
 
     //! odświeżenie informacji o jointach
 	void updateJointTransforms(const osg::Vec3 & rootPosition,
@@ -97,9 +97,9 @@ private:
 
 private:
 	//! Drawer chmury punktow
-	IPointsSchemeDrawer * pointsSchemeDrawer;
+	osgutils::IPointsSchemeDrawer * pointsSchemeDrawer;
 	//! Drawer polaczen miedzy punktami
-	IConnectionsSchemeDrawer * connectionsSchemeDrawer;
+	osgutils::IConnectionsSchemeDrawer * connectionsSchemeDrawer;
 	//! Mapa danych wejsciowych do obiektów wizualizacji
 	const SkeletonJointsMapping * jointsMapping;
 	
