@@ -17,11 +17,7 @@ namespace  kinematicTest {
 		public:
 			virtual ~Viewer() {}
 			static void start();
-
 			static std::vector<osg::Vec3> getPos(kinematic::SkeletonState &skeletonState);
-
-			static kinematic::SkeletonState::NonRigidCompleteStateChange convertFrame(const kinematic::SkeletonState::LinearizedNodesMapping &mapping, kinematic::SkeletonState::RigidPartialStateChange &sChange);
-
 	};
 }
 

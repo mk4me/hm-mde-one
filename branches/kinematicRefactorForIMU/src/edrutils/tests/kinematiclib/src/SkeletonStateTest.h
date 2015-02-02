@@ -20,6 +20,7 @@ class SkeletonStateTest : public CPPUNIT_NS::TestCase
 	CPPUNIT_TEST_SUITE(SkeletonStateTest);
 	CPPUNIT_TEST(testMapping);
 	CPPUNIT_TEST(testFrameConvert);
+	CPPUNIT_TEST(testConvertStateChange);
 	CPPUNIT_TEST_SUITE_END();
 public:
 	SkeletonStateTest(void);
@@ -28,6 +29,7 @@ public:
 public:
 	void testMapping();
 	void testFrameConvert();
+	void testConvertStateChange();
 	virtual void setUp();
 	virtual void tearDown();
 

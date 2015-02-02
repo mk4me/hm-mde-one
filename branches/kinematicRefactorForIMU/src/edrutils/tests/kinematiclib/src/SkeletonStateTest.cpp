@@ -119,17 +119,30 @@ void SkeletonStateTest::testFrameConvert()
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(-7.58606, sChange.translation.x(), epsilon);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(4.3173, sChange.translation.y(), epsilon);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.476158, sChange.translation.z(), epsilon);
+}
 
-	osg::Vec3d axis{ -180.00000000000000, 5.1447700000000002e-009, -151.00000000000000 };
-	osg::Vec3d shift{ 0.0418060236, -0.0754254982, -0.0142621007 };
-	osg::Vec3d after{ 2.63005631e-006, -0.0862365887, 0.0142621007 };
+void SkeletonStateTest::testConvertStateChange()
+{
+	kinematic::Skeleton skeleton;
+	kinematic::Skeleton::convert(*this->acclaimSkeleton, skeleton);
+	auto mapping = kinematic::SkeletonState::createMapping(skeleton);
 
-	osg::Vec3d v = shift;
-	osg::Vec3d r = kinematicUtils::toRadians(-axis);
-	osg::Quat rot; rot.makeRotate(r.z(), osg::Vec3(0, 0, 1),
-								  r.y(), osg::Vec3(0, 1, 0),
-								  r.x(), osg::Vec3(1, 0, 0));
-	v = rot * v;
-	after = after;
+	kinematic::SkeletonState::RigidPartialStateChange sChange = kinematic::SkeletonState::convert(*acclaimSkeleton, acclaimData->frames[0], mapping);
+	kinematic::SkeletonState::NonRigidCompleteStateChange frame = kinematic::SkeletonState::convertStateChange(mapping, sChange);
+	CPPUNIT_ASSERT_EQUAL(27u, frame.size());
+	auto lhipjointData = frame[mapping.right.at("lhipjoint")];
+	auto rhipjointData = frame[mapping.right.at("rhipjoint")];
+	CPPUNIT_ASSERT(lhipjointData.translation == osg::Vec3());
+	CPPUNIT_ASSERT(rhipjointData.rotation == osg::Quat());
+	CPPUNIT_ASSERT(rhipjointData.rotation == lhipjointData.rotation);
 
+	//rhand 9.42497 - 7.79745 32.1625
+	auto rhand = frame[mapping.right.at("rhand")];
+	CPPUNIT_ASSERT(rhand.translation == osg::Vec3());
+	osg::Vec3d rad = kinematicUtils::toRadians(osg::Vec3d(9.42497, -7.79745, 32.1625));
+	osg::Quat q = kinematicUtils::convertXYZ(rad);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.x(), rhand.rotation.x(), epsilon);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.y(), rhand.rotation.y(), epsilon);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.z(), rhand.rotation.z(), epsilon);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.w(), rhand.rotation.w(), epsilon);
 }

@@ -30,18 +30,14 @@ void kinematicTest::Viewer::start()
 	pointsDrawer.setSize(0.1);
 	pointsDrawer.setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
 
-	osgutils::ConnectionsDrawer connectionsDrawer(3);
+	osgutils::ConnectionsDrawerPtr connectionsDrawer;
 	auto joint2index = kinematic::SkeletonState::createJoint2IndexMapping(skeletonState, mapping);
-	auto sd = kinematic::SkeletonState::createConnections(skeletonState, joint2index);
-	connectionsDrawer.init(sd);
-	connectionsDrawer.setSize(0.04);
-	connectionsDrawer.setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
+	
 
 	int framesCount = acclaimData.frames.size();
 	osg::ref_ptr<osg::PositionAttitudeTransform> pat = new osg::PositionAttitudeTransform();
 	osgViewer::Viewer viewer;
 	pat->addChild(pointsDrawer.getNode());
-	pat->addChild(connectionsDrawer.getNode());
 	osg::Quat att; att.makeRotate(90, 1, 0, 0);
 	pat->setAttitude(att);
 	float x = -10, y = 20, z = -2.5;
@@ -59,14 +55,25 @@ void kinematicTest::Viewer::start()
 		viewer.frame();
 		frameIdx = frameIdx >= (framesCount - 1) ? 0 : ++frameIdx;
 		kinematic::SkeletonState::RigidPartialStateChange sChange = kinematic::SkeletonState::convert(acclaimSkeleton, acclaimData.frames[frameIdx], mapping);
-		auto frame = convertFrame(mapping, sChange);
+		auto frame = kinematic::SkeletonState::convertStateChange(mapping, sChange);
 		
-		kinematic::SkeletonState::update(skeletonState, frame);
+		kinematic::SkeletonState::update(skeletonState, frame, mapping);
 		auto pos = getPos(skeletonState);
 		std::transform(pos.begin(), pos.end(), pos.begin(), [&](const osg::Vec3& p) { return p + osg::Vec3(a, b, c); });
 		pat->setPosition(osg::Vec3(x,y,z));
 		pointsDrawer.update(pos);
-		connectionsDrawer.update(pos);
+
+		if (!connectionsDrawer) {
+			
+			auto sd = kinematic::SkeletonState::createConnections(skeletonState, joint2index);
+			connectionsDrawer = utils::make_shared<decltype(connectionsDrawer)::element_type>(3);
+			connectionsDrawer->init(sd);
+			connectionsDrawer->setSize(0.04);
+			connectionsDrawer->setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
+
+			pat->addChild(connectionsDrawer->getNode());
+		}
+		connectionsDrawer->update(pos);
 	}
 }
 
@@ -81,16 +88,4 @@ std::vector<osg::Vec3> kinematicTest::Viewer::getPos(kinematic::SkeletonState &s
 	};
 	kinematic::SkeletonState::Joint::visitLevelOrder(root, visitor);
 	return pos;
-}
-
-kinematic::SkeletonState::NonRigidCompleteStateChange kinematicTest::Viewer::convertFrame(const kinematic::SkeletonState::LinearizedNodesMapping &mapping, kinematic::SkeletonState::RigidPartialStateChange &sChange)
-{
-	kinematic::SkeletonState::NonRigidCompleteStateChange frame;
-	auto count = mapping.size();
-	frame.push_back(kinematic::SkeletonState::JointStateChange{ sChange.translation, osg::Quat() });
-	for (int i = 1; i < count; i++) {
-		// jesli sChange.rotations nie ma odpowiedniego indeksu, to stworzy sie osg::Quat()
-		frame.push_back(kinematic::SkeletonState::JointStateChange{ osg::Vec3(), sChange.rotations[i] });
-	}
-	return frame;
 }

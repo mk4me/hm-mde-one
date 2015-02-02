@@ -13,9 +13,10 @@
 #include <biovisionformatslib/MotionData.h>
 #include <osg/Vec3>
 #include <osg/Quat>
+#include <osg/Matrix>
 #include <list>
 #include <boost/bimap.hpp>
-#include "osgutils/OsgSchemeDrawer.h"
+#include <osgutils/OsgSchemeDrawer.h>
 
 namespace kinematic
 {
@@ -90,42 +91,13 @@ namespace kinematic
 			//! \return Nazwa stawu
 			std::string name() const;
 
-			//! \return Lokalna pzycja wzglêdem rodzica
-			osg::Vec3 localPosition() const;
 			//! \return Globalna pozycja
 			osg::Vec3 globalPosition() const;
 
-			//! \return Lokalna orientacja wzglêdem rodzica
-			osg::Quat localOrientation() const;
-			//! \return Globalna orientacja
-			osg::Quat globalOrientation() const;
+			osg::Matrix getG() const;
 
-			//! \param translation Lokalne przesuniêcie
-			//! \param rotation Lokalna rotacja
-			void update(const osg::Vec3 & translation, const osg::Quat & rotation);
-
-
-			//! \param translation Przesuniêcie
-			void update(const osg::Vec3 & translation);
-			//! \param position Globalna pozycja
-			void setGlobal(const osg::Vec3 & position);
-			//! \param position Lokalna pozycja
-			void setLocal(const osg::Vec3 & position);
-
-			//! \param rotation Rotacja
-			void update(const osg::Quat & rotation);
-			//! \param orientation Globalna orientacja
-			void setGlobal(const osg::Quat & orientation);
-			//! \param orientation Lokalna orientacja
-			void setLocal(const osg::Quat & orientation);
-
-			//! \param position Globalna pozycja
-			//! \param orientation Globalna orientacja
-			void setGlobal(const osg::Vec3 & position, const osg::Quat & orientation);
-			//! \param position Lokalna pozycja
-			//! \param orientation Lokalna orientacja
-			void setLocal(const osg::Vec3 & position, const osg::Quat & orientation);
-
+			void update(const osg::Vec3 & translation, const osg::Quat & rotation, const osg::Matrix& parentG);
+		
 		private:
 			//! Prywatna implementacja
 			utils::shared_ptr<JointDataImpl> impl;
@@ -161,28 +133,30 @@ namespace kinematic
 
 		static LinearizedNodesMapping createMapping(const Skeleton & skeleton);
 
+		static NonRigidCompleteStateChange convertStateChange(const LinearizedNodesMapping &mapping, const RigidPartialStateChange &sChange);
+
 		//! \param skeletonState [out] Aktualizowany stan szkieletu
 		//! \param stateChange Zmiana stanu szkieletu
 		static void update(SkeletonState & skeletonState, const RigidCompleteStateChange & stateChange);
 		//! \param skeletonState [out] Aktualizowany stan szkieletu
 		//! \param stateChange Zmiana stanu szkieletu
-		static void update(SkeletonState & skeletonState, const NonRigidCompleteStateChange & stateChange);
+		static void update(SkeletonState & skeletonState, const NonRigidCompleteStateChange & stateChange, const LinearizedNodesMapping & mapping);
 
 		//! \param skeletonState [out] Aktualizowany stan szkieletu
 		//! \param stateChange Zmiana stanu szkieletu
 		static void update(SkeletonState & skeletonState, const RigidPartialStateChange & stateChange);
-		//! \param skeletonState [out] Aktualizowany stan szkieletu
-		//! \param stateChange Zmiana stanu szkieletu
-		static void update(SkeletonState & skeletonState, const NonRigidPartialStateChange & stateChange);
+		////! \param skeletonState [out] Aktualizowany stan szkieletu
+		////! \param stateChange Zmiana stanu szkieletu
+		//static void update(SkeletonState & skeletonState, const NonRigidPartialStateChange & stateChange);
 
-		//! \param skeletonState [out] Aktualizowany stan szkieletu
-		//! \param newState Nowy stan szkieletu
-		static void setLocal(SkeletonState & skeletonState, const RigidCompleteStateChange & newState);
-		static void setGlobal(SkeletonState & skeletonState, const RigidCompleteStateChange & newState);
-		//! \param skeletonState [out] Aktualizowany stan szkieletu
-		//! \param newState Nowy stan szkieletu
-		static void setLocal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState);
-		static void setGlobal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState);
+		////! \param skeletonState [out] Aktualizowany stan szkieletu
+		////! \param newState Nowy stan szkieletu
+		//static void setLocal(SkeletonState & skeletonState, const RigidCompleteStateChange & newState);
+		//static void setGlobal(SkeletonState & skeletonState, const RigidCompleteStateChange & newState);
+		////! \param skeletonState [out] Aktualizowany stan szkieletu
+		////! \param newState Nowy stan szkieletu
+		//static void setLocal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState);
+		//static void setGlobal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState);
 
 		//! \param skeletonState Stan szkieletu
 		//! \return Globalny opis stanu szkieletu

@@ -59,7 +59,7 @@ const std::vector<std::vector<osg::Vec3>> SkeletonSerie::createPointsPositions(c
 	for (unsigned int i = 0; i < density; ++i, time = delta * i) {
 		int frameNo = time * this->skeletonWithStates->states->frameTime;
 		auto& frame = skeletonWithStates->states->frames[frameNo];
-		kinematic::SkeletonState::update(sstate, frame);
+		kinematic::SkeletonState::update(sstate, frame, skeletonWithStates->nodesMapping);
 		std::vector<osg::Vec3> position(j2i.size());
 		for (auto& j : j2i) {
 			position[j.second] = j.first->value.globalPosition() + frame[0].translation;
@@ -120,11 +120,9 @@ void SkeletonSerie::update()
 	int frameNo = lastUpdateTime / skeletonWithStates->states->frameTime;
 	int maxSize = skeletonWithStates->states->frames.size();
 	frameNo = frameNo >= maxSize ? maxSize - 1 : frameNo;
-	// tymczasowy hack - pierwsza klatka to surowy szkielet
-	if (frameNo > 0) {
-		auto& frame = skeletonWithStates->states->frames[frameNo];
-		kinematic::SkeletonState::update(*skeletonState, frame);
-	}
+	auto& frame = skeletonWithStates->states->frames[frameNo];
+	kinematic::SkeletonState::update(*skeletonState, frame, skeletonWithStates->nodesMapping);
+	
 	kinematic::SkeletonState::JointConstPtr root = skeletonState->root();
 	auto visitor = [&](kinematic::SkeletonState::JointConstPtr node, kinematic::SkeletonState::Joint::size_type level)
 		{
