@@ -21,6 +21,9 @@ SET_PRIVATE_HEADERS(
 
 
 #TODO moze warto to jakos uniwersalnie zrobic..
-file(COPY "testFiles" DESTINATION "${CMAKE_BINARY_DIR}/tests/kinematiclib")
-
+if (UNIX)
+	file(COPY "testFiles" DESTINATION "${CMAKE_BINARY_DIR}/bin")
+else()
+	file(COPY "testFiles" DESTINATION "${CMAKE_BINARY_DIR}/tests/kinematiclib")
+endif()
 END_PROJECT()

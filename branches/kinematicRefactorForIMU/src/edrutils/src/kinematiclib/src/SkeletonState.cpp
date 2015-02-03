@@ -14,21 +14,15 @@ class SkeletonState::JointData::JointDataImpl
 public:
 	osg::Vec3 originTranslation;
 	osg::Quat originRotation;
-	osg::Quat prerot;
 	std::string name;
-	osg::Matrix C;
-	osg::Matrix Cinv;
-	osg::Matrix B;
-	osg::Matrix L;
-	osg::Matrix G;
+	osg::Matrix shiftMatrix;
+	osg::Matrix localMatrix;
+	osg::Matrix globalMatrix;
 
-	JointDataImpl(const std::string & name, const osg::Vec3 & translation, const osg::Quat & rotation, const osg::Quat& prerot) :
-		prerot(prerot), originRotation(rotation), originTranslation(translation), name(name)
+	JointDataImpl(const std::string & name, const osg::Vec3 & translation, const osg::Quat & rotation) :
+		originRotation(rotation), originTranslation(translation), name(name)
 	{
-		C.set(prerot);
-		Cinv = osg::Matrix::inverse(C);
-		B.makeIdentity();
-		B.setTrans(translation);
+		shiftMatrix.setTrans(translation);
 	}
 
 	~JointDataImpl()
@@ -38,23 +32,37 @@ public:
 
 	osg::Vec3 globalPosition() const
 	{
-		return G.getTrans();
+		return globalMatrix.getTrans();
 	}
 	
+	osg::Quat globalOrientation() const
+	{
+		return globalMatrix.getRotate();
+	}
+
+	void setGlobalOrientation(const osg::Quat& rotation)
+	{
+		globalMatrix.setRotate(rotation);
+	}
+
+	void setGlobalTranslation(const osg::Vec3& translation)
+	{
+		globalMatrix.setTrans(translation);
+	}
+
 	
 	//! \param translation Lokalne przesuni�cie
 	//! \param rotation Lokalna rotacja
 	void update(const osg::Vec3 & translation, const osg::Quat & rotation, const osg::Matrix& parentG)
 	{
-		osg::Matrix M; M.set(rotation);
-		L = Cinv * M * C * B;
-		G = L * parentG;
+		osg::Matrix m; m.set(rotation);
+		localMatrix =  shiftMatrix * m;
+		globalMatrix = localMatrix * parentG;
 	}
 };
 
-SkeletonState::JointData::JointData(const std::string & name, const osg::Vec3 & translation,
-									const osg::Quat & rotation, const osg::Quat & prerotation) :
-									impl(new JointDataImpl(name, translation, rotation, prerotation))
+SkeletonState::JointData::JointData(const std::string & name, const osg::Vec3 & translation, const osg::Quat & rotation) :
+	impl(new JointDataImpl(name, translation, rotation))
 {
 
 }
@@ -71,7 +79,7 @@ std::string SkeletonState::JointData::name() const
 
 osg::Matrix kinematic::SkeletonState::JointData::getG() const
 {
-	return impl->G;
+	return impl->globalMatrix;
 }
 
 void kinematic::SkeletonState::JointData::update(const osg::Vec3 & translation, const osg::Quat & rotation, const osg::Matrix& parentG)
@@ -84,9 +92,24 @@ osg::Vec3 SkeletonState::JointData::globalPosition() const
 	return impl->globalPosition();
 }
 
+
+osg::Quat kinematic::SkeletonState::JointData::globalOrientation() const
+{
+	return impl->globalOrientation();
+}
+
+void kinematic::SkeletonState::JointData::setGlobal(const osg::Quat& rotation)
+{
+	impl->setGlobalOrientation(rotation);
+}
+
+void kinematic::SkeletonState::JointData::setGlobal(const osg::Vec3& translation) {
+	impl->setGlobalTranslation(translation);
+}
+
 SkeletonState::JointPtr SkeletonState::create(kinematic::JointConstPtr joint)
 {
-	auto j = Joint::create(JointData(joint->value.name, joint->value.position, joint->value.orientation, joint->value.prerot));	
+	auto j = Joint::create(JointData(joint->value.name, joint->value.position, joint->value.orientation));
 
 	for (auto jj : joint->children)
 	{
@@ -300,6 +323,11 @@ SkeletonState::JointConstPtr SkeletonState::root() const
 	return root_;
 }
 
+osg::Vec3 resolveRadians(const acclaim::Skeleton & skeleton, const osg::Vec3& toResolve)
+{
+	return skeleton.units.isAngleInRadians() ? static_cast<osg::Vec3d>(toResolve) : kinematicUtils::toRadians(toResolve);
+}
+
 SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 	const acclaim::MotionData::BoneData & boneData)
 {
@@ -368,8 +396,10 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 		++i;
 	}
 
-	
-	ret.rotation = kinematicUtils::convert(skeleton.units.isAngleInRadians() ? static_cast<osg::Vec3d>(rot) : kinematicUtils::toRadians(rot), bone.axisOrder);
+	osg::Quat c = kinematicUtils::convert(resolveRadians(skeleton, bone.axis), bone.axisOrder);
+	osg::Quat cinv = c.inverse();
+	osg::Quat rot2 = kinematicUtils::convert(resolveRadians(skeleton, rot), bone.axisOrder);
+	ret.rotation = cinv * rot2 * c;
 
 	return ret;
 }

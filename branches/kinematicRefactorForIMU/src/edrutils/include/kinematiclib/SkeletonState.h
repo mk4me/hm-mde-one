@@ -20,37 +20,37 @@
 
 namespace kinematic
 {
-	//! Klasa przedstawiaj¹ca stan szkieletu - pozycje i orientacje poszczególnych stawów
+	//! Klasa przedstawiajï¿½ca stan szkieletu - pozycje i orientacje poszczegï¿½lnych stawï¿½w
 	class SkeletonState
 	{
 	public:
 
-		//! Typ indeksu wêz³a
+		//! Typ indeksu wï¿½zï¿½a
 		typedef unsigned int NodeIDX;
-		//! Typ bimapy indeksów wêz³ów do nazw wêz³ów
+		//! Typ bimapy indeksï¿½w wï¿½zï¿½ï¿½w do nazw wï¿½zï¿½ï¿½w
 		typedef boost::bimap<NodeIDX, std::string> LinearizedNodesMapping;
 
-		//! Struktura opisuj¹ca prosta zmianê w szkielecie - translacja roota i lokalne rotacje stawów
+		//! Struktura opisujï¿½ca prosta zmianï¿½ w szkielecie - translacja roota i lokalne rotacje stawï¿½w
 		//! pozycje rotacji w wektorze wg mapowania
 		struct RigidCompleteStateChange
 		{
 			//! Translacja roota
 			osg::Vec3 translation;
-			//! Lokalne rotacje wszystkich stawów
+			//! Lokalne rotacje wszystkich stawï¿½w
 			std::vector<osg::Quat> rotations;
 		};
 
-		//! Struktura opisuj¹ca prosta zmianê w szkielecie - translacja roota i lokalne rotacje stawów
+		//! Struktura opisujï¿½ca prosta zmianï¿½ w szkielecie - translacja roota i lokalne rotacje stawï¿½w
 		//! rotacje wg mapowania
 		struct RigidPartialStateChange
 		{
 			//! Translacja roota
 			osg::Vec3 translation;
-			//! Lokalne rotacje wybranych stawów
+			//! Lokalne rotacje wybranych stawï¿½w
 			std::map<NodeIDX, osg::Quat> rotations;
 		};
 
-		//! Struktura opisuj¹ca zmianê stawu
+		//! Struktura opisujï¿½ca zmianï¿½ stawu
 		struct JointStateChange
 		{
 			//! Lokalna translacja
@@ -59,15 +59,15 @@ namespace kinematic
 			osg::Quat rotation;
 		};
 
-		//! Typ opisuj¹cy pe³n¹ zmianê stanu szkieletu
+		//! Typ opisujï¿½cy peï¿½nï¿½ zmianï¿½ stanu szkieletu
 		//! pozycja zmian wg mapowania
 		typedef std::vector<JointStateChange> NonRigidCompleteStateChange;
 
-		//! Typ opisuj¹cy pe³n¹ zmianê stanu szkieletu
+		//! Typ opisujï¿½cy peï¿½nï¿½ zmianï¿½ stanu szkieletu
 		//! zmiany wg mapowania
 		typedef std::map<NodeIDX, JointStateChange> NonRigidPartialStateChange;
 
-		//! Klasa reprezentuj¹ca staw
+		//! Klasa reprezentujï¿½ca staw
 		class JointData
 		{
 		private:
@@ -77,11 +77,11 @@ namespace kinematic
 			friend class SkeletonState;
 
 		private:			
-			//! \param name Nazwa wêz³a odpowiadaj¹ca szkieletowi
+			//! \param name Nazwa wï¿½zï¿½a odpowiadajï¿½ca szkieletowi
 			//! \param translation Pozycja|Translacja lokalna stawu
 			//! \param rotation Orientacja|Rotacja lokalna stawu			
 			JointData(const std::string & name, const osg::Vec3 & translation,
-					  const osg::Quat & rotation, const osg::Quat & prerotation );
+					  const osg::Quat & rotation);
 
 		public:
 
@@ -94,6 +94,12 @@ namespace kinematic
 			//! \return Globalna pozycja
 			osg::Vec3 globalPosition() const;
 
+			//! \return Globalna orientacja
+			osg::Quat globalOrientation() const;
+
+			void setGlobal(const osg::Quat& rotation);
+			void setGlobal(const osg::Vec3& translation);
+
 			osg::Matrix getG() const;
 
 			void update(const osg::Vec3 & translation, const osg::Quat & rotation, const osg::Matrix& parentG);
@@ -105,22 +111,22 @@ namespace kinematic
 		
 		//! Typ jointa stanu
 		typedef utils::TreeNode<JointData> Joint;
-		//! Typ wskaŸników do jointów
+		//! Typ wskaï¿½nikï¿½w do jointï¿½w
 		DEFINE_SMART_POINTERS(Joint);
 
 		typedef std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> Joint2Index;
 	private:
 
 		//! \param root Staw rodzic stanu
-		//! \param activeJointsCount Iloœæ aktywnych stawów które maja dzieci
+		//! \param activeJointsCount Iloï¿½ï¿½ aktywnych stawï¿½w ktï¿½re maja dzieci
 		SkeletonState(JointPtr root);
 
 	public:
 
-		//! \param Other Stan który przejmujemy
+		//! \param Other Stan ktï¿½ry przejmujemy
 		SkeletonState(SkeletonState && Other);
 
-		//! \param skeleton Szkielet dla któego tworzymy stan
+		//! \param skeleton Szkielet dla ktï¿½ego tworzymy stan
 		//! \return Stan bazowy szkieletu
 		static SkeletonState create(const Skeleton & skeleton);
 

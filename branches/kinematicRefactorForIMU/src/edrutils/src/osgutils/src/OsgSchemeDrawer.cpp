@@ -3,6 +3,7 @@
 #include <osgutils/CustomPrimitivesFactory.h>
 #include <osg/LineWidth>
 #include <osg/PositionAttitudeTransform>
+#include <osg/Geode>
 
 namespace osgutils
 {

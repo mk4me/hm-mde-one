@@ -22,7 +22,7 @@ ADD_PROJECT(plugin_kinematic "coreui;plugin_c3d;kinematiclib;kinematicUtils;hani
 ADD_PROJECT(plugin_hmdbCommunication "CURL;WSDLPULL;corelib;coreui;hmdbserviceslib;qthtmlgenlib;sqliteUtils;SQLCIPHER;QUAZIP;plugin_kinematic;plugin_video;threadingUtils;networkUtils" "plugins/hmdbCommunication")
 ADD_PROJECT(plugin_newChart "QWT;coreui;plugin_c3d" "plugins/newChart")
 ADD_PROJECT(plugin_subject "corelib;vidlib;plugin_c3d" "plugins/subject")
-ADD_PROJECT(plugin_hmm "corelib;coreui;c3dlib;QWT;vidlib;kinematiclib;plugin_subject" "plugins/hmmlib")
+ADD_PROJECT(plugin_hmm "corelib;coreui;c3dlib;QWT;vidlib;osgutils;kinematiclib;plugin_subject" "plugins/hmmlib")
 #ADD_PROJECT(plugin_newVdf "dflib;coreui;corelib" "plugins/newVdf")
 #ADD_PROJECT(plugin_dfElements "dflib;coreui;plugin_newVdf;plugin_c3d" "plugins/dfElements")
 ADD_PROJECT(plugin_imuCostume "corelib;coreui;kinematiclib;kinematicUtils;BOOST;QT;OSG;plugin_c3d;plugin_hmdbCommunication;imucostumelib" "plugins/imuCostume")
