@@ -26,8 +26,6 @@ namespace kinematic
 		osg::Quat orientation;
 		//! Unikalna nazwa
 		std::string name;
-		//! Dodatkowa orientacja wynikajaca z asf
-		osg::Quat prerot;
 	};	
 
 	typedef utils::TreeNode<JointData> Joint;

@@ -356,6 +356,7 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 	unsigned int i = 0;
 	unsigned int roti = 0;
 	unsigned int transi = 0;
+
 	for (const auto & dof : bone.dofs)
 	{
 		switch (dof.channel)
@@ -376,15 +377,15 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 			break;
 
 		case kinematicUtils::ChannelType::RX:
-			rot[0] = boneData.channelValues[i];
+			rot[roti++] = boneData.channelValues[i];
 			break;
 
 		case kinematicUtils::ChannelType::RY:
-			rot[1] = boneData.channelValues[i];
+			rot[roti++] = boneData.channelValues[i];
 			break;
 
 		case kinematicUtils::ChannelType::RZ:
-			rot[2] = boneData.channelValues[i];
+			rot[roti++] = boneData.channelValues[i];
 			break;
 
 		case acclaim::DegreeOfFreedom::L:
@@ -401,7 +402,8 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 
 	osg::Quat c = kinematicUtils::convert(resolveRadians(skeleton, bone.axis), bone.axisOrder);
 	osg::Quat cinv = c.inverse();
-	osg::Quat rot2 = kinematicUtils::convert(resolveRadians(skeleton, rot), bone.axisOrder);
+	auto rotOrder = skeleton.getRotationOrder();
+	osg::Quat rot2 = kinematicUtils::convert(resolveRadians(skeleton, rot), bone.name == "root" ? rotOrder : bone.axisOrder);
 	ret.rotation = cinv * rot2 * c;
 
 	return ret;
@@ -576,7 +578,7 @@ kinematic::SkeletonState::NonRigidCompleteStateChange kinematic::SkeletonState::
 {
 	NonRigidCompleteStateChange frame;
 	auto count = mapping.size();
-	frame.push_back(kinematic::SkeletonState::JointStateChange{ sChange.translation, osg::Quat() });
+	frame.push_back(kinematic::SkeletonState::JointStateChange{ sChange.translation, sChange.rotations.at(0) });
 	for (int i = 1; i < count; i++) {
 		auto it = sChange.rotations.find(i);
 		frame.push_back(kinematic::SkeletonState::JointStateChange{ osg::Vec3(), it != sChange.rotations.end() ? it->second : osg::Quat() });

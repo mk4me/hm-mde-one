@@ -48,6 +48,22 @@ namespace acclaim
 		kinematicUtils::AxisOrder::Type axisOrder;
 		//! kolejność rotacji (sekcja order)
 		std::vector<kinematicUtils::Channel> dataOrder;
+		kinematicUtils::AxisOrder::Type getRotationOrder()
+		{
+			std::string s;
+			int count = dataOrder.size();
+			for (int i = 0; i < count; ++i) {
+				if (dataOrder[i] == kinematicUtils::ChannelType::RX) {
+					s += "X";
+				} else if (dataOrder[i] == kinematicUtils::ChannelType::RY) {
+					s += "Y";
+				} else if (dataOrder[i] == kinematicUtils::ChannelType::RZ) {
+					s += "Z";
+				}
+			}
+			return Axis::getAxisOrder(s);
+		}
+
 	};
 	DEFINE_SMART_POINTERS(Skeleton);
 }

@@ -333,8 +333,8 @@ bool AsfParser::parseRoot(const std::string& root, Skeleton& skeleton) {
         }
     }
     
-	/*
-	std::string s;
+
+	/*std::string s;
     int count = channels.size();
     for (int i = 0; i < count; ++i) {
         if (channels[i] == DegreeOfFreedom::RX) {
@@ -345,8 +345,8 @@ bool AsfParser::parseRoot(const std::string& root, Skeleton& skeleton) {
             s += "Z";
         }
     }
-    Axis::Order dataOrder = Axis::getAxisOrder(s);
-	*/
+    Axis::Order dataOrder = Axis::getAxisOrder(s);*/
+
 
     skeleton.axisOrder = order;
     skeleton.dataOrder = channels;
