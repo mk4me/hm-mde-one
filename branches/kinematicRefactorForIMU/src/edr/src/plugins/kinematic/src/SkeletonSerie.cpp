@@ -3,7 +3,6 @@
 #include <osgutils/OsgSchemeDrawer.h>
 #include "TrajectoriesDrawer.h"
 #include "SkeletalVisualizationSchemeHelper.h"
-//#include <kinematiclib/JointAnglesCollection.h>
 #include <threadingUtils/StreamData.h>
 #include <kinematiclib/SkeletonState.h>
 

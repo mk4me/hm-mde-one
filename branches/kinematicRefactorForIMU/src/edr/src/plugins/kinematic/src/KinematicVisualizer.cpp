@@ -290,6 +290,7 @@ QWidget* KinematicVisualizer::createWidget()
 
 	resetScene();
 
+	widget->show();
     return widget;
 }
 

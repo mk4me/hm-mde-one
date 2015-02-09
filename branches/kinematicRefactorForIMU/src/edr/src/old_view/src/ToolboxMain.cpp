@@ -11,7 +11,7 @@
 
 #include <utils/Debug.h>
 
-#include <corelib/StringTools.h>
+#include <utils/StringConversionTools.h>
 #include <coreui/CoreVisualizerWidget.h>
 
 #include <corelib/Visualizer.h>
@@ -181,7 +181,7 @@ void ToolboxMain::populateVisualizersMenu( QMenu* menu )
 	IVisualizerManager::VisualizerPrototypes visPrototypes;
 	getVisualizerManager()->visualizerPrototypes(visPrototypes);
 	for(auto vis : visPrototypes) {
-		QAction* action = new QAction(toQString(vis->getName()), menu);
+		QAction* action = new QAction(utils::Convert::toQString(vis->getName()), menu);
 		action->setData( qVariantFromValue(vis->getID()) );
 		action->setIcon( vis->getIcon() );
 		action->connect( action, SIGNAL(triggered()), this, SLOT(actionCreateVisualizer()) );

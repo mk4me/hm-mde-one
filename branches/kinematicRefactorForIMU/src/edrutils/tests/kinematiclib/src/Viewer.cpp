@@ -22,33 +22,41 @@ void kinematicTest::Viewer::start()
 
 	kinematic::Skeleton skeleton;
 	kinematic::Skeleton::convert(acclaimSkeleton, skeleton);
-	const auto mapping = kinematic::SkeletonState::createMapping(skeleton);
 	kinematic::SkeletonState skeletonState = kinematic::SkeletonState::create(skeleton);
 	
-	osgutils::PointsDrawer pointsDrawer(3);
-	pointsDrawer.init(mapping.size());
-	pointsDrawer.setSize(0.1);
-	pointsDrawer.setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
 
-	osgutils::ConnectionsDrawerPtr connectionsDrawer;
+	const auto mapping = kinematic::SkeletonState::createMapping(skeleton);
 	auto joint2index = kinematic::SkeletonState::createJoint2IndexMapping(skeletonState, mapping);
-	
+
 
 	int framesCount = acclaimData.frames.size();
 	osg::ref_ptr<osg::PositionAttitudeTransform> pat = new osg::PositionAttitudeTransform();
 	osgViewer::Viewer viewer;
-	pat->addChild(pointsDrawer.getNode());
 	osg::Quat att; att.makeRotate(90, 1, 0, 0);
 	pat->setAttitude(att);
-	float x = -10, y = 20, z = -2.5;
+	float x = 0, y = 20, z = -2.5;
 	float a = 0, b = 0, c = 0;
-	
+
 	viewer.setSceneData(pat);
 	int frameIdx = 0;
 	viewer.setUpViewInWindow(1090, 100, 500, 500);
 	//viewer.run();
 	osg::ref_ptr<osgGA::TrackballManipulator> tm = new osgGA::TrackballManipulator;
 	
+
+	osgutils::PointsDrawer pointsDrawer(3);
+	pointsDrawer.init(mapping.size());
+	pointsDrawer.setSize(0.1);
+	pointsDrawer.setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
+	pat->addChild(pointsDrawer.getNode());
+
+	auto sd = kinematic::SkeletonState::createConnections(skeletonState, joint2index);
+	osgutils::ConnectionsDrawer	connectionsDrawer(3);
+	connectionsDrawer.init(sd);
+	connectionsDrawer.setSize(0.04);
+	connectionsDrawer.setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
+	pat->addChild(connectionsDrawer.getNode());
+
 	viewer.setCameraManipulator(tm);
 	viewer.realize();
 	while (!viewer.done()) {
@@ -63,17 +71,8 @@ void kinematicTest::Viewer::start()
 		pat->setPosition(osg::Vec3(x,y,z));
 		pointsDrawer.update(pos);
 
-		if (!connectionsDrawer) {
-			
-			auto sd = kinematic::SkeletonState::createConnections(skeletonState, joint2index);
-			connectionsDrawer = utils::make_shared<decltype(connectionsDrawer)::element_type>(3);
-			connectionsDrawer->init(sd);
-			connectionsDrawer->setSize(0.04);
-			connectionsDrawer->setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
 
-			pat->addChild(connectionsDrawer->getNode());
-		}
-		connectionsDrawer->update(pos);
+		connectionsDrawer.update(pos);
 	}
 }
 

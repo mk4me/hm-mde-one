@@ -12,10 +12,10 @@
 
 PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR
 
-//WA¯NE!!
-//tak inicjalizujemy resourcy wkompilowane w biblioteki statyczne linkowane do aplikacji - w naszym przypadku to Core jest tak¹ bibliotek¹ i jego resourcy musza byæ jawnie inicjalizowane
-//Nazwa resourców musi byæ unikalna poniewa¿ Qt "miesza" nazwy metod z nazwamy plików resourców które chcemy inicjalizowaæ tworz¹c unikalne statyczne funkcje na potrzeby inicjalizacji
-//link: http://developer.qt.nokia.com/doc/qt-4.8/resources.html - sam dó³ stronki
+//WAï¿½NE!!
+//tak inicjalizujemy resourcy wkompilowane w biblioteki statyczne linkowane do aplikacji - w naszym przypadku to Core jest takï¿½ bibliotekï¿½ i jego resourcy musza byï¿½ jawnie inicjalizowane
+//Nazwa resourcï¿½w musi byï¿½ unikalna poniewaï¿½ Qt "miesza" nazwy metod z nazwamy plikï¿½w resourcï¿½w ktï¿½re chcemy inicjalizowaï¿½ tworzï¿½c unikalne statyczne funkcje na potrzeby inicjalizacji
+//link: http://developer.qt.nokia.com/doc/qt-4.8/resources.html - sam dï¿½ stronki
 inline void initCoreResources() { Q_INIT_RESOURCE(CoreIcons); }
 
 using namespace coreUI;
@@ -90,7 +90,7 @@ QSplashScreen * CoreMainWindow::splashScreen()
 
 		initializeSplashScreen(splashScreen_);
 
-		splashScreen_->finish(this);
+		//splashScreen_->finish(this);
 		splashScreen_->show();
 	}	
 

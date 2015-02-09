@@ -55,7 +55,9 @@ public:
 	//! \param rotation Lokalna rotacja
 	void update(const osg::Vec3 & translation, const osg::Quat & rotation, const osg::Matrix& parentG)
 	{
-		osg::Matrix m; m.set(rotation);
+		osg::Matrix m;
+		m.set(rotation);
+		m.setTrans(translation);
 		localMatrix =  shiftMatrix * m;
 		globalMatrix = localMatrix * parentG;
 	}
@@ -107,13 +109,14 @@ void kinematic::SkeletonState::JointData::setGlobal(const osg::Vec3& translation
 	impl->setGlobalTranslation(translation);
 }
 
-SkeletonState::JointPtr SkeletonState::create(kinematic::JointConstPtr joint)
+SkeletonState::JointPtr SkeletonState::create(kinematic::JointConstPtr joint, const osg::Vec3 parentPosition)
 {
 	auto j = Joint::create(JointData(joint->value.name, joint->value.position, joint->value.orientation));
-
+	j->value.setGlobal(parentPosition + joint->value.position);
 	for (auto jj : joint->children)
 	{
-		auto jjj = create(jj);
+		auto pp = j->value.globalPosition();
+		auto jjj = create(jj, pp);
 		j->children.push_back(jjj);
 		jjj->parent = j;
 	//	// hierarchia osg!!
@@ -138,7 +141,7 @@ SkeletonState::SkeletonState(SkeletonState && Other)
 SkeletonState SkeletonState::create(const Skeleton & skeleton)
 {
 	if (skeleton.root != nullptr){
-		return SkeletonState(create(skeleton.root));
+		return SkeletonState(create(skeleton.root, osg::Vec3()));
 	}
 
 	return SkeletonState(JointPtr());
@@ -216,7 +219,6 @@ void updateOrientationsAndPosition(SkeletonState::JointPtr joint, const Skeleton
 
 void SkeletonState::update(SkeletonState & skeletonState, const NonRigidCompleteStateChange & stateChange, const LinearizedNodesMapping & mapping)
 {
-	auto it = stateChange.begin();
 	updateOrientationsAndPosition(skeletonState.root(), stateChange, mapping, osg::Matrix());
 }
 
@@ -374,15 +376,15 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 			break;
 
 		case kinematicUtils::ChannelType::RX:
-			rot[roti++] = boneData.channelValues[i];
+			rot[0] = boneData.channelValues[i];
 			break;
 
 		case kinematicUtils::ChannelType::RY:
-			rot[roti++] = boneData.channelValues[i];
+			rot[1] = boneData.channelValues[i];
 			break;
 
 		case kinematicUtils::ChannelType::RZ:
-			rot[roti++] = boneData.channelValues[i];
+			rot[2] = boneData.channelValues[i];
 			break;
 
 		case acclaim::DegreeOfFreedom::L:
@@ -395,6 +397,7 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 
 		++i;
 	}
+
 
 	osg::Quat c = kinematicUtils::convert(resolveRadians(skeleton, bone.axis), bone.axisOrder);
 	osg::Quat cinv = c.inverse();

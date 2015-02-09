@@ -183,7 +183,7 @@ namespace kinematic
 
 	private:
 
-		static JointPtr create(kinematic::JointConstPtr joint);
+		static JointPtr create(kinematic::JointConstPtr joint, const osg::Vec3 parentPosition);
 
 	private:
 		//! Staw - root stanu

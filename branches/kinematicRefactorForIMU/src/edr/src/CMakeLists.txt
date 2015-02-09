@@ -31,7 +31,7 @@ ADD_PROJECT(plugin_imuCostume "corelib;coreui;kinematiclib;kinematicUtils;BOOST;
 END_PROJECTS_GROUP()
 
 BEGIN_PROJECTS_GROUP("view")
-#ADD_PROJECT(old_view "core;coreui;plugin_newTimeline;OPENGL;c3dlib")
+ADD_PROJECT(old_view "core;coreui;plugin_newTimeline;OPENGL;c3dlib")
 ADD_PROJECT(mde_view "core;coreui;c3dlib;kinematiclib;plugin_newTimeline;plugin_hmdbCommunication")
 ADD_PROJECT(imu_view "core;coreui;c3dlib;kinematiclib;plugin_newTimeline;plugin_hmdbCommunication")
 ADD_PROJECT(medusa_view "core;coreui;c3dlib;kinematiclib;plugin_newTimeline;plugin_hmdbCommunication;plugin_dicom")

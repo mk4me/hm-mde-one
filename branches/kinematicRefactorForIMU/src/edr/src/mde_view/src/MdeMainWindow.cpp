@@ -45,8 +45,8 @@ class MDEHMDBSourceView : public hmdbCommunication::IHMDBSourceViewManager::IHMD
 public:
 	//! \return Nazwa widoku
 	virtual const QString name() const { return QObject::tr("MDE view"); }
-	//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych jakim zasilamy widok
-	//! \return Widok obs³uguj¹cy kontekst
+	//! \param shallowCopyContext Kontekst pï¿½ytkiej kopii bazy danych jakim zasilamy widok
+	//! \return Widok obsï¿½ugujï¿½cy kontekst
 	virtual QWidget * createView(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext, hmdbCommunication::IHMDBSourceViewManager * viewManager) {
 
 		auto ret = new MDEPerspectiveWidget(shallowCopyContext);
@@ -76,7 +76,7 @@ public:
 
 		return ret;
 	}
-	//! \return Czy dany widok wymaga po³¹czenia z us³ugami webowymi
+	//! \return Czy dany widok wymaga poï¿½ï¿½czenia z usï¿½ugami webowymi
 	virtual const bool requiresRemoteContext() const { return true; }
 };
 
@@ -116,7 +116,7 @@ void MdeMainWindow::initializeSplashScreen(QSplashScreen * splashScreen)
 
 void MdeMainWindow::showSplashScreenMessage(const QString & message)
 {
-    splashScreen()->showMessage(message, Qt::AlignBottom | Qt::AlignLeft, Qt::white);
+    splashScreen()->showMessage(message, Qt::AlignBottom | Qt::AlignLeft, Qt::red);
 }
 
 void MdeMainWindow::customViewInit(QWidget * console)
@@ -125,8 +125,10 @@ void MdeMainWindow::customViewInit(QWidget * console)
    memoryManager->addObserver(analysisModel);
    trySetStyleByName("hmm");
  
+#ifdef WIN32
    this->showFullScreen();
    this->setFixedSize(this->width(), this->height());
+#endif
 
    utils::shared_ptr<hmdbCommunication::IHMDBSource> icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
    plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(icomm);
