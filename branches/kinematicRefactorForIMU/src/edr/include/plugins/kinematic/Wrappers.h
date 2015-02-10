@@ -29,6 +29,7 @@ struct SkeletonWithStates
 	SkeletonStatesConstPtr states;
 	kinematic::SkeletonConstPtr skeleton;
 	kinematic::SkeletonState::LinearizedNodesMapping nodesMapping;
+	double scale = 1.0;
 };
 DEFINE_SMART_POINTERS(SkeletonWithStates);
 

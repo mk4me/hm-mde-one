@@ -427,14 +427,17 @@ public:
 				const auto mapping = kinematic::SkeletonState::createMapping(*skeleton);
 
 				for (auto& frame : data->frames) {
-					//TODO
-					//konwersja do pelnego stanu
-					//states->frames.push_back(kinematic::SkeletonState::convert(*model, frame, mapping));
+					kinematic::SkeletonState::RigidPartialStateChange sChange = kinematic::SkeletonState::convert(*model, frame, mapping);
+					//konwersja z czesiowego do pelnego stanu
+					kinematic::SkeletonState::NonRigidCompleteStateChange nc = kinematic::SkeletonState::convertStateChange(mapping, sChange);
+					states->frames.push_back(nc);
 				}
 				
 				auto sws = utils::make_shared<SkeletonWithStates>();
 				sws->skeleton = skeleton;
 				sws->states = states;
+				sws->nodesMapping = mapping;
+				sws->scale = 0.25;
 				object->set(sws);
 				//kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
 				//joints->setSkeletal(skeleton, *states);

@@ -80,8 +80,13 @@ void FileSource::addFile( const core::Filesystem::Path& path )
 void FileSource::loadAsfAmc()
 {
 	auto transaction = fileDM->transaction();
-	core::Filesystem::Path p1 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/acclaimFormats/testFiles/test.amc";
-	core::Filesystem::Path p2 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/acclaimFormats/testFiles/test.asf";
+	//core::Filesystem::Path p1 = "C:/Users/Mateusz/Desktop/test.amc";
+	//core::Filesystem::Path p2 = "C:/Users/Mateusz/Desktop/test.asf";
+
+	//core::Filesystem::Path p1 = "E:/programming/WORK/EDR/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test2.amc";
+	//core::Filesystem::Path p2 = "E:/programming/WORK/EDR/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test2.asf";
+	core::Filesystem::Path p1 = "C:/Users/Wojciech/Desktop/test.amc";
+	core::Filesystem::Path p2 = "C:/Users/Wojciech/Desktop/test.asf";
 	transaction->addFile(p1);
 	transaction->addFile(p2);
 	core::ConstVariantsList oList;

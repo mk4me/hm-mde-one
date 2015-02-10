@@ -24,7 +24,7 @@ SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer,
 	skeletonWithStates = data->get();
 	skeletonState.reset(new kinematic::SkeletonState(kinematic::SkeletonState::create(*skeletonWithStates->skeleton)));
 	joint2Index = kinematic::SkeletonState::createJoint2IndexMapping(*skeletonState, skeletonWithStates->nodesMapping);
-	auto ratio = 1.0;
+	auto ratio = skeletonWithStates->scale;
 	localRootNode->setScale(osg::Vec3(ratio, ratio, ratio));
 	pointsDrawer->init(skeletonWithStates->states->frames.front().size());
 	pointsDrawer->setSize(0.02 / ratio);
