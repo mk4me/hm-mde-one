@@ -48,7 +48,7 @@ namespace acclaim
 		kinematicUtils::AxisOrder::Type axisOrder;
 		//! kolejność rotacji (sekcja order)
 		std::vector<kinematicUtils::Channel> dataOrder;
-		kinematicUtils::AxisOrder::Type getRotationOrder()
+		kinematicUtils::AxisOrder::Type getRotationOrder() const
 		{
 			std::string s;
 			int count = dataOrder.size();

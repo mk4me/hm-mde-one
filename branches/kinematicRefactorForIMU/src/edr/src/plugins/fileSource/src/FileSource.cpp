@@ -80,8 +80,8 @@ void FileSource::addFile( const core::Filesystem::Path& path )
 void FileSource::loadAsfAmc()
 {
 	auto transaction = fileDM->transaction();
-	core::Filesystem::Path p1 = "C:/Users/Mateusz/Desktop/test.amc";
-	core::Filesystem::Path p2 = "C:/Users/Mateusz/Desktop/test.asf";
+	core::Filesystem::Path p1 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/acclaimFormats/testFiles/test.amc";
+	core::Filesystem::Path p2 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/acclaimFormats/testFiles/test.asf";
 	transaction->addFile(p1);
 	transaction->addFile(p2);
 	core::ConstVariantsList oList;
@@ -107,13 +107,7 @@ void FileSource::loadAsfAmc()
 	for (auto& frame : data->frames) {
 		kinematic::SkeletonState::RigidPartialStateChange sChange = kinematic::SkeletonState::convert(*model, frame, mapping);
 		//konwersja z czesiowego do pelnego stanu
-		kinematic::SkeletonState::NonRigidCompleteStateChange nc;
-		auto count = mapping.size();
-		nc.push_back(kinematic::SkeletonState::JointStateChange{ sChange.translation, osg::Quat() });
-		for (int i = 1; i < count; i++) {
-			// jesli sChange.rotations nie ma odpowiedniego indeksu, to stworzy sie osg::Quat()
-			nc.push_back(kinematic::SkeletonState::JointStateChange{ osg::Vec3(), sChange.rotations[i] });
-		}
+		kinematic::SkeletonState::NonRigidCompleteStateChange nc = kinematic::SkeletonState::convertStateChange(mapping, sChange);
 		states->frames.push_back(nc);
 	}
 
