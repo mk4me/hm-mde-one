@@ -196,6 +196,32 @@ void IMUCostumeDataSource::resfreshCostumesData()
 bool IMUCostumeDataSource::lateInit()
 {
 	refreshThread.run(&IMUCostumeDataSource::resfreshCostumesData, this);
+
+	try{
+		auto p = plugin::getResourcesPath() / "profiles.pro";
+
+		if (core::Filesystem::pathExists(p) == true){
+			std::ifstream f(p.string());
+
+			//próbujemy czytać profile
+			if (f.is_open() == true){
+
+				while (f.eof() == false){
+
+					auto pro = SerializableCostumeProfile::deserialize(f);
+
+					if (SerializableCostumeProfile::verify(pro, this) != SerializableCostumeProfile::Failed){
+						auto upro = SerializableCostumeProfile::unpack(pro, this);
+						costumesProfiles_.insert(CostumesProfiles::value_type(upro.name, upro));
+					}
+				}
+			}			
+		}
+	}
+	catch (...){
+		PLUGIN_LOG_ERROR("Failed to read profiles");
+	}
+
 	return true;
 }
 
@@ -207,6 +233,32 @@ void IMUCostumeDataSource::finalize()
 		refreshThread.join();
 		refreshThread = core::Thread();
 	}
+
+	if (costumesProfiles_.empty() == false){
+
+		try{
+			auto p = plugin::getResourcesPath() / "profiles.pro";
+		
+			std::ofstream f(p.string());
+
+			//próbujemy zapisać profile
+			if (f.is_open() == true){
+
+				for (const auto & pro : costumesProfiles_){
+
+					auto sPro = SerializableCostumeProfile::pack(pro.second);
+					SerializableCostumeProfile::serialize(f, sPro);
+					f << std::endl;
+				}
+					
+				f.close();
+			}			
+		}
+		catch (...){
+			PLUGIN_LOG_ERROR("Failed to write profiles");
+		}
+	}
+
 
 	OrientationEstimationAlgorithms().swap(orientationEstimationAlgorithms_);
 	CostumeCalibrationAlgorithms().swap(calibrationAlgorithms_);
@@ -304,7 +356,7 @@ const bool IMUCostumeDataSource::refreshCostumes()
 		try{
 			CostumeData cData;
 			cData.rawCostume.reset(new imuCostume::CostumeRawIO(id.ip, id.port));
-			cData.rawCostume->setSamplingDelay(20);
+			cData.rawCostume->setSamplingDelay(10);
 			cData.rawDataStream.reset(new RawDataStream);
 			cData.samplesStatus = utils::make_shared<utils::SamplesStatus>(100, createStatusMap());
 			cData.samplesStatus->positiveSample();
@@ -812,7 +864,7 @@ void IMUCostumeDataSource::registerMotionEstimationAlgorithm(const IMUCostumeMot
 	}
 }
 
-void IMUCostumeDataSource::registerSkeletonModel(kinematic::SkeletonConstPtr skeleton)
+void IMUCostumeDataSource::registerSkeletonModel(SkeletonConstPtr skeleton)
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
 
@@ -820,20 +872,17 @@ void IMUCostumeDataSource::registerSkeletonModel(kinematic::SkeletonConstPtr ske
 		throw std::runtime_error("Uninitialized skeleton model");
 	}
 
-	auto it = std::find_if(skeletonModels_.begin(), skeletonModels_.end(), [skeleton](kinematic::SkeletonConstPtr s) -> bool
-	{
-		return s == skeleton;
-	});
+	auto it = skeletonModels_.find(skeleton->id);	
 
 	if (it == skeletonModels_.end()){
-		skeletonModels_.push_back(skeleton);
+		skeletonModels_.insert(SkeletonModels::value_type(skeleton->id, skeleton));
 	}
 	else{
 		throw std::runtime_error("Skeleton model already registered");
 	}
 }	
 
-bool verifyProfile(const IMUCostumeDataSource::CostumeProfile & profile)
+bool verifyProfile(const CostumeProfile & profile)
 {
 	bool ret = true;
 
@@ -863,14 +912,10 @@ void IMUCostumeDataSource::registerCostumeProfile(const CostumeProfile & profile
 
 	//produjemy rejestrowac brakujace elementy profilu
 
-	//szkielet
-	auto it = std::find_if(skeletonModels_.begin(), skeletonModels_.end(), [profile](kinematic::SkeletonConstPtr s) -> bool
-	{
-		return s == profile.skeleton;
-	});
-
-	if (it == skeletonModels_.end()){
-		skeletonModels_.push_back(profile.skeleton);
+	if (profile.skeleton != nullptr){
+		if (skeletonModels_.find(profile.skeleton->id) == skeletonModels_.end()){
+			skeletonModels_.insert(SkeletonModels::value_type(profile.skeleton->id, profile.skeleton));
+		}
 	}
 
 	//algorytm kalibracji

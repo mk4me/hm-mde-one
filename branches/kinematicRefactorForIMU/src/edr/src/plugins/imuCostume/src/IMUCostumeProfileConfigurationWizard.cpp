@@ -11,7 +11,7 @@ struct WizzardPageDetails
 	QWidget * widget;
 };
 
-QWizard * IMUCostumeProfileConfigurationWizard::create(const IIMUDataSource::CostumeProfileInstance & profile,
+QWizard * IMUCostumeProfileConfigurationWizard::create(const CostumeProfileInstance & profile,
 	QWidget * parent)
 {
 	QWizard * ret = nullptr;

@@ -9,6 +9,7 @@ SET_PUBLIC_HEADERS (
 	IMUCostumeCalibrationAlgorithm.h
 	IMUCostumeMotionEstimationAlgorithm.h
 	Types.h
+	CostumeProfile.h
 )
 
 SET_PRIVATE_HEADERS (
@@ -20,8 +21,7 @@ SET_PRIVATE_HEADERS (
 	IMUParser.h
 	IMUCFGParser.h
 	IMUPerspective.h
-	PCH.h
-	IMUCostumeCalibrationWizard.h
+	PCH.h	
 	IMUCostumeProfileEditionWizard.h
 	IMUCostumeProfileConfigurationWizard.h
 	RecordingWizard.h
@@ -39,26 +39,24 @@ SET_SOURCE_FILES(
 	IMUPerspective.cpp
 	IMUCFGParser.cpp
 	PCH.cpp
-	Plugin.cpp
-	IMUCostumeCalibrationWizard.cpp
+	Plugin.cpp	
 	IMUCostumeProfileEditionWizard.cpp
 	IMUCostumeProfileConfigurationWizard.cpp
 	RecordingWizard.cpp
 	CostumeParser.cpp
+	CostumeProfile.cpp
 )
 
 SET_MOC_FILES(
 	CostumeSkeletonMotionHelper.h
 	OrientationDelegate.h
-	IMUCostumeListWidget.h
-	IMUCostumeCalibrationWizard.h
+	IMUCostumeListWidget.h	
 	IMUCostumeProfileEditionWizard.h
 	RecordingWizard.h
 )
 
 SET_UI_FILES(
-	IMUCostumeListWidget.ui
-	IMUCostumeCalibrationWizard.ui
+	IMUCostumeListWidget.ui	
 	IMUCostumeProfileEditionWizard.ui
 	RecordingWizard.ui
 )

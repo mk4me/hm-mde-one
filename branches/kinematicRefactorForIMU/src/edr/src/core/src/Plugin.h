@@ -56,6 +56,8 @@ private:
     ObjectWrapperPrototypes objectWrapperPrototypes;
 	//! Funkcja wo³ana przy inicjalizacji pluginu
 	initializeFunc initFunc;
+	//! Funkcja wo³ana przy póŸnej inicjalizacji pluginu
+	initializeFunc lateInitFunc;
 	//! Funkcja wo³ana przy deinicjalizacji pluginu - od³¹czenie sie od wszystkich zewnêtrznych zasobów
 	deinitializeFunc deinitFunc;
 
@@ -113,10 +115,13 @@ public:
 	//! \param deinit Funkcja wo³ana przy deinicjalizacji pluginu - od³¹czenie sie od wszystkich zewnêtrznych zasobów
 	virtual void setLoadDescription(
 		initializeFunc init,
+		initializeFunc lateInit,
 		deinitializeFunc deinit) override;
 
 	//! \return Czy uda³o siê zainicjalizowaæ plugin
 	bool initialize();
+	//! \return Czy uda³o siê zainicjalizowaæ plugin
+	bool lateInitialize();
 	//! Deinicjalizacja pluginu
 	void deinitialize();
 

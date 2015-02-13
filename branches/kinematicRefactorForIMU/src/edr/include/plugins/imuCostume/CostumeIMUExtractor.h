@@ -40,6 +40,17 @@ namespace IMU
 	//! Klasa realizuj¹ca konwersjê ze strumienia danych czujników do kompletnych danych IMU
 	class IMU_EXPORT CostumeIMUExtractor
 	{
+	private:
+
+		struct ImuSensorData
+		{
+			osg::Vec3d acc;
+			osg::Vec3d gyro;
+			osg::Vec3d mag;
+			osg::Quat orient;
+			int status;
+		};
+
 	public:
 		//! \param Other Obiekt przejmowany
 		CostumeIMUExtractor(CostumeIMUExtractor && Other);
@@ -60,6 +71,8 @@ namespace IMU
 	private:
 		//! Obiekt realizuj¹cy weryfikacjê
 		CostumeCompleteDataFilter completeDataFilter;
+		//aktualne dane do wysy³k dalej w przetwarzanie
+		mutable std::map<imuCostume::Costume::SensorID, ImuSensorData> currentData;
 	};
 
 	//! Klasa procesora strumienia estymuj¹ca orientacje czujników na bazie pomiarów

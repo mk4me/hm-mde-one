@@ -75,7 +75,7 @@
 //! \param versionMinor Nr dodatkowy wersji pluginu
 //! \param versionPatch Nr wersji patcha wersji pluginu
 #define CORE_EXT_PLUGIN_BEGIN(name, id, langCode, \
-	init, deinit, \
+	init, lateInit, deinit, \
 	vendorName, vendorShortName, vendorDescription, vendorContact, \
 	versionMajor, versionMinor, versionPatch) \
 PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR                                 \
@@ -109,7 +109,7 @@ extern "C" UTILS_DECL_EXPORT void CORE_INITIALIZE_PLUGIN_CONTEXT_FUNCTION_NAME(c
 	core::IApplication* coreApplication)								\
 {                                                                       \
 	plugin::__coreApplication = coreApplication;						\
-	plugin->setLoadDescription(init, deinit);						\
+	plugin->setLoadDescription(init, lateInit, deinit);						\
 }																		\
 extern "C" UTILS_DECL_EXPORT void CORE_PLUGIN_LOAD_LOGIC_CONTENT_FUNCTION_NAME(core::IPlugin * plugin) \
 {
@@ -118,7 +118,7 @@ extern "C" UTILS_DECL_EXPORT void CORE_PLUGIN_LOAD_LOGIC_CONTENT_FUNCTION_NAME(c
 //! \param name Nazwa pluginu
 //! \param id ID pluginu
 #define CORE_PLUGIN_BEGIN(name, id)	CORE_EXT_PLUGIN_BEGIN(name, id, "en", \
-	nullptr, nullptr, \
+	nullptr, nullptr, nullptr, \
 	"Polsko-Japońska Wyższa Szkoła Technik Komputerowych, Oddział zamiejscowy w Bytomiu", "PJWSTK Bytom", "Uczelnia prywatna", "marek.kulbacki@gmail.com", \
 	1, 0, 0)
 
@@ -175,8 +175,9 @@ namespace core {
 class IPlugin : public plugin::IIdentifiable, public plugin::IPluginDescription
 {
 public:
-
+	//! Typ funkcji inicjującej plugin
 	typedef bool(*initializeFunc)();
+	//! Typ funkcji deinicjującej plugin
 	typedef void(*deinitializeFunc)();
 
 public:
@@ -197,9 +198,11 @@ public:
 		const core::Version::VersionNumberType patch) = 0;
 
 	//! \param init Funkcja wołana przy inicjalizacji pluginu
+	//! \param lateInit Funkcja wołana przy późnej inicjalizacji pluginu
 	//! \param deinit Funkcja wołana przy deinicjalizacji pluginu - odłączenie sie od wszystkich zewnętrznych zasobów
 	virtual void setLoadDescription(
 		initializeFunc init,
+		initializeFunc lateInit,
 		deinitializeFunc deinit) = 0;
 
 	//! \param name Nazwa dostawcy

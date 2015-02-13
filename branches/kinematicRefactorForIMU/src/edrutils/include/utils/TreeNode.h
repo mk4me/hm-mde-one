@@ -41,22 +41,22 @@ namespace utils
 
 	//! \tparam NPtr Typ wska�nika w�z�a
 	template<typename NPtr>
-	class MaxLevelVisitor
+	class FindMaxLevelVisitor
 	{
 	public:
 		//! Konstruktor domyslny
-		MaxLevelVisitor() : level(0) {}
+		FindMaxLevelVisitor() : maxLevel(0) {}
 		//! Destruktor
-		~MaxLevelVisitor() {}
+		~FindMaxLevelVisitor() {}
 		//! \param node Odwiedzany w�ze�
 		//! \param level Aktualnie odwiedzany poziom (wzgledem w�z�a z kt�rego startowali�my)
 		void operator()(NPtr node, const unsigned int level)
 		{
-			this->level = std::max(this->level, level);
+			maxLevel = std::max(maxLevel, level);
 		}
 
 		//! Maksymalny poziom
-		unsigned int level;
+		unsigned int maxLevel;
 	};
 
 	//! \tparam ValueType Typ rpzechowywanej warto�ci
@@ -79,6 +79,13 @@ namespace utils
 
 	private:
 
+		//! \param other Węzeł przenoszony wraz z wartością
+		TreeNode(TreeNode && other)
+			: parent(std::move(other.parent)),
+			children(std::move(other.children)),
+			value(std::move(other.value))
+		{}
+
 		//! \param value Warto�c przechowywana w w�le (kopiowanie)
 		TreeNode(const value_type & value) : value(value) {}
 		//! \param value Warto�c przechowywana w w�le (move semantics)
@@ -100,6 +107,22 @@ namespace utils
 		}		
 
 	public:
+
+		//! \param node Węzeł od którego zaczynamy kopiowanie - automatycznie staje się rootem!!
+		//! \return Klon danego węzła będący rootem nowego drzewa
+		static NodePtr clone(NodeConstPtr node)
+		{
+			NodePtr ret(create(node->value));
+
+			for (const auto & cn : node->children)
+			{
+				auto c(clone(cn));
+				c->parent = ret;
+				ret->children.push_back(c);
+			}
+
+			return ret;
+		}
 		
 		//! \param value Warto�� z jak� tworzymy w�ze�
 		//! \return Nowy w�ze� z zadan� warto�ci�
@@ -585,9 +608,9 @@ namespace utils
 			if (isLeaf() == false){				
 				for (const auto & child : children)
 				{
-					MaxLevelVisitor<NodeConstPtr> mlVisitor;
+					FindMaxLevelVisitor<NodeConstPtr> mlVisitor;
 					visitLevelOrder(child, mlVisitor);
-					l = std::max(l, mlVisitor.level);
+					l = std::max(l, mlVisitor.maxLevel);
 				}
 
 				++l;

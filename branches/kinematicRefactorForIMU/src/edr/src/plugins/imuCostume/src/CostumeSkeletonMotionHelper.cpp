@@ -6,6 +6,20 @@
 #include <corelib/ILog.h>
 #include <corelib/IPlugin.h>
 
+static double calculateDelta(const imuCostume::CostumeCANopenIO::Timestamp current,
+	const imuCostume::CostumeCANopenIO::Timestamp previous)
+{
+	auto deltaT = (current >= previous) ? (current - previous) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previous + current);
+	deltaT /= 1000.0;
+
+	if (deltaT >= 1000)
+	{
+		PLUGIN_LOG_DEBUG("Probably wrong delta calculation -> current: " << current << " previous: " << previous);
+	}
+
+	return deltaT;
+}
+
 void CostumeSkeletonMotionHelper::estimate(std::map<imuCostume::Costume::SensorID, AlgoProgress> & algos,
 	const IMU::SensorsData & sensorsData, const uint32_t currentTime)
 {
@@ -13,8 +27,7 @@ void CostumeSkeletonMotionHelper::estimate(std::map<imuCostume::Costume::SensorI
 	{
 		auto it = sensorsData.find(m.first);
 		if (it != sensorsData.end()){
-			double deltaTime = (currentTime > m.second.lastTime) ? (currentTime - m.second.lastTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - m.second.lastTime + currentTime);
-			deltaTime /= 1000.0;
+			double deltaTime = calculateDelta(currentTime, m.second.lastTime);			
 
 			if (m.second.counter == 0 && m.second.lastTime == 0){
 				deltaTime = 0.0;
@@ -22,13 +35,13 @@ void CostumeSkeletonMotionHelper::estimate(std::map<imuCostume::Costume::SensorI
 
 			m.second.lastTime = currentTime;
 			++(m.second.counter);
-			m.second.algo->estimate(it->second.accelerometer, it->second.gyroscope, it->second.magnetometer, deltaTime);
+			m.second.algo->estimate(it->second.accelerometer, it->second.gyroscope, it->second.magnetometer, deltaTime, it->second.orientation);
 		}
 	}
 }
 
 CostumeSkeletonMotionHelper::CostumeSkeletonMotionHelper(SensorsStreamPtr sensorsStream,
-	IMU::IIMUDataSource::CostumeProfileInstance * costumeProfile,
+	IMU::CostumeProfileInstance * costumeProfile,
 	const unsigned int maxSamples,
 	const unsigned int calibratinStageChangeValue, QWidget * parent)
 	: sensorsStream(sensorsStream), costumeProfile(costumeProfile),
@@ -96,8 +109,7 @@ void CostumeSkeletonMotionHelper::perform()
 		//PLUGIN_LOG_DEBUG("New data processing");
 		IMU::SensorsStreamData data;
 		sensorsStream->data(data);
-		double deltaTime = (data.timestamp > previousTime) ? (data.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + data.timestamp);
-		deltaTime /= 1000.0;
+		double deltaTime = calculateDelta(data.timestamp, previousTime);		
 		if (first == true){
 			first = false;
 			deltaTime = 0.0;

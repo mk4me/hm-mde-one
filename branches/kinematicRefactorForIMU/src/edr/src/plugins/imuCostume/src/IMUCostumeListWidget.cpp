@@ -7,7 +7,6 @@
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QFileDialog>
 #include <corelib/Filesystem.h>
-#include "IMUCostumeCalibrationWizard.h"
 #include "corelib/IVisualizerManager.h"
 #include "corelib/PluginCommon.h"
 #include "utils/ObjectWrapper.h"
@@ -38,6 +37,8 @@
 #include "RecordingWizard.h"
 #include <fstream>
 #include "CostumeParser.h"
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/lexical_cast.hpp>
 
 Q_DECLARE_METATYPE(imuCostume::CostumeRawIO::CostumeAddress);
 
@@ -185,7 +186,7 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 
 			if (cl == false){
 				connect(load, SIGNAL(triggered()), this, SLOT(onLoad()));
-				connect(setSamplingRateAll, SIGNAL(triggered()), this, SLOT(onSetSamplingRate()));
+				connect(setSamplingRate, SIGNAL(triggered()), this, SLOT(onSetSamplingRate()));
 				connect(rsConfig, SIGNAL(triggered()), this, SLOT(onRefreshSensorsConfiguration()));
 				connect(resetStatus, SIGNAL(triggered()), this, SLOT(onResetCostumeConnectionStatus()));
 				unload->setEnabled(false);
@@ -289,24 +290,154 @@ void IMUCostumeWidget::onLoad()
 	imuCostume::Costume::SensorIDsSet sIDs;
 
 	auto it = sc.find(imuCostume::Costume::IMU);
-	if (it != sc.end()){
-		IMUCostumeProfileEditionWizard ew(it->second, tr("New profile"), this);
+	if (it != sc.end()){		
 
-		auto res = ew.exec();
+		IMU::CostumeProfile profile;
 
-		if (res != QDialog::Accepted){
-			return;
+		auto profiles = ds->costumesProfiles();
+
+		if (profiles.empty() == false){
+			QStringList plist;
+
+			for (const auto & p : profiles)
+			{
+				plist.push_back(QString::fromStdString(p.second.name));
+			}
+
+			bool ok = false;
+			auto profileName = QInputDialog::getItem(this, tr("Choose predefined profile"), tr("Profile"), plist, 0, false, &ok);
+
+			if (ok == false){
+
+				IMUCostumeProfileEditionWizard ew(it->second, tr("New profile"), this);
+
+				auto res = ew.exec();
+
+				if (res != QDialog::Accepted){
+					return;
+				}
+
+				profile = ew.costumeProfile();
+
+				res = QMessageBox::question(this, tr("Save new profile"), tr("Would You like to save new profile?"));
+
+				if (res == QMessageBox::Yes){
+					bool ok = true;
+					QString pName;
+					while (ok == true){
+						pName = QInputDialog::getText(this, tr("Profile name"), tr("Input new profile name"), QLineEdit::Normal, "", &ok);
+						if (ok == false){
+							
+						}else if(plist.contains(pName) == true){
+							QMessageBox::information(this, tr("Profile name"), tr("Profile name must be unique and non empty - please try again"));
+						}
+						else{
+							ok = false;
+						}
+					}
+
+					if (pName.isEmpty() == false){
+						profile.name = pName.toStdString();
+						ds->registerCostumeProfile(profile);
+						QMessageBox::information(this, tr("Profile registered"), tr("Profile registration complete"));
+					}
+				}
+			}
+			else{
+
+				auto it = profiles.find(profileName.toStdString());
+
+				profile = it->second;
+
+				auto ret = QMessageBox::question(this, tr("Profile edition?"), tr("Would You like to edit selected profile or use it directly?"), tr("Edit"), tr("Use"));
+
+				if (ret == 0){
+					IMUCostumeProfileEditionWizard ew(profile, this);
+
+					auto res = ew.exec();
+
+					if (res == QDialog::Accepted){
+						auto p = ew.costumeProfile();
+						//TODO
+						if (false){
+
+							res = QMessageBox::question(this, tr("Save new profile"), tr("Would You like to save new profile?"));
+
+							if (res == QMessageBox::Yes){
+								bool ok = true;
+								QString pName;
+								while (ok == true){
+									pName = QInputDialog::getText(this, tr("Profile name"), tr("Input new profile name"), QLineEdit::Normal, "", &ok);
+									if (ok == false){
+
+									}
+									else if (plist.contains(pName) == true){
+										QMessageBox::information(this, tr("Profile name"), tr("Profile name must be unique and non empty - please try again"));
+									}
+									else{
+										ok = false;
+									}
+								}
+
+								if (pName.isEmpty() == false){
+									profile.name = pName.toStdString();
+									ds->registerCostumeProfile(profile);
+									QMessageBox::information(this, tr("Profile registered"), tr("Profile registration complete"));
+								}
+							}
+						}
+
+						profile = p;					
+					}					
+				}
+			}
+		}
+		else{
+			IMUCostumeProfileEditionWizard ew(it->second, tr("New profile"), this);
+
+			auto res = ew.exec();
+
+			if (res != QDialog::Accepted){
+				return;
+			}
+
+			profile = ew.costumeProfile();
+
+			res = QMessageBox::question(this, tr("Save new profile"), tr("Would You like to save new profile?"));
+
+			if (res == QMessageBox::Yes){
+				bool ok = true;
+				QString pName;
+				while (ok == true){
+					pName = QInputDialog::getText(this, tr("Profile name"), tr("Input new profile name"));
+					if (pName.isEmpty() == true){
+						ok = (QMessageBox::question(this, tr("Retry to save profile"), tr("An empty profile name was given - would you like to retry to save profile with proper name?")) == QMessageBox::Yes);
+					}
+					else if (profiles.find(pName.toStdString()) != profiles.end()){
+						QMessageBox::information(this, tr("Profile name"), tr("Profile name must be unique and non empty - please try again"));
+					}
+					else{
+						ok = false;
+					}
+				}
+
+				if (pName.isEmpty() == false){
+					profile.name = pName.toStdString();
+					ds->registerCostumeProfile(profile);
+					QMessageBox::information(this, tr("Profile registered"), tr("Profile registration complete"));
+				}
+			}
 		}
 
 		PLUGIN_LOG_DEBUG("Profile creation done");
 
-		auto profileInstance = IMU::IIMUDataSource::CostumeProfileInstance::create(ew.costumeProfile());
+		auto profileInstance = IMU::CostumeProfileInstance::create(profile);
 
 		PLUGIN_LOG_DEBUG("Profile instantiation done");
 
 		auto cw = IMU::IMUCostumeProfileConfigurationWizard::create(profileInstance);
 		if (cw != nullptr){
-			res = cw->exec();
+			auto res = cw->exec();
 			if (res != QDialog::Accepted){
 				return;
 			}
@@ -345,7 +476,7 @@ void IMUCostumeWidget::onLoad()
 			&profileInstance, initializeFramesCount + profileInstance.calibrationAlgorithm->maxCalibrationSteps(),
 			initializeFramesCount, this);
 
-		res = csmh.exec();
+		auto res = csmh.exec();
 
 		if (res == QDialog::Rejected){
 			return;

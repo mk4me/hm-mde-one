@@ -32,14 +32,14 @@ public:
 	IMUCostumeProfileEditionWizard(const imuCostume::Costume::SensorIDsSet & sensorsIDs,
 		const QString & profileName = tr("Unnamed profile"), QWidget * parent = nullptr);
 
-	IMUCostumeProfileEditionWizard(const IMU::IIMUDataSource::CostumeProfile & costumeProfile,
+	IMUCostumeProfileEditionWizard(const IMU::CostumeProfile & costumeProfile,
 		QWidget * parent = nullptr);
 
 	virtual ~IMUCostumeProfileEditionWizard();
 
 	virtual bool eventFilter(QObject * watched, QEvent * event) override;
 
-	IMU::IIMUDataSource::CostumeProfile costumeProfile() const;
+	IMU::CostumeProfile costumeProfile() const;
 
 private:
 
@@ -65,7 +65,7 @@ private:
 
 	std::map<unsigned int, std::list<kinematic::SkeletonConstPtr>> skeletons;
 
-	IMU::IIMUDataSource::CostumeProfile baseCostumeProfile_;	
+	IMU::CostumeProfile baseCostumeProfile_;	
 };
 
 #endif	// __HEADER_GUARD_IMU__IMUCOSTUMECONFIGURATIONWIZARD_H__

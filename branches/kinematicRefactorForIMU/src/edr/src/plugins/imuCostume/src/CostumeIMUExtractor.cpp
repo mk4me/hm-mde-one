@@ -2,6 +2,20 @@
 #include <plugins/imuCostume/CostumeIMUExtractor.h>
 #include <corelib/IPlugin.h>
 
+static double calculateDelta(const imuCostume::CostumeCANopenIO::Timestamp current,
+	const imuCostume::CostumeCANopenIO::Timestamp previous)
+{
+	auto deltaT = (current >= previous) ? (current - previous) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previous + current);
+	deltaT /= 1000.0;
+
+	if (deltaT >= 1000)
+	{
+		PLUGIN_LOG_DEBUG("Probably wrong delta calculation -> current: " << current << " previous: " << previous);
+	}
+
+	return deltaT;
+}
+
 using namespace IMU;
 
 CostumeCompleteDataFilter::CostumeCompleteDataFilter(CostumeCompleteDataFilter && Other)
@@ -48,7 +62,7 @@ bool CostumeCompleteDataFilter::operator()(const IMU::CostumeStream::value_type 
 	{
 		if (d->type() == imuCostume::Costume::IMU){
 			auto imuData = utils::static_pointer_cast<const imuCostume::Costume::IMUSensor>(d);
-			if (imuData->dataStatus() & (imuCostume::Costume::IMUSensor::ACC_DATA | imuCostume::Costume::IMUSensor::GYRO_DATA | imuCostume::Costume::IMUSensor::MAG_DATA))
+			if (imuData->dataStatus() == 0x0F)
 			{
 				locSensorsIDs.erase(d->id());
 			}
@@ -59,13 +73,15 @@ bool CostumeCompleteDataFilter::operator()(const IMU::CostumeStream::value_type 
 }
 
 CostumeIMUExtractor::CostumeIMUExtractor(CostumeIMUExtractor && Other)
-	: completeDataFilter(std::move(Other.completeDataFilter))
+	: completeDataFilter(std::move(Other.completeDataFilter)),
+	currentData(std::move(Other.currentData))
 {
 
 }
 
 CostumeIMUExtractor::CostumeIMUExtractor(const CostumeIMUExtractor & Other)
-	: completeDataFilter(Other.completeDataFilter)
+	: completeDataFilter(Other.completeDataFilter),
+	currentData(Other.currentData)
 {
 
 }
@@ -73,13 +89,27 @@ CostumeIMUExtractor::CostumeIMUExtractor(const CostumeIMUExtractor & Other)
 CostumeIMUExtractor::CostumeIMUExtractor(const imuCostume::Costume::SensorIDsSet & sensorsIDs)
 	: completeDataFilter(sensorsIDs)
 {
-
+	for (const auto & id : sensorsIDs)
+	{
+		ImuSensorData isd;
+		isd.status = 0;
+		currentData.insert(std::map<imuCostume::Costume::SensorID, ImuSensorData>::value_type(id, isd));
+	}
 }
 
 CostumeIMUExtractor::CostumeIMUExtractor(const imuCostume::Costume::SensorsConfiguration & sensorsConfiguration)
 	: completeDataFilter(sensorsConfiguration)
 {
-	
+	auto it = sensorsConfiguration.find(imuCostume::Costume::IMU);
+
+	if (it != sensorsConfiguration.end()){
+		for (const auto & id : it->second)
+		{
+			ImuSensorData isd;
+			isd.status = 0;
+			currentData.insert(std::map<imuCostume::Costume::SensorID, ImuSensorData>::value_type(id, isd));
+		}
+	}
 }
 
 CostumeIMUExtractor::~CostumeIMUExtractor()
@@ -89,8 +119,43 @@ CostumeIMUExtractor::~CostumeIMUExtractor()
 
 bool CostumeIMUExtractor::verify(const IMU::CostumeStream::value_type & streamData) const
 {
-	//return completeDataFilter(streamData);
-	return true;
+	bool ret = false;
+	
+	for (auto const & sd : streamData.sensorsData)
+	{
+		auto it = currentData.find(sd->id());
+
+		if (it != currentData.end()){
+
+			auto imuData = utils::static_pointer_cast<const imuCostume::Costume::IMUSensor>(sd);
+
+			const auto status = imuData->dataStatus();
+
+			if (status | imuCostume::Costume::IMUSensor::ACC_DATA){
+				it->second.acc = imuData->accelerometer();
+			}
+
+			if (status | imuCostume::Costume::IMUSensor::GYRO_DATA){
+				it->second.gyro = imuData->gyroscope();
+			}
+
+			if (status | imuCostume::Costume::IMUSensor::MAG_DATA){
+				it->second.mag = imuData->magnetometer();
+			}
+
+			if (status | imuCostume::Costume::IMUSensor::ORIENT_DATA){
+				it->second.orient = imuData->orientation();
+			}
+
+			it->second.status |= status;
+
+			if (it->second.status == 0x0F){
+				ret = true;
+			}
+		}
+	}
+
+	return ret;
 }
 
 void CostumeIMUExtractor::extract(const IMU::CostumeStream::value_type & streamData, IMU::SensorsStreamData & sensorsData) const
@@ -99,15 +164,21 @@ void CostumeIMUExtractor::extract(const IMU::CostumeStream::value_type & streamD
 	//PLUGIN_LOG_DEBUG("CostumeIMUExtractor");
 	for (const auto & d : streamData.sensorsData)
 	{
-		auto imuData = utils::static_pointer_cast<const imuCostume::Costume::IMUSensor>(d);		
+		auto it = currentData.find(d->id());
 
-		IMU::SensorData sd;
-		sd.accelerometer = imuData->accelerometer();
-		sd.magnetometer = imuData->magnetometer();
-		sd.gyroscope = imuData->gyroscope();
-		sd.orientation = imuData->orientation();
+		if (it != currentData.end()){
 
-		locData.insert(IMU::SensorsData::value_type(d->id(), sd));
+			if (it->second.status == 0x0F){
+
+				IMU::SensorData sd;
+				sd.accelerometer = it->second.acc;
+				sd.magnetometer = it->second.mag;
+				sd.gyroscope = it->second.gyro;
+				sd.orientation = it->second.orient;
+
+				locData.insert(IMU::SensorsData::value_type(d->id(), sd));
+			}
+		}
 	}		
 	
 	sensorsData.timestamp = streamData.timestamp;
@@ -135,13 +206,12 @@ void OrientationEstimator::operator()(IMU::SensorsStreamData & data) const
 			if (tIT == lastUpdateTime.end()){
 				lastUpdateTime.insert(std::map<imuCostume::Costume::SensorID, uint32_t>::value_type(d.first, data.timestamp));
 			}
-			else{
-				deltaT = (data.timestamp > tIT->second) ? (data.timestamp - tIT->second) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - tIT->second + data.timestamp);
-				deltaT /= 1000.0;
+			else{				
+				deltaT = calculateDelta(data.timestamp, tIT->second);				
 				tIT->second = data.timestamp;
 			}
 
-			d.second.orientation = oIT->second->estimate(d.second.accelerometer, d.second.gyroscope, d.second.magnetometer, deltaT);
+			d.second.orientation = oIT->second->estimate(d.second.accelerometer, d.second.gyroscope, d.second.magnetometer, deltaT, d.second.orientation);
 		}
 	}
 }
@@ -243,8 +313,7 @@ bool ExtractCostumeMotion::verify(const IMU::SensorsStreamData & input) const
 
 void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::SkeletonMotionState & output) const
 {
-	double deltaTime = (input.timestamp > previousTime) ? (input.timestamp - previousTime) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previousTime + input.timestamp);
-	deltaTime /= 1000.0;
+	double deltaTime = calculateDelta(input.timestamp, previousTime);	
 
 	if (previousTime == 0)
 	{
@@ -266,8 +335,8 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Sk
 
 	kinematic::SkeletonState ss(kinematic::SkeletonState::create(*skeleton));
 
-	kinematic::SkeletonState::JointConstPtr root = ss.root();
-	auto visitor = [&motionState, &jointsGlobalOrientations](kinematic::SkeletonState::JointConstPtr joint,
+	kinematic::SkeletonState::JointPtr root = ss.root();
+	auto visitor = [&motionState, &jointsGlobalOrientations](kinematic::SkeletonState::JointPtr joint,
 			const kinematic::SkeletonState::Joint::size_type) -> void
 		{
 			auto it = jointsGlobalOrientations.find(joint->value.name());

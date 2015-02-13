@@ -44,10 +44,12 @@ namespace IMU
 		//! \param gyroscope gyroscope vector from IMU
 		//! \param magnetometer magnetometer vector from IMU
 		//! \param inDeltaT time between acquisitions in seconds [s] from IMU sensor
+		//! \param refOrient Orientacja referencyjna, wyliczna np. na samym czujniku,
+		//! nie zawsze musi byæ poprawna i nie zawsze musi byæ dostêpna (brak = kwaternion jednostkowy dla zerowego obrotu)
 		//! \return Returns estimated orientation.		
 		virtual osg::Quat estimate(const osg::Vec3d& accelerometer,
 			const osg::Vec3d& gyroscope, const osg::Vec3d& magnetometer,
-			const double inDeltaT) = 0;
+			const double inDeltaT, const osg::Quat & refOrient = osg::Quat(0,0,0,1)) = 0;
 
 		//! \return Widget konfiguracyjny
 		virtual QWidget* configurationWidget() { return nullptr; }

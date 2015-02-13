@@ -73,9 +73,11 @@ void Plugin::setVersion(const core::Version::VersionNumberType major,
 
 void Plugin::setLoadDescription(
 	initializeFunc init,
+	initializeFunc lateInit,
 	deinitializeFunc deinit)
 {
 	initFunc = init;
+	lateInitFunc = lateInit;
 	deinitFunc = deinit;
 }
 
@@ -86,6 +88,22 @@ bool Plugin::initialize()
 	if (initFunc != nullptr){
 		try{
 			ret = initFunc();
+		}
+		catch (...){
+			ret = false;
+		}
+	}
+
+	return ret;
+}
+
+bool Plugin::lateInitialize()
+{
+	bool ret = true;
+
+	if (lateInitFunc != nullptr){
+		try{
+			ret = lateInitFunc();
 		}
 		catch (...){
 			ret = false;

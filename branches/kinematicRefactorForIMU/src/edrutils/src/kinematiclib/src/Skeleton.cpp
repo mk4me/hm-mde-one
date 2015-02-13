@@ -7,6 +7,29 @@
 
 using namespace kinematic;
 
+
+Skeleton::Skeleton()
+{
+
+}
+
+Skeleton::Skeleton(const Skeleton & other)
+	: name(other.name), root(Joint::clone(other.root))
+{
+
+}
+
+Skeleton::Skeleton(Skeleton && other)
+	: name(std::move(other.name)), root(std::move(other.root))
+{
+
+}
+
+Skeleton::~Skeleton()
+{
+
+}
+
 void createJoint(JointPtr parentJoint, const acclaim::Skeleton & skeleton,
 	const int currentBoneID, const hAnim::Humanoid::Hierarchy & hAnimHierarchy,
 	std::set<std::string> & names)

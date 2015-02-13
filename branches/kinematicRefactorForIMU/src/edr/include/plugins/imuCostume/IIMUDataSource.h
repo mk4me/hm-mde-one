@@ -9,11 +9,13 @@
 #define __HEADER_GUARD_IMU__IIMUDATASOURCE_H__
 
 #include <atomic>
+#include <corelib/IIdentifiable.h>
 #include <corelib/Variant.h>
 #include <plugins/imuCostume/Streams.h>
 #include <plugins/imuCostume/IIMUOrientationEstimationAlgorithm.h>
 #include <plugins/imuCostume/IMUCostumeMotionEstimationAlgorithm.h>
 #include <kinematiclib/SkeletonState.h>
+#include <plugins/imuCostume/CostumeProfile.h>
 
 namespace IMU
 {
@@ -87,66 +89,6 @@ namespace IMU
 
 		//! Mapa identyfikatorów sensorów do algorytmów estymujacych ich otientacjê
 		typedef std::map<imuCostume::Costume::SensorID, IIMUOrientationEstimationAlgorithmPtr> OrientationEstimationAlgorithmsMapping;
-
-		struct CostumeProfile;
-
-		//! Profil kostiumu
-		struct CostumeProfileInstance
-		{
-			//! \param profil Profil z którego tworzymy instancjê
-			//! \return instancja profilu
-			static CostumeProfileInstance create(const CostumeProfile & profile)
-			{
-				CostumeProfileInstance ret;
-
-				ret.name = profile.name;
-				ret.calibrationAlgorithm.reset(profile.calibrationAlgorithm->create());
-				ret.motionEstimationAlgorithm.reset(profile.motionEstimationAlgorithm->create());
-				ret.sensorsAdjustments = profile.sensorsAdjustments;
-				ret.sensorsMapping = profile.sensorsMapping;
-				ret.skeleton = profile.skeleton;
-				for (const auto & ea : profile.sensorsOrientationEstimationAlgorithms)
-				{
-					ret.sensorsOrientationEstimationAlgorithms.insert(OrientationEstimationAlgorithmsMapping::value_type(ea.first, IIMUOrientationEstimationAlgorithmPtr(ea.second->create())));
-				}
-
-				return ret;
-			}
-
-			//! Nazwa profilu
-			std::string name;
-			//! Szkielet
-			kinematic::SkeletonConstPtr skeleton;
-			//! Mapowanie sensorów
-			SensorsMapping sensorsMapping;
-			//! Algorytm kalibracji
-			IMUCostumeCalibrationAlgorithmPtr calibrationAlgorithm;
-			//! Poprawki sensorów
-			IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts sensorsAdjustments;
-			//! Algorytmy estymacji orientacji sensorów			
-			OrientationEstimationAlgorithmsMapping sensorsOrientationEstimationAlgorithms;
-			//! Algorytm poprawki estymacji ruchu (bierze pod uwage np. hierarchiê, ograniczneia stawów, ...)
-			IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm;
-		};
-
-		//! Profil kostiumu
-		struct CostumeProfile
-		{
-			//! Nazwa profilu
-			std::string name;
-			//! Szkielet
-			kinematic::SkeletonConstPtr skeleton;
-			//! Mapowanie sensorów
-			SensorsMapping sensorsMapping;
-			//! Algorytm kalibracji
-			IMUCostumeCalibrationAlgorithmConstPtr calibrationAlgorithm;
-			//! Poprawki sensorów
-			IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts sensorsAdjustments;
-			//! Algorytmy estymacji orientacji sensorów			
-			OrientationEstimationPrototypeAlgorithmsMapping sensorsOrientationEstimationAlgorithms;
-			//! Algorytm poprawki estymacji ruchu (bierze pod uwage np. hierarchiê, ograniczneia stawów, ...)
-			IMUCostumeMotionEstimationAlgorithmConstPtr motionEstimationAlgorithm;
-		};
 		
 		//! Mapa algorytmów estymacji orientacji czujników
 		typedef std::map<core::UniqueID, IIMUOrientationEstimationAlgorithmConstPtr> OrientationEstimationAlgorithms;
@@ -155,7 +97,7 @@ namespace IMU
 		//! Mapa algorytmów estymuj¹cych ruchu
 		typedef std::map<core::UniqueID, IMUCostumeMotionEstimationAlgorithmConstPtr> CostumeMotionEstimationAlgorithms;
 		//! Lista modeli (szkieletów, hierarchii)
-		typedef std::list<kinematic::SkeletonConstPtr> SkeletonModels;
+		typedef std::map<core::UniqueID, SkeletonConstPtr> SkeletonModels;
 		//! Mapa profili kostiumów
 		typedef std::map<std::string, CostumeProfile> CostumesProfiles;
 
@@ -224,7 +166,7 @@ namespace IMU
 		//! \param algorithm Prototyp algorytmu poprawy estymacji ruchu kostiumu dla ca³ego szkieletu
 		virtual void registerMotionEstimationAlgorithm(const IMUCostumeMotionEstimationAlgorithm * algorithm) = 0;
 		//! \param skeleton Model szkieletu który mo¿na estymowaæ
-		virtual void registerSkeletonModel(kinematic::SkeletonConstPtr skeleton) = 0;
+		virtual void registerSkeletonModel(SkeletonConstPtr skeleton) = 0;
 		//! \param profile Profil kostiumu
 		virtual void registerCostumeProfile(const CostumeProfile & profile) = 0;
 

@@ -8,7 +8,7 @@
 #ifndef __HEADER_GUARD_IMU__IMUCOSTUMEPROFILECONFIGURATIONWIZARD_H__
 #define __HEADER_GUARD_IMU__IMUCOSTUMEPROFILECONFIGURATIONWIZARD_H__
 
-#include <plugins/imuCostume/IIMUDataSource.h>
+#include <plugins/imuCostume/CostumeProfile.h>
 
 class QWizard;
 class QWidget;
@@ -19,7 +19,7 @@ namespace IMU
 	{
 	public:
 
-		static QWizard * create(const IIMUDataSource::CostumeProfileInstance & profile,
+		static QWizard * create(const CostumeProfileInstance & profile,
 			QWidget * parent = nullptr);
 	};
 }

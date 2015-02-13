@@ -139,7 +139,7 @@ namespace IMU
 		virtual void registerOrientationEstimationAlgorithm(const IIMUOrientationEstimationAlgorithm * algorithm) override;
 		virtual void registerCostumeCalibrationAlgorithm(const IMUCostumeCalibrationAlgorithm * algorithm) override;
 		virtual void registerMotionEstimationAlgorithm(const IMUCostumeMotionEstimationAlgorithm * algorithm) override;
-		virtual void registerSkeletonModel(kinematic::SkeletonConstPtr skeleton) override;
+		virtual void registerSkeletonModel(SkeletonConstPtr skeleton) override;
 		virtual void registerCostumeProfile(const CostumeProfile & profile) override;
 		
 		virtual OrientationEstimationAlgorithms orientationEstimationAlgorithms() const override;

@@ -14,6 +14,17 @@ namespace kinematic
 	//! tzw. end effector
 	struct Skeleton
 	{
+		//! Konstruktor domyślny
+		Skeleton();
+		//! Konstruktor kopiujący
+		//! \param other Kopiowany szkielet - klonujemy węzły
+		Skeleton(const Skeleton & other);
+		//! Konstruktor przenoszący
+		//! \param other przenoszony szkielet
+		Skeleton(Skeleton && other);
+		//! Destruktor wirtualny
+		virtual ~Skeleton();
+
 		//! Staw rodzic reprezentujący cały model
 		JointPtr root;
 		//! Nazwa modelu

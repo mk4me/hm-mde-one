@@ -102,7 +102,7 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 				kinematic::SkeletonConstPtr sm = sml.front()->get();
 
 				//kinematic::JointAnglesCollectionPtr ja = utils::make_shared<kinematic::JointAnglesCollection>();
-				//TODO - uzypeï¿½niï¿½ szkielet + dane
+				//TODO - uzype³niæ szkielet + dane
 				//ja->setSkeletal(sm, *sd);
 				//auto jaWrapper = utils::ObjectWrapper::create<kinematic::JointAnglesCollection>();
 				//ja->setLengthRatio(0.1);
@@ -298,7 +298,8 @@ core::IHierarchyItemPtr IMU::IMUPerspective::createChannelItem(VectorChannelColl
 	return channelItem;
 }
 
-/*void IMU::IMUPerspective::generateAnglesChannelBranch(kinematic::JointAnglesCollectionPtr ja, core::IHierarchyItemPtr skeletonItem)
+/*
+void IMU::IMUPerspective::generateAnglesChannelBranch(kinematic::JointAnglesCollectionPtr ja, core::IHierarchyItemPtr skeletonItem)
 {
 	VectorChannelCollectionPtr angles = utils::make_shared<VectorChannelCollection>();
 	int count = ja->getNumChannels();
