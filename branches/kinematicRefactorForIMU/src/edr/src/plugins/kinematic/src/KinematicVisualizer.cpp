@@ -237,13 +237,18 @@ QWidget* KinematicVisualizer::createWidget()
 	scaleAction = new CoreAction(tr("Manipulators"), QIcon(":/kinematic/icons/manipulator-scale.png"), tr("Scale"), widget, CoreTitleBar::Left);    
     connect(scaleAction, SIGNAL(triggered()), this, SLOT(draggerTriggered()));
 	widget->addAction(scaleAction);
-		
-
-    CoreAction * resetTransformAction = new CoreAction(tr("Manipulators"), QIcon(":/kinematic/icons/left-b.png"), tr("Reset transform"), widget, CoreTitleBar::Left);    
+	
+	CoreAction * resetTransformAction = new CoreAction(tr("Manipulators"), QIcon(":/kinematic/icons/left-b.png"), tr("Reset transform"), widget, CoreTitleBar::Left);    
     connect(resetTransformAction, SIGNAL(triggered()), this, SLOT(resetTransform()));
 	widget->addAction(resetTransformAction);
 
 	
+
+	//! akcja wyświetla orientacje jointów
+	coreUI::CoreAction* showJointsOrientationsAction = new CoreAction(tr("Manipulators"), QIcon(":/kinematic/icons/manipulator-translate.png"), tr("Points orientations"), widget, CoreTitleBar::Left);
+	connect(showJointsOrientationsAction, SIGNAL(triggered()), this, SLOT(showJointsOrientations()));
+	widget->addAction(showJointsOrientationsAction);
+
     osg::Vec3 pos (0.0f, 9.0f, 3.0f);
     osg::Vec3 up(0,0,1);
 
@@ -916,6 +921,14 @@ void KinematicVisualizer::showGhost(bool val)
     if (serie) {
         serie->setGhostVisible(val);
     }
+}
+
+void KinematicVisualizer::showJointsOrientations()
+{
+	SkeletonSerie* serie = dynamic_cast<SkeletonSerie*>(tryGetCurrentSerie());
+	if (serie) {
+		serie->setJointsOrientationsVisible();
+	}
 }
 
 

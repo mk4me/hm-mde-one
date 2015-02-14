@@ -26,6 +26,9 @@ void kinematicTest::Viewer::start()
 	
 
 	const auto mapping = kinematic::SkeletonState::createMapping(skeleton);
+	for (auto& p : mapping.right) {
+		std::cout << p.first << std::string(", ") << p.second << std::endl;
+	}
 	auto joint2index = kinematic::SkeletonState::createJoint2IndexMapping(skeletonState, mapping);
 
 
@@ -63,6 +66,7 @@ void kinematicTest::Viewer::start()
 		viewer.frame();
 		frameIdx = frameIdx >= (framesCount - 1) ? 0 : ++frameIdx;
 		kinematic::SkeletonState::RigidPartialStateChange sChange = kinematic::SkeletonState::convert(acclaimSkeleton, acclaimData.frames[frameIdx], mapping);
+		
 		auto frame = kinematic::SkeletonState::convertStateChange(mapping, sChange);
 		
 		kinematic::SkeletonState::update(skeletonState, frame, mapping);

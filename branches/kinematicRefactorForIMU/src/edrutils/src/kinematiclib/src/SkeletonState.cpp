@@ -11,18 +11,45 @@ class SkeletonState::JointData::JointDataImpl
 {
 	friend class SkeletonState;
 
+private:
+
+	void refreshGlobal() const
+	{
+		if (globalRequiresRefresh == true){
+			auto mw = node->getWorldMatrices();
+			if (mw.empty() == true){
+				globalMatrix.makeScale(1, 1, 1);
+				globalMatrix.makeTranslate(localPosition());
+				globalMatrix.makeRotate(localOrientation());
+			}
+			else{
+				globalMatrix = mw[0];
+			}
+
+			globalRequiresRefresh = false;
+		}
+	}
+
+	void localUpdate(const osg::Vec3 & translation)
+	{
+		node->setPosition(translation + originTranslation);
+	}
+
+	void localUpdate(const osg::Quat & rotation)
+	{
+		node->setAttitude(originOrientation * rotation);
+	}
 public:
-	osg::Vec3 originTranslation;
-	osg::Quat originRotation;
-	std::string name;
-	osg::Matrix shiftMatrix;
-	osg::Matrix localMatrix;
-	osg::Matrix globalMatrix;
 
 	JointDataImpl(const std::string & name, const osg::Vec3 & translation, const osg::Quat & rotation) :
-		originRotation(rotation), originTranslation(translation), name(name)
+		node(new osg::PositionAttitudeTransform), originTranslation(translation),
+		globalRequiresRefresh(true), originOrientation(rotation)
 	{
-		shiftMatrix.setTrans(translation);
+		node->setName(name);		
+		node->setPosition(translation);
+		node->setAttitude(rotation);
+		node->setScale(osg::Vec3(1, 1, 1));
+		globalMatrix.makeIdentity();		
 	}
 
 	~JointDataImpl()
@@ -30,24 +57,54 @@ public:
 
 	}
 
+	std::string name() const
+	{
+		return node->getName();
+	}
+
+	osg::Vec3 localPosition() const
+	{
+		return node->getPosition();
+	}
+
 	osg::Vec3 globalPosition() const
 	{
+		refreshGlobal();
 		return globalMatrix.getTrans();
 	}
 	
+	osg::Quat localOrientation() const
+	{
+		return node->getAttitude();
+	}
+
+	//! \return Globalna orientacja
 	osg::Quat globalOrientation() const
 	{
+		refreshGlobal();
 		return globalMatrix.getRotate();
 	}
 
-	void setGlobalOrientation(const osg::Quat& rotation)
+	//! \param translation Lokalne przesunięcie
+	void update(const osg::Vec3 & translation)
 	{
-		globalMatrix.setRotate(rotation);
+		localUpdate(translation);
+		globalRequiresRefresh = true;
 	}
 
-	void setGlobalTranslation(const osg::Vec3& translation)
+	//! \param position Globalna pozycja
+	void setGlobal(const osg::Vec3 & position)
 	{
-		globalMatrix.setTrans(translation);
+		node->setPosition(node->getPosition() + position - globalPosition());
+		globalMatrix.setTrans(position);
+	}
+
+	//! \param position Globalna pozycja
+	void setLocal(const osg::Vec3 & position)
+	{
+		originTranslation = position;
+		node->setPosition(position);
+		globalRequiresRefresh = true;
 	}
 
 	
@@ -55,12 +112,57 @@ public:
 	//! \param rotation Lokalna rotacja
 	void update(const osg::Vec3 & translation, const osg::Quat & rotation, const osg::Matrix& parentG)
 	{
-		osg::Matrix m;
-		m.set(rotation);
-		m.setTrans(translation);
-		localMatrix =  shiftMatrix * m;
-		globalMatrix = localMatrix * parentG;
+		localUpdate(translation);
+		localUpdate(rotation);
+		globalRequiresRefresh = true;
 	}
+
+	//! \param orientation Globalna orientacja
+	void setGlobal(const osg::Quat & orientation)
+	{
+		node->setAttitude(node->getAttitude() * orientation / globalOrientation());
+		globalMatrix.setRotate(orientation);
+	}
+	//! \param orientation Globalna orientacja
+	void setLocal(const osg::Quat & orientation)
+	{
+		originOrientation = orientation;
+		node->setAttitude(orientation);
+		globalRequiresRefresh = true;
+	}
+
+	//! \param translation Lokalne przesunięcie
+	//! \param rotation Lokalna rotacja
+	void update(const osg::Vec3 & translation, const osg::Quat & rotation)
+	{
+		localUpdate(translation);
+		localUpdate(rotation);
+		globalRequiresRefresh = true;
+	}
+	//! \param position Globalna pozycja
+	//! \param orientation Globalna orientacja
+	void setGlobal(const osg::Vec3 & position, const osg::Quat & orientation)
+	{
+		setGlobal(position);
+		setGlobal(orientation);
+	}
+
+	//! \param position Globalna pozycja
+	//! \param orientation Globalna orientacja
+	void setLocal(const osg::Vec3 & position, const osg::Quat & orientation)
+	{
+		setLocal(position);
+		setLocal(orientation);
+	}
+private:
+	//! Węzeł osg
+	osg::ref_ptr<osg::PositionAttitudeTransform> node;
+	osg::Vec3 originTranslation;
+	osg::Quat originOrientation;
+	//! Czy stan globalny wymaga odświeżenia
+	mutable bool globalRequiresRefresh;
+	//! Macierz opisująca stan globalny
+	mutable osg::Matrix globalMatrix;
 };
 
 SkeletonState::JointData::JointData(const std::string & name, const osg::Vec3 & translation, const osg::Quat & rotation) :
@@ -76,23 +178,28 @@ SkeletonState::JointData::~JointData()
 
 std::string SkeletonState::JointData::name() const
 {
-	return impl->name;
+	return impl->name();
 }
 
-osg::Matrix kinematic::SkeletonState::JointData::getG() const
+osg::Vec3 SkeletonState::JointData::localPosition() const
 {
-	return impl->globalMatrix;
+	return impl->localPosition();
 }
 
-void kinematic::SkeletonState::JointData::update(const osg::Vec3 & translation, const osg::Quat & rotation, const osg::Matrix& parentG)
-{
-	impl->update(translation, rotation, parentG);
-}
-
-osg::Vec3 SkeletonState::JointData::globalPosition() const 
+osg::Vec3 SkeletonState::JointData::globalPosition() const
 {
 	return impl->globalPosition();
 }
+void kinematic::SkeletonState::JointData::update(const osg::Vec3 & translation, const osg::Quat & rotation)
+{
+	impl->update(translation, rotation);
+}
+
+osg::Quat SkeletonState::JointData::localOrientation() const
+{
+	return impl->localOrientation();
+}
+
 
 
 osg::Quat kinematic::SkeletonState::JointData::globalOrientation() const
@@ -100,29 +207,53 @@ osg::Quat kinematic::SkeletonState::JointData::globalOrientation() const
 	return impl->globalOrientation();
 }
 
-void kinematic::SkeletonState::JointData::setGlobal(const osg::Quat& rotation)
+
+void kinematic::SkeletonState::JointData::setGlobal(const osg::Vec3& translation) 
 {
-	impl->setGlobalOrientation(rotation);
+	impl->setGlobal(translation);
 }
 
-void kinematic::SkeletonState::JointData::setGlobal(const osg::Vec3& translation) {
-	impl->setGlobalTranslation(translation);
+void SkeletonState::JointData::setLocal(const osg::Vec3 & position)
+{
+	impl->setLocal(position);
 }
 
-SkeletonState::JointPtr SkeletonState::create(kinematic::JointConstPtr joint, const osg::Vec3 parentPosition)
+void SkeletonState::JointData::update(const osg::Quat & rotation)
+{
+	impl->localUpdate(rotation);
+}
+
+void SkeletonState::JointData::setGlobal(const osg::Quat & orientation)
+{
+	impl->setGlobal(orientation);
+}
+
+void SkeletonState::JointData::setLocal(const osg::Quat & orientation)
+{
+	impl->setLocal(orientation);
+}
+
+
+void SkeletonState::JointData::setGlobal(const osg::Vec3 & position, const osg::Quat & orientation)
+{
+	impl->setGlobal(position, orientation);
+}
+
+void SkeletonState::JointData::setLocal(const osg::Vec3 & position, const osg::Quat & orientation)
+{
+	impl->setLocal(position, orientation);
+}
+
+SkeletonState::JointPtr SkeletonState::create(kinematic::JointConstPtr joint)
 {
 	auto j = Joint::create(JointData(joint->value.name, joint->value.position, joint->value.orientation));
-	j->value.setGlobal(parentPosition + joint->value.position);
-	for (auto jj : joint->children)
-	{
-		auto pp = j->value.globalPosition();
-		auto jjj = create(jj, pp);
+	for (auto jj : joint->children)	{
+		auto jjj = create(jj);
 		j->children.push_back(jjj);
 		jjj->parent = j;
-	//	// hierarchia osg!!
-	//	j->value.impl->node->addChild(jjj->value.impl->node);
+		// hierarchia osg!!
+		j->value.impl->node->addChild(jjj->value.impl->node);
 	}
-
 	return j;
 }
 
@@ -141,7 +272,7 @@ SkeletonState::SkeletonState(SkeletonState && Other)
 SkeletonState SkeletonState::create(const Skeleton & skeleton)
 {
 	if (skeleton.root != nullptr){
-		return SkeletonState(create(skeleton.root, osg::Vec3()));
+		return SkeletonState(create(skeleton.root));
 	}
 
 	return SkeletonState(JointPtr());
@@ -192,9 +323,9 @@ void updateOrientationsAndPosition(SkeletonState::JointPtr joint, T & valIT, con
 	joint->value.update((*valIT).translation, (*valIT).rotation, parentG);
 	++valIT;
 	for (auto j : joint->children){		
-		//if (j->isLeaf() == false){
+		if (j->isLeaf() == false){
 			updateOrientationsAndPosition(j, valIT, joint->value.getG());
-		//}
+		}
 	}
 }
 
@@ -205,21 +336,21 @@ void SkeletonState::update(SkeletonState & skeletonState, const RigidCompleteSta
 	//updateOrientations<decltype(stateChange.rotations.begin())>(skeletonState.root(), it);
 }
 
-void updateOrientationsAndPosition(SkeletonState::JointPtr joint, const SkeletonState::NonRigidCompleteStateChange & stateChange, const SkeletonState::LinearizedNodesMapping & mapping, const osg::Matrix& parentG)
+void updateOrientationsAndPosition(SkeletonState::JointPtr joint, const SkeletonState::NonRigidCompleteStateChange & stateChange, const SkeletonState::LinearizedNodesMapping & mapping)
 {
 	auto idx = mapping.right.at(joint->value.name());
 	auto data = stateChange[idx];
-	joint->value.update(data.translation, data.rotation, parentG);
+	joint->value.update(data.translation, data.rotation);
 	for (auto j : joint->children) {
 		//if (j->isLeaf() == false){
-		updateOrientationsAndPosition(j, stateChange, mapping, joint->value.getG());
+		updateOrientationsAndPosition(j, stateChange, mapping);
 		//}
 	}
 }
 
 void SkeletonState::update(SkeletonState & skeletonState, const NonRigidCompleteStateChange & stateChange, const LinearizedNodesMapping & mapping)
 {
-	updateOrientationsAndPosition(skeletonState.root(), stateChange, mapping, osg::Matrix());
+	updateOrientationsAndPosition(skeletonState.root(), stateChange, mapping);
 }
 
 void SkeletonState::update(SkeletonState & skeletonState, const RigidPartialStateChange & stateChange)
@@ -559,10 +690,13 @@ kinematic::SkeletonState::Joint2Index kinematic::SkeletonState::createJoint2Inde
 void createConnectionRec(kinematic::SkeletonState::JointConstPtr parent, const std::map<kinematic::SkeletonState::JointConstPtr, unsigned int>& indices, osgutils::SegmentsDescriptors& sd)
 {
 	for (auto& child : parent->children) {
-		osgutils::SegmentDescriptor d;
-		d.length = (parent->value.globalPosition() - child->value.globalPosition()).length();
-		d.range = std::make_pair(indices.at(parent), indices.at(child));
-		sd.push_back(d);
+		auto length = (parent->value.globalPosition() - child->value.globalPosition()).length();
+		if (length > 0) {
+			osgutils::SegmentDescriptor d;
+			d.length = length;
+			d.range = std::make_pair(indices.at(parent), indices.at(child));
+			sd.push_back(d);
+		}
 		createConnectionRec(child, indices, sd);
 	}
 }
@@ -578,7 +712,8 @@ kinematic::SkeletonState::NonRigidCompleteStateChange kinematic::SkeletonState::
 {
 	NonRigidCompleteStateChange frame;
 	auto count = mapping.size();
-	frame.push_back(kinematic::SkeletonState::JointStateChange{ sChange.translation, sChange.rotations.at(0) });
+	auto rootRotIt = sChange.rotations.find(0);
+	frame.push_back(kinematic::SkeletonState::JointStateChange{ sChange.translation, rootRotIt != sChange.rotations.end() ? rootRotIt->second : osg::Quat() });
 	for (int i = 1; i < count; i++) {
 		auto it = sChange.rotations.find(i);
 		frame.push_back(kinematic::SkeletonState::JointStateChange{ osg::Vec3(), it != sChange.rotations.end() ? it->second : osg::Quat() });

@@ -16,6 +16,8 @@
 #include <osg/PositionAttitudeTransform>
 #include "TrajectoriesDrawer.h"
 #include <osgAnimation/Bone>
+#include <osgManipulator/TranslateAxisDragger>
+#include <osg/Switch>
 
 class KinematicVisualizer;
 class SkeletalVisualizationSchemeHelper;
@@ -24,6 +26,25 @@ class IConnectionsSchemeDrawer;
 class GhostSchemeDrawer;
 class SkeletonJointsMapping;
 class TrajectoryDrawerManager;
+
+//! struktura odpowiedzialna za rysowanie osi dla jointów szkieletu
+struct PointsOrientationsDrawer
+{
+public:
+	void init(kinematic::SkeletonState::JointConstPtr root);
+	osg::ref_ptr<osg::Switch> getNode();
+	void update();
+	void setLength(double length);
+	void setVisible(bool visible);
+	bool isVisible();
+
+private:
+	std::vector<osg::ref_ptr<osgManipulator::TranslateAxisDragger>> pointAxes;
+	kinematic::SkeletonState::JointConstWeakPtr root;
+	double scale = 1.0;
+	osg::ref_ptr<osg::Switch> localNode = new osg::Switch();
+	bool visible = true;
+};
 
 //! Seria danych wizualizatora 3D wizualizująca animacje szkieletowa
 class SkeletonSerie : public QObject, public KinematicTimeSerie, public IGhostSerie
@@ -68,6 +89,9 @@ public:
 	utils::shared_ptr<TrajectoryDrawerManager> getTrajectoriesManager();
 
 
+	void setJointsOrientationsVisible();
+
+
 protected:
 	//! Abstrakcyjny setter do czasu, metoda z inną sygnaturą może uchronić przed błędami
 	//! \param time ustawiany czas
@@ -78,7 +102,6 @@ private:
 	const std::vector<std::vector<osg::Vec3>> createPointsPositions(const unsigned int density) const;
 
 	void createGhostAndTrajectories();
-
 private:
 
 	osg::Matrix lToW;
@@ -116,6 +139,7 @@ private:
 	osgutils::SegmentsDescriptors connections;
 	//! mapowanie joint -> index
 	std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> joint2Index;
+	PointsOrientationsDrawer pointsAxesDrawer;
 };
 
 

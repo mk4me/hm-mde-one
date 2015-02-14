@@ -224,6 +224,7 @@ private slots:
     void draggerTriggered();
 
     void showGhost(bool);
+	void showJointsOrientations();
 
 private:
     //! główny węzeł sceny 3d

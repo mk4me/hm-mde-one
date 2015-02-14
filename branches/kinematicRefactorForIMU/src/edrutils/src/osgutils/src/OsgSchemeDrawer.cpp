@@ -996,8 +996,8 @@ void ConnectionsDrawer::init(const SegmentsDescriptors & connections)
 	std::vector<utils::shared_ptr<ConnectionInstance>> locConnsInst(ConnectionInstance::createConnectionsScheme(connections, complexity));
 	osg::ref_ptr<osg::Switch> tmpNode(new osg::Switch);
 
-	for (unsigned int i = 0; i < locConnsInst.size(); ++i){
-		tmpNode->addChild(locConnsInst[i]->posAtt, true);
+	for (auto& instance : locConnsInst) {
+		tmpNode->addChild(instance->posAtt, true);
 	}
 
 	std::swap(node, tmpNode);

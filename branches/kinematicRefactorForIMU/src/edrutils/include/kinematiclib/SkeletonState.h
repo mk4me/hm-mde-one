@@ -97,13 +97,30 @@ namespace kinematic
 			//! \return Globalna orientacja
 			osg::Quat globalOrientation() const;
 
-			void setGlobal(const osg::Quat& rotation);
-			void setGlobal(const osg::Vec3& translation);
+			osg::Vec3 JointData::localPosition() const;
+			osg::Quat JointData::localOrientation() const;
 
-			osg::Matrix getG() const;
 
-			void update(const osg::Vec3 & translation, const osg::Quat & rotation, const osg::Matrix& parentG);
+			void setGlobal(const osg::Vec3 & position);
+			//! \param position Lokalna pozycja
+			void setLocal(const osg::Vec3 & position);
+
+			//! \param rotation Rotacja
+			void update(const osg::Quat & rotation);
+			//! \param orientation Globalna orientacja
+			void setGlobal(const osg::Quat & orientation);
+			//! \param orientation Lokalna orientacja
+			void setLocal(const osg::Quat & orientation);
+
+
+			void update(const osg::Vec3 & translation, const osg::Quat & rotation);
 		
+			//! \param position Globalna pozycja
+			//! \param orientation Globalna orientacja
+			void setGlobal(const osg::Vec3 & position, const osg::Quat & orientation);
+			//! \param position Lokalna pozycja
+			//! \param orientation Lokalna orientacja
+			void setLocal(const osg::Vec3 & position, const osg::Quat & orientation);
 		private:
 			//! Prywatna implementacja
 			utils::shared_ptr<JointDataImpl> impl;
@@ -143,14 +160,17 @@ namespace kinematic
 
 		//! \param skeletonState [out] Aktualizowany stan szkieletu
 		//! \param stateChange Zmiana stanu szkieletu
-		static void update(SkeletonState & skeletonState, const RigidCompleteStateChange & stateChange);
-		//! \param skeletonState [out] Aktualizowany stan szkieletu
-		//! \param stateChange Zmiana stanu szkieletu
 		static void update(SkeletonState & skeletonState, const NonRigidCompleteStateChange & stateChange, const LinearizedNodesMapping & mapping);
 
+	private:
 		//! \param skeletonState [out] Aktualizowany stan szkieletu
 		//! \param stateChange Zmiana stanu szkieletu
 		static void update(SkeletonState & skeletonState, const RigidPartialStateChange & stateChange);
+		//! \param skeletonState [out] Aktualizowany stan szkieletu
+		//! \param stateChange Zmiana stanu szkieletu
+		static void update(SkeletonState & skeletonState, const RigidCompleteStateChange & stateChange);
+
+		public:
 		////! \param skeletonState [out] Aktualizowany stan szkieletu
 		////! \param stateChange Zmiana stanu szkieletu
 		//static void update(SkeletonState & skeletonState, const NonRigidPartialStateChange & stateChange);
@@ -164,12 +184,12 @@ namespace kinematic
 		//static void setLocal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState);
 		//static void setGlobal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState);
 
-		//! \param skeletonState Stan szkieletu
-		//! \return Globalny opis stanu szkieletu
-		static NonRigidCompleteStateChange globalState(const SkeletonState & skeletonState);
-		//! \param skeletonState Stan szkieletu
-		//! \return Lokalny opis stanu szkieletu
-		static NonRigidCompleteStateChange localState(const SkeletonState & skeletonState);
+		////! \param skeletonState Stan szkieletu
+		////! \return Globalny opis stanu szkieletu
+		//static NonRigidCompleteStateChange globalState(const SkeletonState & skeletonState);
+		////! \param skeletonState Stan szkieletu
+		////! \return Lokalny opis stanu szkieletu
+		//static NonRigidCompleteStateChange localState(const SkeletonState & skeletonState);
 
 
 		static osgutils::SegmentsDescriptors createConnections(const kinematic::SkeletonState& skeleton, const Joint2Index& mapping);
@@ -183,7 +203,7 @@ namespace kinematic
 
 	private:
 
-		static JointPtr create(kinematic::JointConstPtr joint, const osg::Vec3 parentPosition);
+		static JointPtr create(kinematic::JointConstPtr joint);
 
 	private:
 		//! Staw - root stanu
