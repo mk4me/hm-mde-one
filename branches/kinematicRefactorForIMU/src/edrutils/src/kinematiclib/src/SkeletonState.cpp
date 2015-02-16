@@ -324,7 +324,7 @@ void updateOrientationsAndPosition(SkeletonState::JointPtr joint, T & valIT, con
 	++valIT;
 	for (auto j : joint->children){		
 		if (j->isLeaf() == false){
-			updateOrientationsAndPosition(j, valIT, joint->value.getG());
+			updateOrientationsAndPosition(j, valIT);
 		}
 	}
 }
