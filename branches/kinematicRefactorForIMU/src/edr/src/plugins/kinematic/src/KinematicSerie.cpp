@@ -27,26 +27,37 @@ const osg::Vec3 KinematicSerieBase::pivotPoint() const
 	return osg::Vec3(0.0, 0.0, 0.0);
 }
 
-KinematicTimeSerie::KinematicTimeSerie() : time(-1.0)
+EventSeriePolicy::EventSeriePolicy() : time(-1.0)
 {
 
 }
 
-void KinematicTimeSerie::resetTransform()
+void EventSeriePolicy::resetTransform()
 {
-	KinematicSerieBase::resetTransform();
+	//KinematicSerieBase::resetTransform();
     // ustawienie czasu (powinno odświeżyć)
     setTime(0.0);
 }
 
-void KinematicTimeSerie::setTime( double val )
+void EventSeriePolicy::setTime( double val )
 {
     time = val; 
     // ustawienie czasu w klasie pochodnej
     setLocalTime(val);
 }
 
-void KinematicTimeSerie::setEvents( EventsCollectionConstPtr val )
+void EventSeriePolicy::setEvents( EventsCollectionConstPtr val )
 {
     events = val;
 }
+
+void EventSeriePolicy::setName(const std::string & name)
+{
+	this->name = name;
+}
+
+const std::string EventSeriePolicy::getName() const
+{
+	return name;
+}
+

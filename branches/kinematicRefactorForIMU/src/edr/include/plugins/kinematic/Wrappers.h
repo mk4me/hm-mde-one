@@ -12,11 +12,10 @@
 #include <kinematiclib/SkeletonState.h>
 #include <osgutils/OsgSchemeDrawer.h>
 
-
+//! Struktura zawiera wczytane z pliku uaktualnienia stanu szkieletu
 struct SkeletonStates
 {
 	std::vector<kinematic::SkeletonState::NonRigidCompleteStateChange> frames;
-	//std::vector<std::string> jointNames;
 	double frameTime;
 	double getLength() const {
 		return frameTime * frames.size();
@@ -24,6 +23,7 @@ struct SkeletonStates
 };
 DEFINE_SMART_POINTERS(SkeletonStates);
 
+//! Struktura szkieletu wraz z danymi
 struct SkeletonWithStates
 {
 	SkeletonStatesConstPtr states;
@@ -34,9 +34,26 @@ struct SkeletonWithStates
 DEFINE_SMART_POINTERS(SkeletonWithStates);
 
 
+typedef threadingUtils::StreamT<kinematic::SkeletonState::NonRigidCompleteStateChange> SkeletonStateStream;
+DEFINE_SMART_POINTERS(SkeletonStateStream);
+
+struct SkeletonWithStreamData
+{
+	kinematic::SkeletonConstPtr skeleton;
+	kinematic::SkeletonState::LinearizedNodesMapping nodesMapping;
+	SkeletonStateStreamPtr states;
+};
+DEFINE_SMART_POINTERS(SkeletonWithStreamData);
 
 
-//! Strumieñ danych szkieletu
+
+DEFINE_WRAPPER(SkeletonStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(SkeletonWithStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(acclaim::MotionData, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(kinematic::Skeleton, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+DEFINE_WRAPPER(acclaim::Skeleton, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+
+//! StrumieÅ„ danych szkieletu
 typedef threadingUtils::StreamT<std::vector<osg::Vec3>> PointsCloudStream;
 DEFINE_SMART_POINTERS(PointsCloudStream);
 
@@ -46,20 +63,16 @@ DEFINE_SMART_POINTERS(QuaternionStream);
 //! Dane szkieletu
 struct SkeletonDataStream
 {
-	unsigned int jointsCount;				//! Ilosc jointów w modelu
-	PointsCloudStreamPtr jointsStream;		//! Strumieñ dla pozycji jointów
-	QuaternionStreamPtr quatStream;			//! Strumieñ globalnych kwaternionów jointów
-	osgutils::SegmentsDescriptors connections;	//! Schemat po³¹czeñ
+	unsigned int jointsCount;				//! Ilosc jointï¿½w w modelu
+	PointsCloudStreamPtr jointsStream;		//! Strumieï¿½ dla pozycji jointï¿½w
+	QuaternionStreamPtr quatStream;			//! Strumieï¿½ globalnych kwaternionï¿½w jointï¿½w
+	osgutils::SegmentsDescriptors connections;	//! Schemat poï¿½ï¿½czeï¿½
 	std::map<std::string, int> segmentNames; 
 };
 
 DEFINE_SMART_POINTERS(SkeletonDataStream);
 
-DEFINE_WRAPPER(SkeletonStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
-DEFINE_WRAPPER(SkeletonWithStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
-DEFINE_WRAPPER(acclaim::MotionData, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
-DEFINE_WRAPPER(kinematic::Skeleton, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
-DEFINE_WRAPPER(acclaim::Skeleton, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
+
 DEFINE_WRAPPER(SkeletonDataStream, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
 DEFINE_WRAPPER(std::string, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(osg::PositionAttitudeTransform, utils::PtrPolicyOSG, utils::ClonePolicyOsgCloneMethod);

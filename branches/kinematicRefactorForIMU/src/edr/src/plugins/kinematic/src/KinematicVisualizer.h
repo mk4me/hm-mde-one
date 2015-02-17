@@ -44,7 +44,7 @@ class KinematicVisualizer :  private QObject, public plugin::IVisualizer
 	//friend class GRFSerie;
 	friend class MarkerSerie;
 	friend class SkeletonSerie;
-	friend class SkeletonSerie2;
+	//friend class SkeletonSerie2;
     friend class KinematicDraggerCallback;
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;

@@ -209,7 +209,7 @@ namespace kinematic
 		//! Staw - root stanu
 		JointPtr root_;
 	};
-	
+	DEFINE_SMART_POINTERS(SkeletonState);
 }
 
 #endif	// __HEADER_GUARD_KINEMATIC__SKELETONSTATE_H__

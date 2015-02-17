@@ -18,13 +18,14 @@ SET_PRIVATE_HEADERS(
 	BvhSerie.h
 	KinematicSerie.h
 	SchemeDialog.h
+	AbstractSkeletonSerie.h
 	SkeletonSerie.h
 	SkeletonStreamSerie.h
+	SkeletonStateStreamSerie.h
 	TrajectoriesDialog.h
 	TrajectoriesDrawer.h
 	PickHandler.h
 	Manipulators.h	
-	#SchemeDrawerContainer.h
 	SkeletalVisualizationSchemeHelper.h	
 	VisualizationScheme.h	
 	PCH.h	
@@ -36,7 +37,7 @@ SET_PUBLIC_HEADERS (
 
 SET_SOURCE_FILES(
 	SkeletalVisualizationSchemeHelper.cpp
-	#OsgSchemeDrawer.cpp
+	AbstractSkeletonSerie.cpp
 	KinematicPlugin.cpp
 	AsfParser.cpp
 	BvhParser.cpp
@@ -50,21 +51,21 @@ SET_SOURCE_FILES(
 	BvhSerie.cpp
 	SkeletonSerie.cpp
 	SkeletonStreamSerie.cpp
+	SkeletonStateStreamSerie.cpp
 	TrajectoriesDialog.cpp
 	TrajectoriesDrawer.cpp
 	SchemeDialog.cpp
 	PickHandler.cpp
 	Manipulators.cpp
 	VisualizationScheme.cpp
-	#SchemeDrawerContainer.cpp
 	PCH.cpp
 )
 
 SET_MOC_FILES(
 	KinematicVisualizer.h
-	#SchemeDrawerContainer.h
 	SkeletonSerie.h
 	SkeletonStreamSerie.h
+	SkeletonStateStreamSerie.h
 	MarkerSerie.h
 	TrajectoriesDialog.h
 	SchemeDialog.h

@@ -1,17 +1,17 @@
 /********************************************************************
-	created:	2011/09/04
-	created:	4:9:2011   14:24
-	filename: 	SkeletonSerie.h
+	created:	2015/02/16
+	created:	16:2:2015   12:24
+	filename: 	AbstractSkeletonSerie.h
 	author:		Wojciech Kniec
 
 	purpose:
 	*********************************************************************/
 
-#ifndef HEADER_GUARD_KINEMATIC__SkeletonSerie_H__
-#define HEADER_GUARD_KINEMATIC__SkeletonSerie_H__
+#ifndef HEADER_GUARD_KINEMATIC__AbstractSkeletonSerie_H__
+#define HEADER_GUARD_KINEMATIC__AbstractSkeletonSerie_H__
 
 #include <corelib/IVisualizer.h>
-#include "AbstractSkeletonSerie.h"
+#include "KinematicSerie.h"
 #include <plugins/kinematic/Wrappers.h>
 #include <osg/PositionAttitudeTransform>
 #include "TrajectoriesDrawer.h"
@@ -27,44 +27,74 @@ class GhostSchemeDrawer;
 class SkeletonJointsMapping;
 class TrajectoryDrawerManager;
 
-//! Seria danych wizualizatora 3D wizualizująca animacje szkieletowa
-class SkeletonSerie : public QObject, public AbstractSkeletonTimeSerie
+//! struktura odpowiedzialna za rysowanie osi dla jointów szkieletu
+struct PointsOrientationsDrawer
 {
-	Q_OBJECT;
+public:
+	void init(kinematic::SkeletonState::JointConstPtr root);
+	osg::ref_ptr<osg::Switch> getNode();
+	void update();
+	void setLength(double length);
+	void setVisible(bool visible);
+	bool isVisible();
+
+private:
+	std::vector<osg::ref_ptr<osgManipulator::TranslateAxisDragger>> pointAxes;
+	kinematic::SkeletonState::JointConstWeakPtr root;
+	double scale = 1.0;
+	osg::ref_ptr<osg::Switch> localNode = new osg::Switch();
+	bool visible = true;
+};
+
+//! Seria danych wizualizatora 3D wizualizująca animacje szkieletowa
+class AbstractSkeletonSerie : public KinematicSerieBase, public IGhostSerie
+{
 
 public:
 	//! Konstuktor
 	//! \param visualizer wizualizator, który stworzył serie danych
-	SkeletonSerie(KinematicVisualizer * visualizer,
+	AbstractSkeletonSerie(KinematicVisualizer * visualizer,
 		const utils::TypeInfo & requestedType, const core::VariantConstPtr & data);
 
-	virtual ~SkeletonSerie() {}
+	virtual ~AbstractSkeletonSerie() {}
 
+//	private slots:
+//	//! zmiana osi, gdy otrzymamy obiekt w nietypowym ukł. współrzędnych
+//	//! \param xyz
+//	void setAxis(bool xyz);
 
 public:
+
 	//! \return ustawione dane
 	virtual const core::VariantConstPtr & getData() const;
 
+	virtual void update();
+
+	virtual const osg::Vec3 pivotPoint() const;
 
 	virtual const utils::TypeInfo & getRequestedDataType() const;
-	//! \return długość kanału w sekundach
-	virtual double getLength() const;
-	virtual double getBegin() const;
-	virtual double getEnd() const;
-	virtual void update();
+
+	virtual const bool ghostVisible() const;
+	virtual void setGhostVisible(const bool visible);
+
+	utils::shared_ptr<TrajectoryDrawerManager> getTrajectoriesManager();
+
+
+	void setJointsOrientationsVisible();
 
 
 protected:
 	//! Abstrakcyjny setter do czasu, metoda z inną sygnaturą może uchronić przed błędami
 	//! \param time ustawiany czas
-	virtual void setLocalTime(double time);
-	virtual const kinematic::SkeletonState::NonRigidCompleteStateChange& getStateChange();
+	//virtual void setLocalTime(double time);
+
+	virtual const kinematic::SkeletonState::NonRigidCompleteStateChange& getStateChange() = 0;
+
+	void init(double ratio, int pointsCount, kinematic::SkeletonStatePtr state, const kinematic::SkeletonState::LinearizedNodesMapping& mapping);
 
 private:
 
-	const std::vector<std::vector<osg::Vec3>> createPointsPositions(const unsigned int density) const;
-
-	void createGhostAndTrajectories();
+//	void createGhostAndTrajectories();
 private:
 
 	osg::Matrix lToW;
@@ -80,14 +110,8 @@ private:
 	KinematicVisualizer * visualizer;
 	//! wrapper przekazany serii
 	core::VariantConstPtr data;
-	//! Dane rozpakowane
-	SkeletonWithStatesConstPtr skeletonWithStates;
-	//! Stan szieletu na podstawie danych z OW
-	kinematic::SkeletonStatePtr skeletonState;
 	//! Typ danych
 	utils::TypeInfo requestedType;
-	//! nazwa serii
-	std::string name;
 	//! czy operujemy na układzie XYZ czy innym
 	bool xyzAxis;
 	//! Obiekt rysujący punkty
@@ -103,8 +127,19 @@ private:
 	//! mapowanie joint -> index
 	std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> joint2Index;
 	PointsOrientationsDrawer pointsAxesDrawer;
+	kinematic::SkeletonStatePtr skeletonState;
+	kinematic::SkeletonState::LinearizedNodesMapping nodesMapping;
 };
 
-
+template <class SeriePolicy>
+class AbstractSkeletonSerieT : public AbstractSkeletonSerie, public SeriePolicy
+{
+public:
+	AbstractSkeletonSerieT(KinematicVisualizer * visualizer, const utils::TypeInfo & requestedType, const core::VariantConstPtr & data) :
+				AbstractSkeletonSerie(visualizer, requestedType, data) {}
+	virtual ~AbstractSkeletonSerieT() {}
+};
+typedef AbstractSkeletonSerieT<plugin::IVisualizer::ISerie> AbstractSkeletonStreamSerie;
+typedef AbstractSkeletonSerieT<EventSeriePolicy> AbstractSkeletonTimeSerie;
 
 #endif
