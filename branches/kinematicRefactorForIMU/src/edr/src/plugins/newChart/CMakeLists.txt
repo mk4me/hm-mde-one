@@ -9,6 +9,7 @@ SET_PUBLIC_HEADERS(
 SET_PRIVATE_HEADERS (
 	NewChartVisualizer.h
 	NewChartSerie.h
+	NewChartStreamSerie.h
 	NewChartPicker.h
 	NewChartMarker.h
 	NewChartState.h
@@ -36,6 +37,7 @@ SET_SOURCE_FILES (
 	NewChartPlugin.cpp	
 	NewChartVisualizer.cpp
 	NewChartSerie.cpp
+	NewChartStreamSerie.cpp
 	NewChartPicker.cpp
 	NewChartMarker.cpp
 	NewChartState.cpp

@@ -7,7 +7,7 @@
 #include <kinematiclib/SkeletonState.h>
 #include "osgManipulator/TranslateAxisDragger"
 
-static const osg::Quat invQXYZ = osg::Quat(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f)) * osg::Quat(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
+//static const osg::Quat invQXYZ = osg::Quat(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f)) * osg::Quat(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
 
 AbstractSkeletonSerie::AbstractSkeletonSerie(KinematicVisualizer * visualizer,
 	const utils::TypeInfo & requestedType,

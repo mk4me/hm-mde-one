@@ -238,25 +238,25 @@ private:
     //! zwracany widget wizualizatora
     osg::ref_ptr<osgui::QOsgDefaultWidget> widget;
     //! pokazuje dialog z trajektoriami
-    coreUI::CoreAction* actionTrajectories;
+    coreUI::CoreAction* actionTrajectories = nullptr;
     //! pokazuje dialog umożliwiający chowanie węzłów z geometria
-    coreUI::CoreAction* actionScheme;
+    coreUI::CoreAction* actionScheme = nullptr;
     //! pokazuje ghosta dla markerów
-    coreUI::CoreAction* actionGhost;
+    coreUI::CoreAction* actionGhost = nullptr;
     //! zamienia osie jeśli jest taka potrzeba
-    coreUI::CoreAction* actionSwitchAxes;
+    coreUI::CoreAction* actionSwitchAxes = nullptr;
     //! wywołuje stan 'pickera' - można wybrać aktywna serie klikając na nia myszka
-    coreUI::CoreAction* pickerAction;
+    coreUI::CoreAction* pickerAction = nullptr;
     //! wywołuje manipulator translacji
-    coreUI::CoreAction* translateAction;
+    coreUI::CoreAction* translateAction = nullptr;
     //! wywołuje manipulator rotacji
-    coreUI::CoreAction* rotateAction;
+    coreUI::CoreAction* rotateAction = nullptr;
     //! wywołuje manipulator skali
-    coreUI::CoreAction* scaleAction;
+    coreUI::CoreAction* scaleAction = nullptr;
     //! niweluje działanie manipulatorów
-    coreUI::CoreAction* resetAction;
+    coreUI::CoreAction* resetAction = nullptr;
     //! Dialog zarządzający trajektoriami
-    TrajectoriesDialog* trajectoriesDialog;
+    TrajectoriesDialog* trajectoriesDialog = nullptr;
     //! Dialog zarządzający widocznością węzłów na scenie
     SchemeDialog* schemeDialog;
     //! kolecja z seriami danych podpiętymi pod wizualizator

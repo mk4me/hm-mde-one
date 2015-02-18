@@ -21,6 +21,7 @@
 #include <coreui/CoreAction.h>
 #include <coreui/CoreWidgetAction.h>
 
+#include "NewChartStreamSerie.h"
 
 NewChartVisualizer::NewChartVisualizer() :
 	upperBoundCurve(nullptr),
@@ -256,36 +257,47 @@ void NewChartVisualizer::getSupportedTypes(utils::TypeInfoList & supportedTypes)
 
 plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie(const utils::TypeInfo & requestedType, const core::VariantConstPtr& data)
 {
-    NewChartSerie * ret = new NewChartSerie(this);
-	auto name = "Serie " + boost::lexical_cast<std::string>(series.size());
-    ret->setName( name);
-    ret->setData(requestedType, data);
-    series.push_back(ret);
+	plugin::IVisualizer::ISerie* ret = nullptr;
+	if (requestedType == typeid(ScalarStream)) {
+		auto streamSerie = new NewChartStreamSerie(this);
+		streamSerie->setData(requestedType, data);
+		//series.push_back(streamSerie);
+		ret = streamSerie;
+	}
+	else if (requestedType == typeid(ScalarChannelReader)) {
+		auto chartSerie = new NewChartSerie(this);
 
-    plotChanged();
+		auto name = "Serie " + boost::lexical_cast<std::string>(series.size());
+		chartSerie->setName( name);
+		chartSerie->setData(requestedType, data);
+		series.push_back(chartSerie);
 
-    statsTable->addEntry(QString("Whole chart"), QString(name.c_str()), ret->getStats());
+		plotChanged();
 
-    //NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(ret->getCurve()));
-    NewChartLegendItem * legendLabel = getLegendLabel(ret->getCurve());
-	if(legendLabel != nullptr){	
-		std::string source;
-		data->getMetadata("core/source", source);
-		legendLabel->setToolTip(source.c_str());		
-		if(series.size() == 1){    
-			if(legendLabel->isItemActive() == false){
-				legend->blockSignals(true);
-				legendLabel->setItemActive(true);
-				legendLabel->setItemVisibleEnabled(false);
-				legend->blockSignals(false);
+		statsTable->addEntry(QString("Whole chart"), QString(name.c_str()), chartSerie->getStats());
+
+		//NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(ret->getCurve()));
+		NewChartLegendItem * legendLabel = getLegendLabel(chartSerie->getCurve());
+		if(legendLabel != nullptr){
+			std::string source;
+			data->getMetadata("core/source", source);
+			legendLabel->setToolTip(source.c_str());
+			if(series.size() == 1){
+				if(legendLabel->isItemActive() == false){
+					legend->blockSignals(true);
+					legendLabel->setItemActive(true);
+					legendLabel->setItemVisibleEnabled(false);
+					legend->blockSignals(false);
+				}
 			}
 		}
+
+		adjustOffsetStep(shiftSpinX, QwtPlot::xBottom);
+		adjustOffsetStep(shiftSpinY, QwtPlot::yLeft);
+		ret = chartSerie;
 	}
-
-    adjustOffsetStep(shiftSpinX, QwtPlot::xBottom);
-    adjustOffsetStep(shiftSpinY, QwtPlot::yLeft);
-
-    return ret;
+	UTILS_ASSERT(ret);
+	return ret;
 }
 
 plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie( const plugin::IVisualizer::ISerie * serie )

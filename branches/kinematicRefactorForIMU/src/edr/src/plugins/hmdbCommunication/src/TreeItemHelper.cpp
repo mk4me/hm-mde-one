@@ -220,15 +220,21 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->serie());
     INewChartSerie* chartSerieZ = dynamic_cast<INewChartSerie*>(serieZ->serie());
 
-    if (events) {
-        chartSerieX->setEvents(events);
-        chartSerieY->setEvents(events);
-        chartSerieZ->setEvents(events);
-    }
-
     chartSerieX->setColor(QColor(255, 0, 0));
     chartSerieY->setColor(QColor(0, 255, 0));
     chartSerieZ->setColor(QColor(0, 0, 255));
+
+    if (events) {
+    	EventSerieBase* eventSerieX = dynamic_cast<EventSerieBase*>(serieX->serie());
+    	EventSerieBase* eventSerieY = dynamic_cast<EventSerieBase*>(serieX->serie());
+    	EventSerieBase* eventSerieZ = dynamic_cast<EventSerieBase*>(serieX->serie());
+    	if (eventSerieX && eventSerieY && eventSerieZ) {
+    		eventSerieX->setEvents(events);
+    		eventSerieY->setEvents(events);
+    		eventSerieZ->setEvents(events);
+    	}
+    }
+
 
     series.push_back(serieX);
     series.push_back(serieY);
@@ -340,7 +346,7 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
     wrapperX->getMetadata("core/name", name);    
 	auto s = visualizer->createSerie(typeid(ScalarChannelReaderInterface), wrapperX);
 
-    INewChartSerie* chartSerie = dynamic_cast<INewChartSerie*>(s->serie());
+    EventSerieBase* chartSerie = dynamic_cast<EventSerieBase*>(s->serie());
     if (events && chartSerie) {
         chartSerie->setEvents(events);
     }

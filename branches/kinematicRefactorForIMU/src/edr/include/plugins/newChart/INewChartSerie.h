@@ -15,7 +15,7 @@
 //! Niektóre elementy serii danych wizualizatora wykresów są edytowane z zewnątrz, 
 //! dlatego należy interfejsować serie danych, aby dać dostęp do obiektu bez konieczności linkowania się z pluginem
 //! taką funkcjonalność w obrębie serii zapewnia właśnie ten interfejs
-class INewChartSerie : public EventSerieBase
+class INewChartSerie
 {
 public:
 	//! destruktor

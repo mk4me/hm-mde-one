@@ -1,0 +1,287 @@
+#include "NewChartPCH.h"
+#include <QtGui/QPainter>
+#include "NewChartStreamSerie.h"
+#include "NewChartVisualizer.h"
+#include "NewChartSeriesData.h"
+
+const int ACTIVE_WIDTH = 2;
+const int NON_ACTIVE_WIDTH = 1;
+
+CurveData::CurveData():
+		d_count(0)
+{
+}
+void CurveData::append(double *x, double *y, int count)
+{
+	int newSize = ( (d_count + count) / 1000 + 1 ) * 1000;
+	if ( newSize > size() )
+	{
+		d_x.resize(newSize);
+		d_y.resize(newSize);
+	}
+	for ( register int i = 0; i < count; i++ )
+	{
+		d_x[d_count + i] = x[i];
+		d_y[d_count + i] = y[i];
+	}
+	d_count += count;
+}
+int CurveData::count() const
+{
+	return d_count;
+}
+int CurveData::size() const
+{
+	return d_x.size();
+}
+const double *CurveData::x() const
+{
+	return d_x.data();
+}
+const double *CurveData::y() const
+{
+	return d_y.data();
+}
+
+
+
+class ChartSerieUpdater : public threadingUtils::IStreamStatusObserver
+{
+public:
+	ChartSerieUpdater(NewChartStreamSerie * serie)
+		: serie(serie)
+	{
+	}
+
+	virtual ~ChartSerieUpdater() {}
+
+	//! Metoda wołana kiedy faktycznie stan strumienia się zmieni
+	virtual void update()
+	{
+		serie->update();
+	}
+
+private:
+
+	NewChartStreamSerie * serie;
+};
+
+
+
+NewChartStreamSerie::NewChartStreamSerie( NewChartVisualizer * visualizer ) :
+visualizer(visualizer),
+    curve(nullptr),
+    active(false),
+    _z(0),
+    _zBase(0)
+{
+	updater.reset(new ChartSerieUpdater(this));
+}
+
+void NewChartStreamSerie::setData(const utils::TypeInfo & requestedType, const core::VariantConstPtr & data )
+{
+    this->data = data;
+	this->requestedType = requestedType;
+	UTILS_ASSERT(requestedType == typeid(ScalarStream));
+	scalarStream = data->get();
+	std::string name;
+	data->getMetadata("core/name", name);
+
+    curve = new NewChartCurve(name.c_str());	
+    visualizer->addPlotCurve(curve, getScales());
+    scalarStream->attachObserver(updater);
+//    data->tryGet(reader);
+//    ScalarChannelReaderInterfacePtr nonConstChannel;
+//    nonConstChannel = utils::const_pointer_cast<ScalarChannelReaderInterface>(reader);
+//    stats.reset(new ScalarChannelStats(nonConstChannel));
+//    //curve->setSamples(new NewChartSeriesData(reader));
+//    int r = rand() % 256;
+//    int g = rand() % 256;
+//    int b = rand() % 256;
+//    setColor(r, g, b);
+//    setWidth(active ? ACTIVE_WIDTH : NON_ACTIVE_WIDTH);
+//    curve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
+//    curve->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
+//    curve->setItemAttribute(QwtPlotItem::AutoScale, true);
+//    curve->setItemAttribute(QwtPlotItem::Legend, true);
+//    curve->setCurveFitter(nullptr);
+//    //visualizer->addPlotCurve(curve, getScales());
+//
+//    _zBase = curve->z();
+//    curve->setZ(_zBase + _z);
+}
+
+const utils::TypeInfo & NewChartStreamSerie::getRequestedDataType() const
+{
+	return requestedType;
+}
+
+void NewChartStreamSerie::update()
+{
+	std::pair<float, float> point;
+	scalarStream->data(point);
+	double a = point.first, b = point.second;
+	curveData.append(&a, &b, 1);
+	curve->setRawSamples(curveData.x(), curveData.y(), curveData.count());
+	curve->show();
+}
+
+
+void NewChartStreamSerie::setZ(double z, bool replot)
+{
+    _z = z;
+    if(replot == true && curve != nullptr){
+        curve->setZ(_zBase + _z);
+    }
+}
+
+double NewChartStreamSerie::z() const
+{
+    return _z;
+}
+
+void NewChartStreamSerie::setActive( bool val )
+{
+    this->active = val;
+    if (curve) {
+        setWidth(val ? ACTIVE_WIDTH : NON_ACTIVE_WIDTH);
+    }
+}
+
+NewChartStreamSerie::~NewChartStreamSerie()
+{
+    //delete[] xvals;
+    //delete[] yvals;
+	curve = nullptr;
+}
+
+void NewChartStreamSerie::removeItemsFromPlot()
+{
+    curve->detach();
+}
+
+const QwtPlotCurve* NewChartStreamSerie::getCurve() const
+{
+    return curve;
+}
+
+QwtPlotCurve* NewChartStreamSerie::getCurve()
+{
+    return curve;
+}
+
+
+void NewChartStreamSerie::setVisible( bool visible )
+{
+    curve->setVisible(visible);
+}
+
+bool NewChartStreamSerie::isVisible() const
+{
+    return curve->isVisible();
+}
+
+
+void NewChartStreamSerie::setWidth( int width )
+{
+    UTILS_ASSERT(curve);
+    QPen pen = curve->pen();
+    pen.setWidth(width);
+    curve->setPen(pen);
+}
+
+double NewChartStreamSerie::getXOffset() const
+{
+    return curve->getXOffset();
+}
+
+void NewChartStreamSerie::setXOffset( double val )
+{
+    curve->setXOffset(val);
+}
+
+double NewChartStreamSerie::getYOffset() const
+{
+    return curve->getYOffset();
+}
+
+void NewChartStreamSerie::setYOffset( double val )
+{
+    curve->setYOffset(val);
+}
+
+QPointF NewChartStreamSerie::getOffset() const
+{
+    return curve->getOffset();
+}
+
+void NewChartStreamSerie::setOffset( const QPointF& offset )
+{
+    curve->setOffset(offset);
+}
+double NewChartStreamSerie::getXScale() const
+{
+    return curve->getXScale();
+}
+
+void NewChartStreamSerie::setXScale( double val )
+{
+    curve->setXScale(val);
+}
+
+double NewChartStreamSerie::getYScale() const
+{
+    return curve->getYScale();
+}
+
+void NewChartStreamSerie::setYScale( double val )
+{
+    curve->setYScale(val);
+}
+
+Scales NewChartStreamSerie::getScales() const
+{ 
+    return Scales(0.0f, 100.0, 0.0, 100.0);
+}
+
+
+double NewChartStreamSerie::getCurrentValue() const
+{ 
+    return 0.0;
+} 
+
+
+void NewChartStreamSerie::setColor( int r, int g, int b, int a /*= 255*/ )
+{
+    setColor(QColor(r, g, b, a));
+}
+
+void NewChartStreamSerie::setColor( const QColor& color )
+{
+    UTILS_ASSERT(curve);
+    QPen pen = curve->pen();
+    pen.setColor(color);
+    curve->setPen(pen);
+}
+
+QColor NewChartStreamSerie::getColor() const
+{
+    UTILS_ASSERT(curve);
+    return curve->pen().color();
+}
+
+void NewChartStreamSerie::setName( const std::string & name )
+{
+    this->name = name;
+}
+
+const std::string NewChartStreamSerie::getName() const
+{
+    return name;
+}
+
+const core::VariantConstPtr & NewChartStreamSerie::getData() const
+{
+    return data;
+}
+

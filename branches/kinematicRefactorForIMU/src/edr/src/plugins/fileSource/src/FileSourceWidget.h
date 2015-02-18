@@ -32,7 +32,8 @@ public:
 private slots:
     void onLoadFiles();
 	void onLoadAsfAmc();
-    
+	void onAddChartStream();
+    void onTimer();
 private:
     FileSource *fileSource;
 };

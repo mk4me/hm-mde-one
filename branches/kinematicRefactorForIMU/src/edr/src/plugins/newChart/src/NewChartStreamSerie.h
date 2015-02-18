@@ -1,14 +1,14 @@
 /********************************************************************
-	created:	2011/11/12
-	created:	12:11:2011   18:08
-	filename: 	ChartSerie.h
+	created:	2015/02/17
+	created:	17:2:2011   09:08
+	filename: 	NewChartStreamSerie.h
 	author:		Wojciech Kniec
 
 	purpose:
 *********************************************************************/
 
-#ifndef HEADER_GUARD_NEW_CHART__NEWCHARTSERIE_H__
-#define HEADER_GUARD_NEW_CHART__NEWCHARTSERIE_H__
+#ifndef HEADER_GUARD_NEW_CHART__NEWCHARTSTREAMSERIE_H__
+#define HEADER_GUARD_NEW_CHART__NEWCHARTSTREAMSERIE_H__
 
 #include <corelib/IVisualizer.h>
 #include <plugins/c3d/C3DCollections.h>
@@ -17,35 +17,41 @@
 #include "NewChartCurve.h"
 #include "NewChartEvents.h"
 #include "Scales.h"
+#include <QtCore/QVector>
 
 class NewChartCurve;
 class NewChartVisualizer;
 
-//! Podstawowa seria danych wizualizatora 2D
-class NewChartSerie : public INewChartSerie, public EventSerieBase
+// Klasa wzięta z przykładu qwt - realtime_plot/incrementalplot.h
+class CurveData
+{
+// A container class for growing data
+public:
+	CurveData();
+	void append(double *x, double *y, int count);
+	int count() const;
+	int	size() const;
+	const double *x() const;
+	const double *y() const;
+private:
+	int d_count;
+	QVector<double> d_x;
+	QVector<double> d_y;
+};
+
+//! Strumieniowa seria danych wizualizatora 2D
+class NewChartStreamSerie : public INewChartSerie, public plugin::IVisualizer::ISerie
 {
     friend class NewChartVisualizer;
 public:
     //! Konstruktor
     //! \param visualizer wizualzator, który tworzy serie danych
-    NewChartSerie(NewChartVisualizer * visualizer);
-    virtual ~NewChartSerie();
+    NewChartStreamSerie(NewChartVisualizer * visualizer);
+    virtual ~NewChartStreamSerie();
 
 public:
-    //! \return czas ustawiony przez timeline
-    double getTime() const;
     //! \return aktualna wartość (dla aktualnego czasu)
     double getCurrentValue() const;
-    //! ustawia czas dla serii
-    //! \param time czas do ustawienia
-    virtual void setTime(double time);
-    //! \return czas trwania serii
-    virtual double getLength() const;
-	virtual double getBegin() const;
-	virtual double getEnd() const;
-    //! ustawia obiekt ze zdarzeniami powiazanymi z próbą pomiarową
-    //! \param val kolecja zdarzeń
-    virtual void setEvents(EventsCollectionConstPtr val);
     //! pobierz krzywą qwt
     const QwtPlotCurve* getCurve() const;
     //! pobierz krzywą qwt
@@ -55,8 +61,6 @@ public:
     void setVisible(bool visible);
     //! \return czy krzywa jest widoczna
     bool isVisible() const;
-    //! \return obiekt ułatwiający zarządzanie eventami
-    EventsHelperPtr getEventsHelper() const { return eventsHelper; }
     //! ustawienie koloru krzywej
     //! \param r składowa czerwona (0 - 255)
     //! \param g składowa zielona (0 - 255)
@@ -94,9 +98,7 @@ public:
     //! \param val aktywna / nieaktywna
     void setActive(bool val);
     //! \return statystyki dla ustawionego ScalarChannelReaderInterface
-    ScalarChannelStatsConstPtr getStats() const { return stats; } //return pointHelper->getStats(); }
-    //! \return ustawiony ScalarChannelReaderInterface
-    ScalarChannelReaderInterfaceConstPtr getReader() const { return reader; }
+    ScalarChannelStatsConstPtr getStats() const { return stats; }
     //! odlacza krzywa od wykresu
     void removeItemsFromPlot();
     //! ustawia kolejność wyświetlania
@@ -131,11 +133,6 @@ public:
     //! \param offset nowa wartość przesunięcia
     void setOffset(const QPointF& offset);
 
-private:
-    //! Ustawia kolory dla krzywych znormalizowanych względem eventów
-    //! \param range dostarczane segmenty
-    //! \param color kolor dla ustawianych segmentów (zwykle ten sam co bazowa krzywa)
-    void setColorsForEvents(EventsHelper::SegmentsRange range, const QColor& color);
 
 private:
     //! wizualizator, który stworzył serie
@@ -145,23 +142,22 @@ private:
     //! OW z danymi
     core::VariantConstPtr data;
 
+	//! Obiekt aktualizujący
+	threadingUtils::StreamStatusObserverPtr updater;
+
 	utils::TypeInfo requestedType;
     //! wizualizowana krzywa
     NewChartCurve* curve;
     //! obiekt ze statystykami
     ScalarChannelStatsPtr stats;
-    //! obiekt z danymi
-    ScalarChannelReaderInterfaceConstPtr reader;
-    //! obiekt zajmujący się logika eventów
-    EventsHelperPtr eventsHelper;
     //! czy seria jest aktywna
     bool active;
-    //! aktualny czas, ustawiony przez timeline
-    double time;
     //! składowa okresla kolejność rysowania
     double _z;
     //! początkowa wartość składowej zd
     double _zBase;
+    ScalarStreamConstPtr scalarStream;
+    CurveData curveData;
 };
 
 #endif

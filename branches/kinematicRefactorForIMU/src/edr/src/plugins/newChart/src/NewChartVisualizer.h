@@ -42,6 +42,7 @@ class NewChartLegendItem;
 class NewChartVisualizer : public QObject, public INewChartVisualizer
 {
     friend class NewChartSerie;
+    friend class NewChartStreamSerie;
     Q_OBJECT;
     UNIQUE_ID("{1122BD8A-6056-4965-9AEA-502F99CA2433}");
 	CLASS_DESCRIPTION("New Chart Visualizer", "New Chart Visualizer");

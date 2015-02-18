@@ -2,12 +2,14 @@
 #include <corelib/Filesystem.h>
 #include <corelib/HierarchyItem.h>
 #include <corelib/HierarchyDataItem.h>
+#include <corelib/PluginCommon.h>
 #include "FileSourceWidget.h"
 #include "../acclaimformatslib/acclaimformatslib/MotionData.h"
 #include "../acclaimformatslib/acclaimformatslib/Skeleton.h"
 #include "kinematiclib/Skeleton.h"
 #include "kinematiclib/SkeletonState.h"
 #include <plugins/kinematic/Wrappers.h>
+#include <plugins/newChart/Wrappers.h>
 
 
 FileSource::FileSource() :
@@ -37,6 +39,17 @@ void FileSource::finalize()
 
 void FileSource::update( double deltaTime )
 {
+
+}
+
+void FileSource::fillStream() {
+	static float t = 0.0f;
+	for (auto& stream : streams) {
+		auto p = std::make_pair(t,t);
+		stream->pushData(p);
+	}
+
+	t += 1.0f;
     
 }
 
@@ -83,10 +96,10 @@ void FileSource::loadAsfAmc()
 	//core::Filesystem::Path p1 = "C:/Users/Mateusz/Desktop/test.amc";
 	//core::Filesystem::Path p2 = "C:/Users/Mateusz/Desktop/test.asf";
 
-	//core::Filesystem::Path p1 = "E:/programming/WORK/EDR/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test2.amc";
-	//core::Filesystem::Path p2 = "E:/programming/WORK/EDR/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test2.asf";
-	core::Filesystem::Path p1 = "C:/Users/Wojciech/Desktop/test.amc";
-	core::Filesystem::Path p2 = "C:/Users/Wojciech/Desktop/test.asf";
+	core::Filesystem::Path p1 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test.amc";
+	core::Filesystem::Path p2 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test.asf";
+	//core::Filesystem::Path p1 = "C:/Users/Wojciech/Desktop/test.amc";
+	//core::Filesystem::Path p2 = "C:/Users/Wojciech/Desktop/test.asf";
 	transaction->addFile(p1);
 	transaction->addFile(p2);
 	core::ConstVariantsList oList;
@@ -129,3 +142,18 @@ void FileSource::loadAsfAmc()
 	root->appendChild(item);
 	hierarchyTransaction->addRoot(root);
 }
+
+void FileSource::addChartStream()
+{
+	auto stream = utils::make_shared<ScalarStream>();
+	streams.push_back(stream);
+	auto object = core::Variant::create<ScalarStream>();
+	object->set(stream);
+
+	auto hierarchyTransaction = memoryDM->hierarchyTransaction();
+	core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>("Chart Stream", "Chart Stream" , QIcon());
+	core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(object, QString());
+	root->appendChild(item);
+	hierarchyTransaction->addRoot(root);
+}
+
