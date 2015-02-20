@@ -11,6 +11,7 @@
 #define HEADER_GUARD_KINEMATIC__SkeletonSerie_H__
 
 #include <corelib/IVisualizer.h>
+#include <osgutils/OsgSchemeDrawer.h>
 #include "AbstractSkeletonSerie.h"
 #include <plugins/kinematic/Wrappers.h>
 #include <osg/PositionAttitudeTransform>
@@ -23,7 +24,6 @@ class KinematicVisualizer;
 class SkeletalVisualizationSchemeHelper;
 class IPointsSchemeDrawer;
 class IConnectionsSchemeDrawer;
-class GhostSchemeDrawer;
 class SkeletonJointsMapping;
 class TrajectoryDrawerManager;
 
@@ -53,6 +53,10 @@ public:
 	virtual double getEnd() const;
 	virtual void update();
 
+public:
+	void setGhostVisible(const bool visible);
+	const bool ghostVisible() const;
+	utils::shared_ptr<TrajectoryDrawerManager> getTrajectoriesManager();
 
 protected:
 	//! Abstrakcyjny setter do czasu, metoda z inną sygnaturą może uchronić przed błędami
@@ -67,11 +71,11 @@ private:
 	void createGhostAndTrajectories();
 private:
 
-	osg::Matrix lToW;
+	//osg::Matrix lToW;
 
-	osg::ref_ptr<osg::PositionAttitudeTransform> localRootNode;
+	//osg::ref_ptr<osg::PositionAttitudeTransform> localRootNode;
 	//! Aktualna dodatkowa rotacja wynikająca ze zmiany osi
-	osg::Quat preRot;
+	//osg::Quat preRot;
 	//! Pozycja wynikająca z położenia roota szkieletu
 	osg::Vec3 rootPosition;
 	//! Czas faktycznej aktualizacji
@@ -89,20 +93,25 @@ private:
 	//! nazwa serii
 	std::string name;
 	//! czy operujemy na układzie XYZ czy innym
-	bool xyzAxis;
+	//bool xyzAxis;
 	//! Obiekt rysujący punkty
-	utils::shared_ptr<osgutils::IPointsSchemeDrawer> pointsDrawer;
+	//utils::shared_ptr<osgutils::IPointsSchemeDrawer> pointsDrawer;
 	//! Obiekt rysujący połączenia
-	utils::shared_ptr<osgutils::IConnectionsSchemeDrawer> connectionsDrawer;
+	//utils::shared_ptr<osgutils::IConnectionsSchemeDrawer> connectionsDrawer;
 	//! Klasa pomocnicza przy rysowaniu ducha
-	utils::shared_ptr<osgutils::GhostSchemeDrawer> ghostDrawer;
+	//utils::shared_ptr<osgutils::GhostSchemeDrawer> ghostDrawer;
 	//! Klasa pomocnicza przy rysowaniu trajektorii
-	TrajectoryDrawerManagerPtr trajectoriesManager;
+	//TrajectoryDrawerManagerPtr trajectoriesManager;
 	//! stworzone połączenia między punktami
-	osgutils::SegmentsDescriptors connections;
+	//osgutils::SegmentsDescriptors connections;
 	//! mapowanie joint -> index
-	std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> joint2Index;
-	PointsOrientationsDrawer pointsAxesDrawer;
+	//std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> joint2Index;
+	//PointsOrientationsDrawer pointsAxesDrawer;
+
+	//! Klasa pomocnicza przy rysowaniu ducha
+		utils::shared_ptr<osgutils::GhostSchemeDrawer> ghostDrawer;
+		//! Klasa pomocnicza przy rysowaniu trajektorii
+		TrajectoryDrawerManagerPtr trajectoriesManager;
 };
 
 

@@ -23,7 +23,6 @@ class KinematicVisualizer;
 class SkeletalVisualizationSchemeHelper;
 class IPointsSchemeDrawer;
 class IConnectionsSchemeDrawer;
-class GhostSchemeDrawer;
 class SkeletonJointsMapping;
 class TrajectoryDrawerManager;
 
@@ -58,11 +57,6 @@ public:
 
 	virtual ~AbstractSkeletonSerie() {}
 
-//	private slots:
-//	//! zmiana osi, gdy otrzymamy obiekt w nietypowym ukł. współrzędnych
-//	//! \param xyz
-//	void setAxis(bool xyz);
-
 public:
 
 	//! \return ustawione dane
@@ -74,10 +68,10 @@ public:
 
 	virtual const utils::TypeInfo & getRequestedDataType() const;
 
-	virtual const bool ghostVisible() const;
-	virtual void setGhostVisible(const bool visible);
+	virtual const bool ghostVisible() const { return false; }
+	virtual void setGhostVisible(const bool visible) {}
 
-	utils::shared_ptr<TrajectoryDrawerManager> getTrajectoriesManager();
+	//utils::shared_ptr<TrajectoryDrawerManager> getTrajectoriesManager();
 
 
 	void setJointsOrientationsVisible();
@@ -91,15 +85,14 @@ protected:
 	virtual const kinematic::SkeletonState::NonRigidCompleteStateChange& getStateChange() = 0;
 
 	void init(double ratio, int pointsCount, kinematic::SkeletonStatePtr state, const kinematic::SkeletonState::LinearizedNodesMapping& mapping);
+	//! zmiana osi, gdy otrzymamy obiekt w nietypowym ukł. współrzędnych
+	//! \param xyz
+	void setAxis(bool xyz);
 
-private:
-
-//	void createGhostAndTrajectories();
 private:
 
 	osg::Matrix lToW;
 
-	osg::ref_ptr<osg::PositionAttitudeTransform> localRootNode;
 	//! Aktualna dodatkowa rotacja wynikająca ze zmiany osi
 	osg::Quat preRot;
 	//! Pozycja wynikająca z położenia roota szkieletu
@@ -118,17 +111,17 @@ private:
 	utils::shared_ptr<osgutils::IPointsSchemeDrawer> pointsDrawer;
 	//! Obiekt rysujący połączenia
 	utils::shared_ptr<osgutils::IConnectionsSchemeDrawer> connectionsDrawer;
-	//! Klasa pomocnicza przy rysowaniu ducha
-	utils::shared_ptr<osgutils::GhostSchemeDrawer> ghostDrawer;
-	//! Klasa pomocnicza przy rysowaniu trajektorii
-	TrajectoryDrawerManagerPtr trajectoriesManager;
+
+	kinematic::SkeletonStatePtr skeletonState;
+	PointsOrientationsDrawer pointsAxesDrawer;
+protected:
 	//! stworzone połączenia między punktami
 	osgutils::SegmentsDescriptors connections;
 	//! mapowanie joint -> index
 	std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> joint2Index;
-	PointsOrientationsDrawer pointsAxesDrawer;
-	kinematic::SkeletonStatePtr skeletonState;
 	kinematic::SkeletonState::LinearizedNodesMapping nodesMapping;
+
+	osg::ref_ptr<osg::PositionAttitudeTransform> localRootNode;
 };
 
 template <class SeriePolicy>

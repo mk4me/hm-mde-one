@@ -7,7 +7,7 @@
 #include <kinematiclib/SkeletonState.h>
 #include "osgManipulator/TranslateAxisDragger"
 
-//static const osg::Quat invQXYZ = osg::Quat(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f)) * osg::Quat(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
+static const osg::Quat invQXYZ = osg::Quat(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f)) * osg::Quat(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
 
 AbstractSkeletonSerie::AbstractSkeletonSerie(KinematicVisualizer * visualizer,
 	const utils::TypeInfo & requestedType,
@@ -56,13 +56,13 @@ void AbstractSkeletonSerie::init(double ratio, int pointsCount,
 
 
 
-//void AbstractSkeletonSerie::setAxis(bool xyz)
-//{
-//	//TODO - sprawdzic jak to dziala
-//	localRootNode->setAttitude(xyz == true ? invQXYZ : osg::Quat());
-//
-//	localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
-//}
+void AbstractSkeletonSerie::setAxis(bool xyz)
+{
+	//TODO - sprawdzic jak to dziala
+	localRootNode->setAttitude(xyz == true ? invQXYZ : osg::Quat());
+
+	localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
+}
 
 
 const core::VariantConstPtr & AbstractSkeletonSerie::getData() const
@@ -109,32 +109,7 @@ const utils::TypeInfo & AbstractSkeletonSerie::getRequestedDataType() const
 	return requestedType;
 }
 
-const bool AbstractSkeletonSerie::ghostVisible() const
-{
-	if (ghostDrawer == nullptr){
-		return false;
-	}
 
-	return !(ghostDrawer->getNode()->getNodeMask() == 0);
-}
-
-
-void AbstractSkeletonSerie::setGhostVisible(const bool visible)
-{
-	if (visible == true && ghostDrawer == nullptr){
-		//createGhostAndTrajectories();
-	}
-
-	ghostDrawer->getNode()->setNodeMask(visible == true ? 1 : 0);
-}
-
-utils::shared_ptr<TrajectoryDrawerManager> AbstractSkeletonSerie::getTrajectoriesManager()
-{
-	if (!trajectoriesManager) {
-		//createGhostAndTrajectories();
-	}
-	return trajectoriesManager;
-}
 
 void AbstractSkeletonSerie::setJointsOrientationsVisible()
 {
