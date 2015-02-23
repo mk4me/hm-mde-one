@@ -62,7 +62,7 @@ bool CostumeCompleteDataFilter::operator()(const IMU::CostumeStream::value_type 
 	{
 		if (d->type() == imuCostume::Costume::IMU){
 			auto imuData = utils::static_pointer_cast<const imuCostume::Costume::IMUSensor>(d);
-			if (imuData->dataStatus() == 0x0F)
+			if (imuData->dataStatus() | 0x0F)
 			{
 				locSensorsIDs.erase(d->id());
 			}
@@ -147,9 +147,7 @@ bool CostumeIMUExtractor::verify(const IMU::CostumeStream::value_type & streamDa
 				it->second.orient = imuData->orientation();
 			}
 
-			it->second.status |= status;
-
-			if (it->second.status == 0x0F){
+			if((it->second.status |= status) | 0x0F){			
 				ret = true;
 			}
 		}
@@ -168,7 +166,7 @@ void CostumeIMUExtractor::extract(const IMU::CostumeStream::value_type & streamD
 
 		if (it != currentData.end()){
 
-			if (it->second.status == 0x0F){
+			if (it->second.status | 0x0F){
 
 				IMU::SensorData sd;
 				sd.accelerometer = it->second.acc;
@@ -182,7 +180,7 @@ void CostumeIMUExtractor::extract(const IMU::CostumeStream::value_type & streamD
 	}		
 	
 	sensorsData.timestamp = streamData.timestamp;
-	sensorsData.sensorsData = std::move(locData);	
+	sensorsData.sensorsData.swap(locData);	
 }
 
 OrientationEstimator::OrientationEstimator(const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping & orientationAlgorithms)
@@ -398,7 +396,8 @@ bool KinematicStreamExtractor::verify(const IMU::MotionStream::value_type & inpu
 void KinematicStreamExtractor::extract(const IMU::MotionStream::value_type & input, SkeletonStateStream::value_type & output) const
 {
 	skeletonState.root()->value.setGlobal(input.second.position);
-	auto visitor = [&input,&output](kinematic::SkeletonState::JointPtr joint,
+	SkeletonStateStream::value_type locOutput;
+	auto visitor = [&input, &locOutput](kinematic::SkeletonState::JointPtr joint,
 		const kinematic::SkeletonState::Joint::size_type) -> void
 	{
 		auto it = input.second.jointsOrientations.find(joint->value.name());
@@ -407,10 +406,13 @@ void KinematicStreamExtractor::extract(const IMU::MotionStream::value_type & inp
 		}
 
 		//if (joint->isLeaf() == false){
-			output.push_back(SkeletonStateStream::value_type::value_type({ joint->value.localPosition(), joint->value.localOrientation() }));			
+			//auto val = SkeletonStateStream::value_type::value_type({ joint->value.localPosition(), joint->value.localOrientation() });
+			auto val = SkeletonStateStream::value_type::value_type({ osg::Vec3(0,0,0), joint->value.localOrientation() });
+			locOutput.push_back(val);
 		//}
 	};
 	kinematic::SkeletonState::Joint::visitLevelOrder(skeletonState.root(), visitor);
+	output.swap(locOutput);
 }
 
 RawToCANopenExtractor::RawToCANopenExtractor()
