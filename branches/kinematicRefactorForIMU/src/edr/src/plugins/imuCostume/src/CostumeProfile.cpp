@@ -61,6 +61,45 @@ CostumeProfileInstance CostumeProfileInstance::create(const CostumeProfile & pro
 	return ret;
 }	
 
+CostumeProfileInstance CostumeProfileInstance::create(const CostumeProfile & profile,
+	const imuCostume::Costume::SensorIDsSet & filter)
+{
+	CostumeProfileInstance ret;
+
+	ret.name = profile.name;
+	ret.calibrationAlgorithm.reset(profile.calibrationAlgorithm->create());
+	ret.motionEstimationAlgorithm.reset(profile.motionEstimationAlgorithm->create());
+	
+	for (const auto & val : profile.sensorsAdjustments)
+	{
+		if (filter.find(val.first) != filter.end())
+		{
+			ret.sensorsAdjustments.insert(val);
+		}
+	}
+
+	for (const auto & val : profile.sensorsMapping)
+	{
+		if (filter.find(val.get_left()) != filter.end())
+		{
+			ret.sensorsMapping.insert(val);
+		}
+	}	
+
+	if (profile.skeleton){
+		ret.skeleton.reset(new Skeleton(*profile.skeleton));
+	}
+
+	for (const auto & ea : profile.sensorsOrientationEstimationAlgorithms)
+	{
+		if (filter.find(ea.first) != filter.end()){
+			ret.sensorsOrientationEstimationAlgorithms.insert(OrientationEstimationAlgorithmsMapping::value_type(ea.first, IIMUOrientationEstimationAlgorithmPtr(ea.second->create())));
+		}
+	}
+
+	return ret;
+}
+
 SerializableCostumeProfile SerializableCostumeProfile::pack(const CostumeProfile & profile)
 {
 	SerializableCostumeProfile ret;

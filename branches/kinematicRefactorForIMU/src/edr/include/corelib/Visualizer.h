@@ -52,8 +52,6 @@ namespace core {
 			VisualizerSerie(Visualizer * visualizer, plugin::IVisualizer::ISerie * serieBase);
 			//! Prywatny destruktor - tylko wizualizator może niszczyć serie danych
 			~VisualizerSerie();
-			//! Metoda próbuje odświezyć serię danych - odrysować na scenie wizualizatora
-			void tryUpdate();
 
 		public:
 			//! \return Wizualizator który stworzył ta serie danych
@@ -64,30 +62,27 @@ namespace core {
 			const plugin::IVisualizer::ISerie * serie() const;
 			//! \return Podstawowy interfejs serii danych
 			plugin::IVisualizer::ISerie * serie();
-			//! Metoda ustawia dane serii - podmienia ją na inną jeżeli requestedType inny niż zadany w serii
-			void setData(const utils::TypeInfo & requestedType, const core::VariantConstPtr & data);
 			//! \tparam Typ który powinna wspierać seria danych
+			template<typename T>
 			//! \return Wskaźnik do danego typu jeśli go wspiera, nullptr jesli nie ma serii
 			//! lub nie wspiera typu
-			template<typename T>
 			T * serieFeatures()
 			{
 				return dynamic_cast<T*>(serie());
 			}
 			//! \tparam Typ który powinna wspierać seria danych
+			template<typename T>
 			//! \return Wskaźnik do danego typu jeśli go wspiera, nullptr jesli nie ma serii
 			//! lub nie wspiera typu
-			template<typename T>
 			const T * serieFeatures() const
 			{
 				return dynamic_cast<const T*>(serie());
 			}
 
-			//! Metoda żąda odświeżenia danych
-			void requestUpdate();
-
 		private:
+			//! Seria danych
 			plugin::IVisualizer::ISerie * serie_;
+			//! Wizualizator
 			Visualizer * visualizer_;
 		};
 

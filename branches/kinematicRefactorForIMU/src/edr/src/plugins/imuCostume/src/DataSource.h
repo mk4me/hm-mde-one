@@ -38,23 +38,22 @@ namespace IMU
 		struct SensorData
 		{
 			utils::shared_ptr<utils::SamplesStatus> samplesStatus;
-			utils::shared_ptr<IMUStream> dataStream;
-			std::vector<utils::shared_ptr<Vec3Stream>> vec3dStreams;
-			utils::shared_ptr<QuatStream> orientationStream;
-			std::list<utils::shared_ptr<ScalarStream>> scalarStreams;
+			core::VariantsList domainData;
 		};
+
+		typedef std::map<imuCostume::Costume::SensorID, SensorData> SensorsData;
 
 		struct CostumeData : public CostumeDescription
 		{
 			utils::shared_ptr<utils::SamplesStatus> samplesStatus;
-			std::map<imuCostume::Costume::SensorID, SensorData> sensorsData;
+			SensorsData sensorsData;
 			CANopenFramesStreamPtr CANopenStream;
 			CostumeStreamPtr costumeStream;
 			ExtractedCostumeStreamAdapterPtr completeImuStream;
 
 			CostumeSkeletonMotionPtr skeletonMotion;
 
-			core::HierarchyDataItemPtr hierarchyRootItem;
+			core::HierarchyItemPtr hierarchyRootItem;
 			core::VariantsList domainData;			
 		};
 
@@ -152,7 +151,7 @@ namespace IMU
 
 		static CostumeStatus innerCreateCostumeStatus(const IMUCostumeDataSource::CostumeData & cData);
 
-		void fillRawCostumeData(CostumeData & cData);
+		core::HierarchyItemPtr fillRawCostumeData(CostumeData & cData);
 
 		static void configureCostume(CostumeDescription & cd);
 		static bool innerRefreshCostumeSensorsConfiguration(CostumeData & data, const uint8_t MaxSamplesCount);
@@ -178,6 +177,11 @@ namespace IMU
 		void tryCreateRecordedItem();
 
 		void resfreshCostumesData();
+		
+		static void unpackSensorsStream(SensorsStreamPtr stream,
+			SensorsData & sensorsData,
+			core::HierarchyItemPtr root,
+			core::VariantsList & domainData);
 
 	private:
 

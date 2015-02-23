@@ -238,6 +238,24 @@ ArrayExtractor::~ArrayExtractor()
 
 }
 
+//! \param idx Index obiketu który chcemy wypakowywaæ z wektora
+CompoundArrayExtractor::CompoundArrayExtractor(const unsigned int idx)
+	: idx(idx)
+{
+
+}
+//! \param Other Inny kopiowany extractor
+CompoundArrayExtractor::CompoundArrayExtractor(const CompoundArrayExtractor & Other)
+	: idx(Other.idx)
+{
+
+}
+//! Destruktor
+CompoundArrayExtractor::~CompoundArrayExtractor()
+{
+
+}
+
 OrientationExtractor::OrientationExtractor(const unsigned int idx)
 	: idx(idx)
 {
@@ -255,14 +273,14 @@ OrientationExtractor::~OrientationExtractor()
 
 }
 
-bool OrientationExtractor::verify(const IMU::SkeletonMotionState & a) const
+bool OrientationExtractor::verify(const IMU::MotionStream::value_type & a) const
 {
 	return true;
 }
 
-void OrientationExtractor::extract(const IMU::SkeletonMotionState & a, osg::Quat & ret) const
+void OrientationExtractor::extract(const IMU::MotionStream::value_type & a, osg::Quat & ret) const
 {
-	auto it = a.jointsOrientations.begin();
+	auto it = a.second.jointsOrientations.begin();
 	std::advance(it, idx);
 	ret = it->second;
 }
@@ -311,7 +329,7 @@ bool ExtractCostumeMotion::verify(const IMU::SensorsStreamData & input) const
 	return true;
 }
 
-void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::SkeletonMotionState & output) const
+void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::MotionStream::value_type & output) const
 {
 	double deltaTime = calculateDelta(input.timestamp, previousTime);	
 
@@ -329,8 +347,11 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Sk
 
 	for (const auto & i : input.sensorsData)
 	{
-		const auto & adj = sensorsAdjustments.find(i.first)->second;
-		jointsGlobalOrientations.insert(std::map<std::string, osg::Quat>::value_type(sensorsMapping.left.find(i.first)->get_right(), i.second.orientation * adj.rotation.inverse()));
+		auto it = sensorsAdjustments.find(i.first);
+		if (it != sensorsAdjustments.end()){
+			const auto & adj = it->second;
+			jointsGlobalOrientations.insert(std::map<std::string, osg::Quat>::value_type(sensorsMapping.left.find(i.first)->get_right(), i.second.orientation * adj.rotation.inverse()));
+		}
 	}
 
 	kinematic::SkeletonState ss(kinematic::SkeletonState::create(*skeleton));
@@ -352,9 +373,9 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Sk
 
 	try{
 		auto ret = motionEstimationAlgorithm->estimate(motionState, input.sensorsData, deltaTime);
-		output.position = ret.position;
-		output.jointsOrientations = ret.jointsOrientations;
-		output.timestamp = (double)previousTime / 1000.0;
+		output.second.position = ret.position;
+		output.second.jointsOrientations = ret.jointsOrientations;
+		output.first = (double)previousTime / 1000.0;
 	}
 	catch (...){
 

@@ -43,6 +43,12 @@ const double *CurveData::y() const
 	return d_y.data();
 }
 
+void CurveData::clear()
+{
+	QVector<double>().swap(d_x);
+	QVector<double>().swap(d_y);
+}
+
 
 
 class ChartSerieUpdater : public threadingUtils::IStreamStatusObserver
@@ -58,7 +64,7 @@ public:
 	//! Metoda wołana kiedy faktycznie stan strumienia się zmieni
 	virtual void update()
 	{
-		serie->update();
+		serie->requestUpdate();
 	}
 
 private:
@@ -73,7 +79,8 @@ visualizer(visualizer),
     curve(nullptr),
     active(false),
     _z(0),
-    _zBase(0)
+    _zBase(0),
+	a(0.0)
 {
 	updater.reset(new ChartSerieUpdater(this));
 }
@@ -87,9 +94,10 @@ void NewChartStreamSerie::setData(const utils::TypeInfo & requestedType, const c
 	std::string name;
 	data->getMetadata("core/name", name);
 
-    curve = new NewChartCurve(name.c_str());	
+    curve = new NewChartCurve(name.c_str());
+	curve->setRenderHint(QwtPlotItem::RenderAntialiased);
     visualizer->addPlotCurve(curve, getScales());
-    scalarStream->attachObserver(updater);
+    utils::const_pointer_cast<ScalarStream>(scalarStream)->attachObserver(updater);
 //    data->tryGet(reader);
 //    ScalarChannelReaderInterfacePtr nonConstChannel;
 //    nonConstChannel = utils::const_pointer_cast<ScalarChannelReaderInterface>(reader);
@@ -117,10 +125,31 @@ const utils::TypeInfo & NewChartStreamSerie::getRequestedDataType() const
 }
 
 void NewChartStreamSerie::update()
-{
+{	
 	std::pair<float, float> point;
 	scalarStream->data(point);
-	double a = point.first, b = point.second;
+	double aa = point.first;
+	double b = point.second;
+
+	aa = std::fmod(aa / 1000, 5.0);
+
+	if (aa < a){
+		if (curveData.size() > 0){
+			std::pair<double, double> spoint;
+
+			spoint.first = 0.0;
+			spoint.second = curveData.y()[curveData.size() - 1] + (point.second - curveData.y()[curveData.size() - 1]) * (5.0 - a) / (5.0 + aa - a);
+
+			curveData.clear();
+			curveData.append(&spoint.first, &spoint.second, 1);
+		}
+		else{
+			curveData.clear();
+		}
+	}
+
+	a = aa;
+
 	curveData.append(&a, &b, 1);
 	curve->setRawSamples(curveData.x(), curveData.y(), curveData.count());
 	curve->show();

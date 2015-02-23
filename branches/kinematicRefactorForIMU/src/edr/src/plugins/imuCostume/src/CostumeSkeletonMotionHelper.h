@@ -31,19 +31,13 @@ private:
 	};
 
 public:
-
-	typedef threadingUtils::IStreamT<IMU::SensorsStreamData> SensorsStream;
-
-	DEFINE_SMART_POINTERS(SensorsStream);
-
-public:
 	//! \param sensorsStream Sturmieñ danych sensorów
 	//! \param estimationAlgorithms [out] Algorytmy estymacji orientacji czujników
 	//! \param calibrationAlgorithm [out] Algorytm kalibrajci kostiumu
 	//! \param maxSamples Maksymalna iloœæ próbek w ca³ej fazie inicjalizacji
 	//! \param calibratinStageChangeValue Iloœæ próbek po któych rozpoczynamy kalibracjê (algorytmy estymacji orientacji zosta³y zainicjowane)
 	//! \param parent Obiekt rodzic
-	CostumeSkeletonMotionHelper(SensorsStreamPtr sensorsStream,
+	CostumeSkeletonMotionHelper(IMU::SensorsStreamPtr sensorsStream,
 		IMU::CostumeProfileInstance * costumeProfile,
 		const unsigned int maxSamples,
 		const unsigned int calibratinStageChangeValue, QWidget * parent = nullptr);
@@ -73,7 +67,7 @@ private:
 
 private:
 	//! Strumieñ danych z kostiumu
-	SensorsStreamPtr sensorsStream;
+	IMU::SensorsStreamPtr sensorsStream;
 	//! Obserwator strumienia kostiumu
 	utils::shared_ptr<threadingUtils::ResetableStreamStatusObserver> observer;
 	//! Profil wg którego bêdziemy siê konfigurowaæ
@@ -92,7 +86,5 @@ private:
 	//! Dialog z postepem inicjalizacji kostiumu
 	QProgressDialog * pd;
 };
-
-DEFINE_WRAPPER(CostumeSkeletonMotionHelper::SensorsStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
 
 #endif	// __HEADER_GUARD_IMU__COSTUMESKELETONMOTIONHELPER_H__

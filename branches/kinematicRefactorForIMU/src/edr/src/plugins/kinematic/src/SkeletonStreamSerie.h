@@ -47,11 +47,6 @@ public:
 
 public:
 
-	void myUpdate()
-	{
-		update();
-	}
-
 	//! Ustawia nową nazwę serii
 	//! \param name nowa nazwa
 	virtual void setName(const std::string & name);

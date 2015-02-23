@@ -40,7 +40,7 @@ void CostumeSkeletonMotionHelper::estimate(std::map<imuCostume::Costume::SensorI
 	}
 }
 
-CostumeSkeletonMotionHelper::CostumeSkeletonMotionHelper(SensorsStreamPtr sensorsStream,
+CostumeSkeletonMotionHelper::CostumeSkeletonMotionHelper(IMU::SensorsStreamPtr sensorsStream,
 	IMU::CostumeProfileInstance * costumeProfile,
 	const unsigned int maxSamples,
 	const unsigned int calibratinStageChangeValue, QWidget * parent)

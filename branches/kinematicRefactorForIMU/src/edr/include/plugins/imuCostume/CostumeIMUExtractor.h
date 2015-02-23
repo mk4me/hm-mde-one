@@ -128,6 +128,42 @@ namespace IMU
 		const unsigned int idx;
 	};
 
+	//! Klasa pozwalaj¹ca wypakowywaæ dane z wektorów
+	class IMU_EXPORT CompoundArrayExtractor
+	{
+	public:
+		//! \param idx Index obiketu który chcemy wypakowywaæ z wektora
+		CompoundArrayExtractor(const unsigned int idx);
+		//! \param Other Inny kopiowany extractor
+		CompoundArrayExtractor(const CompoundArrayExtractor & Other);
+		//! Destruktor
+		~CompoundArrayExtractor();
+
+		//! \tparam AT Wektor do weryfikacji
+		template<typename AT>
+		//! \param a Wektor z którego chcemy wypakowaæ dane
+		//! \return Czy z wektora da siê wypakowaæ dane o zadanym indeksie
+		bool verify(const AT & a) const
+		{
+			return true;
+		}
+
+		//! \tparam AT Wektor do weryfikacji
+		//! \tparam Ret Typ który chcemy wypakowaæ z wektora
+		template<typename AT, typename Ret>
+		//! \param Wektor z którego wypakowujemy dane
+		//! \param ret [out] Obiekt docelowy dla wypakowanych danych
+		void extract(const AT & a, Ret & ret) const
+		{
+			ret.first = a.first;
+			ret.second = a.second[idx];
+		}
+
+	private:
+		//! Indeks spod którego wybieramy dane z wektora
+		const unsigned int idx;
+	};
+
 
 	class IMU_EXPORT OrientationExtractor
 	{
@@ -136,9 +172,9 @@ namespace IMU
 		OrientationExtractor(const OrientationExtractor & Other);
 		~OrientationExtractor();
 
-		bool verify(const IMU::SkeletonMotionState & a) const;
+		bool verify(const IMU::MotionStream::value_type & a) const;
 
-		void extract(const IMU::SkeletonMotionState & a, osg::Quat & ret) const;
+		void extract(const IMU::MotionStream::value_type & a, osg::Quat & ret) const;
 
 	private:
 		const unsigned int idx;
@@ -160,12 +196,12 @@ namespace IMU
 	{
 	public:
 
-		template<typename Base, typename Dest>
+		template<typename Base, typename Dest = decltype(std::declval<Base>().operator[](0))>
 		static threadingUtils::StreamAdapterT<Base, Dest, ArrayExtractor> * create(typename threadingUtils::StreamAdapterT<Base, Dest, ArrayExtractor>::BaseStreamTypePtr baseStream, const unsigned int idx)
 		{
 			return new threadingUtils::StreamAdapterT<Base, Dest, ArrayExtractor>(baseStream, ArrayExtractor(idx));
 		}
-	};
+	};	
 
 	class IMU_EXPORT ExtractCostumeMotion
 	{
@@ -181,7 +217,7 @@ namespace IMU
 
 		bool verify(const IMU::SensorsStreamData & input) const;
 
-		void extract(const IMU::SensorsStreamData & input, IMU::SkeletonMotionState & output) const;
+		void extract(const IMU::SensorsStreamData & input, IMU::MotionStream::value_type & output) const;
 
 	private:
 		kinematic::SkeletonConstPtr skeleton;
@@ -203,6 +239,89 @@ namespace IMU
 		bool verify(const IMU::RawDataStream::value_type & val) const;
 
 		void extract(const IMU::RawDataStream::value_type & in, IMU::CANopenFramesStream::value_type & out) const;
+	};
+
+	class IMUAccExtractor
+	{
+	public:
+		bool verify(const IMU::IMUStream::value_type & a)
+		{
+			return true;
+		}
+		
+		void extract(const IMU::IMUStream::value_type & a, Vec3Stream::value_type & ret) const
+		{
+			ret.first = a.first;
+			ret.second = a.second.accelerometer;
+		}
+	};
+
+	class IMUMagExtractor
+	{
+	public:
+		bool verify(const IMU::IMUStream::value_type & a)
+		{
+			return true;
+		}
+
+		void extract(const IMU::IMUStream::value_type & a, Vec3Stream::value_type & ret) const
+		{
+			ret.first = a.first;
+			ret.second = a.second.magnetometer;
+		}
+	};
+
+	class IMUGyroExtractor
+	{
+	public:
+		bool verify(const IMU::IMUStream::value_type & a)
+		{
+			return true;
+		}
+
+		void extract(const IMU::IMUStream::value_type & a, Vec3Stream::value_type & ret) const
+		{
+			ret.first = a.first;
+			ret.second = a.second.gyroscope;
+		}
+	};
+
+	class IMUOrientExtractor
+	{
+	public:
+		bool verify(const IMU::IMUStream::value_type & a)
+		{
+			return true;
+		}
+
+		void extract(const IMU::IMUStream::value_type & a, QuatStream::value_type & ret) const
+		{
+			ret.first = a.first;
+			ret.second = a.second.orientation;
+		}
+	};
+
+	class IMUExtractor
+	{
+	public:
+
+		IMUExtractor(const imuCostume::Costume::SensorID id) : id(id) {}
+		~IMUExtractor() {}
+
+		bool verify(const IMU::SensorsStreamData & a)
+		{
+			return a.sensorsData.find(id) != a.sensorsData.end();
+		}
+
+		void extract(const IMU::SensorsStreamData & a, IMU::IMUStream::value_type & ret) const
+		{
+			ret.first = a.timestamp;
+			ret.second = a.sensorsData.find(id)->second;
+		}
+
+	private:
+
+		const imuCostume::Costume::SensorID id;
 	};
 }
 

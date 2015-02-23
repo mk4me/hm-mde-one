@@ -431,7 +431,7 @@ void IMUCostumeWidget::onLoad()
 
 		PLUGIN_LOG_DEBUG("Profile creation done");
 
-		auto profileInstance = IMU::CostumeProfileInstance::create(profile);
+		auto profileInstance = IMU::CostumeProfileInstance::create(profile, it->second);
 
 		PLUGIN_LOG_DEBUG("Profile instantiation done");
 

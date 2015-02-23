@@ -33,6 +33,7 @@ public:
 	int	size() const;
 	const double *x() const;
 	const double *y() const;
+	void clear();
 private:
 	int d_count;
 	QVector<double> d_x;
@@ -158,6 +159,7 @@ private:
     double _zBase;
     ScalarStreamConstPtr scalarStream;
     CurveData curveData;
+	double a;
 };
 
 #endif

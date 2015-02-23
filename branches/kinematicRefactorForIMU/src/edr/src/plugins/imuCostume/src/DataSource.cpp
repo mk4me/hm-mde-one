@@ -12,25 +12,204 @@
 #include <iosfwd>
 #include "IMUPerspective.h"
 #include "CostumeSkeletonMotionHelper.h"
+#include <corelib/IVisualizerManager.h>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QLayout>
+#include <plugins/newChart/INewChartVisualizer.h>
+#include <corelib/Exceptions.h>
+
+//! klasa pomocnicza przy tworzeniu wykresów z wektora 3-elementowego
+class NewStreamVector3ItemHelper : public core::WrappedItemHelper
+{
+public:
+	//! Konstruktor pobiera obiekt z wrapperem wektora 3D
+	//! \param wrapper 
+	core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager)
+	{
+		core::IVisualizerManager::VisualizerPrototypes prototypes;
+		manager->getVisualizerPrototypes(typeid(ScalarStream), prototypes, true);
+		core::VisualizerPtr visualizer(prototypes.front()->create());
+
+		QWidget * visWidget = visualizer->getOrCreateWidget();
+		visWidget->layout()->setContentsMargins(2, 0, 2, 2);
+		INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
+		if (!chart) {
+			UTILS_ASSERT(false);
+			throw core::runtime_error("Wrong visualizer type!");
+		}
+		else {
+			chart->setTitle(QString("%1 [%2]").arg(name).arg(units));
+			chart->setAxisScale(INewChartVisualizer::AxisX, 0, 5);
+			chart->setAxisScale(INewChartVisualizer::AxisY, yMin, yMax);
+		}
+		return visualizer;
+	}
+
+	void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series)
+	{
+		static int number = 0;
+		// hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
+		std::string suffix = boost::lexical_cast<std::string>(number++);
+		std::string p = path.toStdString();
+
+		visualizer->getOrCreateWidget();
+
+		auto serieX = visualizer->createSerie(xwrapper->data()->getTypeInfo(), xwrapper);
+		serieX->serie()->setName("X_" + suffix);
+		auto serieY = visualizer->createSerie(ywrapper->data()->getTypeInfo(), ywrapper);
+		serieY->serie()->setName("Y_" + suffix);
+		auto serieZ = visualizer->createSerie(zwrapper->data()->getTypeInfo(), zwrapper);
+		serieZ->serie()->setName("Z_" + suffix);
+
+		INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->serie());
+		INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->serie());
+		INewChartSerie* chartSerieZ = dynamic_cast<INewChartSerie*>(serieZ->serie());
+
+		chartSerieX->setColor(QColor(255, 0, 0));
+		chartSerieY->setColor(QColor(0, 255, 0));
+		chartSerieZ->setColor(QColor(0, 0, 255));
+
+		series.push_back(serieX);
+		series.push_back(serieY);
+		series.push_back(serieZ);
+	}
+
+	NewStreamVector3ItemHelper(const core::VariantConstPtr& wrapper,
+		const core::VariantConstPtr& xwrapper,
+		const core::VariantConstPtr& ywrapper,
+		const core::VariantConstPtr& zwrapper,
+		const QString & name, const QString & units,
+		const double yMin, const double yMax) :
+		WrappedItemHelper(wrapper), xwrapper(xwrapper), ywrapper(ywrapper),
+		zwrapper(zwrapper), name(name), units(units), yMin(yMin), yMax(yMax)
+	{
+	}
+
+	std::vector<utils::TypeInfo> getTypeInfos() const
+	{
+		std::vector<utils::TypeInfo> ret;
+		ret.push_back(typeid(ScalarStream));
+		return ret;
+	}
+
+private:
+	const QString name;
+	const QString units;
+	const core::VariantConstPtr xwrapper;
+	const core::VariantConstPtr ywrapper;
+	const core::VariantConstPtr zwrapper;
+	const double yMin;
+	const double yMax;
+};
+
+//! klasa pomocnicza przy tworzeniu wykresów z wektora 3-elementowego
+class NewStreamQuaternionItemHelper : public core::WrappedItemHelper
+{
+public:
+	//! Konstruktor pobiera obiekt z wrapperem wektora 3D
+	//! \param wrapper 
+	core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager)
+	{
+		core::IVisualizerManager::VisualizerPrototypes prototypes;
+		manager->getVisualizerPrototypes(typeid(ScalarStream), prototypes, true);
+		core::VisualizerPtr visualizer(prototypes.front()->create());
+
+		QWidget * visWidget = visualizer->getOrCreateWidget();
+		visWidget->layout()->setContentsMargins(2, 0, 2, 2);
+		INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
+		if (!chart) {
+			UTILS_ASSERT(false);
+			throw core::runtime_error("Wrong visualizer type!");
+		}
+		else {
+			chart->setTitle(name);
+			chart->setAxisScale(INewChartVisualizer::AxisX, 0, 5);
+			chart->setAxisScale(INewChartVisualizer::AxisY, yMin, yMax);
+		}
+		return visualizer;
+	}
+
+	void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series)
+	{
+		static int number = 0;
+		// hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
+		std::string suffix = boost::lexical_cast<std::string>(number++);
+		std::string p = path.toStdString();
+
+		visualizer->getOrCreateWidget();
+
+		auto serieX = visualizer->createSerie(xwrapper->data()->getTypeInfo(), xwrapper);
+		serieX->serie()->setName("X_" + suffix);
+		auto serieY = visualizer->createSerie(ywrapper->data()->getTypeInfo(), ywrapper);
+		serieY->serie()->setName("Y_" + suffix);
+		auto serieZ = visualizer->createSerie(zwrapper->data()->getTypeInfo(), zwrapper);
+		serieZ->serie()->setName("Z_" + suffix);
+		auto serieW = visualizer->createSerie(wwrapper->data()->getTypeInfo(), wwrapper);
+		serieZ->serie()->setName("W_" + suffix);
+
+		INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->serie());
+		INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->serie());
+		INewChartSerie* chartSerieZ = dynamic_cast<INewChartSerie*>(serieZ->serie());
+		INewChartSerie* chartSerieW = dynamic_cast<INewChartSerie*>(serieW->serie());
+
+		chartSerieX->setColor(QColor(255, 0, 0));
+		chartSerieY->setColor(QColor(0, 255, 0));
+		chartSerieZ->setColor(QColor(0, 0, 255));
+		chartSerieW->setColor(QColor(0, 0, 0));
+
+		series.push_back(serieX);
+		series.push_back(serieY);
+		series.push_back(serieZ);
+		series.push_back(serieW);
+	}
+
+	NewStreamQuaternionItemHelper(const core::VariantConstPtr& wrapper,
+		const core::VariantConstPtr& xwrapper,
+		const core::VariantConstPtr& ywrapper,
+		const core::VariantConstPtr& zwrapper,
+		const core::VariantConstPtr& wwrapper,
+		const QString & name, const double yMin, const double yMax) :
+		WrappedItemHelper(wrapper), xwrapper(xwrapper), ywrapper(ywrapper),
+		zwrapper(zwrapper), wwrapper(wwrapper), name(name), yMin(yMin), yMax(yMax)
+	{
+	}
+
+	std::vector<utils::TypeInfo> getTypeInfos() const
+	{
+		std::vector<utils::TypeInfo> ret;
+		ret.push_back(typeid(ScalarStream));
+		return ret;
+	}
+
+private:
+	const QString name;	
+	const core::VariantConstPtr xwrapper;
+	const core::VariantConstPtr ywrapper;
+	const core::VariantConstPtr zwrapper;
+	const core::VariantConstPtr wwrapper;
+	const double yMin;
+	const double yMax;
+};
 
 utils::SamplesStatus::StatusMap createStatusMap()
 {
 	utils::SamplesStatus::StatusMap ret;
 
 	ret.insert(utils::SamplesStatus::StatusMap::value_type(0.0, IMU::IIMUDataSource::ConnectionStatus::OFFLINE));
-	ret.insert(utils::SamplesStatus::StatusMap::value_type(0.5, IMU::IIMUDataSource::ConnectionStatus::CONNECTION_PROBLEMS));
-	ret.insert(utils::SamplesStatus::StatusMap::value_type(0.8, IMU::IIMUDataSource::ConnectionStatus::ONLINE));
+	ret.insert(utils::SamplesStatus::StatusMap::value_type(0.35, IMU::IIMUDataSource::ConnectionStatus::CONNECTION_PROBLEMS));
+	ret.insert(utils::SamplesStatus::StatusMap::value_type(0.5, IMU::IIMUDataSource::ConnectionStatus::ONLINE));
 
 	return ret;
 }
 
-typedef threadingUtils::StreamAdapterT<IMU::SensorsStreamData, IMU::SkeletonMotionState, IMU::ExtractCostumeMotion> RealMotionStream;
+typedef threadingUtils::StreamAdapterT<IMU::SensorsStreamData, IMU::MotionStream::value_type, IMU::ExtractCostumeMotion> RealMotionStream;
 
 enum
 {
 	AccIdx = 0,
 	GyroIdx = 1,
-	MagIdx = 2
+	MagIdx = 2,
+	OrientationIdx = 3
 };
 
 using namespace IMU;
@@ -449,10 +628,11 @@ std::string IMUCostumeDataSource::sensorParameterName(const unsigned int idx)
 {
 	switch (idx)
 	{
-	case AccIdx:	return QObject::tr("Accelerometer").toStdString();
-	case GyroIdx:	return QObject::tr("Gyroscope").toStdString();
-	case MagIdx:	return QObject::tr("Magnetometer").toStdString();
-	default:		return QObject::tr("Unknown").toStdString();
+	case AccIdx:			return QObject::tr("Accelerometer").toStdString();
+	case GyroIdx:			return QObject::tr("Gyroscope").toStdString();
+	case MagIdx:			return QObject::tr("Magnetometer").toStdString();
+	case OrientationIdx:	return QObject::tr("Orientation").toStdString();
+	default:				return QObject::tr("Unknown").toStdString();
 	}
 }
 
@@ -468,13 +648,20 @@ std::string IMUCostumeDataSource::vectorParameterName(const unsigned int idx)
 	}
 }
 
-void IMUCostumeDataSource::fillRawCostumeData(CostumeData & cData)
+core::HierarchyItemPtr IMUCostumeDataSource::fillRawCostumeData(CostumeData & cData)
 {
+	auto hierarchyTransaction = memoryDM->hierarchyTransaction();
+	core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>("Raw Data", "Raw Data", QIcon());	
+	//hierarchyTransaction->addRoot(root);
+
 	const auto & sc = cData.sensorsConfiguration;
 	auto ow = core::Variant::create<RawDataStream>();
 	ow->setMetadata("core/name", QObject::tr("Raw Data").toStdString());
 	ow->set(cData.rawDataStream);
 	cData.domainData.push_back(ow);
+
+	core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Raw stream"), QObject::tr("Raw stream"));
+	root->appendChild(item);
 
 	cData.CANopenStream.reset(new threadingUtils::StreamAdapterT<RawDataStream::value_type, CANopenFramesStream::value_type, RawToCANopenExtractor>(cData.rawDataStream, RawToCANopenExtractor()));
 	ow = core::Variant::create<CANopenFramesStream>();
@@ -482,61 +669,19 @@ void IMUCostumeDataSource::fillRawCostumeData(CostumeData & cData)
 	ow->set(cData.CANopenStream);
 	cData.domainData.push_back(ow);
 
+	item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("CANopen stream"), QObject::tr("CANopen stream"));
+	root->appendChild(item);
+
 	cData.costumeStream.reset(new threadingUtils::StreamAdapterT<CANopenFramesStream::value_type, CostumeStream::value_type, CANopenDataExtractor>(cData.CANopenStream, CANopenDataExtractor()));
 	ow = core::Variant::create<CostumeStream>();
 	ow->setMetadata("core/name", QObject::tr("Costume Data").toStdString());
 	ow->set(cData.costumeStream);
 	cData.domainData.push_back(ow);
 
-	/*
-	auto sIT = sc.find(imuCostume::Costume::IMU);
-	if (sIT != sc.end()){
+	item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Sensors stream"), QObject::tr("Sensors stream"));
+	root->appendChild(item);
 
-		std::map<imuCostume::Costume::SensorID, SensorData> sData;
-
-		for (auto & sID : sIT->second){
-			SensorData sd;
-			sd.dataStream.reset(new threadingUtils::StreamT<IMUData>);
-
-			ow = core::Variant::create<IMUStream>();
-			ow->setMetadata("core/name", QObject::tr("IMU %1 Data").arg(sID).toStdString());
-			ow->set(sd.dataStream);
-			cData.domainData.push_back(ow);
-
-			for (unsigned int i = 0; i < 3; ++i){
-				sd.vec3dStreams.push_back(utils::shared_ptr<Vec3Stream>(new threadingUtils::StreamT<osg::Vec3>));
-
-				ow = core::Variant::create<Vec3Stream>();
-				ow->setMetadata("core/name", sensorParameterName(i));
-				ow->set(sd.vec3dStreams.back());
-				cData.domainData.push_back(ow);
-
-				for (unsigned int j = 0; j < 3; ++j){
-					sd.scalarStreams.push_back(utils::shared_ptr<ScalarStream>(ArrayStreamAdapter::create<osg::Vec3, osg::Vec3::value_type>(sd.vec3dStreams.back(), j)));
-
-					ow = core::Variant::create<ScalarStream>();
-					ow->setMetadata("core/name", vectorParameterName(j));
-					ow->set(sd.scalarStreams.back());
-					cData.domainData.push_back(ow);
-				}
-			}
-
-			sd.orientationStream.reset(new threadingUtils::StreamT<osg::Quat>);
-
-			for (unsigned int j = 0; j < 4; ++j){
-				sd.scalarStreams.push_back(utils::shared_ptr<ScalarStream>(ArrayStreamAdapter::create<osg::Quat, float>(sd.orientationStream, j)));
-				ow = core::Variant::create<ScalarStream>();
-				ow->setMetadata("core/name", "Orientation");
-				ow->set(sd.scalarStreams.back());
-				cData.domainData.push_back(ow);
-			}
-
-			sData.insert(std::map<imuCostume::Costume::SensorID, SensorData>::value_type(sID, sd));
-		}
-
-		cData.sensorsData = std::move(sData);
-	}
-	*/
+	return root;
 }
 
 void IMUCostumeDataSource::loadRawCostume(const CostumeID & id)
@@ -551,7 +696,7 @@ void IMUCostumeDataSource::loadRawCostume(const CostumeID & id)
 	
 	CostumeData cData = it->second;
 
-	fillRawCostumeData(cData);
+	auto hItem = fillRawCostumeData(cData);
 
 	try{
 		auto t = memoryDM->transaction();
@@ -560,6 +705,11 @@ void IMUCostumeDataSource::loadRawCostume(const CostumeID & id)
 		}
 
 		it->second = cData;
+	
+		auto name = QObject::tr("Costume %1:%2 data").arg(QString::fromStdString(it->first.ip)).arg(it->first.port);
+		it->second.hierarchyRootItem = utils::make_shared<core::HierarchyItem>(name, name, QIcon());
+		it->second.hierarchyRootItem->appendChild(hItem);
+		memoryDM->hierarchyTransaction()->addRoot(it->second.hierarchyRootItem);
 	}
 	catch (std::exception & e){
 		PLUGIN_LOG_ERROR(e.what());		
@@ -590,30 +740,42 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 		imusCount = sIT->second.size();
 	}
 
-	if (profileInstance.sensorsOrientationEstimationAlgorithms.size() != imusCount)
+	if (profileInstance.sensorsOrientationEstimationAlgorithms.size() > imusCount)
 	{
 		throw std::runtime_error("Mismatch in number of loaded sensors orientation estimation algorithms and costume configuration");
 	}
 
 	CostumeData cData = it->second;
 
-	fillRawCostumeData(cData);
+	auto hItem = fillRawCostumeData(cData);
+
+	core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>("Unpacked Data", "Unpacked Data", QIcon());
 
 	//adapter na pe�ne dane z kostiumu nap�dzaj�ce strumie� z estymacj�
 	cData.completeImuStream.reset(new ExtractedCostumeStreamAdapter(cData.costumeStream, CostumeIMUExtractor(cData.sensorsConfiguration)));
 
-	auto ow = core::Variant::create<CostumeSkeletonMotionHelper::SensorsStream>();
+	auto ow = core::Variant::create<IMU::SensorsStream>();
 	ow->setMetadata("core/name", QObject::tr("Complete unpacked IMU data").toStdString());
-	ow->set(CostumeSkeletonMotionHelper::SensorsStreamPtr(cData.completeImuStream));
+	ow->set(IMU::SensorsStreamPtr(cData.completeImuStream));
 	cData.domainData.push_back(ow);
+
+	core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("IMU stream"), QObject::tr("IMU stream"));
+	root->appendChild(item);
+
+	unpackSensorsStream(cData.completeImuStream, cData.sensorsData, item, cData.domainData);
 
 	auto estimatedData = utils::make_shared<threadingUtils::StreamProcessorT<IMU::SensorsStreamData, OrientationEstimator>>(cData.completeImuStream,
 		OrientationEstimator(profileInstance.sensorsOrientationEstimationAlgorithms));
 
-	ow = core::Variant::create<CostumeSkeletonMotionHelper::SensorsStream>();
+	ow = core::Variant::create<IMU::SensorsStream>();
 	ow->setMetadata("core/name", QObject::tr("Complete filtered IMU data").toStdString());
-	ow->set(CostumeSkeletonMotionHelper::SensorsStreamPtr(estimatedData));
+	ow->set(IMU::SensorsStreamPtr(estimatedData));
 	cData.domainData.push_back(ow);
+
+	item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Filtered IMU stream"), QObject::tr("Filtered IMU stream"));
+	root->appendChild(item);
+
+	unpackSensorsStream(cData.completeImuStream, cData.sensorsData, item, cData.domainData);
 
 	//TODO doda� kwaterniony po estymacji + skalary
 
@@ -622,6 +784,9 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 	ow->setMetadata("core/name", QObject::tr("Complete skeleton motion stream").toStdString());
 	ow->set(cData.skeletonMotion);
 	cData.domainData.push_back(ow);
+
+	item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Skeleton stream"), QObject::tr("Skeleton stream"));
+	root->appendChild(item);
 
 	//mapowanie pozycji wektora do nazwy jointa w szkielecie i stanie
 
@@ -645,49 +810,24 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 	ow->set(MotionStreamPtr(cData.skeletonMotion->stream));
 	cData.domainData.push_back(ow);
 
-	//adapter na orientacje po estymacji
-
-	//auto sIT = cd.sensorsConfiguration.find(imuCostume::Costume::IMU);
-	//if (sIT != cd.sensorsConfiguration.end()){
-
-	//	for (auto & sID : sIT->second){
-
-	//		auto it = profileInstance.sensorsMapping.left.find(sID);
-
-	//		//znale�� mapowanie i indeks iteratora
-	//		auto idx = cData.skeletonMotion->dataToModelMapping.right.find(it->second)->get_left();
-
-	//		auto processedOrientation = utils::make_shared<threadingUtils::StreamAdapterT<IMU::SkeletonMotionState, osg::Quat, OrientationExtractor>>(cData.skeletonMotion->stream, OrientationExtractor(idx));
-	//		ow = core::Variant::create<threadingUtils::IStreamT<osg::Quat>>();
-	//		ow->setMetadata("core/name", "Orientation");
-	//		ow->set(processedOrientation);
-	//		cData.domainData.push_back(ow);
-	//		//TODO - podzia� kwaternionu na skalary
-	//		/*
-	//		for (unsigned int j = 0; j < 4; ++j){
-	//			sd.scalarStreams.push_back(utils::shared_ptr<ScalarStream>(ArrayStreamAdapter::create<osg::Quat, float>(sd.orientationStream, j)));
-	//			ow = core::Variant::create<ScalarStream>();
-	//			ow->setMetadata("core/name", "Orientation");
-	//			ow->set(sd.scalarStreams.back());
-	//			cData.domainData.push_back(ow);
-	//		}
-
-	//		sData.insert(std::map<imuCostume::Costume::SensorID, SensorData>::value_type(sID, sd));
-	//		*/
-
-	//		cData.domainData.push_back(ow);
-	//	}
-
-	//	//cData.sensorsData = std::move(sData);
-	//}
+	item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Calibrated skeleton stream"), QObject::tr("Calibrated skeleton stream"));
+	root->appendChild(item);
 
 	try{
-		auto t = memoryDM->transaction();
-		for (const auto & ow : cData.domainData){
-			t->addData(ow);
+		{
+			auto t = memoryDM->transaction();
+			for (const auto & ow : cData.domainData){
+				t->addData(ow);
+			}
 		}
 
 		it->second = cData;
+
+		auto name = QObject::tr("Costume %1:%2 data").arg(QString::fromStdString(it->first.ip)).arg(it->first.port);
+		it->second.hierarchyRootItem = utils::make_shared<core::HierarchyItem>(name, name, QIcon());
+		it->second.hierarchyRootItem->appendChild(hItem);
+		it->second.hierarchyRootItem->appendChild(root);
+		memoryDM->hierarchyTransaction()->addRoot(it->second.hierarchyRootItem);
 	}
 	catch (std::exception & e){
 		PLUGIN_LOG_ERROR(e.what());
@@ -1108,4 +1248,148 @@ IMUCostumeDataSource::CostumesDetails IMUCostumeDataSource::costumesDetails() co
 	}
 
 	return ret;
+}
+
+void IMUCostumeDataSource::unpackSensorsStream(IMU::SensorsStreamPtr stream,
+	SensorsData & sensorsData,
+	core::HierarchyItemPtr root,
+	core::VariantsList & domainData)
+{
+	for (auto & sd : sensorsData)
+	{				
+		auto imuStream = utils::shared_ptr<IMUStream>(new threadingUtils::StreamAdapterT<IMU::SensorsStreamData, IMU::IMUStream::value_type, IMU::IMUExtractor>(stream, IMU::IMUExtractor(sd.first)));
+
+		auto ow = core::Variant::create<IMUStream>();
+		ow->setMetadata("core/name", QObject::tr("IMU %1 Data").arg(sd.first).toStdString());
+		ow->set(imuStream);
+		sd.second.domainData.push_back(ow);
+		domainData.push_back(ow);
+
+		auto imuItem = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("IMU %1 Data").arg(sd.first), QObject::tr("IMU %1 Data").arg(sd.first));
+		root->appendChild(imuItem);
+
+		//ACC
+		{
+			auto vec3Stream = utils::shared_ptr<Vec3Stream>(new threadingUtils::StreamAdapterT<IMU::IMUStream::value_type, Vec3Stream::value_type, IMU::IMUAccExtractor>(imuStream, IMU::IMUAccExtractor()));
+
+			ow = core::Variant::create<Vec3Stream>();
+			ow->setMetadata("core/name", sensorParameterName(0));
+			ow->set(vec3Stream);
+			sd.second.domainData.push_back(ow);
+			domainData.push_back(ow);
+
+			auto imuElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(sensorParameterName(0)), QString::fromStdString(sensorParameterName(0)));
+			imuItem->appendChild(imuElement);
+
+			std::vector<core::VariantConstPtr> vecDataObjects;
+
+			for (unsigned int j = 0; j < 3; ++j){
+				auto scalarStream = utils::shared_ptr<ScalarStream>(new threadingUtils::StreamAdapterT<Vec3Stream::value_type, ScalarStream::value_type, CompoundArrayExtractor>(vec3Stream, CompoundArrayExtractor(j)));
+
+				ow = core::Variant::create<ScalarStream>();
+				ow->setMetadata("core/name", vectorParameterName(j));
+				ow->set(scalarStream);
+				sd.second.domainData.push_back(ow);
+				domainData.push_back(ow);
+				vecDataObjects.push_back(ow);
+
+				auto vecElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(vectorParameterName(j)), QString::fromStdString(vectorParameterName(j)));
+				imuElement->appendChild(vecElement);
+			}
+
+			imuElement->addHelper(core::HierarchyHelperPtr(new NewStreamVector3ItemHelper(imuElement->getData(), vecDataObjects[0], vecDataObjects[1], vecDataObjects[2], imuElement->getName(), "m/s^2", -15, 15)));
+		}
+
+		//GYRO
+		{
+			auto vec3Stream = utils::shared_ptr<Vec3Stream>(new threadingUtils::StreamAdapterT<IMU::IMUStream::value_type, Vec3Stream::value_type, IMU::IMUGyroExtractor>(imuStream, IMU::IMUGyroExtractor()));
+
+			ow = core::Variant::create<Vec3Stream>();
+			ow->setMetadata("core/name", sensorParameterName(1));
+			ow->set(vec3Stream);
+			sd.second.domainData.push_back(ow);
+			domainData.push_back(ow);
+
+			auto imuElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(sensorParameterName(1)), QString::fromStdString(sensorParameterName(1)));
+			imuItem->appendChild(imuElement);
+
+			std::vector<core::VariantConstPtr> vecDataObjects;
+
+			for (unsigned int j = 0; j < 3; ++j){
+				auto scalarStream = utils::shared_ptr<ScalarStream>(new threadingUtils::StreamAdapterT<Vec3Stream::value_type, ScalarStream::value_type, CompoundArrayExtractor>(vec3Stream, CompoundArrayExtractor(j)));
+
+				ow = core::Variant::create<ScalarStream>();
+				ow->setMetadata("core/name", vectorParameterName(j));
+				ow->set(scalarStream);
+				sd.second.domainData.push_back(ow);
+				domainData.push_back(ow);
+				vecDataObjects.push_back(ow);
+
+				auto vecElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(vectorParameterName(j)), QString::fromStdString(vectorParameterName(j)));
+				imuElement->appendChild(vecElement);
+			}
+
+			imuElement->addHelper(core::HierarchyHelperPtr(new NewStreamVector3ItemHelper(imuElement->getData(), vecDataObjects[0], vecDataObjects[1], vecDataObjects[2], imuElement->getName(), "rad/s", -0.3, 0.3)));
+		}
+
+		//MAG
+		{
+			auto vec3Stream = utils::shared_ptr<Vec3Stream>(new threadingUtils::StreamAdapterT<IMU::IMUStream::value_type, Vec3Stream::value_type, IMU::IMUMagExtractor>(imuStream, IMU::IMUMagExtractor()));
+
+			ow = core::Variant::create<Vec3Stream>();
+			ow->setMetadata("core/name", sensorParameterName(2));
+			ow->set(vec3Stream);
+			sd.second.domainData.push_back(ow);
+			domainData.push_back(ow);
+
+			auto imuElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(sensorParameterName(2)), QString::fromStdString(sensorParameterName(2)));
+			imuItem->appendChild(imuElement);
+
+			std::vector<core::VariantConstPtr> vecDataObjects;
+
+			for (unsigned int j = 0; j < 3; ++j){
+				auto scalarStream = utils::shared_ptr<ScalarStream>(new threadingUtils::StreamAdapterT<Vec3Stream::value_type, ScalarStream::value_type, CompoundArrayExtractor>(vec3Stream, CompoundArrayExtractor(j)));
+
+				ow = core::Variant::create<ScalarStream>();
+				ow->setMetadata("core/name", vectorParameterName(j));
+				ow->set(scalarStream);
+				sd.second.domainData.push_back(ow);
+				domainData.push_back(ow);
+				vecDataObjects.push_back(ow);
+
+				auto vecElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(vectorParameterName(j)), QString::fromStdString(vectorParameterName(j)));
+				imuElement->appendChild(vecElement);
+			}
+
+			imuElement->addHelper(core::HierarchyHelperPtr(new NewStreamVector3ItemHelper(imuElement->getData(), vecDataObjects[0], vecDataObjects[1], vecDataObjects[2], imuElement->getName(), "", -3, 3)));
+		}
+
+		auto orientStream = utils::shared_ptr<QuatStream>(new threadingUtils::StreamAdapterT<IMU::IMUStream::value_type, QuatStream::value_type, IMU::IMUOrientExtractor>(imuStream, IMU::IMUOrientExtractor()));
+		ow = core::Variant::create<QuatStream>();
+		ow->setMetadata("core/name", QObject::tr("Orientation").toStdString());
+		ow->set(orientStream);
+		sd.second.domainData.push_back(ow);
+		domainData.push_back(ow);
+
+		auto imuElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Orientation"), QObject::tr("Orientation"));
+		imuItem->appendChild(imuElement);
+
+		std::vector<core::VariantConstPtr> vecDataObjects;
+
+		for (unsigned int j = 0; j < 4; ++j){
+			auto scalarStream = utils::shared_ptr<ScalarStream>(new threadingUtils::StreamAdapterT<QuatStream::value_type, ScalarStream::value_type, CompoundArrayExtractor>(orientStream, CompoundArrayExtractor(j)));
+
+			ow = core::Variant::create<ScalarStream>();
+			ow->setMetadata("core/name", vectorParameterName(j));
+			ow->set(scalarStream);
+			sd.second.domainData.push_back(ow);
+			domainData.push_back(ow);
+			vecDataObjects.push_back(ow);
+
+			auto vecElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(vectorParameterName(j)), QString::fromStdString(vectorParameterName(j)));
+			imuElement->appendChild(vecElement);
+		}
+
+		imuElement->addHelper(core::HierarchyHelperPtr(new NewStreamQuaternionItemHelper(imuElement->getData(), vecDataObjects[0], vecDataObjects[1], vecDataObjects[2], vecDataObjects[3], imuElement->getName(), -1, 1)));
+	}
 }

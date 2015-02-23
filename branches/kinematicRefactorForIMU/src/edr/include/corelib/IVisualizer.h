@@ -50,22 +50,27 @@ namespace plugin
 			//! Próbujemy odświeżać dane jeśli jest to konieczne
 			void tryUpdate()
 			{
-				std::lock_guard<std::mutex> lock(synch_);
-				if (update_ == true){
-					update();
+				bool needUpdate = false;
+				{
+					std::lock_guard<std::recursive_mutex> lock(synch_);
+					needUpdate = update_;
 					update_ = false;
+				}
+
+				if (needUpdate == true){
+					update();					
 				}
 			}
 
 			//! Metoda zaznacza potrzebę odświeżenia serii danych
 			void requestUpdate()
 			{
-				std::lock_guard<std::mutex> lock(synch_);
+				std::lock_guard<std::recursive_mutex> lock(synch_);
 				update_ = true;
 			}
 
 		private:
-			std::mutex synch_;
+			std::recursive_mutex synch_;
 			bool update_;
 		};
 		//! Seria o charakterze czasowym - pozwala manipulować czasem w serii danych

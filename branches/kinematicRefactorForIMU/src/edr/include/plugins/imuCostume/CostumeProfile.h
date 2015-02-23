@@ -67,6 +67,11 @@ namespace IMU
 		//! \param profil Profil z którego tworzymy instancjê
 		//! \return instancja profilu
 		static CostumeProfileInstance create(const CostumeProfile & profile);
+		//! \param profil Profil z którego tworzymy instancjê
+		//! \param filter Filtr identyfikatorów sensorów jakie trafia do instancji
+		//! \return instancja profilu
+		static CostumeProfileInstance create(const CostumeProfile & profile,
+			const imuCostume::Costume::SensorIDsSet & filter);
 
 		//! Nazwa profilu
 		std::string name;

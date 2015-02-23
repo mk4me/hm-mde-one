@@ -115,6 +115,7 @@ public:
       bool isEventMode() const { return context != C3DEventsCollection::IEvent::General; }
       //! Zrzut wizualizatora do pixmapy
       virtual QPixmap takeScreenshot() const;
+	  virtual void setAxisScale(const Axis axis, const double min, const double max, unsigned int steps = 10);
 
 private:
       //! Dodanie krzywej do wykresu, aktualizacja podziałek

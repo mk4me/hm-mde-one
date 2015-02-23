@@ -18,6 +18,14 @@
 class INewChartVisualizer : public plugin::IVisualizer
 {
 public:
+
+	enum Axis
+	{
+		AxisX,
+		AxisY
+	};
+
+public:
 	virtual ~INewChartVisualizer() {}
 
 public:
@@ -26,6 +34,11 @@ public:
     virtual void setTitle( const QString& title ) = 0;
     //! \return tytuł wykresu 
     virtual QString getTitle() const = 0;
+	//! \param axis Typ osi
+	//! \param min Minimalna wartość osi
+	//! \param max Maksymalna wartość osi
+	//! \param steps Ilość pośrednich podziałek
+	virtual void setAxisScale(const Axis axis, const double min, const double max, unsigned int steps = 10) = 0;
 };
 typedef utils::shared_ptr<INewChartVisualizer> INewChartVisualizerPtr;
 typedef utils::shared_ptr<const INewChartVisualizer> INewChartVisualizerConstPtr;

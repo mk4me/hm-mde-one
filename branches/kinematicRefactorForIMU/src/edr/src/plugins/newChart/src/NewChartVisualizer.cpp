@@ -804,6 +804,10 @@ void NewChartVisualizer::setScale()
     }    
 }
 
+void NewChartVisualizer::setAxisScale(const Axis axis, const double min, const double max, unsigned int steps)
+{
+	qwtPlot->setAxisScale(axis == INewChartVisualizer::AxisX ? QwtPlot::yLeft : QwtPlot::xBottom, min, max, (max - min) / std::max<double>(1, steps));
+}
 
 void NewChartVisualizer::setGlobalScales(bool scaleToActive)
 {

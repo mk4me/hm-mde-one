@@ -21,8 +21,7 @@ public:
 	//! Metoda wołana kiedy faktycznie stan strumienia się zmieni
 	virtual void update()
 	{
-		//serie->requestUpdate();
-		serie->myUpdate();
+		serie->requestUpdate();
 	}
 
 private:
