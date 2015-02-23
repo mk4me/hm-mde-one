@@ -156,6 +156,8 @@ namespace kinematic
 
 		static LinearizedNodesMapping createMapping(const Skeleton & skeleton);
 
+		static LinearizedNodesMapping createActiveMapping(const Skeleton & skeleton);
+
 		static NonRigidCompleteStateChange convertStateChange(const LinearizedNodesMapping &mapping, const RigidPartialStateChange &sChange);
 
 		//! \param skeletonState [out] Aktualizowany stan szkieletu

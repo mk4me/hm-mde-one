@@ -298,9 +298,38 @@ private:
 	SkeletonState::NodeIDX currentIDX;
 };
 
+class NonLeafLevelOrderVisitor
+{
+public:
+	NonLeafLevelOrderVisitor() : currentIDX(0) {}
+	~NonLeafLevelOrderVisitor() {}
+
+	void operator()(JointConstPtr joint, const Joint::size_type level)
+	{
+		if (joint != nullptr){
+			if (joint->isLeaf() == false){
+				mapping.insert(SkeletonState::LinearizedNodesMapping::value_type(currentIDX++, joint->value.name));
+			}
+		}
+	}
+
+	SkeletonState::LinearizedNodesMapping mapping;
+
+private:
+
+	SkeletonState::NodeIDX currentIDX;
+};
+
 SkeletonState::LinearizedNodesMapping SkeletonState::createMapping(const Skeleton & skeleton)
 {
 	LevelOrderVisitor lov;
+	::Joint::visitLevelOrder(skeleton.root, lov);
+	return std::move(lov.mapping);
+}
+
+SkeletonState::LinearizedNodesMapping SkeletonState::createActiveMapping(const Skeleton & skeleton)
+{
+	NonLeafLevelOrderVisitor lov;
 	::Joint::visitLevelOrder(skeleton.root, lov);
 	return std::move(lov.mapping);
 }

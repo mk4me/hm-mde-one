@@ -34,7 +34,7 @@ struct SkeletonWithStates
 DEFINE_SMART_POINTERS(SkeletonWithStates);
 
 
-typedef threadingUtils::StreamT<kinematic::SkeletonState::NonRigidCompleteStateChange> SkeletonStateStream;
+typedef threadingUtils::IStreamT<kinematic::SkeletonState::NonRigidCompleteStateChange> SkeletonStateStream;
 DEFINE_SMART_POINTERS(SkeletonStateStream);
 
 struct SkeletonWithStreamData
@@ -46,7 +46,7 @@ struct SkeletonWithStreamData
 DEFINE_SMART_POINTERS(SkeletonWithStreamData);
 
 
-
+DEFINE_WRAPPER(SkeletonWithStreamData, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
 DEFINE_WRAPPER(SkeletonStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(SkeletonWithStates, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(acclaim::MotionData, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);

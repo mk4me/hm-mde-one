@@ -314,7 +314,7 @@ ExtractCostumeMotion::ExtractCostumeMotion(
 	IMU::IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm)
 	: motionEstimationAlgorithm(motionEstimationAlgorithm),
 	sensorsMapping(sensorsMapping), dataMapping(dataMapping), sensorsAdjustments(sensorsAdjustments),
-	skeleton(skeleton), previousTime(0)
+	skeleton(skeleton), previousTime(0), skeletonState(kinematic::SkeletonState::create(*skeleton))
 {
 
 }
@@ -354,9 +354,6 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Mo
 		}
 	}
 
-	kinematic::SkeletonState ss(kinematic::SkeletonState::create(*skeleton));
-
-	kinematic::SkeletonState::JointPtr root = ss.root();
 	auto visitor = [&motionState, &jointsGlobalOrientations](kinematic::SkeletonState::JointPtr joint,
 			const kinematic::SkeletonState::Joint::size_type) -> void
 		{
@@ -365,11 +362,11 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Mo
 				joint->value.setGlobal(it->second);
 			}
 
-			if (joint->isLeaf() == false){
+			//if (joint->isLeaf() == false){
 				motionState.jointsOrientations.insert(std::map<std::string, osg::Quat>::value_type(joint->value.name(), joint->value.globalOrientation()));
-			}
+			//}
 		};
-	kinematic::SkeletonState::Joint::visitLevelOrder(root, visitor);
+	kinematic::SkeletonState::Joint::visitLevelOrder(skeletonState.root(), visitor);
 
 	try{
 		auto ret = motionEstimationAlgorithm->estimate(motionState, input.sensorsData, deltaTime);
@@ -380,6 +377,40 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Mo
 	catch (...){
 
 	}
+}
+
+KinematicStreamExtractor::KinematicStreamExtractor(kinematic::SkeletonConstPtr skeleton)
+	: skeletonState(kinematic::SkeletonState::create(*skeleton))
+{
+
+}
+
+KinematicStreamExtractor::~KinematicStreamExtractor()
+{
+
+}
+
+bool KinematicStreamExtractor::verify(const IMU::MotionStream::value_type & input) const
+{
+	return true;
+}
+
+void KinematicStreamExtractor::extract(const IMU::MotionStream::value_type & input, SkeletonStateStream::value_type & output) const
+{
+	skeletonState.root()->value.setGlobal(input.second.position);
+	auto visitor = [&input,&output](kinematic::SkeletonState::JointPtr joint,
+		const kinematic::SkeletonState::Joint::size_type) -> void
+	{
+		auto it = input.second.jointsOrientations.find(joint->value.name());
+		if (it != input.second.jointsOrientations.end()){
+			joint->value.setGlobal(it->second);
+		}
+
+		//if (joint->isLeaf() == false){
+			output.push_back(SkeletonStateStream::value_type::value_type({ joint->value.localPosition(), joint->value.localOrientation() }));			
+		//}
+	};
+	kinematic::SkeletonState::Joint::visitLevelOrder(skeletonState.root(), visitor);
 }
 
 RawToCANopenExtractor::RawToCANopenExtractor()

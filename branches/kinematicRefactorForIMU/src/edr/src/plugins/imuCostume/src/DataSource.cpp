@@ -813,6 +813,23 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 	item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Calibrated skeleton stream"), QObject::tr("Calibrated skeleton stream"));
 	root->appendChild(item);
 
+	{
+		//dane dla kinematic
+		auto kStream = utils::make_shared<SkeletonWithStreamData>();
+		kStream->skeleton = profileInstance.skeleton;
+		kStream->nodesMapping = kinematic::SkeletonState::createMapping(*profileInstance.skeleton);
+		//SkeletonStateStream
+		kStream->states.reset(new threadingUtils::StreamAdapterT<IMU::MotionStream::value_type, SkeletonStateStream::value_type, KinematicStreamExtractor>(cData.skeletonMotion->stream, KinematicStreamExtractor(profileInstance.skeleton)));
+
+		ow = core::Variant::create<SkeletonWithStreamData>();
+		ow->setMetadata("core/name", QObject::tr("Kinematic stream").toStdString());
+		ow->set(kStream);
+		cData.domainData.push_back(ow);
+
+		item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Kinematic stream"), QObject::tr("Kinematic stream"));
+		root->appendChild(item);
+	}
+
 	try{
 		{
 			auto t = memoryDM->transaction();

@@ -47,6 +47,7 @@ void CurveData::clear()
 {
 	QVector<double>().swap(d_x);
 	QVector<double>().swap(d_y);
+	d_count = 0;
 }
 
 
@@ -138,7 +139,7 @@ void NewChartStreamSerie::update()
 			std::pair<double, double> spoint;
 
 			spoint.first = 0.0;
-			spoint.second = curveData.y()[curveData.size() - 1] + (point.second - curveData.y()[curveData.size() - 1]) * (5.0 - a) / (5.0 + aa - a);
+			spoint.second = curveData.y()[curveData.count() - 1] + (point.second - curveData.y()[curveData.count() - 1]) * (5.0 - a) / (5.0 + aa - a);
 
 			curveData.clear();
 			curveData.append(&spoint.first, &spoint.second, 1);

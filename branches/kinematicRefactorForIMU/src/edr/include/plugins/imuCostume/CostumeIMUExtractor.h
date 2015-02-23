@@ -11,6 +11,7 @@
 #include <plugins/imuCostume/Export.h>
 #include <imucostumelib/ImuCostume.h>
 #include <plugins/imuCostume/IIMUDataSource.h>
+#include <plugins/kinematic/Wrappers.h>
 
 namespace IMU
 {
@@ -221,12 +222,29 @@ namespace IMU
 
 	private:
 		kinematic::SkeletonConstPtr skeleton;
+		mutable kinematic::SkeletonState skeletonState;
 		IMU::IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts sensorsAdjustments;
 		const IMU::SensorsMapping sensorsMapping;
 		const IMU::DataIndexToJointMapping dataMapping;
 		mutable imuCostume::CostumeCANopenIO::Timestamp previousTime;
 		const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping orientationAlgorithms;
 		const IMU::IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm;
+	};
+
+	class IMU_EXPORT KinematicStreamExtractor
+	{
+	public:
+		KinematicStreamExtractor(kinematic::SkeletonConstPtr skeleton);
+
+		~KinematicStreamExtractor();
+
+		bool verify(const IMU::MotionStream::value_type & input) const;
+
+		void extract(const IMU::MotionStream::value_type & input, SkeletonStateStream::value_type & output) const;
+
+	private:
+
+		mutable kinematic::SkeletonState skeletonState;
 	};
 
 	class IMU_EXPORT RawToCANopenExtractor
