@@ -384,7 +384,7 @@ void NewChartVisualizer::setActiveSerie( int idx )
 
     //ostatnia zmieniamy na nieaktywna
     if(currentSerie > -1){
-        NewChartSerie* serie = series[currentSerie];
+        INewChartSeriePrivate* serie = series[currentSerie];
         serie->setActive(false);
 
         auto helper = serie->getEventsHelper();
@@ -408,9 +408,9 @@ void NewChartVisualizer::setActiveSerie( int idx )
 
     if(idx > -1){
         currentSerie = idx;
-        NewChartSerie* serie = series[currentSerie];
+        INewChartSeriePrivate* serie = series[currentSerie];
         serie->setActive(true);
-        picker->setCurrentCurve(serie->curve);
+        picker->setCurrentCurve(serie->getCurve());
 
         refreshSpinBoxes();
 
@@ -530,7 +530,7 @@ void NewChartVisualizer::setManipulation( bool val )
     plotPanner->setEnabled(val);
     plotMagnifier->setEnabled(val);
 }
-const NewChartSerie* NewChartVisualizer::tryGetCurrentSerie() const
+const INewChartSeriePrivate* NewChartVisualizer::tryGetCurrentSerie() const
 {
     if (currentSerie >= 0 && currentSerie < static_cast<int>(series.size())) {
         return series[currentSerie];
@@ -538,7 +538,7 @@ const NewChartSerie* NewChartVisualizer::tryGetCurrentSerie() const
     return nullptr;
 }
 
-NewChartSerie* NewChartVisualizer::tryGetCurrentSerie()
+INewChartSeriePrivate* NewChartVisualizer::tryGetCurrentSerie()
 {
     if (currentSerie >= 0 && currentSerie < static_cast<int>(series.size())) {
         return series[currentSerie];
@@ -551,23 +551,25 @@ void NewChartVisualizer::update( double deltaTime )
     if (currentSerie >= 0 && currentSerie < static_cast<int>(series.size())) {
         
         qwtMarker->setVisible(true);
-        NewChartSerie* serie = series[currentSerie];
-        if (currentSerieTime != serie->getTime() || currentSerieValue != serie->getCurrentValue()) {
-            currentSerieTime = serie->getTime();
-            currentSerieValue = serie->getCurrentValue();
-            qwtMarker->setXValue(currentSerieTime * serie->getXScale() + serie->getXOffset());
-            qwtMarker->setYValue(currentSerieValue * serie->getYScale() + serie->getYOffset());
-        }
-        auto helper = serie->getEventsHelper();
-        if (isEventMode() && helper) {
-            EventsHelper::SegmentConstPtr segment = helper->getSegment(currentSerieTime, this->context);
-            if (segment != oldSegment) {
-                recreateStats(segment ? segment->stats : ScalarChannelStatsConstPtr());
-                setScale(this->scaleToActive, segment ? true : false);
-                oldSegment = segment;
-            }
+        NewChartSerie* serie = dynamic_cast<NewChartSerie*>(series[currentSerie]);
+		if (serie) {
+			if (currentSerieTime != serie->getTime() || currentSerieValue != serie->getCurrentValue()) {
+				currentSerieTime = serie->getTime();
+				currentSerieValue = serie->getCurrentValue();
+				qwtMarker->setXValue(currentSerieTime * serie->getXScale() + serie->getXOffset());
+				qwtMarker->setYValue(currentSerieValue * serie->getYScale() + serie->getYOffset());
+			}
+			auto helper = serie->getEventsHelper();
+			if (isEventMode() && helper) {
+				EventsHelper::SegmentConstPtr segment = helper->getSegment(currentSerieTime, this->context);
+				if (segment != oldSegment) {
+					recreateStats(segment ? segment->stats : ScalarChannelStatsConstPtr());
+					setScale(this->scaleToActive, segment ? true : false);
+					oldSegment = segment;
+				}
         
-        }
+			}
+		}
     } else {
         qwtMarker->setVisible(false);
     }
@@ -620,7 +622,7 @@ void NewChartVisualizer::onEventContext(int index)
 {
     C3DEventsCollection::Context c = static_cast<C3DEventsCollection::Context>(eventsMenu->itemData(index).toInt());
     bool eventMode = (c != C3DEventsCollection::IEvent::General);
-    NewChartSerie* serie = tryGetCurrentSerie();
+	NewChartSerie* serie = dynamic_cast<NewChartSerie*>(tryGetCurrentSerie());
     if (serie) {
         auto helper = serie->getEventsHelper();
         if (helper && helper->getEventsItem()) {
@@ -733,7 +735,7 @@ void NewChartVisualizer::recreateScales()
 
 bool NewChartVisualizer::timeInsideEvent()
 {
-    NewChartSerie* serie = series[currentSerie];
+    NewChartSerie* serie = dynamic_cast<NewChartSerie*>(series[currentSerie]);
 
     auto helper = serie->getEventsHelper();
     if (helper) {
@@ -762,42 +764,44 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
     UTILS_ASSERT(percentDraw);
    
     if (eventMode) {
-        NewChartSerie* serie = series[currentSerie];
-        float x = serie->getTime();
-        EventsHelperPtr h = serie->getEventsHelper();
-        if (h) {
-            EventsHelper::SegmentConstPtr segment = h->getSegment(x, this->context);
-            if (segment) {
-                if (scaleToActive) {
-                    percentDraw->setPercentMode(true);
-                    percentDraw->setLeftRightValues(segment->begin, segment->end);
-                    qwtPlot->setAxisScale(QwtPlot::yLeft, segment->stats->minValue(), segment->stats->maxValue());
-                    qwtPlot->setAxisScaleDiv(QwtPlot::xBottom, percentDraw->getScaleDiv());
-                } else {
-                    float minY = segment->stats->minValue();
-                    float maxY = segment->stats->maxValue();
-                    for (auto it = series.begin(); it != series.end(); ++it) {
-                        if ((*it)->isVisible()) {
-                            auto h = (*it)->getEventsHelper();
-                            if (h) {
-                                EventsHelper::SegmentConstPtr s = h->getSegment(x, this->context);
-                                if (s) {
-                                    minY = (std::min)(minY, s->stats->minValue());
-                                    maxY = (std::max)(maxY, s->stats->maxValue());
-                                }
-                            }
-                        }
-                    }
+        NewChartSerie* serie = dynamic_cast<NewChartSerie*>(series[currentSerie]);
+		if (serie) { 
+			float x = serie->getTime();
+			EventsHelperPtr h = serie->getEventsHelper();
+			if (h) {
+				EventsHelper::SegmentConstPtr segment = h->getSegment(x, this->context);
+				if (segment) {
+					if (scaleToActive) {
+						percentDraw->setPercentMode(true);
+						percentDraw->setLeftRightValues(segment->begin, segment->end);
+						qwtPlot->setAxisScale(QwtPlot::yLeft, segment->stats->minValue(), segment->stats->maxValue());
+						qwtPlot->setAxisScaleDiv(QwtPlot::xBottom, percentDraw->getScaleDiv());
+					} else {
+						float minY = segment->stats->minValue();
+						float maxY = segment->stats->maxValue();
+						for (auto it = series.begin(); it != series.end(); ++it) {
+							if ((*it)->isVisible()) {
+								auto h = (*it)->getEventsHelper();
+								if (h) {
+									EventsHelper::SegmentConstPtr s = h->getSegment(x, this->context);
+									if (s) {
+										minY = (std::min)(minY, s->stats->minValue());
+										maxY = (std::max)(maxY, s->stats->maxValue());
+									}
+								}
+							}
+						}
 
-                    percentDraw->setLeftRightValues(segment->begin, segment->end);
-                    percentDraw->setPercentMode(true);
-                    qwtPlot->setAxisScale(QwtPlot::yLeft, minY, maxY);
-                    qwtPlot->setAxisScaleDiv(QwtPlot::xBottom, percentDraw->getScaleDiv());
-                }
-            } else {
-                setGlobalScales(scaleToActive);
-            }
-        }
+						percentDraw->setLeftRightValues(segment->begin, segment->end);
+						percentDraw->setPercentMode(true);
+						qwtPlot->setAxisScale(QwtPlot::yLeft, minY, maxY);
+						qwtPlot->setAxisScaleDiv(QwtPlot::xBottom, percentDraw->getScaleDiv());
+					}
+				} else {
+					setGlobalScales(scaleToActive);
+				}
+			}
+		}
     } else {
         setGlobalScales(scaleToActive);
 
@@ -812,11 +816,12 @@ void NewChartVisualizer::setScale()
 	if (customScale) {
 			return;
 		}
-    NewChartSerie* serie = tryGetCurrentSerie();
+	INewChartSeriePrivate* serie = tryGetCurrentSerie();
     if (serie) {
-       if (isEventMode()) {
-           float x = serie->getTime();
-           auto helper = serie->getEventsHelper();
+		auto timeSerie = dynamic_cast<NewChartSerie*>(serie);
+       if (timeSerie && isEventMode()) {
+		   float x = timeSerie->getTime();
+		   auto helper = timeSerie->getEventsHelper();
            if (helper) {
                EventsHelper::SegmentConstPtr segment = helper->getSegment(x, this->context);
                setScale(this->scaleToActive, segment ? true : false);
@@ -841,7 +846,7 @@ void NewChartVisualizer::setGlobalScales(bool scaleToActive)
 			return;
 		}
     UTILS_ASSERT(percentDraw);
-    NewChartSerie* serie = tryGetCurrentSerie();
+    INewChartSeriePrivate* serie = tryGetCurrentSerie();
     if (serie) {
         percentDraw->setPercentMode(false);
         if (scaleToActive) {
@@ -857,7 +862,7 @@ void NewChartVisualizer::setGlobalScales(bool scaleToActive)
 
 void NewChartVisualizer::onShiftX( double d )
 {
-    NewChartSerie* s = tryGetCurrentSerie();
+    INewChartSeriePrivate* s = tryGetCurrentSerie();
     if (s) {
         s->setXOffset(d);
         qwtPlot->replot();
@@ -867,7 +872,7 @@ void NewChartVisualizer::onShiftX( double d )
 
 void NewChartVisualizer::onShiftY( double d )
 {
-    NewChartSerie* s = tryGetCurrentSerie();
+	INewChartSeriePrivate* s = tryGetCurrentSerie();
     if (s) {
         s->setYOffset(d);
         qwtPlot->replot();
@@ -877,7 +882,7 @@ void NewChartVisualizer::onShiftY( double d )
 
 void NewChartVisualizer::onScaleX( double d )
 { 
-    NewChartSerie* s = tryGetCurrentSerie();
+	INewChartSeriePrivate* s = tryGetCurrentSerie();
     if (s && d != 0.0) {
        
         s->setXScale(d);
@@ -889,7 +894,7 @@ void NewChartVisualizer::onScaleX( double d )
 
 void NewChartVisualizer::onScaleY( double d )
 {
-    NewChartSerie* s = tryGetCurrentSerie();
+	INewChartSeriePrivate* s = tryGetCurrentSerie();
     if (s && d != 0.0) {
         s->setYScale(d);
         qwtPlot->replot();
@@ -900,7 +905,7 @@ void NewChartVisualizer::onScaleY( double d )
 
 void NewChartVisualizer::refreshSpinBoxes()
 {
-    NewChartSerie* serie = tryGetCurrentSerie();
+	INewChartSeriePrivate* serie = tryGetCurrentSerie();
     if (serie) {
         shiftSpinX->blockSignals(true);
         shiftSpinX->setValue(serie->getXOffset());

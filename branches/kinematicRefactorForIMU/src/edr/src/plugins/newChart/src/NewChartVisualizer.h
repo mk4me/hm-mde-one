@@ -55,9 +55,9 @@ public:
       //! \return wykres QWT, który jest sercem wizualizatora
       QwtPlot* getPlot();
       //! \return aktualnie aktywna seria lub nullptr, jeśli takiej nie ma
-      const NewChartSerie* tryGetCurrentSerie() const;
+	  const INewChartSeriePrivate* tryGetCurrentSerie() const;
       //! \return aktualnie aktywna seria lub nullptr, jeśli takiej nie ma
-      NewChartSerie* tryGetCurrentSerie();
+      INewChartSeriePrivate* tryGetCurrentSerie();
       //! \return pusty obiekt wizualizatora
       virtual IVisualizer* create() const;
 

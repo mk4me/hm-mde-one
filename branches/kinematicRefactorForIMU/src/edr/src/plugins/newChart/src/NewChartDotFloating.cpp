@@ -2,7 +2,7 @@
 #include "NewChartSerie.h"
 #include "NewChartDotFloating.h"
 
-NewChartDotFloating::NewChartDotFloating( const QPointF& position, const NewChartSerie* relatedSerie, int size /*= 2*/ ) :
+NewChartDotFloating::NewChartDotFloating( const QPointF& position, const INewChartSeriePrivate* relatedSerie, int size /*= 2*/ ) :
     NewChartDot(size),
     relatedSerie(relatedSerie)
 {

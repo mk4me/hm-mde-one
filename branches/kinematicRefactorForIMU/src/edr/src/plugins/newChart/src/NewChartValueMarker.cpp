@@ -16,7 +16,7 @@ NewChartValueMarker::NewChartValueMarker( NewChartVisualizer* visualizer ) :
 
 bool NewChartValueMarker::stateEventFilter( QObject *object, QEvent *event )
 {
-    const NewChartSerie* currentSerie = visualizer->tryGetCurrentSerie();
+    const INewChartSeriePrivate* currentSerie = visualizer->tryGetCurrentSerie();
     if (object != canvas || !currentSerie ) {
         return false;
     }
@@ -79,7 +79,7 @@ void NewChartValueMarker::stateEnd()
 
 void NewChartValueMarker::insertNewMarker( const QPointF& point, const QColor& color )
 {
-    const NewChartSerie* serie = visualizer->tryGetCurrentSerie();
+	const INewChartSeriePrivate* serie = visualizer->tryGetCurrentSerie();
     NewChartDot* dot = (new NewChartDotFloating(point, serie));
     NewChartLabel* label = (new NewChartLabel(QObject::tr("Time: %1\nValue: %2").arg(point.x()).arg(point.y())));
     label->setPen(QPen(color));

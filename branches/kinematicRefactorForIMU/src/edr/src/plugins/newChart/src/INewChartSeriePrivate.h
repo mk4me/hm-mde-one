@@ -55,6 +55,32 @@ public:
     const plugin::IVisualizer::ISerie* asISerie() const { return dynamic_cast<const plugin::IVisualizer::ISerie*>(this); }
     plugin::IVisualizer::ISerie* asISerie()  { return dynamic_cast<plugin::IVisualizer::ISerie*>(this); }
 
+	//! \return skala w poziomie
+	virtual double getXScale() const = 0;
+	//! ustawia skale w poziomie dla krzywej
+	//! \param val nowa wartość skali
+	virtual void setXScale(double val) = 0;
+	//! \return skala w pionie
+	virtual double getYScale() const = 0;
+	//! ustawia skale w pionie dla krzywej
+	//! \param val nowa wartość skali
+	virtual void setYScale(double val) = 0;
+	//! \return przesunięcie w poziomie
+	virtual double getXOffset() const = 0;
+	//! ustawia przesunięcie w poziomie
+	//! \param val nowa wartość przesunięcia
+	virtual void setXOffset(double val) = 0;
+	//! \return przesunięcie w pionie
+	virtual double getYOffset() const = 0;
+	//! ustawia przesunięcie w pionie
+	//! \param val nowa wartość przesunięcia
+	virtual void setYOffset(double val) = 0;
+	//! \return przesunięcie krzywej
+	virtual QPointF getOffset() const = 0;
+	//! ustawia przesunięcie
+	//! \param offset nowa wartość przesunięcia
+	virtual void setOffset(const QPointF& offset) = 0;
+
 public:/*
     //! \return czas ustawiony przez timeline
     double getTime() const;
@@ -67,31 +93,7 @@ public:/*
     virtual const std::string getName() const;
 
 
-    //! \return skala w poziomie
-    double getXScale() const;
-    //! ustawia skale w poziomie dla krzywej
-    //! \param val nowa wartość skali
-    void setXScale(double val);
-    //! \return skala w pionie
-    double getYScale() const;
-    //! ustawia skale w pionie dla krzywej
-    //! \param val nowa wartość skali
-    void setYScale(double val);
-    //! \return przesunięcie w poziomie
-    double getXOffset() const;
-    //! ustawia przesunięcie w poziomie
-    //! \param val nowa wartość przesunięcia
-    void setXOffset(double val);
-    //! \return przesunięcie w pionie
-    double getYOffset() const;
-    //! ustawia przesunięcie w pionie
-    //! \param val nowa wartość przesunięcia
-    void setYOffset(double val);
-    //! \return przesunięcie krzywej
-    QPointF getOffset() const;
-    //! ustawia przesunięcie
-    //! \param offset nowa wartość przesunięcia
-    void setOffset(const QPointF& offset);
+    
 */
 };
 

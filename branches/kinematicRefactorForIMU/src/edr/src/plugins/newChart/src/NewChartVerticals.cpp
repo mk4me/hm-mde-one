@@ -38,7 +38,7 @@ bool NewChartVerticals::stateEventFilter( QObject *object, QEvent *event )
                 point1.reset();
             } else {
                 if (cpd.get<2>() < MIN_DIST) {
-                    point1.reset(new std::pair<const NewChartSerie*, QPointF>(cpd.get<0>(), cpd.get<1>()));
+					point1.reset(new std::pair<const INewChartSeriePrivate*, QPointF>(cpd.get<0>(), cpd.get<1>()));
                 }
             }
         }
@@ -61,7 +61,7 @@ bool NewChartVerticals::stateEventFilter( QObject *object, QEvent *event )
                 marker.setVisible(false);
             }
             if ( point1) {
-                QString serieName = (style == NewChartLabel::Horizontal) ? "t" : point1->first->getName().c_str(); 
+                QString serieName = (style == NewChartLabel::Horizontal) ? "t" : point1->first->asISerie()->getName().c_str(); 
                 double diff = (style == NewChartLabel::Horizontal) ? (cpd.get<1>().x() - point1->second.x()) : (cpd.get<1>().y() - point1->second.y());
                 labelMarker->setText(QString("%1%2: %3").arg(QChar(0x394)).arg(serieName).arg(diff));
                 labelMarker->connectDots(cpd.get<1>(), point1->second, style);
@@ -93,13 +93,13 @@ void NewChartVerticals::stateEnd()
     marker.detach();
 }
 
-void NewChartVerticals::insertNewMarker( const QPointF& point1, const QPointF& point2, const NewChartSerie* currentSerie, const QColor& color)
+void NewChartVerticals::insertNewMarker(const QPointF& point1, const QPointF& point2, const INewChartSeriePrivate* currentSerie, const QColor& color)
 {
     UTILS_ASSERT(currentSerie);
     NewChartDotPtr dot1(new NewChartDotFloating(point1, currentSerie));
     NewChartDotPtr dot2(new NewChartDotFloating(point2, currentSerie));
     double delta = (style == NewChartLabel::Vertical) ? (point2.y() - point1.y()) : (point2.x() - point1.x());
-    QString serieName = (style == NewChartLabel::Horizontal) ? "t" : currentSerie->getName().c_str();
+    QString serieName = (style == NewChartLabel::Horizontal) ? "t" : currentSerie->asISerie()->getName().c_str();
     NewChartLabelPtr label(new NewChartLabel(QString("%1%2: %3").arg(QChar(0x394)).arg(serieName).arg(delta)));
     label->setPen(QPen(color));
     dot1->attach(plot);

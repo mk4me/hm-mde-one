@@ -57,7 +57,7 @@ protected:
     typedef utils::shared_ptr<LabelData> LabelDataPtr;
     typedef utils::shared_ptr<const LabelData> LabelDataConstPtr;
 
-    typedef boost::tuple<const NewChartSerie*, QPointF, double> SeriePointDist;
+	typedef boost::tuple<const INewChartSeriePrivate*, QPointF, double> SeriePointDist;
 
 protected:
     //! Realizuje przesunięcie pojedynczej etykiety

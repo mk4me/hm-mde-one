@@ -22,7 +22,7 @@ public:
     //! \param position pozycja na wykresie
     //! \param relatedSerie seria powiazana z punktem, używane są jej transformacje 
     //! \param size wielkość punktu
-    NewChartDotFloating(const QPointF& position, const NewChartSerie* relatedSerie, int size = 2);
+    NewChartDotFloating(const QPointF& position, const INewChartSeriePrivate* relatedSerie, int size = 2);
 
 public:
     //! \return pozycja z uwzględnieniem transformacji serii danych
@@ -35,7 +35,7 @@ private:
     //! pozycja obiektu
     QPointF position;
     //! przechowywana seria danych, z której pobiera się transformację
-    const NewChartSerie* relatedSerie;
+	const INewChartSeriePrivate* relatedSerie;
 };
 
 #endif
