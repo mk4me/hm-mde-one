@@ -323,14 +323,14 @@ private:
 SkeletonState::LinearizedNodesMapping SkeletonState::createMapping(const Skeleton & skeleton)
 {
 	LevelOrderVisitor lov;
-	::Joint::visitLevelOrder(skeleton.root, lov);
+	utils::TreeNode::visitLevelOrder(skeleton.root, lov);
 	return std::move(lov.mapping);
 }
 
 SkeletonState::LinearizedNodesMapping SkeletonState::createActiveMapping(const Skeleton & skeleton)
 {
 	NonLeafLevelOrderVisitor lov;
-	::Joint::visitLevelOrder(skeleton.root, lov);
+	utils::TreeNode::visitLevelOrder(skeleton.root, lov);
 	return std::move(lov.mapping);
 }
 
@@ -712,7 +712,7 @@ kinematic::SkeletonState::Joint2Index kinematic::SkeletonState::createJoint2Inde
 		std::pair<kinematic::SkeletonState::JointConstPtr, unsigned int> p = std::make_pair(joint, i);
 		m.insert(p);
 	};
-	kinematic::SkeletonState::Joint::visitLevelOrder(root, visitor);
+	utils::TreeNode::visitLevelOrder(root, visitor);
 	return m;
 }
 

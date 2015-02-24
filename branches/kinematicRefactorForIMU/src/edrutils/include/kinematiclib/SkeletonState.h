@@ -127,7 +127,7 @@ namespace kinematic
 		};
 		
 		//! Typ jointa stanu
-		typedef utils::TreeNode<JointData> Joint;
+		typedef utils::TreeNodeT<JointData> Joint;
 		//! Typ wska�nik�w do joint�w
 		DEFINE_SMART_POINTERS(Joint);
 

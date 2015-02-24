@@ -7,28 +7,6 @@
 
 static const osg::Quat invQXYZ = osg::Quat(osg::PI_2, osg::Vec3(1.0f, 0.0f, 0.0f)) * osg::Quat(osg::PI_2, osg::Vec3(0.0f, 0.0f, 1.0f));
 
-
-class SkeletonStreamSerieUpdater : public threadingUtils::IStreamStatusObserver
-{
-public:
-	SkeletonStreamSerieUpdater(SkeletonStreamSerie * serie)
-		: serie(serie)
-	{
-	}
-
-	virtual ~SkeletonStreamSerieUpdater() {}
-
-	//! Metoda wołana kiedy faktycznie stan strumienia się zmieni
-	virtual void update()
-	{
-		serie->requestUpdate();
-	}
-
-private:
-
-	SkeletonStreamSerie * serie;
-};
-
 SkeletonStreamSerie::SkeletonStreamSerie(KinematicVisualizer * visualizer,
 	const utils::TypeInfo & requestedType,
 	const core::VariantConstPtr & data) :
@@ -62,7 +40,7 @@ SkeletonStreamSerie::SkeletonStreamSerie(KinematicVisualizer * visualizer,
 
 	//setAxis(true);
 
-	updater.reset(new SkeletonStreamSerieUpdater(this));
+	updater.reset(new plugin::StreamDataSerieUpdater(this));
 
 	skeletalData->jointsStream->attachObserver(updater);
 }

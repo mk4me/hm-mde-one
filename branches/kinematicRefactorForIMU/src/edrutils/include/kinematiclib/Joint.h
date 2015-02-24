@@ -28,7 +28,7 @@ namespace kinematic
 		std::string name;
 	};	
 
-	typedef utils::TreeNode<JointData> Joint;
+	typedef utils::TreeNodeT<JointData> Joint;
 	DEFINE_SMART_POINTERS(Joint);
 }
 

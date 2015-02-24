@@ -364,7 +364,7 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Mo
 				motionState.jointsOrientations.insert(std::map<std::string, osg::Quat>::value_type(joint->value.name(), joint->value.globalOrientation()));
 			//}
 		};
-	kinematic::SkeletonState::Joint::visitLevelOrder(skeletonState.root(), visitor);
+	utils::TreeNode::visitLevelOrder(skeletonState.root(), visitor);
 
 	try{
 		auto ret = motionEstimationAlgorithm->estimate(motionState, input.sensorsData, deltaTime);
@@ -411,7 +411,7 @@ void KinematicStreamExtractor::extract(const IMU::MotionStream::value_type & inp
 			locOutput.push_back(val);
 		//}
 	};
-	kinematic::SkeletonState::Joint::visitLevelOrder(skeletonState.root(), visitor);
+	utils::TreeNode::visitLevelOrder(skeletonState.root(), visitor);
 	output.swap(locOutput);
 }
 

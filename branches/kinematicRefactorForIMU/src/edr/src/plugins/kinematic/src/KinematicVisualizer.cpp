@@ -936,7 +936,7 @@ void KinematicVisualizer::showGhost(bool val)
 
 void KinematicVisualizer::showJointsOrientations()
 {
-	SkeletonSerie* serie = dynamic_cast<SkeletonSerie*>(tryGetCurrentSerie());
+	AbstractSkeletonSerie* serie = dynamic_cast<AbstractSkeletonSerie*>(tryGetCurrentSerie());
 	if (serie) {
 		serie->setJointsOrientationsVisible();
 	}

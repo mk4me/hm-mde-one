@@ -14,6 +14,7 @@
 #include <utils/SmartPtr.h>
 #include <corelib/Variant.h>
 #include <corelib/IIdentifiable.h>
+#include <threadingUtils/StreamData.h>
 #include <QtGui/QPixmap>
 
 class QObject;
@@ -155,6 +156,31 @@ namespace plugin
 	};
 
 	DEFINE_SMART_POINTERS(IVisualizer);
+
+	//! Klasa pomocnicza przy odświeżaniu danych strumieniowych obsługiwanych przez serię danych
+	class StreamDataSerieUpdater : public threadingUtils::IStreamStatusObserver
+	{
+	public:
+		//! \param serie Seria danych obsługująca dane strumieniowe
+		StreamDataSerieUpdater(IVisualizer::ISerie * serie)
+			: serie(serie)
+		{
+		}
+
+		//! Destruktor wirtualny
+		virtual ~StreamDataSerieUpdater() {}
+
+		//! Metoda wołana kiedy faktycznie stan strumienia się zmieni
+		virtual void update()
+		{
+			serie->requestUpdate();
+		}
+
+	private:
+		//! Seria którą odświeżamy
+		IVisualizer::ISerie * serie;
+	};
+
 } // namespace plugin
 
 #endif  // HEADER_GUARD_CORE__IVISUALIZER_H__

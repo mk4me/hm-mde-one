@@ -503,15 +503,22 @@ namespace threadingUtils {
 		//! \param d [out]  Obiekt docelowy dla aktualnych danych ze strumienia po filtracji
 		virtual void data(typename IStreamT<T>::ref_type d) const override
 		{
-			std::lock_guard<std::recursive_mutex> lock(this->synch_);
-			d = currentData_;
+			std::lock_guard<std::recursive_mutex> lock(this->synch_);		
 			if (processReuired == true){				
-				process_(d);
-				processReuired = false;
-			}			
+				process();				
+			}
+
+			d = currentData_;
 		}
 
 	private:
+
+		//! Metoda przetwarza dane i zaznacza że już nie trzeba
+		void process() const
+		{
+			process_(currentData_);
+			processReuired = false;
+		}
 
 		//! Realizuje aktualizacje buforów jeśli jest to konieczne + notyfikuje o zmianach
 		void localUpdate()
@@ -521,9 +528,8 @@ namespace threadingUtils {
 			baseStream_->data(currentData_);
 
 			if (buffersAttached() == true){
-				process_(currentData_);				
+				process();
 				pushBufferData(currentData_);
-				processReuired = false;
 			}
 			else{
 				processReuired = true;

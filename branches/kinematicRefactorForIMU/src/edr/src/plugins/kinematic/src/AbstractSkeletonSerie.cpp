@@ -16,8 +16,8 @@ AbstractSkeletonSerie::AbstractSkeletonSerie(KinematicVisualizer * visualizer,
 	data(data), requestedType(requestedType),
 	lastUpdateTime(std::numeric_limits<double>::min()),
 	xyzAxis(false),
-	pointsDrawer(new osgutils::PointsDrawer(3)),
-	connectionsDrawer(new osgutils::ConnectionsDrawer(3)),
+	pointsDrawer(new osgutils::PointsDrawer(15)),
+	connectionsDrawer(new osgutils::ConnectionsDrawer(15)),
 	localRootNode(new osg::PositionAttitudeTransform)
 {
 }
@@ -88,7 +88,7 @@ void AbstractSkeletonSerie::update()
 		{
 			pos[joint2Index.at(node)] = node->value.globalPosition();
 		};
-	kinematic::SkeletonState::Joint::visitLevelOrder(root, visitor);
+	utils::TreeNode::visitLevelOrder(root, visitor);
 
 	pointsDrawer->update(pos);
 	connectionsDrawer->update(pos);
@@ -127,7 +127,7 @@ void PointsOrientationsDrawer::init(kinematic::SkeletonState::JointConstPtr root
 			pointAxes.push_back(ne);
 			localNode->addChild(ne);
 		};
-		kinematic::SkeletonState::Joint::visitLevelOrder(root, visitor);
+		utils::TreeNode::visitLevelOrder(root, visitor);
 		this->root = root;
 		setVisible(visible);
 	} else {
@@ -154,7 +154,7 @@ void PointsOrientationsDrawer::update()
 			mat.preMultScale(osg::Vec3(scale, scale, scale));
 			ne->setMatrix(mat);
 		};
-		kinematic::SkeletonState::Joint::visitLevelOrder(root, visitor);
+		utils::TreeNode::visitLevelOrder(root, visitor);
 	}
 }
 

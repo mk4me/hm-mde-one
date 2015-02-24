@@ -5,29 +5,6 @@
 #include "SkeletalVisualizationSchemeHelper.h"
 #include <threadingUtils/StreamData.h>
 
-
-
-class SkeletonStreamStateSerieUpdater : public threadingUtils::IStreamStatusObserver
-{
-public:
-	SkeletonStreamStateSerieUpdater(SkeletonStateStreamSerie * serie)
-		: serie(serie)
-	{
-	}
-
-	virtual ~SkeletonStreamStateSerieUpdater() {}
-
-	//! Metoda wołana kiedy faktycznie stan strumienia się zmieni
-	virtual void update()
-	{
-		serie->update();
-	}
-
-private:
-
-	SkeletonStateStreamSerie * serie;
-};
-
 SkeletonStateStreamSerie::SkeletonStateStreamSerie(KinematicVisualizer * visualizer,	const utils::TypeInfo & requestedType,const core::VariantConstPtr & data) :
 	visualizer(visualizer),	data(data), requestedType(requestedType),
 	AbstractSkeletonStreamSerie(visualizer, requestedType, data),
@@ -42,7 +19,7 @@ SkeletonStateStreamSerie::SkeletonStateStreamSerie(KinematicVisualizer * visuali
 	int pointsCount = skeletalData->nodesMapping.size();
 	AbstractSkeletonSerie::init(ratio, pointsCount, skeletonState, skeletalData->nodesMapping);
 
-	updater.reset(new SkeletonStreamStateSerieUpdater(this));
+	updater.reset(new plugin::StreamDataSerieUpdater(this));
 	skeletalData->states->attachObserver(updater);
 }
 

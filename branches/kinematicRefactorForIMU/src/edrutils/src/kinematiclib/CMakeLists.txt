@@ -7,6 +7,7 @@ SET_PUBLIC_HEADERS(
 	SkeletalData.h
 	Skeleton.h
 	SkeletonState.h
+	Topology.h
 )	
 
 SET_SOURCE_FILES( 	

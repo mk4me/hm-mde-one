@@ -59,106 +59,65 @@ namespace utils
 		unsigned int maxLevel;
 	};
 
-	//! \tparam ValueType Typ rpzechowywanej warto�ci
-	template<typename ValueType>
 	struct TreeNode
 	{
-	public:
-		//! Typ przechowywanych w w�z�ach warto�ci
-		typedef ValueType value_type;
-		//! Typ naszego w�z�a
-		typedef TreeNode<value_type> node_type;
-		//! Wskazniki do naszego wezla
-		DEFINE_SMART_POINTERS_EXT(node_type, Node);	
-		//! Dzieci wezla
-		typedef std::list<NodePtr> Children;	
-		//! Typ ilo�ci
-		typedef typename Children::size_type size_type;
-		//! Typ �cie�ki pomi�dzy w�z�ami
-		typedef Children Path;
+		//Typ ściezki
+		template<typename T>
+		using Path = std::list < T > ;
 
-	private:
+		//Typ kolekcji dzieci
+		template<typename T>
+		using Children = Path < T > ;
 
-		//! \param other Węzeł przenoszony wraz z wartością
-		TreeNode(TreeNode && other)
-			: parent(std::move(other.parent)),
-			children(std::move(other.children)),
-			value(std::move(other.value))
-		{}
-
-		//! \param value Warto�c przechowywana w w�le (kopiowanie)
-		TreeNode(const value_type & value) : value(value) {}
-		//! \param value Warto�c przechowywana w w�le (move semantics)
-		TreeNode(value_type && value) : value(std::move(value)) {}
-
-		//! \param node W�ze� kt�ry sprawdzamy pod k�tem bycia naszym przodkiem
-		//! \return Czy dany wez� jest naszym przodkiem (id�c w g�r� po parentach trafimy do niego)
-		bool rawIsAncestor(const node_type * node) const
+		//! \tparam NPtr Typ wska�nika w�z�a
+		template<typename NPtr>
+		//! \param me Węzeł dla którego sprawdzamy przodka
+		//! \param ancestor Weryfikowany węzeł przodek
+		static bool isAncestor(NPtr me, NPtr ancestor)
 		{
-			if (node == nullptr || node == this){
+			if (me == nullptr || me == ancestor){
 				return false;
 			}
 
-			auto p = parent.lock();
+			auto p = me->parent.lock();
 
-			while (p.get() != node) { p = p->parent.lock(); }
+			while (p.get() != ancestor) { p = p->parent.lock(); }
 
-			return p.get() == node;
-		}		
-
-	public:
-
-		//! \param node Węzeł od którego zaczynamy kopiowanie - automatycznie staje się rootem!!
-		//! \return Klon danego węzła będący rootem nowego drzewa
-		static NodePtr clone(NodeConstPtr node)
-		{
-			NodePtr ret(create(node->value));
-
-			for (const auto & cn : node->children)
-			{
-				auto c(clone(cn));
-				c->parent = ret;
-				ret->children.push_back(c);
-			}
-
-			return ret;
-		}
-		
-		//! \param value Warto�� z jak� tworzymy w�ze�
-		//! \return Nowy w�ze� z zadan� warto�ci�
-		static NodePtr create(const value_type & value = value_type())
-		{
-			return NodePtr(new node_type(value));
+			return p.get() == ancestor;
 		}
 
-		//! \param value Warto�� z jak� tworzymy w�ze�
-		//! \return Nowy w�ze� z zadan� warto�ci�
-		static NodePtr create(value_type && value)
+		//! \tparam NPtr Typ wska�nika w�z�a
+		template<typename NPtr>
+		//! \param me Węzeł dla którego sprawdzamy potomka
+		//! \param ancestor Weryfikowany węzeł potomek
+		static bool isDescendant(NPtr me, NPtr descendant)
 		{
-			return NodePtr(new node_type(std::move(value)));
+			return isAncestor(descendant, me);
 		}
 
 		//! \tparam NPtr Typ wska�nika w�z�a
 		template<typename NPtr>
 		//! \param �cie�ka kt�rej d�ugo�� obliczam
 		//! \return D�ugo�� �cie�ki
-		static size_type distance(const std::list<NPtr> & path)
+		static typename Path<NPtr>::size_type distance(const Path<NPtr> & path)
 		{
 			return path.size() - 1;
 		}
 
+		//! \tparam NPtr Typ wska�nika w�z�a
+		template<typename NPtr>
 		//! \param startNode Weze� z kt�rego ma wystartowa� �cie�ka
 		//! \param endNode Weze� do kt�rego doj�� �cie�ka
 		//! \return D�ugo�� �cie�ki pomi�dzy w�z�ami
-		static size_type distance(NodeConstPtr startNode, NodeConstPtr endNode)
-		{			
+		static typename Path<NPtr>::size_type distance(NPtr startNode, NPtr endNode)
+		{
 			return distance(findPath(startNode, endNode));
 		}
 
 		//! \tparam NPtr Typ wska�nika w�z�a
 		template<typename NPtr>
 		//! \param path [out] �cie�ka kt�r� odwracamy
-		static void reversePath(std::list<NPtr> & path)
+		static void reversePath(Path<NPtr> & path)
 		{
 			std::reverse(path.begin(), path.end());
 		}
@@ -168,9 +127,9 @@ namespace utils
 		//! \param startNode W�ze� z kt�rego ma si� rozpocz�� �cie�ka
 		//! \param endNode W�ze� w kt�rym ma si� ko�czy� �cie�ka
 		//! \return �cie�ka pomi�dzy w�z�ami - kolejne w�z�y
-		static std::list<NPtr> findPath(NPtr startNode, NPtr endNode)
+		static Path<NPtr> findPath(NPtr startNode, NPtr endNode)
 		{
-			std::list<NPtr> ret;		
+			Path<NPtr> ret;
 
 			if (startNode != endNode){
 				auto p1 = upPath(startNode);
@@ -206,7 +165,7 @@ namespace utils
 
 					if (retIT != intersectResult.end()){
 						//mamy punkt przeciecia - drogi si� schodz�
-						
+
 						ret.insert(ret.end(), p2.begin(), std::find(p2.begin(), p2.end(), intersectResult.front()));
 						reversePath(ret);
 						ret.push_front(intersectResult.front());
@@ -215,7 +174,7 @@ namespace utils
 						ret.push_back(startNode);
 					}
 				}
-			}			
+			}
 
 			return ret;
 		}
@@ -223,9 +182,9 @@ namespace utils
 		//! \tparam NPtr Typ wska�nika w�z�a
 		template<typename NPtr>
 		//! \param node W�ze� z kt�rego chcemy pobra� �cie�k� do roota
-		static std::list<NPtr> upPath(NPtr startNode)
+		static Path<NPtr> upPath(NPtr startNode)
 		{
-			std::list<NPtr> ret;			
+			Path<NPtr> ret;
 			while (startNode != nullptr && startNode->isRoot() == false) { ret.push_back(startNode); startNode = startNode->parent.lock(); }
 			return ret;
 		}
@@ -239,7 +198,7 @@ namespace utils
 		{
 			if (node != nullptr){
 				visitor(node);
-				for (auto & child : node->children)
+				for (const auto & child : node->children)
 				{
 					visitPreOrder(NPtr(child), visitor);
 				}
@@ -254,7 +213,7 @@ namespace utils
 		static void visitPostOrder(NPtr node, Visitor & visitor)
 		{
 			if (node != nullptr){
-				for (auto & child : node->children)
+				for (const auto & child : node->children)
 				{
 					visitPostOrder(NPtr(child), visitor);
 				}
@@ -264,59 +223,28 @@ namespace utils
 
 		//! \tparam NPtr Typ wska�nika w�z�a
 		//! \tparam Visitor Typ odwiedzaj�cego w�z�y
-		template<typename Visitor>
+		template<typename NPtr, typename Visitor>
 		//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
 		//! \param visitor Obiekt przegl�daj�cy wez�y i poziomy
-		static void visitLevelOrder(NodePtr node, Visitor & visitor)
+		static void visitLevelOrder(NPtr node, Visitor & visitor)
 		{
 			if (node != nullptr){
 
-				Children children;
+				Children<NPtr> children;
 				children.push_back(node);
-				size_type level = 0;
+				typename Children<NPtr>::size_type level = 0;
 				while (children.empty() == false)
 				{
 					//pobieramy dla nast�pnego poziomu dzieci
-					Children nextLevelChildren;
-					for (auto & child : children)
+					Children<NPtr> nextLevelChildren;
+					for (const auto & child : children)
 					{
-						visitor(child, level);
+						visitor(NPtr(child), level);
 
 						if (child != nullptr){
-							nextLevelChildren.insert(nextLevelChildren.end(), child->children.begin(), child->children.end());
-						}						
-					}
-
-					children.swap(nextLevelChildren);
-					++level;
-				}
-			}
-		}
-
-		//! \tparam NPtr Typ wska�nika w�z�a
-		//! \tparam Visitor Typ odwiedzaj�cego w�z�y
-		template<typename Visitor>
-		//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
-		//! \param visitor Obiekt przegl�daj�cy wez�y i poziomy
-		static void visitLevelOrder(NodeConstPtr node, Visitor & visitor)
-		{
-			if (node != nullptr){
-
-				std::list<NodeConstPtr> children;
-				children.push_back(node);
-				size_type level = 0;
-				while (children.empty() == false)
-				{
-					//pobieramy dla nast�pnego poziomu dzieci
-					std::list<NodeConstPtr> nextLevelChildren;
-					for (auto & child : children)
-					{
-						visitor(child, level);
-
-						if (child != nullptr){
-							for (auto & v : child->children){
-								nextLevelChildren.push_back(NodeConstPtr(v));
-							}
+							for (const auto & val : child->children){
+								nextLevelChildren.push_back(NPtr(val));
+							}							
 						}
 					}
 
@@ -338,76 +266,37 @@ namespace utils
 			TreeLinearizeVisitor<NPtr> hv;
 			visitOrder(node, hv);
 			reversePath(hv.linearizedTree);
-			for (auto & val : hv.linearizedTree)
+			for (const auto & val : hv.linearizedTree)
 			{
-				visitor(val);
+				visitor(NPtr(val));
 			}
 		}
 
+		//! \tparam NPtr Typ wska�nika w�z�a
 		//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
-		template<typename CondVisitor>
+		template<typename NPtr, typename CondVisitor>
 		//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
 		//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-		static bool visitLevelOrderWhile(NodePtr node, CondVisitor & condVisitor)
+		static bool visitLevelOrderWhile(NPtr node, CondVisitor & condVisitor)
 		{
 			if (node != nullptr){
 
-				Children children;
+				Children<NPtr> children;
 				children.push_back(node);
-				size_type level = 0;
+				typename Children<NPtr>::size_type level = 0;
 				while (children.empty() == false)
 				{
 					//pobieramy dla nast�pnego poziomu dzieci
-					Children nextLevelChildren;
-					for (auto & child : children)
+					Children<NPtr> nextLevelChildren;
+					for (const auto & child : children)
 					{
-						if (condVisitor(child, level) == false){
+						if (condVisitor(NPtr(child), level) == false){
 							return false;
 						}
 
 						if (child != nullptr){
-							nextLevelChildren.insert(nextLevelChildren.end(), child->children.begin(), child->children.end());
-						}
-					}
-
-					children.swap(nextLevelChildren);
-					++level;
-				}
-
-				return true;
-			}
-			else{
-				return false;
-			}
-		}
-
-		//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
-		template<typename CondVisitor>
-		//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
-		//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-		//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
-		static bool visitLevelOrderWhile(NodeConstPtr node, CondVisitor & condVisitor)
-		{
-			if (node != nullptr){
-
-				std::list<NodeConstPtr> children;
-				children.push_back(node);
-				size_type level = 0;
-				while (children.empty() == false)
-				{
-					//pobieramy dla nast�pnego poziomu dzieci
-					std::list<NodeConstPtr> nextLevelChildren;
-					for (auto & child : children)
-					{
-						if (condVisitor(child) == false){
-							return false;
-						}
-
-						if (child != nullptr){
-
-							for (auto & val : child->children)
-							{
-								nextLevelChildren.push_back(val);
+							for (const auto & val : child->children) {
+								nextLevelChildren.push_back(NPtr(val));
 							}
 						}
 					}
@@ -433,7 +322,7 @@ namespace utils
 		{
 			if (node != nullptr){
 				if (condVisitor(node) == true){
-					for (auto & child : node->children)
+					for (const auto & child : node->children)
 					{
 						if (visitPreOrderWhile(NPtr(child), condVisitor) == false){
 							return false;
@@ -460,7 +349,7 @@ namespace utils
 		static bool visitPostOrderWhile(NPtr node, CondVisitor & condVisitor)
 		{
 			if (node != nullptr){
-				for (auto & child : node->children)
+				for (const auto & child : node->children)
 				{
 					if (visitPostOrderWhile(NPtr(child), condVisitor) == false){
 						return false;
@@ -485,14 +374,79 @@ namespace utils
 			TreeLinearizeVisitor<NPtr> hv;
 			visitOrder(node, hv);
 			reversePath(hv.linearizedTree);
-			for (auto & val : hv.linearizedTree)
+			for (const auto & val : hv.linearizedTree)
 			{
-				if (condVisitor(val) == false){
+				if (condVisitor(NPtr(val)) == false){
 					return false;
 				}
 			}
 
 			return !hv.linearizedTree.empty();
+		}
+	};
+
+	//! \tparam ValueType Typ rpzechowywanej warto�ci
+	template<typename ValueType>
+	struct TreeNodeT
+	{
+	public:
+		//! Typ przechowywanych w w�z�ach warto�ci
+		typedef ValueType value_type;
+		//! Typ naszego w�z�a
+		typedef TreeNodeT<value_type> node_type;
+		//! Wskazniki do naszego wezla
+		DEFINE_SMART_POINTERS_EXT(node_type, Node);	
+		//! Dzieci wezla
+		typedef TreeNode::Children<NodePtr> Children;	
+		//! Typ ilo�ci
+		typedef typename Children::size_type size_type;
+		//! Typ �cie�ki pomi�dzy w�z�ami
+		typedef Children Path;
+
+	private:
+
+		//! \param other Węzeł przenoszony wraz z wartością
+		TreeNodeT(TreeNodeT && other)
+			: parent(std::move(other.parent)),
+			children(std::move(other.children)),
+			value(std::move(other.value))
+		{}
+
+		//! \param value Warto�c przechowywana w w�le (kopiowanie)
+		TreeNodeT(const value_type & value) : value(value) {}
+		//! \param value Warto�c przechowywana w w�le (move semantics)
+		TreeNodeT(value_type && value) : value(std::move(value)) {}
+
+	public:
+
+		//! \param node Węzeł od którego zaczynamy kopiowanie - automatycznie staje się rootem!!
+		//! \return Klon danego węzła będący rootem nowego drzewa
+		static NodePtr clone(NodeConstPtr node)
+		{
+			NodePtr ret(create(node->value));
+
+			for (const auto & cn : node->children)
+			{
+				auto c(clone(cn));
+				c->parent = ret;
+				ret->children.push_back(c);
+			}
+
+			return ret;
+		}
+		
+		//! \param value Warto�� z jak� tworzymy w�ze�
+		//! \return Nowy w�ze� z zadan� warto�ci�
+		static NodePtr create(const value_type & value = value_type())
+		{
+			return NodePtr(new node_type(value));
+		}
+
+		//! \param value Warto�� z jak� tworzymy w�ze�
+		//! \return Nowy w�ze� z zadan� warto�ci�
+		static NodePtr create(value_type && value)
+		{
+			return NodePtr(new node_type(std::move(value)));
 		}
 
 		//! \param parentNode W�ze� do kt�rego dodajemy warto�� dziecka
@@ -528,19 +482,17 @@ namespace utils
 		}
 
 		//! Destruktor
-		~TreeNode() {}
+		~TreeNodeT() {}
 
 		//! \return Rodzenstwo na tym samym poziomie bez mojego wezla
 		Children siblings() const
 		{
 			auto ret = allSiblings();
 
-			for (auto it = ret.begin(); it != ret.end(); ++it)
-			{
-				if ((*it).get() == this){
-					ret.erase(it);
-					break;
-				}
+			auto it = std::find_if(ret.begin(), ret.end(), [this](NodePtr node) { return node.get() == this; });
+
+			if (it != ret.end()){
+				ret.erase(it);
 			}
 
 			return ret;
@@ -561,14 +513,14 @@ namespace utils
 		//! \return Prawda je�li w�ze� jest naszym przodkiem (znajdziemy go id�c w g�re po parentach)
 		bool isAncestor(NodeConstPtr node) const
 		{
-			return rawIsAncestor(node.get());
+			return TreeNode::isAncestor(this, node.get());
 		}
 
 		//! \param node Weze� kt�ry sprawdzamy czy jest naszym potomkiem
 		//! \return Prawda je�li w�ze� jest naszym potomkiem (nasz w�ze� znajdziemy go id�c w g�re po parentach tego w�z�a)
 		bool isDescendant(NodeConstPtr node) const
 		{
-			return node->rawIsAncestor(this);
+			return TreeNode::isDescendant(this, node.get());
 		}
 
 		//! \return Czy w�ze� jest li�ciem - nie ma dzieci
@@ -629,6 +581,176 @@ namespace utils
 		NodeWeakPtr parent;
 		//! Warto��
 		value_type value;
+		//! Dzieci
+		Children children;
+	};
+
+	//! \tparam ValueType Typ rpzechowywanej warto�ci
+	template<>
+	struct TreeNodeT<void>
+	{
+	public:
+		//! Typ przechowywanych w w�z�ach warto�ci
+		typedef void value_type;
+		//! Typ naszego w�z�a
+		typedef TreeNodeT<void> node_type;
+		//! Wskazniki do naszego wezla
+		DEFINE_SMART_POINTERS_EXT(node_type, Node);
+		//! Dzieci wezla
+		typedef TreeNode::Children<NodePtr> Children;
+		//! Typ ilo�ci
+		typedef Children::size_type size_type;
+		//! Typ �cie�ki pomi�dzy w�z�ami
+		typedef Children Path;
+
+	private:
+
+		//! Domyślny konstruktor
+		TreeNodeT() {}
+
+		//! \param other Węzeł przenoszony wraz z wartością
+		TreeNodeT(TreeNodeT && other)
+			: parent(std::move(other.parent)),
+			children(std::move(other.children))			
+		{}		
+
+	public:
+
+		//! \param node Węzeł od którego zaczynamy kopiowanie - automatycznie staje się rootem!!
+		//! \return Klon danego węzła będący rootem nowego drzewa
+		static NodePtr clone(NodeConstPtr node)
+		{
+			NodePtr ret(new node_type());
+
+			for (const auto & cn : node->children)
+			{
+				auto c(clone(cn));
+				c->parent = ret;
+				ret->children.push_back(c);
+			}
+
+			return ret;
+		}
+		
+		//! \return Nowy w�ze�
+		static NodePtr create()
+		{
+			return NodePtr(new node_type());
+		}		
+
+		//! \param parentNode W�ze� do kt�rego dodajemy warto�� dziecka		
+		//! \return W�ze� dziecko z zadan� warto�ci�
+		static NodePtr addChild(NodePtr parentNode)
+		{
+			NodePtr ret;
+
+			if (parentNode != nullptr){
+				ret = create();
+				parentNode->children.push_back(ret);
+				ret->parent = parentNode;
+			}
+
+			return ret;
+		}
+
+		//! Destruktor
+		~TreeNodeT() {}
+
+		//! \return Rodzenstwo na tym samym poziomie bez mojego wezla
+		Children siblings() const
+		{
+			auto ret = allSiblings();
+
+			auto it = std::find_if(ret.begin(), ret.end(), [this](NodePtr node) { return node.get() == this; });
+
+			if (it != ret.end()){
+				ret.erase(it);
+			}
+
+			return ret;
+		}
+
+		//! \return Ca�e rodze�stwo - razem z moim w�z�em
+		Children allSiblings() const
+		{
+			auto p = parent.lock();
+			if (p != nullptr){
+				return p->children;
+			}
+
+			return Children();
+		}
+
+		//! \param node Weze� kt�ry sprawdzamy czy jest naszym przodkiem
+		//! \return Prawda je�li w�ze� jest naszym przodkiem (znajdziemy go id�c w g�re po parentach)
+		bool isAncestor(NodeConstPtr node) const
+		{
+			return TreeNode::isAncestor(this, node.get());
+		}
+
+		//! \param node Weze� kt�ry sprawdzamy czy jest naszym potomkiem
+		//! \return Prawda je�li w�ze� jest naszym potomkiem (nasz w�ze� znajdziemy go id�c w g�re po parentach tego w�z�a)
+		bool isDescendant(NodeConstPtr node) const
+		{
+			return TreeNode::isDescendant(this, node.get());
+		}
+
+		//! \return Czy w�ze� jest li�ciem - nie ma dzieci
+		bool isLeaf() const
+		{
+			return children.empty();
+		}
+
+		//! \return Czy w�ze� jest rootem - nie ma parenta
+		bool isRoot() const
+		{
+			return parent.expired();
+		}
+
+		//! \return Stopie� w�z�a - Ilo�� po��cze� jakie tworzy
+		size_type degree() const
+		{
+			return children.size() + ((isRoot() == true) ? 0 : 1);
+		}
+
+		//! \return Wysoko�c w�z�a - odleg�o�� do roota
+		size_type height() const
+		{
+			size_type l = 0;
+			auto p = this;
+
+			while (p->isRoot() == false) { p = p->parent.lock().get(); ++l; }
+
+			return l;
+		}
+
+		//! \return G��boko�� w�z�a - poziom najdalej oddalonego dziecka
+		size_type depth() const
+		{
+			size_type l = 0;
+
+			if (isLeaf() == false){
+				for (const auto & child : children)
+				{
+					FindMaxLevelVisitor<NodeConstPtr> mlVisitor;
+					TreeNode::visitLevelOrder(child, mlVisitor);
+					l = std::max(l, mlVisitor.maxLevel);
+				}
+
+				++l;
+			}
+
+			return l;
+		}
+
+		//! To samo co depth
+		size_type level() const
+		{
+			return depth();
+		}
+
+		//! Rodzic
+		NodeWeakPtr parent;
 		//! Dzieci
 		Children children;
 	};

@@ -156,9 +156,6 @@ namespace IMU
 		static void configureCostume(CostumeDescription & cd);
 		static bool innerRefreshCostumeSensorsConfiguration(CostumeData & data, const uint8_t MaxSamplesCount);
 
-		static std::string sensorParameterName(const unsigned int idx);
-		static std::string vectorParameterName(const unsigned int idx);
-
 		void innerLoadCostume(const unsigned int idx);
 		void innerUnloadCostume(const unsigned int idx);		
 

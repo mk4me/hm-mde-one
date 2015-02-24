@@ -315,7 +315,7 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(
 					++jointsCount;
 				}
 			};
-			kinematic::Joint::visitPostOrder(m.second->root, visitor);
+			utils::TreeNode::visitPostOrder(m.second->root, visitor);
 
 			ui->modelComboBox->addItem(tr("Model %1: %2 joints").arg(QString::fromStdString(m.second->name)).arg(jointsCount), QVariant::fromValue(m.second));
 		}
@@ -396,7 +396,7 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(
 					++jointsCount;
 				}
 			};
-			kinematic::Joint::visitPostOrder(m.second->root, visitor);
+			utils::TreeNode::visitPostOrder(m.second->root, visitor);
 
 			ui->modelComboBox->addItem(tr("Model %1: %2 joints").arg(QString::fromStdString(m.second->name)).arg(jointsCount), QVariant::fromValue(m.second));
 

@@ -50,31 +50,6 @@ void CurveData::clear()
 	d_count = 0;
 }
 
-
-
-class ChartSerieUpdater : public threadingUtils::IStreamStatusObserver
-{
-public:
-	ChartSerieUpdater(NewChartStreamSerie * serie)
-		: serie(serie)
-	{
-	}
-
-	virtual ~ChartSerieUpdater() {}
-
-	//! Metoda wołana kiedy faktycznie stan strumienia się zmieni
-	virtual void update()
-	{
-		serie->requestUpdate();
-	}
-
-private:
-
-	NewChartStreamSerie * serie;
-};
-
-
-
 NewChartStreamSerie::NewChartStreamSerie( NewChartVisualizer * visualizer ) :
 visualizer(visualizer),
     curve(nullptr),
@@ -83,7 +58,7 @@ visualizer(visualizer),
     _zBase(0),
 	a(0.0)
 {
-	updater.reset(new ChartSerieUpdater(this));
+	updater.reset(new plugin::StreamDataSerieUpdater(this));
 }
 
 void NewChartStreamSerie::setData(const utils::TypeInfo & requestedType, const core::VariantConstPtr & data )
