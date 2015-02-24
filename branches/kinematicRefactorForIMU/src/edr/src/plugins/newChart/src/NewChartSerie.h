@@ -17,12 +17,13 @@
 #include "NewChartCurve.h"
 #include "NewChartEvents.h"
 #include "Scales.h"
+#include "INewChartSeriePrivate.h"
 
 class NewChartCurve;
 class NewChartVisualizer;
 
 //! Podstawowa seria danych wizualizatora 2D
-class NewChartSerie : public INewChartSerie, public EventSerieBase
+class NewChartSerie : public INewChartSeriePrivate, public EventSerieBase
 {
     friend class NewChartVisualizer;
 public:

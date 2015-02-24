@@ -26,7 +26,7 @@
 #include <corelib/IVisualizer.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/INewChartVisualizer.h>
-#include <plugins/newChart/INewChartSerie.h>
+#include "INewChartSeriePrivate.h"
 
 #include "NewChartSerie.h"
 #include "NewChartState.h"
@@ -110,7 +110,7 @@ public:
       //! \param event
       bool eventFilter( QObject *object, QEvent *event );
       //! \return wszystkie serie aktualnie obsługiwane przez wizualizator
-      boost::iterator_range<std::vector<NewChartSerie*>::const_iterator> getSeries() const;
+      boost::iterator_range<std::vector<INewChartSeriePrivate*>::const_iterator> getSeries() const;
       //! \return czy wizualizator jest w trybie wizualizacji eventów
       bool isEventMode() const { return context != C3DEventsCollection::IEvent::General; }
       //! Zrzut wizualizatora do pixmapy
@@ -278,7 +278,7 @@ private:
     //! obiekt przechwujący ekstrema krzywych
     Scales plotScales;
     //! kolekcja z wszystkimi seriami danych
-    std::vector<NewChartSerie*> series;
+    std::vector<INewChartSeriePrivate*> series;
     //! mapa przypisująca akcje do stanu wykresu
     std::map<QAction*, NewChartStatePtr> statesMap;
     //! flaga mowiaca o tym, czy legenda jest widoczna
@@ -334,6 +334,9 @@ private:
     float currentSerieTime;
     //! aktualna wartość dla serii
     float currentSerieValue;
+    // TODO to jest hack dla skali z zewnątrz, powinno stworzyć się obiekt, dla każdego przypadku rysowania skali,
+    // np. skala globalna automatyczna, manualna, do aktywnej, procentowa i podmieniac je tak jak we wzorcu strategia
+    bool customScale;
 };
 typedef utils::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;
 typedef utils::shared_ptr<const NewChartVisualizer> NewChartVisualizerConstPtr;

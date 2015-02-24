@@ -271,7 +271,7 @@ void NewChartStreamSerie::setYScale( double val )
 
 Scales NewChartStreamSerie::getScales() const
 { 
-    return Scales(0.0f, 100.0, 0.0, 100.0);
+    return Scales(0.0f, 10.0, 0.0, 10.0);
 }
 
 

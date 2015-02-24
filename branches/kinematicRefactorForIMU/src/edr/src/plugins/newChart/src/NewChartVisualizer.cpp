@@ -54,7 +54,8 @@ NewChartVisualizer::NewChartVisualizer() :
 	scaleAction(nullptr),
 	bandsAction(nullptr),
     currentSerieTime(-1.0f),
-    currentSerieValue(-1.0f)
+    currentSerieValue(-1.0f),
+	customScale(false)
 {
 
 }
@@ -314,9 +315,10 @@ plugin::IVisualizer::ISerie *NewChartVisualizer::createSerie(const plugin::IVisu
 void NewChartVisualizer::addPlotCurve( QwtPlotCurve* curve, const Scales& scales)
 {
     plotScales.merge(scales);
-
-    qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
-    qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.getYMin(), plotScales.getYMax());
+    if (!customScale) {
+    	qwtPlot->setAxisScale(QwtPlot::xBottom, plotScales.getXMin(), plotScales.getXMax());
+    	qwtPlot->setAxisScale(QwtPlot::yLeft, plotScales.getYMin(), plotScales.getYMax());
+    }
     curve->attach(qwtPlot);
 }
 
@@ -347,7 +349,7 @@ void NewChartVisualizer::setActiveSerie(plugin::IVisualizer::ISerie * serie)
 		setActiveSerie(-1);
 	}else{
 		for(int i = 0; i < series.size(); ++i){
-			if(series[i] == serie){
+			if(series[i]->asISerie() == serie){
 				setActiveSerie(i);
 			}
 		}
@@ -358,7 +360,7 @@ const plugin::IVisualizer::ISerie * NewChartVisualizer::getActiveSerie() const
 {
 	for(int i = 0; i < series.size(); ++i){
 		if(series[i]->isActive() == true){
-			return series[i];
+			return series[i]->asISerie();
 		}
 	}
 
@@ -369,7 +371,7 @@ plugin::IVisualizer::ISerie * NewChartVisualizer::getActiveSerie()
 {
 	for(int i = 0; i < series.size(); ++i){
 		if(series[i]->isActive() == true){
-			return series[i];
+			return series[i]->asISerie();
 		}
 	}
 
@@ -464,8 +466,9 @@ void NewChartVisualizer::onSerieSelected(const QVariant& item, bool on, int idx)
         if (on == true) {
         
             for (unsigned int i = 0; i < series.size(); ++i) {
+
                 NewChartLegendItem * legendLabel = getLegendLabel(series[i]->getCurve());
-                if (series[i]->curve == curve) {
+                if (series[i]->getCurve() == curve) {
                     // powinno wywołać sygnał, który ustawi aktywną serię
                     setActiveSerie(i);
                     legendLabel->setItemVisible(true);
@@ -633,7 +636,10 @@ void NewChartVisualizer::recreateStats( ScalarChannelStatsConstPtr stats /*= Sca
 {
     statsTable->clear();
     for (auto it = series.begin(); it != series.end(); ++it) {
-        statsTable->addEntry(tr("Whole chart"), (*it)->getName().c_str(), (*it)->getStats() );
+    	NewChartSerie* serie = dynamic_cast<NewChartSerie*>(*it);
+    	if (serie) {
+    		statsTable->addEntry(tr("Whole chart"), serie->getName().c_str(), serie->getStats() );
+    	}
     }
     if (stats) {
         QString group = context == C3DEventsCollection::IEvent::Left ? tr("Left") : tr("Right");
@@ -641,15 +647,19 @@ void NewChartVisualizer::recreateStats( ScalarChannelStatsConstPtr stats /*= Sca
         statsTable->addEntry(group, stats->getChannel()->getName().c_str(), stats, color);
     } else {
         for (auto it = series.begin(); it != series.end(); ++it) {
-            int no = 0;
-            EventsHelperPtr helper = (*it)->getEventsHelper();
-            for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); ++segment) {
-                statsTable->addEntry(tr("Left"), tr("%1: Left step %2").arg((*it)->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
-            }
-            no = 0;
-            for (auto segment = helper->getRightSegments().begin(); segment != helper->getRightSegments().end(); ++segment) {
-                statsTable->addEntry(tr("Right"), tr("%1: Right step %2").arg((*it)->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
-            }
+
+        	NewChartSerie* serie = dynamic_cast<NewChartSerie*>(*it);
+        	if (serie) {
+				int no = 0;
+				EventsHelperPtr helper = serie->getEventsHelper();
+				for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); ++segment) {
+					statsTable->addEntry(tr("Left"), tr("%1: Left step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
+				}
+				no = 0;
+				for (auto segment = helper->getRightSegments().begin(); segment != helper->getRightSegments().end(); ++segment) {
+					statsTable->addEntry(tr("Right"), tr("%1: Right step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
+				}
+        	}
         }
     }
 }
@@ -671,12 +681,15 @@ void NewChartVisualizer::onSerieVisible(const QVariant& info, bool visible )
         c->setVisible(visible);
     } else {
         for (unsigned int i = 0; i < series.size(); ++i) {
-            if (series[i]->curve == curve) {
+            if (series[i]->getCurve() == curve) {
                 if (!series[i]->isActive()) {
                     series[i]->setVisible(visible);
-                    auto list = statsTable->getEntriesByChannel(series[i]->getStats()->getChannel());
-                    for(auto item : list) {
-                        item->setHidden(!visible);
+                    auto chartSerie = dynamic_cast<NewChartSerie*>(series[i]);
+                    if (chartSerie) {
+						auto list = statsTable->getEntriesByChannel(chartSerie->getStats()->getChannel());
+						for(auto item : list) {
+							item->setHidden(!visible);
+						}
                     }
                     for (auto it = statesMap.begin(); it != statesMap.end(); ++it) {
                         NewChartLabelStatePtr labelState = utils::dynamic_pointer_cast<NewChartLabelState>(it->second);
@@ -705,6 +718,9 @@ void NewChartVisualizer::onSerieVisible(const QVariant& info, bool visible )
 
 void NewChartVisualizer::recreateScales()
 {
+	if (customScale) {
+		return;
+	}
     plotScales.clear();
     for (auto it = series.begin(); it != series.end(); ++it) {
         if ((*it)->isVisible()) {
@@ -731,12 +747,18 @@ bool NewChartVisualizer::timeInsideEvent()
 
 void NewChartVisualizer::scaleToActiveSerie( bool scaleToActive)
 {
+	if (customScale) {
+			return;
+		}
     this->scaleToActive = scaleToActive;
     setScale(scaleToActive, context != C3DEventsCollection::IEvent::General);
 }
 
 void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
 {
+	if (customScale) {
+			return;
+		}
     UTILS_ASSERT(percentDraw);
    
     if (eventMode) {
@@ -787,6 +809,9 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
 
 void NewChartVisualizer::setScale()
 {
+	if (customScale) {
+			return;
+		}
     NewChartSerie* serie = tryGetCurrentSerie();
     if (serie) {
        if (isEventMode()) {
@@ -806,11 +831,15 @@ void NewChartVisualizer::setScale()
 
 void NewChartVisualizer::setAxisScale(const Axis axis, const double min, const double max, unsigned int steps)
 {
-	qwtPlot->setAxisScale(axis == INewChartVisualizer::AxisX ? QwtPlot::yLeft : QwtPlot::xBottom, min, max, (max - min) / std::max<double>(1, steps));
+	customScale = true;
+	qwtPlot->setAxisScale(axis == INewChartVisualizer::AxisX ? QwtPlot::yLeft : QwtPlot::xBottom, min, max);
 }
 
 void NewChartVisualizer::setGlobalScales(bool scaleToActive)
 {
+	if (customScale) {
+			return;
+		}
     UTILS_ASSERT(percentDraw);
     NewChartSerie* serie = tryGetCurrentSerie();
     if (serie) {
@@ -926,11 +955,14 @@ void NewChartVisualizer::refreshBounds()
     //minimalna rozdzielczość dla wszystkich kanałów
     std::vector<ScalarChannelReaderInterfaceConstPtr> channels;
     for (auto it = series.begin(); it != series.end(); ++it) {
-        ScalarChannelReaderInterfaceConstPtr data;
-        (*it)->getData()->tryGet(data);
-        minT = (std::max)(minT, data->argument(0));
-        maxT = (std::min)(maxT, data->argument(data->size() - 1));
-        channels.push_back(data);
+    	ScalarChannelReaderInterfaceConstPtr data;
+    	auto* iserie = dynamic_cast<plugin::IVisualizer::ISerie*>(*it);
+    	iserie->getData()->tryGet(data);
+    	if(data) {
+    		minT = (std::max)(minT, data->argument(0));
+    		maxT = (std::min)(maxT, data->argument(data->size() - 1));
+    		channels.push_back(data);
+    	}
     }
 
     int totalWindows = (maxT - minT) / movingAverageTimeWindow;
@@ -1207,7 +1239,7 @@ void NewChartVisualizer::stddev_using_precalc_ma( const std::vector<float> & inR
 bool NewChartVisualizer::isCurveFromSerie(const QwtPlotCurve* curve) const
 {
     for (auto it = series.begin(); it != series.end(); ++it) {
-        if ((*it)->curve == curve) {
+        if ((*it)->getCurve() == curve) {
             return true;
         }
     }
@@ -1227,7 +1259,7 @@ void NewChartVisualizer::setLabelsVisible( bool val )
     }
 }
 
-boost::iterator_range<std::vector<NewChartSerie*>::const_iterator> NewChartVisualizer::getSeries() const
+boost::iterator_range<std::vector<INewChartSeriePrivate*>::const_iterator> NewChartVisualizer::getSeries() const
 {
     return boost::make_iterator_range(series.cbegin(), series.cend());
 }

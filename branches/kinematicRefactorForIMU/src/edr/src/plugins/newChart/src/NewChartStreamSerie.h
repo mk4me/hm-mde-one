@@ -16,6 +16,7 @@
 #include <plugins/newChart/INewChartSerie.h>
 #include "NewChartCurve.h"
 #include "NewChartEvents.h"
+#include "INewChartSeriePrivate.h"
 #include "Scales.h"
 #include <QtCore/QVector>
 
@@ -41,7 +42,7 @@ private:
 };
 
 //! Strumieniowa seria danych wizualizatora 2D
-class NewChartStreamSerie : public INewChartSerie, public plugin::IVisualizer::ISerie
+class NewChartStreamSerie : public INewChartSeriePrivate, public plugin::IVisualizer::ISerie
 {
     friend class NewChartVisualizer;
 public:

@@ -121,7 +121,7 @@ void NewChartVerticals::updateLabels()
         QPointF p1 = (*it)->dot1->getPosition();
         QPointF p2 = (*it)->dot2->getPosition();
         double delta = (style == NewChartLabel::Vertical) ? (p2.y() - p1.y()) : (p2.x() - p1.x());
-        QString serieName = (style == NewChartLabel::Horizontal) ? "t" : (*it)->serie->getName().c_str();
+        QString serieName = (style == NewChartLabel::Horizontal) ? "t" : (*it)->serie->asISerie()->getName().c_str();
         (*it)->label->setText(QString("%1%2: %3").arg(QChar(0x394)).arg(serieName).arg(delta));
     }
 }

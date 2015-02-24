@@ -8,6 +8,7 @@ SET_PUBLIC_HEADERS(
 
 SET_PRIVATE_HEADERS (
 	NewChartVisualizer.h
+	INewChartSeriePrivate.h
 	NewChartSerie.h
 	NewChartStreamSerie.h
 	NewChartPicker.h

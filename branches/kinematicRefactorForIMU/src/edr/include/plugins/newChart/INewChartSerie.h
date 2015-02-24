@@ -12,6 +12,9 @@
 
 #include <plugins/c3d/EventSerieBase.h>
 
+class QwtPlotCurve;
+class EventsHelper;
+class Scales;
 //! Niektóre elementy serii danych wizualizatora wykresów są edytowane z zewnątrz, 
 //! dlatego należy interfejsować serie danych, aby dać dostęp do obiektu bez konieczności linkowania się z pluginem
 //! taką funkcjonalność w obrębie serii zapewnia właśnie ten interfejs
@@ -27,6 +30,8 @@ public:
     //! ustawia kolor serii
     //! \param color kolor w formacie Qt
     virtual void setColor(const QColor& color) = 0;
+
+
 };
 typedef utils::shared_ptr<INewChartSerie> INewChartSeriePtr;
 typedef utils::shared_ptr<const INewChartSerie> INewChartSerieConstPtr;
