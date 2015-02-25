@@ -837,7 +837,7 @@ void NewChartVisualizer::setScale()
 void NewChartVisualizer::setAxisScale(const Axis axis, const double min, const double max, unsigned int steps)
 {
 	customScale = true;
-	qwtPlot->setAxisScale(axis == INewChartVisualizer::AxisX ? QwtPlot::yLeft : QwtPlot::xBottom, min, max);
+	qwtPlot->setAxisScale(axis == INewChartVisualizer::AxisY ? QwtPlot::yLeft : QwtPlot::xBottom, min, max);
 }
 
 void NewChartVisualizer::setGlobalScales(bool scaleToActive)
