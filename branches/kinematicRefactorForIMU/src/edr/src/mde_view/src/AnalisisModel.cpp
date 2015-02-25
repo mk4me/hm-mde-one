@@ -142,7 +142,7 @@ void AnalisisModel::update(core::Visualizer::VisualizerSerie * serie, core::Visu
             seriesToPaths.erase(it);
 
             //TODO
-            //usun¹æ wpisy dla pozosta³ych serii bo kanal usuwamy tylko raz
+            //usunï¿½ï¿½ wpisy dla pozostaï¿½ych serii bo kanal usuwamy tylko raz
 
             auto tIT = seriesToPaths.begin();
             while(tIT != seriesToPaths.end()){
@@ -169,7 +169,7 @@ void AnalisisModel::update(core::Visualizer::VisualizerSerie * serie, core::Visu
 
 
 
-void AnalisisModel::addSeriesToVisualizer( core::VisualizerPtr visualizer, core::HierarchyHelperPtr helper, QString &path, QDockWidget * visualizerDockWidget )
+void AnalisisModel::addSeriesToVisualizer( core::VisualizerPtr visualizer, core::HierarchyHelperPtr helper, const QString &path, QDockWidget * visualizerDockWidget )
 {
     std::vector<core::Visualizer::VisualizerSerie*> series;
     helper->getSeries(visualizer, path, series);

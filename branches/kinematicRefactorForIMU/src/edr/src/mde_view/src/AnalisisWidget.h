@@ -61,7 +61,7 @@ private:
     void devideArea();
     QDockWidget* createDockVisualizer(const core::VisualizerPtr & visualizer, const QString& titleName);
     QDockWidget* createAndAddDockVisualizer( core::IHierarchyDataItemConstPtr treeItem, core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet);
-    QDockWidget* createAndAddDockVisualizer( core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet, QString &path );
+    QDockWidget* createAndAddDockVisualizer( core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet, const QString &path );
      
     //! dodaje widget z filtrami
     //! \param filter dodawany widget
