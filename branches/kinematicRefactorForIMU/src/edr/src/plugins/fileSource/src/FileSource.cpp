@@ -46,7 +46,7 @@ void FileSource::fillStream() {
 	static float t = 0.0f;
 	for (auto& stream : streams) {
 		auto p = std::make_pair(t,t);
-		stream->pushData(p);
+		//stream->pushData(p);
 	}
 
 	t += 1.0f;
@@ -145,7 +145,7 @@ void FileSource::loadAsfAmc()
 
 void FileSource::addChartStream()
 {
-	auto stream = utils::make_shared<ScalarStream>();
+	/*auto stream = utils::make_shared<ScalarStream>();
 	streams.push_back(stream);
 	auto object = core::Variant::create<ScalarStream>();
 	object->set(stream);
@@ -154,6 +154,6 @@ void FileSource::addChartStream()
 	core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>("Chart Stream", "Chart Stream" , QIcon());
 	core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(object, QString());
 	root->appendChild(item);
-	hierarchyTransaction->addRoot(root);
+	hierarchyTransaction->addRoot(root);*/
 }
 
