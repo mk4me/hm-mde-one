@@ -7,7 +7,6 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QToolButton>
 #include <iterator>
-#include <corelib/StringTools.h>
 
 #include <corelib/DataAccessors.h>
 #include <coreui/CoreMainWindow.h>

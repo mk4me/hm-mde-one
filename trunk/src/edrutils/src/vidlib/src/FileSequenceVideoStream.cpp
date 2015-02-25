@@ -45,8 +45,9 @@ namespace vidlib
 
     VideoStream* FileSequenceVideoStream::clone() const
     {
-        std::auto_ptr<ILoader> loaderCloned(loader->clone());
-        std::auto_ptr<FileSequenceVideoStream> cloned(new FileSequenceVideoStream(getSource(), getFramerate(), files, loaderCloned.release()));
+        std::unique_ptr<ILoader> loaderCloned(loader->clone());
+		std::unique_ptr<FileSequenceVideoStream> cloned(new FileSequenceVideoStream(getSource(), getFramerate(), files, loaderCloned.get()));
+		loaderCloned.release();
         cloned->setTime(wantedTime);
         return cloned.release();
     }

@@ -11,7 +11,7 @@
 #define HEADER_GUARD_C3DPLUGIN__C3DCOLLECTIONS_H__
 
 #include <plugins/c3d/Export.h>
-#include <kinematiclib/VskParser.h>
+#include <viconformatslib/VskParser.h>
 #include <plugins/c3d/IForcePlatform.h>
 #include <plugins/c3d/C3DChannels.h>
 
@@ -129,7 +129,7 @@ class PLUGINC3D_EXPORT MarkerCollection : public VectorChannelCollection
 public:
     //! Konstruktor
     //! \param vsk parser ze wczytanym plikiem vsk (dzięki niemu tworzą się kolorowe połączenia midzy markerami)
-    MarkerCollection(kinematic::VskParserPtr vsk = kinematic::VskParserPtr());
+	MarkerCollection(vicon::VskPtr vsk = vicon::VskPtr());
     //! Zwraca nazwę markera na podstawie indeksu
     //! \param markerNo poprawny indeks, w przeciwnym razie poleci asercja
     virtual const std::string& getMarkerName(int markerNo) const;
@@ -138,11 +138,11 @@ public:
     //! \return kanał lub null jeśli takiego nie ma
     VectorChannelConstPtr tryGetChannelByName(const std::string& name);
     //! \return parser vsk związany z kolekcją
-    kinematic::VskParserConstPtr getVsk() const;
+	vicon::VskConstPtr getVsk() const;
 
 private:
     //! parser vsk związany z kolekcją
-    kinematic::VskParserPtr vsk;
+	vicon::VskPtr vsk;
 };
 typedef utils::shared_ptr<MarkerCollection> MarkerCollectionPtr;
 typedef utils::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;

@@ -531,7 +531,7 @@ const bool MemoryDataManager::rawIsManaged(const VariantConstPtr & object) const
 {
 	auto type = object->data()->getTypeInfo();
 	if(getDataHierarchyManager()->isRegistered(type) == false){
-		throw core::runtime_error("Type not registered");
+		throw core::runtime_error(std::string("Type not registered: ") + type.name());
 	}
 
 	auto it = objectsByTypes.find(type);

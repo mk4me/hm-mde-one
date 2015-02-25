@@ -143,6 +143,9 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="contextMenuPolicy">
+           <enum>Qt::CustomContextMenu</enum>
+          </property>
           <column>
            <property name="text">
             <string>ID</string>
@@ -371,9 +374,6 @@
           </item>
          </widget>
         </item>
-        <item>
-         <widget class="QTextEdit" name="textEdit"/>
-        </item>
        </layout>
       </widget>
      </item>
@@ -394,10 +394,13 @@
      <item>
       <widget class="QPushButton" name="recordPushButton">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="text">
         <string>Record</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -470,10 +473,44 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>recordPushButton</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>IMUCostumeListWidget</receiver>
+   <slot>onRecord(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>473</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>260</x>
+     <y>236</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sensorsTree</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>IMUCostumeListWidget</receiver>
+   <slot>onSensoresListContextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>146</x>
+     <y>344</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>260</x>
+     <y>236</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onCostumesListContextMenu(QPoint)</slot>
   <slot>onRefresh()</slot>
   <slot>onCostumeChange(QTreeWidgetItem*,QTreeWidgetItem*)</slot>
+  <slot>onRecord(bool)</slot>
+  <slot>onSensoresListContextMenu(QPoint)</slot>
  </slots>
 </ui>

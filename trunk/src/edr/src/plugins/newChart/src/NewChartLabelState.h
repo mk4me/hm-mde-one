@@ -16,6 +16,7 @@
 class NewChartSerie;
 class NewChartDot;
 class NewChartLabel;
+class INewChartSeriePrivate;
 
 //! Stan wykresu, który operuje w jakis sposób na etykietach
 class NewChartLabelState : public NewChartState
@@ -34,11 +35,11 @@ public:
     virtual void stateEnd();
     //! usuwa etykiety z wykresu związane z konkretną seria
     //! \param serie seria, dla której usuwamy
-    void removeSerieLabels(const NewChartSerie* serie);
+    void removeSerieLabels(const INewChartSeriePrivate* serie);
     //! zarządza widocznością etykiet z wykresu zwiazanych z konkretną seria
     //! \param serie seria, dla której zmieniamy widoczność elementów
     //! \param visible widoczny / ukryty
-    void setVisible(const NewChartSerie* serie, bool visible);
+    void setVisible(const INewChartSeriePrivate* serie, bool visible);
 
 protected:
     //! prosta struktura zawierająca informacje o etykiecie
@@ -51,12 +52,12 @@ protected:
         //! drugie połączenie etykiety (może być puste)
         NewChartDot* dot2;
         //! seria zwiazana z etykietą
-        const NewChartSerie* serie;
+        const INewChartSeriePrivate* serie;
     };
     typedef utils::shared_ptr<LabelData> LabelDataPtr;
     typedef utils::shared_ptr<const LabelData> LabelDataConstPtr;
 
-    typedef boost::tuple<const NewChartSerie*, QPointF, double> SeriePointDist;
+	typedef boost::tuple<const INewChartSeriePrivate*, QPointF, double> SeriePointDist;
 
 protected:
     //! Realizuje przesunięcie pojedynczej etykiety

@@ -1,137 +1,176 @@
-#include "stdafx.h"
-#include <kinematiclib/DegreeOfFreedom.h>
-#include <kinematiclib/Joint.h>
 #include <kinematiclib/Skeleton.h>
-#include <kinematiclib/SkeletalModel.h>
+#include <acclaimformatslib/DegreeOfFreedom.h>
+#include <kinematicUtils/RotationConverter.h>
+#include <set>
+#include <deque>
+#include <stdexcept>
 
-using namespace std;
+using namespace kinematic;
 
-namespace kinematic {
 
-Skeleton::Skeleton():
-    position(0.0, 0.0, 0.0),
-    orientation(0.0, 0.0, 0.0),
-    axisOrder(Axis::XYZ),
-    dataOrder(Axis::XYZ),
-    rootName("root")
+Skeleton::Skeleton()
 {
 
 }
 
-osg::Quat SkeletonUtils::getQuatFromEuler( double heading, double attitude, double bank)
+Skeleton::Skeleton(const Skeleton & other)
+	: name(other.name), root(Joint::clone(other.root))
 {
-	double c1 = cos(heading/2);   
-	double s1 = sin(heading/2);   
-	double c2 = cos(attitude/2);   
-	double s2 = sin(attitude/2);   
-	double c3 = cos(bank/2);   
-	double s3 = sin(bank/2);
-	double c1c2 = c1*c2;  
-	double s1s2 = s1*s2;  
 
-	double w =c1c2*c3 - s1s2*s3;
-	double x =c1c2*s3 + s1s2*c3;
-	double y =s1*c2*c3 + c1*s2*s3;
-
-	double z =c1*s2*c3 - s1*c2*s3;
-
-	return osg::Quat(x, y, z, w);
 }
 
-osg::Quat SkeletonUtils::getQuatFromEuler( const osg::Vec3& euler )
+Skeleton::Skeleton(Skeleton && other)
+	: name(std::move(other.name)), root(std::move(other.root))
 {
-	return getQuatFromEuler(euler[0], euler[1], euler[2]);
+
 }
 
-osg::Vec3 SkeletonUtils::getEulerFromQuat(const osg::Quat& q )
+Skeleton::~Skeleton()
 {
-	double heading, attitude, bank;
 
-	double limit = 0.499999;
-	double sqx = q.x()*q.x();   
-	double sqy = q.y()*q.y();   
-	double sqz = q.z()*q.z();
+}
 
-	double t = q.x()*q.y() + q.z()*q.w();
-	// gimbal lock ?
-	if (t > limit) {
-		heading = 2 * atan2(q.x(),q.w());
-		attitude = osg::PI_2;
-		bank = 0;
-	} else if (t < -limit) {
-		heading = -2 * atan2(q.x(),q.w());
-		attitude = - osg::PI_2;
-		bank = 0;
-	} else {
-		heading = atan2(2*q.y()*q.w()-2*q.x()*q.z() , 1 - 2*sqy - 2*sqz);
-		attitude = asin(2*t);
-		bank = atan2(2*q.x()*q.w()-2*q.y()*q.z() , 1 - 2*sqx - 2*sqz);
+void createJoint(JointPtr parentJoint, const acclaim::Skeleton & skeleton, const osg::Vec3& parentPos,
+	const acclaim::Bone& currentBone, const hAnim::Humanoid::Hierarchy & hAnimHierarchy,
+	std::set<std::string> & names)
+{
+	JointData jointData;
+
+	jointData.name = currentBone.name;
+
+	if (names.find(jointData.name) != names.end()){
+		throw std::runtime_error("Joint with given name already exists: " + jointData.name + ". Improper skeleton hierarchy - names must be unique.");
 	}
 
-	return osg::Vec3(heading, attitude, bank);
-}
+	jointData.position = parentPos; 
+	auto nextPos = currentBone.direction * currentBone.length;
+	names.insert(jointData.name);
 
-double SkeletonUtils::getMaxBoneLength(const Skeleton& skeleton) 
-{
-	JointConstPtr root = skeleton.getRoot();
-	return getMaxLength(root, -1.0);
-}
+	auto joint = Joint::addChild(parentJoint, jointData);
+	auto range = skeleton.hierarchy.left.equal_range(currentBone.id);	
 
-double SkeletonUtils::getMaxLength(const JointConstPtr & joint, double maxLength)
-{
-	maxLength = std::max(maxLength, joint->length);
-	for (int i = joint->children.size() - 1; i >= 0; --i) {
-		maxLength = std::max(maxLength, getMaxLength(joint->children[i], maxLength));
+	for (auto it = range.first; it != range.second; ++it){
+		createJoint(joint, skeleton, nextPos, skeleton.bones.at(it->second), hAnimHierarchy, names);
 	}
-	return maxLength;
+	const int TERMINATOR = -0xdead;
+	if (range.first == range.second && currentBone.id != TERMINATOR) {
+		acclaim::Bone b; b.id = TERMINATOR;
+		b.name = currentBone.name + "_leaf";
+		createJoint(joint, skeleton, nextPos, b, hAnimHierarchy, names);
+	}
 }
 
-osg::Vec3 SkeletonUtils::vectorRotation( osg::Vec3 v, double rX, double rY, double rZ )
+bool Skeleton::convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSkeleton)
 {
-	osg::Quat rotz; rotz.makeRotate(rZ, 0,0,1);
-	osg::Quat roty; roty.makeRotate(rY, 0,1,0);
-	osg::Quat rotx; rotx.makeRotate(rX, 1,0,0);
-	v = rotz * v;
-	v = roty * v;
-	v = rotx * v;
-	return v;
+	if (srcSkeleton.bones.empty()){
+		return false;
+	}
+
+	int currentID = srcSkeleton.root;
+	if (currentID == -1){
+
+		const auto & humanoidHierarchy = hAnim::Humanoid::defaultHumanHierarchy();
+
+		std::set<std::string> names;
+
+		//root
+		JointData jointData;
+		jointData.name = "root";
+		jointData.position = srcSkeleton.position;
+		jointData.orientation = kinematicUtils::convert(srcSkeleton.orientation, srcSkeleton.axisOrder);
+		names.insert(jointData.name);
+
+		JointPtr joint = Joint::create(jointData);
+		auto range = srcSkeleton.hierarchy.left.equal_range(currentID);
+		for (auto it = range.first; it != range.second; ++it) {
+			createJoint(joint, srcSkeleton, osg::Vec3(), srcSkeleton.bones.at(it->second), humanoidHierarchy, names);
+		}
+				
+		destSkeleton.name = srcSkeleton.name;
+		destSkeleton.root = joint;
+		
+		return true;
+	}	
+
+	return false;
 }
 
-osg::Quat SkeletonUtils::rotationParentChild(hAnimJointPtr parent, hAnimJointPtr child)
+void createJoint(JointPtr parentJoint, const biovision::JointPtr & srcJoint,
+	const hAnim::Humanoid::Hierarchy & hAnimHierarchy,
+	std::set<std::string> & names)
 {
-	double mul  = osg::DegreesToRadians(1.0);
-	osg::Matrix matParZ; matParZ.makeRotate(-parent->getAxis()[2] * mul, 0.0, 0.0, 1.0);
-	osg::Matrix matParY; matParY.makeRotate(-parent->getAxis()[1] * mul, 0.0, 1.0, 0.0);
-	osg::Matrix matParX; matParX.makeRotate(-parent->getAxis()[0] * mul, 1.0, 0.0, 0.0);
+	JointData jointData;
+	
+	jointData.name = srcJoint->name;
 
-	osg::Matrix matPar = matParZ * matParY * matParX;
-	osg::Matrix matChiZ; matChiZ.makeRotate(child->getAxis()[2] * mul, 0.0, 0.0, 1.0);
-	osg::Matrix matChiY; matChiY.makeRotate(child->getAxis()[1] * mul, 0.0, 1.0, 0.0);
-	osg::Matrix matChiX; matChiX.makeRotate(child->getAxis()[0] * mul, 1.0, 0.0, 0.0);
+	if (names.find(jointData.name) != names.end()){
+		throw std::runtime_error("Joint with given name already exists: " + jointData.name + ". Improper skeleton hierarchy - names must be unique.");
+	}
 
-	osg::Matrix matChi = matChiX * matChiY * matChiZ;
-	osg::Matrix resM = matChi * matPar ;
-	osg::Quat res; 
-	res.set(resM);
-	return res;
-}
+	jointData.position = srcJoint->offset;
+	jointData.orientation = osg::Quat(0, 0, 0, 1);
 
-osg::Quat SkeletonUtils::createRotation( const osg::Quat& rX, const osg::Quat& rY, const osg::Quat& rZ, Axis::Order order )
-{
-	switch (order) 
+	auto joint = Joint::addChild(parentJoint, jointData);
+	names.insert(jointData.name);	
+
+	for (auto j : srcJoint->joints)
 	{
-	case Axis::UnknownAxisOrder:
-	case Axis::XYZ: return rX * rY * rZ;
-	case Axis::XZY: return rX * rZ * rY;
-	case Axis::YXZ: return rY * rX * rZ;
-	case Axis::YZX: return rY * rZ * rX;
-	case Axis::ZXY: return rZ * rX * rY;
-	case Axis::ZYX: return rZ * rY * rX;
-	default:
-		UTILS_ASSERT(false);
-		osg::Quat q;
-		return q;
+		createJoint(joint, j, hAnimHierarchy, names);
 	}
 }
 
-} // kinematic
+bool Skeleton::convert(const biovision::Skeleton & srcSkeleton, Skeleton & destSkeleton)
+{
+	if (srcSkeleton.root == nullptr){
+		return false;
+	}
+
+	const auto humanoidHierarchy = hAnim::Humanoid::defaultHumanHierarchy();
+	std::set<std::string> names;
+
+	JointData jointData;
+
+	jointData.name = "HumanoidRoot";
+	jointData.position = osg::Vec3(0, 0, 0);
+	jointData.orientation = osg::Quat(0, 0, 0, 1);
+
+	names.insert(jointData.name);
+
+	auto root = Joint::create(jointData);
+
+	createJoint(root, srcSkeleton.root, humanoidHierarchy, names);
+
+	destSkeleton.name = "biovision_model";
+	destSkeleton.root = root;
+
+	return true;	
+}
+
+bool Skeleton::convert(const hAnim::Humanoid & srcSkeleton, Skeleton & destSkeleton)
+{
+	if (srcSkeleton.joints.empty() == true){
+		return false;
+	}
+
+	const auto humanoidHierarchy = hAnim::Humanoid::defaultHumanHierarchy();
+	std::set<std::string> names;
+
+	/*
+	//TODO
+	*/
+
+	return true;
+}
+
+void getJointsRecursive(kinematic::JointPtr j, std::map<std::string, kinematic::JointPtr>& mp) {
+	mp[j->value.name] = j;
+	for (auto& c : j->children) {
+		getJointsRecursive(c, mp);
+	}
+}
+std::map<std::string, kinematic::JointPtr> kinematic::Skeleton::getJoints(const Skeleton& s)
+{
+	std::map<std::string, kinematic::JointPtr> ret;
+	getJointsRecursive(s.root, ret);
+	return ret;
+}

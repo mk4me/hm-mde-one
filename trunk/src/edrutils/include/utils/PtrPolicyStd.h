@@ -125,6 +125,9 @@ namespace utils {
 			{
 				return ptr.use_count();
 			}
+
+			template<typename T>
+			using enable_shared_from_this = std::enable_shared_from_this < T > ;
 	};
 
 	template <> struct is_ptr_policy<PtrPolicyStd> : public std::true_type{};

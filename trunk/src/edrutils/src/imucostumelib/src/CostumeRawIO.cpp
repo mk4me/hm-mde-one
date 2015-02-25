@@ -128,9 +128,10 @@ public:
 		return (l == length);
 	}
 
+	//OK
 	void setSamplingDelay(const uint32_t delay, const uint16_t timeout)
 	{
-		auto d = utils::clamp<uint32_t>(delay / 10, 1, 255);
+		auto d = utils::clamp<uint8_t>(delay / 10, 1, 255);
 		std::array<uint8_t, 19> buffer;
 		buffer[0] = 0x04;
 		buffer[1] = (uint8_t)this;
@@ -140,6 +141,7 @@ public:
 		send(buffer.data(), 19, timeout);
 	}
 
+	//OK
 	static std::list<CostumeRawIO::CostumeAddress> listAvailableCostumes()
 	{
 		std::list<CostumeRawIO::CostumeAddress> ret;
@@ -159,7 +161,7 @@ public:
 
 		std::array<uint8_t, PingPongPacketLength> pingMessage = { 0 };
 		pingMessage[0] = pingMessage[1] = 0x03;
-		std::memcpy(pingMessage.data() + 2, PingMagicNumber, 16);
+		std::memcpy(pingMessage.data() + 2, PingMagicNumber, MagicNumberLength);
 
 		const auto sl = socket.send_to(boost::asio::buffer(pingMessage),
 			boost::asio::ip::udp::endpoint(boost::asio::ip::udp::endpoint(

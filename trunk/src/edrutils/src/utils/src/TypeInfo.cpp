@@ -1,14 +1,10 @@
 #include <utils/TypeInfo.h>
-#include <boost/any.hpp>
+#include <typeindex>
 
 const bool areTypesEqual(const std::type_info& t1, const std::type_info& t2)
 {
-	// tutaj u¿ywamy sta³ej z boost/any - pozwala okreœliæ, czy lepiej porównywaæ po nazwie, czy po adresie
-#ifdef BOOST_AUX_ANY_TYPE_ID_NAME
-	return std::strcmp(t1.name(), t2.name()) == 0;
-#else
-	return t1 == t2;
-#endif
+	//TODO - czy to konieczne, czy da siê to robiæ bezpiecznie bez typeindex?
+	return std::type_index(t1) == std::type_index(t2);
 }
 
 using namespace utils;

@@ -34,6 +34,14 @@ PluginLoader::~PluginLoader()
     unloadPlugins();
 }
 
+void PluginLoader::deinitialize()
+{
+	for (auto & p : plugins)
+	{		
+		p.plugin->deinitialize();		
+	}
+}
+
 void PluginLoader::clear()
 {
     // wyczyszczenie ścieżek
@@ -195,11 +203,11 @@ bool PluginLoader::addPlugIn( const Filesystem::Path& path )
 					return false;
 				}
 
-				auto procInitializeAndLoad = loadProcedure<Plugin::InitializeAndLoadFunction>(library, STRINGIZE(CORE_INITIALIZE_AND_LOAD_PLUGIN_FUNCTION_NAME));
-                if ( procInitializeAndLoad != 0) {
-                    return onAddPlugin(plugin, library, procInitializeAndLoad);
+				auto procInitializePluginContext = loadProcedure<Plugin::InitializePluginContextFunction>(library, STRINGIZE(CORE_INITIALIZE_PLUGIN_CONTEXT_FUNCTION_NAME));
+				if (procInitializePluginContext != 0) {
+					return onAddPlugin(plugin, library, procInitializePluginContext);
                 } else {
-                    CORE_LOG_DEBUG(path << " is a plugin, but finding " << STRINGIZE(CORE_INITIALIZE_AND_LOAD_PLUGIN_FUNCTION_NAME) << " failed.");
+					CORE_LOG_DEBUG(path << " is a plugin, but finding " << STRINGIZE(CORE_INITIALIZE_PLUGIN_CONTEXT_FUNCTION_NAME) << " failed.");
                 }
             }
         }catch(std::exception & e){
@@ -215,7 +223,7 @@ bool PluginLoader::addPlugIn( const Filesystem::Path& path )
     return false;
 }
 
-bool PluginLoader::onAddPlugin( PluginPtr plugin, HMODULE library, Plugin::InitializeAndLoadFunction initializeAndLoadFunction )
+bool PluginLoader::onAddPlugin(PluginPtr plugin, HMODULE library, Plugin::InitializePluginContextFunction initializeContextFunction)
 {
 	PluginData pData;
     CORE_LOG_INFO("Loading plugin " << plugin->getPath());
@@ -231,15 +239,24 @@ bool PluginLoader::onAddPlugin( PluginPtr plugin, HMODULE library, Plugin::Initi
     // próba załadowania zawartosci pluginu i zainicjowania kontekstu aplikacji
     try {
 		
-		initializeAndLoadFunction(plugin.get(), pData.coreApplication.get());
+		initializeContextFunction(plugin.get(), pData.coreApplication.get());
         
     } catch ( std::exception& ex ) {
-        CORE_LOG_ERROR("Error loading plugin content and initializing appliaction context for " << plugin->getPath() << ": " << ex.what());
+        CORE_LOG_ERROR("Error loading plugin content and initializing application context for " << plugin->getPath() << ": " << ex.what());
         return false;
     } catch ( ... ) {
-        CORE_LOG_ERROR("Unknown error loading plugin content and initializing appliaction context for " << plugin->getPath());
+        CORE_LOG_ERROR("Unknown error loading plugin content and initializing application context for " << plugin->getPath());
         return false;
     }
+
+	auto procLoadLogicContent = loadProcedure<Plugin::LoadLogicContentFunctionFunction>(library, STRINGIZE(CORE_PLUGIN_LOAD_LOGIC_CONTENT_FUNCTION_NAME));
+	if (procLoadLogicContent != 0) {
+		procLoadLogicContent(plugin.get());
+	}
+	else {
+		CORE_LOG_DEBUG(plugin->getPath() << " is a plugin, but finding " << STRINGIZE(CORE_PLUGIN_LOAD_LOGIC_CONTENT_FUNCTION_NAME) << " failed.");
+		return false;
+	}
 
 	if(plugin->empty() == true){
 		CORE_LOG_INFO("Skipping loading of an empty plugin " << plugin->getPath());

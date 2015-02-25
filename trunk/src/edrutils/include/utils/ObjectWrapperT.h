@@ -185,7 +185,7 @@ namespace utils
 	template <typename T>
 	class ObjectWrapperT : public ObjectWrapper
 	{
-		UTILS_STATIC_ASSERT(sizeof(T) == 0, "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+		static_assert(sizeof(T) == 0, "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
 	};
 }
 

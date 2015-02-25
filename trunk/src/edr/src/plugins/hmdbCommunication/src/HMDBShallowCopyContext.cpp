@@ -25,6 +25,7 @@
 #include <corelib/ISourceManager.h>
 #include <corelib/IParserManagerReader.h>
 #include <utils/Utils.h>
+#include <boost/lexical_cast.hpp>
 
 using namespace hmdbCommunication;
 
@@ -405,12 +406,45 @@ public:
 
 	virtual void initialize(core::Variant * object)
 	{
-		kinematic::SkeletalDataConstPtr data;
-		kinematic::SkeletalModelConstPtr model;
-		if (dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr){
-			kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
-			joints->setSkeletal(model, data);
-			object->set(joints);
+		acclaim::MotionDataConstPtr data;
+		acclaim::SkeletonConstPtr model;
+		if (dataWrapper->tryGet(data) == true && modelWrapper->tryGet(model) == true && data != nullptr && model != nullptr) {
+			if (!data->frames.empty()) {
+				kinematic::SkeletonPtr skeleton = utils::make_shared<kinematic::Skeleton>();
+				if (!kinematic::Skeleton::convert(*model, *skeleton)) {
+					throw std::runtime_error("Unable to convert skeleton");
+				}
+				SkeletonStatesPtr states = utils::make_shared<SkeletonStates>();
+				states->frameTime = data->frameTime;
+				auto firstFrame = data->frames[0];
+
+				/*
+				for (auto& bone : firstFrame.bonesData) {
+					states->jointNames.push_back(bone.name);
+				}
+				*/
+
+				const auto mapping = kinematic::SkeletonState::createMapping(*skeleton);
+
+				for (auto& frame : data->frames) {
+					kinematic::SkeletonState::RigidPartialStateChange sChange = kinematic::SkeletonState::convert(*model, frame, mapping);
+					//konwersja z czesiowego do pelnego stanu
+					kinematic::SkeletonState::NonRigidCompleteStateChange nc = kinematic::SkeletonState::convertStateChange(mapping, sChange);
+					states->frames.push_back(nc);
+				}
+				
+				auto sws = utils::make_shared<SkeletonWithStates>();
+				sws->skeleton = skeleton;
+				sws->states = states;
+				sws->nodesMapping = mapping;
+				sws->scale = 0.25;
+				object->set(sws);
+				//kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
+				//joints->setSkeletal(skeleton, *states);
+				//object->set(joints);
+			} else {
+				// 
+			}
 		}
 	}
 
@@ -656,26 +690,26 @@ const core::VariantPtr createJointsAngles(const core::ConstVariantsList objects,
 	core::VariantConstPtr dataWrapper;
 	core::VariantConstPtr modelWrapper;
 	for (auto it = objects.begin(); it != objects.end(); ++it) {
-		if ((*it)->data()->isSupported(typeid(kinematic::JointAnglesCollection))) {
+		if ((*it)->data()->isSupported(typeid(SkeletonWithStates))) {
 			return ret;
 		}
-		else if ((*it)->data()->isSupported(typeid(kinematic::SkeletalData))) {
+		else if ((*it)->data()->isSupported(typeid(acclaim::MotionData))) {
 			dataWrapper = *it;
 			break;
 		}
 	}
 
-	core::VariantsCollection modelWrappers(typeid(kinematic::SkeletalModel), false);
+	core::VariantsCollection modelWrappers(typeid(acclaim::Skeleton), false);
 	session->getObjects(modelWrappers);	
 
 	if (modelWrappers.empty() == false){
 		modelWrapper = modelWrappers.front();
 
 		if (dataWrapper && modelWrapper) {
-			ret = core::Variant::create<kinematic::JointAnglesCollection>();
+			ret = core::Variant::create<SkeletonWithStates>();			
 			ret->setInitializer(core::VariantInitializerPtr(new JointsInitializer(dataWrapper, modelWrapper)));
 		}
-	}
+	}	
 
 	return ret;
 }

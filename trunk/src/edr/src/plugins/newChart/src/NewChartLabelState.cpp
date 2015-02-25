@@ -3,6 +3,7 @@
 #include "NewChartVisualizer.h"
 #include "NewChartLabel.h"
 #include "NewChartDot.h"
+#include "INewChartSeriePrivate.h"
 
 NewChartLabelState::NewChartLabelState(NewChartVisualizer* visualizer) :
     NewChartState(visualizer)
@@ -57,7 +58,7 @@ NewChartLabelState::LabelDataConstPtr NewChartLabelState::getLabel( const NewCha
 NewChartLabelState::SeriePointDist NewChartLabelState::getClosestPoint(const QPoint& pos) const
 {
     double min = (std::numeric_limits<double>::max)();
-    const NewChartSerie* serie = nullptr;
+    const INewChartSeriePrivate* serie = nullptr;
     QPointF ret;
     auto series = visualizer->getSeries();
     for (auto it = series.begin(); it != series.end(); ++it) {
@@ -90,7 +91,7 @@ void NewChartLabelState::stateEnd()
     //marker.detach();
 }
 
-void NewChartLabelState::removeSerieLabels( const NewChartSerie* serie )
+void NewChartLabelState::removeSerieLabels( const INewChartSeriePrivate* serie )
 {
     for (auto it = labels.begin(); it != labels.end(); ++it) {
         LabelDataPtr data = *it;
@@ -108,7 +109,7 @@ void NewChartLabelState::removeSerieLabels( const NewChartSerie* serie )
     }
 }
 
-void NewChartLabelState::setVisible( const NewChartSerie* serie, bool visible )
+void NewChartLabelState::setVisible( const INewChartSeriePrivate* serie, bool visible )
 {
     for (auto it = labels.begin(); it != labels.end(); ++it) {
         LabelDataPtr data = *it;

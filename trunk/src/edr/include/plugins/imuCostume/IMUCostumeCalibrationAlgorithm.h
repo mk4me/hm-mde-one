@@ -11,27 +11,31 @@
 #include <string>
 #include <vector>
 #include <osg/Quat>
-#include <osg/Vec3>
+#include <osg/Vec3d>
 #include <imucostumelib/ImuCostume.h>
 #include <plugins/imuCostume/Types.h>
 #include <kinematiclib/Skeleton.h>
+#include <corelib/IIdentifiable.h>
 
 class QWidget;
 
 namespace IMU
 {
-	class IMUCostumeCalibrationAlgorithm
+	//! Interfejs algorytmów kalibruj¹cych kostium - znajduj¹cych lokalne skrêcenia sensorów na segmentach (jointach)
+	class IMUCostumeCalibrationAlgorithm : public plugin::IIdentifiable
 	{
 	public:
 
 		//! Struktura opisuj¹ca poprawkê dla sensora IMU
 		struct SensorAdjustment
 		{
+			//! Lokalna rotacja wzglêdem rodzica
 			osg::Quat rotation;
-			osg::Vec3 offset;
+			//! Przesuniêcie wzglêdem rodzica w uk³¹dzie rodzica!
+			osg::Vec3d offset;
 		};
 
-		//! Mapa poprawek sensorów
+		//! Mapa poprawek sensorów: ID -> poprawka
 		typedef std::map<imuCostume::Costume::SensorID, SensorAdjustment> SensorsAdjustemnts;
 
 	public:
@@ -40,38 +44,38 @@ namespace IMU
 
 		//! \return Nowy algorytm kalibracji
 		virtual IMUCostumeCalibrationAlgorithm * create() const = 0;
-
-		// Public Interface
-		//! Returns internal filter name
+		
+		//! \return Internal filter name
 		virtual std::string name() const = 0;
 
 		//! Resets algo internal state
 		virtual void reset() = 0;
 
-		//! Returns max number (n) of steps that algorithm might require to calibrate costume, 0 means no upper limit
+		//! \return Max number (n) of steps that algorithm might require to calibrate costume, 0 means no upper limit
 		virtual unsigned int maxCalibrationSteps() const { return 0; }
 
 		//! \param skeleton	Kalibrowany szkielet
 		//! \param mapping Mapowanie sensorów do szkieletu
-		//! \param sensorsAdjustment Wstêpne ustawienie sensorów - pozwala zadaæ stan pocz¹tkowy bardziej zbli¿ony do rzeczywistoœci
-		//! \param calibrationData Dane kalibracyjne
-		virtual void initialize(void * skeleton, const SensorsMapping & mapping,
-			const SensorsAdjustemnts  & sensorsAdjustment) = 0;
-
-		//! Calculates orientation from sensor fusion
-		/*!
-		\param data Dane z IMU
-		\param inDeltaT Czas od poprzedniej ramki danych
-		\return Returns if calibration successful and sufficient.
-		*/
+		//! \param sensorsAdjustment Wstêpne ustawienie sensorów - pozwala zadaæ stan pocz¹tkowy bardziej zbli¿ony do rzeczywistoœci		
+		virtual void initialize(kinematic::SkeletonConstPtr skeleton, const SensorsMapping & mapping,
+			const SensorsAdjustemnts  & sensorsAdjustment = SensorsAdjustemnts()) = 0;
+		
+		//! \param data Dane z IMU
+		//! \param inDeltaT Czas od poprzedniej ramki danych
+		//! \return Returns if calibration successful and sufficient.		
 		virtual bool calibrate(const SensorsData & data, const double inDeltaT) = 0;
 
-		// Not used
+		//! \return Widget konfiguracyjny
+		virtual QWidget* configurationWidget() { return nullptr; }
+
+		//! \return Widget kalibracyjny (informacje o aktualnym stanie kalibracji, instrukcje dla usera)
 		virtual QWidget* calibrationWidget() { return nullptr; }
 
 		//! \return Dane kalibracyjne szkieletu, poprawki dla sensorów
 		virtual SensorsAdjustemnts sensorsAdjustemnts() const = 0;
 	};
+
+	DEFINE_SMART_POINTERS(IMUCostumeCalibrationAlgorithm);
 }
 
 #endif	// __HEADER_GUARD_IMU__IMUCOSTUMECALIBRATIONALGORITHM_H__

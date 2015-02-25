@@ -44,7 +44,7 @@ const bool DataHierarchyManager::isTypeCompatible(const utils::TypeInfo & base, 
 		return false;
 	}
 
-	return derrivedIT->second.baseTypes.find(base) != derrivedIT->second.baseTypes.end();
+	return (baseIT == derrivedIT) || (derrivedIT->second.baseTypes.find(base) != derrivedIT->second.baseTypes.end());
 }
 
 void DataHierarchyManager::getTypeBaseTypes(const utils::TypeInfo & type, utils::TypeInfoSet & baseTypes) const

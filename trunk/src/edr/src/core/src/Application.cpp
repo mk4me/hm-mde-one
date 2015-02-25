@@ -39,10 +39,6 @@
 #ifdef WIN32
 #define NOMINMAX
 #include <Windows.h>
-//#define KEY_PATH1 TEXT("Software\\Wow6432Node\\PJWSTK\\EDR")
-// Od Visty dodawane s? przedrostki typu Wow6432Node do sciezki w rejestrach
-// adres podawany do oczytu klucza powinien by? automatycznie konwertowany.
-//#define KEY_PATH TEXT("Software\\PJWSTK\\MEDUSA")
 #endif
 
 DEFINE_WRAPPER(int, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
@@ -368,6 +364,18 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 
 	showSplashScreenMessage(QObject::tr("Initializing services"));
 
+	//inicjalizacja pluginów
+	for (int i = 0; i < pluginLoader_->getNumPlugins(); ++i){
+		auto plugin = pluginLoader_->getPlugin(i);
+		auto pluginName = plugin->getPath().stem().string();
+
+		if (plugin->initialize() == false){
+			CORE_LOG_ERROR("Plugin " << pluginName << " loaded from " << plugin->getPath() << " failed to perform initialization");
+			//TODO - teoretycznie należałoby wyłaodwac wszystkie dostarczone przez niego elementy i wyładować go samego, to może pociągnąc rekurencyjnie wyładowywanie innych
+			//TODO - mechanizm do swobodnego ładowania, wyładowywania pluginów
+		}
+	}
+
 	// inicjalizacja us?ug
 	std::set<plugin::IServicePtr> skipServices;
 	for (int i = 0; i < serviceManager_->getNumServices(); ++i) {
@@ -484,6 +492,18 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 			catch (...){
 
 			}
+		}
+	}
+
+	//inicjalizacja pluginów
+	for (int i = 0; i < pluginLoader_->getNumPlugins(); ++i){
+		auto plugin = pluginLoader_->getPlugin(i);
+		auto pluginName = plugin->getPath().stem().string();
+
+		if (plugin->lateInitialize() == false){
+			CORE_LOG_ERROR("Plugin " << pluginName << " loaded from " << plugin->getPath() << " failed to perform late initialization");
+			//TODO - teoretycznie należałoby wyłaodwac wszystkie dostarczone przez niego elementy i wyładować go samego, to może pociągnąc rekurencyjnie wyładowywanie innych
+			//TODO - mechanizm do swobodnego ładowania, wyładowywania pluginów
 		}
 	}
 
@@ -852,6 +872,9 @@ void Application::finalizeUI(){
 
 			CORE_LOG_INFO("Finalizing services");
 			serviceManager_->finalizeServices();
+
+			CORE_LOG_INFO("Deinitializing plugins");
+			pluginLoader_->deinitialize();
 
 			CORE_LOG_INFO("Closing log widget console");
 			logInitializer_->setConsoleWidget(nullptr);

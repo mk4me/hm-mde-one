@@ -13,7 +13,7 @@
 #include <corelib/IVisualizer.h>
 #include "KinematicSerie.h"
 #include <plugins/c3d/C3DChannels.h>
-#include "OsgSchemeDrawer.h"
+#include <osgutils/OsgSchemeDrawer.h>
 #include "TrajectoriesDrawer.h"
 
 class KinematicVisualizer;
@@ -54,8 +54,8 @@ public:
 	virtual void setGhostVisible(const bool visible);
     TrajectoryDrawerManagerPtr getTrajectoriesManager() const;
 
-    IPointsSchemeDrawerPtr getPointsDrawer() const;
-    IConnectionDrawerWithDescriptors getConnectionsDrawer() const;
+	osgutils::IPointsSchemeDrawerPtr getPointsDrawer() const;
+	osgutils::IConnectionDrawerWithDescriptors getConnectionsDrawer() const;
 
 private:
 
@@ -87,13 +87,13 @@ private:
     //! nazwa serii
     std::string name;
 	//! Konfiguracja połączeń
-	SegmentsDescriptors connectionsConfigurations;
+	osgutils::SegmentsDescriptors connectionsConfigurations;
 	//! Obiekt rysujący punkty
-	utils::shared_ptr<IPointsSchemeDrawer> pointsDrawer;
+	utils::shared_ptr<osgutils::IPointsSchemeDrawer> pointsDrawer;
     //! Obiekt rysujący połączenia
-	utils::shared_ptr<IConnectionsSchemeDrawer> connectionsDrawer;
+	utils::shared_ptr<osgutils::IConnectionsSchemeDrawer> connectionsDrawer;
     //! Klasa pomocnicza przy rysowaniu ducha
-	utils::shared_ptr<GhostSchemeDrawer> ghostDrawer;
+	utils::shared_ptr<osgutils::GhostSchemeDrawer> ghostDrawer;
 	//! Klasa pomocnicza przy rysowaniu trajektorii
 	TrajectoryDrawerManagerPtr trajectoriesManager;
 };

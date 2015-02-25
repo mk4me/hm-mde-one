@@ -1,5 +1,6 @@
 #include <threadingUtils/StreamData.h>
 #include <atomic>
+#include <algorithm>
 
 using namespace threadingUtils;
 

@@ -26,7 +26,7 @@
 #include <corelib/IVisualizer.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/INewChartVisualizer.h>
-#include <plugins/newChart/INewChartSerie.h>
+#include "INewChartSeriePrivate.h"
 
 #include "NewChartSerie.h"
 #include "NewChartState.h"
@@ -42,6 +42,7 @@ class NewChartLegendItem;
 class NewChartVisualizer : public QObject, public INewChartVisualizer
 {
     friend class NewChartSerie;
+    friend class NewChartStreamSerie;
     Q_OBJECT;
     UNIQUE_ID("{1122BD8A-6056-4965-9AEA-502F99CA2433}");
 	CLASS_DESCRIPTION("New Chart Visualizer", "New Chart Visualizer");
@@ -54,9 +55,9 @@ public:
       //! \return wykres QWT, który jest sercem wizualizatora
       QwtPlot* getPlot();
       //! \return aktualnie aktywna seria lub nullptr, jeśli takiej nie ma
-      const NewChartSerie* tryGetCurrentSerie() const;
+	  const INewChartSeriePrivate* tryGetCurrentSerie() const;
       //! \return aktualnie aktywna seria lub nullptr, jeśli takiej nie ma
-      NewChartSerie* tryGetCurrentSerie();
+      INewChartSeriePrivate* tryGetCurrentSerie();
       //! \return pusty obiekt wizualizatora
       virtual IVisualizer* create() const;
 
@@ -109,11 +110,12 @@ public:
       //! \param event
       bool eventFilter( QObject *object, QEvent *event );
       //! \return wszystkie serie aktualnie obsługiwane przez wizualizator
-      boost::iterator_range<std::vector<NewChartSerie*>::const_iterator> getSeries() const;
+      boost::iterator_range<std::vector<INewChartSeriePrivate*>::const_iterator> getSeries() const;
       //! \return czy wizualizator jest w trybie wizualizacji eventów
       bool isEventMode() const { return context != C3DEventsCollection::IEvent::General; }
       //! Zrzut wizualizatora do pixmapy
       virtual QPixmap takeScreenshot() const;
+	  virtual void setAxisScale(const Axis axis, const double min, const double max, unsigned int steps = 10);
 
 private:
       //! Dodanie krzywej do wykresu, aktualizacja podziałek
@@ -276,7 +278,7 @@ private:
     //! obiekt przechwujący ekstrema krzywych
     Scales plotScales;
     //! kolekcja z wszystkimi seriami danych
-    std::vector<NewChartSerie*> series;
+    std::vector<INewChartSeriePrivate*> series;
     //! mapa przypisująca akcje do stanu wykresu
     std::map<QAction*, NewChartStatePtr> statesMap;
     //! flaga mowiaca o tym, czy legenda jest widoczna
@@ -332,6 +334,9 @@ private:
     float currentSerieTime;
     //! aktualna wartość dla serii
     float currentSerieValue;
+    // TODO to jest hack dla skali z zewnątrz, powinno stworzyć się obiekt, dla każdego przypadku rysowania skali,
+    // np. skala globalna automatyczna, manualna, do aktywnej, procentowa i podmieniac je tak jak we wzorcu strategia
+    bool customScale;
 };
 typedef utils::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;
 typedef utils::shared_ptr<const NewChartVisualizer> NewChartVisualizerConstPtr;

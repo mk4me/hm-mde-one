@@ -9,15 +9,15 @@ using namespace imuCostume;
 const bool CostumeCANopenIO::send(const uint8_t seqNumber, const void * data,
 	const uint16_t length, const uint16_t timeout, CostumeRawIO & costume)
 {
-	const auto totalLength = 2 + length;
+	const auto totalLength = sizeof(Header) + length;
 	utils::scoped_ptr<uint8_t[]> dataToTransmit(new uint8_t[totalLength]);
 
-	// nag³ówek ramki - wymusza wys³anie reszty na CAN
+	// nagï¿½ï¿½wek ramki - wymusza wysï¿½anie reszty na CAN
 	dataToTransmit[0] = 0x02;
-	// mój unikalny identyfikator - dostanê go w potwierdzeniu
+	// mï¿½j unikalny identyfikator - dostanï¿½ go w potwierdzeniu
 	dataToTransmit[1] = seqNumber;
-	//przepisuje ramkê CANopen
-	std::memcpy(dataToTransmit.get() + 2, data, length);
+	//przepisuje ramkï¿½ CANopen
+	std::memcpy(dataToTransmit.get() + sizeof(Header), data, length);
 
 	return costume.send(dataToTransmit.get(), totalLength, timeout);	
 }
@@ -58,7 +58,9 @@ CostumeCANopenIO::Data CostumeCANopenIO::extractData(const void * data, const ui
 		{
 			CANopenFrame frame = { 0 };
 			frame.structure.cobID = cobID;
-			std::memcpy(frame.structure.data.data(), pd.data(), pd.header().length());
+			auto length = pd.header().length();
+			UTILS_ASSERT(length <= CANopenFrame::SizeLimits::MaxSize);
+			std::memcpy(frame.structure.data.data(), pd.data(), length);
 			ret.CANopenFrames.push_back(frame);
 		}
 	}

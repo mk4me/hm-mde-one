@@ -11,58 +11,64 @@
 #include <imucostumelib/Export.h>
 #include <imucostumelib/CostumeRawIO.h>
 #include <imucostumelib/CANopenFrame.h>
+#include <utils/Debug.h>
 #include <vector>
 
 namespace imuCostume
 {
-	//! Klasa obs³uguj¹ca dane z protoko³u komunikacji
+	//! Klasa obsï¿½ugujï¿½ca dane z protokoï¿½u komunikacji
 	class IMUCOSTUME_EXPORT ProtocolReadBufferHelper
 	{
 	public:
 
-		//! Identyfikator wiadomoœci
+		//! Identyfikator wiadomoï¿½ci
 		struct HeaderProxy
 		{
-			//! Ca³y identyfikator
+			//! Caï¿½y identyfikator
 			const uint8_t * base;
-			//! \return d³ugoœæ danych
-			inline const uint8_t length() const { return base[1] >> 4; };
-			//! Identyfikator wêz³a
+			//! \return dï¿½ugoï¿½ï¿½ danych
+			inline const uint8_t length() const
+			{
+				const auto length = base[1] >> 4;
+				UTILS_ASSERT(length <= CANopenFrame::SizeLimits::MaxSize);
+				return length;
+			};
+			//! Identyfikator wï¿½zï¿½a
 			inline const CANopenFrame::COBID cobID() const { return CANopenFrame::COBID{ uint16_t(((uint8_t)base[1] & 0x0F) << 8) | (uint16_t)base[0] }; };
 		};
 
-		//! Klasa obs³uguj¹ca interpretacjê ramki can open z bufora
+		//! Klasa obsï¿½ugujï¿½ca interpretacjï¿½ ramki can open z bufora
 		class IMUCOSTUME_EXPORT CANopenFrameProxy
 		{
 		public:
-			//! \param base Wska¿nik rozpoczêcia ramki
-			//! \param buffer Bufor w którym ulokowana jest ramka
+			//! \param base Wskaï¿½nik rozpoczï¿½cia ramki
+			//! \param buffer Bufor w ktï¿½rym ulokowana jest ramka
 			CANopenFrameProxy(const uint8_t * base = nullptr);
 			//! Destruktor
 			~CANopenFrameProxy();
 
-			//! \return Adres pocz¹tku ramki
+			//! \return Adres poczï¿½tku ramki
 			const uint8_t * base() const;
-			//! \return Nag³ówek ramki
+			//! \return Nagï¿½ï¿½wek ramki
 			const HeaderProxy header() const;
-			//! \return WskaŸnik bloku danych ramki
+			//! \return Wskaï¿½nik bloku danych ramki
 			const uint8_t * data() const;
-			//! \return Czy mo¿na interpretowaæ dane ramki
+			//! \return Czy moï¿½na interpretowaï¿½ dane ramki
 			const bool empty() const;
 
 		private:
-			//! WskaŸnik poczatku bloku ramki
+			//! Wskaï¿½nik poczatku bloku ramki
 			const uint8_t * base_;
 		};
 
 	private:
 
-		//! \param frameBasis WskaŸniki pocz¹tków ramek CANopen w danych z kostiumu
+		//! \param frameBasis Wskaï¿½niki poczï¿½tkï¿½w ramek CANopen w danych z kostiumu
 		ProtocolReadBufferHelper(const std::vector<const uint8_t*> & frameBasis);
 
 	public:
 
-		//! Konstruktor kopiuj¹cy
+		//! Konstruktor kopiujï¿½cy
 		ProtocolReadBufferHelper();
 		//! \param Other Kopiowany obiekt
 		ProtocolReadBufferHelper(ProtocolReadBufferHelper & Other);
@@ -70,19 +76,19 @@ namespace imuCostume
 		ProtocolReadBufferHelper(ProtocolReadBufferHelper && Other);
 
 		//! \param buffer Odczytany bufor z sieci
-		//! \param length D³ugoœæ danych w buforze
+		//! \param length Dï¿½ugoï¿½ï¿½ danych w buforze
 		static ProtocolReadBufferHelper create(const void * buffer, const uint16_t length);
 
-		//! \return Iloœæ ramek w buforze
+		//! \return Iloï¿½ï¿½ ramek w buforze
 		const uint16_t size() const;
-		//! \return Czy s¹ ramki w buforze
+		//! \return Czy sï¿½ ramki w buforze
 		const bool empty() const;
-		//! \param idx Indeks ramki o która pytamu
-		//! \return Obiekt interpretuj¹cy nasza ramkê
+		//! \param idx Indeks ramki o ktï¿½ra pytamu
+		//! \return Obiekt interpretujï¿½cy nasza ramkï¿½
 		CANopenFrameProxy operator[](const uint16_t idx) const;
 
-		//! \tparam Container Typ kontenera do którego dopisujemy
-		//! \param container [out] Kontener do którego dopisujemy
+		//! \tparam Container Typ kontenera do ktï¿½rego dopisujemy
+		//! \param container [out] Kontener do ktï¿½rego dopisujemy
 		template<class Container>
 		void appendContainer(Container & container)
 		{
@@ -91,7 +97,7 @@ namespace imuCostume
 			}
 		}
 
-		//! \tparam Container Typ kontenera który tworzymy
+		//! \tparam Container Typ kontenera ktï¿½ry tworzymy
 		//! \return Kontener z ramkami CANopen
 		template<class Container>
 		Container createContainer()
@@ -104,7 +110,7 @@ namespace imuCostume
 		}
 
 	private:
-		//! Wektor indeksów pocz¹tków ramek w buforze
+		//! Wektor indeksï¿½w poczï¿½tkï¿½w ramek w buforze
 		std::vector<const uint8_t*> frameBasis;
 	};
 }

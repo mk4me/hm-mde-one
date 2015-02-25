@@ -5,6 +5,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QLayout>
+#include <QtCore/QTimer>
 #include <utils/Debug.h> 
 #include <corelib/PluginCommon.h>
 #include <corelib/ILog.h>
@@ -18,10 +19,21 @@ FileSourceWidget::FileSourceWidget( FileSource* source ) :
 {
     QLayout* layout = new QVBoxLayout();
     this->setLayout(layout);
+
     QPushButton* loadFile = new QPushButton();
     loadFile->setText(tr("Load files"));
     layout->addWidget(loadFile);
     connect(loadFile, SIGNAL(clicked()), this, SLOT(onLoadFiles()));
+
+	QPushButton* loadAsfAmcButton = new QPushButton();
+	loadAsfAmcButton->setText(tr("ASF AMC"));
+	layout->addWidget(loadAsfAmcButton);
+	connect(loadAsfAmcButton, SIGNAL(clicked()), this, SLOT(onLoadAsfAmc()));
+
+	QPushButton* addChartStreamButton = new QPushButton();
+	addChartStreamButton->setText(tr("addChartStreamButton"));
+	layout->addWidget(addChartStreamButton);
+	connect(addChartStreamButton, SIGNAL(clicked()), this, SLOT(onAddChartStream()));
 }
 
 void FileSourceWidget::onLoadFiles()
@@ -32,4 +44,23 @@ void FileSourceWidget::onLoadFiles()
         fileSource->addFile(path);
     }    
 }
+
+void FileSourceWidget::onLoadAsfAmc()
+{
+	fileSource->loadAsfAmc();
+}
+
+void FileSourceWidget::onTimer()
+{
+	fileSource->fillStream();
+}
+
+void FileSourceWidget::onAddChartStream()
+{
+	fileSource->addChartStream();
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(onTimer()));
+    timer->start(100);
+}
+
 

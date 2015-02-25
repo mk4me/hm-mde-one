@@ -40,7 +40,7 @@ private:
     //! \param point2 drugi wskazywany punkt
     //! \param currentSerie seria, z która jest zwiazana etykieta
     //! \param color kolor obwódki etykiety
-    void insertNewMarker(const QPointF& point1, const QPointF& point2, const NewChartSerie* currentSerie, const QColor& color = QColor(Qt::blue));
+	void insertNewMarker(const QPointF& point1, const QPointF& point2, const INewChartSeriePrivate* currentSerie, const QColor& color = QColor(Qt::blue));
     //! odświeżenie etykiet
     void updateLabels();
 
@@ -50,7 +50,7 @@ private:
     //! etykieta, która jest obecnie przesuwana (może to być dowolna etykieta)
     LabelDataConstPtr currentLabel;
     //! wybrany, pierwszy punkt
-    utils::shared_ptr<std::pair<const NewChartSerie*, QPointF>> point1;
+	utils::shared_ptr<std::pair<const INewChartSeriePrivate*, QPointF>> point1;
     //! styl połączenia (pionowe, poziome, proste)
     NewChartLabel::ConnectionStyle style;
     //! marker obrazujący pierwszy wskazywany punkt 

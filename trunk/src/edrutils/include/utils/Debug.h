@@ -13,6 +13,7 @@
 #include <utils/Macros.h>
 #include <utils/Utils.h>
 #include <sstream>
+#include <boost/assert.hpp>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -62,41 +63,12 @@ public:
  */
 #ifdef UTILS_DEBUG
 
-#   ifdef __WIN32__
-#       include <crtdbg.h>
-
-#       define UTILS_ASSERT(condition, ...) UTILS_MULTISTATEMENT_BEGIN                      \
-if (!(condition)) {                                                                         \
-    if (1 == _CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, #condition "\n" __VA_ARGS__)){ \
-        _CrtDbgBreak();                                                                     \
-    }                                                                                       \
-} UTILS_MULTISTATEMENT_END
-
-#       define UTILS_FAIL(...) UTILS_MULTISTATEMENT_BEGIN                                   \
-if (1 == _CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, "" __VA_ARGS__)) {            \
-    _CrtDbgBreak();                                                                         \
-}                                                                                           \
-UTILS_MULTISTATEMENT_END
-
-#   else // __WIN32__
-#       include <cassert>
-#       define UTILS_ASSERT(condition, ...)   assert(condition)
-#       define UTILS_FAIL(...)                assert(false)
-#   endif // __WIN32__
+#define UTILS_ASSERT(condition, ...) BOOST_ASSERT_MSG(#condition, "" ## COMA_AWARE_STRINGIZE(__VA_ARGS__))
+#define UTILS_FAIL(...) UTILS_ASSERT(false, "" ## COMA_AWARE_STRINGIZE(__VA_ARGS__))
 
 #else
 #   define UTILS_ASSERT(...)
 #   define UTILS_FAIL(...)
-#endif
-
-#define UTILS_STATIC_ASSERT(cond, msg) static_assert((cond), msg)
-
-#ifdef UTILS_ENABLE_PRIVATE_TESTS
-#   define ENABLE_PRIVATE_TESTS                 \
-        template<class _TestClass>              \
-        static void _privateTestHook(_TestClass& x);    
-#else
-#   define ENABLE_PRIVATE_TESTS
 #endif
 
 #endif  // HEADER_GUARD__UTILS_DEBUG_H__

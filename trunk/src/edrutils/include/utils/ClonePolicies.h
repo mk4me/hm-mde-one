@@ -17,7 +17,7 @@ namespace utils {
         template <typename T>
         static T* clone(const T* s) {
             return new T(*s);
-        }
+        }		
     };
 
     //! Klonowanie odbywa się za pomoca metody clone()
@@ -49,12 +49,10 @@ namespace utils {
     {
         template <typename T>
 		static T* clone(const T* s) {
-            //UTILS_STATIC_ASSERT(false, "Cloning forbidden!");
+            //static_assert(false, "Cloning forbidden!");
             throw std::runtime_error("Cloning forbidden!");
         }
     };
-
-
 
     typedef ClonePolicyForbidden ClonePolicyNotImplemented;
 

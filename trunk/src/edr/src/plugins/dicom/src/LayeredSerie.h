@@ -99,7 +99,7 @@ namespace dicom {
 
     private:
 		//! Kontekst zdalny danych
-		hmdbCommunication::IHMDBShallowCopyContext * shallowCopntext_;
+		hmdbCommunication::IHMDBShallowCopyContext * shallowContext_;
         bool initialized;
         ILayeredImagePtr image;
         coreUI::WheelGraphicsView* graphicsView;

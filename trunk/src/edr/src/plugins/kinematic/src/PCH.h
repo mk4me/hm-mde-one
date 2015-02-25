@@ -16,7 +16,6 @@
 
 #include <corelib/Exceptions.h>
 #include <corelib/IPlugin.h>
-#include <kinematiclib/SkeletalParsers.h>
 #include <utils/SmartPtr.h>
 
 #include <utils/Utils.h>

@@ -46,8 +46,9 @@ void BasicDataStorage::getObjects(core::VariantsCollection& objects) const
 
 const bool BasicDataStorage::isManaged(const core::VariantConstPtr & object) const
 {
-	if(plugin::getDataHierachyManagerReader()->isRegistered(object->data()->getTypeInfo()) == false){
-		throw core::runtime_error("Type not registered");
+	auto type = object->data()->getTypeInfo();
+	if(plugin::getDataHierachyManagerReader()->isRegistered(type) == false){
+		throw core::runtime_error(std::string("Type not registered: ") + type.name());
 	}
 
 	ScopedLock lock(sync);
@@ -83,8 +84,9 @@ const bool BasicDataStorage::hasObject(const utils::TypeInfo & type, bool exact)
 
 void BasicDataStorage::addData(const core::VariantConstPtr & data)
 {
-	if (plugin::getDataHierachyManagerReader()->isRegistered(data->data()->getTypeInfo()) == false){
-		throw core::runtime_error("Type not registered");
+	auto type = data->data()->getTypeInfo();
+	if (plugin::getDataHierachyManagerReader()->isRegistered(type) == false){
+		throw core::runtime_error(std::string("Type not registered: ") + type.name());
 	}
 
 	ScopedLock lock(sync);
@@ -103,8 +105,9 @@ void BasicDataStorage::addData(const core::VariantConstPtr & data)
 
 void BasicDataStorage::removeData(const core::VariantConstPtr & data)
 {
-	if (plugin::getDataHierachyManagerReader()->isRegistered(data->data()->getTypeInfo()) == false){
-		throw core::runtime_error("Type not registered");
+	auto type = data->data()->getTypeInfo();
+	if (plugin::getDataHierachyManagerReader()->isRegistered(type) == false){
+		throw core::runtime_error(std::string("Type not registered: ") + type.name());
 	}
 
 	ScopedLock lock(sync);

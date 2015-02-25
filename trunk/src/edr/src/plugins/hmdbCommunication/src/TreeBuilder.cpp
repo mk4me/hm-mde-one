@@ -8,12 +8,13 @@
 #include <utils/ObjectWrapper.h>
 #include "TreeBuilder.h"
 #include <plugins/hmdbCommunication/TreeItemHelper.h>
-#include <kinematiclib/JointAnglesCollection.h>
+#include <plugins/kinematic/Wrappers.h>
 #include <plugins/video/Wrappers.h>
 #include <plugins/subject/ISubject.h>
 #include <plugins/hmdbCommunication/IPatient.h>
 #include <corelib/PluginCommon.h>
 #include <utils/ObjectWrapper.h>
+#include <boost/lexical_cast.hpp>
 
 using namespace PluginSubject;
 core::IHierarchyItemPtr TreeBuilder::createTree(const QString& rootItemName, const core::ConstVariantsList& sessions)
@@ -115,7 +116,7 @@ core::IHierarchyItemPtr  TreeBuilder::createTree(const QString& rootItemName, co
             }
 
 			bool hasMarkers = motion->hasObject(typeid(MarkerCollection), false);
-			bool hasJoints = motion->hasObject(typeid(kinematic::JointAnglesCollection), false);
+			bool hasJoints = motion->hasObject(typeid(SkeletonWithStates), false);
 			bool hasAngles = motion->hasObject(typeid(AngleCollection), false);
             if (hasMarkers || hasJoints || hasAngles) {
                 core::IHierarchyItemPtr kinematicItem;
@@ -240,7 +241,7 @@ core::IHierarchyItemPtr TreeBuilder::createJointsBranch( const MotionConstPtr & 
 {
 
     QString desc = createDescription(motion);
-	bool hasJoints = motion->hasObject(typeid(kinematic::JointAnglesCollection), false);
+	bool hasJoints = motion->hasObject(typeid(SkeletonWithStates), false);
     core::IHierarchyItemPtr skeletonItem;
     if (hasJoints) {    
         JointsItemHelperPtr skeletonHelper(new JointsItemHelper(motion));
@@ -248,7 +249,7 @@ core::IHierarchyItemPtr TreeBuilder::createJointsBranch( const MotionConstPtr & 
         //skeletonHelper->setMotion(motion);
         
         core::ConstVariantsList jCollections;
-		motion->getObjects(jCollections, typeid(kinematic::JointAnglesCollection), false);
+		motion->getObjects(jCollections, typeid(SkeletonWithStates), false);
         if (jCollections.size() != 1) {
             // error
         }
@@ -634,7 +635,7 @@ bool MotionPerspective::hasValidData(PluginSubject::SubjectPtr subject)
     types.insert(typeid(MomentCollection));
     types.insert(typeid(PowerCollection));
     types.insert(typeid(MarkerCollection));
-    types.insert(typeid(kinematic::JointAnglesCollection));
+    types.insert(typeid(SkeletonWithStates));
     types.insert(typeid(AngleCollection));
     types.insert(typeid(VideoChannel));
     types.insert(typeid(EMGCollection));

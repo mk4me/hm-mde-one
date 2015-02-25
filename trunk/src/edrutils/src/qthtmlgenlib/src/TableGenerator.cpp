@@ -1,5 +1,6 @@
 #include <qthtmlgenlib/TableGenerator.h>
 #include <QtGui/QTextCursor>
+#include <boost/lexical_cast.hpp>
 
 namespace htmlGen {
 

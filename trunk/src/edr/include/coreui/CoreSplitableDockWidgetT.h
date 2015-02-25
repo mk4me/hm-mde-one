@@ -54,7 +54,7 @@ namespace coreUI {
 	template<class Widget>
 	class WidgetClonePolicyCopyConstructor {
 
-		UTILS_STATIC_ASSERT((boost::is_base_of<QWidget, Widget>::value), "Widget class should inherit from QWidget");
+		static_assert((std::is_base_of<QWidget, Widget>::value), "Widget class should inherit from QWidget");
 
 	public:
 		static QWidget * cloneWidget(QWidget * widget)

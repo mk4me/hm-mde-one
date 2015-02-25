@@ -50,7 +50,7 @@ core::IFilterProvider::FilterBundles HmmService::getFilterBundles() const
 
     core::IFilterBundlePtr kinematic = utils::make_shared<core::FilterBundle>(QObject::tr("KINEMATIC"), iconKinematic);
     kinematic->addFilterCommand(utils::make_shared<MarkersFilter>());
-	addSubjectFilterToBundle(kinematic, typeid(kinematic::JointAnglesCollection), QObject::tr("Joints"), iconJointSmall);
+	addSubjectFilterToBundle(kinematic, typeid(SkeletonWithStates), QObject::tr("Joints"), iconJointSmall);
     bundles.push_back(kinematic);
 
 

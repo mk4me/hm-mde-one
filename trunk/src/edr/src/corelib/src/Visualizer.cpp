@@ -3,6 +3,7 @@
 #include <corelib/Visualizer.h>
 #include <corelib/IVisualizerManager.h>
 #include <corelib/IDataManagerReader.h>
+//#include <corelib/PluginCommon.h>
 
 using namespace core;
 using namespace plugin;
@@ -495,6 +496,20 @@ public:
 	{
 		std::lock_guard<std::recursive_mutex> lock(sync);
 		innerVisualizer_->update(deltaTime);
+		for (auto & serie : dataSeries)
+		{
+			try{
+				serie->serie()->tryUpdate();
+			}
+			catch (std::exception & e){
+				/*
+				PLUGIN_LOG_ERROR("Failed to update visualizer: "
+					<< innerVisualizer_->name() << "(" << innerVisualizer_->ID()
+					<< ") serie " << serie->serie()->getName() << " with requested data type "
+					<< serie->serie()->getRequestedDataType().name());
+					*/
+			}
+		}
 	}
 
 private:

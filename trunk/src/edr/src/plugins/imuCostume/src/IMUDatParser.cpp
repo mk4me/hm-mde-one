@@ -5,24 +5,23 @@
 #include <corelib/Exceptions.h>
 
 
+
 #define CHUNK_SIZE 1024
 #define FRAME_SIZE 32
-
-using namespace std;
 
 IMU::Frames IMU::IMUDatParser::parse(const core::Filesystem::Path& path, int imusCount)
 {
     //array<char, CHUNK_SIZE> chunk;
-    array<uint16_t, CHUNK_SIZE> chunk;
+    std::array<uint16_t, CHUNK_SIZE> chunk;
     Frames frames;
-    ifstream file(path.c_str(), ios::in | ios::binary);
+    std::ifstream file(path.c_str(), std::ios::in | std::ios::binary);
     while (file.read((char*)chunk.data(), CHUNK_SIZE)) {
         Frame f;
         for (uint8_t i = 0; i < imusCount; i++) {
             ImuData imuData;
 
             
-            // przeskakujemy o 32 bajty (16 intów), do kolejnej ramki 
+            // przeskakujemy o 32 bajty (16 intï¿½w), do kolejnej ramki 
             int offs = 2 * 8 * i;
             imuData.raw.acc_x = chunk[offs + 0];
             imuData.raw.acc_y = chunk[offs + 1];
@@ -49,16 +48,16 @@ IMU::Frames IMU::IMUDatParser::parse(const core::Filesystem::Path& path, int imu
 
 std::pair<IMU::Frames, int> IMU::IMUDatParser::parse(const core::Filesystem::Path& path)
 {
-	array<uint16_t, CHUNK_SIZE> chunk;
+	std::array<uint16_t, CHUNK_SIZE> chunk;
 	Frames frames;
-	ifstream file(path.c_str(), ios::in | ios::binary);
+	std::ifstream file(path.c_str(), std::ios::in | std::ios::binary);
 	if (file.read((char*)chunk.data(), CHUNK_SIZE)) {
 		// chunkS / frameS da maksymalna liczbe czujnikow
 		auto maxCount = CHUNK_SIZE / FRAME_SIZE;
 		for (uint8_t i = maxCount - 1; i >= 0; --i) {
 			ImuData imuData;
 
-			// przeskakujemy o 32 bajty (16 intów), do kolejnej ramki 
+			// przeskakujemy o 32 bajty (16 intï¿½w), do kolejnej ramki 
 			int offs = 2 * 8 * i;
 			bool zeros = true;
 			for (auto s = 0; s < FRAME_SIZE / 2; ++s) {
@@ -82,8 +81,8 @@ std::pair<IMU::Frames, int> IMU::IMUDatParser::parse(const core::Filesystem::Pat
 void IMU::IMUDatParser::save(const core::Filesystem::Path& path, const Frames& frames)
 {
     using namespace std;
-    array<uint16_t, CHUNK_SIZE / sizeof(uint16_t)> chunk = { 0 };
-    ofstream file(path.c_str(), ios::out | ios::binary);
+    std::array<uint16_t, CHUNK_SIZE / sizeof(uint16_t)> chunk = { 0 };
+    //std::ofstream file(path.c_str(), std::ios::out | std::ios::binary);
     
     for (auto it = frames.begin(); it != frames.end(); ++it) {
         const Frame& f = *it;
@@ -112,10 +111,10 @@ void IMU::IMUDatParser::save(const core::Filesystem::Path& path, const Frames& f
             chunk[offs + 15] = imuData.qw;
             
         }
-        file.write((char*)chunk.data(), CHUNK_SIZE);
+        //file.write((char*)chunk.data(), CHUNK_SIZE);
     }
 
-    file.close();;
+    //file.close();
 }
 
 std::vector<IMU::Frames> IMU::IMUDatSplitter::split(const Frames& frames, const std::vector<std::pair<int, int>>& splits)

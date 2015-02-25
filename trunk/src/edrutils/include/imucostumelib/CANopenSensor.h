@@ -166,10 +166,10 @@ namespace imuCostume
 
 		//! \tparam T Typ który chcemy zapisaæ SDO w trybie krótkim
 		template<typename T>
-		//! \param nodeID Identyfikator wêz³a do któego maj¹ trafiæ dane
+		//! \param nodeID Identyfikator wêz³a do którego maj¹ trafiæ dane
 		//! \param dictID Identyfikator obiektu danych
 		//! \param dictSubID Pod-identyfikator obiektu danych
-		//! \praram value Wartoœæ któr¹ wysy³amy
+		//! \param value Wartoœæ któr¹ wysy³amy
 		//! \return Sformatowana ramka danych
 		static const CANopenFrame formatExpeditedSDOWriteFrame(const uint8_t nodeID,
 			const uint16_t dictID, const uint8_t dictSubID, const T value)
@@ -188,11 +188,11 @@ namespace imuCostume
 			return formatExpeditedSDOWriteFrame(nodeID, dictID, dictSubID, data.u, dataSize(sizeof(T)));
 		}
 		
-		//! \param nodeID Identyfikator wêz³a do któego maj¹ trafiæ dane
+		//! \param nodeID Identyfikator wêz³a do którego maj¹ trafiæ dane
 		//! \param dictID Identyfikator obiektu danych
 		//! \param dictSubID Pod-identyfikator obiektu danych
-		//! \praram value Wartoœæ któr¹ wysy³amy
-		//! \praram dataSize Faktyczny rozmiar do wysy³ki (mo¿na obc¹æ do wê¿szego lub rozszerzyæ)
+		//! \param value Wartoœæ któr¹ wysy³amy
+		//! \param dataSize Faktyczny rozmiar do wysy³ki (mo¿na obc¹æ do wê¿szego lub rozszerzyæ)
 		//! \return Sformatowana ramka danych
 		static const CANopenFrame formatExpeditedSDOWriteFrame(const uint8_t nodeID,
 			const uint16_t dictID, const uint8_t dictSubID, const uint32_t value,

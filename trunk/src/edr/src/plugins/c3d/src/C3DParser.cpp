@@ -98,10 +98,10 @@ void C3DParser::parse( const std::string & source  )
     // wczytanie plików *vsk, które dostarczaja opis do markerów
     core::Filesystem::Path dir = path.parent_path();
     auto vskFiles = core::Filesystem::listFiles(dir, false, ".vsk");
-    kinematic::VskParserPtr vsk;
+    vicon::VskPtr vsk;
     if (vskFiles.size() == 1) {
-        vsk = kinematic::VskParserPtr(new kinematic::VskParser());
-        vsk->parse(vskFiles.front().string());
+        vsk = utils::make_shared<vicon::Vsk>();
+        vicon::VskParser::parse(vskFiles.front().string(), *vsk);
     }
 	MarkerCollectionPtr markers(new MarkerCollection(vsk));
 	ForceCollectionPtr forces(new ForceCollection);

@@ -39,6 +39,23 @@ namespace imuCostume
 		{
 			std::string ip;		//! Adres IP
 			unsigned int port;	//! Port
+
+			bool operator<(const imuCostume::CostumeRawIO::CostumeAddress & b) const
+			{
+				if (ip < b.ip){
+					return true;
+				}
+				else if (ip == b.ip && port < b.port){
+					return true;
+				}
+
+				return false;
+			}
+
+			bool operator==(const imuCostume::CostumeRawIO::CostumeAddress & b) const
+			{
+				return ((port == b.port) && (ip == b.ip));
+			}
 		};	
 
 	public:
@@ -72,7 +89,7 @@ namespace imuCostume
 
 		//! \param delay Czas przerwy pomiedzy probkami [ms]
 		//! \param timeout Czas na wys³anie [ms]
-		void setSamplingDelay(const uint32_t delay, const uint16_t timeout);
+		void setSamplingDelay(const uint32_t delay, const uint16_t timeout = 0);
 
 	private:
 		//! Obiekt implementujacy funkcjonalnoœæ kostiumu

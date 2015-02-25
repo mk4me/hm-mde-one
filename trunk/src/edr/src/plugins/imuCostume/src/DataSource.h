@@ -9,8 +9,6 @@
 #ifndef HEADER_GUARD_IMU_COSTUME__DATASOURCE_H__
 #define HEADER_GUARD_IMU_COSTUME__DATASOURCE_H__
 
-#include <plugins/imuCostume/IIMUDataSource.h>
-#include <plugins/imuCostume/Wrappers.h>
 #include <corelib/ISource.h>
 #include <osg/Vec3>
 #include <mutex>
@@ -21,10 +19,15 @@
 #include <corelib/HierarchyItem.h>
 #include <corelib/ThreadPool.h>
 #include <corelib/HierarchyDataItem.h>
+#include <plugins/imuCostume/CostumeIMUExtractor.h>
+#include <utils/SamplesStatus.h>
 
+typedef threadingUtils::StreamAdapterT<IMU::CostumeStream::value_type, IMU::SensorsStreamData, IMU::CostumeIMUExtractor> ExtractedCostumeStreamAdapter;
 
 namespace IMU
 {
+	DEFINE_SMART_POINTERS(ExtractedCostumeStreamAdapter);
+
 	class IMUCostumeDataSource : public plugin::ISource, public IIMUDataSource
 	{
 		UNIQUE_ID("{441BB894-1019-4382-97EE-F18A511A49CB}");
@@ -34,26 +37,27 @@ namespace IMU
 
 		struct SensorData
 		{
-			utils::shared_ptr<std::atomic<ConnectionStatus>> status;
-			utils::shared_ptr<IMUStream> dataStream;
-			std::vector<utils::shared_ptr<Vec3Stream>> vec3dStreams;
-			utils::shared_ptr<QuatStream> orientationStream;
-			std::list<utils::shared_ptr<ScalarStream>> scalarStreams;
+			utils::shared_ptr<utils::SamplesStatus> samplesStatus;
+			core::VariantsList domainData;
 		};
 
-		struct CostumeData
-		{
-			imuCostume::Costume::SensorsConfiguration sensorsConfiguration;
-			utils::shared_ptr<imuCostume::CostumeRawIO> rawCostume;
-			utils::shared_ptr<std::atomic<ConnectionStatus>> status;
-			std::map<imuCostume::Costume::SensorID, SensorData> sensorsData;
-			RawDataStreamPtr rawDataStream;
-			CANopenFramesStreamPtr CANopenStream;	
-			CostumeStreamPtr costumeStream;
+		typedef std::map<imuCostume::Costume::SensorID, SensorData> SensorsData;
 
-			core::HierarchyDataItemPtr hierarchyRootItem;
-			core::VariantsList domainData;
-		};	
+		struct CostumeData : public CostumeDescription
+		{
+			utils::shared_ptr<utils::SamplesStatus> samplesStatus;
+			SensorsData sensorsData;
+			CANopenFramesStreamPtr CANopenStream;
+			CostumeStreamPtr costumeStream;
+			ExtractedCostumeStreamAdapterPtr completeImuStream;
+
+			CostumeSkeletonMotionPtr skeletonMotion;
+
+			core::HierarchyItemPtr hierarchyRootItem;
+			core::VariantsList domainData;			
+		};
+
+		typedef std::map<CostumeID, CostumeData> CostumesData;
 
 	public:
 		//! Konstruktor
@@ -94,37 +98,63 @@ namespace IMU
 
 		virtual const unsigned int costumesCout() const override;
 
-		virtual const imuCostume::Costume::SensorsConfiguration & costumeConfiguration(const unsigned int idx) const override;
-		virtual const imuCostume::CostumeRawIO::CostumeAddress costumeAddress(const unsigned int idx) const override;
-		virtual const ConnectionStatus costumeStatus(const unsigned int idx) const override;
-		virtual const RawDataStreamPtr costumeRawDataStream(const unsigned int idx) const override;
-		virtual const core::VariantsList costumeData(const unsigned int idx) const override;
+		virtual const bool costumesEmpty() const override;
 
-		virtual void loadCostume(const unsigned int idx) override;
-		virtual void unloadCostume(const unsigned int idx) override;
-		virtual const bool costumeLoaded(const unsigned int idx) const override;
-		virtual const unsigned int costumesLoadedCount() const override;
+		virtual bool refreshCostumeSensorsConfiguration(const CostumeID & id, const uint8_t samplesCount) override;
+		
+		virtual void resetCostumeStatus(const CostumeID & id) override;
 
-		virtual void loadAllCostumes() override;
-		virtual void unloadAllCostumes() override;
+		virtual void resetSensorStatus(const CostumeID & costumeID,
+			const imuCostume::Costume::SensorID sensorID) override;
 
-		virtual void registerOrientationEstimationAlgorithm(IIMUOrientationEstimationAlgorithm * algorithm) override;
-		virtual void registerCostumeCalibrationAlgorithm(IMUCostumeCalibrationAlgorithm * algorithm) override;
-		virtual void registerMotionEstimationAlgorithm(IMUCostumeMotionEstimationAlgorithm * algorithm) override;
+		virtual CostumeStatus costumeStatus(const CostumeID & id) const override;
 
-		virtual std::list<IIMUOrientationEstimationAlgorithmConstPtr> orientationEstimationAlgorithms() const override;
-		virtual std::list<IMUCostumeCalibrationAlgorithmConstPtr> calibrationAlgorithms() const override;
-		virtual std::list<IMUCostumeMotionEstimationAlgorithmConstPtr> motionEstimationAlgorithms() const override;
+		virtual CostumeDetails costumeDetails(const CostumeID & id) const override;
+
+		virtual CostumesDescriptions costumesDescriptions() const override;
+
+		virtual CostumesStatus costumesStatus() const override;
+
+		virtual CostumesDetails costumesDetails() const override;
+
+		virtual CostumeDescription costumeDescription(const CostumeID & id) const override;
+
+		virtual void loadRawCostume(const CostumeID & id) override;
+
+		virtual void loadCalibratedCostume(const CostumeID & id,
+			const CostumeProfileInstance & profileInstance) override;
+
+		virtual void unloadCostume(const CostumeID & id);
+
+		virtual unsigned int loadedCostumesCount() const override;
+
+		virtual bool costumeLoaded(const CostumeID & id) const override;
+
+		virtual core::ConstVariantsList costumeData(const CostumeID & id) const override;
+
+		virtual void startRecording(RecordingOutputPtr recording) override;
+		virtual void stopRecording(RecordingOutputPtr recording) override;
+
+		virtual void registerOrientationEstimationAlgorithm(const IIMUOrientationEstimationAlgorithm * algorithm) override;
+		virtual void registerCostumeCalibrationAlgorithm(const IMUCostumeCalibrationAlgorithm * algorithm) override;
+		virtual void registerMotionEstimationAlgorithm(const IMUCostumeMotionEstimationAlgorithm * algorithm) override;
+		virtual void registerSkeletonModel(SkeletonConstPtr skeleton) override;
+		virtual void registerCostumeProfile(const CostumeProfile & profile) override;
+		
+		virtual OrientationEstimationAlgorithms orientationEstimationAlgorithms() const override;
+		virtual CostumeCalibrationAlgorithms calibrationAlgorithms() const override;
+		virtual CostumeMotionEstimationAlgorithms motionEstimationAlgorithms() const override;
+		virtual SkeletonModels skeletonModels() const override;
+		virtual CostumesProfiles costumesProfiles() const override;
 
 	private:
 
-		static void configureCostume(CostumeData & cd);
-		static void refreshCostumeSensorsConfiguration(CostumeData & cd);
+		static CostumeStatus innerCreateCostumeStatus(const IMUCostumeDataSource::CostumeData & cData);
 
-		static std::string sensorParameterName(const unsigned int idx);
-		static std::string vectorParameterName(const unsigned int idx);
+		core::HierarchyItemPtr fillRawCostumeData(CostumeData & cData);
 
-		void refreshData();
+		static void configureCostume(CostumeDescription & cd);
+		static bool innerRefreshCostumeSensorsConfiguration(CostumeData & data, const uint8_t MaxSamplesCount);
 
 		void innerLoadCostume(const unsigned int idx);
 		void innerUnloadCostume(const unsigned int idx);		
@@ -143,17 +173,23 @@ namespace IMU
 		void tryCreateStreamItem();
 		void tryCreateRecordedItem();
 
+		void resfreshCostumesData();
+		
+		static void unpackSensorsStream(SensorsStreamPtr stream,
+			SensorsData & sensorsData,
+			core::HierarchyItemPtr root,
+			core::VariantsList & domainData);
+
 	private:
-		//! Czy odœwie¿amy dane
-		std::atomic<bool> refreshData_;
+
+		//! Czy koñczymy dzia³anie w¹tku odœwie¿aj¹cego dane
+		volatile bool finish;
+		//! W¹tek odœwie¿aj¹cy dane i status kostiumów
+		core::Thread refreshThread;
 		//! Obiekt synchronizuj¹cy
-		mutable std::recursive_mutex synch;
-		//! Obiekt synchronizuj¹cy aktualizacjê danych
-		std::recursive_mutex updateSynch;
+		mutable std::recursive_mutex synch;		
 		//! Manager danych w pamiêci
 		core::IMemoryDataManager * memoryDM;
-		//! Watek odswiezajacy dane
-		core::ThreadPool::Thread refreshThread;
 		//! Korzen drzewa dla analiz
 		core::HierarchyItemPtr root;
 		//! Dane strumieniowe
@@ -161,11 +197,14 @@ namespace IMU
 		//! Dane nagrane
 		core::HierarchyItemPtr recordedItems;
 
-		std::map<std::string, CostumeData> costumesData;
+		CostumesData costumesData;
+		std::set<RecordingOutputPtr> recordings;
 
-		std::list<IIMUOrientationEstimationAlgorithmConstPtr> orientationEstimationAlgorithms_;
-		std::list<IMUCostumeCalibrationAlgorithmConstPtr> calibrationAlgorithms_;
-		std::list<IMUCostumeMotionEstimationAlgorithmConstPtr> motionEstimationAlgorithms_;
+		OrientationEstimationAlgorithms orientationEstimationAlgorithms_;
+		CostumeCalibrationAlgorithms calibrationAlgorithms_;
+		CostumeMotionEstimationAlgorithms motionEstimationAlgorithms_;
+		SkeletonModels skeletonModels_;
+		CostumesProfiles costumesProfiles_;
 	};
 }
 

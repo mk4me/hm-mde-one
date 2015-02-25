@@ -8,81 +8,182 @@
 #ifndef __HEADER_GUARD_IMU__IIMUDATASOURCE_H__
 #define __HEADER_GUARD_IMU__IIMUDATASOURCE_H__
 
-#include <utils/PtrPolicyStd.h>
+#include <atomic>
+#include <corelib/IIdentifiable.h>
 #include <corelib/Variant.h>
-#include <threadingUtils/StreamData.h>
-#include <imucostumelib/ImuCostume.h>
-#include <imucostumelib/CostumeCANopenIO.h>
-#include <imucostumelib/ProtocolSendBufferHelper.h>
+#include <plugins/imuCostume/Streams.h>
 #include <plugins/imuCostume/IIMUOrientationEstimationAlgorithm.h>
-#include <plugins/imuCostume/IMUCostumeCalibrationAlgorithm.h>
 #include <plugins/imuCostume/IMUCostumeMotionEstimationAlgorithm.h>
+#include <kinematiclib/SkeletonState.h>
+#include <plugins/imuCostume/CostumeProfile.h>
 
 namespace IMU
 {
+	//! Interfejs Ÿród³a danych obs³uguj¹cego kostiumy
 	class IIMUDataSource
 	{
 	public:
 
+		//! Typ statusu po³¹czenia z kostiumem i czujników
 		enum ConnectionStatus
 		{
-			ONLINE,
-			OFFLINE,
-			CONNECTION_PROBLEMS,
-			UNKNOWN
+			ONLINE,				//! Po³¹czenie OK
+			OFFLINE,			//! Brak po³¹czenia
+			CONNECTION_PROBLEMS,//! Problemy z po³¹czeniem - gubimy pakiety
+			UNKNOWN				//! Nieznany stan - jeszcze siê nie próbowlaiœmy pod³anczaæ
+		};	
+
+		//! Typ opisuj¹cy identyfikator kostiumy
+		typedef imuCostume::CostumeRawIO::CostumeAddress CostumeID;
+
+		typedef std::map<CostumeID, imuCostume::ProtocolSendBufferHelper::Buffer> CostumesDataFrame;
+
+		typedef threadingUtils::StreamBufferT<CostumesDataFrame> CostumesRecordingDataBuffer;
+
+		struct RecordingOutput
+		{
+			CostumesRecordingDataBuffer costumesDataBuffer;
+			std::set<CostumeID> costumesToRecord;
 		};
 
-		typedef threadingUtils::StreamT<imuCostume::ProtocolSendBufferHelper::Buffer> RawDataStream;
+		DEFINE_SMART_POINTERS(RecordingOutput);
 
-		DEFINE_SMART_POINTERS(RawDataStream);
+		//! Struktura opisuj¹ca status po³¹czenia kostiumu i czujników
+		struct CostumeStatus
+		{
+			//! Status po³¹czenie z kostiumem
+			volatile ConnectionStatus status;
+			//! Status poszczególnych czujników
+			std::map<imuCostume::Costume::SensorID, ConnectionStatus> sensorsStatus;
+		};
 
-		typedef threadingUtils::StreamT<imuCostume::CostumeCANopenIO::Data> CANopenFramesStream;
+		//! Mapa statusów kostiumów i ich sensorów
+		typedef std::map<CostumeID, CostumeStatus> CostumesStatus;
 
-		DEFINE_SMART_POINTERS(CANopenFramesStream);
+		//! Struktura opisuj¹ca kostium
+		struct CostumeDescription
+		{
+			//! Konfiguracja czujników
+			imuCostume::Costume::SensorsConfiguration sensorsConfiguration;
+			//! Obiekt obs³uguj¹cy komunikacjê z kostirumem w trybie raw (wyslij/odbierz surowe pakiety danych)
+			utils::shared_ptr<imuCostume::CostumeRawIO> rawCostume;
+			//! Strumieñ surowych danych
+			RawDataStreamPtr rawDataStream;
+		};
 
-		typedef threadingUtils::IStreamT<imuCostume::Costume::Data> CostumeStream;
+		//! Mapa statusów kostiumów i ich sensorów
+		typedef std::map<CostumeID, CostumeDescription> CostumesDescriptions;
 
-		DEFINE_SMART_POINTERS(CostumeStream);
+		//! Struktura opisuj¹ca szczegó³y kostiumu
+		struct CostumeDetails
+		{
+			CostumeStatus statusDetails;
+			CostumeDescription descriptionDetails;
+		};
 
-		DEFINE_SMART_POINTERS(IIMUOrientationEstimationAlgorithm);
-		DEFINE_SMART_POINTERS(IMUCostumeCalibrationAlgorithm);
-		DEFINE_SMART_POINTERS(IMUCostumeMotionEstimationAlgorithm);
+		//! Mapa pe³nej informajci o kostiumach
+		typedef std::map<CostumeID, CostumeDetails> CostumesDetails;
+
+		//! Mapa identyfikatorów sensorów do algorytmów estymujacych ich otientacjê
+		typedef std::map<imuCostume::Costume::SensorID, IIMUOrientationEstimationAlgorithmConstPtr> OrientationEstimationPrototypeAlgorithmsMapping;
+
+		//! Mapa identyfikatorów sensorów do algorytmów estymujacych ich otientacjê
+		typedef std::map<imuCostume::Costume::SensorID, IIMUOrientationEstimationAlgorithmPtr> OrientationEstimationAlgorithmsMapping;
+		
+		//! Mapa algorytmów estymacji orientacji czujników
+		typedef std::map<core::UniqueID, IIMUOrientationEstimationAlgorithmConstPtr> OrientationEstimationAlgorithms;
+		//! Mapa algorytmów kalibracyjnych kostium
+		typedef std::map<core::UniqueID, IMUCostumeCalibrationAlgorithmConstPtr> CostumeCalibrationAlgorithms;
+		//! Mapa algorytmów estymuj¹cych ruchu
+		typedef std::map<core::UniqueID, IMUCostumeMotionEstimationAlgorithmConstPtr> CostumeMotionEstimationAlgorithms;
+		//! Lista modeli (szkieletów, hierarchii)
+		typedef std::map<core::UniqueID, SkeletonConstPtr> SkeletonModels;
+		//! Mapa profili kostiumów
+		typedef std::map<std::string, CostumeProfile> CostumesProfiles;
 
 	public:
-
+		//! Desturktor wirtualny
 		virtual ~IIMUDataSource() {}
 
+		//! Metoda odœwie¿a dostepne kostiumu
+		//! \return Prawda jeœli uda³o siê odœwie¿yæ kostiumy
 		virtual const bool refreshCostumes() = 0;
-
+		//! \return Iloœæ dostepnych kostiumów
 		virtual const unsigned int costumesCout() const = 0;
+		//! \return Iloœæ dostepnych kostiumów
+		virtual const bool costumesEmpty() const = 0;
+		//! \param id Indeks kostiumu
+		//! \return Czy dany kostium jest za³adowany
+		virtual bool costumeLoaded(const CostumeID & id) const = 0;
+		//! \return Iloœæ za³adowanych kostiumóe
+		virtual unsigned int loadedCostumesCount() const = 0;
+		//! \param id Identyfikator kosstiumu
+		//! \param samplesCount iloœæ prób pozyskania danych do wyciagniecia konfiguracji kostiumu
+		//! \return Czy uda³o siê chocia¿ z jednej próbki wyci¹gnaæ konfiguracjê
+		virtual bool refreshCostumeSensorsConfiguration(const CostumeID & id, const uint8_t samplesCount) = 0;
+		//! \param id Indeks kostiumu
+		//! \return Opis kostiumu
+		virtual CostumeDescription costumeDescription(const CostumeID & id) const = 0;
 
-		virtual const imuCostume::Costume::SensorsConfiguration & costumeConfiguration(const unsigned int idx) const = 0;
-		virtual const imuCostume::CostumeRawIO::CostumeAddress costumeAddress(const unsigned int idx) const = 0;
-		virtual const ConnectionStatus costumeStatus(const unsigned int idx) const = 0;
-		virtual const RawDataStreamPtr costumeRawDataStream(const unsigned int idx) const = 0;
-		virtual const core::VariantsList costumeData(const unsigned int idx) const = 0;
+		//! \param id Indeks kostiumu
+		virtual void resetCostumeStatus(const CostumeID & id) = 0;
+		//! \param costumeID Indeks kostiumu
+		//! \param sensorID Indeks kostiumu
+		virtual void resetSensorStatus(const CostumeID & costumeID,
+			const imuCostume::Costume::SensorID sensorID) = 0;
+		//! \param id Indeks kostiumu
+		//! \return Opis kostiumu
+		virtual CostumeStatus costumeStatus(const CostumeID & id) const = 0;
+		//! \param id Indeks kostiumu
+		//! \return Opis kostiumu
+		virtual CostumeDetails costumeDetails(const CostumeID & id) const = 0;
+		//! \return Opis kostiumu
+		virtual CostumesDescriptions costumesDescriptions() const = 0;
+		//! \return Opis kostiumu
+		virtual CostumesStatus costumesStatus() const = 0;
+		//! \return Opis kostiumu
+		virtual CostumesDetails costumesDetails() const = 0;
+		//! Metoda ³aduj¹ca kostium do DM - tylko surowe dane + konwersja
+		//! \param id Indeks kostiumu
+		virtual void loadRawCostume(const CostumeID & id) = 0;
+		//! Metoda ³aduj¹ca kostium do DM - surowe dane + konwersja + estymacja ruchu po kalibracji
+		//! \param id Indeks kostiumu
+		//! \param profileInstance Profil kostiumu
+		virtual void loadCalibratedCostume(const CostumeID & id,
+			const CostumeProfileInstance & profileInstance) = 0;
 
-		virtual void loadCostume(const unsigned int idx) = 0;
-		virtual void unloadCostume(const unsigned int idx) = 0;
-		virtual const bool costumeLoaded(const unsigned int idx) const = 0;
-		virtual const unsigned int costumesLoadedCount() const = 0;
+		//! Metoda wy³¹dowywujê dane z DM dla kostiumu
+		//! \param id Indeks kostiumu
+		virtual void unloadCostume(const CostumeID & id) = 0;
+		//! \param id Indeks kostiumu
+		//! \return Dane domenowe kostiumu z DM
+		virtual core::ConstVariantsList costumeData(const CostumeID & id) const = 0;
 
-		virtual void loadAllCostumes() = 0;
-		virtual void unloadAllCostumes() = 0;
+		//! \param algorithm Prototyp algorytmu estymacji orientacji czujnika
+		virtual void registerOrientationEstimationAlgorithm(const IIMUOrientationEstimationAlgorithm * algorithm) = 0;
+		//! \param algorithm Prototyp algorytmu kalibracji kostiumu
+		virtual void registerCostumeCalibrationAlgorithm(const IMUCostumeCalibrationAlgorithm * algorithm) = 0;
+		//! \param algorithm Prototyp algorytmu poprawy estymacji ruchu kostiumu dla ca³ego szkieletu
+		virtual void registerMotionEstimationAlgorithm(const IMUCostumeMotionEstimationAlgorithm * algorithm) = 0;
+		//! \param skeleton Model szkieletu który mo¿na estymowaæ
+		virtual void registerSkeletonModel(SkeletonConstPtr skeleton) = 0;
+		//! \param profile Profil kostiumu
+		virtual void registerCostumeProfile(const CostumeProfile & profile) = 0;
 
-		virtual void registerOrientationEstimationAlgorithm(IIMUOrientationEstimationAlgorithm * algorithm) = 0;
-		virtual void registerCostumeCalibrationAlgorithm(IMUCostumeCalibrationAlgorithm * algorithm) = 0;
-		virtual void registerMotionEstimationAlgorithm(IMUCostumeMotionEstimationAlgorithm * algorithm) = 0;
+		virtual void startRecording(RecordingOutputPtr recording) = 0;
+		virtual void stopRecording(RecordingOutputPtr recording) = 0;
 
-		virtual std::list<IIMUOrientationEstimationAlgorithmConstPtr> orientationEstimationAlgorithms() const = 0;
-		virtual std::list<IMUCostumeCalibrationAlgorithmConstPtr> calibrationAlgorithms() const = 0;
-		virtual std::list<IMUCostumeMotionEstimationAlgorithmConstPtr> motionEstimationAlgorithms() const = 0;
+		//! \return Lista prototypów algorytmów estymacji orientacji czujnika
+		virtual OrientationEstimationAlgorithms orientationEstimationAlgorithms() const = 0;
+		//! \return Lista prototypów algorytmów kalibracji kostiumu
+		virtual CostumeCalibrationAlgorithms calibrationAlgorithms() const = 0;
+		//! \return Lista prototypów algorytmów poprawy estymacji ruchu kostiumu dla ca³ego szkieletu
+		virtual CostumeMotionEstimationAlgorithms motionEstimationAlgorithms() const = 0;
+		//! \return Lista prototypów algorytmów poprawy estymacji ruchu kostiumu dla ca³ego szkieletu
+		virtual SkeletonModels skeletonModels() const = 0;
+		//! \return Profile kostiumu
+		virtual CostumesProfiles costumesProfiles() const = 0;
 	};
 }
-
-DEFINE_WRAPPER(threadingUtils::IStreamT<imuCostume::ProtocolSendBufferHelper::Buffer>, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
-DEFINE_WRAPPER_INHERITANCE(IMU::IIMUDataSource::RawDataStream, threadingUtils::IStreamT<imuCostume::ProtocolSendBufferHelper::Buffer>);
-DEFINE_WRAPPER(IMU::IIMUDataSource::CANopenFramesStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
-DEFINE_WRAPPER(IMU::IIMUDataSource::CostumeStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
 
 #endif	// __HEADER_GUARD_IMU__IIMUDATASOURCE_H__

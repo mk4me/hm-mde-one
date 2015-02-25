@@ -118,6 +118,40 @@ struct PtrPolicyRaw
 	{
 		return -1;
 	}
+
+	template<typename T>
+	struct enable_shared_from_this
+	{
+	public:
+		enable_shared_from_this()
+		{
+		}
+
+		enable_shared_from_this(enable_shared_from_this const &)
+		{
+		}
+
+		enable_shared_from_this & operator=(enable_shared_from_this const &)
+		{
+			return *this;
+		}
+
+		~enable_shared_from_this()
+		{
+		}
+
+	public:
+
+		T* shared_from_this()
+		{
+			return dynamicCastPtr<T>(this);
+		}
+
+		const T * shared_from_this() const
+		{
+			return dynamicCastPtr<const T>(this);
+		}
+	};
 };
 
 template <> struct is_ptr_policy<PtrPolicyRaw> : public std::true_type {};

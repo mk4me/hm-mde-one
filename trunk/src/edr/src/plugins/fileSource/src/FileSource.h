@@ -12,6 +12,7 @@
 
 #include <corelib/ISource.h>
 #include <corelib/Filesystem.h>
+#include <plugins/newChart/Wrappers.h>
 
 class FileSource : public plugin::ISource
 {
@@ -40,10 +41,17 @@ public:
     virtual void getOfferedTypes( utils::TypeInfoList & offeredTypes ) const;
     void addFile( const core::Filesystem::Path& path );
 
+	void loadAsfAmc();
+
+	void addChartStream();
+
+	void fillStream();
+
 private:
     core::IMemoryDataManager* memoryDM;
     core::IFileDataManager* fileDM;
     core::IStreamDataManager* streamDM;
+    std::vector<ScalarStreamPtr> streams;
 };
 DEFINE_SMART_POINTERS(FileSource);
 

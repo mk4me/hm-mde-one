@@ -15,7 +15,8 @@
 #include <threadingUtils/StreamData.h>
 
 typedef utils::IChannelReader<float, float, true> ScalarChannelReader;
-typedef threadingUtils::IStreamT<float> ScalarStream;
+typedef threadingUtils::IStreamT<std::pair<float, float>> ScalarStream;
+DEFINE_SMART_POINTERS(ScalarStream);
 
 DEFINE_WRAPPER(ScalarChannelReader, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
 DEFINE_WRAPPER(ScalarStream, utils::PtrPolicyStd, utils::ClonePolicyForbidden);

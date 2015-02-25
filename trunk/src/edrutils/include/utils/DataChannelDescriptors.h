@@ -157,8 +157,8 @@ namespace utils {
 	template<class Channel>
 	class ChannelWithDescriptor : public Channel, public ChannelDescriptor
 	{
-		UTILS_STATIC_ASSERT((boost::is_base_of<IRawGeneralDataChannelReader<typename Channel::point_type, typename Channel::time_type>, Channel>::value), "Base class should inherit from IRawGeneralDataChannelReader");
-		UTILS_STATIC_ASSERT(!(boost::is_base_of<IChannelDescriptorReader, Channel>::value), "Channel is already extended with ChannelDescriptor");
+		static_assert((std::is_base_of<IRawGeneralDataChannelReader<typename Channel::point_type, typename Channel::time_type>, Channel>::value), "Base class should inherit from IRawGeneralDataChannelReader");
+		static_assert(!(std::is_base_of<IChannelDescriptorReader, Channel>::value), "Channel is already extended with ChannelDescriptor");
 
 	public:
 

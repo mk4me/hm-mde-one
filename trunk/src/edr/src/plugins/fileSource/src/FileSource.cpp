@@ -2,7 +2,14 @@
 #include <corelib/Filesystem.h>
 #include <corelib/HierarchyItem.h>
 #include <corelib/HierarchyDataItem.h>
+#include <corelib/PluginCommon.h>
 #include "FileSourceWidget.h"
+#include "../acclaimformatslib/acclaimformatslib/MotionData.h"
+#include "../acclaimformatslib/acclaimformatslib/Skeleton.h"
+#include "kinematiclib/Skeleton.h"
+#include "kinematiclib/SkeletonState.h"
+#include <plugins/kinematic/Wrappers.h>
+#include <plugins/newChart/Wrappers.h>
 
 
 FileSource::FileSource() :
@@ -32,6 +39,17 @@ void FileSource::finalize()
 
 void FileSource::update( double deltaTime )
 {
+
+}
+
+void FileSource::fillStream() {
+	static float t = 0.0f;
+	for (auto& stream : streams) {
+		auto p = std::make_pair(t,t);
+		//stream->pushData(p);
+	}
+
+	t += 1.0f;
     
 }
 
@@ -71,3 +89,71 @@ void FileSource::addFile( const core::Filesystem::Path& path )
 
     hierarchyTransaction->addRoot(root);
 }
+
+void FileSource::loadAsfAmc()
+{
+	auto transaction = fileDM->transaction();
+	//core::Filesystem::Path p1 = "C:/Users/Mateusz/Desktop/test.amc";
+	//core::Filesystem::Path p2 = "C:/Users/Mateusz/Desktop/test.asf";
+
+	core::Filesystem::Path p1 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test.amc";
+	core::Filesystem::Path p2 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test.asf";
+	//core::Filesystem::Path p1 = "C:/Users/Wojciech/Desktop/test.amc";
+	//core::Filesystem::Path p2 = "C:/Users/Wojciech/Desktop/test.asf";
+	transaction->addFile(p1);
+	transaction->addFile(p2);
+	core::ConstVariantsList oList;
+
+	transaction->getObjects(p1, oList);
+	auto wrp1 = *oList.begin();
+	transaction->getObjects(p2, oList);
+	auto wrp2 = *(++oList.begin());
+
+	acclaim::MotionDataConstPtr data = wrp1->get() ;
+	acclaim::SkeletonConstPtr model = wrp2->get();
+	kinematic::SkeletonPtr skeleton = utils::make_shared<kinematic::Skeleton>();
+	if (!kinematic::Skeleton::convert(*model, *skeleton)) {
+		throw std::runtime_error("Unable to convert skeleton");
+	}
+	SkeletonStatesPtr states = utils::make_shared<SkeletonStates>();
+	states->frameTime = data->frameTime;
+
+	const auto mapping = kinematic::SkeletonState::createMapping(*skeleton);
+	
+
+
+	for (auto& frame : data->frames) {
+		kinematic::SkeletonState::RigidPartialStateChange sChange = kinematic::SkeletonState::convert(*model, frame, mapping);
+		//konwersja z czesiowego do pelnego stanu
+		kinematic::SkeletonState::NonRigidCompleteStateChange nc = kinematic::SkeletonState::convertStateChange(mapping, sChange);
+		states->frames.push_back(nc);
+	}
+
+	auto sws = utils::make_shared<SkeletonWithStates>();
+	sws->skeleton = skeleton;
+	sws->states = states;
+	sws->nodesMapping = mapping;
+	auto object = core::Variant::create<SkeletonWithStates>();
+	object->set(sws);
+	
+	auto hierarchyTransaction = memoryDM->hierarchyTransaction();
+	core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>(p1.filename().string().c_str(), p1.string().c_str(), QIcon());
+	core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(object, QString());
+	root->appendChild(item);
+	hierarchyTransaction->addRoot(root);
+}
+
+void FileSource::addChartStream()
+{
+	/*auto stream = utils::make_shared<ScalarStream>();
+	streams.push_back(stream);
+	auto object = core::Variant::create<ScalarStream>();
+	object->set(stream);
+
+	auto hierarchyTransaction = memoryDM->hierarchyTransaction();
+	core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>("Chart Stream", "Chart Stream" , QIcon());
+	core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(object, QString());
+	root->appendChild(item);
+	hierarchyTransaction->addRoot(root);*/
+}
+

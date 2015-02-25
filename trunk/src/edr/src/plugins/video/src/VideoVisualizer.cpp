@@ -14,7 +14,7 @@
 
 #include <vidlib/osg/VideoImageStream.h>
 
-#include <corelib/StringTools.h>
+#include <utils/StringConversionTools.h>
 #include <corelib/PluginCommon.h>
 
 #include <QtGui/QIcon>

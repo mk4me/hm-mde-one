@@ -20,8 +20,10 @@ namespace core {
 class Plugin : public IPlugin
 {
 public:
+	//! Typ funkcji inicjujπcej elementy logiki dostarczane przez plugin do aplikacji.
+	typedef void(*LoadLogicContentFunctionFunction)(IPlugin * plugin);
     //! Typ funkcji inicjujπcej plugin kontekstem aplikacji i ladowanymi modulami.
-    typedef void (*InitializeAndLoadFunction)(IPlugin * plugin, IApplication* coreApplication);
+    typedef void (*InitializePluginContextFunction)(IPlugin * plugin, IApplication* coreApplication);
 	//! Typ funkcji wype≥niajπcej podstawowy opis pluginu.
 	typedef void (*SetPluginDescriptionFunction)(IPlugin * plugin);
     //! Typ funkcji pobierajπcej wersjÍ API z ktÛrπ budowano plugin.
@@ -52,6 +54,12 @@ private:
     Visualizers visualizers;
     //! ZbiÛr wprowadzanych OW do aplikacji
     ObjectWrapperPrototypes objectWrapperPrototypes;
+	//! Funkcja wo≥ana przy inicjalizacji pluginu
+	initializeFunc initFunc;
+	//! Funkcja wo≥ana przy pÛünej inicjalizacji pluginu
+	initializeFunc lateInitFunc;
+	//! Funkcja wo≥ana przy deinicjalizacji pluginu - od≥πczenie sie od wszystkich zewnÍtrznych zasobÛw
+	deinitializeFunc deinitFunc;
 
 	//! Kod jÍzyka domyslnego
 	std::string defaultLanguageCode_;
@@ -73,35 +81,49 @@ public:
 	virtual ~Plugin();
 
     //! \return ID pluginu.
-    virtual const UniqueID ID() const;
+    const UniqueID ID() const;
 
     //! \return Opis pluginu
-    virtual const std::string description() const;
+    const std::string description() const;
 
     //! \return Nazwa pluginu.
-    virtual const std::string name() const;
+    const std::string name() const;
 	//! \return KrÛtka nazwa pluginu.
-	virtual const std::string shortName() const;
+	const std::string shortName() const;
     //! \return
     const Filesystem::Path& getPath() const;
 
 	//! \return Wersja pluginu
-	virtual const core::Version * version() const;
+	const core::Version * version() const;
 	//! \return Dostawca pluginu
-	virtual const plugin::VendorDescription * vendor() const;
+	const plugin::VendorDescription * vendor() const;
 
     //! \param path
     void setPath(const Filesystem::Path& path);
 
 	//! \param name Nazwa pluginu
-	virtual void setName(const std::string & name);
+	virtual void setName(const std::string & name) override;
 
 	//! \param major G≥Ûwna wersja pluginu
 	//! \param minor PodrzÍdna wersja pluginu
 	//! \param patch Wersja patcha pluginu
 	virtual void setVersion(const core::Version::VersionNumberType major,
 		const core::Version::VersionNumberType minor,
-		const core::Version::VersionNumberType patch);
+		const core::Version::VersionNumberType patch) override;
+
+	//! \param init Funkcja wo≥ana przy inicjalizacji pluginu
+	//! \param deinit Funkcja wo≥ana przy deinicjalizacji pluginu - od≥πczenie sie od wszystkich zewnÍtrznych zasobÛw
+	virtual void setLoadDescription(
+		initializeFunc init,
+		initializeFunc lateInit,
+		deinitializeFunc deinit) override;
+
+	//! \return Czy uda≥o siÍ zainicjalizowaÊ plugin
+	bool initialize();
+	//! \return Czy uda≥o siÍ zainicjalizowaÊ plugin
+	bool lateInitialize();
+	//! Deinicjalizacja pluginu
+	void deinitialize();
 
 	//! \param name Nazwa dostawcy
 	//! \param shortName SkrÛcona nazwa dostawcy
@@ -110,51 +132,51 @@ public:
 	virtual void setVendor(const std::string & name,
 		const std::string & shortName,
 		const std::string & description,
-		const std::string & contact);
+		const std::string & contact) override;
 
 	//! \param shortName SkrÛcona nazwa pluginu
 	//! \param description Opis pluginu	
 	virtual void setDescription(const std::string & name,		
-		const std::string & description);
+		const std::string & description) override;
 
 	//! \param langCode Kod domyúlnego jÍzyka pluginu wg ISO639
-	virtual void setDefaultLanguageCode(const std::string & langCode);
+	virtual void setDefaultLanguageCode(const std::string & langCode) override;
 
 	//! \return Kod domyúlnego jÍzyka pluginu wg ISO639
 	const std::string & defaultLanguageCode() const;
 
 	//! \param id Identyfikator pluginu
-	virtual void setID(UniqueID id);
+	virtual void setID(UniqueID id) override;
 
     //! \service Us≥uga do dodania do pluginu.
-    virtual void addService(plugin::IServicePtr service);
+	virtual void addService(plugin::IServicePtr service) override;
     //! \return Liczba us≥ug dostarczanych przez plugin.
     int getNumServices() const;
     //! \param i
     const plugin::IServicePtr & getService(int i);
 
     //! \service èrÛd≥o DM do dodania do pluginu.
-    virtual void addSource(plugin::ISourcePtr source);
+	virtual void addSource(plugin::ISourcePtr source) override;
     //! \return Liczba ürÛde≥ DM dostarczanych przez plugin.
     int getNumSources() const;
     //! \param i
     const plugin::ISourcePtr & getSource(int i);
 	
     //! \parser Parser do dodania do pluginu.
-	virtual void addParserPrototype(plugin::IParserPtr parser);
+	virtual void addParserPrototype(plugin::IParserPtr parser) override;
     //! \return Liczba parserÛw dostarczanych przez plugin.
     int getNumParsersPrototypes() const;
     //! \param i
 	const plugin::IParserPtr & getParserPrototype(int i);
 
     //! \visualizer Visualizer do dodania do pluginu.
-    virtual void addVisualizerPrototype(plugin::IVisualizerPtr visualizer);
+	virtual void addVisualizerPrototype(plugin::IVisualizerPtr visualizer) override;
     //! \return Liczba visualizerÛw dostarczanych przez plugin.
     int getNumVisualizerPrototypes() const;
     //! \param i
     const plugin::IVisualizerPtr & getVisualizerPrototype(int i);
 
-	virtual void addObjectWrapperPrototype(utils::ObjectWrapperPtr objectWrapperPrototype);
+	virtual void addObjectWrapperPrototype(utils::ObjectWrapperPtr objectWrapperPrototype) override;
 
     //! \return
     int getNumObjectWrapperPrototypes() const;
@@ -162,6 +184,8 @@ public:
     const utils::ObjectWrapperPtr & getObjectWrapperPrototype(int i);
 	//! \return Czy plugin cokolwiek wnosi do aplikacji
 	const bool empty() const;
+	//! \return Czy plugin wnosi do aplikacji elementy logiki
+	const bool logicEmpty() const;
 };
 
 //! Definicja wskaünika.

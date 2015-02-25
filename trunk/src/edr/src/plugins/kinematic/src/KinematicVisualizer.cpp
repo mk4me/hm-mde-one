@@ -2,6 +2,8 @@
 #include "KinematicVisualizer.h"
 #include "GRFSerie.h"
 #include "SkeletonSerie.h"
+#include "SkeletonStreamSerie.h"
+#include "SkeletonStateStreamSerie.h"
 #include "MarkerSerie.h"
 #include "PickHandler.h"
 #include "Manipulators.h"
@@ -11,6 +13,7 @@
 #include <kinematiclib/Skeleton.h>
 #include <plugins/kinematic/Wrappers.h>
 #include <QtWidgets/QToolButton>
+#include <kinematicUtils/RotationConverter.h>
 #include "OsgSerie.h"
 #include "BvhSerie.h"
 
@@ -32,10 +35,11 @@ void KinematicVisualizer::getSupportedTypes(utils::TypeInfoList & supportedTypes
 {
 	supportedTypes.push_back(typeid(MarkerCollection));
 	supportedTypes.push_back(typeid(GRFCollection));
-	supportedTypes.push_back(typeid(kinematic::JointAnglesCollection));
 	supportedTypes.push_back(typeid(SkeletonDataStream));
 	supportedTypes.push_back(typeid(osg::PositionAttitudeTransform));
-	supportedTypes.push_back(typeid(BVHData));
+	supportedTypes.push_back(typeid(SkeletonWithStates));
+	supportedTypes.push_back(typeid(SkeletonWithStreamData));
+//	supportedTypes.push_back(typeid(BVHData));
 }
 
 int KinematicVisualizer::getMaxDataSeries() const
@@ -56,20 +60,29 @@ plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const utils::TypeI
         //schemeDialog->setDrawer(ms->getConnectionsDrawer(), getRootName(data, tr("Markers")));
         ret = ms;
 	}
-	else if (requestedType == typeid(kinematic::JointAnglesCollection)) {
-		auto ss = new SkeletonSerie(this, requestedType, data);		
-        QStringList names;
-        for (int i = 1; i <= ss->getTrajectoriesManager()->count(); ++i) {
-            names.push_back(QString("Joint %1").arg(i));
-        }
-        trajectoriesDialog->setDrawer(ss->getTrajectoriesManager(), getRootName(data, tr("Skeleton")), names); //getSkeletonNames(data->get()));
-        ret = ss;
+	else if (requestedType == typeid(SkeletonWithStates)) {
+		auto ss = new SkeletonSerie(this, requestedType, data);
+		QStringList names;
+		for (int i = 1; i <= ss->getTrajectoriesManager()->count(); ++i) {
+			names.push_back(QString("Joint %1").arg(i));
+		}
+		trajectoriesDialog->setDrawer(ss->getTrajectoriesManager(), getRootName(data, tr("Skeleton")), names); //getSkeletonNames(data->get()));
+		ret = ss;
+	}
+	else if (requestedType == typeid(SkeletonWithStreamData)) {
+			auto ss = new SkeletonStateStreamSerie(this, requestedType, data);
+//			QStringList names;
+//			for (int i = 1; i <= ss->getTrajectoriesManager()->count(); ++i) {
+//				names.push_back(QString("Joint %1").arg(i));
+//			}
+//			trajectoriesDialog->setDrawer(ss->getTrajectoriesManager(), getRootName(data, tr("Skeleton")), names); //getSkeletonNames(data->get()));
+			ret = ss;
 	}
 	else if (requestedType == typeid(SkeletonDataStream)) {
 		ret = new SkeletonStreamSerie(this, requestedType, data);
-	} else if (requestedType == typeid (BVHData)) {
+	} /*else if (requestedType == typeid (biovision::BVHData)) {
 		ret = new BvhSerie(this, requestedType, data);
-	} else if (requestedType == typeid (osg::PositionAttitudeTransform)) {
+	} */else if (requestedType == typeid (osg::PositionAttitudeTransform)) {
 		ret = new OsgSerie(this, requestedType, data);
 	}else {
 		UTILS_ASSERT(false);
@@ -235,13 +248,18 @@ QWidget* KinematicVisualizer::createWidget()
 	scaleAction = new CoreAction(tr("Manipulators"), QIcon(":/kinematic/icons/manipulator-scale.png"), tr("Scale"), widget, CoreTitleBar::Left);    
     connect(scaleAction, SIGNAL(triggered()), this, SLOT(draggerTriggered()));
 	widget->addAction(scaleAction);
-		
-
-    CoreAction * resetTransformAction = new CoreAction(tr("Manipulators"), QIcon(":/kinematic/icons/left-b.png"), tr("Reset transform"), widget, CoreTitleBar::Left);    
+	
+	CoreAction * resetTransformAction = new CoreAction(tr("Manipulators"), QIcon(":/kinematic/icons/left-b.png"), tr("Reset transform"), widget, CoreTitleBar::Left);    
     connect(resetTransformAction, SIGNAL(triggered()), this, SLOT(resetTransform()));
 	widget->addAction(resetTransformAction);
 
 	
+
+	//! akcja wyświetla orientacje jointów
+	coreUI::CoreAction* showJointsOrientationsAction = new CoreAction(tr("Manipulators"), QIcon(":/kinematic/icons/manipulator-translate.png"), tr("Points orientations"), widget, CoreTitleBar::Left);
+	connect(showJointsOrientationsAction, SIGNAL(triggered()), this, SLOT(showJointsOrientations()));
+	widget->addAction(showJointsOrientationsAction);
+
     osg::Vec3 pos (0.0f, 9.0f, 3.0f);
     osg::Vec3 up(0,0,1);
 
@@ -288,6 +306,7 @@ QWidget* KinematicVisualizer::createWidget()
 
 	resetScene();
 
+	widget->show();
     return widget;
 }
 
@@ -376,24 +395,15 @@ QIcon* KinematicVisualizer::createIcon()
     return new QIcon(QString::fromUtf8(":/kinematic/icons/3D.png"));
 }
 
-//void KinematicVisualizer::actionTriggered( QAction* action )
-//{
-//    resetScene();
-//    currentDrawer = drawersByAction[action];
-//    transformNode->addChild(currentDrawer->getNode());
-//}
 
 void KinematicVisualizer::resetScene()
 {
     if (rootNode) {
-        for (int i = rootNode->getNumChildren() - 1; i >= 0; --i) {
-            rootNode->removeChild(i);
-        }
+		rootNode->removeChildren(0, rootNode->getNumChildren());
+		transformNode = new osg::PositionAttitudeTransform();
+		rootNode->addChild(createFloor());
+		rootNode->addChild(transformNode);
     }
-
-    transformNode = new osg::PositionAttitudeTransform();
-    rootNode->addChild(createFloor());
-    rootNode->addChild(transformNode);
 }
 
 void KinematicVisualizer::setRight()
@@ -487,16 +497,8 @@ void KinematicVisualizer::updateIndicator()
 void KinematicVisualizer::setActiveSerie( plugin::IVisualizer::ISerie *serie )
 {
 	auto ks = dynamic_cast<KinematicSerieBase*>(serie);
-
-	int idx = -1;
-
-    for (unsigned int i = 0; i < series.size(); ++i) {
-        if (series[i] == ks) {
-            idx = i;
-            break;
-        }
-    }
-    
+	auto it = std::find(series.begin(), series.end(), ks);
+    int idx = it != series.end() ? std::distance(series.begin(), it) : -1;
 	setActiveSerie(idx);
 }
 
@@ -731,7 +733,7 @@ void KinematicVisualizer::refreshRotateSpinboxes()
     auto serie = tryGetCurrentSerie();
     if (serie) {
         auto q = serie->getMatrixTransformNode()->getMatrix().getRotate();
-        osg::Vec3 v = kinematic::SkeletonUtils::getEulerFromQuat(q);
+        osg::Vec3 v = kinematicUtils::convertXYZ(q);
         rotateSpinWidgetX.second->setValue(osg::RadiansToDegrees(v.x()));
         rotateSpinWidgetY.second->setValue(osg::RadiansToDegrees(v.y()));
         rotateSpinWidgetZ.second->setValue(osg::RadiansToDegrees(v.z()));
@@ -809,9 +811,9 @@ void KinematicVisualizer::setRotation( KinematicSerieBase* serie, int index, dou
 
 		auto m = serie->getMatrixTransformNode()->getMatrix();
         osg::Quat q = m.getRotate();
-        osg::Vec3 euler = kinematic::SkeletonUtils::getEulerFromQuat(q);
+        osg::Vec3 euler = kinematicUtils::convertXYZ(q);
         euler[index] = osg::DegreesToRadians(d);
-        q = kinematic::SkeletonUtils::getQuatFromEuler(euler);
+		q = kinematicUtils::convertXYZ(euler);
 
         m.setRotate(q);
 		serie->getMatrixTransformNode()->setMatrix(m);
@@ -823,7 +825,7 @@ void KinematicVisualizer::setRotation( KinematicSerieBase* serie, const osg::Vec
 {
 	if (serie) {
 		auto m = serie->getMatrixTransformNode()->getMatrix();
-		auto q = kinematic::SkeletonUtils::getQuatFromEuler(osg::Vec3(osg::DegreesToRadians(r[0]),
+		auto q = kinematicUtils::convertXYZ(osg::Vec3(osg::DegreesToRadians(r[0]),
 							osg::DegreesToRadians(r[1]),
 							osg::DegreesToRadians(r[2])));
 
@@ -913,16 +915,16 @@ QStringList KinematicVisualizer::getMarkersNames( const MarkerCollectionConstPtr
     return names;
 }
 
-QStringList KinematicVisualizer::getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ss ) const
-{
-    QStringList names;
-    UTILS_ASSERT(false);
-    int count = ss->getNumChannels();
-    for (int i = 0; i < count; ++i) {
-        names.push_back(QString::fromStdString(ss->getChannel(i)->getName()));
-    }
-    return names;
-}
+//QStringList KinematicVisualizer::getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ss ) const
+//{
+//    QStringList names;
+//    UTILS_ASSERT(false);
+//    int count = ss->getNumChannels();
+//    for (int i = 0; i < count; ++i) {
+//        names.push_back(QString::fromStdString(ss->getChannel(i)->getName()));
+//    }
+//    return names;
+//}
 
 void KinematicVisualizer::showGhost(bool val)
 {
@@ -930,6 +932,14 @@ void KinematicVisualizer::showGhost(bool val)
     if (serie) {
         serie->setGhostVisible(val);
     }
+}
+
+void KinematicVisualizer::showJointsOrientations()
+{
+	AbstractSkeletonSerie* serie = dynamic_cast<AbstractSkeletonSerie*>(tryGetCurrentSerie());
+	if (serie) {
+		serie->setJointsOrientationsVisible();
+	}
 }
 
 

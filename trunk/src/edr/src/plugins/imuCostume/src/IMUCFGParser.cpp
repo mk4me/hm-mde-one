@@ -3,8 +3,9 @@
 #include <fstream>
 #include <utils/Debug.h>
 #include <kinematiclib/Skeleton.h>
-#include "corelib/IParser.h"
-#include "utils/ObjectWrapper.h"
+#include <corelib/IParser.h>
+#include <utils/ObjectWrapper.h>
+#include <kinematicUtils/RotationConverter.h>
 
 IMU::IMUConfigPtr IMU::IMUCFGParser::rawParse(const std::string& path)
 {
@@ -28,7 +29,9 @@ IMU::IMUConfigPtr IMU::IMUCFGParser::rawParse(const std::string& path)
             } else if (c == 'e') {
                 float x, y, z;
                 file >> x >> y >> z;
-                joint.offsets.push_back(kinematic::SkeletonUtils::getQuatFromEuler(x, y, z));
+                //joint.offsets.push_back(kinematic::SkeletonUtils::getQuatFromEuler(x, y, z));
+				//TODO - do weryfikacji czy dobra konwencja k¹tów eulera do konwersji kwaternionów
+				joint.offsets.push_back(kinematicUtils::convertXYX(osg::Vec3(x, y, z)));
             }
         }
 

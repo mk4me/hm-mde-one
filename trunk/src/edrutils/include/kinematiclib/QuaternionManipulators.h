@@ -10,6 +10,10 @@
 #ifndef HEADER_GUARD_KINEMATIC__QUATERNIONMANIPULATORS_H__
 #define HEADER_GUARD_KINEMATIC__QUATERNIONMANIPULATORS_H__
 
+#include <osg/Quat>
+#include <stdexcept>
+#include <utils/Debug.h>
+
 namespace kinematic {
 
     //! Klasa bazowa dla manipulatorów używanych w kanałach zawierających kwaterniony.

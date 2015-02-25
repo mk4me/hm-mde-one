@@ -22,7 +22,7 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QComboBox>
-#include "OsgSchemeDrawer.h"
+#include "osgutils/OsgSchemeDrawer.h"
 #include "Manipulators.h"
 #include "TrajectoriesDialog.h"
 #include "KinematicSerie.h"
@@ -44,6 +44,7 @@ class KinematicVisualizer :  private QObject, public plugin::IVisualizer
 	//friend class GRFSerie;
 	friend class MarkerSerie;
 	friend class SkeletonSerie;
+	//friend class SkeletonSerie2;
     friend class KinematicDraggerCallback;
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
     typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
@@ -171,7 +172,7 @@ private:
 	//! \param idx indeks serii, która ma stac się aktywna. Musi być z zakresu <0, liczbaSerii)
     void setActiveSerie(int idx);
     QStringList getMarkersNames( const MarkerCollectionConstPtr& ms ) const;
-    QStringList getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ms ) const;
+    //QStringList getSkeletonNames( const kinematic::JointAnglesCollectionConstPtr& ms ) const;
 
 private slots:
     //! Dialog z ustawieniami trajektorii stanie się widoczny
@@ -223,6 +224,7 @@ private slots:
     void draggerTriggered();
 
     void showGhost(bool);
+	void showJointsOrientations();
 
 private:
     //! główny węzeł sceny 3d
@@ -236,25 +238,25 @@ private:
     //! zwracany widget wizualizatora
     osg::ref_ptr<osgui::QOsgDefaultWidget> widget;
     //! pokazuje dialog z trajektoriami
-    coreUI::CoreAction* actionTrajectories;
+    coreUI::CoreAction* actionTrajectories = nullptr;
     //! pokazuje dialog umożliwiający chowanie węzłów z geometria
-    coreUI::CoreAction* actionScheme;
+    coreUI::CoreAction* actionScheme = nullptr;
     //! pokazuje ghosta dla markerów
-    coreUI::CoreAction* actionGhost;
+    coreUI::CoreAction* actionGhost = nullptr;
     //! zamienia osie jeśli jest taka potrzeba
-    coreUI::CoreAction* actionSwitchAxes;
+    coreUI::CoreAction* actionSwitchAxes = nullptr;
     //! wywołuje stan 'pickera' - można wybrać aktywna serie klikając na nia myszka
-    coreUI::CoreAction* pickerAction;
+    coreUI::CoreAction* pickerAction = nullptr;
     //! wywołuje manipulator translacji
-    coreUI::CoreAction* translateAction;
+    coreUI::CoreAction* translateAction = nullptr;
     //! wywołuje manipulator rotacji
-    coreUI::CoreAction* rotateAction;
+    coreUI::CoreAction* rotateAction = nullptr;
     //! wywołuje manipulator skali
-    coreUI::CoreAction* scaleAction;
+    coreUI::CoreAction* scaleAction = nullptr;
     //! niweluje działanie manipulatorów
-    coreUI::CoreAction* resetAction;
+    coreUI::CoreAction* resetAction = nullptr;
     //! Dialog zarządzający trajektoriami
-    TrajectoriesDialog* trajectoriesDialog;
+    TrajectoriesDialog* trajectoriesDialog = nullptr;
     //! Dialog zarządzający widocznością węzłów na scenie
     SchemeDialog* schemeDialog;
     //! kolecja z seriami danych podpiętymi pod wizualizator

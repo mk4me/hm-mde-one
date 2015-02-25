@@ -30,6 +30,7 @@ SET_PUBLIC_HEADERS(
 	Macros.h
 	Utils.h
 	Debug.h
+	Test.h
 	Profiler.h
 	System.h
 	LeakDetection.h
@@ -46,6 +47,9 @@ SET_PUBLIC_HEADERS(
 	CommandStack.h
 	dynamictreemodel.h
 	modeltest.h
+	StringConversionTools.h
+	SamplesStatus.h
+	TreeNode.h
 )
 
 #------------------------------------------------------------------------------
@@ -60,6 +64,7 @@ SET_SOURCE_FILES(
 	CommandStack.cpp
 	dynamictreemodel.cpp
 	modeltest.cpp
+	SamplesStatus.cpp
 )
 
 SET_CONFIGURATION_INPUT_FILES(

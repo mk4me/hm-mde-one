@@ -289,7 +289,7 @@ void TrajectoriesDialog::startTimeChanged( double time )
                 std::string name = item->text(1).toStdString();
 				TrajectoryDrawerManagerPtr manager = item2Root[topItem];
 				int idx = item2Trajectories[item];
-                IRangeDrawer::Range times = manager->range(idx);
+				osgutils::IRangeDrawer::Range times = manager->range(idx);
                 blockAllSignals(true);
                 startTimeSpin->setValue(time);
                 startSlider->setValue(time);
@@ -311,7 +311,7 @@ void TrajectoriesDialog::endTimeChanged( double time )
             if (item && item->isSelected()) {
                 auto manager = item2Root[topItem];
                 auto idx = item2Trajectories[item];
-                IRangeDrawer::Range times = manager->range(idx);
+				osgutils::IRangeDrawer::Range times = manager->range(idx);
                 blockAllSignals(true);
                 endTimeSpin->setValue(time);
                 endSlider->setValue(time);
@@ -336,7 +336,7 @@ void TrajectoriesDialog::treeItemChanged( QTreeWidgetItem * current, QTreeWidget
 	    setButtonColor(colorButton, color);
 	    blockAllSignals(true);
 	    //const std::pair<float, float>& times = currentTrajectories->getTimes(name);
-        IRangeDrawer::Range times = manager->range(idx);
+		osgutils::IRangeDrawer::Range times = manager->range(idx);
         startTimeSpin->setMinimum(0);
         startTimeSpin->setMaximum(manager->maxRange(idx));
         endTimeSpin->setMinimum(0);

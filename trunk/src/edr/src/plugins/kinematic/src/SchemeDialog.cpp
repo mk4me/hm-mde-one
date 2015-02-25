@@ -1,7 +1,7 @@
 #include "PCH.h"
 #include <QtWidgets/QTableView>
 #include "SchemeDialog.h"
-#include "OsgSchemeDrawer.h"
+#include <osgutils/OsgSchemeDrawer.h>
 #include <QtWidgets/QCheckBox>
 
 SchemeDialog::SchemeDialog( QWidget* parent) :
@@ -18,7 +18,7 @@ SchemeDialog::SchemeDialog( QWidget* parent) :
     item->setText(2, tr("Color"));
 }
 
-void SchemeDialog::setDrawer(IBaseDrawerSchemePtr drawer, const QString& rootName, const QStringList& names, const IConnectionDrawerWithDescriptors& connections)
+void SchemeDialog::setDrawer(osgutils::IBaseDrawerSchemePtr drawer, const QString& rootName, const QStringList& names, const osgutils::IConnectionDrawerWithDescriptors& connections)
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(1, rootName);
@@ -118,12 +118,12 @@ void SchemeDialog::visibilityChanged( bool visible )
         auto it = item2Drawer.find(current);
         if (it != item2Drawer.end()) {
             auto t = it->second;
-            IBaseDrawerSchemePtr drawer = t.first;
+			osgutils::IBaseDrawerSchemePtr drawer = t.first;
             auto idx = t.second;
             drawer->setVisible(idx, box->isChecked());
 
-            SegmentsDescriptors descriptions = drawer2Connections[drawer].second;
-            IConnectionsSchemeDrawerPtr connections = drawer2Connections[drawer].first;
+			osgutils::SegmentsDescriptors descriptions = drawer2Connections[drawer].second;
+			osgutils::IConnectionsSchemeDrawerPtr connections = drawer2Connections[drawer].first;
             int count = descriptions.size();
             for (int i = 0; i < count; ++i) {
                 auto a = descriptions[i].range.first;

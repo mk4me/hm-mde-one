@@ -4,9 +4,10 @@
 #include <plugins/newChart/INewChartVisualizer.h>
 #include <plugins/c3d/EventSerieBase.h>
 #include <utils/Debug.h>
-#include <kinematiclib/JointAnglesCollection.h>
+#include <plugins/kinematic/Wrappers.h>
 #include <plugins/hmmlib/EMGFilter.h>
 #include <corelib/Exceptions.h>
+#include <boost/lexical_cast.hpp>
 
 using namespace core;
 
@@ -26,11 +27,11 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 				throw core::runtime_error("Empty object - markers");
 			}
 		}
-		if (motion->hasObject(typeid(kinematic::JointAnglesCollection), false)) {
+		if (motion->hasObject(typeid(SkeletonWithStates), false)) {
 			ConstVariantsList m;
-			motion->getObjects(m, typeid(kinematic::JointAnglesCollection), false);
+			motion->getObjects(m, typeid(SkeletonWithStates), false);
 			if(m.front()->getRawPtr() != nullptr){
-				auto s = visualizer->createSerie(typeid(kinematic::JointAnglesCollection), m.front());
+				auto s = visualizer->createSerie(typeid(SkeletonWithStates), m.front());
 				s->serie()->setName(path.toStdString());
 				tmpSeries.push_back(s);
 			}else{
@@ -58,14 +59,14 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 VisualizerPtr Multiserie3D::createVisualizer(core::IVisualizerManager* manager)
 {
 	core::IVisualizerManager::VisualizerPrototypes prototypes;
-	manager->getVisualizerPrototypes(typeid(kinematic::JointAnglesCollection), prototypes, true);
+	manager->getVisualizerPrototypes(typeid(SkeletonWithStates), prototypes, true);
 	return VisualizerPtr(prototypes.front()->create());
 }
 
 std::vector<utils::TypeInfo> Multiserie3D::getTypeInfos() const
 {
     std::vector<utils::TypeInfo> ret;
-    ret.push_back(typeid(kinematic::JointAnglesCollection));
+    ret.push_back(typeid(SkeletonWithStates));
     ret.push_back(typeid(GRFCollection));
     ret.push_back(typeid(MarkerCollection));
     return ret;
@@ -80,17 +81,17 @@ Multiserie3D::Multiserie3D(const PluginSubject::MotionConstPtr & motion ) :
 VisualizerPtr JointsItemHelper::createVisualizer(core::IVisualizerManager* manager)
 {
 	core::IVisualizerManager::VisualizerPrototypes prototypes;
-	manager->getVisualizerPrototypes(typeid(kinematic::JointAnglesCollection), prototypes, true);
+	manager->getVisualizerPrototypes(typeid(SkeletonWithStates), prototypes, true);
 	return VisualizerPtr(prototypes.front()->create());
 }
 
 void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
 	ConstVariantsList m;
-	motion->getObjects(m, typeid(kinematic::JointAnglesCollection), false);
+	motion->getObjects(m, typeid(SkeletonWithStates), false);
     core::VariantConstPtr joints = m.front();
     if (joints && joints->getRawPtr() != nullptr) {
-		auto s = visualizer->createSerie(typeid(kinematic::JointAnglesCollection), joints);
+		auto s = visualizer->createSerie(typeid(SkeletonWithStates), joints);
 		s->serie()->setName(path.toStdString());
         series.push_back(s);
     } else {
@@ -101,7 +102,7 @@ void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QSt
 std::vector<utils::TypeInfo> JointsItemHelper::getTypeInfos() const
 {
     std::vector<utils::TypeInfo> ret;
-	ret.push_back(typeid(kinematic::JointAnglesCollection));
+	ret.push_back(typeid(SkeletonWithStates));
     return ret;
 }
 
@@ -219,15 +220,21 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->serie());
     INewChartSerie* chartSerieZ = dynamic_cast<INewChartSerie*>(serieZ->serie());
 
-    if (events) {
-        chartSerieX->setEvents(events);
-        chartSerieY->setEvents(events);
-        chartSerieZ->setEvents(events);
-    }
-
     chartSerieX->setColor(QColor(255, 0, 0));
     chartSerieY->setColor(QColor(0, 255, 0));
     chartSerieZ->setColor(QColor(0, 0, 255));
+
+    if (events) {
+    	EventSerieBase* eventSerieX = dynamic_cast<EventSerieBase*>(serieX->serie());
+    	EventSerieBase* eventSerieY = dynamic_cast<EventSerieBase*>(serieX->serie());
+    	EventSerieBase* eventSerieZ = dynamic_cast<EventSerieBase*>(serieX->serie());
+    	if (eventSerieX && eventSerieY && eventSerieZ) {
+    		eventSerieX->setEvents(events);
+    		eventSerieY->setEvents(events);
+    		eventSerieZ->setEvents(events);
+    	}
+    }
+
 
     series.push_back(serieX);
     series.push_back(serieY);
@@ -339,7 +346,7 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
     wrapperX->getMetadata("core/name", name);    
 	auto s = visualizer->createSerie(typeid(ScalarChannelReaderInterface), wrapperX);
 
-    INewChartSerie* chartSerie = dynamic_cast<INewChartSerie*>(s->serie());
+    EventSerieBase* chartSerie = dynamic_cast<EventSerieBase*>(s->serie());
     if (events && chartSerie) {
         chartSerie->setEvents(events);
     }

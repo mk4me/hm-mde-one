@@ -7,6 +7,7 @@
 #include <hmdbserviceslib/DateTime.h>
 #include <utils/Debug.h>
 #include <stdexcept>
+#include <time.h>
 
 namespace hmdbServices
 {

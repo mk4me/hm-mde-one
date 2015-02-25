@@ -55,6 +55,9 @@ public:
     void clear();
     //! Ładuje pluginy.
     void load();
+	//deinicjalizujemy pluginy
+	void deinitialize();
+
 	//! \param path Ścieżka gdzie szukać wtyczek
 	void addPath(const Filesystem::Path& path)
 	{
@@ -108,7 +111,7 @@ public:
 	template<typename T>
 	static T loadProcedure(HMODULE library, const char * procName)
 	{
-		//UTILS_STATIC_ASSERT((std::is_member_function_pointer<T>::value || std::is_function<T>::value), "Casting type must be member funtion pointer or function");
+		//static_assert((std::is_member_function_pointer<T>::value || std::is_function<T>::value), "Casting type must be member funtion pointer or function");
 		#if defined(__WIN32__)
 			return reinterpret_cast<T>(::GetProcAddress(library, procName));
 		#elif defined(__UNIX__)
@@ -145,7 +148,7 @@ private:
 	//! \param library Uchwyt do zwalnianej biblioteki z pluginem
 	//! \param path  Ścieżka biblioteki z pluginem
     //! \param createFunction Funkcja tworząca plugin
-    bool onAddPlugin(PluginPtr plugin, HMODULE library, Plugin::InitializeAndLoadFunction fillFunction);
+	bool onAddPlugin(PluginPtr plugin, HMODULE library, Plugin::InitializePluginContextFunction initializePluginContext);
 };
 
 typedef utils::shared_ptr<PluginLoader> PluginLoaderPtr;

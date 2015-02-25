@@ -28,7 +28,7 @@ namespace utils {
 	template <class Channel>
 	class DataChannelCollection
 	{
-		UTILS_STATIC_ASSERT((boost::is_base_of<IRawGeneralDataChannelReader<typename Channel::point_type, typename Channel::time_type>, Channel>::value), "Base class should inherit from IRawGeneralDataChannelReader");
+		static_assert((std::is_base_of<IRawGeneralDataChannelReader<typename Channel::point_type, typename Channel::time_type>, Channel>::value), "Base class should inherit from IRawGeneralDataChannelReader");
 
 	public:
 		typedef Channel ChannelType;

@@ -23,6 +23,7 @@ public:
 	virtual void setGhostVisible(const bool visible) = 0;
 };
 
+
 class KinematicSerieBase
 {
 public: 
@@ -44,26 +45,18 @@ protected:
 	MatrixTransformPtr matrixTransform;
 };
 
-class KinematicSerie : public KinematicSerieBase, public plugin::IVisualizer::ISerie
-{
-public:
-
-	virtual ~KinematicSerie() {}
-
-protected:
-
-	KinematicSerie() {}
-};
+template <class SeriePolicy>
+class KinematicSerieBaseT : public KinematicSerieBase, public SeriePolicy
+{};
+typedef KinematicSerieBaseT<plugin::IVisualizer::ISerie> KinematicSerie;
 
 
-/*! Podstawowa i abstrakcyjna seria danych w wizualizatorze 3D */
-class KinematicTimeSerie : public KinematicSerieBase, public EventSerieBase
+class EventSeriePolicy : public EventSerieBase
 {
 public:
     //! W konstruktorze tworzone są już węzły i zerowany czas
-    KinematicTimeSerie();
-    virtual ~KinematicTimeSerie() {}
-
+	EventSeriePolicy();
+    virtual ~EventSeriePolicy() {}
 public:
     //! KinematicSerie jest serią zawierającą eventy. Klasy pochodne maja możliwość ich obsługi
     virtual void setEvents(EventsCollectionConstPtr val);
@@ -74,6 +67,11 @@ public:
     void setTime(double val);
 	//! Metoda niweluje efekty działania manipulatorów
 	virtual void resetTransform();
+	//! Ustawia nową nazwę serii
+	//! \param name nowa nazwa
+	virtual void setName(const std::string & name);
+	//! \return nazwa serii
+	virtual const std::string getName() const;
 
 protected:
     //! Abstrakcyjny setter do czasu, metoda z inną sygnaturą może uchronić przed błędami
@@ -86,6 +84,12 @@ protected:
 private:
     //! ustawiony czas dla serii
     double time;
+	//! nazwa serii
+	std::string name;
 };
+
+/*! Podstawowa i abstrakcyjna seria danych w wizualizatorze 3D */
+typedef KinematicSerieBaseT<EventSeriePolicy> KinematicTimeSerie;
+
 
 #endif

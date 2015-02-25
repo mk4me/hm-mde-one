@@ -141,7 +141,7 @@ public:
 
 	template<class Derrived>
 	void addChild(const std::string & path, size_type idx) {
-		UTILS_STATIC_ASSERT((boost::is_base_of<NamedTreeBase, Derrived>::value), "Base class should inherit from NamedTreeBase");
+		static_assert((std::is_base_of<NamedTreeBase, Derrived>::value), "Base class should inherit from NamedTreeBase");
 
 		UTILS_ASSERT((path.empty() == false), "Bledna sciezka do dziecka!");
 
@@ -275,7 +275,7 @@ protected:
 template<class Data, class PtrPolicy>
 class NamedTree : public NamedTreeBase, protected PtrPolicy
 {
-	UTILS_STATIC_ASSERT((utils::is_ptr_policy<PtrPolicy>::value), "Pointer policy is invalid. This will cause more errors.");
+	static_assert((utils::is_ptr_policy<PtrPolicy>::value), "Pointer policy is invalid. This will cause more errors.");
 
 public:
 	//!

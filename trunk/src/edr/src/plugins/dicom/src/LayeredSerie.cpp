@@ -79,7 +79,7 @@ private:
 
 hmdbCommunication::IHMDBShallowCopyContext * LayeredSerie::sourceContext() const
 {
-	return shallowCopntext_;
+	return shallowContext_;
 }
 
 hmdbCommunication::IHMDBShallowCopyContext * LayeredSerie::sourceContextForData(const core::VariantConstPtr data)
@@ -101,7 +101,7 @@ void LayeredSerie::setupData( const core::VariantConstPtr & data )
     dicom::ILayeredImagePtr img = cloneWrp->get();
     this->image = img;
 
-	this->shallowCopntext_ = sourceContextForData(data);
+	this->shallowContext_ = sourceContextForData(data);
 
     if (image) {
 
@@ -154,7 +154,7 @@ dicom::LayeredSerie::LayeredSerie(LayeredImageVisualizer* visualizer, LayeredIma
     initialized(false),
     layersModel(visualizer),
     commandStack(new utils::CommandStack),
-	shallowCopntext_(nullptr)
+	shallowContext_(nullptr)
 {
     stateMachine = utils::make_shared<LayeredStateMachine>(this, commandStack);
     graphicsScene = new coreUI::GraphicSceneWithStateMachine(stateMachine);

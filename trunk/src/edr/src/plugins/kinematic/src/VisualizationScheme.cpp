@@ -1,34 +1,37 @@
 #include "PCH.h"
 #include "VisualizationScheme.h"
+#include "viconformatslib/VskParser.h"
 
 using namespace std;
 using namespace osg;
 using namespace boost;
-using namespace kinematic;
 
-kinematic::VskParserPtr Vsk::Count16(new kinematic::VskParser());
-kinematic::VskParserPtr Vsk::Count39(new kinematic::VskParser());
-kinematic::VskParserPtr Vsk::Count53(new kinematic::VskParser());
+vicon::VskPtr Vsk::Count16(nullptr);
+vicon::VskPtr Vsk::Count39(nullptr);
+vicon::VskPtr Vsk::Count53(nullptr);
 
-kinematic::VskParserConstPtr Vsk::get( MarkersCount count )
+vicon::VskConstPtr Vsk::get( MarkersCount count )
 {
     switch(count)
     {
     case MarkersCount15:
     case MarkersCount16:
-        if (!Count16->isLoaded()) {
-            Count16->parse(plugin::getResourcePath("trial/CZD.vsk").string());
+        if (!Count16) {
+			Count16 = utils::make_shared<vicon::Vsk>();
+			vicon::VskParser::parse(plugin::getResourcePath("trial/CZD.vsk").string(), *Count16);
         }
         return Count16;
     case MarkersCount39:
-        if (!Count39->isLoaded()) {
-            Count39->parse(plugin::getResourcePath("trial/M39.vsk").string());
+        if (!Count39) {
+			Count39 = utils::make_shared<vicon::Vsk>();
+			vicon::VskParser::parse(plugin::getResourcePath("trial/M39.vsk").string(), *Count39);
         }
         return Count39;
 
     case MarkersCount53:
-        if (!Count53->isLoaded()) {
-            Count53->parse(plugin::getResourcePath("trial/M53.vsk").string());
+        if (!Count53) {
+			Count53 = utils::make_shared<vicon::Vsk>();
+			vicon::VskParser::parse(plugin::getResourcePath("trial/M53.vsk").string(), *Count53);
         }
         return Count53;
 

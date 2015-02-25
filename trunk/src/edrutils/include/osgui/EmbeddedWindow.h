@@ -119,7 +119,7 @@ static Embedded<T>* EmbeddedWindow::embed( T* window,
                                  osgWidget::Widget::Layer layer /*= osgWidget::Widget::LAYER_MIDDLE*/, 
                                  unsigned layerOffset /*= 0*/ )
 {
-    UTILS_STATIC_ASSERT((boost::is_base_of<osgWidget::Window, T>::value), "Base class should inherit from osgWidget::Window");
+    static_assert((std::is_base_of<osgWidget::Window, T>::value), "Base class should inherit from osgWidget::Window");
     UTILS_ASSERT(window);
     Embedded<T>* ew = new Embedded<T>( 
         newName.size() > 0 ? newName : window->getName() + "Embedded",
