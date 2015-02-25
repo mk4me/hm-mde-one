@@ -74,25 +74,6 @@ void NewChartStreamSerie::setData(const utils::TypeInfo & requestedType, const c
 	curve->setRenderHint(QwtPlotItem::RenderAntialiased);
     visualizer->addPlotCurve(curve, getScales());
     utils::const_pointer_cast<ScalarStream>(scalarStream)->attachObserver(updater);
-//    data->tryGet(reader);
-//    ScalarChannelReaderInterfacePtr nonConstChannel;
-//    nonConstChannel = utils::const_pointer_cast<ScalarChannelReaderInterface>(reader);
-//    stats.reset(new ScalarChannelStats(nonConstChannel));
-//    //curve->setSamples(new NewChartSeriesData(reader));
-//    int r = rand() % 256;
-//    int g = rand() % 256;
-//    int b = rand() % 256;
-//    setColor(r, g, b);
-//    setWidth(active ? ACTIVE_WIDTH : NON_ACTIVE_WIDTH);
-//    curve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
-//    curve->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
-//    curve->setItemAttribute(QwtPlotItem::AutoScale, true);
-//    curve->setItemAttribute(QwtPlotItem::Legend, true);
-//    curve->setCurveFitter(nullptr);
-//    //visualizer->addPlotCurve(curve, getScales());
-//
-//    _zBase = curve->z();
-//    curve->setZ(_zBase + _z);
 }
 
 const utils::TypeInfo & NewChartStreamSerie::getRequestedDataType() const

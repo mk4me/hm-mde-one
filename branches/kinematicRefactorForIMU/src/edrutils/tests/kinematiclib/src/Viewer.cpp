@@ -89,6 +89,6 @@ std::vector<osg::Vec3> kinematicTest::Viewer::getPos(kinematic::SkeletonState &s
 	{
 		pos.push_back(node->value.globalPosition());
 	};
-	kinematic::SkeletonState::Joint::visitLevelOrder(root, visitor);
+	utils::TreeNode::visitLevelOrder(root, visitor);
 	return pos;
 }

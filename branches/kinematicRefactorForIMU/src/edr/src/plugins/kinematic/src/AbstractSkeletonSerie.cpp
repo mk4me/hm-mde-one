@@ -95,14 +95,6 @@ void AbstractSkeletonSerie::update()
 	pointsAxesDrawer.update();
 }
 
-//void AbstractSkeletonSerie::setLocalTime(double time)
-//{
-//	if ((lastUpdateTime == std::numeric_limits<double>::min()) ||
-//		(std::abs(time - lastUpdateTime) >= skeletonWithStates->states->frameTime)){
-//		lastUpdateTime = time;
-//		requestUpdate();
-//	}
-//}
 
 const utils::TypeInfo & AbstractSkeletonSerie::getRequestedDataType() const
 {
