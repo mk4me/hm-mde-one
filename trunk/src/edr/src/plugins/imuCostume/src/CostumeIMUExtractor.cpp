@@ -5,7 +5,7 @@
 static double calculateDelta(const imuCostume::CostumeCANopenIO::Timestamp current,
 	const imuCostume::CostumeCANopenIO::Timestamp previous)
 {
-	auto deltaT = (current >= previous) ? (current - previous) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previous + current);
+	double deltaT = (current >= previous) ? (current - previous) : (std::numeric_limits<imuCostume::CostumeCANopenIO::Timestamp>::max() - previous + current);
 	deltaT /= 1000.0;
 
 	if (deltaT >= 1000)
@@ -348,7 +348,7 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Mo
 		auto it = sensorsAdjustments.find(i.first);
 		if (it != sensorsAdjustments.end()){
 			const auto & adj = it->second;
-			jointsGlobalOrientations.insert(std::map<std::string, osg::Quat>::value_type(sensorsMapping.left.find(i.first)->get_right(), i.second.orientation * adj.rotation.inverse()));
+			jointsGlobalOrientations[sensorsMapping.left.find(i.first)->get_right()] = i.second.orientation * adj.rotation.inverse();
 		}
 	}
 
@@ -359,10 +359,8 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Mo
 			if (it != jointsGlobalOrientations.end()){
 				joint->value.setGlobal(it->second);
 			}
-
-			//if (joint->isLeaf() == false){
-				motionState.jointsOrientations.insert(std::map<std::string, osg::Quat>::value_type(joint->value.name(), joint->value.globalOrientation()));
-			//}
+			
+			motionState.jointsOrientations.insert(std::map<std::string, osg::Quat>::value_type(joint->value.name(), joint->value.localOrientation()));			
 		};
 	utils::TreeNode::visitLevelOrder(skeletonState.root(), visitor);
 
@@ -399,17 +397,13 @@ void KinematicStreamExtractor::extract(const IMU::MotionStream::value_type & inp
 	SkeletonStateStream::value_type locOutput;
 	auto visitor = [&input, &locOutput](kinematic::SkeletonState::JointPtr joint,
 		const kinematic::SkeletonState::Joint::size_type) -> void
-	{
+	{		
 		auto it = input.second.jointsOrientations.find(joint->value.name());
 		if (it != input.second.jointsOrientations.end()){
-			joint->value.setGlobal(it->second);
-		}
-
-		//if (joint->isLeaf() == false){
-			//auto val = SkeletonStateStream::value_type::value_type({ joint->value.localPosition(), joint->value.localOrientation() });
-			auto val = SkeletonStateStream::value_type::value_type({ osg::Vec3(0,0,0), joint->value.localOrientation() });
-			locOutput.push_back(val);
-		//}
+			joint->value.setLocal(it->second);
+		}		
+		
+		locOutput.push_back(SkeletonStateStream::value_type::value_type({ osg::Vec3(0, 0, 0), joint->value.localOrientation() }));		
 	};
 	utils::TreeNode::visitLevelOrder(skeletonState.root(), visitor);
 	output.swap(locOutput);
@@ -417,7 +411,6 @@ void KinematicStreamExtractor::extract(const IMU::MotionStream::value_type & inp
 
 RawToCANopenExtractor::RawToCANopenExtractor()
 {
-
 
 }
 

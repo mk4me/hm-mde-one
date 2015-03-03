@@ -15,19 +15,24 @@ namespace kinematic
 		/// \brief  struktura przechowuje wartości kanałów dla wszystkich kości w pojedynczej klatce animacji
 		struct Frame
 		{
+			//! Translacja całego szkieletu
 			osg::Vec3 translation;
+			//! Rotacje lokalne poszczególnych stawów indeskowane wg mapowania
 			std::vector<osg::Quat> rotations;
 		};
 
 		/// \brief  struktura przechowuje wartości kanałów dla wszystkich kości w pojedynczej klatce animacji
 		struct PartialFrame
 		{
+			//! Translacja całego szkieletu
 			osg::Vec3 translation;
+			//! Rotacje poszczególnych stawów wg nazw
 			std::map<std::string, osg::Quat> rotations;
 		};
 	
 		//! konstruktor, ustawia domyślny okres pojedynczej ramki (1/100)
 		SkeletalData(const float duration = 0.01) :	frameTime(duration)	{}
+		//! Destruktor
 		~SkeletalData() {}
 		
 		//! kolecja z danymi

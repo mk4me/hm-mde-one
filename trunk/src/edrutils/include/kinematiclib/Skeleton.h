@@ -31,10 +31,25 @@ namespace kinematic
 		std::string name;
 
 		//! Konwersja z popularnych formatów
+		//! \param srcSkeleton Szkielet acclaim
+		//! \param destSkeleton [out] Uniwersalny format szkieletu
+		//! \return Czy udało się konwertować
 		static bool convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSkeleton);
+		//! \param srcSkeleton Szkielet biovision
+		//! \param destSkeleton [out] Uniwersalny format szkieletu
+		//! \return Czy udało się konwertować
 		static bool convert(const biovision::Skeleton & srcSkeleton, Skeleton & destSkeleton);
+		//! \param srcSkeleton Szkielet hAnim
+		//! \param destSkeleton [out] Uniwersalny format szkieletu
+		//! \return Czy udało się konwertować
 		static bool convert(const hAnim::Humanoid & srcSkeleton, Skeleton & destSkeleton);
 
+		//! \param topology Topologia dla której tworzymy szkielet
+		//! \return Szkielet na bazie topologii
+		static Skeleton create(TopologyNodeConstPtr topology);
+
+		//! \param skeleton Szkielet z którego wyciągamy jointy
+		//! \return Mapowanie nazw jointów do jointów
 		static std::map<std::string, kinematic::JointPtr> getJoints(const Skeleton& s);
 	};	
 	DEFINE_SMART_POINTERS(Skeleton);

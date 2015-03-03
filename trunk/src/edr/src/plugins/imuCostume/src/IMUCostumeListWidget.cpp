@@ -87,8 +87,8 @@ IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	ui->sensorsTree->clear();
 	connect(&statusRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshStatus()));
 	connect(&recordTimer, SIGNAL(timeout()), this, SLOT(watchRecordedData()));
-	statusRefreshTimer.start(1000 / 25);
-	QTimer::singleShot(0, this, SLOT(onRefresh()));
+	//statusRefreshTimer.start(1000 / 25);
+	//QTimer::singleShot(0, this, SLOT(onRefresh()));
 }
 
 IMUCostumeWidget::~IMUCostumeWidget()
@@ -263,6 +263,13 @@ void IMUCostumeWidget::onRefresh()
 			ci->setIcon(1, statusIcon(cd.second.statusDetails.status));
 			ci->setText(1, statusDescription(cd.second.statusDetails.status));
 			ui->costumesTreeWidget->addTopLevelItem(ci);
+		}
+
+		if (cDetails.empty() == true){
+			statusRefreshTimer.stop();
+		}
+		else if (statusRefreshTimer.isActive() == false){
+			statusRefreshTimer.start(1000 / 25);
 		}
 	}
 	catch (std::exception & e)
@@ -482,13 +489,20 @@ void IMUCostumeWidget::onLoad()
 			return;
 		}
 
+		if (csmh.isComplete() == false){
+			QMessageBox::information(this, tr("Costume initialization failed"), tr("Failed to calibrate costume with given configuration. Change configuration and try again or simply retry."));
+			return;
+		}
+
+		profileInstance.sensorsAdjustments = profileInstance.calibrationAlgorithm->sensorsAdjustemnts();
+
 		PLUGIN_LOG_DEBUG("Costume initialization done");
 
 		coreUI::CoreCursorChanger cc;
 
 		try{
 			profileInstance.motionEstimationAlgorithm->initialize(profileInstance.skeleton,
-				profileInstance.calibrationAlgorithm->sensorsAdjustemnts(), profileInstance.sensorsMapping);
+				profileInstance.sensorsAdjustments, profileInstance.sensorsMapping);
 
 			ds->loadCalibratedCostume(id, profileInstance);
 			PLUGIN_LOG_DEBUG("Costume loaded");

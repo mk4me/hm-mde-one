@@ -10,22 +10,18 @@
 
 #include <osg/Quat>
 #include <osg/Vec3>
-#include <string>
-#include <list>
+#include <kinematiclib/Topology.h>
 #include <utils/SmartPtr.h>
-#include <utils/TreeNode.h>
 
 namespace kinematic
 {
 	//! Struktura opisuje staw modelu
-	struct JointData
+	struct JointData : public TopologyData
 	{		
 		//! Lokalna pozycja
 		osg::Vec3 position;
 		//! Lokalna orientacja
 		osg::Quat orientation;
-		//! Unikalna nazwa
-		std::string name;
 	};	
 
 	typedef utils::TreeNodeT<JointData> Joint;

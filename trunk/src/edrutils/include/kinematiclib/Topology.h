@@ -10,11 +10,21 @@
 
 #include <string>
 #include <utils/TreeNode.h>
+#include <utils/SmartPtr.h>
 
 namespace kinematic
 {
+	//! Struktur opisuj¹ca wêz³y topologii 
+	struct TopologyData
+	{
+		//! Nazwa wêz³a
+		std::string name;
+	};
+
 	//! Typ wêz³a topologii szkieletu
-	typedef utils::TreeNodeT<std::string> TopologyNode;
+	typedef utils::TreeNodeT<TopologyData> TopologyNode;
+
+	DEFINE_SMART_POINTERS(TopologyNode);
 }
 
 #endif	// __HEADER_GUARD_KINEMATIC__TOPOLOGY_H__

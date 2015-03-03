@@ -49,6 +49,9 @@ public:
 	//! \return Wartoœæ zwrócona przez dialog
 	int exec();
 
+	//! \return Czy kalibracja zakoñczona sukcesem
+	bool isComplete() const;
+
 private slots:
 
 	//! Cykliczne odpalana metoda czytaj¹ca dane ze strumienia, jeœli s¹, i realizuj¹ca inicjalizacjê kostiumu
@@ -85,6 +88,8 @@ private:
 	QTimer timer;
 	//! Dialog z postepem inicjalizacji kostiumu
 	QProgressDialog * pd;
+	//!
+	bool complete;
 };
 
 #endif	// __HEADER_GUARD_IMU__COSTUMESKELETONMOTIONHELPER_H__

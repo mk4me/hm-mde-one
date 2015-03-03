@@ -4,6 +4,7 @@
 #include <kinematicUtils/RotationConverter.h>
 #include <kinematiclib/Joint.h>
 #include <utils/TreeNode.h>
+#include <utils/Debug.h>
 
 using namespace kinematic;
 
@@ -13,43 +14,84 @@ class SkeletonState::JointData::JointDataImpl
 
 private:
 
-	void refreshGlobal() const
+	static osg::Matrix PATMatrix(osg::PositionAttitudeTransform * pat)
 	{
-		if (globalRequiresRefresh == true){
-			auto mw = node->getWorldMatrices();
-			if (mw.empty() == true){
-				globalMatrix.makeScale(1, 1, 1);
-				globalMatrix.makeTranslate(localPosition());
-				globalMatrix.makeRotate(localOrientation());
-			}
-			else{
-				globalMatrix = mw[0];
-			}
+		UTILS_ASSERT(pat != nullptr);
+		osg::Matrix ret;
+		ret.makeIdentity();
+		ret.makeTranslate(pat->getPosition());
+		ret.makeRotate(pat->getAttitude());
+		ret.makeScale(1, 1, 1);
 
-			globalRequiresRefresh = false;
+		return ret;
+	}
+
+	static osg::Matrix nodeGlobalMatrix(osg::Node * node)
+	{
+		osg::Matrix ret;
+
+		UTILS_ASSERT(node != nullptr);
+
+		auto wm = node->getWorldMatrices();
+
+		UTILS_ASSERT(wm.size() < 2);
+
+		if (wm.empty() == false){
+			ret = wm[0];
 		}
+		else{
+			auto pat = dynamic_cast<osg::PositionAttitudeTransform*>(node);
+			UTILS_ASSERT(pat != nullptr);
+			ret = PATMatrix(pat);			
+		}
+
+		return ret;
 	}
 
-	void localUpdate(const osg::Vec3 & translation)
+	osg::Matrix parentGlobalMatrix() const
 	{
-		node->setPosition(translation + originTranslation);
+		osg::Matrix ret;
+
+		UTILS_ASSERT(node != nullptr);
+		UTILS_ASSERT(node->getNumParents() < 2);
+
+		if (node->getNumParents() == 1){
+			ret = nodeGlobalMatrix(node->getParent(0));
+		}
+		else{
+			ret.makeRotate(osg::Quat(0, 0, 0, 1));
+			ret.makeTranslate(0, 0, 0);
+			ret.makeScale(1, 1, 1);
+		}
+		
+		return ret;
 	}
 
-	void localUpdate(const osg::Quat & rotation)
+	osg::Matrix myGlobalMatrix() const
 	{
-		node->setAttitude(originOrientation * rotation);
+		UTILS_ASSERT(node != nullptr);
+		return nodeGlobalMatrix(node);
 	}
+
+	osg::Quat parentGlobalOrientation() const
+	{
+		return parentGlobalMatrix().getRotate();
+	}
+
+	osg::Vec3 parentGlobalPosition() const
+	{
+		return parentGlobalMatrix().getTrans();
+	}	
+
 public:
 
 	JointDataImpl(const std::string & name, const osg::Vec3 & translation, const osg::Quat & rotation) :
-		node(new osg::PositionAttitudeTransform), originTranslation(translation),
-		globalRequiresRefresh(true), originOrientation(rotation)
+		node(new osg::PositionAttitudeTransform)
 	{
 		node->setName(name);		
 		node->setPosition(translation);
 		node->setAttitude(rotation);
-		node->setScale(osg::Vec3(1, 1, 1));
-		globalMatrix.makeIdentity();		
+		node->setScale(osg::Vec3(1, 1, 1));		
 	}
 
 	~JointDataImpl()
@@ -69,8 +111,7 @@ public:
 
 	osg::Vec3 globalPosition() const
 	{
-		refreshGlobal();
-		return globalMatrix.getTrans();
+		return myGlobalMatrix().getTrans();		
 	}
 	
 	osg::Quat localOrientation() const
@@ -81,63 +122,68 @@ public:
 	//! \return Globalna orientacja
 	osg::Quat globalOrientation() const
 	{
-		refreshGlobal();
-		return globalMatrix.getRotate();
+		return myGlobalMatrix().getRotate();
 	}
 
 	//! \param translation Lokalne przesunięcie
-	void update(const osg::Vec3 & translation)
+	void localUpdate(const osg::Vec3 & translation)
 	{
-		localUpdate(translation);
-		globalRequiresRefresh = true;
+		node->setPosition(node->getPosition() + translation);
+	}
+
+	void localUpdate(const osg::Quat & rotation)
+	{
+		node->setAttitude(node->getAttitude() * rotation);
+	}
+
+	void globalUpdate(const osg::Vec3 & translation)
+	{
+		setGlobal(globalPosition() + translation);
+	}
+
+	void globalUpdate(const osg::Quat & rotation)
+	{
+		setGlobal(globalOrientation() * rotation);
 	}
 
 	//! \param position Globalna pozycja
 	void setGlobal(const osg::Vec3 & position)
 	{
-		node->setPosition(node->getPosition() + position - globalPosition());
-		globalMatrix.setTrans(position);
+		node->setPosition(position - parentGlobalPosition());
 	}
 
 	//! \param position Globalna pozycja
 	void setLocal(const osg::Vec3 & position)
 	{
-		originTranslation = position;
 		node->setPosition(position);
-		globalRequiresRefresh = true;
 	}
-
 	
 	//! \param translation Lokalne przesuni�cie
 	//! \param rotation Lokalna rotacja
-	void update(const osg::Vec3 & translation, const osg::Quat & rotation, const osg::Matrix& parentG)
+	void localUpdate(const osg::Vec3 & translation, const osg::Quat & rotation)
 	{
 		localUpdate(translation);
 		localUpdate(rotation);
-		globalRequiresRefresh = true;
 	}
 
 	//! \param orientation Globalna orientacja
 	void setGlobal(const osg::Quat & orientation)
 	{
-		node->setAttitude(node->getAttitude() * orientation / globalOrientation());
-		globalMatrix.setRotate(orientation);
+		node->setAttitude(parentGlobalOrientation().inverse() * orientation);
+		UTILS_ASSERT(globalOrientation() == orientation);
 	}
 	//! \param orientation Globalna orientacja
 	void setLocal(const osg::Quat & orientation)
-	{
-		originOrientation = orientation;
-		node->setAttitude(orientation);
-		globalRequiresRefresh = true;
+	{		
+		node->setAttitude(orientation);	
 	}
 
 	//! \param translation Lokalne przesunięcie
 	//! \param rotation Lokalna rotacja
-	void update(const osg::Vec3 & translation, const osg::Quat & rotation)
+	void globalUpdate(const osg::Vec3 & translation, const osg::Quat & rotation)
 	{
-		localUpdate(translation);
-		localUpdate(rotation);
-		globalRequiresRefresh = true;
+		globalUpdate(translation);
+		globalUpdate(rotation);
 	}
 	//! \param position Globalna pozycja
 	//! \param orientation Globalna orientacja
@@ -156,13 +202,7 @@ public:
 	}
 private:
 	//! Węzeł osg
-	osg::ref_ptr<osg::PositionAttitudeTransform> node;
-	osg::Vec3 originTranslation;
-	osg::Quat originOrientation;
-	//! Czy stan globalny wymaga odświeżenia
-	mutable bool globalRequiresRefresh;
-	//! Macierz opisująca stan globalny
-	mutable osg::Matrix globalMatrix;
+	osg::ref_ptr<osg::PositionAttitudeTransform> node;	
 };
 
 SkeletonState::JointData::JointData(const std::string & name, const osg::Vec3 & translation, const osg::Quat & rotation) :
@@ -190,9 +230,14 @@ osg::Vec3 SkeletonState::JointData::globalPosition() const
 {
 	return impl->globalPosition();
 }
-void kinematic::SkeletonState::JointData::update(const osg::Vec3 & translation, const osg::Quat & rotation)
+void SkeletonState::JointData::localUpdate(const osg::Vec3 & translation, const osg::Quat & rotation)
 {
-	impl->update(translation, rotation);
+	impl->localUpdate(translation, rotation);
+}
+
+void SkeletonState::JointData::globalUpdate(const osg::Vec3 & translation, const osg::Quat & rotation)
+{
+	impl->globalUpdate(translation, rotation);
 }
 
 osg::Quat SkeletonState::JointData::localOrientation() const
@@ -200,13 +245,20 @@ osg::Quat SkeletonState::JointData::localOrientation() const
 	return impl->localOrientation();
 }
 
-
-
-osg::Quat kinematic::SkeletonState::JointData::globalOrientation() const
+osg::Quat SkeletonState::JointData::globalOrientation() const
 {
 	return impl->globalOrientation();
 }
 
+void SkeletonState::JointData::localUpdate(const osg::Vec3 & translation)
+{
+	impl->localUpdate(translation);
+}
+
+void SkeletonState::JointData::globalUpdate(const osg::Vec3 & translation)
+{
+	impl->globalUpdate(translation);
+}
 
 void kinematic::SkeletonState::JointData::setGlobal(const osg::Vec3& translation) 
 {
@@ -218,7 +270,12 @@ void SkeletonState::JointData::setLocal(const osg::Vec3 & position)
 	impl->setLocal(position);
 }
 
-void SkeletonState::JointData::update(const osg::Quat & rotation)
+void SkeletonState::JointData::localUpdate(const osg::Quat & rotation)
+{
+	impl->localUpdate(rotation);
+}
+
+void SkeletonState::JointData::globalUpdate(const osg::Quat & rotation)
 {
 	impl->localUpdate(rotation);
 }
@@ -233,7 +290,6 @@ void SkeletonState::JointData::setLocal(const osg::Quat & orientation)
 	impl->setLocal(orientation);
 }
 
-
 void SkeletonState::JointData::setGlobal(const osg::Vec3 & position, const osg::Quat & orientation)
 {
 	impl->setGlobal(position, orientation);
@@ -247,12 +303,12 @@ void SkeletonState::JointData::setLocal(const osg::Vec3 & position, const osg::Q
 SkeletonState::JointPtr SkeletonState::create(kinematic::JointConstPtr joint)
 {
 	auto j = Joint::create(JointData(joint->value.name, joint->value.position, joint->value.orientation));
-	for (auto jj : joint->children)	{
-		auto jjj = create(jj);
-		j->children.push_back(jjj);
-		jjj->parent = j;
+	for (auto cj : joint->children)	{
+		auto jj = create(cj);
+		j->children.push_back(jj);
+		jj->parent = j;
 		// hierarchia osg!!
-		j->value.impl->node->addChild(jjj->value.impl->node);
+		j->value.impl->node->addChild(jj->value.impl->node);
 	}
 	return j;
 }
@@ -369,7 +425,8 @@ void updateOrientationsAndPosition(SkeletonState::JointPtr joint, const Skeleton
 {
 	auto idx = mapping.right.at(joint->value.name());
 	auto data = stateChange[idx];
-	joint->value.update(data.translation, data.rotation);
+	//joint->value.update(data.translation, data.rotation);
+	joint->value.globalUpdate(data.translation, data.rotation);
 	for (auto j : joint->children) {
 		//if (j->isLeaf() == false){
 		updateOrientationsAndPosition(j, stateChange, mapping);

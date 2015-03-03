@@ -24,12 +24,12 @@ namespace kinematic {
 		//! powielony operator z osg, można polemizować nad jego sensem
 		//! \param q1 pierwszy porównywany kwaternion
 		//! \param q2 drugi porównywany kwaternion
-		virtual bool isLower(const osg::Quat& q1, const osg::Quat& q2)
+		static bool isLower(const osg::Quat& q1, const osg::Quat& q2)
 		{
 			return q1 < q2;
 		}
 		//! normalizacja zabroniona
-		virtual osg::Quat normalize(const osg::Quat& q, const osg::Quat& min, const osg::Quat& max) const
+		static osg::Quat normalize(const osg::Quat& q, const osg::Quat& min, const osg::Quat& max)
 		{
 			UTILS_ASSERT("Unable to normalize quaternion");
 			throw std::runtime_error("Unable to normalize quaternion");

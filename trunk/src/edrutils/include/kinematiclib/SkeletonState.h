@@ -97,23 +97,36 @@ namespace kinematic
 			//! \return Globalna orientacja
 			osg::Quat globalOrientation() const;
 
-			osg::Vec3 JointData::localPosition() const;
-			osg::Quat JointData::localOrientation() const;
+			//! \return Lokalna pozycja względem rodzica
+			osg::Vec3 localPosition() const;
+			//! \return Lokalna orientacja względem rodzica
+			osg::Quat localOrientation() const;
 
-
+			//! \param translation Lokalne przesunięcie
+			void localUpdate(const osg::Vec3 & translation);
+			//! \param translation Globalne przesunięcie
+			void globalUpdate(const osg::Vec3 & translation);
+			//! \param position Globalna pozycja
 			void setGlobal(const osg::Vec3 & position);
 			//! \param position Lokalna pozycja
 			void setLocal(const osg::Vec3 & position);
 
-			//! \param rotation Rotacja
-			void update(const osg::Quat & rotation);
+			//! \param rotation Rotacja lokalna
+			void localUpdate(const osg::Quat & rotation);
+			//! \param rotation Rotacja globalna
+			void globalUpdate(const osg::Quat & rotation);
 			//! \param orientation Globalna orientacja
 			void setGlobal(const osg::Quat & orientation);
 			//! \param orientation Lokalna orientacja
 			void setLocal(const osg::Quat & orientation);
 
+			//! \param translation Lokalne przesunięcie
+			//! \param rotation Rotacja lokalna
+			void localUpdate(const osg::Vec3 & translation, const osg::Quat & rotation);
 
-			void update(const osg::Vec3 & translation, const osg::Quat & rotation);
+			//! \param translation Globalne przesunięcie
+			//! \param rotation Rotacja globalna
+			void globalUpdate(const osg::Vec3 & translation, const osg::Quat & rotation);
 		
 			//! \param position Globalna pozycja
 			//! \param orientation Globalna orientacja
@@ -131,11 +144,11 @@ namespace kinematic
 		//! Typ wska�nik�w do joint�w
 		DEFINE_SMART_POINTERS(Joint);
 
+		//! Typ opisujący mapowanie jointów do indeksów
 		typedef std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> Joint2Index;
 	private:
 
 		//! \param root Staw rodzic stanu
-		//! \param activeJointsCount Ilo�� aktywnych staw�w kt�re maja dzieci
 		SkeletonState(JointPtr root);
 
 	public:
@@ -147,22 +160,39 @@ namespace kinematic
 		//! \return Stan bazowy szkieletu
 		static SkeletonState create(const Skeleton & skeleton);
 
+		//! \param skeleton Szkielet dla któego tworzymy zmianę stanu szkieletu
+		//! \param motionData Dane ruchu w formacie acclaim - ramka danych
+		//! \param mapping Mapowanie danych acclaim do szkieletu
+		//! \return Zmiana stanu szkieletu
 		static RigidPartialStateChange convert(const acclaim::Skeleton & skeleton,
 			const acclaim::MotionData::FrameData & motionData,
 			const LinearizedNodesMapping & mapping);
 
+		//! \param skeleton Szkielet dla któego tworzymy zmianę stanu szkieletu
+		//! \param motionData Dane ruchu w formacie biovision - ramka danych		
+		//! \return Zmiana stanu szkieletu
 		static RigidCompleteStateChange convert(const biovision::Skeleton & skeleton,
 			const biovision::MotionData::FrameJointData & motionData);
 
+		//! \param skeleton Szkielet dla którego generujemy mapowanie wszystkich jointów
+		//! \return Mapowanie jointów szkieletu
 		static LinearizedNodesMapping createMapping(const Skeleton & skeleton);
 
+		//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (mających dzieci)
+		//! \return Mapowanie aktywnych jointów szkieletu
 		static LinearizedNodesMapping createActiveMapping(const Skeleton & skeleton);
 
-		static NonRigidCompleteStateChange convertStateChange(const LinearizedNodesMapping &mapping, const RigidPartialStateChange &sChange);
+		//! \param mapping Mapowanie jointów do indeksów
+		//! \param sChange Zmiana stanu (tylko orientacje)
+		//! \return Kompletna zmiana stanu (dodano zerowe translacje)
+		static NonRigidCompleteStateChange convertStateChange(const LinearizedNodesMapping &mapping,
+			const RigidPartialStateChange &sChange);
 
 		//! \param skeletonState [out] Aktualizowany stan szkieletu
 		//! \param stateChange Zmiana stanu szkieletu
-		static void update(SkeletonState & skeletonState, const NonRigidCompleteStateChange & stateChange, const LinearizedNodesMapping & mapping);
+		//! \param mapping Mapowanie jointów do indeksów
+		static void update(SkeletonState & skeletonState, const NonRigidCompleteStateChange & stateChange,
+			const LinearizedNodesMapping & mapping);
 
 	private:
 		//! \param skeletonState [out] Aktualizowany stan szkieletu
@@ -198,13 +228,15 @@ namespace kinematic
 
 		static Joint2Index createJoint2IndexMapping(const kinematic::SkeletonState &skeleton, const LinearizedNodesMapping& mapping);
 
-		//! \return Staw - root stanu
+		//! \return Stan stawu roota całego stanu szkieletu
 		JointPtr root();
-		//! \return Staw - root stanu
+		//! \return Stan stawu roota całego stanu szkieletu
 		JointConstPtr root() const;
 
 	private:
 
+		//! \param joint Staw szkieletu dla którego tworzymy stan
+		//! \return Stan szkieletu dla zadanego stawu i jego dzieci
 		static JointPtr create(kinematic::JointConstPtr joint);
 
 	private:

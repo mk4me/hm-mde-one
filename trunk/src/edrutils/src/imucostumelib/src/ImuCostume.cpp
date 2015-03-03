@@ -86,10 +86,10 @@ std::list<Costume::SensorDataPtr> Costume::extractSensorsData(const std::list<CA
 			else if (data_type == 3 && !(dataStatus & Costume::IMUSensor::ORIENT_DATA))
 			{
 				dataStatus |= Costume::IMUSensor::ORIENT_DATA;
-				orient[0] = float(int16_t((uint16_t(fd.structure.data[1]) << 8) | uint16_t(fd.structure.data[0])));
-				orient[1] = float(int16_t((uint16_t(fd.structure.data[3]) << 8) | uint16_t(fd.structure.data[2])));
-				orient[2] = float(int16_t((uint16_t(fd.structure.data[5]) << 8) | uint16_t(fd.structure.data[4])));
-				orient[3] = float(int16_t((uint16_t(fd.structure.data[7]) << 8) | uint16_t(fd.structure.data[6])));
+				orient[3] = float(int16_t((uint16_t(fd.structure.data[1]) << 8) | uint16_t(fd.structure.data[0])));
+				orient[0] = float(int16_t((uint16_t(fd.structure.data[3]) << 8) | uint16_t(fd.structure.data[2])));
+				orient[1] = float(int16_t((uint16_t(fd.structure.data[5]) << 8) | uint16_t(fd.structure.data[4])));
+				orient[2] = float(int16_t((uint16_t(fd.structure.data[7]) << 8) | uint16_t(fd.structure.data[6])));
 				orient /= orient.length();
 			}
 
