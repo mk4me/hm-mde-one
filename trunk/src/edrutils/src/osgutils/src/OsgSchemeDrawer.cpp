@@ -314,22 +314,24 @@ void ConnectionsSphereDrawer::init(const SegmentsDescriptors & connections)
 	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
 	stateset->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 	stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
-
+	osg::ref_ptr<osg::Switch> tmpNode(new osg::Switch);
 	for (unsigned int i = 0; i < connections.size(); ++i){
 		utils::shared_ptr<ConnectionSphereInstance> lci(new ConnectionSphereInstance);
 		lci->connectionIndices = connections[i].range;
 		float r = connections[i].length / 2;
-		osg::Sphere* sphere= new osg::Sphere(osg::Vec3(), r > 0 ? r : 0.001);
-		osg::ShapeDrawable* sd = new osg::ShapeDrawable(sphere);
-		osg::Geode* geode = new osg::Geode();
-		geode->addDrawable(sd);
-		auto posAtt = new osg::PositionAttitudeTransform;
-		posAtt->setScale(osg::Vec3(0.3, 0.3, 1.0));
-		posAtt->addChild(lci->geode);
+		lci->sphere = osgutils::CustomPrimitivesFactory::createSphere(3, r > 0 ? r : 0.001, osg::Vec4(0.5, 0.5, 0.5, 0.5)); //new osg::Sphere(osg::Vec3(), r > 0 ? r : 0.001);
+		//osg::ShapeDrawable* sd = new osg::ShapeDrawable(lci->sphere);
+		lci->geode = new osg::Geode();
+		lci->geode->addDrawable(lci->sphere.geom);//sd);
+		lci->posAtt = new osg::PositionAttitudeTransform;
+		lci->posAtt->setScale(osg::Vec3(0.3, 0.3, 1.0));
+		lci->posAtt->addChild(lci->geode);
 		//ret[i] = sd;
+		connectionsInstances.push_back(lci);
+		tmpNode->addChild(lci->posAtt, true);
 	}
 
-	osg::ref_ptr<osg::Switch> tmpNode(new osg::Switch);
+	
 
 	/*for(unsigned int i = 0; i < locConnsInst.size(); ++i){		
 		tmpNode->addChild(locConnsInst[i]->posAtt, true);
@@ -345,15 +347,12 @@ osg::ref_ptr<osg::Node> ConnectionsSphereDrawer::getNode()
 
 void ConnectionsSphereDrawer::update(const std::vector<osg::Vec3> & positions)
 {
-	/*for(unsigned int i = 0; i < connectionsInstances.size(); ++i){
+	for(unsigned int i = 0; i < connectionsInstances.size(); ++i){
 		if(node->getValue(i) == true){
 			connectionsInstances[i]->updatePositionOrientation(positions[connectionsInstances[i]->connectionIndices.first],
 				positions[connectionsInstances[i]->connectionIndices.second], connectionsInstances[i]->posAtt);
-		}else{
-			updateCache[i] = std::make_pair(positions[connectionsInstances[i]->connectionIndices.first],
-				positions[connectionsInstances[i]->connectionIndices.second]);
 		}
-	}*/
+	}
 }
 
 void ConnectionsSphereDrawer::setSize(const float size)
@@ -363,7 +362,7 @@ void ConnectionsSphereDrawer::setSize(const float size)
 
 void ConnectionsSphereDrawer::setColor(const osg::Vec4 & color)
 {
-	//ConnectionSphereInstance::setColor(connectionsInstances, color);
+	ConnectionSphereInstance::setColor(connectionsInstances, color);
 }
 
 void ConnectionsSphereDrawer::setVisible(const bool visible)
@@ -599,6 +598,9 @@ public:
 	utils::shared_ptr<GhostConnectionsSchemeDrawer> connectionsDrawer;
 
 	void setRange(const unsigned int start, const unsigned int end);
+
+	void addFrame(const Frame& f);
+	void setBufferSize(int size);
 };
 
 GhostPointsSchemeDrawer::GhostPointsSchemeDrawer(GhostInstance * gi) : gi(gi)
@@ -771,7 +773,7 @@ void GhostSchemeDrawer::init(const std::vector<std::vector<osg::Vec3>> & points,
 			auto pat = dynamic_cast<osg::PositionAttitudeTransform*>(tmpGhost->pointsInstances[j]->posAtt->clone(osg::CopyOp::SHALLOW_COPY));
 			pat->setPosition(points[i][j]);
 			tmpGhost->frames[i].first.push_back(pat);
-			tmpGhost->node->addChild(pat);
+			//tmpGhost->node->addChild(pat);
 		}
 
 		for(unsigned int j = 0; j < tmpGhost->connectionsInstances.size(); ++j){

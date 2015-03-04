@@ -108,7 +108,7 @@ const bool SkeletonSerie::ghostVisible() const
 void SkeletonSerie::createGhostAndTrajectories()
 {
 	trajectoriesManager.reset(new TrajectoryDrawerManager);
-	ghostDrawer.reset(new osgutils::GhostSchemeDrawer(3, 10));
+	ghostDrawer.reset(new osgutils::GhostSchemeDrawer(3, 3));
 
 	//punkty dla ducha i trajektorii
 	auto allPointsPositions = createPointsPositions(300);

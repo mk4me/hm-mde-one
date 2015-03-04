@@ -153,9 +153,10 @@ public:
 
 private:
 	typedef osg::ref_ptr<osg::ShapeDrawable> ShapeDrawablePtr;
-	std::vector<ShapeDrawablePtr> connectionsInstances;
+	//std::vector<ShapeDrawablePtr> connectionsInstances;
 	osg::ref_ptr<osg::Switch> node;
 	unsigned int complexity;
+	std::vector<utils::shared_ptr<ConnectionSphereInstance>> connectionsInstances;
 };
 DEFINE_SMART_POINTERS(ConnectionsSphereDrawer);
 

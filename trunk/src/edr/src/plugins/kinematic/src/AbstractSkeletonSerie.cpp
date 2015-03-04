@@ -17,7 +17,7 @@ AbstractSkeletonSerie::AbstractSkeletonSerie(KinematicVisualizer * visualizer,
 	lastUpdateTime(std::numeric_limits<double>::min()),
 	xyzAxis(false),
 	pointsDrawer(new osgutils::PointsDrawer(15)),
-	connectionsDrawer(new osgutils::ConnectionsDrawer(15)),
+	connectionsDrawer(new osgutils::ConnectionsSphereDrawer(3)),
 	localRootNode(new osg::PositionAttitudeTransform)
 {
 }
@@ -32,11 +32,11 @@ void AbstractSkeletonSerie::init(double ratio, int pointsCount,
 	pointsDrawer->init(pointsCount);
 	pointsDrawer->setSize(0.02 / ratio);
 	pointsDrawer->setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
-	localRootNode->addChild(pointsDrawer->getNode());
+	//localRootNode->addChild(pointsDrawer->getNode());
 	connections = kinematic::SkeletonState::createConnections(*state, joint2Index);
 	connectionsDrawer->init(connections);
 	connectionsDrawer->setColor(osg::Vec4(0.7, 0.7, 0.7, 0.5));
-	connectionsDrawer->setSize(0.05 / ratio);
+	connectionsDrawer->setSize(0.005);
 	localRootNode->addChild(connectionsDrawer->getNode());
 	localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
 

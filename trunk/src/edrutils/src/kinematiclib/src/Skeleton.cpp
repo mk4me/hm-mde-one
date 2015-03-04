@@ -59,7 +59,7 @@ Skeleton Skeleton::create(TopologyNodeConstPtr topology)
 	return ret;
 }
 
-void createJoint(JointPtr parentJoint, const acclaim::Skeleton & skeleton,
+void createJoint(JointPtr parentJoint, const acclaim::Skeleton & skeleton, const osg::Vec3& parentPos,
 	const acclaim::Bone& currentBone, const hAnim::Humanoid::Hierarchy & hAnimHierarchy,
 	std::set<std::string> & names)
 {
@@ -71,20 +71,21 @@ void createJoint(JointPtr parentJoint, const acclaim::Skeleton & skeleton,
 		throw std::runtime_error("Joint with given name already exists: " + jointData.name + ". Improper skeleton hierarchy - names must be unique.");
 	}
 
-	jointData.position = parentJoint->value.position + currentBone.direction * currentBone.length;	
+	jointData.position = parentPos; 
+	auto nextPos = currentBone.direction * currentBone.length;
 	names.insert(jointData.name);
 
 	auto joint = Joint::addChild(parentJoint, jointData);
 	auto range = skeleton.hierarchy.left.equal_range(currentBone.id);	
 
 	for (auto it = range.first; it != range.second; ++it){
-		createJoint(joint, skeleton, skeleton.bones.at(it->second), hAnimHierarchy, names);
+		createJoint(joint, skeleton, nextPos, skeleton.bones.at(it->second), hAnimHierarchy, names);
 	}
 	const int TERMINATOR = -0xdead;
 	if (range.first == range.second && currentBone.id != TERMINATOR) {
 		acclaim::Bone b; b.id = TERMINATOR;
 		b.name = currentBone.name + "_leaf";
-		createJoint(joint, skeleton, b, hAnimHierarchy, names);
+		createJoint(joint, skeleton, nextPos, b, hAnimHierarchy, names);
 	}
 }
 
@@ -111,7 +112,7 @@ bool Skeleton::convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSke
 		JointPtr joint = Joint::create(jointData);
 		auto range = srcSkeleton.hierarchy.left.equal_range(currentID);
 		for (auto it = range.first; it != range.second; ++it) {
-			createJoint(joint, srcSkeleton, srcSkeleton.bones.at(it->second), humanoidHierarchy, names);
+			createJoint(joint, srcSkeleton, osg::Vec3(), srcSkeleton.bones.at(it->second), humanoidHierarchy, names);
 		}
 				
 		destSkeleton.name = srcSkeleton.name;

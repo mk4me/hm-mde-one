@@ -2,7 +2,7 @@
 #include <QtCore/QThread>
 #include <coreui/CoreConsoleWidget.h>
 #include "ui_CoreConsoleWidget.h"
-#include<QtGui/QtEvents>
+#include <QtGui/QtEvents>
 #include "coreui/finddialog.h"
 
 using namespace coreUI;

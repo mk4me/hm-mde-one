@@ -86,7 +86,7 @@ private:
 public:
 
 	JointDataImpl(const std::string & name, const osg::Vec3 & translation, const osg::Quat & rotation) :
-		node(new osg::PositionAttitudeTransform)
+		node(new osg::PositionAttitudeTransform), originTranslation(translation)
 	{
 		node->setName(name);		
 		node->setPosition(translation);
@@ -127,23 +127,23 @@ public:
 
 	//! \param translation Lokalne przesunięcie
 	void localUpdate(const osg::Vec3 & translation)
-	{
-		node->setPosition(node->getPosition() + translation);
+	{   
+		node->setPosition(originTranslation + translation);
 	}
 
 	void localUpdate(const osg::Quat & rotation)
 	{
-		node->setAttitude(node->getAttitude() * rotation);
+		node->setAttitude( rotation);
 	}
 
 	void globalUpdate(const osg::Vec3 & translation)
 	{
-		setGlobal(globalPosition() + translation);
+		setGlobal(translation);
 	}
 
 	void globalUpdate(const osg::Quat & rotation)
 	{
-		setGlobal(globalOrientation() * rotation);
+		setGlobal(rotation);
 	}
 
 	//! \param position Globalna pozycja
@@ -203,6 +203,7 @@ public:
 private:
 	//! Węzeł osg
 	osg::ref_ptr<osg::PositionAttitudeTransform> node;	
+	osg::Vec3 originTranslation;
 };
 
 SkeletonState::JointData::JointData(const std::string & name, const osg::Vec3 & translation, const osg::Quat & rotation) :
@@ -426,7 +427,7 @@ void updateOrientationsAndPosition(SkeletonState::JointPtr joint, const Skeleton
 	auto idx = mapping.right.at(joint->value.name());
 	auto data = stateChange[idx];
 	//joint->value.update(data.translation, data.rotation);
-	joint->value.globalUpdate(data.translation, data.rotation);
+	joint->value.localUpdate(data.translation, data.rotation);
 	for (auto j : joint->children) {
 		//if (j->isLeaf() == false){
 		updateOrientationsAndPosition(j, stateChange, mapping);

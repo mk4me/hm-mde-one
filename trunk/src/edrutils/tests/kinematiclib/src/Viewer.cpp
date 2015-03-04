@@ -54,7 +54,7 @@ void kinematicTest::Viewer::start()
 	pat->addChild(pointsDrawer.getNode());
 
 	auto sd = kinematic::SkeletonState::createConnections(skeletonState, joint2index);
-	osgutils::ConnectionsDrawer	connectionsDrawer(3);
+	osgutils::ConnectionsSphereDrawer	connectionsDrawer(3);
 	connectionsDrawer.init(sd);
 	connectionsDrawer.setSize(0.04);
 	connectionsDrawer.setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
