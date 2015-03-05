@@ -82,12 +82,13 @@ protected:
 	//! \param time ustawiany czas
 	//virtual void setLocalTime(double time);
 
-	virtual const kinematic::SkeletonState::NonRigidCompleteStateChange& getStateChange() = 0;
 
 	void init(double ratio, int pointsCount, kinematic::SkeletonStatePtr state, const kinematic::SkeletonState::LinearizedNodesMapping& mapping);
 	//! zmiana osi, gdy otrzymamy obiekt w nietypowym ukł. współrzędnych
 	//! \param xyz
 	void setAxis(bool xyz);
+
+	kinematic::SkeletonStatePtr getSkeletonState();
 
 private:
 
@@ -122,6 +123,7 @@ protected:
 	kinematic::SkeletonState::LinearizedNodesMapping nodesMapping;
 
 	osg::ref_ptr<osg::PositionAttitudeTransform> localRootNode;
+
 };
 
 template <class SeriePolicy>

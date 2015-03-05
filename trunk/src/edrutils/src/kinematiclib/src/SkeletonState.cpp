@@ -128,7 +128,7 @@ public:
 	//! \param translation Lokalne przesunięcie
 	void localUpdate(const osg::Vec3 & translation)
 	{   
-		node->setPosition(originTranslation + translation);
+		node->setPosition(node->getPosition() + translation);
 	}
 
 	void localUpdate(const osg::Quat & rotation)
@@ -155,7 +155,7 @@ public:
 	//! \param position Globalna pozycja
 	void setLocal(const osg::Vec3 & position)
 	{
-		node->setPosition(position);
+		node->setPosition(originTranslation + position);
 	}
 	
 	//! \param translation Lokalne przesuni�cie
@@ -394,29 +394,35 @@ SkeletonState::LinearizedNodesMapping SkeletonState::createActiveMapping(const S
 template<typename T>
 void updateOrientations(SkeletonState::JointPtr joint, T & valIT)
 {
-	joint->value.update(*valIT++);
+	//‘utils::TreeNodeT<kinematic::SkeletonState::JointData>::value_type’ has no member named ‘update’
+	UTILS_ASSERT(false);
 
-	for (auto j : joint->children){		
-		if (j->isLeaf() == false){
-			updateOrientations(j, valIT);
-		}
-	}
+//	joint->value.update(*valIT++);
+//
+//	for (auto j : joint->children){
+//		if (j->isLeaf() == false){
+//			updateOrientations(j, valIT);
+//		}
+//	}
 }
 
 template<typename T>
 void updateOrientationsAndPosition(SkeletonState::JointPtr joint, T & valIT, const osg::Matrix& parentG)
 {
-	joint->value.update((*valIT).translation, (*valIT).rotation, parentG);
-	++valIT;
-	for (auto j : joint->children){		
-		if (j->isLeaf() == false){
-			updateOrientationsAndPosition(j, valIT);
-		}
-	}
+	//‘utils::TreeNodeT<kinematic::SkeletonState::JointData>::value_type’ has no member named ‘update’
+	UTILS_ASSERT(false);
+//	joint->value.update((*valIT).translation, (*valIT).rotation, parentG);
+//	++valIT;
+//	for (auto j : joint->children){
+//		if (j->isLeaf() == false){
+//			updateOrientationsAndPosition(j, valIT);
+//		}
+//	}
 }
 
 void SkeletonState::update(SkeletonState & skeletonState, const RigidCompleteStateChange & stateChange)
 {
+	UTILS_ASSERT(false, "not yet implemented");
 	//skeletonState.root()->value.update(stateChange.translation);
 	//auto it = stateChange.rotations.begin();
 	//updateOrientations<decltype(stateChange.rotations.begin())>(skeletonState.root(), it);
@@ -440,29 +446,63 @@ void SkeletonState::update(SkeletonState & skeletonState, const NonRigidComplete
 	updateOrientationsAndPosition(skeletonState.root(), stateChange, mapping);
 }
 
-void SkeletonState::update(SkeletonState & skeletonState, const RigidPartialStateChange & stateChange)
+
+void setLocalState(SkeletonState::JointPtr joint, const SkeletonState::NonRigidCompleteStateChange & stateChange, const SkeletonState::LinearizedNodesMapping & mapping)
 {
-	//auto it = stateChange.rotations.begin();
-	//if (it == stateChange.rotations.end()){
-	//	return;
-	//}
-
-	//skeletonState.root()->value.update(stateChange.translation);
-
-	//NodeIDX nodeIDX = 0;
-	//JointPtr root = skeletonState.root();
-	//auto visitorL = [&it, &stateChange, &nodeIDX](JointPtr node, Joint::size_type level)
-	//		{
-	//			if (it->first == nodeIDX){
-
-	//				node->value.update(it->second);
-	//				++it;
-	//			}
-	//			++nodeIDX;
-	//			return it != stateChange.rotations.end();
-	//		};
-	//Joint::visitLevelOrderWhile(root, visitorL);
+	auto idx = mapping.right.at(joint->value.name());
+	auto data = stateChange[idx];
+	joint->value.setLocal(data.translation, data.rotation);
+	for (auto j : joint->children) {
+		setLocalState(j, stateChange, mapping);
+	}
 }
+
+void SkeletonState::setLocal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState, const LinearizedNodesMapping & mapping)
+{
+	setLocalState(skeletonState.root(), newState, mapping);
+}
+
+void setLocalState(SkeletonState::JointPtr joint, const SkeletonState::RigidPartialStateChange & stateChange, const SkeletonState::LinearizedNodesMapping & mapping)
+{
+	auto idx = mapping.right.at(joint->value.name());
+	auto rot = stateChange.rotations[idx];
+	joint->value.setLocal(rot);
+	for (auto j : joint->children) {
+		setLocalState(j, stateChange, mapping);
+	}
+}
+
+void SkeletonState::setLocal(SkeletonState & skeletonState, const RigidPartialStateChange & newState, const LinearizedNodesMapping & mapping)
+{
+	auto root = skeletonState.root();
+	root->value.setLocal(newState.translation);
+	setLocalState(root, newState, mapping);
+}
+
+//void SkeletonState::update(SkeletonState & skeletonState, const RigidCompleteStateChange & stateChange)
+//{
+//	UTILS_ASSERT(false, "not yet implemented");
+//	//auto it = stateChange.rotations.begin();
+//	//if (it == stateChange.rotations.end()){
+//	//	return;
+//	//}
+//
+//	//skeletonState.root()->value.update(stateChange.translation);
+//
+//	//NodeIDX nodeIDX = 0;
+//	//JointPtr root = skeletonState.root();
+//	//auto visitorL = [&it, &stateChange, &nodeIDX](JointPtr node, Joint::size_type level)
+//	//		{
+//	//			if (it->first == nodeIDX){
+//
+//	//				node->value.update(it->second);
+//	//				++it;
+//	//			}
+//	//			++nodeIDX;
+//	//			return it != stateChange.rotations.end();
+//	//		};
+//	//Joint::visitLevelOrderWhile(root, visitorL);
+//}
 
 //void SkeletonState::update(SkeletonState & skeletonState, const NonRigidPartialStateChange & stateChange)
 //{
@@ -484,10 +524,7 @@ void SkeletonState::update(SkeletonState & skeletonState, const RigidPartialStat
 //
 //}
 
-//void SkeletonState::setLocal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState)
-//{
-//
-//}
+
 
 //void updateGlobalState(SkeletonState::JointConstPtr joint, SkeletonState::NonRigidCompleteStateChange & state)
 //{

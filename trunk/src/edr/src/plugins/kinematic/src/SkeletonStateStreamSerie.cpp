@@ -48,6 +48,8 @@ const core::VariantConstPtr & SkeletonStateStreamSerie::getData() const
 
 void SkeletonStateStreamSerie::update()
 {
+	skeletalData->states->data(currentStateChange);
+	kinematic::SkeletonState::update(*getSkeletonState(), currentStateChange, nodesMapping);
 	AbstractSkeletonSerie::update();
 }
 
@@ -61,8 +63,3 @@ const osg::Vec3 SkeletonStateStreamSerie::pivotPoint() const
 	return rootPosition; // * lToW;
 }
 
-const kinematic::SkeletonState::NonRigidCompleteStateChange& SkeletonStateStreamSerie::getStateChange()
-{
-	skeletalData->states->data(currentStateChange);
-	return currentStateChange;
-}

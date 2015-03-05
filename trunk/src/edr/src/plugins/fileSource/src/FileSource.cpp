@@ -120,13 +120,9 @@ void FileSource::loadAsfAmc()
 
 	const auto mapping = kinematic::SkeletonState::createMapping(*skeleton);
 	
-
-
 	for (auto& frame : data->frames) {
-		kinematic::SkeletonState::RigidPartialStateChange sChange = kinematic::SkeletonState::convert(*model, frame, mapping);
-		//konwersja z czesiowego do pelnego stanu
-		kinematic::SkeletonState::NonRigidCompleteStateChange nc = kinematic::SkeletonState::convertStateChange(mapping, sChange);
-		states->frames.push_back(nc);
+		auto sChange = kinematic::SkeletonState::convert(*model, frame, mapping);
+		states->frames.push_back(sChange);
 	}
 
 	auto sws = utils::make_shared<SkeletonWithStates>();

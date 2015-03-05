@@ -45,8 +45,6 @@ void kinematicTest::Viewer::start()
 	viewer.setUpViewInWindow(1090, 100, 500, 500);
 	//viewer.run();
 	osg::ref_ptr<osgGA::TrackballManipulator> tm = new osgGA::TrackballManipulator;
-	
-
 	osgutils::PointsDrawer pointsDrawer(3);
 	pointsDrawer.init(mapping.size());
 	pointsDrawer.setSize(0.1);
@@ -67,15 +65,13 @@ void kinematicTest::Viewer::start()
 		frameIdx = frameIdx >= (framesCount - 1) ? 0 : ++frameIdx;
 		kinematic::SkeletonState::RigidPartialStateChange sChange = kinematic::SkeletonState::convert(acclaimSkeleton, acclaimData.frames[frameIdx], mapping);
 		
-		auto frame = kinematic::SkeletonState::convertStateChange(mapping, sChange);
+		//auto frame = kinematic::SkeletonState::convertStateChange(mapping, sChange);
 		
-		kinematic::SkeletonState::update(skeletonState, frame, mapping);
+		kinematic::SkeletonState::setLocal(skeletonState, sChange, mapping);
 		auto pos = getPos(skeletonState);
 		std::transform(pos.begin(), pos.end(), pos.begin(), [&](const osg::Vec3& p) { return p + osg::Vec3(a, b, c); });
 		pat->setPosition(osg::Vec3(x,y,z));
 		pointsDrawer.update(pos);
-
-
 		connectionsDrawer.update(pos);
 	}
 }

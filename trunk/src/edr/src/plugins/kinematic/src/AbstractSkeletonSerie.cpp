@@ -76,11 +76,18 @@ const osg::Vec3 AbstractSkeletonSerie::pivotPoint() const
 	return rootPosition * lToW;
 }
 
+kinematic::SkeletonStatePtr AbstractSkeletonSerie::getSkeletonState()
+{
+	return skeletonState;
+}
+
 void AbstractSkeletonSerie::update()
 {
-	const kinematic::SkeletonState::NonRigidCompleteStateChange& frame = getStateChange();
+	//const kinematic::SkeletonState::NonRigidCompleteStateChange& frame = getStateChange();
+
+	//kinematic::SkeletonState::update(*skeletonState, frame, nodesMapping);
+
 	std::vector<osg::Vec3> pos(joint2Index.size());
-	kinematic::SkeletonState::update(*skeletonState, frame, nodesMapping);
 	
 	kinematic::SkeletonState::JointConstPtr root = skeletonState->root();
 	

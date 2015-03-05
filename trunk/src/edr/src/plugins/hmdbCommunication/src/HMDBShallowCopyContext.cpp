@@ -315,14 +315,14 @@ const core::ConstVariantsList HMDBShallowCopyLocalContext::data(const DataType t
 
 	for (auto it = items.begin(); it != items.end(); ++it){
 		auto dIT = data_.find(type);
-		// czy mam tak¹ grupê obiektów
+		// czy mam takï¿½ grupï¿½ obiektï¿½w
 		if (dIT != data_.end()){
-			//czy chcê dane wszystkich obiektów tego typu?
+			//czy chcï¿½ dane wszystkich obiektï¿½w tego typu?
 			if (it->second.find(-1) != it->second.end()){
-				// dla wszystkich indeksów
+				// dla wszystkich indeksï¿½w
 				auto IT = dIT->second.begin();
 				while(IT != dIT->second.end()){
-					//filtrowanie danych które zosta³y wy³adowane
+					//filtrowanie danych ktï¿½re zostaï¿½y wyï¿½adowane
 					filterAndInsertData(IT->second, ret, localContext_);
 					if (IT->second.empty() == true){
 						IT = dIT->second.erase(IT);
@@ -428,9 +428,7 @@ public:
 
 				for (auto& frame : data->frames) {
 					kinematic::SkeletonState::RigidPartialStateChange sChange = kinematic::SkeletonState::convert(*model, frame, mapping);
-					//konwersja z czesiowego do pelnego stanu
-					kinematic::SkeletonState::NonRigidCompleteStateChange nc = kinematic::SkeletonState::convertStateChange(mapping, sChange);
-					states->frames.push_back(nc);
+					states->frames.push_back(sChange);
 				}
 				
 				auto sws = utils::make_shared<SkeletonWithStates>();
@@ -460,7 +458,7 @@ private:
 
 void HMDBShallowCopyLocalContext::addPatientObject(const hmdbServices::MedicalShallowCopy::Patient * patient, PluginSubject::SubjectID subjectID)
 {
-	//generujê listê schorzeñ
+	//generujï¿½ listï¿½ schorzeï¿½
 	std::vector<hmdbCommunication::Disorder> disorders;
 	for (auto it = patient->disorders.begin(); it != patient->disorders.end(); ++it)	{
 		hmdbCommunication::Disorder dis;
@@ -475,13 +473,13 @@ void HMDBShallowCopyLocalContext::addPatientObject(const hmdbServices::MedicalSh
 	PatientPtr pPtr(new Patient(subjectID, patient->name, patient->surname, patient->birthDate.toString(),
 		Patient::decodeGender(patient->gender), utils::shared_ptr<const QPixmap>(), disorders));
 
-	//dodajê do DM
+	//dodajï¿½ do DM
 	auto pOW = core::Variant::create<hmdbCommunication::IPatient>();
 	pOW->set(pPtr);
 
 	localContext_->load(pOW);
 
-	//zapamiêtuje
+	//zapamiï¿½tuje
 	data_[PatientType][subjectID].push_back(pOW);
 }
 
@@ -569,7 +567,7 @@ core::VariantPtr HMDBShallowCopyLocalContext::getSubject(const hmdbServices::ID 
 	if (subOW == nullptr){
 
 		PluginSubject::SubjectPtr subPtr;
-		//tworzê subjecta
+		//tworzï¿½ subjecta
 		subOW = subjectService->createSubject();
 
 		//FIX dla linux RtR
@@ -591,10 +589,10 @@ core::VariantPtr HMDBShallowCopyLocalContext::getSubject(const hmdbServices::ID 
 
 		subOW->setMetadata("label", label.str());
 
-		//dodajê do DM
+		//dodajï¿½ do DM
 		localContext_->load(subOW);
 
-		//zapamiêtujê mapowanie
+		//zapamiï¿½tujï¿½ mapowanie
 		data_[SubjectType][id].push_back(subOW);
 	}
 
@@ -624,8 +622,8 @@ core::VariantPtr HMDBShallowCopyLocalContext::getSession(const std::pair<Indexes
 
 		auto s = sIT->second;
 
-		//tworzê sesjê
-		//generujê zbiór ow dla sesji
+		//tworzï¿½ sesjï¿½
+		//generujï¿½ zbiï¿½r ow dla sesji
 		core::ConstVariantsList sessionObjects;
 		for (auto fIT = sessionFiles.first.begin(); fIT != sessionFiles.first.end(); ++fIT){
 			//pobieram obiekty
@@ -669,11 +667,11 @@ core::VariantPtr HMDBShallowCopyLocalContext::getSession(const std::pair<Indexes
 			}
 		}
 
-		//dodajê do DM
+		//dodajï¿½ do DM
 		localContext_->load(antroOW);
 		localContext_->load(sOW);		
 
-		//zapamiêtujê mapowanie
+		//zapamiï¿½tujï¿½ mapowanie
 		data_[SessionType][id].push_back(sOW);
 		data_[SessionType][id].push_back(antroOW);
 		subPtr->addSession(sOW);
@@ -686,7 +684,7 @@ const core::VariantPtr createJointsAngles(const core::ConstVariantsList objects,
 {
 	core::VariantPtr ret;
 
-	//sprawdzamy joint angles - jeœli nie ma budujemy i dodajemy do DM
+	//sprawdzamy joint angles - jeï¿½li nie ma budujemy i dodajemy do DM
 	core::VariantConstPtr dataWrapper;
 	core::VariantConstPtr modelWrapper;
 	for (auto it = objects.begin(); it != objects.end(); ++it) {
@@ -737,8 +735,8 @@ core::VariantPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & motionFi
 
 		auto m = mIT->second;
 
-		//tworzê sesjê
-		//generujê zbiór ow dla motiona
+		//tworzï¿½ sesjï¿½
+		//generujï¿½ zbiï¿½r ow dla motiona
 		core::ConstVariantsList motionObjects;
 		for (auto fIT = motionFiles.begin(); fIT != motionFiles.end(); ++fIT){
 
@@ -797,7 +795,7 @@ core::VariantPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & motionFi
 
 		localContext_->load(mOW);
 
-		//zapamiêtujê mapowanie
+		//zapamiï¿½tujï¿½ mapowanie
 		data_[MotionType][id].push_back(mOW);
 
 		if (jointsWrapper != nullptr){
@@ -827,14 +825,14 @@ const HMDBShallowCopyLocalContext::SubjectFiles HMDBShallowCopyLocalContext::gro
 			}
 			else{
 				//TODO
-				//INFO o nieobs³ugiwanym pliku
+				//INFO o nieobsï¿½ugiwanym pliku
 			}
 		}
 		else{
 			auto fileIT = shallowCopy->motionShallowCopy.files.find(it->first);
 			if (fileIT == shallowCopy->motionShallowCopy.files.end()){
 				//TODO
-				//INFO o nieobs³ugiwanym pliku
+				//INFO o nieobsï¿½ugiwanym pliku
 				continue;
 			}
 
@@ -860,8 +858,8 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 
 	auto shallowCopy = shallowCopyContext_->shallowCopy();
 
-	//buduje mapê hierarchii subject -> session -> motion -> files
-	//na bazie tej mapy bêdê realizowa³ hierarchiê pluginu subject
+	//buduje mapï¿½ hierarchii subject -> session -> motion -> files
+	//na bazie tej mapy bï¿½dï¿½ realizowaï¿½ hierarchiï¿½ pluginu subject
 
 	SubjectFiles subjectHierarchy = groupDataInHierarchy(loadedFilesData, shallowCopy);
 	Indexes loadedFiles;
@@ -874,13 +872,13 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 	auto transaction = localContext_->transaction();
 	//auto hierarchyTransaction = mdm->hierarchyTransaction();
 	for (auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
-		//tworzê subject jeœli to konieczne!!
+		//tworzï¿½ subject jeï¿½li to konieczne!!
 
 		core::VariantPtr subOW = getSubject(subjectIT->first, subjectService, shallowCopy);
 		PluginSubject::SubjectPtr subPtr;
 		subOW->tryGet(subPtr);
 
-		//mam subjecta, mogê iœæ dalej do sesji
+		//mam subjecta, mogï¿½ iï¿½ï¿½ dalej do sesji
 		for (auto sessionIT = subjectIT->second.begin(); sessionIT != subjectIT->second.end(); ++sessionIT){
 			
 			core::VariantPtr sOW = getSession(sessionIT->second,
@@ -889,7 +887,7 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 			PluginSubject::SessionPtr sPtr;
 			sOW->tryGet(sPtr);
 
-			//mam sesjê - mogê iœæ dalej z motionami!!
+			//mam sesjï¿½ - mogï¿½ iï¿½ï¿½ dalej z motionami!!
 			for (auto motionIT = sessionIT->second.second.begin(); motionIT != sessionIT->second.second.end(); ++motionIT){
 				core::VariantPtr mOW = getMotion(motionIT->second,
 					loadedFilesData, sPtr, sOW, motionIT->first,
@@ -1051,7 +1049,7 @@ const bool HMDBShallowCopyLocalContext::unload(const DataType type,
 				else{
 					auto locFiles2roots = files2roots;
 
-					//szukam po rootach czy ich przeciêcie z aktualn¹ grup¹ istnieje
+					//szukam po rootach czy ich przeciï¿½cie z aktualnï¿½ grupï¿½ istnieje
 					for (auto IT = locFiles2roots.begin(); IT != locFiles2roots.end(); ++IT){
 						std::vector<int> inter(std::min(unloadFiles.size(), IT->first.size()));
 						auto retIT = std::set_intersection(unloadFiles.begin(), unloadFiles.end(), IT->first.begin(), IT->first.end(), inter.begin());
@@ -1090,27 +1088,27 @@ void HMDBShallowCopyLocalContext::unloadSubjectHierarchy(const IndexedData & unl
 {
 	auto shallowCopy = shallowCopyContext_->shallowCopy();
 
-	//buduje mapê hierarchii subject -> session -> motion -> files
-	//na bazie tej mapy bêdê realizowa³ hierarchiê pluginu subject
+	//buduje mapï¿½ hierarchii subject -> session -> motion -> files
+	//na bazie tej mapy bï¿½dï¿½ realizowaï¿½ hierarchiï¿½ pluginu subject
 
 	SubjectFiles subjectHierarchy = groupDataInHierarchy(unloadedFiles, shallowCopy);
 
 	auto transaction = localContext_->transaction();
 	for (auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
-		//tworzê subject jeœli to konieczne!!
+		//tworzï¿½ subject jeï¿½li to konieczne!!
 
 		core::VariantPtr subOW = findObjectByType(SubjectType, subjectIT->first, typeid(PluginSubject::ISubject));
 		PluginSubject::SubjectPtr subPtr;
 		subOW->tryGet(subPtr);
 
-		//mam subjecta, mogê iœæ dalej do sesji
+		//mam subjecta, mogï¿½ iï¿½ï¿½ dalej do sesji
 		for (auto sessionIT = subjectIT->second.begin(); sessionIT != subjectIT->second.end(); ++sessionIT){
 
 			core::VariantPtr sOW = findObjectByType(SessionType, sessionIT->first, typeid(PluginSubject::ISession));
 			PluginSubject::SessionPtr sPtr;
 			sOW->tryGet(sPtr);
 
-			//mam sesjê - mogê iœæ dalej z motionami!!
+			//mam sesjï¿½ - mogï¿½ iï¿½ï¿½ dalej z motionami!!
 			for (auto motionIT = sessionIT->second.second.begin(); motionIT != sessionIT->second.second.end(); ++motionIT){
 				core::VariantPtr mOW = findObjectByType(MotionType, motionIT->first, typeid(PluginSubject::IMotion));
 				PluginSubject::MotionPtr mPtr;

@@ -62,7 +62,7 @@ protected:
 	//! Abstrakcyjny setter do czasu, metoda z inną sygnaturą może uchronić przed błędami
 	//! \param time ustawiany czas
 	virtual void setLocalTime(double time);
-	virtual const kinematic::SkeletonState::NonRigidCompleteStateChange& getStateChange();
+
 
 private:
 

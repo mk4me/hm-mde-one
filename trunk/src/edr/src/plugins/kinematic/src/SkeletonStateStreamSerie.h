@@ -58,8 +58,6 @@ public:
 
 	virtual const utils::TypeInfo & getRequestedDataType() const;
 
-protected:
-	virtual const kinematic::SkeletonState::NonRigidCompleteStateChange& getStateChange();
 
 private:
 	//! Obiekt aktualizujący

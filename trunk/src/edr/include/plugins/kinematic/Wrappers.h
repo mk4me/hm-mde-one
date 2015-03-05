@@ -15,7 +15,7 @@
 //! Struktura zawiera wczytane z pliku uaktualnienia stanu szkieletu
 struct SkeletonStates
 {
-	std::vector<kinematic::SkeletonState::NonRigidCompleteStateChange> frames;
+	std::vector<kinematic::SkeletonState::RigidPartialStateChange> frames;
 	double frameTime;
 	double getLength() const {
 		return frameTime * frames.size();

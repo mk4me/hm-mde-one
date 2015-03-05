@@ -194,13 +194,23 @@ namespace kinematic
 		static void update(SkeletonState & skeletonState, const NonRigidCompleteStateChange & stateChange,
 			const LinearizedNodesMapping & mapping);
 
+		////! \param skeletonState [out] Aktualizowany stan szkieletu
+		////! \param newState Nowy stan szkieletu
+		//! \param mapping Mapowanie jointów do indeksów
+		static void setLocal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState,
+				const LinearizedNodesMapping & mapping);
+
+		//! \param skeletonState [out] Aktualizowany stan szkieletu
+		//! \param stateChange Zmiana stanu szkieletu
+		//! \param mapping Mapowanie jointów do indeksów
+		static void setLocal(SkeletonState & skeletonState, const RigidPartialStateChange & stateChange,
+				const LinearizedNodesMapping & mapping);
+
 	private:
 		//! \param skeletonState [out] Aktualizowany stan szkieletu
 		//! \param stateChange Zmiana stanu szkieletu
-		static void update(SkeletonState & skeletonState, const RigidPartialStateChange & stateChange);
-		//! \param skeletonState [out] Aktualizowany stan szkieletu
-		//! \param stateChange Zmiana stanu szkieletu
 		static void update(SkeletonState & skeletonState, const RigidCompleteStateChange & stateChange);
+
 
 		public:
 		////! \param skeletonState [out] Aktualizowany stan szkieletu
@@ -211,9 +221,6 @@ namespace kinematic
 		////! \param newState Nowy stan szkieletu
 		//static void setLocal(SkeletonState & skeletonState, const RigidCompleteStateChange & newState);
 		//static void setGlobal(SkeletonState & skeletonState, const RigidCompleteStateChange & newState);
-		////! \param skeletonState [out] Aktualizowany stan szkieletu
-		////! \param newState Nowy stan szkieletu
-		//static void setLocal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState);
 		//static void setGlobal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState);
 
 		////! \param skeletonState Stan szkieletu
