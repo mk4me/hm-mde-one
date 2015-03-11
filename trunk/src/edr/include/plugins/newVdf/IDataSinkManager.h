@@ -13,13 +13,14 @@
 #include <plugins/newVdf/IDataSink.h>
 #include <utils/Debug.h>
 #include <utils/ObserverPattern.h>
+#include <boost/range/iterator_range.hpp>
 
 namespace vdf{
 
     class IDataSinkManager : public utils::Observable<IDataSinkManager>
     {
     public:
-        //! Lista Ÿróde³ danych.
+        //! Lista ï¿½rï¿½deï¿½ danych.
         typedef std::vector<vdf::IDataSinkPtr> IDataSinks;
         //! 
         typedef boost::iterator_range<IDataSinks::const_iterator> DataSinksConstRange;

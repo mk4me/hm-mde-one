@@ -12,13 +12,14 @@
 #include <plugins/newVdf/IDataProcessor.h>
 #include <utils/Debug.h>
 #include <utils/ObserverPattern.h>
+#include <boost/range/iterator_range.hpp>
 
 namespace vdf{
 
     class IDataProcessorManager :  public utils::Observable<IDataProcessorManager>
     {
     public:
-        //! Lista elementów przetwarzaj¹cych.
+        //! Lista elementï¿½w przetwarzajï¿½cych.
         typedef std::vector<vdf::IDataProcessorPtr> IDataProcessors;
         //! 
         typedef boost::iterator_range<IDataProcessors::const_iterator> IDataProcessorsConstRange;

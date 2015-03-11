@@ -1,46 +1,41 @@
 /********************************************************************
     created:  2012/12/10
     created:  10:12:2012   20:33
-    filename: IMRNode.h
+    filename: ISTMRNode.h
     author:   Mateusz Janiak
     
     purpose:  
 *********************************************************************/
-#ifndef HEADER_GUARD___IMRNODE_H__
-#define HEADER_GUARD___IMRNODE_H__
+#ifndef HEADER_GUARD___ISTMRNODE_H__
+#define HEADER_GUARD___ISTMRNODE_H__
 
 #include <dflib/IDFFeatures.h>
-#include <mutex>
 
-class MROutputPin;
-class MRInputPin;
+class STMROutputPin;
+class STMRInputPin;
 
-class IMRNode : public df::IDFResetable, public df::IDFPausable
+class ISTMRNode : public df::IDFResetable, public df::IDFPausable
 {
 public:
 	virtual void process() = 0;
 	virtual void tryPause() = 0;
-
-protected:
-
-	mutable std::mutex mutex;
 };
 
-class IMRSink
+class ISTMRSink
 {
 public:
-	virtual ~IMRSink() {}
+	virtual ~ISTMRSink() {}
 	virtual void updateSnk() = 0;
 };
 
-class IMRSource
+class ISTMRSource
 {
 public:
-	virtual ~IMRSource() {}
+	virtual ~ISTMRSource() {}
 	virtual void updateSrc() = 0;
 };
 
-class IMRSourceNode : public IMRSource, public virtual IMRNode
+class ISTMRSourceNode : public ISTMRSource, public virtual ISTMRNode
 {
 public:
 
@@ -50,16 +45,16 @@ public:
 	virtual void lockSrcProcessing() = 0;
 	virtual void unlockSrcProcessing() = 0;
 
-	virtual MROutputPin * outputPin(size_type idx) = 0;
-	virtual const MROutputPin * outputPin(size_type idx) const = 0;
+	virtual STMROutputPin * outputPin(size_type idx) = 0;
+	virtual const STMROutputPin * outputPin(size_type idx) const = 0;
 
-	virtual void addOutputPin(MROutputPin * pin) = 0;
+	virtual void addOutputPin(STMROutputPin * pin) = 0;
 
 	virtual const size_type outputSize() const = 0;
 	virtual const bool outputEmpty() const = 0;
 };
 
-class IMRSinkNode : public IMRSink, public virtual IMRNode
+class ISTMRSinkNode : public ISTMRSink, public virtual ISTMRNode
 {
 public:
 
@@ -69,20 +64,20 @@ public:
 	virtual void lockSnkProcessing() = 0;
 	virtual void unlockSnkProcessing() = 0;
 
-	virtual MRInputPin * inputPin(size_type idx) = 0;
-	virtual const MRInputPin * inputPin(size_type idx) const = 0;
+	virtual STMRInputPin * inputPin(size_type idx) = 0;
+	virtual const STMRInputPin * inputPin(size_type idx) const = 0;
 
-	virtual void addInputPin(MRInputPin * pin) = 0;
+	virtual void addInputPin(STMRInputPin * pin) = 0;
 
 	virtual const size_type inputSize() const = 0;
 	virtual const bool inputEmpty() const = 0;
 };
 
-class IMRProcessingNode : public IMRSinkNode, public IMRSourceNode
+class ISTMRProcessingNode : public ISTMRSinkNode, public ISTMRSourceNode
 {
 public:
 
 	typedef unsigned int size_type;
 };
 
-#endif	//	HEADER_GUARD___IMRNODE_H__
+#endif	//	HEADER_GUARD___ISTMRNODE_H__

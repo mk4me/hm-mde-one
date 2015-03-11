@@ -12,13 +12,14 @@
 #include <plugins/newVdf/IDataSource.h>
 #include <utils/Debug.h>
 #include <utils/ObserverPattern.h>
+#include <boost/range/iterator_range.hpp>
 
 namespace vdf {
 
     class IDataSourceManager : public utils::Observable<IDataSourceManager>
     {
     public:
-        //! Lista Ÿróde³ danych.
+        //! Lista ï¿½rï¿½deï¿½ danych.
         typedef std::vector<vdf::IDataSourcePtr> IDataSources;
         //! 
         typedef boost::iterator_range<IDataSources::const_iterator> IDataSourcesConstRange;

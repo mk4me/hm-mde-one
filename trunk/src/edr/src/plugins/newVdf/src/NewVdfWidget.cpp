@@ -123,8 +123,8 @@ void vdf::NewVdfWidget::clearScene()
 
 void vdf::NewVdfWidget::runDF()
 {
-	QMessageBox::critical(this, tr("Costume connection problem"), tr("Could not connect costume - please retry and follow costume initialization instructions."));
-	return;
+	//QMessageBox::critical(this, tr("Costume connection problem"), tr("Could not connect costume - please retry and follow costume initialization instructions."));
+	//return;
     
 	std::list<UniversalSink*> sinks;
     auto nodes = sceneModel->getVisualItems<IVisualNodePtr>();

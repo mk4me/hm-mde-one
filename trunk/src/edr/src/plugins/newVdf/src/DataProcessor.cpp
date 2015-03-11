@@ -1,3 +1,4 @@
+#include <boost/lexical_cast.hpp>
 #include "NewVdfPCH.h"
 #include <plugins/newVdf/DataProcessor.h>
 #include <dflib/Node.h>

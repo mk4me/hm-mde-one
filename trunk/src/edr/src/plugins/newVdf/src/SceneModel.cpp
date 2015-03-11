@@ -7,11 +7,11 @@
 #include <plugins/newVdf/IVisualSourceNode.h>
 #include <plugins/newVdf/IVisualProcessingNode.h>
 #include <dflib/Model.h>
-#include <dflib/DFModelRunner.h>
+#include <dflib/STDFModelRunner.h>
 #include <dflib/Connection.h>
 #include <dflib/Node.h>
 #include <type_traits>
-#include <corelib/IThreadPool.h>
+//#include <corelib/IThreadPool.h>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -23,52 +23,52 @@
 
 using namespace vdf;
 
-class VDFThreadPool : public threadingUtils::IThreadPool
-{
-public:
-
-	VDFThreadPool(core::IThreadPool * tp) : tp_(tp)
-	{
-	}
-
-	virtual ~VDFThreadPool() {}
-
-	virtual const size_type maxThreads() const
-	{
-		return tp_->max();
-	}
-
-	virtual const size_type minThreads() const
-	{
-		return tp_->min();
-	}
-
-	virtual const size_type threadsCount() const
-	{
-		return tp_->count();
-	}
-
-	virtual threadingUtils::IThreadPtr getThread()
-	{
-		core::IThreadPool::Threads ret;
-		tp_->getThreads("VDF", ret, 1);
-		ret.front()->setDestination("Node thread");
-		return ret.front();
-	}
-
-	virtual void getThreads(const size_type groupSize, Threads & threads, const bool exact = true)
-	{
-		core::IThreadPool::Threads ret;
-		tp_->getThreads("VDF", ret, groupSize);
-		for (auto it = ret.begin(); it != ret.end(); ++it){
-			(*it)->setDestination("Node thread");
-			threads.push_back(*it);
-		}
-	}
-
-private:
-	core::IThreadPool * tp_;
-};
+//class VDFThreadPool : public threadingUtils::IThreadPool
+//{
+//public:
+//
+//	VDFThreadPool(core::IThreadPool * tp) : tp_(tp)
+//	{
+//	}
+//
+//	virtual ~VDFThreadPool() {}
+//
+//	virtual const size_type maxThreads() const
+//	{
+//		return tp_->max();
+//	}
+//
+//	virtual const size_type minThreads() const
+//	{
+//		return tp_->min();
+//	}
+//
+//	virtual const size_type threadsCount() const
+//	{
+//		return tp_->count();
+//	}
+//
+//	virtual threadingUtils::IThreadPtr getThread()
+//	{
+//		core::IThreadPool::Threads ret;
+//		tp_->getThreads("VDF", ret, 1);
+//		ret.front()->setDestination("Node thread");
+//		return ret.front();
+//	}
+//
+//	virtual void getThreads(const size_type groupSize, Threads & threads, const bool exact = true)
+//	{
+//		core::IThreadPool::Threads ret;
+//		tp_->getThreads("VDF", ret, groupSize);
+//		for (auto it = ret.begin(); it != ret.end(); ++it){
+//			(*it)->setDestination("Node thread");
+//			threads.push_back(*it);
+//		}
+//	}
+//
+//private:
+//	core::IThreadPool * tp_;
+//};
 
 IVisualConnectionPtr SceneModel::addConnection(IVisualOutputPinPtr outputPin, IVisualInputPinPtr inputPin)
 {
@@ -86,10 +86,10 @@ IVisualConnectionPtr SceneModel::addConnection(IVisualOutputPinPtr outputPin, IV
 	return connection;
 }
 
-SceneModel::SceneModel(CanvasStyleEditorPtr factories, core::IThreadPool* threadpool) :
+SceneModel::SceneModel(CanvasStyleEditorPtr factories) ://, core::IThreadPool* threadpool) :
 builder(factories),
-model(new df::Model),
-dfThreadFactory(new VDFThreadPool(threadpool))
+model(new df::Model)
+//dfThreadFactory(new VDFThreadPool(threadpool))
 {
 }
 
@@ -174,14 +174,15 @@ void SceneModel::addNode(df::INode* node)
 
 void SceneModel::run()
 {
-	if (df::DFModelRunner::verifyModel(model.get()) == true){
-		df::DFModelRunner runner;
-		runner.start(model.get(), nullptr, dfThreadFactory.get());
-		runner.join();
+	UTILS_ASSERT("TODO");
+	if (df::STDFModelRunner::verifyModel(model.get()) == true){
+		df::STDFModelRunner runner;
+		runner.start(model.get(), nullptr);
+//		runner.join();
 	}
 	else{
-		//TODO
-		//obs³uga b³êdów
+//		//TODO
+//		//obsï¿½uga bï¿½ï¿½dï¿½w
 		UTILS_ASSERT(false);
 	}
 }
@@ -453,6 +454,11 @@ void vdf::SceneModel::addNodeWithPins(const SceneBuilder::VisualNodeWithPins& no
 	for (auto it = pins.begin(); it != pins.end(); ++it) {
 		addItem(*it);
 	}
+}
+
+vdf::SceneBuilder::VisualNodeWithPins vdf::SceneModel::Serializer::createItemByEntry(const std::string& name)
+{
+	return typesWindow->createItemByEntry(QString::fromStdString(name));
 }
 
 vdf::SceneModel::Serializer::Infos vdf::SceneModel::Serializer::extractInfos() const

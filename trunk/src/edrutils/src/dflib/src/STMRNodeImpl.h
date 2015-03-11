@@ -6,23 +6,21 @@
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD___MRNODEIMPL_H__
-#define HEADER_GUARD___MRNODEIMPL_H__
+#ifndef HEADER_GUARD___STMRNODEIMPL_H__
+#define HEADER_GUARD___STMRNODEIMPL_H__
 
 #include <vector>
-#include <mutex>
-#include <condition_variable>
 
-class MRInputPin;
-class MROutputPin;
-class IMRSourceNode;
-class IMRSinkNode;
+class STMRInputPin;
+class STMROutputPin;
+class ISTMRSourceNode;
+class ISTMRSinkNode;
 
-class MRNodeImpl
+class STMRNodeImpl
 {
 public:
 
-	MRNodeImpl();
+	STMRNodeImpl();
 
 	void pause();
 	void resume();
@@ -33,21 +31,20 @@ public:
 
 private:
 	bool paused_;
-	std::mutex syncPolicy;
 };
 
-class MRSourceNodeImpl
+class STMRSourceNodeImpl
 {
 private:
 
-	typedef std::vector<MROutputPin*> OutputPins;
+	typedef std::vector<STMROutputPin*> OutputPins;
 	typedef OutputPins::size_type size_type;
 
 public:
 
-	MRSourceNodeImpl(IMRSourceNode * source, unsigned int toConsume);
+	STMRSourceNodeImpl(ISTMRSourceNode * source, unsigned int toConsume);
 
-	~MRSourceNodeImpl();
+	~STMRSourceNodeImpl();
 
 	void updateSrc();
 
@@ -55,39 +52,37 @@ public:
 
 	void resetOutputs();
 
-	void addPin(MROutputPin * pin);
+	void addPin(STMROutputPin * pin);
 
 	const bool empty() const;
 
 	const size_type size() const;
 
-	MROutputPin * pin(size_type idx);
-	const MROutputPin * pin(size_type idx) const;
+	STMROutputPin * pin(size_type idx);
+	const STMROutputPin * pin(size_type idx) const;
 
 	void wait();
 	void wakeUp();
 
 private:	
-	std::mutex syncPolicy;
-	std::condition_variable wait_;
 	const unsigned int toConsume;
 	unsigned int currentlyConsumed;
-	IMRSourceNode * source_;
+	ISTMRSourceNode * source_;
 	OutputPins outputPins;
 };
 
-class MRSinkNodeImpl
+class STMRSinkNodeImpl
 {
 private:
 
-	typedef std::vector<MRInputPin*> InputPins;
+	typedef std::vector<STMRInputPin*> InputPins;
 	typedef InputPins::size_type size_type;
 
 public:
 
-	MRSinkNodeImpl(IMRSinkNode * sink, unsigned int toConsume);
+	STMRSinkNodeImpl(ISTMRSinkNode * sink, unsigned int toConsume);
 
-	~MRSinkNodeImpl();
+	~STMRSinkNodeImpl();
 
 	void updateSnk();
 
@@ -95,25 +90,23 @@ public:
 
 	void resetInputs();
 
-	void addPin(MRInputPin * pin);
+	void addPin(STMRInputPin * pin);
 
 	const bool empty() const;
 
 	const size_type size() const;
 
-	MRInputPin * pin(size_type idx);
-	const MRInputPin * pin(size_type idx) const;
+	STMRInputPin * pin(size_type idx);
+	const STMRInputPin * pin(size_type idx) const;
 
 	void wait();
 
 	void wakeUp();
 
 private:
-	std::condition_variable wait_;
-	std::mutex sync;
 	const unsigned int toConsume;
 	unsigned int readyToConsume;
-	IMRSinkNode * sink_;
+	ISTMRSinkNode * sink_;
 	InputPins inputPins;
 };
 

@@ -1,11 +1,12 @@
 #include <corelib/IPlugin.h>
-#include <plugins/dfelements/DFProcessors.h>
+#include <plugins/dfElements/DFProcessors.h>
 #include <plugins/newVdf/UniversalSink.h>
 #include <plugins/newVdf/UniversalSource.h>
 #include <plugins/newVdf/IDataFlowProvider.h>
 #include <plugins/c3d/C3DChannels.h>
+#include <plugins/newChart/Wrappers.h>
 
-CORE_PLUGIN_BEGIN("DFEments", core::UID::GenerateUniqueID("{678727A0-ED31-43CA-AE6D-BADA05717ADA}"))
+CORE_PLUGIN_BEGIN("DFElements", core::UID::GenerateUniqueID("{678727A0-ED31-43CA-AE6D-BADA05717ADA}"))
 
 	VDF_SERVICE_BEGIN(DFElementsService, "{C354FD3F-3559-4990-830D-57BA5E5BC813}")
 
@@ -13,6 +14,12 @@ CORE_PLUGIN_BEGIN("DFEments", core::UID::GenerateUniqueID("{678727A0-ED31-43CA-A
             vdf::UniversalSource<VectorChannelReaderInterface>, 
             "Vector source",
             "{03FCCADA-5814-4B7B-BC60-2E07CBBF35FB}",
+            QIcon(":/newVdf/icons/source.png"));
+
+		VDF_ADD_DATA_SOURCE(
+            vdf::UniversalSource<ScalarStream>,
+            "Scalar Stream source",
+            "{03FCCADA-5814-4B7B-BC60-2E07CBBF35FC}",
             QIcon(":/newVdf/icons/source.png"));
 
 		VDF_ADD_DATA_PROCESSOR(

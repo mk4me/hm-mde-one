@@ -66,5 +66,5 @@ QString SimpleSourceNode::getName() const
 
 void vdf::SimpleSourceNode::setValid( bool valid )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }

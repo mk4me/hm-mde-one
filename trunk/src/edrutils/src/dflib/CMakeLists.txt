@@ -12,6 +12,7 @@ SET_PUBLIC_HEADERS (
 	IDFFeatures.h
 	ModelBase.h
 	DFModelRunner.h
+	STDFModelRunner.h
 	IDFLogger.h
 	ModelImpl.h
 	Model.h
@@ -29,6 +30,12 @@ SET_PRIVATE_HEADERS (
 	MRPin.h
 	MRConnection.h
 	DFModelRunnerImpl.h
+	ISTMRNode.h
+	STMRNode.h
+	STMRNodeImpl.h
+	STMRPin.h
+	STMRConnection.h
+	STDFModelRunnerImpl.h
 )
 
 SET_SOURCE_FILES(
@@ -48,6 +55,12 @@ SET_SOURCE_FILES(
 	MRModelInterfaceVerifier.cpp
 	MRModelPinRequirementsVerifier.cpp
 	MRModelLogicVerifier.cpp
+	STDFModelRunner.cpp
+	STDFModelRunnerImpl.cpp
+	STMRNode.cpp
+	STMRNodeImpl.cpp
+	STMRPin.cpp
+	STMRConnection.cpp
 )
 
 END_PROJECT()

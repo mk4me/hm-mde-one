@@ -1,5 +1,7 @@
 #include "NewVdfPCH.h"
 #include "PresetsWidget.h"
+#include <iosfwd>
+#include <fstream>
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QLayout>
 

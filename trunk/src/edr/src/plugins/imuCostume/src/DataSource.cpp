@@ -10,6 +10,7 @@
 #include <corelib/HierarchyDataItem.h>
 #include <plugins/hmdbCommunication/TreeItemHelper.h>
 #include <iosfwd>
+#include <fstream>
 #include "IMUPerspective.h"
 #include "CostumeSkeletonMotionHelper.h"
 #include <corelib/IVisualizerManager.h>

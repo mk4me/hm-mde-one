@@ -88,7 +88,7 @@ namespace vdf {
 		DEFINE_SMART_POINTERS(MergedItem);
 
 	public:
-		SceneModel(CanvasStyleEditorPtr factories, core::ThreadPool* threadpool = plugin::getThreadPool());
+		SceneModel(CanvasStyleEditorPtr factories);//, core::ThreadPool* threadpool = plugin::getThreadPool());
 		virtual ~SceneModel() {}
 
 		public slots:
@@ -229,7 +229,7 @@ namespace vdf {
 
 				std::map<int, IVisualNodePtr> idx2Node;
 				for (auto it = nc.begin(); it != nc.end(); ++it) {
-					auto itm = typesWindow->createItemByEntry(QString::fromStdString(it->name));
+					auto itm = createItemByEntry(it->name);
 					idx2Node[it->index] = itm.get<0>();
 					model->addNodeWithPins(itm, QPointF(it->x, it->y));
 				}
@@ -246,7 +246,7 @@ namespace vdf {
 			}
 
 			Infos extractInfos() const;
-
+			SceneBuilder::VisualNodeWithPins createItemByEntry(const std::string&);
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
 			SceneModelPtr model;
 			TypesWindow* typesWindow;

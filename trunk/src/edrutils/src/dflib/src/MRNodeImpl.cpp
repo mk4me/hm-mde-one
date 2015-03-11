@@ -1,6 +1,7 @@
 #include "MRNodeImpl.h"
 #include "IMRNode.h"
 #include "MRPin.h"
+#include <algorithm>
 #include <stdexcept>
 
 MRNodeImpl::MRNodeImpl() : paused_(false)
@@ -33,7 +34,7 @@ const bool MRNodeImpl::paused() const
 void MRNodeImpl::tryPause()
 {
 	std::unique_lock<std::mutex> lock(syncPolicy);
-	pauseVariable.wait(lock);
+	//pauseVariable.wait(lock);
 }
 
 MRSourceNodeImpl::MRSourceNodeImpl(IMRSourceNode * source, unsigned int toConsume) : source_(source), toConsume(toConsume), currentlyConsumed(0)
@@ -105,7 +106,7 @@ const MROutputPin * MRSourceNodeImpl::pin(size_type idx) const
 
 void MRSourceNodeImpl::wait()
 {	
-	std::unique_lock<std::mutex> lock(sync);
+	std::unique_lock<std::mutex> lock(syncPolicy);
 	wait_.wait(lock);
 }
 

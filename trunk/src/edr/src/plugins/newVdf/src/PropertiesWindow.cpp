@@ -1,4 +1,4 @@
-#include "newVdfPCH.h"
+//#include "newVdfPCH.h"
 #include "PropertiesWindow.h"
 #include <plugins/newVdf/INodeConfiguration.h>
 #include <corelib/PluginCommon.h>

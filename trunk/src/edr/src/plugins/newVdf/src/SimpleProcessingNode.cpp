@@ -83,6 +83,6 @@ void SimpleProcessingNode::clearOutputPins()
 
 void vdf::SimpleProcessingNode::setValid( bool valid )
 {
-    throw std::exception("The method or operation is not implemented.");
+    throw std::runtime_error("The method or operation is not implemented.");
 }
 
