@@ -1,39 +1,37 @@
-#include "MRPin.h"
-#include "IMRNode.h"
-#include "MRConnection.h"
+#include "STMRPin.h"
+#include "ISTMRNode.h"
+#include "STMRConnection.h"
 #include <algorithm>
 #include <stdexcept>
 
-MRInputPin::MRInputPin(IMRSink * sink, df::IInputPin * pin, df::IDFInput * dfInput) : sink_(sink), pin_(pin), dfInput_(dfInput), consumed_(false), outputsReady(0)
+STMRInputPin::STMRInputPin(ISTMRSink * sink, df::IInputPin * pin, df::IDFInput * dfInput) : sink_(sink), pin_(pin), dfInput_(dfInput), consumed_(false), outputsReady(0)
 {
 
 }
 
-MRInputPin::~MRInputPin()
+STMRInputPin::~STMRInputPin()
 {
 
 }
 
-IMRSink * MRInputPin::sink()
+ISTMRSink * STMRInputPin::sink()
 {
 	return sink_;
 }
 
-const IMRSink * MRInputPin::sink() const
+const ISTMRSink * STMRInputPin::sink() const
 {
 	return sink_;
 }
 
-void MRInputPin::reset()
+void STMRInputPin::reset()
 {
-	std::lock_guard<std::mutex> lock(mutex);
 	dfInput_->reset();
 }
 
-void MRInputPin::update()
+void STMRInputPin::update()
 {
 	consumed_ = false;
-	std::lock_guard<std::mutex> lock(mutex);
 	++outputsReady;
 	if(outputsReady == connections.size())
 	{
@@ -41,15 +39,13 @@ void MRInputPin::update()
 	}
 }
 
-const bool MRInputPin::updated() const
+const bool STMRInputPin::updated() const
 {
-	std::lock_guard<std::mutex> lock(mutex);
 	return outputsReady == connections.size();
 }
 
-void MRInputPin::consumeData()
+void STMRInputPin::consumeData()
 {
-	std::lock_guard<std::mutex> lock(mutex);
 	try{
 		for(auto it = connections.begin(); it != connections.end(); ++it){
 			dfInput_->copyData((*it)->source()->dfOutput());
@@ -64,23 +60,22 @@ void MRInputPin::consumeData()
 	}
 }
 
-const bool MRInputPin::dataConsumed() const
+const bool STMRInputPin::dataConsumed() const
 {
-	std::lock_guard<std::mutex> lock(mutex);
 	return consumed_;
 }
 
-MRConnection * MRInputPin::connection(size_type idx)
+STMRConnection * STMRInputPin::connection(size_type idx)
 {
 	return connections[idx];
 }
 
-const MRConnection * MRInputPin::connection(size_type idx) const
+const STMRConnection * STMRInputPin::connection(size_type idx) const
 {
 	return connections[idx];
 }
 
-void MRInputPin::addConnection(MRConnection * connection)
+void STMRInputPin::addConnection(STMRConnection * connection)
 {
 	if(std::find(connections.begin(), connections.end(), connection) != connections.end())
 	{
@@ -90,65 +85,63 @@ void MRInputPin::addConnection(MRConnection * connection)
 	connections.push_back(connection);
 }
 
-MRInputPin::size_type MRInputPin::size() const
+STMRInputPin::size_type STMRInputPin::size() const
 {
 	return connections.size();
 }
 
-const bool MRInputPin::empty() const
+const bool STMRInputPin::empty() const
 {
 	return connections.empty();
 }
 
-df::IInputPin * MRInputPin::innerPin()
+df::IInputPin * STMRInputPin::innerPin()
 {
 	return pin_;
 }
 
-const df::IInputPin * MRInputPin::innerPin() const
+const df::IInputPin * STMRInputPin::innerPin() const
 {
 	return pin_;
 }
 
-df::IDFInput * MRInputPin::dfInput()
+df::IDFInput * STMRInputPin::dfInput()
 {
 	return dfInput_;
 }
 
-const df::IDFInput * MRInputPin::dfInput() const
+const df::IDFInput * STMRInputPin::dfInput() const
 {
 	return dfInput_;
 }
 
-MROutputPin::MROutputPin(IMRSource * source, df::IOutputPin * pin, df::IDFOutput * dfOutput) : source_(source), pin_(pin), dfOutput_(dfOutput), updated_(false), inputsConsumed(0)
+STMROutputPin::STMROutputPin(ISTMRSource * source, df::IOutputPin * pin, df::IDFOutput * dfOutput) : source_(source), pin_(pin), dfOutput_(dfOutput), updated_(false), inputsConsumed(0)
 {
 
 }
 
-MROutputPin::~MROutputPin()
+STMROutputPin::~STMROutputPin()
 {
 
 }
 
-IMRSource * MROutputPin::source()
+ISTMRSource * STMROutputPin::source()
 {
 	return source_;
 }
 
-const IMRSource * MROutputPin::source() const
+const ISTMRSource * STMROutputPin::source() const
 {
 	return source_;
 }
 
-void MROutputPin::reset()
+void STMROutputPin::reset()
 {
-	std::lock_guard<std::mutex> lock(mutex);
 	dfOutput_->reset();
 }
 
-void MROutputPin::update()
+void STMROutputPin::update()
 {
-	std::lock_guard<std::mutex> lock(mutex);
 	inputsConsumed = 0;
 	updated_ = true;
 
@@ -158,15 +151,13 @@ void MROutputPin::update()
 	}
 }
 
-const bool MROutputPin::updated() const
+const bool STMROutputPin::updated() const
 {
-	std::lock_guard<std::mutex> lock(mutex);
 	return updated_;
 }
 
-void MROutputPin::consumeData()
+void STMROutputPin::consumeData()
 {
-	std::lock_guard<std::mutex> lock(mutex);
 	++inputsConsumed;
 	if(inputsConsumed == connections.size())
 	{
@@ -175,23 +166,22 @@ void MROutputPin::consumeData()
 	}
 }
 
-const bool MROutputPin::dataConsumed() const
+const bool STMROutputPin::dataConsumed() const
 {
-	std::lock_guard<std::mutex> lock(mutex);
 	return inputsConsumed == connections.size();
 }
 
-MRConnection * MROutputPin::connection(size_type idx)
+STMRConnection * STMROutputPin::connection(size_type idx)
 {
 	return connections[idx];
 }
 
-const MRConnection * MROutputPin::connection(size_type idx) const
+const STMRConnection * STMROutputPin::connection(size_type idx) const
 {
 	return connections[idx];
 }
 
-void MROutputPin::addConnection(MRConnection * connection)
+void STMROutputPin::addConnection(STMRConnection * connection)
 {
 	if(std::find(connections.begin(), connections.end(), connection) != connections.end())
 	{
@@ -201,32 +191,32 @@ void MROutputPin::addConnection(MRConnection * connection)
 	connections.push_back(connection);
 }
 
-MROutputPin::size_type MROutputPin::size() const
+STMROutputPin::size_type STMROutputPin::size() const
 {
 	return connections.size();
 }
 
-const bool MROutputPin::empty() const
+const bool STMROutputPin::empty() const
 {
 	return connections.empty();
 }
 
-df::IOutputPin * MROutputPin::innerPin()
+df::IOutputPin * STMROutputPin::innerPin()
 {
 	return pin_;
 }
 
-const df::IOutputPin * MROutputPin::innerPin() const
+const df::IOutputPin * STMROutputPin::innerPin() const
 {
 	return pin_;
 }
 
-df::IDFOutput * MROutputPin::dfOutput()
+df::IDFOutput * STMROutputPin::dfOutput()
 {
 	return dfOutput_;
 }
 
-const df::IDFOutput * MROutputPin::dfOutput() const
+const df::IDFOutput * STMROutputPin::dfOutput() const
 {
 	return dfOutput_;
 }

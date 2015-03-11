@@ -10,6 +10,37 @@ CORE_PLUGIN_BEGIN("DFElements", core::UID::GenerateUniqueID("{678727A0-ED31-43CA
 
 	VDF_SERVICE_BEGIN(DFElementsService, "{C354FD3F-3559-4990-830D-57BA5E5BC813}")
 
+		VDF_ADD_DATA_SOURCE(
+			vdf::UniversalSource<VectorChannelReaderInterface>,//<MarkerChannel>,
+			"Marker source",
+			"{EA816238-E526-4074-ADDC-1617215FCBAD}",
+			QIcon(":/dfElements/icons/marker.png"));
+		VDF_ADD_DATA_SOURCE(
+			vdf::UniversalSource<VectorChannelReaderInterface>,//<ForceChannel>,
+			"Force source",
+			"{BD87AEFC-5B5E-4A5A-BA07-44D8892AA6BD}",
+			QIcon(":/dfElements/icons/force.png"));
+		VDF_ADD_DATA_SOURCE(
+			vdf::UniversalSource<VectorChannelReaderInterface>,//<MomentChannel>,
+			"Moment source",
+			"{EEFC6B5E-E3CB-4DDD-8ACA-A0AF28ACC730}",
+			QIcon(":/dfElements/icons/moment.png"));
+		VDF_ADD_DATA_SOURCE(
+			vdf::UniversalSource<VectorChannelReaderInterface>,//<AngleChannel>,
+			"Angle source",
+			"{96524542-B216-4BD9-87DA-52CB5C7E9B9B}",
+			QIcon(":/newVdf/icons/source.png"));
+		VDF_ADD_DATA_SOURCE(
+			vdf::UniversalSource<VectorChannelReaderInterface>,//<PowerChannel>,
+			"Power source",
+			"{B82BF44A-A32C-4454-BE59-9114BECD17D9}",
+			QIcon(":/dfElements/icons/power.png"));
+		VDF_ADD_DATA_SOURCE(
+			vdf::UniversalSource<ScalarChannelReader>,
+			"Scalar source",
+			"{8E69F5D7-2314-4831-BE40-7081109A1997}",
+			QIcon(":/newVdf/icons/source.png"));
+
         VDF_ADD_DATA_SOURCE(
             vdf::UniversalSource<VectorChannelReaderInterface>, 
             "Vector source",
