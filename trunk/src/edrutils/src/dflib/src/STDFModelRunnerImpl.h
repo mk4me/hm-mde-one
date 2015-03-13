@@ -75,7 +75,6 @@ private:
 	public:
 		SinkNodeRunner(ISTMRSinkNode * node, STDFModelRunnerImpl * runner, df::IDFLogger * logger);
 
-	private:
 		virtual const bool dataflow();
 
 	private:
@@ -89,7 +88,6 @@ private:
 	public:
 		SourceNodeRunner(ISTMRSourceNode * node, STDFModelRunnerImpl * runner, df::IDFLogger * logger);
 
-	private:
 		virtual const bool dataflow();
 
 	private:
@@ -103,7 +101,6 @@ private:
 	public:
 		ProcessingNodeRunner(ISTMRProcessingNode * node, STDFModelRunnerImpl * runner, df::IDFLogger * logger);
 
-	private:
 		virtual const bool dataflow();
 
 	private:
@@ -161,8 +158,7 @@ private:
 	void nonSourceFinished();
 
 	void finishDataflow();
-	void stopDataflow();
-
+	
 	//! Ko�czymy przep�yw danych - czy�cimy wszystko
 	const bool dataflowFinished() const;
 
@@ -215,15 +211,6 @@ public:
 	void start(df::IModelReader * model, df::IDFLogger * logger);
 	void stop();
 
-	void pause(df::INode * node);
-	void resume(df::INode * node);
-	const bool paused(df::INode * node);
-
-	void pause();
-	void resume();
-	const bool paused() const;
-
-	//void join();
 };
 
 #endif	//	HEADER_GUARD___STDFModelRunnerIMPL_H__

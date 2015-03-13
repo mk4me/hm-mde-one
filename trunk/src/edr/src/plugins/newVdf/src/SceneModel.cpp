@@ -174,7 +174,6 @@ void SceneModel::addNode(df::INode* node)
 
 void SceneModel::run()
 {
-	UTILS_ASSERT("TODO");
 	if (df::STDFModelRunner::verifyModel(model.get()) == true){
 		df::STDFModelRunner runner;
 		runner.start(model.get(), nullptr);

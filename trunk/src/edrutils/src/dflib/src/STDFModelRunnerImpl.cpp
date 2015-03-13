@@ -62,23 +62,18 @@ const bool df::STDFModelRunner::STDFModelRunnerImpl::SourceNodeRunner::dataflow(
 
 	if (runner_->sourceStarted() == false){
 		stage++;
-		//runner_->waitForAllSourcesStart();
 	}
 	stage++;
-	node_->tryPause();
 	stage++;
-	//runner_->tryPause();
 	stage++;
 	node_->process();
 	stage++;
 	if (runner_->sourceFinished() == false){
 		stage++;
-		//runner_->waitForAllSourcesFinish();
 	}
 	stage++;
 
-	node_->lockSrcProcessing();
-
+	
 	stage++;
 
 	return true;
@@ -91,16 +86,13 @@ df::STDFModelRunner::STDFModelRunnerImpl::SinkNodeRunner::SinkNodeRunner(ISTMRSi
 
 const bool df::STDFModelRunner::STDFModelRunnerImpl::SinkNodeRunner::dataflow()
 {
-	node_->lockSnkProcessing();
 	stage++;
 	if (runner_->dataflowFinished() == true)
 	{
 		return false;
 	}
 
-	node_->tryPause();
 	stage++;
-	//runner_->tryPause();
 	stage++;
 	node_->process();
 	stage++;
@@ -116,7 +108,6 @@ df::STDFModelRunner::STDFModelRunnerImpl::ProcessingNodeRunner::ProcessingNodeRu
 
 const bool df::STDFModelRunner::STDFModelRunnerImpl::ProcessingNodeRunner::dataflow()
 {
-	node_->lockSnkProcessing();
 	stage++;
 
 	if (runner_->dataflowFinished() == true)
@@ -124,15 +115,12 @@ const bool df::STDFModelRunner::STDFModelRunnerImpl::ProcessingNodeRunner::dataf
 		return false;
 	}
 
-	node_->tryPause();
 	stage++;
-	//runner_->tryPause();
 	stage++;
 	node_->process();
 	stage++;
 	runner_->nonSourceFinished();
 	stage++;
-	node_->lockSrcProcessing();
 	stage++;
 	return true;
 }
@@ -181,7 +169,7 @@ bool df::STDFModelRunner::STDFModelRunnerImpl::sourceFinished()
 			//�r�d�a sko�czy�y przetwarza� - czekamy na innych �eby zako�czy� dataflow
 			sourcesEmpty_ = true;
 			if (dataToProcess == 0){
-				stopDataflow();
+				//stopDataflow();
 			}
 		}
 
@@ -193,7 +181,6 @@ bool df::STDFModelRunner::STDFModelRunnerImpl::sourceFinished()
 
 bool df::STDFModelRunner::STDFModelRunnerImpl::sourceStarted()
 {
-
 	++sourcesStarted_;
 
 	if (sourcesStarted_ == sources_.size())
@@ -218,53 +205,14 @@ void df::STDFModelRunner::STDFModelRunnerImpl::nonSourceFinished()
 		decreaseDataToProcess();
 
 		if (sourcesEmpty_ == true && dataToProcess == 0){
-			stopDataflow();
+			//stopDataflow();
 		}
-	}
-}
-
-void df::STDFModelRunner::STDFModelRunnerImpl::stopDataflow()
-{
-	dataflowFinished_ = true;
-
-	//unlock all nodes to kill corresponding threads (runners)!!
-	//when all are dead dataflow will finish seamlessly processing by cleaning up and reseting
-
-	if (paused_ == true){
-		paused_ = false;
-		//dataflowPauseSync.unlock();
-	}
-
-	for (auto it = pausedNodes.begin(); it != pausedNodes.end(); ++it)
-	{
-		it->second->resume();
-	}
-
-	for (auto it = sources_.begin(); it != sources_.end(); ++it)
-	{
-		(*it).node->unlockSrcProcessing();
-	}
-
-	//sourcesFinishWait.notify_all();
-
-	for (auto it = sinks_.begin(); it != sinks_.end(); ++it)
-	{
-		(*it)->unlockSnkProcessing();
-	}
-
-	for (auto it = processors_.begin(); it != processors_.end(); ++it)
-	{
-		(*it)->unlockSnkProcessing();
 	}
 }
 
 void df::STDFModelRunner::STDFModelRunnerImpl::finishDataflow()
 {
 	try{
-//		for (auto it = threads_.begin(); it != threads_.end(); ++it)
-//		{
-//			(*it)->join();
-//		}
 
 		cleanUpDataflow();
 	}
@@ -349,20 +297,6 @@ void df::STDFModelRunner::STDFModelRunnerImpl::stop()
 {
 }
 
-void df::STDFModelRunner::STDFModelRunnerImpl::pause()
-{
-	paused_ = true;
-}
-
-void df::STDFModelRunner::STDFModelRunnerImpl::resume()
-{
-	paused_ = false;
-}
-
-const bool df::STDFModelRunner::STDFModelRunnerImpl::paused() const
-{
-	return paused_;
-}
 
 //void df::STDFModelRunner::STDFModelRunnerImpl::join()
 //{
@@ -563,17 +497,29 @@ void df::STDFModelRunner::STDFModelRunnerImpl::resetDataflowElements()
 
 void df::STDFModelRunner::STDFModelRunnerImpl::startDataflow()
 {
-//	auto it = threads_.begin();
-//	for (unsigned int i = 0; i < runnables_.size(); ++i)
-//	{
-//		(*it++)->start(runnables_[i]);
-//	}
-
-	for (auto it = sources_.begin(); it != sources_.end(); ++it)
-		{
-			it->node->updateSrc();
+	bool hasStep = true;
+	while (hasStep) {
+		hasStep = false;
+		for (auto& source : sources_) {
+			if (source.node->hasSomethingToProcess()) {
+				hasStep = true;
+				source.node->process();
+			}
+		}
+		for (auto& processor : processors_) {
+			if (processor->hasSomethingToProcess()) {
+				hasStep = true;
+				processor->process();
+			}
 		}
 
+		for (auto& sink : sinks_) {
+			if (sink->hasSomethingToProcess()) {
+				hasStep = true;
+				sink->process();
+			}
+		}
+	}
 }
 
 void df::STDFModelRunner::STDFModelRunnerImpl::cleanUpDataflow()
@@ -624,23 +570,8 @@ void df::STDFModelRunner::STDFModelRunnerImpl::markFailure(const std::string & m
 	if (failure_ == false)
 	{
 		failure_ = true;
-		stopDataflow();
+		//stopDataflow();
 	}
 }
 
-void df::STDFModelRunner::STDFModelRunnerImpl::pause(df::INode * node)
-{
-	auto it = pausedNodes.find(node);
-	it->second->pause();
-}
 
-void df::STDFModelRunner::STDFModelRunnerImpl::resume(df::INode * node)
-{
-	auto it = pausedNodes.find(node);
-	it->second->resume();
-}
-
-const bool df::STDFModelRunner::STDFModelRunnerImpl::paused(df::INode * node)
-{
-	return pausedNodes.find(node) != pausedNodes.end();
-}

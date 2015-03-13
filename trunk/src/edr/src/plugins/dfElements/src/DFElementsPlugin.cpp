@@ -5,11 +5,18 @@
 #include <plugins/newVdf/IDataFlowProvider.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/Wrappers.h>
+#include <plugins/kinematic/Wrappers.h>
 
 CORE_PLUGIN_BEGIN("DFElements", core::UID::GenerateUniqueID("{678727A0-ED31-43CA-AE6D-BADA05717ADA}"))
 
 	VDF_SERVICE_BEGIN(DFElementsService, "{C354FD3F-3559-4990-830D-57BA5E5BC813}")
 
+	
+		VDF_ADD_DATA_SOURCE(
+			vdf::UniversalSource<SkeletonWithStates>,//<MarkerChannel>,
+			"Skeleton source",
+			"{C0CF31A2-4E96-4E6C-99FA-BEB9107373FF}",
+			QIcon(":/dfElements/icons/1a.png"));
 		VDF_ADD_DATA_SOURCE(
 			vdf::UniversalSource<VectorChannelReaderInterface>,//<MarkerChannel>,
 			"Marker source",

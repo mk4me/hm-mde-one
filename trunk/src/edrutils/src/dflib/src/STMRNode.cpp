@@ -17,30 +17,6 @@ void STMRSinkNode::process()
 	sink_->consume();
 }
 
-void STMRSinkNode::pause()
-{
-	nodeImpl.pause();
-}
-
-void STMRSinkNode::resume()
-{
-	nodeImpl.resume();
-}
-
-void STMRSinkNode::tryPause()
-{
-	nodeImpl.tryPause();
-}
-
-const bool STMRSinkNode::paused() const
-{
-	return nodeImpl.paused();
-}
-
-void STMRSinkNode::updateSnk()
-{
-	snkImpl->updateSnk();
-}
 
 void STMRSinkNode::reset()
 {
@@ -48,15 +24,12 @@ void STMRSinkNode::reset()
 	snkImpl->resetInputs();
 }
 
-void STMRSinkNode::lockSnkProcessing()
-{
-	snkImpl->wait();
-}
 
-void STMRSinkNode::unlockSnkProcessing()
-{
-	snkImpl->wakeUp();
-}
+//void STMRSinkNode::unlockSnkProcessing()
+//{
+//	process();
+//	snkImpl->wakeUp();
+//}
 
 void STMRSinkNode::addInputPin(STMRInputPin * pin)
 {
@@ -83,6 +56,16 @@ const bool STMRSinkNode::inputEmpty() const
 	return snkImpl->empty();
 }
 
+bool STMRSinkNode::hasSomethingToProcess()
+{
+	return snkImpl->hasSomethingToProcess();
+}
+
+void STMRSinkNode::updateSnk()
+{
+	snkImpl->updateSnk();
+}
+
 STMRSourceNode::STMRSourceNode(df::ISourceNode * node, df::IDFSource * source) : node_(node), source_(source)
 {
 	srcImpl = new STMRSourceNodeImpl(this, node->outputsConnected());
@@ -99,30 +82,7 @@ void STMRSourceNode::process()
 	srcImpl->updateOutputs();
 }
 
-void STMRSourceNode::pause()
-{
-	nodeImpl.pause();
-}
 
-void STMRSourceNode::resume()
-{
-	nodeImpl.resume();
-}
-
-void STMRSourceNode::tryPause()
-{
-	nodeImpl.tryPause();
-}
-
-const bool STMRSourceNode::paused() const
-{
-	return nodeImpl.paused();
-}
-
-void STMRSourceNode::updateSrc()
-{
-	srcImpl->updateSrc();
-}
 
 void STMRSourceNode::reset()
 {
@@ -130,15 +90,7 @@ void STMRSourceNode::reset()
 	srcImpl->resetOutputs();
 }
 
-void STMRSourceNode::lockSrcProcessing()
-{
-	srcImpl->wait();
-}
 
-void STMRSourceNode::unlockSrcProcessing()
-{
-	srcImpl->wakeUp();
-}
 
 void STMRSourceNode::addOutputPin(STMROutputPin * pin)
 {
@@ -165,6 +117,11 @@ const bool STMRSourceNode::outputEmpty() const
 	return srcImpl->size();
 }
 
+bool STMRSourceNode::hasSomethingToProcess()
+{
+	return !source_->empty();
+}
+
 STMRProcessingNode::STMRProcessingNode(df::IProcessingNode * node, df::IDFProcessor * processor) : node_(node), processor_(processor)
 {
 	snkImpl = new STMRSinkNodeImpl(this, node->inputsConnected());
@@ -184,35 +141,7 @@ void STMRProcessingNode::process()
 	srcImpl->updateOutputs();
 }
 
-void STMRProcessingNode::tryPause()
-{
-	nodeImpl.tryPause();
-}
 
-void STMRProcessingNode::pause()
-{
-	nodeImpl.pause();
-}
-
-void STMRProcessingNode::resume()
-{
-	nodeImpl.resume();
-}
-
-const bool STMRProcessingNode::paused() const
-{
-	return nodeImpl.paused();
-}
-
-void STMRProcessingNode::updateSnk()
-{
-	snkImpl->updateSnk();
-}
-
-void STMRProcessingNode::updateSrc()
-{
-	srcImpl->updateSrc();
-}
 
 void STMRProcessingNode::reset()
 {
@@ -221,15 +150,12 @@ void STMRProcessingNode::reset()
 	srcImpl->resetOutputs();
 }
 
-void STMRProcessingNode::lockSnkProcessing()
-{
-	snkImpl->wait();
-}
 
-void STMRProcessingNode::unlockSnkProcessing()
-{
-	snkImpl->wakeUp();
-}
+//void STMRProcessingNode::unlockSnkProcessing()
+//{
+//	snkImpl->wakeUp();
+//	process();
+//}
 
 void STMRProcessingNode::addInputPin(STMRInputPin * pin)
 {
@@ -256,15 +182,6 @@ const bool STMRProcessingNode::inputEmpty() const
 	return snkImpl->empty();
 }
 
-void STMRProcessingNode::lockSrcProcessing()
-{
-	srcImpl->wait();
-}
-
-void STMRProcessingNode::unlockSrcProcessing()
-{
-	srcImpl->wakeUp();
-}
 
 void STMRProcessingNode::addOutputPin(STMROutputPin * pin)
 {
@@ -289,4 +206,14 @@ const STMRProcessingNode::size_type STMRProcessingNode::outputSize() const
 const bool STMRProcessingNode::outputEmpty() const
 {
 	return srcImpl->empty();
+}
+
+bool STMRProcessingNode::hasSomethingToProcess()
+{
+	return snkImpl->hasSomethingToProcess();
+}
+
+void STMRProcessingNode::updateSnk()
+{
+	snkImpl->updateSnk();
 }

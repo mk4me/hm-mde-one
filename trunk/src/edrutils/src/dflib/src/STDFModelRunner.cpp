@@ -21,28 +21,6 @@ namespace df {
 		privImpl->stop();
 	}
 
-	const bool STDFModelRunner::paused() const
-	{
-		return privImpl->paused();
-	}
-
-	void STDFModelRunner::pause()
-	{
-		privImpl->pause();
-	}
-
-	void STDFModelRunner::resume()
-	{
-		privImpl->resume();
-	}
-
-	void STDFModelRunner::pause(INode * node)
-	{
-	}
-
-	void STDFModelRunner::resume(INode * node)
-	{
-	}
 
 
 	const bool STDFModelRunner::verifyModel(const IModelReader * reader)

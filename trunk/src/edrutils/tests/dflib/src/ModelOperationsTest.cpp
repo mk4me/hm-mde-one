@@ -7,9 +7,10 @@
 #include <dflib/DFModelRunner.h>
 #include <boost/shared_ptr.hpp>
 #include <cmath>
+#include "dflib/STDFModelRunner.h"
 
-#include <threading/QtThreadFactory.h>
-#include <threading/ThreadPool.h>
+//#include <threading/QtThreadFactory.h>
+//#include <threading/ThreadPool.h>
 
 typedef boost::shared_ptr<df::Model> ModelPtr;
 typedef boost::shared_ptr<IntSource> SourcePtr;
@@ -243,22 +244,55 @@ void ModelOperationsTest::testDifferentModelConnectionRemove()
 
 }
 
-void ModelOperationsTest::testModelRunning()
+void ModelOperationsTest::testSimplestModel()
 {
-	utils::IThreadFactoryPtr tf(new utils::QtThreadFactory);
-	utils::IThreadPoolPtr tp(new utils::ThreadPool(tf));
+	IntSource::Data dataA;
+	dataA.push_back(123);
 
+	ModelPtr model(new df::Model());
+	// Ÿró³a
+	SourcePtr sourceA(new IntSource(dataA, "A"));
+	model->addNode(sourceA.get());
 
+	// sinki
+	SinkPtr sinkA(new IntSink("A"));
+	model->addNode(sinkA.get());
+		
+	//³¹czymy
+	//Ÿród³o A z mno¿eniem i dodawaniam
+	ConnectionPtr connAMul(new df::Connection(sourceA->outputPin(0), sinkA->inputPin(0)));
+	model->addConnection(connAMul.get());
+	
+	df::STDFModelRunner runner;
+	
+	//startujemy model
+	runner.start(model.get(), nullptr);
+
+	//porównyjemy wyniki - zawartoœæ sinków i Ÿróde³ powinna byæ taka sama
+	bool equalA = dataA.size() == sinkA->data().size();
+
+	if (equalA == true) {
+		for (auto i = 0; i < dataA.size(); ++i) {
+			if (dataA[i] != sinkA->data()[i]) {
+				equalA = false;
+				break;
+			}
+		}
+	}
+	CPPUNIT_ASSERT(equalA);
+
+}
+
+void ModelOperationsTest::testSingleThreadModelRunning()
+{
 	IntSource::Data dataA;
 	IntSource::Data dataB;
 
-	for(int i = 0; i < 1000; ++i)
-	{
+	for (int i = 0; i < 1000; ++i) {
 		dataA.push_back(1 + (rand() % 1000));
 	}
 
-	for(int i = 0; i < 1000; ++i)
-	{
+	for (int i = 0; i < 1000; ++i) {
 		dataB.push_back(1 + (rand() % 1000));
 	}
 
@@ -316,7 +350,7 @@ void ModelOperationsTest::testModelRunning()
 	//mnozenie z dzieleniem
 	ConnectionPtr connMulDiv(new df::Connection(procMul->outputPin(0), procDiv->inputPin(0)));
 	model->addConnection(connMulDiv.get());
-	
+
 	//dodawanie z odejmowaniem
 	ConnectionPtr connAddSub(new df::Connection(procAdd->outputPin(0), procSub->inputPin(0)));
 	model->addConnection(connAddSub.get());
@@ -328,24 +362,20 @@ void ModelOperationsTest::testModelRunning()
 	ConnectionPtr connSubB(new df::Connection(procSub->outputPin(0), sinkB->inputPin(0)));
 	model->addConnection(connSubB.get());
 
-	df::DFModelRunner runner;
+	df::STDFModelRunner runner;
 
-	
+
 
 	//startujemy model
-	runner.start(model.get(), nullptr, tp.get());
-	runner.join();
+	runner.start(model.get(), nullptr);
 
 	//porównyjemy wyniki - zawartoœæ sinków i Ÿróde³ powinna byæ taka sama
 
 	bool equalA = dataA.size() == sinkA->data().size();
 
-	if(equalA == true)
-	{
-		for(auto i = 0; i < dataA.size(); ++i)
-		{
-			if(dataA[i] != sinkA->data()[i])
-			{
+	if (equalA == true) {
+		for (auto i = 0; i < dataA.size(); ++i) {
+			if (dataA[i] != sinkA->data()[i]) {
 				equalA = false;
 				break;
 			}
@@ -354,17 +384,141 @@ void ModelOperationsTest::testModelRunning()
 
 	bool equalB = dataB.size() == sinkB->data().size();
 
-	if(equalB == true)
-	{
-		for(auto i = 0; i < dataB.size(); ++i)
-		{
-			if(dataB[i] != sinkB->data()[i])
-			{
+	if (equalB == true) {
+		for (auto i = 0; i < dataB.size(); ++i) {
+			if (dataB[i] != sinkB->data()[i]) {
 				equalB = false;
 				break;
 			}
 		}
 	}
 
-	CPPUNIT_ASSERT( equalA && equalB );
+	CPPUNIT_ASSERT(equalA && equalB);
+
 }
+
+//void ModelOperationsTest::testModelRunning()
+//{
+//	utils::IThreadFactoryPtr tf(new utils::QtThreadFactory);
+//	utils::IThreadPoolPtr tp(new utils::ThreadPool(tf));
+//
+//
+//	IntSource::Data dataA;
+//	IntSource::Data dataB;
+//
+//	for(int i = 0; i < 1000; ++i)
+//	{
+//		dataA.push_back(1 + (rand() % 1000));
+//	}
+//
+//	for(int i = 0; i < 1000; ++i)
+//	{
+//		dataB.push_back(1 + (rand() % 1000));
+//	}
+//
+//	ModelPtr model(new df::Model());
+//	// Ÿró³a
+//	SourcePtr sourceA(new IntSource(dataA, "A"));
+//	model->addNode(sourceA.get());
+//
+//	SourcePtr sourceB(new IntSource(dataB, "B"));
+//	model->addNode(sourceB.get());
+//
+//	// elementy przetwarzaj¹ce
+//	ProcessorPtr procAdd(new IntProcessor(IntProcessor::Func(&addition), "Add"));
+//	model->addNode(procAdd.get());
+//
+//	ProcessorPtr procSub(new IntProcessor(IntProcessor::Func(&subtraction), "Sub"));
+//	model->addNode(procSub.get());
+//
+//	ProcessorPtr procMul(new IntProcessor(IntProcessor::Func(&multiplication), "Mul"));
+//	model->addNode(procMul.get());
+//
+//	ProcessorPtr procDiv(new IntProcessor(IntProcessor::Func(&division), "Div"));
+//	model->addNode(procDiv.get());
+//
+//	// sinki
+//	SinkPtr sinkA(new IntSink("A"));
+//	model->addNode(sinkA.get());
+//
+//	SinkPtr sinkB(new IntSink("B"));
+//	model->addNode(sinkB.get());
+//
+//	//³¹czymy
+//	//Ÿród³o A z mno¿eniem i dodawaniam
+//	ConnectionPtr connAMul(new df::Connection(sourceA->outputPin(0), procMul->inputPin(0)));
+//	ConnectionPtr connAAdd(new df::Connection(sourceA->outputPin(0), procAdd->inputPin(0)));
+//
+//	model->addConnection(connAMul.get());
+//	model->addConnection(connAAdd.get());
+//
+//	//Ÿród³o B z mno¿eniem i dodawaniam
+//	ConnectionPtr connBMul(new df::Connection(sourceB->outputPin(0), procMul->inputPin(1)));
+//	ConnectionPtr connBAdd(new df::Connection(sourceB->outputPin(0), procAdd->inputPin(1)));
+//
+//	model->addConnection(connBMul.get());
+//	model->addConnection(connBAdd.get());
+//
+//	//Ÿród³o B z dzieleniem
+//	ConnectionPtr connBDiv(new df::Connection(sourceB->outputPin(0), procDiv->inputPin(1)));
+//	model->addConnection(connBDiv.get());
+//
+//	//Ÿród³o A z odejmowaniem
+//	ConnectionPtr connASub(new df::Connection(sourceA->outputPin(0), procSub->inputPin(1)));
+//	model->addConnection(connASub.get());
+//
+//	//mnozenie z dzieleniem
+//	ConnectionPtr connMulDiv(new df::Connection(procMul->outputPin(0), procDiv->inputPin(0)));
+//	model->addConnection(connMulDiv.get());
+//	
+//	//dodawanie z odejmowaniem
+//	ConnectionPtr connAddSub(new df::Connection(procAdd->outputPin(0), procSub->inputPin(0)));
+//	model->addConnection(connAddSub.get());
+//
+//	//podpinamy sinki do dzielenia i odejmowania
+//	ConnectionPtr connDivA(new df::Connection(procDiv->outputPin(0), sinkA->inputPin(0)));
+//	model->addConnection(connDivA.get());
+//
+//	ConnectionPtr connSubB(new df::Connection(procSub->outputPin(0), sinkB->inputPin(0)));
+//	model->addConnection(connSubB.get());
+//
+//	df::DFModelRunner runner;
+//
+//	
+//
+//	//startujemy model
+//	runner.start(model.get(), nullptr, tp.get());
+//	runner.join();
+//
+//	//porównyjemy wyniki - zawartoœæ sinków i Ÿróde³ powinna byæ taka sama
+//
+//	bool equalA = dataA.size() == sinkA->data().size();
+//
+//	if(equalA == true)
+//	{
+//		for(auto i = 0; i < dataA.size(); ++i)
+//		{
+//			if(dataA[i] != sinkA->data()[i])
+//			{
+//				equalA = false;
+//				break;
+//			}
+//		}
+//	}
+//
+//	bool equalB = dataB.size() == sinkB->data().size();
+//
+//	if(equalB == true)
+//	{
+//		for(auto i = 0; i < dataB.size(); ++i)
+//		{
+//			if(dataB[i] != sinkB->data()[i])
+//			{
+//				equalB = false;
+//				break;
+//			}
+//		}
+//	}
+//
+//	CPPUNIT_ASSERT( equalA && equalB );
+//}

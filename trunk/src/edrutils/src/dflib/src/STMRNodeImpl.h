@@ -103,6 +103,8 @@ public:
 
 	void wakeUp();
 
+	bool hasSomethingToProcess() const;
+
 private:
 	const unsigned int toConsume;
 	unsigned int readyToConsume;

@@ -161,7 +161,7 @@ void STMROutputPin::consumeData()
 	++inputsConsumed;
 	if(inputsConsumed == connections.size())
 	{
-		source_->updateSrc();
+		//source_->updateSrc();
 		updated_ = false;
 	}
 }

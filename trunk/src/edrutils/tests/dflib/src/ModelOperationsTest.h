@@ -25,7 +25,9 @@ public:
 	void testConnectionRemove();
     void testDifferentModelConnectionRemove();
 
-	void testModelRunning();
+	//void testModelRunning();
+	void testSimplestModel();
+	void testSingleThreadModelRunning();
 
 	CPPUNIT_TEST_SUITE( ModelOperationsTest );
 	CPPUNIT_TEST( testBasicNodeAddition );
@@ -42,7 +44,9 @@ public:
     CPPUNIT_TEST( testConnectionRemove );
     CPPUNIT_TEST_EXCEPTION( testDifferentModelConnectionRemove, df::PinsConnectionException );
 
-	CPPUNIT_TEST( testModelRunning );
+	//CPPUNIT_TEST( testModelRunning );
+	CPPUNIT_TEST(testSimplestModel);
+	CPPUNIT_TEST(testSingleThreadModelRunning);
 
 	CPPUNIT_TEST_SUITE_END();
 

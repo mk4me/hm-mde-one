@@ -27,7 +27,7 @@ namespace df{
 	//! z niepodpi�tymi wyjsciami. Tylko �t�d�� s� synchronizowane - czekaj� a� wszystkie razem sko�cz� produkowa� dane
 	//! do modelu, aby sprawdzi� czy s� w stanie wszystkie dostarczy� nowych danych. Je�li tak ponownie moga produkowac dane,
 	//! w przeciwnym wypadku czekamy na przetworzenie danych ju� znajduj�cych si� w modelu.
-	class STDFModelRunner : public IDFPausable
+	class STDFModelRunner 
 	{
 	public:
 		//! Domy�lny konstruktor
@@ -44,18 +44,6 @@ namespace df{
 		//! Natychmiastowe przerwania przetwarzania
 		//! Metoda blokuj�ca - czeka na zako�czenie wszystkich w�tk�w
 		void stop();
-
-		//! \param node W�ze� kt�ry chcemy pauzowa�
-		virtual void pause(INode * node);
-		//! \param node W�ze� kt�ry chcemy przywr�ci� do pracy
-		virtual void resume(INode * node);
-
-		//! Pauzowanie przetwrarzania
-		virtual void pause();
-		//! Przywracanie przetwarzania
-		virtual void resume();
-		//! Czy przetwarzanie wstrzymane
-		virtual const bool paused() const;
 
 
 		//! \param reader Model kt�ry potencjalnie ma by� uruchomiony

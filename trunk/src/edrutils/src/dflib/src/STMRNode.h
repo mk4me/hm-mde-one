@@ -25,19 +25,10 @@ public:
 
 	virtual void process();
 
-	virtual void pause();
-	virtual void resume();
-	virtual const bool paused() const;
-
-	virtual void tryPause();
-
-	virtual void updateSnk();
-
+	
 	virtual void reset();
 
-	virtual void lockSnkProcessing();
-	virtual void unlockSnkProcessing();
-
+	
 	virtual void addInputPin(STMRInputPin * pin);
 
 	virtual STMRInputPin * inputPin(size_type idx);
@@ -45,6 +36,10 @@ public:
 
 	virtual const size_type inputSize() const;
 	virtual const bool inputEmpty() const;
+
+	virtual bool hasSomethingToProcess();
+
+	virtual void updateSnk();
 
 private:
 	STMRSinkNodeImpl * snkImpl;
@@ -63,18 +58,9 @@ public:
 
 	virtual void process();
 
-	virtual void pause();
-	virtual void resume();
-	virtual const bool paused() const;
 
-	virtual void tryPause();
-
-	virtual void updateSrc();
-
+	
 	virtual void reset();
-
-	virtual void lockSrcProcessing();
-	virtual void unlockSrcProcessing();
 
 	virtual void addOutputPin(STMROutputPin * pin);
 
@@ -83,6 +69,8 @@ public:
 
 	virtual const size_type outputSize() const;
 	virtual const bool outputEmpty() const;
+
+	virtual bool hasSomethingToProcess();
 
 private:
 	STMRSourceNodeImpl * srcImpl;
@@ -100,20 +88,11 @@ public:
 
 	virtual void process();
 
-	virtual void pause();
-	virtual void resume();
-	virtual const bool paused() const;
 
-	virtual void tryPause();
-
-	virtual void updateSnk();
-	virtual void updateSrc();
-
+	
 	virtual void reset();
 
-	virtual void lockSnkProcessing();
-	virtual void unlockSnkProcessing();
-
+	
 	virtual void addInputPin(STMRInputPin * pin);
 
 	virtual STMRInputPin * inputPin(size_type idx);
@@ -122,9 +101,7 @@ public:
 	virtual const size_type inputSize() const;
 	virtual const bool inputEmpty() const;
 
-	virtual void lockSrcProcessing();
-	virtual void unlockSrcProcessing();
-
+	
 	virtual void addOutputPin(STMROutputPin * pin);
 
 	virtual STMROutputPin * outputPin(size_type idx);
@@ -132,6 +109,10 @@ public:
 
 	virtual const size_type outputSize() const;
 	virtual const bool outputEmpty() const;
+
+	virtual bool hasSomethingToProcess();
+
+	virtual void updateSnk();
 
 private:
 	STMRSinkNodeImpl * snkImpl;

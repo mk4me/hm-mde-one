@@ -48,7 +48,7 @@ namespace vdf {
         }
         virtual const bool empty() const
         {
-            return used || !channel;
+			return used;// || !channel;
         }
         virtual void produce()
         {
@@ -57,6 +57,7 @@ namespace vdf {
             if (dataItem && dataItem->getData()) {
                 outPinA->setWrapper(dataItem->getData());
             }
+			used = true;
         }
 
 

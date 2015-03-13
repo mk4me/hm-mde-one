@@ -14,25 +14,24 @@
 class STMROutputPin;
 class STMRInputPin;
 
-class ISTMRNode : public df::IDFResetable, public df::IDFPausable
+class ISTMRNode : public df::IDFResetable
 {
 public:
+	virtual bool hasSomethingToProcess() = 0;
 	virtual void process() = 0;
-	virtual void tryPause() = 0;
 };
 
 class ISTMRSink
 {
 public:
-	virtual ~ISTMRSink() {}
 	virtual void updateSnk() = 0;
+	virtual ~ISTMRSink() {}
 };
 
 class ISTMRSource
 {
 public:
 	virtual ~ISTMRSource() {}
-	virtual void updateSrc() = 0;
 };
 
 class ISTMRSourceNode : public ISTMRSource, public virtual ISTMRNode
@@ -42,8 +41,6 @@ public:
 	typedef unsigned int size_type;
 
 public:
-	virtual void lockSrcProcessing() = 0;
-	virtual void unlockSrcProcessing() = 0;
 
 	virtual STMROutputPin * outputPin(size_type idx) = 0;
 	virtual const STMROutputPin * outputPin(size_type idx) const = 0;
@@ -61,8 +58,6 @@ public:
 	typedef unsigned int size_type;
 
 public:
-	virtual void lockSnkProcessing() = 0;
-	virtual void unlockSnkProcessing() = 0;
 
 	virtual STMRInputPin * inputPin(size_type idx) = 0;
 	virtual const STMRInputPin * inputPin(size_type idx) const = 0;

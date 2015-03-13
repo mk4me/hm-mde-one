@@ -23,10 +23,10 @@ ADD_PROJECT(plugin_hmdbCommunication "CURL;WSDLPULL;corelib;coreui;hmdbservicesl
 ADD_PROJECT(plugin_newChart "QWT;coreui;plugin_c3d" "plugins/newChart")
 ADD_PROJECT(plugin_subject "corelib;vidlib;plugin_c3d" "plugins/subject")
 ADD_PROJECT(plugin_hmm "corelib;coreui;c3dlib;QWT;vidlib;osgutils;kinematiclib;plugin_subject" "plugins/hmmlib")
-#ADD_PROJECT(plugin_newVdf "dflib;coreui;corelib" "plugins/newVdf")
-#ADD_PROJECT(plugin_dfElements "dflib;coreui;plugin_newVdf;plugin_c3d" "plugins/dfElements")
+ADD_PROJECT(plugin_newVdf "dflib;coreui;corelib" "plugins/newVdf")
+ADD_PROJECT(plugin_dfElements "dflib;coreui;plugin_newVdf;plugin_kinematic;plugin_c3d" "plugins/dfElements")
 ADD_PROJECT(plugin_imuCostume "corelib;coreui;kinematiclib;kinematicUtils;BOOST;QT;OSG;plugin_c3d;plugin_hmdbCommunication;imucostumelib" "plugins/imuCostume")
-#ADD_PROJECT(plugin_python "dflib;plugin_hmdbCommunication;plugin_c3d;coreui;plugin_newVdf;BOOST;PYTHON;QT;corelib" "plugins/python")
+ADD_PROJECT(plugin_python "dflib;plugin_hmdbCommunication;plugin_c3d;coreui;plugin_newVdf;BOOST;PYTHON;QT;corelib" "plugins/python")
 #ADD_PROJECT(plugin_orientationsFit "corelib;GeneralAlgorithms;OSG;BOOST;utils;IMU;QuatUtils;QT" "plugins/orientationsFit")
 END_PROJECTS_GROUP()
 

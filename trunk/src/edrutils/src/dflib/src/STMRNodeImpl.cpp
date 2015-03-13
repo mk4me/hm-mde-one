@@ -3,6 +3,7 @@
 #include "STMRPin.h"
 #include <algorithm>
 #include <stdexcept>
+#include "utils/Debug.h"
 
 STMRNodeImpl::STMRNodeImpl() : paused_(false)
 {
@@ -51,7 +52,7 @@ void STMRSourceNodeImpl::updateSrc()
 	if (currentlyConsumed == toConsume)
 	{
 		currentlyConsumed = 0;
-		source_->unlockSrcProcessing();
+		//source_->unlockSrcProcessing();
 	}
 }
 
@@ -125,19 +126,22 @@ STMRSinkNodeImpl::~STMRSinkNodeImpl()
 void STMRSinkNodeImpl::updateSnk()
 {
 	++readyToConsume;
-	if (readyToConsume == toConsume)
+	UTILS_ASSERT(readyToConsume <= toConsume);
+	/*if (readyToConsume == toConsume)
 	{
 		readyToConsume = 0;
 		sink_->unlockSnkProcessing();
-	}
+	}*/
 }
 
 void STMRSinkNodeImpl::consumeInputs()
 {
+	UTILS_ASSERT(readyToConsume == toConsume);
 	for (auto it = inputPins.begin(); it != inputPins.end(); ++it)
 	{
 		(*it)->consumeData();
 	}
+	readyToConsume = 0;
 }
 
 void STMRSinkNodeImpl::resetInputs()
@@ -184,4 +188,9 @@ void STMRSinkNodeImpl::wait()
 
 void STMRSinkNodeImpl::wakeUp()
 {
+}
+
+bool STMRSinkNodeImpl::hasSomethingToProcess() const
+{
+	return (readyToConsume == toConsume);
 }
