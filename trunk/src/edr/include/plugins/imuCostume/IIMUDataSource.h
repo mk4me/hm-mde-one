@@ -16,6 +16,7 @@
 #include <plugins/imuCostume/IMUCostumeMotionEstimationAlgorithm.h>
 #include <kinematiclib/SkeletonState.h>
 #include <plugins/imuCostume/CostumeProfile.h>
+#include <plugins/imuCostume/CostumeProfile.h>
 
 namespace IMU
 {
@@ -36,14 +37,32 @@ namespace IMU
 		//! Typ opisuj¹cy identyfikator kostiumy
 		typedef imuCostume::CostumeRawIO::CostumeAddress CostumeID;
 
-		typedef std::map<CostumeID, imuCostume::ProtocolSendBufferHelper::Buffer> CostumesDataFrame;
+		struct RecordedSensorData : SensorData
+		{
+			osg::Quat estimatedOrientation;
+			osg::Quat jointOrientation;
+		};
 
+		struct RecordedCostumeData
+		{
+			imuCostume::CostumeCANopenIO::Timestamp timestamp;
+			std::map<imuCostume::Costume::SensorID, RecordedSensorData> sensorsData;
+		};
+
+		//! Mapa pakietów wg kostiumów
+		typedef std::map<CostumeID, RecordedCostumeData> CostumesDataFrame;
+		//! Strumieñ danych pakietów kostiumów
 		typedef threadingUtils::StreamBufferT<CostumesDataFrame> CostumesRecordingDataBuffer;
 
+		typedef std::map<imuCostume::CostumeRawIO::CostumeAddress, imuCostume::Costume::SensorIDsSet> CostumesToRecord;
+
+		//! Struktura opisuj¹ca zapis danych z kostiumów
 		struct RecordingOutput
 		{
+			//! Strumieñ buforów z danymi kostiumów
 			CostumesRecordingDataBuffer costumesDataBuffer;
-			std::set<CostumeID> costumesToRecord;
+			//! Zbiór nagrywanych kostiumów
+			CostumesToRecord costumesToRecord;
 		};
 
 		DEFINE_SMART_POINTERS(RecordingOutput);
@@ -69,6 +88,8 @@ namespace IMU
 			utils::shared_ptr<imuCostume::CostumeRawIO> rawCostume;
 			//! Strumieñ surowych danych
 			RawDataStreamPtr rawDataStream;
+			//! Profil kosiumu
+			CostumeProfilePtr profile;
 		};
 
 		//! Mapa statusów kostiumów i ich sensorów
@@ -99,7 +120,7 @@ namespace IMU
 		//! Lista modeli (szkieletów, hierarchii)
 		typedef std::map<core::UniqueID, SkeletonConstPtr> SkeletonModels;
 		//! Mapa profili kostiumów
-		typedef std::map<std::string, CostumeProfile> CostumesProfiles;
+		typedef std::map<std::string, CostumeProfileConstPtr> CostumesProfiles;
 
 	public:
 		//! Desturktor wirtualny
@@ -150,7 +171,7 @@ namespace IMU
 		//! \param id Indeks kostiumu
 		//! \param profileInstance Profil kostiumu
 		virtual void loadCalibratedCostume(const CostumeID & id,
-			const CostumeProfileInstance & profileInstance) = 0;
+			CostumeProfilePtr profile) = 0;
 
 		//! Metoda wy³¹dowywujê dane z DM dla kostiumu
 		//! \param id Indeks kostiumu
@@ -160,15 +181,15 @@ namespace IMU
 		virtual core::ConstVariantsList costumeData(const CostumeID & id) const = 0;
 
 		//! \param algorithm Prototyp algorytmu estymacji orientacji czujnika
-		virtual void registerOrientationEstimationAlgorithm(const IIMUOrientationEstimationAlgorithm * algorithm) = 0;
+		virtual void registerOrientationEstimationAlgorithm(IIMUOrientationEstimationAlgorithmPtr algorithm) = 0;
 		//! \param algorithm Prototyp algorytmu kalibracji kostiumu
-		virtual void registerCostumeCalibrationAlgorithm(const IMUCostumeCalibrationAlgorithm * algorithm) = 0;
+		virtual void registerCostumeCalibrationAlgorithm(IMUCostumeCalibrationAlgorithmPtr algorithm) = 0;
 		//! \param algorithm Prototyp algorytmu poprawy estymacji ruchu kostiumu dla ca³ego szkieletu
-		virtual void registerMotionEstimationAlgorithm(const IMUCostumeMotionEstimationAlgorithm * algorithm) = 0;
+		virtual void registerMotionEstimationAlgorithm(IMUCostumeMotionEstimationAlgorithmPtr algorithm) = 0;
 		//! \param skeleton Model szkieletu który mo¿na estymowaæ
-		virtual void registerSkeletonModel(SkeletonConstPtr skeleton) = 0;
+		virtual void registerSkeletonModel(SkeletonPtr skeleton) = 0;
 		//! \param profile Profil kostiumu
-		virtual void registerCostumeProfile(const CostumeProfile & profile) = 0;
+		virtual void registerCostumeProfile(CostumeProfilePtr profile) = 0;
 
 		virtual void startRecording(RecordingOutputPtr recording) = 0;
 		virtual void stopRecording(RecordingOutputPtr recording) = 0;

@@ -113,6 +113,8 @@ void IMUCostumeWidget::innerCostumeChange(const imuCostume::CostumeRawIO::Costum
 			ui->sensorsTree->addTopLevelItem(sItem);
 		}
 	}
+
+	ui->recordPushButton->setEnabled(ds->costumeLoaded(costumeID));
 }
 
 void IMUCostumeWidget::onCostumeChange(QTreeWidgetItem * current, QTreeWidgetItem * previous)
@@ -172,11 +174,30 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 
 		if(ui->costumesTreeWidget->currentItem() != nullptr){
 
+			auto profiles = ds->costumesProfiles();
+
 			const auto id = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
 
 			menu.addSeparator();
 
-			auto load = menu.addAction(tr("Load"));
+			auto load = menu.addAction(tr("Load"));			
+			auto loadMenu = new QMenu();
+
+			auto newProfileLoad = loadMenu->addAction(tr("New profile"));
+			
+			if (profiles.empty() == false){
+
+				loadMenu->addSeparator();
+
+				for (const auto & profile : profiles)
+				{
+					auto a = loadMenu->addAction(QString::fromStdString(profile.first));					
+					connect(a, SIGNAL(triggered()), this, SLOT(onLoadProfile()));
+				}
+			}
+
+			load->setMenu(loadMenu);
+
 			auto unload = menu.addAction(tr("Unload"));
 			auto setSamplingRate = menu.addAction(tr("Set sampling rate"));
 			auto rsConfig = menu.addAction(tr("Refresh sensors configuration"));
@@ -185,7 +206,7 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 			auto cl = ds->costumeLoaded(id);
 
 			if (cl == false){
-				connect(load, SIGNAL(triggered()), this, SLOT(onLoad()));
+				connect(newProfileLoad, SIGNAL(triggered()), this, SLOT(onLoadNewProfile()));
 				connect(setSamplingRate, SIGNAL(triggered()), this, SLOT(onSetSamplingRate()));
 				connect(rsConfig, SIGNAL(triggered()), this, SLOT(onRefreshSensorsConfiguration()));
 				connect(resetStatus, SIGNAL(triggered()), this, SLOT(onResetCostumeConnectionStatus()));
@@ -254,8 +275,6 @@ void IMUCostumeWidget::onRefresh()
 
 		auto cDetails = ds->costumesDetails();
 
-		ui->recordPushButton->setEnabled(cDetails.empty() == false);
-
 		for (const auto & cd : cDetails){
 			auto ci = new QTreeWidgetItem;
 			ci->setText(0, QString("%1:%2").arg(QString::fromStdString(cd.second.descriptionDetails.rawCostume->ip())).arg(cd.second.descriptionDetails.rawCostume->port()));
@@ -288,7 +307,7 @@ void IMUCostumeWidget::onRefresh()
 	}
 }
 
-void IMUCostumeWidget::onLoad()
+void IMUCostumeWidget::onLoadNewProfile()
 {
 	const auto id = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
 
@@ -296,224 +315,341 @@ void IMUCostumeWidget::onLoad()
 	const auto & sc = cd.sensorsConfiguration;
 	imuCostume::Costume::SensorIDsSet sIDs;
 
-	auto it = sc.find(imuCostume::Costume::IMU);
-	if (it != sc.end()){		
+	auto cit = sc.find(imuCostume::Costume::IMU);
 
-		IMU::CostumeProfile profile;
+	bool emptyConf = false;
 
-		auto profiles = ds->costumesProfiles();
+	if (cit == sc.end()){
+		emptyConf = true;
+	}
+	else if (cit->second.empty() == true){
+		emptyConf = true;
+	}
 
-		if (profiles.empty() == false){
-			QStringList plist;
+	if (emptyConf == true){
+		QMessageBox::warning(this, tr("Empty costume configuration"), tr("Trying to load costume with no sensors in configuration. Refresh sensors configuration and try again."));
+		return;
+	}
 
-			for (const auto & p : profiles)
-			{
-				plist.push_back(QString::fromStdString(p.second.name));
-			}
+	IMUCostumeProfileEditionWizard * ew = new IMUCostumeProfileEditionWizard(cit->second,
+		ds->orientationEstimationAlgorithms(),
+		ds->calibrationAlgorithms(),
+		ds->motionEstimationAlgorithms(),
+		ds->skeletonModels(),
+		tr("New profile"), this);
 
-			bool ok = false;
-			auto profileName = QInputDialog::getItem(this, tr("Choose predefined profile"), tr("Profile"), plist, 0, false, &ok);
+	auto res = ew->exec();
 
+	if (res != QDialog::Accepted){
+		return;
+	}
+
+	auto profiles = ds->costumesProfiles();
+
+	auto profile = utils::make_shared<IMU::CostumeProfile>(ew->costumeProfile());
+
+	res = QMessageBox::question(this, tr("Save new profile"), tr("Would You like to save new profile?"));
+
+	if (res == QMessageBox::Yes){
+		bool ok = true;
+		QString pName;
+		while (ok == true){
+			pName = QInputDialog::getText(this, tr("Profile name"), tr("Input new profile name"), QLineEdit::Normal, "", &ok);
 			if (ok == false){
 
-				IMUCostumeProfileEditionWizard ew(it->second, tr("New profile"), this);
-
-				auto res = ew.exec();
-
-				if (res != QDialog::Accepted){
-					return;
-				}
-
-				profile = ew.costumeProfile();
-
-				res = QMessageBox::question(this, tr("Save new profile"), tr("Would You like to save new profile?"));
-
-				if (res == QMessageBox::Yes){
-					bool ok = true;
-					QString pName;
-					while (ok == true){
-						pName = QInputDialog::getText(this, tr("Profile name"), tr("Input new profile name"), QLineEdit::Normal, "", &ok);
-						if (ok == false){
-							
-						}else if(plist.contains(pName) == true){
-							QMessageBox::information(this, tr("Profile name"), tr("Profile name must be unique and non empty - please try again"));
-						}
-						else{
-							ok = false;
-						}
-					}
-
-					if (pName.isEmpty() == false){
-						profile.name = pName.toStdString();
-						ds->registerCostumeProfile(profile);
-						QMessageBox::information(this, tr("Profile registered"), tr("Profile registration complete"));
-					}
-				}
+			}
+			else if (pName.isEmpty() == true || profiles.find(pName.toStdString()) != profiles.end()){
+				QMessageBox::information(this, tr("Profile name"), tr("Profile name must be unique and non empty - please try again"));
 			}
 			else{
-
-				auto it = profiles.find(profileName.toStdString());
-
-				profile = it->second;
-
-				auto ret = QMessageBox::question(this, tr("Profile edition?"), tr("Would You like to edit selected profile or use it directly?"), tr("Edit"), tr("Use"));
-
-				if (ret == 0){
-					IMUCostumeProfileEditionWizard ew(profile, this);
-
-					auto res = ew.exec();
-
-					if (res == QDialog::Accepted){
-						auto p = ew.costumeProfile();
-						//TODO
-						if (false){
-
-							res = QMessageBox::question(this, tr("Save new profile"), tr("Would You like to save new profile?"));
-
-							if (res == QMessageBox::Yes){
-								bool ok = true;
-								QString pName;
-								while (ok == true){
-									pName = QInputDialog::getText(this, tr("Profile name"), tr("Input new profile name"), QLineEdit::Normal, "", &ok);
-									if (ok == false){
-
-									}
-									else if (plist.contains(pName) == true){
-										QMessageBox::information(this, tr("Profile name"), tr("Profile name must be unique and non empty - please try again"));
-									}
-									else{
-										ok = false;
-									}
-								}
-
-								if (pName.isEmpty() == false){
-									profile.name = pName.toStdString();
-									ds->registerCostumeProfile(profile);
-									QMessageBox::information(this, tr("Profile registered"), tr("Profile registration complete"));
-								}
-							}
-						}
-
-						profile = p;					
-					}					
-				}
+				ok = false;
+				profile->name = pName.toStdString();
+				ds->registerCostumeProfile(profile);
+				QMessageBox::information(this, tr("Profile registered"), tr("Profile registration complete"));
 			}
 		}
-		else{
-			IMUCostumeProfileEditionWizard ew(it->second, tr("New profile"), this);
+	}
 
-			auto res = ew.exec();
+	PLUGIN_LOG_DEBUG("Profile creation done");
 
-			if (res != QDialog::Accepted){
-				return;
-			}
+	//konfigurujemy algorytmy
+	auto cw = IMU::IMUCostumeProfileConfigurationWizard::create(*profile);
+	if (cw != nullptr){
+		auto res = cw->exec();
+		if (res != QDialog::Accepted){
+			return;
+		}
 
-			profile = ew.costumeProfile();
+		PLUGIN_LOG_DEBUG("Profile configuration done");
+	}
 
-			res = QMessageBox::question(this, tr("Save new profile"), tr("Would You like to save new profile?"));
+	//iniclalizujemy algorytm kalibracji
+	IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions sa;
 
-			if (res == QMessageBox::Yes){
-				bool ok = true;
-				QString pName;
-				while (ok == true){
-					pName = QInputDialog::getText(this, tr("Profile name"), tr("Input new profile name"));
-					if (pName.isEmpty() == true){
-						ok = (QMessageBox::question(this, tr("Retry to save profile"), tr("An empty profile name was given - would you like to retry to save profile with proper name?")) == QMessageBox::Yes);
-					}
-					else if (profiles.find(pName.toStdString()) != profiles.end()){
-						QMessageBox::information(this, tr("Profile name"), tr("Profile name must be unique and non empty - please try again"));
-					}
-					else{
-						ok = false;
-					}
+	for (const auto & sd : profile->sensorsDescriptions)
+	{
+		IMU::IMUCostumeCalibrationAlgorithm::SensorDescription localsd;
+		localsd.jointName = sd.second.jointName;
+		localsd.offset = sd.second.offset;
+		localsd.rotation = sd.second.rotation;
+
+		sa.insert(IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions::value_type(sd.first, localsd));
+	}
+
+	profile->calibrationAlgorithm->initialize(profile->skeleton, sa);
+
+	PLUGIN_LOG_DEBUG("Calibration initialized");
+
+	auto canOpenStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::RawDataStream::value_type, IMU::CANopenFramesStream::value_type, IMU::RawToCANopenExtractor>>(cd.rawDataStream, IMU::RawToCANopenExtractor());
+
+	PLUGIN_LOG_DEBUG("canOpenStream created");
+
+	//iloœæ próbek na rozgrzewkê algorytmów estymacji orientacji czujników
+	unsigned int initializeFramesCount = 50;
+
+	for (const auto & sa : profile->sensorsDescriptions)
+	{
+		initializeFramesCount = std::max(initializeFramesCount, sa.second.orientationEstimationAlgorithm->approximateEstimationDelay());
+	}
+
+	PLUGIN_LOG_DEBUG("Minimum samples for estimation algorithms done");
+
+	auto costumeStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::CANopenFramesStream::value_type, IMU::CostumeStream::value_type, IMU::CANopenDataExtractor>>(canOpenStream, IMU::CANopenDataExtractor());
+
+	PLUGIN_LOG_DEBUG("costumeStream created");
+
+	//mamy wszystko, jesteœmy po konfiguracji wszystkiego
+	//mo¿na dalej konfigurowaæ kostium - inicjalizowaæ filtry, kalibrowaæ i ³adowaæ ca³oœæ do DataManager
+	auto extractorAdapter = utils::make_shared<ExtractedCostumeStreamAdapter>(costumeStream, IMU::CostumeIMUExtractor(cd.sensorsConfiguration));
+
+	PLUGIN_LOG_DEBUG("extractorAdapter created");
+
+	// inicjalizacja algorytmów estymacji orientacji czujników + kalibracja
+	CostumeSkeletonMotionHelper csmh(extractorAdapter,
+		profile, initializeFramesCount + profile->calibrationAlgorithm->maxCalibrationSteps(),
+		initializeFramesCount, this);
+
+	res = csmh.exec();
+
+	//czy anulowano
+	if (res == QDialog::Rejected){
+		return;
+	}
+
+	//czy kalibracja ok?
+	if (csmh.isComplete() == false){
+		QMessageBox::information(this, tr("Costume initialization failed"), tr("Failed to calibrate costume with given configuration. Change configuration and try again or simply retry."));
+		return;
+	}
+
+	// pobieramy efekt kalibracji
+	auto calibrationAdjustments = profile->calibrationAlgorithm->sensorsAdjustemnts();
+
+	for (const auto & ca : calibrationAdjustments)
+	{
+		auto it = sa.find(ca.first);
+		it->second.offset = ca.second.offset;
+		it->second.rotation = ca.second.rotation;
+	}
+
+	PLUGIN_LOG_DEBUG("Costume initialization done");
+
+	coreUI::CoreCursorChanger cc;
+
+	try{
+		//inicjalizacja algorytmu estymacji szkieletu
+		profile->motionEstimationAlgorithm->initialize(profile->skeleton, sa);
+		//³adowanie
+		ds->loadCalibratedCostume(id, profile);
+		ui->recordPushButton->setEnabled(true);
+		PLUGIN_LOG_DEBUG("Costume loaded");
+	}
+	catch (...){
+		QMessageBox::critical(this, tr("Failed to load calibrated costume"), tr("Internal error"));
+	}
+}
+
+void IMUCostumeWidget::onLoadProfile()
+{
+	QAction * action = qobject_cast<QAction*>(sender());
+	if (action == nullptr){
+		return;
+	}
+
+	const auto id = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+
+	auto cd = ds->costumeDescription(id);
+	const auto & sc = cd.sensorsConfiguration;
+	imuCostume::Costume::SensorIDsSet sIDs;
+
+	auto cit = sc.find(imuCostume::Costume::IMU);
+
+	bool emptyConf = false;
+
+	if (cit == sc.end()){
+		emptyConf = true;
+	}
+	else if (cit->second.empty() == true){
+		emptyConf = true;
+	}
+
+	if (emptyConf == true){
+		QMessageBox::warning(this, tr("Empty costume configuration"), tr("Trying to load costume with no sensors in configuration. Refresh sensors configuration and try again."));
+		return;
+	}
+
+	auto profiles = ds->costumesProfiles();
+	
+	auto it = profiles.find(action->text().toStdString());
+
+	if (it == profiles.end()){
+		QMessageBox::warning(this, tr("Non-existing profile"), tr("Selected profile is already unavailable, please try other profile"));
+		return;
+	}
+
+	auto profile = utils::make_shared<IMU::CostumeProfile>(*(it->second));
+
+	auto ret = QMessageBox::question(this, tr("Profile edition?"), tr("Would You like to edit selected profile or use it directly?"), tr("Edit"), tr("Use"));
+
+	//czy edytujemy
+	if (ret == 0){
+		//edycja
+
+		IMUCostumeProfileEditionWizard ew(cit->second,
+			ds->orientationEstimationAlgorithms(),
+			ds->calibrationAlgorithms(),
+			ds->motionEstimationAlgorithms(),
+			ds->skeletonModels(),			
+			profile, this);		
+
+		auto res = ew.exec();
+
+		if (res != QDialog::Accepted){
+			return;
+		}
+
+		profile = utils::make_shared<IMU::CostumeProfile>(ew.costumeProfile());
+
+		res = QMessageBox::question(this, tr("Save new profile"), tr("Would You like to save new profile?"));
+
+		if (res == QMessageBox::Yes){
+			bool ok = true;
+			QString pName;
+			while (ok == true){
+				pName = QInputDialog::getText(this, tr("Profile name"), tr("Input new profile name"), QLineEdit::Normal, "", &ok);
+				if (ok == false){
+
 				}
-
-				if (pName.isEmpty() == false){
-					profile.name = pName.toStdString();
+				else if (pName.isEmpty() == true || profiles.find(pName.toStdString()) != profiles.end()){
+					QMessageBox::information(this, tr("Profile name"), tr("Profile name must be unique and non empty - please try again"));
+				}
+				else{
+					ok = false;
+					profile->name = pName.toStdString();
 					ds->registerCostumeProfile(profile);
 					QMessageBox::information(this, tr("Profile registered"), tr("Profile registration complete"));
 				}
-			}
+			}			
 		}
+	}
 
-		PLUGIN_LOG_DEBUG("Profile creation done");
+	PLUGIN_LOG_DEBUG("Profile creation done");
 
-		auto profileInstance = IMU::CostumeProfileInstance::create(profile, it->second);
-
-		PLUGIN_LOG_DEBUG("Profile instantiation done");
-
-		auto cw = IMU::IMUCostumeProfileConfigurationWizard::create(profileInstance);
-		if (cw != nullptr){
-			auto res = cw->exec();
-			if (res != QDialog::Accepted){
-				return;
-			}
-
-			PLUGIN_LOG_DEBUG("Profile configuration done");
-		}
-
-		profileInstance.calibrationAlgorithm->initialize(profileInstance.skeleton, profileInstance.sensorsMapping, profileInstance.sensorsAdjustments);
-
-		PLUGIN_LOG_DEBUG("Calibration initialized");
-
-		auto canOpenStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::RawDataStream::value_type, IMU::CANopenFramesStream::value_type, IMU::RawToCANopenExtractor>>(cd.rawDataStream, IMU::RawToCANopenExtractor());
-
-		PLUGIN_LOG_DEBUG("canOpenStream created");
-
-		unsigned int initializeFramesCount = 50;
-
-		for (const auto & sa : profileInstance.sensorsOrientationEstimationAlgorithms)
-		{
-			initializeFramesCount = std::max(initializeFramesCount, sa.second->approximateEstimationDelay());
-		}
-
-		PLUGIN_LOG_DEBUG("Minimum samples for estimation algorithms done");
-
-		auto costumeStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::CANopenFramesStream::value_type, IMU::CostumeStream::value_type, IMU::CANopenDataExtractor>>(canOpenStream, IMU::CANopenDataExtractor());
-
-		PLUGIN_LOG_DEBUG("costumeStream created");
-
-		//mamy wszystko, jesteœmy po konfiguracji wszystkiego
-		//mo¿na dalej konfigurowaæ kostium - inicjalizowaæ filtry, kalibrowaæ i ³adowaæ ca³oœæ do DataManager
-		auto extractorAdapter = utils::make_shared<ExtractedCostumeStreamAdapter>(costumeStream, IMU::CostumeIMUExtractor(cd.sensorsConfiguration));
-
-		PLUGIN_LOG_DEBUG("extractorAdapter created");
-
-		CostumeSkeletonMotionHelper csmh(extractorAdapter,
-			&profileInstance, initializeFramesCount + profileInstance.calibrationAlgorithm->maxCalibrationSteps(),
-			initializeFramesCount, this);
-
-		auto res = csmh.exec();
-
-		if (res == QDialog::Rejected){
+	//konfigurujemy algorytmy
+	auto cw = IMU::IMUCostumeProfileConfigurationWizard::create(*profile);
+	if (cw != nullptr){
+		auto res = cw->exec();
+		if (res != QDialog::Accepted){
 			return;
 		}
 
-		if (csmh.isComplete() == false){
-			QMessageBox::information(this, tr("Costume initialization failed"), tr("Failed to calibrate costume with given configuration. Change configuration and try again or simply retry."));
-			return;
-		}
-
-		profileInstance.sensorsAdjustments = profileInstance.calibrationAlgorithm->sensorsAdjustemnts();
-
-		PLUGIN_LOG_DEBUG("Costume initialization done");
-
-		coreUI::CoreCursorChanger cc;
-
-		try{
-			profileInstance.motionEstimationAlgorithm->initialize(profileInstance.skeleton,
-				profileInstance.sensorsAdjustments, profileInstance.sensorsMapping);
-
-			ds->loadCalibratedCostume(id, profileInstance);
-			PLUGIN_LOG_DEBUG("Costume loaded");
-		}
-		catch (...){
-			QMessageBox::critical(this, tr("Failed to load calibrated costume"), tr("Internal error"));
-		}		
+		PLUGIN_LOG_DEBUG("Profile configuration done");
 	}
-	else{
 
+	//iniclalizujemy algorytm kalibracji
+	IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions sa;
+
+	for (const auto & sd : profile->sensorsDescriptions)
+	{
+		IMU::IMUCostumeCalibrationAlgorithm::SensorDescription localsd;
+		localsd.jointName = sd.second.jointName;
+		localsd.offset = sd.second.offset;
+		localsd.rotation = sd.second.rotation;
+
+		sa.insert(IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions::value_type(sd.first,localsd));
 	}
+
+	profile->calibrationAlgorithm->initialize(profile->skeleton, sa);
+
+	PLUGIN_LOG_DEBUG("Calibration initialized");
+
+	auto canOpenStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::RawDataStream::value_type, IMU::CANopenFramesStream::value_type, IMU::RawToCANopenExtractor>>(cd.rawDataStream, IMU::RawToCANopenExtractor());
+
+	PLUGIN_LOG_DEBUG("canOpenStream created");
+
+	//iloœæ próbek na rozgrzewkê algorytmów estymacji orientacji czujników
+	unsigned int initializeFramesCount = 50;
+
+	for (const auto & sa : profile->sensorsDescriptions)
+	{
+		initializeFramesCount = std::max(initializeFramesCount, sa.second.orientationEstimationAlgorithm->approximateEstimationDelay());
+	}
+
+	PLUGIN_LOG_DEBUG("Minimum samples for estimation algorithms done");
+
+	auto costumeStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::CANopenFramesStream::value_type, IMU::CostumeStream::value_type, IMU::CANopenDataExtractor>>(canOpenStream, IMU::CANopenDataExtractor());
+
+	PLUGIN_LOG_DEBUG("costumeStream created");
+
+	//mamy wszystko, jesteœmy po konfiguracji wszystkiego
+	//mo¿na dalej konfigurowaæ kostium - inicjalizowaæ filtry, kalibrowaæ i ³adowaæ ca³oœæ do DataManager
+	auto extractorAdapter = utils::make_shared<ExtractedCostumeStreamAdapter>(costumeStream, IMU::CostumeIMUExtractor(cd.sensorsConfiguration));
+
+	PLUGIN_LOG_DEBUG("extractorAdapter created");
+
+	// inicjalizacja algorytmów estymacji orientacji czujników + kalibracja
+	CostumeSkeletonMotionHelper csmh(extractorAdapter,
+		profile, initializeFramesCount + profile->calibrationAlgorithm->maxCalibrationSteps(),
+		initializeFramesCount, this);
+
+	auto res = csmh.exec();
+
+	//czy anulowano
+	if (res == QDialog::Rejected){
+		return;
+	}
+
+	//czy kalibracja ok?
+	if (csmh.isComplete() == false){
+		QMessageBox::information(this, tr("Costume initialization failed"), tr("Failed to calibrate costume with given configuration. Change configuration and try again or simply retry."));
+		return;
+	}
+
+	// pobieramy efekt kalibracji
+	auto calibrationAdjustments = profile->calibrationAlgorithm->sensorsAdjustemnts();
+
+	for (const auto & ca : calibrationAdjustments)
+	{
+		auto it = sa.find(ca.first);
+		it->second.offset = ca.second.offset;
+		it->second.rotation = ca.second.rotation;
+	}
+
+	PLUGIN_LOG_DEBUG("Costume initialization done");
+
+	coreUI::CoreCursorChanger cc;
+
+	try{
+		//inicjalizacja algorytmu estymacji szkieletu
+		profile->motionEstimationAlgorithm->initialize(profile->skeleton,	sa);
+		//³adowanie
+		ds->loadCalibratedCostume(id, profile);
+		ui->recordPushButton->setEnabled(true);
+		PLUGIN_LOG_DEBUG("Costume loaded");
+	}
+	catch (...){
+		QMessageBox::critical(this, tr("Failed to load calibrated costume"), tr("Internal error"));
+	}	
 }
 
 void IMUCostumeWidget::onUnload()
@@ -521,6 +657,7 @@ void IMUCostumeWidget::onUnload()
 	coreUI::CoreCursorChanger cc;
 	const auto id = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
 	ds->unloadCostume(id);
+	ui->recordPushButton->setEnabled(ds->loadedCostumesCount() > 0);
 }
 
 void IMUCostumeWidget::onLoadAll()
@@ -706,20 +843,74 @@ void IMUCostumeWidget::watchRecordedData()
 		IMU::IIMUDataSource::CostumesRecordingDataBuffer::ListT data;
 		recordOutput->costumesDataBuffer.data(data);
 
-		IMU::CostumeParser::save(*outputFile, data);
+		IMU::CostumeParser::save(*outputFile, data, recordIndex);
+		recordIndex += data.size();
 		outputFile->flush();
 	}
 }
 
+void serialize(std::ostream & stream, const osg::Vec3 & vec)
+{
+	stream << vec.x() << " " << vec.y() << " " << vec.z();
+}
+
+void serialize(std::ostream & stream, const osg::Quat & orient)
+{
+	stream << orient.x() << " " << orient.y() << " " << orient.z() << " " << orient.w();
+}
+
+void serializeRecordedCostumeConfiguration(std::ostream & stream,
+	const imuCostume::CostumeRawIO::CostumeAddress & costumeID,
+	const imuCostume::Costume::SensorIDsSet & sensorsToRecord,
+	IMU::CostumeProfileConstPtr profile)
+{
+	stream << "Costume " << costumeID.ip << " " << costumeID.port << std::endl;
+	stream << "SkeletalModel " << profile->skeleton->root->value.name << " ";
+	serialize(stream, profile->skeleton->root->value.position);
+	stream << " ";
+	serialize(stream, profile->skeleton->root->value.orientation);
+	stream << " " << profile->skeleton->root->size() - 1 << std::endl;
+
+	auto visitor = [&stream](kinematic::JointConstPtr joint)
+	{
+		stream << joint->parent.lock()->value.name << " " << joint->value.name << " ";
+		serialize(stream, joint->value.position);
+		stream << " ";
+		serialize(stream, joint->value.orientation);
+		stream << std::endl;
+	};
+
+	for (const auto & c : profile->skeleton->root->children)
+	{
+		utils::TreeNode::visitPreOrder(c, visitor);
+	}
+
+	stream << "MappingDetails " << sensorsToRecord.size() << std::endl;
+
+	for (const auto & sID : sensorsToRecord)
+	{
+		auto it = profile->sensorsDescriptions.find(sID);
+		stream << std::to_string(sID) << " " << it->second.jointName << " ";
+		serialize(stream, it->second.offset);
+		stream << " ";
+		serialize(stream, it->second.rotation);
+		stream << " " << boost::lexical_cast<std::string>(it->second.orientationEstimationAlgorithm->ID()) << std::endl;
+	}
+
+	stream << "CalibrationAlgorithm " << boost::lexical_cast<std::string>(profile->calibrationAlgorithm->ID()) << std::endl;
+	stream << "MotionAlgorithm " << boost::lexical_cast<std::string>(profile->motionEstimationAlgorithm->ID()) << std::endl;
+}
+
 void IMUCostumeWidget::onRecord(const bool record)
 {
-	if (record == true){
+	if (record == true){		
 
-		std::set<IMU::IIMUDataSource::CostumeID> costumes;
+		RecordingWizard::CostumesToRecord costumes;
 
 		for (unsigned int i = 0; i < ui->costumesTreeWidget->topLevelItemCount(); ++i)
 		{
-			costumes.insert(ui->costumesTreeWidget->topLevelItem(i)->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>());
+			auto costumeID = ui->costumesTreeWidget->topLevelItem(i)->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+			costumes.insert(RecordingWizard::CostumesToRecord::value_type(costumeID, ds->costumeDescription(costumeID).sensorsConfiguration.find(imuCostume::Costume::IMU)->second));
 		}
 
 		RecordingWizard w(costumes, this);
@@ -732,12 +923,23 @@ void IMUCostumeWidget::onRecord(const bool record)
 			outputFile = utils::make_shared<std::ofstream>(w.outputPath().toStdString().c_str());			
 
 			if (outputFile->is_open() == true){
+
+				costumes = w.costumes();
+
+				for (const auto & c : costumes)
+				{
+					auto cd = ds->costumeDescription(c.first);
+					serializeRecordedCostumeConfiguration(*outputFile, c.first, c.second, cd.profile);
+				}
+
+				(*outputFile) << "Data" << std::endl;
+
 				recordOutput = utils::make_shared<IMU::IIMUDataSource::RecordingOutput>();
 				recordOutput->costumesDataBuffer.setMaxBufferSize(10000);
 				recordOutput->costumesToRecord = w.costumes();		
 
 				recordTimer.start(500);
-
+				recordIndex = 0;
 				ds->startRecording(recordOutput);
 			}
 			else{
@@ -765,7 +967,7 @@ void IMUCostumeWidget::onRecord(const bool record)
 		IMU::IIMUDataSource::CostumesRecordingDataBuffer::ListT data;
 		recordOutput->costumesDataBuffer.data(data);
 
-		IMU::CostumeParser::save(*outputFile, data);
+		IMU::CostumeParser::save(*outputFile, data, recordIndex);
 
 		outputFile->close();
 		outputFile.reset();

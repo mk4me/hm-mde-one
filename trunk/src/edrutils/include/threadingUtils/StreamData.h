@@ -289,7 +289,7 @@ namespace threadingUtils {
 			catch (...){
 			}
 
-			data_ = data;
+			data_ = std::move(data);
 
 			notify();
 		}
@@ -350,11 +350,13 @@ namespace threadingUtils {
 		friend class BaseStreamUpdater;
 
 	public:
-		//! \param baseStream Strumień którego reprezentację zmieniamy
+
+		//! \param baseStream Strumień który filtruję
 		//! \param filter Obiekt filtrujący zmiany strumienia
 		StreamFilterT(BaseStreamTypePtr baseStream,
-			Filter filter)
-			: baseStream_(baseStream), filter_(filter)			
+			const Filter & filter = Filter(), const T & startValue = T())
+			: baseStream_(baseStream), filter_(filter),
+			currentData_(startValue)
 		{
 			if (baseStream_ == nullptr){
 				throw std::invalid_argument("Uninitialized base stream");
@@ -367,9 +369,39 @@ namespace threadingUtils {
 		//! \param baseStream Strumień który filtruję
 		//! \param filter Obiekt filtrujący zmiany strumienia
 		StreamFilterT(BaseStreamTypePtr baseStream,
-			Filter filter, const T & startValue)
+			const Filter & filter, T && startValue)
 			: baseStream_(baseStream), filter_(filter),
+			currentData_(std::move(startValue))
+		{
+			if (baseStream_ == nullptr){
+				throw std::invalid_argument("Uninitialized base stream");
+			}
+
+			sourceStreamObserver.reset(new BaseStreamUpdater(this));
+			baseStream_->attachObserver(sourceStreamObserver);
+		}
+
+		//! \param baseStream Strumień który filtruję
+		//! \param filter Obiekt filtrujący zmiany strumienia
+		StreamFilterT(BaseStreamTypePtr baseStream,
+			Filter && filter, const T & startValue = T())
+			: baseStream_(std::move(baseStream)), filter_(filter),
 			currentData_(startValue)
+		{
+			if (baseStream_ == nullptr){
+				throw std::invalid_argument("Uninitialized base stream");
+			}
+
+			sourceStreamObserver.reset(new BaseStreamUpdater(this));
+			baseStream_->attachObserver(sourceStreamObserver);
+		}
+
+		//! \param baseStream Strumień który filtruję
+		//! \param filter Obiekt filtrujący zmiany strumienia
+		StreamFilterT(BaseStreamTypePtr baseStream,
+			Filter && filter, T && startValue)
+			: baseStream_(std::move(baseStream)), filter_(filter),
+			currentData_(std::move(startValue))
 		{
 			if (baseStream_ == nullptr){
 				throw std::invalid_argument("Uninitialized base stream");
@@ -424,13 +456,13 @@ namespace threadingUtils {
 	};
 
 	//! Klasa zmieniająca reprezentację strumienia
-	template<typename T, typename Process>
+	template<typename T, typename Processor>
 	class StreamProcessorT : public IStreamT < T >
 	{
 	public:
 
 		//! Typ adaptera
-		typedef StreamProcessorT<T, Process> StreamProcessorType;
+		typedef StreamProcessorT<T, Processor> StreamProcessorType;
 
 		//! Typ strumienia bazowego
 		typedef IStreamT<T> BaseStreamType;
@@ -464,12 +496,13 @@ namespace threadingUtils {
 		friend class BaseStreamUpdater;
 
 	public:
-		//! \param baseStream Strumień którego reprezentację zmieniamy
+
+		//! \param baseStream Strumień który filtruję
 		//! \param filter Obiekt filtrujący zmiany strumienia
 		StreamProcessorT(BaseStreamTypePtr baseStream,
-			Process process)
-			: baseStream_(baseStream), process_(process),
-			processReuired(false)
+			const Processor & processor = Processor(), const T & startValue = T())
+			: baseStream_(baseStream), processor_(processor),
+			currentData_(startValue), processReuired(false)
 		{
 			if (baseStream_ == nullptr){
 				throw std::invalid_argument("Uninitialized base stream");
@@ -482,9 +515,39 @@ namespace threadingUtils {
 		//! \param baseStream Strumień który filtruję
 		//! \param filter Obiekt filtrujący zmiany strumienia
 		StreamProcessorT(BaseStreamTypePtr baseStream,
-			Process process, const T & startValue)
-			: baseStream_(baseStream), process_(process),
+			const Processor & processor, T && startValue)
+			: baseStream_(baseStream), processor_(processor),
+			currentData_(std::move(startValue)), processReuired(false)
+		{
+			if (baseStream_ == nullptr){
+				throw std::invalid_argument("Uninitialized base stream");
+			}
+
+			sourceStreamObserver.reset(new BaseStreamUpdater(this));
+			baseStream_->attachObserver(sourceStreamObserver);
+		}
+
+		//! \param baseStream Strumień który filtruję
+		//! \param filter Obiekt filtrujący zmiany strumienia
+		StreamProcessorT(BaseStreamTypePtr baseStream,
+			Processor && processor, const T & startValue = T())
+			: baseStream_(baseStream), processor_(std::move(processor)),
 			currentData_(startValue), processReuired(false)
+		{
+			if (baseStream_ == nullptr){
+				throw std::invalid_argument("Uninitialized base stream");
+			}
+
+			sourceStreamObserver.reset(new BaseStreamUpdater(this));
+			baseStream_->attachObserver(sourceStreamObserver);
+		}
+
+		//! \param baseStream Strumień który filtruję
+		//! \param filter Obiekt filtrujący zmiany strumienia
+		StreamProcessorT(BaseStreamTypePtr baseStream,
+			Processor && processor, T && startValue)
+			: baseStream_(baseStream), processor_(std::move(processor)),
+			currentData_(std::move(startValue)), processReuired(false)
 		{
 			if (baseStream_ == nullptr){
 				throw std::invalid_argument("Uninitialized base stream");
@@ -516,7 +579,7 @@ namespace threadingUtils {
 		//! Metoda przetwarza dane i zaznacza że już nie trzeba
 		void process() const
 		{
-			process_(currentData_);
+			processor_(currentData_);
 			processReuired = false;
 		}
 
@@ -544,7 +607,7 @@ namespace threadingUtils {
 		//! Strumień który przykrywam
 		BaseStreamTypePtr baseStream_;
 		//! Obiekt do przetwarzania danych danych
-		mutable Process process_;
+		mutable Processor processor_;
 		//! Obserwator strumienia bazowego
 		StreamStatusObserverPtr sourceStreamObserver;
 		//! Czy należy przetworzyć dane czy zostały już przetworzone
@@ -592,12 +655,13 @@ namespace threadingUtils {
 		friend class BaseStreamUpdater;
 
 	public:
+
 		//! \param baseStream Strumień którego reprezentację zmieniamy
 		//! \param extractorFunction Funktor realizujące przepakowanie typów danych
 		StreamAdapterT(BaseStreamTypePtr baseStream,
-			Extractor extractor)
+			const Extractor & extractor = Extractor(), const Dest & startValue = Dest())
 			: baseStream_(baseStream), extractor_(extractor),
-			unpackRequired_(false)
+			currentData_(startValue), unpackRequired_(false)
 		{
 			if (baseStream_ == nullptr){
 				throw std::invalid_argument("Uninitialized base stream");
@@ -610,9 +674,39 @@ namespace threadingUtils {
 		//! \param baseStream Strumień którego reprezentację zmieniamy
 		//! \param extractorFunction Funktor realizujące przepakowanie typów danych
 		StreamAdapterT(BaseStreamTypePtr baseStream,
-			Extractor extractor, const Dest & startValue)
-			: baseStream_(baseStream), extractor_(extractor),
+			Extractor && extractor, const Dest & startValue = Dest())
+			: baseStream_(baseStream), extractor_(std::move(extractor)),
 			currentData_(startValue), unpackRequired_(false)
+		{
+			if (baseStream_ == nullptr){
+				throw std::invalid_argument("Uninitialized base stream");
+			}
+
+			sourceStreamObserver.reset(new BaseStreamUpdater(this));
+			baseStream_->attachObserver(sourceStreamObserver);
+		}
+
+		//! \param baseStream Strumień którego reprezentację zmieniamy
+		//! \param extractorFunction Funktor realizujące przepakowanie typów danych
+		StreamAdapterT(BaseStreamTypePtr baseStream,
+			const Extractor & extractor, Dest && startValue)
+			: baseStream_(baseStream), extractor_(extractor),
+			currentData_(std::move(startValue)), unpackRequired_(false)
+		{
+			if (baseStream_ == nullptr){
+				throw std::invalid_argument("Uninitialized base stream");
+			}
+
+			sourceStreamObserver.reset(new BaseStreamUpdater(this));
+			baseStream_->attachObserver(sourceStreamObserver);
+		}
+
+		//! \param baseStream Strumień którego reprezentację zmieniamy
+		//! \param extractorFunction Funktor realizujące przepakowanie typów danych
+		StreamAdapterT(BaseStreamTypePtr baseStream,
+			Extractor && extractor, Dest && startValue)
+			: baseStream_(baseStream), extractor_(std::move(extractor)),
+			currentData_(std::move(startValue)), unpackRequired_(false)
 		{
 			if (baseStream_ == nullptr){
 				throw std::invalid_argument("Uninitialized base stream");

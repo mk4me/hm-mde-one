@@ -69,7 +69,7 @@ void CostumeParser::parse(const std::string& path)
 							data.buffer.reset(new uint8_t[data.length], utils::array_deleter<uint8_t>());
 							std::memcpy(data.buffer.get(), rawData.data(), data.length);
 
-							frame.insert(IIMUDataSource::CostumesDataFrame::value_type(id, data));
+							//frame.insert(IIMUDataSource::CostumesDataFrame::value_type(id, data));
 						}
 					}
 					else{
@@ -90,27 +90,55 @@ void CostumeParser::parse(const std::string& path)
 	}	
 }
 
+void serialize(std::ostream & stream, const osg::Vec3 & vec)
+{
+	stream << vec.x() << " " << vec.y() << " " << vec.z();
+}
+
+void serialize(std::ostream & stream, const osg::Quat & orient)
+{
+	stream << orient.x() << " " << orient.y() << " " << orient.z() << " " << orient.w();
+}
+
 void CostumeParser::save(std::ostream & stream, const IIMUDataSource::CostumesDataFrame & data)
 {
-	if (data.empty() == false){
+	//if (data.empty() == false){
 
-		stream << data.size() << std::endl;
+		//stream << data.size() << std::endl;
 
 		for (const auto & val : data)
 		{
-			std::string buf;
-			boost::algorithm::hex(val.second.buffer.get(), val.second.buffer.get() + val.second.length, std::back_inserter(buf));
+			//std::string buf;
+			//boost::algorithm::hex(val.second.buffer.get(), val.second.buffer.get() + val.second.length, std::back_inserter(buf));
 
-			stream << val.first.ip << " " << val.first.port << " " << buf << std::endl;
+			stream << val.first.ip << " " << val.first.port << " " << val.second.timestamp;
+
+			for (const auto & sData : val.second.sensorsData)
+			{
+				stream << " " << std::to_string(sData.first) << " ";
+				serialize(stream, sData.second.accelerometer);
+				stream << " ";
+				serialize(stream, sData.second.gyroscope);
+				stream << " ";
+				serialize(stream, sData.second.magnetometer);
+				stream << " ";
+				serialize(stream, sData.second.orientation);
+				stream << " ";
+				serialize(stream, sData.second.estimatedOrientation);
+				stream << " ";
+				serialize(stream, sData.second.jointOrientation);
+			}
 		}
-	}
+	//}
 }
 
-void CostumeParser::save(std::ostream & stream, const IIMUDataSource::CostumesRecordingDataBuffer::ListT & data)
+void CostumeParser::save(std::ostream & stream, const IIMUDataSource::CostumesRecordingDataBuffer::ListT & data, std::size_t idx)
 {
 	for (auto const & val : data)
 	{
+		stream << idx++ << " " << val.size() << std::endl;
 		save(stream, val);
+		stream << std::endl;
 	}
 }
 
@@ -118,7 +146,7 @@ void CostumeParser::save(const std::string & path, const IIMUDataSource::Costume
 {
 	std::ofstream out(path);
 	if (out.is_open() == true){
-		save(out, data);
+		save(out, data, 0);
 	}
 
 	out.flush();

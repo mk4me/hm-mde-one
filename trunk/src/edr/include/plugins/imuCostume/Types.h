@@ -48,6 +48,19 @@ namespace IMU
 		//! Dane sensorów
 		SensorsData sensorsData;
 	};
+
+	//! Struktura opisuj¹ca joint
+	struct JointData
+	{
+		//! Orientacja lokalna
+		osg::Quat localOrientation;
+		//! Orientacja lokalna
+		osg::Quat globalOrientation;
+		//! Lokalna pozycja
+		osg::Vec3d localPosition;
+		//! Lokalna pozycja
+		osg::Vec3d globalPosition;
+	};
 }
 
 #endif	// __HEADER_GUARD_IMU__TYPES_H__

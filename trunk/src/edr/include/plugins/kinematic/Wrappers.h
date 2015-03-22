@@ -5,6 +5,7 @@
 #include <threadingUtils/StreamData.h>
 #include <utils/PtrPolicyOSG.h>
 #include <utils/PtrPolicyStd.h>
+#include <utils/ClonePolicies.h>
 #include <osg/PositionAttitudeTransform>
 #include <acclaimformatslib/Skeleton.h>
 #include <acclaimformatslib/MotionData.h>

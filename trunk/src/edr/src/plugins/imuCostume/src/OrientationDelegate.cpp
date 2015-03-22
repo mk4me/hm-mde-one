@@ -5,8 +5,6 @@
 #include <QtWidgets/QVBoxLayout>
 #include <coreui/CoreRotationWidgetEditor.h>
 
-using namespace IMU;
-
 OrientationDelegate::OrientationDelegate(QObject * parent)
 	: QStyledItemDelegate(parent), update(false)
 {
@@ -18,7 +16,9 @@ OrientationDelegate::~OrientationDelegate()
 
 }
 
-QWidget * OrientationDelegate::createEditor(QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index) const
+QWidget * OrientationDelegate::createEditor(QWidget * parent,
+	const QStyleOptionViewItem & option,
+	const QModelIndex & index) const
 {
 	auto d = new QDialog(parent);
 	auto e = new coreUI::CoreRotationWidgetEditor(d);
@@ -50,13 +50,16 @@ QWidget * OrientationDelegate::createEditor(QWidget * parent, const QStyleOption
 	return d;
 }
 
-void OrientationDelegate::setEditorData(QWidget * editor, const QModelIndex & index) const
+void OrientationDelegate::setEditorData(QWidget * editor,
+	const QModelIndex & index) const
 {
 	auto r = editor->findChild<coreUI::CoreRotationWidgetEditor*>();
 	r->setValue(index.data(Qt::UserRole).value<osg::Quat>());
 }
 
-void OrientationDelegate::setModelData(QWidget * editor, QAbstractItemModel * model, const QModelIndex & index) const
+void OrientationDelegate::setModelData(QWidget * editor,
+	QAbstractItemModel * model,
+	const QModelIndex & index) const
 {
 	auto s = static_cast<QDialog*>(editor);
 	auto r = s->findChild<coreUI::CoreRotationWidgetEditor*>();
@@ -68,7 +71,9 @@ void OrientationDelegate::setModelData(QWidget * editor, QAbstractItemModel * mo
 	}
 }
 
-void OrientationDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void OrientationDelegate::updateEditorGeometry(QWidget *editor,
+	const QStyleOptionViewItem &option,
+	const QModelIndex &index) const
 {
 	//CELOWO PUSTE - ZAWSZE NA ŒRODKU PARENTA!!
 }

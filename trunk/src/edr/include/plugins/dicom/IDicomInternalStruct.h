@@ -12,6 +12,7 @@
 
 #include <utils/SmartPtr.h>
 #include <utils/PtrPolicyBoost.h>
+#include <utils/ClonePolicies.h>
 #include <vector>
 #include <boost/tuple/tuple.hpp>
 #include <boost/range.hpp>

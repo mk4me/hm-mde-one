@@ -11,35 +11,39 @@
 #include <QtWidgets/QStyledItemDelegate>
 #include <osg/Quat>
 
-namespace IMU
+class OrientationDelegate : public QStyledItemDelegate
 {
-	class OrientationDelegate : public QStyledItemDelegate
-	{
-		Q_OBJECT
+	Q_OBJECT
 
-	public:
-		OrientationDelegate(QObject * parent = nullptr);
+public:
+	OrientationDelegate(QObject * parent = nullptr);
 
-		virtual ~OrientationDelegate();
+	virtual ~OrientationDelegate();
 
-		virtual QWidget * createEditor(QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index) const override;
+	virtual QWidget * createEditor(QWidget * parent,
+		const QStyleOptionViewItem & option,
+		const QModelIndex & index) const override;
 
-		virtual void setEditorData(QWidget * editor, const QModelIndex & index) const override;
+	virtual void setEditorData(QWidget * editor,
+		const QModelIndex & index) const override;
 
-		virtual void setModelData(QWidget * editor, QAbstractItemModel * model, const QModelIndex & index) const override;
+	virtual void setModelData(QWidget * editor,
+		QAbstractItemModel * model,
+		const QModelIndex & index) const override;
 
-		virtual void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+	virtual void updateEditorGeometry(QWidget *editor,
+		const QStyleOptionViewItem &option,
+		const QModelIndex &index) const override;
 
-	private slots:
+private slots:
 
-		void onAccept();
+	void onAccept();
 
-		void onReject();
+	void onReject();
 
-	private:
+private:
 
-		mutable bool update;
-	};
-}
+	mutable bool update;
+};
 
 #endif	// __HEADER_GUARD_IMU__ORIENTATIONDELEGATE_H__

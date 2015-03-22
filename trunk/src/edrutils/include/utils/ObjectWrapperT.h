@@ -28,21 +28,21 @@ namespace utils
 
 	private:
 		//! Wrappowany obiekt.
-		typename ObjectWrapperTraits<Type>::Ptr wrapped_;
+		typename ObjectWrapperTraits<Type>::Ptr wrapped_;	
 
 	protected:
 
-		//! Konstruktor domyœlny
-		__ObjectWrapperT() : ObjectWrapper()
+		//! Konstruktor
+		//! \param data Dane		
+		__ObjectWrapperT(typename ObjectWrapperTraits<Type>::Ptr data)
+			: wrapped_(data)
+		{
+		}
+		
+		//! Domyslny konstruktor
+		__ObjectWrapperT()
 		{
 			ObjectWrapperTraits<Type>::PtrPolicy::initPtr(wrapped_);
-		}
-
-		//! Konstruktor kopiuj¹cy
-		//! \param wrapper Obiekt kopiowany
-		__ObjectWrapperT(const __ObjectWrapperT & wrapper)
-			: ObjectWrapper(wrapper), wrapped_(wrapper.wrapped_)
-		{
 		}
 
 	private:
@@ -136,7 +136,7 @@ namespace utils
 		//! Destruktor wirtualny
 		virtual ~__ObjectWrapperT()
 		{
-		}
+		} 
 
 		virtual const int getReferenceCount() const
 		{
@@ -177,7 +177,7 @@ namespace utils
 
 		virtual const ObjectWrapperPtr create() const {
 			return ObjectWrapper::create<T>();
-		}
+		}	
 	};
 
 	//! Deklaracja typu. Trzeba go specjalizowaæ za pomoc¹ makr. Ta wersja bêdzie
@@ -185,20 +185,25 @@ namespace utils
 	template <typename T>
 	class ObjectWrapperT : public ObjectWrapper
 	{
-		static_assert(sizeof(T) == 0, "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");
+		static_assert(sizeof(T) == 0, "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");	
 	};
 }
 
 #define __DEFINE_WRAPPER_CLASS(typeT)\
-template <> class ObjectWrapperT<typeT> : public __ObjectWrapperT<typeT>\
-{\
-	friend class ObjectWrapper;\
+template <> class ObjectWrapperT<typeT> : public __ObjectWrapperT<typeT>{\
 private:\
-	ObjectWrapperT() : ImplType() {}\
+	ObjectWrapperT() {} \
+	ObjectWrapperT(ObjectWrapperTraits<typeT>::Ptr data) : __ObjectWrapperT<typeT>(data) {}\
 public:\
 	virtual ~ObjectWrapperT() {}\
 	static const std::string className(){\
 		return #typeT;\
+	}\
+	static ObjectWrapperPtr create(){\
+		return ObjectWrapperPtr(new ObjectWrapperT);\
+	}\
+	static ObjectWrapperPtr wrapp(ObjectWrapperTraits<typeT>::Ptr data){\
+		return ObjectWrapperPtr(new ObjectWrapperT(data)); \
 	}\
 };
 

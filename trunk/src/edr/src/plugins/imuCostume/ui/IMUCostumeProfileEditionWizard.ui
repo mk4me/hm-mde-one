@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>624</width>
-    <height>732</height>
+    <height>783</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -76,6 +76,13 @@
        </size>
       </property>
      </spacer>
+    </item>
+    <item row="3" column="0">
+     <widget class="QPushButton" name="loadModelPushButton">
+      <property name="text">
+       <string>Load</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -243,13 +250,13 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWizardPage" name="sensorsMappingPage">
+  <widget class="QWizardPage" name="sensorsConfigurationPage">
    <property name="title">
-    <string>Sensors to model mapping</string>
+    <string>Sensors configuration</string>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_4">
+   <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
-     <widget class="QTableWidget" name="sensorsMappingTableWidget">
+     <widget class="QTableWidget" name="sensorsConfigurationTableWidget">
       <attribute name="horizontalHeaderStretchLastSection">
        <bool>true</bool>
       </attribute>
@@ -268,113 +275,112 @@
       </column>
       <column>
        <property name="text">
+        <string>Estimation Algorithm</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Rotation</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
         <string>Offset</string>
        </property>
       </column>
-      <column>
-       <property name="text">
-        <string>Orientation</string>
-       </property>
-      </column>
      </widget>
     </item>
     <item>
-     <widget class="QCheckBox" name="oneToOneMappingCheckBox">
-      <property name="text">
-       <string>One-To-One mapping</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QCheckBox" name="oneToOneMappingCheckBox">
+          <property name="text">
+           <string>One-To-One mapping</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
-  <widget class="QWizardPage" name="sensorsEstimationPage">
+  <widget class="QWizardPage" name="motionEstimationCalibrationPage">
    <property name="title">
-    <string>Sensors` orientation estimation</string>
+    <string>Motion estimation configuration</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <widget class="QWidget" name="singleEstimationWidget" native="true">
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLabel" name="singleEstimationLabel">
-         <property name="text">
-          <string>Orientation estimation algorithm:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="singleEstimationAlgorithmComboBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <layout class="QFormLayout" name="formLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="calibrationAlgorithLabel">
+          <property name="text">
+           <string>Calibration algorithm:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="calibrationAlgorithmComboBox"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="motionEstimationAglorithmLabel">
+          <property name="text">
+           <string>Motion estimation algorithm:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="motionEstimationAglorithmComboBox"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </item>
     <item>
-     <widget class="QTableWidget" name="sensorsEstimationAlgorithmsTableWidget">
-      <column>
-       <property name="text">
-        <string>Sensor</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Algorithm</string>
-       </property>
-      </column>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="singleEstimationAlgorithmCheckBox">
-      <property name="text">
-       <string>Single estimation algorithm</string>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
-      <property name="checked">
-       <bool>true</bool>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>546</height>
+       </size>
       </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWizardPage" name="calibrationPage">
-   <property name="title">
-    <string>Calibration</string>
-   </property>
-   <layout class="QFormLayout" name="formLayout_5">
-    <item row="0" column="0">
-     <widget class="QLabel" name="calibrationAlgorithLabel">
-      <property name="text">
-       <string>Calibration algorithm:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QComboBox" name="calibrationAlgorithmComboBox"/>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWizardPage" name="motionEstimationPage">
-   <property name="title">
-    <string>Motion estimation</string>
-   </property>
-   <layout class="QFormLayout" name="formLayout_3">
-    <item row="0" column="0">
-     <widget class="QLabel" name="motionEstimationAglorithmLabel">
-      <property name="text">
-       <string>Motion estimation algorithm:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QComboBox" name="motionEstimationAglorithmComboBox"/>
+     </spacer>
     </item>
    </layout>
   </widget>
@@ -384,22 +390,6 @@
   <include location="imuCostumeIcons.qrc"/>
  </resources>
  <connections>
-  <connection>
-   <sender>singleEstimationAlgorithmCheckBox</sender>
-   <signal>stateChanged(int)</signal>
-   <receiver>IMUCostumeProfileEditionWizard</receiver>
-   <slot>onEstimationAlgorithmSelectionModeChange(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>49</x>
-     <y>127</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>311</x>
-     <y>365</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>IMUCostumeProfileEditionWizard</sender>
    <signal>currentIdChanged(int)</signal>
@@ -417,30 +407,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>sensorsMappingTableWidget</sender>
+   <sender>sensorsConfigurationTableWidget</sender>
    <signal>cellChanged(int,int)</signal>
    <receiver>IMUCostumeProfileEditionWizard</receiver>
-   <slot>verifySensorsMapping(int,int)</slot>
+   <slot>onSensorConfigurationCellChange(int,int)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>320</x>
      <y>387</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>311</x>
-     <y>365</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>sensorsEstimationAlgorithmsTableWidget</sender>
-   <signal>cellChanged(int,int)</signal>
-   <receiver>IMUCostumeProfileEditionWizard</receiver>
-   <slot>verifyEstimationAlgorithms(int,int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>320</x>
-     <y>409</y>
     </hint>
     <hint type="destinationlabel">
      <x>311</x>
@@ -481,22 +455,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>motionEstimationAglorithmComboBox</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>IMUCostumeProfileEditionWizard</receiver>
-   <slot>verifyMotionEstimationAlgorithm(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>391</x>
-     <y>131</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>311</x>
-     <y>365</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>oneToOneMappingCheckBox</sender>
    <signal>stateChanged(int)</signal>
    <receiver>IMUCostumeProfileEditionWizard</receiver>
@@ -513,32 +471,46 @@
    </hints>
   </connection>
   <connection>
-   <sender>singleEstimationAlgorithmComboBox</sender>
+   <sender>motionEstimationAglorithmComboBox</sender>
    <signal>currentIndexChanged(int)</signal>
    <receiver>IMUCostumeProfileEditionWizard</receiver>
-   <slot>onSingleEstimationAlgorithmChange(int)</slot>
+   <slot>verifyMotionEstimationAlgorithm(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>402</x>
-     <y>140</y>
+     <x>49</x>
+     <y>127</y>
     </hint>
     <hint type="destinationlabel">
      <x>311</x>
-     <y>365</y>
+     <y>391</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>loadModelPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>IMUCostumeProfileEditionWizard</receiver>
+   <slot>onLoadModel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>64</x>
+     <y>214</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>391</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
-  <slot>onEstimationAlgorithmSelectionModeChange(int)</slot>
-  <slot>onSensorsMappingCellDoubleClick(int,int)</slot>
   <slot>pageChanged(int)</slot>
-  <slot>verifyModel(int)</slot>
-  <slot>verifySensorsMapping(int,int)</slot>
-  <slot>verifyEstimationAlgorithms(int,int)</slot>
   <slot>verifyCalibrationAlgorithm(int)</slot>
   <slot>verifyMotionEstimationAlgorithm(int)</slot>
-  <slot>onOneToOneMappingChanged(int)</slot>
-  <slot>onSingleEstimationAlgorithmChange(int)</slot>
+  <slot>onSensorConfigurationCellChange(int,int)</slot>
+  <slot>verifyModel(int)</slot>
+  <slot>onCellPressed(int,int)</slot>
+  <slot>onCellActivated(QModelIndex)</slot>
+  <slot>onLoadModel()</slot>
  </slots>
 </ui>

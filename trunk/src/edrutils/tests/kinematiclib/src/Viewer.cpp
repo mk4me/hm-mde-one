@@ -10,11 +10,14 @@
 #include "osgutils/OsgSchemeDrawer.h"
 #include "osgGA/TrackballManipulator"
 #include "osg/PositionAttitudeTransform"
+#include <iostream>
 
 void kinematicTest::Viewer::start()
 {
 	acclaim::AsfParser asf;
-	auto acclaimSkeleton = asf.parse("./testFiles/test.asf");
+	//auto acclaimSkeleton = asf.parse("./testFiles/test.asf");
+	auto acclaimSkeleton = asf.parse("./testFiles/B0238.asf");
+
 
 	acclaim::AmcParser amc;
 	acclaim::MotionData acclaimData;
@@ -58,10 +61,19 @@ void kinematicTest::Viewer::start()
 	connectionsDrawer.setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
 	pat->addChild(connectionsDrawer.getNode());
 
+	auto pos = getPos(skeletonState);
+	std::transform(pos.begin(), pos.end(), pos.begin(), [&](const osg::Vec3& p) { return p + osg::Vec3(a, b, c); });
+	pat->setPosition(osg::Vec3(x, y, z));
+	pointsDrawer.update(pos);
+	connectionsDrawer.update(pos);
+
 	viewer.setCameraManipulator(tm);
-	viewer.realize();
-	while (!viewer.done()) {
-		viewer.frame();
+	viewer.run();
+	//viewer.realize();
+
+	//while (!viewer.done()) {
+		/*
+		viewer.frame();		
 		frameIdx = frameIdx >= (framesCount - 1) ? 0 : ++frameIdx;
 		kinematic::SkeletonState::RigidPartialStateChange sChange = kinematic::SkeletonState::convert(acclaimSkeleton, acclaimData.frames[frameIdx], mapping);
 		
@@ -72,8 +84,9 @@ void kinematicTest::Viewer::start()
 		std::transform(pos.begin(), pos.end(), pos.begin(), [&](const osg::Vec3& p) { return p + osg::Vec3(a, b, c); });
 		pat->setPosition(osg::Vec3(x,y,z));
 		pointsDrawer.update(pos);
-		connectionsDrawer.update(pos);
-	}
+		connectionsDrawer.update(pos);		
+		*/
+	//}
 }
 
 std::vector<osg::Vec3> kinematicTest::Viewer::getPos(kinematic::SkeletonState &skeletonState)

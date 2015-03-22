@@ -11,21 +11,21 @@ struct WizzardPageDetails
 	QWidget * widget;
 };
 
-QWizard * IMUCostumeProfileConfigurationWizard::create(const CostumeProfileInstance & profile,
+QWizard * IMUCostumeProfileConfigurationWizard::create(const CostumeProfile & profile,
 	QWidget * parent)
 {
 	QWizard * ret = nullptr;
 
 	std::list<WizzardPageDetails> pages;
 
-	for (const auto & a : profile.sensorsOrientationEstimationAlgorithms)
+	for (const auto & a : profile.sensorsDescriptions)
 	{
-		auto w = a.second->configurationWidget();
+		auto w = a.second.orientationEstimationAlgorithm->configurationWidget();
 
 		if (w != nullptr){
 			WizzardPageDetails pd;
 			pd.title = QObject::tr("Orientation estimation algorithms configuration");
-			pd.subTitle = QObject::tr("Sensor %1 -> Joint %2 : %3 algorithm").arg(a.first).arg(QString::fromStdString(profile.sensorsMapping.left.find(a.first)->get_right())).arg(QString::fromStdString(a.second->name()));
+			pd.subTitle = QObject::tr("Sensor %1 -> Joint %2 : %3 algorithm").arg(a.first).arg(QString::fromStdString(a.second.jointName)).arg(QString::fromStdString(a.second.orientationEstimationAlgorithm->name()));
 			pd.widget = w;
 			pages.push_back(pd);
 		}

@@ -81,7 +81,6 @@ namespace threadingUtils
 
 
 		FunctionWrapper(const FunctionWrapper& Other) = delete;
-		FunctionWrapper(FunctionWrapper& Other) = delete;
 		FunctionWrapper& operator=(const FunctionWrapper& Other) = delete;
 
 	private:

@@ -15,57 +15,18 @@
 
 namespace utils
 {
-	//! \tparam NPtr Typ wska�nika w�z�a
-	template<typename NPtr>
-	class TreeLinearizeVisitor
-	{
-		//! Typ zlinearyzowanego drzewa
-		typedef std::list<NPtr> LinearizedTree;
-
-	public:
-
-		//! Konstruktor domyslny
-		TreeLinearizeVisitor() {}
-		//! Destruktor
-		~TreeLinearizeVisitor() {}
-
-		//! \param node odwiedzany w�ze�
-		void operator()(NPtr node)
-		{
-			linearizedTree.push_back(node);
-		}
-
-		//! Zlinearyzowane drzewo
-		LinearizedTree linearizedTree;
-	};
-
-	//! \tparam NPtr Typ wska�nika w�z�a
-	template<typename NPtr>
-	class FindMaxLevelVisitor
-	{
-	public:
-		//! Konstruktor domyslny
-		FindMaxLevelVisitor() : maxLevel(0) {}
-		//! Destruktor
-		~FindMaxLevelVisitor() {}
-		//! \param node Odwiedzany w�ze�
-		//! \param level Aktualnie odwiedzany poziom (wzgledem w�z�a z kt�rego startowali�my)
-		void operator()(NPtr node, const unsigned int level)
-		{
-			maxLevel = std::max(maxLevel, level);
-		}
-
-		//! Maksymalny poziom
-		unsigned int maxLevel;
-	};
-
 	struct TreeNode
 	{
+		//! Typ rozmiaru
+		typedef std::size_t SizeType;
+
 		//Typ ściezki
+		//! \tparam Element ścieżki
 		template<typename T>
 		using Path = std::list < T > ;
 
 		//Typ kolekcji dzieci
+		//! \tparam Typ dziecka
 		template<typename T>
 		using Children = Path < T > ;
 
@@ -99,9 +60,9 @@ namespace utils
 		template<typename NPtr>
 		//! \param �cie�ka kt�rej d�ugo�� obliczam
 		//! \return D�ugo�� �cie�ki
-		static typename Path<NPtr>::size_type distance(const Path<NPtr> & path)
+		static SizeType distance(const Path<NPtr> & path)
 		{
-			return path.size() - 1;
+			return path.empty() == true ? 0 : path.size() - 1;
 		}
 
 		//! \tparam NPtr Typ wska�nika w�z�a
@@ -109,7 +70,7 @@ namespace utils
 		//! \param startNode Weze� z kt�rego ma wystartowa� �cie�ka
 		//! \param endNode Weze� do kt�rego doj�� �cie�ka
 		//! \return D�ugo�� �cie�ki pomi�dzy w�z�ami
-		static typename Path<NPtr>::size_type distance(NPtr startNode, NPtr endNode)
+		static SizeType distance(NPtr startNode, NPtr endNode)
 		{
 			return distance(findPath(startNode, endNode));
 		}
@@ -124,35 +85,79 @@ namespace utils
 
 		//! \tparam NPtr Typ wska�nika w�z�a
 		template<typename NPtr>
+		//! \param node W�ze� z kt�rego chcemy pobra� �cie�k� do roota
+		static Path<NPtr> upPath(NPtr startNode)
+		{
+			Path<NPtr> ret;
+
+			if (startNode != nullptr){
+
+				if (startNode->isRoot() == true){
+					ret.push_back(startNode);
+				}
+				else{
+					while (startNode != nullptr && startNode->isRoot() == false) { ret.push_back(startNode); startNode = startNode->parent.lock(); }
+				}
+			}
+
+			return ret;
+		}
+
+		//! \tparam NPtr Typ wska�nika w�z�a
+		template<typename NPtr>
+		//! \param node Węzeł dla którego liczymy dzieci
+		static SizeType childrenSize(NPtr node)
+		{
+			SizeType ret = 0;
+
+			if (node != nullptr){
+
+				for (const auto & c : node->children)
+				{
+					if (c != nullptr){
+						TreeSizeVisitor tsv;
+						TreeNode::visitPreOrder(c, tsv);
+						ret += tsv.treeSize();
+					}
+					else{
+						++ret;
+					}
+				}
+			}
+
+			return ret;
+		}
+
+		//! \tparam NPtr Typ wska�nika w�z�a
+		template<typename NPtr>
 		//! \param startNode W�ze� z kt�rego ma si� rozpocz�� �cie�ka
 		//! \param endNode W�ze� w kt�rym ma si� ko�czy� �cie�ka
 		//! \return �cie�ka pomi�dzy w�z�ami - kolejne w�z�y
 		static Path<NPtr> findPath(NPtr startNode, NPtr endNode)
 		{
-			Path<NPtr> ret;
-
 			if (startNode != endNode){
 				auto p1 = upPath(startNode);
 
-				auto it = std::find(p1.begin(), p1.end(), endNode);
+				//wariant end node jest przodkiem startNode
+				{
+					auto it = std::find(p1.begin(), p1.end(), endNode);
 
-				if (it != p1.end()){
-					ret.push_back(startNode);
-					ret.insert(ret.end(), p1.begin(), it);
-					ret.push_back(endNode);
-					return ret;
+					if (it != p1.end()){						
+						return Path<NPtr>(p1.begin(), it + 1);
+					}
 				}
 
 				auto p2 = upPath(endNode);
 
-				it = std::find(p2.begin(), p2.end(), endNode);
+				//wariant end node jest potomkiem startNode
+				{
+					auto it = std::find(p2.begin(), p2.end(), startNode);
 
-				if (it != p2.end()){
-					ret.insert(ret.end(), p2.begin(), it);
-					reversePath(ret);
-					ret.push_front(startNode);
-					ret.push_back(endNode);
-					return ret;
+					if (it != p2.end()){
+						Path<NPtr> ret(p2.begin(), it+1);
+						reversePath(ret);						
+						return ret;
+					}
 				}
 
 				if (p1.empty() == false && p2.empty() == false){
@@ -165,28 +170,43 @@ namespace utils
 
 					if (retIT != intersectResult.end()){
 						//mamy punkt przeciecia - drogi si� schodz�
+						//szukam najblizszego punktu przeciecia
+						std::set<NPtr> intersectionSet(intersectResult.begin(), retIT);
+						NPtr intersectionPoint;
 
-						ret.insert(ret.end(), p2.begin(), std::find(p2.begin(), p2.end(), intersectResult.front()));
-						reversePath(ret);
-						ret.push_front(intersectResult.front());
-						ret.insert(ret.begin(), p1.begin(), std::find(p1.begin(), p1.end(), intersectResult.front()));
-						ret.push_front(startNode);
-						ret.push_back(startNode);
+						if (p1.size() < p2.size()){
+							for (const auto & n : p1)
+							{
+								if (intersectionSet.find(n) != intersectionSet.end()){
+									intersectionPoint = n;
+									break;
+								}
+							}
+						}
+						else{
+							for (const auto & n : p2)
+							{
+								if (intersectionSet.find(n) != intersectionSet.end()){
+									intersectionPoint = n;
+									break;
+								}
+							}
+						}
+
+						Path<NPtr> ret(p1.begin(), std::find(p1.begin(), p1.end(), intersectionPoint));						
+						ret.insert(ret.end(), std::find(p2.begin(), p2.end(), intersectionPoint), p2.end());
+						return ret;
 					}
 				}
+				else{
+					return Path<NPtr>();
+				}
 			}
-
-			return ret;
-		}
-
-		//! \tparam NPtr Typ wska�nika w�z�a
-		template<typename NPtr>
-		//! \param node W�ze� z kt�rego chcemy pobra� �cie�k� do roota
-		static Path<NPtr> upPath(NPtr startNode)
-		{
-			Path<NPtr> ret;
-			while (startNode != nullptr && startNode->isRoot() == false) { ret.push_back(startNode); startNode = startNode->parent.lock(); }
-			return ret;
+			else{
+				Path<NPtr> ret
+				ret.push_back(startNode);
+				return ret;
+			}			
 		}
 
 		//! \tparam NPtr Typ wska�nika w�z�a
@@ -196,8 +216,8 @@ namespace utils
 		//! \param visitor Obiekt przegl�daj�cy wez�y
 		static void visitPreOrder(NPtr node, Visitor & visitor)
 		{
+			visitor(node);
 			if (node != nullptr){
-				visitor(node);
 				for (const auto & child : node->children)
 				{
 					visitPreOrder(NPtr(child), visitor);
@@ -216,9 +236,9 @@ namespace utils
 				for (const auto & child : node->children)
 				{
 					visitPostOrder(NPtr(child), visitor);
-				}
-				visitor(node);
+				}			
 			}
+			visitor(node);
 		}
 
 		//! \tparam NPtr Typ wska�nika w�z�a
@@ -228,29 +248,26 @@ namespace utils
 		//! \param visitor Obiekt przegl�daj�cy wez�y i poziomy
 		static void visitLevelOrder(NPtr node, Visitor & visitor)
 		{
-			if (node != nullptr){
-
-				Children<NPtr> children;
-				children.push_back(node);
-				typename Children<NPtr>::size_type level = 0;
-				while (children.empty() == false)
+			Children<NPtr> children;
+			children.push_back(node);
+			TreeNode::SizeType level = 0;
+			while (children.empty() == false)
+			{
+				//pobieramy dla nast�pnego poziomu dzieci
+				Children<NPtr> nextLevelChildren;
+				for (const auto & child : children)
 				{
-					//pobieramy dla nast�pnego poziomu dzieci
-					Children<NPtr> nextLevelChildren;
-					for (const auto & child : children)
-					{
-						visitor(NPtr(child), level);
+					visitor(NPtr(child), level);
 
-						if (child != nullptr){
-							for (const auto & val : child->children){
-								nextLevelChildren.push_back(NPtr(val));
-							}							
-						}
+					if (child != nullptr){
+						for (const auto & val : child->children){
+							nextLevelChildren.push_back(NPtr(val));
+						}							
 					}
-
-					children.swap(nextLevelChildren);
-					++level;
 				}
+
+				children.swap(nextLevelChildren);
+				++level;
 			}
 		}
 
@@ -265,8 +282,9 @@ namespace utils
 		{
 			TreeLinearizeVisitor<NPtr> hv;
 			visitOrder(node, hv);
-			reversePath(hv.linearizedTree);
-			for (const auto & val : hv.linearizedTree)
+			auto lt = hv.linearizedTree();
+			reversePath(lt);
+			for (const auto & val : lt)
 			{
 				visitor(NPtr(val));
 			}
@@ -279,37 +297,31 @@ namespace utils
 		//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
 		static bool visitLevelOrderWhile(NPtr node, CondVisitor & condVisitor)
 		{
-			if (node != nullptr){
-
-				Children<NPtr> children;
-				children.push_back(node);
-				typename Children<NPtr>::size_type level = 0;
-				while (children.empty() == false)
+			Children<NPtr> children;
+			children.push_back(node);
+			SizeType level = 0;
+			while (children.empty() == false)
+			{
+				//pobieramy dla nast�pnego poziomu dzieci
+				Children<NPtr> nextLevelChildren;
+				for (const auto & child : children)
 				{
-					//pobieramy dla nast�pnego poziomu dzieci
-					Children<NPtr> nextLevelChildren;
-					for (const auto & child : children)
-					{
-						if (condVisitor(NPtr(child), level) == false){
-							return false;
-						}
-
-						if (child != nullptr){
-							for (const auto & val : child->children) {
-								nextLevelChildren.push_back(NPtr(val));
-							}
-						}
+					if (condVisitor(NPtr(child), level) == false){
+						return false;
 					}
 
-					children.swap(nextLevelChildren);
-					++level;
+					if (child != nullptr){
+						for (const auto & val : child->children) {
+							nextLevelChildren.push_back(NPtr(val));
+						}
+					}
 				}
 
-				return true;
+				children.swap(nextLevelChildren);
+				++level;
 			}
-			else{
-				return false;
-			}
+
+			return true;
 		}
 
 		//! \tparam NPtr Typ wska�nika w�z�a
@@ -320,20 +332,15 @@ namespace utils
 		//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
 		static bool visitPreOrderWhile(NPtr node, CondVisitor & condVisitor)
 		{
-			if (node != nullptr){
-				if (condVisitor(node) == true){
-					for (const auto & child : node->children)
-					{
-						if (visitPreOrderWhile(NPtr(child), condVisitor) == false){
-							return false;
-						}
+			if (condVisitor(node) == true){
+				for (const auto & child : node->children)
+				{
+					if (visitPreOrderWhile(NPtr(child), condVisitor) == false){
+						return false;
 					}
+				}
 
-					return true;
-				}
-				else {
-					return false;
-				}
+				return true;
 			}
 			else {
 				return false;
@@ -348,18 +355,13 @@ namespace utils
 		//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
 		static bool visitPostOrderWhile(NPtr node, CondVisitor & condVisitor)
 		{
-			if (node != nullptr){
-				for (const auto & child : node->children)
-				{
-					if (visitPostOrderWhile(NPtr(child), condVisitor) == false){
-						return false;
-					}
+			for (const auto & child : node->children)
+			{
+				if (visitPostOrderWhile(NPtr(child), condVisitor) == false){
+					return false;
 				}
-				return condVisitor(node);
 			}
-			else{
-				return false;
-			}
+			return condVisitor(node);
 		}
 
 		//! \tparam VisitOrder Spos�b oryginalnego odwiedzania, kt�re chcemy odwr�ci�
@@ -373,16 +375,127 @@ namespace utils
 		{
 			TreeLinearizeVisitor<NPtr> hv;
 			visitOrder(node, hv);
-			reversePath(hv.linearizedTree);
-			for (const auto & val : hv.linearizedTree)
+			auto lt = hv.linearizedTree();
+			reversePath(lt);
+			for (const auto & val : lt)
 			{
 				if (condVisitor(NPtr(val)) == false){
 					return false;
 				}
 			}
 
-			return !hv.linearizedTree.empty();
+			return !lt.empty();
 		}
+	};
+
+	//! Klasa wizytująca, zliczająca ilość węzłów drzewa
+	class TreeSizeVisitor
+	{
+	public:
+
+		//! Konstruktor domyslny
+		TreeSizeVisitor() : treeSize_(0) {}
+		//! Destruktor
+		~TreeSizeVisitor() {}
+
+		//! \tparam NPtr Typ wska�nika w�z�a
+		template<typename NPtr>
+		//! \param node odwiedzany w�ze�
+		void operator()(NPtr node)
+		{
+			++treeSize_;
+		}
+
+		//! Resetuje licznik
+		void reset()
+		{
+			treeSize_ = 0;
+		}
+
+		//! \return Ilość węzłów drzewa
+		TreeNode::SizeType treeSize() const
+		{
+			return treeSize_;
+		}
+
+	private:
+
+		//! Ilość węzłów w drzewie
+		TreeNode::SizeType treeSize_;
+	};
+
+	//! \tparam NPtr Typ wska�nika w�z�a
+	template<typename NPtr>
+	//! Klasa linearyzująca drzewo
+	class TreeLinearizeVisitor
+	{
+		//! Typ zlinearyzowanego drzewa
+		typedef TreeNode::Path<NPtr> LinearizedTree;
+
+	public:
+
+		//! Konstruktor domyslny
+		TreeLinearizeVisitor() {}
+		//! Destruktor
+		~TreeLinearizeVisitor() {}
+
+		//! \param node odwiedzany w�ze�
+		void operator()(NPtr node)
+		{
+			linearizedTree_.push_back(node);
+		}
+
+		//! \return Zlinearyzowane drzewo
+		const LinearizedTree linearizedTree() const
+		{
+			return linearizedTree_;
+		}
+
+		//! Czyści zlinearyzowaną reprezentacje drzewa
+		void reset()
+		{
+			LinearizedTree().swap(linearizedTree_);
+		}
+
+	private:
+
+		//! Zlinearyzowane drzewo
+		LinearizedTree linearizedTree_;
+	};
+
+	//! Klasa wizytująca szukająca najgłebszego poziomu drzewa
+	class FindMaxLevelVisitor
+	{
+	public:
+		//! Konstruktor domyslny
+		FindMaxLevelVisitor() : maxLevel_(0) {}
+		//! Destruktor
+		~FindMaxLevelVisitor() {}
+
+		//! \tparam NPtr Typ wska�nika w�z�a
+		template<typename NPtr>
+		//! \param node Odwiedzany w�ze�
+		//! \param level Aktualnie odwiedzany poziom (wzgledem w�z�a z kt�rego startowali�my)
+		void operator()(NPtr node, const TreeNode::SizeType level)
+		{
+			maxLevel_ = std::max(maxLevel_, level);
+		}
+
+		//! \return Najgłebszy poziom drzewa
+		TreeNode::SizeType maxLevel() const
+		{
+			return maxLevel_;
+		}
+
+		//! Zeruje najgłębszy poziom drzewa
+		void reset()
+		{
+			maxLevel_ = 0;
+		}
+
+	private:
+		//! Maksymalny poziom
+		TreeNode::SizeType maxLevel_;
 	};
 
 	//! \tparam ValueType Typ rpzechowywanej warto�ci
@@ -536,15 +649,15 @@ namespace utils
 		}
 
 		//! \return Stopie� w�z�a - Ilo�� po��cze� jakie tworzy
-		size_type degree() const
+		TreeNode::SizeType degree() const
 		{
 			return children.size() + ((isRoot() == true) ? 0 : 1);
 		}
 
 		//! \return Wysoko�c w�z�a - odleg�o�� do roota
-		size_type height() const
+		TreeNode::SizeType height() const
 		{
-			size_type l = 0;
+			TreeNode::SizeType l = 0;
 			auto p = this;
 
 			while (p->isRoot() == false) { p = p->parent.lock().get(); ++l; }
@@ -553,16 +666,16 @@ namespace utils
 		}
 
 		//! \return G��boko�� w�z�a - poziom najdalej oddalonego dziecka
-		size_type depth() const
+		TreeNode::SizeType depth() const
 		{
-			size_type l = 0;
+			TreeNode::SizeType l = 0;
 
 			if (isLeaf() == false){				
 				for (const auto & child : children)
 				{
-					FindMaxLevelVisitor<NodeConstPtr> mlVisitor;
+					FindMaxLevelVisitor mlVisitor;
 					visitLevelOrder(child, mlVisitor);
-					l = std::max(l, mlVisitor.maxLevel);
+					l = std::max(l, mlVisitor.maxLevel());
 				}
 
 				++l;
@@ -572,9 +685,15 @@ namespace utils
 		}
 
 		//! To samo co depth
-		size_type level() const
+		TreeNode::SizeType level() const
 		{
 			return depth();
+		}
+
+		//! \return Ilość węzłów w tym drzewie
+		TreeNode::SizeType size() const
+		{
+			return 1 + TreeNode::childrenSize(this);
 		}
 
 		//! Rodzic
@@ -708,15 +827,15 @@ namespace utils
 		}
 
 		//! \return Stopie� w�z�a - Ilo�� po��cze� jakie tworzy
-		size_type degree() const
+		TreeNode::SizeType degree() const
 		{
 			return children.size() + ((isRoot() == true) ? 0 : 1);
 		}
 
 		//! \return Wysoko�c w�z�a - odleg�o�� do roota
-		size_type height() const
+		TreeNode::SizeType height() const
 		{
-			size_type l = 0;
+			TreeNode::SizeType l = 0;
 			auto p = this;
 
 			while (p->isRoot() == false) { p = p->parent.lock().get(); ++l; }
@@ -725,16 +844,16 @@ namespace utils
 		}
 
 		//! \return G��boko�� w�z�a - poziom najdalej oddalonego dziecka
-		size_type depth() const
+		TreeNode::SizeType depth() const
 		{
-			size_type l = 0;
+			TreeNode::SizeType l = 0;
 
 			if (isLeaf() == false){
 				for (const auto & child : children)
 				{
-					FindMaxLevelVisitor<NodeConstPtr> mlVisitor;
+					FindMaxLevelVisitor mlVisitor;
 					TreeNode::visitLevelOrder(child, mlVisitor);
-					l = std::max(l, mlVisitor.maxLevel);
+					l = std::max(l, mlVisitor.maxLevel());
 				}
 
 				++l;
@@ -744,9 +863,15 @@ namespace utils
 		}
 
 		//! To samo co depth
-		size_type level() const
+		TreeNode::SizeType level() const
 		{
 			return depth();
+		}
+
+		//! \return Ilość węzłów w tym drzewie
+		TreeNode::SizeType size() const
+		{
+			return 1 + TreeNode::childrenSize(this);
 		}
 
 		//! Rodzic

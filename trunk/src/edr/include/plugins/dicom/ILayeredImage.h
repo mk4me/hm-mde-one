@@ -15,6 +15,7 @@
 #include <vector>
 #include <utils/ObjectWrapper.h>
 #include <utils/PtrPolicyBoost.h>
+#include <utils/ClonePolicies.h>
 #include <boost/range/iterator_range_core.hpp>
 #include <boost/serialization/access.hpp>
 #include "boost/serialization/assume_abstract.hpp"

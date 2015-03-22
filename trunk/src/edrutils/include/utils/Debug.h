@@ -63,8 +63,8 @@ public:
  */
 #ifdef UTILS_DEBUG
 
-#define UTILS_ASSERT(condition, ...) BOOST_ASSERT_MSG(#condition, "" ## COMA_AWARE_STRINGIZE(__VA_ARGS__))
-#define UTILS_FAIL(...) UTILS_ASSERT(false, "" ## COMA_AWARE_STRINGIZE(__VA_ARGS__))
+#define UTILS_ASSERT(condition, ...) BOOST_ASSERT_MSG(condition, COMA_AWARE_STRINGIZE(#condition,__VA_ARGS__))
+#define UTILS_FAIL(...) UTILS_ASSERT(false, COMA_AWARE_STRINGIZE(failure,__VA_ARGS__))
 
 #else
 #   define UTILS_ASSERT(...)

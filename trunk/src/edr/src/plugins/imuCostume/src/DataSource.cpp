@@ -255,7 +255,7 @@ void IMUCostumeDataSource::resfreshCostumesData()
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 		else{
-
+			std::set<imuCostume::CostumeRawIO::CostumeAddress> costumes;
 			imuCostume::CostumeCANopenIO::Frame frame;
 			uint16_t length;
 
@@ -290,7 +290,10 @@ void IMUCostumeDataSource::resfreshCostumesData()
 						CostumeID id;
 						id.ip = cd.second.rawCostume->ip();
 						id.port = cd.second.rawCostume->port();
-						costumesDataFrame.insert(CostumesDataFrame::value_type(id, streamBuffer));
+						
+						costumes.insert(id);
+
+						//costumesDataFrame.insert(CostumesDataFrame::value_type(id, streamBuffer));
 
 						//konwertuje dane do czujnikow kompletnych
 
@@ -353,20 +356,67 @@ void IMUCostumeDataSource::resfreshCostumesData()
 				}
 			}
 
-			if (costumesDataFrame.empty() == false){
-				std::lock_guard<std::recursive_mutex > lock(synch);
+			if (costumes.empty() == false){
+				std::lock_guard<std::recursive_mutex > lock(synch);			
 				for (auto & rec : recordings)
 				{
-					CostumesDataFrame recCDF;
-					for (const auto & id : rec->costumesToRecord)
+					CostumesDataFrame cdf;
+					for (const auto & ctr : rec->costumesToRecord)
 					{
-						auto it = costumesDataFrame.find(id);
-						if (it != costumesDataFrame.end()){
-							recCDF.insert(*it);
+						auto it = costumes.find(ctr.first);
+						if (it != costumes.end()){
+							RecordedCostumeData rcd;
+
+							auto cIT = costumesData.find(ctr.first);
+
+							utils::shared_ptr<SkeletonWithStreamData> kinematicStream;
+							cIT->second.domainData.back()->tryGet(kinematicStream);
+							::SkeletonStateStream::value_type sdata;
+							kinematicStream->states->data(sdata);
+
+							IMU::SensorsStreamData cssd;
+							cIT->second.completeImuStream->data(cssd);
+							rcd.timestamp = cssd.timestamp;
+							
+							//zapis danych tego kostiumu
+							for (const auto & sID : ctr.second)
+							{
+								auto jointName = cIT->second.profile->sensorsDescriptions.find(sID)->second.jointName;
+
+								auto idx = kinematicStream->nodesMapping.right.find(jointName)->get_left();
+
+								RecordedSensorData rsd;
+								auto sdIT = cIT->second.sensorsData.find(sID);
+								auto ow = sdIT->second.domainData.front();
+								utils::shared_ptr<IMUStream> imuStream;
+								ow->tryGet(imuStream);
+								IMUStream::value_type data;
+								imuStream->data(data);
+
+								rsd.accelerometer = data.second.accelerometer;
+								rsd.gyroscope = data.second.gyroscope;
+								rsd.magnetometer = data.second.magnetometer;
+								rsd.orientation = data.second.orientation;
+
+								auto it = sdIT->second.domainData.begin();
+								std::advance(it, 18);
+
+								ow = *it;								
+								ow->tryGet(imuStream);								
+								imuStream->data(data);
+
+								rsd.estimatedOrientation = data.second.orientation;
+
+								//todo - z kinematic
+								rsd.jointOrientation = sdata[idx].rotation;
+
+								rcd.sensorsData.insert(std::map<imuCostume::Costume::SensorID, RecordedSensorData>::value_type(sID, rsd));
+							}
+							cdf.insert(CostumesDataFrame::value_type(ctr.first, rcd));
 						}
 					}
 
-					rec->costumesDataBuffer.pushData(std::move(recCDF));
+					rec->costumesDataBuffer.pushData(std::move(cdf));
 				}
 			}
 		}
@@ -391,8 +441,8 @@ bool IMUCostumeDataSource::lateInit()
 					auto pro = SerializableCostumeProfile::deserialize(f);
 
 					if (SerializableCostumeProfile::verify(pro, this) != SerializableCostumeProfile::Failed){
-						auto upro = SerializableCostumeProfile::unpack(pro, this);
-						costumesProfiles_.insert(CostumesProfiles::value_type(upro.name, upro));
+						auto upro = utils::make_shared<IMU::CostumeProfile>(SerializableCostumeProfile::unpack(pro, this));
+						costumesProfiles_.insert(CostumesProfiles::value_type(upro->name, upro));
 					}
 				}
 			}			
@@ -426,7 +476,7 @@ void IMUCostumeDataSource::finalize()
 
 				for (const auto & pro : costumesProfiles_){
 
-					auto sPro = SerializableCostumeProfile::pack(pro.second);
+					auto sPro = SerializableCostumeProfile::pack(*pro.second);
 					SerializableCostumeProfile::serialize(f, sPro);
 					f << std::endl;
 				}
@@ -652,7 +702,7 @@ std::string vectorParameterName(const unsigned int idx)
 core::HierarchyItemPtr IMUCostumeDataSource::fillRawCostumeData(CostumeData & cData)
 {
 	auto hierarchyTransaction = memoryDM->hierarchyTransaction();
-	core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>("Raw Data", "Raw communication data", QIcon());	
+	//core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>("Raw Data", "Raw communication data", QIcon());	
 	//hierarchyTransaction->addRoot(root);
 
 	const auto & sc = cData.sensorsConfiguration;
@@ -661,8 +711,8 @@ core::HierarchyItemPtr IMUCostumeDataSource::fillRawCostumeData(CostumeData & cD
 	ow->set(cData.rawDataStream);
 	cData.domainData.push_back(ow);
 
-	core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Raw stream"), QObject::tr("Raw Ethernet costume frames"));
-	root->appendChild(item);
+	//core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Raw stream"), QObject::tr("Raw Ethernet costume frames"));
+	//root->appendChild(item);
 
 	cData.CANopenStream.reset(new threadingUtils::StreamAdapterT<RawDataStream::value_type, CANopenFramesStream::value_type, RawToCANopenExtractor>(cData.rawDataStream, RawToCANopenExtractor()));
 	ow = core::Variant::create<CANopenFramesStream>();
@@ -670,8 +720,8 @@ core::HierarchyItemPtr IMUCostumeDataSource::fillRawCostumeData(CostumeData & cD
 	ow->set(cData.CANopenStream);
 	cData.domainData.push_back(ow);
 
-	item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("CANopen stream"), QObject::tr("Extracted CANopen frames stream"));
-	root->appendChild(item);
+	//item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("CANopen stream"), QObject::tr("Extracted CANopen frames stream"));
+	//root->appendChild(item);
 
 	cData.costumeStream.reset(new threadingUtils::StreamAdapterT<CANopenFramesStream::value_type, CostumeStream::value_type, CANopenDataExtractor>(cData.CANopenStream, CANopenDataExtractor()));
 	ow = core::Variant::create<CostumeStream>();
@@ -679,10 +729,11 @@ core::HierarchyItemPtr IMUCostumeDataSource::fillRawCostumeData(CostumeData & cD
 	ow->set(cData.costumeStream);
 	cData.domainData.push_back(ow);
 
-	item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Sensors stream"), QObject::tr("Grouped sensors data and status stream"));
-	root->appendChild(item);
+	//item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Sensors stream"), QObject::tr("Grouped sensors data and status stream"));
+	//root->appendChild(item);
 
-	return root;
+	//return root;
+	return core::HierarchyItemPtr();
 }
 
 void IMUCostumeDataSource::loadRawCostume(const CostumeID & id)
@@ -697,7 +748,7 @@ void IMUCostumeDataSource::loadRawCostume(const CostumeID & id)
 	
 	CostumeData cData = it->second;
 
-	auto hItem = fillRawCostumeData(cData);
+	fillRawCostumeData(cData);
 
 	try{
 		auto t = memoryDM->transaction();
@@ -707,10 +758,10 @@ void IMUCostumeDataSource::loadRawCostume(const CostumeID & id)
 
 		it->second = cData;
 
-		auto rootItem = utils::make_shared<core::HierarchyItem>(QObject::tr("Costume %1:%2 data").arg(QString::fromStdString(it->first.ip)).arg(it->first.port), "", QIcon());
-		rootItem->appendChild(hItem);		
-		memoryDM->hierarchyTransaction()->addRoot(rootItem);
-		it->second.hierarchyRootItem = rootItem;
+		//auto rootItem = utils::make_shared<core::HierarchyItem>(QObject::tr("Costume %1:%2 data").arg(QString::fromStdString(it->first.ip)).arg(it->first.port), "", QIcon());
+		//rootItem->appendChild(hItem);		
+		//memoryDM->hierarchyTransaction()->addRoot(rootItem);
+		///it->second.hierarchyRootItem = rootItem;
 	}
 	catch (std::exception & e){
 		PLUGIN_LOG_ERROR(e.what());		
@@ -720,7 +771,7 @@ void IMUCostumeDataSource::loadRawCostume(const CostumeID & id)
 	}
 }
 void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
-	const CostumeProfileInstance & profileInstance)
+	CostumeProfilePtr profile)
 {
 	std::lock_guard<std::recursive_mutex > lock(synch);	
 	
@@ -741,16 +792,17 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 		imusCount = sIT->second.size();
 	}
 
-	if (profileInstance.sensorsOrientationEstimationAlgorithms.size() > imusCount)
+	if (profile->sensorsDescriptions.size() > imusCount)
 	{
 		throw std::runtime_error("Mismatch in number of loaded sensors orientation estimation algorithms and costume configuration");
 	}
 
 	CostumeData cData = it->second;
 
-	auto hItem = fillRawCostumeData(cData);
+	fillRawCostumeData(cData);
 
-	core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>(QObject::tr("Unpacked Data"), QObject::tr("Unpacked IMU sensors data"), QIcon());
+	auto root = utils::make_shared<core::HierarchyItem>(QObject::tr("Costume %1:%2 data").arg(QString::fromStdString(it->first.ip)).arg(it->first.port), "", QIcon());
+	//core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>(QObject::tr("Unpacked Data"), QObject::tr("Unpacked IMU sensors data"), QIcon());
 
 	//adapter na pe�ne dane z kostiumu nap�dzaj�ce strumie� z estymacj�
 	cData.completeImuStream.reset(new ExtractedCostumeStreamAdapter(cData.costumeStream, CostumeIMUExtractor(cData.sensorsConfiguration)));
@@ -760,13 +812,13 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 	ow->set(IMU::SensorsStreamPtr(cData.completeImuStream));
 	cData.domainData.push_back(ow);
 
-	core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("IMU stream"), QObject::tr("IMU sensors data stream"));
+	core::IHierarchyItemPtr item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("IMU stream"), QObject::tr("IMU sensors data stream"));
 	root->appendChild(item);
 
-	unpackSensorsStream(cData.completeImuStream, cData.sensorsData, item, cData.domainData);
+	unpackSensorsStream(cData.completeImuStream, cData.sensorsData, item, cData.domainData, profile);
 
 	auto estimatedData = utils::make_shared<threadingUtils::StreamProcessorT<IMU::SensorsStreamData, OrientationEstimator>>(cData.completeImuStream,
-		OrientationEstimator(profileInstance.sensorsOrientationEstimationAlgorithms));
+		OrientationEstimator(profile));
 
 	ow = core::Variant::create<IMU::SensorsStream>();
 	ow->setMetadata("core/name", QObject::tr("Filtered IMU stream").toStdString());
@@ -776,7 +828,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 	item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Filtered IMU stream"), QObject::tr("IMU filtered orientation stream"));
 	root->appendChild(item);
 
-	unpackSensorsStream(estimatedData, cData.sensorsData, item, cData.domainData);
+	unpackSensorsStream(estimatedData, cData.sensorsData, item, cData.domainData, profile);
 
 	cData.skeletonMotion = utils::make_shared<IMU::CostumeSkeletonMotion>();
 	ow = core::Variant::create<IMU::CostumeSkeletonMotion>();
@@ -784,8 +836,8 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 	ow->set(cData.skeletonMotion);
 	cData.domainData.push_back(ow);
 
-	item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Skeleton"), QObject::tr("Calibrated and filtrated skeleton"));
-	root->appendChild(item);
+	//item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Skeleton"), QObject::tr("Calibrated and filtrated skeleton"));
+	//root->appendChild(item);
 
 	//mapowanie pozycji wektora do nazwy jointa w szkielecie i stanie
 
@@ -794,31 +846,45 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 				cData.skeletonMotion->dataToModelMapping.insert(DataIndexToJointMapping::value_type(cData.skeletonMotion->dataToModelMapping.size(), joint->value.name));
 			};
 
-	utils::TreeNode::visitLevelOrder(profileInstance.skeleton->root, visitor);
+	utils::TreeNode::visitLevelOrder(profile->skeleton->root, visitor);
 
-	cData.skeletonMotion->skeleton = profileInstance.skeleton;
+	cData.skeletonMotion->skeleton = profile->skeleton;
 	cData.skeletonMotion->stream.reset(new RealMotionStream(estimatedData,
-		ExtractCostumeMotion(profileInstance.skeleton,
-		profileInstance.sensorsMapping,
-		cData.skeletonMotion->dataToModelMapping,
-		profileInstance.sensorsAdjustments,
-		profileInstance.motionEstimationAlgorithm)));
+		ExtractCostumeMotion(profile, cData.skeletonMotion->dataToModelMapping)));
 
 	ow = core::Variant::create<MotionStream>();
 	ow->setMetadata("core/name", QObject::tr("Skeleton stream").toStdString());
 	ow->set(MotionStreamPtr(cData.skeletonMotion->stream));
 	cData.domainData.push_back(ow);
 
-	item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Skeleton stream"), QObject::tr("Calibrated and filtrated skeleton stream"));
-	root->appendChild(item);
+	//item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Skeleton stream"), QObject::tr("Calibrated and filtrated skeleton stream"));
+	//root->appendChild(item);
 
 	{
 		//dane dla kinematic
 		auto kStream = utils::make_shared<SkeletonWithStreamData>();
-		kStream->skeleton = profileInstance.skeleton;
-		kStream->nodesMapping = kinematic::SkeletonState::createMapping(*profileInstance.skeleton);
+		kStream->skeleton = profile->skeleton;
+		kStream->nodesMapping = kinematic::SkeletonState::createMapping(*profile->skeleton);
 		//SkeletonStateStream
-		kStream->states.reset(new threadingUtils::StreamAdapterT<IMU::MotionStream::value_type, SkeletonStateStream::value_type, KinematicStreamExtractor>(cData.skeletonMotion->stream, KinematicStreamExtractor(profileInstance.skeleton)));
+
+		auto skeletonState = kinematic::SkeletonState::create(*profile->skeleton);
+
+		std::list<kinematic::SkeletonState::JointConstPtr> joints;
+
+		auto jointsGrabberVisitor = [&joints](kinematic::SkeletonState::JointConstPtr joint, std::size_t level)
+		{
+			if (joint != nullptr){
+				joints.push_back(joint);
+			}
+		};
+
+		utils::TreeNode::visitLevelOrder(skeletonState.root(), jointsGrabberVisitor);
+
+		auto sStateStream = utils::make_shared<threadingUtils::StreamAdapterT<MotionStream::value_type, IMU::SkeletonStateStream::value_type, KinematicStreamExtractor>>(cData.skeletonMotion->stream, KinematicStreamExtractor(std::move(skeletonState)));
+
+		cData.domainData.push_back(core::Variant::wrapp<IMU::SkeletonStateStream>(sStateStream));
+
+		kStream->states.reset(new threadingUtils::StreamAdapterT<IMU::SkeletonStateStream::value_type, ::SkeletonStateStream::value_type, IMU::TimeRemoverExtractor>(sStateStream));
 
 		ow = core::Variant::create<SkeletonWithStreamData>();
 		ow->setMetadata("core/name", QObject::tr("Kinematic stream").toStdString());
@@ -827,6 +893,16 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 
 		item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Kinematic stream"), QObject::tr("Kinematic 3D stream"));
 		root->appendChild(item);
+
+		item = utils::make_shared<core::HierarchyItem>(QObject::tr("Active joints"), QObject::tr("Joints with sensors"));
+		root->appendChild(item);
+		//TODO
+		//dodać gałęzie z jointami i ich danymi: lokalny kąt w szkielecie, globalny kąt w świecie, lokalna pozycja względem rodzica, globalna pozycja
+
+		for (const auto & sd : profile->sensorsDescriptions)
+		{
+
+		}
 	}
 
 	try{
@@ -837,14 +913,17 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 			}
 		}
 
+		cData.profile = profile;
 		it->second = cData;
 		
-		auto troot = utils::make_shared<core::HierarchyItem>(QObject::tr("Costume %1:%2 data").arg(QString::fromStdString(it->first.ip)).arg(it->first.port), "", QIcon());
-		troot->appendChild(hItem);
-		troot->appendChild(root);
-		memoryDM->hierarchyTransaction()->addRoot(troot);
+		//auto troot = utils::make_shared<core::HierarchyItem>(QObject::tr("Costume %1:%2 data").arg(QString::fromStdString(it->first.ip)).arg(it->first.port), "", QIcon());
+		//troot->appendChild(hItem);
+		//troot->appendChild(root);
+		//memoryDM->hierarchyTransaction()->addRoot(troot);
+		memoryDM->hierarchyTransaction()->addRoot(root);
 
-		it->second.hierarchyRootItem = troot;		
+		//it->second.hierarchyRootItem = troot;
+		it->second.hierarchyRootItem = root;
 	}
 	catch (std::exception & e){
 		PLUGIN_LOG_ERROR(e.what());
@@ -973,7 +1052,7 @@ void IMUCostumeDataSource::tryCreateRecordedItem()
 	}
 }
 
-void IMUCostumeDataSource::registerOrientationEstimationAlgorithm(const IIMUOrientationEstimationAlgorithm * algorithm)
+void IMUCostumeDataSource::registerOrientationEstimationAlgorithm(IIMUOrientationEstimationAlgorithmPtr algorithm)
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
 
@@ -989,7 +1068,7 @@ void IMUCostumeDataSource::registerOrientationEstimationAlgorithm(const IIMUOrie
 	}
 }
 
-void IMUCostumeDataSource::registerCostumeCalibrationAlgorithm(const IMUCostumeCalibrationAlgorithm * algorithm)
+void IMUCostumeDataSource::registerCostumeCalibrationAlgorithm(IMUCostumeCalibrationAlgorithmPtr algorithm)
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
 
@@ -1005,7 +1084,7 @@ void IMUCostumeDataSource::registerCostumeCalibrationAlgorithm(const IMUCostumeC
 	}
 }
 
-void IMUCostumeDataSource::registerMotionEstimationAlgorithm(const IMUCostumeMotionEstimationAlgorithm * algorithm)
+void IMUCostumeDataSource::registerMotionEstimationAlgorithm(IMUCostumeMotionEstimationAlgorithmPtr algorithm)
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
 
@@ -1021,7 +1100,7 @@ void IMUCostumeDataSource::registerMotionEstimationAlgorithm(const IMUCostumeMot
 	}
 }
 
-void IMUCostumeDataSource::registerSkeletonModel(SkeletonConstPtr skeleton)
+void IMUCostumeDataSource::registerSkeletonModel(SkeletonPtr skeleton)
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
 
@@ -1045,9 +1124,7 @@ bool verifyProfile(const CostumeProfile & profile)
 
 	if (profile.name.empty() == true || profile.calibrationAlgorithm == nullptr ||
 		profile.motionEstimationAlgorithm == nullptr ||
-		profile.skeleton == nullptr || profile.sensorsMapping.empty() == true ||
-		profile.sensorsMapping.size() != profile.sensorsOrientationEstimationAlgorithms.size() ||
-		profile.sensorsMapping.size() != profile.sensorsAdjustments.size()){
+		profile.skeleton == nullptr || profile.sensorsDescriptions.empty() == true){
 
 		ret = false;
 	}
@@ -1055,48 +1132,48 @@ bool verifyProfile(const CostumeProfile & profile)
 	return ret;
 }
 
-void IMUCostumeDataSource::registerCostumeProfile(const CostumeProfile & profile)
+void IMUCostumeDataSource::registerCostumeProfile(CostumeProfilePtr profile)
 {
-	if (verifyProfile(profile) == false){
+	if (verifyProfile(*profile) == false){
 		throw std::runtime_error("Incomplete profile");
 	}
 
 	std::lock_guard<std::recursive_mutex> lock(synch);
 
-	if (costumesProfiles_.find(profile.name) != costumesProfiles_.end()){
+	if (costumesProfiles_.find(profile->name) != costumesProfiles_.end()){
 		throw std::runtime_error("Profile already registered");
 	}
 
 	//produjemy rejestrowac brakujace elementy profilu
 
-	if (profile.skeleton != nullptr){
-		if (skeletonModels_.find(profile.skeleton->id) == skeletonModels_.end()){
-			skeletonModels_.insert(SkeletonModels::value_type(profile.skeleton->id, profile.skeleton));
+	if (profile->skeleton != nullptr){
+		if (skeletonModels_.find(profile->skeleton->id) == skeletonModels_.end()){
+			skeletonModels_.insert(SkeletonModels::value_type(profile->skeleton->id, profile->skeleton));
 		}
 	}
 
 	//algorytm kalibracji
-	if (calibrationAlgorithms_.find(profile.calibrationAlgorithm->ID()) == calibrationAlgorithms_.end())
+	if (calibrationAlgorithms_.find(profile->calibrationAlgorithm->ID()) == calibrationAlgorithms_.end())
 	{
-		calibrationAlgorithms_.insert(CostumeCalibrationAlgorithms::value_type(profile.calibrationAlgorithm->ID(), profile.calibrationAlgorithm));
+		calibrationAlgorithms_.insert(CostumeCalibrationAlgorithms::value_type(profile->calibrationAlgorithm->ID(), profile->calibrationAlgorithm));
 	}
 
 	//algorytm estymacji ruchu
-	if (motionEstimationAlgorithms_.find(profile.motionEstimationAlgorithm->ID()) == motionEstimationAlgorithms_.end())
+	if (motionEstimationAlgorithms_.find(profile->motionEstimationAlgorithm->ID()) == motionEstimationAlgorithms_.end())
 	{
-		motionEstimationAlgorithms_.insert(CostumeMotionEstimationAlgorithms::value_type(profile.motionEstimationAlgorithm->ID(), profile.motionEstimationAlgorithm));
+		motionEstimationAlgorithms_.insert(CostumeMotionEstimationAlgorithms::value_type(profile->motionEstimationAlgorithm->ID(), profile->motionEstimationAlgorithm));
 	}
 
 	// algorytmy estymacji
-	for (const auto & ea : profile.sensorsOrientationEstimationAlgorithms)
+	for (const auto & ea : profile->sensorsDescriptions)
 	{
-		if (orientationEstimationAlgorithms_.find(ea.second->ID()) == orientationEstimationAlgorithms_.end()){
-			orientationEstimationAlgorithms_.insert(OrientationEstimationAlgorithms::value_type(ea.second->ID(), ea.second));
+		if (orientationEstimationAlgorithms_.find(ea.second.orientationEstimationAlgorithm->ID()) == orientationEstimationAlgorithms_.end()){
+			orientationEstimationAlgorithms_.insert(OrientationEstimationAlgorithms::value_type(ea.second.orientationEstimationAlgorithm->ID(), ea.second.orientationEstimationAlgorithm));
 		}
 	}
 
 	//rejestrujemy profil
-	costumesProfiles_.insert(CostumesProfiles::value_type(profile.name, profile));
+	costumesProfiles_.insert(CostumesProfiles::value_type(profile->name, profile));
 }
 
 IMUCostumeDataSource::OrientationEstimationAlgorithms IMUCostumeDataSource::orientationEstimationAlgorithms() const
@@ -1312,11 +1389,16 @@ core::HierarchyDataItemPtr extracImuStreamVector(core::VariantsList & domainData
 
 void IMUCostumeDataSource::unpackSensorsStream(IMU::SensorsStreamPtr stream,
 	SensorsData & sensorsData,
-	core::HierarchyItemPtr root,
-	core::VariantsList & domainData)
+	core::IHierarchyItemPtr root,
+	core::VariantsList & domainData,
+	CostumeProfileConstPtr profile)
 {
 	for (auto & sd : sensorsData)
-	{				
+	{		
+		if (profile->sensorsDescriptions.find(sd.first) == profile->sensorsDescriptions.end()){
+			continue;
+		}
+
 		auto imuStream = utils::shared_ptr<IMUStream>(new threadingUtils::StreamAdapterT<IMU::SensorsStreamData, IMU::IMUStream::value_type, IMU::IMUExtractor>(stream, IMU::IMUExtractor(sd.first)));
 
 		auto ow = core::Variant::create<IMUStream>();

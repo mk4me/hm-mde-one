@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>447</width>
-    <height>512</height>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,11 +15,28 @@
   </property>
   <widget class="QWizardPage" name="selectCostumeswizardPage">
    <property name="title">
-    <string>Select costumes</string>
+    <string>Recording configuration</string>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="costumesLabel">
+      <property name="text">
+       <string>Costumes:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="sensorsLabel">
+      <property name="text">
+       <string>Sensors:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
      <widget class="QListWidget" name="costumesToRecordListWidget"/>
+    </item>
+    <item row="1" column="1">
+     <widget class="QListWidget" name="sensorsToRecordListWidget"/>
     </item>
    </layout>
   </widget>
@@ -134,11 +151,45 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>sensorsToRecordListWidget</sender>
+   <signal>itemChanged(QListWidgetItem*)</signal>
+   <receiver>RecordingWizard</receiver>
+   <slot>onSensorSelectionChanged(QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>336</x>
+     <y>267</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>223</x>
+     <y>224</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>costumesToRecordListWidget</sender>
+   <signal>currentItemChanged(QListWidgetItem*,QListWidgetItem*)</signal>
+   <receiver>RecordingWizard</receiver>
+   <slot>onCostumeChange(QListWidgetItem*,QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>127</x>
+     <y>267</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>223</x>
+     <y>224</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onCostumeSelectionChange(QListWidgetItem*)</slot>
   <slot>onChoose()</slot>
   <slot>onOutputFilePathEdit(QString)</slot>
   <slot>pageChanged(int)</slot>
+  <slot>onSensorSelectionChanged(QListWidgetItem*)</slot>
+  <slot>onCostumeChange(QListWidgetItem*,QListWidgetItem*)</slot>
  </slots>
 </ui>

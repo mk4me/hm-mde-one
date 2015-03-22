@@ -41,7 +41,7 @@ void CostumeSkeletonMotionHelper::estimate(std::map<imuCostume::Costume::SensorI
 }
 
 CostumeSkeletonMotionHelper::CostumeSkeletonMotionHelper(IMU::SensorsStreamPtr sensorsStream,
-	IMU::CostumeProfileInstance * costumeProfile,
+	IMU::CostumeProfilePtr costumeProfile,
 	const unsigned int maxSamples,
 	const unsigned int calibratinStageChangeValue, QWidget * parent)
 	: sensorsStream(sensorsStream), costumeProfile(costumeProfile),
@@ -49,12 +49,12 @@ CostumeSkeletonMotionHelper::CostumeSkeletonMotionHelper(IMU::SensorsStreamPtr s
 	calibratinStageChangeValue(calibratinStageChangeValue), previousTime(0),
 	first(true), complete(false)
 {
-	for (const auto & sa : costumeProfile->sensorsOrientationEstimationAlgorithms)
+	for (const auto & sa : costumeProfile->sensorsDescriptions)
 	{
 		AlgoProgress ap;
 		ap.counter = 0;
 		ap.lastTime = 0;
-		ap.algo = sa.second;
+		ap.algo = sa.second.orientationEstimationAlgorithm;
 
 		algorithmsProgress.insert(std::map<imuCostume::Costume::SensorID, AlgoProgress>::value_type(sa.first, ap));
 	}	

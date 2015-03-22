@@ -15,6 +15,24 @@
 
 namespace IMU
 {
+	//! Klasa usuwaj¹ca czas z danych
+	class TimeRemoverExtractor
+	{
+	public:
+		//! \tparam Src Typ Ÿród³owy
+		template<typename Src>
+		inline static bool verify(const Src & timeData)
+		{
+			return true;
+		}
+		//! \tparam Src Typ Ÿród³owy
+		template<typename Src>
+		inline static void extract(const Src & timeData, typename Src::second_type & data)
+		{
+			data = timeData.second;
+		}
+	};
+
 	//! Klasa realizuj¹ca filtracjê kompletnych danych IMU (pe³ne dane dla wszystkich czujników IMU)
 	class IMU_EXPORT CostumeCompleteDataFilter
 	{
@@ -81,15 +99,15 @@ namespace IMU
 	{
 	public:
 		//! \param orientationAlgorithms Algorytmy wstymuj¹cê orientacje czujników
-		OrientationEstimator(const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping & orientationAlgorithms);
+		OrientationEstimator(IMU::CostumeProfilePtr profile);
 		//! Destruktor
 		~OrientationEstimator();
 		//! \param [out] data Dane do estymacji
 		void operator()(IMU::SensorsStreamData & data) const;		
 
 	private:
-		//! Algorytmy estymuj¹ce orientacje czujników
-		const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping orientationAlgorithms;
+		//! Profil z algorytmami które estymuj¹ orientacje czujników
+		IMU::CostumeProfilePtr profile;
 
 		mutable std::map<imuCostume::Costume::SensorID, uint32_t> lastUpdateTime;
 	};
@@ -208,11 +226,8 @@ namespace IMU
 	{
 	public:
 		ExtractCostumeMotion(
-			kinematic::SkeletonConstPtr skeleton,
-			const IMU::SensorsMapping & sensorsMapping,
-			const IMU::DataIndexToJointMapping & dataMapping,
-			const IMU::IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts & sensorsAdjustments,
-			IMU::IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm);
+			IMU::CostumeProfilePtr profile,
+			const IMU::DataIndexToJointMapping & dataMapping);
 
 		~ExtractCostumeMotion();
 
@@ -221,30 +236,30 @@ namespace IMU
 		void extract(const IMU::SensorsStreamData & input, IMU::MotionStream::value_type & output) const;
 
 	private:
-		kinematic::SkeletonConstPtr skeleton;
-		mutable kinematic::SkeletonState skeletonState;
-		IMU::IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts sensorsAdjustments;
-		const IMU::SensorsMapping sensorsMapping;
+		IMU::CostumeProfilePtr profile;
+		mutable kinematic::SkeletonState skeletonState;				
 		const IMU::DataIndexToJointMapping dataMapping;
-		mutable imuCostume::CostumeCANopenIO::Timestamp previousTime;
-		const IMU::IIMUDataSource::OrientationEstimationAlgorithmsMapping orientationAlgorithms;
-		const IMU::IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm;
+		mutable imuCostume::CostumeCANopenIO::Timestamp previousTime;		
 	};
 
 	class IMU_EXPORT KinematicStreamExtractor
 	{
 	public:
-		KinematicStreamExtractor(kinematic::SkeletonConstPtr skeleton);
+		KinematicStreamExtractor(kinematic::SkeletonState && skeletonState);
 
 		~KinematicStreamExtractor();
 
 		bool verify(const IMU::MotionStream::value_type & input) const;
 
-		void extract(const IMU::MotionStream::value_type & input, SkeletonStateStream::value_type & output) const;
+		void extract(const IMU::MotionStream::value_type & input, IMU::SkeletonStateStream::value_type & output) const;
+
+		const kinematic::SkeletonState & skeletonState() const;
+		float currentTime() const;
 
 	private:
 
-		mutable kinematic::SkeletonState skeletonState;
+		mutable kinematic::SkeletonState skeletonState_;
+		mutable float currentTime_;
 	};
 
 	class IMU_EXPORT RawToCANopenExtractor

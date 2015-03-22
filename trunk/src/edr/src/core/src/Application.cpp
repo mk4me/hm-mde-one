@@ -1,4 +1,5 @@
 #include "CorePCH.h"
+#include <utils/ClonePolicies.h>
 #include <QtWidgets/QApplication>
 #include <osgQt/GraphicsWindowQt>
 #include <osg/ArgumentParser>
@@ -50,8 +51,12 @@ namespace coreUI {
 	class UIApplication : public QApplication
 	{
 	public:
+		//! \param argc Ilość argumentów z konsoli
+		//! \param argv Tablica argumentów
 		UIApplication(int & argc, char *argv[]) : QApplication(argc, argv) {}
-
+		//! Destruktor wirtualny
+		virtual ~UIApplication() {}
+		//! Reimplementacja pozwalająca łapać wyjątki w obsłudze eventów
 		virtual bool notify(QObject* receiver, QEvent* event)
 		{
 			try {

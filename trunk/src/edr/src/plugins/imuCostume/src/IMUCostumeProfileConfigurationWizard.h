@@ -19,7 +19,7 @@ namespace IMU
 	{
 	public:
 
-		static QWizard * create(const CostumeProfileInstance & profile,
+		static QWizard * create(const CostumeProfile & profile,
 			QWidget * parent = nullptr);
 	};
 }

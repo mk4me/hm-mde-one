@@ -112,15 +112,33 @@ namespace core
 
 		//! \param wrapper Wrapowane dane
 		//! \return Pełny wrapper z obsługa metadanych i leniwš inicjalizacjš
-		static const VariantPtr create(const utils::ObjectWrapperPtr & wrapper);
+		static VariantPtr create(const utils::ObjectWrapperPtr & wrapper);
 
 		//! \tparam T Typ dla jakiego tworzymy wrapper
 		//! \param dummy Nieuzywany
 		//! \return Pełny wrapper z obsługa metadanych i leniwš inicjalizacjš
 		template<typename T>
-		static const VariantPtr create(const T * /*dummy*/ = nullptr)
+		static VariantPtr create(const T * /*dummy*/ = nullptr)
 		{
 			return VariantPtr(new Variant(utils::ObjectWrapper::create<T>()));
+		}
+
+		//! \tparam T Typ obiektu dla ktorego chcemy utworzych OW
+		//! \param value Wartość z jaką chcemy utowrzyć OW
+		//! \return Wrapper obiektu.
+		template <class T>
+		static VariantPtr wrapp(typename utils::ObjectWrapperTraits<T>::Ptr value)
+		{
+			return VariantPtr(new Variant(utils::ObjectWrapper::wrapp<T>(value)));
+		}
+
+		//! \tparam T Typ obiektu dla ktorego chcemy utworzych OW
+		//! \param value Wartość z jaką chcemy utowrzyć OW
+		//! \return Wrapper obiektu.
+		template <class T, class U>
+		static VariantPtr wrapp(typename utils::ObjectWrapperTraits<T>::PtrPolicy::template Ptr<U>::Type value)
+		{
+			return VariantPtr(new Variant(utils::ObjectWrapper::wrapp<T>(typename utils::ObjectWrapperTraits<T>::Ptr(value))));
 		}
 
 		//! \tparam Ptr
@@ -181,7 +199,7 @@ namespace core
 		~Variant();
 
 		//! \return Pusty obiekt dla danych mojego typu
-		const VariantPtr create() const;
+		VariantPtr create() const;
 		//! \param key Klucz metadanych który sprawdzamy czy istnieje
 		//! \return Czy dany klucz istnieje
 		const bool existMetadata(const std::string & key) const;

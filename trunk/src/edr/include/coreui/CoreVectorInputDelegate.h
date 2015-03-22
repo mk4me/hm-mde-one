@@ -284,7 +284,115 @@ namespace coreUI
 		virtual ~CoreVectorEditor();
 
 		static QString vectorPattern(const unsigned int size, const QChar valueSeparator = ',');
-		static QString quaternionPattern(const QChar valueSeparator = ',');		
+		static QString quaternionPattern(const QChar valueSeparator = ',');
+
+		template<typename T>
+		static QString quaternionToString(const T x, const T y, const T z, const T w,
+			const QString & quatPattern = quaternionPattern())
+		{
+			return QString(quatPattern).arg(utils::Convert::toQString<T>(x))
+				.arg(utils::Convert::toQString<T>(y))
+				.arg(utils::Convert::toQString<T>(z))
+				.arg(utils::Convert::toQString<T>(w));
+		}
+
+		template<typename VectorType>
+		static QString quaternionToString(const VectorType & vector,
+			const QString & quatPattern = quaternionPattern())
+		{
+			QString ret(quatPattern);
+
+			for (const auto & val : vector)
+			{
+				ret = ret.arg(utils::Convert::toQString(val));
+			}
+
+			return ret;
+		}
+
+		/*template<typename T>
+		static QString quaternionToString(const T(&array)[4],
+		const QString & quatPattern = quaternionPattern())
+		{
+		QString ret(quatPattern);
+
+		for (std::size_t i = 0; i < 4; ++i)
+		{
+		ret = ret.arg(utils::Convert::toQString<T>(array[i]));
+		}
+
+		return ret;
+		}*/
+
+		template<typename T>
+		static QString quaternionToString(const T * array,
+			const QString & quatPattern = quaternionPattern())
+		{
+			QString ret(quatPattern);
+
+			for (std::size_t i = 0; i < 4; ++i)
+			{
+				ret = ret.arg(utils::Convert::toQString<T>(array[i]));
+			}
+
+			return ret;
+		}
+
+		template<typename VectorType>
+		static QString vectorToString(const VectorType & vector,
+			const QString & vecPattern = vectorPattern(vector.size()))
+		{
+			QString ret(vecPattern);
+
+			for (const auto & val : vector)
+			{
+				ret = ret.arg(utils::Convert::toQString(val));
+			}
+
+			return ret;
+		}
+
+		template<typename T, std::size_t N>
+		static QString vectorToString(const T(&array)[N],
+			const QString & vecPattern = vectorPattern(N))
+		{
+			QString ret(vecPattern);			
+
+			for (std::size_t i = 0; i < N; ++i)
+			{
+				ret = ret.arg(utils::Convert::toQString(array[i]));
+			}
+
+			return ret;
+		}
+
+		template<typename VectorType>
+		static QString vectorToString(const VectorType & vector,
+			const std::size_t N, const QString & vecPattern)
+		{
+			QString ret(vecPattern);
+
+			for (std::size_t i = 0; i < N; ++i)
+			{
+				ret = ret.arg(utils::Convert::toQString(vector[i]));
+			}
+
+			return ret;
+		}
+
+		template<typename T>
+		static QString vectorToString(const T * array,
+			const std::size_t N, const QString & vecPattern = vectorPattern(N))
+		{
+			QString ret(vecPattern);
+
+			for (std::size_t i = 0; i < N; ++i)
+			{
+				ret = ret.arg(utils::Convert::toQString(*array[i]));
+			}
+
+			return ret;
+		}
 
 	signals:
 
@@ -611,14 +719,7 @@ namespace coreUI
 		//! \return Sformatowany wektor gotowy do wy�wietlenia po edycji
 		static QString valueToDisplay(const QString & displayPattern, const typename VectorEditorWidget::VectorType & value)
 		{
-			QString ret(displayPattern);
-
-			for (const auto & val : value)
-			{
-				ret = ret.arg(utils::Convert::toQString<ValueType>(val));
-			}
-
-			return ret;
+			return CoreVectorEditor::vectorToString(value, displayPattern);
 		}
 
 		virtual QWidget * createEditor(QWidget *parent, const QStyleOptionViewItem &option,

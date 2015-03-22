@@ -5,9 +5,10 @@
 
 Q_DECLARE_METATYPE(IMU::IIMUDataSource::CostumeID);
 
-RecordingWizard::RecordingWizard(const std::set<IMU::IIMUDataSource::CostumeID> & costumes,
+RecordingWizard::RecordingWizard(const CostumesToRecord & costumes,
 	QWidget *parent, Qt::WindowFlags flags)
-	: QWizard(parent, flags), ui(new Ui::RecordingWizard)
+	: QWizard(parent, flags), ui(new Ui::RecordingWizard),
+	baseCostumesToRecord_(costumes)
 {
 	if (costumes.empty() == true){
 		throw std::runtime_error("No costumes to choose for recording");
@@ -15,14 +16,14 @@ RecordingWizard::RecordingWizard(const std::set<IMU::IIMUDataSource::CostumeID> 
 
 	ui->setupUi(this);
 
-	for (const auto & id : costumes)
+	for (const auto & costume : costumes)
 	{
-		QListWidgetItem* item = new QListWidgetItem(QString("%1:%2").arg(id.ip.c_str()).arg(id.port), ui->costumesToRecordListWidget);
-		item->setData(Qt::UserRole, QVariant::fromValue(id));
+		QListWidgetItem* item = new QListWidgetItem(QString("%1:%2").arg(costume.first.ip.c_str()).arg(costume.first.port), ui->costumesToRecordListWidget);
+		item->setData(Qt::UserRole, QVariant::fromValue(costume.first));
 		item->setFlags(item->flags() | Qt::ItemIsUserCheckable); // set checkable flag
 		item->setCheckState(Qt::Unchecked); // AND initialize check state
 		ui->costumesToRecordListWidget->addItem(item);
-	}
+	}	
 
 	ui->costumesToRecordListWidget->item(0)->setCheckState(Qt::Checked);
 }
@@ -37,23 +38,57 @@ QString RecordingWizard::outputPath() const
 	return ui->outputLineEdit->text();
 }
 
-std::set<IMU::IIMUDataSource::CostumeID> RecordingWizard::costumes() const
+RecordingWizard::CostumesToRecord RecordingWizard::costumes() const
 {
-	std::set<IMU::IIMUDataSource::CostumeID> ret;
+	return costumesToRecord_;
+}
 
-	for (unsigned int i = 0; i < ui->costumesToRecordListWidget->count(); ++i)
-	{
-		auto item = ui->costumesToRecordListWidget->item(i);
-		if (item->checkState() == Qt::Checked){
-			ret.insert(item->data(Qt::UserRole).value<IMU::IIMUDataSource::CostumeID>());
-		}
+void RecordingWizard::onCostumeChange(QListWidgetItem * current, QListWidgetItem * previous)
+{
+	currentCostume = current->data(Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+	ui->sensorsToRecordListWidget->setEnabled(current->checkState() == Qt::Checked);
+
+	auto it = costumesToRecord_.find(currentCostume);
+	if (it != costumesToRecord_.end()){
+
+	}
+	else{
+		costumesToRecord_[currentCostume] = baseCostumesToRecord_[currentCostume];
+		it = costumesToRecord_.find(currentCostume);
 	}
 
-	return std::move(ret);
+	ui->sensorsToRecordListWidget->clear();
+
+	for (const auto & id : baseCostumesToRecord_[currentCostume])
+	{
+		auto item = new QListWidgetItem(QString::number(id));
+		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+		item->setCheckState(it->second.find(id) == it->second.end() ? Qt::Unchecked : Qt::Checked);
+		ui->sensorsToRecordListWidget->addItem(item);
+	}
+}
+
+void RecordingWizard::onSensorSelectionChanged(QListWidgetItem* item)
+{
+	auto currentCostume = ui->costumesToRecordListWidget->currentItem()->data(Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+	auto sensorID = item->data(Qt::DisplayRole).toInt();
+	if (item->checkState() == Qt::Checked)
+	{
+		costumesToRecord_[currentCostume].insert(sensorID);
+	}
+	else{
+		costumesToRecord_[currentCostume].erase(sensorID);
+	}	
 }
 
 void RecordingWizard::onCostumeSelectionChange(QListWidgetItem* item)
 {
+	if (item != ui->costumesToRecordListWidget->currentItem()){
+		return;
+	}
+
+	ui->sensorsToRecordListWidget->setEnabled(item->checkState() == Qt::Checked);	
+
 	if (item->checkState() == Qt::Checked){
 		button(QWizard::NextButton)->setEnabled(true);
 	}

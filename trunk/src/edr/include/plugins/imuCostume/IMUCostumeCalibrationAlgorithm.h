@@ -35,8 +35,18 @@ namespace IMU
 			osg::Vec3d offset;
 		};
 
+		//! Struktura opisuj¹ca konfiguracjê sensorów
+		struct SensorDescription : public SensorAdjustment
+		{
+			//! Nazwa jointa na którym umiejscowiony jest sensor
+			std::string jointName;
+		};
+
 		//! Mapa poprawek sensorów: ID -> poprawka
 		typedef std::map<imuCostume::Costume::SensorID, SensorAdjustment> SensorsAdjustemnts;
+
+		//! Mapa poprawek sensorów: ID -> opis sensora
+		typedef std::map<imuCostume::Costume::SensorID, SensorDescription> SensorsDescriptions;
 
 	public:
 		//! Destruktor wirtualny
@@ -55,10 +65,9 @@ namespace IMU
 		virtual unsigned int maxCalibrationSteps() const { return 0; }
 
 		//! \param skeleton	Kalibrowany szkielet
-		//! \param mapping Mapowanie sensorów do szkieletu
-		//! \param sensorsAdjustment Wstêpne ustawienie sensorów - pozwala zadaæ stan pocz¹tkowy bardziej zbli¿ony do rzeczywistoœci		
-		virtual void initialize(kinematic::SkeletonConstPtr skeleton, const SensorsMapping & mapping,
-			const SensorsAdjustemnts  & sensorsAdjustment = SensorsAdjustemnts()) = 0;
+		//! \param sensorsDescription Opis sensorów
+		virtual void initialize(kinematic::SkeletonConstPtr skeleton,
+			const SensorsDescriptions & sensorsDescription) = 0;
 		
 		//! \param data Dane z IMU
 		//! \param inDeltaT Czas od poprzedniej ramki danych

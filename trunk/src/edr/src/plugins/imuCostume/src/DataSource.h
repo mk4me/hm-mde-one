@@ -122,7 +122,7 @@ namespace IMU
 		virtual void loadRawCostume(const CostumeID & id) override;
 
 		virtual void loadCalibratedCostume(const CostumeID & id,
-			const CostumeProfileInstance & profileInstance) override;
+			CostumeProfilePtr profile) override;
 
 		virtual void unloadCostume(const CostumeID & id);
 
@@ -135,11 +135,11 @@ namespace IMU
 		virtual void startRecording(RecordingOutputPtr recording) override;
 		virtual void stopRecording(RecordingOutputPtr recording) override;
 
-		virtual void registerOrientationEstimationAlgorithm(const IIMUOrientationEstimationAlgorithm * algorithm) override;
-		virtual void registerCostumeCalibrationAlgorithm(const IMUCostumeCalibrationAlgorithm * algorithm) override;
-		virtual void registerMotionEstimationAlgorithm(const IMUCostumeMotionEstimationAlgorithm * algorithm) override;
-		virtual void registerSkeletonModel(SkeletonConstPtr skeleton) override;
-		virtual void registerCostumeProfile(const CostumeProfile & profile) override;
+		virtual void registerOrientationEstimationAlgorithm(IIMUOrientationEstimationAlgorithmPtr algorithm) override;
+		virtual void registerCostumeCalibrationAlgorithm(IMUCostumeCalibrationAlgorithmPtr algorithm) override;
+		virtual void registerMotionEstimationAlgorithm(IMUCostumeMotionEstimationAlgorithmPtr algorithm) override;
+		virtual void registerSkeletonModel(SkeletonPtr skeleton) override;
+		virtual void registerCostumeProfile(CostumeProfilePtr profile) override;
 		
 		virtual OrientationEstimationAlgorithms orientationEstimationAlgorithms() const override;
 		virtual CostumeCalibrationAlgorithms calibrationAlgorithms() const override;
@@ -177,8 +177,9 @@ namespace IMU
 		
 		static void unpackSensorsStream(SensorsStreamPtr stream,
 			SensorsData & sensorsData,
-			core::HierarchyItemPtr root,
-			core::VariantsList & domainData);
+			core::IHierarchyItemPtr root,
+			core::VariantsList & domainData,
+			CostumeProfileConstPtr profile);
 
 	private:
 

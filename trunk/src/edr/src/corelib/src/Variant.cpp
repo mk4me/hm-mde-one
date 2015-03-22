@@ -20,7 +20,7 @@ const utils::ObjectWrapperConstPtr Variant::data_t::operator->() const
 	return variant->wrapper_;
 }
 
-const VariantPtr Variant::create(const utils::ObjectWrapperPtr & wrapper)
+VariantPtr Variant::create(const utils::ObjectWrapperPtr & wrapper)
 {
 	if (wrapper == nullptr){
 		throw core::runtime_error("Empty data placeholder");
@@ -29,7 +29,7 @@ const VariantPtr Variant::create(const utils::ObjectWrapperPtr & wrapper)
 	return VariantPtr(new Variant(wrapper));
 }
 
-const VariantPtr Variant::create() const
+VariantPtr Variant::create() const
 {
 	return VariantPtr(new Variant(wrapper_->create()));
 }

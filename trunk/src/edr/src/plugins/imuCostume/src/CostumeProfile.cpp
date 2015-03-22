@@ -39,65 +39,38 @@ const core::UniqueID Skeleton::ID() const
 	return id;
 }
 
-CostumeProfileInstance CostumeProfileInstance::create(const CostumeProfile & profile)
+CostumeProfile * CostumeProfile::clone() const
 {
-	CostumeProfileInstance ret;
+	std::unique_ptr<CostumeProfile> ret(new CostumeProfile);
 
-	ret.name = profile.name;
-	ret.calibrationAlgorithm.reset(profile.calibrationAlgorithm->create());
-	ret.motionEstimationAlgorithm.reset(profile.motionEstimationAlgorithm->create());
-	ret.sensorsAdjustments = profile.sensorsAdjustments;
-	ret.sensorsMapping = profile.sensorsMapping;
+	ret->name = name;
 
-	if (profile.skeleton){
-		ret.skeleton.reset(new Skeleton(*profile.skeleton));
+	if (skeleton != nullptr){
+		ret->skeleton.reset(new Skeleton(*skeleton));
 	}
 
-	for (const auto & ea : profile.sensorsOrientationEstimationAlgorithms)
-	{
-		ret.sensorsOrientationEstimationAlgorithms.insert(OrientationEstimationAlgorithmsMapping::value_type(ea.first, IIMUOrientationEstimationAlgorithmPtr(ea.second->create())));
+	if (calibrationAlgorithm != nullptr){
+		ret->calibrationAlgorithm.reset(calibrationAlgorithm->create());
 	}
 
-	return ret;
-}	
+	if (motionEstimationAlgorithm != nullptr){
+		ret->motionEstimationAlgorithm.reset(motionEstimationAlgorithm->create());
+	}
 
-CostumeProfileInstance CostumeProfileInstance::create(const CostumeProfile & profile,
-	const imuCostume::Costume::SensorIDsSet & filter)
-{
-	CostumeProfileInstance ret;
-
-	ret.name = profile.name;
-	ret.calibrationAlgorithm.reset(profile.calibrationAlgorithm->create());
-	ret.motionEstimationAlgorithm.reset(profile.motionEstimationAlgorithm->create());
-	
-	for (const auto & val : profile.sensorsAdjustments)
+	for (const auto & sd : sensorsDescriptions)
 	{
-		if (filter.find(val.first) != filter.end())
-		{
-			ret.sensorsAdjustments.insert(val);
+		SensorDescription locsd;
+		locsd.jointName = sd.second.jointName;
+		locsd.offset = sd.second.offset;
+		locsd.rotation = sd.second.rotation;
+		if (sd.second.orientationEstimationAlgorithm != nullptr){
+			locsd.orientationEstimationAlgorithm.reset(sd.second.orientationEstimationAlgorithm->create());
 		}
+
+		ret->sensorsDescriptions.insert(SensorsDescriptions::value_type(sd.first, locsd));
 	}
 
-	for (const auto & val : profile.sensorsMapping)
-	{
-		if (filter.find(val.get_left()) != filter.end())
-		{
-			ret.sensorsMapping.insert(val);
-		}
-	}	
-
-	if (profile.skeleton){
-		ret.skeleton.reset(new Skeleton(*profile.skeleton));
-	}
-
-	for (const auto & ea : profile.sensorsOrientationEstimationAlgorithms)
-	{
-		if (filter.find(ea.first) != filter.end()){
-			ret.sensorsOrientationEstimationAlgorithms.insert(OrientationEstimationAlgorithmsMapping::value_type(ea.first, IIMUOrientationEstimationAlgorithmPtr(ea.second->create())));
-		}
-	}
-
-	return ret;
+	return ret.release();
 }
 
 SerializableCostumeProfile SerializableCostumeProfile::pack(const CostumeProfile & profile)
@@ -107,13 +80,15 @@ SerializableCostumeProfile SerializableCostumeProfile::pack(const CostumeProfile
 	ret.skeletonID = profile.skeleton == nullptr ? boost::uuids::nil_uuid() : profile.skeleton->ID();
 	ret.calibrationAlgorithmID = profile.calibrationAlgorithm == nullptr ? boost::uuids::nil_uuid() : profile.calibrationAlgorithm->ID();
 	ret.motionEstimationAlgorithmID = profile.motionEstimationAlgorithm == nullptr ? boost::uuids::nil_uuid() : profile.motionEstimationAlgorithm->ID();
-	ret.sensorsAdjustments = profile.sensorsAdjustments;
-	ret.sensorsMapping = profile.sensorsMapping;
-	for (const auto & ea : profile.sensorsOrientationEstimationAlgorithms)
+
+	for (const auto & sd : profile.sensorsDescriptions)
 	{
-		if (ea.second != nullptr){
-			ret.sensorsOrientationEstimationAlgorithms.insert(OrientationEstimationAlgorithmsMapping::value_type(ea.first, ea.second->ID()));
-		}
+		SensorDescription local;
+		local.jointName = sd.second.jointName;
+		local.offset = sd.second.offset;
+		local.rotation = sd.second.rotation;
+		local.orientationEstimationAlgorithmID = sd.second.orientationEstimationAlgorithm == nullptr ? boost::uuids::nil_uuid() : sd.second.orientationEstimationAlgorithm->ID();
+		ret.sensorsDescriptions.insert(SensorsDescriptions::value_type(sd.first, local));
 	}
 
 	return ret;
@@ -129,40 +104,48 @@ CostumeProfile SerializableCostumeProfile::unpack(const SerializableCostumeProfi
 
 	CostumeProfile ret;
 	ret.name = profile.name;
-	ret.sensorsAdjustments = profile.sensorsAdjustments;
-	ret.sensorsMapping = profile.sensorsMapping;
 
+	//szkielet
 	{
 		auto sIT = skeletons.find(profile.skeletonID);
 
 		if (sIT != skeletons.end()){
-			ret.skeleton = sIT->second;
+			ret.skeleton = utils::make_shared < IMU::Skeleton >(*sIT->second);
 		}
 	}
 
+	//motion estimation algorithm
 	{
 		auto mIT = motionEstimationAlgos.find(profile.motionEstimationAlgorithmID);
 
 		if (mIT != motionEstimationAlgos.end()){
-			ret.motionEstimationAlgorithm = mIT->second;
+			ret.motionEstimationAlgorithm.reset(mIT->second->create());
 		}
 	}
 
+	//kalibracja
 	{
 		auto cIT = calibrationAlgos.find(profile.calibrationAlgorithmID);
 
 		if (cIT != calibrationAlgos.end()){
-			ret.calibrationAlgorithm = cIT->second;
+			ret.calibrationAlgorithm.reset(cIT->second->create());
 		}
 	}
 
-	for (const auto & ea : profile.sensorsOrientationEstimationAlgorithms)
+	//konfiguracja sensorów
+	for (const auto & ea : profile.sensorsDescriptions)
 	{
-		auto eIT = orientationEstimationAlgos.find(ea.second);
+		CostumeProfile::SensorDescription local;
+		local.jointName = ea.second.jointName;
+		local.offset = ea.second.offset;
+		local.rotation = ea.second.rotation;
 
+		auto eIT = orientationEstimationAlgos.find(ea.second.orientationEstimationAlgorithmID);
 		if (eIT != orientationEstimationAlgos.end()){
-			ret.sensorsOrientationEstimationAlgorithms.insert(CostumeProfile::OrientationEstimationAlgorithmsMapping::value_type(ea.first, eIT->second));
+			local.orientationEstimationAlgorithm.reset(eIT->second->create());
 		}
+
+		ret.sensorsDescriptions.insert(CostumeProfile::SensorsDescriptions::value_type(ea.first, local));
 	}
 
 	return ret;
@@ -174,8 +157,7 @@ SerializableCostumeProfile::VerificationStatus SerializableCostumeProfile::verif
 		return Failed;
 	}
 
-	if (profile.sensorsAdjustments.size() != profile.sensorsMapping.size()
-		|| profile.sensorsAdjustments.size() != profile.sensorsOrientationEstimationAlgorithms.size()
+	if (profile.sensorsDescriptions.empty() == true
 		|| profile.skeletonID.is_nil() == true
 		|| profile.calibrationAlgorithmID.is_nil() == true
 		|| profile.motionEstimationAlgorithmID.is_nil() == true){
@@ -212,9 +194,9 @@ SerializableCostumeProfile::VerificationStatus SerializableCostumeProfile::verif
 
 	auto orientationEstimationAlgos = ds->orientationEstimationAlgorithms();
 
-	for (const auto & ea : profile.sensorsOrientationEstimationAlgorithms)
+	for (const auto & ea : profile.sensorsDescriptions)
 	{
-		auto eIT = orientationEstimationAlgos.find(ea.second);
+		auto eIT = orientationEstimationAlgos.find(ea.second.orientationEstimationAlgorithmID);
 
 		if (eIT == orientationEstimationAlgos.end()){
 			return Incomplete;
@@ -230,35 +212,14 @@ void SerializableCostumeProfile::serialize(std::ostream & stream, const Serializ
 
 	stream << "ProfileName: " << sProfile.name << std::endl;
 	stream << "SkeletonID: " << sProfile.skeletonID << std::endl;
-	stream << "MappingDetails: " << sProfile.sensorsMapping.size() << std::endl;
+	stream << "SensorsConfiguration: " << sProfile.sensorsDescriptions.size() << std::endl;
 
-	for (const auto & m : sProfile.sensorsMapping)
-	{
-		const auto id = m.get_left();
+	for (const auto & m : sProfile.sensorsDescriptions)
+	{		
+		std::string sID = std::to_string(m.first);
 
-		auto algoID = boost::uuids::nil_uuid();
-
-		auto algoIT = sProfile.sensorsOrientationEstimationAlgorithms.find(id);
-
-		if (algoIT != sProfile.sensorsOrientationEstimationAlgorithms.end()){
-			algoID = algoIT->second;
-		}
-
-		auto adjIT = sProfile.sensorsAdjustments.find(id);
-
-		IMU::IMUCostumeCalibrationAlgorithm::SensorAdjustment sa;
-		sa.offset = osg::Vec3(0, 0, 0);
-		sa.rotation = osg::Quat(0, 0, 0, 1);
-
-		if (adjIT != sProfile.sensorsAdjustments.end()){
-			sa = adjIT->second;
-		}
-
-		//std::string sID = boost::lexical_cast<std::string>(id);
-		std::string sID = std::to_string(id);
-
-		stream << sID << ": " << m.get_right() << " " << sa.offset[0] << " " << sa.offset[1] << " " << sa.offset[2]
-			<< " " << sa.rotation[0] << " " << sa.rotation[1] << " " << sa.rotation[2] << " " << sa.rotation[3] << " " << algoID << std::endl;
+		stream << sID << ": " << m.second.jointName << " " << m.second.offset[0] << " " << m.second.offset[1] << " " << m.second.offset[2]
+			<< " " << m.second.rotation[0] << " " << m.second.rotation[1] << " " << m.second.rotation[2] << " " << m.second.rotation[3] << " " << m.second.orientationEstimationAlgorithmID << std::endl;
 	}
 
 	stream << "CalibrationAlgoID: " << sProfile.calibrationAlgorithmID << std::endl;
@@ -273,7 +234,7 @@ SerializableCostumeProfile SerializableCostumeProfile::deserialize(std::istream 
 
 	profileTokens.insert("ProfileName");
 	profileTokens.insert("SkeletonID");	
-	profileTokens.insert("MappingDetails");
+	profileTokens.insert("SensorsConfiguration");
 	profileTokens.insert("CalibrationAlgoID");
 	profileTokens.insert("EstimationAlgoID");
 
@@ -313,7 +274,7 @@ SerializableCostumeProfile SerializableCostumeProfile::deserialize(std::istream 
 						ss << valueToExtract;
 						ss >> ret.skeletonID;
 					}
-					else if (token == "MappingDetails"){
+					else if (token == "SensorsConfiguration"){
 						unsigned int count = 0;
 						std::stringstream ss;
 						ss << valueToExtract;
@@ -330,23 +291,19 @@ SerializableCostumeProfile SerializableCostumeProfile::deserialize(std::istream 
 								valueToExtract = line.substr(pos + 2);
 								std::stringstream ss;
 								ss << valueToExtract;
-								IMU::IMUCostumeCalibrationAlgorithm::SensorAdjustment sa;
-								core::UniqueID algoID;
-								std::string jointName;
-								ss >> jointName;
-								ss >> sa.offset[0];
-								ss >> sa.offset[1];
-								ss >> sa.offset[2];
-								ss >> sa.rotation[0];
-								ss >> sa.rotation[1];
-								ss >> sa.rotation[2];
-								ss >> sa.rotation[3];
-								ss >> algoID;
+								SensorDescription sd;
+								
+								ss >> sd.jointName;
+								ss >> sd.offset[0];
+								ss >> sd.offset[1];
+								ss >> sd.offset[2];
+								ss >> sd.rotation[0];
+								ss >> sd.rotation[1];
+								ss >> sd.rotation[2];
+								ss >> sd.rotation[3];
+								ss >> sd.orientationEstimationAlgorithmID;
 
-								ret.sensorsAdjustments.insert(IMU::IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts::value_type(sID, sa));
-								ret.sensorsMapping.insert(IMU::SensorsMapping::value_type(sID, jointName));
-								ret.sensorsOrientationEstimationAlgorithms.insert(SerializableCostumeProfile::OrientationEstimationAlgorithmsMapping::value_type(sID, algoID));
-
+								ret.sensorsDescriptions.insert(SensorsDescriptions::value_type(sID, sd));
 							}
 							else{
 								finish = true;

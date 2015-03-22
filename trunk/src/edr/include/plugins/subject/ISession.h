@@ -11,6 +11,7 @@
 
 #include <stdexcept>
 #include <utils/PtrPolicyStd.h>
+#include <utils/ClonePolicies.h>
 #include <plugins/subject/Types.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/IMemoryDataManager.h>

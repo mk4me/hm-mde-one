@@ -13,59 +13,77 @@
 #include <osg/Vec3d>
 #include <osg/Quat>
 #include <map>
+#include <vector>
 #include <plugins/imuCostume/IIMUDataSource.h>
 
 namespace Ui {
 	class IMUCostumeProfileEditionWizard;
 }
 
+class SensorIDDelegate;
+class SkeletonJointsDelegate;
+class Vector3DDelegate;
+class OrientationDelegate;
+class OrientationEstimationAlgorithmDelegate;
+
 class IMUCostumeProfileEditionWizard : public QWizard
 {
 	Q_OBJECT;
 
-private:
-
-	class JointsItemDelegate;
-
 public:
 
-	IMUCostumeProfileEditionWizard(const imuCostume::Costume::SensorIDsSet & sensorsIDs,
-		const QString & profileName = tr("Unnamed profile"), QWidget * parent = nullptr);
-
-	IMUCostumeProfileEditionWizard(const IMU::CostumeProfile & costumeProfile,
+	IMUCostumeProfileEditionWizard(const imuCostume::Costume::SensorIDsSet & costumeSensors,
+		const IMU::IIMUDataSource::OrientationEstimationAlgorithms & orientAlgorithms,
+		const IMU::IIMUDataSource::CostumeCalibrationAlgorithms & calibAlgorithms,
+		const IMU::IIMUDataSource::CostumeMotionEstimationAlgorithms & motionAlgorithms,
+		const IMU::IIMUDataSource::SkeletonModels & skeletonModels,
+		const QString & profileName = tr("New Profile"),
 		QWidget * parent = nullptr);
 
-	virtual ~IMUCostumeProfileEditionWizard();
+	IMUCostumeProfileEditionWizard(const imuCostume::Costume::SensorIDsSet & costumeSensors,
+		const IMU::IIMUDataSource::OrientationEstimationAlgorithms & orientAlgorithms,
+		const IMU::IIMUDataSource::CostumeCalibrationAlgorithms & calibAlgorithms,
+		const IMU::IIMUDataSource::CostumeMotionEstimationAlgorithms & motionAlgorithms,
+		const IMU::IIMUDataSource::SkeletonModels & skeletonModels,
+		IMU::CostumeProfileConstPtr profile,
+		QWidget * parent = nullptr);
 
-	virtual bool eventFilter(QObject * watched, QEvent * event) override;
+	virtual ~IMUCostumeProfileEditionWizard();	
 
 	IMU::CostumeProfile costumeProfile() const;
 
 private:
 
+	void init(const QString & profileName,
+		const imuCostume::Costume::SensorIDsSet & costumeSensors,
+		const IMU::IIMUDataSource::OrientationEstimationAlgorithms & orientAlgorithms,
+		const IMU::IIMUDataSource::CostumeCalibrationAlgorithms & calibAlgorithms,
+		const IMU::IIMUDataSource::CostumeMotionEstimationAlgorithms & motionAlgorithms,
+		const IMU::IIMUDataSource::SkeletonModels & skeletonModels);
+
 	void refreshProfile();
+	bool verifyCalibrationAndMotionAlgorithms() const;
 
 private slots:
-
-	void onEstimationAlgorithmSelectionModeChange(int idx);
+	
 	void pageChanged(int idx);
-	void verifyModel(int idx);
-	void verifySensorsMapping(int row, int col);
-	void verifyEstimationAlgorithms(int row, int col);
+	void verifyModel(int idx);		
 	void verifyCalibrationAlgorithm(int idx);
 	void verifyMotionEstimationAlgorithm(int idx);
 	void onOneToOneMappingChanged(int state);
-	void onSingleEstimationAlgorithmChange(int idx);
+	void onSensorConfigurationCellChange(int row, int column);
+	void onLoadModel();
 
 private:	
+	
+	std::vector<int> checkStates;
+	SensorIDDelegate * sensorDelegate;
+	SkeletonJointsDelegate * skeletonJointDelegate;
+	Vector3DDelegate * vector3DDelegate;
+	OrientationDelegate * orientationDelegate;
+	OrientationEstimationAlgorithmDelegate * orientationAlgorithmDelegate;
 
 	Ui::IMUCostumeProfileEditionWizard * ui;
-
-	JointsItemDelegate * jointsItemDelegate;
-
-	std::map<unsigned int, std::list<kinematic::SkeletonConstPtr>> skeletons;
-
-	IMU::CostumeProfile baseCostumeProfile_;	
 };
 
 #endif	// __HEADER_GUARD_IMU__IMUCOSTUMECONFIGURATIONWIZARD_H__

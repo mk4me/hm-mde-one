@@ -14,7 +14,6 @@
 #include <list>
 #include <algorithm>
 #include <utils/SmartPtr.h>
-#include <utils/ClonePolicies.h>
 #include <utils/ObjectWrapperTraits.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +115,16 @@ namespace utils {
 		static const ObjectWrapperPtr create(T* dummy = nullptr)
 		{
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
-			return ObjectWrapperPtr(new ObjectWrapperT<T>());
+			return ObjectWrapperT<T>::create();
+		}
+
+		//! \tparam T Typ obiektu dla ktorego chcemy utworzych OW
+		//! \param value Wartość z jaką chcemy utowrzyć OW
+		//! \return Wrapper obiektu.
+		template <class T>
+		static const ObjectWrapperPtr wrapp(typename ObjectWrapperTraits<T>::Ptr value)
+		{			
+			return ObjectWrapperT<T>::wrapp(value);
 		}
 
 		//! \tparam T Typ obiektu ktorego nazwe OW chcemy pobrac
@@ -250,7 +258,7 @@ namespace utils {
 		ObjectWrapper();
 		//! Konstruktor kopiujący
 		//! \param wrapper Obiekt ktory kopiujemy
-		ObjectWrapper(const ObjectWrapper & wrapper);
+		//ObjectWrapper(const ObjectWrapper & wrapper);
 
 	private:
 		//! Ustawia obiekt wrappera.

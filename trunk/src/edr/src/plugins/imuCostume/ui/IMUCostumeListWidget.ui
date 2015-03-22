@@ -394,7 +394,7 @@
      <item>
       <widget class="QPushButton" name="recordPushButton">
        <property name="enabled">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="text">
         <string>Record</string>

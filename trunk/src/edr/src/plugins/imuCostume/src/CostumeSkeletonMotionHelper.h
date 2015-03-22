@@ -4,7 +4,7 @@
 	author:	  Mateusz Janiak
 
 	purpose:
-*********************************************************************/
+	*********************************************************************/
 #ifndef __HEADER_GUARD_IMU__COSTUMESKELETONMOTIONHELPER_H__
 #define __HEADER_GUARD_IMU__COSTUMESKELETONMOTIONHELPER_H__
 
@@ -38,7 +38,7 @@ public:
 	//! \param calibratinStageChangeValue Iloœæ próbek po któych rozpoczynamy kalibracjê (algorytmy estymacji orientacji zosta³y zainicjowane)
 	//! \param parent Obiekt rodzic
 	CostumeSkeletonMotionHelper(IMU::SensorsStreamPtr sensorsStream,
-		IMU::CostumeProfileInstance * costumeProfile,
+		IMU::CostumeProfilePtr costumeProfile,
 		const unsigned int maxSamples,
 		const unsigned int calibratinStageChangeValue, QWidget * parent = nullptr);
 
@@ -52,7 +52,7 @@ public:
 	//! \return Czy kalibracja zakoñczona sukcesem
 	bool isComplete() const;
 
-private slots:
+	private slots:
 
 	//! Cykliczne odpalana metoda czytaj¹ca dane ze strumienia, jeœli s¹, i realizuj¹ca inicjalizacjê kostiumu
 	void perform();
@@ -74,7 +74,7 @@ private:
 	//! Obserwator strumienia kostiumu
 	utils::shared_ptr<threadingUtils::ResetableStreamStatusObserver> observer;
 	//! Profil wg którego bêdziemy siê konfigurowaæ
-	IMU::CostumeProfileInstance * costumeProfile;
+	IMU::CostumeProfilePtr costumeProfile;
 
 	std::map<imuCostume::Costume::SensorID, AlgoProgress> algorithmsProgress;
 

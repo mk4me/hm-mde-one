@@ -22,10 +22,10 @@ ObjectWrapper::ObjectWrapper()
 
 }
 
-ObjectWrapper::ObjectWrapper(const ObjectWrapper & wrapper)
+/*ObjectWrapper::ObjectWrapper(const ObjectWrapper & wrapper)
 {
 
-}
+}*/
 
 const bool ObjectWrapper::__tryUnpackData(void * object, const TypeInfo & ptrType)
 {

@@ -10,6 +10,7 @@
 #define __HEADER_GUARD_VIDEO__WRAPPERS_H__
 
 #include <utils/PtrPolicyStd.h>
+#include <utils/ClonePolicies.h>
 #include <corelib/BaseDataTypes.h>
 #include <vidlib/osg/VideoImageStream.h>
 #include <vidlib/osg/OsgAdapter.h>

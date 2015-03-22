@@ -26,6 +26,10 @@ SET_PRIVATE_HEADERS (
 	IMUCostumeProfileConfigurationWizard.h
 	RecordingWizard.h
 	CostumeParser.h
+	OrientationEstimationAlgorithmDelegate.h
+	SensorIDDelegate.h
+	SkeletonJointsDelegate.h
+	Vector3DDelegate.h
 )
 
 SET_SOURCE_FILES(
@@ -45,6 +49,10 @@ SET_SOURCE_FILES(
 	RecordingWizard.cpp
 	CostumeParser.cpp
 	CostumeProfile.cpp
+	OrientationEstimationAlgorithmDelegate.cpp
+	SensorIDDelegate.cpp
+	SkeletonJointsDelegate.cpp
+	Vector3DDelegate.cpp
 )
 
 SET_MOC_FILES(
@@ -53,6 +61,9 @@ SET_MOC_FILES(
 	IMUCostumeListWidget.h	
 	IMUCostumeProfileEditionWizard.h
 	RecordingWizard.h
+	SkeletonJointsDelegate.h
+	OrientationEstimationAlgorithmDelegate.h
+	SensorIDDelegate.h
 )
 
 SET_UI_FILES(

@@ -33,7 +33,7 @@ namespace IMU
 		virtual void parse(const std::string& path) override;
 
 		static void save(std::ostream & stream, const IIMUDataSource::CostumesDataFrame & data);
-		static void save(std::ostream & stream, const IIMUDataSource::CostumesRecordingDataBuffer::ListT & data);
+		static void save(std::ostream & stream, const IIMUDataSource::CostumesRecordingDataBuffer::ListT & data, std::size_t idx);
 		static void save(const std::string & path, const IIMUDataSource::CostumesRecordingDataBuffer::ListT & data);
 
 	private:

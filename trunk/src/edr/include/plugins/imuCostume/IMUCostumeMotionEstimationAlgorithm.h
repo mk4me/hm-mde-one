@@ -25,11 +25,14 @@ namespace IMU
 	{
 	public:
 
+		//! Typ mapy orientacji jointów
+		typedef std::map<std::string, osg::Quat> JointsOrientations;
+
 		//! Opis stanu ruchu
 		struct MotionState 
 		{
 			//! Mapa jointów do ich orientacji lokalnych
-			std::map<std::string, osg::Quat> jointsOrientations;
+			JointsOrientations jointsOrientations;
 			//! Pozycja szkieletu
 			osg::Vec3d position;
 		};
@@ -48,11 +51,9 @@ namespace IMU
 		virtual void reset() = 0;
 
 		//! \param skeleton	Kalibrowany szkielet
-		//! \param sensorsAdjustment Poprawki dla sensorów
-		//! \param sensorsMapping Mapowanie sensorów do jointów
+		//! \param sensorsDescription Opis sensorów - mapowanie + poprawki po kalibracji
 		virtual void initialize(kinematic::SkeletonConstPtr skeleton,
-			const IMUCostumeCalibrationAlgorithm::SensorsAdjustemnts & sensorsAdjustment,
-			const SensorsMapping & sensorsMapping) = 0;
+			const IMUCostumeCalibrationAlgorithm::SensorsDescriptions & sensorsDescription) = 0;
 		
 		//! \param motionState Aktualny stan ruchu szkieletu
 		//! \param data Kompletne rozpakowane dane z IMU
@@ -62,7 +63,7 @@ namespace IMU
 			const SensorsData & data, const double inDeltaT) = 0;
 
 		//! \return Widget konfiguruj¹cy algorytm
-		virtual QWidget* configurationWidget() { return nullptr; }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+		virtual QWidget* configurationWidget() { return nullptr; }
 	};
 
 	DEFINE_SMART_POINTERS(IMUCostumeMotionEstimationAlgorithm);

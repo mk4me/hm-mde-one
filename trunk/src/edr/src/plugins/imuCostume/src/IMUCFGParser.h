@@ -13,6 +13,7 @@
 
 #include <utils/SmartPtr.h>
 #include <utils/PtrPolicyStd.h>
+#include <utils/ClonePolicies.h>
 #include <vector>
 #include <osg/Quat>
 #include "corelib/IParser.h"

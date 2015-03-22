@@ -10,6 +10,7 @@
 #define HEADER_GUARD_NEW_CHART__WRAPPERS_H__
 
 #include <utils/PtrPolicyStd.h>
+#include <utils/ClonePolicies.h>
 #include <utils/ObjectWrapper.h>
 #include <utils/DataChannelDescriptors.h>
 #include <threadingUtils/StreamData.h>

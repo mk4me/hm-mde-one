@@ -53,7 +53,8 @@ private slots:
 	void onCostumeChange(QTreeWidgetItem * current, QTreeWidgetItem * previous);
 
 	void onRecord(const bool record);
-	void onLoad();
+	void onLoadNewProfile();
+	void onLoadProfile();
 	void onUnload();
 	void onSetSamplingRate();
 	void onRefreshSensorsConfiguration();
@@ -77,6 +78,8 @@ private slots:
 
 private:
 
+	void tryLoadCostume(IMU::CostumeProfile profile);
+
 	unsigned int getSamplingRate();
 	unsigned int getSensorsConfigurationSamplesCount();
 
@@ -89,6 +92,7 @@ private:
 	QTimer statusRefreshTimer;
 	IMU::IMUCostumeDataSource * ds;
 	Ui::IMUCostumeListWidget * ui;
+	std::size_t recordIndex;
 };
 
 #endif	//	HEADER_GUARD_IMU__IMUCOSTUMELISTWIDGET_H__
