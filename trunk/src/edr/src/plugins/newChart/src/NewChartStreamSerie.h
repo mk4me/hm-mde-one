@@ -100,7 +100,7 @@ public:
     //! \param val aktywna / nieaktywna
     void setActive(bool val);
     //! \return statystyki dla ustawionego ScalarChannelReaderInterface
-    ScalarChannelStatsConstPtr getStats() const { return stats; }
+	c3dlib::ScalarChannelStatsConstPtr getStats() const { return stats; }
     //! odlacza krzywa od wykresu
     void removeItemsFromPlot();
     //! ustawia kolejność wyświetlania
@@ -151,14 +151,14 @@ private:
     //! wizualizowana krzywa
     NewChartCurve* curve;
     //! obiekt ze statystykami
-    ScalarChannelStatsPtr stats;
+	c3dlib::ScalarChannelStatsPtr stats;
     //! czy seria jest aktywna
     bool active;
     //! składowa okresla kolejność rysowania
     double _z;
     //! początkowa wartość składowej zd
     double _zBase;
-    ScalarStreamConstPtr scalarStream;
+	ScalarStreamConstPtr scalarStream;
     CurveData curveData;
 	double a;
 };

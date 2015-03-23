@@ -48,7 +48,7 @@ static NamesDictionary getNames( )
 }
 
 MarkersFilter::MarkersFilter() : 
-BuilderConfiguredFilterCommand(getNames(), typeid(MarkerChannel),
+BuilderConfiguredFilterCommand(getNames(), typeid(c3dlib::MarkerChannel),
         QString::fromStdString(plugin::getResourcePath("images/skeleton_front/skeleton_markers.xml").string()),
         QString::fromStdString(plugin::getResourcePath("images/skeleton_back/skeleton_markers.xml").string()),
         QObject::tr("Markers"), QIcon(QString::fromUtf8(":/mde/icons/markerSmall.png")))//,

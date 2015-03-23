@@ -5,11 +5,11 @@
 
 void VectorDiff::process()
 {
-    VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
-    VectorChannelReaderInterfaceConstPtr signal2 = inPinB->getValue();
+    c3dlib::VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
+    c3dlib::VectorChannelReaderInterfaceConstPtr signal2 = inPinB->getValue();
 
     if (signal1 && signal2) {
-        VectorChannelPtr channel(new VectorChannel(signal1->size() / signal1->getLength()));
+		c3dlib::VectorChannelPtr channel(new c3dlib::VectorChannel(signal1->size() / signal1->getLength()));
         channel->setName("Result");
         size_type count = (std::min)(signal1->size(), signal2->size());
 
@@ -55,11 +55,11 @@ void VectorAdder::reset()
 
 void VectorAdder::process()
 {
-    VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
-    VectorChannelReaderInterfaceConstPtr signal2 = inPinB->getValue();
+    c3dlib::VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
+    c3dlib::VectorChannelReaderInterfaceConstPtr signal2 = inPinB->getValue();
 
     if (signal1 && signal2) {
-        VectorChannelPtr channel(new VectorChannel(signal1->size() / signal1->getLength()));
+		c3dlib::VectorChannelPtr channel(new c3dlib::VectorChannel(signal1->size() / signal1->getLength()));
         channel->setName("Result");
         size_type count = (std::min)(signal1->size(), signal2->size());
 
@@ -92,12 +92,12 @@ void Vector2Scalar::reset()
 
 void Vector2Scalar::process()
 {
-    VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
+	c3dlib::VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
     if (signal1) {
         float samplesPS = signal1->size() / signal1->getLength();
-        ScalarChannelPtr channelX(new ScalarChannel(samplesPS)); channelX->setName("X");
-        ScalarChannelPtr channelY(new ScalarChannel(samplesPS)); channelY->setName("Y");
-        ScalarChannelPtr channelZ(new ScalarChannel(samplesPS)); channelZ->setName("Z");
+        c3dlib::ScalarChannelPtr channelX(new c3dlib::ScalarChannel(samplesPS)); channelX->setName("X");
+        c3dlib::ScalarChannelPtr channelY(new c3dlib::ScalarChannel(samplesPS)); channelY->setName("Y");
+        c3dlib::ScalarChannelPtr channelZ(new c3dlib::ScalarChannel(samplesPS)); channelZ->setName("Z");
 
         size_type count = signal1->size();
 
@@ -134,12 +134,12 @@ void Scalar2Vector::reset()
 
 void Scalar2Vector::process()
 {
-    ScalarChannelReaderInterfaceConstPtr signal1 = inPinX->getValue();
-    ScalarChannelReaderInterfaceConstPtr signal2 = inPinY->getValue();
-    ScalarChannelReaderInterfaceConstPtr signal3 = inPinZ->getValue();
+    c3dlib::ScalarChannelReaderInterfaceConstPtr signal1 = inPinX->getValue();
+    c3dlib::ScalarChannelReaderInterfaceConstPtr signal2 = inPinY->getValue();
+    c3dlib::ScalarChannelReaderInterfaceConstPtr signal3 = inPinZ->getValue();
     if (signal1 && signal2 && signal3) {
         float samplesPS = signal1->size() / signal1->getLength();
-        VectorChannelPtr channel(new VectorChannel(samplesPS)); 
+		c3dlib::VectorChannelPtr channel(new c3dlib::VectorChannel(samplesPS));
         channel->setName("Result");
 
         size_type count = (std::min)(signal1->size(), signal2->size());

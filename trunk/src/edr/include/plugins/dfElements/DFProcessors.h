@@ -138,10 +138,10 @@ private:
    std::string name;
 };
 
-typedef UniversalChannelProcessor<ScalarInputPin, ScalarOutputPin, ScalarChannelReaderInterfaceConstPtr, ScalarChannelPtr> UniversalScalar;
-typedef UniversalChannel2Processor<ScalarInputPin, ScalarOutputPin, ScalarChannelReaderInterfaceConstPtr, ScalarChannelPtr> Universal2Scalar;
-typedef UniversalChannelProcessor<VectorInputPin, VectorOutputPin, VectorChannelReaderInterfaceConstPtr, VectorChannelPtr> UniversalVector;
-typedef UniversalChannel2Processor<VectorInputPin, VectorOutputPin, VectorChannelReaderInterfaceConstPtr, VectorChannelPtr> Universal2Vector;
+typedef UniversalChannelProcessor<ScalarInputPin, ScalarOutputPin, c3dlib::ScalarChannelReaderInterfaceConstPtr, c3dlib::ScalarChannelPtr> UniversalScalar;
+typedef UniversalChannel2Processor<ScalarInputPin, ScalarOutputPin, c3dlib::ScalarChannelReaderInterfaceConstPtr, c3dlib::ScalarChannelPtr> Universal2Scalar;
+typedef UniversalChannelProcessor<VectorInputPin, VectorOutputPin, c3dlib::VectorChannelReaderInterfaceConstPtr, c3dlib::VectorChannelPtr> UniversalVector;
+typedef UniversalChannel2Processor<VectorInputPin, VectorOutputPin, c3dlib::VectorChannelReaderInterfaceConstPtr, c3dlib::VectorChannelPtr> Universal2Vector;
 
 class ScalarDiff : public Universal2Scalar
 {

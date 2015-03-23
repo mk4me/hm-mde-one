@@ -8,7 +8,7 @@ const QColor leftColor2(128, 0, 0, 15);
 const QColor rightColor1(0, 255, 0, 15);
 const QColor rightColor2(0, 128, 0, 15);
 
-EventsPlotItem::EventsPlotItem( EventsCollectionConstPtr events ) : 
+EventsPlotItem::EventsPlotItem(c3dlib::EventsCollectionConstPtr events) :
     events(events) 
 {
     UTILS_ASSERT(events);
@@ -18,19 +18,19 @@ EventsPlotItem::EventsPlotItem( EventsCollectionConstPtr events ) :
 void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const
 {
     int count = events->getNumEvents();
-    C3DEventsCollection::EventConstPtr lastLeftEvent;
-    C3DEventsCollection::EventConstPtr lastRightEvent;
+	c3dlib::C3DEventsCollection::EventConstPtr lastLeftEvent;
+	c3dlib::C3DEventsCollection::EventConstPtr lastRightEvent;
 
     int half = (canvasRect.bottom() - canvasRect.top())/ 2 + canvasRect.top();
 
     for (int i = 0; i < count; ++i) {
-        C3DEventsCollection::EventConstPtr event = events->getEvent(i);
-        if (event->getContext() != C3DEventsCollection::IEvent::Left && event->getContext() != C3DEventsCollection::IEvent::Right) {
+		c3dlib::C3DEventsCollection::EventConstPtr event = events->getEvent(i);
+		if (event->getContext() != c3dlib::C3DEventsCollection::IEvent::Left && event->getContext() != c3dlib::C3DEventsCollection::IEvent::Right) {
             continue;
         }
         int x = static_cast<int>(xMap.transform(event->getTime()));
 
-        bool left = event->getContext() == C3DEventsCollection::IEvent::Left;
+		bool left = event->getContext() == c3dlib::C3DEventsCollection::IEvent::Left;
         int top = left ? canvasRect.top() : half;
         int bottom = left ? half : canvasRect.bottom();
 
@@ -53,7 +53,7 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
             int lastX = static_cast<int>(xMap.transform(lastRightEvent->getTime()));
             painter->drawRect(lastX, top, x - lastX, bottom - top);
         } 
-        if (event->getContext() == C3DEventsCollection::IEvent::Left) {
+		if (event->getContext() == c3dlib::C3DEventsCollection::IEvent::Left) {
             lastLeftEvent = event;
         } else {
             lastRightEvent = event;
@@ -79,7 +79,7 @@ void EventsPlotItem::draw( QPainter *painter, const QwtScaleMap &xMap, const Qwt
 
 
 
-void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEventsCollection::Context context)
+void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, c3dlib::C3DEventsCollection::Context context)
 {
     // te translacje, używane są później, w trakcie rysowania
     // nazwy te pochodza z pliku c3d
@@ -93,8 +93,8 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEvents
                 if (currentSegment) {
                     UTILS_ASSERT(currentSegment->event1);
                     currentSegment->end = event->getTime();
-                    ScalarChannelReaderInterfacePtr nonConstChannel(utils::const_pointer_cast<ScalarChannelReaderInterface>(scalar));
-                    currentSegment->stats = ScalarChannelStatsPtr(new ScalarChannelStats(nonConstChannel, currentSegment->begin, currentSegment->end));
+					c3dlib::ScalarChannelReaderInterfacePtr nonConstChannel(utils::const_pointer_cast<c3dlib::ScalarChannelReaderInterface>(scalar));
+					currentSegment->stats = c3dlib::ScalarChannelStatsPtr(new c3dlib::ScalarChannelStats(nonConstChannel, currentSegment->begin, currentSegment->end));
                     collection.push_back(currentSegment);
                 }
 
@@ -108,7 +108,7 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEvents
     }
 
     for (unsigned int i = 0; i < collection.size(); ++i) {
-        ScalarChannelReaderInterfacePtr nonConstChannel(utils::const_pointer_cast<ScalarChannelReaderInterface>(scalar));
+		c3dlib::ScalarChannelReaderInterfacePtr nonConstChannel(utils::const_pointer_cast<c3dlib::ScalarChannelReaderInterface>(scalar));
         SegmentPtr segment = collection[i];
         QString name = QString("%1:%2").arg(scalar->getName().c_str()).arg(i);
         segment->normalizedCurve = PlotCurvePtr(new QwtPlotCurve(name));
@@ -120,20 +120,20 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, C3DEvents
     }
 }
 
-EventsHelper::EventsHelper( EventsCollectionConstPtr events, ScalarChannelReaderInterfaceConstPtr scalar ) :
+EventsHelper::EventsHelper(c3dlib::EventsCollectionConstPtr events, c3dlib::ScalarChannelReaderInterfaceConstPtr scalar) :
     events(events),
     scalar(scalar),
     eventsItem(new EventsPlotItem(events))
 {
-    createSegments(leftSegments, C3DEventsCollection::IEvent::Left);
-    createSegments(rightSegments, C3DEventsCollection::IEvent::Right);
+	createSegments(leftSegments, c3dlib::C3DEventsCollection::IEvent::Left);
+	createSegments(rightSegments, c3dlib::C3DEventsCollection::IEvent::Right);
    
 }
 
-EventsHelper::SegmentConstPtr EventsHelper::getSegment( timeType time, C3DEventsCollection::Context context )
+EventsHelper::SegmentConstPtr EventsHelper::getSegment(timeType time, c3dlib::C3DEventsCollection::Context context)
 {
-    UTILS_ASSERT(context == C3DEventsCollection::IEvent::Left || context == C3DEventsCollection::IEvent::Right);
-    std::vector<SegmentPtr>& segments = context == C3DEventsCollection::IEvent::Left ? leftSegments : rightSegments;
+	UTILS_ASSERT(context == c3dlib::C3DEventsCollection::IEvent::Left || context == c3dlib::C3DEventsCollection::IEvent::Right);
+	std::vector<SegmentPtr>& segments = context == c3dlib::C3DEventsCollection::IEvent::Left ? leftSegments : rightSegments;
     for (auto it = segments.cbegin(); it != segments.cend(); ++it) {
         if (time >= (*it)->begin && time <= (*it)->end) {
             return *it;

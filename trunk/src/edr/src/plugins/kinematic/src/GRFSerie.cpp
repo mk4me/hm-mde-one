@@ -18,12 +18,12 @@ GRFSerie::GRFSerie( KinematicVisualizer * visualizer,
 	const core::VariantConstPtr & data ) : visualizer(visualizer),
 	maxLength(0.0f), data(data)
 {
-	UTILS_ASSERT(data->data()->getTypeInfo() == typeid(GRFCollection));	
+	UTILS_ASSERT(data->data()->getTypeInfo() == typeid(c3dlib::GRFCollection));
 	this->requestedType = requestedType;
 	//FIX tymczasowy dla linuxa
 	grfCollection = data->get();	
 
-	const IForcePlatformCollection& platforms = grfCollection->getPlatforms();
+	const c3dlib::IForcePlatformCollection& platforms = grfCollection->getPlatforms();
     if (!platforms.empty()) {
         matrixTransform->addChild(createPlatformsGroup(platforms));
         matrixTransform->addChild(createButterfly(grfCollection, this->maxLength));
@@ -48,7 +48,7 @@ osg::Matrix GRFSerie::getInitialMatrix() const
 	return osg::Matrix();
 }
 
-osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup( const IForcePlatformCollection& platforms)
+osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup(const c3dlib::IForcePlatformCollection& platforms)
 {
 	osg::ref_ptr<osg::Group> group = new osg::Group();
 	int i = 0;
@@ -83,10 +83,10 @@ osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup( const IForcePlatformCol
 	return group;
 }
 
-GRFSerie::GroupPtr GRFSerie::createButterfly( GRFCollectionConstPtr grf, float& maxLength) const
+GRFSerie::GroupPtr GRFSerie::createButterfly(c3dlib::GRFCollectionConstPtr grf, float& maxLength) const
 {
     osg::ref_ptr<osg::Group> group = new osg::Group();
-    const IForcePlatformCollection& platforms = grf->getPlatforms();
+	const c3dlib::IForcePlatformCollection& platforms = grf->getPlatforms();
     for (auto it = platforms.begin(); it != platforms.end(); ++it) {
         auto range = (*it)->getSteps();
         for (auto step = range.begin(); step != range.end(); ++step) {
@@ -99,7 +99,7 @@ GRFSerie::GroupPtr GRFSerie::createButterfly( GRFCollectionConstPtr grf, float& 
     return group;
 }
 
-GRFSerie::GeodePtr GRFSerie::createStep( IForcePlatform::IStepConstPtr step, float &maxLength, IForcePlatformConstPtr platform) const
+GRFSerie::GeodePtr GRFSerie::createStep(c3dlib::IForcePlatform::IStepConstPtr step, float &maxLength, c3dlib::IForcePlatformConstPtr platform) const
 {
     osg::Vec3 start1 = step->getStartPoint();
     osg::Vec3 end1   = step->getEndPoint();

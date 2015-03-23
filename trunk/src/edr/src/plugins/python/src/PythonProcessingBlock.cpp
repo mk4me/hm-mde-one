@@ -29,7 +29,7 @@ void python::PythonProcessingBlock::reset()
 
 void python::PythonProcessingBlock::process()
 {
-	VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
+	c3dlib::VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
 
 	if (signal1) {
 		size_type count = signal1->size();
@@ -70,7 +70,7 @@ void python::PythonProcessingBlock::process()
 			throw std::runtime_error("Wrong output list size");
 		}
 
-		VectorChannelPtr channel(new VectorChannel(signal1->size() / signal1->getLength()));
+		c3dlib::VectorChannelPtr channel(new c3dlib::VectorChannel(signal1->size() / signal1->getLength()));
 		channel->setName("Result");
 		for (int i = 0; i < count; ++i) {
 			channel->addPoint(osg::Vec3(vecX[i], vecY[i], vecZ[i]));

@@ -14,7 +14,7 @@ python::PythonDataChannel::~PythonDataChannel()
 
 }
 
-python::PythonDataChannel python::PythonDataChannel::convert(VectorChannelConstPtr channel)
+python::PythonDataChannel python::PythonDataChannel::convert(c3dlib::VectorChannelConstPtr channel)
 {
 	UTILS_ASSERT(channel);
 	PythonDataChannel c;
@@ -28,9 +28,9 @@ python::PythonDataChannel python::PythonDataChannel::convert(VectorChannelConstP
 	return c;
 }
 
-VectorChannelPtr python::PythonDataChannel::convert(const PythonDataChannel& obj)
+c3dlib::VectorChannelPtr python::PythonDataChannel::convert(const PythonDataChannel& obj)
 {
-	VectorChannelPtr channel = utils::make_shared<VectorChannel>(obj.getFrequency());
+	c3dlib::VectorChannelPtr channel = utils::make_shared<c3dlib::VectorChannel>(obj.getFrequency());
 	auto name = obj.getName();
 	channel->setName(name.empty() ? "Result" : name);
 	auto data = obj.getData();

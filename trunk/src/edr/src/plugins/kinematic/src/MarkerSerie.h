@@ -64,7 +64,7 @@ private:
 	//! \param channel2 drugi marker
 	//! \param epsilon przedział histogramu
 	//! \return typowa długość między markerami
-	static float getStickLength( VectorChannelConstPtr channel1, VectorChannelConstPtr channel2, float epsilon = 0.001f );
+	static float getStickLength(c3dlib::VectorChannelConstPtr channel1, c3dlib::VectorChannelConstPtr channel2, float epsilon = 0.001f);
 
 	const std::vector<std::vector<osg::Vec3>> createPointsPositions(const unsigned int density) const;
 
@@ -79,7 +79,7 @@ private:
     //! wrapper przekazany serii
     core::VariantConstPtr data;
 	//! Wypakowane markery
-	MarkerCollectionConstPtr markersCollection;
+	c3dlib::MarkerCollectionConstPtr markersCollection;
 	//! Czas faktycznej aktualizacji
 	double lastUpdateTime;
 	//! Informacja o zadanym typie

@@ -28,9 +28,9 @@ void NewChartSerie::setData(const utils::TypeInfo & requestedType, const core::V
 
     curve = new NewChartCurve(name.c_str());	
     data->tryGet(reader);    
-    ScalarChannelReaderInterfacePtr nonConstChannel;
-    nonConstChannel = utils::const_pointer_cast<ScalarChannelReaderInterface>(reader);
-    stats.reset(new ScalarChannelStats(nonConstChannel));
+	c3dlib::ScalarChannelReaderInterfacePtr nonConstChannel;
+	nonConstChannel = utils::const_pointer_cast<c3dlib::ScalarChannelReaderInterface>(reader);
+    stats.reset(new c3dlib::ScalarChannelStats(nonConstChannel));
     curve->setSamples(new NewChartSeriesData(reader));
     int r = rand() % 256;
     int g = rand() % 256;
@@ -91,7 +91,7 @@ NewChartSerie::~NewChartSerie()
 	curve = nullptr;
 }
 
-void NewChartSerie::setEvents( EventsCollectionConstPtr val )
+void NewChartSerie::setEvents(c3dlib::EventsCollectionConstPtr val)
 {
     UTILS_ASSERT(val);
     eventsHelper = EventsHelperPtr(new EventsHelper(val, getReader()));
@@ -200,7 +200,7 @@ void NewChartSerie::setColorsForEvents( EventsHelper::SegmentsRange range, const
 
 double NewChartSerie::getCurrentValue() const 
 { 
-    return static_cast<double>(ScalarContiniousTimeAccessor::getValue(time, *reader)); 
+	return static_cast<double>(c3dlib::ScalarContiniousTimeAccessor::getValue(time, *reader));
 } 
 
 double NewChartSerie::getLength() const

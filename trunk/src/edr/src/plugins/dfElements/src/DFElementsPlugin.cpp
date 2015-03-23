@@ -18,38 +18,38 @@ CORE_PLUGIN_BEGIN("DFElements", core::UID::GenerateUniqueID("{678727A0-ED31-43CA
 			"{C0CF31A2-4E96-4E6C-99FA-BEB9107373FF}",
 			QIcon(":/dfElements/icons/1a.png"));
 		VDF_ADD_DATA_SOURCE(
-			vdf::UniversalSource<VectorChannelReaderInterface>,//<MarkerChannel>,
+			vdf::UniversalSource<c3dlib::VectorChannelReaderInterface>,//<MarkerChannel>,
 			"Marker source",
 			"{EA816238-E526-4074-ADDC-1617215FCBAD}",
 			QIcon(":/dfElements/icons/marker.png"));
 		VDF_ADD_DATA_SOURCE(
-			vdf::UniversalSource<VectorChannelReaderInterface>,//<ForceChannel>,
+			vdf::UniversalSource<c3dlib::VectorChannelReaderInterface>,//<ForceChannel>,
 			"Force source",
 			"{BD87AEFC-5B5E-4A5A-BA07-44D8892AA6BD}",
 			QIcon(":/dfElements/icons/force.png"));
 		VDF_ADD_DATA_SOURCE(
-			vdf::UniversalSource<VectorChannelReaderInterface>,//<MomentChannel>,
+			vdf::UniversalSource<c3dlib::VectorChannelReaderInterface>,//<MomentChannel>,
 			"Moment source",
 			"{EEFC6B5E-E3CB-4DDD-8ACA-A0AF28ACC730}",
 			QIcon(":/dfElements/icons/moment.png"));
 		VDF_ADD_DATA_SOURCE(
-			vdf::UniversalSource<VectorChannelReaderInterface>,//<AngleChannel>,
+			vdf::UniversalSource<c3dlib::VectorChannelReaderInterface>,//<AngleChannel>,
 			"Angle source",
 			"{96524542-B216-4BD9-87DA-52CB5C7E9B9B}",
 			QIcon(":/newVdf/icons/source.png"));
 		VDF_ADD_DATA_SOURCE(
-			vdf::UniversalSource<VectorChannelReaderInterface>,//<PowerChannel>,
+			vdf::UniversalSource<c3dlib::VectorChannelReaderInterface>,//<PowerChannel>,
 			"Power source",
 			"{B82BF44A-A32C-4454-BE59-9114BECD17D9}",
 			QIcon(":/dfElements/icons/power.png"));
 		VDF_ADD_DATA_SOURCE(
-			vdf::UniversalSource<ScalarChannelReader>,
+			vdf::UniversalSource<c3dlib::ScalarChannelReader>,
 			"Scalar source",
 			"{8E69F5D7-2314-4831-BE40-7081109A1997}",
 			QIcon(":/newVdf/icons/source.png"));
 
         VDF_ADD_DATA_SOURCE(
-            vdf::UniversalSource<VectorChannelReaderInterface>, 
+			vdf::UniversalSource<c3dlib::VectorChannelReaderInterface>,
             "Vector source",
             "{03FCCADA-5814-4B7B-BC60-2E07CBBF35FB}",
             QIcon(":/newVdf/icons/source.png"));

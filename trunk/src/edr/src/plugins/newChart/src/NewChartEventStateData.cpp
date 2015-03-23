@@ -1,7 +1,7 @@
 #include "NewChartPCH.h"
 #include "NewChartEventStateData.h"
 
-NewChartEventStateData::NewChartEventStateData( ScalarChannelReaderInterfaceConstPtr channel, float startTime, float endTime ) :
+NewChartEventStateData::NewChartEventStateData(c3dlib::ScalarChannelReaderInterfaceConstPtr channel, float startTime, float endTime) :
     channel(channel)
 {
     startIndex = channel->getValueHelper(startTime).first;

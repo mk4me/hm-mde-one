@@ -33,8 +33,8 @@ plugin::IVisualizer* KinematicVisualizer::create() const
 
 void KinematicVisualizer::getSupportedTypes(utils::TypeInfoList & supportedTypes) const
 {
-	supportedTypes.push_back(typeid(MarkerCollection));
-	supportedTypes.push_back(typeid(GRFCollection));
+	supportedTypes.push_back(typeid(c3dlib::MarkerCollection));
+	supportedTypes.push_back(typeid(c3dlib::GRFCollection));
 	supportedTypes.push_back(typeid(SkeletonDataStream));
 	supportedTypes.push_back(typeid(osg::PositionAttitudeTransform));
 	supportedTypes.push_back(typeid(SkeletonWithStates));
@@ -50,10 +50,10 @@ int KinematicVisualizer::getMaxDataSeries() const
 plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const utils::TypeInfo & requestedType, const core::VariantConstPtr & data)
 {
 	KinematicSerieBase * ret = nullptr;
-	if (requestedType == typeid(GRFCollection)) {
+	if (requestedType == typeid(c3dlib::GRFCollection)) {
 		ret = new GRFSerie(this, requestedType, data);		
 	}
-	else if (requestedType == typeid(MarkerCollection)) {
+	else if (requestedType == typeid(c3dlib::MarkerCollection)) {
 		auto ms = new MarkerSerie(this, requestedType, data);		
         trajectoriesDialog->setDrawer(ms->getTrajectoriesManager(), getRootName(data, tr("Markers")), getMarkersNames(data->get()));
         schemeDialog->setDrawer(ms->getPointsDrawer(), getRootName(data, tr("Markers")), getMarkersNames(data->get()), ms->getConnectionsDrawer());
@@ -905,7 +905,7 @@ QString KinematicVisualizer::getRootName( const core::VariantConstPtr & data, co
     return suffix;
 }
 
-QStringList KinematicVisualizer::getMarkersNames( const MarkerCollectionConstPtr& ms ) const
+QStringList KinematicVisualizer::getMarkersNames(const c3dlib::MarkerCollectionConstPtr& ms) const
 {
     QStringList names;
     int count = ms->getNumChannels();

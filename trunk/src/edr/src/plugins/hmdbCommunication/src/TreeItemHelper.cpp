@@ -16,11 +16,11 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 	std::vector<Visualizer::VisualizerSerie*> tmpSeries;
 
 	try{
-		if (motion->hasObject(typeid(MarkerCollection), false)) {
+		if (motion->hasObject(typeid(c3dlib::MarkerCollection), false)) {
 			ConstVariantsList m;
-			motion->getObjects(m, typeid(MarkerCollection), false);
+			motion->getObjects(m, typeid(c3dlib::MarkerCollection), false);
 			if(m.front()->getRawPtr() != nullptr){
-				auto s = visualizer->createSerie(typeid(MarkerCollection), m.front());
+				auto s = visualizer->createSerie(typeid(c3dlib::MarkerCollection), m.front());
 				s->serie()->setName(path.toStdString());
 				tmpSeries.push_back(s);
 			}else{
@@ -38,11 +38,11 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 				throw core::runtime_error("Empty object - joints");
 			}
 		}
-		if (motion->hasObject(typeid(GRFCollection), false)) {
+		if (motion->hasObject(typeid(c3dlib::GRFCollection), false)) {
 			ConstVariantsList m;
-			motion->getObjects(m, typeid(GRFCollection), false);
+			motion->getObjects(m, typeid(c3dlib::GRFCollection), false);
 			if(m.front()->getRawPtr() != nullptr){
-				auto s = visualizer->createSerie(typeid(GRFCollection), m.front());
+				auto s = visualizer->createSerie(typeid(c3dlib::GRFCollection), m.front());
 				s->serie()->setName(path.toStdString());
 				tmpSeries.push_back(s);
 			}else{
@@ -67,8 +67,8 @@ std::vector<utils::TypeInfo> Multiserie3D::getTypeInfos() const
 {
     std::vector<utils::TypeInfo> ret;
     ret.push_back(typeid(SkeletonWithStates));
-    ret.push_back(typeid(GRFCollection));
-    ret.push_back(typeid(MarkerCollection));
+	ret.push_back(typeid(c3dlib::GRFCollection));
+	ret.push_back(typeid(c3dlib::MarkerCollection));
     return ret;
 }
 
@@ -115,7 +115,7 @@ JointsItemHelper::JointsItemHelper(const PluginSubject::MotionConstPtr & motion 
 VisualizerPtr NewChartItemHelper::createVisualizer(core::IVisualizerManager* manager)
 {
 	core::IVisualizerManager::VisualizerPrototypes prototypes;
-	manager->getVisualizerPrototypes(typeid(ScalarChannelReaderInterface), prototypes, true);
+	manager->getVisualizerPrototypes(typeid(c3dlib::ScalarChannelReaderInterface), prototypes, true);
 	VisualizerPtr visualizer(prototypes.front()->create());
 
     QWidget * visWidget = visualizer->getOrCreateWidget();
@@ -126,7 +126,7 @@ VisualizerPtr NewChartItemHelper::createVisualizer(core::IVisualizerManager* man
         throw core::runtime_error("Wrong visualizer type!");
     } else {
         std::string title;
-        ScalarChannelReaderInterfaceConstPtr scalar = wrapper->get();
+		c3dlib::ScalarChannelReaderInterfaceConstPtr scalar = wrapper->get();
         title += scalar->getName();
         title += " [";
         title += scalar->getValueBaseUnit();
@@ -148,11 +148,11 @@ void NewChartItemHelper::createSeries( const VisualizerPtr & visualizer, const Q
 std::vector<utils::TypeInfo> NewChartItemHelper::getTypeInfos() const
 {
     std::vector<utils::TypeInfo> ret;
-	ret.push_back(typeid(ScalarChannelReaderInterface));
+	ret.push_back(typeid(c3dlib::ScalarChannelReaderInterface));
     return ret;
 }
 
-NewChartItemHelper::NewChartItemHelper(const core::VariantConstPtr& wrapper, const EventsCollectionConstPtr& events ) :
+NewChartItemHelper::NewChartItemHelper(const core::VariantConstPtr& wrapper, const c3dlib::EventsCollectionConstPtr& events) :
     WrappedItemHelper(wrapper),
     events(events)
 {
@@ -161,7 +161,7 @@ NewChartItemHelper::NewChartItemHelper(const core::VariantConstPtr& wrapper, con
 VisualizerPtr NewVector3ItemHelper::createVisualizer(core::IVisualizerManager* manager)
 {
 	core::IVisualizerManager::VisualizerPrototypes prototypes;
-	manager->getVisualizerPrototypes(typeid(ScalarChannelReaderInterface), prototypes, true);
+	manager->getVisualizerPrototypes(typeid(c3dlib::ScalarChannelReaderInterface), prototypes, true);
 	VisualizerPtr visualizer(prototypes.front()->create());
 
     QWidget * visWidget = visualizer->getOrCreateWidget();
@@ -172,7 +172,7 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer(core::IVisualizerManager* m
         throw core::runtime_error("Wrong visualizer type!");
     } else {
         std::string title;
-        VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
+		c3dlib::VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
         title += vectorChannel->getName();
         title += " [";
         title += vectorChannel->getValueBaseUnit();
@@ -184,14 +184,14 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer(core::IVisualizerManager* m
 
 void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
-    VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
+	c3dlib::VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
 
-    ScalarChannelReaderInterfacePtr x(new VectorToScalarAdaptor(vectorChannel, 0));
-    ScalarChannelReaderInterfacePtr y(new VectorToScalarAdaptor(vectorChannel, 1));
-    ScalarChannelReaderInterfacePtr z(new VectorToScalarAdaptor(vectorChannel, 2));
-    core::VariantPtr wrapperX = core::Variant::create<ScalarChannelReaderInterface>();
-    core::VariantPtr wrapperY = core::Variant::create<ScalarChannelReaderInterface>();
-    core::VariantPtr wrapperZ = core::Variant::create<ScalarChannelReaderInterface>();
+    c3dlib::ScalarChannelReaderInterfacePtr x(new c3dlib::VectorToScalarAdaptor(vectorChannel, 0));
+    c3dlib::ScalarChannelReaderInterfacePtr y(new c3dlib::VectorToScalarAdaptor(vectorChannel, 1));
+    c3dlib::ScalarChannelReaderInterfacePtr z(new c3dlib::VectorToScalarAdaptor(vectorChannel, 2));
+    core::VariantPtr wrapperX = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
+    core::VariantPtr wrapperY = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
+    core::VariantPtr wrapperZ = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
     wrapperX->set(x);
     wrapperY->set(y);
     wrapperZ->set(z);
@@ -241,7 +241,7 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     series.push_back(serieZ);
 }
 
-NewVector3ItemHelper::NewVector3ItemHelper(const core::VariantConstPtr& wrapper, const EventsCollectionConstPtr& events ) :
+NewVector3ItemHelper::NewVector3ItemHelper(const core::VariantConstPtr& wrapper, const c3dlib::EventsCollectionConstPtr& events) :
     WrappedItemHelper(wrapper),
     events(events)
 {
@@ -250,7 +250,7 @@ NewVector3ItemHelper::NewVector3ItemHelper(const core::VariantConstPtr& wrapper,
 std::vector<utils::TypeInfo> NewVector3ItemHelper::getTypeInfos() const
 {
     std::vector<utils::TypeInfo> ret;
-	ret.push_back(typeid(ScalarChannelReaderInterface));
+	ret.push_back(typeid(c3dlib::ScalarChannelReaderInterface));
     return ret;
 }
 
@@ -279,7 +279,7 @@ VisualizerPtr NewMultiserieHelper::createVisualizer(core::IVisualizerManager* ma
 {
 	core::IVisualizerManager::VisualizerPrototypes prototypes;
     // TODO : jawnie pobrac New Chart
-	manager->getVisualizerPrototypes(typeid(ScalarChannelReaderInterface), prototypes, true);
+	manager->getVisualizerPrototypes(typeid(c3dlib::ScalarChannelReaderInterface), prototypes, true);
 	VisualizerPtr visualizer(prototypes.front()->create());
 
     QWidget * visWidget = visualizer->getOrCreateWidget();
@@ -298,7 +298,7 @@ VisualizerPtr NewMultiserieHelper::createVisualizer(core::IVisualizerManager* ma
 std::vector<utils::TypeInfo> NewMultiserieHelper::getTypeInfos() const
 {
     std::vector<utils::TypeInfo> ret;
-	ret.push_back(typeid(ScalarChannelReaderInterface));
+	ret.push_back(typeid(c3dlib::ScalarChannelReaderInterface));
     return ret;
 }
 
@@ -315,13 +315,13 @@ NewMultiserieHelper::NewMultiserieHelper(const std::vector<core::VariantConstPtr
 {
     UTILS_ASSERT(false);
     for (auto it = charts.begin(); it != charts.end(); ++it) {
-        wrappers.push_back(ChartWithDescription(*it, EventsCollectionConstPtr(), PluginSubject::MotionConstPtr()));
+		wrappers.push_back(ChartWithDescription(*it, c3dlib::EventsCollectionConstPtr(), PluginSubject::MotionConstPtr()));
     }
 }
 
 
 
-EMGFilterHelper::EMGFilterHelper( const core::VariantConstPtr& wrapper, const EventsCollectionConstPtr& events ) :
+EMGFilterHelper::EMGFilterHelper(const core::VariantConstPtr& wrapper, const c3dlib::EventsCollectionConstPtr& events) :
     NewChartItemHelper(wrapper, events)
 {
 }
@@ -329,22 +329,22 @@ EMGFilterHelper::EMGFilterHelper( const core::VariantConstPtr& wrapper, const Ev
 
 void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
 {
-    ScalarChannelReaderInterfacePtr channel = wrapper->clone()->get();
+	c3dlib::ScalarChannelReaderInterfacePtr channel = wrapper->clone()->get();
 
     utils::shared_ptr<AbsMeanChannel<float, float>> absTest( new AbsMeanChannel<float, float>(channel));
     absTest->initialize();
 
     //utils::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, ScalarChannelIntegrator()));
-    utils::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, RMSModifier()));
+	utils::shared_ptr<c3dlib::ScalarModifier> integratorChannel(new c3dlib::ScalarModifier(absTest, RMSModifier()));
 
-    core::VariantPtr wrapperX = core::Variant::create<ScalarChannelReaderInterface>();
-    wrapperX->set(utils::dynamic_pointer_cast<ScalarChannelReaderInterface>(integratorChannel));
+	core::VariantPtr wrapperX = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
+	wrapperX->set(utils::dynamic_pointer_cast<c3dlib::ScalarChannelReaderInterface>(integratorChannel));
     wrapperX->copyMetadata(*wrapper);
     visualizer->getOrCreateWidget();
 
     std::string name("UNKNOWN");
     wrapperX->getMetadata("core/name", name);    
-	auto s = visualizer->createSerie(typeid(ScalarChannelReaderInterface), wrapperX);
+	auto s = visualizer->createSerie(typeid(c3dlib::ScalarChannelReaderInterface), wrapperX);
 
     EventSerieBase* chartSerie = dynamic_cast<EventSerieBase*>(s->serie());
     if (events && chartSerie) {

@@ -10,20 +10,21 @@
 #ifndef HEADER_GUARD_ForcePlaform__FORCEPLATFORM_H__
 #define HEADER_GUARD_ForcePlaform__FORCEPLATFORM_H__
 
-#include "C3DPCH.h"
 #include <c3dlib/C3DParser.h>
-#include <plugins/c3d/IForcePlatform.h>
-#include <plugins/c3d/C3DChannels.h>
-#include <plugins/c3d/C3DCollections.h>
+#include <c3dlib/IForcePlatform.h>
+#include <c3dlib/C3DTypes.h>
+#include <c3dlib/C3DCollectionTypes.h>
+#include <c3dlib/Export.h>
 
+namespace c3dlib {
 // Klasa reprezentuje platforme GRF
-class ForcePlatform : public IForcePlatform
+class C3DLIB_EXPORT ForcePlatform : public IForcePlatform
 {
 public:
     //! typ zdarzenia wczytanego z pliku C3D
-    typedef c3dlib::C3DParser::IEvent IEvent;
+    typedef C3DParser::IEvent IEvent;
     //! kontekst zdarzenia (strona lewa, prawa, ... )
-    typedef c3dlib::C3DParser::IEvent::Context Context;
+    typedef C3DParser::IEvent::Context Context;
     //! akcesor do danych zapisanych w DataChannel z markerem
 	typedef utils::DataChannelTimeAccessor<osg::Vec3f, float> TimeAccessor;
 
@@ -80,7 +81,7 @@ public:
 public:
     //! Konstruktor, inicjalizuje klasę na podstawie surowych danych platformy
     //! \param platform platforma dostarczona przez parser c3d
-    ForcePlatform(c3dlib::ForcePlatformPtr platform);
+	ForcePlatform(ForcePlatformStructPtr platform);
 
 public:
     //! \return wykryte kroki (w rozumieniu IStep)
@@ -117,7 +118,7 @@ private:
 
 private:
     //! obiekt pochodzący wprost z parsera c3d, surowe dane platformy
-    c3dlib::ForcePlatform platform;
+    ForcePlatformStruct platform;
     //! kolekcja z krokami (w rozumieniu klasy Step)
     Steps steps;
     //! kanał z odpowiadająca płycie siła
@@ -127,6 +128,6 @@ private:
 };
 typedef utils::shared_ptr<ForcePlatform> ForcePlatformPtr;
 typedef utils::shared_ptr<const ForcePlatform> ForcePlatformConstPtr;
-
+}
 
 #endif

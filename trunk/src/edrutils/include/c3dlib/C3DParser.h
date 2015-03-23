@@ -20,7 +20,7 @@
 namespace c3dlib {
 
 //! Opis platformy GRF
-struct C3DLIB_EXPORT ForcePlatform
+struct C3DLIB_EXPORT ForcePlatformStruct
 {
 	//! wierzchołki pojedynczej płyty
 	osg::Vec3 corners[4];
@@ -31,10 +31,10 @@ struct C3DLIB_EXPORT ForcePlatform
     //! lista indeksów kanałów analogowych podpiętych do płyty (np. F1 i M1 to kanały 1-6)
     std::set<std::string> channelLabels;
 };
-typedef ForcePlatform* ForcePlatformPtr;
-typedef const ForcePlatform* ForcePlatformConstPtr;
-typedef const std::vector<ForcePlatformConstPtr>& ForcePlatformConstCollection;
-typedef std::vector<ForcePlatformPtr> ForcePlatformCollection;
+typedef ForcePlatformStruct* ForcePlatformStructPtr;
+typedef const ForcePlatformStruct* ForcePlatformStructConstPtr;
+typedef const std::vector<ForcePlatformStructConstPtr>& ForcePlatformStructConstCollection;
+typedef std::vector<ForcePlatformStructPtr> ForcePlatformStructCollection;
 
 //! Klasa służy do pobierania informacji z pliku C3D, przykrywa biblioteke btk
 class C3DLIB_EXPORT C3DParser
@@ -159,7 +159,7 @@ public:
     //! \return event o konkrentym indeksie (zgodnie z kolejnością w c3d)
 	IEventPtr getEvent(int index) const;
     //! \return kolekcja z informacjami o platformach pomiarowych zapisanych w pliku 
-	ForcePlatformCollection getForcePlatforms() { return forcePlatforms; }
+	ForcePlatformStructCollection getForcePlatformsStruct() { return forcePlatforms; }
 
 private:
     //! realizacja idiomu "Cashire cat"
@@ -175,7 +175,7 @@ private:
 	//! kolekcja zdarzeń
     std::vector<IEventPtr> events;
 	//! płyty GRF
-	ForcePlatformCollection forcePlatforms;
+	ForcePlatformStructCollection forcePlatforms;
     //! przesunięcia video, zgodnie z kolejnością
 	std::vector<double> movieDelaysVector;
 private:
@@ -184,6 +184,7 @@ private:
 	//! zwraca mnożnik, dzięki któremu można przekonwertować wartość do SI
 	float getUnitScale(const std::string& unit) const;
 };
+
 
 }
 

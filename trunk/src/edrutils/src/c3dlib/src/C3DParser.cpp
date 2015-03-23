@@ -372,7 +372,7 @@ void C3DParser::loadAcquisition()
 		// system jest przygotowany dla 4 wierzchołków
 		// nie zakłada się, ze platformy moga być innym wielokatem.
 		if ((*it)->GetCorners().size() == 12) {
-			ForcePlatformPtr platform(new ForcePlatform());
+			ForcePlatformStructPtr platform(new ForcePlatformStruct());
 			platform->origin[0] = (*it)->GetOrigin()[0];
 			platform->origin[1] = (*it)->GetOrigin()[1];
 			platform->origin[2] = (*it)->GetOrigin()[2];

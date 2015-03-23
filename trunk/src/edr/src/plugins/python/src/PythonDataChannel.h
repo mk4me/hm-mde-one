@@ -17,8 +17,8 @@ namespace python {
 	class PythonDataChannel 
 	{
 	public:
-		static PythonDataChannel convert(VectorChannelConstPtr channel);
-		static VectorChannelPtr convert(const PythonDataChannel& obj);
+		static PythonDataChannel convert(c3dlib::VectorChannelConstPtr channel);
+		static c3dlib::VectorChannelPtr convert(const PythonDataChannel& obj);
 
 	public:
 		PythonDataChannel();

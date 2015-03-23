@@ -59,7 +59,7 @@ public:
     virtual ~EventSeriePolicy() {}
 public:
     //! KinematicSerie jest serią zawierającą eventy. Klasy pochodne maja możliwość ich obsługi
-    virtual void setEvents(EventsCollectionConstPtr val);
+	virtual void setEvents(c3dlib::EventsCollectionConstPtr val);
     //! Zwraca czas 
     double getTime() const { return time; }
     //! Ustawia czas. Metoda celowo nie jest wirtualna, klasy dziedziczące powinny implementować setLocalTime
@@ -80,7 +80,7 @@ protected:
 
 protected:
     //! zdarzenia związane z próba pomiarowa
-    EventsCollectionConstPtr events;
+	c3dlib::EventsCollectionConstPtr events;
 private:
     //! ustawiony czas dla serii
     double time;

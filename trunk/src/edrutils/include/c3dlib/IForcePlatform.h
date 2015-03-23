@@ -7,13 +7,15 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_C3DPLUGIN__FORCEPLATFORM_H__
-#define HEADER_GUARD_C3DPLUGIN__FORCEPLATFORM_H__
+#ifndef HEADER_GUARD_C3DLIB__IFORCEPLATFORM_H__
+#define HEADER_GUARD_C3DLIB__IFORCEPLATFORM_H__
 
 #include <boost/range.hpp>
 #include <osg/Vec3>
 #include <utils/SmartPtr.h>
-#include <plugins/c3d/C3DChannels.h>
+#include <c3dlib/C3DTypes.h>
+
+namespace c3dlib {
 
 //! Interfejs platformy GRF, obiekty tego typu zasilają system
 class IForcePlatform
@@ -80,5 +82,6 @@ typedef utils::shared_ptr<IForcePlatform> IForcePlatformPtr;
 typedef utils::shared_ptr<const IForcePlatform> IForcePlatformConstPtr;
 typedef std::vector<IForcePlatformPtr> IForcePlatformCollection;
 
+}
 
 #endif

@@ -76,7 +76,7 @@ static NamesDictionary getForcesNames()
 }
 
 ForcesFilter::ForcesFilter() : 
-BuilderConfiguredFilterCommand(getForcesNames(), typeid(ForceChannel),
+BuilderConfiguredFilterCommand(getForcesNames(), typeid(c3dlib::ForceChannel),
     QString::fromStdString(plugin::getResourcePath("images/skeleton_front/skeleton_front.xml").string()),
     QString::fromStdString(plugin::getResourcePath("images/skeleton_back/skeleton_back.xml").string()),
     QObject::tr("Forces"), QIcon(QString::fromUtf8(":/mde/icons/forcesSmall.png")))//,
@@ -87,7 +87,7 @@ BuilderConfiguredFilterCommand(getForcesNames(), typeid(ForceChannel),
 
 
 MomentsFilter::MomentsFilter() : 
-BuilderConfiguredFilterCommand(getMomentsNames(), typeid(MomentChannel),
+BuilderConfiguredFilterCommand(getMomentsNames(), typeid(c3dlib::MomentChannel),
     QString::fromStdString(plugin::getResourcePath("images/skeleton_front/skeleton_front.xml").string()),
     QString::fromStdString(plugin::getResourcePath("images/skeleton_back/skeleton_back.xml").string()),
     QObject::tr("Moments"),QIcon(QString::fromUtf8(":/mde/icons/momentSmall.png")))//,
@@ -98,7 +98,7 @@ BuilderConfiguredFilterCommand(getMomentsNames(), typeid(MomentChannel),
 
 
 PowersFilter::PowersFilter() : 
-BuilderConfiguredFilterCommand(getPowersNames(), typeid(PowerChannel),
+BuilderConfiguredFilterCommand(getPowersNames(), typeid(c3dlib::PowerChannel),
     QString::fromStdString(plugin::getResourcePath("images/skeleton_front/skeleton_front.xml").string()),
     QString::fromStdString(plugin::getResourcePath("images/skeleton_back/skeleton_back.xml").string()),
     QObject::tr("Powers"), QIcon(QString::fromUtf8(":/mde/icons/powerSmall.png")))//,

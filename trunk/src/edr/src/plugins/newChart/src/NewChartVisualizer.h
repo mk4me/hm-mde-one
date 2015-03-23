@@ -112,7 +112,7 @@ public:
       //! \return wszystkie serie aktualnie obsługiwane przez wizualizator
       boost::iterator_range<std::vector<INewChartSeriePrivate*>::const_iterator> getSeries() const;
       //! \return czy wizualizator jest w trybie wizualizacji eventów
-      bool isEventMode() const { return context != C3DEventsCollection::IEvent::General; }
+	  bool isEventMode() const { return context != c3dlib::C3DEventsCollection::IEvent::General; }
       //! Zrzut wizualizatora do pixmapy
       virtual QPixmap takeScreenshot() const;
 	  virtual void setAxisScale(const Axis axis, const double min, const double max, unsigned int steps = 10);
@@ -127,10 +127,10 @@ private:
       //! Ustawia zdarzenia C3D związane z próba pomiarowa
       //! \param serie seria, której dotycza eventy
       //! \param val kolekcja ze zdarzeniami
-      void setEvents(NewChartSerie* serie, EventsCollectionConstPtr val );
+	  void setEvents(NewChartSerie* serie, c3dlib::EventsCollectionConstPtr val);
       //! Tworzy drzewo ze statystykami
       //! \param stats statystyki, dla których utworzone zostanie drzewo
-      void recreateStats(ScalarChannelStatsConstPtr stats = ScalarChannelStatsConstPtr());
+	  void recreateStats(c3dlib::ScalarChannelStatsConstPtr stats = c3dlib::ScalarChannelStatsConstPtr());
       //! odświeża widzialne serie, przypisanie współrzędnej Z (przykrywanie)
       void refreshSerieLayers();
       //! odświeża spinboxy zawierające przesunięcie i skale aktywnej serii
@@ -325,7 +325,7 @@ private:
     //! spinbox z aktualna skala w T aktywnej serii
     QDoubleSpinBox* scaleSpinY;
     //! aktualny kontekst eventów (general, left, right)
-    C3DEventsCollection::Context context;
+	c3dlib::C3DEventsCollection::Context context;
     //! pomocnicze, do ustalenia czy zmienił się aktualnie obrazowany event
     EventsHelper::SegmentConstPtr oldSegment;
     //! stan wizualizatora, picker - umożliwia wybieranie aktywnej serii klikając na nia

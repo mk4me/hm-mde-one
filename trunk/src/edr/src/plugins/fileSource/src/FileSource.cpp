@@ -96,10 +96,10 @@ void FileSource::loadAsfAmc()
 	//core::Filesystem::Path p1 = "C:/Users/Mateusz/Desktop/test.amc";
 	//core::Filesystem::Path p2 = "C:/Users/Mateusz/Desktop/test.asf";
 
-	core::Filesystem::Path p1 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test.amc";
-	core::Filesystem::Path p2 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test.asf";
-	//core::Filesystem::Path p1 = "C:/Users/Wojciech/Desktop/test.amc";
-	//core::Filesystem::Path p2 = "C:/Users/Wojciech/Desktop/test.asf";
+	//core::Filesystem::Path p1 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test.amc";
+	//core::Filesystem::Path p2 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test.asf";
+	core::Filesystem::Path p1 = "C:/Users/Wojciech/Desktop/test.amc";
+	core::Filesystem::Path p2 = "C:/Users/Wojciech/Desktop/test.asf";
 	transaction->addFile(p1);
 	transaction->addFile(p2);
 	core::ConstVariantsList oList;

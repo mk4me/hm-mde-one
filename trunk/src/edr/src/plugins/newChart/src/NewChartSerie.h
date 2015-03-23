@@ -46,7 +46,7 @@ public:
 	virtual double getEnd() const;
     //! ustawia obiekt ze zdarzeniami powiazanymi z próbą pomiarową
     //! \param val kolecja zdarzeń
-    virtual void setEvents(EventsCollectionConstPtr val);
+	virtual void setEvents(c3dlib::EventsCollectionConstPtr val);
     //! pobierz krzywą qwt
     const QwtPlotCurve* getCurve() const;
     //! pobierz krzywą qwt
@@ -95,9 +95,9 @@ public:
     //! \param val aktywna / nieaktywna
     void setActive(bool val);
     //! \return statystyki dla ustawionego ScalarChannelReaderInterface
-    ScalarChannelStatsConstPtr getStats() const { return stats; } //return pointHelper->getStats(); }
+	c3dlib::ScalarChannelStatsConstPtr getStats() const { return stats; } //return pointHelper->getStats(); }
     //! \return ustawiony ScalarChannelReaderInterface
-    ScalarChannelReaderInterfaceConstPtr getReader() const { return reader; }
+	c3dlib::ScalarChannelReaderInterfaceConstPtr getReader() const { return reader; }
     //! odlacza krzywa od wykresu
     void removeItemsFromPlot();
     //! ustawia kolejność wyświetlania
@@ -150,9 +150,9 @@ private:
     //! wizualizowana krzywa
     NewChartCurve* curve;
     //! obiekt ze statystykami
-    ScalarChannelStatsPtr stats;
+	c3dlib::ScalarChannelStatsPtr stats;
     //! obiekt z danymi
-    ScalarChannelReaderInterfaceConstPtr reader;
+	c3dlib::ScalarChannelReaderInterfaceConstPtr reader;
     //! obiekt zajmujący się logika eventów
     EventsHelperPtr eventsHelper;
     //! czy seria jest aktywna

@@ -147,7 +147,7 @@ const std::vector<std::vector<osg::Vec3>> MarkerSerie::createPointsPositions(con
 	return ret;
 }
 
-float MarkerSerie::getStickLength( VectorChannelConstPtr channel1, VectorChannelConstPtr channel2, float epsilon)
+float MarkerSerie::getStickLength(c3dlib::VectorChannelConstPtr channel1, c3dlib::VectorChannelConstPtr channel2, float epsilon)
 {
 	std::map<float, int> histogram;
 	const auto s = std::min(channel1->size(), channel2->size());

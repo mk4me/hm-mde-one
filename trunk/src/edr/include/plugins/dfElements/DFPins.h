@@ -18,11 +18,11 @@
 #include <plugins/newVdf/UniversalInputPin.h>
 #include <plugins/newVdf/UniversalOutputPin.h>
 
-typedef vdf::UniversalInputPinT<ScalarChannelReaderInterface> ScalarInputPin;
-typedef vdf::UniversalOutputPinT<ScalarChannelReaderInterface> ScalarOutputPin;
+typedef vdf::UniversalInputPinT<c3dlib::ScalarChannelReaderInterface> ScalarInputPin;
+typedef vdf::UniversalOutputPinT<c3dlib::ScalarChannelReaderInterface> ScalarOutputPin;
 
-typedef vdf::UniversalInputPinT<VectorChannelReaderInterface> VectorInputPin;
-typedef vdf::UniversalOutputPinT<VectorChannelReaderInterface> VectorOutputPin;
+typedef vdf::UniversalInputPinT<c3dlib::VectorChannelReaderInterface> VectorInputPin;
+typedef vdf::UniversalOutputPinT<c3dlib::VectorChannelReaderInterface> VectorOutputPin;
 
 
 #endif

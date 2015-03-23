@@ -46,7 +46,7 @@ void EventSeriePolicy::setTime( double val )
     setLocalTime(val);
 }
 
-void EventSeriePolicy::setEvents( EventsCollectionConstPtr val )
+void EventSeriePolicy::setEvents(c3dlib::EventsCollectionConstPtr val)
 {
     events = val;
 }

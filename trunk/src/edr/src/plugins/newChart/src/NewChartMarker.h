@@ -19,7 +19,7 @@ class NewChartMarker : public QwtPlotMarker
 {
 public:
     //! konstruktor z podpiętymi danymi
-    explicit NewChartMarker(ScalarChannelReaderInterfaceConstPtr reader);
+    explicit NewChartMarker(c3dlib::ScalarChannelReaderInterfaceConstPtr reader);
     explicit NewChartMarker();
 	virtual ~NewChartMarker() {}
 
@@ -44,7 +44,7 @@ public:
 
 private:
     //! wskazywane dane
-    ScalarChannelReaderInterfaceConstPtr reader;
+	c3dlib::ScalarChannelReaderInterfaceConstPtr reader;
     //! aktualna pozycja etykiety
     mutable QPointF position;
     //! umożliwia opoznione ustawienie pozycji

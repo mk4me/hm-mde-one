@@ -13,7 +13,7 @@
 #include <list>
 #include <corelib/IVisualizer.h>
 #include <utils/DataChannel.h>
-#include <plugins/c3d/IForcePlatform.h>
+#include <c3dlib/IForcePlatform.h>
 #include <osg/Geode>
 #include "KinematicVisualizer.h"
 
@@ -88,7 +88,7 @@ private:
 	typedef utils::shared_ptr<Arrow> ArrowPtr;
 	typedef utils::shared_ptr<const Arrow> ArrowConstPtr;
 
-    typedef std::map<IForcePlatformConstPtr, osg::ref_ptr<osg::ShapeDrawable> > Platform2Shape;
+	typedef std::map<c3dlib::IForcePlatformConstPtr, osg::ref_ptr<osg::ShapeDrawable> > Platform2Shape;
 
     //! Klasa ułatwia rysowanie "ducha" strzałki. Wizualizowane są poprzednie pozycje strzałki. Im starcza pozycja tym mniejsza alfa.
 	class GhostStack
@@ -124,18 +124,18 @@ private:
 	//! Tworzy węzeł z geometria wszystkich płyt GRF
 	//! \param platforms kolecja platform pochodzących z C3D
     //! \return utworzony węzeł
-	GroupPtr createPlatformsGroup(const IForcePlatformCollection& platforms);
+	GroupPtr createPlatformsGroup(const c3dlib::IForcePlatformCollection& platforms);
 	//! Tworzy "skrzydla motyla" czyli graficzna reprezentacje zmiany siły nacisku konkretnej płyty w czasie
 	//! \param grf dane płyty GRF
 	//! \param maxLength tutaj zwracana jest maksymalna długość siły, jest to pomocne przy kolorowaniu wektora
     //! \return utworzony węzeł
-	GroupPtr createButterfly(GRFCollectionConstPtr grf, float& maxLength) const;
+	GroupPtr createButterfly(c3dlib::GRFCollectionConstPtr grf, float& maxLength) const;
     //! Tworzy pojedyncze "skrzydla motyla" czyli graficzna reprezentacje zmiany siły nacisku konkretnej płyty w czasie
     //! \param step wykryty wczesniej krok w obrębie płyty pomiarowej
     //! \param maxLength maksymalna długość siły, jest to pomocne przy kolorowaniu wektora
     //! \param platform plaforma, dla której tworzona jest geometria
     //! \return utworzony węzeł 
-    GeodePtr createStep( IForcePlatform::IStepConstPtr step, float &maxLength, IForcePlatformConstPtr platform) const;
+	GeodePtr createStep(c3dlib::IForcePlatform::IStepConstPtr step, float &maxLength, c3dlib::IForcePlatformConstPtr platform) const;
     //! Tworzy węzeł z geometria pojedynczej płyty GRF
     //! \param texture tekstura, która ma być na prostopadloscianie, może być nullptr
     //! \param origin punkt, w którym znajduje się lewy górny róg płyty
@@ -161,11 +161,11 @@ private:
     //! Wizualizator, który utworzył serie
 	KinematicVisualizer * visualizer;
     //! Dane GRF dostarczone serii
-	GRFCollectionConstPtr grfCollection;
+	c3dlib::GRFCollectionConstPtr grfCollection;
     //! maksymalna długość siły, pomocne przy kolorowaniu wektora
 	float maxLength;
     //! mapa (krok -> (strzałka, jej ghost) pomocne przy rysowaniu i odświeżaniu wizualizacji
-    std::map<IForcePlatform::IStepConstPtr, std::pair<ArrowPtr, GhostStackPtr>> stepsData;
+	std::map<c3dlib::IForcePlatform::IStepConstPtr, std::pair<ArrowPtr, GhostStackPtr>> stepsData;
     //! pobrana z zasobów tekstura dla pierwszej płyty
 	static osg::ref_ptr<osg::Texture2D> texture1;
     //! pobrana z zasobów tekstura dla drugiej płyty

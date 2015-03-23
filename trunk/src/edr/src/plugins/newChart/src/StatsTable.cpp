@@ -24,7 +24,7 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
      return sum;
  }
    
- QTreeWidgetItem* StatsTable::addEntry(const QString& group, const QString& name, ScalarChannelStatsConstPtr stats, const QColor& backgroundColor )
+ QTreeWidgetItem* StatsTable::addEntry(const QString& group, const QString& name, c3dlib::ScalarChannelStatsConstPtr stats, const QColor& backgroundColor)
  {
      if (group.isEmpty()) {
          throw core::runtime_error("StatsTable: Passed empty group");
@@ -133,7 +133,7 @@ QStringList StatsTable::getGroups() const
      return list;
  }
 
-StatsTable::range StatsTable::getEntries( ScalarChannelStatsConstPtr stats )
+StatsTable::range StatsTable::getEntries(c3dlib::ScalarChannelStatsConstPtr stats)
 {
     auto r = stats2TreeItems.equal_range(stats);
     return boost::make_iterator_range(r.first, r.second);

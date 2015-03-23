@@ -54,7 +54,7 @@ static NamesDictionary getNames()
 }
 
 EMGConfigFilter::EMGConfigFilter() :
-BuilderConfiguredFilterCommand(getNames(), typeid(EMGChannel),
+BuilderConfiguredFilterCommand(getNames(), typeid(c3dlib::EMGChannel),
     QString::fromStdString(plugin::getResourcePath("images/muscular_front/muscular_front.xml").string()),
     QString::fromStdString(plugin::getResourcePath("images/muscular_back/muscular_back.xml").string()),
     QObject::tr("EMGs"), QIcon(QString::fromUtf8(":/mde/icons/emg1Small.png")))//,

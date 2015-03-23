@@ -157,12 +157,12 @@ protected:
 class RMSModifier
 {
 public:
-    typedef ScalarChannelReaderInterface::point_type pointT;
-    typedef ScalarChannelReaderInterface::size_type sizeT;
+	typedef c3dlib::ScalarChannelReaderInterface::point_type pointT;
+	typedef c3dlib::ScalarChannelReaderInterface::size_type sizeT;
 
-    void operator()(ScalarChannelReaderInterface::_MyExtendedWriter & modifierInterface,
-        const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
-        const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
+	void operator()(c3dlib::ScalarChannelReaderInterface::_MyExtendedWriter & modifierInterface,
+					const c3dlib::ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
+					const c3dlib::ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
     {
         //uzupełnij brakujące próbki
         if(myChannel.size() < observedChannel.size()){
@@ -211,16 +211,16 @@ public:
 class ScalarChannelIntegrator
 {
 public:
-    typedef ScalarChannelReaderInterface::point_type pointT;
-    typedef ScalarChannelReaderInterface::size_type sizeT;
+	typedef c3dlib::ScalarChannelReaderInterface::point_type pointT;
+	typedef c3dlib::ScalarChannelReaderInterface::size_type sizeT;
 
     pointT mean(const pointT& p1, const pointT& p2, const pointT& p3) const
     {
         return (p1 + p2 + p3) / 3;
     }
-    void operator()(ScalarChannelReaderInterface::_MyExtendedWriter & modifierInterface,
-        const ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
-        const ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
+	void operator()(c3dlib::ScalarChannelReaderInterface::_MyExtendedWriter & modifierInterface,
+					const c3dlib::ScalarChannelReaderInterface::_MyRawChannelReaderType & observedChannel,
+					const c3dlib::ScalarChannelReaderInterface::_MyRawChannelReaderType & myChannel)
     {
         ////uzupełnij brakujące próbki : co dziesiata...
         sizeT skipN = 10;

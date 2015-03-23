@@ -38,7 +38,7 @@ NewChartVisualizer::NewChartVisualizer() :
     statsTable(nullptr),
 	scaleToActive(false),
 	percentDraw(nullptr),
-    context(C3DEventsCollection::IEvent::General),
+	context(c3dlib::C3DEventsCollection::IEvent::General),
     eventsMenu(nullptr),
     shiftSpinX(nullptr),
     shiftSpinY(nullptr),
@@ -97,9 +97,9 @@ QWidget* NewChartVisualizer::createWidget()
     eventsMenu->setToolTip(tr("Events context"));
 
     QIcon eventsIcon(":/newChart/icons/normalizacja1.png");
-    eventsMenu->addItem(eventsIcon, tr("None events") , QVariant(C3DEventsCollection::IEvent::General));
-    eventsMenu->addItem(eventsIcon, tr("Left events") , QVariant(C3DEventsCollection::IEvent::Left));
-    eventsMenu->addItem(eventsIcon, tr("Right events"), QVariant(C3DEventsCollection::IEvent::Right));
+	eventsMenu->addItem(eventsIcon, tr("None events"), QVariant(c3dlib::C3DEventsCollection::IEvent::General));
+	eventsMenu->addItem(eventsIcon, tr("Left events"), QVariant(c3dlib::C3DEventsCollection::IEvent::Left));
+	eventsMenu->addItem(eventsIcon, tr("Right events"), QVariant(c3dlib::C3DEventsCollection::IEvent::Right));
 	connect(eventsMenu, SIGNAL(activated(int)), this, SLOT(onEventContext(int)));
 
 	coreUI::CoreWidgetAction * eventsAction = new coreUI::CoreWidgetAction(widget, tr("Events"), coreUI::CoreTitleBar::Right);
@@ -252,7 +252,7 @@ QWidget* NewChartVisualizer::createWidget()
 
 void NewChartVisualizer::getSupportedTypes(utils::TypeInfoList & supportedTypes) const
 {
-	supportedTypes.push_back(typeid(ScalarChannelReader));
+	supportedTypes.push_back(typeid(c3dlib::ScalarChannelReader));
 	supportedTypes.push_back(typeid(ScalarStream));
 }
 
@@ -265,7 +265,7 @@ plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie(const utils::TypeI
 		series.push_back(streamSerie);
 		ret = streamSerie;
 	}
-	else if (requestedType == typeid(ScalarChannelReader)) {
+	else if (requestedType == typeid(c3dlib::ScalarChannelReader)) {
 		auto chartSerie = new NewChartSerie(this);
 
 		auto name = "Serie " + boost::lexical_cast<std::string>(series.size());
@@ -416,7 +416,7 @@ void NewChartVisualizer::setActiveSerie( int idx )
 
         auto helper = serie->getEventsHelper();
         if (helper && helper->getEventsItem()) {
-            helper->getEventsItem()->setVisible(context != C3DEventsCollection::IEvent::General);
+			helper->getEventsItem()->setVisible(context != c3dlib::C3DEventsCollection::IEvent::General);
         }
 
         //zaznacz w legendzie
@@ -563,7 +563,7 @@ void NewChartVisualizer::update( double deltaTime )
 			if (isEventMode() && helper) {
 				EventsHelper::SegmentConstPtr segment = helper->getSegment(currentSerieTime, this->context);
 				if (segment != oldSegment) {
-					recreateStats(segment ? segment->stats : ScalarChannelStatsConstPtr());
+					recreateStats(segment ? segment->stats : c3dlib::ScalarChannelStatsConstPtr());
 					setScale(this->scaleToActive, segment ? true : false);
 					oldSegment = segment;
 				}
@@ -601,10 +601,10 @@ int NewChartVisualizer::getMaxDataSeries( void ) const
     return -1;
 }
 
-void NewChartVisualizer::setEvents(NewChartSerie* serie, EventsCollectionConstPtr val )
+void NewChartVisualizer::setEvents(NewChartSerie* serie, c3dlib::EventsCollectionConstPtr val)
 {
-    C3DEventsCollection::Context c = static_cast<C3DEventsCollection::Context>(eventsMenu->itemData(eventsMenu->currentIndex()).toInt());
-    bool eventMode = (c != C3DEventsCollection::IEvent::General);
+	c3dlib::C3DEventsCollection::Context c = static_cast<c3dlib::C3DEventsCollection::Context>(eventsMenu->itemData(eventsMenu->currentIndex()).toInt());
+	bool eventMode = (c != c3dlib::C3DEventsCollection::IEvent::General);
     EventsHelperPtr helper = serie->getEventsHelper();
     helper->getEventsItem()->attach(qwtPlot);
     helper->getEventsItem()->setVisible(serie == tryGetCurrentSerie() && eventMode);
@@ -620,8 +620,8 @@ void NewChartVisualizer::setEvents(NewChartSerie* serie, EventsCollectionConstPt
 
 void NewChartVisualizer::onEventContext(int index)
 {
-    C3DEventsCollection::Context c = static_cast<C3DEventsCollection::Context>(eventsMenu->itemData(index).toInt());
-    bool eventMode = (c != C3DEventsCollection::IEvent::General);
+	c3dlib::C3DEventsCollection::Context c = static_cast<c3dlib::C3DEventsCollection::Context>(eventsMenu->itemData(index).toInt());
+	bool eventMode = (c != c3dlib::C3DEventsCollection::IEvent::General);
 	NewChartSerie* serie = dynamic_cast<NewChartSerie*>(tryGetCurrentSerie());
     if (serie) {
         auto helper = serie->getEventsHelper();
@@ -634,7 +634,7 @@ void NewChartVisualizer::onEventContext(int index)
     setScale();
 }
 
-void NewChartVisualizer::recreateStats( ScalarChannelStatsConstPtr stats /*= ScalarChannelStatsConstPtr()*/ )
+void NewChartVisualizer::recreateStats(c3dlib::ScalarChannelStatsConstPtr stats /*= ScalarChannelStatsConstPtr()*/)
 {
     statsTable->clear();
     for (auto it = series.begin(); it != series.end(); ++it) {
@@ -644,8 +644,8 @@ void NewChartVisualizer::recreateStats( ScalarChannelStatsConstPtr stats /*= Sca
     	}
     }
     if (stats) {
-        QString group = context == C3DEventsCollection::IEvent::Left ? tr("Left") : tr("Right");
-        QColor color  = context == C3DEventsCollection::IEvent::Left ?  QColor(255, 200, 200) : QColor(200, 255, 200);
+		QString group = context == c3dlib::C3DEventsCollection::IEvent::Left ? tr("Left") : tr("Right");
+		QColor color = context == c3dlib::C3DEventsCollection::IEvent::Left ? QColor(255, 200, 200) : QColor(200, 255, 200);
         statsTable->addEntry(group, stats->getChannel()->getName().c_str(), stats, color);
     } else {
         for (auto it = series.begin(); it != series.end(); ++it) {
@@ -710,7 +710,7 @@ void NewChartVisualizer::onSerieVisible(const QVariant& info, bool visible )
     }
 
     recreateScales();
-    if (context == C3DEventsCollection::IEvent::General || !timeInsideEvent()) {
+	if (context == c3dlib::C3DEventsCollection::IEvent::General || !timeInsideEvent()) {
         setScale();
     }
     legend->blockSignals(false);
@@ -753,7 +753,7 @@ void NewChartVisualizer::scaleToActiveSerie( bool scaleToActive)
 			return;
 		}
     this->scaleToActive = scaleToActive;
-    setScale(scaleToActive, context != C3DEventsCollection::IEvent::General);
+	setScale(scaleToActive, context != c3dlib::C3DEventsCollection::IEvent::General);
 }
 
 void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
@@ -958,9 +958,9 @@ void NewChartVisualizer::refreshBounds()
     //minimalny czas dla wszystkich seri danych
     //maksymalny czas dla wszystkich serii danych
     //minimalna rozdzielczość dla wszystkich kanałów
-    std::vector<ScalarChannelReaderInterfaceConstPtr> channels;
+	std::vector<c3dlib::ScalarChannelReaderInterfaceConstPtr> channels;
     for (auto it = series.begin(); it != series.end(); ++it) {
-    	ScalarChannelReaderInterfaceConstPtr data;
+		c3dlib::ScalarChannelReaderInterfaceConstPtr data;
     	auto* iserie = dynamic_cast<plugin::IVisualizer::ISerie*>(*it);
     	iserie->getData()->tryGet(data);
     	if(data) {
@@ -986,7 +986,7 @@ void NewChartVisualizer::refreshBounds()
     //dzielnik dla średniej
     float size = channels.size();
     //akcesor do danych
-    utils::shared_ptr<ScalarContiniousTimeAccessor> accessor(new ScalarContiniousTimeAccessor(channels.front()));
+	utils::shared_ptr<c3dlib::ScalarContiniousTimeAccessor> accessor(new c3dlib::ScalarContiniousTimeAccessor(channels.front()));
 
     //wyliczamy próbki czasowe
     //wyliczam średnią dla wszystkich próbek

@@ -37,7 +37,7 @@ core::IFilterProvider::FilterBundles HmmService::getFilterBundles() const
     core::IFilterProvider::FilterBundles bundles;
 
     core::IFilterBundlePtr analog = utils::make_shared<core::FilterBundle>(QObject::tr("ANALOG"), iconAnalog);
-	addSubjectFilterToBundle(analog, typeid(GRFCollection), QObject::tr("GRF"), iconGRFSmall);
+	addSubjectFilterToBundle(analog, typeid(c3dlib::GRFCollection), QObject::tr("GRF"), iconGRFSmall);
     analog->addFilterCommand(utils::make_shared<EMGConfigFilter>());
     //addSubjectFilterToBundle(analog, typeid(EMGChannel), QObject::tr("EMG"), iconEmgSmall);
     bundles.push_back(analog);
@@ -60,9 +60,9 @@ core::IFilterProvider::FilterBundles HmmService::getFilterBundles() const
 
 
     core::IFilterBundlePtr illness = utils::make_shared<core::FilterBundle>(QObject::tr("ILLNESS"), iconIllness);
-    addSubjectFilterToBundle(illness, typeid(GRFCollection), QObject::tr("Endo"), iconEndo);
-    addSubjectFilterToBundle(illness, typeid(EMGCollection), QObject::tr("Stroke"), iconStroke);
-    addSubjectFilterToBundle(illness, typeid(EMGCollection), QObject::tr("Spin"), iconSpine);
+	addSubjectFilterToBundle(illness, typeid(c3dlib::GRFCollection), QObject::tr("Endo"), iconEndo);
+	addSubjectFilterToBundle(illness, typeid(c3dlib::EMGCollection), QObject::tr("Stroke"), iconStroke);
+	addSubjectFilterToBundle(illness, typeid(c3dlib::EMGCollection), QObject::tr("Spin"), iconSpine);
     bundles.push_back(illness);
         
     return bundles;

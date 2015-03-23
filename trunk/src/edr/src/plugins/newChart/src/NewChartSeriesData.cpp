@@ -1,7 +1,7 @@
 #include "NewChartPCH.h"
 #include "NewChartSeriesData.h"
 
-NewChartSeriesData::NewChartSeriesData( ScalarChannelReaderInterfaceConstPtr channel, 
+NewChartSeriesData::NewChartSeriesData(c3dlib::ScalarChannelReaderInterfaceConstPtr channel,
     QPointF offset, double scaleX , double scaleY) :
     channel(channel),
     offset(offset),

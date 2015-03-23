@@ -36,7 +36,7 @@ public:
     virtual QWidget* getConfigurationWidget();
     // todo: ta metoda nie jest potrzebna, bo mamy sygnal
     // problem w tym ,ze sygnal nie dziala z jakiegos wzgledu
-    core::IHierarchyItemPtr getDataItem() const { return dataItem; }
+    //core::IHierarchyItemPtr getDataItem() const { return dataItem; }
 
 private:
     void _UniversalSink();

@@ -7,8 +7,9 @@
 #include <c3dlib/C3DParser.h>
 #include <corelib/Filesystem.h>
 #include <plugins/c3d/C3DChannels.h>
+#include <plugins/c3d/C3DCollections.h>
 #include "C3DParser.h"
-#include "ForcePlatform.h"
+#include <c3dlib/ForcePlatform.h>
 
 C3DParser::C3DParser()
 {
@@ -24,25 +25,25 @@ void C3DParser::initObjects(utils::ObjectsVector & objects)
 {
 	// sztywne stworzenie obiektów, zachowanie kompatybilności
 	for (int i = 0; i < 4; ++i){
-		objects.push_back(utils::ObjectWrapper::create<GRFChannel>());
+		objects.push_back(utils::ObjectWrapper::create<c3dlib::GRFChannel>());
 	}
 	for (int i = 0; i < 16; ++i){
-		objects.push_back(utils::ObjectWrapper::create<EMGChannel>());
+		objects.push_back(utils::ObjectWrapper::create<c3dlib::EMGChannel>());
 	}
 
 	// GRF i EMG są dosepne tez poprzez standardowe kolekcje
-	objects.push_back(utils::ObjectWrapper::create<GRFCollection>());
-	objects.push_back(utils::ObjectWrapper::create<EMGCollection>());
+	objects.push_back(utils::ObjectWrapper::create<c3dlib::GRFCollection>());
+	objects.push_back(utils::ObjectWrapper::create<c3dlib::EMGCollection>());
 
-	objects.push_back(utils::ObjectWrapper::create<C3DEventsCollection>());
-	objects.push_back(utils::ObjectWrapper::create<MovieDelays>());
+	objects.push_back(utils::ObjectWrapper::create<c3dlib::C3DEventsCollection>());
+	objects.push_back(utils::ObjectWrapper::create<c3dlib::MovieDelays>());
 
 	// reszta kolekcji już bez udziwnien
-	objects.push_back(utils::ObjectWrapper::create<MarkerCollection>());
-	objects.push_back(utils::ObjectWrapper::create<ForceCollection>());
-	objects.push_back(utils::ObjectWrapper::create<AngleCollection>());
-	objects.push_back(utils::ObjectWrapper::create<MomentCollection>());
-	objects.push_back(utils::ObjectWrapper::create<PowerCollection>());
+	objects.push_back(utils::ObjectWrapper::create<c3dlib::MarkerCollection>());
+	objects.push_back(utils::ObjectWrapper::create<c3dlib::ForceCollection>());
+	objects.push_back(utils::ObjectWrapper::create<c3dlib::AngleCollection>());
+	objects.push_back(utils::ObjectWrapper::create<c3dlib::MomentCollection>());
+	objects.push_back(utils::ObjectWrapper::create<c3dlib::PowerCollection>());
 }
 
 void C3DParser::parse( const std::string & source  )
@@ -60,12 +61,12 @@ void C3DParser::parse( const std::string & source  )
 	initObjects(localData);
 
     // wczytanie danych analogowych
-    GRFCollectionPtr grfs(new GRFCollection());
-    EMGCollectionPtr e(new EMGCollection());
+	c3dlib::GRFCollectionPtr grfs(new c3dlib::GRFCollection());
+	c3dlib::EMGCollectionPtr e(new c3dlib::EMGCollection());
     if (parserPtr->getNumAnalogs() == 28)
     {
         for (int i = 0; i < 4; ++i) {
-            GRFChannelPtr ptr(new GRFChannel(*parserPtr , i));
+			c3dlib::GRFChannelPtr ptr(new c3dlib::GRFChannel(*parserPtr, i));
             localData[i]->set(ptr);			
             grfs->addChannel(ptr);
         }
@@ -73,7 +74,7 @@ void C3DParser::parse( const std::string & source  )
 		localData[20]->set(grfs);        
 
         for (int i = 12; i < 28; ++i) {
-            EMGChannelPtr ptr(new EMGChannel(*parserPtr , i));
+			c3dlib::EMGChannelPtr ptr(new c3dlib::EMGChannel(*parserPtr, i));
             localData[4+i-12]->set(ptr);			
             e->addChannel(ptr);
         }
@@ -83,16 +84,16 @@ void C3DParser::parse( const std::string & source  )
 
     // wczytanie eventów
 	int count = parserPtr->getNumEvents();
-    EventsCollectionPtr allEventsCollection(new C3DEventsCollection());
+	c3dlib::EventsCollectionPtr allEventsCollection(new c3dlib::C3DEventsCollection());
 	for (int i = 0; i < count; ++i) {
 		c3dlib::C3DParser::IEventPtr event = parserPtr->getEvent(i);
-        C3DEventsCollection::EventPtr e(event->clone());
+		c3dlib::C3DEventsCollection::EventPtr e(event->clone());
         allEventsCollection->addEvent(e);
 	}
     
 	localData[22]->set(allEventsCollection);	
 
-	MovieDelaysPtr delays = utils::make_shared<MovieDelays>(parserPtr->getMovieDelays());
+	c3dlib::MovieDelaysPtr delays = utils::make_shared<c3dlib::MovieDelays>(parserPtr->getMovieDelays());
 	localData[23]->set(delays);	
 
     // wczytanie plików *vsk, które dostarczaja opis do markerów
@@ -103,11 +104,11 @@ void C3DParser::parse( const std::string & source  )
         vsk = utils::make_shared<vicon::Vsk>();
         vicon::VskParser::parse(vskFiles.front().string(), *vsk);
     }
-	MarkerCollectionPtr markers(new MarkerCollection(vsk));
-	ForceCollectionPtr forces(new ForceCollection);
-	AngleCollectionPtr angles(new AngleCollection);
-	MomentCollectionPtr moments(new MomentCollection);
-	PowerCollectionPtr powers(new PowerCollection);
+	c3dlib::MarkerCollectionPtr markers(new c3dlib::MarkerCollection(vsk));
+	c3dlib::ForceCollectionPtr forces(new c3dlib::ForceCollection);
+	c3dlib::AngleCollectionPtr angles(new c3dlib::AngleCollection);
+	c3dlib::MomentCollectionPtr moments(new c3dlib::MomentCollection);
+	c3dlib::PowerCollectionPtr powers(new c3dlib::PowerCollection);
 
 	localData[24]->set(markers);
 	localData[25]->set(forces);
@@ -119,37 +120,37 @@ void C3DParser::parse( const std::string & source  )
 	for (int i = 0; i < markersCount; ++i) {
 		switch (parserPtr->getPoint(i)->getType()) {
 			case c3dlib::C3DParser::IPoint::Angle: {
-                AngleChannelPtr ptr(new AngleChannel(*parserPtr, i));
+				c3dlib::AngleChannelPtr ptr(new c3dlib::AngleChannel(*parserPtr, i));
                 angles->addChannel(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Marker: {
-                MarkerChannelPtr ptr(new MarkerChannel(*parserPtr, i));
+				c3dlib::MarkerChannelPtr ptr(new c3dlib::MarkerChannel(*parserPtr, i));
                 markers->addChannel(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Force: {
-                ForceChannelPtr ptr(new ForceChannel(*parserPtr, i));
+				c3dlib::ForceChannelPtr ptr(new c3dlib::ForceChannel(*parserPtr, i));
                 forces->addChannel(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Moment: {
-                MomentChannelPtr ptr(new MomentChannel(*parserPtr, i));
+				c3dlib::MomentChannelPtr ptr(new c3dlib::MomentChannel(*parserPtr, i));
                 moments->addChannel(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Power: {
-                PowerChannelPtr ptr(new PowerChannel(*parserPtr, i));
+				c3dlib::PowerChannelPtr ptr(new c3dlib::PowerChannel(*parserPtr, i));
                 powers->addChannel(ptr);
             } break;
 		}
 	}
 
     try {
-        IForcePlatformCollection platforms;
-        auto parsedPlatforms = parserPtr->getForcePlatforms();
+		c3dlib::IForcePlatformCollection platforms;
+        auto parsedPlatforms = parserPtr->getForcePlatformsStruct();
         int count = static_cast<int>(parsedPlatforms.size());
         for (int i = 0; i < count;  ++i) {
-            ForcePlatformPtr fp(new ForcePlatform(parsedPlatforms[i]));
+			c3dlib::ForcePlatformPtr fp(new c3dlib::ForcePlatform(parsedPlatforms[i]));
             // HACK ! POWINIEN BYC KANAL NA PODST. NR PLATFORMY!
-            fp->setForceChannel(grfs->getGRFChannel(i == 0 ? GRFChannel::F1 : GRFChannel::F2));
-            fp->setMomentChannel(grfs->getGRFChannel(i == 0 ? GRFChannel::M1 : GRFChannel::M2));
+			fp->setForceChannel(grfs->getGRFChannel(i == 0 ? c3dlib::GRFChannel::F1 : c3dlib::GRFChannel::F2));
+			fp->setMomentChannel(grfs->getGRFChannel(i == 0 ? c3dlib::GRFChannel::M1 : c3dlib::GRFChannel::M2));
             fp->computeSteps(markers, allEventsCollection);
             platforms.push_back(fp);
         }
@@ -170,13 +171,13 @@ void C3DParser::getObject(core::Variant & object, const unsigned int idx) const
 	object.set(data[idx]);
 	object.setMetadata("core/source", path);
 	if (0 <= idx && idx < 4){
-		GRFChannelPtr ptr = data[idx]->get();
+		c3dlib::GRFChannelPtr ptr = data[idx]->get();
 		if (ptr) {
 			object.setMetadata("core/name", ptr->getName());
 		}
 	}
 	else if(idx < 20){
-		EMGChannelPtr ptr = data[idx]->get();
+		c3dlib::EMGChannelPtr ptr = data[idx]->get();
 		if (ptr) {
 			object.setMetadata("core/name", ptr->getName());
 		}

@@ -22,16 +22,16 @@ public:
 
     //! Abstraktycja metoda, seria danych po jej wywołaniu powinna zainicjalizować sobie obsługę eventów
     //! \param val ustawiane eventy
-    virtual void setEvents(EventsCollectionConstPtr val) = 0;
+    virtual void setEvents(c3dlib::EventsCollectionConstPtr val) = 0;
     //! \return kontekst, dla którego aktualnie rozpatrywane są jointy (typowo left, right)
-    C3DEventsCollection::Context getContext() const;
+	c3dlib::C3DEventsCollection::Context getContext() const;
     //! ustawia kontekst, dla którego aktualnie rozpatrywane są jointy 
     //! \param val kontekst, typowo left, right
-    void setContext(C3DEventsCollection::Context val);
+	void setContext(c3dlib::C3DEventsCollection::Context val);
 
 private:
     //! kontekst, typowo left, right
-    C3DEventsCollection::Context context; 
+	c3dlib::C3DEventsCollection::Context context;
 
 };
 typedef utils::shared_ptr<EventSerieBase> EventSerieBasePtr;

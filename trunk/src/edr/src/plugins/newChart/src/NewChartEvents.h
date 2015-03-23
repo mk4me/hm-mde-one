@@ -20,7 +20,7 @@ class EventsPlotItem : public QwtPlotItem
 public:
     //! Obiekt tworzony jest od razu z eventami 
     //! \param events wskaźnik do poprawnych danych
-    EventsPlotItem(EventsCollectionConstPtr events);
+	EventsPlotItem(c3dlib::EventsCollectionConstPtr events);
     virtual ~EventsPlotItem() {}
 
 public:
@@ -31,11 +31,11 @@ public:
     //! \param canvasRect obszar, który można zarysować
     virtual void draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const;
     //! \return kolekcja z rysowanymi eventami
-    EventsCollectionConstPtr getEvents() const { return events; }
+	c3dlib::EventsCollectionConstPtr getEvents() const { return events; }
 
 private:
     //! odrysowywane eventy
-    EventsCollectionConstPtr events;
+	c3dlib::EventsCollectionConstPtr events;
 
 };
 
@@ -46,9 +46,9 @@ public:
     //! typ używany do reprezentacji czasu
     typedef float timeType;
     //! niemodyfikowalny wskaźnik do wczytanego z pliku C3D zdarzenia
-    typedef C3DEventsCollection::EventConstPtr EventConstPtr;
+	typedef c3dlib::C3DEventsCollection::EventConstPtr EventConstPtr;
     //! wskaźnik do wczytanego z pliku C3D zdarzenia
-    typedef C3DEventsCollection::EventPtr EventPtr;
+	typedef c3dlib::C3DEventsCollection::EventPtr EventPtr;
     //! wskażnik do krzywej wykresu
     typedef utils::shared_ptr<QwtPlotCurve> PlotCurvePtr;
     //! segment oznaczający przedział czasowy związany z eventami
@@ -63,7 +63,7 @@ public:
         //! koniec czasu, w którym event się kończy
         timeType end;
         //! dane ze statystykami (znormalizowanego odcinka)
-        ScalarChannelStatsPtr stats;
+		c3dlib::ScalarChannelStatsPtr stats;
         //! znormalizowana krzywa
         PlotCurvePtr normalizedCurve;
     };
@@ -80,15 +80,15 @@ public:
 
 public:
     //! konstruktor pobiera dane i związane z nimi eventy
-    EventsHelper(EventsCollectionConstPtr events, ScalarChannelReaderInterfaceConstPtr scalar);
+	EventsHelper(c3dlib::EventsCollectionConstPtr events, c3dlib::ScalarChannelReaderInterfaceConstPtr scalar);
     //! \return eventy C3D
-    EventsCollectionConstPtr getEvents() const { return events; }
+	c3dlib::EventsCollectionConstPtr getEvents() const { return events; }
     //! \return element wykresu odpowiedzialny za rysowanie eventów
     const EventsPlotItem* getEventsItem() const { return eventsItem; }
     //! \return element wykresu odpowiedzialny za rysowanie eventów
     EventsPlotItem* getEventsItem() { return eventsItem; }
     //! \return odpowiedni segment dla podanego czasu lub nullptr jeśli takiego nie ma
-    SegmentConstPtr getSegment(timeType time, C3DEventsCollection::Context context);
+	SegmentConstPtr getSegment(timeType time, c3dlib::C3DEventsCollection::Context context);
     //! \return zwraca segmenty dla prawej nogi
     SegmentsConstRange getRightSegments() const { return boost::make_iterator_range(rightSegments.cbegin(), rightSegments.cend()); }
     //! \return zwraca segmenty dla lewej nogi
@@ -100,7 +100,7 @@ public:
 
 private:
     //! tworzy segmenty na podstawie dostarczonych eventów i danych 
-    void createSegments(std::vector<SegmentPtr>& collection, C3DEventsCollection::Context context);
+	void createSegments(std::vector<SegmentPtr>& collection, c3dlib::C3DEventsCollection::Context context);
 
 private:
     //! kolekcja z lewymi segmentami
@@ -108,9 +108,9 @@ private:
     //! kolekcja z prawymi segmentami
     std::vector<SegmentPtr> rightSegments;
     //! dostarczone eventy c3d
-    EventsCollectionConstPtr events;
+	c3dlib::EventsCollectionConstPtr events;
     //! dostarczone dane
-    ScalarChannelReaderInterfaceConstPtr scalar;
+	c3dlib::ScalarChannelReaderInterfaceConstPtr scalar;
     //! element rysowany na wykresie
     EventsPlotItem* eventsItem;
 };

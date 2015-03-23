@@ -2,7 +2,6 @@ BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS (
 	C3DChannels.h
-	IForcePlatform.h
 	C3DCollections.h
 	EventSerieBase.h
 	Export.h
@@ -10,7 +9,6 @@ SET_PUBLIC_HEADERS (
 
 SET_PRIVATE_HEADERS (
 	C3DParser.h
-	ForcePlatform.h
 	C3DPCH.h
 )
 
@@ -19,7 +17,6 @@ SET_SOURCE_FILES(
 	EventSerieBase.cpp
 	C3DPlugin.cpp
 	C3DParser.cpp
-	ForcePlatform.cpp
 	C3DPCH.cpp
 	C3DCollections.cpp
 )

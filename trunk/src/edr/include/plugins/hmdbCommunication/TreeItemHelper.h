@@ -24,7 +24,7 @@
 class HMDBCOMMUNICATION_EXPORT NewChartItemHelper : public core::WrappedItemHelper
 {
 public:
-    NewChartItemHelper(const core::VariantConstPtr& wrapper, const EventsCollectionConstPtr& events = EventsCollectionConstPtr());
+	NewChartItemHelper(const core::VariantConstPtr& wrapper, const c3dlib::EventsCollectionConstPtr& events = c3dlib::EventsCollectionConstPtr());
 
 public:
     //! Tworzy wizualizator newChart
@@ -38,7 +38,7 @@ public:
     std::vector<utils::TypeInfo> getTypeInfos() const;
 
 protected:
-    EventsCollectionConstPtr events;
+	c3dlib::EventsCollectionConstPtr events;
 };
 typedef utils::shared_ptr<NewChartItemHelper> NewChartItemHelperPtr;
 typedef utils::shared_ptr<const NewChartItemHelper> NewChartItemHelperConstPtr;
@@ -49,7 +49,7 @@ class HMDBCOMMUNICATION_EXPORT NewVector3ItemHelper : public core::WrappedItemHe
 public:
     //! Konstruktor pobiera obiekt z wrapperem wektora 3D
     //! \param wrapper 
-    NewVector3ItemHelper(const core::VariantConstPtr& wrapper, const EventsCollectionConstPtr& events = EventsCollectionConstPtr());
+	NewVector3ItemHelper(const core::VariantConstPtr& wrapper, const c3dlib::EventsCollectionConstPtr& events = c3dlib::EventsCollectionConstPtr());
 
 public:
     //! zwraca utworzone serie danych
@@ -62,7 +62,7 @@ public:
     //! \return typ ScalarChannelReaderInterface
     std::vector<utils::TypeInfo> getTypeInfos() const;
 private:
-    EventsCollectionConstPtr events;
+	c3dlib::EventsCollectionConstPtr events;
 };
 typedef utils::shared_ptr<NewVector3ItemHelper> NewVector3ItemHelperPtr;
 typedef utils::shared_ptr<const NewVector3ItemHelper> NewVector3ItemHelperConstPtr;
@@ -77,7 +77,7 @@ public:
         //! obiekt, z danymi serii
         core::VariantConstPtr wrapper;
         //! związane z obiektem zdarzenia
-        EventsCollectionConstPtr events;
+		c3dlib::EventsCollectionConstPtr events;
         //! próba, z której pochodzi obiekt z danymi
         PluginSubject::MotionConstPtr motion;
 
@@ -85,7 +85,7 @@ public:
         //! \param w obiekt, z danymi serii
         //! \param e związane z obiektem zdarzenia
         //! \param m próba, z której pochodzi obiekt z danymi
-        ChartWithDescription(core::VariantConstPtr w, EventsCollectionConstPtr e, PluginSubject::MotionConstPtr m) :
+		ChartWithDescription(core::VariantConstPtr w, c3dlib::EventsCollectionConstPtr e, PluginSubject::MotionConstPtr m) :
             wrapper(w),
             events(e),
             motion(m)
@@ -191,7 +191,7 @@ class EMGFilterHelper : public NewChartItemHelper
 public:
     //! Konstruktor
     //! \param wrapper 
-    EMGFilterHelper(const core::VariantConstPtr& wrapper, const EventsCollectionConstPtr& events = EventsCollectionConstPtr());
+	EMGFilterHelper(const core::VariantConstPtr& wrapper, const c3dlib::EventsCollectionConstPtr& events = c3dlib::EventsCollectionConstPtr());
     virtual ~EMGFilterHelper() {}
 
 public:

@@ -762,13 +762,13 @@ core::VariantPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & motionFi
 			mPtr->addData(*it);
 		}
 
-		if (mPtr->hasObject(typeid(VideoChannel), false) && mPtr->hasObject(typeid(MovieDelays), false)) {
+		if (mPtr->hasObject(typeid(VideoChannel), false) && mPtr->hasObject(typeid(c3dlib::MovieDelays), false)) {
 			core::VariantsCollection videoCollection(typeid(VideoChannel), false);
-			core::VariantsCollection movieDelaysCollection(typeid(MovieDelays), false);
+			core::VariantsCollection movieDelaysCollection(typeid(c3dlib::MovieDelays), false);
 			mPtr->getObjects(videoCollection);
 			mPtr->getObjects(movieDelaysCollection);
 			if (movieDelaysCollection.size() == 1) {
-				MovieDelaysConstPtr delays = (*(movieDelaysCollection.begin()))->get();
+				c3dlib::MovieDelaysConstPtr delays = (*(movieDelaysCollection.begin()))->get();
 				if (delays->size() == videoCollection.size()) {
 					int i = 0;
 					for (auto it = videoCollection.begin(); it != videoCollection.end(); ++it) {

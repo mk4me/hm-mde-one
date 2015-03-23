@@ -14,12 +14,12 @@
 #include <utils/ObjectWrapper.h>
 #include <utils/DataChannelDescriptors.h>
 #include <threadingUtils/StreamData.h>
+#include <c3dlib/C3DTypes.h>
 
-typedef utils::IChannelReader<float, float, true> ScalarChannelReader;
 typedef threadingUtils::IStreamT<std::pair<float, float>> ScalarStream;
 DEFINE_SMART_POINTERS(ScalarStream);
 
-DEFINE_WRAPPER(ScalarChannelReader, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
+DEFINE_WRAPPER(c3dlib::ScalarChannelReader, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
 DEFINE_WRAPPER(ScalarStream, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
 
 #endif	//	HEADER_GUARD_NEW_CHART__WRAPPERS_H__

@@ -138,6 +138,7 @@ void vdf::NewVdfWidget::runDF()
 
         UniversalSink* usink = dynamic_cast<UniversalSink*>(modelNode);
         if (usink) {
+			usink->disconnect(SIGNAL(itemConsumed(core::IHierarchyItemPtr)));
             connect(usink, SIGNAL(itemConsumed(core::IHierarchyItemPtr)), this, SLOT(onSinkGenerate(core::IHierarchyItemPtr)));
             sinks.push_back(usink);
         }
@@ -148,9 +149,9 @@ void vdf::NewVdfWidget::runDF()
 
         root = core::HierarchyItemPtr(new core::HierarchyItem(QString("Processing %1").arg(++processingNo), QString()));
         sceneModel->run();
-        for (auto it = sinks.begin(); it != sinks.end(); ++it) {
+       /* for (auto it = sinks.begin(); it != sinks.end(); ++it) {
             root->appendChild((*it)->getDataItem());
-        }
+        }*/
         treeModel->addRootItem(root);
     } catch (std::exception& e) {
         QMessageBox::critical(this, tr("Error"), QString("Info: %1").arg(e.what()));

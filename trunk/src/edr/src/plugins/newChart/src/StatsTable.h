@@ -54,10 +54,10 @@ class StatsTable : public QWidget, private Ui::StatsTable
 {
     Q_OBJECT;
 public:
-    typedef std::multimap<ScalarChannelStatsConstPtr, QTreeWidgetItem*> statsMultimap;
+	typedef std::multimap<c3dlib::ScalarChannelStatsConstPtr, QTreeWidgetItem*> statsMultimap;
     typedef boost::iterator_range<statsMultimap::iterator> range;
     typedef boost::iterator_range<statsMultimap::const_iterator> const_range;
-    typedef ScalarChannelStatsConstPtr::element_type::ChannelConstPtr channelConstPtr;
+	typedef c3dlib::ScalarChannelStatsConstPtr::element_type::ChannelConstPtr channelConstPtr;
 
 public:
     StatsTable(QWidget* parent = nullptr, Qt::WindowFlags f = 0);
@@ -70,7 +70,7 @@ public slots:
     //! \param stats obiekt ze statystykami
     //! \param backgroundColor kolor tła dla dodawanego elementu
     //! \return utworzony element drzwa
-    QTreeWidgetItem* addEntry(const QString& group, const QString& name, ScalarChannelStatsConstPtr stats, const QColor& backgroundColor = Qt::white);
+	QTreeWidgetItem* addEntry(const QString& group, const QString& name, c3dlib::ScalarChannelStatsConstPtr stats, const QColor& backgroundColor = Qt::white);
     //! próbuje pobrać wpis ze statystykami
     //! \param group nazwa grupy (np. strona lewa, prawa ...)
     //! \param name nazwa wpisu 
@@ -79,7 +79,7 @@ public slots:
     //! Pobiera wszystkie wpisy związane z konkretynymi statystykami
     //! \param stats statystyki, dla których maja być pobrane wpisy
     //! \return obiekt boost::range z wpisami
-    range getEntries(ScalarChannelStatsConstPtr stats);
+	range getEntries(c3dlib::ScalarChannelStatsConstPtr stats);
     //! Pobiera wszystkie wpisy związane z konkretynym kanałem
     //! \param channel kanał dla którego maja być pobrane wpisy
     //! \return lista z elementami drzewa
@@ -102,7 +102,7 @@ private:
     //! wysokość wiersza
     int rowHeight;
     //! mapa statystyki -> wpis z drzewie ze statystykami
-    std::multimap<ScalarChannelStatsConstPtr, QTreeWidgetItem*> stats2TreeItems;
+	std::multimap<c3dlib::ScalarChannelStatsConstPtr, QTreeWidgetItem*> stats2TreeItems;
     ItemDelegate treeItemDelegate;
 };
 typedef utils::shared_ptr<StatsTable> StatsTablePtr;

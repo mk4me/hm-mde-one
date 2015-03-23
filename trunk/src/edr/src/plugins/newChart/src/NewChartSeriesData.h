@@ -23,7 +23,7 @@ public:
     //! \param offset początkowe przesunięcie (domyślnie = (0,0))
     //! \param scaleX początkowa skala w poziomie (domyślnie 1)
     //! \param scaleY początkowa skala w pionie (domyślnie 1)
-    NewChartSeriesData(ScalarChannelReaderInterfaceConstPtr channel, 
+	NewChartSeriesData(c3dlib::ScalarChannelReaderInterfaceConstPtr channel,
         QPointF offset = QPointF(), double scaleX = 1.0, double scaleY = 1.0);
 
 public:
@@ -55,7 +55,7 @@ public:
 
 private:
     //! DataChannel z danymi
-    ScalarChannelReaderInterfaceConstPtr channel;
+	c3dlib::ScalarChannelReaderInterfaceConstPtr channel;
     //! ustawione przesunięcie
     QPointF offset;
     //! ustawiona skala pozioma

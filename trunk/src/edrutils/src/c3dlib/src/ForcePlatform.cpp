@@ -1,13 +1,13 @@
-#include "C3DPCH.h"
-#include "ForcePlatform.h"
-
-#include <plugins/c3d/IForcePlatform.h>
-#include <plugins/c3d/C3DChannels.h>
+#include <c3dlib/ForcePlatform.h>
+#include <list>
+#include <c3dlib/IForcePlatform.h>
+#include <c3dlib/C3DTypes.h>
 #include <utils/DataChannel.h>
 #include <utils/DataChannelCollection.h>
 
+namespace c3dlib {
 
-ForcePlatform::ForcePlatform( c3dlib::ForcePlatformPtr platform ) :
+ForcePlatform::ForcePlatform(ForcePlatformStructPtr platform) :
     platform(*platform)
 {
     
@@ -192,3 +192,4 @@ GRFChannelConstPtr ForcePlatform::getMomentChannel() const
     return moment;
 }
 
+}

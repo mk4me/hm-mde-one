@@ -12,7 +12,7 @@ const float MIN_LERP_DIST = 15.0f;
 const float LERP_Y = 0.1f;
 const float LERP_X = 0.33f;
 
-NewChartMarker::NewChartMarker( ScalarChannelReaderInterfaceConstPtr reader ) :
+NewChartMarker::NewChartMarker(c3dlib::ScalarChannelReaderInterfaceConstPtr reader) :
     reader(reader),
     positionSet(false),
     lerpX(LERP_X),
