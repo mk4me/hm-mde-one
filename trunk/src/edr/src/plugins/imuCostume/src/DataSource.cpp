@@ -19,6 +19,34 @@
 #include <plugins/newChart/INewChartVisualizer.h>
 #include <corelib/Exceptions.h>
 
+class JointStreamExtractor
+{
+public:
+	JointStreamExtractor(JointStreamExtractor && other) : joint(std::move(other.joint)) {}
+	JointStreamExtractor(const JointStreamExtractor & other) : joint(other.joint) {}
+	JointStreamExtractor(kinematic::SkeletonState::JointConstPtr joint) : joint(joint) {}
+
+	template<typename T>
+	inline static bool verify(const T &) { return true; }
+
+	template<typename T>
+	void extract(const T & src, IMU::JointStream::value_type & jointData) const {
+		jointData.first = src.first;
+		jointData.second.globalOrientation = joint->value.globalOrientation();
+		jointData.second.localOrientation = joint->value.localOrientation();
+		jointData.second.globalPosition = joint->value.globalPosition();
+		jointData.second.localPosition = joint->value.localPosition();
+	}
+
+private:
+	kinematic::SkeletonState::JointConstPtr joint;
+};
+
+TIMEMEMBER_EXTRACTOR(globalOrientation);
+TIMEMEMBER_EXTRACTOR(localOrientation);
+TIMEMEMBER_EXTRACTOR(globalPosition);
+TIMEMEMBER_EXTRACTOR(localPosition);
+
 //! klasa pomocnicza przy tworzeniu wykresów z wektora 3-elementowego
 class NewStreamVector3ItemHelper : public core::WrappedItemHelper
 {
@@ -191,6 +219,87 @@ private:
 	const double yMin;
 	const double yMax;
 };
+
+template<typename StreamType, typename SensorDataType, typename Extractor>
+core::HierarchyDataItemPtr extracImuStreamVector(core::VariantsList & domainData,
+	utils::shared_ptr<StreamType> stream,
+	SensorDataType & sd,
+	const std::string & paramName,
+	const QString & units, const double minY, const double maxY)
+{
+	auto vec3Stream = utils::make_shared<threadingUtils::StreamAdapterT<StreamType::value_type, IMU::Vec3Stream::value_type, Extractor>>(stream);
+
+	auto ow = core::Variant::wrapp<IMU::Vec3Stream>(vec3Stream);
+	ow->setMetadata("core/name", paramName);
+	sd.domainData.push_back(ow);
+	domainData.push_back(ow);
+
+	std::vector<core::VariantConstPtr> vecDataObjects;
+	std::list<core::IHierarchyItemPtr> hierarchyItems;
+
+	for (unsigned int j = 0; j < 3; ++j){
+		auto scalarStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::Vec3Stream::value_type, ScalarStream::value_type, IMU::CompoundArrayExtractor>>(vec3Stream, IMU::CompoundArrayExtractor(j));
+
+		ow = core::Variant::wrapp<ScalarStream>(scalarStream);
+		ow->setMetadata("core/name", vectorParameterName(j));
+		sd.domainData.push_back(ow);
+		domainData.push_back(ow);
+		vecDataObjects.push_back(ow);
+
+		hierarchyItems.push_back(utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(paramName), QString::fromStdString(vectorParameterName(j))));
+	}
+
+	auto helper = utils::make_shared<NewStreamVector3ItemHelper>(ow, vecDataObjects[0], vecDataObjects[1], vecDataObjects[2], QString::fromStdString(paramName), units, minY, maxY);
+
+	auto imuElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(paramName), QString::fromStdString(paramName), helper);
+
+	for (auto & hi : hierarchyItems)
+	{
+		imuElement->appendChild(hi);
+	}
+
+	return imuElement;
+}
+
+template<typename StreamType, typename SensorDataType, typename Extractor>
+core::HierarchyDataItemPtr extracImuStreamQuat(core::VariantsList & domainData,
+	utils::shared_ptr<StreamType> stream,
+	SensorDataType & sd,
+	const std::string & paramName)
+{
+	auto orientStream = utils::shared_ptr<QuatStream>(new threadingUtils::StreamAdapterT<StreamType::value_type, QuatStream::value_type, Extractor>(stream));
+
+	auto ow = core::Variant::wrapp<QuatStream>(orientStream);
+	ow->setMetadata("core/name", QObject::tr("Orientation").toStdString());
+	sd.domainData.push_back(ow);
+	domainData.push_back(ow);
+
+	std::vector<core::VariantConstPtr> vecDataObjects;
+	std::list<core::IHierarchyItemPtr> hierarchyItems;
+
+	for (unsigned int j = 0; j < 4; ++j){
+		auto scalarStream = utils::shared_ptr<ScalarStream>(new threadingUtils::StreamAdapterT<QuatStream::value_type, ScalarStream::value_type, CompoundArrayExtractor>(orientStream, CompoundArrayExtractor(j)));
+
+		ow = core::Variant::wrapp<ScalarStream>(scalarStream);
+		ow->setMetadata("core/name", vectorParameterName(j));
+		sd.domainData.push_back(ow);
+		domainData.push_back(ow);
+		vecDataObjects.push_back(ow);
+
+		hierarchyItems.push_back(utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(vectorParameterName(j)), QString::fromStdString(vectorParameterName(j))));
+	}
+
+	auto helper = utils::make_shared<NewStreamQuaternionItemHelper>(ow, vecDataObjects[0], vecDataObjects[1], vecDataObjects[2], vecDataObjects[3], QObject::tr("Orientation"), -1, 1);
+
+	auto imuElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Orientation"), QObject::tr("Orientation"), helper);
+
+	for (auto & hi : hierarchyItems)
+	{
+		imuElement->appendChild(hi);
+	}
+
+	return imuElement;
+}
 
 utils::SamplesStatus::StatusMap createStatusMap()
 {
@@ -901,7 +1010,102 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 
 		for (const auto & sd : profile->sensorsDescriptions)
 		{
+			auto it = std::find_if(joints.begin(), joints.end(), [&sd](kinematic::SkeletonState::JointConstPtr joint)
+			{
+				if (joint != nullptr){
+					if (joint->value.name() == sd.second.jointName){
+						return true;
+					}
+				}
 
+				return false;
+			});
+
+			if (it != joints.end()){
+
+				auto sIT = cData.sensorsData.find(sd.first);
+
+				//TODO
+				//dodać gałąź jointa active!!
+
+				auto stream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::SkeletonStateStream::value_type, JointStream::value_type, JointStreamExtractor>>(sStateStream, JointStreamExtractor(*it));
+				cData.domainData.push_back(core::Variant::wrapp<JointStream>(stream));
+				auto jitem = utils::make_shared<core::HierarchyItem>(QString::fromStdString((*it)->value.name()), QString::fromStdString((*it)->value.name()));
+				item->appendChild(jitem);			
+
+				//global orient
+				{
+					jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalOrientation>(cData.domainData, stream,
+						sIT->second, QObject::tr("Global orientation").toStdString()));
+				}
+
+				//local orient
+				{
+					jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalOrientation>(cData.domainData, stream,
+						sIT->second, QObject::tr("Local orientation").toStdString()));
+				}
+
+				//local pos
+				{
+					jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalPosition>(cData.domainData, stream,
+						sIT->second, QObject::tr("Global position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()));
+				}
+
+				//global pos
+				{
+					jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalPosition>(cData.domainData, stream,
+						sIT->second, QObject::tr("Local position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()));
+				}
+
+				joints.erase(it);
+			}
+		}
+
+		item = utils::make_shared<core::HierarchyItem>(QObject::tr("Inactive joints"), QObject::tr("Joints with no sensors attached"));
+		root->appendChild(item);
+
+		for (const auto & joint : joints){
+
+			auto idIT = std::find_if(profile->sensorsDescriptions.begin(), profile->sensorsDescriptions.end(), [&joint](const IMU::CostumeProfile::SensorsDescriptions::value_type & sd)
+			{
+				return sd.second.jointName == joint->value.name();
+			});
+
+			//TODO
+			//dodać gałąź jointa inactive!!
+			auto sIT = cData.sensorsData.find(idIT->first);
+
+			//TODO
+			//dodać gałąź jointa active!!
+
+			auto stream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::SkeletonStateStream::value_type, JointStream::value_type, JointStreamExtractor>>(sStateStream, JointStreamExtractor(joint));
+			cData.domainData.push_back(core::Variant::wrapp<JointStream>(stream));
+			auto jitem = utils::make_shared<core::HierarchyItem>(QString::fromStdString(joint->value.name()), QString::fromStdString(joint->value.name()));
+			item->appendChild(jitem);
+
+			//global orient
+			{
+				jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalOrientation>(cData.domainData, stream,
+					sIT->second, QObject::tr("Global orientation").toStdString()));
+			}
+
+			//local orient
+			{
+				jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalOrientation>(cData.domainData, stream,
+					sIT->second, QObject::tr("Local orientation").toStdString()));
+			}
+
+			//local pos
+			{
+				jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalPosition>(cData.domainData, stream,
+					sIT->second, QObject::tr("Global position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()));
+			}
+
+			//global pos
+			{
+				jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalPosition>(cData.domainData, stream,
+					sIT->second, QObject::tr("Local position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()));
+			}
 		}
 	}
 
@@ -1344,49 +1548,6 @@ IMUCostumeDataSource::CostumesDetails IMUCostumeDataSource::costumesDetails() co
 	return ret;
 }
 
-template<typename SensorDataType, typename Extractor>
-core::HierarchyDataItemPtr extracImuStreamVector(core::VariantsList & domainData,
-	utils::shared_ptr<IMUStream> imuStream,
-	SensorDataType & sd,
-	const std::string & paramName,
-	const QString & units, const double minY, const double maxY)
-{
-	auto vec3Stream = utils::shared_ptr<IMU::Vec3Stream>(new threadingUtils::StreamAdapterT<IMU::IMUStream::value_type, IMU::Vec3Stream::value_type, Extractor>(imuStream, Extractor()));
-
-	auto ow = core::Variant::create<IMU::Vec3Stream>();
-	ow->setMetadata("core/name", paramName);
-	ow->set(vec3Stream);
-	sd.domainData.push_back(ow);
-	domainData.push_back(ow);
-
-	std::vector<core::VariantConstPtr> vecDataObjects;
-	std::list<core::IHierarchyItemPtr> hierarchyItems;
-
-	for (unsigned int j = 0; j < 3; ++j){
-		auto scalarStream = utils::shared_ptr<ScalarStream>(new threadingUtils::StreamAdapterT<IMU::Vec3Stream::value_type, ScalarStream::value_type, IMU::CompoundArrayExtractor>(vec3Stream, IMU::CompoundArrayExtractor(j)));
-
-		ow = core::Variant::create<ScalarStream>();
-		ow->setMetadata("core/name", vectorParameterName(j));
-		ow->set(scalarStream);
-		sd.domainData.push_back(ow);
-		domainData.push_back(ow);
-		vecDataObjects.push_back(ow);
-
-		hierarchyItems.push_back(utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(paramName), QString::fromStdString(vectorParameterName(j))));
-	}
-
-	auto helper = core::HierarchyHelperPtr(new NewStreamVector3ItemHelper(ow, vecDataObjects[0], vecDataObjects[1], vecDataObjects[2], QString::fromStdString(paramName), units, minY, maxY));
-
-	auto imuElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(paramName), QString::fromStdString(paramName), helper);
-
-	for (auto & hi : hierarchyItems)
-	{
-		imuElement->appendChild(hi);
-	}
-
-	return imuElement;
-}
-
 void IMUCostumeDataSource::unpackSensorsStream(IMU::SensorsStreamPtr stream,
 	SensorsData & sensorsData,
 	core::IHierarchyItemPtr root,
@@ -1412,58 +1573,26 @@ void IMUCostumeDataSource::unpackSensorsStream(IMU::SensorsStreamPtr stream,
 
 		//ACC
 		{
-			imuItem->appendChild(extracImuStreamVector<IMU::IMUCostumeDataSource::SensorData, IMU::IMUAccExtractor>(domainData, imuStream,
+			imuItem->appendChild(extracImuStreamVector<IMUStream, IMU::IMUCostumeDataSource::SensorData, IMU::TimeMemberExtractoraccelerometer>(domainData, imuStream,
 				sd.second, sensorParameterName(0), QString("m/s^2"), -15.0, 15.0));			
 		}
 
 		//GYRO
 		{
-			imuItem->appendChild(extracImuStreamVector<IMU::IMUCostumeDataSource::SensorData, IMU::IMUGyroExtractor>(domainData, imuStream,
+			imuItem->appendChild(extracImuStreamVector<IMUStream, IMU::IMUCostumeDataSource::SensorData, IMU::TimeMemberExtractorgyroscope>(domainData, imuStream,
 				sd.second, sensorParameterName(1), QString("rad/s"), -0.3, 0.3));
 		}
 
 		//MAG
 		{
-			imuItem->appendChild(extracImuStreamVector<IMU::IMUCostumeDataSource::SensorData, IMU::IMUGyroExtractor>(domainData, imuStream,
+			imuItem->appendChild(extracImuStreamVector<IMUStream, IMU::IMUCostumeDataSource::SensorData, IMU::TimeMemberExtractormagnetometer>(domainData, imuStream,
 				sd.second, sensorParameterName(2), "", -2.5, 2.5));
 		}
 
 		//ORIENT
 		{
-			auto orientStream = utils::shared_ptr<QuatStream>(new threadingUtils::StreamAdapterT<IMU::IMUStream::value_type, QuatStream::value_type, IMU::IMUOrientExtractor>(imuStream, IMU::IMUOrientExtractor()));
-
-			ow = core::Variant::create<QuatStream>();
-			ow->setMetadata("core/name", QObject::tr("Orientation").toStdString());
-			ow->set(orientStream);
-			sd.second.domainData.push_back(ow);
-			domainData.push_back(ow);
-
-			std::vector<core::VariantConstPtr> vecDataObjects;
-			std::list<core::IHierarchyItemPtr> hierarchyItems;			
-
-			for (unsigned int j = 0; j < 4; ++j){
-				auto scalarStream = utils::shared_ptr<ScalarStream>(new threadingUtils::StreamAdapterT<QuatStream::value_type, ScalarStream::value_type, CompoundArrayExtractor>(orientStream, CompoundArrayExtractor(j)));
-
-				ow = core::Variant::create<ScalarStream>();
-				ow->setMetadata("core/name", vectorParameterName(j));
-				ow->set(scalarStream);
-				sd.second.domainData.push_back(ow);
-				domainData.push_back(ow);
-				vecDataObjects.push_back(ow);
-
-				hierarchyItems.push_back(utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(vectorParameterName(j)), QString::fromStdString(vectorParameterName(j))));
-			}			
-
-			auto helper = core::HierarchyHelperPtr(new NewStreamQuaternionItemHelper(ow, vecDataObjects[0], vecDataObjects[1], vecDataObjects[2], vecDataObjects[3], QObject::tr("Orientation"), -1, 1));
-
-			auto imuElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Orientation"), QObject::tr("Orientation"), helper);
-
-			for (auto & hi : hierarchyItems)
-			{
-				imuElement->appendChild(hi);
-			}
-
-			imuItem->appendChild(imuElement);
-		}		
+			imuItem->appendChild(extracImuStreamQuat<IMUStream, IMU::IMUCostumeDataSource::SensorData, IMU::TimeMemberExtractororientation>(domainData, imuStream,
+				sd.second, QObject::tr("Orientation").toStdString()));
+		}	
 	}
 }

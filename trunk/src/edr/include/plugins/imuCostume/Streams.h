@@ -103,6 +103,7 @@ DEFINE_WRAPPER_INHERITANCE(IMU::RawDataStream, threadingUtils::IStreamT<imuCostu
 DEFINE_WRAPPER(IMU::CANopenFramesStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
 DEFINE_WRAPPER(IMU::CostumeStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
 DEFINE_WRAPPER(IMU::MotionStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(IMU::JointStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
 DEFINE_WRAPPER(IMU::CostumeSkeletonMotion, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
 DEFINE_WRAPPER(IMU::SkeletonStateStream, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
 

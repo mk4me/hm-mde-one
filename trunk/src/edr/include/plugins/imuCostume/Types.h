@@ -35,7 +35,7 @@ namespace IMU
 		osg::Vec3d gyroscope;
 		//! Magnetometr
 		osg::Vec3d magnetometer;
-	};
+	};	
 
 	//! Agregacja danych z sensorów
 	typedef std::map<imuCostume::Costume::SensorID, SensorData> SensorsData;
@@ -61,6 +61,30 @@ namespace IMU
 		//! Lokalna pozycja
 		osg::Vec3d globalPosition;
 	};
+
+#define TIMEMEMBER_EXTRACTOR_NAME(memberName) \
+	TimeMemberExtractor##memberName
+
+#define TIMEMEMBER_EXTRACTOR(memberName) \
+class TIMEMEMBER_EXTRACTOR_NAME(memberName){\
+public:\
+	template<typename SrcType>\
+	inline static bool verify(const SrcType &) { return true; }\
+	template<typename SrcType, typename DestType = SrcType::second_type>\
+	inline static void extract(const SrcType & src, DestType & dest){\
+		dest.first = src.first;\
+		dest.second = src.second.memberName;\
+	}\
+};
+
+#define TIMEMEMBER_ADAPTER_NAME(baseType, memberName) \
+	TimeMemberAdapter##baseType##memberName
+
+#define TIMEMEMBER_ADAPTER_EXT(baseType, destType, memberName) \
+typedef StreamAdapterT<baseType, destType, TIMEMEMBER_EXTRACTOR_NAME(memberName)> TIMEMEMBER_ADAPTER_NAME(baseType,memberName);
+
+#define TIMEMEMBER_ADAPTER(baseType, memberName) \
+	TIMEMEMBER_ADAPTER_EXT(baseType, decltype(std::declval<baseType>().second.memberName), memberName);
 }
 
 #endif	// __HEADER_GUARD_IMU__TYPES_H__

@@ -26,8 +26,8 @@ namespace IMU
 			return true;
 		}
 		//! \tparam Src Typ Ÿród³owy
-		template<typename Src>
-		inline static void extract(const Src & timeData, typename Src::second_type & data)
+		template<typename Src, typename Dest = Src::second_type>
+		inline static void extract(const Src & timeData, typename Dest & data)
 		{
 			data = timeData.second;
 		}
@@ -117,7 +117,7 @@ namespace IMU
 	{
 	public:
 		//! \param idx Index obiketu który chcemy wypakowywaæ z wektora
-		ArrayExtractor(const unsigned int idx);
+		ArrayExtractor(const std::size_t idx);
 		//! \param Other Inny kopiowany extractor
 		ArrayExtractor(const ArrayExtractor & Other);
 		//! Destruktor
@@ -144,7 +144,7 @@ namespace IMU
 
 	private:
 		//! Indeks spod którego wybieramy dane z wektora
-		const unsigned int idx;
+		const std::size_t idx;
 	};
 
 	//! Klasa pozwalaj¹ca wypakowywaæ dane z wektorów
@@ -152,7 +152,7 @@ namespace IMU
 	{
 	public:
 		//! \param idx Index obiketu który chcemy wypakowywaæ z wektora
-		CompoundArrayExtractor(const unsigned int idx);
+		CompoundArrayExtractor(const std::size_t idx);
 		//! \param Other Inny kopiowany extractor
 		CompoundArrayExtractor(const CompoundArrayExtractor & Other);
 		//! Destruktor
@@ -180,7 +180,7 @@ namespace IMU
 
 	private:
 		//! Indeks spod którego wybieramy dane z wektora
-		const unsigned int idx;
+		const std::size_t idx;
 	};
 
 
@@ -274,7 +274,13 @@ namespace IMU
 		void extract(const IMU::RawDataStream::value_type & in, IMU::CANopenFramesStream::value_type & out) const;
 	};
 
-	class IMUAccExtractor
+	TIMEMEMBER_EXTRACTOR(accelerometer);
+	TIMEMEMBER_EXTRACTOR(magnetometer);
+	TIMEMEMBER_EXTRACTOR(gyroscope);
+	TIMEMEMBER_EXTRACTOR(orientation);
+
+
+	/*class IMUAccExtractor
 	{
 	public:
 		bool verify(const IMU::IMUStream::value_type & a)
@@ -332,7 +338,7 @@ namespace IMU
 			ret.first = a.first;
 			ret.second = a.second.orientation;
 		}
-	};
+	};*/
 
 	class IMUExtractor
 	{

@@ -612,7 +612,7 @@ namespace threadingUtils {
 		StreamStatusObserverPtr sourceStreamObserver;
 		//! Czy należy przetworzyć dane czy zostały już przetworzone
 		volatile mutable bool processReuired;
-	};
+	};	
 
 	//! Klasa zmieniająca reprezentację strumienia
 	template<typename Base, typename Dest, typename Extractor>
@@ -774,5 +774,42 @@ namespace threadingUtils {
 		mutable volatile bool unpackRequired_;
 	};
 }
+
+//! Makro definiujące nazwę extractora pola
+//! \param memberName Nazwa wypakowywanego pola
+#define MEMBER_EXTRACTOR_NAME(memberName) \
+	MemberExtractor##memberName
+
+//! Makro definiujące klasę wypakowującą zadane pole
+//! \param memberName Nazwa wypakowywanego pola
+#define MEMBER_EXTRACTOR(memberName) \
+class MEMBER_EXTRACTOR_NAME(memberName){\
+public:\
+	template<typename SrcType>\
+	inline static bool verify(const SrcType &) { return true; }\
+	template<typename SrcType, typename DestType>\
+	inline static void extract(const SrcType & src, DestType & dest){\
+		dest = src.memberName;\
+	}\
+};
+
+//! Makro definiujące nazwę adaptera dla zadanej klasy bazowej i pola
+//! \param baseType Typ bazowy z którego wyciągamy pole
+//! \param memberName Nazwa wypakowywanego pola
+#define MEMBER_ADAPTER_NAME(baseType, memberName) \
+	MemberAdapter##baseType##memberName
+
+//! Makro definiujące adapter dla wyciąganego pola
+//! \param baseType Typ bazowy z którego wyciągamy pole
+//! \param destType Typ docelowy jeśli chcemy wymusić dostępną konwersję
+//! \param memberName Nazwa wypakowywanego pola
+#define MEMBER_ADAPTER_EXT(baseType, destType, memberName) \
+typedef StreamAdapterT<baseType, destType, MEMBER_EXTRACTOR_NAME(memberName)> MEMBER_ADAPTER_NAME(baseType,memberName);
+
+//! Makro definiujące adapter dla wyciąganego pola
+//! \param baseType Typ bazowy z którego wyciągamy pole
+//! \param memberName Nazwa wypakowywanego pola
+#define MEMBER_ADAPTER(baseType, memberName) \
+	MEMBER_ADAPTER_EXT(baseType, decltype(std::declval<baseType>().memberName), memberName);
 
 #endif	//	HEADER_GUARD_THREADINGUTILS__STREAMDATABASE_H__
