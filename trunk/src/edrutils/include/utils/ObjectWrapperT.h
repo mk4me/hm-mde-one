@@ -15,15 +15,15 @@
 
 namespace utils
 {
-	//! Pomocniczy typ bazowy, zarz¹dzaj¹cy obiektem za pomoc¹ parametru
-	//! PtrPolicy. Tego typu nigdy nie u¿ywa siê wprost.
+	//! Pomocniczy typ bazowy, zarzï¿½dzajï¿½cy obiektem za pomocï¿½ parametru
+	//! PtrPolicy. Tego typu nigdy nie uï¿½ywa siï¿½ wprost.
 	template <typename T>
 	class __ObjectWrapperT : public ObjectWrapper
 	{
 	public:
 		//! Typ wrapowanych danych
 		typedef T Type;
-		//! Pe³ny typ aktualnego wrappera
+		//! Peï¿½ny typ aktualnego wrappera
 		typedef __ObjectWrapperT<Type> ImplType;
 
 	private:
@@ -47,8 +47,8 @@ namespace utils
 
 	private:
 
-		//! \param dest ObjectWrapper do którego chcemy kopiowaæ dane
-		//! \return WskaŸnik na ObjectWrapper mojego typu lub rzuca wyj¹tkiem
+		//! \param dest ObjectWrapper do ktï¿½rego chcemy kopiowaï¿½ dane
+		//! \return Wskaï¿½nik na ObjectWrapper mojego typu lub rzuca wyjï¿½tkiem
 		static ImplType * __getMe(ObjectWrapper & dest)
 		{
 			auto cloned = dynamic_cast<ImplType*>(&dest);
@@ -60,7 +60,7 @@ namespace utils
 			return cloned;
 		}
 
-		//! \param cloned WskaŸnik na ObjectWrapper mojego typu
+		//! \param cloned Wskaï¿½nik na ObjectWrapper mojego typu
 		//! \param co Typ klonowania
 		void __cloneImpl(ImplType * cloned, const ObjectWrapper::CloneOp co) const
 		{
@@ -180,12 +180,12 @@ namespace utils
 		}	
 	};
 
-	//! Deklaracja typu. Trzeba go specjalizowaæ za pomoc¹ makr. Ta wersja bêdzie
-	//! rzucaæ statyczn¹ asercj¹.
+	//! Deklaracja typu. Trzeba go specjalizowaï¿½ za pomocï¿½ makr. Ta wersja bï¿½dzie
+	//! rzucaï¿½ statycznï¿½ asercjï¿½.
 	template <typename T>
 	class ObjectWrapperT : public ObjectWrapper
 	{
-		static_assert(sizeof(T) == 0, "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");	
+		static_assert(sizeof(T) == 0, "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperï¿½w");	
 	};
 }
 
@@ -199,7 +199,7 @@ public:\
 	static const std::string className(){\
 		return #typeT;\
 	}\
-	static ObjectWrapperPtr create(){\
+	static ObjectWrapperPtr createS(){\
 		return ObjectWrapperPtr(new ObjectWrapperT);\
 	}\
 	static ObjectWrapperPtr wrapp(ObjectWrapperTraits<typeT>::Ptr data){\

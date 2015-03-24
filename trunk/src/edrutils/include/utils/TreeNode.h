@@ -15,6 +15,82 @@
 
 namespace utils
 {
+
+	//! Klasa wizytująca, zliczająca ilość węzłów drzewa
+	class TreeSizeVisitor
+	{
+	public:
+
+		//! Konstruktor domyslny
+		TreeSizeVisitor() : treeSize_(0) {}
+		//! Destruktor
+		~TreeSizeVisitor() {}
+
+		//! \tparam NPtr Typ wska�nika w�z�a
+		template<typename NPtr>
+		//! \param node odwiedzany w�ze�
+		void operator()(NPtr node)
+		{
+			++treeSize_;
+		}
+
+		//! Resetuje licznik
+		void reset()
+		{
+			treeSize_ = 0;
+		}
+
+		//! \return Ilość węzłów drzewa
+		std::size_t treeSize() const
+		{
+			return treeSize_;
+		}
+
+	private:
+
+		//! Ilość węzłów w drzewie
+		std::size_t treeSize_;
+	};
+
+	//! \tparam NPtr Typ wska�nika w�z�a
+		template<typename NPtr>
+		//! Klasa linearyzująca drzewo
+		class TreeLinearizeVisitor
+		{
+			//! Typ zlinearyzowanego drzewa
+			typedef std::list<NPtr> LinearizedTree;
+
+		public:
+
+			//! Konstruktor domyslny
+			TreeLinearizeVisitor() {}
+			//! Destruktor
+			~TreeLinearizeVisitor() {}
+
+			//! \param node odwiedzany w�ze�
+			void operator()(NPtr node)
+			{
+				linearizedTree_.push_back(node);
+			}
+
+			//! \return Zlinearyzowane drzewo
+			const LinearizedTree linearizedTree() const
+			{
+				return linearizedTree_;
+			}
+
+			//! Czyści zlinearyzowaną reprezentacje drzewa
+			void reset()
+			{
+				LinearizedTree().swap(linearizedTree_);
+			}
+
+		private:
+
+			//! Zlinearyzowane drzewo
+			LinearizedTree linearizedTree_;
+		};
+
 	struct TreeNode
 	{
 		//! Typ rozmiaru
@@ -203,7 +279,7 @@ namespace utils
 				}
 			}
 			else{
-				Path<NPtr> ret
+				Path<NPtr> ret;
 				ret.push_back(startNode);
 				return ret;
 			}			
@@ -388,80 +464,8 @@ namespace utils
 		}
 	};
 
-	//! Klasa wizytująca, zliczająca ilość węzłów drzewa
-	class TreeSizeVisitor
-	{
-	public:
 
-		//! Konstruktor domyslny
-		TreeSizeVisitor() : treeSize_(0) {}
-		//! Destruktor
-		~TreeSizeVisitor() {}
 
-		//! \tparam NPtr Typ wska�nika w�z�a
-		template<typename NPtr>
-		//! \param node odwiedzany w�ze�
-		void operator()(NPtr node)
-		{
-			++treeSize_;
-		}
-
-		//! Resetuje licznik
-		void reset()
-		{
-			treeSize_ = 0;
-		}
-
-		//! \return Ilość węzłów drzewa
-		TreeNode::SizeType treeSize() const
-		{
-			return treeSize_;
-		}
-
-	private:
-
-		//! Ilość węzłów w drzewie
-		TreeNode::SizeType treeSize_;
-	};
-
-	//! \tparam NPtr Typ wska�nika w�z�a
-	template<typename NPtr>
-	//! Klasa linearyzująca drzewo
-	class TreeLinearizeVisitor
-	{
-		//! Typ zlinearyzowanego drzewa
-		typedef TreeNode::Path<NPtr> LinearizedTree;
-
-	public:
-
-		//! Konstruktor domyslny
-		TreeLinearizeVisitor() {}
-		//! Destruktor
-		~TreeLinearizeVisitor() {}
-
-		//! \param node odwiedzany w�ze�
-		void operator()(NPtr node)
-		{
-			linearizedTree_.push_back(node);
-		}
-
-		//! \return Zlinearyzowane drzewo
-		const LinearizedTree linearizedTree() const
-		{
-			return linearizedTree_;
-		}
-
-		//! Czyści zlinearyzowaną reprezentacje drzewa
-		void reset()
-		{
-			LinearizedTree().swap(linearizedTree_);
-		}
-
-	private:
-
-		//! Zlinearyzowane drzewo
-		LinearizedTree linearizedTree_;
-	};
 
 	//! Klasa wizytująca szukająca najgłebszego poziomu drzewa
 	class FindMaxLevelVisitor

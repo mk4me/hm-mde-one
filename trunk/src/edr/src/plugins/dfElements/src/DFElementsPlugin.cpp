@@ -171,7 +171,7 @@ CORE_PLUGIN_BEGIN("DFElements", core::UID::GenerateUniqueID("{678727A0-ED31-43CA
 
 
 		VDF_ADD_DATA_PROCESSOR(
-			ScalarDummy, 
+			ScalarDummy,
 			".Normalization",
 			"{3B6D7C28-C681-4A76-B1F9-77AA58AA4899}",
 			QIcon(":/dfElements/icons/normalizeV.png"));

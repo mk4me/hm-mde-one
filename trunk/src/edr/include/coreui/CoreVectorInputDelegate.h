@@ -26,6 +26,7 @@
 #include <coreui/CoreLabeledWidget.h>
 #include <QtWidgets/QFileDialog>
 #include <utils/StringConversionTools.h>
+#include <numeric>
 
 namespace coreUI
 {
@@ -339,8 +340,7 @@ namespace coreUI
 		}
 
 		template<typename VectorType>
-		static QString vectorToString(const VectorType & vector,
-			const QString & vecPattern = vectorPattern(vector.size()))
+		static QString vectorToString(const VectorType & vector, const QString & vecPattern)
 		{
 			QString ret(vecPattern);
 
@@ -350,6 +350,12 @@ namespace coreUI
 			}
 
 			return ret;
+		}
+
+		template<typename VectorType>
+				static QString vectorToString(const VectorType & vector)
+		{
+			return vectorToString(vector, vectorPattern(vector.size()));
 		}
 
 		template<typename T, std::size_t N>
@@ -382,7 +388,7 @@ namespace coreUI
 
 		template<typename T>
 		static QString vectorToString(const T * array,
-			const std::size_t N, const QString & vecPattern = vectorPattern(N))
+			const std::size_t N, const QString & vecPattern )
 		{
 			QString ret(vecPattern);
 
@@ -392,6 +398,12 @@ namespace coreUI
 			}
 
 			return ret;
+		}
+
+		template<typename T>
+				static QString vectorToString(const T * array, const std::size_t N)
+		{
+			return vectorToString(array, N, vectorPattern(N));
 		}
 
 	signals:
