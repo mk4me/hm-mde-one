@@ -115,13 +115,8 @@ bool Plugin::lateInitialize()
 
 void Plugin::deinitialize()
 {
-	if (deinitFunc != nullptr){
-		try{
-			deinitFunc();
-		}
-		catch (...){
-
-		}
+	if (deinitFunc != nullptr){		
+		deinitFunc();		
 	}
 }
 

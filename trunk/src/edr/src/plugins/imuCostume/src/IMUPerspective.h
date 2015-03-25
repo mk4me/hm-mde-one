@@ -49,15 +49,15 @@ public:
 
 	static void createIMUBranch(core::ConstVariantsList &oList, core::HierarchyItemPtr root);
 
-	static core::IHierarchyItemPtr createChannelItem(VectorChannelCollectionPtr collection, int i, const QString& name);
+	static core::IHierarchyItemPtr createChannelItem(c3dlib::VectorChannelCollectionPtr collection, int i, const QString& name);
 
-	static core::IHierarchyItemPtr createImuCollectionItem(int i, VectorChannelCollectionConstPtr collection);
+	static core::IHierarchyItemPtr createImuCollectionItem(int i, c3dlib::VectorChannelCollectionConstPtr collection);
 
     //core::HierarchyDataItemPtr tryGetHierarchyItem(const std::string& filename);
 
 private:
 	static std::string generateChannelName(const IMU::IMUConfig&, int i);
-	static VectorChannelPtr createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit = std::string());
+	static c3dlib::VectorChannelPtr createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit = std::string());
 	//void generateAnglesChannelBranch(kinematic::JointAnglesCollectionPtr ja, core::IHierarchyItemPtr skeletonItem);
 private:
     std::map<std::string, core::HierarchyDataItemWeakPtr> name2hierarchy;

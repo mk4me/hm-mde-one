@@ -32,6 +32,8 @@ private:
 		PluginPtr plugin;
 		//! Wskaźnik do dedykowanej implementacji interfejcu core::IApplication
 		utils::shared_ptr<IApplication> coreApplication;
+		//! Identyfikator
+		std::string identyfier;
 		//! Uchwyt do biblioteki
 		HMODULE handle;
 	};
@@ -47,16 +49,19 @@ private:
 	mutable std::mutex sync;
 
 public:
+	//! \param pluginsPath Ścieżka do pluginów
     PluginLoader(const Filesystem::Path & pluginsPath);
-    virtual ~PluginLoader();
+	//! Destruktor
+    ~PluginLoader();
 
-public:
     //! Czyści pluginy
     void clear();
     //! Ładuje pluginy.
     void load();
-	//deinicjalizujemy pluginy
+	//! deinicjalizujemy pluginy
 	void deinitialize();
+	//! czysci pluginy
+	void reset();
 
 	//! \param path Ścieżka gdzie szukać wtyczek
 	void addPath(const Filesystem::Path& path)
@@ -124,6 +129,9 @@ public:
 
 
 private:
+
+	static std::string pluginIdentyfier(const std::string & name,
+		const core::Filesystem::Path & path, const core::UniqueID & id);
     //!
     //! \param path Ścieżka biblioteki z pluginem
     bool addPlugIn(const Filesystem::Path& path);

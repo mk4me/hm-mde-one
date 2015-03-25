@@ -561,8 +561,8 @@ Application::~Application()
 		memoryDataManager_.reset();
 		CORE_LOG_INFO("Releasing hierarchy data manager");
 		dataHierarchyManager_.reset();
-		CORE_LOG_INFO("Releasing plugins");
-		pluginLoader_.reset();
+		CORE_LOG_INFO("Reseting plugins");
+		pluginLoader_->reset();
 
 		CORE_LOG_INFO("Releasing job manager");
 		jobManager_.reset();
@@ -578,6 +578,11 @@ Application::~Application()
 
 		CORE_LOG_INFO("Cleaning UI context");
 		uiApplication_.reset();
+
+		CORE_LOG_INFO("Unloading plugins shared libraries");
+		pluginLoader_->clear();
+		CORE_LOG_INFO("Reseting plugin loader");
+		pluginLoader_.reset();
 
 		CORE_LOG_INFO("Cleaning tmp files");
 		Filesystem::deleteDirectory(getPaths()->getTmpPath());

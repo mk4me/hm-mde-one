@@ -179,9 +179,8 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 			const auto id = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
 
 			menu.addSeparator();
-
-			auto load = menu.addAction(tr("Load"));			
-			auto loadMenu = new QMenu();
+					
+			auto loadMenu = menu.addMenu(tr("Load"));
 
 			auto newProfileLoad = loadMenu->addAction(tr("New profile"));
 			
@@ -195,8 +194,6 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 					connect(a, SIGNAL(triggered()), this, SLOT(onLoadProfile()));
 				}
 			}
-
-			load->setMenu(loadMenu);
 
 			auto unload = menu.addAction(tr("Unload"));
 			auto setSamplingRate = menu.addAction(tr("Set sampling rate"));
@@ -214,7 +211,7 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 			}
 			else{
 				connect(unload, SIGNAL(triggered()), this, SLOT(onUnload()));
-				load->setEnabled(false);
+				loadMenu->setEnabled(false);
 				setSamplingRate->setEnabled(false);
 				rsConfig->setEnabled(false);
 				resetStatus->setEnabled(false);
@@ -331,14 +328,14 @@ void IMUCostumeWidget::onLoadNewProfile()
 		return;
 	}
 
-	IMUCostumeProfileEditionWizard * ew = new IMUCostumeProfileEditionWizard(cit->second,
+	IMUCostumeProfileEditionWizard ew(cit->second,
 		ds->orientationEstimationAlgorithms(),
 		ds->calibrationAlgorithms(),
 		ds->motionEstimationAlgorithms(),
 		ds->skeletonModels(),
 		tr("New profile"), this);
 
-	auto res = ew->exec();
+	auto res = ew.exec();
 
 	if (res != QDialog::Accepted){
 		return;
@@ -346,7 +343,7 @@ void IMUCostumeWidget::onLoadNewProfile()
 
 	auto profiles = ds->costumesProfiles();
 
-	auto profile = utils::make_shared<IMU::CostumeProfile>(ew->costumeProfile());
+	auto profile = utils::make_shared<IMU::CostumeProfile>(ew.costumeProfile());
 
 	res = QMessageBox::question(this, tr("Save new profile"), tr("Would You like to save new profile?"));
 

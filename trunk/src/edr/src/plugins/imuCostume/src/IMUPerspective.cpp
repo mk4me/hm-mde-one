@@ -26,12 +26,13 @@
 #include <kinematicUtils/RotationConverter.h>
 #include <iomanip>
 #include <boost/lexical_cast.hpp>
+#include <plugins/c3d/C3DChannels.h>
 
 typedef core::Filesystem fs;
 
-VectorChannelPtr IMU::IMUPerspective::createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit)
+c3dlib::VectorChannelPtr IMU::IMUPerspective::createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit)
 {
-	auto c = utils::make_shared<VectorChannel>((float)hz);
+	auto c = utils::make_shared<c3dlib::VectorChannel>((float)hz);
     // + 1 , bo numeracja w plikach *.cfg zaczyna si� od 1
     c->setName(generateChannelName(config, i + 1));
 	c->setValueBaseUnit(unit);
@@ -75,10 +76,10 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
             
 			core::HierarchyItemPtr motionItem(new core::HierarchyItem(QString::fromStdString(ss.str()), QString()));
 			sessionItem->appendChild(motionItem);
-            if (motion->hasObject(typeid(VectorChannelCollection), false)) {
+			if (motion->hasObject(typeid(c3dlib::VectorChannelCollection), false)) {
                 core::ConstVariantsList vectors;
 				hasData = true;
-				motion->getObjects(vectors, typeid(VectorChannelCollection), false);
+				motion->getObjects(vectors, typeid(c3dlib::VectorChannelCollection), false);
 				createIMUBranch(vectors, motionItem);
             }
 
@@ -143,7 +144,7 @@ void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &oList, core::
 {
 	int i = 0;
 	for (auto it = oList.begin(); it != oList.end(); ++i, ++it) {
-		VectorChannelCollectionConstPtr collection = (*it)->get();
+		c3dlib::VectorChannelCollectionConstPtr collection = (*it)->get();
 		if (collection) {
 			auto collectionItem = createImuCollectionItem(i, collection);
 			root->appendChild(collectionItem);
@@ -153,13 +154,13 @@ void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &oList, core::
 
 void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &framesV, IMU::IMUConfigConstPtr config, const std::string& sourceName, core::HierarchyItemPtr sessionItem, core::IMemoryDataManager * memoryDataManager)
 {
-	auto accWrapper = utils::ObjectWrapper::create<VectorChannelCollection>();
-	auto magWrapper = utils::ObjectWrapper::create<VectorChannelCollection>();
-	auto gyrWrapper = utils::ObjectWrapper::create<VectorChannelCollection>();
+	auto accWrapper = utils::ObjectWrapper::create<c3dlib::VectorChannelCollection>();
+	auto magWrapper = utils::ObjectWrapper::create<c3dlib::VectorChannelCollection>();
+	auto gyrWrapper = utils::ObjectWrapper::create<c3dlib::VectorChannelCollection>();
 
-	VectorChannelCollectionPtr accelerations = utils::make_shared<VectorChannelCollection>();
-	VectorChannelCollectionPtr magnetometers = utils::make_shared<VectorChannelCollection>();
-	VectorChannelCollectionPtr gyroscopes = utils::make_shared<VectorChannelCollection>();
+	auto accelerations = utils::make_shared<c3dlib::VectorChannelCollection>();
+	auto magnetometers = utils::make_shared<c3dlib::VectorChannelCollection>();
+	auto gyroscopes = utils::make_shared<c3dlib::VectorChannelCollection>();
 
 	// todo przeniesc te hz do configa?
 	int hz = 50;
@@ -197,13 +198,13 @@ void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &framesV, IMU:
 	{
 		core::VariantsList objects;
 
-		auto _lambda = [&](VectorChannelCollectionPtr collection, const std::string& groupName)
+		auto _lambda = [&](c3dlib::VectorChannelCollectionPtr collection, const std::string& groupName)
 		{
 			int count = collection->getNumChannels();
 			for (int i = 0; i < count; ++i) {
-				VectorChannelPtr channel = collection->getChannel(i);
+				c3dlib::VectorChannelPtr channel = collection->getChannel(i);
 
-				core::VariantPtr wrapper = core::Variant::create<VectorChannel>();
+				core::VariantPtr wrapper = core::Variant::create<c3dlib::VectorChannel>();
 				wrapper->setMetadata("core/name", channel->getName());
 				wrapper->setMetadata("core/source", sourceName + std::string("/") + groupName);
 				wrapper->set(channel);
@@ -242,7 +243,7 @@ void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &framesV, IMU:
 	sessionItem->appendChild(gyrItem);*/
 }
 
-core::IHierarchyItemPtr IMU::IMUPerspective::createImuCollectionItem(int i, VectorChannelCollectionConstPtr collection)
+core::IHierarchyItemPtr IMU::IMUPerspective::createImuCollectionItem(int i, c3dlib::VectorChannelCollectionConstPtr collection)
 {
 	QString name;
 	switch (i) {
@@ -253,9 +254,9 @@ core::IHierarchyItemPtr IMU::IMUPerspective::createImuCollectionItem(int i, Vect
 	}
 	auto collectionItem = utils::make_shared<core::HierarchyItem>(name, QString());
 	for (int j = 0; j < collection->getNumChannels(); ++j) {
-		core::VariantPtr wrapper = core::Variant::create<VectorChannel>();
-		VectorChannelConstPtr c = collection->getChannel(j);
-		wrapper->set(utils::const_pointer_cast<VectorChannel>(c));
+		core::VariantPtr wrapper = core::Variant::create<c3dlib::VectorChannel>();
+		c3dlib::VectorChannelConstPtr c = collection->getChannel(j);
+		wrapper->set(utils::const_pointer_cast<c3dlib::VectorChannel>(c));
 		static int number = 0;
 		wrapper->setMetadata("name", "Serie_" + boost::lexical_cast<std::string>(number++));
 		wrapper->setMetadata("source", "TreeBuilder");
@@ -285,11 +286,11 @@ std::string IMU::IMUPerspective::generateChannelName(const IMU::IMUConfig& conf,
 	return unknown.toStdString();
 }
 
-core::IHierarchyItemPtr IMU::IMUPerspective::createChannelItem(VectorChannelCollectionPtr collection, int i, const QString& name)
+core::IHierarchyItemPtr IMU::IMUPerspective::createChannelItem(c3dlib::VectorChannelCollectionPtr collection, int i, const QString& name)
 {
-	core::VariantPtr wrapper = core::Variant::create<VectorChannel>();
-	VectorChannelConstPtr c = collection->getChannel(i);
-	wrapper->set(utils::const_pointer_cast<VectorChannel>(c));
+	core::VariantPtr wrapper = core::Variant::create<c3dlib::VectorChannel>();
+	c3dlib::VectorChannelConstPtr c = collection->getChannel(i);
+	wrapper->set(utils::const_pointer_cast<c3dlib::VectorChannel>(c));
 	static int number = 0;
 	wrapper->setMetadata("name", "Serie_" + boost::lexical_cast<std::string>(number++));
 	wrapper->setMetadata("source", "TreeBuilder");

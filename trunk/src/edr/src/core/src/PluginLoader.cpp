@@ -34,11 +34,48 @@ PluginLoader::~PluginLoader()
     unloadPlugins();
 }
 
+std::string PluginLoader::pluginIdentyfier(const std::string & name,
+	const core::Filesystem::Path & path, const core::UniqueID & id)
+{
+	std::stringstream ss;
+	ss << name << " (ID: " << id << ") from " << path.string();
+	return ss.str();
+}
+
 void PluginLoader::deinitialize()
 {
 	for (auto & p : plugins)
-	{		
-		p.plugin->deinitialize();		
+	{
+		try{
+			CORE_LOG_DEBUG("Deinitializing plugin " << p.identyfier);
+			p.plugin->deinitialize();
+			CORE_LOG_DEBUG("Plugin deinitialized successfuly");
+		}
+		catch (std::exception & e){
+			CORE_LOG_DEBUG("Failed to deinitialized plugin: " << e.what());
+		}
+		catch (...){
+			CORE_LOG_DEBUG("Failed to deinitialized plugin with UNKNOWN error");
+		}
+	}
+}
+
+void PluginLoader::reset()
+{
+	for (auto & p : plugins)
+	{
+		try{
+			CORE_LOG_DEBUG("Reseting plugin " << p.identyfier);
+			p.plugin.reset();
+			CORE_LOG_DEBUG("Plugin reset successfuly");
+
+		}
+		catch (std::exception & e){
+			CORE_LOG_DEBUG("Failed to reset plugin: " << e.what());
+		}
+		catch (...){
+			CORE_LOG_DEBUG("Failed to reset plugin with UNKNOWN error");
+		}
 	}
 }
 
@@ -47,13 +84,9 @@ void PluginLoader::clear()
     // wyczyszczenie ścieżek
     Paths().swap(paths);
 
-	for(auto it = plugins.begin(); it != plugins.end(); ++it)
-	{
-		CORE_LOG_DEBUG("Unloading plugin " << (*it).plugin->ID() << " name " << (*it).plugin->name() << " from " << (*it).plugin->getPath());
-		(*it).plugin.reset();
-		unloadSharedLibrary((*it).handle);
-		(*it).coreApplication.reset();
-		CORE_LOG_DEBUG("Plugin unloaded successfully");
+	for(auto & p : plugins)
+	{	
+		unloadSharedLibrary(p.handle);		
 	}
 
 	Plugins().swap(plugins);
@@ -283,8 +316,8 @@ bool PluginLoader::onAddPlugin(PluginPtr plugin, HMODULE library, Plugin::Initia
     if(pluginIDFound == false){	
 
         plugins.push_back( pData );
-
-        CORE_LOG_INFO("Successfully loaded plugin " << plugin->getPath());
+		pData.identyfier = pluginIdentyfier(pData.plugin->name(), pData.plugin->getPath(), pData.plugin->ID());
+        CORE_LOG_INFO("Successfully loaded plugin " << pData.identyfier);
 
     }else{
         CORE_LOG_WARNING("Plugin with given ID " << pData.plugin->ID() << " already exist. Plugin " << plugin->getPath() << " NOT loaded to application! Collision with plugin loaded from: " << collidingPlugin->getPath() );
