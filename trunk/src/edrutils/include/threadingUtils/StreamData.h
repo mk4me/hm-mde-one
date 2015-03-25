@@ -275,7 +275,7 @@ namespace threadingUtils {
 
 			data_ = data;
 
-			notify();
+			this->notify();
 		}
 
 		//! \param data Data received from the stream
@@ -291,7 +291,7 @@ namespace threadingUtils {
 
 			data_ = std::move(data);
 
-			notify();
+			this->notify();
 		}
 
 		//! Destruktor wirtualny
@@ -436,11 +436,11 @@ namespace threadingUtils {
 
 			if (filter(bd) == true){
 				currentData_ = bd;
-				if (buffersAttached() == true){					
+				if (this->buffersAttached() == true){
 					pushBufferData(currentData_);
 				}
 
-				notify();
+				this->notify();
 			}
 		}
 
@@ -590,7 +590,7 @@ namespace threadingUtils {
 			
 			baseStream_->data(currentData_);
 
-			if (buffersAttached() == true){
+			if (this->buffersAttached() == true){
 				process();
 				pushBufferData(currentData_);
 			}
@@ -598,7 +598,7 @@ namespace threadingUtils {
 				processReuired = true;
 			}
 
-			notify();		
+			this->notify();
 		}
 
 	private:
@@ -745,7 +745,7 @@ namespace threadingUtils {
 			baseStream_->data(bd);
 
 			if (extractor_.verify(bd) == true){
-				if (buffersAttached() == true){
+				if (this->buffersAttached() == true){
 					extractor_.extract(bd, currentData_);
 					unpackRequired_ = false;
 					pushBufferData(currentData_);					
@@ -755,7 +755,7 @@ namespace threadingUtils {
 					baseData_ = bd;
 				}
 
-				notify();
+				this->notify();
 			}
 		}
 

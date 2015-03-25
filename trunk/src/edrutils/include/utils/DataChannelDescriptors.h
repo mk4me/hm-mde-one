@@ -312,13 +312,13 @@ namespace utils {
 		virtual void addPoint(time_type time, point_type_const_reference point)
 		{
 			impl.addPoint(time, point);
-			notify();
+			this->notify();
 		}
 
 		virtual void addPoint(point_type_const_reference point)
 		{
 			impl.addPoint(point);
-			notify();
+			this->notify();
 		}
 
 		//! \return

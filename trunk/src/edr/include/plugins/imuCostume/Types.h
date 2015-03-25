@@ -18,38 +18,38 @@
 
 namespace IMU
 {
-	//! Mapa identyfikatorów sensorów do nazw jointów z którymi s¹ skojarzone, jeden sensor, jeden joint, ale joint moze miec wiêcej sensorów!!
+	//! Mapa identyfikatorï¿½w sensorï¿½w do nazw jointï¿½w z ktï¿½rymi sï¿½ skojarzone, jeden sensor, jeden joint, ale joint moze miec wiï¿½cej sensorï¿½w!!
 	typedef boost::bimap<boost::bimaps::set_of<imuCostume::Costume::SensorID>, boost::bimaps::multiset_of<std::string>> SensorsMapping;
 
-	//! Mapa indeksów orientacji i jointów którym odpowiadaj¹ te oreintacje
+	//! Mapa indeksï¿½w orientacji i jointï¿½w ktï¿½rym odpowiadajï¿½ te oreintacje
 	typedef boost::bimap<unsigned int, std::string> DataIndexToJointMapping;
 
-	//! Struktura opisuj¹ca orientacje sensora
+	//! Struktura opisujï¿½ca orientacje sensora
 	struct SensorData
 	{
 		//! Orientacja
 		osg::Quat orientation;
 		//! Akcelerometr
 		osg::Vec3d accelerometer;
-		//! ¯yroskop
+		//! ï¿½yroskop
 		osg::Vec3d gyroscope;
 		//! Magnetometr
 		osg::Vec3d magnetometer;
 	};	
 
-	//! Agregacja danych z sensorów
+	//! Agregacja danych z sensorï¿½w
 	typedef std::map<imuCostume::Costume::SensorID, SensorData> SensorsData;
 
-	//! Struktura opisuj¹ca dane strumienia z danymi czujników
+	//! Struktura opisujï¿½ca dane strumienia z danymi czujnikï¿½w
 	struct SensorsStreamData
 	{
 		//! Stempel czasu danych
 		imuCostume::CostumeCANopenIO::Timestamp timestamp;
-		//! Dane sensorów
+		//! Dane sensorï¿½w
 		SensorsData sensorsData;
 	};
 
-	//! Struktura opisuj¹ca joint
+	//! Struktura opisujï¿½ca joint
 	struct JointData
 	{
 		//! Orientacja lokalna
@@ -70,7 +70,7 @@ class TIMEMEMBER_EXTRACTOR_NAME(memberName){\
 public:\
 	template<typename SrcType>\
 	inline static bool verify(const SrcType &) { return true; }\
-	template<typename SrcType, typename DestType = SrcType::second_type>\
+	template<typename SrcType, typename DestType = typename SrcType::second_type>\
 	inline static void extract(const SrcType & src, DestType & dest){\
 		dest.first = src.first;\
 		dest.second = src.second.memberName;\

@@ -124,7 +124,7 @@ namespace utils {
 		virtual data_range getValueHelper(time_type time) const
 		{
 			size_type minIdx = 0;
-			size_type maxIdx = size() - 1;
+			size_type maxIdx = this->size() - 1;
 
 			while (minIdx < maxIdx){
 				size_type midIdx = (maxIdx + minIdx) >> 1;
@@ -179,9 +179,9 @@ namespace utils {
 		{
 			// wyznaczenie indeksów
 			size_type idx = static_cast<size_type>(time * getSamplesPerSecond());
-			UTILS_ASSERT(idx >= 0 && idx < size());
+			UTILS_ASSERT(idx >= 0 && idx < this->size());
 
-			return data_range(idx, (idx == size() - 1) ? idx : idx + 1);
+			return data_range(idx, (idx == this->size() - 1) ? idx : idx + 1);
 		}
 	};
 
@@ -397,7 +397,7 @@ namespace utils {
 				storage.addPoint(v.first, v.second);
 			}
 		}
-
+		virtual ~RawGeneralDataChannel() {}
 		//! \return Klon kanału
 		virtual RawGeneralDataChannel<PointType, TimeType> * clone() const
 		{
@@ -499,13 +499,13 @@ namespace utils {
 
 			storage.addPoint(time, point);
 
-			notify();
+			this->notify();
 		}
 
 		virtual void addPoint(point_type_const_reference point)
 		{
 			throw std::runtime_error("Not supported in general channel");
-			notify();
+			this->notify();
 		}
 	};
 
@@ -672,13 +672,13 @@ namespace utils {
 
 			storage.addPoint(time, point);
 
-			notify();
+			this->notify();
 		}
 
 		virtual void addPoint(point_type_const_reference point)
 		{
 			storage.addPoint((TimeType)storage.size() * invSamplesPerSecond, point);
-			notify();
+			this->notify();
 		}
 	};
 

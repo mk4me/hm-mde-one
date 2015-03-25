@@ -18,6 +18,7 @@
 #include <QtWidgets/QLayout>
 #include <plugins/newChart/INewChartVisualizer.h>
 #include <corelib/Exceptions.h>
+#include <plugins/imuCostume/Streams.h>
 
 class JointStreamExtractor
 {
@@ -267,9 +268,9 @@ core::HierarchyDataItemPtr extracImuStreamQuat(core::VariantsList & domainData,
 	SensorDataType & sd,
 	const std::string & paramName)
 {
-	auto orientStream = utils::shared_ptr<QuatStream>(new threadingUtils::StreamAdapterT<StreamType::value_type, QuatStream::value_type, Extractor>(stream));
+	auto orientStream = utils::shared_ptr<IMU::QuatStream>(new threadingUtils::StreamAdapterT<StreamType::value_type, IMU::QuatStream::value_type, Extractor>(stream));
 
-	auto ow = core::Variant::wrapp<QuatStream>(orientStream);
+	auto ow = core::Variant::wrapp<IMU::QuatStream>(orientStream);
 	ow->setMetadata("core/name", QObject::tr("Orientation").toStdString());
 	sd.domainData.push_back(ow);
 	domainData.push_back(ow);
@@ -278,7 +279,7 @@ core::HierarchyDataItemPtr extracImuStreamQuat(core::VariantsList & domainData,
 	std::list<core::IHierarchyItemPtr> hierarchyItems;
 
 	for (unsigned int j = 0; j < 4; ++j){
-		auto scalarStream = utils::shared_ptr<ScalarStream>(new threadingUtils::StreamAdapterT<QuatStream::value_type, ScalarStream::value_type, CompoundArrayExtractor>(orientStream, CompoundArrayExtractor(j)));
+		auto scalarStream = utils::shared_ptr<ScalarStream>(new threadingUtils::StreamAdapterT<IMU::QuatStream::value_type, ScalarStream::value_type, IMU::CompoundArrayExtractor>(orientStream, IMU::CompoundArrayExtractor(j)));
 
 		ow = core::Variant::wrapp<ScalarStream>(scalarStream);
 		ow->setMetadata("core/name", vectorParameterName(j));

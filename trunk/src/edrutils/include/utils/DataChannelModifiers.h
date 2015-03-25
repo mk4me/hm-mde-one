@@ -129,7 +129,7 @@ namespace utils {
 				update();
 			}
 			else{
-				notify();
+				this->notify();
 			}
 		}
 
@@ -218,7 +218,7 @@ namespace utils {
 			modifier(*this, *channel, *this);
 
 			if (changed == true){
-				notify();
+				this->notify();
 			}
 		}
 

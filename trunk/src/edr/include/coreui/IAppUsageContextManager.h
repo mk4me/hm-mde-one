@@ -379,4 +379,4 @@ private:
     std::set<QWidget*> widgets;
 };
 }
-#endif HEADER_GUARD___IAPPUSAGECONTEXTMANAGER_H__
+#endif //HEADER_GUARD___IAPPUSAGECONTEXTMANAGER_H__

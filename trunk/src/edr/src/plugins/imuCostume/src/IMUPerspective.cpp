@@ -76,7 +76,7 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
             
 			core::HierarchyItemPtr motionItem(new core::HierarchyItem(QString::fromStdString(ss.str()), QString()));
 			sessionItem->appendChild(motionItem);
-			if (motion->hasObject(typeid(c3dlib::VectorChannelCollection), false)) {
+	if (motion->hasObject(typeid(c3dlib::VectorChannelCollection), false)) {
                 core::ConstVariantsList vectors;
 				hasData = true;
 				motion->getObjects(vectors, typeid(c3dlib::VectorChannelCollection), false);
@@ -103,7 +103,7 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 				kinematic::SkeletonConstPtr sm = sml.front()->get();
 
 				//kinematic::JointAnglesCollectionPtr ja = utils::make_shared<kinematic::JointAnglesCollection>();
-				//TODO - uzype³niæ szkielet + dane
+				//TODO - uzypeï¿½niï¿½ szkielet + dane
 				//ja->setSkeletal(sm, *sd);
 				//auto jaWrapper = utils::ObjectWrapper::create<kinematic::JointAnglesCollection>();
 				//ja->setLengthRatio(0.1);

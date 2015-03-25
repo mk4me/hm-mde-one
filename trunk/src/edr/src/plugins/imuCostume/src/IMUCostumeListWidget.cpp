@@ -401,7 +401,7 @@ void IMUCostumeWidget::onLoadNewProfile()
 
 	PLUGIN_LOG_DEBUG("canOpenStream created");
 
-	//iloœæ próbek na rozgrzewkê algorytmów estymacji orientacji czujników
+	//iloï¿½ï¿½ prï¿½bek na rozgrzewkï¿½ algorytmï¿½w estymacji orientacji czujnikï¿½w
 	unsigned int initializeFramesCount = 50;
 
 	for (const auto & sa : profile->sensorsDescriptions)
@@ -415,13 +415,13 @@ void IMUCostumeWidget::onLoadNewProfile()
 
 	PLUGIN_LOG_DEBUG("costumeStream created");
 
-	//mamy wszystko, jesteœmy po konfiguracji wszystkiego
-	//mo¿na dalej konfigurowaæ kostium - inicjalizowaæ filtry, kalibrowaæ i ³adowaæ ca³oœæ do DataManager
+	//mamy wszystko, jesteï¿½my po konfiguracji wszystkiego
+	//moï¿½na dalej konfigurowaï¿½ kostium - inicjalizowaï¿½ filtry, kalibrowaï¿½ i ï¿½adowaï¿½ caï¿½oï¿½ï¿½ do DataManager
 	auto extractorAdapter = utils::make_shared<ExtractedCostumeStreamAdapter>(costumeStream, IMU::CostumeIMUExtractor(cd.sensorsConfiguration));
 
 	PLUGIN_LOG_DEBUG("extractorAdapter created");
 
-	// inicjalizacja algorytmów estymacji orientacji czujników + kalibracja
+	// inicjalizacja algorytmï¿½w estymacji orientacji czujnikï¿½w + kalibracja
 	CostumeSkeletonMotionHelper csmh(extractorAdapter,
 		profile, initializeFramesCount + profile->calibrationAlgorithm->maxCalibrationSteps(),
 		initializeFramesCount, this);
@@ -456,7 +456,7 @@ void IMUCostumeWidget::onLoadNewProfile()
 	try{
 		//inicjalizacja algorytmu estymacji szkieletu
 		profile->motionEstimationAlgorithm->initialize(profile->skeleton, sa);
-		//³adowanie
+		//ï¿½adowanie
 		ds->loadCalibratedCostume(id, profile);
 		ui->recordPushButton->setEnabled(true);
 		PLUGIN_LOG_DEBUG("Costume loaded");
@@ -584,7 +584,7 @@ void IMUCostumeWidget::onLoadProfile()
 
 	PLUGIN_LOG_DEBUG("canOpenStream created");
 
-	//iloœæ próbek na rozgrzewkê algorytmów estymacji orientacji czujników
+	//iloï¿½ï¿½ prï¿½bek na rozgrzewkï¿½ algorytmï¿½w estymacji orientacji czujnikï¿½w
 	unsigned int initializeFramesCount = 50;
 
 	for (const auto & sa : profile->sensorsDescriptions)
@@ -598,13 +598,13 @@ void IMUCostumeWidget::onLoadProfile()
 
 	PLUGIN_LOG_DEBUG("costumeStream created");
 
-	//mamy wszystko, jesteœmy po konfiguracji wszystkiego
-	//mo¿na dalej konfigurowaæ kostium - inicjalizowaæ filtry, kalibrowaæ i ³adowaæ ca³oœæ do DataManager
+	//mamy wszystko, jesteï¿½my po konfiguracji wszystkiego
+	//moï¿½na dalej konfigurowaï¿½ kostium - inicjalizowaï¿½ filtry, kalibrowaï¿½ i ï¿½adowaï¿½ caï¿½oï¿½ï¿½ do DataManager
 	auto extractorAdapter = utils::make_shared<ExtractedCostumeStreamAdapter>(costumeStream, IMU::CostumeIMUExtractor(cd.sensorsConfiguration));
 
 	PLUGIN_LOG_DEBUG("extractorAdapter created");
 
-	// inicjalizacja algorytmów estymacji orientacji czujników + kalibracja
+	// inicjalizacja algorytmï¿½w estymacji orientacji czujnikï¿½w + kalibracja
 	CostumeSkeletonMotionHelper csmh(extractorAdapter,
 		profile, initializeFramesCount + profile->calibrationAlgorithm->maxCalibrationSteps(),
 		initializeFramesCount, this);
@@ -639,7 +639,7 @@ void IMUCostumeWidget::onLoadProfile()
 	try{
 		//inicjalizacja algorytmu estymacji szkieletu
 		profile->motionEstimationAlgorithm->initialize(profile->skeleton,	sa);
-		//³adowanie
+		//ï¿½adowanie
 		ds->loadCalibratedCostume(id, profile);
 		ui->recordPushButton->setEnabled(true);
 		PLUGIN_LOG_DEBUG("Costume loaded");
@@ -846,12 +846,12 @@ void IMUCostumeWidget::watchRecordedData()
 	}
 }
 
-void serialize(std::ostream & stream, const osg::Vec3 & vec)
+static void serialize(std::ostream & stream, const osg::Vec3 & vec)
 {
 	stream << vec.x() << " " << vec.y() << " " << vec.z();
 }
 
-void serialize(std::ostream & stream, const osg::Quat & orient)
+static void serialize(std::ostream & stream, const osg::Quat & orient)
 {
 	stream << orient.x() << " " << orient.y() << " " << orient.z() << " " << orient.w();
 }
@@ -941,7 +941,7 @@ void IMUCostumeWidget::onRecord(const bool record)
 			}
 			else{
 
-				//TODO - info ¿e siê nie uda³o jednak pliku stworzyæ do zapisu
+				//TODO - info ï¿½e siï¿½ nie udaï¿½o jednak pliku stworzyï¿½ do zapisu
 				ui->recordPushButton->blockSignals(true);
 				ui->recordPushButton->setChecked(!record);
 				ui->recordPushButton->blockSignals(false);
@@ -959,7 +959,7 @@ void IMUCostumeWidget::onRecord(const bool record)
 		recordTimer.stop();
 		ds->stopRecording(recordOutput);
 
-		//koñczymy zapis danych
+		//koï¿½czymy zapis danych
 
 		IMU::IIMUDataSource::CostumesRecordingDataBuffer::ListT data;
 		recordOutput->costumesDataBuffer.data(data);

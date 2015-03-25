@@ -15,25 +15,25 @@
 
 namespace IMU
 {
-	//! Klasa usuwaj¹ca czas z danych
+	//! Klasa usuwajï¿½ca czas z danych
 	class TimeRemoverExtractor
 	{
 	public:
-		//! \tparam Src Typ Ÿród³owy
+		//! \tparam Src Typ ï¿½rï¿½dï¿½owy
 		template<typename Src>
 		inline static bool verify(const Src & timeData)
 		{
 			return true;
 		}
-		//! \tparam Src Typ Ÿród³owy
-		template<typename Src, typename Dest = Src::second_type>
-		inline static void extract(const Src & timeData, typename Dest & data)
+		//! \tparam Src Typ ï¿½rï¿½dï¿½owy
+		template<typename Src, typename Dest = typename Src::second_type>
+		inline static void extract(const Src & timeData,  Dest & data)
 		{
 			data = timeData.second;
 		}
 	};
 
-	//! Klasa realizuj¹ca filtracjê kompletnych danych IMU (pe³ne dane dla wszystkich czujników IMU)
+	//! Klasa realizujï¿½ca filtracjï¿½ kompletnych danych IMU (peï¿½ne dane dla wszystkich czujnikï¿½w IMU)
 	class IMU_EXPORT CostumeCompleteDataFilter
 	{
 	public:
@@ -41,22 +41,22 @@ namespace IMU
 		CostumeCompleteDataFilter(CostumeCompleteDataFilter && Other);
 		//! \param Other Obiekt kopiowany
 		CostumeCompleteDataFilter(const CostumeCompleteDataFilter & Other);
-		//! \param sensorsIDs Identyfikatory sensorów IMU
+		//! \param sensorsIDs Identyfikatory sensorï¿½w IMU
 		CostumeCompleteDataFilter(const imuCostume::Costume::SensorIDsSet & sensorsIDs);
-		//! \param sensorsConfiguration Konfiguracja sensorów
+		//! \param sensorsConfiguration Konfiguracja sensorï¿½w
 		CostumeCompleteDataFilter(const imuCostume::Costume::SensorsConfiguration & sensorsConfiguration);
 		//! Desturktor
 		~CostumeCompleteDataFilter();
 		//! \param dataToFilter Dane do filtracji
-		//! \return Prawda jeœli dane s¹ kompletne
+		//! \return Prawda jeï¿½li dane sï¿½ kompletne
 		bool operator()(const IMU::CostumeStream::value_type & dataToFilter) const;
 
 	private:
-		//! Zbiór identyfikatorów sensorów IMU
+		//! Zbiï¿½r identyfikatorï¿½w sensorï¿½w IMU
 		imuCostume::Costume::SensorIDsSet sensorsIDs;
 	};
 
-	//! Klasa realizuj¹ca konwersjê ze strumienia danych czujników do kompletnych danych IMU
+	//! Klasa realizujï¿½ca konwersjï¿½ ze strumienia danych czujnikï¿½w do kompletnych danych IMU
 	class IMU_EXPORT CostumeIMUExtractor
 	{
 	private:
@@ -75,30 +75,30 @@ namespace IMU
 		CostumeIMUExtractor(CostumeIMUExtractor && Other);
 		//! \param Other Obiekt kopiowany
 		CostumeIMUExtractor(const CostumeIMUExtractor & Other);
-		//! \param sensorsIDs Identyfikatory czujników IMU
+		//! \param sensorsIDs Identyfikatory czujnikï¿½w IMU
 		CostumeIMUExtractor(const imuCostume::Costume::SensorIDsSet & sensorsIDs);
-		//! \param sensorsConfiguration Konfiguracja sensorów
+		//! \param sensorsConfiguration Konfiguracja sensorï¿½w
 		CostumeIMUExtractor(const imuCostume::Costume::SensorsConfiguration & sensorsConfiguration);
 		//! Destruktor
 		~CostumeIMUExtractor();
-		//! \param dataToVerify Dane do veryfikacji pd k¹tem mo¿liwoœci konwersji
-		//! \return Prawda jeœli dane mo¿na konwertowaæ
+		//! \param dataToVerify Dane do veryfikacji pd kï¿½tem moï¿½liwoï¿½ci konwersji
+		//! \return Prawda jeï¿½li dane moï¿½na konwertowaï¿½
 		bool verify(const IMU::CostumeStream::value_type & dataToVerify) const;
 		//! \param convertedData [out] Dane po konwersji
 		void extract(const IMU::CostumeStream::value_type & dataToConvert, IMU::SensorsStreamData & convertedData) const;
 
 	private:
-		//! Obiekt realizuj¹cy weryfikacjê
+		//! Obiekt realizujï¿½cy weryfikacjï¿½
 		CostumeCompleteDataFilter completeDataFilter;
-		//aktualne dane do wysy³k dalej w przetwarzanie
+		//aktualne dane do wysyï¿½k dalej w przetwarzanie
 		mutable std::map<imuCostume::Costume::SensorID, ImuSensorData> currentData;
 	};
 
-	//! Klasa procesora strumienia estymuj¹ca orientacje czujników na bazie pomiarów
+	//! Klasa procesora strumienia estymujï¿½ca orientacje czujnikï¿½w na bazie pomiarï¿½w
 	class IMU_EXPORT OrientationEstimator
 	{
 	public:
-		//! \param orientationAlgorithms Algorytmy wstymuj¹cê orientacje czujników
+		//! \param orientationAlgorithms Algorytmy wstymujï¿½cï¿½ orientacje czujnikï¿½w
 		OrientationEstimator(IMU::CostumeProfilePtr profile);
 		//! Destruktor
 		~OrientationEstimator();
@@ -106,17 +106,17 @@ namespace IMU
 		void operator()(IMU::SensorsStreamData & data) const;		
 
 	private:
-		//! Profil z algorytmami które estymuj¹ orientacje czujników
+		//! Profil z algorytmami ktï¿½re estymujï¿½ orientacje czujnikï¿½w
 		IMU::CostumeProfilePtr profile;
 
 		mutable std::map<imuCostume::Costume::SensorID, uint32_t> lastUpdateTime;
 	};
 
-	//! Klasa pozwalaj¹ca wypakowywaæ dane z wektorów
+	//! Klasa pozwalajï¿½ca wypakowywaï¿½ dane z wektorï¿½w
 	class IMU_EXPORT ArrayExtractor
 	{
 	public:
-		//! \param idx Index obiketu który chcemy wypakowywaæ z wektora
+		//! \param idx Index obiketu ktï¿½ry chcemy wypakowywaï¿½ z wektora
 		ArrayExtractor(const std::size_t idx);
 		//! \param Other Inny kopiowany extractor
 		ArrayExtractor(const ArrayExtractor & Other);
@@ -125,17 +125,17 @@ namespace IMU
 
 		//! \tparam AT Wektor do weryfikacji
 		template<typename AT>
-		//! \param a Wektor z którego chcemy wypakowaæ dane
-		//! \return Czy z wektora da siê wypakowaæ dane o zadanym indeksie
+		//! \param a Wektor z ktï¿½rego chcemy wypakowaï¿½ dane
+		//! \return Czy z wektora da siï¿½ wypakowaï¿½ dane o zadanym indeksie
 		bool verify(const AT & a) const
 		{
 			return true;
 		}
 
 		//! \tparam AT Wektor do weryfikacji
-		//! \tparam Ret Typ który chcemy wypakowaæ z wektora
+		//! \tparam Ret Typ ktï¿½ry chcemy wypakowaï¿½ z wektora
 		template<typename AT, typename Ret>
-		//! \param Wektor z którego wypakowujemy dane
+		//! \param Wektor z ktï¿½rego wypakowujemy dane
 		//! \param ret [out] Obiekt docelowy dla wypakowanych danych
 		void extract(const AT & a, Ret & ret) const
 		{
@@ -143,15 +143,15 @@ namespace IMU
 		}
 
 	private:
-		//! Indeks spod którego wybieramy dane z wektora
+		//! Indeks spod ktï¿½rego wybieramy dane z wektora
 		const std::size_t idx;
 	};
 
-	//! Klasa pozwalaj¹ca wypakowywaæ dane z wektorów
+	//! Klasa pozwalajï¿½ca wypakowywaï¿½ dane z wektorï¿½w
 	class IMU_EXPORT CompoundArrayExtractor
 	{
 	public:
-		//! \param idx Index obiketu który chcemy wypakowywaæ z wektora
+		//! \param idx Index obiketu ktï¿½ry chcemy wypakowywaï¿½ z wektora
 		CompoundArrayExtractor(const std::size_t idx);
 		//! \param Other Inny kopiowany extractor
 		CompoundArrayExtractor(const CompoundArrayExtractor & Other);
@@ -160,17 +160,17 @@ namespace IMU
 
 		//! \tparam AT Wektor do weryfikacji
 		template<typename AT>
-		//! \param a Wektor z którego chcemy wypakowaæ dane
-		//! \return Czy z wektora da siê wypakowaæ dane o zadanym indeksie
+		//! \param a Wektor z ktï¿½rego chcemy wypakowaï¿½ dane
+		//! \return Czy z wektora da siï¿½ wypakowaï¿½ dane o zadanym indeksie
 		bool verify(const AT & a) const
 		{
 			return true;
 		}
 
 		//! \tparam AT Wektor do weryfikacji
-		//! \tparam Ret Typ który chcemy wypakowaæ z wektora
+		//! \tparam Ret Typ ktï¿½ry chcemy wypakowaï¿½ z wektora
 		template<typename AT, typename Ret>
-		//! \param Wektor z którego wypakowujemy dane
+		//! \param Wektor z ktï¿½rego wypakowujemy dane
 		//! \param ret [out] Obiekt docelowy dla wypakowanych danych
 		void extract(const AT & a, Ret & ret) const
 		{
@@ -179,7 +179,7 @@ namespace IMU
 		}
 
 	private:
-		//! Indeks spod którego wybieramy dane z wektora
+		//! Indeks spod ktï¿½rego wybieramy dane z wektora
 		const std::size_t idx;
 	};
 
@@ -225,6 +225,7 @@ namespace IMU
 	class IMU_EXPORT ExtractCostumeMotion
 	{
 	public:
+		ExtractCostumeMotion(ExtractCostumeMotion&& other) : skeletonState(std::move(other.skeletonState)){}
 		ExtractCostumeMotion(
 			IMU::CostumeProfilePtr profile,
 			const IMU::DataIndexToJointMapping & dataMapping);
@@ -246,7 +247,7 @@ namespace IMU
 	{
 	public:
 		KinematicStreamExtractor(kinematic::SkeletonState && skeletonState);
-
+		KinematicStreamExtractor(KinematicStreamExtractor&& other) : skeletonState_(std::move(other.skeletonState_)) {}
 		~KinematicStreamExtractor();
 
 		bool verify(const IMU::MotionStream::value_type & input) const;

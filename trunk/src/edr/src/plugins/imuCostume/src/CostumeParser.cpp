@@ -90,12 +90,12 @@ void CostumeParser::parse(const std::string& path)
 	}	
 }
 
-void serialize(std::ostream & stream, const osg::Vec3 & vec)
+static void serialize(std::ostream & stream, const osg::Vec3 & vec)
 {
 	stream << vec.x() << " " << vec.y() << " " << vec.z();
 }
 
-void serialize(std::ostream & stream, const osg::Quat & orient)
+static void serialize(std::ostream & stream, const osg::Quat & orient)
 {
 	stream << orient.x() << " " << orient.y() << " " << orient.z() << " " << orient.w();
 }

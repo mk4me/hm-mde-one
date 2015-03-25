@@ -34,4 +34,4 @@ typedef std::vector<MotionConstPtr> Motions;
 
 }
 
-#endif HEADER_GUARD_SUBJECT__TYPES_H__
+#endif //HEADER_GUARD_SUBJECT__TYPES_H__

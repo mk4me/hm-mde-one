@@ -115,7 +115,7 @@ namespace utils {
 		static const ObjectWrapperPtr create(T* dummy = nullptr)
 		{
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
-			return ObjectWrapperT<T>::createS();
+			return ObjectWrapperT<T>::create();
 		}
 
 		//! \tparam T Typ obiektu dla ktorego chcemy utworzych OW

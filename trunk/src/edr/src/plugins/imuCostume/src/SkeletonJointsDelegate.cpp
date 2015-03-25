@@ -15,12 +15,13 @@ void SkeletonJointsDelegate::setJoints(kinematic::JointConstPtr root)
 {
 	std::list<std::string> locJoints;
 
-	utils::TreeNode::visitLevelOrder(root, [&locJoints](kinematic::JointConstPtr node, const std::size_t level)
+	auto visitor =  [&locJoints](kinematic::JointConstPtr node, const std::size_t level)
 	{
 		if (node != nullptr){
 			locJoints.push_back(node->value.name);
 		}
-	});
+	};
+	utils::TreeNode::visitLevelOrder(root, visitor);
 
 	joints.swap(locJoints);
 }
