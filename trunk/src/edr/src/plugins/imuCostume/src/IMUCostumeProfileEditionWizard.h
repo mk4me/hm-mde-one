@@ -73,6 +73,12 @@ private slots:
 	void onOneToOneMappingChanged(int state);
 	void onSensorConfigurationCellChange(int row, int column);
 	void onLoadModel();
+	void onSensorsConfigurationTableContextMenu(const QPoint & position);
+
+	void onSelectAllSensors();
+	void onDeselectAllSensors();
+	void onInversSensorsSelection();
+	void onSelectCommonEstimationAlgorithm();
 
 private:	
 	

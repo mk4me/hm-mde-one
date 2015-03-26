@@ -313,6 +313,13 @@ ExtractCostumeMotion::ExtractCostumeMotion(
 
 }
 
+ExtractCostumeMotion::ExtractCostumeMotion(ExtractCostumeMotion&& other)
+	: skeletonState(std::move(other.skeletonState)), profile(std::move(other.profile)),
+	dataMapping(std::move(other.dataMapping)), previousTime(std::move(other.previousTime))
+{
+
+}
+
 ExtractCostumeMotion::~ExtractCostumeMotion()
 {
 

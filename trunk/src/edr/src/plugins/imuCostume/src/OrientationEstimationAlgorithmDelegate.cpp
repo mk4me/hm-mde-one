@@ -19,6 +19,11 @@ void OrientationEstimationAlgorithmDelegate::setOrientationEstimationAlgorithms(
 	algorithms_ = algorithms;
 }
 
+const IMU::IIMUDataSource::OrientationEstimationAlgorithms & OrientationEstimationAlgorithmDelegate::orientationEstimationAlgorithms() const
+{
+	return algorithms_;
+}
+
 QString OrientationEstimationAlgorithmDelegate::defaultText()
 {
 	return tr("Select algorithm...");

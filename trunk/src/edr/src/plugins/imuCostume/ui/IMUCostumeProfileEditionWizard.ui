@@ -257,6 +257,9 @@
    <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
      <widget class="QTableWidget" name="sensorsConfigurationTableWidget">
+      <property name="contextMenuPolicy">
+       <enum>Qt::CustomContextMenu</enum>
+      </property>
       <attribute name="horizontalHeaderStretchLastSection">
        <bool>true</bool>
       </attribute>
@@ -502,6 +505,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>sensorsConfigurationTableWidget</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>IMUCostumeProfileEditionWizard</receiver>
+   <slot>onSensorsConfigurationTableContextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>320</x>
+     <y>410</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>391</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>pageChanged(int)</slot>
@@ -512,5 +531,6 @@
   <slot>onCellPressed(int,int)</slot>
   <slot>onCellActivated(QModelIndex)</slot>
   <slot>onLoadModel()</slot>
+  <slot>onSensorsConfigurationTableContextMenu(QPoint)</slot>
  </slots>
 </ui>

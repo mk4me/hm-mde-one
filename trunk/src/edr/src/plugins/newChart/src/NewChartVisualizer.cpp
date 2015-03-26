@@ -970,6 +970,12 @@ void NewChartVisualizer::refreshBounds()
     	}
     }
 
+	//TODO
+	//HACK dla strumieni
+	if (channels.empty() == true){
+		return;
+	}
+
     int totalWindows = (maxT - minT) / movingAverageTimeWindow;
 
     if(totalWindows == 0){

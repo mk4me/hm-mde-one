@@ -63,6 +63,10 @@ visualizer(visualizer),
 
 void NewChartStreamSerie::setData(const utils::TypeInfo & requestedType, const core::VariantConstPtr & data )
 {
+	if (scalarStream != nullptr){
+		utils::const_pointer_cast<ScalarStream>(scalarStream)->detachObserver(updater);
+	}
+
     this->data = data;
 	this->requestedType = requestedType;
 	UTILS_ASSERT(requestedType == typeid(ScalarStream));
@@ -139,6 +143,10 @@ NewChartStreamSerie::~NewChartStreamSerie()
     //delete[] xvals;
     //delete[] yvals;
 	curve = nullptr;
+
+	if (scalarStream != nullptr && updater != nullptr){
+		utils::const_pointer_cast<ScalarStream>(scalarStream)->detachObserver(updater);
+	}
 }
 
 void NewChartStreamSerie::removeItemsFromPlot()

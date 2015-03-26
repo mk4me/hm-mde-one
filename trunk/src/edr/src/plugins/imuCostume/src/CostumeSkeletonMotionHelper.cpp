@@ -2,7 +2,6 @@
 #include "CostumeSkeletonMotionHelper.h"
 #include <chrono>
 #include <thread>
-#include <QtWidgets/QProgressDialog>
 #include <corelib/ILog.h>
 #include <corelib/IPlugin.h>
 
@@ -44,10 +43,10 @@ CostumeSkeletonMotionHelper::CostumeSkeletonMotionHelper(IMU::SensorsStreamPtr s
 	IMU::CostumeProfilePtr costumeProfile,
 	const unsigned int maxSamples,
 	const unsigned int calibratinStageChangeValue, QWidget * parent)
-	: sensorsStream(sensorsStream), costumeProfile(costumeProfile),
+	: QObject(parent), sensorsStream(sensorsStream), costumeProfile(costumeProfile),
 	observer(new threadingUtils::ResetableStreamStatusObserver),
 	calibratinStageChangeValue(calibratinStageChangeValue), previousTime(0),
-	first(true), complete(false)
+	first(true), complete(false), pd(parent)
 {
 	for (const auto & sa : costumeProfile->sensorsDescriptions)
 	{
@@ -59,29 +58,27 @@ CostumeSkeletonMotionHelper::CostumeSkeletonMotionHelper(IMU::SensorsStreamPtr s
 		algorithmsProgress.insert(std::map<imuCostume::Costume::SensorID, AlgoProgress>::value_type(sa.first, ap));
 	}	
 
-	sensorsStream->attachObserver(observer);
-	pd = new QProgressDialog(parent);
-	pd->setWindowTitle(tr("Costume initialization"));
-	pd->setRange(0, maxSamples);
-	pd->setValue(0);
-	pd->setLabelText(tr("Orientation estimation algorithms"));
-	connect(pd, SIGNAL(canceled()), this, SLOT(cancel()));
+	sensorsStream->attachObserver(observer);	
+	pd.setWindowTitle(tr("Costume initialization"));
+	pd.setRange(0, maxSamples);
+	pd.setValue(0);
+	pd.setLabelText(tr("Orientation estimation algorithms"));
+	connect(&pd, SIGNAL(canceled()), this, SLOT(cancel()));
 	connect(&timer, SIGNAL(timeout()), this, SLOT(perform()));
 }
 
 CostumeSkeletonMotionHelper::~CostumeSkeletonMotionHelper()
 {
 	sensorsStream->detachObserver(observer);
-	delete pd;
 }
 
 int CostumeSkeletonMotionHelper::exec()
 {
 	complete = false;
 	timer.start(0);
-	pd->exec();
+	pd.exec();
 
-	return pd->wasCanceled() == true ? QDialog::Rejected : QDialog::Accepted;
+	return pd.wasCanceled() == true ? QDialog::Rejected : QDialog::Accepted;
 }
 
 bool CostumeSkeletonMotionHelper::isComplete() const
@@ -122,39 +119,34 @@ void CostumeSkeletonMotionHelper::perform()
 			deltaTime = 0.0;
 		}
 		
-		if (pd->value() == calibratinStageChangeValue) {
-			pd->setLabelText(tr("Calibrating"));
+		if (pd.value() == calibratinStageChangeValue) {
+			pd.setLabelText(tr("Calibrating"));
 
 			resetCounters();
 		}
 
 		estimate(algorithmsProgress, data.sensorsData, data.timestamp);
 
-		if (pd->value() >= calibratinStageChangeValue){		
+		if (pd.value() >= calibratinStageChangeValue){		
 			bool ret = costumeProfile->calibrationAlgorithm->calibrate(data.sensorsData, deltaTime);
 			if (ret == true){
-				complete = true;
-				auto m = pd->value();
-				m = pd->maximum();
-				pd->setValue(pd->maximum());
-				m = pd->value();
-				auto i = 0;
-				++i;
+				complete = true;				
+				pd.setValue(pd.maximum());
 			}
 		}
 
-		if (pd->value() == pd->maximum()){
+		if (pd.value() == pd.maximum()){
 			cancel();			
 		}
 		else {
 			previousTime = data.timestamp;
 
-			if (pd->value() < calibratinStageChangeValue){
+			if (pd.value() < calibratinStageChangeValue){
 
-				pd->setValue(minCounter());
+				pd.setValue(minCounter());
 			}
 			else{
-				pd->setValue(minCounter() + calibratinStageChangeValue);
+				pd.setValue(minCounter() + calibratinStageChangeValue);
 			}
 		}
 	}
@@ -162,5 +154,6 @@ void CostumeSkeletonMotionHelper::perform()
 
 void CostumeSkeletonMotionHelper::cancel()
 {
+	disconnect(&timer, SIGNAL(timeout()), this, SLOT(perform()));
 	timer.stop();
 }

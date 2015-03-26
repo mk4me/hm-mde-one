@@ -10,9 +10,8 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
+#include <QtWidgets/QProgressDialog>
 #include <plugins/imuCostume/IIMUDataSource.h>
-
-class QProgressDialog;
 
 //! Obiekt realizuj¹cy wizualny postêp inicjalizacji kostiumu
 //! inicjalizacjê algorytmów estyamcji orientacji dla czujników oraz kalibracjê
@@ -87,7 +86,7 @@ private:
 	//! Timer realizuj¹cy odpytywanie strumienia z danych
 	QTimer timer;
 	//! Dialog z postepem inicjalizacji kostiumu
-	QProgressDialog * pd;
+	QProgressDialog pd;
 	//!
 	bool complete;
 };

@@ -25,6 +25,7 @@ public:
 	virtual ~OrientationEstimationAlgorithmDelegate();
 
 	void setOrientationEstimationAlgorithms(const IMU::IIMUDataSource::OrientationEstimationAlgorithms & algorithms);
+	const IMU::IIMUDataSource::OrientationEstimationAlgorithms & orientationEstimationAlgorithms() const;
 
 	static QString defaultText();
 

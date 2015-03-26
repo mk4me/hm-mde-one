@@ -114,54 +114,6 @@ namespace threadingUtils
 
 		//! Zeruje zmienn� warunkow�
 		void clearConditionVariable();
-
-		//! Czekanie przerywalne na w�asnym obiekcie synchronizuj�cym
-		template<typename Lockable>
-		void wait(std::condition_variable_any& cv, Lockable& lk)
-		{
-			CustomLock<Lockable> cl(this, cv, lk);
-			interruption_point();
-			cv.wait(cl);
-			interruption_point();
-		}
-
-		//! Czekanie przerywalne z predykatem na w�asnym obiekcie synchornizuj�cym
-		template<typename Lockable, typename Predicate>
-			void wait(std::condition_variable_any& cv, Lockable& lk, Predicate pred)
-		{
-			bool res = false;
-			CustomLock<Lockable> cl(this, cv, lk);
-			interruption_point();
-			while ((threadInterruptFlag()->isSet() == false) && ((res = pred()) == false))
-			{
-				if(cv.wait_for(cl, std::chrono::milliseconds(0)) == std::cv_status::timeout){
-					std::this_thread::yield();
-				}
-			}
-
-			if (res == false){
-				interruption_point();
-			}
-		}
-
-		//! Czekanie przerywalne z predykatem na w�asnym obiekcie synchornizuj�cym z customowym timeoutem
-		template<typename Lockable, typename Predicate, class Rep = long long,
-		class Period = std::chrono::milliseconds>
-		void wait(std::condition_variable_any& cv, Lockable& lk, Predicate pred,
-			std::chrono::duration<Rep, Period> & timeout)
-		{
-			bool res = false;
-			CustomLock<Lockable> cl(this, cv, lk);
-			interruption_point();
-			while ((threadInterruptFlag()->isSet() == false) && ((res = pred()) == false))
-			{
-				cv.wait_for(cl, timeout);
-			}
-
-			if (res == false){
-				interruption_point();
-			}
-		}
 	};
 }
 

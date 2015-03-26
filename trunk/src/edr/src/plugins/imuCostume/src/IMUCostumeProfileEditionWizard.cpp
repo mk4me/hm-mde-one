@@ -9,9 +9,11 @@
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtGui/QStandardItemModel>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QMenu>
 #include <coreui/CoreRotationWidgetEditor.h>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QDialogButtonBox>
+#include <QtWidgets/QInputDialog>
 #include <QtWidgets/QMessageBox>
 #include "OrientationDelegate.h"
 #include <boost/lexical_cast.hpp>
@@ -51,8 +53,7 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 	QWidget * parent) : QWizard(parent), ui(new Ui::IMUCostumeProfileEditionWizard),
 	checkStates(costumeSensors.size(), (int)Qt::PartiallyChecked)
 {
-	ui->setupUi(this);
-	/*init(profileName.isEmpty() == true ? tr("New profile") : profileName,
+	init(profileName.isEmpty() == true ? tr("New profile") : profileName,
 		costumeSensors, orientAlgorithms, calibAlgorithms, motionAlgorithms, skeletonModels);
 
 	//inicjujemy tablice ustawień sensorów
@@ -99,7 +100,6 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 	}
 
 	ui->sensorsConfigurationTableWidget->blockSignals(false);
-	*/
 }
 
 IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume::Costume::SensorIDsSet & costumeSensors,
@@ -112,7 +112,7 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 	checkStates(costumeSensors.size())
 {
 	ui->setupUi(this);
-	/*init(profile->name.empty() == true ? tr("New profile") : QString::fromStdString(profile->name),
+	init(profile->name.empty() == true ? tr("New profile") : QString::fromStdString(profile->name),
 		costumeSensors,	orientAlgorithms, calibAlgorithms, motionAlgorithms, skeletonModels);
 
 	imuCostume::Costume::SensorIDsSet allCostumeSensors(costumeSensors);
@@ -227,7 +227,6 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 
 		++row;
 	}
-	*/
 }
 
 void IMUCostumeProfileEditionWizard::init(const QString & profileName,
@@ -333,6 +332,208 @@ void IMUCostumeProfileEditionWizard::init(const QString & profileName,
 IMUCostumeProfileEditionWizard::~IMUCostumeProfileEditionWizard()
 {
 	delete ui;
+}
+
+void IMUCostumeProfileEditionWizard::onSensorsConfigurationTableContextMenu(const QPoint & position)
+{
+	//wyznaczamy ile mamy zaznaczonych, niezaznaczonych
+	unsigned int selected = 0;
+	unsigned int unselected = 0;
+
+	for (unsigned int row = 0; row < ui->sensorsConfigurationTableWidget->rowCount(); ++row)
+	{
+		if (ui->sensorsConfigurationTableWidget->item(row, UseIDX)->checkState() == Qt::Unchecked){
+			++unselected;
+		}
+		else{
+			++selected;
+		}
+	}
+
+	QMenu menu(ui->sensorsConfigurationTableWidget);
+	auto action = menu.addAction(tr("Select All"));
+	if (unselected > 0){
+		connect(action, SIGNAL(triggered()), this, SLOT(onSelectAllSensors()));
+	}
+	else{
+		action->setEnabled(false);
+	}
+
+	action = menu.addAction(tr("Deselect All"));
+	if (selected > 0){
+		connect(action, SIGNAL(triggered()), this, SLOT(onDeselectAllSensors()));
+	}
+	else{
+		action->setEnabled(false);
+	}
+
+	action = menu.addAction(tr("Inverse selection"));
+	connect(action, SIGNAL(triggered()), this, SLOT(onInversSensorsSelection()));
+
+	menu.addSeparator();
+
+	action = menu.addAction(tr("Select estimation algorithm"));
+	connect(action, SIGNAL(triggered()), this, SLOT(onSelectCommonEstimationAlgorithm()));
+
+	menu.exec(ui->sensorsConfigurationTableWidget->mapToGlobal(position));
+}
+
+void IMUCostumeProfileEditionWizard::onSelectAllSensors()
+{
+	ui->sensorsConfigurationTableWidget->blockSignals(true);
+	for (unsigned int row = 0; row < ui->sensorsConfigurationTableWidget->rowCount(); ++row)
+	{
+		auto checkState = Qt::PartiallyChecked;
+		if (ui->sensorsConfigurationTableWidget->item(row, UseIDX)->checkState() == Qt::Unchecked){		
+
+			auto sensorIDData = ui->sensorsConfigurationTableWidget->item(row, SensorIDX)->data(Qt::DisplayRole);
+			auto jointData = ui->sensorsConfigurationTableWidget->item(row, JointIDX)->data(Qt::DisplayRole);
+			auto algoData = ui->sensorsConfigurationTableWidget->item(row, AlgorithmIDX)->data(Qt::UserRole);
+
+			if (sensorIDData.isValid() && jointData.isValid() && algoData.isValid()){
+
+				auto sid = sensorIDData.toInt();
+				auto jointName = jointData.toString();
+				auto algo = algoData.value<IMU::IIMUOrientationEstimationAlgorithmConstPtr>();
+
+				if (sid > -1 && jointName != SkeletonJointsDelegate::defaultText()
+					&& algo != nullptr){
+					checkState = Qt::Checked;
+				}
+			}			
+			
+			ui->sensorsConfigurationTableWidget->item(row, UseIDX)->setCheckState(checkState);
+			checkStates[row] = checkState;
+		}
+	}
+	ui->sensorsConfigurationTableWidget->blockSignals(false);
+}
+
+void IMUCostumeProfileEditionWizard::onDeselectAllSensors()
+{
+	ui->sensorsConfigurationTableWidget->blockSignals(true);
+	for (unsigned int row = 0; row < ui->sensorsConfigurationTableWidget->rowCount(); ++row)
+	{
+		if (ui->sensorsConfigurationTableWidget->item(row, UseIDX)->checkState() != Qt::Unchecked){
+
+			ui->sensorsConfigurationTableWidget->item(row, UseIDX)->setCheckState(Qt::Unchecked);
+			checkStates[row] = Qt::Unchecked;
+		}
+	}
+	ui->sensorsConfigurationTableWidget->blockSignals(false);
+}
+
+void IMUCostumeProfileEditionWizard::onInversSensorsSelection()
+{
+	ui->sensorsConfigurationTableWidget->blockSignals(true);
+	for (unsigned int row = 0; row < ui->sensorsConfigurationTableWidget->rowCount(); ++row)
+	{
+		auto checkState = Qt::Unchecked;
+
+		if (ui->sensorsConfigurationTableWidget->item(row, UseIDX)->checkState() != Qt::Unchecked){
+
+		}
+		else{
+
+			checkState = Qt::PartiallyChecked;
+
+			auto sensorIDData = ui->sensorsConfigurationTableWidget->item(row, SensorIDX)->data(Qt::DisplayRole);
+			auto jointData = ui->sensorsConfigurationTableWidget->item(row, JointIDX)->data(Qt::DisplayRole);
+			auto algoData = ui->sensorsConfigurationTableWidget->item(row, AlgorithmIDX)->data(Qt::UserRole);
+
+			if (sensorIDData.isValid() && jointData.isValid() && algoData.isValid()){
+
+				auto sid = sensorIDData.toInt();
+				auto jointName = jointData.toString();
+				auto algo = algoData.value<IMU::IIMUOrientationEstimationAlgorithmConstPtr>();
+
+				if (sid > -1 && jointName != SkeletonJointsDelegate::defaultText()
+					&& algo != nullptr){
+					checkState = Qt::Checked;
+				}
+			}
+		}
+
+		ui->sensorsConfigurationTableWidget->item(row, UseIDX)->setCheckState(checkState);
+		checkStates[row] = checkState;
+	}
+	ui->sensorsConfigurationTableWidget->blockSignals(false);
+}
+
+void IMUCostumeProfileEditionWizard::onSelectCommonEstimationAlgorithm()
+{
+	//TODO
+	//select algorithm
+
+	//najpierw sprawdzamy czy nie ma już tak że wszystkie algo są takie 
+	IMU::IIMUOrientationEstimationAlgorithmConstPtr algo;
+	bool same = true;
+
+	auto data = ui->sensorsConfigurationTableWidget->item(0, AlgorithmIDX)->data(Qt::UserRole);
+
+	if (data.isValid() == true){
+		algo = data.value<IMU::IIMUOrientationEstimationAlgorithmConstPtr>();
+	}
+
+	for (unsigned int row = 1; row < ui->sensorsConfigurationTableWidget->rowCount(); ++row)
+	{
+		data = ui->sensorsConfigurationTableWidget->item(row, AlgorithmIDX)->data(Qt::UserRole);
+
+		if (data.isValid() == true){
+			if (algo != data.value<IMU::IIMUOrientationEstimationAlgorithmConstPtr>()){
+				same = false;
+				break;
+			}
+		}
+		else if (algo != nullptr){
+			same = false;
+			break;
+		}
+	}
+
+	QStringList values;
+	values << OrientationEstimationAlgorithmDelegate::defaultText();
+
+	int currentID = 0;
+
+	auto algorithms = orientationAlgorithmDelegate->orientationEstimationAlgorithms();
+
+	int i = 1;
+	for (const auto & a : algorithms)
+	{
+		values << QString("%1 (%2)").arg(QString::fromStdString(a.second->name())).arg(QString::fromStdString(boost::lexical_cast<std::string>(a.first)));
+		
+		if (same == true && algo == a.second){
+			currentID = i;
+		}
+
+		++i;
+	}
+
+	bool ok = true;
+
+	auto item = QInputDialog::getItem(this, tr("Orientation estimation algorithm"), tr("Algorithm"), values, currentID, false, &ok);
+
+	if (ok == true && item != values.first()){
+		ui->sensorsConfigurationTableWidget->blockSignals(true);
+		auto it = std::find(values.begin(), values.end(), item);
+		unsigned int idx = std::distance(values.begin(), it);
+		--idx;
+
+		auto algoIT = algorithms.begin();
+		std::advance(algoIT, idx);
+
+		auto nameData = QVariant::fromValue(QString::fromStdString(algoIT->second->name()));
+		auto valueData = QVariant::fromValue(algoIT->second);
+
+		for (unsigned int row = 0; row < ui->sensorsConfigurationTableWidget->rowCount(); ++row)
+		{
+			ui->sensorsConfigurationTableWidget->item(row, AlgorithmIDX)->setData(Qt::DisplayRole, nameData);
+			ui->sensorsConfigurationTableWidget->item(row, AlgorithmIDX)->setData(Qt::UserRole, valueData);
+		}
+
+		ui->sensorsConfigurationTableWidget->blockSignals(false);
+	}
 }
 
 void IMUCostumeProfileEditionWizard::pageChanged(int idx)
@@ -512,7 +713,7 @@ void IMUCostumeProfileEditionWizard::onSensorConfigurationCellChange(int row, in
 	checkStates[row] = ui->sensorsConfigurationTableWidget->item(row, UseIDX)->checkState();
 
 	//TODO
-	//verify other rows - target to ok: at least one checked and no partial checks
+	//verify other rows - target to ok: at least one checked and/or no partial checks
 	//button(QWizard::NextButton)->setEnabled(enable);
 }
 

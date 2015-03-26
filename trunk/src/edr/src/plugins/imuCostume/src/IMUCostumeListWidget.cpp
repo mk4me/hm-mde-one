@@ -46,18 +46,24 @@ typedef threadingUtils::StreamAdapterT<IMU::CostumeStream::value_type, IMU::Sens
 
 QIcon statusIcon(IMU::IIMUDataSource::ConnectionStatus connectionStatus)
 {
+	static const QIcon onlineIcon = QIcon(QString::fromUtf8(":/imuCostume/icons/dostepny.png"));
+	static const QIcon offlineIcon = QIcon(QString::fromUtf8(":/imuCostume/icons/niedostepny.png"));
+	static const QIcon connectionProblemsIcon = QIcon(QString::fromUtf8(":/imuCostume/icons/czesciowodostepny.png"));
+	static const QIcon unknownIcon = QIcon(QString::fromUtf8(":/imuCostume/icons/nieznanydostepny.png"));
+
+
 	switch (connectionStatus)
 	{
 	case IMU::IIMUDataSource::ONLINE:
-		return QIcon(QString::fromUtf8(":/imuCostume/icons/dostepny.png"));		
+		return onlineIcon;
 	case IMU::IIMUDataSource::OFFLINE:
-		return QIcon(QString::fromUtf8(":/imuCostume/icons/niedostepny.png"));		
+		return offlineIcon;
 	case IMU::IIMUDataSource::CONNECTION_PROBLEMS:
-		return QIcon(QString::fromUtf8(":/imuCostume/icons/czesciowodostepny.png"));
+		return connectionProblemsIcon;
 	case IMU::IIMUDataSource::UNKNOWN:
-		return QIcon(QString::fromUtf8(":/imuCostume/icons/nieznanydostepny.png"));
+		return unknownIcon;
 	default:
-		return QIcon(QString::fromUtf8(":/imuCostume/icons/nieznanydostepny.png"));
+		return unknownIcon;
 	}
 }
 
@@ -580,7 +586,7 @@ void IMUCostumeWidget::onLoadProfile()
 
 	PLUGIN_LOG_DEBUG("Calibration initialized");
 
-	auto canOpenStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::RawDataStream::value_type, IMU::CANopenFramesStream::value_type, IMU::RawToCANopenExtractor>>(cd.rawDataStream, IMU::RawToCANopenExtractor());
+	auto canOpenStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::RawDataStream::value_type, IMU::CANopenFramesStream::value_type, IMU::RawToCANopenExtractor>>(cd.rawDataStream);
 
 	PLUGIN_LOG_DEBUG("canOpenStream created");
 
@@ -594,7 +600,7 @@ void IMUCostumeWidget::onLoadProfile()
 
 	PLUGIN_LOG_DEBUG("Minimum samples for estimation algorithms done");
 
-	auto costumeStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::CANopenFramesStream::value_type, IMU::CostumeStream::value_type, IMU::CANopenDataExtractor>>(canOpenStream, IMU::CANopenDataExtractor());
+	auto costumeStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::CANopenFramesStream::value_type, IMU::CostumeStream::value_type, IMU::CANopenDataExtractor>>(canOpenStream);
 
 	PLUGIN_LOG_DEBUG("costumeStream created");
 
@@ -638,7 +644,7 @@ void IMUCostumeWidget::onLoadProfile()
 
 	try{
 		//inicjalizacja algorytmu estymacji szkieletu
-		profile->motionEstimationAlgorithm->initialize(profile->skeleton,	sa);
+		profile->motionEstimationAlgorithm->initialize(profile->skeleton, sa);
 		//�adowanie
 		ds->loadCalibratedCostume(id, profile);
 		ui->recordPushButton->setEnabled(true);

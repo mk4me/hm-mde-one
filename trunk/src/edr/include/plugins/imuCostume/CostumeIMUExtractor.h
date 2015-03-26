@@ -225,7 +225,7 @@ namespace IMU
 	class IMU_EXPORT ExtractCostumeMotion
 	{
 	public:
-		ExtractCostumeMotion(ExtractCostumeMotion&& other) : skeletonState(std::move(other.skeletonState)){}
+		ExtractCostumeMotion(ExtractCostumeMotion&& other);
 		ExtractCostumeMotion(
 			IMU::CostumeProfilePtr profile,
 			const IMU::DataIndexToJointMapping & dataMapping);

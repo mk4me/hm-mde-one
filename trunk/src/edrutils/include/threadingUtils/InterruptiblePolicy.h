@@ -75,7 +75,7 @@ namespace threadingUtils
 		class Period = std::chrono::milliseconds>
 			static void wait(std::condition_variable & cv,
 			std::unique_lock<std::mutex> & lock,
-			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(1))
+			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(0))
 		{
 			cv.wait(lock);
 		}
@@ -85,7 +85,7 @@ namespace threadingUtils
 			static void wait(std::condition_variable & cv,
 			std::unique_lock<std::mutex> & lock,
 			Predicate pred,
-			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(1))
+			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(0))
 		{
 			cv.wait(lock, pred);
 		}
@@ -94,7 +94,7 @@ namespace threadingUtils
 		class Period = std::chrono::milliseconds>
 			static void wait(std::condition_variable_any & cva,
 			Lockable & lock,
-			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(1))
+			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(0))
 		{
 			std::unique_lock<Lockable> l(lock);
 			cva.wait(lock);

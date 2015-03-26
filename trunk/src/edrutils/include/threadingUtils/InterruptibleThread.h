@@ -25,38 +25,39 @@ namespace threadingUtils
 	class InterrubtibleThread
 	{
 	public:
+		//! Typ polityki przerywania wątku
 		typedef InterruptiblePolicyT InterruptiblePolicy;
 
 	private:
-
+		//! Struktura zawierająca prywatny, współdzielony stan wątku
 		struct SharedState
 		{
-			SharedState()
-			{
-
-			}
-
-			~SharedState()
-			{
-
-			}
-
+			//! Obiekt polityki przerywania
 			InterruptiblePolicy interruptible;
 		};
 
-
 	public:
 
+		//! Kosntruktor domyślny
 		InterrubtibleThread() : sharedState(utils::make_shared<SharedState>())  {}
+		//! \param Other Przenoszony wątek
 		InterrubtibleThread(InterrubtibleThread&& Other)  : sharedState(std::move(Other.sharedState)), thread(std::move(Other.thread)) {}
+		//! Konstruktor kopiujący
 		InterrubtibleThread(const InterrubtibleThread&) = delete;
+		//! Destruktor wirtualny
 		virtual ~InterrubtibleThread() {}
 
-
+		//! Operator przypisania
+		//! \param Other przenoszony wątek
 		InterrubtibleThread& operator=(InterrubtibleThread&& Other) { sharedState = std::move(Other.sharedState); thread = std::move(Other.thread); }
+		//! Operator przypisania		
 		InterrubtibleThread& operator=(const InterrubtibleThread&) = delete;
 
+		//! \tparam F Typ funkcji jaką wołamy w wątku
+		//! \tparam Args Typy argumentów przekazywanych do funkcji
 		template<class F, class... Args>
+		//! \param f Funkcja którą wołamy w wątku
+		//! \param arguments Argumenty przekazywane do funkcji
 		void run(F&& f, Args &&... arguments)
 		{
 			std::function<void()> ff(std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...));
@@ -77,21 +78,33 @@ namespace threadingUtils
 			}, sharedState);
 		}
 
+		//! \param Other Zamieniany wątek
 		void swap(InterrubtibleThread& Other) { std::swap(sharedState, Other.sharedState); std::swap(thread, Other.thread); }
+		//! \return Czy można dołączyć do wątku
 		const bool joinable() const { return thread.joinable(); }
+		//! Dołancza się do wątku, czeka na jego zakończenie
 		void join() { thread.join(); }
+		//! Zwalnia wątek - żyje samodzielnie, nie mamy już nad nim kontroli z poziomu tej klasy
 		void detach() { thread.detach(); }
+		//! \return Identyfikator wątku
 		std::thread::id get_id() const { return thread.get_id(); }
+		//! \return Uchwyt wątku specyficzny dla platformy
 		std::thread::native_handle_type native_handle() { return thread.native_handle(); }
+		//! Przerwania wątku
 		void interrupt() { interruptible.interrupt(); }
+		//! \return Czy wątek jest przerywalny
 		const bool interruptible() const { return sharedState->interruptible.interruptible(); }
+		//! Sprawdzenie przerwania wątku
 		static void interruptionPoint() { InterruptiblePolicy::interruptionPoint(); }
+		//! Reset przerwania wątku
 		static void resetInterruption() { InterruptiblePolicy::resetInterruption(); }
 
 	protected:
+		//! Faktyczny wątek
 		RunnableThread thread;
 
 	private:
+		//! Prywatny stan wątku
 		utils::shared_ptr<SharedState> sharedState;
 	};
 
@@ -107,24 +120,12 @@ namespace threadingUtils
 
 		struct SharedState
 		{
-			SharedState()
-			{
-
-			}
-
-			~SharedState()
-			{
-
-			}
-
 			std::atomic<bool> finalize;
 			std::mutex functionMutex;
 			std::condition_variable functionCondition;
 			utils::shared_ptr<FunctionWrapper> functionWrapper;
 			InterruptiblePolicy interruptible;
 		};
-
-
 
 	public:
 
