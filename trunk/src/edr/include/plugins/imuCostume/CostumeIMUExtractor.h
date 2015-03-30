@@ -255,12 +255,10 @@ namespace IMU
 		void extract(const IMU::MotionStream::value_type & input, IMU::SkeletonStateStream::value_type & output) const;
 
 		const kinematic::SkeletonState & skeletonState() const;
-		float currentTime() const;
 
 	private:
 
 		mutable kinematic::SkeletonState skeletonState_;
-		mutable float currentTime_;
 	};
 
 	class IMU_EXPORT RawToCANopenExtractor

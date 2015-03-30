@@ -236,7 +236,7 @@ ArrayExtractor::~ArrayExtractor()
 
 }
 
-//! \param idx Index obiketu ktï¿½ry chcemy wypakowywaï¿½ z wektora
+//! \param idx Index obiketu który chcemy wypakowywaæ z wektora
 CompoundArrayExtractor::CompoundArrayExtractor(const unsigned int idx)
 	: idx(idx)
 {
@@ -302,12 +302,6 @@ void CANopenDataExtractor::extract(const IMU::CANopenFramesStream::value_type & 
 {
 	//PLUGIN_LOG_ERROR("CANopenDataExtractor");
 	ret = imuCostume::Costume::convert(a);
-}
-
-ExtractCostumeMotion::ExtractCostumeMotion(ExtractCostumeMotion&& other) :
-		skeletonState(std::move(other.skeletonState)),
-		previousTime(0)
-{
 }
 
 ExtractCostumeMotion::ExtractCostumeMotion(
@@ -377,7 +371,8 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Mo
 		auto ret = profile->motionEstimationAlgorithm->estimate(motionState, input.sensorsData, deltaTime);
 		output.second.position = ret.position;
 		output.second.jointsOrientations = ret.jointsOrientations;
-		output.first = (double)previousTime / 1000.0;
+		//output.first = (double)previousTime / 1000.0;
+		output.first = previousTime;
 	}
 	catch (...){
 
@@ -385,15 +380,15 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Mo
 }
 
 KinematicStreamExtractor::KinematicStreamExtractor(kinematic::SkeletonState && skeletonState)
-	: skeletonState_(std::move(skeletonState)), currentTime_(0)
+	: skeletonState_(std::move(skeletonState))
 {
 
 }
 
-
-KinematicStreamExtractor::KinematicStreamExtractor(KinematicStreamExtractor&& other) :
-		skeletonState_(std::move(other.skeletonState_)), currentTime_(0)
+KinematicStreamExtractor::KinematicStreamExtractor(KinematicStreamExtractor&& other)
+	: skeletonState_(std::move(other.skeletonState_))
 {
+
 }
 
 KinematicStreamExtractor::~KinematicStreamExtractor()
@@ -428,11 +423,6 @@ void KinematicStreamExtractor::extract(const IMU::MotionStream::value_type & inp
 const kinematic::SkeletonState & KinematicStreamExtractor::skeletonState() const
 {
 	return skeletonState_;
-}
-
-float KinematicStreamExtractor::currentTime() const
-{
-	return currentTime_;
 }
 
 RawToCANopenExtractor::RawToCANopenExtractor()

@@ -1,4 +1,4 @@
-/********************************************************************
+﻿/********************************************************************
 	created:  2014/10/07	10:52:53
 	filename: InterruptiblePolicy.h
 	author:	  Mateusz Janiak
@@ -18,7 +18,10 @@
 
 namespace threadingUtils
 {
-	//! Wyj�tek rzucany przy przerywaniu w�tku
+	//! Domyslny timeout
+	static const std::chrono::milliseconds DefaultTimeout = std::chrono::milliseconds(1);
+
+	//! Wyjątek rzucany przy przerywaniu wątku
 	class ThreadInterruptedException : public std::runtime_error
 	{
 	public:
@@ -30,8 +33,8 @@ namespace threadingUtils
 		virtual ~ThreadInterruptedException() {}
 	};
 
-	//! \tparam InterruptiblePolicy Polityka przerywalno�ci w�tku
-	//! RAII u�ywane do inicjalizacji w�tku wspieraj�cego przerywanie
+	//! \tparam InterruptiblePolicy Polityka przerywalności wątku
+	//! RAII używane do inicjalizacji wątku wspierającego przerywanie
 	template<typename InterruptiblePolicy>
 	struct InterruptibleThreadGuard
 	{
@@ -50,7 +53,7 @@ namespace threadingUtils
 		InterruptiblePolicy & interrupt;
 	};
 
-	//! Polityka bez przerywalno�ci
+	//! Polityka bez przerywalności
 	class NoInterruptiblePolicy
 	{
 	public:
@@ -70,51 +73,81 @@ namespace threadingUtils
 
 		static void initializeContext(void*& privateData) {}
 		static void deinitializeContext(void*& privateData) {}
+		
+		static void wait(std::condition_variable & cv,
+			std::unique_lock<std::mutex> & lock)
+		{
+			wait(cv, lock, DefaultTimeout);
+		}
 
-		template<class Rep = long long,
-		class Period = std::chrono::milliseconds>
-			static void wait(std::condition_variable & cv,
+		template<class Rep, class Period>
+		static void wait(std::condition_variable & cv,
 			std::unique_lock<std::mutex> & lock,
-			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(0))
+			const std::chrono::duration<Rep, Period> & timeout)
 		{
 			cv.wait(lock);
 		}
 
-		template<typename Predicate, class Rep = long long,
-		class Period = std::chrono::milliseconds>
-			static void wait(std::condition_variable & cv,
+		template<typename Predicate>
+		static void wait(std::condition_variable & cv,
+			std::unique_lock<std::mutex> & lock,
+			Predicate pred)
+		{
+			wait(cv, lock, pred, DefaultTimeout);
+		}
+
+		template<typename Predicate, class Rep,	class Period>
+		static void wait(std::condition_variable & cv,
 			std::unique_lock<std::mutex> & lock,
 			Predicate pred,
-			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(0))
+			const std::chrono::duration<Rep, Period> & timeout)
 		{
 			cv.wait(lock, pred);
 		}
 
-		template<typename Lockable, class Rep = long long,
-		class Period = std::chrono::milliseconds>
-			static void wait(std::condition_variable_any & cva,
+		template<typename Lockable>
+		static void wait(std::condition_variable_any & cva,
+			Lockable & lock)
+		{
+			wait(cva, lock, DefaultTimeout);
+		}
+
+		template<typename Lockable, class Rep, class Period>
+		static void wait(std::condition_variable_any & cva,
 			Lockable & lock,
-			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(0))
+			const std::chrono::duration<Rep, Period> & timeout)
 		{
 			std::unique_lock<Lockable> l(lock);
 			cva.wait(lock);
 		}
 
-		template<typename Lockable, typename Predicate, class Rep = long long,
-		class Period = std::chrono::milliseconds>
-			static void wait(std::condition_variable_any & cva,
+		template<typename Lockable, typename Predicate>
+		static void wait(std::condition_variable_any & cva,
+			Lockable & lock,
+			Predicate pred)
+		{
+			wait(cva, lock, pred, DefaultTimeout);
+		}
+
+		template<typename Lockable, typename Predicate, class Rep, class Period>
+		static void wait(std::condition_variable_any & cva,
 			Lockable & lock,
 			Predicate pred,
-			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(1))
+			const std::chrono::duration<Rep, Period> & timeout)
 		{
 			std::unique_lock<Lockable> l(lock);
 			cva.wait(lock, pred);
 		}
 
-		template<typename T, class Rep = long long,
-		class Period = std::chrono::milliseconds>
-			static void wait(std::future<T> & f,
-			const std::chrono::duration<Rep, Period> & timeout = std::chrono::milliseconds(1))
+		template<typename T>
+		static void wait(std::future<T> & f)
+		{
+			wait(f, DefaultTimeout);
+		}
+
+		template<typename T, class Rep,	class Period>
+		static void wait(std::future<T> & f, 
+			const std::chrono::duration<Rep, Period> & timeout)
 		{
 			f.wait();
 		}
@@ -184,100 +217,99 @@ namespace threadingUtils
 			
 			return !ret;
 		}
+		
+		static void wait(std::condition_variable & cv,
+			std::unique_lock<std::mutex> & lock)
+		{
+			wait(cv, lock, DefaultTimeout);			
+		}
 
-		template<typename Duration>
+		template<class Rep,	class Period>
 		static void wait(std::condition_variable & cv,
 			std::unique_lock<std::mutex> & lock,
-			const Duration & timeout = Duration(1))
+			const std::chrono::duration<Rep, Period> & timeout)
 		{
 			interruptionPoint();
 			InterruptFlag::threadInterruptFlag()->setConditionVariable(cv);
 			InterruptFlag::ClearConditionVariableOnDestruct guard;
-			interruptionPoint();
-			cv.wait_for(lock, timeout);			
-			interruptionPoint();
+			do{
+				interruptionPoint();
+			} while (cv.wait_for(lock, timeout) == std::cv_status::timeout);
 		}
 
-		template<typename Predicate, typename Duration>
+		template<typename Predicate>
+		static void wait(std::condition_variable & cv,
+			std::unique_lock<std::mutex> & lock,
+			Predicate pred)
+		{
+			wait(cv, lock, pred, DefaultTimeout);
+		}
+
+		template<typename Predicate, class Rep, class Period>
 		static void wait(std::condition_variable & cv,
 			std::unique_lock<std::mutex> & lock,
 			Predicate pred,
-			const Duration & timeout = Duration(1))
+			const std::chrono::duration<Rep, Period> & timeout)
 		{
-			bool res = false;
 			interruptionPoint();
 			InterruptFlag::threadInterruptFlag()->setConditionVariable(cv);
 			InterruptFlag::ClearConditionVariableOnDestruct guard;
-			while ((InterruptFlag::threadInterruptFlag()->isSet() == false) && ((res = pred()) == false))
-			{
-				cv.wait_for(lock, timeout);
-			}
-
-			if (res == false){
+			do{
 				interruptionPoint();
-			}
+			} while (cv.wait_for(lock, timeout, pred) == false);
 		}
 
+		//! Czekanie przerywalne na wďż˝asnym obiekcie synchronizujďż˝cym		
 		template<typename Lockable>
-		static void wait(std::condition_variable_any & cva,
-			Lockable & lock)
+		static void wait(std::condition_variable_any& cv, Lockable& lk)
 		{
-			InterruptFlag::threadInterruptFlag()->wait(cva, lock);
+			wait(cv, lk, DefaultTimeout);
 		}
 
-		template<typename Lockable, typename Predicate, typename Duration>
-		static void wait(std::condition_variable_any & cva,
-			Lockable & lock,Predicate pred,
-			const Duration & timeout = Duration(1))
+		template<typename Lockable, class Rep, class Period>
+		static void wait(std::condition_variable_any& cv, Lockable& lk,
+			const std::chrono::duration<Rep, Period> & timeout)
 		{
-			InterruptFlag::threadInterruptFlag()->wait(cva, lock, pred, timeout);
-		}
-
-		template<typename Lockable, typename Duration>
-		static void wait(Lockable & lock,
-			const Duration & timeout = Duration(1))
-		{
-			while (InterruptFlag::threadInterruptFlag()->isSet() == false)
-			{
-				if (lock.try_lock() == true){
-					break;
-				}
-
-				std::this_thread::sleep_for(timeout);
-			}
-
 			interruptionPoint();
-		}
-
-		template<typename Predicate, typename Duration>
-		static void wait(Predicate pred,
-			const Duration & timeout = Duration(1))
-		{
-			bool res = false;
-			while (InterruptFlag::threadInterruptFlag()->isSet() == false && (res = pred()) == false)
-			{
-				std::this_thread::sleep_for(timeout);
-			}
-
-			if (res == false){
+			InterruptFlag::CustomLock<Lockable> cl(InterruptFlag::threadInterruptFlag(), cv, lk);
+			do{
 				interruptionPoint();
-			}
+			} while (cv.wait_for(cl, timeout) == std::cv_status::timeout);
 		}
 
-		template<typename T, typename Duration>
-		static void wait(std::future<T> & f,
-			const Duration & timeout = Duration(1))
+		//! Czekanie przerywalne z predykatem na wďż˝asnym obiekcie synchornizujďż˝cym
+		template<typename Lockable, typename Predicate>
+		static void wait(std::condition_variable_any& cv, Lockable& lk, Predicate pred)
 		{
-			std::mutex mutex;
-			std::unique_lock<std::mutex> lk(mutex);
-			while (InterruptFlag::threadInterruptFlag()->isSet() == false)
-			{
-				if (f.wait_for(lk, timeout) == std::future_status::ready){
-					break;
-				}
-			}
+			wait(cv, lk, pred, DefaultTimeout);
+		}
 
+		template<typename Lockable, typename Predicate, class Rep, class Period>
+		static void wait(std::condition_variable_any & cv,
+			Lockable & lk,
+			Predicate pred,
+			const std::chrono::duration<Rep, Period> & timeout)
+		{
 			interruptionPoint();
+			InterruptFlag::CustomLock<Lockable> cl(InterruptFlag::threadInterruptFlag(), cv, lk);
+			do{
+				interruptionPoint();
+			} while (cv.wait_for(cl, timeout, pred) == false);
+		}
+
+		template<typename T>
+		static void wait(std::future<T> & f)
+		{
+			wait(f, DefaultTimeout);
+		}
+
+		template<typename T, class Rep, class Period>
+		static void wait(std::future<T> & f,
+			const std::chrono::duration<Rep, Period> & timeout)
+		{
+			do{
+				interruptionPoint();
+			} while (f.wait_for(timeout) == std::future_status::timeout);
 		}
 	};
 }

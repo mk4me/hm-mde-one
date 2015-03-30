@@ -2,7 +2,7 @@
 
 using namespace threadingUtils;
 
-InterruptFlag::InterruptFlag() : threadCond(0), threadCondAny(0)
+InterruptFlag::InterruptFlag() : threadCond(nullptr), threadCondAny(nullptr)
 {
 
 }
@@ -49,6 +49,7 @@ void InterruptFlag::threadReset()
 InterruptFlag *& InterruptFlag::threadInterruptFlag()
 {
 	//! Zmienna lokalna w¹tku z flag¹
+	//HACK - to powinno iœæ jako niezale¿na zmienna
 	static thread_local InterruptFlag * threadInterruptFlag_ = nullptr;
 	return threadInterruptFlag_;
 }
@@ -64,10 +65,3 @@ void InterruptFlag::clearConditionVariable()
 	std::lock_guard<std::mutex> lk(setClearMutex);
 	threadCond = nullptr;
 }
-
-InterruptFlag::ClearConditionVariableOnDestruct::~ClearConditionVariableOnDestruct()
-{
-	threadInterruptFlag()->clearConditionVariable();
-}
-
-//thread_local InterruptFlag * InterruptFlag::threadInterruptFlag_ = nullptr;

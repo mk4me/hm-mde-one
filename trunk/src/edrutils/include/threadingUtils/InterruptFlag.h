@@ -30,6 +30,18 @@ namespace threadingUtils
 		//! Obiekt synchronizuj�cy
 		std::mutex setClearMutex;
 
+	public:
+
+		//! Struktura pomocnicza przy zwalnianiu zmiennej warunkowej w przypadku wyj�tku przerwania
+		struct ClearConditionVariableOnDestruct
+		{
+			//! Destruktor
+			~ClearConditionVariableOnDestruct()
+			{
+				threadInterruptFlag()->clearConditionVariable();
+			}
+		};
+
 		//! \tparam Lockable Typ obiektu synchronizuj�cego
 		//! Klasa wpiera funkcjonalno�c przerywania oczekiwania na customowych obiektach synchronizuj�cych
 		template<typename Lockable>
@@ -72,17 +84,13 @@ namespace threadingUtils
 			//! Przywraca stan zasob�w flagi
 			~CustomLock()
 			{
-				self->threadCondAny = 0;
+				self->threadCondAny = nullptr;
 				self->setClearMutex.unlock();
 			}
-		};	
-
-		//! Struktura pomocnicza przy zwalnianiu zmiennej warunkowej w przypadku wyj�tku przerwania
-		struct ClearConditionVariableOnDestruct
-		{
-			//! Destruktor
-			~ClearConditionVariableOnDestruct();
 		};
+
+		template<typename Lockable>
+		friend class CustomLock;
 
 	public:
 
