@@ -247,7 +247,7 @@ namespace IMU
 	{
 	public:
 		KinematicStreamExtractor(kinematic::SkeletonState && skeletonState);
-		KinematicStreamExtractor(KinematicStreamExtractor&& other) : skeletonState_(std::move(other.skeletonState_)) {}
+		KinematicStreamExtractor(KinematicStreamExtractor&& other);
 		~KinematicStreamExtractor();
 
 		bool verify(const IMU::MotionStream::value_type & input) const;

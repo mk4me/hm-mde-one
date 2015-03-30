@@ -10,7 +10,7 @@
 #define PRINT OutputDebugString
 #else // __WIN32__
 #include <cstdio>
-#define PRINT printf
+#define PRINT(x) printf("%s", (x));
 #endif // __WIN32__
 
 #define BUFFER_SIZE 256

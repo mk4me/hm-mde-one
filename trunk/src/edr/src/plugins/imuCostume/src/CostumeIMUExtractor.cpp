@@ -236,7 +236,7 @@ ArrayExtractor::~ArrayExtractor()
 
 }
 
-//! \param idx Index obiketu który chcemy wypakowywaæ z wektora
+//! \param idx Index obiketu ktï¿½ry chcemy wypakowywaï¿½ z wektora
 CompoundArrayExtractor::CompoundArrayExtractor(const unsigned int idx)
 	: idx(idx)
 {
@@ -302,6 +302,12 @@ void CANopenDataExtractor::extract(const IMU::CANopenFramesStream::value_type & 
 {
 	//PLUGIN_LOG_ERROR("CANopenDataExtractor");
 	ret = imuCostume::Costume::convert(a);
+}
+
+ExtractCostumeMotion::ExtractCostumeMotion(ExtractCostumeMotion&& other) :
+		skeletonState(std::move(other.skeletonState)),
+		previousTime(0)
+{
 }
 
 ExtractCostumeMotion::ExtractCostumeMotion(
@@ -382,6 +388,12 @@ KinematicStreamExtractor::KinematicStreamExtractor(kinematic::SkeletonState && s
 	: skeletonState_(std::move(skeletonState)), currentTime_(0)
 {
 
+}
+
+
+KinematicStreamExtractor::KinematicStreamExtractor(KinematicStreamExtractor&& other) :
+		skeletonState_(std::move(other.skeletonState_)), currentTime_(0)
+{
 }
 
 KinematicStreamExtractor::~KinematicStreamExtractor()

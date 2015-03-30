@@ -20,6 +20,19 @@
 #include <corelib/Exceptions.h>
 #include <plugins/imuCostume/Streams.h>
 
+
+std::string vectorParameterName(const unsigned int idx)
+{
+	switch (idx)
+	{
+	case 0:	return "x";
+	case 1:	return "y";
+	case 2:	return "z";
+	case 3:	return "w";
+	default: return QObject::tr("Unknown").toStdString();
+	}
+}
+
 class JointStreamExtractor
 {
 public:
@@ -228,7 +241,7 @@ core::HierarchyDataItemPtr extracImuStreamVector(core::VariantsList & domainData
 	const std::string & paramName,
 	const QString & units, const double minY, const double maxY)
 {
-	auto vec3Stream = utils::make_shared<threadingUtils::StreamAdapterT<StreamType::value_type, IMU::Vec3Stream::value_type, Extractor>>(stream);
+	auto vec3Stream = utils::make_shared<threadingUtils::StreamAdapterT<typename StreamType::value_type, IMU::Vec3Stream::value_type, Extractor>>(stream);
 
 	auto ow = core::Variant::wrapp<IMU::Vec3Stream>(vec3Stream);
 	ow->setMetadata("core/name", paramName);
@@ -797,17 +810,6 @@ std::string sensorParameterName(const unsigned int idx)
 	}
 }
 
-std::string vectorParameterName(const unsigned int idx)
-{
-	switch (idx)
-	{
-	case 0:	return "x";
-	case 1:	return "y";
-	case 2:	return "z";
-	case 3:	return "w";
-	default: return QObject::tr("Unknown").toStdString();
-	}
-}
 
 core::HierarchyItemPtr IMUCostumeDataSource::fillRawCostumeData(CostumeData & cData)
 {

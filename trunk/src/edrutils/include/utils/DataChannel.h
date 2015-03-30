@@ -565,6 +565,8 @@ namespace utils {
 			}
 		}
 
+		virtual ~RawUniformDataChannel() {}
+
 	public:
 		virtual RawUniformDataChannel<PointType, TimeType> * clone() const
 		{

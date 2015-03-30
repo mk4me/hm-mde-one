@@ -56,7 +56,7 @@ public:
     toggleEnabled(false),
     toggled(false)
     {
-        onStyleChanged();
+        this->onStyleChanged();
     }
 
     //! Konstruktor dla obiektu o cechach osgWidget::Widget
@@ -68,7 +68,7 @@ public:
     toggleEnabled(false),
     toggled(false)
     {
-        onStyleChanged();
+        this->onStyleChanged();
     }
 
     //! Konstruktor dla obiektu o cechach osgWidget::Label
@@ -80,7 +80,7 @@ public:
     toggleEnabled(false),
     toggled(false)
     {
-        onStyleChanged();
+        this->onStyleChanged();
     }
 
 
@@ -95,8 +95,10 @@ public:
         toggleEnabled(button.toggleEnabled),
         toggled(button.toggled)
     {
-        onStyleChanged();
+        this->onStyleChanged();
     }
+
+    virtual ~Buttonized() {}
 
 public:
     //!
@@ -106,7 +108,7 @@ public:
     virtual bool mousePush(double x, double y, const osgWidget::WindowManager* manager)
     {
         pushed = true;
-        onStyleChanged();
+        this->onStyleChanged();
         return Base::mousePush(x, y , manager);
     }
     //!
@@ -117,7 +119,7 @@ public:
     {
         pushed = false;
         toggled = toggleEnabled ? !toggled : toggled;
-        onStyleChanged();
+        this->onStyleChanged();
         return Base::mouseRelease(x, y , manager);
     }
     //!
@@ -127,7 +129,7 @@ public:
     virtual bool mouseEnter(double x, double y, const osgWidget::WindowManager* manager)
     {
         hovered = true;
-        onStyleChanged();
+        this->onStyleChanged();
         return Base::mouseEnter(x, y , manager);
     }
     //!
@@ -137,7 +139,7 @@ public:
     virtual bool mouseLeave(double x, double y, const osgWidget::WindowManager* manager)
     {
         hovered = false;
-        onStyleChanged();
+        this->onStyleChanged();
         return Base::mouseLeave(x, y , manager);
     }
 
@@ -171,7 +173,7 @@ public:
     void setToggled(bool triggered)
     {
         this->toggled = triggered;
-        onStyleChanged();
+        this->onStyleChanged();
     }
 
 protected:
@@ -220,7 +222,7 @@ public:
 	void setAllColors(osgWidget::Color color)
 	{
 		normalColor = hoverColor = pushedColor = toggleColor = color;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getHoverColor() const
@@ -231,7 +233,7 @@ public:
 	void setHoverColor(osgWidget::Color hoverColor)
 	{
 		this->hoverColor = hoverColor;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getPushedColor() const
@@ -242,7 +244,7 @@ public:
 	void setPushedColor(osgWidget::Color clickedColor)
 	{
 		this->pushedColor = clickedColor;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getNormalColor() const
@@ -253,7 +255,7 @@ public:
 	void setNormalColor(osgWidget::Color normalColor)
 	{
 		this->normalColor = normalColor;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getToggleColor() const
@@ -264,7 +266,7 @@ public:
 	void setToggleColor(osgWidget::Color toggleColor)
 	{
 		this->toggleColor = toggleColor;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 
 protected:
@@ -331,7 +333,7 @@ public:
 	void setLabelAllColors(osgWidget::Color color)
 	{
 		normalColor = hoverColor = pushedColor = toggleColor = color;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getLabelHoverColor() const
@@ -342,7 +344,7 @@ public:
 	void setLabelHoverColor(osgWidget::Color hoverColor)
 	{
 		this->hoverColor = hoverColor;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getLabelPushedColor() const
@@ -353,7 +355,7 @@ public:
 	void setLabelPushedColor(osgWidget::Color clickedColor)
 	{
 		this->pushedColor = clickedColor;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getLabelNormalColor() const
@@ -364,7 +366,7 @@ public:
 	void setLabelNormalColor(osgWidget::Color normalColor)
 	{
 		this->normalColor = normalColor;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getLabelToggleColor() const
@@ -375,7 +377,7 @@ public:
 	void setLabelToggleColor(osgWidget::Color toggleColor)
 	{
 		this->toggleColor = toggleColor;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 
 protected:
@@ -437,7 +439,7 @@ public:
 	void setAllStyles(const std::string & allStyle)
 	{
 		normalStyle = hoverStyle = pushedStyle = toggleStyle = allStyle;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	const std::string & getHoverStyle() const
@@ -448,7 +450,7 @@ public:
 	void setHoverStyle(const std::string & hoverStyle)
 	{
 		this->hoverStyle = hoverStyle;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	const std::string & getPushedStyle() const
@@ -459,7 +461,7 @@ public:
 	void setPushedStyle(const std::string & pushedStyle)
 	{
 		this->pushedStyle = pushedStyle;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	const std::string & getNormalStyle() const
@@ -470,7 +472,7 @@ public:
 	void setNormalStyle(const std::string &  normalStyle)
 	{
 		this->normalStyle = normalStyle;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	const std::string & getToggleColor() const
@@ -481,7 +483,7 @@ public:
 	void setToggleStyle(const std::string &  toggleStyle)
 	{
 		this->toggleStyle = toggleStyle;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 
 protected:
@@ -513,6 +515,7 @@ protected:
 
 class IBorderStylePolicy {
 public:
+	virtual ~IBorderStylePolicy() {}
 	virtual osgWidget::Color getBorderNormalColor() const { return osgWidget::Color(); };
 	virtual void setBorderNormalColor(osgWidget::Color borderNormalColor) {};
 	virtual osgWidget::Color getBorderHoverColor() const { return osgWidget::Color(); };
@@ -559,6 +562,8 @@ public:    //!
 			   borderPushedColor(border.borderPushedColor)
 		   {}
 
+	virtual ~BorderStylePolicy() {}
+
 public:
 	//! \return
 	osgWidget::Color getBorderNormalColor() const
@@ -569,7 +574,7 @@ public:
 	void setBorderNormalColor(osgWidget::Color borderNormalColor)
 	{
 		this->borderNormalColor = borderNormalColor;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getBorderHoverColor() const
@@ -580,7 +585,7 @@ public:
 	void setBorderHoverColor(osgWidget::Color borderHoverColor)
 	{
 		this->borderHoverColor = borderHoverColor;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getBorderPushedColor() const
@@ -591,7 +596,7 @@ public:
 	void setBorderPushedColor(osgWidget::Color borderPushedColor)
 	{
 		this->borderPushedColor = borderPushedColor;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//! \return
 	osgWidget::Color getBorderToggleColor() const
@@ -602,13 +607,13 @@ public:
 	void setBorderToggleColor(osgWidget::Color borderToggleColor)
 	{
 		this->borderToggleColor = borderToggleColor;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 	//!
 	void setBorderAllColors(osgWidget::Color color)
 	{
 		borderNormalColor = borderHoverColor = borderPushedColor = borderToggleColor = color;
-		onStyleChanged();
+		this->onStyleChanged();
 	}
 
 protected:

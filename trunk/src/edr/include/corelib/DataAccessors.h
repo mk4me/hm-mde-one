@@ -121,4 +121,4 @@ namespace core {
     }
 }
 
-#endif HEADER_GUARD___DATAACCESSORS_H__
+#endif //HEADER_GUARD___DATAACCESSORS_H__

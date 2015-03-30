@@ -86,7 +86,7 @@ QString statusDescription(IMU::IIMUDataSource::ConnectionStatus connectionStatus
 
 IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	QWidget * parent, const Qt::WindowFlags f)
-	: QWidget(parent, f), ui(new Ui::IMUCostumeListWidget), ds(ds)
+	: QWidget(parent, f), ui(new Ui::IMUCostumeListWidget), ds(ds), recordIndex(0)
 {
 	ui->setupUi(this);
 	ui->costumesTreeWidget->clear();
