@@ -145,7 +145,7 @@ inline static std::string readStream(std::istream & stream)
 	std::string ret;
 
 	std::streamsize read = 0;
-	while ((read = forceReadSome(stream, buffer.get(), BufferSize)) > 0) { ret.append(buffer.get(), read); }
+	while ((read = forceReadSome(stream, buffer.get(), BufferSize)) > 0) { ret.append(buffer.get(), static_cast<unsigned int>(read)); }
 	return std::move(ret);
 }
 

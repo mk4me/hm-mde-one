@@ -119,9 +119,9 @@ const utils::TypeInfo & VideoVisualizer::VideoSerie::getRequestedDataType() cons
 
 void VideoVisualizer::VideoSerie::update()
 {
-	VideoStreamConstPtr stream;
-	data->get(stream);
-	visualizer->currentStreamTime = stream->getTime();
+	/*VideoStreamConstPtr stream;
+	data->get(stream);*/
+	visualizer->currentStreamTime = visualizer->stream->getTime();
 }
 
 const core::VariantConstPtr & VideoVisualizer::VideoSerie::getData() const

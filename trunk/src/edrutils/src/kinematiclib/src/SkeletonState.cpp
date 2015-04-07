@@ -466,8 +466,10 @@ void SkeletonState::setLocal(SkeletonState & skeletonState, const NonRigidComple
 void setLocalState(SkeletonState::JointPtr joint, const SkeletonState::RigidPartialStateChange & stateChange, const SkeletonState::LinearizedNodesMapping & mapping)
 {
 	SkeletonState::NodeIDX idx = mapping.right.at(joint->value.name());
-	auto rot = stateChange.rotations.at(idx);
-	joint->value.setLocal(rot);
+	auto rot = stateChange.rotations.find(idx);
+	if (rot != stateChange.rotations.end()) {
+		joint->value.setLocal(rot->second);
+	}
 	for (auto j : joint->children) {
 		setLocalState(j, stateChange, mapping);
 	}

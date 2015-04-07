@@ -63,13 +63,13 @@ public:
 		}
 
 		auto cs = viewManager->contentsCount(name());
-		for (int i = 0; i < cs; ++i){
+		for (unsigned int i = 0; i < cs; ++i){
 			auto c = viewManager->content(i, name());
 			config->registerContent(c);
 		}
 
 		auto ps = viewManager->perspectivesCount(name());
-		for (int i = 0; i < ps; ++i){
+		for (unsigned int i = 0; i < ps; ++i){
 			auto p = viewManager->perspective(i, name());
 			config->registerPerspective(p);
 		}
