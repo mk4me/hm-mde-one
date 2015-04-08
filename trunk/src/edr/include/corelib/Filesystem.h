@@ -6,7 +6,7 @@
 #define FILESYSTEM_H
 
 #include <corelib/Export.h>
-#include <vector>
+#include <list>
 #include <set>
 #include <string>
 #include <algorithm>
@@ -27,6 +27,16 @@ public:
     typedef boost::filesystem::directory_iterator Iterator;
     typedef boost::filesystem::recursive_directory_iterator RecursiveIterator;
 	typedef boost::uintmax_t size_t;
+
+	// Zbiór ścieżek
+	typedef std::list<Path> PathsList;
+	// Zbiór plików
+	typedef PathsList FilesList;
+
+	// Zbiór ścieżek
+	typedef std::set<Path> PathsSet;
+	// Zbiór plików
+	typedef PathsSet FilesSet;
 
 public:
 	/*
@@ -71,8 +81,8 @@ public:
 	@param recursive czy szukać plików w podfolderach
 	@return lista wszystkich plików wraz ze ścieżką
 	*/
-    static std::vector<std::string> listFiles(const std::string& path, bool recursive = false);
-    static std::vector<Path> listFiles(const Path& path, bool recursive = false);
+    static std::list<std::string> listFiles(const std::string& path, bool recursive = false);
+    static PathsList listFiles(const Path& path, bool recursive = false);
 	/*
 	Listuje wszystkie pliki danego folderu spełniające kryterium maski.
 	@param path ścieżka do folderu który ma być przeszukany
@@ -80,8 +90,8 @@ public:
 	@param mask rozszerzenie pliku, np. ".avi"
 	@return lista wszystkich plików wraz ze ścieżką
 	*/
-	static std::vector<std::string> listFiles(const std::string& path, bool recursive, const std::string& mask);
-    static std::vector<Path> listFiles(const Path& path, bool recursive, const std::string& mask);
+	static std::list<std::string> listFiles(const std::string& path, bool recursive, const std::string& mask);
+	static PathsList listFiles(const Path& path, bool recursive, const std::string& mask);
 	/*
 	Listuje wszystkie pliki danego folderu spełniające kryterium masek.
 	@param path ścieżka do folderu który ma być przeszukany
@@ -89,8 +99,8 @@ public:
 	@param mask wektor z rozszerzeniami szukanych plikow
 	@return lista wszystkich plików wraz ze ścieżką
 	*/
-	static std::vector<std::string> listFiles(const std::string& path, bool recursive, const std::vector<std::string>& masks);
-    static std::vector<Path> listFiles(const Path& path, bool recursive, const std::vector<std::string>& masks);
+	static std::list<std::string> listFiles(const std::string& path, bool recursive, const std::vector<std::string>& masks);
+	static PathsList listFiles(const Path& path, bool recursive, const std::vector<std::string>& masks);
 	/*
 	Listuje wszystkie pliki danego folderu spełniające kryterium przekazywanego filtru.
 	@tparam Path Typ opisujący ścieżkę
@@ -101,7 +111,7 @@ public:
 	@return lista wszystkich plików wraz ze ścieżką
 	*/
 	template<typename Path, typename Predicate>
-	static std::vector<Path> listFilteredFiles(const Path& path, bool recursive, Predicate filter)
+	static PathsList listFilteredFiles(const Path& path, bool recursive, Predicate filter)
 	{
 		auto ret(listFiles(path, recursive));
 		auto eIT = std::remove_if(ret.begin(), ret.end(), [&](const Path& path) { return !filter(path); });
@@ -113,8 +123,8 @@ public:
 	@param path ścieżka do folderu który ma być przeszukany
 	@return lista wszystkich podfolderów wraz ze ścieżką
 	*/
-	static std::vector<std::string> listSubdirectories(const std::string& path);
-    static std::vector<Path> listSubdirectories(const Path& path);
+	static std::list<std::string> listSubdirectories(const std::string& path);
+	static PathsList listSubdirectories(const Path& path);
     /*
 	Sprawdza czy podana scieżka wskazuje zwykły plik
 	@param path ścieżka do sprawdzenia
@@ -183,12 +193,6 @@ public:
 	static const size_t size(const std::string & path);
 	static const size_t size(const Path & path);
 };
-
-// Zbiór ścieżek
-typedef std::set<Filesystem::Path> Paths;
-// Zbiór plików
-typedef Paths Files;
-
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace core

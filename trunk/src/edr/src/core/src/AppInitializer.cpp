@@ -30,14 +30,14 @@ public:
 	}
 
 	//! Metoda uruchamiaj�ca aplikacje, pobiera jako parametr wzorca widok kt�ry b�dzie uruchomiony, widok powinien dziedziczy� po CoreMainWindow
-	int start(coreUI::CoreMainWindow * mainWindow)
+	int start(CoreMainWindow * mainWindow)
 	{
 		int result = 0;
 		if (initUIContextRes == 1){
 			result = 1;
 		}
 		else{
-			coreUI::SingleInstanceWindow * siw = dynamic_cast<coreUI::SingleInstanceWindow*>(mainWindow);
+			SingleInstanceWindow * siw = dynamic_cast<SingleInstanceWindow*>(mainWindow);
 			bool allowed = true;
 			if (siw != nullptr){
 				if (siw->isSingle() == false){
@@ -66,7 +66,7 @@ public:
 
 						CORE_LOG_INFO("Unused translation files:\n" << files);
 
-						std::vector<Filesystem::Path>().swap(translations);
+						Filesystem::PathsList().swap(translations);
 					}
 
 					mainWindow->init(plugin::__coreApplication);
@@ -101,17 +101,17 @@ public:
 		return result;
 	}
 
-	coreUI::CoreMainWindow::CloseUpOperations cleanUp() const
+	CoreMainWindow::CloseUpOperations cleanUp() const
 	{
 		return cleanUp_;
 	}
 
 private:
-	std::vector<Filesystem::Path> translations;
+	Filesystem::PathsList translations;
 	utils::shared_ptr<Application> coreApplication;
 	MainViewApplication mainViewApplication;
 	int initUIContextRes;
-	coreUI::CoreMainWindow::CloseUpOperations cleanUp_;
+	CoreMainWindow::CloseUpOperations cleanUp_;
 };
 
 AppInitializer::AppInitializer(int & argc, char *argv[], const std::string & appName) : impl(new AppInitializerImpl(argc, argv, appName))
@@ -122,12 +122,12 @@ AppInitializer::~AppInitializer()
 {
 }
 
-int AppInitializer::start(coreUI::CoreMainWindow * mainWindow)
+int AppInitializer::start(CoreMainWindow * mainWindow)
 {
 	return impl->start(mainWindow);
 }
 
-coreUI::CoreMainWindow::CloseUpOperations AppInitializer::cleanUp() const
+CoreMainWindow::CloseUpOperations AppInitializer::cleanUp() const
 {
 	return impl->cleanUp();
 }

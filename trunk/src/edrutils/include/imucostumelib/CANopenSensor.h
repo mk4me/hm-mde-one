@@ -49,7 +49,7 @@ namespace imuCostume
 
 		enum ErrorCode
 		{
-			NO_ERROR = 0x00,
+			ERROR_OK = 0x00,
 			NO_TOOGLE_BIT = 0x05030000,
 			OUT_OF_MEMORY = 0x05030005,
 			UNKNOWN_COMMAND = 0x06040001,

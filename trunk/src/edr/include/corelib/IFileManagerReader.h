@@ -23,7 +23,7 @@ namespace core {
 		virtual ~IFileManagerReaderOperations() {}
 
 		//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
-		virtual void getFiles(Files & files) const = 0;
+		virtual void getFiles(Filesystem::FilesSet & files) const = 0;
 
 		//! \param file Plik kótry weryfikujemy czy jest zarz¹dzany przez DM
 		//! \return Prawda jeœli plik jest zarz¹dzany przez ten DM

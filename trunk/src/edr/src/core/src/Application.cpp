@@ -101,7 +101,7 @@ void Application::showSplashScreenMessage(const QString & message)
 }
 
 int Application::initUIContext(int & argc, char *argv[], const std::string & appName,
-	std::vector<Filesystem::Path> & coreTranslations)
+	Filesystem::PathsList & coreTranslations)
 {
 	//obs?uga argument?w i opisu uzycia aplikacji z konsoli
 	osg::ArgumentParser arguments(&argc, argv);
@@ -234,7 +234,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 }
 
 void Application::initWithUI(CoreMainWindow * mainWindow,
-	std::vector<Filesystem::Path> & translations)
+	Filesystem::PathsList & translations)
 {
 	this->mainWindow = mainWindow;
 	mainWindow->splashScreen();

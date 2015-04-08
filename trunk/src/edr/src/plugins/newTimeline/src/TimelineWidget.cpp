@@ -9,6 +9,8 @@
 #include "ChannelCheckbox.h"
 #include "ChannelWidget.h"
 #include <timelinelib/Controller.h>
+#include <plugins/newTimeline/ITimelineService.h>
+#include <corelib/IServiceManager.h>
 
 
 TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidget * parent, Qt::WindowFlags f)
@@ -393,12 +395,10 @@ void TimelineWidget::playbackDirectionChanged(bool backward)
 
 void TimelineWidget::pause(bool playTimeline)
 {
-    if(playTimeline == false){
-        getController()->pause();
-    }else{
-        //getController()->play();
-		//TODO resume
-    }
+	auto timeline = core::queryService<ITimelineService>(plugin::getServiceManager());
+	if (timeline != nullptr){
+		timeline->setPlaying(playTimeline);
+	}
 }
 
 void TimelineWidget::toBegin()

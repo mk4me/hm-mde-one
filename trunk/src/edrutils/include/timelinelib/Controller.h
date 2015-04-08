@@ -66,8 +66,12 @@ namespace timeline{
 
 		//------------------------------- Zarzadzanie odtwarzaniem ------------------------------
 
-		//! Uruchamia timeline - odtwarzanie
+		//! Uruchamia wątek timeline - odtwarzanie
 		virtual void run() = 0;
+
+		virtual void finalize() = 0;
+
+		virtual void play() = 0;
 
 		//! Wstrzymuje odtwarzanie timeline
 		virtual void pause() = 0;
@@ -135,7 +139,7 @@ namespace timeline{
 		virtual Model::TChannelConstPtr findChannel(const std::string & path) const = 0;
 	};
 
-	class Controller : public IController, public std::recursive_mutex
+	class Controller : public IController
 	{
 	protected:
 
@@ -150,9 +154,20 @@ namespace timeline{
 		{
 		public:
 			Timer(unsigned long int delay)
-				: delay(delay)
+				: delay(delay), finalize_(false)
 			{
 				UTILS_ASSERT((delay != 0), "Zły czas pomiędzy tikami tegara");
+			}
+
+			~Timer()
+			{
+				
+			}
+
+			void finalize()
+			{
+				finalize_ = true;
+				controller->cv.notify_all();
 			}
 
 			virtual void run()
@@ -161,17 +176,19 @@ namespace timeline{
 					throw std::runtime_error("Wrong controller to update");
 				}
 
-				while (true){
-					{
+				while (finalize_ == false){					
+					if (controller->isPlaying() == false){
 						// czy nie ma pauzy
 						std::unique_lock<std::mutex> lock(controller->pauseMutex);
-						controller->cv.wait(lock);
+						controller->cv.wait(lock, [this]() { return controller->isPlaying() == true || finalize_ == true; });						
 					}
 
 					//aktualizujemy czas
-					if (controller->setNextTime(delay) == true){
-						return;
-					}
+					//if (controller->setNextTime(delay) == true){
+					//	return;
+					//}
+
+					controller->setNextTime(delay);
 
 					//zasypiamy
 					std::this_thread::sleep_for(std::chrono::microseconds(delay));
@@ -196,6 +213,7 @@ namespace timeline{
 			}
 
 		private:
+			volatile bool finalize_;
 			Controller * controller;
 			unsigned long int delay;
 		};
@@ -246,9 +264,6 @@ namespace timeline{
 		//! Generator nowego czasu dla timera
 		TimeGenerator timeGenerator;
 
-		//! Informacja czy jawnie zapauzowano odtwarzanie czy osiągnięto limit czasu (true - pauza, false - limit czasu)
-		bool paused;
-
 	public:
 
 		Controller();
@@ -288,6 +303,10 @@ namespace timeline{
 
 		//! Uruchamia timeline - odtwarzanie
 		virtual void run();
+
+		virtual void finalize();
+
+		virtual void play();
 
 		//! Wstrzymuje odtwarzanie timeline
 		virtual void pause();

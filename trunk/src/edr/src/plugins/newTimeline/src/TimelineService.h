@@ -38,10 +38,7 @@ public:
 		core::IVisualizerManager * visualizerManager,
 		core::IMemoryDataManager * memoryDataManager,
 		core::IStreamDataManager * streamDataManager,
-		core::IFileDataManager * fileDataManager)
-    {
-
-    }
+		core::IFileDataManager * fileDataManager);
 
     virtual void finalize();
     //!

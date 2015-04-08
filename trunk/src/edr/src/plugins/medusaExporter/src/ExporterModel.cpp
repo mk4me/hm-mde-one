@@ -205,7 +205,7 @@ void medusaExporter::ExporterModel::pack(const QString& dirPath, const QString& 
 {
 	fs::Path dir(dirPath.toStdString());
 	if (fs::isDirectory(dir)) {
-		std::vector<fs::Path> files = fs::listFilteredFiles(dir, true, filter);
+		auto files = fs::listFilteredFiles(dir, true, filter);
 		int count = files.size();
 		if (count == 0) {
 			throw core::runtime_error("No files to pack");
@@ -434,7 +434,7 @@ QStringList medusaExporter::ExporterModel::getUsers(const QString& path, const E
 	return usersList;
 }
 
-std::vector<core::Filesystem::Path> medusaExporter::ExporterModel::gatherInternalSessionFiles(const QString &dirPath)
+core::Filesystem::PathsList medusaExporter::ExporterModel::gatherInternalSessionFiles(const QString &dirPath)
 {
 	auto filter = [&](const fs::Path& path) -> bool {
 		if (path.extension() == ".xml") {

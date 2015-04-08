@@ -32,37 +32,37 @@ void registerTranslator(const std::string & locale, const core::Filesystem::Path
 
 using namespace core;
 
-void LanguagesLoader::loadCoreTranslations(std::vector<Filesystem::Path> & paths,
+void LanguagesLoader::loadCoreTranslations(Filesystem::PathsList & paths,
 	LanguagesManager * languagesManager)
 {
-	std::vector<int> toErase;
+	Filesystem::PathsList toErase;
 
-	for(auto i = 0; i < paths.size(); ++i){
+	for (const auto & p : paths){
 		//nazwa pliku
-		auto file = paths[i].stem().string();
+		auto file = p.stem().string();
 		auto pos = file.find("qt_");
 		//teraz szukam t³umaczeñ dla core/qt/widoków
 		if(pos != std::string::npos){
 
 			registerTranslator(file.substr(pos + 3, file.size() - pos - 3),
-				paths[i], "qt", languagesManager);
+				p, "qt", languagesManager);
 
-			toErase.push_back(i);
+			toErase.push_back(p);
 
 		}else if( (pos = file.find("lang_")) != std::string::npos
 			&& file.find("plugin") == std::string::npos && pos > 1){
 
 			registerTranslator(file.substr(pos + 5, file.size() - pos - 5),
-				paths[i], file.substr(0, pos - 1), languagesManager);
+				p, file.substr(0, pos - 1), languagesManager);
 
-			toErase.push_back(i);
+			toErase.push_back(p);
 		}else{
-			CORE_LOG_INFO("Skipping translation file: " << paths[i] << " as not matching any core translation pattern");
+			CORE_LOG_INFO("Skipping translation file: " << p << " as not matching any core translation pattern");
 		}
 	}
 
-	for(int j = toErase.size()-1; j > -1; --j){
-		paths.erase(paths.begin()+toErase[j]);
+	for (const auto & p : toErase){
+		paths.remove(p);
 	}
 }
 
@@ -82,14 +82,14 @@ void LanguagesLoader::loadPluginDefaultTranslation(const std::string & pluginNam
 	}
 }
 
-void LanguagesLoader::loadPluginTranslations(std::vector<Filesystem::Path> & paths,
+void LanguagesLoader::loadPluginTranslations(Filesystem::PathsList & paths,
 	const std::string & pluginName, LanguagesManager * languagesManager)
 {
-	std::vector<int> toErase;
+	Filesystem::PathsList toErase;
 
-	for(auto i = 0; i < paths.size(); ++i){
+	for(const auto & p : paths){
 		//nazwa pliku
-		auto file = paths[i].stem().string();
+		auto file = p.stem().string();
 
 		auto pos = file.find("lang_");
 
@@ -97,16 +97,16 @@ void LanguagesLoader::loadPluginTranslations(std::vector<Filesystem::Path> & pat
 			&& pos > 1){
 
 			registerTranslator(file.substr(pos + 5, file.size() - pos - 5),
-				paths[i], file.substr(0, pos - 1), languagesManager);
+				p, file.substr(0, pos - 1), languagesManager);
 
-			toErase.push_back(i);
+			toErase.push_back(p);
 
 		}else{
-			CORE_LOG_DEBUG("Skipping translation file: " << paths[i] << " as not matching plugin`s " << pluginName << " translation pattern");
+			CORE_LOG_DEBUG("Skipping translation file: " << p << " as not matching plugin`s " << pluginName << " translation pattern");
 		}
 	}
 
-	for(int j = toErase.size()-1; j > -1; --j){
-		paths.erase(paths.begin()+toErase[j]);
+	for(const auto & p : toErase){
+		paths.remove(p);
 	}
 }

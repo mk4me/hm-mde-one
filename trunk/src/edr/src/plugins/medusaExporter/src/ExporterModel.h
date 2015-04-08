@@ -49,7 +49,7 @@ namespace medusaExporter {
 		void pack(const QString& dirPath, const QString& outFile, std::function<bool(const core::Filesystem::Path&)> filter, CallbackFunction fun);
 		std::map<std::string, bool> gatherPowerDopplers(const QString& dirPath, CallbackFunction fun);
 		void gatherPowerDopplers(dicom::IDicomInternalStructConstPtr inter, std::map<std::string, bool>& dopplers);
-		std::vector<core::Filesystem::Path> gatherInternalSessionFiles(const QString &dirPath);
+		core::Filesystem::PathsList gatherInternalSessionFiles(const QString &dirPath);
 
 	private:
 		std::vector<IExporterConstPtr> exporters;

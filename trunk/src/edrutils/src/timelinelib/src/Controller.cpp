@@ -5,7 +5,7 @@ namespace timeline {
 Controller::Controller() : IController(&dirtyState),
     model(new Model()), constModel(model), timeUpdateMode(AsynchTimeUpdate),
     playbackDirection(PlayForward), timer(new Timer(40000)),
-    timeGenerator(&Controller::forwardTimeUpdate), paused(false)
+    timeGenerator(&Controller::forwardTimeUpdate)
 {
     timer->setController(this);
 }
@@ -108,6 +108,33 @@ Controller::PlaybackDirection Controller::getPlaybackDirection() const
 }
 
 void Controller::run()
+{	
+	runningThreadID = std::this_thread::get_id();
+	timer->run();
+}
+
+void Controller::finalize()
+{
+	if (timer != nullptr){
+		timer->finalize();
+	}	
+
+	runningThreadID = std::thread::id();
+
+	{
+		ScopedLock lock(stateMutex);
+
+		State state = getState();		
+
+		state.isPlaying = false;
+
+		setState(state);
+	}
+
+	cv.notify_all();
+}
+
+void Controller::play()
 {
 	ScopedLock lock(stateMutex);
 
@@ -118,17 +145,9 @@ void Controller::run()
 	}
 
 	state.isPlaying = true;
-
-	if (paused == false){
-		runningThreadID = std::this_thread::get_id();
-		timer->run();
-	}
-	else{
-		paused = false;
-		cv.notify_one();
-	}
-
 	setState(state);
+
+	cv.notify_all();
 }
 
 void Controller::pause()
@@ -141,8 +160,6 @@ void Controller::pause()
         return;
     }
 
-    pauseMutex.lock();
-    paused = true;
     state.isPlaying = false;
     setState(state);
 }

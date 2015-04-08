@@ -139,8 +139,8 @@ void VideoParser::parse(const std::string & source)
 
             // tworzymy strumień z sekwencji plików
             osg::ref_ptr<osgDB::Options> options = new osgDB::Options();
-            options->setObjectCacheHint( osgDB::Options::CACHE_NONE );
-            std::auto_ptr<FileSequenceVideoStream> innerStream(new FileSequenceVideoStream(directory, framerate, files, new OsgImageLoader(options)));
+            options->setObjectCacheHint( osgDB::Options::CACHE_NONE );			
+			std::auto_ptr<FileSequenceVideoStream> innerStream(new FileSequenceVideoStream(directory, framerate, std::vector<std::string>(files.begin(), files.end()), new OsgImageLoader(options)));
 
             // UTILS_ASSERT(!innerStream->getLastError());
 

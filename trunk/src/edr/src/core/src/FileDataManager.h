@@ -113,7 +113,7 @@ namespace core {
 
 		void updateObservers(const ChangeList & changes);
 
-		void rawGetFiles(Files & files) const;
+		void rawGetFiles(Filesystem::FilesSet & files) const;
 
 		void rawGetObjects(const Filesystem::Path & file, ConstVariantsList & objects) const;
 
@@ -158,7 +158,7 @@ namespace core {
 		virtual void removeObserver(const FileObserverPtr & fileWatcher);
 
 		//! \param files Zbi�r plik�w ktrymi aktualnie zarz�dza ten DataManager
-		virtual void getFiles(Files & files) const;
+		virtual void getFiles(Filesystem::FilesList & files) const;
 
 		//! \param file Plik k�try weryfikujemy czy jest zarz�dzany przez DM
 		//! \return Prawda je�li plik jest zarz�dzany przez ten DM

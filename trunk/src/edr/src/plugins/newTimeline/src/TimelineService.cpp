@@ -8,7 +8,7 @@
 TimelineService::TimelineService() : controller(new timeline::Controller()),
 	widget(nullptr)
 {
-	thread = std::move(plugin::getThreadPool()->get("Timeline Service", "Timeline management"));
+	
 }
 
 
@@ -17,9 +17,18 @@ TimelineService::~TimelineService()
 
 }
 
+void TimelineService::init(core::ISourceManager * sourceManager,
+	core::IVisualizerManager * visualizerManager,
+	core::IMemoryDataManager * memoryDataManager,
+	core::IStreamDataManager * streamDataManager,
+	core::IFileDataManager * fileDataManager)
+{
+	thread = plugin::getThreadPool()->get("Timeline Service", "Timeline management");
+}
+
  void TimelineService::finalize()
  {
-     setPlaying(false);
+	 controller->finalize();
 	 if (thread.joinable() == true){
 		 thread.join();
 	 }
@@ -100,10 +109,8 @@ void TimelineService::setPlaying(bool playing)
 		if (thread.joinable() == false){
 			thread.run([this]()->void {controller->run(); });
 		}
-		else{
-			//TODO
-			//play/resume
-		}
+
+		controller->play();
         
     }else{
         controller->pause();

@@ -183,7 +183,7 @@ public:
 		return true;
 	}
 
-	virtual void getFiles(Files & files) const
+	virtual void getFiles(Filesystem::FilesSet & files) const
 	{
 		verifyRollback();
 
@@ -289,7 +289,7 @@ public:
 
 public:
 
-	virtual void getFiles(Files & files) const
+	virtual void getFiles(Filesystem::FilesSet & files) const
 	{
 		fdm->rawGetFiles(files);
 	}
@@ -675,10 +675,10 @@ const bool FileDataManager::rawIsLoadedCompleately(const Filesystem::Path & file
 	return missingObjects.find(file) == missingObjects.end();
 }
 
-void FileDataManager::rawGetFiles(Files & files) const
+void FileDataManager::rawGetFiles(Filesystem::FilesSet & files) const
 {
-	for (auto it = objectsByFiles.begin(); it != objectsByFiles.end(); ++it) {
-		files.insert(it->first);
+	for (const auto & obf : objectsByFiles) {
+		files.insert(obf.first);
 	}
 }
 
@@ -947,11 +947,11 @@ void FileDataManager::removeObserver(const FileObserverPtr & fileWatcher)
 	observers.erase(it);
 }
 
-void FileDataManager::getFiles(Files & files) const
+void FileDataManager::getFiles(Filesystem::FilesList & files) const
 {
 	ScopedLock lock(sync);
-	for (auto it = objectsByFiles.begin(); it != objectsByFiles.end(); ++it) {
-		files.insert(it->first);
+	for (const auto & obf : objectsByFiles) {
+		files.push_back(obf.first);
 	}
 }
 
