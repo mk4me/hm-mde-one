@@ -104,7 +104,7 @@ public:
 		
 	virtual void set(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
 	{
-		return SQLCipherStorage::rawSet(key, input, progress, db);
+		SQLCipherStorage::rawSet(key, input, progress, db);
 	}
 	
 	virtual const bool remove(const std::string & key)
@@ -529,15 +529,16 @@ const bool SQLCipherStorage::create(const core::Filesystem::Path & path,
 		return false;
 	}	
 	
-	sqliteUtils::SQLiteDB::Wrapper db(sqliteUtils::SQLiteDB::open(path.string(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_SHAREDCACHE), sqliteUtils::SQLiteDB::Close(maxSqliteExecTries, sqliteExecWaitMS));
+
+	sqliteUtils::SQLiteDB::Wrapper db(sqliteUtils::SQLiteDB::open(path.string(), key, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_SHAREDCACHE), sqliteUtils::SQLiteDB::Close(maxSqliteExecTries, sqliteExecWaitMS));
 	if (db != nullptr){
 		auto ret = initialize(db);
 		if (ret == true) {
-			/*if (sqlite3_key(db, key.c_str(), key.size()) == SQLITE_OK) {
+			if (sqlite3_key(db, key.c_str(), key.size()) == SQLITE_OK) {
 				return ret;
 			} else {
 				return false;
-			}*/
+			}
 		}
 		return ret;
 	}

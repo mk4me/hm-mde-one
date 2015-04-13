@@ -8,7 +8,7 @@
 using namespace coreUI;
 
 CoreDockWidgetManager::CoreDockWidgetManager( QWidget *parent /*= 0*/, Qt::WindowFlags flags /*= 0*/ ) :
-	QWidget(parent, flags), tabWidget(new QTabWidget),
+	QWidget(parent, flags), tabWidget(new QTabWidget), autoCloseEmptySets_(true),
     maxWidgetsInSetHint(5)
 {
 	auto layout = new QHBoxLayout;

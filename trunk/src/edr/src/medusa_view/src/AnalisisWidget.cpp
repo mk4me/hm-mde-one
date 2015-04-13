@@ -146,6 +146,7 @@ void AnalisisWidget::devideArea()
 {
     topMainWindow = new coreUI::CoreDockWidgetManager();
     topMainWindow->setSetsClosable(true);
+    topMainWindow->setAutoCloseEmptySets(false);
     // na potrzeby meduzy, jeden set - jeden widget
     topMainWindow->setMaxWidgetsInSetHint(1);
     topMainWindow->setTabPosition(QTabWidget::South);
