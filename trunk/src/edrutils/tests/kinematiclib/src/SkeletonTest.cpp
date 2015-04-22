@@ -21,8 +21,10 @@
 
 void SkeletonTest::test1()
 {
-	acclaim::AsfParser parser;
-	acclaim::Skeleton acclaimSkeleton = parser.parse("./testFiles/test.asf");
+	//acclaim::AsfParser parser;
+
+	std::ifstream file("./testFiles/test.asf");
+	acclaim::Skeleton acclaimSkeleton = acclaim::AsfParser::parse(file, true);
 	kinematic::Skeleton skeleton;
 	kinematic::Skeleton::convert(acclaimSkeleton, skeleton);
 	CPPUNIT_ASSERT_EQUAL(std::string("VICON"), skeleton.name);

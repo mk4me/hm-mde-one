@@ -40,7 +40,7 @@ namespace hmdbServices
 
 		strftime(buffer, 80, "%Y-%m-%dT%H:%M:%S.000Z", &time);
 		buffer[25] = '\0';
-		return std::string(buffer);
+		return std::string(buffer, sizeof(buffer));
 	}
 
 	const std::string toString(const DateTime & time)

@@ -7,7 +7,7 @@ using namespace core;
 
 PluginPath::PluginPath(const std::string & pluginName)
 	: pluginPath(getPaths()->getPluginPath()/pluginName),
-	pluginTmpPath(getPaths()->getTmpPath()/pluginName)
+	pluginTmpPath(getPaths()->getTempPath()/pluginName)
 {
 	Filesystem::createDirectory(pluginTmpPath);
 }
@@ -37,7 +37,7 @@ const Filesystem::Path& PluginPath::getResourcesPath() const
 	return getPaths()->getResourcesPath();
 }
 
-const Filesystem::Path& PluginPath::getTmpPath() const
+const Filesystem::Path& PluginPath::getTempPath() const
 {
 	return pluginTmpPath;
 }
@@ -45,9 +45,4 @@ const Filesystem::Path& PluginPath::getTmpPath() const
 const Filesystem::Path& PluginPath::getPluginPath() const
 {
 	return pluginPath;
-}
-
-const Filesystem::Path PluginPath::generateTempFileName() const
-{
-	return Path::TempFileName();
 }

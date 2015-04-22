@@ -807,8 +807,8 @@ void IMUCostumeProfileEditionWizard::onLoadModel()
 	core::Filesystem::Path p(file.toStdString());
 	if (core::Filesystem::isRegularFile(p)) {
 		try{
-			acclaim::AsfParser asfParser;
-			auto as = asfParser.parse(p.string());
+			std::ifstream file(p.string());
+			auto as = acclaim::AsfParser::parse(file, true);
 			kinematic::Skeleton skeleton;
 			kinematic::Skeleton::convert(as, skeleton);
 

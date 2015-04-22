@@ -10,31 +10,18 @@
 #define HEADER_GUARD__UTILS_H__
 
 #include <utils/Config.h>
+#include <utils/Macros.h>
+#include <utils/SmartPtr.h>
 #include <cstring>
 #include <sstream>
 #include <type_traits>
 #include <memory>
 #include <functional>
+#include <cstdint>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
-
-// Sugerowany początek makra składającego się z wielu instrukcji
-#define UTILS_MULTISTATEMENT_BEGIN  do {
-
-// Sugerowany koniec makra składającego się z wielu instrukcji
-#ifdef _MSC_VER
-#   define UTILS_MULTISTATEMENT_END     \
-    __pragma(warning(push))             \
-    __pragma(warning(disable: 4127))    \
-    } while(0) /* brak ; na koncu! */   \
-    __pragma(warning(pop))
-#else
-#   define UTILS_MULTISTATEMENT_END    } while(0) /* brak ; na koncu! */
-#endif
-
-//------------------------------------------------------------------------------
 
 //
 template <class T>
@@ -61,18 +48,11 @@ return (std::forward<T>(val));
 }
 
 //! Zwalnia zadany wskaźnik oraz zeruje jego wartość.
-#define UTILS_DELETEPTR(ptr) UTILS_MULTISTATEMENT_BEGIN \
-    delete ptr; \
-    ptr = nullptr; \
-    UTILS_MULTISTATEMENT_END
-
-//! Zwalnia zadany wskaźnik oraz zeruje jego wartość.
 //! \param ptr Wskaźnik do zwolnienia.
 template <class T>
 inline void deletePtr(T *& ptr)
 {
-    delete ptr;
-    ptr = nullptr;
+	UTILS_DELETEPTR(ptr);
 }
 
 //------------------------------------------------------------------------------
@@ -86,17 +66,74 @@ inline T sign(T value)
     return value >= 0 ? T(1) : T(-1);
 }
 
-//------------------------------------------------------------------------------
-
-//! Zwraca znak liczby. Używane do uproszczenia mnożenia.
-//! \param value
-//! \return 1 albo -1
-template <class T, size_t Size>
-inline size_t length(const T (&fixedArray)[Size])
+// ------------------------------------------------------------------------------
+//! Informacje o tablicach
+struct ArrayTraits
 {
-  return Size;
-}
+	//! Wypakowuje z tablicy zadanyc element
+	//! \tparam Element Indeks elementu w tablicy	
+	template <std::size_t Element>
+	struct ElementExtractor
+	{
+		static_assert(Element >= 0, "Element index must be greater or equal 0");
 
+		//! \tparam T Typ tablicy
+		template <typename T>
+		//! \param array Tablica
+		//! \return Wypakowany element
+		static inline decltype(std::declval(T)[Element]) extract(const T & array)
+		{
+			return array[Element];
+		}
+
+		//! \tparam T Typ elementu tablicy
+		//! \tparam Size Rozmiar tablicy
+		template <typename T, std::size_t Size>
+		//! \param array Tablica
+		//! \return Wypakowany element
+		static inline T extract(const T(&array)[Size])
+		{
+			static_assert(Element < Size, "Element index out of range");
+			return array[Element];
+		}
+	};
+
+	//! Zwraca długość tablicy
+	//! \param fixedArray Tablica
+	//! \return Długość tablicy
+	template <class T>
+	static inline std::size_t length(const T & array)
+	{
+		return array.size();
+	}
+
+	//! Zwraca długość tablicy
+	//! \param fixedArray Tablica
+	//! \return Długość tablicy
+	template <class T, std::size_t Size>
+	static inline std::size_t length(const T(&fixedArray)[Size])
+	{
+		return Size;
+	}	
+
+	//! Zwraca rozmiar tablicy w bajtach
+	//! \param fixedArray Tablica
+	//! \return Rozmiar tablicy
+	template <class T>
+	static inline std::size_t size(const T & array)
+	{
+		return length(array) * sizeof(std::remove_reference(decltype(std::declval<T>()[0])));
+	}	
+
+	//! Zwraca rozmiar tablicy w bajtach
+	//! \param fixedArray Tablica
+	//! \return Rozmiar tablicy
+	template <class T, std::size_t Size>
+	static inline std::size_t size(const T(&array)[Size])
+	{
+		return sizeof(array);
+	}
+};
 
 //------------------------------------------------------------------------------
 
@@ -104,50 +141,71 @@ struct NullType {};
 
 //------------------------------------------------------------------------------
 
-//! \param stream Strumień którego rozmiar pobieramy
-//! \return Rozmiar strumienia
-inline static const std::streamsize streamSize(std::istream & stream)
+struct StreamTools
 {
-	const auto pos = stream.tellg();
-	stream.seekg(0, std::ios::beg);
-	const auto start = stream.tellg();
-	stream.seekg(0, std::ios::end);
-	const auto end = stream.tellg();
-	stream.seekg(pos);
+	//! \param stream Strumień którego rozmiar pobieramy
+	//! \return Rozmiar strumienia
+	inline static const std::streamsize size(std::istream & stream)
+	{
+		const auto pos = stream.tellg();
+		stream.seekg(0, std::ios::beg);
+		const auto start = stream.tellg();
+		stream.seekg(0, std::ios::end);
+		const auto end = stream.tellg();
+		stream.seekg(pos);
 
-	return std::streamsize(end - start);
-}
+		return std::streamsize(end - start);
+	}
 
-//------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------
 
-//! \param stream Strumień do czytania
-//! \param out Bufor do któego czytamy strumień
-//! \param bytesCount Ilość bajtów do przeczytania ze strumienia
-//! \return Faktyczna ilośc bajtów przeczytana ze strumienia
-inline static const std::streamsize forceReadSome(std::istream & stream,
-	char * out, const std::streamsize bytesCount)
-{
-	const auto state = stream.rdstate();
-	stream.read(out, bytesCount);
-	const std::streamsize bytes = stream.gcount();
-	stream.clear(state | (stream.eof() == true ? std::ios_base::eofbit : std::ios_base::goodbit));
-	return bytes;
-}
+	//! \param stream Strumień do czytania
+	//! \param out Bufor do któego czytamy strumień
+	//! \param bytesCount Ilość bajtów do przeczytania ze strumienia
+	//! \return Faktyczna ilośc bajtów przeczytana ze strumienia
+	inline static const std::streamsize forceReadSome(std::istream & stream,
+		char * out, const std::streamsize bytesCount)
+	{
+		const auto state = stream.rdstate();
+		stream.read(out, bytesCount);
+		const std::streamsize bytes = stream.gcount();
+		stream.clear(state | (stream.eof() == true ? std::ios_base::eofbit : std::ios_base::goodbit));
+		return bytes;
+	}
 
-//------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------
 
-//! \param stream Strumień do skopiowania
-//! \return Strumień zapisany w stringu
-inline static std::string readStream(std::istream & stream)
-{
-	unsigned int BufferSize = 1024 * 512;
-	std::unique_ptr<char[]> buffer(new char[BufferSize] {0});
-	std::string ret;
+	//! \param stream Strumień do skopiowania
+	//! \return Strumień zapisany w stringu
+	inline static std::string read(std::istream & stream, void * buffer,
+		const std::size_t bufferSize)
+	{
+		std::string ret;
 
-	std::streamsize read = 0;
-	while ((read = forceReadSome(stream, buffer.get(), BufferSize)) > 0) { ret.append(buffer.get(), static_cast<unsigned int>(read)); }
-	return std::move(ret);
-}
+		std::streamsize read = 0;
+		while ((read = forceReadSome(stream, static_cast<char*>(buffer), bufferSize)) > 0) { ret.append(static_cast<char*>(buffer), static_cast<unsigned int>(read)); }
+		return std::move(ret);
+	}
+
+	//------------------------------------------------------------------------------
+
+	//! \param stream Strumień do skopiowania
+	//! \return Strumień zapisany w stringu
+	inline static std::string read(std::istream & stream)
+	{
+		unsigned int BufferSize = 1024 * 512;
+		std::unique_ptr<char[]> buffer(new char[BufferSize] {0});
+		return read(stream, buffer.get(), BufferSize);
+	}
+
+	template<typename T, unsigned int Size>
+	//! \param stream Strumień do skopiowania
+	//! \return Strumień zapisany w stringu
+	inline static std::string read(std::istream & stream, T(&fixedArray)[Size])
+	{
+		return read(stream, (void*)fixedArray, ArrayTraits::size(fixedArray));
+	}
+};
 
 //------------------------------------------------------------------------------
 
@@ -160,37 +218,54 @@ inline const T EndianSwap(const T value)
 	union
 	{
 		T u;
-		unsigned char u8[sizeof(T)];
-	} source, dest;
+		uint8_t u8[sizeof(T)];
+	} es;
 
-	source.u = value;
+	es.u = value;
 
-	for (std::size_t k = 0; k < sizeof(T); k++)
-		dest.u8[k] = source.u8[sizeof(T) - k - 1];
+	std::reverse(es.u8, es.u8 + sizeof(T));
 
-	return dest.u;
+	return es.u;
 };
 
 //------------------------------------------------------------------------------
 
-//! \tparam Typ uywany do czyszczenia przy niszczeniu - funktor z operatorem ()
 class Cleanup
 {
-public:
-	typedef std::function<void()> Functor;
-public:
-	//! \param cleanup Obiekt uywany do czyszczenia
-	Cleanup(const Functor & cleanup) : cleanup(cleanup) {}
+	private:
+
+		class CleanupPrivateBase
+		{
+		public:
+			virtual ~CleanupPrivateBase() {}
+		};
+
+		template<typename T>
+		class CleanupPrivate : public CleanupPrivateBase
+		{
+		public:
+			CleanupPrivate(T && t) : t(std::move(t)) {}
+			CleanupPrivate(const T & t) : t(t) {}
+			virtual ~CleanupPrivate() { t(); }
+		private:
+			T t;
+		};
+
+public:	
 
 	//! \param cleanup Obiekt uywany do czyszczenia
 	template<typename T>
-	Cleanup(const T & cleanup) : cleanup(cleanup) {}
+	Cleanup(const T & t) : cleanup(utils::make_shared<CleanupPrivate<T>>(t)) {}
+
+	//! \param cleanup Obiekt uywany do czyszczenia
+	template<typename T>
+	Cleanup(T && t) : cleanup(utils::make_shared<CleanupPrivate<T>>(std::move(t))) {}
 
 	//! Destruktor
-	~Cleanup() { cleanup(); }
+	~Cleanup() {}
 private:
 	//! Obiekt czyszczacy
-	Functor cleanup;
+	utils::shared_ptr<CleanupPrivateBase> cleanup;
 };
 
 //------------------------------------------------------------------------------
@@ -220,50 +295,6 @@ const T mergeOrdered(const T & a, const T & b)
 	ret.insert(b.begin(), b.end());
 	return ret;
 }
-
-
-//------------------------------------------------------------------------------
-/**
- *	Definicja ostrzeżenia o przestarzałej funkcjonalności
- */
-#ifdef __GNUC__
-#   define UTILS_DEPRECATED(func) func __attribute__ ((deprecated))
-#elif defined(_MSC_VER)
-#   define UTILS_DEPRECATED(func) __declspec(deprecated) func
-#else
-#   pragma basicMessage("WARNING: You need to implement DEPRECATED for this compiler")
-#   define UTILS_DEPRECATED(func) func
-#endif
-
-//------------------------------------------------------------------------------
-//! Makro pozwalające generować string z ciągu strumieni
-#define UTILS_FORMAT_STRING(ITEMS)												\
-  ( ( dynamic_cast<std::ostringstream &> (										\
-         std::ostringstream() . seekp( 0, std::ios_base::cur ) << ITEMS )		\
-    ) . str() )
-
-//------------------------------------------------------------------------------
-/**
- *	Makra zapamiętujące/odtwarzające stan warningów.
- */
-#if defined(_MSC_VER)
-#   define UTILS_PUSH_WARNINGS  __pragma(warning(push))
-#   define UTILS_POP_WARNINGS   __pragma(warning(pop))
-#   define UTILS_DISABLE_DLL_INTERFACE_WARNING __pragma(warning(disable: 4251))
-#elif defined(__GNUC__) && defined(UTILS_CXX0X)
-#   define DO_PRAGMA(x) _Pragma (#x)
-#   define UTILS_PUSH_WARNINGS  DO_PRAGMA(GCC diagnostic push)
-#   define UTILS_POP_WARNINGS   DO_PRAGMA(GCC diagnostic pop)
-#   define UTILS_DISABLE_DLL_INTERFACE_WARNING
-#else
-#   pragma basicMessage("WARNING: You need to implement _Pragma for this compiler")
-#   define UTILS_PUSH_WARNINGS
-#   define UTILS_POP_WARNINGS
-#   define UTILS_DISABLE_DLL_INTERFACE_WARNING
-#endif
-
-
-//------------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace util

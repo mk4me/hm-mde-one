@@ -4,16 +4,19 @@
 #include <corelib/Filesystem.h>
 #include <QtCore/QCoreApplication>
 #include <corelib/PluginCommon.h>
+#include <corelib/ISourceManager.h>
 #include "IMUCostumeListWidget.h"
 #include <QtCore/QCoreApplication>
 #include <corelib/HierarchyHelper.h>
 #include <corelib/HierarchyDataItem.h>
+#include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <plugins/hmdbCommunication/TreeItemHelper.h>
 #include <iosfwd>
 #include <fstream>
 #include "IMUPerspective.h"
 #include "CostumeSkeletonMotionHelper.h"
 #include <corelib/IVisualizerManager.h>
+#include <QtWidgets/QInputDialog>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QLayout>
 #include <plugins/newChart/INewChartVisualizer.h>
@@ -508,7 +511,7 @@ void IMUCostumeDataSource::resfreshCostumesData()
 
 								auto idx = kinematicStream->nodesMapping.right.find(jointName)->get_left();
 
-								RecordedSensorData rsd;
+								RecordedData rsd;
 								auto sdIT = cIT->second.sensorsData.find(sID);
 								auto ow = sdIT->second.domainData.front();
 								utils::shared_ptr<IMUStream> imuStream;
@@ -533,7 +536,7 @@ void IMUCostumeDataSource::resfreshCostumesData()
 								//todo - z kinematic
 								rsd.jointOrientation = sdata[idx].rotation;
 
-								rcd.sensorsData.insert(std::map<imuCostume::Costume::SensorID, RecordedSensorData>::value_type(sID, rsd));
+								rcd.data.insert(std::map<imuCostume::Costume::SensorID, RecordedData>::value_type(sID, rsd));
 							}
 							cdf.insert(CostumesDataFrame::value_type(ctr.first, rcd));
 						}
@@ -1186,7 +1189,7 @@ core::ConstVariantsList IMUCostumeDataSource::costumeData(const CostumeID & id) 
 	return ret;
 }
 
-void IMUCostumeDataSource::startRecording(RecordingOutputPtr recording)
+void IMUCostumeDataSource::startRecording(RecordingConfigurationPtr recording)
 {
 	if (recording != nullptr){
 		std::lock_guard<std::recursive_mutex > lock(synch);
@@ -1194,7 +1197,7 @@ void IMUCostumeDataSource::startRecording(RecordingOutputPtr recording)
 	}
 }
 
-void IMUCostumeDataSource::stopRecording(RecordingOutputPtr recording)
+void IMUCostumeDataSource::stopRecording(RecordingConfigurationPtr recording)
 {
 	if (recording != nullptr){
 		std::lock_guard<std::recursive_mutex > lock(synch);
@@ -1403,6 +1406,48 @@ IMUCostumeDataSource::CostumesProfiles IMUCostumeDataSource::costumesProfiles() 
 	return costumesProfiles_;
 }
 
+hmdbCommunication::IHMDBShallowCopyContextPtr IMUCostumeDataSource::selectUploadContext() const
+{
+	hmdbCommunication::IHMDBShallowCopyContextPtr ret;
+
+	auto source = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
+	if (source != nullptr){
+		auto contextsCount = source->shallowContextsCount();
+		std::map<QString, hmdbCommunication::IHMDBShallowCopyContextPtr> mapping;
+
+		for (unsigned int i = 0; i < contextsCount; ++i){
+			auto context = source->shallowContext(i);
+			if (context != nullptr){
+				if (context->shallowCopyRemoteContext() != nullptr){
+					auto session = context->shallowCopyRemoteContext()->remoteContext()->session();
+					mapping.insert(std::map<QString, hmdbCommunication::IHMDBShallowCopyContextPtr>::value_type(QString("%1@%2").arg(QString::fromStdString(session->motionServicesUrl())).arg(QString::fromStdString(session->userName())), context));
+				}
+			}
+		}
+
+		if (mapping.empty() != true){
+			if (mapping.size() == 1){
+				ret = mapping.begin()->second;
+			}
+			else{
+				bool ok = true;
+				QStringList items;
+
+				for (const auto m : mapping){
+					items << m.first;
+				}
+
+				auto item = QInputDialog::getItem(nullptr, QObject::tr("Select upload context"), QObject::tr("Database connection"), items, 0, &ok);
+				if (ok == true){
+					ret = mapping.find(item)->second;
+				}
+			}
+		}
+	}
+
+	return ret;
+}
+
 IMUCostumeDataSource::CostumeDescription IMUCostumeDataSource::costumeDescription(const CostumeID & id) const
 {
 	std::lock_guard<std::recursive_mutex> lock(synch);
@@ -1588,4 +1633,10 @@ void IMUCostumeDataSource::unpackSensorsStream(IMU::SensorsStreamPtr stream,
 				sd.second, QObject::tr("Orientation").toStdString()));
 		}	
 	}
+}
+
+void IMUCostumeDataSource::uploadSession(const core::Filesystem::Path & configuration,
+	const core::Filesystem::FilesList & recordings)
+{
+
 }

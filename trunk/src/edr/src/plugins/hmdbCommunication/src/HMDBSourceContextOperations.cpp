@@ -688,7 +688,7 @@ TmpFileTransferIO::~TmpFileTransferIO()
 IHMDBStorage::OStreamPtr TmpFileTransferIO::prepareOutput()
 {
 	int i = 0;
-	while (core::Filesystem::pathExists(tmpFilePath = plugin::getPaths()->getTmpPath() / plugin::getPaths()->generateTempFileName()) == true && i++ < 10) {}
+	while (core::Filesystem::pathExists(tmpFilePath = plugin::getPaths()->getTempFilePath()) == true && i++ < 10) {}
 
 	if (core::Filesystem::pathExists(tmpFilePath) == false){
 

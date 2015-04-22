@@ -113,7 +113,7 @@ void CostumeParser::save(std::ostream & stream, const IIMUDataSource::CostumesDa
 
 			stream << val.first.ip << " " << val.first.port << " " << val.second.timestamp;
 
-			for (const auto & sData : val.second.sensorsData)
+			for (const auto & sData : val.second.data)
 			{
 				stream << " " << std::to_string(sData.first) << " ";
 				serialize(stream, sData.second.accelerometer);

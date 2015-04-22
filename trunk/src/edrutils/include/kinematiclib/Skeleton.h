@@ -6,6 +6,7 @@
 #include <acclaimformatslib/Skeleton.h>
 #include <biovisionformatslib/Skeleton.h>
 #include <kinematiclib/SkeletalMappingScheme.h>
+#include <kinematicUtils/Types.h>
 
 namespace kinematic
 {
@@ -14,6 +15,9 @@ namespace kinematic
 	//! tzw. end effector
 	struct Skeleton
 	{
+		//! Mapa nazw jointów do ich kolejności rotacji
+		typedef std::map<std::string, kinematicUtils::AxisOrder::Type> JointsAxis;
+
 		//! Konstruktor domyślny
 		Skeleton();
 		//! Konstruktor kopiujący
@@ -35,6 +39,16 @@ namespace kinematic
 		//! \param destSkeleton [out] Uniwersalny format szkieletu
 		//! \return Czy udało się konwertować
 		static bool convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSkeleton);
+
+		//! Konwersja z popularnych formatów
+		//! \param srcSkeleton Szkielet acclaim
+		//! \param destSkeleton [out] Uniwersalny format szkieletu
+		//! \return Czy udało się konwertować
+		static bool convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSkeleton,
+			const kinematicUtils::AxisOrder::Type axisOrder,
+			const kinematicUtils::AngleUnitType angleUnit,
+			const JointsAxis & jointsAxis = JointsAxis());
+
 		//! \param srcSkeleton Szkielet biovision
 		//! \param destSkeleton [out] Uniwersalny format szkieletu
 		//! \return Czy udało się konwertować

@@ -88,9 +88,9 @@ static void FFmpegLogForwarder(void* ptr, int level, const char* fmt, va_list vl
     FFmpegVideoStream::FFmpegClass parentClass = { NULL, NULL };
 
     // wersja wzorowana na av_log_default_callback (log.c)
-    static int print_prefix=1;
-    static char line[4096] = { 0 };
-    static int len = 0;
+    int print_prefix=1;
+    char line[4096] = { 0 };
+    int len = 0;
 
     AVClass* avc = ptr ? *reinterpret_cast<AVClass**>(ptr) : NULL;
 
@@ -408,7 +408,7 @@ int64_t seekFunction(void* opaque, int64_t offset, int whence)
 	auto me = reinterpret_cast<std::istream*>(opaque);	
 
 	if (whence == AVSEEK_SIZE)
-		return utils::streamSize(*me); // I don't know "size of my handle in bytes"
+		return utils::StreamTools::size(*me); // I don't know "size of my handle in bytes"
 	
 	if (!me->seekg(offset, whence)){
 		return -1;

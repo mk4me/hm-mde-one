@@ -28,34 +28,26 @@ namespace acclaim
     /// \brief  Struktura przechowuje pojedynczy stopien swobody dla kości.
     struct DegreeOfFreedom
     {
+		//! Dodatkowy kanał danych gdzie długość kości może ulegać zmianie
 		static const int L = kinematicUtils::ChannelType::CUSTOM_CHANNEL_BASE + 1;
 
 		kinematicUtils::Channel channel; //<! kanał, dla którego definiowany jest stopien swobody
         double minLimit; //<! minimalna wartość dla kanału (domyślnie -nieskonczoność)
-        double maxLimit; //<! maksymalna wartość dla kanału (domyślnie nieskonczoność)
+		double maxLimit; //<! maksymalna wartość dla kanału (domyślnie nieskonczoność)
 
-        // konstruktor
-		DegreeOfFreedom(const kinematicUtils::Channel channel) :
-			channel(channel),
-                minLimit(-std::numeric_limits<float>::infinity()),
-                maxLimit(std::numeric_limits<float>::infinity())
-            {
-            }
+        // \param channel Kanał danych opisywany ograniczeniami
+		DegreeOfFreedom(const kinematicUtils::Channel channel);
 
-		DegreeOfFreedom(const kinematicUtils::Channel channel, double minLimit, double maxLimit) :
-			channel(channel),
-			minLimit(minLimit),
-			maxLimit(maxLimit)
-		{
-		}
+		// \param channel Kanał danych opisywany ograniczeniami
+		//! \param minLimit Najmniejsza możliwa wartość dla danych kanału
+		//! \param maxLimit Największa możliwa wartość dla danych kanału
+		DegreeOfFreedom(const kinematicUtils::Channel channel, double minLimit, double maxLimit);
 
-		bool operator ==(const DegreeOfFreedom& b) const
-		{
-			const double epsilon = 0.0000001;
-			return channel == b.channel &&
-				std::abs(minLimit - b.minLimit) < epsilon &&
-				std::abs(maxLimit - b.maxLimit) < epsilon;
-		}
+		//! Destruktor
+		~DegreeOfFreedom();
+
+		//! Operator porównania
+		bool operator ==(const DegreeOfFreedom& b) const;
 
         /// \brief  Zwraca indeks (w tablicy wartości kanałów dla pojedynczej klatki kości)
         /// \param  Kanał dla którego powinnien być zwrócony indeks 
@@ -71,7 +63,7 @@ namespace acclaim
         /// \param  channel kanał dla którego będzie zwrócona nazwa. 
         /// \param  uppercase określa czy zwracana nazwa ma mieć duże, czy male litery. 
         /// \return Nazwa kanału. 
-		static std::string getChannelName(kinematicUtils::Channel channel, bool uppercase = false);
+		static std::string getChannelName(kinematicUtils::Channel channel, bool uppercase);
     };
 	
 }

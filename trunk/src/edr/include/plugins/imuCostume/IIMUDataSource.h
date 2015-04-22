@@ -37,16 +37,22 @@ namespace IMU
 		//! Typ opisuj¹cy identyfikator kostiumy
 		typedef imuCostume::CostumeRawIO::CostumeAddress CostumeID;
 
-		struct RecordedSensorData : SensorData
+		//! Zapisywane dane
+		struct RecordedData : SensorData
 		{
+			//! Estymowana orientacja
 			osg::Quat estimatedOrientation;
+			//! Przeliczona orientacja skojarzonego jointa
 			osg::Quat jointOrientation;
 		};
 
+		//! Zapisywane dane kostiumu
 		struct RecordedCostumeData
 		{
+			//! Czas
 			imuCostume::CostumeCANopenIO::Timestamp timestamp;
-			std::map<imuCostume::Costume::SensorID, RecordedSensorData> sensorsData;
+			//! Dane sensorów
+			std::map<imuCostume::Costume::SensorID, RecordedData> data;
 		};
 
 		//! Mapa pakietów wg kostiumów
@@ -57,7 +63,7 @@ namespace IMU
 		typedef std::map<imuCostume::CostumeRawIO::CostumeAddress, imuCostume::Costume::SensorIDsSet> CostumesToRecord;
 
 		//! Struktura opisuj¹ca zapis danych z kostiumów
-		struct RecordingOutput
+		struct RecordingConfiguration
 		{
 			//! Strumieñ buforów z danymi kostiumów
 			CostumesRecordingDataBuffer costumesDataBuffer;
@@ -65,7 +71,7 @@ namespace IMU
 			CostumesToRecord costumesToRecord;
 		};
 
-		DEFINE_SMART_POINTERS(RecordingOutput);
+		DEFINE_SMART_POINTERS(RecordingConfiguration);
 
 		//! Struktura opisuj¹ca status po³¹czenia kostiumu i czujników
 		struct CostumeStatus
@@ -191,8 +197,8 @@ namespace IMU
 		//! \param profile Profil kostiumu
 		virtual void registerCostumeProfile(CostumeProfilePtr profile) = 0;
 
-		virtual void startRecording(RecordingOutputPtr recording) = 0;
-		virtual void stopRecording(RecordingOutputPtr recording) = 0;
+		virtual void startRecording(RecordingConfigurationPtr recording) = 0;
+		virtual void stopRecording(RecordingConfigurationPtr recording) = 0;
 
 		//! \return Lista prototypów algorytmów estymacji orientacji czujnika
 		virtual OrientationEstimationAlgorithms orientationEstimationAlgorithms() const = 0;

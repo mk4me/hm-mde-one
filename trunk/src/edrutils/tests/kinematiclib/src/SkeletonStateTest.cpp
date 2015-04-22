@@ -39,11 +39,11 @@ SkeletonStateTest::~SkeletonStateTest(void)
 
 void SkeletonStateTest::setUp()
 {
-	acclaim::AsfParser asf;
-	acclaimSkeleton.reset(new acclaim::Skeleton(asf.parse("./testFiles/test.asf")));
+	std::ifstream fileAsf("./testFiles/test.asf");
+	acclaimSkeleton.reset(new acclaim::Skeleton(acclaim::AsfParser::parse(fileAsf, true)));
 
-	acclaim::AmcParser amc;
-	amc.parse(*acclaimData, "./testFiles/test.amc");
+	std::ifstream fileAmc("./testFiles/test.amc");
+	acclaim::AmcParser::parse(*acclaimData, fileAmc);
 }
 
 void SkeletonStateTest::tearDown()

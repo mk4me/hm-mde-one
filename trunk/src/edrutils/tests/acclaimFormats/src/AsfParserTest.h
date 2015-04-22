@@ -12,7 +12,7 @@ class AsfParserTest : public CPPUNIT_NS::TestCase
 	CPPUNIT_TEST(testSingleBone);
 	CPPUNIT_TEST(testBones);
 	CPPUNIT_TEST(testHierarchy);
-    CPPUNIT_TEST_EXCEPTION(testLoadNotExisting, std::runtime_error);
+    //CPPUNIT_TEST_EXCEPTION(testLoadNotExisting, std::runtime_error);
     CPPUNIT_TEST_SUITE_END();
 public:
     AsfParserTest(void);
@@ -24,7 +24,7 @@ public:
 
 	void testLoadMetadata();
 	void testLoadUnits();
-    void testLoadNotExisting();
+    //void testLoadNotExisting();
 	void testHierarchy();
 	void testBones();
 	void testSingleBone();

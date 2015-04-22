@@ -8,6 +8,7 @@
 #include <utils/SmartPtr.h>
 #include <acclaimformatslib/Bone.h>
 #include <acclaimformatslib/DegreeOfFreedom.h>
+#include <kinematicUtils/RotationConverter.h>
 #include <osg/Vec3>
 
 namespace acclaim
@@ -15,54 +16,62 @@ namespace acclaim
 	/// \brief  Klasa przechowuje hierarchie kości
 	struct Skeleton
 	{	
+		//! Typ identyfikatora kości
+		typedef int ID;
+		//! Typ indeksujący kości wg ich identyfikatorów
+		typedef std::map<ID, Bone> Bones;
+		//! Typ opisujący hierarchię kości - relacja rodzic <-> dziecko
+		typedef boost::bimap<boost::bimaps::multiset_of<ID>, boost::bimaps::set_of<ID>> Hierarchy;
 
-		typedef std::map<int, Bone> Bones;
-		typedef boost::bimap<boost::bimaps::multiset_of<int>, boost::bimaps::set_of<int>> Hierarchy;
-
+		//! Struktura opisująca sekcję Units
 		struct Units
 		{
+			//! Mapa klucz - opis
 			std::map<std::string, std::string> typeValueUnits;
-			std::map<std::string, float> defaultValues;
+			//! Mapa klucz - wartość
+			std::map<std::string, double> defaultValues;
+			//! Konstruktor domyślny
+			Units();
+			//! Destruktor
+			~Units();
 
-			bool isAngleInRadians() const {
-				auto angleIt = typeValueUnits.find("angle");
-				return angleIt != typeValueUnits.end() && angleIt->second == "rad";
-			}
+			//! \return Czy kąt podawany jest w radianach
+			bool isAngleInRadians() const;
+			//! \param angleType Typ kąta
+			void setAngleType(const kinematicUtils::AngleUnitType angleType);
 		};
 
+		//! Konstruktor domyślny
+		Skeleton();
+		//! Destruktor
+		~Skeleton();
+
+		//! Wersja formatu
 		std::string version;
+		//! Nazwa szkieletu
 		std::string name;
+		//! Dokumentacja
 		std::string documentation;
+		//! Jednostki i opis
 		Units units;
 		//! korzeń, czyli kość od której zaczyna się hierarchia.
-		int root;
-
+		ID root;
+		//! Kości
 		Bones bones;
-
+		//! Hierarchia
 		Hierarchy hierarchy;
-		//! początkowa pozycja w globalnym układzie odniesienia
-		osg::Vec3 position;
-		//! początkowa orientacja w globalnym układzie odniesienia
-		osg::Vec3 orientation;
-		//! kolejność rotacji (sekcja axis)
+		//! Początkowa pozycja w globalnym układzie odniesienia
+		osg::Vec3d position;
+		//! Początkowa orientacja w globalnym układzie odniesienia
+		osg::Vec3d orientation;
+		//! Kolejność rotacji (sekcja axis)
 		kinematicUtils::AxisOrder::Type axisOrder;
-		//! kolejność rotacji (sekcja order)
+		//! Kolejność rotacji (sekcja order)
 		std::vector<kinematicUtils::Channel> dataOrder;
-		kinematicUtils::AxisOrder::Type getRotationOrder() const
-		{
-			std::string s;
-			int count = dataOrder.size();
-			for (int i = 0; i < count; ++i) {
-				if (dataOrder[i] == kinematicUtils::ChannelType::RX) {
-					s += "X";
-				} else if (dataOrder[i] == kinematicUtils::ChannelType::RY) {
-					s += "Y";
-				} else if (dataOrder[i] == kinematicUtils::ChannelType::RZ) {
-					s += "Z";
-				}
-			}
-			return Axis::getAxisOrder(s);
-		}
+		//! \return Kolejność rotacji
+		kinematicUtils::AxisOrder::Type rotationOrder() const;
+		//! \return Aktywne kości (razem z rootem)
+		unsigned int activeBones() const;
 
 	};
 	DEFINE_SMART_POINTERS(Skeleton);

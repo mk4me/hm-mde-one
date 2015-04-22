@@ -27,7 +27,7 @@ namespace IMU
 		}
 		//! \tparam Src Typ �r�d�owy
 		template<typename Src, typename Dest = typename Src::second_type>
-		inline static void extract(const Src & timeData,  Dest & data)
+		inline static void extract(const Src & timeData, Dest & data)
 		{
 			data = timeData.second;
 		}
@@ -61,12 +61,9 @@ namespace IMU
 	{
 	private:
 
-		struct ImuSensorData
+		struct SensorDataWithStatus : public SensorData
 		{
-			osg::Vec3d acc;
-			osg::Vec3d gyro;
-			osg::Vec3d mag;
-			osg::Quat orient;
+			//! Status danych
 			int status;
 		};
 
@@ -91,7 +88,7 @@ namespace IMU
 		//! Obiekt realizuj�cy weryfikacj�
 		CostumeCompleteDataFilter completeDataFilter;
 		//aktualne dane do wysy�k dalej w przetwarzanie
-		mutable std::map<imuCostume::Costume::SensorID, ImuSensorData> currentData;
+		mutable std::map<imuCostume::Costume::SensorID, SensorDataWithStatus> currentData;
 	};
 
 	//! Klasa procesora strumienia estymuj�ca orientacje czujnik�w na bazie pomiar�w
@@ -108,7 +105,7 @@ namespace IMU
 	private:
 		//! Profil z algorytmami kt�re estymuj� orientacje czujnik�w
 		IMU::CostumeProfilePtr profile;
-
+		//! Mapa z ostatnimi czasami aktualizacji poszczególnych sensorów
 		mutable std::map<imuCostume::Costume::SensorID, uint32_t> lastUpdateTime;
 	};
 
@@ -277,67 +274,6 @@ namespace IMU
 	TIMEMEMBER_EXTRACTOR(magnetometer);
 	TIMEMEMBER_EXTRACTOR(gyroscope);
 	TIMEMEMBER_EXTRACTOR(orientation);
-
-
-	/*class IMUAccExtractor
-	{
-	public:
-		bool verify(const IMU::IMUStream::value_type & a)
-		{
-			return true;
-		}
-		
-		void extract(const IMU::IMUStream::value_type & a, Vec3Stream::value_type & ret) const
-		{
-			ret.first = a.first;
-			ret.second = a.second.accelerometer;
-		}
-	};
-
-	class IMUMagExtractor
-	{
-	public:
-		bool verify(const IMU::IMUStream::value_type & a)
-		{
-			return true;
-		}
-
-		void extract(const IMU::IMUStream::value_type & a, Vec3Stream::value_type & ret) const
-		{
-			ret.first = a.first;
-			ret.second = a.second.magnetometer;
-		}
-	};
-
-	class IMUGyroExtractor
-	{
-	public:
-		bool verify(const IMU::IMUStream::value_type & a)
-		{
-			return true;
-		}
-
-		void extract(const IMU::IMUStream::value_type & a, Vec3Stream::value_type & ret) const
-		{
-			ret.first = a.first;
-			ret.second = a.second.gyroscope;
-		}
-	};
-
-	class IMUOrientExtractor
-	{
-	public:
-		bool verify(const IMU::IMUStream::value_type & a)
-		{
-			return true;
-		}
-
-		void extract(const IMU::IMUStream::value_type & a, QuatStream::value_type & ret) const
-		{
-			ret.first = a.first;
-			ret.second = a.second.orientation;
-		}
-	};*/
 
 	class IMUExtractor
 	{

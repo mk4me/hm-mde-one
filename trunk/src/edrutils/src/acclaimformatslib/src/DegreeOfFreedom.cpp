@@ -1,6 +1,4 @@
 #include <acclaimformatslib/DegreeOfFreedom.h>
-#include <algorithm>
-#include <cctype>
 
 using namespace acclaim;
 
@@ -27,41 +25,76 @@ int DegreeOfFreedom::getChannelIndex(kinematicUtils::Channel channel, const std:
 }
 
 kinematicUtils::AxisOrder::Type Axis::getAxisOrder(const std::string& axis) {
-    std::string s(axis);
-    std::transform(s.begin(), s.end(), s.begin(), ::toupper);
-    if (s == "XYZ") {
+	if (axis == "XYZ") {
 		return kinematicUtils::AxisOrder::XYZ;
-    } else if (s == "XZY") {
+	}
+	else if (axis == "XZY") {
 		return kinematicUtils::AxisOrder::XZY;
-    } else if (s == "YXZ") {
+	}
+	else if (axis == "YXZ") {
 		return kinematicUtils::AxisOrder::XZY;
-    } else if (s == "YZX") {
+	}
+	else if (axis == "YZX") {
 		return kinematicUtils::AxisOrder::YZX;
-    } else if (s == "ZXY") {
+	}
+	else if (axis == "ZXY") {
 		return kinematicUtils::AxisOrder::ZXY;
-    } else if (s == "ZYX") {
+	}
+	else if (axis == "ZYX") {
 		return kinematicUtils::AxisOrder::ZYX;
     } else {
 		throw std::runtime_error("Unsupported acclaim axis order");
     }
 }
 
+DegreeOfFreedom::DegreeOfFreedom(const kinematicUtils::Channel channel) :
+	channel(channel),
+	minLimit(-std::numeric_limits<double>::infinity()),
+	maxLimit(std::numeric_limits<double>::infinity())
+{
+}
+
+DegreeOfFreedom::DegreeOfFreedom(const kinematicUtils::Channel channel,
+	double minLimit, double maxLimit) :
+	channel(channel),
+	minLimit(minLimit),
+	maxLimit(maxLimit)
+{
+}
+
+DegreeOfFreedom::~DegreeOfFreedom()
+{
+
+}
+
+bool DegreeOfFreedom::operator==(const DegreeOfFreedom& b) const
+{
+	static const double epsilon = 0.0000001f;
+	return channel == b.channel &&
+		std::abs(minLimit - b.minLimit) < epsilon &&
+		std::abs(maxLimit - b.maxLimit) < epsilon;
+}
+
 kinematicUtils::Channel DegreeOfFreedom::getChannel( const std::string& channel ) {
-    std::string s(channel);
-    std::transform(s.begin(), s.end(), s.begin(), ::toupper);
-    if (s == "TX") {
+	if (channel == "TX") {
 		return (kinematicUtils::ChannelType::TX);
-    } else if (s == "TY") {
+	}
+	else if (channel == "TY") {
 		return (kinematicUtils::ChannelType::TY);
-    } else if (s == "TZ") {
+	}
+	else if (channel == "TZ") {
 		return (kinematicUtils::ChannelType::TZ);
-    } else if (s == "RX") {
+	}
+	else if (channel == "RX") {
 		return (kinematicUtils::ChannelType::RX);
-    } else if (s == "RY") {
+	}
+	else if (channel == "RY") {
 		return (kinematicUtils::ChannelType::RY);
-    } else if (s == "RZ") {
+	}
+	else if (channel == "RZ") {
 		return (kinematicUtils::ChannelType::RZ);
-    } else if (s == "L") {
+	}
+	else if (channel == "L") {
         return (DegreeOfFreedom::L);
     } else {
 		throw std::runtime_error("Unsupported acclaim data channel");

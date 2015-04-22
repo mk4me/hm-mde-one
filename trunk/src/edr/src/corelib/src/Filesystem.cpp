@@ -1,5 +1,8 @@
 #include "CoreLibPCH.h"
 #include <corelib/Filesystem.h>
+#include <chrono>
+#include <thread>
+#include <boost/lexical_cast.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace core {
@@ -400,6 +403,21 @@ const Filesystem::size_t Filesystem::size(const Path & path)
 	}
 
 	return ret;
+}
+
+std::string Filesystem::temporaryFileName()
+{
+	return boost::lexical_cast<std::string>(std::chrono::system_clock::now().time_since_epoch().count()) + "_" + boost::lexical_cast<std::string>(std::this_thread::get_id());
+}
+
+std::string Filesystem::temporaryFileExtension()
+{
+	return std::string("tmp");
+}
+
+std::string Filesystem::temporaryFile()
+{
+	return temporaryFileName() + "." + temporaryFileExtension();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

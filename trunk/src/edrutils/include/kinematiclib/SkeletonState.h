@@ -169,6 +169,13 @@ namespace kinematic
 			const LinearizedNodesMapping & mapping);
 
 		//! \param skeleton Szkielet dla któego tworzymy zmianę stanu szkieletu
+		//! \param motionData Dane ruchu w formacie acclaim - ramka danych
+		//! \param mapping Mapowanie danych acclaim do szkieletu
+		//! \return Zmiana stanu szkieletu
+		static acclaim::MotionData::BonesData convert(const acclaim::Skeleton & skeleton,
+			const SkeletonState & skeletonState);
+
+		//! \param skeleton Szkielet dla któego tworzymy zmianę stanu szkieletu
 		//! \param motionData Dane ruchu w formacie biovision - ramka danych		
 		//! \return Zmiana stanu szkieletu
 		static RigidCompleteStateChange convert(const biovision::Skeleton & skeleton,

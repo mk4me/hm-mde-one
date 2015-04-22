@@ -583,13 +583,13 @@ SkeletonState::JointConstPtr SkeletonState::root() const
 	return root_;
 }
 
-osg::Vec3 resolveRadians(const acclaim::Skeleton & skeleton, const osg::Vec3& toResolve)
+osg::Vec3 resolveRadians(const bool angleInRadians, const osg::Vec3& toResolve)
 {
-	return skeleton.units.isAngleInRadians() ? static_cast<osg::Vec3d>(toResolve) : kinematicUtils::toRadians(toResolve);
+	return angleInRadians == true ? static_cast<osg::Vec3d>(toResolve) : kinematicUtils::toRadians(toResolve);
 }
 
 SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
-	const acclaim::MotionData::BoneData & boneData)
+	const acclaim::MotionData::BoneData & boneData, const bool angleInRadians)
 {
 	auto it = std::find_if(skeleton.bones.begin(), skeleton.bones.end(), [&boneData](const acclaim::Skeleton::Bones::value_type & val)
 	{
@@ -657,11 +657,9 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 		++i;
 	}
 
-
-	osg::Quat c = kinematicUtils::convert(resolveRadians(skeleton, bone.axis), bone.axisOrder);
-	osg::Quat cinv = c.inverse();
-	auto rotOrder = skeleton.getRotationOrder();
-	osg::Quat rot2 = kinematicUtils::convert(resolveRadians(skeleton, rot), bone.name == "root" ? rotOrder : bone.axisOrder);
+	osg::Quat c = kinematicUtils::convert(resolveRadians(angleInRadians, bone.axis), bone.axisOrder);
+	osg::Quat cinv = c.inverse();	
+	osg::Quat rot2 = kinematicUtils::convert(resolveRadians(angleInRadians, rot), bone.rotationOrder());
 	ret.rotation = cinv * rot2 * c;
 
 	return ret;
@@ -692,12 +690,14 @@ SkeletonState::RigidPartialStateChange SkeletonState::convert(const acclaim::Ske
 {
 	RigidPartialStateChange ret;
 
+	const bool angleInRadians = skeleton.units.isAngleInRadians();
+
 	for (const auto & bd : motionData.bonesData)
 	{
 		auto it = mapping.right.find(bd.name);
 		if (it != mapping.right.end()){
 			auto nodeID = it->get_left();
-			auto jointStateChange = ::convert(skeleton, bd);
+			auto jointStateChange = ::convert(skeleton, bd, angleInRadians);
 			ret.rotations.insert(std::map<NodeIDX, osg::Quat>::value_type(nodeID, jointStateChange.rotation));
 
 			if (nodeID == 0){
@@ -707,6 +707,128 @@ SkeletonState::RigidPartialStateChange SkeletonState::convert(const acclaim::Ske
 	}
 
 	//orderChanges(skeleton, skeleton.root, changes, ret);
+
+	return ret;
+}
+
+acclaim::MotionData::BonesData SkeletonState::convert(const acclaim::Skeleton & skeleton,
+	const SkeletonState & skeletonState)
+{
+	if (skeletonState.root() == nullptr){
+		throw std::runtime_error("Empty skeleton state");
+	}
+
+	acclaim::MotionData::BonesData ret;
+	const bool angleInRadians = skeleton.units.isAngleInRadians();
+	
+	acclaim::MotionData::BoneData bd;
+	bd.name = "root";
+	{
+		osg::Quat c = kinematicUtils::convert(resolveRadians(angleInRadians, skeleton.orientation), skeleton.axisOrder);
+		osg::Quat cinv = c.inverse();
+
+		auto orient = kinematicUtils::convert(c * skeletonState.root()->value.localOrientation() * cinv, skeleton.rotationOrder());
+		if (angleInRadians == false){
+			orient = kinematicUtils::toDegrees(orient);
+		}
+
+		orient = kinematicUtils::orderedAngles(orient, skeleton.rotationOrder());
+
+		auto position = skeletonState.root()->value.localPosition();
+
+		for (auto dO : skeleton.dataOrder)
+		{			
+			switch (dO)
+			{
+			case kinematicUtils::ChannelType::TX:
+				bd.channelValues.push_back(position.x());
+				break;
+			case kinematicUtils::ChannelType::TY:
+				bd.channelValues.push_back(position.y());
+				break;
+			case kinematicUtils::ChannelType::TZ:
+				bd.channelValues.push_back(position.z());
+				break;
+			case kinematicUtils::ChannelType::RX:
+				bd.channelValues.push_back(orient.x());
+				break;
+			case kinematicUtils::ChannelType::RY:
+				bd.channelValues.push_back(orient.y());
+				break;
+			case kinematicUtils::ChannelType::RZ:
+				bd.channelValues.push_back(orient.z());
+				break;
+
+			default:
+				throw std::runtime_error("Unrecognized data channel for AMC file");
+				break;
+			}
+		}
+	}
+
+	ret.push_back(bd);
+
+	for (const auto c : skeletonState.root()->children)
+	{
+		utils::TreeNode::visitPreOrder(c, [&skeleton, &ret, angleInRadians](SkeletonState::JointConstPtr joint)
+		{
+			if (joint->isLeaf() == true){
+				return;
+			}
+
+			const auto name = joint->value.name();
+			auto sIT = std::find_if(skeleton.bones.begin(), skeleton.bones.end(), [&name](const acclaim::Skeleton::Bones::value_type & bd)
+			{
+				return bd.second.name == name;
+			});
+
+			if (sIT == skeleton.bones.end()){
+				throw std::runtime_error("Bone not found in skeleton model");
+			}
+
+			//pomijamy statyczne stawy
+			if (sIT->second.dofs.empty() == false){
+				acclaim::MotionData::BoneData bd;
+				bd.name = name;
+
+				osg::Quat c = kinematicUtils::convert(resolveRadians(angleInRadians, sIT->second.axis), sIT->second.axisOrder);
+				osg::Quat cinv = c.inverse();
+
+				auto orient = kinematicUtils::convert(c * joint->value.localOrientation() * cinv, sIT->second.rotationOrder());
+				
+				if (angleInRadians == false){
+					orient = kinematicUtils::toDegrees(orient);
+				}
+
+				orient = kinematicUtils::orderedAngles(orient, sIT->second.rotationOrder());
+
+				for (auto dO : sIT->second.dofs)
+				{
+					switch (dO.channel)
+					{
+					case kinematicUtils::ChannelType::RX:
+						bd.channelValues.push_back(orient.x());
+						break;
+					case kinematicUtils::ChannelType::RY:
+						bd.channelValues.push_back(orient.y());
+						break;
+					case kinematicUtils::ChannelType::RZ:
+						bd.channelValues.push_back(orient.z());
+						break;
+					case acclaim::DegreeOfFreedom::L:
+						//TODO - co zrobić z tym przesunięciem?
+						break;
+
+					default:
+						throw std::runtime_error("Unrecognized data channel for AMC file");
+						break;
+					}
+				}
+
+				ret.push_back(bd);
+			}
+		});
+	}
 
 	return ret;
 }
@@ -841,7 +963,7 @@ kinematic::SkeletonState::NonRigidCompleteStateChange kinematic::SkeletonState::
 	auto count = mapping.size();
 	auto rootRotIt = sChange.rotations.find(0);
 	frame.push_back(kinematic::SkeletonState::JointStateChange{ sChange.translation, rootRotIt != sChange.rotations.end() ? rootRotIt->second : osg::Quat() });
-	for (int i = 1; i < count; i++) {
+	for (unsigned int i = 1; i < count; i++) {
 		auto it = sChange.rotations.find(i);
 		frame.push_back(kinematic::SkeletonState::JointStateChange{ osg::Vec3(), it != sChange.rotations.end() ? it->second : osg::Quat() });
 	}

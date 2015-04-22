@@ -1,8 +1,6 @@
 #include "RotationConverterTest.h"
 #include <kinematicUtils/RotationConverter.h>
-#include "osg/Vec3"
-
-
+#include <osg/Vec3>
 
 void RotationConverterTest::testConversion()
 {

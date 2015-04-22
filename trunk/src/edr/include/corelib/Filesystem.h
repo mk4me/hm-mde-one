@@ -192,6 +192,13 @@ public:
 	*/
 	static const size_t size(const std::string & path);
 	static const size_t size(const Path & path);
+
+	//! \return Nazwa pliku tymczasowego - uwzględnia czas i wątek
+	static std::string temporaryFileName();
+	//! \return Rozszerzenie pliku tymczasowego
+	static std::string temporaryFileExtension();
+	//! \return Nazwa + rozszerzenie pliku tymczasowego - uwzględnia czas i wątek
+	static std::string temporaryFile();
 };
 
 ////////////////////////////////////////////////////////////////////////////////

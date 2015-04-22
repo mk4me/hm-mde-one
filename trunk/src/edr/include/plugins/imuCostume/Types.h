@@ -35,7 +35,7 @@ namespace IMU
 		osg::Vec3d gyroscope;
 		//! Magnetometr
 		osg::Vec3d magnetometer;
-	};	
+	};
 
 	//! Agregacja danych z sensor�w
 	typedef std::map<imuCostume::Costume::SensorID, SensorData> SensorsData;
@@ -61,10 +61,13 @@ namespace IMU
 		//! Lokalna pozycja
 		osg::Vec3d globalPosition;
 	};
+}
 
+//! Makro realizujące nazwę ekstraktora pola strumienia czasowego
 #define TIMEMEMBER_EXTRACTOR_NAME(memberName) \
 	TimeMemberExtractor##memberName
 
+//! Makro definiujące ekstraktor pola strumienia czasowego
 #define TIMEMEMBER_EXTRACTOR(memberName) \
 class TIMEMEMBER_EXTRACTOR_NAME(memberName){\
 public:\
@@ -77,14 +80,16 @@ public:\
 	}\
 };
 
+//! Makro realizujące adapter pola strumienia czasowego
 #define TIMEMEMBER_ADAPTER_NAME(baseType, memberName) \
 	TimeMemberAdapter##baseType##memberName
 
+//! Makro definiujące adapter pola strumienia czasowego
 #define TIMEMEMBER_ADAPTER_EXT(baseType, destType, memberName) \
 typedef StreamAdapterT<baseType, destType, TIMEMEMBER_EXTRACTOR_NAME(memberName)> TIMEMEMBER_ADAPTER_NAME(baseType,memberName);
 
+//! Makro definiujące adapter pola strumienia czasowego
 #define TIMEMEMBER_ADAPTER(baseType, memberName) \
 	TIMEMEMBER_ADAPTER_EXT(baseType, decltype(std::declval<baseType>().second.memberName), memberName);
-}
 
 #endif	// __HEADER_GUARD_IMU__TYPES_H__

@@ -20,7 +20,7 @@ namespace core {
 		const Filesystem::Path & applicationDataPath,
 		const Filesystem::Path & userApplicationDataPath,
 		const Filesystem::Path & resourcesPath,
-		const Filesystem::Path & tmpPath,
+		const Filesystem::Path & tempPath,
 		const Filesystem::Path & pluginPath);
 		virtual ~Path();
 
@@ -34,15 +34,11 @@ namespace core {
 		//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
 		virtual const Filesystem::Path& getResourcesPath() const;
 		//! \return Zwraca pe³n¹ œcie¿kê do tymczasowego folderu, który jest czyszczony podczas ka¿dego zamykania aplikacji
-		virtual const Filesystem::Path& getTmpPath() const;
+		virtual const Filesystem::Path& getTempPath() const;
 		//! \return Zwraca pe³n¹ œcie¿kê do folderu pluginu
 		virtual const Filesystem::Path& getPluginPath() const;
-		//! \return Losowa nazwa pliku tymczasowego
-		virtual const Filesystem::Path generateTempFileName() const;
 		//! \return Zwraca pe³n¹ œcie¿kê do folderu z t³umaczeniami aplikacji
 		const Filesystem::Path& getTranslationsPath() const;
-		//! \return Losowa nazwa pliku tymczasowego
-		static const Filesystem::Path TempFileName();
 
 	private:
 		Filesystem::Path translationsPath_;
@@ -50,7 +46,7 @@ namespace core {
 		Filesystem::Path applicationDataPath_;
 		Filesystem::Path userApplicationDataPath_;
 		Filesystem::Path resourcesPath_;
-		Filesystem::Path tmpPath_;
+		Filesystem::Path tempPath_;
 		Filesystem::Path pluginPath_;
 	};
 }

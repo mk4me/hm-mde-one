@@ -28,11 +28,9 @@ public:
 	//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
 	virtual const Filesystem::Path& getResourcesPath() const;
 	//! \return Zwraca pe³n¹ œcie¿kê do tymczasowego folderu, który jest czyszczony podczas ka¿dego zamykania aplikacji
-	virtual const Filesystem::Path& getTmpPath() const;
+	virtual const Filesystem::Path& getTempPath() const;
 	//! \return Zwraca pe³n¹ œcie¿kê do folderu pluginu
 	virtual const Filesystem::Path& getPluginPath() const;
-	//! \return Losowa nazwa pliku tymczasowego
-	virtual const Filesystem::Path generateTempFileName() const;
 
 private:
 	const Filesystem::Path pluginPath;

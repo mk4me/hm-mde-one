@@ -141,7 +141,7 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 	for (auto it = expressions.begin(); it != expressions.end(); ++it){
 		ExpressionDescription desc;
 		desc.objectsTypes = it->second.objectsTypes;
-		for (int i = 0; i < desc.objectsTypes.size(); ++i){
+		for (unsigned int i = 0; i < desc.objectsTypes.size(); ++i){
 			auto t = desc.objectsTypes[i];
 			if (typesHierarchy->isRegistered(t)){
 				desc.supportedTypes.insert(t);

@@ -157,7 +157,7 @@ void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFun
 						try{
 							std::ofstream out(filePath.string(), std::ios_base::out | std::ios_base::binary);
 							std::streamsize size = 0;
-							while (stream->eof() == false && ((size = utils::forceReadSome(*stream, (char*)buffer.get(), BufferSize)) > 0)) { out.write(buffer.get(), size); }
+							while (stream->eof() == false && ((size = utils::StreamTools::forceReadSome(*stream, (char*)buffer.get(), BufferSize)) > 0)) { out.write(buffer.get(), size); }
 							out.close();
 						}
 						catch (...){

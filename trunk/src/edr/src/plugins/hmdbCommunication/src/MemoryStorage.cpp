@@ -198,7 +198,7 @@ const IHMDBStorage::IStreamPtr MemoryStorage::rawGet(const std::string & key) co
 
 const bool MemoryStorage::rawSet(const std::string & key, IStreamPtr input)
 {
-	auto str = utils::readStream(*input);
+	auto str = utils::StreamTools::read(*input);
 	auto it = storage.find(key);
 	if (it != storage.end()){
 		it->second = str;
@@ -212,7 +212,7 @@ const bool MemoryStorage::rawSet(const std::string & key, IStreamPtr input)
 
 void MemoryStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBStorageProgress * progress)
 {
-	const auto streamSize = utils::streamSize(*input);
+	const auto streamSize = utils::StreamTools::size(*input);
 
 	if (streamSize == 0){
 		progress->setError("Empty input stream");

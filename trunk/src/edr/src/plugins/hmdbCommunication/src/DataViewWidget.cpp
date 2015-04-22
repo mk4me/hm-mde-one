@@ -1501,11 +1501,11 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 			return;
 		}
 
-		if (storage->shareDiskSpace(plugin::getPaths()->getTmpPath()) == true){
+		if (storage->shareDiskSpace(plugin::getPaths()->getTempPath()) == true){
 			size <<= 1;
 		}
 		
-		const auto aSpace = core::Filesystem::availableSpace(plugin::getPaths()->getTmpPath());
+		const auto aSpace = core::Filesystem::availableSpace(plugin::getPaths()->getTempPath());
 
 		if (size > aSpace){
 			QMessageBox::warning(this, tr("Download disk space requirements"), tr("Requested download requires %1 to store the data while only %2 is available. Please ensure there is enough space on the disk for download and try again.").arg(formatFileSize(size)).arg(formatFileSize(aSpace)));

@@ -30,11 +30,11 @@ public:
 	//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
 	virtual const Filesystem::Path& getResourcesPath() const = 0;
     //! \return Zwraca pełną ścieżkę do tymczasowego folderu, który jest czyszczony podczas każdego zamykania aplikacji
-    virtual const Filesystem::Path& getTmpPath() const = 0;
+    virtual const Filesystem::Path& getTempPath() const = 0;
+	//! \return Losowa nazwa pliku tymczasowego
+	inline const Filesystem::Path getTempFilePath() const { return getTempPath() / Filesystem::temporaryFile(); }
 	//! \return Zwraca pełną ścieżkę do folderu pluginu
 	virtual const Filesystem::Path& getPluginPath() const = 0;
-	//! \return Losowa nazwa pliku tymczasowego
-	virtual const Filesystem::Path generateTempFileName() const = 0;
 };
 
 }

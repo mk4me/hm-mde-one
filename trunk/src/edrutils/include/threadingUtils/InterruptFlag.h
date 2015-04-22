@@ -45,7 +45,7 @@ namespace threadingUtils
 		//! \tparam Lockable Typ obiektu synchronizuj�cego
 		//! Klasa wpiera funkcjonalno�c przerywania oczekiwania na customowych obiektach synchronizuj�cych
 		template<typename Lockable>
-		struct CustomLock
+		class CustomLock
 		{
 		private:
 			//! Flaga synchronizuj�ca

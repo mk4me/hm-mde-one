@@ -53,44 +53,45 @@ namespace utils
 	};
 
 	//! \tparam NPtr Typ wska�nika w�z�a
-		template<typename NPtr>
-		//! Klasa linearyzująca drzewo
-		class TreeLinearizeVisitor
+	template<typename NPtr>
+	//! Klasa linearyzująca drzewo
+	class TreeLinearizeVisitor
+	{
+		//! Typ zlinearyzowanego drzewa
+		typedef std::list<NPtr> LinearizedTree;
+
+	public:
+
+		//! Konstruktor domyslny
+		TreeLinearizeVisitor() {}
+		//! Destruktor
+		~TreeLinearizeVisitor() {}
+
+		//! \param node odwiedzany w�ze�
+		void operator()(NPtr node)
 		{
-			//! Typ zlinearyzowanego drzewa
-			typedef std::list<NPtr> LinearizedTree;
+			linearizedTree_.push_back(node);
+		}
 
-		public:
+		//! \return Zlinearyzowane drzewo
+		const LinearizedTree linearizedTree() const
+		{
+			return linearizedTree_;
+		}
 
-			//! Konstruktor domyslny
-			TreeLinearizeVisitor() {}
-			//! Destruktor
-			~TreeLinearizeVisitor() {}
+		//! Czyści zlinearyzowaną reprezentacje drzewa
+		void reset()
+		{
+			LinearizedTree().swap(linearizedTree_);
+		}
 
-			//! \param node odwiedzany w�ze�
-			void operator()(NPtr node)
-			{
-				linearizedTree_.push_back(node);
-			}
+	private:
 
-			//! \return Zlinearyzowane drzewo
-			const LinearizedTree linearizedTree() const
-			{
-				return linearizedTree_;
-			}
+		//! Zlinearyzowane drzewo
+		LinearizedTree linearizedTree_;
+	};
 
-			//! Czyści zlinearyzowaną reprezentacje drzewa
-			void reset()
-			{
-				LinearizedTree().swap(linearizedTree_);
-			}
-
-		private:
-
-			//! Zlinearyzowane drzewo
-			LinearizedTree linearizedTree_;
-		};
-
+	//! Klasa z podstawowymi typami i generycznymi algorytmami dla drzewa
 	struct TreeNode
 	{
 		//! Typ rozmiaru
@@ -285,6 +286,129 @@ namespace utils
 			}			
 		}
 
+		//! \tparam NPtrA Typ wskaźnika węzła startowego pierwszego drzewa
+		//! \tparam NPtrB Typ wskaźnika węzła startowego drugiego drzewa
+		//! \tparam Comp Typ obiektu używanego do poównania elementów drzew
+		template<typename NPtrA, typename NPtrB,
+			typename Comp = std::equal_to<>>
+		//! \param nodeA Węzeł startowy pierwszego drzewa
+		//! \param nodeB Węzeł startowy drugiego drzewa
+		//! \param comp Obiekt porównyjący wartości węzłów
+		//! \return Czy oba drzewa są równe - struktura i dane węzłów
+		static bool compare(NPtrA nodeA, NPtrB nodeB, Comp comp = Comp())
+		{
+			//zakładamy że struktury takie same
+			bool ret = true;
+			//czy już początek nam się rózni?
+			if ((nodeA != nullptr && nodeB == nullptr) ||
+				(nodeA == nullptr && nodeB != nullptr)){
+				ret = false;
+			}
+			else{
+				//no to porównyjemy
+				//szybko po rozmiarze
+				ret = (nodeA->children.size() == nodeB->children.size());
+
+				if (ret == true){
+
+					ret == comp(nodeA->value, nodeB->value);
+
+					if (ret == true){
+						//idziemy głębiej
+						for (auto itA = nodeA->children.begin(), auto itB = nodeB->children.begin();
+							(itA != nodeA->children.end()) && (itB != nodeB->children.end()) && ((ret = compare(*itA, *itB, comp)) == true);
+							++itA, ++itB) {
+						}
+
+						if (ret == true && (itA != nodeA->children.end() || itB != nodeB->children.end())){
+							ret = false;
+						}
+					}
+				}
+			}
+
+			return ret;
+		}
+
+		//! \tparam NPtrA Typ wskaźnika węzła startowego pierwszego drzewa
+		//! \tparam NPtrB Typ wskaźnika węzła startowego drugiego drzewa
+		template<typename NPtrA, typename NPtrB>
+		//! \param nodeA Węzeł startowy pierwszego drzewa
+		//! \param nodeB Węzeł startowy drugiego drzewa
+		//! \return Czy struktury drzew są takie same
+		static bool compareStructure(NPtrA nodeA, NPtrB nodeB)
+		{	
+			if (nodeA == nodeB){
+				return true;
+			}
+
+			//zakładamy że struktury takie same
+			bool ret = true;
+			//czy już początek nam się rózni?
+			if ((nodeA != nullptr && nodeB == nullptr) ||
+				(nodeA == nullptr && nodeB != nullptr)){
+				ret = false;
+			}
+			else{
+				//no to porównyjemy
+				//szybko po rozmiarze
+				ret = (nodeA->children.size() == nodeB->children.size());
+
+				if (ret == true){
+					//idziemy głębiej
+					for (auto itA = nodeA->children.begin(), auto itB = nodeB->children.begin();
+						(itA != nodeA->children.end()) && (itB != nodeB->children.end()) && ((ret = compareStructure(*itA, *itB)) == true);
+						++itA, ++itB) {}
+
+					if (ret == true && (itA != nodeA->children.end() || itB != nodeB->children.end())){
+						ret = false;
+					}
+				}
+			}
+
+			return ret;
+		}
+
+		//! \tparam NPtr Typ wskaźnika węzła
+		template<typename NPtr>
+		//! \param node usuwany węzeł z hierarchi (nie może być to root)
+		static void removeSubTree(NPtr node)
+		{
+			if (node->isRoot() == false){
+				auto parent = node->parent.lock();
+				parent->children.erase(std::remove(parent->children.begin(), parent->children.end(), node), parent->children.end());
+			}
+		}
+
+		//! \tparam NPtr Typ wskaźnika węzła
+		template<typename NPtr>
+		//! \param node usuwany węzeł z hierarchi, jego dzieci przechodza wyżej na koniec listy dzieci (nie może być to root)
+		static void removeNode(NPtr node)
+		{
+			if (node->isRoot() == false){
+				auto parent = node->parent.lock();
+				parent->children.erase(std::remove(parent->children.begin(), parent->children.end(), node), parent->children.end());
+				parent->children.insert(parent->children.end(), node->children.begin(), node->children.end());
+				node->children.swap(decltype(node->children)());
+			}
+		}
+
+		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam Visitor Typ odwiedzaj�cego w�z�y
+		template<typename NPtrA, typename NPtrB, typename Visitor>
+		//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
+		//! \param visitor Obiekt przegl�daj�cy wez�y
+		static void visitPreOrder(NPtrA nodeA, NPtrB nodeB, Visitor & visitor)
+		{
+			visitor(nodeA, nodeB);
+			if (nodeA != nullptr && nodeB != nullptr){
+				for (const auto & child : node->children)
+				{
+					visitPreOrder(NPtr(child), visitor);
+				}
+			}
+		}
+
 		//! \tparam NPtr Typ wska�nika w�z�a
 		//! \tparam Visitor Typ odwiedzaj�cego w�z�y
 		template<typename NPtr, typename Visitor>
@@ -463,9 +587,6 @@ namespace utils
 			return !lt.empty();
 		}
 	};
-
-
-
 
 	//! Klasa wizytująca szukająca najgłebszego poziomu drzewa
 	class FindMaxLevelVisitor

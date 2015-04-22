@@ -937,7 +937,7 @@ void IMUCostumeWidget::onRecord(const bool record)
 
 				(*outputFile) << "Data" << std::endl;
 
-				recordOutput = utils::make_shared<IMU::IIMUDataSource::RecordingOutput>();
+				recordOutput = utils::make_shared<IMU::IIMUDataSource::RecordingConfiguration>();
 				recordOutput->costumesDataBuffer.setMaxBufferSize(10000);
 				recordOutput->costumesToRecord = w.costumes();		
 

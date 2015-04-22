@@ -13,6 +13,8 @@ SET_SOURCE_FILES(
 	AmcParser.cpp
 	AsfParser.cpp
 	DegreeOfFreedom.cpp
+	Skeleton.cpp
+	Bone.cpp
 )
 
 END_PROJECT()

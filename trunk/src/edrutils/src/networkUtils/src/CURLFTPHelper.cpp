@@ -73,7 +73,7 @@ size_t _read(void* buffer, size_t size, size_t nmemb, void* stream)
 			offset = 0;
 		}
 		else{
-			offset = utils::forceReadSome(*istream, (char*)buffer, offset);
+			offset = utils::StreamTools::forceReadSome(*istream, (char*)buffer, offset);
 		}
 	}
 	catch (...){

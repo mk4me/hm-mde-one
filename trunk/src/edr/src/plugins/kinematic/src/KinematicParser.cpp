@@ -28,10 +28,9 @@ void KinematicParser::parse( const std::string & source)
 
 	acclaim::MotionDataPtr dataPtr = utils::make_shared<acclaim::MotionData>();
 
-	//if(core::Filesystem::fileExtension(path).compare(".amc") == 0) {
-		acclaim::AmcParser amc;
-		std::string amcFilename = path.string();
-		amc.parse(*dataPtr, amcFilename);
+	//if(core::Filesystem::fileExtension(path).compare(".amc") == 0) {		
+		std::ifstream amcFile(path.string());
+		acclaim::AmcParser::parse(*dataPtr, amcFile);
 				
 	//} 
 	// bvh chwilowo wylaczone

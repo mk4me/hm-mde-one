@@ -20,8 +20,8 @@ void AsfParser::parse( const std::string & source )
 {
 	skeletalModel = utils::ObjectWrapper::create<acclaim::Skeleton>();
 	core::Filesystem::Path path(source);
-	acclaim::AsfParser asf;
-	auto skeleton = asf.parse(path.string());
+	std::ifstream file(path.string());	 
+	 auto skeleton = acclaim::AsfParser::parse(file, true);
 	acclaim::SkeletonPtr modelPtr = utils::make_shared<acclaim::Skeleton>(std::move(skeleton));
     skeletalModel->set(modelPtr);
 }

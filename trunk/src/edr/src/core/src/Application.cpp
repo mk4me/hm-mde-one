@@ -164,7 +164,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 	CORE_LOG_INFO("ApplicationDataPath: " << paths_->getApplicationDataPath());
 	CORE_LOG_INFO("UserApplicationDataPath: " << paths_->getUserApplicationDataPath());
 	CORE_LOG_INFO("ResourcesPath: " << paths_->getResourcesPath());
-	CORE_LOG_INFO("TmpPath: " << paths_->getTmpPath());
+	CORE_LOG_INFO("TmpPath: " << paths_->getTempPath());
 	CORE_LOG_INFO("PluginPath: " << paths_->getPluginPath());
 	CORE_LOG_INFO("TranslationsPath: " << paths_->getTranslationsPath());
 
@@ -243,10 +243,10 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 
 	//probujemy tmp katalog zapewni?
 	try{
-		Filesystem::createDirectory(paths_->getTmpPath());
+		Filesystem::createDirectory(paths_->getTempPath());
 	}
 	catch (...){
-		CORE_LOG_ERROR("Could not create temporary directory: " << paths_->getTmpPath());
+		CORE_LOG_ERROR("Could not create temporary directory: " << paths_->getTempPath());
 		throw;
 	}
 
@@ -585,7 +585,7 @@ Application::~Application()
 		pluginLoader_.reset();
 
 		CORE_LOG_INFO("Cleaning tmp files");
-		Filesystem::deleteDirectory(getPaths()->getTmpPath());
+		Filesystem::deleteDirectory(getPaths()->getTempPath());
 
 		CORE_LOG_INFO("Releasing application description");
 		applicationDescription_.reset();

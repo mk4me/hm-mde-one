@@ -91,9 +91,9 @@ CostumeIMUExtractor::CostumeIMUExtractor(const imuCostume::Costume::SensorIDsSet
 {
 	for (const auto & id : sensorsIDs)
 	{
-		ImuSensorData isd;
+		SensorDataWithStatus isd;
 		isd.status = 0;
-		currentData.insert(std::map<imuCostume::Costume::SensorID, ImuSensorData>::value_type(id, isd));
+		currentData.insert(std::map<imuCostume::Costume::SensorID, SensorDataWithStatus>::value_type(id, isd));
 	}
 }
 
@@ -105,9 +105,9 @@ CostumeIMUExtractor::CostumeIMUExtractor(const imuCostume::Costume::SensorsConfi
 	if (it != sensorsConfiguration.end()){
 		for (const auto & id : it->second)
 		{
-			ImuSensorData isd;
+			SensorDataWithStatus isd;
 			isd.status = 0;
-			currentData.insert(std::map<imuCostume::Costume::SensorID, ImuSensorData>::value_type(id, isd));
+			currentData.insert(std::map<imuCostume::Costume::SensorID, SensorDataWithStatus>::value_type(id, isd));
 		}
 	}
 }
@@ -132,19 +132,19 @@ bool CostumeIMUExtractor::verify(const IMU::CostumeStream::value_type & streamDa
 			const auto status = imuData->dataStatus();
 
 			if (status | imuCostume::Costume::IMUSensor::ACC_DATA){
-				it->second.acc = imuData->accelerometer();
+				it->second.accelerometer = imuData->accelerometer();
 			}
 
 			if (status | imuCostume::Costume::IMUSensor::GYRO_DATA){
-				it->second.gyro = imuData->gyroscope();
+				it->second.gyroscope = imuData->gyroscope();
 			}
 
 			if (status | imuCostume::Costume::IMUSensor::MAG_DATA){
-				it->second.mag = imuData->magnetometer();
+				it->second.magnetometer = imuData->magnetometer();
 			}
 
 			if (status | imuCostume::Costume::IMUSensor::ORIENT_DATA){
-				it->second.orient = imuData->orientation();
+				it->second.orientation = imuData->orientation();
 			}
 
 			if((it->second.status |= status) | 0x0F){			
@@ -166,15 +166,9 @@ void CostumeIMUExtractor::extract(const IMU::CostumeStream::value_type & streamD
 
 		if (it != currentData.end()){
 
-			if (it->second.status | 0x0F){
+			if (it->second.status | 0x0F){				
 
-				IMU::SensorData sd;
-				sd.accelerometer = it->second.acc;
-				sd.magnetometer = it->second.mag;
-				sd.gyroscope = it->second.gyro;
-				sd.orientation = it->second.orient;
-
-				locData.insert(IMU::SensorsData::value_type(d->id(), sd));
+				locData.insert(IMU::SensorsData::value_type(d->id(), IMU::SensorData(it->second)));
 			}
 		}
 	}		

@@ -210,7 +210,7 @@ const bool SQLCipherStorage::rawSet(const std::string & key, IHMDBStorage::IStre
 		return false;
 	}
 
-	const auto streamSize = utils::streamSize(*input);
+	const auto streamSize = utils::StreamTools::size(*input);
 
 	if (streamSize == 0){
 		return false;
@@ -324,7 +324,7 @@ void SQLCipherStorage::rawSet(const std::string & key, IStreamPtr input, IHMDBSt
 		return;
 	}
 
-	const auto streamSize = utils::streamSize(*input);
+	const auto streamSize = utils::StreamTools::size(*input);
 
 	if (streamSize == 0){
 		progress->setError("Empty input stream");

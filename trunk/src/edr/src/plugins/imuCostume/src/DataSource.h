@@ -20,6 +20,7 @@
 #include <corelib/ThreadPool.h>
 #include <corelib/HierarchyDataItem.h>
 #include <plugins/imuCostume/CostumeIMUExtractor.h>
+#include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <utils/SamplesStatus.h>
 
 typedef threadingUtils::StreamAdapterT<IMU::CostumeStream::value_type, IMU::SensorsStreamData, IMU::CostumeIMUExtractor> ExtractedCostumeStreamAdapter;
@@ -132,8 +133,8 @@ namespace IMU
 
 		virtual core::ConstVariantsList costumeData(const CostumeID & id) const override;
 
-		virtual void startRecording(RecordingOutputPtr recording) override;
-		virtual void stopRecording(RecordingOutputPtr recording) override;
+		virtual void startRecording(RecordingConfigurationPtr recording) override;
+		virtual void stopRecording(RecordingConfigurationPtr recording) override;
 
 		virtual void registerOrientationEstimationAlgorithm(IIMUOrientationEstimationAlgorithmPtr algorithm) override;
 		virtual void registerCostumeCalibrationAlgorithm(IMUCostumeCalibrationAlgorithmPtr algorithm) override;
@@ -146,6 +147,11 @@ namespace IMU
 		virtual CostumeMotionEstimationAlgorithms motionEstimationAlgorithms() const override;
 		virtual SkeletonModels skeletonModels() const override;
 		virtual CostumesProfiles costumesProfiles() const override;
+
+		hmdbCommunication::IHMDBShallowCopyContextPtr selectUploadContext() const;
+
+		void uploadSession(const core::Filesystem::Path & configuration,
+			const core::Filesystem::FilesList & recordings);
 
 	private:
 
@@ -199,7 +205,7 @@ namespace IMU
 		core::HierarchyItemPtr recordedItems;
 
 		CostumesData costumesData;
-		std::set<RecordingOutputPtr> recordings;
+		std::set<RecordingConfigurationPtr> recordings;
 
 		OrientationEstimationAlgorithms orientationEstimationAlgorithms_;
 		CostumeCalibrationAlgorithms calibrationAlgorithms_;

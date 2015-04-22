@@ -22,10 +22,14 @@ class CostumeSkeletonMotionHelper : public QObject
 
 private:
 
+	//Struktura opisuj¹ca postêp inicjalizacji algorytmu
 	struct AlgoProgress
 	{
+		//! Algorytm
 		IMU::IIMUOrientationEstimationAlgorithmPtr algo;
+		//! Ostatni czas
 		uint32_t lastTime;
+		//! Licznik
 		unsigned int counter;
 	};
 
@@ -51,7 +55,7 @@ public:
 	//! \return Czy kalibracja zakoñczona sukcesem
 	bool isComplete() const;
 
-	private slots:
+private slots:
 
 	//! Cykliczne odpalana metoda czytaj¹ca dane ze strumienia, jeœli s¹, i realizuj¹ca inicjalizacjê kostiumu
 	void perform();

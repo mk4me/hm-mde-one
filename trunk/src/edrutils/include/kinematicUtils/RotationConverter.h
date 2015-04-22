@@ -14,6 +14,22 @@
 
 namespace kinematicUtils
 {
+	//! Wyliczenie jednostek opisj¹cych k¹ty
+	enum AngleUnitType
+	{
+		Deg,	//! Stopnie
+		Rad		//! Radiany
+	};
+
+	double convertAngleUnit(const double value, const AngleUnitType destType);
+
+	template<int DestinationAngleUnitType>
+	inline double convertAngleUnit(const double value)
+	{
+		static_assert(false, "Nalezy u¿yæ jednej z dozwolonych specjalizacji wynikaj¹cych z wyliczenia dla AngleUnitType");
+		return 0.0;
+	}
+
 	osg::Quat convertXYX(const osg::Vec3d & rotation);
 	osg::Quat convertXYZ(const osg::Vec3d & rotation);
 	osg::Quat convertXZX(const osg::Vec3d & rotation);
@@ -27,6 +43,15 @@ namespace kinematicUtils
 	osg::Quat convertZYX(const osg::Vec3d & rotation);
 	osg::Quat convertZYZ(const osg::Vec3d & rotation);
 	osg::Quat convert(const osg::Vec3d & rotation, const AxisOrder::Type axisOrder);
+
+	template<int AxisOrder>
+	inline osg::Quat convert(const osg::Vec3d & rotation)
+	{
+		static_assert(false, "Nalezy u¿yæ jednej z dozwolonych specjalizacji wynikaj¹cych z wyliczenia dla AxisOrder");
+		return osg::Quat(0, 0, 0, 1);
+	}
+
+	osg::Vec3d orderedAngles(const osg::Vec3d & angles, const AxisOrder::Type axisOrder);
 	
 	osg::Vec3d convertXYX(const osg::Quat & rotation);
 	osg::Vec3d convertXYZ(const osg::Quat & rotation);
@@ -42,8 +67,177 @@ namespace kinematicUtils
 	osg::Vec3d convertZYZ(const osg::Quat & rotation);
 	osg::Vec3d convert(const osg::Quat & rotation, const AxisOrder::Type axisOrder);
 
+	template<int AxisOrder>
+	inline osg::Vec3d convert(const osg::Quat & rotation)
+	{
+		static_assert(false, "Nalezy u¿yæ jednej z dozwolonych specjalizacji wynikaj¹cych z wyliczenia dla AxisOrder");
+		return osg::Vec3d(0, 0, 0);
+	}
+
 	osg::Vec3d toRadians(const osg::Vec3d & rotation);
 	osg::Vec3d toDegrees(const osg::Vec3d & rotation);
+
+//-------------------------------------------------------
+
+	template<>
+	inline double convertAngleUnit<AngleUnitType::Deg>(const double value)
+	{		
+		return osg::RadiansToDegrees(value);
+	}
+
+	template<>
+	inline double convertAngleUnit<AngleUnitType::Rad >(const double value)
+	{
+		return osg::DegreesToRadians(value);
+	}
+
+//-------------------------------------------------------
+
+	template<>
+	inline osg::Quat convert<AxisOrder::XYX>(const osg::Vec3d & rotation)
+	{
+		return convertXYX(rotation);
+	}
+
+	template<>
+	inline osg::Quat convert<AxisOrder::XYZ>(const osg::Vec3d & rotation)
+	{
+		return convertXYZ(rotation);
+	}
+
+	template<>
+	inline osg::Quat convert<AxisOrder::XZX>(const osg::Vec3d & rotation)
+	{
+		return convertXZX(rotation);
+	}
+
+	template<>
+	inline osg::Quat convert<AxisOrder::XZY>(const osg::Vec3d & rotation)
+	{
+		return convertXZY(rotation);
+	}
+
+	template<>
+	inline osg::Quat convert<AxisOrder::YXY>(const osg::Vec3d & rotation)
+	{
+		return convertYXY(rotation);
+	}
+
+	template<>
+	inline osg::Quat convert<AxisOrder::YXZ>(const osg::Vec3d & rotation)
+	{
+		return convertYXZ(rotation);
+	}
+
+	template<>
+	inline osg::Quat convert<AxisOrder::YZX>(const osg::Vec3d & rotation)
+	{
+		return convertYZX(rotation);
+	}
+
+	template<>
+	inline osg::Quat convert<AxisOrder::YZY>(const osg::Vec3d & rotation)
+	{
+		return convertYZY(rotation);
+	}
+
+	template<>
+	inline osg::Quat convert<AxisOrder::ZXY>(const osg::Vec3d & rotation)
+	{
+		return convertZXY(rotation);
+	}
+
+	template<>
+	inline osg::Quat convert<AxisOrder::ZXZ>(const osg::Vec3d & rotation)
+	{
+		return convertZXZ(rotation);
+	}
+
+	template<>
+	inline osg::Quat convert<AxisOrder::ZYX>(const osg::Vec3d & rotation)
+	{
+		return convertZYX(rotation);
+	}
+
+	template<>
+	inline osg::Quat convert<AxisOrder::ZYZ>(const osg::Vec3d & rotation)
+	{
+		return convertZYZ(rotation);
+	}
+
+//------------------------------------------------------------------
+
+	template<>
+	inline osg::Vec3d convert<AxisOrder::XYX>(const osg::Quat & rotation)
+	{
+		return convertXYX(rotation);
+	}
+
+	template<>
+	inline osg::Vec3d convert<AxisOrder::XYZ>(const osg::Quat & rotation)
+	{
+		return convertXYZ(rotation);
+	}
+
+	template<>
+	inline osg::Vec3d convert<AxisOrder::XZX>(const osg::Quat & rotation)
+	{
+		return convertXZX(rotation);
+	}
+
+	template<>
+	inline osg::Vec3d convert<AxisOrder::XZY>(const osg::Quat & rotation)
+	{
+		return convertXZY(rotation);
+	}
+
+	template<>
+	inline osg::Vec3d convert<AxisOrder::YXY>(const osg::Quat & rotation)
+	{
+		return convertYXY(rotation);
+	}
+
+	template<>
+	inline osg::Vec3d convert<AxisOrder::YXZ>(const osg::Quat & rotation)
+	{
+		return convertYXZ(rotation);
+	}
+
+	template<>
+	inline osg::Vec3d convert<AxisOrder::YZX>(const osg::Quat & rotation)
+	{
+		return convertYZX(rotation);
+	}
+
+	template<>
+	inline osg::Vec3d convert<AxisOrder::YZY>(const osg::Quat & rotation)
+	{
+		return convertYZY(rotation);
+	}
+
+	template<>
+	inline osg::Vec3d convert<AxisOrder::ZXY>(const osg::Quat & rotation)
+	{
+		return convertZXY(rotation);
+	}
+
+	template<>
+	inline osg::Vec3d convert<AxisOrder::ZXZ>(const osg::Quat & rotation)
+	{
+		return convertZXZ(rotation);
+	}
+
+	template<>
+	inline osg::Vec3d convert<AxisOrder::ZYX>(const osg::Quat & rotation)
+	{
+		return convertZYX(rotation);
+	}
+
+	template<>
+	inline osg::Vec3d convert<AxisOrder::ZYZ>(const osg::Quat & rotation)
+	{
+		return convertZYZ(rotation);
+	}
 }
 
 #endif	// __HEADER_GUARD_KINEMATICUTILS__ROTATIONCONVERTER_H__

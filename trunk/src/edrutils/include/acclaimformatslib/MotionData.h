@@ -9,6 +9,9 @@ namespace acclaim
 	struct MotionData
 	{
 	public:
+		//! Agregat danych kanału
+		typedef std::vector<double> ChannelValues;
+
 		/// \brief  Struktura zawiera wartości kanałów dla
 		/// 	    konkretnej kości i konkretnego kanału
 		struct BoneData
@@ -16,30 +19,31 @@ namespace acclaim
 			//! nazwa stawu
 			std::string name;
 			/// \brief  wartości kanałów dla tej stawu (ich liczba powinna być rowna stopniom swobody stawu)
-			std::vector<float> channelValues;
-			//! konstruktor ustawia domyślny rozmiar dla kolekcji (6 stopni swobody)
-			BoneData()
-			{
-				channelValues.reserve(6);
-			}
+			ChannelValues channelValues;
 		};
+
+		//! Agregat danych kości
+		typedef std::vector<BoneData> BonesData;
 
 		/// \brief  struktura przechowuje wartości kanałów dla wszystkich kości w pojedynczej klatce animacji
 		struct FrameData
 		{
-			int id; //!< numer klatki animacji
-			std::vector<BoneData> bonesData; //!< wartości kanałów			
-		};		
+			unsigned int id; //!< numer klatki animacji
+			BonesData bonesData; //!< wartości kanałów			
+		};
+
+		typedef std::vector<FrameData> FramesData;
 
 	public:
-		//! konstruktor, ustawia domyślny okres pojedynczej ramki (1/100)
+		//! \param frameTime Czas trwania ramki w sekundach
 		MotionData(const double frameTime = 0.01) :
 			frameTime(frameTime)
 		{}
+		//! Destruktor
 		~MotionData() {}
 
 		//! kolecja z danymi
-		std::vector<FrameData>  frames;
+		FramesData frames;
 		////! Czas trwania pojedynczej ramki
 		double frameTime;
 	};

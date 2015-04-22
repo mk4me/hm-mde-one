@@ -6,50 +6,52 @@
 #include <utils/SmartPtr.h>
 #include <boost/utility.hpp>
 #include <acclaimformatslib/DegreeOfFreedom.h>
+#include <kinematicUtils/RotationConverter.h>
 
 namespace acclaim
 {
 	//! Struktura przechowuje informacje o stawie
 	struct Bone
 	{
+		//! Domyślny kierunek kości
+		static const osg::Vec3d defaultDirection;
+		//! Domyślna orientacja kości
+		static const osg::Vec3d defaultAxis;
+		//! Domyślna kolejnośc osi
+		static const kinematicUtils::AxisOrder::Type defaultAxisOrder = kinematicUtils::AxisOrder::XYZ;		
+		//! Domyślna reprezentacja kątów
+		static const kinematicUtils::AngleUnitType defaultAngleUnit = kinematicUtils::Deg;
+
 		//! unikalny identyfikator stawu
 		int id;
 		//! nazwa stawu
 		std::string name;
-		//! kierunek kości w globalnym układzie odniesienia
-		osg::Vec3 direction;
+		//! kierunek kości w globalnym/lokalnym? układzie odniesienia
+		osg::Vec3d direction;
 		//! długość kości
-		float length;
-		//! określa oś obrotu dla kości
-		osg::Vec3 axis;
+		double length;
+		//! określa orientację referencyjną kości - obraca się wg orientacji danych z AMC
+		osg::Vec3d axis;
 		//! określa kolejność rotacji dla osi obrotu
-		kinematicUtils::AxisOrder::Type axisOrder;
-		//! określa kolejność rotacji
-		kinematicUtils::AxisOrder::Type rotationOrder;
+		kinematicUtils::AxisOrder::Type axisOrder;		
 		//! stopnie swobody dla kości (razem z limitami)
 		std::vector<DegreeOfFreedom> dofs;
+		//! \return Czy kość jest aktywna - będa dla niej dane w pliku AMC
+		const bool isActive() const;
+		//! \return Kolejność rotacji
+		kinematicUtils::AxisOrder::Type rotationOrder() const;
 
-		Bone() :
-			id(-1),
-			axis(0.0, 0.0, 0.0),
-			length(-1),
-			axisOrder(kinematicUtils::AxisOrder::XYZ),
-			rotationOrder(kinematicUtils::AxisOrder::XYZ),
-			direction(0.0, 0.0, 0.0)
-		{}
+		//! Domyslny konstruktor
+		Bone();
 
-		Bone(const Bone & Other) :
-			id(Other.id),
-			name(Other.name),
-			direction(Other.direction),
-			length(Other.length),
-			axis(Other.axis),
-			axisOrder(Other.axisOrder),
-			rotationOrder(Other.rotationOrder),
-			dofs(Other.dofs)
-		{}
+		//! \param Other Kopiowana kość
+		Bone(const Bone & Other);
 
-		~Bone() {}
+		//! \param Other Przenoszona kość
+		Bone(Bone && Other);
+
+		//! Desturktor
+		~Bone();
 	};
 }
 

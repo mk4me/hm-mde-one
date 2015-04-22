@@ -87,7 +87,7 @@ private:
 
 private:
 	utils::shared_ptr<std::ofstream> outputFile;
-	IMU::IIMUDataSource::RecordingOutputPtr recordOutput;	
+	IMU::IIMUDataSource::RecordingConfigurationPtr recordOutput;	
 	QTimer recordTimer;
 	QTimer statusRefreshTimer;
 	IMU::IMUCostumeDataSource * ds;

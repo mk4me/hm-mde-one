@@ -7,7 +7,7 @@ class AmcParserTest : public CPPUNIT_NS::TestCase
 {
     CPPUNIT_TEST_SUITE(AmcParserTest);
     CPPUNIT_TEST(testLoad);
-	CPPUNIT_TEST_EXCEPTION(testLoadNotExisting, std::runtime_error);
+	//CPPUNIT_TEST_EXCEPTION(testLoadNotExisting, std::runtime_error);
     CPPUNIT_TEST_SUITE_END();
 public:
     AmcParserTest(void);
@@ -15,6 +15,6 @@ public:
 
 public:
     void testLoad();
-    void testLoadNotExisting();
+    //void testLoadNotExisting();
 };
 #endif

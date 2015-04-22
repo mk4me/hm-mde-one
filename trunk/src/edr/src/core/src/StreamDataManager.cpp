@@ -469,7 +469,7 @@ private:
 			auto stream = getStream();
 			if (stream != nullptr) {
 
-				const auto tmpPath = plugin::getPaths()->getTmpPath() / plugin::getPaths()->generateTempFileName();
+				const auto tmpPath = plugin::getPaths()->getTempFilePath();
 				std::ofstream output(tmpPath.string(), std::ios_base::out | std::ios_base::binary);
 
 				if (output.is_open() == true) {
