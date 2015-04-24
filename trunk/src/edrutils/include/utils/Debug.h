@@ -14,7 +14,7 @@
 #include <utils/Utils.h>
 #include <sstream>
 #include <boost/assert.hpp>
-
+#include <boost/date_time/posix_time/posix_time_types.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
@@ -45,6 +45,18 @@ public:
     static void formatMessage(char * buffer, int bufferSize);
 };
 
+class ScopeTimePrinter
+{
+public:
+	ScopeTimePrinter(const std::string& scopeName);
+	ScopeTimePrinter(const std::string& scopeName, const char * file, int line);
+	virtual ~ScopeTimePrinter();
+private:
+	std::string scopeName;
+	boost::posix_time::ptime tick;
+};
+
+
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace utils
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,5 +82,8 @@ public:
 #   define UTILS_ASSERT(...)
 #   define UTILS_FAIL(...)
 #endif
+
+
+
 
 #endif  // HEADER_GUARD__UTILS_DEBUG_H__

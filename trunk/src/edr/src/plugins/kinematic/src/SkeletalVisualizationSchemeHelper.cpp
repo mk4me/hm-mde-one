@@ -29,12 +29,11 @@ void SkeletonJointsMapping::init(kinematic::SkeletonConstPtr skeleton,
 				locVisJoints[it->second] = index;
 				locNamedVisJoints[it->first] = index;	
 
-			}else{
-
+			} else {
 				missing[it->first] = it->second;
 				//throw core::runtime_error("Could not perform joints mapping");
 			}
-		}else{
+		} else {
 			++index;
 			locVisJoints[it->second] = index;
 			locNamedVisJoints[it->first] = index;	

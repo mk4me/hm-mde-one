@@ -37,9 +37,6 @@ public:
 	virtual void update();
 
 	virtual const utils::TypeInfo & getRequestedDataType() const;
-	//! \return długość kanału w sekundach
-	
-
     //! \return macierz serii z transformacją, która nie została zmieniona przez manipulatory
     virtual osg::Matrix getInitialMatrix() const;
 

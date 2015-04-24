@@ -114,5 +114,3 @@ int TrajectoryDrawerManager::maxRange( const unsigned int idx ) const
 {
     return featuresDescriptors[idx]->count();
 }
-
-

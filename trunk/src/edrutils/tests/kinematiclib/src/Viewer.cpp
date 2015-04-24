@@ -16,7 +16,7 @@ void kinematicTest::Viewer::start()
 {
 	acclaim::AsfParser asf;
 	//auto acclaimSkeleton = asf.parse("./testFiles/test.asf");
-	auto acclaimSkeleton = asf.parse("./testFiles/B0238.asf");
+	auto acclaimSkeleton = asf.parse("./testFiles/B0238.asf", true);
 
 
 	acclaim::AmcParser amc;

@@ -21,7 +21,6 @@ SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer, const utils::Type
 	AbstractSkeletonSerie::init(ratio, pointsCount, skeletonState, skeletonWithStates->nodesMapping);
 	setTime(0.0);
 	setAxis(true);
-
 }
 
 
@@ -51,7 +50,7 @@ const std::vector<std::vector<osg::Vec3>> SkeletonSerie::createPointsPositions(c
 		kinematic::SkeletonState::setLocal(sstate, frame, skeletonWithStates->nodesMapping);
 		std::vector<osg::Vec3> position(j2i.size());
 		for (auto& j : j2i) {
-			position[j.second] = (j.first->value.globalPosition()) * static_cast<float>(this->skeletonWithStates->scale);
+			position[j.second] = (j.first->value.globalPosition());// *static_cast<float>(this->skeletonWithStates->scale);
 		}
 		ret[i] = position ;
 	}

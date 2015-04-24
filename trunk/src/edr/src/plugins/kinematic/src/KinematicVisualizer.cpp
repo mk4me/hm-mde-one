@@ -39,7 +39,6 @@ void KinematicVisualizer::getSupportedTypes(utils::TypeInfoList & supportedTypes
 	supportedTypes.push_back(typeid(osg::PositionAttitudeTransform));
 	supportedTypes.push_back(typeid(SkeletonWithStates));
 	supportedTypes.push_back(typeid(SkeletonWithStreamData));
-//	supportedTypes.push_back(typeid(BVHData));
 }
 
 int KinematicVisualizer::getMaxDataSeries() const

@@ -16,9 +16,9 @@
 class IGhostSerie
 {
 public:
-
 	virtual ~IGhostSerie() {}
 
+public:
 	virtual const bool ghostVisible() const = 0;
 	virtual void setGhostVisible(const bool visible) = 0;
 };
@@ -31,8 +31,9 @@ public:
 
 public:
 	KinematicSerieBase();
-
 	virtual ~KinematicSerieBase();
+
+public:
 	//! \return macierz, na której operują manipulatory
 	MatrixTransformPtr getMatrixTransformNode();
 	//! Metoda niweluje efekty działania manipulatorów

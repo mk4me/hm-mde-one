@@ -4,6 +4,7 @@
 #include <set>
 #include <deque>
 #include <stdexcept>
+#include <utils/Debug.h>
 
 using namespace kinematic;
 
