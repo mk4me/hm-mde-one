@@ -41,10 +41,10 @@ UTILS_PUSH_WARNINGS
 #include <osgWidget/ViewerEventHandlers>
 #include <osgWidget/WindowManager>
 #include <osgText/Text>
-#include <osgGA/TrackballManipulator>
-#include <osgGA/StateSetManipulator>
-#include <osgGA/EventVisitor>
-#include <osgDB/ReadFile>
+//#include <osgGA/TrackballManipulator>
+//#include <osgGA/StateSetManipulator>
+//#include <osgGA/EventVisitor>
+//#include <osgDB/ReadFile>
 UTILS_POP_WARNINGS
 
 #include <QtCore/QtCore>

@@ -27,12 +27,12 @@
 #include <qwt_plot.h>
 #include <qwt_text.h>
 #include <qwt_series_data.h>
-#include <qwt_plot_grid.h>
-#include <qwt_plot_zoomer.h>
-#include <qwt_picker_machine.h>
-#include <qwt_curve_fitter.h>
-#include <qwt_plot_directpainter.h>
-#include <qwt_legend_label.h>
+//#include <qwt_plot_grid.h>
+//#include <qwt_plot_zoomer.h>
+//#include <qwt_picker_machine.h>
+//#include <qwt_curve_fitter.h>
+//#include <qwt_plot_directpainter.h>
+//#include <qwt_legend_label.h>
 #pragma warning( default : 4250 )
 #undef QT_NO_QT_INCLUDE_WARN
 

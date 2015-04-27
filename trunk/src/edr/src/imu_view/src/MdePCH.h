@@ -29,24 +29,6 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QHeaderView>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QDialog>
-#include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QProgressBar>
-#include <QtWidgets/QSpacerItem>
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QSlider>
-#include <QtWidgets/QSplitter>
-#include <QtWidgets/QTabWidget>
-#include <QtWidgets/QTreeWidget>
-#include <QtWidgets/QTreeWidgetItem>
-#include <QtWidgets/QDoubleSpinBox>
-#include <QtWidgets/QFrame>
 
 #include <utils/Utils.h>
 #include <utils/SmartPtr.h>
@@ -55,8 +37,6 @@
 #include <corelib/IVisualizer.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <utils/Push.h>
-//#include <timelinelib/IChannel.h>
-//#include "IAppUsageContextManager.h"
 
 #include <corelib/BaseDataTypes.h>
 #include <corelib/Exceptions.h>
@@ -67,9 +47,6 @@
 
 #include <corelib/IPlugin.h>
 
-//#include <plugins/newTimeline/ITimelineService.h>
-//#include <plugins/video/Wrappers.h>
-//#include <plugins/kinematic/Wrappers.h>
 
 
 #endif

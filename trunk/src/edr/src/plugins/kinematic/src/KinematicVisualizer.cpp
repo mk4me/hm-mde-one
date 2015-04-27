@@ -14,6 +14,7 @@
 #include <plugins/kinematic/Wrappers.h>
 #include <QtWidgets/QToolButton>
 #include <kinematicUtils/RotationConverter.h>
+#include <osgGA/StateSetManipulator>
 #include "OsgSerie.h"
 #include "BvhSerie.h"
 

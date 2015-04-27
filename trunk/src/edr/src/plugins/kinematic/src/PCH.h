@@ -26,9 +26,9 @@
 #include <QtCore/QtCore>
 
 UTILS_PUSH_WARNINGS
-#include <osg/Array>
-#include <osg/Node>
-#include <osg/AnimationPath>
+//#include <osg/Array>
+//#include <osg/Node>
+//#include <osg/AnimationPath>
 #include <osg/Config>
 #include <osg/Geode>
 #include <osg/Geometry>
@@ -46,7 +46,7 @@ UTILS_PUSH_WARNINGS
 #include <osg/ShapeDrawable>
 #include <osg/Shape>
 #include <osg/Timer>
-#include <osg/Vec3>
+//#include <osg/Vec3>
 #include <osg/Vec3d>
 #include <osg/MatrixTransform>
 #include <osgViewer/Viewer>
@@ -54,14 +54,14 @@ UTILS_PUSH_WARNINGS
 #include <osgViewer/ViewerEventHandlers>
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/ViewerEventHandlers>
-#include <osgGA/TrackballManipulator>
-#include <osgGA/FlightManipulator>
-#include <osgGA/DriveManipulator>
-#include <osgGA/KeySwitchMatrixManipulator>
-#include <osgGA/OrbitManipulator>
-#include <osgGA/StateSetManipulator>
-#include <osgGA/AnimationPathManipulator>
-#include <osgGA/TerrainManipulator>
+//#include <osgGA/TrackballManipulator>
+//#include <osgGA/FlightManipulator>
+//#include <osgGA/DriveManipulator>
+//#include <osgGA/KeySwitchMatrixManipulator>
+//#include <osgGA/OrbitManipulator>
+//#include <osgGA/StateSetManipulator>
+//#include <osgGA/AnimationPathManipulator>
+//#include <osgGA/TerrainManipulator>
 #include <osgDB/ReadFile>
 UTILS_POP_WARNINGS
 
