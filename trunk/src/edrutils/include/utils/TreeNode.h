@@ -108,10 +108,10 @@ namespace utils
 		using Children = Path < T > ;
 
 		//! \tparam NPtr Typ wska�nika w�z�a
-		template<typename NPtr>
+		template<typename NPtrA, typename NPtrB>
 		//! \param me Węzeł dla którego sprawdzamy przodka
 		//! \param ancestor Weryfikowany węzeł przodek
-		static bool isAncestor(NPtr me, NPtr ancestor)
+		static bool isAncestor(NPtrA me, NPtrB ancestor)
 		{
 			if (me == nullptr || me == ancestor){
 				return false;
@@ -125,10 +125,10 @@ namespace utils
 		}
 
 		//! \tparam NPtr Typ wska�nika w�z�a
-		template<typename NPtr>
+		template<typename NPtrA, typename NPtrB>
 		//! \param me Węzeł dla którego sprawdzamy potomka
 		//! \param ancestor Weryfikowany węzeł potomek
-		static bool isDescendant(NPtr me, NPtr descendant)
+		static bool isDescendant(NPtrA me, NPtrB descendant)
 		{
 			return isAncestor(descendant, me);
 		}
@@ -143,11 +143,11 @@ namespace utils
 		}
 
 		//! \tparam NPtr Typ wska�nika w�z�a
-		template<typename NPtr>
+		template<typename NPtrA, typename NPtrB>
 		//! \param startNode Weze� z kt�rego ma wystartowa� �cie�ka
 		//! \param endNode Weze� do kt�rego doj�� �cie�ka
 		//! \return D�ugo�� �cie�ki pomi�dzy w�z�ami
-		static SizeType distance(NPtr startNode, NPtr endNode)
+		static SizeType distance(NPtrA startNode, NPtrB endNode)
 		{
 			return distance(findPath(startNode, endNode));
 		}
@@ -206,11 +206,11 @@ namespace utils
 		}
 
 		//! \tparam NPtr Typ wska�nika w�z�a
-		template<typename NPtr>
+		template<typename NPtrA, typename NPtrB>
 		//! \param startNode W�ze� z kt�rego ma si� rozpocz�� �cie�ka
 		//! \param endNode W�ze� w kt�rym ma si� ko�czy� �cie�ka
 		//! \return �cie�ka pomi�dzy w�z�ami - kolejne w�z�y
-		static Path<NPtr> findPath(NPtr startNode, NPtr endNode)
+		static Path<NPtrA> findPath(NPtrA startNode, NPtrB endNode)
 		{
 			if (startNode != endNode){
 				auto p1 = upPath(startNode);
@@ -220,7 +220,7 @@ namespace utils
 					auto it = std::find(p1.begin(), p1.end(), endNode);
 
 					if (it != p1.end()){						
-						return Path<NPtr>(p1.begin(), it + 1);
+						return Path<NPtrA>(p1.begin(), it + 1);
 					}
 				}
 
@@ -231,7 +231,7 @@ namespace utils
 					auto it = std::find(p2.begin(), p2.end(), startNode);
 
 					if (it != p2.end()){
-						Path<NPtr> ret(p2.begin(), it+1);
+						Path<NPtrA> ret(p2.begin(), it+1);
 						reversePath(ret);						
 						return ret;
 					}
@@ -239,17 +239,17 @@ namespace utils
 
 				if (p1.empty() == false && p2.empty() == false){
 
-					std::set<NPtr> s1(p1.begin(), p1.end());
-					std::set<NPtr> s2(p2.begin(), p2.end());
+					std::set<NPtrA> s1(p1.begin(), p1.end());
+					std::set<NPtrA> s2(p2.begin(), p2.end());
 
-					std::vector<NPtr> intersectResult(std::min(p1.size(), p2.size()));
+					std::vector<NPtrA> intersectResult(std::min(p1.size(), p2.size()));
 					auto retIT = std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), intersectResult.begin());
 
 					if (retIT != intersectResult.end()){
 						//mamy punkt przeciecia - drogi si� schodz�
 						//szukam najblizszego punktu przeciecia
-						std::set<NPtr> intersectionSet(intersectResult.begin(), retIT);
-						NPtr intersectionPoint;
+						std::set<NPtrA> intersectionSet(intersectResult.begin(), retIT);
+						NPtrA intersectionPoint;
 
 						if (p1.size() < p2.size()){
 							for (const auto & n : p1)
@@ -270,17 +270,17 @@ namespace utils
 							}
 						}
 
-						Path<NPtr> ret(p1.begin(), std::find(p1.begin(), p1.end(), intersectionPoint));						
+						Path<NPtrA> ret(p1.begin(), std::find(p1.begin(), p1.end(), intersectionPoint));						
 						ret.insert(ret.end(), std::find(p2.begin(), p2.end(), intersectionPoint), p2.end());
 						return ret;
 					}
 				}
 				else{
-					return Path<NPtr>();
+					return Path<NPtrA>();
 				}
 			}
 			else{
-				Path<NPtr> ret;
+				Path<NPtrA> ret;
 				ret.push_back(startNode);
 				return ret;
 			}			
@@ -390,22 +390,6 @@ namespace utils
 				parent->children.erase(std::remove(parent->children.begin(), parent->children.end(), node), parent->children.end());
 				parent->children.insert(parent->children.end(), node->children.begin(), node->children.end());
 				node->children.swap(decltype(node->children)());
-			}
-		}
-
-		//! \tparam NPtr Typ wska�nika w�z�a
-		//! \tparam Visitor Typ odwiedzaj�cego w�z�y
-		template<typename NPtrA, typename NPtrB, typename Visitor>
-		//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
-		//! \param visitor Obiekt przegl�daj�cy wez�y
-		static void visitPreOrder(NPtrA nodeA, NPtrB nodeB, Visitor & visitor)
-		{
-			visitor(nodeA, nodeB);
-			if (nodeA != nullptr && nodeB != nullptr){
-				for (const auto & child : node->children)
-				{
-					visitPreOrder(NPtr(child), visitor);
-				}
 			}
 		}
 
