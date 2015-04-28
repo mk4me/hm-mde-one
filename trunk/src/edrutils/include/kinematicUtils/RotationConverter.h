@@ -14,7 +14,7 @@
 
 namespace kinematicUtils
 {
-	//! Wyliczenie jednostek opisj¹cych k¹ty
+	//! Wyliczenie jednostek opisjï¿½cych kï¿½ty
 	enum AngleUnitType
 	{
 		Deg,	//! Stopnie
@@ -26,7 +26,7 @@ namespace kinematicUtils
 	template<int DestinationAngleUnitType>
 	inline double convertAngleUnit(const double value)
 	{
-		static_assert(false, "Nalezy u¿yæ jednej z dozwolonych specjalizacji wynikaj¹cych z wyliczenia dla AngleUnitType");
+		UTILS_ASSERT(false, "Nalezy uï¿½yï¿½ jednej z dozwolonych specjalizacji wynikajï¿½cych z wyliczenia dla AngleUnitType");
 		return 0.0;
 	}
 
@@ -47,7 +47,7 @@ namespace kinematicUtils
 	template<int AxisOrder>
 	inline osg::Quat convert(const osg::Vec3d & rotation)
 	{
-		static_assert(false, "Nalezy u¿yæ jednej z dozwolonych specjalizacji wynikaj¹cych z wyliczenia dla AxisOrder");
+		UTILS_ASSERT(false, "Nalezy uï¿½yï¿½ jednej z dozwolonych specjalizacji wynikajï¿½cych z wyliczenia dla AxisOrder");
 		return osg::Quat(0, 0, 0, 1);
 	}
 
@@ -70,7 +70,7 @@ namespace kinematicUtils
 	template<int AxisOrder>
 	inline osg::Vec3d convert(const osg::Quat & rotation)
 	{
-		static_assert(false, "Nalezy u¿yæ jednej z dozwolonych specjalizacji wynikaj¹cych z wyliczenia dla AxisOrder");
+		UTILS_ASSERT(false, "Nalezy uï¿½yï¿½ jednej z dozwolonych specjalizacji wynikajï¿½cych z wyliczenia dla AxisOrder");
 		return osg::Vec3d(0, 0, 0);
 	}
 

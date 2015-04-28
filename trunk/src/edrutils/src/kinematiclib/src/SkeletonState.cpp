@@ -770,64 +770,65 @@ acclaim::MotionData::BonesData SkeletonState::convert(const acclaim::Skeleton & 
 
 	for (const auto c : skeletonState.root()->children)
 	{
-		utils::TreeNode::visitPreOrder(c, [&skeleton, &ret, angleInRadians](SkeletonState::JointConstPtr joint)
-		{
-			if (joint->isLeaf() == true){
-				return;
-			}
-
-			const auto name = joint->value.name();
-			auto sIT = std::find_if(skeleton.bones.begin(), skeleton.bones.end(), [&name](const acclaim::Skeleton::Bones::value_type & bd)
-			{
-				return bd.second.name == name;
-			});
-
-			if (sIT == skeleton.bones.end()){
-				throw std::runtime_error("Bone not found in skeleton model");
-			}
-
-			//pomijamy statyczne stawy
-			if (sIT->second.dofs.empty() == false){
-				acclaim::MotionData::BoneData bd;
-				bd.name = name;
-
-				osg::Quat c = kinematicUtils::convert(resolveRadians(angleInRadians, sIT->second.axis), sIT->second.axisOrder);
-				osg::Quat cinv = c.inverse();
-
-				auto orient = kinematicUtils::convert(c * joint->value.localOrientation() * cinv, sIT->second.rotationOrder());
-				
-				if (angleInRadians == false){
-					orient = kinematicUtils::toDegrees(orient);
-				}
-
-				orient = kinematicUtils::orderedAngles(orient, sIT->second.rotationOrder());
-
-				for (auto dO : sIT->second.dofs)
+		auto vis = [&skeleton, &ret, angleInRadians](SkeletonState::JointConstPtr joint)
 				{
-					switch (dO.channel)
-					{
-					case kinematicUtils::ChannelType::RX:
-						bd.channelValues.push_back(orient.x());
-						break;
-					case kinematicUtils::ChannelType::RY:
-						bd.channelValues.push_back(orient.y());
-						break;
-					case kinematicUtils::ChannelType::RZ:
-						bd.channelValues.push_back(orient.z());
-						break;
-					case acclaim::DegreeOfFreedom::L:
-						//TODO - co zrobić z tym przesunięciem?
-						break;
-
-					default:
-						throw std::runtime_error("Unrecognized data channel for AMC file");
-						break;
+					if (joint->isLeaf() == true){
+						return;
 					}
-				}
 
-				ret.push_back(bd);
-			}
-		});
+					const auto name = joint->value.name();
+					auto sIT = std::find_if(skeleton.bones.begin(), skeleton.bones.end(), [&name](const acclaim::Skeleton::Bones::value_type & bd)
+					{
+						return bd.second.name == name;
+					});
+
+					if (sIT == skeleton.bones.end()){
+						throw std::runtime_error("Bone not found in skeleton model");
+					}
+
+					//pomijamy statyczne stawy
+					if (sIT->second.dofs.empty() == false){
+						acclaim::MotionData::BoneData bd;
+						bd.name = name;
+
+						osg::Quat c = kinematicUtils::convert(resolveRadians(angleInRadians, sIT->second.axis), sIT->second.axisOrder);
+						osg::Quat cinv = c.inverse();
+
+						auto orient = kinematicUtils::convert(c * joint->value.localOrientation() * cinv, sIT->second.rotationOrder());
+
+						if (angleInRadians == false){
+							orient = kinematicUtils::toDegrees(orient);
+						}
+
+						orient = kinematicUtils::orderedAngles(orient, sIT->second.rotationOrder());
+
+						for (auto dO : sIT->second.dofs)
+						{
+							switch (dO.channel)
+							{
+							case kinematicUtils::ChannelType::RX:
+								bd.channelValues.push_back(orient.x());
+								break;
+							case kinematicUtils::ChannelType::RY:
+								bd.channelValues.push_back(orient.y());
+								break;
+							case kinematicUtils::ChannelType::RZ:
+								bd.channelValues.push_back(orient.z());
+								break;
+							case acclaim::DegreeOfFreedom::L:
+								//TODO - co zrobić z tym przesunięciem?
+								break;
+
+							default:
+								throw std::runtime_error("Unrecognized data channel for AMC file");
+								break;
+							}
+						}
+
+						ret.push_back(bd);
+					}
+				};
+		utils::TreeNode::visitPreOrder(c, vis);
 	}
 
 	return ret;

@@ -250,7 +250,7 @@ bool parseBones(const std::string& bones, Skeleton & model, const bool createUni
 
 			if (boneParse) {
 				if (model.bones.find(bone.id) == model.bones.end()) {
-					model.bones[bone.id] = bone;
+					model.bones.insert(std::make_pair(bone.id, bone));
 				}
 				else {
 					throw std::runtime_error("Bone : " + bone.name + " already added");

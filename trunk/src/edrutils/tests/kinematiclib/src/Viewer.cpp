@@ -11,17 +11,20 @@
 #include "osgGA/TrackballManipulator"
 #include "osg/PositionAttitudeTransform"
 #include <iostream>
+#include <fstream>
 
 void kinematicTest::Viewer::start()
 {
 	acclaim::AsfParser asf;
 	//auto acclaimSkeleton = asf.parse("./testFiles/test.asf");
-	auto acclaimSkeleton = asf.parse("./testFiles/B0238.asf", true);
+	std::ifstream asfStream("./testFiles/B0238.asf");
+	auto acclaimSkeleton = asf.parse(asfStream, true);
 
 
 	acclaim::AmcParser amc;
 	acclaim::MotionData acclaimData;
-	amc.parse(acclaimData, "./testFiles/test.amc");
+	std::ifstream amcStream("./testFiles/test.amc");
+	amc.parse(acclaimData, amcStream);
 
 	kinematic::Skeleton skeleton;
 	kinematic::Skeleton::convert(acclaimSkeleton, skeleton);

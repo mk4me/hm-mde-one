@@ -315,7 +315,9 @@ namespace utils
 
 					if (ret == true){
 						//idziemy głębiej
-						for (auto itA = nodeA->children.begin(), auto itB = nodeB->children.begin();
+						auto itA = nodeA->children.begin();
+						auto itB = nodeB->children.begin();
+						for (;
 							(itA != nodeA->children.end()) && (itB != nodeB->children.end()) && ((ret = compare(*itA, *itB, comp)) == true);
 							++itA, ++itB) {
 						}
@@ -356,7 +358,9 @@ namespace utils
 
 				if (ret == true){
 					//idziemy głębiej
-					for (auto itA = nodeA->children.begin(), auto itB = nodeB->children.begin();
+					auto itA = nodeA->children.begin();
+					auto itB = nodeB->children.begin();
+					for (;
 						(itA != nodeA->children.end()) && (itB != nodeB->children.end()) && ((ret = compareStructure(*itA, *itB)) == true);
 						++itA, ++itB) {}
 

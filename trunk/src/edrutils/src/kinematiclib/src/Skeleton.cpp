@@ -5,6 +5,7 @@
 #include <deque>
 #include <stdexcept>
 #include <utils/Debug.h>
+#include <utils/TreeNode.h>
 
 using namespace kinematic;
 
@@ -78,7 +79,7 @@ void createJoint(JointPtr parentJoint, const acclaim::Skeleton & skeleton,
 	auto joint = Joint::addChild(parentJoint, jointData);
 	auto range = skeleton.hierarchy.left.equal_range(currentBone.id);	
 	const auto nextPos = currentBone.direction * currentBone.length;
-	//taka jest konwencja ASF - podajemy przesuniecie rodzica, dla wyjaœnienia spojrzeæ na tworzenie liœci hierarchi
+	//taka jest konwencja ASF - podajemy przesuniecie rodzica, dla wyjaï¿½nienia spojrzeï¿½ na tworzenie liï¿½ci hierarchi
 	for (auto it = range.first; it != range.second; ++it){
 		createJoint(joint, skeleton, nextPos, skeleton.bones.at(it->second), names);
 	}
@@ -173,62 +174,62 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 		localSkeleton.root = bone.id;
 
 		for (const auto c : srcSkeleton.root->children){
-
-			utils::TreeNode::visitPreOrder(c, [&id, &localSkeleton,
-				&jointsAxis, axisOrder, angleUnit](kinematic::JointPtr joint)
-			{
-				if (joint == nullptr){
-					throw std::runtime_error("Uninitialized joint");
-				}
-
-				if (joint->isLeaf() == true){
-					return;
-				}
-
-				acclaim::Bone bone;
-				bone.name = joint->value.name;
-				bone.axisOrder = findJointAxis(bone.name, jointsAxis, axisOrder);
-
-				if (joint->children.size() == 1){
-					bone.length = joint->children.front()->value.position.length();
-					bone.direction = joint->children.front()->value.position;
-					bone.direction.normalize();
-				}
-				else{
-					bone.length = 0.0;
-					bone.direction = joint->parent.lock()->value.orientation * osg::Vec3(1, 0, 0);					
-				}				
-				
-				bone.axis = osg::Vec3(0, 0, 0);
-
-				/*bone.axis = kinematicUtils::convert(joint->value.orientation, bone.axisOrder);
-				if (angleUnit == kinematicUtils::Deg){
-					bone.axis = kinematicUtils::toDegrees(bone.axis);
-				}*/
-				bone.id = id + 1;
-
-				localSkeleton.bones.insert(acclaim::Skeleton::Bones::value_type(bone.id, bone));
-
-				auto parentID = localSkeleton.root;
-
-				if (joint->parent.lock()->isRoot() == false){
-					auto parentName = joint->parent.lock()->value.name;
-					auto it = std::find_if(localSkeleton.bones.begin(), localSkeleton.bones.end(),
-						[&parentName](const acclaim::Skeleton::Bones::value_type & bd)
+			auto vis = [&id, &localSkeleton,
+						&jointsAxis, axisOrder, angleUnit](kinematic::JointPtr joint)
 					{
-						return bd.second.name == parentName;
-					});
+						if (joint == nullptr){
+							throw std::runtime_error("Uninitialized joint");
+						}
 
-					if (it == localSkeleton.bones.end()){
-						throw std::runtime_error("Could not find parent bone");
-					}
+						if (joint->isLeaf() == true){
+							return;
+						}
 
-					parentID = it->first;
-				}				
+						acclaim::Bone bone;
+						bone.name = joint->value.name;
+						bone.axisOrder = findJointAxis(bone.name, jointsAxis, axisOrder);
 
-				localSkeleton.hierarchy.left.insert(acclaim::Skeleton::Hierarchy::left_value_type(parentID, bone.id));
-				id = bone.id;
-			});
+						if (joint->children.size() == 1){
+							bone.length = joint->children.front()->value.position.length();
+							bone.direction = joint->children.front()->value.position;
+							bone.direction.normalize();
+						}
+						else{
+							bone.length = 0.0;
+							bone.direction = joint->parent.lock()->value.orientation * osg::Vec3(1, 0, 0);
+						}
+
+						bone.axis = osg::Vec3(0, 0, 0);
+
+						/*bone.axis = kinematicUtils::convert(joint->value.orientation, bone.axisOrder);
+						if (angleUnit == kinematicUtils::Deg){
+							bone.axis = kinematicUtils::toDegrees(bone.axis);
+						}*/
+						bone.id = id + 1;
+
+						localSkeleton.bones.insert(acclaim::Skeleton::Bones::value_type(bone.id, bone));
+
+						auto parentID = localSkeleton.root;
+
+						if (joint->parent.lock()->isRoot() == false){
+							auto parentName = joint->parent.lock()->value.name;
+							auto it = std::find_if(localSkeleton.bones.begin(), localSkeleton.bones.end(),
+								[&parentName](const acclaim::Skeleton::Bones::value_type & bd)
+							{
+								return bd.second.name == parentName;
+							});
+
+							if (it == localSkeleton.bones.end()){
+								throw std::runtime_error("Could not find parent bone");
+							}
+
+							parentID = it->first;
+						}
+
+						localSkeleton.hierarchy.left.insert(acclaim::Skeleton::Hierarchy::left_value_type(parentID, bone.id));
+						id = bone.id;
+					};
+			utils::TreeNode::visitPreOrder(c, vis);
 		}
 
 		destSkeleton = localSkeleton;

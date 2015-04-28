@@ -24,6 +24,7 @@
 #include "SkeletonJointsDelegate.h"
 #include "OrientationEstimationAlgorithmDelegate.h"
 #include <acclaimformatslib/AsfParser.h>
+#include <fstream>
 
 Q_DECLARE_METATYPE(IMU::IIMUOrientationEstimationAlgorithmConstPtr);
 Q_DECLARE_METATYPE(IMU::IMUCostumeCalibrationAlgorithmConstPtr);

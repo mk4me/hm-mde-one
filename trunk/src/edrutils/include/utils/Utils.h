@@ -18,6 +18,8 @@
 #include <memory>
 #include <functional>
 #include <cstdint>
+#include <utility>
+#include <algorithm>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
@@ -81,7 +83,7 @@ struct ArrayTraits
 		template <typename T>
 		//! \param array Tablica
 		//! \return Wypakowany element
-		static inline decltype(std::declval(T)[Element]) extract(const T & array)
+		static inline decltype(std::declval<T>[Element]) extract(const T & array)
 		{
 			return array[Element];
 		}
@@ -122,7 +124,7 @@ struct ArrayTraits
 	template <class T>
 	static inline std::size_t size(const T & array)
 	{
-		return length(array) * sizeof(std::remove_reference(decltype(std::declval<T>()[0])));
+		return length(array) * sizeof(std::remove_reference<decltype(std::declval<T>()[0])>);
 	}	
 
 	//! Zwraca rozmiar tablicy w bajtach
