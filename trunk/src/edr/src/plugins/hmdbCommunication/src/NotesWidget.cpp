@@ -55,6 +55,9 @@ NotesWidget::NotesWidget(QWidget * parent) : QFrame(parent), currentPatientID(-1
 		"	border-top: none;\n"
 		"	border-right: none;\n"
 		"}"));
+	
+	removeNoteButton->setEnabled(false);
+	editNoteButton->setEnabled(false);
 }
 
 NotesWidget::~NotesWidget()
@@ -132,7 +135,7 @@ void NotesWidget::addNote(const QDateTime & created, const QString & title, cons
 	int row = notesTable->rowCount();
 	notesTable->insertRow(row);
 	//ID
-	notesTable->setItem(row, 0, new QTableWidgetItem(QString::number(noteData->localID)));
+	notesTable->setItem(row, 0, new QTableWidgetItem(QString::number(noteData->globalID)));
 	//Title
 	notesTable->setItem(row, 1, new QTableWidgetItem(noteData->title));
 	//Created
@@ -144,16 +147,17 @@ void NotesWidget::addNote(const QDateTime & created, const QString & title, cons
 
 void NotesWidget::removeNote()
 {
+	auto localID = currentNote->localID;
 	notes.erase(currentNote->globalID);
 
-	auto pNotes = patientNotes[currentPatientID];
-
+	auto& pNotes = patientNotes[currentPatientID];
+	// ta operacja podmnienia currentNote na nullptr!
 	notesTable->clearSelection();
 	bool sorting = notesTable->isSortingEnabled();
 	notesTable->setSortingEnabled(false);
 	notesTable->removeRow(notesTable->currentRow());
 
-	for(unsigned int i = currentNote->localID; i < pNotes.size() - 1; ++i){
+	for(unsigned int i = localID; i < pNotes.size() - 1; ++i){
 		pNotes[i] = pNotes[i+1];
 		pNotes[i]->localID = i;
 
@@ -242,7 +246,9 @@ void NotesWidget::fillNotesList()
 
 	if(it == patientNotes.end() || it->second.empty() == true){
 		//tworzymy puste wiersze
-		int emptyRows = 2;
+
+		// TODO - w jakim celu byly tworzone te wiersze?
+		/*int emptyRows = 2;
 		notesTable->setRowCount(emptyRows);
 
 		for(int row = 0; row < emptyRows; ++row){
@@ -250,13 +256,13 @@ void NotesWidget::fillNotesList()
 			notesTable->setItem(row, 1, new QTableWidgetItem());
 			notesTable->setItem(row, 2, new QTableWidgetItem());
 			notesTable->setItem(row, 3, new QTableWidgetItem());
-		}
+		}*/
 	}else{
 		unsigned int rows = (std::max)(it->second.size(), static_cast<PatientNotes::size_type>(2));
 		notesTable->setRowCount(rows);
 		unsigned int row = 0;
 		for( ; row < it->second.size(); ++row){
-			notesTable->setItem(row, 0, new QTableWidgetItem(QString::number(it->second[row]->localID)));
+			notesTable->setItem(row, 0, new QTableWidgetItem(QString::number(it->second[row]->globalID)));
 			notesTable->setItem(row, 1, new QTableWidgetItem(it->second[row]->title));
 			notesTable->setItem(row, 2, new QTableWidgetItem(it->second[row]->created.toString("dd.MM.yyyy")));
 			notesTable->setItem(row, 3, new QTableWidgetItem());
@@ -316,7 +322,7 @@ void NotesWidget::onCurrentNoteChange()
 		}
 	}
 
-	if(noteID <= 0){
+	if(noteID < 0){
 		currentNote.reset();
 		clearNote();
 		removeNoteButton->setEnabled(false);

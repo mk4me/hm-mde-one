@@ -103,7 +103,8 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
             //DicomInternalStructConstPtr test = (*inter.begin())->get();
 		} else {
 			PLUGIN_LOG_ERROR("No session file found!");
-			UTILS_ASSERT(false);
+			// nie znaleziono pliku sesji, takie dane nie moga miec informacji o power dopplerze
+			return core::IHierarchyItemPtr(); // < ------------	return !
 		}
         core::HierarchyDataItemPtr sessionItem(new core::HierarchyDataItem(QIcon(), label, desc));
 	    
