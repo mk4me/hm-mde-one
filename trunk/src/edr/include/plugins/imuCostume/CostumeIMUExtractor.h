@@ -15,24 +15,6 @@
 
 namespace IMU
 {
-	//! Klasa usuwaj�ca czas z danych
-	class TimeRemoverExtractor
-	{
-	public:
-		//! \tparam Src Typ �r�d�owy
-		template<typename Src>
-		inline static bool verify(const Src & timeData)
-		{
-			return true;
-		}
-		//! \tparam Src Typ �r�d�owy
-		template<typename Src, typename Dest = typename Src::second_type>
-		inline static void extract(const Src & timeData, Dest & data)
-		{
-			data = timeData.second;
-		}
-	};
-
 	//! Klasa realizuj�ca filtracj� kompletnych danych IMU (pe�ne dane dla wszystkich czujnik�w IMU)
 	class IMU_EXPORT CostumeCompleteDataFilter
 	{
@@ -193,7 +175,7 @@ namespace IMU
 		void extract(const IMU::MotionStream::value_type & a, osg::Quat & ret) const;
 
 	private:
-		const unsigned int idx;
+		const std::size_t idx;
 	};
 
 	class IMU_EXPORT CANopenDataExtractor
@@ -212,8 +194,8 @@ namespace IMU
 	{
 	public:
 
-		template<typename Base, typename Dest = decltype(std::declval<Base>().operator[](0))>
-		static threadingUtils::StreamAdapterT<Base, Dest, ArrayExtractor> * create(typename threadingUtils::StreamAdapterT<Base, Dest, ArrayExtractor>::BaseStreamTypePtr baseStream, const unsigned int idx)
+		template<typename Base, typename Dest = decltype(std::declval<Base>()[0])>
+		static threadingUtils::StreamAdapterT<Base, Dest, ArrayExtractor> * create(typename threadingUtils::StreamAdapterT<Base, Dest, ArrayExtractor>::BaseStreamTypePtr baseStream, const std::size_t idx)
 		{
 			return new threadingUtils::StreamAdapterT<Base, Dest, ArrayExtractor>(baseStream, ArrayExtractor(idx));
 		}
@@ -223,9 +205,8 @@ namespace IMU
 	{
 	public:
 		ExtractCostumeMotion(ExtractCostumeMotion&& other);
-		ExtractCostumeMotion(
-			IMU::CostumeProfilePtr profile,
-			const IMU::DataIndexToJointMapping & dataMapping);
+		ExtractCostumeMotion(IMU::CostumeProfilePtr profile,
+			const kinematic::LinearizedSkeleton::Mapping & mapping);
 
 		~ExtractCostumeMotion();
 
@@ -235,15 +216,15 @@ namespace IMU
 
 	private:
 		IMU::CostumeProfilePtr profile;
-		mutable kinematic::SkeletonState skeletonState;				
-		const IMU::DataIndexToJointMapping dataMapping;
+		mutable kinematic::Skeleton skeleton;				
+		const kinematic::LinearizedSkeleton::Mapping mapping;
 		mutable imuCostume::CostumeCANopenIO::Timestamp previousTime;		
 	};
 
 	class IMU_EXPORT KinematicStreamExtractor
 	{
 	public:
-		KinematicStreamExtractor(kinematic::SkeletonState && skeletonState);
+		KinematicStreamExtractor(kinematic::Skeleton && skeleton);
 		KinematicStreamExtractor(KinematicStreamExtractor&& other);
 		~KinematicStreamExtractor();
 
@@ -251,11 +232,11 @@ namespace IMU
 
 		void extract(const IMU::MotionStream::value_type & input, IMU::SkeletonStateStream::value_type & output) const;
 
-		const kinematic::SkeletonState & skeletonState() const;
+		const kinematic::Skeleton & skeleton() const;
 
 	private:
 
-		mutable kinematic::SkeletonState skeletonState_;
+		mutable kinematic::Skeleton skeleton_;
 	};
 
 	class IMU_EXPORT RawToCANopenExtractor

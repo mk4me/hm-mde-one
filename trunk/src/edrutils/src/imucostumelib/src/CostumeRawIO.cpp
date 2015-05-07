@@ -15,12 +15,13 @@ class CostumeRawIO::CostumeRawIOImpl
 {
 public:
 	CostumeRawIOImpl(const std::string & ip, const unsigned int port) :
-		ip_(ip), port_(port), io_service(), socket(io_service)
+		ip_(ip), port_(port), io_service(), socket(io_service), samplingDelay_(0)
 	{
 		socket.open(boost::asio::ip::udp::v4());
 		socket.set_option(boost::asio::socket_base::reuse_address(true));
 		socket.bind(boost::asio::ip::udp::endpoint(	boost::asio::ip::address_v4::any(),	port));
 		socket.connect(boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string(ip), port));
+		setSamplingDelay(20, 100);
 	}
 
 	~CostumeRawIOImpl()
@@ -129,7 +130,7 @@ public:
 	}
 
 	//OK
-	void setSamplingDelay(const uint32_t delay, const uint16_t timeout)
+	bool setSamplingDelay(const uint32_t delay, const uint16_t timeout)
 	{
 		auto d = utils::clamp<uint8_t>(delay / 10, 1, 255);
 		std::array<uint8_t, 19> buffer;
@@ -137,8 +138,17 @@ public:
 		buffer[1] = (uint8_t)this;
 		std::memcpy(buffer.data() + 2, PingMagicNumber, MagicNumberLength);
 		buffer[18] = d;
+		auto ret = send(buffer.data(), 19, timeout);
+		if (ret == true){
+			samplingDelay_ = delay;
+		}
 
-		send(buffer.data(), 19, timeout);
+		return ret;
+	}
+
+	const uint32_t samplingDelay() const
+	{
+		return samplingDelay_;
 	}
 
 	//OK
@@ -271,6 +281,8 @@ private:
 	const std::string ip_;
 	//! Port kostiumy
 	const unsigned int port_;
+	//!
+	uint8_t samplingDelay_;
 	//! Obiekty do odbierania danych po UDP
 	//! Serwis
 	boost::asio::io_service io_service;
@@ -321,5 +333,10 @@ void CostumeRawIO::setSamplingDelay(const uint32_t delay, const uint16_t timeout
 
 std::list<CostumeRawIO::CostumeAddress> CostumeRawIO::listAvailableCostumes()
 {
-	return std::move(CostumeRawIOImpl::listAvailableCostumes());
+	return CostumeRawIOImpl::listAvailableCostumes();
+}
+
+const uint32_t CostumeRawIO::samplingDelay() const
+{
+	return impl->samplingDelay();
 }

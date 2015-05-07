@@ -313,7 +313,7 @@ namespace threadingUtils
 				}
 			}
 
-			return std::move(ret);
+			return ret;
 		}
 		
 		template<typename Ret>
@@ -353,7 +353,7 @@ namespace threadingUtils
 
 			WorkExecutor workExecutor(this, std::move(thread));
 			const auto ret = workExecutor.get_id();
-			workExecutors.insert(std::make_pair(ret, std::move(workExecutor)));
+			workExecutors.insert({ ret, std::move(workExecutor) });
 			++activeCounter;
 			return ret;
 		}

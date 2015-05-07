@@ -90,6 +90,8 @@ namespace imuCostume
 		//! \param delay Czas przerwy pomiedzy probkami [ms]
 		//! \param timeout Czas na wys³anie [ms]
 		void setSamplingDelay(const uint32_t delay, const uint16_t timeout = 0);
+		//! \return Czas przerwy pomiedzy probkami [ms]
+		const uint32_t samplingDelay() const;
 
 	private:
 		//! Obiekt implementujacy funkcjonalnoœæ kostiumu

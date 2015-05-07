@@ -22,11 +22,17 @@ namespace biovision
 
 	struct Joint
 	{
+		//! Rodzic
 		JointWeakPtr parent;
+		//! Nazwa
 		std::string name;
+		//! Lokalne przesuniêcie wzglêdem rodzica
 		osg::Vec3 offset;
+		//! Kana³y danych
 		std::vector<kinematicUtils::Channel> channels;
+		//! Kolejnoœæ rotacji
 		kinematicUtils::AxisOrder::Type rotationOrder;
+		//! Dzieci
 		std::list<JointPtr> joints;
 	};
 }

@@ -8,588 +8,53 @@
 
 using namespace kinematic;
 
-class SkeletonState::JointData::JointDataImpl
+osg::Vec3d resolveRadians(const bool angleInRadians, const osg::Vec3d& toResolve)
 {
-	friend class SkeletonState;
-
-private:
-
-	static osg::Matrix PATMatrix(osg::PositionAttitudeTransform * pat)
-	{
-		UTILS_ASSERT(pat != nullptr);
-		osg::Matrix ret;
-		ret.makeIdentity();
-		ret.makeTranslate(pat->getPosition());
-		ret.makeRotate(pat->getAttitude());
-		ret.makeScale(1, 1, 1);
-
-		return ret;
-	}
-
-	static osg::Matrix nodeGlobalMatrix(osg::Node * node)
-	{
-		osg::Matrix ret;
-
-		UTILS_ASSERT(node != nullptr);
-
-		auto wm = node->getWorldMatrices();
-
-		UTILS_ASSERT(wm.size() < 2);
-
-		if (wm.empty() == false){
-			ret = wm[0];
-		}
-		else{
-			auto pat = dynamic_cast<osg::PositionAttitudeTransform*>(node);
-			UTILS_ASSERT(pat != nullptr);
-			ret = PATMatrix(pat);			
-		}
-
-		return ret;
-	}
-
-	osg::Matrix parentGlobalMatrix() const
-	{
-		osg::Matrix ret;
-
-		UTILS_ASSERT(node != nullptr);
-		UTILS_ASSERT(node->getNumParents() < 2);
-
-		if (node->getNumParents() == 1){
-			ret = nodeGlobalMatrix(node->getParent(0));
-		}
-		else{
-			ret.makeRotate(osg::Quat(0, 0, 0, 1));
-			ret.makeTranslate(0, 0, 0);
-			ret.makeScale(1, 1, 1);
-		}
-		
-		return ret;
-	}
-
-	osg::Matrix myGlobalMatrix() const
-	{
-		UTILS_ASSERT(node != nullptr);
-		return nodeGlobalMatrix(node);
-	}
-
-	osg::Quat parentGlobalOrientation() const
-	{
-		return parentGlobalMatrix().getRotate();
-	}
-
-	osg::Vec3 parentGlobalPosition() const
-	{
-		return parentGlobalMatrix().getTrans();
-	}	
-
-public:
-
-	JointDataImpl(const std::string & name, const osg::Vec3 & translation, const osg::Quat & rotation) :
-		node(new osg::PositionAttitudeTransform), originTranslation(translation)
-	{
-		node->setName(name);		
-		node->setPosition(translation);
-		node->setAttitude(rotation);
-		node->setScale(osg::Vec3(1, 1, 1));		
-	}
-
-	~JointDataImpl()
-	{
-
-	}
-
-	std::string name() const
-	{
-		return node->getName();
-	}
-
-	osg::Vec3 localPosition() const
-	{
-		return node->getPosition();
-	}
-
-	osg::Vec3 globalPosition() const
-	{
-		return myGlobalMatrix().getTrans();		
-	}
-	
-	osg::Quat localOrientation() const
-	{
-		return node->getAttitude();
-	}
-
-	//! \return Globalna orientacja
-	osg::Quat globalOrientation() const
-	{
-		return myGlobalMatrix().getRotate();
-	}
-
-	//! \param translation Lokalne przesunięcie
-	void localUpdate(const osg::Vec3 & translation)
-	{   
-		node->setPosition(node->getPosition() + translation);
-	}
-
-	void localUpdate(const osg::Quat & rotation)
-	{
-		node->setAttitude( rotation);
-	}
-
-	void globalUpdate(const osg::Vec3 & translation)
-	{
-		setGlobal(translation);
-	}
-
-	void globalUpdate(const osg::Quat & rotation)
-	{
-		setGlobal(rotation);
-	}
-
-	//! \param position Globalna pozycja
-	void setGlobal(const osg::Vec3 & position)
-	{
-		node->setPosition(position - parentGlobalPosition());
-	}
-
-	//! \param position Globalna pozycja
-	void setLocal(const osg::Vec3 & position)
-	{
-		node->setPosition(originTranslation + position);
-	}
-	
-	//! \param translation Lokalne przesuni�cie
-	//! \param rotation Lokalna rotacja
-	void localUpdate(const osg::Vec3 & translation, const osg::Quat & rotation)
-	{
-		localUpdate(translation);
-		localUpdate(rotation);
-	}
-
-	//! \param orientation Globalna orientacja
-	void setGlobal(const osg::Quat & orientation)
-	{
-		node->setAttitude(parentGlobalOrientation().inverse() * orientation);
-		//TODO weryfikacja w testach ze to dziala
-		//UTILS_ASSERT(std::fabs((globalOrientation().inverse() * orientation).w()) < osg::DegreesToRadians(0.05));
-	}
-	//! \param orientation Globalna orientacja
-	void setLocal(const osg::Quat & orientation)
-	{		
-		node->setAttitude(orientation);	
-	}
-
-	//! \param translation Lokalne przesunięcie
-	//! \param rotation Lokalna rotacja
-	void globalUpdate(const osg::Vec3 & translation, const osg::Quat & rotation)
-	{
-		globalUpdate(translation);
-		globalUpdate(rotation);
-	}
-	//! \param position Globalna pozycja
-	//! \param orientation Globalna orientacja
-	void setGlobal(const osg::Vec3 & position, const osg::Quat & orientation)
-	{
-		setGlobal(position);
-		setGlobal(orientation);
-	}
-
-	//! \param position Globalna pozycja
-	//! \param orientation Globalna orientacja
-	void setLocal(const osg::Vec3 & position, const osg::Quat & orientation)
-	{
-		setLocal(position);
-		setLocal(orientation);
-	}
-private:
-	//! Węzeł osg
-	osg::ref_ptr<osg::PositionAttitudeTransform> node;	
-	osg::Vec3 originTranslation;
-};
-
-SkeletonState::JointData::JointData(const std::string & name, const osg::Vec3 & translation, const osg::Quat & rotation) :
-	impl(new JointDataImpl(name, translation, rotation))
-{
-
+	return angleInRadians == true ? toResolve : kinematicUtils::toRadians(toResolve);
 }
 
-SkeletonState::JointData::~JointData()
+LinearizedSkeleton::Mapping createActiveMapping(const Skeleton & skeleton,
+	const acclaim::Skeleton::Bones & bones)
 {
+	LinearizedSkeleton::Mapping ret = LinearizedSkeleton::createNonLeafMapping(skeleton);
 
-}
-
-std::string SkeletonState::JointData::name() const
-{
-	return impl->name();
-}
-
-osg::Vec3 SkeletonState::JointData::localPosition() const
-{
-	return impl->localPosition();
-}
-
-osg::Vec3 SkeletonState::JointData::globalPosition() const
-{
-	return impl->globalPosition();
-}
-void SkeletonState::JointData::localUpdate(const osg::Vec3 & translation, const osg::Quat & rotation)
-{
-	impl->localUpdate(translation, rotation);
-}
-
-void SkeletonState::JointData::globalUpdate(const osg::Vec3 & translation, const osg::Quat & rotation)
-{
-	impl->globalUpdate(translation, rotation);
-}
-
-osg::Quat SkeletonState::JointData::localOrientation() const
-{
-	return impl->localOrientation();
-}
-
-osg::Quat SkeletonState::JointData::globalOrientation() const
-{
-	return impl->globalOrientation();
-}
-
-void SkeletonState::JointData::localUpdate(const osg::Vec3 & translation)
-{
-	impl->localUpdate(translation);
-}
-
-void SkeletonState::JointData::globalUpdate(const osg::Vec3 & translation)
-{
-	impl->globalUpdate(translation);
-}
-
-void kinematic::SkeletonState::JointData::setGlobal(const osg::Vec3& translation) 
-{
-	impl->setGlobal(translation);
-}
-
-void SkeletonState::JointData::setLocal(const osg::Vec3 & position)
-{
-	impl->setLocal(position);
-}
-
-void SkeletonState::JointData::localUpdate(const osg::Quat & rotation)
-{
-	impl->localUpdate(rotation);
-}
-
-void SkeletonState::JointData::globalUpdate(const osg::Quat & rotation)
-{
-	impl->localUpdate(rotation);
-}
-
-void SkeletonState::JointData::setGlobal(const osg::Quat & orientation)
-{
-	impl->setGlobal(orientation);
-}
-
-void SkeletonState::JointData::setLocal(const osg::Quat & orientation)
-{
-	impl->setLocal(orientation);
-}
-
-void SkeletonState::JointData::setGlobal(const osg::Vec3 & position, const osg::Quat & orientation)
-{
-	impl->setGlobal(position, orientation);
-}
-
-void SkeletonState::JointData::setLocal(const osg::Vec3 & position, const osg::Quat & orientation)
-{
-	impl->setLocal(position, orientation);
-}
-
-SkeletonState::JointPtr SkeletonState::create(kinematic::JointConstPtr joint)
-{
-	auto j = Joint::create(JointData(joint->value.name, joint->value.position, joint->value.orientation));
-	for (auto cj : joint->children)	{
-		auto jj = create(cj);
-		j->children.push_back(jj);
-		jj->parent = j;
-		// hierarchia osg!!
-		j->value.impl->node->addChild(jj->value.impl->node);
-	}
-	return j;
-}
-
-SkeletonState::SkeletonState(JointPtr root)
-	: root_(root)
-{
-
-}
-
-SkeletonState::SkeletonState(SkeletonState && Other)
-	: root_(std::move(Other.root_))
-{
-
-}
-
-SkeletonState SkeletonState::create(const Skeleton & skeleton)
-{
-	if (skeleton.root != nullptr){
-		return SkeletonState(create(skeleton.root));
-	}
-
-	return SkeletonState(JointPtr());
-}
-
-class LevelOrderVisitor
-{
-public:
-	LevelOrderVisitor() : currentIDX(0) {}
-	~LevelOrderVisitor() {}
-
-	void operator()(JointConstPtr joint, const Joint::size_type level)
+	for (const auto & bd : bones)
 	{
-		if (joint != nullptr){
-			mapping.insert(SkeletonState::LinearizedNodesMapping::value_type(currentIDX++, joint->value.name));
+		if (bd.second.isActive() == false){
+			ret.right.erase(bd.second.name);
 		}
 	}
 
-	SkeletonState::LinearizedNodesMapping mapping;
+	return ret;
+}
 
-private:
-
-	SkeletonState::NodeIDX currentIDX;
-};
-
-class NonLeafLevelOrderVisitor
+SkeletonState::AcclaimActiveSkeletonMapping SkeletonState::createAcclaimActiveMapping(
+	const Skeleton & skeleton, const acclaim::Skeleton::Bones & bones)
 {
-public:
-	NonLeafLevelOrderVisitor() : currentIDX(0) {}
-	~NonLeafLevelOrderVisitor() {}
+	const auto skeletonMapping = LinearizedSkeleton::createNonLeafMapping(skeleton);	
 
-	void operator()(JointConstPtr joint, const Joint::size_type level)
+	AcclaimActiveSkeletonMapping ret;
+
+	for (const auto & bd : bones)
 	{
-		if (joint != nullptr){
-			if (joint->isLeaf() == false){
-				mapping.insert(SkeletonState::LinearizedNodesMapping::value_type(currentIDX++, joint->value.name));
+		if (bd.second.isActive() == true){
+			auto it = skeletonMapping.right.find(bd.second.name);
+			if (it != skeletonMapping.right.end())
+			{
+				ret.insert({ it->get_left(), bd.first });
 			}
 		}
 	}
 
-	SkeletonState::LinearizedNodesMapping mapping;
+	//root - bo w mapowaniu mogą się róznić nazwy rootów
+	ret.insert({ skeletonMapping.left.begin()->get_left(), bones.begin()->first});
 
-private:
-
-	SkeletonState::NodeIDX currentIDX;
-};
-
-SkeletonState::LinearizedNodesMapping SkeletonState::createMapping(const Skeleton & skeleton)
-{
-	LevelOrderVisitor lov;
-	utils::TreeNode::visitLevelOrder(skeleton.root, lov);
-	return std::move(lov.mapping);
+	return ret;
 }
 
-SkeletonState::LinearizedNodesMapping SkeletonState::createActiveMapping(const Skeleton & skeleton)
-{
-	NonLeafLevelOrderVisitor lov;
-	utils::TreeNode::visitLevelOrder(skeleton.root, lov);
-	return std::move(lov.mapping);
-}
-
-template<typename T>
-void updateOrientations(SkeletonState::JointPtr joint, T & valIT)
-{
-	//‘utils::TreeNodeT<kinematic::SkeletonState::JointData>::value_type’ has no member named ‘update’
-	UTILS_ASSERT(false);
-
-//	joint->value.update(*valIT++);
-//
-//	for (auto j : joint->children){
-//		if (j->isLeaf() == false){
-//			updateOrientations(j, valIT);
-//		}
-//	}
-}
-
-template<typename T>
-void updateOrientationsAndPosition(SkeletonState::JointPtr joint, T & valIT, const osg::Matrix& parentG)
-{
-	//‘utils::TreeNodeT<kinematic::SkeletonState::JointData>::value_type’ has no member named ‘update’
-	UTILS_ASSERT(false);
-//	joint->value.update((*valIT).translation, (*valIT).rotation, parentG);
-//	++valIT;
-//	for (auto j : joint->children){
-//		if (j->isLeaf() == false){
-//			updateOrientationsAndPosition(j, valIT);
-//		}
-//	}
-}
-
-void SkeletonState::update(SkeletonState & skeletonState, const RigidCompleteStateChange & stateChange)
-{
-	UTILS_ASSERT(false, "not yet implemented");
-	//skeletonState.root()->value.update(stateChange.translation);
-	//auto it = stateChange.rotations.begin();
-	//updateOrientations<decltype(stateChange.rotations.begin())>(skeletonState.root(), it);
-}
-
-void updateOrientationsAndPosition(SkeletonState::JointPtr joint, const SkeletonState::NonRigidCompleteStateChange & stateChange, const SkeletonState::LinearizedNodesMapping & mapping)
-{
-	auto idx = mapping.right.at(joint->value.name());
-	auto data = stateChange[idx];
-	//joint->value.update(data.translation, data.rotation);
-	joint->value.localUpdate(data.translation, data.rotation);
-	for (auto j : joint->children) {
-		//if (j->isLeaf() == false){
-		updateOrientationsAndPosition(j, stateChange, mapping);
-		//}
-	}
-}
-
-void SkeletonState::update(SkeletonState & skeletonState, const NonRigidCompleteStateChange & stateChange, const LinearizedNodesMapping & mapping)
-{
-	updateOrientationsAndPosition(skeletonState.root(), stateChange, mapping);
-}
-
-
-void setLocalState(SkeletonState::JointPtr joint, const SkeletonState::NonRigidCompleteStateChange & stateChange, const SkeletonState::LinearizedNodesMapping & mapping)
-{
-	auto idx = mapping.right.at(joint->value.name());
-	auto data = stateChange[idx];
-	joint->value.setLocal(data.translation, data.rotation);
-	for (auto j : joint->children) {
-		setLocalState(j, stateChange, mapping);
-	}
-}
-
-void SkeletonState::setLocal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState, const LinearizedNodesMapping & mapping)
-{
-	setLocalState(skeletonState.root(), newState, mapping);
-}
-
-void setLocalState(SkeletonState::JointPtr joint, const SkeletonState::RigidPartialStateChange & stateChange, const SkeletonState::LinearizedNodesMapping & mapping)
-{
-	SkeletonState::NodeIDX idx = mapping.right.at(joint->value.name());
-	auto rot = stateChange.rotations.find(idx);
-	if (rot != stateChange.rotations.end()) {
-		joint->value.setLocal(rot->second);
-	}
-	for (auto j : joint->children) {
-		setLocalState(j, stateChange, mapping);
-	}
-}
-
-void SkeletonState::setLocal(SkeletonState & skeletonState, const RigidPartialStateChange & newState, const LinearizedNodesMapping & mapping)
-{
-	auto root = skeletonState.root();
-	root->value.setLocal(newState.translation);
-	setLocalState(root, newState, mapping);
-}
-
-//void SkeletonState::update(SkeletonState & skeletonState, const RigidCompleteStateChange & stateChange)
-//{
-//	UTILS_ASSERT(false, "not yet implemented");
-//	//auto it = stateChange.rotations.begin();
-//	//if (it == stateChange.rotations.end()){
-//	//	return;
-//	//}
-//
-//	//skeletonState.root()->value.update(stateChange.translation);
-//
-//	//NodeIDX nodeIDX = 0;
-//	//JointPtr root = skeletonState.root();
-//	//auto visitorL = [&it, &stateChange, &nodeIDX](JointPtr node, Joint::size_type level)
-//	//		{
-//	//			if (it->first == nodeIDX){
-//
-//	//				node->value.update(it->second);
-//	//				++it;
-//	//			}
-//	//			++nodeIDX;
-//	//			return it != stateChange.rotations.end();
-//	//		};
-//	//Joint::visitLevelOrderWhile(root, visitorL);
-//}
-
-//void SkeletonState::update(SkeletonState & skeletonState, const NonRigidPartialStateChange & stateChange)
-//{
-//
-//}
-//
-//void SkeletonState::setGlobal(SkeletonState & skeletonState, const RigidCompleteStateChange & newState)
-//{
-//
-//}
-//
-//void SkeletonState::setLocal(SkeletonState & skeletonState, const RigidCompleteStateChange & newState)
-//{
-//
-//}
-//
-//void SkeletonState::setGlobal(SkeletonState & skeletonState, const NonRigidCompleteStateChange & newState)
-//{
-//
-//}
-
-
-
-//void updateGlobalState(SkeletonState::JointConstPtr joint, SkeletonState::NonRigidCompleteStateChange & state)
-//{
-//	SkeletonState::JointStateChange jsc;
-//	jsc.rotation = joint->value.globalOrientation();
-//	jsc.translation = joint->value.globalPosition();
-//	state.push_back(jsc);
-//	for (auto j : joint->children){
-//		updateGlobalState(j, state);
-//	}
-//}
-
-//void updateLocalState(SkeletonState::JointConstPtr joint, SkeletonState::NonRigidCompleteStateChange & state)
-//{
-//	SkeletonState::JointStateChange jsc;
-//	jsc.rotation = joint->value.localOrientation();
-//	jsc.translation = joint->value.localPosition();
-//	state.push_back(jsc);
-//	for (auto j : joint->children){
-//		updateLocalState(j, state);
-//	}
-//}
-//
-//SkeletonState::NonRigidCompleteStateChange SkeletonState::globalState(const SkeletonState & skeletonState)
-//{
-//	NonRigidCompleteStateChange ret;
-//
-//	if (skeletonState.root() != nullptr){
-//		updateGlobalState(skeletonState.root(), ret);
-//	}
-//
-//	return ret;
-//}
-//
-//SkeletonState::NonRigidCompleteStateChange SkeletonState::localState(const SkeletonState & skeletonState)
-//{
-//	NonRigidCompleteStateChange ret;
-//
-//	if (skeletonState.root() != nullptr){
-//		updateLocalState(skeletonState.root(), ret);
-//	}
-//
-//	return ret;
-//}
-
-SkeletonState::JointPtr SkeletonState::root()
-{
-	return root_;
-}
-
-SkeletonState::JointConstPtr SkeletonState::root() const
-{
-	return root_;
-}
-
-osg::Vec3 resolveRadians(const bool angleInRadians, const osg::Vec3& toResolve)
-{
-	return angleInRadians == true ? static_cast<osg::Vec3d>(toResolve) : kinematicUtils::toRadians(toResolve);
-}
-
-SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
-	const acclaim::MotionData::BoneData & boneData, const bool angleInRadians)
+SkeletonState::NonRigidJointState convert(const acclaim::Skeleton & skeleton,
+	const acclaim::MotionData::BoneData & boneData, const bool angleInRadians,
+	const acclaim::Bone::HelperMotionData & helperMotionData)
 {
 	auto it = std::find_if(skeleton.bones.begin(), skeleton.bones.end(), [&boneData](const acclaim::Skeleton::Bones::value_type & val)
 	{
@@ -606,11 +71,11 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 		throw std::runtime_error("Acclaim motion data mismatch skeleton structure degrees of freedom for node " + boneData.name + ". In model declared " + boost::lexical_cast<std::string>(bone.dofs.size()) + " dof`s but data contains " + boost::lexical_cast<std::string>(boneData.channelValues.size()) + " dof`s.");
 	}
 
-	SkeletonState::JointStateChange ret;
-	ret.translation = osg::Vec3(0, 0, 0);
-	ret.rotation = osg::Quat(0, 0, 0, 1);
+	SkeletonState::NonRigidJointState ret;
+	ret.position = osg::Vec3d(0, 0, 0);
+	ret.orientation = osg::Quat(0, 0, 0, 1);
 
-	osg::Vec3 rot(0, 0, 0);
+	osg::Vec3d rot(0, 0, 0);
 	unsigned int i = 0;
 	unsigned int roti = 0;
 	unsigned int transi = 0;
@@ -620,17 +85,17 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 		switch (dof.channel)
 		{
 		case kinematicUtils::ChannelType::TX:
-			ret.translation.x() = boneData.channelValues[i];
+			ret.position.x() = boneData.channelValues[i];
 			++transi;
 			break;
 
 		case kinematicUtils::ChannelType::TY:
-			ret.translation.y() = boneData.channelValues[i];
+			ret.position.y() = boneData.channelValues[i];
 			++transi;
 			break;
 
 		case kinematicUtils::ChannelType::TZ:
-			ret.translation.z() = boneData.channelValues[i];
+			ret.position.z() = boneData.channelValues[i];
 			++transi;
 			break;
 
@@ -647,7 +112,7 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 			break;
 
 		case acclaim::DegreeOfFreedom::L:
-			//TODO - przesun�� dziecko
+			//TODO - przesuń dziecko
 			break;
 
 		default:
@@ -657,22 +122,19 @@ SkeletonState::JointStateChange convert(const acclaim::Skeleton & skeleton,
 		++i;
 	}
 
-	osg::Quat c = kinematicUtils::convert(resolveRadians(angleInRadians, bone.axis), bone.axisOrder);
-	osg::Quat cinv = c.inverse();	
-	osg::Quat rot2 = kinematicUtils::convert(resolveRadians(angleInRadians, rot), bone.rotationOrder());
-	ret.rotation = cinv * rot2 * c;
+	ret.orientation = helperMotionData.cInv * kinematicUtils::convert(resolveRadians(angleInRadians, rot), bone.rotationOrder()) * helperMotionData.c;
 
 	return ret;
 }
 
 void orderChanges(const acclaim::Skeleton & skeleton, const int currentBoneID,
-	const std::map<std::string, SkeletonState::JointStateChange> & changes,
-	SkeletonState::NonRigidCompleteStateChange & change)
+	const std::map<std::string, SkeletonState::NonRigidJointState> & changes,
+	SkeletonState::NonRigidCompleteState & state)
 {
 	const auto & b = skeleton.bones.find(currentBoneID)->second;	
 	auto changeIT = changes.find(b.name);
 	if (changeIT != changes.end()) {
-		change.push_back(changeIT->second);
+		state.push_back(changeIT->second);
 	}
 	
 	auto lIT = skeleton.hierarchy.left.lower_bound(currentBoneID);
@@ -680,41 +142,41 @@ void orderChanges(const acclaim::Skeleton & skeleton, const int currentBoneID,
 
 	for (; lIT != uIT; ++lIT)
 	{
-		orderChanges(skeleton, lIT->get_right(), changes, change);
+		orderChanges(skeleton, lIT->get_right(), changes, state);
 	}
-	
 }
 
-SkeletonState::RigidPartialStateChange SkeletonState::convert(const acclaim::Skeleton & skeleton,
-	const acclaim::MotionData::FrameData & motionData, const LinearizedNodesMapping & mapping)
+SkeletonState::RigidPartialStateLocal SkeletonState::convert(const acclaim::Skeleton & skeleton,
+	const acclaim::MotionData::BonesData & motionData,
+	const LinearizedSkeleton::Mapping & mapping,
+	const acclaim::Skeleton::HelperMotionData & helperMotionData)
 {
-	RigidPartialStateChange ret;
+	RigidPartialStateLocal ret;
 
 	const bool angleInRadians = skeleton.units.isAngleInRadians();
 
-	for (const auto & bd : motionData.bonesData)
+	for (const auto & bd : motionData)
 	{
 		auto it = mapping.right.find(bd.name);
-		if (it != mapping.right.end()){
-			auto nodeID = it->get_left();
-			auto jointStateChange = ::convert(skeleton, bd, angleInRadians);
-			ret.rotations.insert(std::map<NodeIDX, osg::Quat>::value_type(nodeID, jointStateChange.rotation));
+		const auto nodeID = it->get_left();
+		auto hIT = helperMotionData.find(nodeID);
+		const auto jointState = ::convert(skeleton, bd, angleInRadians, hIT->second);
+		ret.orientations.insert({ nodeID, jointState.orientation });
 
-			if (nodeID == 0){
-				ret.translation = jointStateChange.translation;
-			}
+		if (nodeID == 0){
+			ret.position = jointState.position;
 		}
 	}
-
-	//orderChanges(skeleton, skeleton.root, changes, ret);
 
 	return ret;
 }
 
 acclaim::MotionData::BonesData SkeletonState::convert(const acclaim::Skeleton & skeleton,
-	const SkeletonState & skeletonState)
+	const SkeletonState::RigidCompleteState & skeletonState,
+	const AcclaimActiveSkeletonMapping & activeMapping,
+	const acclaim::Skeleton::HelperMotionData & helperMotionData)
 {
-	if (skeletonState.root() == nullptr){
+	if (skeletonState.orientations.empty() == true && skeleton.bones.empty() == false){
 		throw std::runtime_error("Empty skeleton state");
 	}
 
@@ -724,17 +186,21 @@ acclaim::MotionData::BonesData SkeletonState::convert(const acclaim::Skeleton & 
 	acclaim::MotionData::BoneData bd;
 	bd.name = "root";
 	{
-		osg::Quat c = kinematicUtils::convert(resolveRadians(angleInRadians, skeleton.orientation), skeleton.axisOrder);
-		osg::Quat cinv = c.inverse();
+		auto helperData = helperMotionData.begin()->second;
 
-		auto orient = kinematicUtils::convert(c * skeletonState.root()->value.localOrientation() * cinv, skeleton.rotationOrder());
+		//osg::Quat c = kinematicUtils::convert(resolveRadians(angleInRadians, skeleton.orientation), skeleton.axisOrder);
+		//osg::Quat cinv = c.inverse();
+
+		//auto orient = kinematicUtils::convert(c * skeletonState.root()->value().localOrientation() * cinv, skeleton.rotationOrder());
+		auto rotationOrder = acclaim::Skeleton::rotationOrder(skeleton);
+		auto orient = kinematicUtils::convert(helperData.c * skeletonState.orientations.front() * helperData.cInv, rotationOrder);
 		if (angleInRadians == false){
 			orient = kinematicUtils::toDegrees(orient);
 		}
 
-		orient = kinematicUtils::orderedAngles(orient, skeleton.rotationOrder());
+		orient = kinematicUtils::orderedAngles(orient, rotationOrder);
 
-		auto position = skeletonState.root()->value.localPosition();
+		auto position = skeletonState.position;
 
 		for (auto dO : skeleton.dataOrder)
 		{			
@@ -768,81 +234,64 @@ acclaim::MotionData::BonesData SkeletonState::convert(const acclaim::Skeleton & 
 
 	ret.push_back(bd);
 
-	for (const auto c : skeletonState.root()->children)
+	for (unsigned int i = 1; i < skeletonState.orientations.size(); ++i)
 	{
-		auto vis = [&skeleton, &ret, angleInRadians](SkeletonState::JointConstPtr joint)
-				{
-					if (joint->isLeaf() == true){
-						return;
-					}
+		auto acclaimID = activeMapping.left.find(i)->second;
+		acclaim::MotionData::BoneData bd;
+		const auto & bData = skeleton.bones.find(acclaimID)->second;
+		bd.name = bData.name;
+		const auto & hData = helperMotionData.find(acclaimID)->second;
+		//osg::Quat c = kinematicUtils::convert(resolveRadians(angleInRadians, sIT->second.axis), sIT->second.axisOrder);
+		//osg::Quat cinv = c.inverse();
 
-					const auto name = joint->value.name();
-					auto sIT = std::find_if(skeleton.bones.begin(), skeleton.bones.end(), [&name](const acclaim::Skeleton::Bones::value_type & bd)
-					{
-						return bd.second.name == name;
-					});
+		//auto orient = kinematicUtils::convert(c * joint->value().localOrientation() * cinv, sIT->second.rotationOrder());
+		auto rotationOrder = bData.rotationOrder();
+		auto orient = kinematicUtils::convert(hData.c * skeletonState.orientations[i] * hData.cInv, rotationOrder);
 
-					if (sIT == skeleton.bones.end()){
-						throw std::runtime_error("Bone not found in skeleton model");
-					}
+		if (angleInRadians == false){
+			orient = kinematicUtils::toDegrees(orient);
+		}
 
-					//pomijamy statyczne stawy
-					if (sIT->second.dofs.empty() == false){
-						acclaim::MotionData::BoneData bd;
-						bd.name = name;
+		orient = kinematicUtils::orderedAngles(orient, rotationOrder);
 
-						osg::Quat c = kinematicUtils::convert(resolveRadians(angleInRadians, sIT->second.axis), sIT->second.axisOrder);
-						osg::Quat cinv = c.inverse();
+		for (auto dO : bData.dofs)
+		{
+			switch (dO.channel)
+			{
+			case kinematicUtils::ChannelType::RX:
+				bd.channelValues.push_back(orient.x());
+				break;
+			case kinematicUtils::ChannelType::RY:
+				bd.channelValues.push_back(orient.y());
+				break;
+			case kinematicUtils::ChannelType::RZ:
+				bd.channelValues.push_back(orient.z());
+				break;
+			case acclaim::DegreeOfFreedom::L:
+				//TODO - co zrobić z tym przesunięciem?
+				break;
 
-						auto orient = kinematicUtils::convert(c * joint->value.localOrientation() * cinv, sIT->second.rotationOrder());
+			default:
+				throw std::runtime_error("Unrecognized data channel for AMC file");
+				break;
+			}
+		}
 
-						if (angleInRadians == false){
-							orient = kinematicUtils::toDegrees(orient);
-						}
-
-						orient = kinematicUtils::orderedAngles(orient, sIT->second.rotationOrder());
-
-						for (auto dO : sIT->second.dofs)
-						{
-							switch (dO.channel)
-							{
-							case kinematicUtils::ChannelType::RX:
-								bd.channelValues.push_back(orient.x());
-								break;
-							case kinematicUtils::ChannelType::RY:
-								bd.channelValues.push_back(orient.y());
-								break;
-							case kinematicUtils::ChannelType::RZ:
-								bd.channelValues.push_back(orient.z());
-								break;
-							case acclaim::DegreeOfFreedom::L:
-								//TODO - co zrobić z tym przesunięciem?
-								break;
-
-							default:
-								throw std::runtime_error("Unrecognized data channel for AMC file");
-								break;
-							}
-						}
-
-						ret.push_back(bd);
-					}
-				};
-		utils::TreeNode::visitPreOrder(c, vis);
+		ret.push_back(bd);
 	}
 
 	return ret;
 }
 
-SkeletonState::JointStateChange convert(biovision::JointConstPtr joint, const biovision::MotionData::ChannelData & frameData)
+SkeletonState::NonRigidJointState convert(biovision::JointConstPtr joint, const biovision::MotionData::ChannelData & frameData)
 {
 	if (joint->channels.size() != frameData.size()){
 		throw std::runtime_error("Biovision motion data mismatch skeleton structure - channels size mismatch. Joint: " + joint->name + ". Motion data channels size: " + boost::lexical_cast<std::string>(frameData.size()) + ". Joint channels size: " + boost::lexical_cast<std::string>(joint->channels.size()));
 	}
 
-	SkeletonState::JointStateChange ret;
-	ret.translation = osg::Vec3(0, 0, 0);
-	ret.rotation = osg::Quat(0, 0, 0, 1);
+	SkeletonState::NonRigidJointState ret;
+	ret.position = osg::Vec3(0, 0, 0);
+	ret.orientation = osg::Quat(0, 0, 0, 1);
 
 	osg::Vec3 rot(0, 0, 0);
 	unsigned int roti = 0;
@@ -852,15 +301,15 @@ SkeletonState::JointStateChange convert(biovision::JointConstPtr joint, const bi
 		switch (channel)
 		{
 		case kinematicUtils::ChannelType::TX:
-			ret.translation.x() = frameData[i];
+			ret.position.x() = frameData[i];
 			break;
 
 		case kinematicUtils::ChannelType::TY:
-			ret.translation.y() = frameData[i];
+			ret.position.y() = frameData[i];
 			break;
 
 		case kinematicUtils::ChannelType::TZ:
-			ret.translation.z() = frameData[i];
+			ret.position.z() = frameData[i];
 			break;
 
 		case kinematicUtils::ChannelType::RX:
@@ -882,16 +331,16 @@ SkeletonState::JointStateChange convert(biovision::JointConstPtr joint, const bi
 		++i;
 	}
 
-	ret.rotation = kinematicUtils::convert(rot, joint->rotationOrder);
+	ret.orientation = kinematicUtils::convert(rot, joint->rotationOrder);
 
 	return ret;
 }
 
 void orderChanges(biovision::JointConstPtr joint,
-	const std::map<std::string, SkeletonState::JointStateChange> & changes,
-	SkeletonState::RigidCompleteStateChange & change)
+	const std::map<std::string, SkeletonState::NonRigidJointState> & changes,
+	SkeletonState::RigidCompleteState & change)
 {
-	change.rotations.push_back(changes.find(joint->name)->second.rotation);
+	change.orientations.push_back(changes.find(joint->name)->second.orientation);
 
 	for (auto j : joint->joints)
 	{
@@ -899,76 +348,197 @@ void orderChanges(biovision::JointConstPtr joint,
 	}
 }
 
-SkeletonState::RigidCompleteStateChange SkeletonState::convert(const biovision::Skeleton & skeleton,
+SkeletonState::RigidCompleteState SkeletonState::convert(const biovision::Skeleton & skeleton,
 	const biovision::MotionData::FrameJointData & motionData)
 {
-	RigidCompleteStateChange ret;
+	RigidCompleteState ret;
 
-	std::map<std::string, JointStateChange> changes;	
+	std::map<std::string, NonRigidJointState> changes;	
 
 	unsigned int i = 0;	
 	for (const auto & joint : skeleton.sourceOrderJoints)
 	{
-		changes.insert(std::map<std::string, JointStateChange>::value_type(joint->name, ::convert(joint, motionData[i++])));
+		changes.insert({ joint->name, ::convert(joint, motionData[i++]) });
 	}
 
 	orderChanges(skeleton.root, changes, ret);
 
-	auto rIT = changes.find(skeleton.root->name);
+	//root - pozucja, zawsze pierwszy w hierarchi
+	ret.position = changes.begin()->second.position;
 
-	if (rIT != changes.end()){
-		ret.translation = rIT->second.translation;
+	return ret;
+}
+
+SkeletonState::RigidCompleteStateGlobal SkeletonState::globalRigidState(const Skeleton & skeleton)
+{
+	RigidCompleteStateGlobal ret;
+
+	if (skeleton.root() != nullptr){
+		ret.position = skeleton.root()->value().globalPosition();
+		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, [&ret](Skeleton::JointConstPtr joint)
+		{
+			ret.orientations.push_back(joint->value().globalOrientation());
+		});
 	}
 
 	return ret;
 }
 
-kinematic::SkeletonState::Joint2Index kinematic::SkeletonState::createJoint2IndexMapping(const kinematic::SkeletonState &skeleton, const kinematic::SkeletonState::LinearizedNodesMapping& mapping)
+SkeletonState::RigidCompleteStateLocal SkeletonState::localRigidState(const Skeleton & skeleton)
 {
-	kinematic::SkeletonState::Joint2Index m;
-	kinematic::SkeletonState::JointConstPtr root = skeleton.root();
-	auto visitor = [&](kinematic::SkeletonState::JointConstPtr joint, kinematic::SkeletonState::Joint::size_type lvl)
+	RigidCompleteStateLocal ret;
+
+	if (skeleton.root() != nullptr){
+		ret.position = skeleton.root()->value().localPosition();
+		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, [&ret](Skeleton::JointConstPtr joint)
+		{
+			ret.orientations.push_back(joint->value().localOrientation());
+		});
+	}
+
+	return ret;
+}
+
+SkeletonState::NonRigidCompleteStateGlobal SkeletonState::globalNonRigidState(const Skeleton & skeleton)
+{
+	NonRigidCompleteStateGlobal ret;
+
+	if (skeleton.root() != nullptr){		
+		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, [&ret](Skeleton::JointConstPtr joint)
+		{
+			ret.push_back({ joint->value().globalPosition(), joint->value().globalOrientation() });
+		});
+	}
+
+	return ret;
+}
+
+SkeletonState::NonRigidCompleteStateLocal SkeletonState::localNonRigidState(const Skeleton & skeleton)
+{
+	NonRigidCompleteStateLocal ret;
+
+	if (skeleton.root() != nullptr){
+		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, [&ret](Skeleton::JointConstPtr joint)
+		{
+			ret.push_back({ joint->value().localPosition(), joint->value().localOrientation() });
+		});
+	}
+
+	return ret;
+}
+
+void SkeletonState::applyLocalState(Skeleton & skeleton, const RigidCompleteState & state)
+{
+	kinematic::LinearizedSkeleton::Visitor::localIndexedVisitNonLeaf(skeleton,
+		[&state](kinematic::Skeleton::JointPtr joint, kinematic::LinearizedSkeleton::NodeIDX idx)
 	{
-		auto i = mapping.right.at(joint->value.name());
-		std::pair<kinematic::SkeletonState::JointConstPtr, unsigned int> p = std::make_pair(joint, i);
-		m.insert(p);
-	};
-	utils::TreeNode::visitLevelOrder(root, visitor);
-	return m;
+		joint->value().setLocal(state.orientations[idx]);
+	});
+	
+	skeleton.root()->value().setGlobal(state.position);
 }
 
-void createConnectionRec(kinematic::SkeletonState::JointConstPtr parent, const std::map<kinematic::SkeletonState::JointConstPtr, unsigned int>& indices, osgutils::SegmentsDescriptors& sd)
+void SkeletonState::applyLocalState(Skeleton & skeleton, const RigidPartialState & state)
 {
-	for (auto& child : parent->children) {
-		auto length = (parent->value.globalPosition() - child->value.globalPosition()).length();
-		if (length > 0) {
-			osgutils::SegmentDescriptor d;
-			d.length = length;
-			d.range = std::make_pair(indices.at(parent), indices.at(child));
-			sd.push_back(d);
+	auto it = state.orientations.begin();
+	if (it != state.orientations.end()){
+		kinematic::LinearizedSkeleton::Visitor::localIndexedVisitNonLeaf(skeleton,
+			[&state, &it](kinematic::Skeleton::JointPtr joint, kinematic::LinearizedSkeleton::NodeIDX idx)
+		{
+			if (it != state.orientations.end()){
+				if (it->first == idx){
+					joint->value().setLocal(it->second);
+					++it;
+				}
+			}
+		});
+	}
+
+	skeleton.root()->value().setGlobal(state.position);
+}
+
+void SkeletonState::applyLocalState(Skeleton & skeleton, const NonRigidCompleteState & state)
+{
+	kinematic::LinearizedSkeleton::Visitor::globalIndexedVisit(skeleton,
+		[&state](kinematic::Skeleton::JointPtr joint, kinematic::LinearizedSkeleton::NodeIDX idx)
+	{
+		joint->value().setLocal(state[idx].position, state[idx].orientation);
+	});	
+}
+
+void SkeletonState::applyLocalState(Skeleton & skeleton, const NonRigidPartialState & state)
+{
+	if (state.empty() == true){
+		return;
+	}
+
+	auto it = state.begin();
+	kinematic::LinearizedSkeleton::Visitor::globalIndexedVisit(skeleton,
+		[&state, &it](kinematic::Skeleton::JointPtr joint, kinematic::LinearizedSkeleton::NodeIDX idx)
+	{
+		if (it != state.end()){
+			if (it->first == idx){
+				joint->value().setLocal(it->second.position, it->second.orientation);
+				++it;
+			}
 		}
-		createConnectionRec(child, indices, sd);
-	}
+	});
 }
 
-osgutils::SegmentsDescriptors kinematic::SkeletonState::createConnections(const kinematic::SkeletonState& skeleton, const Joint2Index& mapping)
+void SkeletonState::applyGlobalState(Skeleton & skeleton, const RigidCompleteState & state)
 {
-	osgutils::SegmentsDescriptors sd;
-	createConnectionRec(skeleton.root(), mapping, sd);
-	return sd;
+	kinematic::LinearizedSkeleton::Visitor::localIndexedVisitNonLeaf(skeleton,
+		[&state](kinematic::Skeleton::JointPtr joint, kinematic::LinearizedSkeleton::NodeIDX idx)
+	{
+		joint->value().setGlobal(state.orientations[idx]);
+	});
+
+	skeleton.root()->value().setGlobal(state.position);
 }
 
-kinematic::SkeletonState::NonRigidCompleteStateChange kinematic::SkeletonState::convertStateChange(const LinearizedNodesMapping &mapping, const RigidPartialStateChange &sChange)
+void SkeletonState::applyGlobalState(Skeleton & skeleton, const RigidPartialState & state)
 {
-	NonRigidCompleteStateChange frame;
-	auto count = mapping.size();
-	auto rootRotIt = sChange.rotations.find(0);
-	frame.push_back(kinematic::SkeletonState::JointStateChange{ sChange.translation, rootRotIt != sChange.rotations.end() ? rootRotIt->second : osg::Quat() });
-	for (unsigned int i = 1; i < count; i++) {
-		auto it = sChange.rotations.find(i);
-		frame.push_back(kinematic::SkeletonState::JointStateChange{ osg::Vec3(), it != sChange.rotations.end() ? it->second : osg::Quat() });
+	auto it = state.orientations.begin();
+	if (it != state.orientations.end()){
+		kinematic::LinearizedSkeleton::Visitor::localIndexedVisitNonLeaf(skeleton,
+			[&state, &it](kinematic::Skeleton::JointPtr joint, kinematic::LinearizedSkeleton::NodeIDX idx)
+		{
+			if (it != state.orientations.end()){
+				if (it->first == idx){
+					joint->value().setGlobal(it->second);
+					++it;
+				}
+			}
+		});
 	}
-	return frame;
+
+	skeleton.root()->value().setGlobal(state.position);
 }
 
+void SkeletonState::applyGlobalState(Skeleton & skeleton, const NonRigidCompleteState & state)
+{
+	kinematic::LinearizedSkeleton::Visitor::globalIndexedVisit(skeleton,
+		[&state](kinematic::Skeleton::JointPtr joint, kinematic::LinearizedSkeleton::NodeIDX idx)
+	{
+		joint->value().setGlobal(state[idx].position, state[idx].orientation);
+	});
+}
 
+void SkeletonState::applyGlobalState(Skeleton & skeleton, const NonRigidPartialState & state)
+{
+	if (state.empty() == true){
+		return;
+	}
+
+	auto it = state.begin();
+	kinematic::LinearizedSkeleton::Visitor::globalIndexedVisit(skeleton,
+		[&state, &it](kinematic::Skeleton::JointPtr joint, kinematic::LinearizedSkeleton::NodeIDX idx)
+	{
+		if (it != state.end()){
+			if (it->first == idx){
+				joint->value().setGlobal(it->second.position, it->second.orientation);
+				++it;
+			}
+		}
+	});
+}

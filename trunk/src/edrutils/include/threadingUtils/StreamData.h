@@ -18,6 +18,7 @@ purpose:  Baza dla danych strumieniowych
 #include <functional>
 #include <utils/Debug.h>
 #include <list>
+#include <utility>
 
 namespace threadingUtils {
 	//! Interfejs obiektu obserwującego strumień

@@ -118,10 +118,11 @@ void FileSource::loadAsfAmc()
 	SkeletonStatesPtr states = utils::make_shared<SkeletonStates>();
 	states->frameTime = data->frameTime;
 
-	const auto mapping = kinematic::SkeletonState::createMapping(*skeleton);
+	const auto mapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*skeleton);
+	const auto helperData = acclaim::Skeleton::helperMotionData(*model);
 	
 	for (auto& frame : data->frames) {
-		auto sChange = kinematic::SkeletonState::convert(*model, frame, mapping);
+		auto sChange = kinematic::SkeletonState::convert(*model, frame.bonesData, mapping, helperData);
 		states->frames.push_back(sChange);
 	}
 

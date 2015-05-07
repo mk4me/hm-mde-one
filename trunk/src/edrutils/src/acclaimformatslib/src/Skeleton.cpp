@@ -15,7 +15,7 @@ Skeleton::Units::~Units()
 }
 
 //! \return Czy k¹t podawany jest w radianach
-bool Skeleton::Units::isAngleInRadians() const {
+const bool Skeleton::Units::isAngleInRadians() const {
 	bool ret = false;
 	auto angleIt = typeValueUnits.find("angle");
 	if (angleIt != typeValueUnits.end()){
@@ -48,61 +48,51 @@ Skeleton::~Skeleton()
 
 }
 
-kinematicUtils::AxisOrder::Type Skeleton::rotationOrder() const
+const kinematicUtils::AxisOrder::Type Skeleton::rotationOrder(const Skeleton & skeleton)
 {
 	std::string s;
-	int count = dataOrder.size();
+	int count = skeleton.dataOrder.size();
 	for (int i = 0; i < count && s.size() < 3; ++i) {
-		if (dataOrder[i] == kinematicUtils::ChannelType::RX) {
+		if (skeleton.dataOrder[i] == kinematicUtils::ChannelType::RX) {
 			s += "X";
 		}
-		else if (dataOrder[i] == kinematicUtils::ChannelType::RY) {
+		else if (skeleton.dataOrder[i] == kinematicUtils::ChannelType::RY) {
 			s += "Y";
 		}
-		else if (dataOrder[i] == kinematicUtils::ChannelType::RZ) {
+		else if (skeleton.dataOrder[i] == kinematicUtils::ChannelType::RZ) {
 			s += "Z";
 		}
 	}
 	return Axis::getAxisOrder(s);
 }
 
-unsigned int Skeleton::activeBones() const
+const std::size_t Skeleton::activeBones(const Skeleton & skeleton)
 {	
-	return std::count_if(bones.begin(), bones.end(), [](const Bones::value_type & bd)
+	return std::count_if(skeleton.bones.begin(), skeleton.bones.end(), [](const Bones::value_type & bd)
 	{
 		return bd.second.isActive() == true;
 	});
 }
 
-//double SkeletonUtils::getMaxBoneLength(const Skeleton& skeleton) 
-//{
-//	JointConstPtr root = skeleton.getRoot();
-//	return getMaxLength(root, -1.0);
-//}
-//
-//double SkeletonUtils::getMaxLength(const JointConstPtr & joint, double maxLength)
-//{
-//	maxLength = std::max(maxLength, joint->length);
-//	for (int i = joint->children.size() - 1; i >= 0; --i) {
-//		maxLength = std::max(maxLength, getMaxLength(joint->children[i], maxLength));
-//	}
-//	return maxLength;
-//}
-//
-//osg::Quat SkeletonUtils::createRotation( const osg::Quat& rX, const osg::Quat& rY, const osg::Quat& rZ, Axis::Order order )
-//{
-//	switch (order) 
-//	{
-//	case Axis::UnknownAxisOrder:
-//	case Axis::XYZ: return rX * rY * rZ;
-//	case Axis::XZY: return rX * rZ * rY;
-//	case Axis::YXZ: return rY * rX * rZ;
-//	case Axis::YZX: return rY * rZ * rX;
-//	case Axis::ZXY: return rZ * rX * rY;
-//	case Axis::ZYX: return rZ * rY * rX;
-//	default:
-//		UTILS_ASSERT(false);
-//		osg::Quat q;
-//		return q;
-//	}
-//}
+Skeleton::HelperMotionData Skeleton::helperMotionData(const Skeleton & skeleton)
+{
+	HelperMotionData ret;	
+	const bool angleInRadians = skeleton.units.isAngleInRadians();
+	for (const auto & bd : skeleton.bones)
+	{
+		ret.insert(ret.end(), { bd.first, Bone::helperData(bd.second, angleInRadians) });
+	}
+
+	return ret;
+}
+
+Skeleton::BonesMapping Skeleton::createMapping(const Bones & bones)
+{
+	BonesMapping ret;	
+	for (const auto & bd : bones)
+	{
+		ret.insert(ret.end(), { bd.first, bd.second.name });
+	}
+
+	return ret;
+}

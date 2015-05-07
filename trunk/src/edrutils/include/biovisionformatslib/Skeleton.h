@@ -16,8 +16,11 @@ namespace biovision
 {
 	struct Skeleton
 	{
+		//! Root hierearchi koœci
 		JointPtr root;
+		//! Mapa nazw koœci do koœci
 		std::map<std::string, JointPtr> joints;
+		//! Kolejnoœæ koœci w danych
 		std::vector<JointPtr> sourceOrderJoints;
 	};
 }

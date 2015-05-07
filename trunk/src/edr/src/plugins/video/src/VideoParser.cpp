@@ -97,7 +97,7 @@ void VideoParser::parse(const std::string & source)
 	utils::ObjectsVector localData;	
 
 	core::Filesystem::Path path(source);
-    if ( core::Filesystem::fileExtension(path).compare(".imgsequence") == 0 ) {
+    if ( path.extension().string().compare(".imgsequence") == 0 ) {
 
 		localData.push_back(utils::ObjectWrapper::create<::VideoStream>());
 
@@ -136,11 +136,18 @@ void VideoParser::parse(const std::string & source)
             }
             // wylistowanie plików
             auto files = core::Filesystem::listFiles(dirPath.string());
+			std::vector<std::string> ffiles;
+			ffiles.reserve(files.size());
+
+			for (const auto & f : files)
+			{
+				ffiles.push_back(f.string());
+			}
 
             // tworzymy strumień z sekwencji plików
             osg::ref_ptr<osgDB::Options> options = new osgDB::Options();
             options->setObjectCacheHint( osgDB::Options::CACHE_NONE );			
-			std::auto_ptr<FileSequenceVideoStream> innerStream(new FileSequenceVideoStream(directory, framerate, std::vector<std::string>(files.begin(), files.end()), new OsgImageLoader(options)));
+			std::auto_ptr<FileSequenceVideoStream> innerStream(new FileSequenceVideoStream(directory, framerate, ffiles, new OsgImageLoader(options)));
 
             // UTILS_ASSERT(!innerStream->getLastError());
 

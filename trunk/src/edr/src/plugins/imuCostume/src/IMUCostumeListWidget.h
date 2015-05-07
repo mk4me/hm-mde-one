@@ -17,6 +17,8 @@
 #include <imucostumelib/ImuCostume.h>
 #include <corelib/Variant.h>
 #include <plugins/imuCostume/IIMUDataSource.h>
+#include "CostumeParser.h"
+#include <corelib/Filesystem.h>
 
 namespace Ui {
 	class IMUCostumeListWidget;
@@ -42,6 +44,15 @@ private:
 		utils::shared_ptr<threadingUtils::ResetableStreamStatusObserver> costumeStreamObserver;
 	};
 
+	struct RecordingDetails
+	{
+		core::Filesystem::Path path;
+		uint8_t counter;
+		utils::shared_ptr<std::ofstream> motionOutput;
+		kinematic::SkeletonPtr skeleton;
+		kinematic::LinearizedSkeleton::Mapping mapping;
+	};
+
 public:
 	IMUCostumeWidget(IMU::IMUCostumeDataSource * ds, QWidget * parent = nullptr, const Qt::WindowFlags f = 0);
 	virtual ~IMUCostumeWidget();
@@ -55,6 +66,11 @@ private slots:
 	void onRecord(const bool record);
 	void onLoadNewProfile();
 	void onLoadProfile();
+
+	void innerInitializeAndLoad(IMU::CostumeProfilePtr profile,
+		IMU::IIMUDataSource::CostumeDescription & cd,
+		const imuCostume::CostumeRawIO::CostumeAddress & id);
+
 	void onUnload();
 	void onSetSamplingRate();
 	void onRefreshSensorsConfiguration();
@@ -76,6 +92,8 @@ private slots:
 
 	void watchRecordedData();
 
+	void onOptions();
+
 private:
 
 	void tryLoadCostume(IMU::CostumeProfile profile);
@@ -85,6 +103,11 @@ private:
 
 	void innerCostumeChange(const imuCostume::CostumeRawIO::CostumeAddress & costumeID);
 
+	static std::string recordingDir(const imuCostume::CostumeRawIO::CostumeAddress & id,
+		const std::chrono::system_clock::time_point & now);
+
+	void saveMotionData();
+
 private:
 	utils::shared_ptr<std::ofstream> outputFile;
 	IMU::IIMUDataSource::RecordingConfigurationPtr recordOutput;	
@@ -93,6 +116,9 @@ private:
 	IMU::IMUCostumeDataSource * ds;
 	Ui::IMUCostumeListWidget * ui;
 	std::size_t recordIndex;
+	core::Filesystem::Path recordingOutputDirectory;
+	std::map<imuCostume::CostumeRawIO::CostumeAddress, RecordingDetails> recordingDetails;
+	IMU::CostumeParser::CostumesMappings costumesMapping;
 };
 
 #endif	//	HEADER_GUARD_IMU__IMUCOSTUMELISTWIDGET_H__

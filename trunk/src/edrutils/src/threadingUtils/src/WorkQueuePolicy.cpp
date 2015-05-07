@@ -22,7 +22,7 @@ void StealingMultipleWorkQueuePolicy::initializeThread()
 	const std::thread::id myID = std::this_thread::get_id();
 	{
 		std::lock_guard<std::mutex> lock(mutex);
-		localQueues.insert(LocalQueues::value_type(myID, localQueue));
+		localQueues.insert({ myID, localQueue });
 	}
 
 	localWorkQueue() = localQueue.get();

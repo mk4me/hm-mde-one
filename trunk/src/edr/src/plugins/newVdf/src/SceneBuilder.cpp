@@ -58,7 +58,7 @@ SceneBuilder::Pins SceneBuilder::addInputPins( IVisualSinkNodePtr sink, int coun
 		pin->setIndex(i);
         pins.push_back(pin);
     }
-    return std::move(pins);
+    return pins;
 }
 
 SceneBuilder::Pins SceneBuilder::addOutputPins( IVisualSourceNodePtr source, int count ) const
@@ -73,7 +73,7 @@ SceneBuilder::Pins SceneBuilder::addOutputPins( IVisualSourceNodePtr source, int
 		pin->setIndex(i);
         pins.push_back(pin);
     }
-    return std::move(pins);
+    return pins;
 }
 
 SceneBuilder::VisualNodeWithPins  SceneBuilder::createType(const QString& text, const QIcon& icon, df::INode* prototype, int in, int out) const

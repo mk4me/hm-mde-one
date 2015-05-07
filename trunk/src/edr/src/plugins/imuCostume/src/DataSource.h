@@ -22,6 +22,7 @@
 #include <plugins/imuCostume/CostumeIMUExtractor.h>
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <utils/SamplesStatus.h>
+#include "CostumeParser.h"
 
 typedef threadingUtils::StreamAdapterT<IMU::CostumeStream::value_type, IMU::SensorsStreamData, IMU::CostumeIMUExtractor> ExtractedCostumeStreamAdapter;
 
@@ -55,7 +56,7 @@ namespace IMU
 			CostumeSkeletonMotionPtr skeletonMotion;
 
 			core::HierarchyItemPtr hierarchyRootItem;
-			core::VariantsList domainData;			
+			core::VariantsList domainData;		
 		};
 
 		typedef std::map<CostumeID, CostumeData> CostumesData;
@@ -180,7 +181,12 @@ namespace IMU
 		void tryCreateRecordedItem();
 
 		void resfreshCostumesData();
-		
+
+		void tryRecord(std::set<imuCostume::CostumeRawIO::CostumeAddress> &costumes);
+
+		void updateSensorsStatus(const imuCostume::CostumeCANopenIO::Frame &frame, const uint16_t length, const CostumeData &cd);
+
+
 		static void unpackSensorsStream(SensorsStreamPtr stream,
 			SensorsData & sensorsData,
 			core::IHierarchyItemPtr root,

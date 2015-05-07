@@ -1,12 +1,12 @@
-#include <kinematiclib/SkeletalMappingScheme.h>
+#include <kinematiclib/SkeletonMappingScheme.h>
 #include <tinyxml2.h>
 #include <utils/Debug.h>
 
 using namespace kinematic;
 
-SkeletonMappingScheme::MappingDict readMappingNode(tinyxml2::XMLNode* node)
+SkeletonMappingScheme::MappingDictionary readMappingNode(tinyxml2::XMLNode* node)
 {
-	SkeletonMappingScheme::MappingDict result;
+	SkeletonMappingScheme::MappingDictionary result;
 	tinyxml2::XMLNode* child;
 	for (child = node->FirstChild(); child != nullptr; child = child->NextSibling()) {
 		if (node->ToElement()) {
@@ -37,7 +37,7 @@ SkeletonMappingScheme::MappingDict readMappingNode(tinyxml2::XMLNode* node)
 	return result;
 }
 
-void readNode(tinyxml2::XMLNode* node, std::list<SkeletonMappingScheme::MappingDict> & result)
+void readNode(tinyxml2::XMLNode* node, std::list<SkeletonMappingScheme::MappingDictionary> & result)
 {
 	if (!node) {
 		return;
@@ -49,7 +49,7 @@ void readNode(tinyxml2::XMLNode* node, std::list<SkeletonMappingScheme::MappingD
 	else if (node->ToElement()) {
 		auto element = node->ToElement();
 		if (element && strcmp(element->Value(), "SkeletonScheme") == 0) {
-			SkeletonMappingScheme::MappingDict dict = readMappingNode(element);
+			SkeletonMappingScheme::MappingDictionary dict = readMappingNode(element);
 			if (dict.size() > 0) {
 				result.push_back(dict);
 			}
@@ -63,7 +63,7 @@ void readNode(tinyxml2::XMLNode* node, std::list<SkeletonMappingScheme::MappingD
 	}
 }
 
-void SkeletonMappingScheme::loadFromXML(const std::string& filename, std::list<SkeletonMappingScheme::MappingDict>& outSchemes)
+void SkeletonMappingScheme::loadFromXML(const std::string& filename, std::list<SkeletonMappingScheme::MappingDictionary>& outSchemes)
 {
 	tinyxml2::XMLDocument doc;
 	if (doc.LoadFile(filename.c_str()) == tinyxml2::XML_SUCCESS) {
@@ -73,9 +73,9 @@ void SkeletonMappingScheme::loadFromXML(const std::string& filename, std::list<S
 	}
 }
 
-SkeletonMappingScheme::MappingDict createDefaultAcclaimToHAnimMappingDict()
+SkeletonMappingScheme::MappingDictionary createDefaultAcclaimToHAnimMappingDict()
 {
-	SkeletonMappingScheme::MappingDict ret;
+	SkeletonMappingScheme::MappingDictionary ret;
 	ret["root0"] = "vl5";
 	ret["root1"] = "l_hip";
 	ret["root2"] = "r_hip";
@@ -176,7 +176,7 @@ SkeletonMappingScheme::MappingDict createDefaultAcclaimToHAnimMappingDict()
 
 	return ret;
 }
-const SkeletonMappingScheme::MappingDict & SkeletonMappingScheme::defaultAcclaimToHAnimMappingScheme()
+const SkeletonMappingScheme::MappingDictionary & SkeletonMappingScheme::defaultAcclaimToHAnimMappingScheme()
 {
 	static const auto defaultMappingDict = createDefaultAcclaimToHAnimMappingDict();
 	return defaultMappingDict;

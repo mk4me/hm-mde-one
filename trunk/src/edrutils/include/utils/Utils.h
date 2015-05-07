@@ -75,7 +75,7 @@ struct ArrayTraits
 	//! Wypakowuje z tablicy zadanyc element
 	//! \tparam Element Indeks elementu w tablicy	
 	template <std::size_t Element>
-	struct ElementExtractor
+	struct StaticElementExtractor
 	{
 		static_assert(Element >= 0, "Element index must be greater or equal 0");
 
@@ -83,7 +83,7 @@ struct ArrayTraits
 		template <typename T>
 		//! \param array Tablica
 		//! \return Wypakowany element
-		static inline decltype(std::declval<T>[Element]) extract(const T & array)
+		static inline decltype(std::declval<const T>()[Element]) extract(const T & array)
 		{
 			return array[Element];
 		}
@@ -98,6 +98,41 @@ struct ArrayTraits
 			static_assert(Element < Size, "Element index out of range");
 			return array[Element];
 		}
+	};
+
+	//! Klasa pozwalaj�ca wypakowywa� dane z wektor�w
+	class ElementExtractor
+	{
+	public:
+		//! \param idx Index obiketu kt�ry chcemy wypakowywa� z wektora
+		ElementExtractor(const std::size_t idx) : idx(idx) {}
+		//! \param Other Inny kopiowany extractor
+		ElementExtractor(const ElementExtractor & Other) : idx(Other.idx) {}
+		//! Destruktor
+		~ElementExtractor() {}
+
+		//! \tparam T Typ tablicy
+		template <typename T>
+		//! \param array Tablica
+		//! \return Wypakowany element
+		static inline decltype(std::declval<const T>()[0]) extract(const T & array)
+		{
+			return array[idx];
+		}
+
+		//! \tparam T Typ elementu tablicy
+		//! \tparam Size Rozmiar tablicy
+		template <typename T, std::size_t Size>
+		//! \param array Tablica
+		//! \return Wypakowany element
+		static inline T extract(const T(&array)[Size])
+		{			
+			return array[idx];
+		}
+
+	private:
+		//! Indeks spod kt�rego wybieramy dane z wektora
+		const std::size_t idx;
 	};
 
 	//! Zwraca długość tablicy
@@ -124,7 +159,7 @@ struct ArrayTraits
 	template <class T>
 	static inline std::size_t size(const T & array)
 	{
-		return length(array) * sizeof(std::remove_reference<decltype(std::declval<T>()[0])>);
+		return length(array) * sizeof(std::remove_reference<decltype(std::declval<const T>()[0])>);
 	}	
 
 	//! Zwraca rozmiar tablicy w bajtach
@@ -186,7 +221,7 @@ struct StreamTools
 
 		std::streamsize read = 0;
 		while ((read = forceReadSome(stream, static_cast<char*>(buffer), bufferSize)) > 0) { ret.append(static_cast<char*>(buffer), static_cast<unsigned int>(read)); }
-		return std::move(ret);
+		return ret;
 	}
 
 	//------------------------------------------------------------------------------
@@ -215,7 +250,7 @@ struct StreamTools
 //! \param value Wartość dla któej wykonujemy swap bajtów
 //! \return Wartość ze zmienioną kolejnością bajtów
 template<typename T>
-inline const T EndianSwap(const T value)
+inline T EndianSwap(const T value)
 {
 	union
 	{
@@ -277,7 +312,7 @@ private:
 //! \param b Druga kolekcja łączona
 //! \return Kolekcja będąca rezultatem dołączonia do kolekcji a kolekcji b
 template<class T>
-const T mergeUnordered(const T & a, const T & b)
+T mergeUnordered(const T & a, const T & b)
 {
 	T ret(a);
 	ret.insert(ret.end(), b.begin(), b.end());
@@ -291,7 +326,7 @@ const T mergeUnordered(const T & a, const T & b)
 //! \param b Druga kolekcja łączona
 //! \return Kolekcja będąca rezultatem dołączonia elementó kolekcji b do elementów kolekcji kolekcji a
 template<class T>
-const T mergeOrdered(const T & a, const T & b)
+T mergeOrdered(const T & a, const T & b)
 {
 	T ret(a);
 	ret.insert(b.begin(), b.end());

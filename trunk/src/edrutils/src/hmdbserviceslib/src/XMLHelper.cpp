@@ -211,7 +211,7 @@ void XMLHelper::extractShallowCopyAttributes(const tinyxml2::XMLElement * elemen
 			XMLHelper::extractAttributeValue(attr_element, "Name", name);
 			XMLHelper::extractAttributeValue(attr_element, "Value", value);
 
-			attrs.insert(MotionShallowCopy::Attrs::value_type(name, value));
+			attrs.insert({ name, value });
 			attr_element = attr_element->NextSiblingElement();
 		}
 	}

@@ -424,10 +424,11 @@ public:
 				}
 				*/
 
-				const auto mapping = kinematic::SkeletonState::createMapping(*skeleton);
+				const auto mapping = kinematic::LinearizedSkeleton::createCompleteMapping(*skeleton);
+				const auto helperData = acclaim::Skeleton::helperMotionData(*model);
 
-				for (auto& frame : data->frames) {
-					kinematic::SkeletonState::RigidPartialStateChange sChange = kinematic::SkeletonState::convert(*model, frame, mapping);
+				for (const auto& frame : data->frames) {
+					auto sChange = kinematic::SkeletonState::convert(*model, frame.bonesData, mapping, helperData);
 					states->frames.push_back(sChange);
 				}
 				

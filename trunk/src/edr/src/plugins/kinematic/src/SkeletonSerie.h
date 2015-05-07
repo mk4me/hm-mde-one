@@ -87,7 +87,7 @@ private:
 	//! Dane rozpakowane
 	SkeletonWithStatesConstPtr skeletonWithStates;
 	//! Stan szieletu na podstawie danych z OW
-	kinematic::SkeletonStatePtr skeletonState;
+	kinematic::SkeletonPtr skeleton;
 	//! Typ danych
 	utils::TypeInfo requestedType;
 	//! nazwa serii

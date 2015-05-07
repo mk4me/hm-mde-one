@@ -16,7 +16,7 @@
 //! Struktura zawiera wczytane z pliku uaktualnienia stanu szkieletu
 struct SkeletonStates
 {
-	std::vector<kinematic::SkeletonState::RigidPartialStateChange> frames;
+	std::vector<kinematic::SkeletonState::RigidPartialState> frames;
 	double frameTime;
 	double getLength() const {
 		return frameTime * frames.size();
@@ -29,19 +29,19 @@ struct SkeletonWithStates
 {
 	SkeletonStatesConstPtr states;
 	kinematic::SkeletonConstPtr skeleton;
-	kinematic::SkeletonState::LinearizedNodesMapping nodesMapping;
+	kinematic::LinearizedSkeleton::Mapping nodesMapping;
 	double scale = 1.0;
 };
 DEFINE_SMART_POINTERS(SkeletonWithStates);
 
 
-typedef threadingUtils::IStreamT<kinematic::SkeletonState::NonRigidCompleteStateChange> SkeletonStateStream;
+typedef threadingUtils::IStreamT<kinematic::SkeletonState::NonRigidCompleteState> SkeletonStateStream;
 DEFINE_SMART_POINTERS(SkeletonStateStream);
 
 struct SkeletonWithStreamData
 {
 	kinematic::SkeletonConstPtr skeleton;
-	kinematic::SkeletonState::LinearizedNodesMapping nodesMapping;
+	kinematic::LinearizedSkeleton::Mapping nodesMapping;
 	SkeletonStateStreamPtr states;
 };
 DEFINE_SMART_POINTERS(SkeletonWithStreamData);

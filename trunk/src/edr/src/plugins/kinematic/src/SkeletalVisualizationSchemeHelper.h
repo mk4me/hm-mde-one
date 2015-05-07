@@ -28,7 +28,7 @@ public:
 	//! Metoda pomocnicza przy wypelnianiu wektora rotacji
 	//! \param joint Joint o ktorego indeks pytamy
 	//! \return indeks jointa lub -1 jezeli jointa nie ma
-	const int jointIndex(kinematic::JointPtr joint) const;
+	const int jointIndex(kinematic::Skeleton::JointConstPtr joint) const;
 
 	const unsigned int mappedJointsNumber() const;
 
@@ -38,7 +38,7 @@ public:
 
 private:
 
-	void generateMappedConnectionsDescription( kinematic::JointPtr join,
+	void generateMappedConnectionsDescription( kinematic::Skeleton::JointConstPtr join,
 		const unsigned int idx,
 		osgutils::SegmentsDescriptors & cds) const;
 
@@ -48,7 +48,7 @@ private:
 	//! ułatwia ineksowanie jointów
 	std::map<std::string, unsigned int> namedVisJoints;
 	//! ułatwia ineksowanie jointów
-	std::map<kinematic::JointPtr, unsigned int> visJoints;
+	std::map<kinematic::Skeleton::JointConstPtr, unsigned int> visJoints;
 };
 
 
@@ -91,7 +91,7 @@ private:
   //  //! \param joint przetwarzany staw
   //  //! \param parentRot rotacja rodzica
   //  //! \param parentPos pozycja rodzica
-	void updateJointTransforms(const std::vector<osg::Quat> & rotations, kinematic::JointPtr joint,
+	void updateJointTransforms(const std::vector<osg::Quat> & rotations, kinematic::Skeleton::JointConstPtr joint,
 							   const osg::Quat & parentRot, const osg::Vec3 & parentPos,
 							   std::vector<osg::Vec3> & pointsPositions);
 

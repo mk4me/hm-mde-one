@@ -127,8 +127,7 @@ SET_MOC_FILES(
 	CoreDockWidgetManager.h
 	CoreConsoleWidget.h
 	CoreMainWindow.h	
-	CoreAction.h
-	CorePopup.h
+	CoreAction.h	
 	CorePopupPrivate.h
 	CoreDockWidget.h
 	CoreFlexiToolBar.h

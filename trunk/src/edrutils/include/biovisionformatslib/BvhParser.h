@@ -8,9 +8,12 @@
 namespace biovision
 {
 
+//! Struktura opisująca dane BVH
 struct BVHData
 {
+	//! Szkielet
 	Skeleton model;
+	//! Dane ruchu
 	MotionData data;
 };
 DEFINE_SMART_POINTERS(BVHData);

@@ -259,7 +259,7 @@ BVHData BvhParser::parse(const std::string& filename ) {
                 // zgodnie z kolejnością wystapienia jointów w pliku
                 for (auto it = jointList.begin(); it != jointList.end(); ++it) {
                     int channelsCount = (*it)->channels.size();
-                    float number;
+                    double number;
 					MotionData::ChannelData channelData;
                     for (int k = 0; k < channelsCount; ++k ) {
                         in >> number;
@@ -403,7 +403,7 @@ void BvhParser::readSingleJoint(Skeleton & model, std::istream& in, std::list<Jo
 				parent->joints.push_back(j);
 			}
 
-			model.joints.insert(std::map<std::string, JointPtr>::value_type(name, j));
+			model.joints.insert({ name, j });
 			readSingleJoint(model, in, jointList, j);
 		}
 		else{

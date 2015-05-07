@@ -21,9 +21,6 @@ namespace IMU
 	//! Mapa identyfikator�w sensor�w do nazw joint�w z kt�rymi s� skojarzone, jeden sensor, jeden joint, ale joint moze miec wi�cej sensor�w!!
 	typedef boost::bimap<boost::bimaps::set_of<imuCostume::Costume::SensorID>, boost::bimaps::multiset_of<std::string>> SensorsMapping;
 
-	//! Mapa indeks�w orientacji i joint�w kt�rym odpowiadaj� te oreintacje
-	typedef boost::bimap<unsigned int, std::string> DataIndexToJointMapping;
-
 	//! Struktura opisuj�ca orientacje sensora
 	struct SensorData
 	{
@@ -61,6 +58,25 @@ namespace IMU
 		//! Lokalna pozycja
 		osg::Vec3d globalPosition;
 	};
+
+	//! Klasa usuwaj�ca czas z danych
+	class TimeRemoverExtractor
+	{
+	public:
+		//! \tparam Src Typ �r�d�owy
+		template<typename Src>
+		inline static bool verify(const Src & timeData)
+		{
+			return true;
+		}
+		//! \tparam Src Typ �r�d�owy
+		template<typename Src, typename Dest = typename Src::second_type>
+		inline static void extract(const Src & timeData, Dest & data)
+		{
+			data = timeData.second;
+		}
+	};
+
 }
 
 //! Makro realizujące nazwę ekstraktora pola strumienia czasowego

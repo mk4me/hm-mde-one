@@ -171,7 +171,7 @@ const MRSourceNode::size_type MRSourceNode::outputSize() const
 
 const bool MRSourceNode::outputEmpty() const
 {
-	return srcImpl->size();
+	return srcImpl->empty();
 }
 
 MRProcessingNode::MRProcessingNode(df::IProcessingNode * node, df::IDFProcessor * processor) : node_(node), processor_(processor)

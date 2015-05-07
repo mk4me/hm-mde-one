@@ -393,7 +393,7 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
 			currentMenu->addWidget(new osgui::AspectRatioKeeper(submenuItem.emptyWidget), row, 0);
 
             //add widget
-            it = currentMenu->submenus.insert(Submenus::value_type(*prev, submenuItem)).first;
+			it = currentMenu->submenus.insert({ *prev, submenuItem }).first;
 		}
 
 		currentMenu = it->second.submenu;
@@ -430,7 +430,7 @@ bool ContextMenu::addMenuItem(Iter begin, Iter end, bool checked, const OnClickC
         item.checkedWidget->setSize(item.menuItem->getHeight(), item.menuItem->getHeight());
 
 		//add widget
-		Items::iterator it = currentMenu->items.insert(Items::value_type(*prev, item)).first;
+		Items::iterator it = currentMenu->items.insert({ *prev, item }).first;
 
 		osgWidget::Callback * cc = new osgWidget::Callback(&ContextMenu::onItemPush, currentMenu, osgWidget::EVENT_MOUSE_PUSH, &(it->second));
 		osgWidget::Callback * ec = new osgWidget::Callback(&ContextMenu::onItemEnter, currentMenu, osgWidget::EVENT_MOUSE_ENTER, &(it->second));

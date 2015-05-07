@@ -27,7 +27,7 @@ namespace hmdbServices
 				if (fileIT == srcFiles.end()){
 					file = new MotionShallowCopy::File;
 					file->fileID = fileID;
-					srcFiles.insert(MotionShallowCopy::Files::value_type(fileID, file));
+					srcFiles.insert({ fileID, file });
 				}
 				else{
 					file = fileIT->second;
@@ -37,7 +37,7 @@ namespace hmdbServices
 				file->trial = trial;
 				file->session = session;
 
-				outputFiles.insert(MotionShallowCopy::Files::value_type(fileID, file));				
+				outputFiles.insert({ fileID, file });
 
 				file_element = file_element->NextSiblingElement();
 			}
@@ -298,7 +298,7 @@ namespace hmdbServices
 					auto it = shallowCopy.disorders.find(disorderID);
 
 					if (it == shallowCopy.disorders.end()){
-						it = shallowCopy.disorders.insert(MedicalShallowCopy::Disorders::value_type(disorderID, new MedicalShallowCopy::Disorder)).first;
+						it = shallowCopy.disorders.insert({ disorderID, new MedicalShallowCopy::Disorder }).first;
 						it->second->disorderID = disorderID;
 					}
 

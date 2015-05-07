@@ -142,7 +142,7 @@ void VideoBufferChunk::append( Picture * picture, double startTime, double endTi
     stop = endTime;
   }
   // czy już było?
-  if (!framesMap.insert(std::make_pair(startTime, std::make_pair(endTime, picture))).second) {
+  if (!framesMap.insert({ startTime, std::make_pair(endTime, picture) }).second) {
     throw new std::runtime_error("Frame already in buffer.");
   }
 }

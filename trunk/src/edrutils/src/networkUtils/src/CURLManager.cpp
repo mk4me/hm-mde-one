@@ -174,7 +174,7 @@ public:
 				// czy uchwyt skoñczy³ ¿¹dane operacje
 				if (info->msg == CURLMSG_DONE){
 
-					results.insert(std::map<CURL*, CURLcode>::value_type(info->easy_handle, info->data.result));
+					results.insert({ info->easy_handle, info->data.result });
 
 					// jaki jest stan uchwytu
 					switch (info->data.result){

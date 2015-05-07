@@ -10,8 +10,10 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
-#include <QtWidgets/QProgressDialog>
 #include <plugins/imuCostume/IIMUDataSource.h>
+
+class QWidget;
+class QProgressDialog;
 
 //! Obiekt realizuj¹cy wizualny postêp inicjalizacji kostiumu
 //! inicjalizacjê algorytmów estyamcji orientacji dla czujników oraz kalibracjê
@@ -64,11 +66,11 @@ private slots:
 
 private:
 
-	static void estimate(std::map<imuCostume::Costume::SensorID, AlgoProgress> & algos,
-		const IMU::SensorsData & sensorsData, const uint32_t currentTime);
-
+	void estimate(const IMU::SensorsStreamData & streamData);
+	
+	//! Zwraca minimalny licznik inicjowanych algorytmów
 	unsigned int minCounter() const;
-
+	//! Zeruje liczniki
 	void resetCounters();
 
 private:
@@ -78,9 +80,8 @@ private:
 	utils::shared_ptr<threadingUtils::ResetableStreamStatusObserver> observer;
 	//! Profil wg którego bêdziemy siê konfigurowaæ
 	IMU::CostumeProfilePtr costumeProfile;
-
+	//! Mapa postêpu algorytmów
 	std::map<imuCostume::Costume::SensorID, AlgoProgress> algorithmsProgress;
-
 	//! Numer próbki przy której przechodzimy do fazy kalibracji
 	unsigned int calibratinStageChangeValue;
 	//! Poprzednia próbka czasu
@@ -89,9 +90,11 @@ private:
 	bool first;
 	//! Timer realizuj¹cy odpytywanie strumienia z danych
 	QTimer timer;
+	//! Widget konfiguracji - instrukcje itp itd jak kalibrowaæ
+	QWidget * cw;
 	//! Dialog z postepem inicjalizacji kostiumu
-	QProgressDialog pd;
-	//!
+	QProgressDialog * pd;
+	//! Info czy zakoñczono inicjalizacjê
 	bool complete;
 };
 

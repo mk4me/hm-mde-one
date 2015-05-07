@@ -18,6 +18,7 @@ namespace coreUI {
 
 class COREUI_EXPORT CoreAction : public QAction, public CoreTitleBar::ICoreTitleBarAction, public ICoreActionSection
 {
+	Q_OBJECT
 public:
 	CoreAction(const QString & sectionName, const QString &text, QObject* parent, CoreTitleBar::SideType side = CoreTitleBar::Left);
 	CoreAction(const QString & sectionName, const QIcon &icon, const QString &text, QObject* parent, CoreTitleBar::SideType side = CoreTitleBar::Left);

@@ -51,7 +51,7 @@ bool Converter::convert( PictureLayered src, PictureLayered dst )
   std::map<Description, SwsContext*>::iterator found = cache.find(description);
   if ( found == cache.end() ) {
     // wstawiamy!
-    found = cache.insert( std::make_pair(description, reinterpret_cast<SwsContext*>(NULL)) ).first;
+	  found = cache.insert({ description, reinterpret_cast<SwsContext*>(NULL) }).first;
   }
 
   VIDLIB_MEASURE_SCOPE(ConvertFrame);

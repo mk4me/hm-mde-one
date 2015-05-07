@@ -41,7 +41,7 @@ class JointStreamExtractor
 public:
 	JointStreamExtractor(JointStreamExtractor && other) : joint(std::move(other.joint)) {}
 	JointStreamExtractor(const JointStreamExtractor & other) : joint(other.joint) {}
-	JointStreamExtractor(kinematic::SkeletonState::JointConstPtr joint) : joint(joint) {}
+	JointStreamExtractor(kinematic::Skeleton::JointConstPtr joint) : joint(joint) {}
 
 	template<typename T>
 	inline static bool verify(const T &) { return true; }
@@ -49,14 +49,14 @@ public:
 	template<typename T>
 	void extract(const T & src, IMU::JointStream::value_type & jointData) const {
 		jointData.first = src.first;
-		jointData.second.globalOrientation = joint->value.globalOrientation();
-		jointData.second.localOrientation = joint->value.localOrientation();
-		jointData.second.globalPosition = joint->value.globalPosition();
-		jointData.second.localPosition = joint->value.localPosition();
+		jointData.second.globalOrientation = joint->value().globalOrientation();
+		jointData.second.localOrientation = joint->value().localOrientation();
+		jointData.second.globalPosition = joint->value().globalPosition();
+		jointData.second.localPosition = joint->value().localPosition();
 	}
 
 private:
-	kinematic::SkeletonState::JointConstPtr joint;
+	kinematic::Skeleton::JointConstPtr joint;
 };
 
 TIMEMEMBER_EXTRACTOR(globalOrientation);
@@ -344,10 +344,7 @@ using namespace IMU;
 IMUCostumeDataSource::IMUCostumeDataSource()
 	: memoryDM(nullptr), finish(false)
 {
-	//char data[] = { -128, -72, -1, 79, 58, -85, 111, 0, 47, -123, -52, 37, 124, 45, 4, 25, -118, 88, 8, 23, 5, 10, 23, 5, 0, 101, -128, 20, 79, 0, 103, 34, 1, 101, 111, -4, -121, 0, -32, -4, 2, 101, -4, -1, -69, -1, 62, 0, 3, -123, -20, 19, 26, 28, -70, 5, -90, 103, 4, 101, -45, -7, 92, -19, 60, 35, 5, 101, -22, 1, 73, 0, -68, -5, 6, 101, 27, -7, 82, 5, 116, 8, 7, -123, 106, 89, -11, 26, 109, 6, 112, -57, 8, 101, -31, 4, 107, 28, -4, -29, 9, 101, 115, 0, 43, -4, -102, 1, 10, 101, -10, -1, -19, -1, -19, -1, 11, -123, 122, -40, -43, 85, 66, -53, 42, -16, 12, 101, -58, 22, -28, -8, 25, 32, 13, 101, -62, -4, 18, 2, -101, -2, 14, 101, 0, 0, 86, 0, 12, 0, 15, -123, -37, 37, -36, 34, -50, 2, 120, 96, 16, 101, -84, 39, -19, -7, -119, 4, 17, 101, -9, -5, 19, -1, -73, -2, 18, 101, 21, 0, -5, -1, 7, 0, 19, -123, -42, 66, -62, -33, -80, 65, -68, -47, 20, 101, 4, 32, -26, 13, -67, -21, 21, 101, -18, -4, -71, -1, -81, 2, 22, 101, 7, 0, -18, -1, -32, -1, 23, -123, 65, 11, 23, 77, -55, 54, -59, 53, 24, 101, 4, 32, 85, 6, 85, 23, 25, 101, 26, -3, -11, 0, 14, -3, 26, 101, 10, 0, -21, -1, -18, -1, 27, -123, 111, 78, 17, 21, 15, 45, -62, 57, 28, 101, 107, 1, 6, 10, 24, 39, 29, 101, 50, 0, 86, -3, -124, -4, 30, 101, 5, 0, -24, -1, 14, 0, 31, -123, -15, 83, 38, -12, -9, -8, 65, -69, 32, 101, -110, 5, 10, -39, 112, -7, 33, 101, -4, 0, 4, 4, -78, 1, 34, 101, 12, 0, 15, 0, 5, 0, 35, -123, 16, 66, 38, 81, 101, -19, -45, 25, 36, 101, -113, -19, -30, -3, 65, -36, 37, 101, -110, 0, 62, 0, -49, 3, 38, 101, -27, -1, -24, -1, 6, 0, 39, -123, 72, -26, 108, 1, 63, 106, -61, -4, 40, 101, -4, -29, -1, -23, -57, 17, 41, 101, -66, 2, 54, 3, 111, -1, 42, 101, -27, -1, 39, 0, 4, 0, 43, -123, -30, 76, -52, 3, -24, -58, -78, 52, 44, 101, 121, 33, 20, 1, 37, 22, 45, 101, -104, -4, 126, 1, -92, -1, -128, 0 };
 
-
-	//imuCostume::CostumeCANopenIO::Data d = imuCostume::CostumeCANopenIO::extractData(&data, 416);
 }
 
 IMUCostumeDataSource::~IMUCostumeDataSource()
@@ -419,48 +416,9 @@ void IMUCostumeDataSource::resfreshCostumesData()
 						
 						costumes.insert(id);
 
-						//costumesDataFrame.insert(CostumesDataFrame::value_type(id, streamBuffer));
-
 						//konwertuje dane do czujnikow kompletnych
 
-						auto s = imuCostume::Costume::extractSensorsData(frame.structure.data.data(), length - sizeof(imuCostume::CostumeCANopenIO::Header));
-
-						std::map<imuCostume::Costume::SensorID, imuCostume::Costume::SensorDataPtr> sdat;
-
-						for (auto ss : s)
-						{
-							sdat.insert(std::map<imuCostume::Costume::SensorID, imuCostume::Costume::SensorDataPtr>::value_type(ss->id(), ss));
-						}
-
-						{
-							std::lock_guard<std::recursive_mutex > lock(synch);
-
-							//nie ma danych to sensory tez maja false probke
-							for (auto & sd : cd.second.sensorsData)
-							{
-								auto it = sdat.find(sd.first);
-								if (it != sdat.end()){
-									if (it->second->type() == imuCostume::Costume::IMU){
-										auto ptr = utils::dynamic_pointer_cast<imuCostume::Costume::IMUSensor>(it->second);
-										if (ptr->dataStatus() >= 0x07){
-											sd.second.samplesStatus->positiveSample();
-										}
-										else if (ptr->dataStatus() > 0x00 && ptr->dataStatus() < 0x08){
-											sd.second.samplesStatus->positiveNegativeSample();
-										}
-										else{
-											sd.second.samplesStatus->negativeSample();
-										}
-									}
-									else{
-										sd.second.samplesStatus->positiveSample();
-									}
-								}
-								else{
-									sd.second.samplesStatus->negativeSample();
-								}							
-							}
-						}
+						updateSensorsStatus(frame, length, cd.second);
 
 						//PLUGIN_LOG_DEBUG("Costume " << cd.second.rawCostume->ip() << " data received");												
 					}
@@ -482,69 +440,8 @@ void IMUCostumeDataSource::resfreshCostumesData()
 				}
 			}
 
-			if (costumes.empty() == false){
-				std::lock_guard<std::recursive_mutex > lock(synch);			
-				for (auto & rec : recordings)
-				{
-					CostumesDataFrame cdf;
-					for (const auto & ctr : rec->costumesToRecord)
-					{
-						auto it = costumes.find(ctr.first);
-						if (it != costumes.end()){
-							RecordedCostumeData rcd;
+			tryRecord(costumes);
 
-							auto cIT = costumesData.find(ctr.first);
-
-							utils::shared_ptr<SkeletonWithStreamData> kinematicStream;
-							cIT->second.domainData.back()->tryGet(kinematicStream);
-							::SkeletonStateStream::value_type sdata;
-							kinematicStream->states->data(sdata);
-
-							IMU::SensorsStreamData cssd;
-							cIT->second.completeImuStream->data(cssd);
-							rcd.timestamp = cssd.timestamp;
-							
-							//zapis danych tego kostiumu
-							for (const auto & sID : ctr.second)
-							{
-								auto jointName = cIT->second.profile->sensorsDescriptions.find(sID)->second.jointName;
-
-								auto idx = kinematicStream->nodesMapping.right.find(jointName)->get_left();
-
-								RecordedData rsd;
-								auto sdIT = cIT->second.sensorsData.find(sID);
-								auto ow = sdIT->second.domainData.front();
-								utils::shared_ptr<IMUStream> imuStream;
-								ow->tryGet(imuStream);
-								IMUStream::value_type data;
-								imuStream->data(data);
-
-								rsd.accelerometer = data.second.accelerometer;
-								rsd.gyroscope = data.second.gyroscope;
-								rsd.magnetometer = data.second.magnetometer;
-								rsd.orientation = data.second.orientation;
-
-								auto it = sdIT->second.domainData.begin();
-								std::advance(it, 18);
-
-								ow = *it;								
-								ow->tryGet(imuStream);								
-								imuStream->data(data);
-
-								rsd.estimatedOrientation = data.second.orientation;
-
-								//todo - z kinematic
-								rsd.jointOrientation = sdata[idx].rotation;
-
-								rcd.data.insert(std::map<imuCostume::Costume::SensorID, RecordedData>::value_type(sID, rsd));
-							}
-							cdf.insert(CostumesDataFrame::value_type(ctr.first, rcd));
-						}
-					}
-
-					rec->costumesDataBuffer.pushData(std::move(cdf));
-				}
-			}
 		}
 	}
 }
@@ -717,8 +614,7 @@ const bool IMUCostumeDataSource::refreshCostumes()
 			cData.samplesStatus = utils::make_shared<utils::SamplesStatus>(100, createStatusMap());
 			cData.samplesStatus->positiveSample();
 			configureCostume(cData);
-			innerRefreshCostumeSensorsConfiguration(cData, MaxSamplesCount);
-
+			innerRefreshCostumeSensorsConfiguration(cData, MaxSamplesCount);		
 			additionalCostumesData.insert(CostumesData::value_type(id, cData));
 		}
 		catch (...){
@@ -956,16 +852,11 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 
 	//mapowanie pozycji wektora do nazwy jointa w szkielecie i stanie
 
-	auto visitor = [&cData](kinematic::JointConstPtr joint, kinematic::Joint::size_type) -> void
-			{
-				cData.skeletonMotion->dataToModelMapping.insert(DataIndexToJointMapping::value_type(cData.skeletonMotion->dataToModelMapping.size(), joint->value.name));
-			};
-
-	utils::TreeNode::visitLevelOrder(profile->skeleton->root, visitor);
+	cData.skeletonMotion->mapping = kinematic::LinearizedSkeleton::createCompleteMapping(*profile->skeleton);	
 
 	cData.skeletonMotion->skeleton = profile->skeleton;
 	cData.skeletonMotion->stream.reset(new RealMotionStream(estimatedData,
-		ExtractCostumeMotion(profile, cData.skeletonMotion->dataToModelMapping)));
+		ExtractCostumeMotion(profile, cData.skeletonMotion->mapping)));
 
 	ow = core::Variant::create<MotionStream>();
 	ow->setMetadata("core/name", QObject::tr("Skeleton stream").toStdString());
@@ -979,23 +870,19 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 		//dane dla kinematic
 		auto kStream = utils::make_shared<SkeletonWithStreamData>();
 		kStream->skeleton = profile->skeleton;
-		kStream->nodesMapping = kinematic::SkeletonState::createMapping(*profile->skeleton);
+		kStream->nodesMapping = cData.skeletonMotion->mapping;
 		//SkeletonStateStream
 
-		auto skeletonState = kinematic::SkeletonState::create(*profile->skeleton);
+		auto skeleton = kinematic::Skeleton(*profile->skeleton);
 
-		std::list<kinematic::SkeletonState::JointConstPtr> joints;
+		std::list<kinematic::Skeleton::JointConstPtr> joints;
 
-		auto jointsGrabberVisitor = [&joints](kinematic::SkeletonState::JointConstPtr joint, std::size_t level)
+		kinematic::LinearizedSkeleton::Visitor::visit(skeleton, [&joints](kinematic::Skeleton::JointConstPtr joint)
 		{
-			if (joint != nullptr){
-				joints.push_back(joint);
-			}
-		};
+			joints.push_back(joint);
+		});
 
-		utils::TreeNode::visitLevelOrder(skeletonState.root(), jointsGrabberVisitor);
-
-		auto sStateStream = utils::make_shared<threadingUtils::StreamAdapterT<MotionStream::value_type, IMU::SkeletonStateStream::value_type, KinematicStreamExtractor>>(cData.skeletonMotion->stream, KinematicStreamExtractor(std::move(skeletonState)));
+		auto sStateStream = utils::make_shared<threadingUtils::StreamAdapterT<MotionStream::value_type, IMU::SkeletonStateStream::value_type, KinematicStreamExtractor>>(cData.skeletonMotion->stream, KinematicStreamExtractor(std::move(skeleton)));
 
 		cData.domainData.push_back(core::Variant::wrapp<IMU::SkeletonStateStream>(sStateStream));
 
@@ -1010,18 +897,16 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 		root->appendChild(item);
 
 		auto ajitem = utils::make_shared<core::HierarchyItem>(QObject::tr("Active joints"), QObject::tr("Joints with sensors"));
-		item->appendChild(ajitem);		
+		item->appendChild(ajitem);
 		//TODO
 		//dodać gałęzie z jointami i ich danymi: lokalny kąt w szkielecie, globalny kąt w świecie, lokalna pozycja względem rodzica, globalna pozycja
 
 		for (const auto & sd : profile->sensorsDescriptions)
 		{
-			auto it = std::find_if(joints.begin(), joints.end(), [&sd](kinematic::SkeletonState::JointConstPtr joint)
+			auto it = std::find_if(joints.begin(), joints.end(), [&sd](kinematic::Skeleton::JointConstPtr joint)
 			{
-				if (joint != nullptr){
-					if (joint->value.name() == sd.second.jointName){
-						return true;
-					}
+				if (joint->value().name() == sd.second.jointName){
+					return true;
 				}
 
 				return false;
@@ -1036,7 +921,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 
 				auto stream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::SkeletonStateStream::value_type, JointStream::value_type, JointStreamExtractor>>(sStateStream, JointStreamExtractor(*it));
 				cData.domainData.push_back(core::Variant::wrapp<JointStream>(stream));
-				auto jitem = utils::make_shared<core::HierarchyItem>(QString::fromStdString((*it)->value.name()), QString::fromStdString((*it)->value.name()));
+				auto jitem = utils::make_shared<core::HierarchyItem>(QString::fromStdString((*it)->value().name()), QString::fromStdString((*it)->value().name()));
 				ajitem->appendChild(jitem);
 
 				//global orient
@@ -1076,7 +961,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 
 			auto stream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::SkeletonStateStream::value_type, JointStream::value_type, JointStreamExtractor>>(sStateStream, JointStreamExtractor(joint));
 			cData.domainData.push_back(core::Variant::wrapp<JointStream>(stream));
-			auto jitem = utils::make_shared<core::HierarchyItem>(QString::fromStdString(joint->value.name()), QString::fromStdString(joint->value.name()));
+			auto jitem = utils::make_shared<core::HierarchyItem>(QString::fromStdString(joint->value().name()), QString::fromStdString(joint->value().name()));
 			ajitem->appendChild(jitem);
 
 			//global orient
@@ -1639,4 +1524,111 @@ void IMUCostumeDataSource::uploadSession(const core::Filesystem::Path & configur
 	const core::Filesystem::FilesList & recordings)
 {
 
+}
+
+void IMU::IMUCostumeDataSource::updateSensorsStatus(const imuCostume::CostumeCANopenIO::Frame &frame,
+	const uint16_t length, const CostumeData &cd)
+{
+	auto s = imuCostume::Costume::extractSensorsData(frame.structure.data.data(), length - sizeof(imuCostume::CostumeCANopenIO::Header));
+
+	std::map<imuCostume::Costume::SensorID, imuCostume::Costume::SensorDataPtr> sdat;
+
+	for (auto ss : s)
+	{
+		sdat.insert({ ss->id(), ss });
+	}
+
+	{
+		std::lock_guard<std::recursive_mutex > lock(synch);
+
+		//nie ma danych to sensory tez maja false probke
+		for (auto & sd : cd.sensorsData)
+		{
+			auto it = sdat.find(sd.first);
+			if (it != sdat.end()){
+				if (it->second->type() == imuCostume::Costume::IMU){
+					auto ptr = utils::dynamic_pointer_cast<imuCostume::Costume::IMUSensor>(it->second);
+					if (ptr->dataStatus() >= 0x07){
+						sd.second.samplesStatus->positiveSample();
+					}
+					else if (ptr->dataStatus() > 0x00 && ptr->dataStatus() < 0x08){
+						sd.second.samplesStatus->positiveNegativeSample();
+					}
+					else{
+						sd.second.samplesStatus->negativeSample();
+					}
+				}
+				else{
+					sd.second.samplesStatus->positiveSample();
+				}
+			}
+			else{
+				sd.second.samplesStatus->negativeSample();
+			}
+		}
+	}
+}
+
+void IMU::IMUCostumeDataSource::tryRecord(std::set<imuCostume::CostumeRawIO::CostumeAddress> &costumes)
+{
+	if (costumes.empty() == false){
+		std::lock_guard<std::recursive_mutex > lock(synch);
+		for (auto & rec : recordings)
+		{
+			CostumesDataFrame cdf;
+			for (const auto & ctr : rec->costumesToRecord)
+			{
+				auto it = costumes.find(ctr.first);
+				if (it != costumes.end()){
+					RecordedCostumeData rcd;
+
+					auto cIT = costumesData.find(ctr.first);
+
+					utils::shared_ptr<SkeletonWithStreamData> kinematicStream;
+					cIT->second.domainData.back()->tryGet(kinematicStream);
+					::SkeletonStateStream::value_type sdata;
+					kinematicStream->states->data(sdata);
+
+					IMU::SensorsStreamData cssd;
+					cIT->second.completeImuStream->data(cssd);
+					rcd.timestamp = cssd.timestamp;
+
+					//zapis danych tego kostiumu
+					for (const auto & sID : ctr.second)
+					{
+						//auto idx = cIT->second.stjmapping.find(sID)->second;
+						RecordedSensorData rsd;
+						auto sdIT = cIT->second.sensorsData.find(sID);
+						auto ow = sdIT->second.domainData.front();
+						utils::shared_ptr<IMUStream> imuStream;
+						ow->tryGet(imuStream);
+						IMUStream::value_type data;
+						imuStream->data(data);
+
+						rsd.accelerometer = data.second.accelerometer;
+						rsd.gyroscope = data.second.gyroscope;
+						rsd.magnetometer = data.second.magnetometer;
+						rsd.orientation = data.second.orientation;
+
+						auto it = sdIT->second.domainData.begin();
+						std::advance(it, 18);
+
+						ow = *it;
+						ow->tryGet(imuStream);
+						imuStream->data(data);
+
+						rsd.estimatedOrientation = data.second.orientation;
+
+						//todo - z kinematic
+						//rsd.jointOrientation = sdata[idx].rotation;
+
+						rcd.sensorsData.insert({ sID, rsd });
+					}
+					cdf.insert({ ctr.first, rcd });
+				}
+			}
+
+			rec->costumesDataBuffer.pushData(std::move(cdf));
+		}
+	}
 }

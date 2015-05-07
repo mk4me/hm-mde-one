@@ -104,8 +104,8 @@ SamplesStatus SamplesStatus::createBinaryStatus(const int statusLower, const int
 	}
 
 	StatusMap statusMap;
-	statusMap.insert(StatusMap::value_type(splitValue, statusLower));
-	statusMap.insert(StatusMap::value_type(1.0f, statusHigher));
+	statusMap.insert({ splitValue, statusLower });
+	statusMap.insert({ 1.0f, statusHigher });
 
 	return SamplesStatus(windowSize, statusMap);
 }

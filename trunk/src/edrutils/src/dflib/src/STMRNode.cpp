@@ -114,7 +114,7 @@ const STMRSourceNode::size_type STMRSourceNode::outputSize() const
 
 const bool STMRSourceNode::outputEmpty() const
 {
-	return srcImpl->size();
+	return srcImpl->empty();
 }
 
 bool STMRSourceNode::hasSomethingToProcess()

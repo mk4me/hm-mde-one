@@ -74,7 +74,7 @@ private:
 	utils::TypeInfo requestedType;
 	//! nazwa serii
 	std::string name;
-	kinematic::SkeletonState::NonRigidCompleteStateChange currentStateChange;
+	kinematic::SkeletonState::NonRigidCompleteState currentState;
 
 };
 

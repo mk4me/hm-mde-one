@@ -13,6 +13,7 @@
 #include <QtGui/QStandardItemModel>
 #include <imucostumelib/ImuCostume.h>
 
+//! Delegat obs³uguj¹cy wybór identyfikatora sensora
 class SensorIDDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
@@ -22,11 +23,11 @@ public:
 	SensorIDDelegate(QObject * parent = nullptr);
 
 	virtual ~SensorIDDelegate();
-
+	//! \param sensors Pula sensorów z której mo¿na wybieraæ identyfikatory
 	void setSensors(const imuCostume::Costume::SensorIDsSet & sensors);
-
+	//! \return Domyslny tekst dla wyboru identyfikatora sensora
 	static QString defaultText();
-
+	//! \return Domyslna wartoœæ dla wyboru identyfikatora sensora
 	static int defaultValue();
 
 	virtual QWidget * createEditor(QWidget * parent,

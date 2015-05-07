@@ -14,6 +14,7 @@
 #include <plugins/imuCostume/Types.h>
 #include <plugins/imuCostume/IMUCostumeCalibrationAlgorithm.h>
 #include <kinematiclib/Skeleton.h>
+#include <kinematiclib/SkeletonState.h>
 #include <corelib/IIdentifiable.h>
 
 class QWidget;
@@ -23,20 +24,6 @@ namespace IMU
 	//! Interfejs algorytmów poprawiaj¹cych ogóln¹ estymacjê pozy i pozycji szkieletu (uwzlêgniaj¹c ograniczenia, hierarchiê, ...)
 	class IMUCostumeMotionEstimationAlgorithm : public plugin::IIdentifiable
 	{
-	public:
-
-		//! Typ mapy orientacji jointów
-		typedef std::map<std::string, osg::Quat> JointsOrientations;
-
-		//! Opis stanu ruchu
-		struct MotionState 
-		{
-			//! Mapa jointów do ich orientacji lokalnych
-			JointsOrientations jointsOrientations;
-			//! Pozycja szkieletu
-			osg::Vec3d position;
-		};
-
 	public:
 		//! Destruktor wirtualny
 		virtual ~IMUCostumeMotionEstimationAlgorithm() {}
@@ -59,11 +46,25 @@ namespace IMU
 		//! \param data Kompletne rozpakowane dane z IMU
 		//! \param inDeltaT Czas od poprzedniej ramki danych
 		//! \return Returns Lokalne orientacje wszystkich jointów, bez end-sitów (jointów bez dzieci)
-		virtual MotionState estimate(const MotionState & motionState,
+		virtual kinematic::SkeletonState::RigidCompleteStateLocal estimate(const kinematic::SkeletonState::RigidCompleteStateLocal & motionState,
 			const SensorsData & data, const double inDeltaT) = 0;
 
 		//! \return Widget konfiguruj¹cy algorytm
 		virtual QWidget* configurationWidget() { return nullptr; }
+
+		//! \return Aktywne jointy kostiumu którymi faktycznie bêdziemy ruszaæ
+		virtual std::set<kinematic::LinearizedSkeleton::NodeIDX> activeJoints(kinematic::SkeletonConstPtr skeleton,
+			const IMUCostumeCalibrationAlgorithm::SensorsDescriptions & sensorsDescription) const
+		{
+			std::set<kinematic::LinearizedSkeleton::NodeIDX> ret;
+
+			for (const auto & sd : sensorsDescription)
+			{
+				ret.insert(sd.second.jointIdx);
+			}
+
+			return ret;
+		}
 	};
 
 	DEFINE_SMART_POINTERS(IMUCostumeMotionEstimationAlgorithm);

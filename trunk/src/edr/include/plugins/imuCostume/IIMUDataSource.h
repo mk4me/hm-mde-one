@@ -37,13 +37,11 @@ namespace IMU
 		//! Typ opisuj¹cy identyfikator kostiumy
 		typedef imuCostume::CostumeRawIO::CostumeAddress CostumeID;
 
-		//! Zapisywane dane
-		struct RecordedData : SensorData
+		//! Zapisywane dane sensora
+		struct RecordedSensorData : SensorData
 		{
 			//! Estymowana orientacja
 			osg::Quat estimatedOrientation;
-			//! Przeliczona orientacja skojarzonego jointa
-			osg::Quat jointOrientation;
 		};
 
 		//! Zapisywane dane kostiumu
@@ -52,7 +50,9 @@ namespace IMU
 			//! Czas
 			imuCostume::CostumeCANopenIO::Timestamp timestamp;
 			//! Dane sensorów
-			std::map<imuCostume::Costume::SensorID, RecordedData> data;
+			std::map<imuCostume::Costume::SensorID, RecordedSensorData> sensorsData;
+			//! Dane szkieletu
+			kinematic::SkeletonState::RigidCompleteState skeletonData;
 		};
 
 		//! Mapa pakietów wg kostiumów

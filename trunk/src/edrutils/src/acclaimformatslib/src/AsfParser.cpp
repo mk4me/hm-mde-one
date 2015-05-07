@@ -250,7 +250,7 @@ bool parseBones(const std::string& bones, Skeleton & model, const bool createUni
 
 			if (boneParse) {
 				if (model.bones.find(bone.id) == model.bones.end()) {
-					model.bones.insert(std::make_pair(bone.id, bone));
+					model.bones.insert({ bone.id, bone });
 				}
 				else {
 					throw std::runtime_error("Bone : " + bone.name + " already added");
@@ -376,7 +376,7 @@ bool parseHierarchy(const std::string& hierarchyString, Skeleton & model)
 	}
 
 	model.root = root.id;
-	model.bones.insert(Skeleton::Bones::value_type(root.id, root));
+	model.bones.insert({ root.id, root });
 
 	for (auto& line : hierarchy) {
 		//TODO - weryfikacja czy coś znaleziono
@@ -390,7 +390,7 @@ bool parseHierarchy(const std::string& hierarchyString, Skeleton & model)
 			{
 				return val.second.name == name;
 			})->first;
-			model.hierarchy.insert(Skeleton::Hierarchy::value_type(parentID, boneID));
+			model.hierarchy.insert({ parentID, boneID });
 		}
 	}
 
@@ -493,7 +493,7 @@ void saveHierarchy(std::ostream& out, const Skeleton & model)
 		throw std::runtime_error("root not found in hierarchy");
 	}
 
-	std::deque<Skeleton::ID> bonesID;
+	std::deque<Bone::ID> bonesID;
 
 	out << ":hierarchy" << std::endl;
 	out << "  begin" << std::endl;	
@@ -503,7 +503,7 @@ void saveHierarchy(std::ostream& out, const Skeleton & model)
 
 	if (range.first != range.second){
 
-		std::vector<Skeleton::ID> childrenIDs;
+		std::vector<Bone::ID> childrenIDs;
 
 		for (; range.first != range.second; ++range.first)
 		{
@@ -519,7 +519,7 @@ void saveHierarchy(std::ostream& out, const Skeleton & model)
 		}
 
 		std::reverse(childrenIDs.begin(), childrenIDs.end());
-		std::for_each(childrenIDs.begin(), childrenIDs.end(), [&bonesID](const Skeleton::ID id) { bonesID.push_front(id); });
+		std::for_each(childrenIDs.begin(), childrenIDs.end(), [&bonesID](const Bone::ID id) { bonesID.push_front(id); });
 
 		out << std::endl;
 	}
@@ -534,7 +534,7 @@ void saveHierarchy(std::ostream& out, const Skeleton & model)
 
 			out << "    " << model.bones.find(boneID)->second.name;
 
-			std::vector<Skeleton::ID> childrenIDs;
+			std::vector<Bone::ID> childrenIDs;
 
 			for (; range.first != range.second; ++range.first)
 			{
@@ -550,7 +550,7 @@ void saveHierarchy(std::ostream& out, const Skeleton & model)
 			}
 
 			std::reverse(childrenIDs.begin(), childrenIDs.end());
-			std::for_each(childrenIDs.begin(), childrenIDs.end(), [&bonesID](const Skeleton::ID id) { bonesID.push_front(id); });
+			std::for_each(childrenIDs.begin(), childrenIDs.end(), [&bonesID](const Bone::ID id) { bonesID.push_front(id); });
 
 			out << std::endl;
 		}

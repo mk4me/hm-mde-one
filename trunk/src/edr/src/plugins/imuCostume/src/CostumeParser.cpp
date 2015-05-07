@@ -100,53 +100,59 @@ static void serialize(std::ostream & stream, const osg::Quat & orient)
 	stream << orient.x() << " " << orient.y() << " " << orient.z() << " " << orient.w();
 }
 
-void CostumeParser::save(std::ostream & stream, const IIMUDataSource::CostumesDataFrame & data)
+void CostumeParser::save(std::ostream & stream,
+	const IIMUDataSource::CostumesDataFrame & data,
+	const CostumesMappings & mapping)
 {
-	//if (data.empty() == false){
+	for (const auto & val : data)
+	{
+		auto it = mapping.find(val.first);
 
-		//stream << data.size() << std::endl;
-
-		for (const auto & val : data)
-		{
-			//std::string buf;
-			//boost::algorithm::hex(val.second.buffer.get(), val.second.buffer.get() + val.second.length, std::back_inserter(buf));
-
-			stream << val.first.ip << " " << val.first.port << " " << val.second.timestamp;
-
-			for (const auto & sData : val.second.data)
-			{
-				stream << " " << std::to_string(sData.first) << " ";
-				serialize(stream, sData.second.accelerometer);
-				stream << " ";
-				serialize(stream, sData.second.gyroscope);
-				stream << " ";
-				serialize(stream, sData.second.magnetometer);
-				stream << " ";
-				serialize(stream, sData.second.orientation);
-				stream << " ";
-				serialize(stream, sData.second.estimatedOrientation);
-				stream << " ";
-				serialize(stream, sData.second.jointOrientation);
-			}
+		if (it == mapping.end()){
+			throw std::runtime_error("Costume not found in mappings");
 		}
-	//}
+
+		stream << val.first.ip << " " << val.first.port << " " << val.second.timestamp << " ";
+		serialize(stream, val.second.skeletonData.position);
+
+		for (const auto & sData : val.second.sensorsData)
+		{
+			stream << " " << std::to_string(sData.first) << " ";
+			serialize(stream, sData.second.accelerometer);
+			stream << " ";
+			serialize(stream, sData.second.gyroscope);
+			stream << " ";
+			serialize(stream, sData.second.magnetometer);
+			stream << " ";
+			serialize(stream, sData.second.orientation);
+			stream << " ";
+			serialize(stream, sData.second.estimatedOrientation);
+			stream << " ";
+			serialize(stream, val.second.skeletonData.orientations[it->second.find(sData.first)->second]);
+		}
+	}
 }
 
-void CostumeParser::save(std::ostream & stream, const IIMUDataSource::CostumesRecordingDataBuffer::ListT & data, std::size_t idx)
+void CostumeParser::save(std::ostream & stream,
+	const IIMUDataSource::CostumesRecordingDataBuffer::ListT & data,
+	const CostumesMappings & mapping,
+	std::size_t idx)
 {
 	for (auto const & val : data)
 	{
 		stream << idx++ << " " << val.size() << std::endl;
-		save(stream, val);
+		save(stream, val, mapping);
 		stream << std::endl;
 	}
 }
 
-void CostumeParser::save(const std::string & path, const IIMUDataSource::CostumesRecordingDataBuffer::ListT & data)
+void CostumeParser::save(const std::string & path,
+	const IIMUDataSource::CostumesRecordingDataBuffer::ListT & data,
+	const CostumesMappings & mapping)
 {
 	std::ofstream out(path);
 	if (out.is_open() == true){
-		save(out, data, 0);
+		save(out, data, mapping, 0);
 	}
 
 	out.flush();

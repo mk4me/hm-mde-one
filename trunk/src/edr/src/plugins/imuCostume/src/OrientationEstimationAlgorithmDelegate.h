@@ -14,6 +14,7 @@
 #include <plugins/imuCostume/IIMUDataSource.h>
 #include <utils/StringConversionTools.h>
 
+//! Klasa delegata powzalaj¹cego wybraæ algorytm estymacji orientacji pojedynczego czujnika
 class OrientationEstimationAlgorithmDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
@@ -24,11 +25,13 @@ public:
 
 	virtual ~OrientationEstimationAlgorithmDelegate();
 
+	//! \param algorithms Pula algorytmów z której mo¿na wybieraæ
 	void setOrientationEstimationAlgorithms(const IMU::IIMUDataSource::OrientationEstimationAlgorithms & algorithms);
+	//! \return Pula algorytmów z której mo¿na wybieraæ
 	const IMU::IIMUDataSource::OrientationEstimationAlgorithms & orientationEstimationAlgorithms() const;
-
+	//! \return Domyœlny text dla wybory algorytmu
 	static QString defaultText();
-
+	//! \return Domyœlna wartoœæ dla wybory algorytmu
 	static IMU::IIMUOrientationEstimationAlgorithmConstPtr defaultValue();
 
 	virtual QWidget * createEditor(QWidget * parent, const QStyleOptionViewItem & option, const QModelIndex & index) const override;

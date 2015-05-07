@@ -39,7 +39,7 @@ namespace IMU
 	DEFINE_SMART_POINTERS(JointStream);
 
 	//! Seria danych szkieletu
-	typedef ITimeStream<kinematic::SkeletonState::NonRigidCompleteStateChange> SkeletonStateStream;
+	typedef ITimeStream<kinematic::SkeletonState::NonRigidCompleteStateLocal> SkeletonStateStream;
 	DEFINE_SMART_POINTERS(SkeletonStateStream);
 
 	//! Strumieñ danych jednego czujnika IMU
@@ -77,14 +77,14 @@ namespace IMU
 
 	DEFINE_SMART_POINTERS(SensorsStream);
 
-	typedef ITimeStream<IMUCostumeMotionEstimationAlgorithm::MotionState> MotionStream;
+	typedef ITimeStream<kinematic::SkeletonState::RigidCompleteStateLocal> MotionStream;
 
 	DEFINE_SMART_POINTERS(MotionStream);
 
 	struct CostumeSkeletonMotion
 	{
-		DataIndexToJointMapping dataToModelMapping;
 		kinematic::SkeletonConstPtr skeleton;
+		kinematic::LinearizedSkeleton::Mapping mapping;
 		MotionStreamPtr stream;
 	};
 

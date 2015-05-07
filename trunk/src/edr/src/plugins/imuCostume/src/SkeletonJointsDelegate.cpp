@@ -11,24 +11,19 @@ SkeletonJointsDelegate::~SkeletonJointsDelegate()
 
 }
 
-void SkeletonJointsDelegate::setJoints(kinematic::JointConstPtr root)
+void SkeletonJointsDelegate::setJoints(const kinematic::LinearizedSkeleton::Mapping & joints)
 {
-	std::list<std::string> locJoints;
-
-	auto visitor =  [&locJoints](kinematic::JointConstPtr node, const std::size_t level)
-	{
-		if (node != nullptr){
-			locJoints.push_back(node->value.name);
-		}
-	};
-	utils::TreeNode::visitLevelOrder(root, visitor);
-
-	joints.swap(locJoints);
+	this->joints = joints;
 }
 
 QString SkeletonJointsDelegate::defaultText()
 {
 	return tr("Select joint...");
+}
+
+kinematic::LinearizedSkeleton::NodeIDX SkeletonJointsDelegate::defaultValue()
+{
+	return -1;
 }
 
 QWidget * SkeletonJointsDelegate::createEditor(QWidget * parent,
@@ -45,13 +40,13 @@ QWidget * SkeletonJointsDelegate::createEditor(QWidget * parent,
 		{
 			if (i != index.row())
 			{
-				auto jointName = index.model()->data(index.model()->index(i, index.column())).toString().toStdString();
-				locJoints.remove(jointName);
+				auto jointIDX = index.model()->data(index.model()->index(i, index.column()), Qt::UserRole).toInt();
+				locJoints.left.erase(jointIDX);
 			}
 		}
 	}
 
-	editor->addItem(defaultText());
+	editor->addItem(defaultText(), defaultValue());
 	const QStandardItemModel* model = qobject_cast<const QStandardItemModel*>(editor->model());
 	QStandardItem* item = model->item(0);
 
@@ -63,7 +58,7 @@ QWidget * SkeletonJointsDelegate::createEditor(QWidget * parent,
 
 		for (const auto & j : locJoints)
 		{
-			editor->addItem(QString::fromStdString(j));
+			editor->addItem(QString::fromStdString(j.get_right()), j.get_left());
 		}
 	}
 
@@ -83,6 +78,8 @@ void SkeletonJointsDelegate::setModelData(QWidget * editor,
 {
 	QComboBox * e = qobject_cast<QComboBox*>(editor);
 	model->setData(index, e->currentText());
+	auto it = joints.right.find(e->currentText().toStdString());
+	model->setData(index, it != joints.right.end() ? it->get_left() : defaultValue(), Qt::UserRole);
 }
 
 void SkeletonJointsDelegate::updateEditorGeometry(QWidget * editor,

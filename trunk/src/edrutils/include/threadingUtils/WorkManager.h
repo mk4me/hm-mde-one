@@ -242,7 +242,7 @@ namespace threadingUtils {
 				}
 			}
 
-			return std::move(ret);
+			return ret;
 		}
 
 		//! \param thread Dodawany w¹tek realizuj¹cy zadania
@@ -256,7 +256,7 @@ namespace threadingUtils {
 
 			WorkExecutor workExecutor(this, std::move(thread));
 			const auto ret = workExecutor.get_id();
-			workExecutors.insert(WorkExecutorsMap::value_type(ret, std::move(workExecutor)));
+			workExecutors.insert({ ret, std::move(workExecutor) });
 			++activeCounter;
 			return ret;
 		}

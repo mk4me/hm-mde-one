@@ -15,13 +15,17 @@ namespace acclaim
 {
 	/// \brief  Klasa przechowuje hierarchie kości
 	struct Skeleton
-	{	
-		//! Typ identyfikatora kości
-		typedef int ID;
+	{
 		//! Typ indeksujący kości wg ich identyfikatorów
-		typedef std::map<ID, Bone> Bones;
+		using Bones = std::map<Bone::ID, Bone>;
 		//! Typ opisujący hierarchię kości - relacja rodzic <-> dziecko
-		typedef boost::bimap<boost::bimaps::multiset_of<ID>, boost::bimaps::set_of<ID>> Hierarchy;
+		using Hierarchy = boost::bimap<boost::bimaps::multiset_of<Bone::ID>, boost::bimaps::set_of<Bone::ID>>;
+
+		//! Typ indeksujący kości wg ich identyfikatorów
+		using BonesMapping = boost::bimap < Bone::ID, std::string >;
+
+		//! Dane pomocnicze dla formatu acclaim
+		using HelperMotionData = std::map < Bone::ID, Bone::HelperMotionData > ;
 
 		//! Struktura opisująca sekcję Units
 		struct Units
@@ -36,7 +40,7 @@ namespace acclaim
 			~Units();
 
 			//! \return Czy kąt podawany jest w radianach
-			bool isAngleInRadians() const;
+			const bool isAngleInRadians() const;
 			//! \param angleType Typ kąta
 			void setAngleType(const kinematicUtils::AngleUnitType angleType);
 		};
@@ -55,7 +59,7 @@ namespace acclaim
 		//! Jednostki i opis
 		Units units;
 		//! korzeń, czyli kość od której zaczyna się hierarchia.
-		ID root;
+		Bone::ID root;
 		//! Kości
 		Bones bones;
 		//! Hierarchia
@@ -68,10 +72,18 @@ namespace acclaim
 		kinematicUtils::AxisOrder::Type axisOrder;
 		//! Kolejność rotacji (sekcja order)
 		std::vector<kinematicUtils::Channel> dataOrder;
+		//! \param skeleton Szkielet
 		//! \return Kolejność rotacji
-		kinematicUtils::AxisOrder::Type rotationOrder() const;
+		static const kinematicUtils::AxisOrder::Type rotationOrder(const Skeleton & skeleton);
+		//! \param skeleton Szkielet
 		//! \return Aktywne kości (razem z rootem)
-		unsigned int activeBones() const;
+		static const std::size_t activeBones(const Skeleton & skeleton);
+		//! \param skeleton Szkielet
+		//! \return Dane pomocnicze dla wyznaczania ruchu
+		static HelperMotionData helperMotionData(const Skeleton & skeleton);
+		//! \param bones Kości
+		//! \return Mapowanie kości
+		static BonesMapping createMapping(const Bones & bones);
 
 	};
 	DEFINE_SMART_POINTERS(Skeleton);

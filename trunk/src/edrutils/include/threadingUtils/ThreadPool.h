@@ -208,7 +208,7 @@ namespace threadingUtils {
 
 				Thread th(this, std::move(ith));
 				++threadsCount_;
-				return std::move(th);
+				return th;
 			}
 			else{
 				throw ThreadPoolEmptyException("ThreadPool empty");

@@ -28,6 +28,7 @@ namespace IMU
 	{
 		//! Identyfikator szkieletu
 		const core::UniqueID id;
+		const std::string name;
 
 		//! \param skeleton Kopiowany szkielet
 		Skeleton(const Skeleton & skeleton);
@@ -35,10 +36,10 @@ namespace IMU
 		Skeleton(Skeleton && skeleton);
 		//! \param id Identyfikator
 		//! \param skeleton Hierarchia wraz z orientacjami
-		Skeleton(const core::UniqueID id, const kinematic::Skeleton & skeleton);
+		Skeleton(const core::UniqueID id, const std::string & name, const kinematic::Skeleton & skeleton);
 		//! \param id Identyfikator
 		//! \param skeleton Hierarchia wraz z orientacjami
-		Skeleton(const core::UniqueID id, kinematic::Skeleton && skeleton);
+		Skeleton(const core::UniqueID id, const std::string & name, kinematic::Skeleton && skeleton);
 		//! Destruktor wirtualny
 		virtual ~Skeleton();
 		//! \return Identyfokator szkieletu
@@ -70,6 +71,8 @@ namespace IMU
 		IMUCostumeCalibrationAlgorithmPtr calibrationAlgorithm;				
 		//! Algorytm poprawki estymacji ruchu (bierze pod uwage np. hierarchiê, ograniczneia stawów, ...)
 		IMUCostumeMotionEstimationAlgorithmPtr motionEstimationAlgorithm;
+		//! Aktywne jointy szkieletu
+		std::set<kinematic::LinearizedSkeleton::NodeIDX> activeJoints;
 		//! \return G³êboka kopia profilu
 		CostumeProfile * clone() const;
 	};

@@ -6,9 +6,323 @@
 #include <stdexcept>
 #include <utils/Debug.h>
 #include <utils/TreeNode.h>
+#include <utils/Tree.h>
+#include <osg/PositionAttitudeTransform>
 
 using namespace kinematic;
 
+class Skeleton::JointData::JointDataImpl
+{
+private:
+
+	static osg::Matrix PATMatrix(osg::PositionAttitudeTransform * pat)
+	{
+		UTILS_ASSERT(pat != nullptr);
+		osg::Matrix ret;
+		ret.makeIdentity();
+		ret.makeTranslate(pat->getPosition());
+		ret.makeRotate(pat->getAttitude());
+		ret.makeScale(1, 1, 1);
+
+		return ret;
+	}
+
+	static osg::Matrix nodeGlobalMatrix(osg::Node * node)
+	{
+		osg::Matrix ret;
+
+		UTILS_ASSERT(node != nullptr);
+
+		auto wm = node->getWorldMatrices();
+
+		UTILS_ASSERT(wm.size() < 2);
+
+		if (wm.empty() == false){
+			ret = wm[0];
+		}
+		else{
+			auto pat = dynamic_cast<osg::PositionAttitudeTransform*>(node);
+			UTILS_ASSERT(pat != nullptr);
+			ret = PATMatrix(pat);
+		}
+
+		return ret;
+	}
+
+	osg::Matrix parentGlobalMatrix() const
+	{
+		osg::Matrix ret;
+
+		UTILS_ASSERT(node != nullptr);
+		UTILS_ASSERT(node->getNumParents() < 2);
+
+		if (node->getNumParents() == 1){
+			ret = nodeGlobalMatrix(node->getParent(0));
+		}
+		else{
+			ret.makeRotate(osg::Quat(0, 0, 0, 1));
+			ret.makeTranslate(0, 0, 0);
+			ret.makeScale(1, 1, 1);
+		}
+
+		return ret;
+	}
+
+	osg::Matrix myGlobalMatrix() const
+	{
+		UTILS_ASSERT(node != nullptr);
+		return nodeGlobalMatrix(node);
+	}
+
+	osg::Quat parentGlobalOrientation() const
+	{
+		return parentGlobalMatrix().getRotate();
+	}
+
+	osg::Vec3d parentGlobalPosition() const
+	{
+		return parentGlobalMatrix().getTrans();
+	}
+
+public:
+
+	JointDataImpl(const std::string & name, const osg::Vec3d & translation,
+		const osg::Quat & rotation) : node(new osg::PositionAttitudeTransform)//,
+		//originTranslation(translation)
+	{
+		node->setName(name);
+		node->setPosition(translation);
+		node->setAttitude(rotation);
+		node->setScale(osg::Vec3(1, 1, 1));
+	}
+
+	JointDataImpl(JointDataImpl & parent, const std::string & name,
+		const osg::Vec3d & translation, const osg::Quat & rotation) :
+		JointDataImpl(name, translation, rotation)
+	{
+		parent.node->addChild(node);
+	}
+
+	~JointDataImpl()
+	{
+
+	}
+
+	std::string name() const
+	{
+		return node->getName();
+	}
+
+	osg::Vec3d localPosition() const
+	{
+		return node->getPosition();
+	}
+
+	osg::Vec3d globalPosition() const
+	{
+		return myGlobalMatrix().getTrans();
+	}
+
+	osg::Quat localOrientation() const
+	{
+		return node->getAttitude();
+	}
+
+	//! \return Globalna orientacja
+	osg::Quat globalOrientation() const
+	{
+		return myGlobalMatrix().getRotate();
+	}
+
+	//! \param translation Lokalne przesunięcie
+	void localUpdate(const osg::Vec3d & translation)
+	{
+		node->setPosition(node->getPosition() + translation);
+	}
+
+	void localUpdate(const osg::Quat & rotation)
+	{
+		node->setAttitude(rotation);
+	}
+
+	void globalUpdate(const osg::Vec3d & translation)
+	{
+		setGlobal(translation);
+	}
+
+	void globalUpdate(const osg::Quat & rotation)
+	{
+		setGlobal(rotation);
+	}
+
+	//! \param position Globalna pozycja
+	void setGlobal(const osg::Vec3d & position)
+	{
+		node->setPosition(position - parentGlobalPosition());
+	}
+
+	//! \param position Globalna pozycja
+	void setLocal(const osg::Vec3d & position)
+	{
+		//node->setPosition(originTranslation + position);
+		node->setPosition(position);
+	}
+
+	//! \param translation Lokalne przesuni�cie
+	//! \param rotation Lokalna rotacja
+	void localUpdate(const osg::Vec3d & translation, const osg::Quat & rotation)
+	{
+		localUpdate(translation);
+		localUpdate(rotation);
+	}
+
+	//! \param orientation Globalna orientacja
+	void setGlobal(const osg::Quat & orientation)
+	{
+		node->setAttitude(parentGlobalOrientation().inverse() * orientation);
+		//TODO weryfikacja w testach ze to dziala
+		//UTILS_ASSERT(std::fabs((globalOrientation().inverse() * orientation).w()) < osg::DegreesToRadians(0.05));
+	}
+	//! \param orientation Globalna orientacja
+	void setLocal(const osg::Quat & orientation)
+	{
+		node->setAttitude(orientation);
+	}
+
+	//! \param translation Lokalne przesunięcie
+	//! \param rotation Lokalna rotacja
+	void globalUpdate(const osg::Vec3d & translation, const osg::Quat & rotation)
+	{
+		globalUpdate(translation);
+		globalUpdate(rotation);
+	}
+	//! \param position Globalna pozycja
+	//! \param orientation Globalna orientacja
+	void setGlobal(const osg::Vec3d & position, const osg::Quat & orientation)
+	{
+		setGlobal(position);
+		setGlobal(orientation);
+	}
+
+	//! \param position Globalna pozycja
+	//! \param orientation Globalna orientacja
+	void setLocal(const osg::Vec3d & position, const osg::Quat & orientation)
+	{
+		setLocal(position);
+		setLocal(orientation);
+	}
+private:
+	//! Węzeł osg
+	osg::ref_ptr<osg::PositionAttitudeTransform> node;
+	//osg::Vec3d originTranslation;
+};
+
+Skeleton::JointData::JointData(const std::string & name, const osg::Vec3d & translation, const osg::Quat & rotation)
+	: impl(new JointDataImpl(name, translation, rotation))
+{
+
+}
+			
+Skeleton::JointData::JointData(JointData & parent, const std::string & name,
+	const osg::Vec3d & translation, const osg::Quat & rotation)
+	: impl(new JointDataImpl(*(parent.impl), name, translation, rotation))
+{
+	
+}
+
+Skeleton::JointData::JointData(JointData && Other) : impl(std::move(Other.impl))
+{
+
+}
+
+Skeleton::JointData::~JointData()
+{
+
+}
+
+std::string Skeleton::JointData::name() const
+{
+	return impl->name();
+}
+
+osg::Vec3d Skeleton::JointData::localPosition() const
+{
+	return impl->localPosition();
+}
+
+osg::Vec3d Skeleton::JointData::globalPosition() const
+{
+	return impl->globalPosition();
+}
+void Skeleton::JointData::localUpdate(const osg::Vec3d & translation, const osg::Quat & rotation)
+{
+	impl->localUpdate(translation, rotation);
+}
+
+void Skeleton::JointData::globalUpdate(const osg::Vec3d & translation, const osg::Quat & rotation)
+{
+	impl->globalUpdate(translation, rotation);
+}
+
+osg::Quat Skeleton::JointData::localOrientation() const
+{
+	return impl->localOrientation();
+}
+
+osg::Quat Skeleton::JointData::globalOrientation() const
+{
+	return impl->globalOrientation();
+}
+
+void Skeleton::JointData::localUpdate(const osg::Vec3 & translation)
+{
+	impl->localUpdate(translation);
+}
+
+void Skeleton::JointData::globalUpdate(const osg::Vec3d & translation)
+{
+	impl->globalUpdate(translation);
+}
+
+void Skeleton::JointData::setGlobal(const osg::Vec3d & translation)
+{
+	impl->setGlobal(translation);
+}
+
+void Skeleton::JointData::setLocal(const osg::Vec3d & position)
+{
+	impl->setLocal(position);
+}
+
+void Skeleton::JointData::localUpdate(const osg::Quat & rotation)
+{
+	impl->localUpdate(rotation);
+}
+
+void Skeleton::JointData::globalUpdate(const osg::Quat & rotation)
+{
+	impl->localUpdate(rotation);
+}
+
+void Skeleton::JointData::setGlobal(const osg::Quat & orientation)
+{
+	impl->setGlobal(orientation);
+}
+
+void Skeleton::JointData::setLocal(const osg::Quat & orientation)
+{
+	impl->setLocal(orientation);
+}
+
+void Skeleton::JointData::setGlobal(const osg::Vec3d & position, const osg::Quat & orientation)
+{
+	impl->setGlobal(position, orientation);
+}
+
+void Skeleton::JointData::setLocal(const osg::Vec3d & position, const osg::Quat & orientation)
+{
+	impl->setLocal(position, orientation);
+}
 
 Skeleton::Skeleton()
 {
@@ -16,13 +330,18 @@ Skeleton::Skeleton()
 }
 
 Skeleton::Skeleton(const Skeleton & other)
-	: name(other.name), root(Joint::clone(other.root))
+	: root_(Joint::clone(other.root_))
 {
 
 }
 
 Skeleton::Skeleton(Skeleton && other)
-	: name(std::move(other.name)), root(std::move(other.root))
+	: root_(std::move(other.root_))
+{
+
+}
+
+Skeleton::Skeleton(JointPtr && root) : root_(std::move(root))
 {
 
 }
@@ -32,65 +351,104 @@ Skeleton::~Skeleton()
 
 }
 
-void createJoint(JointPtr rootJoint, TopologyNodeConstPtr topologyJoint)
+Skeleton::JointPtr Skeleton::root()
 {
-	for (const auto & tn : topologyJoint->children)
+	return root_;
+}
+
+Skeleton::JointConstPtr Skeleton::root() const
+{
+	return root_;
+}
+
+Skeleton & Skeleton::operator = (Skeleton && Other)
+{
+	root_ = std::move(Other.root_);
+	return *this;
+}
+
+Skeleton & Skeleton::operator=(const Skeleton & Other)
+{
+	if (this != &Other){
+		root_ = Joint::clone(Other.root_);
+	}
+	return *this;
+}
+
+const bool verify(const Skeleton & skeleton)
+{
+	if (skeleton.root() == nullptr){
+		return true;
+	}
+
+	std::set<std::string> uniqueNames;
+
+	return utils::TreeNode::PreOrderWhileVisitPolicy::visitWhile(skeleton.root(), [&uniqueNames](Skeleton::JointConstPtr joint)
 	{
-		JointData jd;
-		jd.name = tn->value.name;
-		jd.position = osg::Vec3(0, 0, 0);
-		jd.orientation = osg::Quat(0, 0, 0, 1);
-		auto rj = Joint::addChild(rootJoint, jd);
+		if (joint == nullptr){
+			return false;
+		}
+
+		return uniqueNames.insert(joint->value().name()).second;
+	});
+}
+
+void createJoint(Skeleton::JointPtr parentJoint, TopologyNodeConstPtr topologyJoint)
+{
+	for (const auto & tn : topologyJoint->children())
+	{
+		auto rj = Skeleton::Joint::add(parentJoint, Skeleton::JointData(parentJoint->value(), tn->value().name));
 		createJoint(rj, tn);
 	}
 }
 
-Skeleton Skeleton::create(TopologyNodeConstPtr topology)
+bool Skeleton::convert(TopologyNodeConstPtr topology, Skeleton & skeleton)
 {
-	Skeleton ret;
+	Skeleton localSkeleton;
 
 	if (topology != nullptr){
-		JointData jd;
-		jd.name = topology->value.name;
-		jd.position = osg::Vec3(0, 0, 0);
-		jd.orientation = osg::Quat(0, 0, 0, 1);
-		ret.root = Joint::create(jd);
-		createJoint(ret.root, topology);
+		localSkeleton.root_ = Joint::create({ topology->value().name });
+		createJoint(localSkeleton.root_, topology);
+	}
+
+	bool ret = verify(localSkeleton);
+
+	if (ret == true){
+		skeleton = std::move(localSkeleton);
 	}
 
 	return ret;
 }
 
-void createJoint(JointPtr parentJoint, const acclaim::Skeleton & skeleton,
+bool createJoint(Skeleton::JointPtr parentJoint, const acclaim::Skeleton & skeleton,
 	const osg::Vec3& parentPos,	const acclaim::Bone& currentBone,
 	std::set<std::string> & names)
 {
 	if (names.find(currentBone.name) != names.end()){
-		throw std::runtime_error("Joint with given name already exists: " + currentBone.name + ". Improper skeleton hierarchy - names must be unique.");
+		return false;
 	}
 
-	names.insert(currentBone.name);
+	bool ret = true;
 
-	JointData jointData;
-	jointData.name = currentBone.name;
-	jointData.position = parentPos;
-	jointData.orientation = osg::Quat(0, 0, 0, 1);
+	names.insert(currentBone.name);	
 
-	auto joint = Joint::addChild(parentJoint, jointData);
+	auto joint = Skeleton::Joint::add(parentJoint, Skeleton::JointData(parentJoint->value(), currentBone.name, parentPos));
 	auto range = skeleton.hierarchy.left.equal_range(currentBone.id);	
 	const auto nextPos = currentBone.direction * currentBone.length;
 	//taka jest konwencja ASF - podajemy przesuniecie rodzica, dla wyja�nienia spojrze� na tworzenie li�ci hierarchi
-	for (auto it = range.first; it != range.second; ++it){
-		createJoint(joint, skeleton, nextPos, skeleton.bones.at(it->second), names);
+	for (auto it = range.first; (it != range.second) && (ret == true); ++it){
+		ret = createJoint(joint, skeleton, nextPos, skeleton.bones.at(it->second), names);
 	}
 	//przerywamy rekurencje tworzenia hierarchi
 	static const int TERMINATOR = -0xdead;
-	if (range.first == range.second && currentBone.id != TERMINATOR) {
+	if ((ret == true) && (range.first == range.second) && (currentBone.id != TERMINATOR)) {
 		acclaim::Bone b;
 		b.id = TERMINATOR;
 		b.name = currentBone.name + "_leaf";
-		createJoint(joint, skeleton, nextPos, b, names);
+		ret = createJoint(joint, skeleton, nextPos, b, names);
 	}
+
+	return ret;
 }
 
 bool Skeleton::convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSkeleton)
@@ -99,32 +457,25 @@ bool Skeleton::convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSke
 		return false;
 	}
 
+	bool ret = true;
+
 	std::set<std::string> names;
 
 	//root
-	JointData jointData;
-	jointData.name = "root";
-	jointData.position = srcSkeleton.position;
-	jointData.orientation = kinematicUtils::convert(srcSkeleton.orientation, srcSkeleton.axisOrder);
-	names.insert(jointData.name);
+	Skeleton::JointData jointData("root", srcSkeleton.position, kinematicUtils::convert(srcSkeleton.orientation, srcSkeleton.axisOrder));
+	names.insert(jointData.name());
 
-	JointPtr joint = Joint::create(jointData);
+	auto joint = Skeleton::Joint::create(jointData);
 	auto range = srcSkeleton.hierarchy.left.equal_range(srcSkeleton.root);
-	for (auto it = range.first; it != range.second; ++it) {
-		try{
-			createJoint(joint, srcSkeleton, jointData.position, srcSkeleton.bones.at(it->second), names);
-		}
-		catch (...){
-			return false;
-		}
+	for (auto it = range.first; (it != range.second) && (ret == true); ++it) {
+		ret = createJoint(joint, srcSkeleton, srcSkeleton.position, srcSkeleton.bones.at(it->second), names);
 	}
 
-	if (joint->children.empty() == true){
+	if (joint->isLeaf() == true || ret == false){
 		return false;
 	}
 				
-	destSkeleton.name = srcSkeleton.name;
-	destSkeleton.root = joint;
+	destSkeleton.root_ = joint;
 		
 	return true;
 }
@@ -145,37 +496,37 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 	const kinematicUtils::AngleUnitType angleUnit,
 	const JointsAxis & jointsAxis)
 {
-	if (srcSkeleton.root == nullptr){
+	if (srcSkeleton.root_ == nullptr){
 		return false;
 	}
 
 	try{
 		acclaim::Skeleton localSkeleton;
-		localSkeleton.name = srcSkeleton.name;
+		localSkeleton.name = "kinematicSkeleton";
 		localSkeleton.axisOrder = axisOrder;
 		localSkeleton.units.setAngleType(angleUnit);
-		localSkeleton.position = srcSkeleton.root->value.position;
-		localSkeleton.orientation = kinematicUtils::convert(srcSkeleton.root->value.orientation, axisOrder);
+		localSkeleton.position = srcSkeleton.root_->value().localPosition();
+		localSkeleton.orientation = kinematicUtils::convert(srcSkeleton.root_->value().localOrientation(), axisOrder);
 
 		if (angleUnit == kinematicUtils::Deg){
 			localSkeleton.orientation = kinematicUtils::toDegrees(localSkeleton.orientation);
 		}
 
-		acclaim::Skeleton::ID id = 0;
+		acclaim::Bone::ID id = 0;
 
 		acclaim::Bone bone;
 		bone.id = id;
 		bone.name = "root";
 		bone.axisOrder = localSkeleton.axisOrder;
-		bone.direction = srcSkeleton.root->value.orientation * osg::Vec3(1, 0, 0);
+		bone.direction = srcSkeleton.root_->value().localOrientation() * osg::Vec3(1, 0, 0);
 		bone.length = 0.0;
 
-		localSkeleton.bones.insert(acclaim::Skeleton::Bones::value_type(bone.id, bone));
+		localSkeleton.bones.insert({ bone.id, bone });
 		localSkeleton.root = bone.id;
 
-		for (const auto c : srcSkeleton.root->children){
+		for (const auto & c : srcSkeleton.root_->children()){
 			auto vis = [&id, &localSkeleton,
-						&jointsAxis, axisOrder, angleUnit](kinematic::JointPtr joint)
+						&jointsAxis, axisOrder, angleUnit](Skeleton::JointPtr joint)
 					{
 						if (joint == nullptr){
 							throw std::runtime_error("Uninitialized joint");
@@ -186,33 +537,33 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 						}
 
 						acclaim::Bone bone;
-						bone.name = joint->value.name;
+						bone.name = joint->value().name();
 						bone.axisOrder = findJointAxis(bone.name, jointsAxis, axisOrder);
 
-						if (joint->children.size() == 1){
-							bone.length = joint->children.front()->value.position.length();
-							bone.direction = joint->children.front()->value.position;
+						if (joint->children().size() == 1){
+							bone.length = joint->children().front()->value().localPosition().length();
+							bone.direction = joint->children().front()->value().localPosition();
 							bone.direction.normalize();
 						}
 						else{
 							bone.length = 0.0;
-							bone.direction = joint->parent.lock()->value.orientation * osg::Vec3(1, 0, 0);
+							bone.direction = joint->parent()->value().localOrientation() * osg::Vec3(1, 0, 0);
 						}
 
 						bone.axis = osg::Vec3(0, 0, 0);
 
-						/*bone.axis = kinematicUtils::convert(joint->value.orientation, bone.axisOrder);
+						/*bone.axis = kinematicUtils::convert(joint->value().orientation, bone.axisOrder);
 						if (angleUnit == kinematicUtils::Deg){
 							bone.axis = kinematicUtils::toDegrees(bone.axis);
 						}*/
 						bone.id = id + 1;
 
-						localSkeleton.bones.insert(acclaim::Skeleton::Bones::value_type(bone.id, bone));
+						localSkeleton.bones.insert({ bone.id, bone });
 
 						auto parentID = localSkeleton.root;
 
-						if (joint->parent.lock()->isRoot() == false){
-							auto parentName = joint->parent.lock()->value.name;
+						if (joint->parent()->isRoot() == false){
+							auto parentName = joint->parent()->value().name();
 							auto it = std::find_if(localSkeleton.bones.begin(), localSkeleton.bones.end(),
 								[&parentName](const acclaim::Skeleton::Bones::value_type & bd)
 							{
@@ -226,10 +577,10 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 							parentID = it->first;
 						}
 
-						localSkeleton.hierarchy.left.insert(acclaim::Skeleton::Hierarchy::left_value_type(parentID, bone.id));
+						localSkeleton.hierarchy.left.insert({ parentID, bone.id });
 						id = bone.id;
 					};
-			utils::TreeNode::visitPreOrder(c, vis);
+			utils::TreeNode::PreOrderVisitPolicy::visit(c, vis);
 		}
 
 		destSkeleton = localSkeleton;
@@ -241,27 +592,26 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 	return true;
 }
 
-void createJoint(JointPtr parentJoint, const biovision::JointPtr & srcJoint,
+bool createJoint(Skeleton::JointPtr parentJoint, const biovision::JointPtr & srcJoint,
 	std::set<std::string> & names)
 {
-	JointData jointData;
-	
-	jointData.name = srcJoint->name;
-
-	if (names.find(jointData.name) != names.end()){
-		throw std::runtime_error("Joint with given name already exists: " + jointData.name + ". Improper skeleton hierarchy - names must be unique.");
+	if (names.find(srcJoint->name) != names.end()){
+		return false;
 	}
 
-	jointData.position = srcJoint->offset;
-	jointData.orientation = osg::Quat(0, 0, 0, 1);
+	bool ret = true;
 
-	auto joint = Joint::addChild(parentJoint, jointData);
-	names.insert(jointData.name);	
+	auto joint = Skeleton::Joint::add(parentJoint, Skeleton::JointData(srcJoint->name, srcJoint->offset));
+	names.insert(srcJoint->name);
 
 	for (auto j : srcJoint->joints)
 	{
-		createJoint(joint, j, names);
+		if ((ret = createJoint(joint, j, names)) == false){
+			break;
+		}
 	}
+
+	return ret;
 }
 
 bool Skeleton::convert(const biovision::Skeleton & srcSkeleton, Skeleton & destSkeleton)
@@ -272,22 +622,18 @@ bool Skeleton::convert(const biovision::Skeleton & srcSkeleton, Skeleton & destS
 
 	std::set<std::string> names;
 
-	JointData jointData;
+	Skeleton::JointData jointData("root");
 
-	jointData.name = "root";
-	jointData.position = osg::Vec3(0, 0, 0);
-	jointData.orientation = osg::Quat(0, 0, 0, 1);
+	names.insert(jointData.name());
 
-	names.insert(jointData.name);
+	auto root = Skeleton::Joint::create(jointData);
 
-	auto root = Joint::create(jointData);
+	if (createJoint(root, srcSkeleton.root, names) == true){
+		destSkeleton.root_ = root;
+		return true;
+	}
 
-	createJoint(root, srcSkeleton.root, names);
-
-	destSkeleton.name = "biovision_model";
-	destSkeleton.root = root;
-
-	return true;	
+	return false;
 }
 
 bool Skeleton::convert(const hAnim::Humanoid & srcSkeleton, Skeleton & destSkeleton)
@@ -303,17 +649,4 @@ bool Skeleton::convert(const hAnim::Humanoid & srcSkeleton, Skeleton & destSkele
 	*/
 
 	return true;
-}
-
-void getJointsRecursive(kinematic::JointPtr j, std::map<std::string, kinematic::JointPtr>& mp) {
-	mp[j->value.name] = j;
-	for (auto& c : j->children) {
-		getJointsRecursive(c, mp);
-	}
-}
-std::map<std::string, kinematic::JointPtr> kinematic::Skeleton::getJoints(const Skeleton& s)
-{
-	std::map<std::string, kinematic::JointPtr> ret;
-	getJointsRecursive(s.root, ret);
-	return ret;
 }

@@ -232,7 +232,7 @@ public:
             std::string name = input.substr(entryBegin, nameEnd - entryBegin);
             EnumType value = static_cast<EnumType>(values[entryNo]);
             byNames[name] = value;
-            byValues.insert( std::make_pair(value, name) );
+			byValues.insert({ value, name });
             
             // przechodzimy na następny wpis
             entryBegin = entryEnd + 1;

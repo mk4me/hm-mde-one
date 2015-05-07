@@ -32,9 +32,8 @@ AsfParserTest::~AsfParserTest(void)
 
 void AsfParserTest::setUp()
 {
-	acclaim::AsfParser asf;
 	std::ifstream file("./testFiles/test.asf");
-	skeleton.reset(new acclaim::Skeleton(asf.parse(file, true)));
+	skeleton.reset(new acclaim::Skeleton(acclaim::AsfParser::parse(file, true)));
 }
 
 void AsfParserTest::tearDown()

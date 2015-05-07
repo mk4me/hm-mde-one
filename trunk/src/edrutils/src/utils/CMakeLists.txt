@@ -50,6 +50,8 @@ SET_PUBLIC_HEADERS(
 	StringConversionTools.h
 	SamplesStatus.h
 	TreeNode.h
+	Tree.h
+	LinearizedTree.h
 )
 
 #------------------------------------------------------------------------------

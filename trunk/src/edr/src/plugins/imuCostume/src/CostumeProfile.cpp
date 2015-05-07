@@ -6,25 +6,27 @@
 using namespace IMU;
 
 Skeleton::Skeleton(const Skeleton & skeleton)
-	: kinematic::Skeleton(skeleton), id(skeleton.id)
+	: kinematic::Skeleton(skeleton), id(skeleton.id), name(skeleton.name)
 {
 
 }
 
 Skeleton::Skeleton(Skeleton && skeleton)
-	: kinematic::Skeleton(skeleton), id(skeleton.id)
+	: kinematic::Skeleton(skeleton), id(skeleton.id), name(std::move(skeleton.name))
 {
 	
 }
 
-Skeleton::Skeleton(const core::UniqueID id, const kinematic::Skeleton & skeleton)
-	: kinematic::Skeleton(skeleton), id(id)
+Skeleton::Skeleton(const core::UniqueID id, const std::string & name,
+	const kinematic::Skeleton & skeleton) : kinematic::Skeleton(skeleton),
+	id(id), name(name)
 {
 
 }
 
-Skeleton::Skeleton(const core::UniqueID id, kinematic::Skeleton && skeleton)
-	: kinematic::Skeleton(std::move(skeleton)), id(id)
+Skeleton::Skeleton(const core::UniqueID id, const std::string & name,
+	kinematic::Skeleton && skeleton) : kinematic::Skeleton(std::move(skeleton)),
+	id(id), name(name)
 {
 
 }
@@ -69,6 +71,8 @@ CostumeProfile * CostumeProfile::clone() const
 
 		ret->sensorsDescriptions.insert(SensorsDescriptions::value_type(sd.first, locsd));
 	}
+
+	ret->activeJoints = activeJoints;
 
 	return ret.release();
 }
@@ -132,6 +136,8 @@ CostumeProfile SerializableCostumeProfile::unpack(const SerializableCostumeProfi
 		}
 	}
 
+	IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions sds;	
+
 	//konfiguracja sensorów
 	for (const auto & ea : profile.sensorsDescriptions)
 	{
@@ -146,7 +152,10 @@ CostumeProfile SerializableCostumeProfile::unpack(const SerializableCostumeProfi
 		}
 
 		ret.sensorsDescriptions.insert(CostumeProfile::SensorsDescriptions::value_type(ea.first, local));
+		sds.insert({ ea.first, local });
 	}
+
+	ret.activeJoints = ret.motionEstimationAlgorithm->activeJoints(ret.skeleton, sds);
 
 	return ret;
 }

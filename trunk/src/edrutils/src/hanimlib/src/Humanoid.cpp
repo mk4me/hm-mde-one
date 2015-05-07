@@ -191,7 +191,7 @@ Humanoid Humanoid::defaultHumanHumanoid()
 	createJointAndSegment("r_pinky2", "r_pinky_middle", joint, segment, ret);
 	createJointAndSegment("r_pinky3", "r_pinky_distal", joint, segment, ret);
 
-	return std::move(ret);
+	return ret;
 }
 
 Humanoid::Hierarchy createDefaultHumanHierarchy()
@@ -204,7 +204,7 @@ Humanoid::Hierarchy createDefaultHumanHierarchy()
 		auto segments = Object::filter<Segment>(j->children);
 		for (auto s : segments)
 		{
-			ret.insert(Humanoid::Hierarchy::value_type(j->name, s->name));
+			ret.insert({ j->name, s->name });
 		}
 	}
 
@@ -213,7 +213,7 @@ Humanoid::Hierarchy createDefaultHumanHierarchy()
 		auto joints = Object::filter<Joint>(s->children);
 		for (auto j : joints)
 		{
-			ret.insert(Humanoid::Hierarchy::value_type(s->name, j->name));
+			ret.insert({ s->name, j->name });
 		}
 	}
 

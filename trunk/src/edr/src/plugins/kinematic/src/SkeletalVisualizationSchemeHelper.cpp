@@ -10,12 +10,11 @@ using namespace kinematic;
 void SkeletonJointsMapping::init(kinematic::SkeletonConstPtr skeleton,
 	const std::vector<std::string> & indices)
 {
-	std::map<kinematic::JointPtr, unsigned int> locVisJoints;
+	std::map<kinematic::Skeleton::JointConstPtr, unsigned int> locVisJoints;
 	std::map<std::string, unsigned int> locNamedVisJoints;
-	std::map<std::string,kinematic::JointPtr> missing;
+	std::map<std::string,kinematic::Skeleton::JointConstPtr> missing;
 
-	std::map<std::string, kinematic::JointPtr> jointMap = kinematic::Skeleton::getJoints(*skeleton);
-	
+	auto jointMap = kinematic::Skeleton::joints(skeleton->root());
 
 	int index = -1;
 
@@ -75,7 +74,7 @@ const int SkeletonJointsMapping::jointIndex(const std::string & jointName) const
 	return -1;
 }
 
-const int SkeletonJointsMapping::jointIndex(kinematic::JointPtr joint) const
+const int SkeletonJointsMapping::jointIndex(kinematic::Skeleton::JointConstPtr joint) const
 {
 	auto it = visJoints.find(joint);
 
@@ -89,18 +88,18 @@ const int SkeletonJointsMapping::jointIndex(kinematic::JointPtr joint) const
 const osgutils::SegmentsDescriptors SkeletonJointsMapping::generateMappedConnectionsDescription() const
 {
 	osgutils::SegmentsDescriptors cds;
-	auto idx = jointIndex(skeleton_->root);
-	generateMappedConnectionsDescription(skeleton_->root, idx == -1 ? 0 : idx, cds);
+	auto idx = jointIndex(skeleton_->root());
+	generateMappedConnectionsDescription(skeleton_->root(), idx == -1 ? 0 : idx, cds);
 
 	return cds;
 }
 
-void SkeletonJointsMapping::generateMappedConnectionsDescription( kinematic::JointPtr joint,
+void SkeletonJointsMapping::generateMappedConnectionsDescription(kinematic::Skeleton::JointConstPtr joint,
 	const unsigned int idx,
 	osgutils::SegmentsDescriptors & cds) const
 {
-	auto jointChildren = joint->children;
-	for(auto child : jointChildren) {
+	const auto & jointChildren = joint->children();
+	for(const auto & child : jointChildren) {
 		
 		auto idxB = jointIndex(child);
 
@@ -111,7 +110,8 @@ void SkeletonJointsMapping::generateMappedConnectionsDescription( kinematic::Joi
 			cd.range.first = idx;
 			cd.range.second = idxB;
 			
-			cd.length = (joint->value.position - child->value.position).length();
+			//cd.length = (joint->value().position - child->value().position).length();
+			cd.length = child->value().localPosition().length();
 
 			cds.push_back(cd);
 		}else{
@@ -135,13 +135,15 @@ SkeletalVisualizationSchemeHelper::~SkeletalVisualizationSchemeHelper()
 }
 
 void SkeletalVisualizationSchemeHelper::updateJointTransforms(const std::vector<osg::Quat> & rotations,
-	JointPtr joint, const Quat & parentRot, const Vec3 & parentPos,
+	Skeleton::JointConstPtr joint, const Quat & parentRot, const Vec3 & parentPos,
 	std::vector<osg::Vec3> & pointsPositions)
 {
     // zapewnienie zgodności indeksów (między tablicami connections i states)	
-    int idx = jointsMapping->jointIndex(joint->value.name);
-	Vec3 shift = parentPos - joint->value.position;
-	Quat pc = joint->value.orientation;
+    int idx = jointsMapping->jointIndex(joint->value().name());
+	//Vec3 shift = parentPos - joint->value().position;
+	Vec3 shift = joint->value().localPosition();
+	//Quat pc = joint->value().orientation;
+	Quat pc = joint->value().localOrientation();
     Quat rotation = idx < rotations.size() ? rotations[idx] * pc  * parentRot : pc * parentRot;
 	shift = rotation * shift;
 
@@ -150,7 +152,7 @@ void SkeletalVisualizationSchemeHelper::updateJointTransforms(const std::vector<
 	pointsPositions[idx] = pos;
 
 	
-	for(auto child : joint->children) {
+	for(const auto & child : joint->children()) {
 		updateJointTransforms(rotations, child, rotation, pos, pointsPositions);
 	}
 }
@@ -188,7 +190,7 @@ void SkeletalVisualizationSchemeHelper::innerCalculatePointsPositions(std::vecto
 {
 	osg::Quat q;
 
-	updateJointTransforms(rotations, jointsMapping->skeleton()->root, q, rootPosition, pointsPositions);	
+	updateJointTransforms(rotations, jointsMapping->skeleton()->root(), q, rootPosition, pointsPositions);	
 }
 
 void SkeletalVisualizationSchemeHelper::init(const SkeletonJointsMapping * jointsMapping)

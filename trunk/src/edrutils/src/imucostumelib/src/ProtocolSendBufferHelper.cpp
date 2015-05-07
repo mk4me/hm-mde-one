@@ -62,7 +62,7 @@ ProtocolSendBufferHelper::Buffer ProtocolSendBufferHelper::createBuffer()
 		std::memcpy(ret.buffer.get(), localBuffer.data(), ret.length);
 	}
 
-	return std::move(ret);
+	return ret;
 }
 
 ProtocolSendBufferHelper::Buffer::Buffer(Buffer && Other)

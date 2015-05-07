@@ -14,11 +14,13 @@ namespace biovision
 {
 	struct MotionData
 	{
-		typedef std::vector<float> ChannelData;
+		typedef std::vector<double> ChannelData;
 		typedef std::vector<ChannelData> FrameJointData;
 		typedef std::vector<FrameJointData> Frames;
 
+		//! Czas pojedynczej ramki
 		float frameTime;
+		//! Ramki danych
 		Frames frames;
 	};
 }

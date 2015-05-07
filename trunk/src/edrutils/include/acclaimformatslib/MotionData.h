@@ -9,6 +9,7 @@ namespace acclaim
 	struct MotionData
 	{
 	public:
+
 		//! Agregat danych kanału
 		typedef std::vector<double> ChannelValues;
 
@@ -45,7 +46,7 @@ namespace acclaim
 		//! kolecja z danymi
 		FramesData frames;
 		////! Czas trwania pojedynczej ramki
-		double frameTime;
+		const double frameTime;
 	};
 	DEFINE_SMART_POINTERS(MotionData);
 }

@@ -30,7 +30,7 @@ Q_DECLARE_METATYPE(IMU::IIMUOrientationEstimationAlgorithmConstPtr);
 Q_DECLARE_METATYPE(IMU::IMUCostumeCalibrationAlgorithmConstPtr);
 Q_DECLARE_METATYPE(IMU::IMUCostumeMotionEstimationAlgorithmConstPtr);
 
-Q_DECLARE_METATYPE(kinematic::JointConstPtr);
+Q_DECLARE_METATYPE(kinematic::Skeleton::JointConstPtr);
 
 Q_DECLARE_METATYPE(osg::Vec3d);
 
@@ -275,8 +275,8 @@ void IMUCostumeProfileEditionWizard::init(const QString & profileName,
 
 		for (auto m : skeletonModels)
 		{
-			unsigned int jointsCount = kinematic::SkeletonState::createMapping(*m.second).size();
-			unsigned int activeJointsCount = kinematic::SkeletonState::createActiveMapping(*m.second).size();
+			unsigned int jointsCount = m.second->root()->size();
+			unsigned int activeJointsCount = kinematic::LinearizedSkeleton::createNonLeafOrder(*m.second).size();
 			ui->modelComboBox->addItem(tr("Model %1: %2 joints (%3 active)").arg(QString::fromStdString(m.second->name)).arg(jointsCount).arg(activeJointsCount), QVariant::fromValue(m.second));
 		}
 	}
@@ -570,27 +570,18 @@ void IMUCostumeProfileEditionWizard::verifyModel(int idx)
 
 	if (enable == true){
 		auto skeleton = ui->modelComboBox->currentData(Qt::UserRole).value<IMU::SkeletonConstPtr>();
-		skeletonJointDelegate->setJoints(skeleton->root);
+		const auto joints = kinematic::LinearizedSkeleton::createCompleteMapping(*skeleton);
+		skeletonJointDelegate->setJoints(joints);
 
-		std::set<std::string> jointNames;
-
-		auto nameVisitor = [&jointNames](kinematic::JointConstPtr joint)
-		{
-			if (joint != nullptr){
-				jointNames.insert(joint->value.name);
-			}
-		};
-
-		utils::TreeNode::visitPostOrder(skeleton->root, nameVisitor);
-
-		//przejść przez kolumne z jointami w mapowaniu i wyzerować te dla których nie ma odpowiednika z aktualnym szkielecie
+		//przejść przez kolumne z jointami w mapowaniu i wyzerować te dla których nie ma odpowiednika w aktualnym szkielecie
 		auto model = ui->sensorsConfigurationTableWidget->model();
 		for (unsigned int i = 0; i < model->rowCount(); ++i)
 		{
 			auto index = model->index(i, JointIDX);
-			auto jointName = model->data(index).toString();
-			if (jointNames.find(jointName.toStdString()) == jointNames.end()){
+			auto jointIDX = model->data(index, Qt::UserRole).toInt();
+			if (joints.left.find(jointIDX) == joints.left.end()){
 				model->setData(index, SkeletonJointsDelegate::defaultText());
+				model->setData(index, SkeletonJointsDelegate::defaultValue(), Qt::UserRole);
 			}
 		}
 	}
@@ -777,6 +768,8 @@ CostumeProfile IMUCostumeProfileEditionWizard::costumeProfile() const
 		}
 	}
 
+	IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions sds;
+
 	auto scm = ui->sensorsConfigurationTableWidget->model();
 	for (unsigned int i = 0; i < scm->rowCount(); ++i)
 	{
@@ -785,7 +778,7 @@ CostumeProfile IMUCostumeProfileEditionWizard::costumeProfile() const
 			auto sensorID = scm->data(scm->index(i, SensorIDX)).toUInt();
 
 			CostumeProfile::SensorDescription sd;
-
+			sd.jointIdx = scm->data(scm->index(i, JointIDX), Qt::UserRole).toInt();
 			sd.jointName = scm->data(scm->index(i, JointIDX)).toString().toStdString();
 			sd.offset = scm->data(scm->index(i, OffsetIDX), Qt::UserRole).value<osg::Vec3d>();
 			sd.rotation = scm->data(scm->index(i, RotationIDX), Qt::UserRole).value<osg::Quat>();
@@ -794,9 +787,12 @@ CostumeProfile IMUCostumeProfileEditionWizard::costumeProfile() const
 
 			sd.orientationEstimationAlgorithm.reset(algo->create());		
 
-			ret.sensorsDescriptions.insert(CostumeProfile::SensorsDescriptions::value_type(sensorID, sd));			
+			ret.sensorsDescriptions.insert(CostumeProfile::SensorsDescriptions::value_type(sensorID, sd));
+			sds.insert({ sensorID, sd });
 		}
-	}	
+	}
+
+	ret.activeJoints = ret.motionEstimationAlgorithm->activeJoints(ret.skeleton, sds);
 
 	return ret;
 }
@@ -816,10 +812,10 @@ void IMUCostumeProfileEditionWizard::onLoadModel()
 			boost::uuids::basic_random_generator<boost::mt19937> gen;
 			boost::uuids::uuid u = gen();
 
-			auto registeredSkeleton = utils::make_shared<const IMU::Skeleton>(u, skeleton);
+			auto registeredSkeleton = utils::make_shared<const IMU::Skeleton>(u, as.name, skeleton);
 
-			unsigned int jointsCount = kinematic::SkeletonState::createMapping(*registeredSkeleton).size();
-			unsigned int activeJointsCount = kinematic::SkeletonState::createActiveMapping(*registeredSkeleton).size();
+			unsigned int jointsCount = registeredSkeleton->root()->size();
+			unsigned int activeJointsCount = kinematic::LinearizedSkeleton::createNonLeafOrder(*registeredSkeleton).size();
 			ui->modelComboBox->addItem(tr("Model %1: %2 joints (%3 active").arg(QString::fromStdString(registeredSkeleton->name)).arg(jointsCount).arg(activeJointsCount), QVariant::fromValue(registeredSkeleton));
 			ui->modelComboBox->setCurrentIndex(ui->modelComboBox->count() - 1);
 		}

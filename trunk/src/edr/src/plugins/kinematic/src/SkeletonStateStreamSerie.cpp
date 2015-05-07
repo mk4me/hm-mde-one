@@ -13,11 +13,11 @@ SkeletonStateStreamSerie::SkeletonStateStreamSerie(KinematicVisualizer * visuali
 	UTILS_ASSERT(data->data()->getTypeInfo() == typeid(SkeletonWithStreamData));
 	data->getMetadata("core/name", name);
 	skeletalData = data->get();
-	auto skeletonState = utils::make_shared<kinematic::SkeletonState>(kinematic::SkeletonState::create(*skeletalData->skeleton));
+	auto skeleton = utils::make_shared<kinematic::Skeleton>(*skeletalData->skeleton);
 
 	auto ratio = 1.0;
 	int pointsCount = skeletalData->nodesMapping.size();
-	AbstractSkeletonSerie::init(ratio, pointsCount, skeletonState, skeletalData->nodesMapping);
+	AbstractSkeletonSerie::init(ratio, pointsCount, skeleton, skeletalData->nodesMapping);
 
 	updater.reset(new plugin::StreamDataSerieUpdater(this));
 	skeletalData->states->attachObserver(updater);
@@ -48,8 +48,9 @@ const core::VariantConstPtr & SkeletonStateStreamSerie::getData() const
 
 void SkeletonStateStreamSerie::update()
 {
-	skeletalData->states->data(currentStateChange);
-	kinematic::SkeletonState::update(*getSkeletonState(), currentStateChange, nodesMapping);
+	skeletalData->states->data(currentState);
+	//kinematic::SkeletonState::update(*getSkeleton(), currentState, nodesMapping);
+	kinematic::SkeletonState::applyLocalState(*getSkeleton(), currentState);
 	AbstractSkeletonSerie::update();
 }
 

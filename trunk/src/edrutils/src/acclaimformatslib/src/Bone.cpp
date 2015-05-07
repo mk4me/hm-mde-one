@@ -1,4 +1,5 @@
 #include <acclaimformatslib/Bone.h>
+#include <kinematicUtils/RotationConverter.h>
 
 using namespace acclaim;
 
@@ -38,7 +39,7 @@ const bool Bone::isActive() const
 	return dofs.empty() == false;
 }
 
-kinematicUtils::AxisOrder::Type Bone::rotationOrder() const
+const kinematicUtils::AxisOrder::Type Bone::rotationOrder() const
 {
 	std::string s;
 	int count = dofs.size();
@@ -54,4 +55,12 @@ kinematicUtils::AxisOrder::Type Bone::rotationOrder() const
 		}
 	}
 	return Axis::getAxisOrder(s);
+}
+
+Bone::HelperMotionData Bone::helperData(const Bone & bone, const bool angleInRadians)
+{
+	osg::Quat c = kinematicUtils::convert(angleInRadians == true ? bone.axis : kinematicUtils::toRadians(bone.axis), bone.axisOrder);
+	osg::Quat cInv = c.inverse();
+
+	return{ c, cInv };
 }

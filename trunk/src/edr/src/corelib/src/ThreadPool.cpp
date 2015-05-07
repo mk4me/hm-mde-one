@@ -162,7 +162,7 @@ const ThreadPool::size_type ThreadPool::threadsCount() const
 
 ThreadPool::Thread ThreadPool::get(const std::string & who, const std::string & destination)
 {	
-	return std::move(Thread(std::move(tp->get()), who, destination));
+	return Thread(std::move(tp->get()), who, destination);
 }
 
 const ThreadPool::size_type ThreadPool::get(const size_type groupSize,

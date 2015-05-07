@@ -36,5 +36,7 @@ public:
 private:
 	std::unique_ptr<acclaim::Skeleton> acclaimSkeleton;
 	std::unique_ptr<acclaim::MotionData> acclaimData;
+	std::unique_ptr<acclaim::Skeleton::HelperMotionData> acclaimhelperMotionData;
+	std::size_t acclaimActiveBones;
 };
 #endif

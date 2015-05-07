@@ -39,6 +39,8 @@
 #include "CostumeParser.h"
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/lexical_cast.hpp>
+#include <acclaimformatslib/AsfParser.h>
+#include <acclaimformatslib/AmcParser.h>
 
 Q_DECLARE_METATYPE(imuCostume::CostumeRawIO::CostumeAddress);
 
@@ -86,15 +88,23 @@ QString statusDescription(IMU::IIMUDataSource::ConnectionStatus connectionStatus
 
 IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	QWidget * parent, const Qt::WindowFlags f)
-	: QWidget(parent, f), ui(new Ui::IMUCostumeListWidget), ds(ds), recordIndex(0)
+	: QWidget(parent, f), ui(new Ui::IMUCostumeListWidget), ds(ds), recordIndex(0),
+	recordingOutputDirectory(plugin::getPaths()->getPluginPath()/"recordings")
 {
 	ui->setupUi(this);
 	ui->costumesTreeWidget->clear();
 	ui->sensorsTree->clear();
 	connect(&statusRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshStatus()));
 	connect(&recordTimer, SIGNAL(timeout()), this, SLOT(watchRecordedData()));
-	//statusRefreshTimer.start(1000 / 25);
-	//QTimer::singleShot(0, this, SLOT(onRefresh()));
+
+	if (core::Filesystem::pathExists(recordingOutputDirectory) == false){
+		try{
+			core::Filesystem::createDirectory(recordingOutputDirectory);
+		}
+		catch (...){
+			PLUGIN_LOG_DEBUG("Failed to create recordings output directory: " << recordingOutputDirectory);
+		}
+	}
 }
 
 IMUCostumeWidget::~IMUCostumeWidget()
@@ -373,103 +383,7 @@ void IMUCostumeWidget::onLoadNewProfile()
 		}
 	}
 
-	PLUGIN_LOG_DEBUG("Profile creation done");
-
-	//konfigurujemy algorytmy
-	auto cw = IMU::IMUCostumeProfileConfigurationWizard::create(*profile);
-	if (cw != nullptr){
-		auto res = cw->exec();
-		if (res != QDialog::Accepted){
-			return;
-		}
-
-		PLUGIN_LOG_DEBUG("Profile configuration done");
-	}
-
-	//iniclalizujemy algorytm kalibracji
-	IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions sa;
-
-	for (const auto & sd : profile->sensorsDescriptions)
-	{
-		IMU::IMUCostumeCalibrationAlgorithm::SensorDescription localsd;
-		localsd.jointName = sd.second.jointName;
-		localsd.offset = sd.second.offset;
-		localsd.rotation = sd.second.rotation;
-
-		sa.insert(IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions::value_type(sd.first, localsd));
-	}
-
-	profile->calibrationAlgorithm->initialize(profile->skeleton, sa);
-
-	PLUGIN_LOG_DEBUG("Calibration initialized");
-
-	auto canOpenStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::RawDataStream::value_type, IMU::CANopenFramesStream::value_type, IMU::RawToCANopenExtractor>>(cd.rawDataStream, IMU::RawToCANopenExtractor());
-
-	PLUGIN_LOG_DEBUG("canOpenStream created");
-
-	//ilo�� pr�bek na rozgrzewk� algorytm�w estymacji orientacji czujnik�w
-	unsigned int initializeFramesCount = 50;
-
-	for (const auto & sa : profile->sensorsDescriptions)
-	{
-		initializeFramesCount = std::max(initializeFramesCount, sa.second.orientationEstimationAlgorithm->approximateEstimationDelay());
-	}
-
-	PLUGIN_LOG_DEBUG("Minimum samples for estimation algorithms done");
-
-	auto costumeStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::CANopenFramesStream::value_type, IMU::CostumeStream::value_type, IMU::CANopenDataExtractor>>(canOpenStream, IMU::CANopenDataExtractor());
-
-	PLUGIN_LOG_DEBUG("costumeStream created");
-
-	//mamy wszystko, jeste�my po konfiguracji wszystkiego
-	//mo�na dalej konfigurowa� kostium - inicjalizowa� filtry, kalibrowa� i �adowa� ca�o�� do DataManager
-	auto extractorAdapter = utils::make_shared<ExtractedCostumeStreamAdapter>(costumeStream, IMU::CostumeIMUExtractor(cd.sensorsConfiguration));
-
-	PLUGIN_LOG_DEBUG("extractorAdapter created");
-
-	// inicjalizacja algorytm�w estymacji orientacji czujnik�w + kalibracja
-	CostumeSkeletonMotionHelper csmh(extractorAdapter,
-		profile, initializeFramesCount + profile->calibrationAlgorithm->maxCalibrationSteps(),
-		initializeFramesCount, this);
-
-	res = csmh.exec();
-
-	//czy anulowano
-	if (res == QDialog::Rejected){
-		return;
-	}
-
-	//czy kalibracja ok?
-	if (csmh.isComplete() == false){
-		QMessageBox::information(this, tr("Costume initialization failed"), tr("Failed to calibrate costume with given configuration. Change configuration and try again or simply retry."));
-		return;
-	}
-
-	// pobieramy efekt kalibracji
-	auto calibrationAdjustments = profile->calibrationAlgorithm->sensorsAdjustemnts();
-
-	for (const auto & ca : calibrationAdjustments)
-	{
-		auto it = sa.find(ca.first);
-		it->second.offset = ca.second.offset;
-		it->second.rotation = ca.second.rotation;
-	}
-
-	PLUGIN_LOG_DEBUG("Costume initialization done");
-
-	coreUI::CoreCursorChanger cc;
-
-	try{
-		//inicjalizacja algorytmu estymacji szkieletu
-		profile->motionEstimationAlgorithm->initialize(profile->skeleton, sa);
-		//�adowanie
-		ds->loadCalibratedCostume(id, profile);
-		ui->recordPushButton->setEnabled(true);
-		PLUGIN_LOG_DEBUG("Costume loaded");
-	}
-	catch (...){
-		QMessageBox::critical(this, tr("Failed to load calibrated costume"), tr("Internal error"));
-	}
+	innerInitializeAndLoad(profile, cd, id);
 }
 
 void IMUCostumeWidget::onLoadProfile()
@@ -556,6 +470,13 @@ void IMUCostumeWidget::onLoadProfile()
 		}
 	}
 
+	innerInitializeAndLoad(profile, cd, id);	
+}
+
+void IMUCostumeWidget::innerInitializeAndLoad(IMU::CostumeProfilePtr profile,
+	IMU::IIMUDataSource::CostumeDescription &cd,
+	const imuCostume::CostumeRawIO::CostumeAddress & id)
+{
 	PLUGIN_LOG_DEBUG("Profile creation done");
 
 	//konfigurujemy algorytmy
@@ -579,7 +500,7 @@ void IMUCostumeWidget::onLoadProfile()
 		localsd.offset = sd.second.offset;
 		localsd.rotation = sd.second.rotation;
 
-		sa.insert(IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions::value_type(sd.first,localsd));
+		sa.insert(IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions::value_type(sd.first, localsd));
 	}
 
 	profile->calibrationAlgorithm->initialize(profile->skeleton, sa);
@@ -590,7 +511,7 @@ void IMUCostumeWidget::onLoadProfile()
 
 	PLUGIN_LOG_DEBUG("canOpenStream created");
 
-	//ilo�� pr�bek na rozgrzewk� algorytm�w estymacji orientacji czujnik�w
+	//ilo?? pr?bek na rozgrzewk? algorytm?w estymacji orientacji czujnik?w
 	unsigned int initializeFramesCount = 50;
 
 	for (const auto & sa : profile->sensorsDescriptions)
@@ -604,13 +525,13 @@ void IMUCostumeWidget::onLoadProfile()
 
 	PLUGIN_LOG_DEBUG("costumeStream created");
 
-	//mamy wszystko, jeste�my po konfiguracji wszystkiego
-	//mo�na dalej konfigurowa� kostium - inicjalizowa� filtry, kalibrowa� i �adowa� ca�o�� do DataManager
+	//mamy wszystko, jeste?my po konfiguracji wszystkiego
+	//mo?na dalej konfigurowa? kostium - inicjalizowa? filtry, kalibrowa? i ?adowa? ca?o?? do DataManager
 	auto extractorAdapter = utils::make_shared<ExtractedCostumeStreamAdapter>(costumeStream, IMU::CostumeIMUExtractor(cd.sensorsConfiguration));
 
 	PLUGIN_LOG_DEBUG("extractorAdapter created");
 
-	// inicjalizacja algorytm�w estymacji orientacji czujnik�w + kalibracja
+	// inicjalizacja algorytm?w estymacji orientacji czujnik?w + kalibracja
 	CostumeSkeletonMotionHelper csmh(extractorAdapter,
 		profile, initializeFramesCount + profile->calibrationAlgorithm->maxCalibrationSteps(),
 		initializeFramesCount, this);
@@ -645,14 +566,14 @@ void IMUCostumeWidget::onLoadProfile()
 	try{
 		//inicjalizacja algorytmu estymacji szkieletu
 		profile->motionEstimationAlgorithm->initialize(profile->skeleton, sa);
-		//�adowanie
+		//?adowanie
 		ds->loadCalibratedCostume(id, profile);
 		ui->recordPushButton->setEnabled(true);
 		PLUGIN_LOG_DEBUG("Costume loaded");
 	}
 	catch (...){
 		QMessageBox::critical(this, tr("Failed to load calibrated costume"), tr("Internal error"));
-	}	
+	}
 }
 
 void IMUCostumeWidget::onUnload()
@@ -661,6 +582,7 @@ void IMUCostumeWidget::onUnload()
 	const auto id = ui->costumesTreeWidget->currentItem()->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
 	ds->unloadCostume(id);
 	ui->recordPushButton->setEnabled(ds->loadedCostumesCount() > 0);
+	recordingDetails.erase(id);
 }
 
 void IMUCostumeWidget::onLoadAll()
@@ -839,16 +761,39 @@ void IMUCostumeWidget::onResetCostumeConnectionStatusAll()
 	refreshStatus();
 }
 
+void IMUCostumeWidget::saveMotionData()
+{
+	IMU::IIMUDataSource::CostumesRecordingDataBuffer::ListT data;
+	recordOutput->costumesDataBuffer.data(data);
+
+	IMU::CostumeParser::save(*outputFile, data, costumesMapping, recordIndex);
+
+	auto id = recordIndex;
+
+	for (const auto & d : data)
+	{
+		for (const auto & dd : d){
+			auto it = recordingDetails.find(dd.first);
+
+			acclaim::MotionData md;
+			kinematic::SkeletonState::applyLocalState(*it->second.skeleton, dd.second.skeletonData);
+			
+			acclaim::AmcParser::serialize({}, *(it->second.motionOutput));
+			it->second.motionOutput->flush();
+		}
+
+		++id;
+	}
+
+	recordIndex += data.size();
+	outputFile->flush();
+}
+
 void IMUCostumeWidget::watchRecordedData()
 {
 	if (recordOutput->costumesDataBuffer.size() > 0.5 * recordOutput->costumesDataBuffer.maxBufferSize())
 	{
-		IMU::IIMUDataSource::CostumesRecordingDataBuffer::ListT data;
-		recordOutput->costumesDataBuffer.data(data);
-
-		IMU::CostumeParser::save(*outputFile, data, recordIndex);
-		recordIndex += data.size();
-		outputFile->flush();
+		saveMotionData();
 	}
 }
 
@@ -865,27 +810,29 @@ static void serialize(std::ostream & stream, const osg::Quat & orient)
 void serializeRecordedCostumeConfiguration(std::ostream & stream,
 	const imuCostume::CostumeRawIO::CostumeAddress & costumeID,
 	const imuCostume::Costume::SensorIDsSet & sensorsToRecord,
-	IMU::CostumeProfileConstPtr profile)
+	const IMU::IIMUDataSource::CostumeDescription & cd)
 {
+	auto profile = cd.profile;
 	stream << "Costume " << costumeID.ip << " " << costumeID.port << std::endl;
-	stream << "SkeletalModel " << profile->skeleton->root->value.name << " ";
-	serialize(stream, profile->skeleton->root->value.position);
+	stream << "DataRate " << std::to_string(cd.rawCostume->samplingDelay()) << std::endl;
+	stream << "SkeletalModel " << profile->skeleton->root()->value().name() << " ";
+	serialize(stream, profile->skeleton->root()->value().localPosition());
 	stream << " ";
-	serialize(stream, profile->skeleton->root->value.orientation);
-	stream << " " << profile->skeleton->root->size() - 1 << std::endl;
+	serialize(stream, profile->skeleton->root()->value().localOrientation());
+	stream << " " << profile->skeleton->root()->size() - 1 << std::endl;
 
-	auto visitor = [&stream](kinematic::JointConstPtr joint)
+	auto visitor = [&stream](kinematic::Skeleton::JointConstPtr joint)
 	{
-		stream << joint->parent.lock()->value.name << " " << joint->value.name << " ";
-		serialize(stream, joint->value.position);
+		stream << joint->parent()->value().name() << " " << joint->value().name() << " ";
+		serialize(stream, joint->value().localPosition());
 		stream << " ";
-		serialize(stream, joint->value.orientation);
+		serialize(stream, joint->value().localOrientation());
 		stream << std::endl;
 	};
 
-	for (const auto & c : profile->skeleton->root->children)
+	for (const auto & c : profile->skeleton->root()->children())
 	{
-		utils::TreeNode::visitPreOrder(c, visitor);
+		utils::TreeNode::PreOrderVisitPolicy::visit(c, visitor);
 	}
 
 	stream << "MappingDetails " << sensorsToRecord.size() << std::endl;
@@ -909,12 +856,17 @@ void IMUCostumeWidget::onRecord(const bool record)
 	if (record == true){		
 
 		RecordingWizard::CostumesToRecord costumes;
+		IMU::CostumeParser::CostumesMappings cm;
 
 		for (unsigned int i = 0; i < ui->costumesTreeWidget->topLevelItemCount(); ++i)
 		{
 			auto costumeID = ui->costumesTreeWidget->topLevelItem(i)->data(0, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
-			costumes.insert(RecordingWizard::CostumesToRecord::value_type(costumeID, ds->costumeDescription(costumeID).sensorsConfiguration.find(imuCostume::Costume::IMU)->second));
+			auto cd = ds->costumeDescription(costumeID);
+			costumes.insert({ costumeID, cd.sensorsConfiguration.find(imuCostume::Costume::IMU)->second });
+			cm.insert({ costumeID, IMU::CostumeParser::createMapping(cd.profile->sensorsDescriptions, kinematic::LinearizedSkeleton::createCompleteMapping(*(cd.profile->skeleton))) });
 		}
+
+		costumesMapping = cm;
 
 		RecordingWizard w(costumes, this);
 
@@ -923,34 +875,109 @@ void IMUCostumeWidget::onRecord(const bool record)
 		if (ret == QWizard::Accepted){
 
 			coreUI::CoreCursorChanger cc;
-			outputFile = utils::make_shared<std::ofstream>(w.outputPath().toStdString().c_str());			
 
-			if (outputFile->is_open() == true){
+			const auto now = std::chrono::system_clock::now();
 
-				costumes = w.costumes();
-
-				for (const auto & c : costumes)
-				{
+			//faktyczne kostiumy do nagrań
+			costumes = w.costumes();
+			//dla każdego kostiumu
+			for (const auto & c : costumes)
+			{
+				//czy mam już nazwe katalogu dla kostiumu i aktualnych nagrań?
+				auto it = recordingDetails.find(c.first);
+				if (it == recordingDetails.end()){
 					auto cd = ds->costumeDescription(c.first);
-					serializeRecordedCostumeConfiguration(*outputFile, c.first, c.second, cd.profile);
+					it = recordingDetails.insert({ c.first, { recordingOutputDirectory / recordingDir(c.first, now), 0, nullptr,
+						utils::make_shared<kinematic::Skeleton>(*(cd.profile->skeleton)),
+						kinematic::LinearizedSkeleton::createCompleteMapping(*(cd.profile->skeleton)) } }).first;
 				}
 
-				(*outputFile) << "Data" << std::endl;
+				//sprawdź czy katalog istnieje - jak nie to utwórz
+				if (core::Filesystem::pathExists(it->second.path) == false){
+					core::Filesystem::createDirectory(it->second.path);
+				}
 
-				recordOutput = utils::make_shared<IMU::IIMUDataSource::RecordingConfiguration>();
-				recordOutput->costumesDataBuffer.setMaxBufferSize(10000);
-				recordOutput->costumesToRecord = w.costumes();		
+				auto files = core::Filesystem::listFiles(it->second.path);
 
-				recordTimer.start(500);
-				recordIndex = 0;
-				ds->startRecording(recordOutput);
+				//sprawdź czy konfiguracja istnieje - jak nie to utwórz
+				{
+					bool cfgExists = false;
+					
+					if (files.empty() == false){
+						cfgExists = (files.end() != std::find_if(files.begin(), files.end(), [](const core::Filesystem::Path & path)
+						{
+							return path.extension().string() == ".ccfg";
+						}));
+					}
+
+					if (cfgExists == false){
+						std::ofstream outputCfgFile((it->second.path / "costumeConfiguration.ccfg").string());
+						if (outputCfgFile.is_open() == true){
+							auto cd = ds->costumeDescription(c.first);
+							serializeRecordedCostumeConfiguration(outputCfgFile, c.first, c.second, cd);
+						}
+					}
+				}
+
+				//sprawdź czy szkielet istnieje - jak nie to utwórz
+				{
+					bool skeletonExists = false;
+
+					if (files.empty() == false){
+						skeletonExists = (files.end() != std::find_if(files.begin(), files.end(), [](const core::Filesystem::Path & path)
+						{
+							return path.extension().string() == ".asf";
+						}));
+					}
+
+					if (skeletonExists == false){
+						std::ofstream outputSkeletonFile((it->second.path / (it->first.ip + "skeleton.asf")).string());
+						if (outputSkeletonFile.is_open() == true){
+							auto cd = ds->costumeDescription(c.first);
+							acclaim::Skeleton skeleton;
+							kinematic::Skeleton::convert(*(cd.profile->skeleton), skeleton,
+								kinematicUtils::AxisOrder::XYZ,	kinematicUtils::Deg);
+
+							skeleton.name = "Costume " + c.first.ip;
+
+							acclaim::AsfParser::serialize(outputSkeletonFile, skeleton);
+						}
+					}
+				}
+
+				//nowy plik AMC z danymi ruchu do zapisu
+				auto counter = ++it->second.counter;
+				it->second.motionOutput = utils::make_shared<std::ofstream>((it->second.path / ("recording_" + boost::lexical_cast<std::string>(counter)+".amc")).string().c_str());
 			}
-			else{
 
-				//TODO - info �e si� nie uda�o jednak pliku stworzy� do zapisu
-				ui->recordPushButton->blockSignals(true);
-				ui->recordPushButton->setChecked(!record);
-				ui->recordPushButton->blockSignals(false);
+			{
+				outputFile = utils::make_shared<std::ofstream>(w.outputPath().toStdString().c_str());
+
+				if (outputFile->is_open() == true){					
+
+					for (const auto & c : costumes)
+					{
+						auto cd = ds->costumeDescription(c.first);
+						serializeRecordedCostumeConfiguration(*outputFile, c.first, c.second, cd);
+					}
+
+					(*outputFile) << "Data" << std::endl;
+
+					recordOutput = utils::make_shared<IMU::IIMUDataSource::RecordingConfiguration>();
+					recordOutput->costumesDataBuffer.setMaxBufferSize(10000);
+					recordOutput->costumesToRecord = w.costumes();
+
+					recordTimer.start(500);
+					recordIndex = 0;
+					ds->startRecording(recordOutput);
+				}
+				else{
+
+					//TODO - info �e si� nie uda�o jednak pliku stworzy� do zapisu
+					ui->recordPushButton->blockSignals(true);
+					ui->recordPushButton->setChecked(!record);
+					ui->recordPushButton->blockSignals(false);
+				}
 			}
 		}
 		else{
@@ -967,13 +994,31 @@ void IMUCostumeWidget::onRecord(const bool record)
 
 		//ko�czymy zapis danych
 
-		IMU::IIMUDataSource::CostumesRecordingDataBuffer::ListT data;
-		recordOutput->costumesDataBuffer.data(data);
-
-		IMU::CostumeParser::save(*outputFile, data, recordIndex);
+		saveMotionData();
 
 		outputFile->close();
 		outputFile.reset();
 		recordOutput.reset();
 	}
+}
+
+void IMUCostumeWidget::onOptions()
+{
+	auto dir = QFileDialog::getExistingDirectory(this, tr("Recording output directory"), QString::fromStdString(recordingOutputDirectory.string()));
+
+	if (dir.isEmpty() == false){
+		recordingOutputDirectory = dir.toStdString();
+	}
+}
+
+std::string IMUCostumeWidget::recordingDir(const imuCostume::CostumeRawIO::CostumeAddress & id,
+	const std::chrono::system_clock::time_point & now)
+{	
+	const auto now_t = std::chrono::system_clock::to_time_t(now);
+	std::stringstream ss;
+
+	ss << std::put_time(std::localtime(&now_t), "%Y%m%d_%H%M%S");
+	ss << "_" << id.ip << "_" << id.port;
+
+	return ss.str();
 }

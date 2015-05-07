@@ -69,7 +69,7 @@ namespace threadingUtils
 				commonQueue.push(std::move(innerTask));
 			}
 
-			return std::move(ret);
+			return ret;
 		}
 
 		const bool tryGet(Task & task);

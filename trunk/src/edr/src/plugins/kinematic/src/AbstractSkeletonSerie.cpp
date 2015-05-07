@@ -23,17 +23,32 @@ AbstractSkeletonSerie::AbstractSkeletonSerie(KinematicVisualizer * visualizer,
 }
 
 void AbstractSkeletonSerie::init(double ratio, int pointsCount,
-			kinematic::SkeletonStatePtr state, const kinematic::SkeletonState::LinearizedNodesMapping& mapping)
+	kinematic::SkeletonPtr skeleton, const kinematic::LinearizedSkeleton::Mapping& mapping)
 {
-	this->skeletonState = state;
+	this->skeleton = skeleton;
 	this->nodesMapping = mapping;
-	joint2Index = kinematic::SkeletonState::createJoint2IndexMapping(*state, mapping);
+	//joint2Index = kinematic::SkeletonState::createJoint2IndexMapping(*state, mapping);
 	localRootNode->setScale(osg::Vec3(ratio, ratio, ratio));
 	pointsDrawer->init(pointsCount);
 	pointsDrawer->setSize(0.02 / ratio);
 	pointsDrawer->setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
 	//localRootNode->addChild(pointsDrawer->getNode());
-	connections = kinematic::SkeletonState::createConnections(*state, joint2Index);
+	//TODO - inicjalizacja po³aczeñ na bazie indeksów jointów
+	//connections = kinematic::SkeletonState::createConnections(*skeleton, joint2Index);
+
+	kinematic::LinearizedSkeleton::Visitor::globalIndexedVisit(*skeleton, [this, &mapping]
+		(kinematic::Skeleton::JointPtr joint, const kinematic::LinearizedSkeleton::NodeIDX idx)
+	{
+		for (const auto & c : joint->children())
+		{
+			osgutils::SegmentDescriptor sd;
+			sd.length = c->value().localPosition().length();
+			sd.range.first = idx;
+			sd.range.second = mapping.right.find(c->value().name())->get_left();
+			connections.push_back(sd);
+		}
+	});
+
 	connectionsDrawer->init(connections);
 	connectionsDrawer->setColor(osg::Vec4(0.7, 0.7, 0.7, 0.5));
 	connectionsDrawer->setSize(0.005);
@@ -49,7 +64,7 @@ void AbstractSkeletonSerie::init(double ratio, int pointsCount,
 	//setAxis(true);
 
 	pointsAxesDrawer.setLength(0.1);
-	pointsAxesDrawer.init(state->root());
+	pointsAxesDrawer.init(skeleton->root());
 	pointsAxesDrawer.setVisible(false);
 	localRootNode->addChild(pointsAxesDrawer.getNode());
 }
@@ -76,9 +91,9 @@ const osg::Vec3 AbstractSkeletonSerie::pivotPoint() const
 	return rootPosition * lToW;
 }
 
-kinematic::SkeletonStatePtr AbstractSkeletonSerie::getSkeletonState()
+kinematic::SkeletonPtr AbstractSkeletonSerie::getSkeleton()
 {
-	return skeletonState;
+	return skeleton;
 }
 
 void AbstractSkeletonSerie::update()
@@ -87,15 +102,14 @@ void AbstractSkeletonSerie::update()
 
 	//kinematic::SkeletonState::update(*skeletonState, frame, nodesMapping);
 
-	std::vector<osg::Vec3> pos(joint2Index.size());
-	
-	kinematic::SkeletonState::JointConstPtr root = skeletonState->root();
-	
-	auto visitor = [&](kinematic::SkeletonState::JointConstPtr node, kinematic::SkeletonState::Joint::size_type level)
-		{
-			pos[joint2Index.at(node)] = node->value.globalPosition();
-		};
-	utils::TreeNode::visitLevelOrder(root, visitor);
+	//std::vector<osg::Vec3> pos(joint2Index.size());
+	std::vector<osg::Vec3> pos;
+	pos.reserve(nodesMapping.size());
+		
+	kinematic::LinearizedSkeleton::Visitor::visit(*skeleton, [&pos](kinematic::Skeleton::JointConstPtr node)
+	{
+		pos.push_back(node->value().globalPosition());
+	});
 
 	pointsDrawer->update(pos);
 	connectionsDrawer->update(pos);
@@ -116,17 +130,18 @@ void AbstractSkeletonSerie::setJointsOrientationsVisible()
 }
 
 
-void PointsOrientationsDrawer::init(kinematic::SkeletonState::JointConstPtr root)
+void PointsOrientationsDrawer::init(kinematic::Skeleton::JointConstPtr root)
 {
 	if (pointAxes.empty()) {
-		auto visitor = [&](kinematic::SkeletonState::JointConstPtr node, kinematic::SkeletonState::Joint::size_type level)
+		auto visitor = [&](kinematic::Skeleton::JointConstPtr node, kinematic::Skeleton::Joint::size_type level)
 		{
 			osg::ref_ptr<osgManipulator::TranslateAxisDragger> ne = new osgManipulator::TranslateAxisDragger();
 			ne->setupDefaultGeometry();
 			pointAxes.push_back(ne);
 			localNode->addChild(ne);
 		};
-		utils::TreeNode::visitLevelOrder(root, visitor);
+
+		kinematic::LinearizedSkeleton::Visitor::VisitOrder::NodeVisitOrder::visit(root, visitor);
 		this->root = root;
 		setVisible(visible);
 	} else {
@@ -144,16 +159,16 @@ void PointsOrientationsDrawer::update()
 	auto root = this->root.lock();
 	if (root) {
 		auto it = pointAxes.begin();
-		auto visitor = [&](kinematic::SkeletonState::JointConstPtr node, kinematic::SkeletonState::Joint::size_type level)
+		auto visitor = [&](kinematic::Skeleton::JointConstPtr node, kinematic::Skeleton::Joint::size_type level)
 		{
 			auto ne = *(it++);
 			osg::Matrix mat;
-			mat.set(node->value.globalOrientation());
-			mat.setTrans(node->value.globalPosition());
+			mat.set(node->value().globalOrientation());
+			mat.setTrans(node->value().globalPosition());
 			mat.preMultScale(osg::Vec3(scale, scale, scale));
 			ne->setMatrix(mat);
 		};
-		utils::TreeNode::visitLevelOrder(root, visitor);
+		kinematic::LinearizedSkeleton::Visitor::VisitOrder::NodeVisitOrder::visit(root, visitor);
 	}
 }
 

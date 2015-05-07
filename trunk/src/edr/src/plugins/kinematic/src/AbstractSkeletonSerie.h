@@ -30,7 +30,7 @@ class TrajectoryDrawerManager;
 struct PointsOrientationsDrawer
 {
 public:
-	void init(kinematic::SkeletonState::JointConstPtr root);
+	void init(kinematic::Skeleton::JointConstPtr root);
 	osg::ref_ptr<osg::Switch> getNode();
 	void update();
 	void setLength(double length);
@@ -39,7 +39,7 @@ public:
 
 private:
 	std::vector<osg::ref_ptr<osgManipulator::TranslateAxisDragger>> pointAxes;
-	kinematic::SkeletonState::JointConstWeakPtr root;
+	kinematic::Skeleton::JointConstWeakPtr root;
 	double scale = 1.0;
 	osg::ref_ptr<osg::Switch> localNode = new osg::Switch();
 	bool visible = true;
@@ -83,12 +83,12 @@ protected:
 	//virtual void setLocalTime(double time);
 
 
-	void init(double ratio, int pointsCount, kinematic::SkeletonStatePtr state, const kinematic::SkeletonState::LinearizedNodesMapping& mapping);
+	void init(double ratio, int pointsCount, kinematic::SkeletonPtr skeleton, const kinematic::LinearizedSkeleton::Mapping& mapping);
 	//! zmiana osi, gdy otrzymamy obiekt w nietypowym ukł. współrzędnych
 	//! \param xyz
 	void setAxis(bool xyz);
 
-	kinematic::SkeletonStatePtr getSkeletonState();
+	kinematic::SkeletonPtr getSkeleton();
 
 private:
 
@@ -113,14 +113,14 @@ private:
 	//! Obiekt rysujący połączenia
 	utils::shared_ptr<osgutils::IConnectionsSchemeDrawer> connectionsDrawer;
 
-	kinematic::SkeletonStatePtr skeletonState;
+	kinematic::SkeletonPtr skeleton;
 	PointsOrientationsDrawer pointsAxesDrawer;
 protected:
 	//! stworzone połączenia między punktami
 	osgutils::SegmentsDescriptors connections;
 	//! mapowanie joint -> index
-	std::map<kinematic::SkeletonState::JointConstPtr, unsigned int> joint2Index;
-	kinematic::SkeletonState::LinearizedNodesMapping nodesMapping;
+	//std::map<kinematic::Skeleton::JointConstPtr, unsigned int> joint2Index;
+	kinematic::LinearizedSkeleton::Mapping nodesMapping;
 
 	osg::ref_ptr<osg::PositionAttitudeTransform> localRootNode;
 

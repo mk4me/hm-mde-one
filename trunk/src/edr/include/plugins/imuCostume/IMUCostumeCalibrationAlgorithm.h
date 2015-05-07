@@ -15,6 +15,7 @@
 #include <imucostumelib/ImuCostume.h>
 #include <plugins/imuCostume/Types.h>
 #include <kinematiclib/Skeleton.h>
+#include <kinematiclib/LinearizedSkeleton.h>
 #include <corelib/IIdentifiable.h>
 
 class QWidget;
@@ -40,6 +41,8 @@ namespace IMU
 		{
 			//! Nazwa jointa na którym umiejscowiony jest sensor
 			std::string jointName;
+			//! ID jointa w zlinearyzowanym szkielecie
+			kinematic::LinearizedSkeleton::NodeIDX jointIdx;
 		};
 
 		//! Mapa poprawek sensorów: ID -> poprawka

@@ -4,6 +4,9 @@
 #include <thread>
 #include <corelib/ILog.h>
 #include <corelib/IPlugin.h>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QProgressDialog>
 
 static double calculateDelta(const imuCostume::CostumeCANopenIO::Timestamp current,
 	const imuCostume::CostumeCANopenIO::Timestamp previous)
@@ -19,20 +22,19 @@ static double calculateDelta(const imuCostume::CostumeCANopenIO::Timestamp curre
 	return deltaT;
 }
 
-void CostumeSkeletonMotionHelper::estimate(std::map<imuCostume::Costume::SensorID, AlgoProgress> & algos,
-	const IMU::SensorsData & sensorsData, const uint32_t currentTime)
+void CostumeSkeletonMotionHelper::estimate(const IMU::SensorsStreamData & streamData)
 {
-	for (auto & m : algos)
+	for (auto & m : algorithmsProgress)
 	{
-		auto it = sensorsData.find(m.first);
-		if (it != sensorsData.end()){
-			double deltaTime = calculateDelta(currentTime, m.second.lastTime);			
+		auto it = streamData.sensorsData.find(m.first);
+		if (it != streamData.sensorsData.end()){
+			double deltaTime = calculateDelta(streamData.timestamp, m.second.lastTime);
 
 			if (m.second.counter == 0 && m.second.lastTime == 0){
 				deltaTime = 0.0;
 			}
 
-			m.second.lastTime = currentTime;
+			m.second.lastTime = streamData.timestamp;
 			++(m.second.counter);
 			m.second.algo->estimate(it->second.accelerometer, it->second.gyroscope, it->second.magnetometer, deltaTime, it->second.orientation);
 		}
@@ -46,7 +48,7 @@ CostumeSkeletonMotionHelper::CostumeSkeletonMotionHelper(IMU::SensorsStreamPtr s
 	: QObject(parent), sensorsStream(sensorsStream), costumeProfile(costumeProfile),
 	observer(new threadingUtils::ResetableStreamStatusObserver),
 	calibratinStageChangeValue(calibratinStageChangeValue), previousTime(0),
-	first(true), complete(false), pd(parent)
+	first(true), complete(false), pd(new QProgressDialog(parent)), cw(nullptr)
 {
 	for (const auto & sa : costumeProfile->sensorsDescriptions)
 	{
@@ -55,15 +57,23 @@ CostumeSkeletonMotionHelper::CostumeSkeletonMotionHelper(IMU::SensorsStreamPtr s
 		ap.lastTime = 0;
 		ap.algo = sa.second.orientationEstimationAlgorithm;
 
-		algorithmsProgress.insert(std::map<imuCostume::Costume::SensorID, AlgoProgress>::value_type(sa.first, ap));
+		algorithmsProgress.insert({ sa.first, ap });
 	}	
 
 	sensorsStream->attachObserver(observer);	
-	pd.setWindowTitle(tr("Costume initialization"));
-	pd.setRange(0, maxSamples);
-	pd.setValue(0);
-	pd.setLabelText(tr("Orientation estimation algorithms"));
-	connect(&pd, SIGNAL(canceled()), this, SLOT(cancel()));
+	pd->setWindowTitle(tr("Costume initialization"));
+	pd->setRange(0, maxSamples);
+	pd->setValue(0);
+	pd->setLabelText(tr("Orientation estimation algorithms"));
+
+	cw = costumeProfile->calibrationAlgorithm->calibrationWidget();
+	if (cw != nullptr){
+		cw->setParent(pd);
+		pd->layout()->addWidget(cw);
+		cw->setVisible(false);
+	}
+
+	connect(pd, SIGNAL(canceled()), this, SLOT(cancel()));
 	connect(&timer, SIGNAL(timeout()), this, SLOT(perform()));
 }
 
@@ -76,9 +86,9 @@ int CostumeSkeletonMotionHelper::exec()
 {
 	complete = false;
 	timer.start(0);
-	pd.exec();
+	pd->exec();
 
-	return pd.wasCanceled() == true ? QDialog::Rejected : QDialog::Accepted;
+	return pd->wasCanceled() == true ? QDialog::Rejected : QDialog::Accepted;
 }
 
 bool CostumeSkeletonMotionHelper::isComplete() const
@@ -119,34 +129,38 @@ void CostumeSkeletonMotionHelper::perform()
 			deltaTime = 0.0;
 		}
 		
-		if (pd.value() == calibratinStageChangeValue) {
-			pd.setLabelText(tr("Calibrating"));
+		if (pd->value() == calibratinStageChangeValue) {
+			pd->setLabelText(tr("Calibrating"));
 
 			resetCounters();
 		}
 
-		estimate(algorithmsProgress, data.sensorsData, data.timestamp);
+		estimate(data);
 
-		if (pd.value() >= calibratinStageChangeValue){		
+		if (pd->value() >= calibratinStageChangeValue){
+			if (cw != nullptr){
+				cw->setVisible(true);
+				cw = nullptr;
+			}
 			bool ret = costumeProfile->calibrationAlgorithm->calibrate(data.sensorsData, deltaTime);
 			if (ret == true){
 				complete = true;				
-				pd.setValue(pd.maximum());
+				pd->setValue(pd->maximum());
 			}
 		}
 
-		if (pd.value() == pd.maximum()){
+		if (pd->value() == pd->maximum()){
 			cancel();			
 		}
 		else {
 			previousTime = data.timestamp;
 
-			if (pd.value() < calibratinStageChangeValue){
+			if (pd->value() < calibratinStageChangeValue){
 
-				pd.setValue(minCounter());
+				pd->setValue(minCounter());
 			}
 			else{
-				pd.setValue(minCounter() + calibratinStageChangeValue);
+				pd->setValue(minCounter() + calibratinStageChangeValue);
 			}
 		}
 	}
