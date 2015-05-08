@@ -3,7 +3,6 @@
 
 #include <limits>
 #include <cppunit/extensions/HelperMacros.h>
-#include <kinematiclib/Joint.h>
 
 class JointTest : public CPPUNIT_NS::TestCase
 {

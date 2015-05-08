@@ -1,7 +1,6 @@
 #ifndef HEADER_GUARD_KINEMATICDATA__SKELETALMODEL_H__
 #define HEADER_GUARD_KINEMATICDATA__SKELETALMODEL_H__
 
-#include <kinematiclib/Joint.h>
 #include <kinematiclib/Skeleton.h>
 #include <kinematiclib/SkeletonState.h>
 #include <threadingUtils/StreamData.h>

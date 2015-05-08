@@ -14,7 +14,6 @@
 #include <map>
 #include <list>
 #include <utils/SmartPtr.h>
-#include <kinematiclib/Joint.h>
 
 namespace kinematic
 {
