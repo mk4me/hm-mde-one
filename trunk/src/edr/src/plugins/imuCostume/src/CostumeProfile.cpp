@@ -155,7 +155,11 @@ CostumeProfile SerializableCostumeProfile::unpack(const SerializableCostumeProfi
 		sds.insert({ ea.first, local });
 	}
 
-	ret.activeJoints = ret.motionEstimationAlgorithm->activeJoints(ret.skeleton, sds);
+	if (ret.motionEstimationAlgorithm != nullptr){
+
+		ret.activeJoints = ret.motionEstimationAlgorithm->activeJoints(ret.skeleton, sds);
+
+	}
 
 	return ret;
 }

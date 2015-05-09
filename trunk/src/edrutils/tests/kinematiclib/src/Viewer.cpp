@@ -15,30 +15,72 @@
 
 void kinematicTest::Viewer::start()
 {
-	acclaim::AsfParser asf;
-	//auto acclaimSkeleton = asf.parse("./testFiles/test.asf");
-	std::ifstream asfStream("./testFiles/B0238.asf");
-	auto acclaimSkeleton = asf.parse(asfStream, true);
+	std::ifstream fileAsf("./testFiles/test.asf");
+	std::ofstream fileAsfOut("./testFiles/testOut.asf");
+	auto acclaimSkeleton = acclaim::AsfParser::parse(fileAsf, true);
 
+	kinematic::Skeleton kSkeleton;
+	kinematic::Skeleton::convert(acclaimSkeleton, kSkeleton);
+	acclaim::Skeleton aSkeleton;
+	kinematic::Skeleton::convert(kSkeleton, aSkeleton, acclaimSkeleton.axisOrder, kinematicUtils::Deg);
 
-	acclaim::AmcParser amc;
+	for (const auto & bd : acclaimSkeleton.bones)
+	{
+		auto it = aSkeleton.bones.find(bd.first);
+		it->second.axis = bd.second.axis;
+		it->second.axisOrder = bd.second.axisOrder;
+		it->second.dofs = bd.second.dofs;
+	}
+
+	acclaim::AsfParser::serialize(fileAsfOut, aSkeleton);
+	fileAsfOut.close();
+	//auto acclaimSkeleton = asf.parse("./testFiles/B0238.asf");
+
+	std::ifstream fileAmc("./testFiles/test.amc");	
+	std::ofstream fileAmcOut("./testFiles/testOut.amc");
 	acclaim::MotionData acclaimData;
-	std::ifstream amcStream("./testFiles/test.amc");
-	amc.parse(acclaimData, amcStream);
+	acclaim::AmcParser::parse(acclaimData, fileAmc);
+	std::vector<kinematic::SkeletonState::RigidPartialStateLocal> kData;
+	auto motionHelperData = acclaim::Skeleton::helperMotionData(acclaimSkeleton);
+
+	const auto kmapping = kinematic::LinearizedSkeleton::createNonLeafMapping(kSkeleton);
+	const auto amapping = acclaim::Skeleton::createMapping(aSkeleton.bones);
+	const auto acclaimActiveMapping = kinematic::SkeletonState::createAcclaimActiveMapping(kSkeleton, aSkeleton.bones);
+
+	for (const auto & fd : acclaimData.frames)
+	{		
+		kData.push_back(kinematic::SkeletonState::convert(aSkeleton.bones, amapping, fd.bonesData, acclaimActiveMapping, motionHelperData, aSkeleton.units.isAngleInRadians()));
+	}
+
+	acclaim::MotionData cData(acclaimData.frameTime);		
+
+	unsigned int frameNumber = 1;
+
+	for (const auto & fd : kData)
+	{
+		acclaim::MotionData::FrameData frame;
+		frame.id = frameNumber++;
+		kinematic::SkeletonState::applyState(kSkeleton, fd);
+		frame.bonesData = kinematic::SkeletonState::convert(aSkeleton, kinematic::SkeletonState::localRigidState(kSkeleton), acclaimActiveMapping, motionHelperData);
+		cData.frames.push_back(frame);
+	}
+
+	//acclaim::AmcParser::serialize(acclaimData, fileAmcOut);
+	acclaim::AmcParser::serialize(cData, fileAmcOut);
+	fileAmcOut.close();
 
 	kinematic::Skeleton skeleton;
 	kinematic::Skeleton::convert(acclaimSkeleton, skeleton);
-	kinematic::SkeletonState skeletonState = kinematic::SkeletonState::create(skeleton);
 	
 
-	const auto mapping = kinematic::SkeletonState::createMapping(skeleton);
-	for (auto& p : mapping.right) {
-		std::cout << p.first << std::string(", ") << p.second << std::endl;
+	const auto mapping = kinematic::LinearizedSkeleton::createCompleteMapping(skeleton);
+	for (const auto& p : mapping) {
+		std::cout << p.get_left() << std::string(", ") << p.get_right() << std::endl;
 	}
-	auto joint2index = kinematic::SkeletonState::createJoint2IndexMapping(skeletonState, mapping);
 
 
-	int framesCount = acclaimData.frames.size();
+	//int framesCount = acclaimData.frames.size();
+	int framesCount = kData.size();
 	osg::ref_ptr<osg::PositionAttitudeTransform> pat = new osg::PositionAttitudeTransform();
 	osgViewer::Viewer viewer;
 	osg::Quat att; att.makeRotate(90, 1, 0, 0);
@@ -57,50 +99,57 @@ void kinematicTest::Viewer::start()
 	pointsDrawer.setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
 	pat->addChild(pointsDrawer.getNode());
 
-	auto sd = kinematic::SkeletonState::createConnections(skeletonState, joint2index);
+	osgutils::SegmentsDescriptors connections;
+
+	kinematic::LinearizedSkeleton::Visitor::globalIndexedVisit(skeleton, [&mapping, &connections]
+		(kinematic::Skeleton::JointPtr joint, const kinematic::LinearizedSkeleton::NodeIDX idx)
+	{
+		for (const auto & c : joint->children())
+		{
+			osgutils::SegmentDescriptor sd;
+			sd.length = c->value().localPosition().length();
+			sd.range.first = idx;
+			sd.range.second = mapping.right.find(c->value().name())->get_left();
+			connections.push_back(sd);
+		}
+	});
+
 	osgutils::ConnectionsSphereDrawer	connectionsDrawer(3);
-	connectionsDrawer.init(sd);
+	connectionsDrawer.init(connections);
 	connectionsDrawer.setSize(0.04);
 	connectionsDrawer.setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
 	pat->addChild(connectionsDrawer.getNode());
 
-	auto pos = getPos(skeletonState);
+	auto pos = getPos(skeleton);
 	std::transform(pos.begin(), pos.end(), pos.begin(), [&](const osg::Vec3& p) { return p + osg::Vec3(a, b, c); });
 	pat->setPosition(osg::Vec3(x, y, z));
 	pointsDrawer.update(pos);
 	connectionsDrawer.update(pos);
 
 	viewer.setCameraManipulator(tm);
-	viewer.run();
-	//viewer.realize();
+	//viewer.run();
+	viewer.realize();
 
-	//while (!viewer.done()) {
-		/*
+	while (!viewer.done()) {
 		viewer.frame();		
-		frameIdx = frameIdx >= (framesCount - 1) ? 0 : ++frameIdx;
-		kinematic::SkeletonState::RigidPartialStateChange sChange = kinematic::SkeletonState::convert(acclaimSkeleton, acclaimData.frames[frameIdx], mapping);
-		
-		//auto frame = kinematic::SkeletonState::convertStateChange(mapping, sChange);
-		
-		kinematic::SkeletonState::setLocal(skeletonState, sChange, mapping);
-		auto pos = getPos(skeletonState);
+		frameIdx = frameIdx >= (framesCount - 1) ? 0 : ++frameIdx;		
+		kinematic::SkeletonState::applyState(skeleton, kData[frameIdx]);
+		auto pos = getPos(skeleton);
 		std::transform(pos.begin(), pos.end(), pos.begin(), [&](const osg::Vec3& p) { return p + osg::Vec3(a, b, c); });
 		pat->setPosition(osg::Vec3(x,y,z));
 		pointsDrawer.update(pos);
-		connectionsDrawer.update(pos);		
-		*/
-	//}
+		connectionsDrawer.update(pos);	
+	}
 }
 
-std::vector<osg::Vec3> kinematicTest::Viewer::getPos(kinematic::SkeletonState &skeletonState)
-{
-	kinematic::SkeletonState::JointConstPtr root = skeletonState.root();
+std::vector<osg::Vec3> kinematicTest::Viewer::getPos(const kinematic::Skeleton &skeleton)
+{	
 	std::vector<osg::Vec3> pos;
 
-	auto visitor = [&](kinematic::SkeletonState::JointConstPtr node, kinematic::SkeletonState::Joint::size_type level)
+	kinematic::LinearizedSkeleton::Visitor::visit(skeleton, [&pos](kinematic::Skeleton::JointConstPtr node)
 	{
-		pos.push_back(node->value.globalPosition());
-	};
-	utils::TreeNode::visitLevelOrder(root, visitor);
+		pos.push_back(node->value().globalPosition());
+	});
+
 	return pos;
 }

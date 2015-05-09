@@ -21,7 +21,7 @@ namespace threadingUtils
 {
 	//! \tparam Thread Typ w�tku jaki wrapujemy do postaci runnable
 	//! \tparam CallPolicy Spos�b wo�ania metod przez w�tek
-	template<typename Thread, typename ExceptionHandlePolicy = RawCallPolicy>
+	template<typename Thread, typename ExceptionHandlePolicy = RethrowExceptionHandlePolicy>
 	class RunnableThread
 	{
 	public:
@@ -73,7 +73,7 @@ namespace threadingUtils
 		Thread thread;
 	};
 
-	template<typename Thread, typename ExceptionHandlePolicy = RawCallPolicy>
+	template<typename Thread, typename ExceptionHandlePolicy = ConsumeExceptionHandlePolicy>
 	class MultipleRunThread
 	{
 	private:
@@ -82,16 +82,6 @@ namespace threadingUtils
 
 		struct SharedState
 		{
-			SharedState()
-			{
-
-			}
-
-			~SharedState()
-			{
-
-			}
-
 			std::atomic<bool> finalize;
 			std::mutex functionMutex;
 			std::condition_variable functionCondition;
@@ -103,7 +93,7 @@ namespace threadingUtils
 		MultipleRunThread() = default;
 		MultipleRunThread(MultipleRunThread&& Other) : sharedState(std::move(Other.sharedState)), thread(std::move(Other.thread)) {}
 		MultipleRunThread(const MultipleRunThread&) = delete;
-		virtual ~MultipleRunThread() { }
+		~MultipleRunThread() { }
 
 
 		MultipleRunThread& operator=(MultipleRunThread&& Other) { sharedState = std::move(Other.sharedState); thread = std::move(Other.thread); }
@@ -123,9 +113,10 @@ namespace threadingUtils
 
 				thread = Thread([](utils::shared_ptr<SharedState> sharedState){
 
+					// Pętla wykonująca kolejne operacje
 					while (true){
 						std::unique_lock<std::mutex> lock(sharedState->functionMutex);
-
+						// Pętla czekająca na operację
 						while (sharedState->functionCondition.wait_for(lock,
 							std::chrono::milliseconds(100),
 							[=]() { return (sharedState->functionWrapper != nullptr) || (sharedState->finalize == true); }) == false) {}
@@ -135,9 +126,7 @@ namespace threadingUtils
 						}
 
 						if (sharedState->functionWrapper != nullptr){
-							auto fw = sharedState->functionWrapper;
-							sharedState->functionWrapper.reset();
-
+							auto fw = std::move(sharedState->functionWrapper);
 							(*fw)();
 						}
 					}
@@ -163,6 +152,9 @@ namespace threadingUtils
 					catch (...){
 						auto e = std::current_exception();
 						ExceptionHandlePolicy::handle(e);
+						// Musze zagwarantować że future dostanie jakiś wyjątek
+						// gdyby ExceptionHandlePolicy chciał zgasić wyjątki,
+						// może też rzucić inny wyjątek lub coś sobie z nim zrobić
 						std::rethrow_exception(e);
 					}
 				};
@@ -216,10 +208,8 @@ namespace threadingUtils
 			}
 		}
 
-	protected:
-		Thread thread;
-
 	private:
+		Thread thread;
 		utils::shared_ptr<SharedState> sharedState;
 	};
 }

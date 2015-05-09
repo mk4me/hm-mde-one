@@ -17,7 +17,7 @@ namespace  kinematicTest {
 		public:
 			virtual ~Viewer() {}
 			static void start();
-			static std::vector<osg::Vec3> getPos(kinematic::SkeletonState &skeletonState);
+			static std::vector<osg::Vec3> getPos(const kinematic::Skeleton &skeleton);
 	};
 }
 

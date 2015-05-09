@@ -95,6 +95,8 @@ namespace IMU
 		virtual QWidget* getSettingsWidget();
 		//! \param offeredTypes Typy oferowane przez to Ÿród³o
 		virtual void getOfferedTypes(utils::TypeInfoList & offeredTypes) const;
+		
+		virtual bool addCostume(const CostumeID & id) override;
 
 		virtual const bool refreshCostumes() override;
 

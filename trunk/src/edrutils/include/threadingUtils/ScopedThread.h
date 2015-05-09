@@ -18,8 +18,8 @@ namespace threadingUtils
 	class ScopedThread
 	{
 	public:
-		//! \param t_ W¹tek którego pilnujemy
-		explicit ScopedThread(Thread t_) : t(std::move(t_))
+		//! \param t W¹tek którego pilnujemy
+		explicit ScopedThread(Thread && t) : t(std::move(t))
 		{
 			if (t.joinable() == false){
 				throw std::logic_error("Empty thread");
@@ -32,8 +32,8 @@ namespace threadingUtils
 			t.join();
 		}
 
-		ScopedThread(ScopedThread const&) = delete;
-		ScopedThread& operator=(ScopedThread const&) = delete;
+		ScopedThread(const ScopedThread &) = delete;
+		ScopedThread& operator=(const ScopedThread &) = delete;
 
 	private:
 		//! Obs³ugiwany w¹tek

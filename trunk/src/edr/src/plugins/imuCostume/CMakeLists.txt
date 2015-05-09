@@ -30,6 +30,7 @@ SET_PRIVATE_HEADERS (
 	SensorIDDelegate.h
 	SkeletonJointsDelegate.h
 	Vector3DDelegate.h
+	ConnectCostumeInputDialog.h
 )
 
 SET_SOURCE_FILES(
@@ -53,6 +54,7 @@ SET_SOURCE_FILES(
 	SensorIDDelegate.cpp
 	SkeletonJointsDelegate.cpp
 	Vector3DDelegate.cpp
+	ConnectCostumeInputDialog.cpp
 )
 
 SET_MOC_FILES(
@@ -64,12 +66,14 @@ SET_MOC_FILES(
 	SkeletonJointsDelegate.h
 	OrientationEstimationAlgorithmDelegate.h
 	SensorIDDelegate.h
+	ConnectCostumeInputDialog.h
 )
 
 SET_UI_FILES(
 	IMUCostumeListWidget.ui	
 	IMUCostumeProfileEditionWizard.ui
 	RecordingWizard.ui
+	ConnectCostumeInputDialog.ui
 )
 
 SET_RC_FILES(

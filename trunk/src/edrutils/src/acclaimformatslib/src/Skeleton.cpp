@@ -4,7 +4,7 @@ using namespace acclaim;
 
 Skeleton::Units::Units()
 {
-	defaultValues["length"] = 1.0;
+	defaultValues["length"] = 0.1;
 	defaultValues["mass"] = 1.0;
 	setAngleType(kinematicUtils::Deg);
 }
@@ -86,9 +86,9 @@ Skeleton::HelperMotionData Skeleton::helperMotionData(const Skeleton & skeleton)
 	return ret;
 }
 
-Skeleton::BonesMapping Skeleton::createMapping(const Bones & bones)
+Skeleton::Mapping Skeleton::createMapping(const Bones & bones)
 {
-	BonesMapping ret;	
+	Mapping ret;	
 	for (const auto & bd : bones)
 	{
 		ret.insert(ret.end(), { bd.first, bd.second.name });

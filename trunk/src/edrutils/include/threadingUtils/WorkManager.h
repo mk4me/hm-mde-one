@@ -20,7 +20,7 @@ namespace threadingUtils {
 	//! \tparam RunnableThread Typ w¹tku który mo¿na uruchamiaæ (run)
 	//! Klasa realizuj¹ca funkcjonalnoœæ managera prac, zarz¹dzaj¹cego zleconymi zadaniami i ich realizacj¹
 	//! na zarz¹dzanych w¹tkach
-	template<class WorkQueue, class RunnableThread, typename WorkExceptionHandlePolicy = RawCallPolicy>
+	template<class WorkQueue, class RunnableThread, typename WorkExceptionHandlePolicy = ConsumeExceptionHandlePolicy>
 	class WorkManager
 	{
 
@@ -140,7 +140,7 @@ namespace threadingUtils {
 			~WorkExecutor() {}
 
 			//! Metoda koñczy dzia³anie przetwarzania zadañ przez obs³ugiwany w¹tek
-			void forceFinalize() { if (sharedState == nullptr) { throw std::runtime_error("Operation not permitted"); sharedState->forceFinalize = true; }
+			void forceFinalize() { if (sharedState != nullptr) sharedState->forceFinalize = true; }
 
 			//! Metoda czeka na zakoñæzenie w¹tku
 			void join()

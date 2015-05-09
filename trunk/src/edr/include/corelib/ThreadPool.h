@@ -129,7 +129,15 @@ namespace core
 				this->innerThread.run([ff](utils::shared_ptr<Description> description)
 				{
 					DescriptionLocalGuard dlg(description);
-					ff();
+					try{
+						ff();
+					}
+					catch (std::exception & e){
+
+					}
+					catch (...){
+
+					}
 				}, description);
 			}
 

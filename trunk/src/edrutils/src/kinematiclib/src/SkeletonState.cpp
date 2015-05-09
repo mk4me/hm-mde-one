@@ -51,16 +51,16 @@ SkeletonState::AcclaimActiveSkeletonMapping SkeletonState::createAcclaimActiveMa
 	return ret;
 }
 
-SkeletonState::NonRigidJointState convert(const acclaim::Skeleton & skeleton,
+SkeletonState::NonRigidJointState convert(const acclaim::Skeleton::Bones & skeletonBones,
 	const acclaim::MotionData::BoneData & boneData, const bool angleInRadians,
 	const acclaim::Bone::HelperMotionData & helperMotionData)
 {
-	auto it = std::find_if(skeleton.bones.begin(), skeleton.bones.end(), [&boneData](const acclaim::Skeleton::Bones::value_type & val)
+	auto it = std::find_if(skeletonBones.begin(), skeletonBones.end(), [&boneData](const acclaim::Skeleton::Bones::value_type & val)
 	{
 		return val.second.name == boneData.name;
 	});
 
-	if (it == skeleton.bones.end()){
+	if (it == skeletonBones.end()){
 		throw std::runtime_error("Acclaim motion data mismatch skeleton structure - missing " + boneData.name + " node");
 	}
 
@@ -145,24 +145,38 @@ void orderChanges(const acclaim::Skeleton & skeleton, const int currentBoneID,
 	}
 }
 
-SkeletonState::RigidPartialStateLocal SkeletonState::convert(const acclaim::Skeleton & skeleton,
+SkeletonState::RigidPartialStateLocal SkeletonState::convert(
+	const acclaim::Skeleton::Bones & bones,
+	const acclaim::Skeleton::Mapping & aMapping,
 	const acclaim::MotionData::BonesData & motionData,
-	const LinearizedSkeleton::Mapping & mapping,
-	const acclaim::Skeleton::HelperMotionData & helperMotionData)
+	const AcclaimActiveSkeletonMapping & activeMapping,
+	const acclaim::Skeleton::HelperMotionData & helperMotionData,
+	const bool angleInRadians)
 {
-	RigidPartialStateLocal ret;
-
-	const bool angleInRadians = skeleton.units.isAngleInRadians();
+	RigidPartialStateLocal ret;	
 
 	for (const auto & bd : motionData)
 	{
-		auto it = mapping.right.find(bd.name);
-		const auto nodeID = it->get_left();
-		auto hIT = helperMotionData.find(nodeID);
-		const auto jointState = ::convert(skeleton, bd, angleInRadians, hIT->second);
-		ret.orientations.insert({ nodeID, jointState.orientation });
+		auto it = aMapping.right.find(bd.name);
+		if (it == aMapping.right.end()){
+			throw std::runtime_error("Acclaim motion data mismatch mapping - missing " + bd.name + " bone");
+		}
 
-		if (nodeID == 0){
+		const auto aNodeID = it->get_left();
+		auto hIT = helperMotionData.find(aNodeID);
+		if (hIT == helperMotionData.end()){
+			throw std::runtime_error("Acclaim motion data mismatch skeleton motion helper data - missing " + bd.name + " bone");
+		}
+
+		auto aIT = activeMapping.right.find(aNodeID);
+		if (aIT == activeMapping.right.end()){
+			throw std::runtime_error("Acclaim motion data mismatch active skeleton mapping - missing " + bd.name + " bone");
+		}
+
+		const auto jointState = ::convert(bones, bd, angleInRadians, hIT->second);
+		ret.orientations.insert({ aIT->get_left(), jointState.orientation });
+
+		if (aIT->get_left() == 0){
 			ret.position = jointState.position;
 		}
 	}
@@ -171,7 +185,7 @@ SkeletonState::RigidPartialStateLocal SkeletonState::convert(const acclaim::Skel
 }
 
 acclaim::MotionData::BonesData SkeletonState::convert(const acclaim::Skeleton & skeleton,
-	const SkeletonState::RigidCompleteState & skeletonState,
+	const SkeletonState::RigidCompleteStateLocal & skeletonState,
 	const AcclaimActiveSkeletonMapping & activeMapping,
 	const acclaim::Skeleton::HelperMotionData & helperMotionData)
 {
@@ -235,48 +249,51 @@ acclaim::MotionData::BonesData SkeletonState::convert(const acclaim::Skeleton & 
 
 	for (unsigned int i = 1; i < skeletonState.orientations.size(); ++i)
 	{
-		auto acclaimID = activeMapping.left.find(i)->second;
-		acclaim::MotionData::BoneData bd;
-		const auto & bData = skeleton.bones.find(acclaimID)->second;
-		bd.name = bData.name;
-		const auto & hData = helperMotionData.find(acclaimID)->second;
-		//osg::Quat c = kinematicUtils::convert(resolveRadians(angleInRadians, sIT->second.axis), sIT->second.axisOrder);
-		//osg::Quat cinv = c.inverse();
+		auto it = activeMapping.left.find(i);
+		if (it != activeMapping.left.end()){
+			auto acclaimID = it->get_right();
+			acclaim::MotionData::BoneData bd;
+			const auto & bData = skeleton.bones.find(acclaimID)->second;
+			bd.name = bData.name;
+			const auto & hData = helperMotionData.find(acclaimID)->second;
+			//osg::Quat c = kinematicUtils::convert(resolveRadians(angleInRadians, sIT->second.axis), sIT->second.axisOrder);
+			//osg::Quat cinv = c.inverse();
 
-		//auto orient = kinematicUtils::convert(c * joint->value().localOrientation() * cinv, sIT->second.rotationOrder());
-		auto rotationOrder = bData.rotationOrder();
-		auto orient = kinematicUtils::convert(hData.c * skeletonState.orientations[i] * hData.cInv, rotationOrder);
+			//auto orient = kinematicUtils::convert(c * joint->value().localOrientation() * cinv, sIT->second.rotationOrder());
+			auto rotationOrder = bData.rotationOrder();
+			auto orient = kinematicUtils::convert(hData.c * skeletonState.orientations[i] * hData.cInv, rotationOrder);
 
-		if (angleInRadians == false){
-			orient = kinematicUtils::toDegrees(orient);
-		}
-
-		orient = kinematicUtils::orderedAngles(orient, rotationOrder);
-
-		for (auto dO : bData.dofs)
-		{
-			switch (dO.channel)
-			{
-			case kinematicUtils::ChannelType::RX:
-				bd.channelValues.push_back(orient.x());
-				break;
-			case kinematicUtils::ChannelType::RY:
-				bd.channelValues.push_back(orient.y());
-				break;
-			case kinematicUtils::ChannelType::RZ:
-				bd.channelValues.push_back(orient.z());
-				break;
-			case acclaim::DegreeOfFreedom::L:
-				//TODO - co zrobić z tym przesunięciem?
-				break;
-
-			default:
-				throw std::runtime_error("Unrecognized data channel for AMC file");
-				break;
+			if (angleInRadians == false){
+				orient = kinematicUtils::toDegrees(orient);
 			}
-		}
 
-		ret.push_back(bd);
+			orient = kinematicUtils::orderedAngles(orient, rotationOrder);
+
+			for (auto dO : bData.dofs)
+			{
+				switch (dO.channel)
+				{
+				case kinematicUtils::ChannelType::RX:
+					bd.channelValues.push_back(orient.x());
+					break;
+				case kinematicUtils::ChannelType::RY:
+					bd.channelValues.push_back(orient.y());
+					break;
+				case kinematicUtils::ChannelType::RZ:
+					bd.channelValues.push_back(orient.z());
+					break;
+				case acclaim::DegreeOfFreedom::L:
+					//TODO - co zrobić z tym przesunięciem?
+					break;
+
+				default:
+					throw std::runtime_error("Unrecognized data channel for AMC file");
+					break;
+				}
+			}
+
+			ret.push_back(bd);
+		}
 	}
 
 	return ret;

@@ -403,8 +403,8 @@ void KinematicStreamExtractor::extract(const IMU::MotionStream::value_type & inp
 
 	kinematic::SkeletonState::applyState(skeleton_, input.second);
 
-	kinematic::LinearizedSkeleton::Visitor::globalIndexedVisit(skeleton_,
-		[&locOutput](kinematic::Skeleton::JointPtr joint, const kinematic::LinearizedSkeleton::NodeIDX idx)
+	kinematic::LinearizedSkeleton::Visitor::visit(skeleton_,
+		[&locOutput](kinematic::Skeleton::JointPtr joint)
 	{
 		locOutput.push_back({ joint->value().localPosition(), joint->value().localOrientation() });
 	});

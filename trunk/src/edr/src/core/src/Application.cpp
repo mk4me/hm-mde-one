@@ -303,7 +303,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 		core::ThreadPool::Threads threads;
 		threadPool_->get(std::thread::hardware_concurrency() - 1, threads,  true, "Core", "JobManager worker thread");
 
-		for (auto & t : threads){			
+		for (auto && t : threads){			
 			innerWorkManager_->addWorkerThread(std::move(t));
 		}
 	}

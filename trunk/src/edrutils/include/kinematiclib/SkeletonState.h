@@ -131,17 +131,19 @@ namespace kinematic
 		//! \param motionData Dane ruchu w formacie acclaim - ramka danych
 		//! \param mapping Mapowanie danych acclaim do szkieletu
 		//! \return Zmiana stanu szkieletu
-		static RigidPartialStateLocal convert(const acclaim::Skeleton & skeleton,
+		static RigidPartialStateLocal convert(const acclaim::Skeleton::Bones & bones,
+			const acclaim::Skeleton::Mapping & aMapping,
 			const acclaim::MotionData::BonesData & motionData,
-			const LinearizedSkeleton::Mapping & mapping,
-			const acclaim::Skeleton::HelperMotionData & helperMotionData);
+			const AcclaimActiveSkeletonMapping & activeMapping,
+			const acclaim::Skeleton::HelperMotionData & helperMotionData,
+			const bool angleInRadians);
 
 		//! \param skeleton Szkielet dla którego tworzymy zmianę stanu szkieletu
 		//! \param motionData Dane ruchu w formacie acclaim - ramka danych
 		//! \param mapping Mapowanie danych acclaim do szkieletu
 		//! \return Zmiana stanu szkieletu
 		static acclaim::MotionData::BonesData convert(const acclaim::Skeleton & skeleton,
-			const RigidCompleteState & skeletonState,
+			const RigidCompleteStateLocal & skeletonState,
 			const AcclaimActiveSkeletonMapping & activeMapping,
 			const acclaim::Skeleton::HelperMotionData & helperMotionData);
 

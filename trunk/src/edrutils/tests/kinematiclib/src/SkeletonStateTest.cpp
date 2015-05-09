@@ -103,9 +103,11 @@ void SkeletonStateTest::testMapping()
 void SkeletonStateTest::testFrameConvert()
 {
 	kinematic::Skeleton skeleton;
-	kinematic::Skeleton::convert(*this->acclaimSkeleton, skeleton);
-	const auto mapping = kinematic::LinearizedSkeleton::createCompleteMapping(skeleton);
-	kinematic::SkeletonState::RigidPartialState sChange = kinematic::SkeletonState::convert(*acclaimSkeleton, acclaimData->frames[0].bonesData, mapping, *acclaimhelperMotionData);
+	kinematic::Skeleton::convert(*this->acclaimSkeleton, skeleton);	
+	const auto amapping = acclaim::Skeleton::createMapping(acclaimSkeleton->bones);
+	const auto activeMapping = kinematic::SkeletonState::createAcclaimActiveMapping(skeleton, acclaimSkeleton->bones);	
+
+	auto sChange = kinematic::SkeletonState::convert(acclaimSkeleton->bones, amapping, acclaimData->frames[0].bonesData, activeMapping, *acclaimhelperMotionData, acclaimSkeleton->units.isAngleInRadians());
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(9.60681, sChange.position.x(), epsilon);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(4.21614, sChange.position.y(), epsilon);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.253612, sChange.position.z(), epsilon);
@@ -118,8 +120,8 @@ void SkeletonStateTest::testFrameConvert()
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.y(), sChange.orientations[3].y(), epsilon);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.z(), sChange.orientations[3].z(), epsilon);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.w(), sChange.orientations[3].w(), epsilon);
-
-	sChange = kinematic::SkeletonState::convert(*acclaimSkeleton, acclaimData->frames.rbegin()->bonesData, mapping, *acclaimhelperMotionData);
+	
+	sChange = kinematic::SkeletonState::convert(acclaimSkeleton->bones, amapping, acclaimData->frames.rbegin()->bonesData, activeMapping, *acclaimhelperMotionData, acclaimSkeleton->units.isAngleInRadians());
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(-7.58606, sChange.position.x(), epsilon);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(4.3173, sChange.position.y(), epsilon);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.476158, sChange.position.z(), epsilon);
@@ -129,13 +131,16 @@ void SkeletonStateTest::testConvertStateChange()
 {
 	kinematic::Skeleton skeleton;
 	kinematic::Skeleton::convert(*this->acclaimSkeleton, skeleton);
-	auto mapping = kinematic::LinearizedSkeleton::createCompleteMapping(skeleton);
+	const auto kmapping = kinematic::LinearizedSkeleton::createNonLeafMapping(skeleton);
+	const auto amapping = acclaim::Skeleton::createMapping(acclaimSkeleton->bones);
+	const auto activeMapping = kinematic::SkeletonState::createAcclaimActiveMapping(skeleton, acclaimSkeleton->bones);
 
-	kinematic::SkeletonState::RigidPartialState frame = kinematic::SkeletonState::convert(*acclaimSkeleton, acclaimData->frames[0].bonesData, mapping, *acclaimhelperMotionData);
+	auto frame = kinematic::SkeletonState::convert(acclaimSkeleton->bones, amapping, acclaimData->frames[0].bonesData, activeMapping, *acclaimhelperMotionData, acclaimSkeleton->units.isAngleInRadians());
+	
 	//kinematic::SkeletonState::NonRigidCompleteStateChange frame = kinematic::SkeletonState::convertStateChange(mapping, sChange);
 	CPPUNIT_ASSERT_EQUAL((int)acclaimActiveBones, (int)frame.orientations.size());
-	auto id1 = mapping.right.find("lhipjoint")->get_left();
-	auto id2 = mapping.right.find("rhipjoint")->get_left();
+	auto id1 = kmapping.right.find("lhipjoint")->get_left();
+	auto id2 = kmapping.right.find("rhipjoint")->get_left();
 
 
 	//auto lhipjointData = frame[mapping.right.at("lhipjoint")];
@@ -146,7 +151,7 @@ void SkeletonStateTest::testConvertStateChange()
 	//CPPUNIT_ASSERT(rhipjointData.rotation == lhipjointData.rotation);
 
 	//rhand 9.42497 - 7.79745 32.1625
-	auto rhand = frame.orientations[mapping.right.at("rhand")];
+	auto rhand = frame.orientations[kmapping.right.find("rhand")->get_left()];
 	//CPPUNIT_ASSERT(rhand.translation == osg::Vec3());
 	osg::Vec3d rad = kinematicUtils::toRadians(osg::Vec3d(9.42497, -7.79745, 32.1625));
 	osg::Quat q = kinematicUtils::convertXYZ(rad);

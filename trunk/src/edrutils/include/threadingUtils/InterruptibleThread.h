@@ -21,12 +21,12 @@ namespace threadingUtils
 	//! \tparam RunnableThread Polityka w�tku z metod� uruchamiania zada� run
 	//! \tparam InterruptHandlingPolicy Polityka obs�ugi przerwania w w�tku
 	//! \tparam InteruptiblePolicy Polityka realizuj�ca przerywanie w�tku
-	template<typename RunnableThread, typename ExceptionHandlePolicy = RawCallPolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InterruptiblePolicyT = NoInterruptiblePolicy>
+	template<typename RunnableThread, typename ExceptionHandlePolicy = ConsumeExceptionHandlePolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InterruptiblePolicyT = NoInterruptiblePolicy>
 	class InterrubtibleThread
 	{
 	public:
 		//! Typ polityki przerywania wątku
-		typedef InterruptiblePolicyT InterruptiblePolicy;
+		using InterruptiblePolicy = InterruptiblePolicyT;
 
 	private:
 		//! Struktura zawierająca prywatny, współdzielony stan wątku
@@ -45,7 +45,7 @@ namespace threadingUtils
 		//! Konstruktor kopiujący
 		InterrubtibleThread(const InterrubtibleThread&) = delete;
 		//! Destruktor wirtualny
-		virtual ~InterrubtibleThread() {}
+		~InterrubtibleThread() {}
 
 		//! Operator przypisania
 		//! \param Other przenoszony wątek
@@ -108,12 +108,13 @@ namespace threadingUtils
 		utils::shared_ptr<SharedState> sharedState;
 	};
 
-	template<typename RunnableThread, typename ExceptionHandlePolicy = RawCallPolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InterruptiblePolicyT = NoInterruptiblePolicy>
+	template<typename RunnableThread, typename ExceptionHandlePolicy = ConsumeExceptionHandlePolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InterruptiblePolicyT = NoInterruptiblePolicy>
 	class InterruptibleMultipleRunThread
 	{
 	public:
 
-			typedef InterruptiblePolicyT InterruptiblePolicy;
+		using InterruptiblePolicy = InterruptiblePolicyT;
+
 	private:
 
 		typedef InterruptibleMultipleRunThread<RunnableThread, ExceptionHandlePolicy, InterruptHandlingPolicy, InterruptiblePolicy> MyThreadType;
@@ -127,12 +128,11 @@ namespace threadingUtils
 			InterruptiblePolicy interruptible;
 		};
 
-	public:
-
+	public:		
 		InterruptibleMultipleRunThread() {}
 		InterruptibleMultipleRunThread(InterruptibleMultipleRunThread&& Other) : sharedState(std::move(Other.sharedState)), thread(std::move(Other.thread)) {}
 		InterruptibleMultipleRunThread(const InterruptibleMultipleRunThread&) = delete;
-		virtual ~InterruptibleMultipleRunThread() { }
+		~InterruptibleMultipleRunThread() { }
 
 
 		InterruptibleMultipleRunThread& operator=(InterruptibleMultipleRunThread&& Other) { sharedState = std::move(Other.sharedState); thread = std::move(Other.thread); return *this; }
@@ -169,9 +169,7 @@ namespace threadingUtils
 
 						if (sharedState->functionWrapper != nullptr){
 
-							auto fw = sharedState->functionWrapper;
-							sharedState->functionWrapper.reset();
-
+							auto fw = std::move(sharedState->functionWrapper);
 							(*fw)();
 
 							InterruptiblePolicy::resetInterruption();
@@ -261,10 +259,8 @@ namespace threadingUtils
 			}
 		}
 
-	protected:
-		RunnableThread thread;
-
 	private:
+		RunnableThread thread;
 		utils::shared_ptr<SharedState> sharedState;
 	};
 }

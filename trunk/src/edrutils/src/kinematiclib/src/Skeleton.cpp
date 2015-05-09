@@ -11,6 +11,17 @@
 
 using namespace kinematic;
 
+osg::Vec3d correctNegativeZero(const osg::Vec3 & value)
+{
+	auto ret(value);
+	for (unsigned int i = 0; i < 3; ++i)
+	{
+		ret[i] = utils::correctNegativeZero(ret[i]);
+	}
+
+	return ret;
+}
+
 class Skeleton::JointData::JointDataImpl
 {
 private:
@@ -86,9 +97,14 @@ private:
 
 public:
 
+	JointDataImpl(const JointDataImpl & other)
+		: node(new osg::PositionAttitudeTransform(*(other.node), osg::CopyOp::DEEP_COPY_ALL))
+	{
+
+	}
+
 	JointDataImpl(const std::string & name, const osg::Vec3d & translation,
-		const osg::Quat & rotation) : node(new osg::PositionAttitudeTransform)//,
-		//originTranslation(translation)
+		const osg::Quat & rotation) : node(new osg::PositionAttitudeTransform)
 	{
 		node->setName(name);
 		node->setPosition(translation);
@@ -99,6 +115,12 @@ public:
 	JointDataImpl(JointDataImpl & parent, const std::string & name,
 		const osg::Vec3d & translation, const osg::Quat & rotation) :
 		JointDataImpl(name, translation, rotation)
+	{
+		parent.node->addChild(node);
+	}
+
+	JointDataImpl(JointDataImpl & parent, const JointDataImpl & other)
+		: node(new osg::PositionAttitudeTransform(*(other.node), osg::CopyOp::DEEP_COPY_ALL))
 	{
 		parent.node->addChild(node);
 	}
@@ -164,7 +186,6 @@ public:
 	//! \param position Globalna pozycja
 	void setLocal(const osg::Vec3d & position)
 	{
-		//node->setPosition(originTranslation + position);
 		node->setPosition(position);
 	}
 
@@ -214,8 +235,13 @@ public:
 private:
 	//! Węzeł osg
 	osg::ref_ptr<osg::PositionAttitudeTransform> node;
-	//osg::Vec3d originTranslation;
 };
+
+Skeleton::JointData::JointData(const JointData & other)
+	: impl(new JointDataImpl(*(other.impl)))
+{
+
+}
 
 Skeleton::JointData::JointData(const std::string & name, const osg::Vec3d & translation, const osg::Quat & rotation)
 	: impl(new JointDataImpl(name, translation, rotation))
@@ -228,6 +254,12 @@ Skeleton::JointData::JointData(JointData & parent, const std::string & name,
 	: impl(new JointDataImpl(*(parent.impl), name, translation, rotation))
 {
 	
+}
+
+Skeleton::JointData::JointData(JointData & parent, const JointData & other)
+	: impl(new JointDataImpl(*(parent.impl), *(other.impl)))
+{
+
 }
 
 Skeleton::JointData::JointData(JointData && Other) : impl(std::move(Other.impl))
@@ -329,10 +361,25 @@ Skeleton::Skeleton()
 
 }
 
-Skeleton::Skeleton(const Skeleton & other)
-	: root_(Joint::clone(other.root_))
+Skeleton::JointPtr createJoint(Skeleton::JointPtr parent, Skeleton::JointConstPtr joint)
 {
+	auto ret = Skeleton::Joint::create({ parent->value(), joint->value() });
 
+	for (const auto & c : joint->children())
+	{
+		Skeleton::Joint::add(ret, createJoint(ret, c));
+	}
+
+	return ret;
+}
+
+Skeleton::Skeleton(const Skeleton & other)
+	: root_(Joint::create(other.root_->value()))
+{
+	for (const auto & c : other.root()->children())
+	{
+		Joint::add(root_, createJoint(root_, c));
+	}
 }
 
 Skeleton::Skeleton(Skeleton && other)
@@ -370,7 +417,7 @@ Skeleton & Skeleton::operator = (Skeleton && Other)
 Skeleton & Skeleton::operator=(const Skeleton & Other)
 {
 	if (this != &Other){
-		root_ = Joint::clone(Other.root_);
+		root_ = Skeleton(Other).root_;
 	}
 	return *this;
 }
@@ -505,12 +552,14 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 		localSkeleton.name = "kinematicSkeleton";
 		localSkeleton.axisOrder = axisOrder;
 		localSkeleton.units.setAngleType(angleUnit);
-		localSkeleton.position = srcSkeleton.root_->value().localPosition();
+		localSkeleton.position = correctNegativeZero(srcSkeleton.root_->value().localPosition());
 		localSkeleton.orientation = kinematicUtils::convert(srcSkeleton.root_->value().localOrientation(), axisOrder);
 
 		if (angleUnit == kinematicUtils::Deg){
 			localSkeleton.orientation = kinematicUtils::toDegrees(localSkeleton.orientation);
 		}
+
+		localSkeleton.orientation = correctNegativeZero(localSkeleton.orientation);
 
 		acclaim::Bone::ID id = 0;
 
@@ -518,7 +567,7 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 		bone.id = id;
 		bone.name = "root";
 		bone.axisOrder = localSkeleton.axisOrder;
-		bone.direction = srcSkeleton.root_->value().localOrientation() * osg::Vec3(1, 0, 0);
+		bone.direction = correctNegativeZero(srcSkeleton.root_->value().localOrientation() * osg::Vec3(1, 0, 0));
 		bone.length = 0.0;
 
 		localSkeleton.bones.insert({ bone.id, bone });
@@ -542,12 +591,12 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 
 						if (joint->children().size() == 1){
 							bone.length = joint->children().front()->value().localPosition().length();
-							bone.direction = joint->children().front()->value().localPosition();
+							bone.direction = correctNegativeZero(joint->children().front()->value().localPosition());
 							bone.direction.normalize();
 						}
 						else{
 							bone.length = 0.0;
-							bone.direction = joint->parent()->value().localOrientation() * osg::Vec3(1, 0, 0);
+							bone.direction = correctNegativeZero(joint->parent()->value().localOrientation() * osg::Vec3(1, 0, 0));
 						}
 
 						bone.axis = osg::Vec3(0, 0, 0);

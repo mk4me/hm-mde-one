@@ -59,6 +59,7 @@ public:
 
 private slots:	
 
+	void onConnectCostume();
 	void onSensoresListContextMenu(const QPoint & position);
 	void onCostumesListContextMenu(const QPoint & position);
 	void onCostumeChange(QTreeWidgetItem * current, QTreeWidgetItem * previous);

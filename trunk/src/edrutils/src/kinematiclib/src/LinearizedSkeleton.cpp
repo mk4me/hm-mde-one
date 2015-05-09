@@ -21,12 +21,14 @@ LinearizedSkeleton::Order LinearizedSkeleton::createNonLeafOrder(const Skeleton 
 	return Visitor::createNonLeafOrderKey(skeleton, NameKeyExtractor());
 }
 
-LinearizedSkeleton::Mapping LinearizedSkeleton::createCompleteMapping(const Skeleton & skeleton)
+LinearizedSkeleton::GlobalMapping LinearizedSkeleton::createCompleteMapping(const Skeleton & skeleton)
 {
-	return Visitor::createCompleteMappingKey(skeleton, NameKeyExtractor());
+	return GlobalMapping(Visitor::createCompleteMappingKey(skeleton, NameKeyExtractor()));
 }
 
-LinearizedSkeleton::Mapping LinearizedSkeleton::createNonLeafMapping(const Skeleton & skeleton)
+LinearizedSkeleton::LocalMapping LinearizedSkeleton::createNonLeafMapping(const Skeleton & skeleton)
 {
-	return Visitor::createNonLeafMappingKey(skeleton, NameKeyExtractor());
+	auto order = Visitor::createNonLeafOrderKey(skeleton, NameKeyExtractor());
+	
+	return LocalMapping(Visitor::convert(order));
 }

@@ -424,6 +424,7 @@ void IMUCostumeDataSource::resfreshCostumesData()
 					}
 					else{
 
+						std::lock_guard<std::recursive_mutex > lock(synch);
 						cd.second.samplesStatus->negativeSample();
 
 						//nie ma danych to sensory tez maja false probke
@@ -547,6 +548,31 @@ void IMUCostumeDataSource::getOfferedTypes(utils::TypeInfoList & offeredTypes) c
 	offeredTypes.push_back(typeid(IMUStream));
 	offeredTypes.push_back(typeid(Vec3Stream));
 	offeredTypes.push_back(typeid(ScalarStream));
+}
+
+bool IMUCostumeDataSource::addCostume(const CostumeID & id)
+{
+	static const uint8_t MaxSamplesCount = 125;
+	std::lock_guard<std::recursive_mutex > lock(synch);
+	auto it = costumesData.find(id);
+	if (it == costumesData.end()){
+		try{
+			CostumeData cData;
+			cData.rawCostume.reset(new imuCostume::CostumeRawIO(id.ip, id.port));
+			cData.rawCostume->setSamplingDelay(10);
+			cData.rawDataStream.reset(new RawDataStream);
+			cData.samplesStatus = utils::make_shared<utils::SamplesStatus>(100, createStatusMap());
+			cData.samplesStatus->positiveSample();
+			configureCostume(cData);
+			innerRefreshCostumeSensorsConfiguration(cData, MaxSamplesCount);
+			costumesData.insert(CostumesData::value_type(id, cData));
+		}
+		catch (...){
+			return false;
+		}
+	}
+
+	return it == costumesData.end();
 }
 
 const bool IMUCostumeDataSource::refreshCostumes()

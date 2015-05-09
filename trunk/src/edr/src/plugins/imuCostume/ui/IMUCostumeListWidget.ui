@@ -438,6 +438,11 @@
     </layout>
    </item>
   </layout>
+  <action name="actionConnect_costume">
+   <property name="text">
+    <string>Connect costume</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="imuCostumeIcons.qrc"/>
@@ -523,6 +528,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionConnect_costume</sender>
+   <signal>triggered()</signal>
+   <receiver>IMUCostumeListWidget</receiver>
+   <slot>onConnectCostume()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>260</x>
+     <y>364</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>260</x>
+     <y>364</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onCostumesListContextMenu(QPoint)</slot>
@@ -531,5 +552,6 @@
   <slot>onRecord(bool)</slot>
   <slot>onSensoresListContextMenu(QPoint)</slot>
   <slot>onOptions()</slot>
+  <slot>onConnectCostume()</slot>
  </slots>
 </ui>

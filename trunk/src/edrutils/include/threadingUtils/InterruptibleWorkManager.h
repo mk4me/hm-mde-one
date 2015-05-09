@@ -112,7 +112,14 @@ namespace threadingUtils
 			//! Struktura opisuj¹ca wspólny stan w¹tku i obiektu zarz¹dzaj¹cego jego prac¹ przy przetwarzaniu zleconych zadañ
 			struct SharedState
 			{
-				SharedState()
+				SharedState() : workManager(nullptr), forceFinalize(false)
+				{
+
+				}
+
+				SharedState(InterruptibleWorkManager * workManager,
+					bool forceFinalize) : workManager(workManager),
+					forceFinalize(forceFinalize)
 				{
 
 				}
@@ -132,10 +139,8 @@ namespace threadingUtils
 			//! \param jobManager Manager zadañ
 			//! \param thread W¹tek który przejmujemy na potrzeby prztwarzania zleconych zadañ
 			WorkExecutor(InterruptibleWorkManager * workManager, InterruptibleThread && thread)
-				: sharedState(utils::make_shared<SharedState>()), thread(std::move(thread))
-			{
-				sharedState->workManager = workManager;
-				sharedState->forceFinalize = false;
+				: sharedState(utils::make_shared<SharedState>(workManager, false)), thread(std::move(thread))
+			{				
 				this->thread.run([](utils::shared_ptr<SharedState> sharedState){
 					LocalThreadGuard localThreadGuard;
 					ThreadGuard<std::atomic<size_type>> guard(sharedState->workManager->activeCounter);
@@ -162,12 +167,9 @@ namespace threadingUtils
 
 			void finalize()
 			{
-				if (sharedState == nullptr)
-				{
-					throw std::runtime_error("Operation not permitted");
+				if (sharedState != nullptr){
+					sharedState->forceFinalize = true;
 				}
-
-				sharedState->forceFinalize = true;
 			}
 
 			//! Metoda koñczy dzia³anie przetwarzania zadañ przez obs³ugiwany w¹tek
@@ -227,16 +229,6 @@ namespace threadingUtils
 
 		struct WorkSharedState
 		{
-			WorkSharedState()
-			{
-
-			}
-
-			~WorkSharedState()
-			{
-
-			}
-
 			std::promise<void*> interruptPrivateData;
 			utils::shared_ptr<bool> interrupt;
 		};
@@ -253,14 +245,6 @@ namespace threadingUtils
 
 		template<typename T>
 		using FutureType = InterruptibleFuture < T, typename InterruptibleThread::InterruptiblePolicy >;
-
-		/*
-		template<typename T>
-		struct FutureType = InterruptibleFuture < T, typename InterruptibleThread::InterruptPolicy > ;
-		{
-			typedef InterruptibleFuture<T, typename InterruptibleThread::InterruptPolicy> type;
-		};
-		*/
 
 	public:
 

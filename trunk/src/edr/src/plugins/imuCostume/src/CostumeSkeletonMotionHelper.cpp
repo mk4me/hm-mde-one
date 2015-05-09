@@ -42,13 +42,13 @@ void CostumeSkeletonMotionHelper::estimate(const IMU::SensorsStreamData & stream
 }
 
 CostumeSkeletonMotionHelper::CostumeSkeletonMotionHelper(IMU::SensorsStreamPtr sensorsStream,
-	IMU::CostumeProfilePtr costumeProfile,
-	const unsigned int maxSamples,
-	const unsigned int calibratinStageChangeValue, QWidget * parent)
-	: QObject(parent), sensorsStream(sensorsStream), costumeProfile(costumeProfile),
-	observer(new threadingUtils::ResetableStreamStatusObserver),
-	calibratinStageChangeValue(calibratinStageChangeValue), previousTime(0),
-	first(true), complete(false), pd(new QProgressDialog(parent)), cw(nullptr)
+IMU::CostumeProfilePtr costumeProfile,
+const unsigned int maxSamples,
+const unsigned int calibratinStageChangeValue, QWidget * parent)
+: QObject(parent), sensorsStream(sensorsStream), costumeProfile(costumeProfile),
+observer(new threadingUtils::ResetableStreamStatusObserver),
+calibratinStageChangeValue(calibratinStageChangeValue), previousTime(0),
+first(true), complete(false), pd(new QProgressDialog(tr("Orientation estimation algorithms"), tr("Cancel"), 0, maxSamples, parent)), cw(nullptr)
 {
 	for (const auto & sa : costumeProfile->sensorsDescriptions)
 	{
@@ -60,11 +60,9 @@ CostumeSkeletonMotionHelper::CostumeSkeletonMotionHelper(IMU::SensorsStreamPtr s
 		algorithmsProgress.insert({ sa.first, ap });
 	}	
 
-	sensorsStream->attachObserver(observer);	
+	sensorsStream->attachObserver(observer);		
 	pd->setWindowTitle(tr("Costume initialization"));
-	pd->setRange(0, maxSamples);
 	pd->setValue(0);
-	pd->setLabelText(tr("Orientation estimation algorithms"));
 
 	cw = costumeProfile->calibrationAlgorithm->calibrationWidget();
 	if (cw != nullptr){
@@ -145,11 +143,11 @@ void CostumeSkeletonMotionHelper::perform()
 			bool ret = costumeProfile->calibrationAlgorithm->calibrate(data.sensorsData, deltaTime);
 			if (ret == true){
 				complete = true;				
-				pd->setValue(pd->maximum());
+				pd->setValue(pd->maximum());				
 			}
 		}
 
-		if (pd->value() == pd->maximum()){
+		if (complete == true){
 			cancel();			
 		}
 		else {

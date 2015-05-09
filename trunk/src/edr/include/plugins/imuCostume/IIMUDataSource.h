@@ -132,6 +132,9 @@ namespace IMU
 		//! Desturktor wirtualny
 		virtual ~IIMUDataSource() {}
 
+		//! \param id Indeks kostiumu
+		//! \return Czy dany kostium jest za³adowany
+		virtual bool addCostume(const CostumeID & id) = 0;
 		//! Metoda odœwie¿a dostepne kostiumu
 		//! \return Prawda jeœli uda³o siê odœwie¿yæ kostiumy
 		virtual const bool refreshCostumes() = 0;

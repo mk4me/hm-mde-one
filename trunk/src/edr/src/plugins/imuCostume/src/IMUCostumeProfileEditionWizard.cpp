@@ -77,6 +77,7 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 		//JOINT column
 		{
 			ui->sensorsConfigurationTableWidget->setItem(row, JointIDX, new QTableWidgetItem(SkeletonJointsDelegate::defaultText()));
+			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, JointIDX), SkeletonJointsDelegate::defaultValue(), Qt::UserRole);
 		}
 
 		//ALGORITHM column
@@ -463,9 +464,6 @@ void IMUCostumeProfileEditionWizard::onInversSensorsSelection()
 
 void IMUCostumeProfileEditionWizard::onSelectCommonEstimationAlgorithm()
 {
-	//TODO
-	//select algorithm
-
 	//najpierw sprawdzamy czy nie ma już tak że wszystkie algo są takie 
 	IMU::IIMUOrientationEstimationAlgorithmConstPtr algo;
 	bool same = true;
@@ -516,7 +514,7 @@ void IMUCostumeProfileEditionWizard::onSelectCommonEstimationAlgorithm()
 	auto item = QInputDialog::getItem(this, tr("Orientation estimation algorithm"), tr("Algorithm"), values, currentID, false, &ok);
 
 	if (ok == true && item != values.first()){
-		ui->sensorsConfigurationTableWidget->blockSignals(true);
+		//ui->sensorsConfigurationTableWidget->blockSignals(true);
 		auto it = std::find(values.begin(), values.end(), item);
 		unsigned int idx = std::distance(values.begin(), it);
 		--idx;
@@ -533,7 +531,7 @@ void IMUCostumeProfileEditionWizard::onSelectCommonEstimationAlgorithm()
 			ui->sensorsConfigurationTableWidget->item(row, AlgorithmIDX)->setData(Qt::UserRole, valueData);
 		}
 
-		ui->sensorsConfigurationTableWidget->blockSignals(false);
+		//ui->sensorsConfigurationTableWidget->blockSignals(false);
 	}
 }
 
@@ -570,7 +568,8 @@ void IMUCostumeProfileEditionWizard::verifyModel(int idx)
 
 	if (enable == true){
 		auto skeleton = ui->modelComboBox->currentData(Qt::UserRole).value<IMU::SkeletonConstPtr>();
-		const auto joints = kinematic::LinearizedSkeleton::createCompleteMapping(*skeleton);
+		const auto order = kinematic::LinearizedSkeleton::createNonLeafOrder(*skeleton);
+		const auto joints = utils::LinearizedTree::convert(order);
 		skeletonJointDelegate->setJoints(joints);
 
 		//przejść przez kolumne z jointami w mapowaniu i wyzerować te dla których nie ma odpowiednika w aktualnym szkielecie

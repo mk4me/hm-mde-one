@@ -50,10 +50,11 @@ const std::vector<std::vector<osg::Vec3>> SkeletonSerie::createPointsPositions(c
 		int frameNo = time / this->skeletonWithStates->states->frameTime;
 		auto& frame = skeletonWithStates->states->frames[frameNo];
 		kinematic::SkeletonState::applyLocalState(sstate, frame);
-		std::vector<osg::Vec3> position(size);		
-		kinematic::LinearizedSkeleton::Visitor::globalIndexedVisit(sstate, [&position](kinematic::Skeleton::JointPtr joint, const kinematic::LinearizedSkeleton::NodeIDX idx)
+		std::vector<osg::Vec3> position;
+		position.reserve(size);
+		kinematic::LinearizedSkeleton::Visitor::visit(sstate, [&position](kinematic::Skeleton::JointPtr joint)
 		{
-			position[idx] = joint->value().globalPosition();
+			position.push_back(joint->value().globalPosition());
 		});		
 		ret[i] = position ;
 	}

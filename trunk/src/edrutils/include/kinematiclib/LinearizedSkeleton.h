@@ -12,6 +12,7 @@
 #include <vector>
 #include <boost/bimap.hpp>
 #include <kinematiclib/Skeleton.h>
+#include <kinematiclib/Types.h>
 #include <utils/LinearizedTree.h>
 
 namespace kinematic
@@ -24,6 +25,10 @@ namespace kinematic
 		using NodeIDX = utils::LinearizedTree::NodeIDX;
 		//! Typ bimapy indeksów węzłów do nazw węzłów
 		using Mapping = utils::LinearizedTree::Mapping< std::string >;
+
+		using LocalMapping = LocalData < Mapping > ;
+		using GlobalMapping = GlobalData < Mapping >;
+
 		//! Typ obsługujący przechodzenie po zlinearyzowanym szkielecie
 		using Visitor = utils::LinearizedTreeT < utils::Tree::LevelOrderVisitPolicy > ;
 
@@ -32,14 +37,14 @@ namespace kinematic
 		static Order createCompleteOrder(const Skeleton & skeleton);
 		//! \param skeleton Szkielet dla którego generujemy mapowanie wszystkich jointów
 		//! \return Mapowanie jointów szkieletu
-		static Mapping createCompleteMapping(const Skeleton & skeleton);
+		static GlobalMapping createCompleteMapping(const Skeleton & skeleton);
 
 		//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (mających dzieci)
 		//! \return Mapowanie aktywnych jointów szkieletu
 		static Order createNonLeafOrder(const Skeleton & skeleton);
 		//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (mających dzieci)
 		//! \return Mapowanie aktywnych jointów szkieletu
-		static Mapping createNonLeafMapping(const Skeleton & skeleton);
+		static LocalMapping createNonLeafMapping(const Skeleton & skeleton);
 	};
 }
 

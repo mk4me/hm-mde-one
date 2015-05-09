@@ -35,7 +35,7 @@ struct SkeletonWithStates
 DEFINE_SMART_POINTERS(SkeletonWithStates);
 
 
-typedef threadingUtils::IStreamT<kinematic::SkeletonState::NonRigidCompleteState> SkeletonStateStream;
+typedef threadingUtils::IStreamT<kinematic::SkeletonState::NonRigidCompleteStateLocal> SkeletonStateStream;
 DEFINE_SMART_POINTERS(SkeletonStateStream);
 
 struct SkeletonWithStreamData

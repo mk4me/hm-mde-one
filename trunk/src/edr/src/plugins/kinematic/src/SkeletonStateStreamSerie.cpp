@@ -47,10 +47,10 @@ const core::VariantConstPtr & SkeletonStateStreamSerie::getData() const
 }
 
 void SkeletonStateStreamSerie::update()
-{
+{	
 	skeletalData->states->data(currentState);
-	//kinematic::SkeletonState::update(*getSkeleton(), currentState, nodesMapping);
-	kinematic::SkeletonState::applyLocalState(*getSkeleton(), currentState);
+
+	kinematic::SkeletonState::applyState(*getSkeleton(), currentState);
 	AbstractSkeletonSerie::update();
 }
 

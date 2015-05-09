@@ -27,6 +27,9 @@ namespace kinematic
 			friend class Skeleton;
 
 		public:
+
+			//! \param other Kopiowane dane innego węzła			
+			JointData(const JointData & other);
 			//! \param name Nazwa w�z�a odpowiadaj�ca szkieletowi
 			//! \param translation Pozycja|Translacja lokalna stawu
 			//! \param rotation Orientacja|Rotacja lokalna stawu			
@@ -40,6 +43,10 @@ namespace kinematic
 			JointData(JointData & parent, const std::string & name,
 				const osg::Vec3d & translation = osg::Vec3d(0, 0, 0),
 				const osg::Quat & rotation = osg::Quat(0, 0, 0, 1));
+
+			//! \param parent Rodzic naszego węzła
+			//! \param other Kopiowane dane innego węzła		
+			JointData(JointData & parent, const JointData & other);
 
 			//! Konstruktor przenoszący
 			JointData(JointData && Other);

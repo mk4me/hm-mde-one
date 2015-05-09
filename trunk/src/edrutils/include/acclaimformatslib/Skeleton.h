@@ -22,7 +22,7 @@ namespace acclaim
 		using Hierarchy = boost::bimap<boost::bimaps::multiset_of<Bone::ID>, boost::bimaps::set_of<Bone::ID>>;
 
 		//! Typ indeksujący kości wg ich identyfikatorów
-		using BonesMapping = boost::bimap < Bone::ID, std::string >;
+		using Mapping = boost::bimap < Bone::ID, std::string >;
 
 		//! Dane pomocnicze dla formatu acclaim
 		using HelperMotionData = std::map < Bone::ID, Bone::HelperMotionData > ;
@@ -83,7 +83,7 @@ namespace acclaim
 		static HelperMotionData helperMotionData(const Skeleton & skeleton);
 		//! \param bones Kości
 		//! \return Mapowanie kości
-		static BonesMapping createMapping(const Bones & bones);
+		static Mapping createMapping(const Bones & bones);
 
 	};
 	DEFINE_SMART_POINTERS(Skeleton);

@@ -98,11 +98,6 @@ kinematic::SkeletonPtr AbstractSkeletonSerie::getSkeleton()
 
 void AbstractSkeletonSerie::update()
 {
-	//const kinematic::SkeletonState::NonRigidCompleteStateChange& frame = getStateChange();
-
-	//kinematic::SkeletonState::update(*skeletonState, frame, nodesMapping);
-
-	//std::vector<osg::Vec3> pos(joint2Index.size());
 	std::vector<osg::Vec3> pos;
 	pos.reserve(nodesMapping.size());
 		

@@ -13,7 +13,7 @@
 namespace threadingUtils
 {
 	//! Polityka surowego wywo³ania
-	struct RawCallPolicy
+	struct RethrowExceptionHandlePolicy
 	{
 		//! \tparam F Typ metody jak¹ wo³amy
 		//! \tparam Args Typy argumentów z jakimi wo³amy metodê
@@ -22,7 +22,26 @@ namespace threadingUtils
 		template<typename T>
 		static void handle(const T & e)
 		{
+			throw e;
+		}
 
+		static void handle(std::exception_ptr eptr)
+		{
+			std::rethrow_exception(eptr);
+		}
+	};
+
+	//! Polityka surowego wywo³ania
+	struct ConsumeExceptionHandlePolicy
+	{
+		//! \tparam F Typ metody jak¹ wo³amy
+		//! \tparam Args Typy argumentów z jakimi wo³amy metodê
+		//! \param f Wo³ana metoda
+		//! \param arguments Argumenty metody
+		template<typename T>
+		static void handle(const T & e)
+		{
+			
 		}
 	};
 }

@@ -25,6 +25,17 @@
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
+template<typename T>
+T correctNegativeZero(const T value)
+{
+	static_assert(std::is_floating_point<T>::value, "T must be floating point type");
+	if (value == T()){
+		return std::fabs(value);
+	}
+
+	return value;
+}
+
 //
 template <class T>
 inline T clamp(const T& v, const T& min, const T& max)

@@ -413,14 +413,14 @@ void saveRoot(std::ostream& out, const Skeleton & model)
 	out << std::endl << "   axis " << Axis::getAxisOrderName(model.axisOrder) << std::endl;
 	
 	out << "   position "
-		<< model.position[0] << " "
-		<< model.position[1] << " "
-		<< model.position[2] << std::endl;
+		<< utils::correctNegativeZero(model.position[0]) << " "
+		<< utils::correctNegativeZero(model.position[1]) << " "
+		<< utils::correctNegativeZero(model.position[2]) << std::endl;
 
 	out << "   orientation "
-		<< model.orientation[0] << " "
-		<< model.orientation[1] << " "
-		<< model.orientation[2] << std::endl;
+		<< utils::correctNegativeZero(model.orientation[0]) << " "
+		<< utils::correctNegativeZero(model.orientation[1]) << " "
+		<< utils::correctNegativeZero(model.orientation[2]) << std::endl;
 }
 
 void saveSingleBone(std::ostream& out, const Bone& bone, const Skeleton & model)
@@ -429,15 +429,15 @@ void saveSingleBone(std::ostream& out, const Bone& bone, const Skeleton & model)
 	out << "     id " << bone.id << std::endl;
 	out << "     name " << bone.name << std::endl;
 	out << "     direction " <<
-		bone.direction[0] << " " <<
-		bone.direction[1] << " " <<
-		bone.direction[2] << std::endl;
+		utils::correctNegativeZero(bone.direction[0]) << " " <<
+		utils::correctNegativeZero(bone.direction[1]) << " " <<
+		utils::correctNegativeZero(bone.direction[2]) << std::endl;
 
 	out << "     length " << bone.length << std::endl;
 	out << "     axis " <<
-		bone.axis[0] << " " <<
-		bone.axis[1] << " " <<
-		bone.axis[2] << " " <<
+		utils::correctNegativeZero(bone.axis[0]) << " " <<
+		utils::correctNegativeZero(bone.axis[1]) << " " <<
+		utils::correctNegativeZero(bone.axis[2]) << " " <<
 		Axis::getAxisOrderName(bone.axisOrder) <<
 		std::endl;
 
@@ -459,14 +459,14 @@ void saveSingleBone(std::ostream& out, const Bone& bone, const Skeleton & model)
 				out << "-inf";
 			}
 			else {
-				out << bone.dofs[i].minLimit;
+				out << utils::correctNegativeZero(bone.dofs[i].minLimit);
 			}
 			out << ", ";
 			if (bone.dofs[i].maxLimit == std::numeric_limits<double>::infinity()) {
 				out << "inf";
 			}
 			else {
-				out << bone.dofs[i].maxLimit;
+				out << utils::correctNegativeZero(bone.dofs[i].maxLimit);
 			}
 			out << ")" << std::endl;
 		}
@@ -570,7 +570,7 @@ void saveUnits(std::ostream& out, const Skeleton & model)
 
 	for (const auto & u : model.units.defaultValues)
 	{
-		out << "  " << u.first << " " << u.second << std::endl;
+		out << "  " << u.first << " " << utils::correctNegativeZero(u.second) << std::endl;
 	}	
 }
 

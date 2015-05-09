@@ -41,6 +41,7 @@
 #include <boost/lexical_cast.hpp>
 #include <acclaimformatslib/AsfParser.h>
 #include <acclaimformatslib/AmcParser.h>
+#include "ConnectCostumeInputDialog.h"
 
 Q_DECLARE_METATYPE(imuCostume::CostumeRawIO::CostumeAddress);
 
@@ -156,12 +157,54 @@ void IMUCostumeWidget::onSensoresListContextMenu(const QPoint & position)
 	}
 }
 
+void IMUCostumeWidget::onConnectCostume()
+{
+	ConnectCostumeInputDialog dialog(this);
+
+	auto ret = dialog.exec();
+
+	if (ret == QDialog::Accepted){
+		imuCostume::CostumeRawIO::CostumeAddress ca;
+		ca.ip = dialog.ip().toStdString();
+		ca.ip.erase(std::remove(ca.ip.begin(), ca.ip.end(), ' '), ca.ip.end());
+		ca.port = dialog.port();
+
+		auto cDetails = ds->costumesDetails();
+
+		auto cIT = cDetails.find(ca);
+
+		if (cIT != cDetails.end()){
+			QMessageBox::warning(this, tr("Costume loaded"), tr("Requested costume already found"));
+		}
+		else{
+			auto res = ds->addCostume(ca);
+			if (res == true){
+				auto ci = new QTreeWidgetItem;
+				ci->setText(0, QString("%1:%2").arg(QString::fromStdString(ca.ip)).arg(ca.port));
+				ci->setData(0, Qt::UserRole, QVariant::fromValue(ca));
+				ci->setIcon(1, statusIcon(IMU::IIMUDataSource::ONLINE));
+				ci->setText(1, statusDescription(IMU::IIMUDataSource::ONLINE));
+				ui->costumesTreeWidget->addTopLevelItem(ci);
+			}
+			else{
+				QMessageBox::critical(this, tr("Costume loading failed"), tr("Could not connect given costume - either costume is already connected or can not communicate with costume"));
+			}
+		}
+	}
+}
+
 void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 {
 	const auto cc = ds->costumesCout();
 
-	if(cc > 0){
-		QMenu menu(this);
+	QMenu menu(this);
+
+	menu.addAction(ui->actionConnect_costume);
+
+	if(cc > 0){	
+
+		menu.addSeparator();
+
 		auto lcc = ds->loadedCostumesCount();
 
 		auto loadAll = menu.addAction(tr("Load all"));
@@ -233,9 +276,9 @@ void IMUCostumeWidget::onCostumesListContextMenu(const QPoint & position)
 				resetStatus->setEnabled(false);
 			}		
 		}
-
-		menu.exec(ui->costumesTreeWidget->mapToGlobal(position));
 	}
+
+	menu.exec(ui->costumesTreeWidget->mapToGlobal(position));
 }
 
 void IMUCostumeWidget::refreshStatus()

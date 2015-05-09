@@ -41,16 +41,6 @@ namespace threadingUtils
 
 		struct SharedState
 		{
-			SharedState()
-			{
-			
-			}
-
-			~SharedState()
-			{
-
-			}
-
 			std::function<T()> functionWrapper;
 			std::atomic<Status> status_;
 			std::recursive_mutex statusMutex;
@@ -212,7 +202,7 @@ namespace threadingUtils
 			return (sharedState == nullptr) ? Initialized : static_cast<Status>(sharedState->status_);
 		}
 
-		const T get()
+		T get()
 		{
 			return future.get();
 		}
@@ -234,16 +224,6 @@ namespace threadingUtils
 
 		struct SharedState
 		{
-			SharedState()
-			{
-
-			}
-
-			~SharedState()
-			{
-
-			}
-
 			std::function<T&()> functionWrapper;
 			std::atomic<Status> status_;
 			std::recursive_mutex statusMutex;
@@ -328,7 +308,7 @@ namespace threadingUtils
 						sharedState->status_ = Running;
 					}
 					try{
-						T ret(sharedState->functionWrapper());
+						T& ret(sharedState->functionWrapper());
 						{
 							std::lock_guard<std::recursive_mutex> lock(sharedState->statusMutex);
 							sharedState->status_ = Finished;
@@ -404,7 +384,7 @@ namespace threadingUtils
 			return (sharedState == nullptr) ? Initialized : sharedState->status_;
 		}
 
-		const T& get()
+		T& get()
 		{
 			return future.get();
 		}
@@ -426,16 +406,6 @@ namespace threadingUtils
 
 		struct SharedState
 		{
-			SharedState()
-			{
-
-			}
-
-			~SharedState()
-			{
-
-			}
-
 			std::function<void()> functionWrapper;
 			std::atomic<Status> status_;
 			std::recursive_mutex statusMutex;
@@ -632,8 +602,8 @@ namespace threadingUtils
 		//! \tparam T Typ wyniku future
 		//! \tparam FuturePolicy Typ future (shared | future)
 		//! \param future Future na którego wykonanie czekamy realizuj¹c inne zadania
-		template<typename JobType>
-		void waitForOtherJob(JobType & job)
+		template<typename T>
+		void waitForOtherJob(InterruptibleJob<T> & job)
 		{
 			workManager->waitForOtherTask(job.future);
 		}
