@@ -21,7 +21,7 @@ class ConnectCostumeInputDialog : public QDialog
 
 public:
 	explicit ConnectCostumeInputDialog(QWidget *parent = 0, Qt::WindowFlags f = 0,
-		const QString & ip = QString("192.168.1.173"));
+		const QString & ip = QString("192.168.001.173"));
 
 	virtual ~ConnectCostumeInputDialog();
 

@@ -8,8 +8,11 @@ ConnectCostumeInputDialog::ConnectCostumeInputDialog(QWidget *parent,
 	ui(new Ui::ConnectCostumeInputDialog)
 {
 	ui->setupUi(this);	
-	ui->ipLineEdit->setValidator(new QRegExpValidator(
-		QRegExp("^([1]?/D/d?|2[0-4]/d|25[0-5])/.([1]?/D/d?|2[0-4]/d|25[0-5])/([1]?/d/d?|2[0-4]/d|25 [0-5])/([1]?/d/d?|2[0-4]/d|25[0-5])$"), this));
+
+	static const QString Octet = "(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])";
+
+	ui->ipLineEdit->setValidator(new QRegExpValidator(QRegExp("^" + Octet + "\\." + Octet + "\\." + Octet + "\\." + Octet + "$")));
+//		QRegExp("^([1]?/D/d?|2[0-4]/d|25[0-5])/.([1]?/D/d?|2[0-4]/d|25[0-5])/([1]?/d/d?|2[0-4]/d|25 [0-5])/([1]?/d/d?|2[0-4]/d|25[0-5])$"), this));
 
 	ui->ipLineEdit->setText(ip);
 }

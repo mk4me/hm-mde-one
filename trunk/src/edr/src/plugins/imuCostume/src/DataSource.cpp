@@ -565,6 +565,11 @@ bool IMUCostumeDataSource::addCostume(const CostumeID & id)
 			cData.samplesStatus->positiveSample();
 			configureCostume(cData);
 			innerRefreshCostumeSensorsConfiguration(cData, MaxSamplesCount);
+
+			if (cData.sensorsConfiguration.empty() == true){
+				return false;
+			}
+
 			costumesData.insert(CostumesData::value_type(id, cData));
 		}
 		catch (...){
