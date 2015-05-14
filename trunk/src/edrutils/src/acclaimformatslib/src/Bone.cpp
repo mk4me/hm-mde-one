@@ -3,11 +3,57 @@
 
 using namespace acclaim;
 
-const osg::Vec3d Bone::defaultDirection = osg::Vec3d(0, 1, 0);
 const osg::Vec3d Bone::defaultAxis = osg::Vec3d(0, 0, 0);
 
-Bone::Bone() : id(-1), axis(0.0, 0.0, 0.0), length(-1),
-axisOrder(kinematicUtils::AxisOrder::XYZ), direction(0.0, 0.0, 0.0)
+DegreeOfFreedom Bone::defaultRotationDof(const kinematicUtils::Channel channel,
+	const kinematicUtils::AngleUnitType angleUnit)
+{
+	DegreeOfFreedom ret(channel);
+	switch (angleUnit)
+	{
+	case kinematicUtils::Deg:
+		ret.minLimit = -180.0;
+		ret.maxLimit = 180.0;
+		break;
+
+	case kinematicUtils::Rad:
+		ret.minLimit = -osg::PI;
+		ret.minLimit = osg::PI;
+		break;	
+	}
+
+	return ret;
+}
+
+Bone::Dofs Bone::defaultRotationDofs(const kinematicUtils::AngleUnitType angleUnit)
+{
+	Dofs ret;
+	ret.reserve(3);
+
+	ret.push_back(defaultRotationDof(kinematicUtils::ChannelType::RX, angleUnit));
+	ret.push_back(defaultRotationDof(kinematicUtils::ChannelType::RY, angleUnit));
+	ret.push_back(defaultRotationDof(kinematicUtils::ChannelType::RZ, angleUnit));
+
+	return ret;
+}
+
+Bone::Dofs Bone::defaultRootDofs(const kinematicUtils::AngleUnitType angleUnit)
+{
+	Dofs ret;
+	ret.reserve(6);
+
+	ret.push_back(DegreeOfFreedom(kinematicUtils::ChannelType::TX));
+	ret.push_back(DegreeOfFreedom(kinematicUtils::ChannelType::TY));
+	ret.push_back(DegreeOfFreedom(kinematicUtils::ChannelType::TZ));
+	ret.push_back(defaultRotationDof(kinematicUtils::ChannelType::RZ, angleUnit));
+	ret.push_back(defaultRotationDof(kinematicUtils::ChannelType::RY, angleUnit));
+	ret.push_back(defaultRotationDof(kinematicUtils::ChannelType::RX, angleUnit));
+
+	return ret;
+}
+
+Bone::Bone() : id(-1), axis(defaultAxis), length(-1),
+axisOrder(defaultAxisOrder), direction(0.0, 0.0, 0.0)
 {
 
 }

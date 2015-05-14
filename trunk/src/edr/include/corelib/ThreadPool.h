@@ -132,7 +132,7 @@ namespace core
 					try{
 						ff();
 					}
-					catch (std::exception & e){
+					catch (std::exception&){
 
 					}
 					catch (...){

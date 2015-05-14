@@ -12,22 +12,22 @@ osg::Vec3d resolveRadians(const bool angleInRadians, const osg::Vec3d& toResolve
 	return angleInRadians == true ? toResolve : kinematicUtils::toRadians(toResolve);
 }
 
-LinearizedSkeleton::Mapping createActiveMapping(const Skeleton & skeleton,
+LinearizedSkeleton::LocalMapping createActiveMapping(const Skeleton & skeleton,
 	const acclaim::Skeleton::Bones & bones)
 {
-	LinearizedSkeleton::Mapping ret = LinearizedSkeleton::createNonLeafMapping(skeleton);
+	auto ret = LinearizedSkeleton::createNonLeafMapping(skeleton);
 
 	for (const auto & bd : bones)
 	{
 		if (bd.second.isActive() == false){
-			ret.right.erase(bd.second.name);
+			ret.data().right.erase(bd.second.name);
 		}
 	}
 
 	return ret;
 }
 
-SkeletonState::AcclaimActiveSkeletonMapping SkeletonState::createAcclaimActiveMapping(
+SkeletonState::AcclaimActiveSkeletonMappingLocal SkeletonState::createAcclaimActiveMappingLocal(
 	const Skeleton & skeleton, const acclaim::Skeleton::Bones & bones)
 {
 	const auto skeletonMapping = LinearizedSkeleton::createNonLeafMapping(skeleton);	
@@ -37,8 +37,8 @@ SkeletonState::AcclaimActiveSkeletonMapping SkeletonState::createAcclaimActiveMa
 	for (const auto & bd : bones)
 	{
 		if (bd.second.isActive() == true){
-			auto it = skeletonMapping.right.find(bd.second.name);
-			if (it != skeletonMapping.right.end())
+			auto it = skeletonMapping.data().right.find(bd.second.name);
+			if (it != skeletonMapping.data().right.end())
 			{
 				ret.insert({ it->get_left(), bd.first });
 			}
@@ -46,9 +46,33 @@ SkeletonState::AcclaimActiveSkeletonMapping SkeletonState::createAcclaimActiveMa
 	}
 
 	//root - bo w mapowaniu mogą się róznić nazwy rootów
-	ret.insert({ skeletonMapping.left.begin()->get_left(), bones.begin()->first});
+	ret.insert({ skeletonMapping.data().left.begin()->get_left(), bones.begin()->first });
 
-	return ret;
+	return AcclaimActiveSkeletonMappingLocal(ret);
+};
+
+SkeletonState::AcclaimActiveSkeletonMappingGlobal SkeletonState::createAcclaimActiveMappingGlobal(const Skeleton & skeleton,
+	const acclaim::Skeleton::Bones & bones)
+{
+	const auto skeletonMapping = LinearizedSkeleton::createCompleteMapping(skeleton);
+
+	AcclaimActiveSkeletonMapping ret;
+
+	for (const auto & bd : bones)
+	{
+		if (bd.second.isActive() == true){
+			auto it = skeletonMapping.data().right.find(bd.second.name);
+			if (it != skeletonMapping.data().right.end())
+			{
+				ret.insert({ it->get_left(), bd.first });
+			}
+		}
+	}
+
+	//root - bo w mapowaniu mogą się róznić nazwy rootów
+	ret.insert({ skeletonMapping.data().left.begin()->get_left(), bones.begin()->first });
+
+	return AcclaimActiveSkeletonMappingGlobal(ret);
 }
 
 SkeletonState::NonRigidJointState convert(const acclaim::Skeleton::Bones & skeletonBones,
@@ -149,7 +173,7 @@ SkeletonState::RigidPartialStateLocal SkeletonState::convert(
 	const acclaim::Skeleton::Bones & bones,
 	const acclaim::Skeleton::Mapping & aMapping,
 	const acclaim::MotionData::BonesData & motionData,
-	const AcclaimActiveSkeletonMapping & activeMapping,
+	const AcclaimActiveSkeletonMappingLocal & activeMapping,
 	const acclaim::Skeleton::HelperMotionData & helperMotionData,
 	const bool angleInRadians)
 {
@@ -168,16 +192,16 @@ SkeletonState::RigidPartialStateLocal SkeletonState::convert(
 			throw std::runtime_error("Acclaim motion data mismatch skeleton motion helper data - missing " + bd.name + " bone");
 		}
 
-		auto aIT = activeMapping.right.find(aNodeID);
-		if (aIT == activeMapping.right.end()){
+		auto aIT = activeMapping.data().right.find(aNodeID);
+		if (aIT == activeMapping.data().right.end()){
 			throw std::runtime_error("Acclaim motion data mismatch active skeleton mapping - missing " + bd.name + " bone");
 		}
 
 		const auto jointState = ::convert(bones, bd, angleInRadians, hIT->second);
-		ret.orientations.insert({ aIT->get_left(), jointState.orientation });
+		ret.data().orientations.insert({ aIT->get_left(), jointState.orientation });
 
 		if (aIT->get_left() == 0){
-			ret.position = jointState.position;
+			ret.data().position = jointState.position;
 		}
 	}
 
@@ -186,10 +210,10 @@ SkeletonState::RigidPartialStateLocal SkeletonState::convert(
 
 acclaim::MotionData::BonesData SkeletonState::convert(const acclaim::Skeleton & skeleton,
 	const SkeletonState::RigidCompleteStateLocal & skeletonState,
-	const AcclaimActiveSkeletonMapping & activeMapping,
+	const AcclaimActiveSkeletonMappingLocal & activeMapping,
 	const acclaim::Skeleton::HelperMotionData & helperMotionData)
 {
-	if (skeletonState.orientations.empty() == true && skeleton.bones.empty() == false){
+	if (skeletonState.data().orientations.empty() == true && skeleton.bones.empty() == false){
 		throw std::runtime_error("Empty skeleton state");
 	}
 
@@ -206,14 +230,14 @@ acclaim::MotionData::BonesData SkeletonState::convert(const acclaim::Skeleton & 
 
 		//auto orient = kinematicUtils::convert(c * skeletonState.root()->value().localOrientation() * cinv, skeleton.rotationOrder());
 		auto rotationOrder = acclaim::Skeleton::rotationOrder(skeleton);
-		auto orient = kinematicUtils::convert(helperData.c * skeletonState.orientations.front() * helperData.cInv, rotationOrder);
+		auto orient = kinematicUtils::convert(helperData.c * skeletonState.data().orientations.front() * helperData.cInv, rotationOrder);
 		if (angleInRadians == false){
 			orient = kinematicUtils::toDegrees(orient);
 		}
 
 		orient = kinematicUtils::orderedAngles(orient, rotationOrder);
 
-		auto position = skeletonState.position;
+		auto position = skeletonState.data().position;
 
 		for (auto dO : skeleton.dataOrder)
 		{			
@@ -247,10 +271,10 @@ acclaim::MotionData::BonesData SkeletonState::convert(const acclaim::Skeleton & 
 
 	ret.push_back(bd);
 
-	for (unsigned int i = 1; i < skeletonState.orientations.size(); ++i)
+	for (unsigned int i = 1; i < skeletonState.data().orientations.size(); ++i)
 	{
-		auto it = activeMapping.left.find(i);
-		if (it != activeMapping.left.end()){
+		auto it = activeMapping.data().left.find(i);
+		if (it != activeMapping.data().left.end()){
 			auto acclaimID = it->get_right();
 			acclaim::MotionData::BoneData bd;
 			const auto & bData = skeleton.bones.find(acclaimID)->second;
@@ -261,7 +285,7 @@ acclaim::MotionData::BonesData SkeletonState::convert(const acclaim::Skeleton & 
 
 			//auto orient = kinematicUtils::convert(c * joint->value().localOrientation() * cinv, sIT->second.rotationOrder());
 			auto rotationOrder = bData.rotationOrder();
-			auto orient = kinematicUtils::convert(hData.c * skeletonState.orientations[i] * hData.cInv, rotationOrder);
+			auto orient = kinematicUtils::convert(hData.c * skeletonState.data().orientations[i] * hData.cInv, rotationOrder);
 
 			if (angleInRadians == false){
 				orient = kinematicUtils::toDegrees(orient);
@@ -390,10 +414,10 @@ SkeletonState::RigidCompleteStateGlobal SkeletonState::globalRigidState(const Sk
 	RigidCompleteStateGlobal ret;
 
 	if (skeleton.root() != nullptr){
-		ret.position = skeleton.root()->value().globalPosition();
+		ret.data().position = skeleton.root()->value().globalPosition();
 		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, [&ret](Skeleton::JointConstPtr joint)
 		{
-			ret.orientations.push_back(joint->value().globalOrientation());
+			ret.data().orientations.push_back(joint->value().globalOrientation());
 		});
 	}
 
@@ -405,10 +429,10 @@ SkeletonState::RigidCompleteStateLocal SkeletonState::localRigidState(const Skel
 	RigidCompleteStateLocal ret;
 
 	if (skeleton.root() != nullptr){
-		ret.position = skeleton.root()->value().localPosition();
+		ret.data().position = skeleton.root()->value().localPosition();
 		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, [&ret](Skeleton::JointConstPtr joint)
 		{
-			ret.orientations.push_back(joint->value().localOrientation());
+			ret.data().orientations.push_back(joint->value().localOrientation());
 		});
 	}
 
@@ -422,7 +446,7 @@ SkeletonState::NonRigidCompleteStateGlobal SkeletonState::globalNonRigidState(co
 	if (skeleton.root() != nullptr){		
 		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, [&ret](Skeleton::JointConstPtr joint)
 		{
-			ret.push_back({ joint->value().globalPosition(), joint->value().globalOrientation() });
+			ret.data().push_back({ joint->value().globalPosition(), joint->value().globalOrientation() });
 		});
 	}
 
@@ -436,7 +460,7 @@ SkeletonState::NonRigidCompleteStateLocal SkeletonState::localNonRigidState(cons
 	if (skeleton.root() != nullptr){
 		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, [&ret](Skeleton::JointConstPtr joint)
 		{
-			ret.push_back({ joint->value().localPosition(), joint->value().localOrientation() });
+			ret.data().push_back({ joint->value().localPosition(), joint->value().localOrientation() });
 		});
 	}
 

@@ -387,7 +387,7 @@ void IMUCostumeDataSource::resfreshCostumesData()
 			for (auto & cd : locCostumesData)
 			{				
 				try{
-					bool success = cd.second.rawCostume->receive(frame.buffer, length, 100);
+					bool success = cd.second.rawCostume->receive(frame.buffer, length, 50);
 
 					if (success == true){
 
@@ -887,7 +887,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 
 	cData.skeletonMotion->skeleton = profile->skeleton;
 	cData.skeletonMotion->stream.reset(new RealMotionStream(estimatedData,
-		ExtractCostumeMotion(profile, cData.skeletonMotion->mapping)));
+		ExtractCostumeMotion(profile)));
 
 	ow = core::Variant::create<MotionStream>();
 	ow->setMetadata("core/name", QObject::tr("Skeleton stream").toStdString());
@@ -919,12 +919,11 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 
 		kStream->states.reset(new threadingUtils::StreamAdapterT<IMU::SkeletonStateStream::value_type, ::SkeletonStateStream::value_type, IMU::TimeRemoverExtractor>(sStateStream));
 
-		ow = core::Variant::create<SkeletonWithStreamData>();
-		ow->setMetadata("core/name", QObject::tr("Kinematic stream").toStdString());
-		ow->set(kStream);
-		cData.domainData.push_back(ow);
+		auto kow = core::Variant::create<SkeletonWithStreamData>();
+		kow->setMetadata("core/name", QObject::tr("Kinematic stream").toStdString());
+		kow->set(kStream);
 
-		item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Kinematic stream"), QObject::tr("Kinematic 3D stream"));
+		item = utils::make_shared<core::HierarchyDataItem>(kow, QIcon(), QObject::tr("Kinematic stream"), QObject::tr("Kinematic 3D stream"));
 		root->appendChild(item);
 
 		auto ajitem = utils::make_shared<core::HierarchyItem>(QObject::tr("Active joints"), QObject::tr("Joints with sensors"));
@@ -1019,6 +1018,8 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 					sd, QObject::tr("Local position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()));
 			}
 		}
+
+		cData.domainData.push_back(kow);
 	}
 
 	try{
@@ -1602,7 +1603,7 @@ void IMU::IMUCostumeDataSource::updateSensorsStatus(const imuCostume::CostumeCAN
 
 void IMU::IMUCostumeDataSource::tryRecord(std::set<imuCostume::CostumeRawIO::CostumeAddress> &costumes)
 {
-	if (costumes.empty() == false){
+	if (costumes.empty() == false && recordings.empty() == false){
 		std::lock_guard<std::recursive_mutex > lock(synch);
 		for (auto & rec : recordings)
 		{
@@ -1624,10 +1625,9 @@ void IMU::IMUCostumeDataSource::tryRecord(std::set<imuCostume::CostumeRawIO::Cos
 					cIT->second.completeImuStream->data(cssd);
 					rcd.timestamp = cssd.timestamp;
 
-					//zapis danych tego kostiumu
+					//zapis danych sensorów tego kostiumu
 					for (const auto & sID : ctr.second)
 					{
-						//auto idx = cIT->second.stjmapping.find(sID)->second;
 						RecordedSensorData rsd;
 						auto sdIT = cIT->second.sensorsData.find(sID);
 						auto ow = sdIT->second.domainData.front();
@@ -1650,11 +1650,13 @@ void IMU::IMUCostumeDataSource::tryRecord(std::set<imuCostume::CostumeRawIO::Cos
 
 						rsd.estimatedOrientation = data.second.orientation;
 
-						//todo - z kinematic
-						//rsd.jointOrientation = sdata[idx].rotation;
-
 						rcd.sensorsData.insert({ sID, rsd });
 					}
+
+					//TODO
+					//zapis stanu szkieletu
+					//rcd.skeletonData
+
 					cdf.insert({ ctr.first, rcd });
 				}
 			}

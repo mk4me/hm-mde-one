@@ -120,7 +120,7 @@ void FileSource::loadAsfAmc()
 
 	const auto amapping = acclaim::Skeleton::createMapping(model->bones);
 	const auto mapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*skeleton);
-	const auto activeMapping = kinematic::SkeletonState::createAcclaimActiveMapping(*skeleton, model->bones);
+	const auto activeMapping = kinematic::SkeletonState::createAcclaimActiveMappingLocal(*skeleton, model->bones);
 	const auto helperData = acclaim::Skeleton::helperMotionData(*model);
 	
 	for (auto& frame : data->frames) {		
@@ -131,7 +131,7 @@ void FileSource::loadAsfAmc()
 	auto sws = utils::make_shared<SkeletonWithStates>();
 	sws->skeleton = skeleton;
 	sws->states = states;
-	sws->nodesMapping = mapping;
+	sws->nodesMapping = kinematic::LinearizedSkeleton::createCompleteMapping(*skeleton);;
 	auto object = core::Variant::create<SkeletonWithStates>();
 	object->set(sws);
 	

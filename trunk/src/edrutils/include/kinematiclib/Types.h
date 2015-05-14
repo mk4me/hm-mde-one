@@ -15,13 +15,13 @@ namespace kinematic
 	{
 		Local = 0,	//! Lokalne
 		Global = 1	//! Globalne
-	};
+	};	
 
-	//! \tparam Base Typ bazowy, wrapowany
+	//! \tparam T Typ bazowy, wrapowany
 	//! \tparam Type Wartoœæ reprezentuj¹ca typ
-	template<typename Base, int Type>
+	template<typename T, int Type>
 	//! Klasa wrapuj¹ca dane ruchu (stan, zmianê) dodaj¹ca informacje o charakterze tych danych - lokalne|globalne
-	class Data : public Base
+	class Data
 	{
 		static_assert(Type == Local || Type == Global, "Type must be Local or Global");
 
@@ -30,24 +30,36 @@ namespace kinematic
 		Data() {}
 		//! Konstruktor kopiuj¹cy
 		//! \param data Kopiowane dane
-		Data(const Data & data) : Base(data) {}
+		Data(const Data & data) : data_(data.data_) {}
 		//! Konstruktor przenosz¹cy
 		//! \param data Przenoszone dane
-		Data(Data && data) : Base(static_cast<Base&&>(std::move(data))) {}
+		Data(Data && data) : data_(std::move(data.data_)) {}
 		//! Konstruktor
 		//! \param data Kopiowane dane
-		explicit Data(const Base & data) : Base(data) {}
+		explicit Data(const T & data) : data_(data) {}
 		//! Konstruktor
 		//! \param data Przenoszone dane
-		explicit Data(Base && data) : Base(std::move(data)) {}
+		explicit Data(T && data) : data_(std::move(data)) {}
 		//! Destruktor wirtualny
 		virtual ~Data() {}
+
+		explicit inline operator T& () { return data_; }
+
+		explicit inline operator const T& () const { return data_; }
+
+		inline T& data() { return data_; }
+
+		inline const T& data() const { return data_; }
 
 	public:
 
 		enum {
 			type = Type	//! Typ danych
-		};		
+		};
+
+	private:
+		//! Datne
+		T data_;
 	};
 
 	//! \tparam Base Typ bazowy

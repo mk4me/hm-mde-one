@@ -33,7 +33,7 @@ void Skeleton::Units::setAngleType(const kinematicUtils::AngleUnitType angleType
 Skeleton::Skeleton():
     position(0.0, 0.0, 0.0),
     orientation(0.0, 0.0, 0.0),
-	axisOrder(kinematicUtils::AxisOrder::XYZ),
+	axisOrder(Bone::defaultAxisOrder),
 	dataOrder({ kinematicUtils::ChannelType::TX, kinematicUtils::ChannelType::TY, kinematicUtils::ChannelType::TZ,
 	kinematicUtils::ChannelType::RZ, kinematicUtils::ChannelType::RY, kinematicUtils::ChannelType::RX }),
 	version("1.10"),

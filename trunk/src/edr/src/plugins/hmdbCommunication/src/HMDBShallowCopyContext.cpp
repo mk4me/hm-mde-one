@@ -426,7 +426,7 @@ public:
 
 				const auto amapping = acclaim::Skeleton::createMapping(model->bones);
 				const auto mapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*skeleton);
-				const auto activeMapping = kinematic::SkeletonState::createAcclaimActiveMapping(*skeleton, model->bones);
+				const auto activeMapping = kinematic::SkeletonState::createAcclaimActiveMappingLocal(*skeleton, model->bones);
 				const auto helperData = acclaim::Skeleton::helperMotionData(*model);
 
 				for (auto& frame : data->frames) {
@@ -437,7 +437,7 @@ public:
 				auto sws = utils::make_shared<SkeletonWithStates>();
 				sws->skeleton = skeleton;
 				sws->states = states;
-				sws->nodesMapping = mapping;
+				sws->nodesMapping = kinematic::LinearizedSkeleton::createCompleteMapping(*skeleton);
 				sws->scale = 0.25;
 				object->set(sws);
 				//kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());

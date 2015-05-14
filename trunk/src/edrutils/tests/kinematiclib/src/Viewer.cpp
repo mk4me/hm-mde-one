@@ -45,7 +45,7 @@ void kinematicTest::Viewer::start()
 
 	const auto kmapping = kinematic::LinearizedSkeleton::createNonLeafMapping(kSkeleton);
 	const auto amapping = acclaim::Skeleton::createMapping(aSkeleton.bones);
-	const auto acclaimActiveMapping = kinematic::SkeletonState::createAcclaimActiveMapping(kSkeleton, aSkeleton.bones);
+	const auto acclaimActiveMapping = kinematic::SkeletonState::createAcclaimActiveMappingLocal(kSkeleton, aSkeleton.bones);
 
 	for (const auto & fd : acclaimData.frames)
 	{		
@@ -66,7 +66,7 @@ void kinematicTest::Viewer::start()
 	}
 
 	//acclaim::AmcParser::serialize(acclaimData, fileAmcOut);
-	acclaim::AmcParser::serialize(cData, fileAmcOut);
+	acclaim::AmcParser::serialize(cData, kinematicUtils::AngleUnitType::Deg, fileAmcOut);
 	fileAmcOut.close();
 
 	kinematic::Skeleton skeleton;
@@ -74,7 +74,7 @@ void kinematicTest::Viewer::start()
 	
 
 	const auto mapping = kinematic::LinearizedSkeleton::createCompleteMapping(skeleton);
-	for (const auto& p : mapping) {
+	for (const auto& p : mapping.data()) {
 		std::cout << p.get_left() << std::string(", ") << p.get_right() << std::endl;
 	}
 
@@ -94,7 +94,7 @@ void kinematicTest::Viewer::start()
 	//viewer.run();
 	osg::ref_ptr<osgGA::TrackballManipulator> tm = new osgGA::TrackballManipulator;
 	osgutils::PointsDrawer pointsDrawer(3);
-	pointsDrawer.init(mapping.size());
+	pointsDrawer.init(mapping.data().size());
 	pointsDrawer.setSize(0.1);
 	pointsDrawer.setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
 	pat->addChild(pointsDrawer.getNode());
@@ -109,7 +109,7 @@ void kinematicTest::Viewer::start()
 			osgutils::SegmentDescriptor sd;
 			sd.length = c->value().localPosition().length();
 			sd.range.first = idx;
-			sd.range.second = mapping.right.find(c->value().name())->get_left();
+			sd.range.second = mapping.data().right.find(c->value().name())->get_left();
 			connections.push_back(sd);
 		}
 	});

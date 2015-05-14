@@ -84,7 +84,7 @@ namespace IMU
 	struct CostumeSkeletonMotion
 	{
 		kinematic::SkeletonConstPtr skeleton;
-		kinematic::LinearizedSkeleton::Mapping mapping;
+		kinematic::LinearizedSkeleton::GlobalMapping mapping;
 		MotionStreamPtr stream;
 	};
 

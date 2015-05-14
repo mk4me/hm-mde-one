@@ -17,7 +17,7 @@ SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer, const utils::Type
 	skeleton.reset(new kinematic::Skeleton(*skeletonWithStates->skeleton));
 	auto ratio = skeletonWithStates->scale;
 	//int pointsCount = skeletonWithStates->states->frames.front().size();
-	int pointsCount =  skeletonWithStates->nodesMapping.left.size();
+	int pointsCount =  skeletonWithStates->nodesMapping.data().left.size();
 	AbstractSkeletonSerie::init(ratio, pointsCount, skeleton, skeletonWithStates->nodesMapping);
 	setTime(0.0);
 	setAxis(true);
@@ -32,7 +32,7 @@ void SkeletonSerie::update()
 	int maxSize = skeletonWithStates->states->frames.size();
 	frameNo = frameNo >= maxSize ? maxSize - 1 : frameNo;
 	//kinematic::SkeletonState::applyLocalState(*getSkeleton(), skeletonWithStates->states->frames[frameNo], nodesMapping);
-	kinematic::SkeletonState::applyLocalState(*getSkeleton(), skeletonWithStates->states->frames[frameNo]);
+	kinematic::SkeletonState::applyState(*getSkeleton(), skeletonWithStates->states->frames[frameNo]);
 	AbstractSkeletonSerie::update();
 }
 
@@ -49,7 +49,7 @@ const std::vector<std::vector<osg::Vec3>> SkeletonSerie::createPointsPositions(c
 	for (unsigned int i = 0; i < density; ++i, time = delta * i) {
 		int frameNo = time / this->skeletonWithStates->states->frameTime;
 		auto& frame = skeletonWithStates->states->frames[frameNo];
-		kinematic::SkeletonState::applyLocalState(sstate, frame);
+		kinematic::SkeletonState::applyState(sstate, frame);
 		std::vector<osg::Vec3> position;
 		position.reserve(size);
 		kinematic::LinearizedSkeleton::Visitor::visit(sstate, [&position](kinematic::Skeleton::JointPtr joint)

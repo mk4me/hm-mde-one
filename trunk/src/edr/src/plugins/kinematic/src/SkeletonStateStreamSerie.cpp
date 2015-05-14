@@ -16,7 +16,7 @@ SkeletonStateStreamSerie::SkeletonStateStreamSerie(KinematicVisualizer * visuali
 	auto skeleton = utils::make_shared<kinematic::Skeleton>(*skeletalData->skeleton);
 
 	auto ratio = 1.0;
-	int pointsCount = skeletalData->nodesMapping.size();
+	int pointsCount = skeletalData->nodesMapping.data().size();
 	AbstractSkeletonSerie::init(ratio, pointsCount, skeleton, skeletalData->nodesMapping);
 
 	updater.reset(new plugin::StreamDataSerieUpdater(this));

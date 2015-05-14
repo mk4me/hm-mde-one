@@ -136,6 +136,8 @@ CostumeProfile SerializableCostumeProfile::unpack(const SerializableCostumeProfi
 		}
 	}
 
+	const auto localMapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*ret.skeleton);
+
 	IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions sds;	
 
 	//konfiguracja sensorów
@@ -143,6 +145,7 @@ CostumeProfile SerializableCostumeProfile::unpack(const SerializableCostumeProfi
 	{
 		CostumeProfile::SensorDescription local;
 		local.jointName = ea.second.jointName;
+		local.jointIdx = localMapping.data().right.find(local.jointName)->get_left();
 		local.offset = ea.second.offset;
 		local.rotation = ea.second.rotation;
 
@@ -252,11 +255,16 @@ SerializableCostumeProfile SerializableCostumeProfile::deserialize(std::istream 
 	profileTokens.insert("EstimationAlgoID");
 
 	std::string line;
-	std::getline(stream, line);
 
 	bool finish = false;
 
 	while (finish == false){
+
+		if (profileTokens.empty() == true){
+			break;
+		}
+
+		std::getline(stream, line);
 
 		auto pos = line.find(':');
 
@@ -335,7 +343,7 @@ SerializableCostumeProfile SerializableCostumeProfile::deserialize(std::istream 
 						ss >> ret.motionEstimationAlgorithmID;						
 					}
 
-					std::getline(stream, line);
+					//std::getline(stream, line);
 				}
 			}
 		}

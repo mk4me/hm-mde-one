@@ -28,6 +28,9 @@ namespace kinematic
 		//! Typ mapowania identyfikatorów kosci aktywnych szkieletu acclaim do odpowadajacych jointow naszego szkieletu
 		using AcclaimActiveSkeletonMapping = boost::bimap < LinearizedSkeleton::NodeIDX, acclaim::Bone::ID > ;
 
+		using AcclaimActiveSkeletonMappingLocal = LocalData < AcclaimActiveSkeletonMapping >;
+		using AcclaimActiveSkeletonMappingGlobal = GlobalData < AcclaimActiveSkeletonMapping >;
+
 		//! Orientacje dla ciała sztywnego
 		using Orientations = std::vector<osg::Quat>;
 
@@ -115,16 +118,28 @@ namespace kinematic
 		//! \param state Stan szkieletu
 		static void applyGlobalState(Skeleton & skeleton, const NonRigidPartialState & state);
 
-		template<typename StateType>
-		static void applyState(Skeleton & skeleton, const StateType & state)
+		template<typename T>
+		static void applyState(Skeleton & skeleton, const LocalData<T> & state)
 		{
-			applyState(skeleton, state, std::integral_constant<bool, StateType::type == Local>());
+			applyLocalState(skeleton, state.data());
+		}
+
+		template<typename T>
+		static void applyState(Skeleton & skeleton, const GlobalData<T> & state)
+		{
+			applyGlobalState(skeleton, state.data());
 		}
 
 		//! \param skeleton Szkielet
 		//! \param bones Kości
 		//! \return Zlinearyzowane mapowanie aktywnych kości
-		static AcclaimActiveSkeletonMapping createAcclaimActiveMapping(const Skeleton & skeleton,
+		static AcclaimActiveSkeletonMappingLocal createAcclaimActiveMappingLocal(const Skeleton & skeleton,
+			const acclaim::Skeleton::Bones & bones);
+
+		//! \param skeleton Szkielet
+		//! \param bones Kości
+		//! \return Zlinearyzowane mapowanie aktywnych kości
+		static AcclaimActiveSkeletonMappingGlobal createAcclaimActiveMappingGlobal(const Skeleton & skeleton,
 			const acclaim::Skeleton::Bones & bones);
 
 		//! \param skeleton Szkielet dla którego tworzymy zmianę stanu szkieletu
@@ -134,7 +149,7 @@ namespace kinematic
 		static RigidPartialStateLocal convert(const acclaim::Skeleton::Bones & bones,
 			const acclaim::Skeleton::Mapping & aMapping,
 			const acclaim::MotionData::BonesData & motionData,
-			const AcclaimActiveSkeletonMapping & activeMapping,
+			const AcclaimActiveSkeletonMappingLocal & activeMapping,
 			const acclaim::Skeleton::HelperMotionData & helperMotionData,
 			const bool angleInRadians);
 
@@ -144,7 +159,7 @@ namespace kinematic
 		//! \return Zmiana stanu szkieletu
 		static acclaim::MotionData::BonesData convert(const acclaim::Skeleton & skeleton,
 			const RigidCompleteStateLocal & skeletonState,
-			const AcclaimActiveSkeletonMapping & activeMapping,
+			const AcclaimActiveSkeletonMappingLocal & activeMapping,
 			const acclaim::Skeleton::HelperMotionData & helperMotionData);
 
 		//! \param skeleton Szkielet dla którego tworzymy zmianę stanu szkieletu
@@ -152,20 +167,6 @@ namespace kinematic
 		//! \return Zmiana stanu szkieletu
 		static RigidCompleteState convert(const biovision::Skeleton & skeleton,
 			const biovision::MotionData::FrameJointData & motionData);
-
-	private:
-
-		template<typename StateType>
-		static void applyState(Skeleton & skeleton, const StateType & state, std::true_type)
-		{
-			applyLocalState(skeleton, state);
-		}
-
-		template<typename StateType>
-		static void applyState(Skeleton & skeleton, const StateType & state, std::false_type)
-		{
-			applyGlobalState(skeleton, state);
-		}
 	};
 }
 

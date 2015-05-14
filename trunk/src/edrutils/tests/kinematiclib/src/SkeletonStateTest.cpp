@@ -61,14 +61,14 @@ void SkeletonStateTest::testMapping()
 {
 	kinematic::Skeleton skeleton;
 	kinematic::Skeleton::convert(*this->acclaimSkeleton, skeleton);
-	kinematic::LinearizedSkeleton::Mapping mapping = kinematic::LinearizedSkeleton::createNonLeafMapping(skeleton);
-	for (auto& p : mapping.left) {
+	auto mapping = kinematic::LinearizedSkeleton::createNonLeafMapping(skeleton);
+	for (auto& p : mapping.data().left) {
 		UTILS_DEBUG_PRINT("%d - > %s", p.first, p.second.c_str());
 	}
-	CPPUNIT_ASSERT_EQUAL((int)acclaimSkeleton->bones.size(), (int)mapping.left.size());
-	CPPUNIT_ASSERT_EQUAL((int)acclaimSkeleton->bones.size(), (int)mapping.right.size());
-	CPPUNIT_ASSERT_EQUAL(std::string("root"), mapping.left.at(0));
-	CPPUNIT_ASSERT_EQUAL(0u, mapping.right.at("root"));
+	CPPUNIT_ASSERT_EQUAL((int)acclaimSkeleton->bones.size(), (int)mapping.data().left.size());
+	CPPUNIT_ASSERT_EQUAL((int)acclaimSkeleton->bones.size(), (int)mapping.data().right.size());
+	CPPUNIT_ASSERT_EQUAL(std::string("root"), mapping.data().left.at(0));
+	CPPUNIT_ASSERT_EQUAL(0u, mapping.data().right.at("root"));
 }
 
 // tworzone mapowanie w const auto mapping = kinematic::SkeletonState::createMapping(skeleton);
@@ -105,26 +105,26 @@ void SkeletonStateTest::testFrameConvert()
 	kinematic::Skeleton skeleton;
 	kinematic::Skeleton::convert(*this->acclaimSkeleton, skeleton);	
 	const auto amapping = acclaim::Skeleton::createMapping(acclaimSkeleton->bones);
-	const auto activeMapping = kinematic::SkeletonState::createAcclaimActiveMapping(skeleton, acclaimSkeleton->bones);	
+	const auto activeMapping = kinematic::SkeletonState::createAcclaimActiveMappingLocal(skeleton, acclaimSkeleton->bones);	
 
 	auto sChange = kinematic::SkeletonState::convert(acclaimSkeleton->bones, amapping, acclaimData->frames[0].bonesData, activeMapping, *acclaimhelperMotionData, acclaimSkeleton->units.isAngleInRadians());
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(9.60681, sChange.position.x(), epsilon);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(4.21614, sChange.position.y(), epsilon);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.253612, sChange.position.z(), epsilon);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(9.60681, sChange.data().position.x(), epsilon);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(4.21614, sChange.data().position.y(), epsilon);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.253612, sChange.data().position.z(), epsilon);
 
 	// lowerback -6.90483 0.869314 0.0870155
 	// lowerback ma index 3 w mapping...
 	osg::Vec3d rad = kinematicUtils::toRadians(osg::Vec3d(-6.90483, 0.869314, 0.0870155));
 	osg::Quat q = kinematicUtils::convertXYZ(rad);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.x(), sChange.orientations[3].x(), epsilon);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.y(), sChange.orientations[3].y(), epsilon);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.z(), sChange.orientations[3].z(), epsilon);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.w(), sChange.orientations[3].w(), epsilon);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.x(), sChange.data().orientations[3].x(), epsilon);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.y(), sChange.data().orientations[3].y(), epsilon);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.z(), sChange.data().orientations[3].z(), epsilon);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.w(), sChange.data().orientations[3].w(), epsilon);
 	
 	sChange = kinematic::SkeletonState::convert(acclaimSkeleton->bones, amapping, acclaimData->frames.rbegin()->bonesData, activeMapping, *acclaimhelperMotionData, acclaimSkeleton->units.isAngleInRadians());
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(-7.58606, sChange.position.x(), epsilon);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(4.3173, sChange.position.y(), epsilon);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.476158, sChange.position.z(), epsilon);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(-7.58606, sChange.data().position.x(), epsilon);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(4.3173, sChange.data().position.y(), epsilon);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.476158, sChange.data().position.z(), epsilon);
 }
 
 void SkeletonStateTest::testConvertStateChange()
@@ -133,25 +133,25 @@ void SkeletonStateTest::testConvertStateChange()
 	kinematic::Skeleton::convert(*this->acclaimSkeleton, skeleton);
 	const auto kmapping = kinematic::LinearizedSkeleton::createNonLeafMapping(skeleton);
 	const auto amapping = acclaim::Skeleton::createMapping(acclaimSkeleton->bones);
-	const auto activeMapping = kinematic::SkeletonState::createAcclaimActiveMapping(skeleton, acclaimSkeleton->bones);
+	const auto activeMapping = kinematic::SkeletonState::createAcclaimActiveMappingLocal(skeleton, acclaimSkeleton->bones);
 
 	auto frame = kinematic::SkeletonState::convert(acclaimSkeleton->bones, amapping, acclaimData->frames[0].bonesData, activeMapping, *acclaimhelperMotionData, acclaimSkeleton->units.isAngleInRadians());
 	
 	//kinematic::SkeletonState::NonRigidCompleteStateChange frame = kinematic::SkeletonState::convertStateChange(mapping, sChange);
-	CPPUNIT_ASSERT_EQUAL((int)acclaimActiveBones, (int)frame.orientations.size());
-	auto id1 = kmapping.right.find("lhipjoint")->get_left();
-	auto id2 = kmapping.right.find("rhipjoint")->get_left();
+	CPPUNIT_ASSERT_EQUAL((int)acclaimActiveBones, (int)frame.data().orientations.size());
+	auto id1 = kmapping.data().right.find("lhipjoint")->get_left();
+	auto id2 = kmapping.data().right.find("rhipjoint")->get_left();
 
 
 	//auto lhipjointData = frame[mapping.right.at("lhipjoint")];
 	//auto rhipjointData = frame[mapping.right.at("rhipjoint")];
-	CPPUNIT_ASSERT(frame.orientations.find(id1) == frame.orientations.end());
-	CPPUNIT_ASSERT(frame.orientations.find(id2) == frame.orientations.end());
+	CPPUNIT_ASSERT(frame.data().orientations.find(id1) == frame.data().orientations.end());
+	CPPUNIT_ASSERT(frame.data().orientations.find(id2) == frame.data().orientations.end());
 	//CPPUNIT_ASSERT(rhipjointData.rotation == osg::Quat());
 	//CPPUNIT_ASSERT(rhipjointData.rotation == lhipjointData.rotation);
 
 	//rhand 9.42497 - 7.79745 32.1625
-	auto rhand = frame.orientations[kmapping.right.find("rhand")->get_left()];
+	auto rhand = frame.data().orientations[kmapping.data().right.find("rhand")->get_left()];
 	//CPPUNIT_ASSERT(rhand.translation == osg::Vec3());
 	osg::Vec3d rad = kinematicUtils::toRadians(osg::Vec3d(9.42497, -7.79745, 32.1625));
 	osg::Quat q = kinematicUtils::convertXYZ(rad);

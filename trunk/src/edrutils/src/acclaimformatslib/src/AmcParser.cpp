@@ -6,23 +6,41 @@
 
 using namespace acclaim;
 
-void AmcParser::serialize(const MotionData & data,
-	std::ostream& out)
+void AmcParser::initSerialize(std::ostream& stream, const kinematicUtils::AngleUnitType angleType)
 {
-    out << ":FULLY-SPECIFIED" << std::endl;
-    out << ":DEGREES" << std::endl;
+	stream << ":FULLY-SPECIFIED" << std::endl;
+	switch (angleType)
+	{
+	case kinematicUtils::AngleUnitType::Rad:
+		stream << ":RADIANS";
+		break;
+	case kinematicUtils::AngleUnitType::Deg:
+		stream << ":DEGREES";
+		break;	
+	}
+	stream << std::endl;
+}
 
-	auto framesSize = data.frames.size();
-	for (unsigned int i = 0; i < framesSize; ++i) {
-		out << data.frames[i].id << std::endl;                
-		for (unsigned int j = 0; j < data.frames[i].bonesData.size(); ++j) {
-			out << data.frames[i].bonesData[j].name;
-			for (unsigned int k = 0; k < data.frames[i].bonesData[j].channelValues.size(); ++k) {
-				out << " " << data.frames[i].bonesData[j].channelValues[k];
-			}
+void AmcParser::serialize(const MotionData::FrameData & frame, std::ostream& stream)
+{
+	stream << frame.id << std::endl;
+	for (unsigned int j = 0; j < frame.bonesData.size(); ++j) {
+		stream << frame.bonesData[j].name;
+		for (unsigned int k = 0; k < frame.bonesData[j].channelValues.size(); ++k) {
+			stream << " " << frame.bonesData[j].channelValues[k];
+		}
 
-            out << std::endl;
-        }
+		stream << std::endl;
+	}
+}
+
+void AmcParser::serialize(const MotionData & data,
+	const kinematicUtils::AngleUnitType angleType, std::ostream& out)
+{
+	initSerialize(out, angleType);
+
+	for (unsigned int i = 0; i < data.frames.size(); ++i) {
+		serialize(data.frames[i], out);
     }
 }
 
@@ -39,6 +57,11 @@ void AmcParser::parse(MotionData & data, std::istream & stream)
         if (loc != std::string::npos) {
             break;
         }
+
+		loc = line.find(":RADIANS");
+		if (loc != std::string::npos) {
+			break;
+		}
     }
 
 	std::vector<MotionData::FrameData> frames;

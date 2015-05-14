@@ -15,10 +15,8 @@ namespace acclaim
 		//! \param stream Strumień który parsujemy
 		//! \param createUniqueIndicies Czy generować unikalne indeksy kości czy używać tych z pliku
 		static Skeleton parse(std::istream & stream, const bool createUniqueIndicies);
-		/*! zapis wczytanego modelu
-			\param stream Nazwa pliku do wczytania
-			\param model Szkielet który zapisujemy
-		*/
+		//! \param stream Strumień do którego zapisujemy szkielet
+		//! \param model Model szkieletu który zapisujemy
 		static void serialize(std::ostream & stream, const Skeleton & model);
 	};
 }

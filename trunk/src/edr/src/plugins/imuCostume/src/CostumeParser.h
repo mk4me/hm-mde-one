@@ -35,15 +35,15 @@ namespace IMU
 
 		template<typename SensorsDescriptions>
 		static SensorToJointMapping createMapping(const SensorsDescriptions & sds,
-			const kinematic::LinearizedSkeleton::Mapping & lm)
+			const kinematic::LinearizedSkeleton::GlobalMapping & lm)
 		{
 			SensorToJointMapping ret;
 			auto rIT = ret.end();
 
 			for (const auto & sd : sds)
 			{
-				auto it = lm.right.find(sd.second.jointName);
-				if (it == lm.right.end()){
+				auto it = lm.data().right.find(sd.second.jointName);
+				if (it == lm.data().right.end()){
 					throw std::runtime_error("Joint name not found in linearized skeleton bimapping");
 				}
 

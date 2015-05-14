@@ -35,7 +35,7 @@
         <string>009.009.009.009</string>
        </property>
        <property name="text">
-        <string>192.168.1.173</string>
+        <string>192.168.001.173</string>
        </property>
        <property name="maxLength">
         <number>15</number>

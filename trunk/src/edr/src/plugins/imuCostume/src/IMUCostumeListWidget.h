@@ -50,7 +50,9 @@ private:
 		uint8_t counter;
 		utils::shared_ptr<std::ofstream> motionOutput;
 		kinematic::SkeletonPtr skeleton;
-		kinematic::LinearizedSkeleton::Mapping mapping;
+		acclaim::Skeleton acclaimSkeleton;
+		acclaim::Skeleton::HelperMotionData helperMotionData;
+		kinematic::LinearizedSkeleton::GlobalMapping mapping;
 	};
 
 public:

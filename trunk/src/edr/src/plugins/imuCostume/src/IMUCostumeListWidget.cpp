@@ -574,9 +574,15 @@ void IMUCostumeWidget::innerInitializeAndLoad(IMU::CostumeProfilePtr profile,
 
 	PLUGIN_LOG_DEBUG("extractorAdapter created");
 
+	auto calibSteps = std::min(profile->calibrationAlgorithm->maxCalibrationSteps(), 6000u);
+
+	if (calibSteps <= 0){
+		calibSteps = 6000;
+	}
+
 	// inicjalizacja algorytm?w estymacji orientacji czujnik?w + kalibracja
 	CostumeSkeletonMotionHelper csmh(extractorAdapter,
-		profile, initializeFramesCount + profile->calibrationAlgorithm->maxCalibrationSteps(),
+		profile, initializeFramesCount + calibSteps,
 		initializeFramesCount, this);
 
 	auto res = csmh.exec();
@@ -813,19 +819,46 @@ void IMUCostumeWidget::saveMotionData()
 
 	auto id = recordIndex;
 
+	//serializujemy najpierw do pamięci - powinno iść dużo szybciej
+	std::map<imuCostume::CostumeRawIO::CostumeAddress, std::stringstream> streams;
+
+	//iteruje po ramkach
 	for (const auto & d : data)
 	{
+		//iteruje po kostiumach w ramce
 		for (const auto & dd : d){
 			auto it = recordingDetails.find(dd.first);
+			auto & output = streams[dd.first];
 
-			acclaim::MotionData md;
-			kinematic::SkeletonState::applyLocalState(*it->second.skeleton, dd.second.skeletonData);
+			kinematic::SkeletonState::NonRigidCompleteStateLocal state;			
+			for (const auto & sd : dd.second.skeletonData)
+			{
+				state.data().push_back(sd.localState);
+			}
 			
-			acclaim::AmcParser::serialize({}, *(it->second.motionOutput));
-			it->second.motionOutput->flush();
+			kinematic::SkeletonState::applyState(*(it->second.skeleton), state);
+			auto localRigidState = kinematic::SkeletonState::localRigidState(*(it->second.skeleton));
+			acclaim::MotionData::FrameData fd;
+			fd.bonesData = kinematic::SkeletonState::convert(it->second.acclaimSkeleton, localRigidState, {}, it->second.helperMotionData);
+			fd.id = id;
+			
+			acclaim::AmcParser::serialize(fd, output);			
 		}
 
 		++id;
+	}
+
+	//teraz zrzucam dane z pamięci do plików
+	for (const auto & sData : streams)
+	{
+		auto it = recordingDetails.find(sData.first);
+		(*(it->second.motionOutput)) << sData.second.rdbuf();
+	}
+
+	//flushuje wszystkie pliki
+	for (auto & rd : recordingDetails)
+	{
+		rd.second.motionOutput->flush();
 	}
 
 	recordIndex += data.size();
@@ -930,9 +963,41 @@ void IMUCostumeWidget::onRecord(const bool record)
 				auto it = recordingDetails.find(c.first);
 				if (it == recordingDetails.end()){
 					auto cd = ds->costumeDescription(c.first);
-					it = recordingDetails.insert({ c.first, { recordingOutputDirectory / recordingDir(c.first, now), 0, nullptr,
-						utils::make_shared<kinematic::Skeleton>(*(cd.profile->skeleton)),
-						kinematic::LinearizedSkeleton::createCompleteMapping(*(cd.profile->skeleton)) } }).first;
+					RecordingDetails rd;
+					rd.counter = 0;
+					rd.skeleton = utils::make_shared<kinematic::Skeleton>(*(cd.profile->skeleton));
+					rd.path = recordingOutputDirectory / recordingDir(c.first, now);					
+					rd.mapping = kinematic::LinearizedSkeleton::createCompleteMapping(*(cd.profile->skeleton));
+					rd.acclaimSkeleton.name = "IMU";
+					const auto angleType = kinematicUtils::Rad;
+					rd.acclaimSkeleton.units.setAngleType(angleType);
+					kinematic::Skeleton::convert(*(rd.skeleton), rd.acclaimSkeleton, rd.acclaimSkeleton.axisOrder, angleType);
+					rd.acclaimSkeleton.bones[rd.acclaimSkeleton.root].axisOrder = rd.acclaimSkeleton.axisOrder;
+					rd.acclaimSkeleton.bones[rd.acclaimSkeleton.root].dofs = acclaim::Bone::defaultRootDofs(angleType);
+					const auto localMapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*(rd.skeleton));
+
+					for (const auto id : cd.profile->activeJoints)
+					{
+						auto lIT = localMapping.data().left.find(id);
+						if (lIT != localMapping.data().left.end()){
+							const auto name = lIT->get_right();
+							auto it = std::find_if(rd.acclaimSkeleton.bones.begin(), rd.acclaimSkeleton.bones.end(),
+								[&name, &localMapping](const acclaim::Skeleton::Bones::value_type & boneData)
+							{
+								return name == boneData.second.name;
+							});
+
+							if (it != rd.acclaimSkeleton.bones.end()){
+								if (it->first != rd.acclaimSkeleton.root){
+									it->second.dofs = acclaim::Bone::defaultRotationDofs(angleType);
+								}
+							}
+						}
+					}
+
+					rd.helperMotionData = acclaim::Skeleton::helperMotionData(rd.acclaimSkeleton);
+
+					it = recordingDetails.insert({ c.first, rd }).first;
 				}
 
 				//sprawdź czy katalog istnieje - jak nie to utwórz

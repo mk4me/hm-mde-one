@@ -567,10 +567,11 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 		bone.id = id;
 		bone.name = "root";
 		bone.axisOrder = localSkeleton.axisOrder;
-		bone.direction = correctNegativeZero(srcSkeleton.root_->value().localOrientation() * osg::Vec3(1, 0, 0));
-		bone.length = 0.0;
+		bone.direction = localSkeleton.position;
+		bone.length = bone.direction.length();
+		bone.direction.normalize();
 
-		localSkeleton.bones.insert({ bone.id, bone });
+		localSkeleton.bones.insert({ bone.id, bone }).first;
 		localSkeleton.root = bone.id;
 
 		for (const auto & c : srcSkeleton.root_->children()){
@@ -590,24 +591,23 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 						bone.axisOrder = findJointAxis(bone.name, jointsAxis, axisOrder);
 
 						if (joint->children().size() == 1){
-							bone.length = joint->children().front()->value().localPosition().length();
 							bone.direction = correctNegativeZero(joint->children().front()->value().localPosition());
+							bone.length = bone.direction.length();							
 							bone.direction.normalize();
 						}
 						else{
 							bone.length = 0.0;
-							bone.direction = correctNegativeZero(joint->parent()->value().localOrientation() * osg::Vec3(1, 0, 0));
 						}
 
+						/*
 						bone.axis = osg::Vec3(0, 0, 0);
-
-						/*bone.axis = kinematicUtils::convert(joint->value().orientation, bone.axisOrder);
+						bone.axis = kinematicUtils::convert(joint->value().orientation, bone.axisOrder);
 						if (angleUnit == kinematicUtils::Deg){
 							bone.axis = kinematicUtils::toDegrees(bone.axis);
 						}*/
 						bone.id = id + 1;
 
-						localSkeleton.bones.insert({ bone.id, bone });
+						localSkeleton.bones.insert(localSkeleton.bones.end(), { bone.id, bone });
 
 						auto parentID = localSkeleton.root;
 

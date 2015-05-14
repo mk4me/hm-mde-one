@@ -205,8 +205,7 @@ namespace IMU
 	{
 	public:
 		ExtractCostumeMotion(ExtractCostumeMotion&& other);
-		ExtractCostumeMotion(IMU::CostumeProfilePtr profile,
-			const kinematic::LinearizedSkeleton::Mapping & mapping);
+		ExtractCostumeMotion(IMU::CostumeProfilePtr profile);
 
 		~ExtractCostumeMotion();
 
@@ -216,8 +215,7 @@ namespace IMU
 
 	private:
 		IMU::CostumeProfilePtr profile;
-		mutable kinematic::Skeleton skeleton;				
-		const kinematic::LinearizedSkeleton::Mapping mapping;
+		mutable kinematic::Skeleton skeleton;
 		mutable imuCostume::CostumeCANopenIO::Timestamp previousTime;		
 	};
 

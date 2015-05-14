@@ -12,6 +12,7 @@
 #include <QtCore/QTimer>
 #include <plugins/imuCostume/IIMUDataSource.h>
 
+class QDialog;
 class QWidget;
 class QProgressDialog;
 
@@ -94,6 +95,8 @@ private:
 	QWidget * cw;
 	//! Dialog z postepem inicjalizacji kostiumu
 	QProgressDialog * pd;
+
+	QDialog * dialog;
 	//! Info czy zakoñczono inicjalizacjê
 	bool complete;
 };

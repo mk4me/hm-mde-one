@@ -83,7 +83,7 @@ protected:
 	//virtual void setLocalTime(double time);
 
 
-	void init(double ratio, int pointsCount, kinematic::SkeletonPtr skeleton, const kinematic::LinearizedSkeleton::Mapping& mapping);
+	void init(double ratio, int pointsCount, kinematic::SkeletonPtr skeleton, const kinematic::LinearizedSkeleton::GlobalMapping& mapping);
 	//! zmiana osi, gdy otrzymamy obiekt w nietypowym ukł. współrzędnych
 	//! \param xyz
 	void setAxis(bool xyz);
@@ -120,7 +120,7 @@ protected:
 	osgutils::SegmentsDescriptors connections;
 	//! mapowanie joint -> index
 	//std::map<kinematic::Skeleton::JointConstPtr, unsigned int> joint2Index;
-	kinematic::LinearizedSkeleton::Mapping nodesMapping;
+	kinematic::LinearizedSkeleton::GlobalMapping nodesMapping;
 
 	osg::ref_ptr<osg::PositionAttitudeTransform> localRootNode;
 

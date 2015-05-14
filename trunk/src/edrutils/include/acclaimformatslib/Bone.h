@@ -15,6 +15,8 @@ namespace acclaim
 	{
 		//! Typ identyfikatora kości
 		using ID = int;
+		//! Stopnie swobody
+		using Dofs = std::vector < DegreeOfFreedom > ;
 
 		//! Struktura z danymi pomocniczymi do wyznaczania ruchu
 		struct HelperMotionData
@@ -23,8 +25,6 @@ namespace acclaim
 			osg::Quat cInv;
 		};
 
-		//! Domyślny kierunek kości
-		static const osg::Vec3d defaultDirection;
 		//! Domyślna orientacja kości
 		static const osg::Vec3d defaultAxis;
 		//! Domyślna kolejnośc osi
@@ -45,7 +45,7 @@ namespace acclaim
 		//! określa kolejność rotacji dla osi obrotu
 		kinematicUtils::AxisOrder::Type axisOrder;		
 		//! stopnie swobody dla kości (razem z limitami)
-		std::vector<DegreeOfFreedom> dofs;
+		Dofs dofs;
 		//! \return Czy kość jest aktywna - będa dla niej dane w pliku AMC
 		const bool isActive() const;
 		//! \return Kolejność rotacji
@@ -54,6 +54,17 @@ namespace acclaim
 		//! \param angleInRadians Czy kąty sa w radianach
 		//! \return Dane pomocnicze przy przetwarzaniu danych ruchu
 		static HelperMotionData helperData(const Bone & bone, const bool angleInRadians);
+		//! \param channel Typ kanału, musi to być kanał z rotacjami
+		//! \param angleUnit Jednostki dla kątów
+		//! \return Domyslny stopień swobody dla kąta
+		static DegreeOfFreedom defaultRotationDof(const kinematicUtils::Channel channel,
+			const kinematicUtils::AngleUnitType angleUnit);
+		//! \param angleUnit Jednostki dla kątów
+		//! \return Domyslne stopnie swobody dla obracających się kości
+		static Dofs defaultRotationDofs(const kinematicUtils::AngleUnitType angleUnit);
+		//! \param angleUnit Jednostki dla kątów
+		//! \return Domyslne stopnie swobody dla roota
+		static Dofs defaultRootDofs(const kinematicUtils::AngleUnitType angleUnit);
 
 		//! Domyslny konstruktor
 		Bone();

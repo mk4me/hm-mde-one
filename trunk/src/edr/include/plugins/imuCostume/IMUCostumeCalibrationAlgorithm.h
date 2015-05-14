@@ -41,7 +41,7 @@ namespace IMU
 		{
 			//! Nazwa jointa na którym umiejscowiony jest sensor
 			std::string jointName;
-			//! ID jointa w zlinearyzowanym szkielecie
+			//! ID jointa w zlinearyzowanym szkielecie (lokalne, bez liœci)
 			kinematic::LinearizedSkeleton::NodeIDX jointIdx;
 		};
 

@@ -44,6 +44,12 @@ namespace IMU
 			osg::Quat estimatedOrientation;
 		};
 
+		struct RecordedJointData
+		{
+			kinematic::SkeletonState::NonRigidJointState localState;
+			kinematic::SkeletonState::NonRigidJointState globalState;
+		};
+
 		//! Zapisywane dane kostiumu
 		struct RecordedCostumeData
 		{
@@ -52,7 +58,7 @@ namespace IMU
 			//! Dane sensorów
 			std::map<imuCostume::Costume::SensorID, RecordedSensorData> sensorsData;
 			//! Dane szkieletu
-			kinematic::SkeletonState::RigidCompleteState skeletonData;
+			std::vector<RecordedJointData> skeletonData;
 		};
 
 		//! Mapa pakietów wg kostiumów

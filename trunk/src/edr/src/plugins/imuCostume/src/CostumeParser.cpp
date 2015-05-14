@@ -113,7 +113,7 @@ void CostumeParser::save(std::ostream & stream,
 		}
 
 		stream << val.first.ip << " " << val.first.port << " " << val.second.timestamp << " ";
-		serialize(stream, val.second.skeletonData.position);
+		serialize(stream, val.second.skeletonData[0].globalState.position);
 
 		for (const auto & sData : val.second.sensorsData)
 		{
@@ -128,7 +128,7 @@ void CostumeParser::save(std::ostream & stream,
 			stream << " ";
 			serialize(stream, sData.second.estimatedOrientation);
 			stream << " ";
-			serialize(stream, val.second.skeletonData.orientations[it->second.find(sData.first)->second]);
+			serialize(stream, val.second.skeletonData[it->second.find(sData.first)->second].localState.orientation);
 		}
 	}
 }

@@ -6,6 +6,8 @@
 #include <corelib/IPlugin.h>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QProgressDialog>
 
 static double calculateDelta(const imuCostume::CostumeCANopenIO::Timestamp current,
@@ -48,8 +50,14 @@ const unsigned int calibratinStageChangeValue, QWidget * parent)
 : QObject(parent), sensorsStream(sensorsStream), costumeProfile(costumeProfile),
 observer(new threadingUtils::ResetableStreamStatusObserver),
 calibratinStageChangeValue(calibratinStageChangeValue), previousTime(0),
-first(true), complete(false), pd(new QProgressDialog(tr("Orientation estimation algorithms"), tr("Cancel"), 0, maxSamples, parent)), cw(nullptr)
+first(true), complete(false), dialog(new QDialog(parent)),
+cw(nullptr)
 {
+	pd = new QProgressDialog(tr("Orientation estimation algorithms"), tr("Cancel"), 0, maxSamples, dialog);
+	pd->setWindowFlags(Qt::Widget);
+	auto l = new QVBoxLayout;	
+	l->addWidget(pd);
+
 	for (const auto & sa : costumeProfile->sensorsDescriptions)
 	{
 		AlgoProgress ap;
@@ -62,16 +70,27 @@ first(true), complete(false), pd(new QProgressDialog(tr("Orientation estimation 
 
 	sensorsStream->attachObserver(observer);		
 	pd->setWindowTitle(tr("Costume initialization"));
-	pd->setValue(0);
+	dialog->setWindowTitle(tr("Costume initialization"));
+	pd->setValue(0);	
 
 	cw = costumeProfile->calibrationAlgorithm->calibrationWidget();
-	if (cw != nullptr){
-		cw->setParent(pd);
-		pd->layout()->addWidget(cw);
+	if (cw != nullptr){		
+		cw->setParent(dialog);
+		l->addWidget(cw);		
 		cw->setVisible(false);
 	}
 
+	dialog->setLayout(l);
+
+	connect(pd, SIGNAL(reset()), pd, SLOT(cancel()));
+
+	auto res = connect(pd, SIGNAL(accepted()), dialog, SLOT(accept()));
+	res = connect(pd, SIGNAL(finished(int)), dialog, SLOT(done(int)));
+	res = connect(pd, SIGNAL(rejected()), dialog, SLOT(reject()));
 	connect(pd, SIGNAL(canceled()), this, SLOT(cancel()));
+	res = connect(pd, SIGNAL(canceled()), dialog, SLOT(reject()));
+
+	
 	connect(&timer, SIGNAL(timeout()), this, SLOT(perform()));
 }
 
@@ -84,7 +103,7 @@ int CostumeSkeletonMotionHelper::exec()
 {
 	complete = false;
 	timer.start(0);
-	pd->exec();
+	dialog->exec();
 
 	return pd->wasCanceled() == true ? QDialog::Rejected : QDialog::Accepted;
 }
@@ -134,11 +153,12 @@ void CostumeSkeletonMotionHelper::perform()
 		}
 
 		estimate(data);
-
+		auto val = pd->value();
 		if (pd->value() >= calibratinStageChangeValue){
 			if (cw != nullptr){
-				cw->setVisible(true);
-				cw = nullptr;
+				if (cw->isVisible() == false){
+					cw->setVisible(true);					
+				}				
 			}
 			bool ret = costumeProfile->calibrationAlgorithm->calibrate(data.sensorsData, deltaTime);
 			if (ret == true){
@@ -148,7 +168,8 @@ void CostumeSkeletonMotionHelper::perform()
 		}
 
 		if (complete == true){
-			cancel();			
+			cancel();
+			dialog->accept();
 		}
 		else {
 			previousTime = data.timestamp;

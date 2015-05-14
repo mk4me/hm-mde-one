@@ -23,7 +23,7 @@ AbstractSkeletonSerie::AbstractSkeletonSerie(KinematicVisualizer * visualizer,
 }
 
 void AbstractSkeletonSerie::init(double ratio, int pointsCount,
-	kinematic::SkeletonPtr skeleton, const kinematic::LinearizedSkeleton::Mapping& mapping)
+	kinematic::SkeletonPtr skeleton, const kinematic::LinearizedSkeleton::GlobalMapping& mapping)
 {
 	this->skeleton = skeleton;
 	this->nodesMapping = mapping;
@@ -44,7 +44,7 @@ void AbstractSkeletonSerie::init(double ratio, int pointsCount,
 			osgutils::SegmentDescriptor sd;
 			sd.length = c->value().localPosition().length();
 			sd.range.first = idx;
-			sd.range.second = mapping.right.find(c->value().name())->get_left();
+			sd.range.second = mapping.data().right.find(c->value().name())->get_left();
 			connections.push_back(sd);
 		}
 	});
@@ -99,7 +99,7 @@ kinematic::SkeletonPtr AbstractSkeletonSerie::getSkeleton()
 void AbstractSkeletonSerie::update()
 {
 	std::vector<osg::Vec3> pos;
-	pos.reserve(nodesMapping.size());
+	pos.reserve(nodesMapping.data().size());
 		
 	kinematic::LinearizedSkeleton::Visitor::visit(*skeleton, [&pos](kinematic::Skeleton::JointConstPtr node)
 	{

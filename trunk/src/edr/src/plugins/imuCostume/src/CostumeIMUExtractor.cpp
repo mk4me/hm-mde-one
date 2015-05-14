@@ -272,7 +272,7 @@ bool OrientationExtractor::verify(const IMU::MotionStream::value_type & a) const
 
 void OrientationExtractor::extract(const IMU::MotionStream::value_type & a, osg::Quat & ret) const
 {
-	ret = a.second.orientations[idx];
+	ret = a.second.data().orientations[idx];
 }
 
 CANopenDataExtractor::CANopenDataExtractor()
@@ -297,17 +297,15 @@ void CANopenDataExtractor::extract(const IMU::CANopenFramesStream::value_type & 
 }
 
 ExtractCostumeMotion::ExtractCostumeMotion(
-	IMU::CostumeProfilePtr profile,	
-	const kinematic::LinearizedSkeleton::Mapping & mapping)
-	: profile(profile), mapping(mapping),
-	previousTime(0), skeleton(*profile->skeleton)
+	IMU::CostumeProfilePtr profile)
+	: profile(profile),	previousTime(0), skeleton(*profile->skeleton)
 {
 
 }
 
 ExtractCostumeMotion::ExtractCostumeMotion(ExtractCostumeMotion&& other)
 	: skeleton(std::move(other.skeleton)), profile(std::move(other.profile)),
-	mapping(std::move(other.mapping)), previousTime(std::move(other.previousTime))
+	previousTime(std::move(other.previousTime))
 {
 
 }
@@ -334,7 +332,7 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Mo
 	previousTime = input.timestamp;
 
 	kinematic::SkeletonState::RigidCompleteStateLocal motionState;
-	motionState.position = osg::Vec3(0, 0, 0);
+	motionState.data().position = osg::Vec3(0, 0, 0);
 
 	std::map<kinematic::LinearizedSkeleton::NodeIDX, osg::Quat> jointsGlobalOrientations;
 
@@ -360,7 +358,7 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Mo
 			}
 		}
 
-		motionState.orientations.insert(motionState.orientations.end(), joint->value().localOrientation());
+		motionState.data().orientations.insert(motionState.data().orientations.end(), joint->value().localOrientation());
 	});
 
 	try{
@@ -398,7 +396,7 @@ bool KinematicStreamExtractor::verify(const IMU::MotionStream::value_type & inpu
 void KinematicStreamExtractor::extract(const IMU::MotionStream::value_type & input, IMU::SkeletonStateStream::value_type & output) const
 {
 	output.first = input.first;
-	skeleton_.root()->value().setGlobal(input.second.position);
+	skeleton_.root()->value().setGlobal(input.second.data().position);
 	IMU::SkeletonStateStream::value_type::second_type locOutput;	
 
 	kinematic::SkeletonState::applyState(skeleton_, input.second);
@@ -406,10 +404,10 @@ void KinematicStreamExtractor::extract(const IMU::MotionStream::value_type & inp
 	kinematic::LinearizedSkeleton::Visitor::visit(skeleton_,
 		[&locOutput](kinematic::Skeleton::JointPtr joint)
 	{
-		locOutput.push_back({ joint->value().localPosition(), joint->value().localOrientation() });
+		locOutput.data().push_back({ joint->value().localPosition(), joint->value().localOrientation() });
 	});
 
-	output.second.swap(locOutput);
+	output.second = locOutput;
 }
 
 const kinematic::Skeleton & KinematicStreamExtractor::skeleton() const
