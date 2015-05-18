@@ -283,7 +283,12 @@
       </column>
       <column>
        <property name="text">
-        <string>Rotation</string>
+        <string>PreMulRotation</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>PostMulRotation</string>
        </property>
       </column>
       <column>

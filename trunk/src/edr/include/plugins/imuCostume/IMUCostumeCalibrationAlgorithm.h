@@ -30,8 +30,10 @@ namespace IMU
 		//! Struktura opisuj¹ca poprawkê dla sensora IMU
 		struct SensorAdjustment
 		{
-			//! Lokalna rotacja wzglêdem rodzica
-			osg::Quat rotation;
+			//! Pre mul Lokalna rotacja wzglêdem rodzica
+			osg::Quat preMulRotation;
+			//! Post mul
+			osg::Quat postMulRotation;
 			//! Przesuniêcie wzglêdem rodzica w uk³¹dzie rodzica!
 			osg::Vec3d offset;
 		};

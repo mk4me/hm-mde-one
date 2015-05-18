@@ -24,7 +24,7 @@ static double calculateDelta(const imuCostume::CostumeCANopenIO::Timestamp curre
 	return deltaT;
 }
 
-void CostumeSkeletonMotionHelper::estimate(const IMU::SensorsStreamData & streamData)
+void CostumeSkeletonMotionHelper::estimate(IMU::SensorsStreamData & streamData)
 {
 	for (auto & m : algorithmsProgress)
 	{
@@ -38,7 +38,7 @@ void CostumeSkeletonMotionHelper::estimate(const IMU::SensorsStreamData & stream
 
 			m.second.lastTime = streamData.timestamp;
 			++(m.second.counter);
-			m.second.algo->estimate(it->second.accelerometer, it->second.gyroscope, it->second.magnetometer, deltaTime, it->second.orientation);
+			it->second.orientation = m.second.algo->estimate(it->second.accelerometer, it->second.gyroscope, it->second.magnetometer, deltaTime, it->second.orientation);
 		}
 	}
 }

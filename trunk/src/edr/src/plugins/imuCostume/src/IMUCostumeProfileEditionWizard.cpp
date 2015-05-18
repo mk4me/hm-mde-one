@@ -40,8 +40,9 @@ static const int UseIDX = 0;
 static const int SensorIDX = 0;
 static const int JointIDX = 1;
 static const int AlgorithmIDX = 2;
-static const int RotationIDX = 3;
-static const int OffsetIDX = 4;
+static const int PreMulRotationIDX = 3;
+static const int PostMulRotationIDX = 4;
+static const int OffsetIDX = 5;
 
 using namespace IMU;
 
@@ -86,10 +87,16 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, AlgorithmIDX), QVariant::fromValue(OrientationEstimationAlgorithmDelegate::defaultValue()), Qt::UserRole);
 		}
 
-		//ROTATION column
+		//PRE MUL ROTATION column
 		{
-			ui->sensorsConfigurationTableWidget->setItem(row, RotationIDX, new QTableWidgetItem(coreUI::CoreVectorEditor::quaternionToString(osg::Quat(0,0,0,1)._v)));
-			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, RotationIDX), QVariant::fromValue(osg::Quat(0, 0, 0, 1)), Qt::UserRole);
+			ui->sensorsConfigurationTableWidget->setItem(row, PreMulRotationIDX, new QTableWidgetItem(coreUI::CoreVectorEditor::quaternionToString(osg::Quat(0,0,0,1)._v)));
+			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, PreMulRotationIDX), QVariant::fromValue(osg::Quat(0, 0, 0, 1)), Qt::UserRole);
+		}
+
+		//POST MUL ROTATION column
+		{
+			ui->sensorsConfigurationTableWidget->setItem(row, PostMulRotationIDX, new QTableWidgetItem(coreUI::CoreVectorEditor::quaternionToString(osg::Quat(0, 0, 0, 1)._v)));
+			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, PostMulRotationIDX), QVariant::fromValue(osg::Quat(0, 0, 0, 1)), Qt::UserRole);
 		}
 
 		//OFFSET column
@@ -113,9 +120,22 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 	QWidget * parent) : QWizard(parent), ui(new Ui::IMUCostumeProfileEditionWizard),
 	checkStates(costumeSensors.size())
 {
-	ui->setupUi(this);
+	//ui->setupUi(this);
 	init(profile->name.empty() == true ? tr("New profile") : QString::fromStdString(profile->name),
 		costumeSensors,	orientAlgorithms, calibAlgorithms, motionAlgorithms, skeletonModels);
+
+	if (profile->skeleton != nullptr){
+
+		for (int i = 2; i < ui->modelComboBox->count(); ++i)
+		{
+			if (ui->modelComboBox->itemData(i).value<IMU::SkeletonConstPtr>()->ID() == profile->skeleton->ID()){
+				ui->modelComboBox->setCurrentIndex(i);
+				break;
+			}
+		}
+	}
+
+	const auto localMapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*(profile->skeleton));
 
 	imuCostume::Costume::SensorIDsSet allCostumeSensors(costumeSensors);
 
@@ -126,6 +146,8 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 	//inicjujemy tablice ustawień sensorów
 	ui->sensorsConfigurationTableWidget->setRowCount(allCostumeSensors.size());
 
+
+	ui->sensorsConfigurationTableWidget->blockSignals(true);
 	unsigned int row = 0;
 
 	//idziemy po wszystkich sensorach
@@ -133,13 +155,16 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 	{
 		auto pIT = profile->sensorsDescriptions.find(id);
 		auto cIT = costumeSensors.find(id);
+		auto sID = SensorIDDelegate::defaultValue();
+		auto sensorText = SensorIDDelegate::defaultText();
 
 		bool use = false;
 		bool sensorIDValid = false;
 
 		QString jointName;
 		osg::Vec3d offset(0, 0, 0);
-		osg::Quat rotation(0, 0, 0, 1);
+		osg::Quat preMulRotation(0, 0, 0, 1);
+		osg::Quat postMulRotation(0, 0, 0, 1);
 		IIMUOrientationEstimationAlgorithmConstPtr algorithm;
 
 		if (pIT != profile->sensorsDescriptions.end()
@@ -148,10 +173,12 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 			//mam wartość dla obu wpisów
 			use = true;
 			sensorIDValid = true;
-
+			sID = id;
+			sensorText = QString("%1").arg(id);
 			jointName = QString::fromStdString(pIT->second.jointName);
 			offset = pIT->second.offset;
-			rotation = pIT->second.rotation;
+			preMulRotation = pIT->second.preMulRotation;
+			postMulRotation = pIT->second.postMulRotation;
 			algorithm = pIT->second.orientationEstimationAlgorithm;
 		}
 		else if (pIT != profile->sensorsDescriptions.end()){
@@ -162,7 +189,8 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 
 			jointName = QString::fromStdString(pIT->second.jointName);
 			offset = pIT->second.offset;
-			rotation = pIT->second.rotation;
+			preMulRotation = pIT->second.preMulRotation;
+			postMulRotation = pIT->second.postMulRotation;
 			algorithm = pIT->second.orientationEstimationAlgorithm;
 		}
 		else{
@@ -171,54 +199,36 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 			sensorIDValid = false;
 		}
 
-		//USE column
-		{
-			auto useItem = new QTableWidgetItem();
-			useItem->setFlags(useItem->flags() | Qt::ItemFlag::ItemIsUserCheckable);
-
-			if (use == true){
-				useItem->setCheckState(Qt::Checked);
-				useItem->setFlags(useItem->flags() | Qt::ItemFlag::ItemIsEnabled);
-			}
-			else{
-				useItem->setCheckState(Qt::Unchecked);
-				useItem->setFlags(useItem->flags() & ~Qt::ItemFlag::ItemIsEnabled);
-			}
-
-			ui->sensorsConfigurationTableWidget->setItem(row, UseIDX, useItem);
-		}
-
-		//SENSOR column
-		{
-			if (sensorIDValid == true){
-				ui->sensorsConfigurationTableWidget->setItem(row, SensorIDX, new QTableWidgetItem(QString("%1").arg(id)));
-				ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, SensorIDX), QVariant(id));
-			}
-			else{
-				ui->sensorsConfigurationTableWidget->setItem(row, SensorIDX, new QTableWidgetItem(SensorIDDelegate::defaultText()));
-			}
-		}
-
 		//JOINT column
 		{
-			ui->sensorsConfigurationTableWidget->setItem(row, JointIDX, new QTableWidgetItem(jointName.isEmpty() == true ? SkeletonJointsDelegate::defaultText() : jointName));
+			auto it = localMapping.data().right.find(jointName.toStdString());
+			//ui->sensorsConfigurationTableWidget->setItem(row, JointIDX, new QTableWidgetItem(jointName.isEmpty() == true ? SkeletonJointsDelegate::defaultText() : jointName));
+			ui->sensorsConfigurationTableWidget->setItem(row, JointIDX, new QTableWidgetItem(it == localMapping.data().right.end() ? SkeletonJointsDelegate::defaultText() : jointName));
+			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, JointIDX), it != localMapping.data().right.end() ? it->get_left() : SkeletonJointsDelegate::defaultValue(), Qt::UserRole);
 		}
 
 		//ALGORITHM column
 		{
 			if (algorithm == nullptr){
 				ui->sensorsConfigurationTableWidget->setItem(row, AlgorithmIDX, new QTableWidgetItem(OrientationEstimationAlgorithmDelegate::defaultText()));
+				ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, AlgorithmIDX), QVariant::fromValue(OrientationEstimationAlgorithmDelegate::defaultValue()), Qt::UserRole);
 			}
 			else{
 				ui->sensorsConfigurationTableWidget->setItem(row, AlgorithmIDX, new QTableWidgetItem(QString::fromStdString(algorithm->name())));
-				ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, AlgorithmIDX), QVariant::fromValue(algorithm));
+				ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, AlgorithmIDX), QVariant::fromValue(algorithm), Qt::UserRole);
 			}
 		}
 
-		//ROTATION column
+		//PRE MUL ROTATION column
 		{
-			ui->sensorsConfigurationTableWidget->setItem(row, RotationIDX, new QTableWidgetItem(coreUI::CoreVectorEditor::quaternionToString(rotation._v)));
-			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, RotationIDX), QVariant::fromValue(rotation), Qt::UserRole);
+			ui->sensorsConfigurationTableWidget->setItem(row, PreMulRotationIDX, new QTableWidgetItem(coreUI::CoreVectorEditor::quaternionToString(preMulRotation._v)));
+			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, PreMulRotationIDX), QVariant::fromValue(preMulRotation), Qt::UserRole);
+		}
+
+		//POST MUL ROTATION column
+		{
+			ui->sensorsConfigurationTableWidget->setItem(row, PostMulRotationIDX, new QTableWidgetItem(coreUI::CoreVectorEditor::quaternionToString(postMulRotation._v)));
+			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, PostMulRotationIDX), QVariant::fromValue(postMulRotation), Qt::UserRole);
 		}
 
 		//OFFSET column
@@ -227,7 +237,68 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, OffsetIDX), QVariant::fromValue(offset), Qt::UserRole);
 		}
 
+		//SENSOR column
+		{
+			auto sensorItem = new QTableWidgetItem(sensorText);
+			sensorItem->setFlags(sensorItem->flags() | Qt::ItemFlag::ItemIsUserCheckable | Qt::ItemFlag::ItemIsEnabled);
+			sensorItem->setCheckState(use == true ? Qt::Checked : Qt::Unchecked);
+			ui->sensorsConfigurationTableWidget->setItem(row, SensorIDX, sensorItem);
+			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, SensorIDX), QVariant(id));
+
+			/*
+			if (sensorIDValid == true){
+			ui->sensorsConfigurationTableWidget->setItem(row, SensorIDX, new QTableWidgetItem(QString("%1").arg(id)));
+			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, SensorIDX), QVariant(id));
+			}
+			else{
+			ui->sensorsConfigurationTableWidget->setItem(row, SensorIDX, new QTableWidgetItem(SensorIDDelegate::defaultText()));
+			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, SensorIDX), QVariant(SensorIDDelegate::defaultValue()));
+			}
+			*/
+		}
+
+		////USE column
+		//{
+		//	auto useItem = new QTableWidgetItem();
+		//	useItem->setFlags(useItem->flags() | Qt::ItemFlag::ItemIsUserCheckable);
+
+		//	if (use == true){
+		//		useItem->setCheckState(Qt::Checked);
+		//		useItem->setFlags(useItem->flags() | Qt::ItemFlag::ItemIsEnabled);
+		//	}
+		//	else{
+		//		useItem->setCheckState(Qt::Unchecked);
+		//		useItem->setFlags(useItem->flags() & ~Qt::ItemFlag::ItemIsEnabled);
+		//	}
+
+		//	ui->sensorsConfigurationTableWidget->setItem(row, UseIDX, useItem);
+		//}
+
 		++row;
+	}
+
+	ui->sensorsConfigurationTableWidget->blockSignals(false);
+
+	if (profile->calibrationAlgorithm != nullptr){
+
+		for (int i = 2; i < ui->calibrationAlgorithmComboBox->count(); ++i)
+		{
+			if (ui->calibrationAlgorithmComboBox->itemData(i).value<IMU::IMUCostumeCalibrationAlgorithmConstPtr>()->ID() == profile->calibrationAlgorithm->ID()){
+				ui->calibrationAlgorithmComboBox->setCurrentIndex(i);
+				break;
+			}
+		}
+	}
+
+
+	if (profile->motionEstimationAlgorithm != nullptr){
+		for (int i = 2; i < ui->motionEstimationAglorithmComboBox->count(); ++i)
+		{
+			if (ui->motionEstimationAglorithmComboBox->itemData(i).value<IMU::IMUCostumeMotionEstimationAlgorithmConstPtr>()->ID() == profile->motionEstimationAlgorithm->ID()){
+				ui->motionEstimationAglorithmComboBox->setCurrentIndex(i);
+				break;
+			}
+		}
 	}
 }
 
@@ -256,7 +327,8 @@ void IMUCostumeProfileEditionWizard::init(const QString & profileName,
 	ui->sensorsConfigurationTableWidget->setItemDelegateForColumn(SensorIDX, sensorDelegate);
 	ui->sensorsConfigurationTableWidget->setItemDelegateForColumn(JointIDX, skeletonJointDelegate);
 	ui->sensorsConfigurationTableWidget->setItemDelegateForColumn(AlgorithmIDX, orientationAlgorithmDelegate);
-	ui->sensorsConfigurationTableWidget->setItemDelegateForColumn(RotationIDX, orientationDelegate);
+	ui->sensorsConfigurationTableWidget->setItemDelegateForColumn(PreMulRotationIDX, orientationDelegate);
+	ui->sensorsConfigurationTableWidget->setItemDelegateForColumn(PostMulRotationIDX, orientationDelegate);
 	ui->sensorsConfigurationTableWidget->setItemDelegateForColumn(OffsetIDX, vector3DDelegate);
 
 	//MODEL combobox
@@ -780,13 +852,14 @@ CostumeProfile IMUCostumeProfileEditionWizard::costumeProfile() const
 			sd.jointIdx = scm->data(scm->index(i, JointIDX), Qt::UserRole).toInt();
 			sd.jointName = scm->data(scm->index(i, JointIDX)).toString().toStdString();
 			sd.offset = scm->data(scm->index(i, OffsetIDX), Qt::UserRole).value<osg::Vec3d>();
-			sd.rotation = scm->data(scm->index(i, RotationIDX), Qt::UserRole).value<osg::Quat>();
+			sd.preMulRotation = scm->data(scm->index(i, PreMulRotationIDX), Qt::UserRole).value<osg::Quat>();
+			sd.postMulRotation = scm->data(scm->index(i, PostMulRotationIDX), Qt::UserRole).value<osg::Quat>();
 
 			auto algo = scm->data(scm->index(i, AlgorithmIDX), Qt::UserRole).value<IIMUOrientationEstimationAlgorithmConstPtr>();
 
 			sd.orientationEstimationAlgorithm.reset(algo->create());		
 
-			ret.sensorsDescriptions.insert(CostumeProfile::SensorsDescriptions::value_type(sensorID, sd));
+			ret.sensorsDescriptions.insert({ sensorID, sd });
 			sds.insert({ sensorID, sd });
 		}
 	}

@@ -533,6 +533,9 @@ void IMUCostumeWidget::innerInitializeAndLoad(IMU::CostumeProfilePtr profile,
 		PLUGIN_LOG_DEBUG("Profile configuration done");
 	}
 
+	//local mapping
+	const auto localMapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*(profile->skeleton));
+
 	//iniclalizujemy algorytm kalibracji
 	IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions sa;
 
@@ -540,8 +543,10 @@ void IMUCostumeWidget::innerInitializeAndLoad(IMU::CostumeProfilePtr profile,
 	{
 		IMU::IMUCostumeCalibrationAlgorithm::SensorDescription localsd;
 		localsd.jointName = sd.second.jointName;
+		localsd.jointIdx = localMapping.data().right.find(localsd.jointName)->get_left();;
 		localsd.offset = sd.second.offset;
-		localsd.rotation = sd.second.rotation;
+		localsd.preMulRotation = sd.second.preMulRotation;
+		localsd.postMulRotation = sd.second.postMulRotation;
 
 		sa.insert(IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions::value_type(sd.first, localsd));
 	}
@@ -605,7 +610,8 @@ void IMUCostumeWidget::innerInitializeAndLoad(IMU::CostumeProfilePtr profile,
 	{
 		auto it = sa.find(ca.first);
 		it->second.offset = ca.second.offset;
-		it->second.rotation = ca.second.rotation;
+		it->second.preMulRotation = ca.second.preMulRotation;
+		it->second.postMulRotation = ca.second.postMulRotation;
 	}
 
 	PLUGIN_LOG_DEBUG("Costume initialization done");
@@ -919,7 +925,9 @@ void serializeRecordedCostumeConfiguration(std::ostream & stream,
 		stream << std::to_string(sID) << " " << it->second.jointName << " ";
 		serialize(stream, it->second.offset);
 		stream << " ";
-		serialize(stream, it->second.rotation);
+		serialize(stream, it->second.preMulRotation);
+		stream << " ";
+		serialize(stream, it->second.postMulRotation);
 		stream << " " << boost::lexical_cast<std::string>(it->second.orientationEstimationAlgorithm->ID()) << std::endl;
 	}
 

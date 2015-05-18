@@ -62,8 +62,7 @@ void OrientationDelegate::setModelData(QWidget * editor,
 	const QModelIndex & index) const
 {
 	if(update == true){
-		auto s = static_cast<QDialog*>(editor);
-		auto r = s->findChild<coreUI::CoreRotationWidgetEditor*>();
+		auto r = editor->findChild<coreUI::CoreRotationWidgetEditor*>();
 		auto value = r->value();
 		model->setData(index, QVariant::fromValue(value), Qt::UserRole);
 		model->setData(index, QString("[(%1, %2, %3), %4]").arg(value[0]).arg(value[1]).arg(value[2]).arg(value[3]));		

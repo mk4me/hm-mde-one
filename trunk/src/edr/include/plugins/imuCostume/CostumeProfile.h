@@ -89,7 +89,9 @@ namespace IMU
 			//! Przesuniêcie lokalne wzglêdem pozycji jointa
 			osg::Vec3 offset;
 			//! Rotacja o jak¹ nalezy obróciæ sensor by uzyskaæ orientacje jointa
-			osg::Quat rotation;
+			osg::Quat preMulRotation;
+			//! Rotacja o jak¹ nalezy obróciæ sensor by uzyskaæ orientacje jointa
+			osg::Quat postMulRotation;
 			//! Algorytm estymacji orientacji
 			core::UniqueID orientationEstimationAlgorithmID;
 		};

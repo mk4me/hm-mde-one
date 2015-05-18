@@ -64,7 +64,8 @@ CostumeProfile * CostumeProfile::clone() const
 		SensorDescription locsd;
 		locsd.jointName = sd.second.jointName;
 		locsd.offset = sd.second.offset;
-		locsd.rotation = sd.second.rotation;
+		locsd.preMulRotation = sd.second.preMulRotation;
+		locsd.postMulRotation = sd.second.postMulRotation;
 		if (sd.second.orientationEstimationAlgorithm != nullptr){
 			locsd.orientationEstimationAlgorithm.reset(sd.second.orientationEstimationAlgorithm->create());
 		}
@@ -90,7 +91,8 @@ SerializableCostumeProfile SerializableCostumeProfile::pack(const CostumeProfile
 		SensorDescription local;
 		local.jointName = sd.second.jointName;
 		local.offset = sd.second.offset;
-		local.rotation = sd.second.rotation;
+		local.preMulRotation = sd.second.preMulRotation;
+		local.postMulRotation = sd.second.postMulRotation;
 		local.orientationEstimationAlgorithmID = sd.second.orientationEstimationAlgorithm == nullptr ? boost::uuids::nil_uuid() : sd.second.orientationEstimationAlgorithm->ID();
 		ret.sensorsDescriptions.insert(SensorsDescriptions::value_type(sd.first, local));
 	}
@@ -147,7 +149,8 @@ CostumeProfile SerializableCostumeProfile::unpack(const SerializableCostumeProfi
 		local.jointName = ea.second.jointName;
 		local.jointIdx = localMapping.data().right.find(local.jointName)->get_left();
 		local.offset = ea.second.offset;
-		local.rotation = ea.second.rotation;
+		local.preMulRotation = ea.second.preMulRotation;
+		local.postMulRotation = ea.second.postMulRotation;
 
 		auto eIT = orientationEstimationAlgos.find(ea.second.orientationEstimationAlgorithmID);
 		if (eIT != orientationEstimationAlgos.end()){
@@ -235,7 +238,9 @@ void SerializableCostumeProfile::serialize(std::ostream & stream, const Serializ
 		std::string sID = std::to_string(m.first);
 
 		stream << sID << ": " << m.second.jointName << " " << m.second.offset[0] << " " << m.second.offset[1] << " " << m.second.offset[2]
-			<< " " << m.second.rotation[0] << " " << m.second.rotation[1] << " " << m.second.rotation[2] << " " << m.second.rotation[3] << " " << m.second.orientationEstimationAlgorithmID << std::endl;
+			<< " " << m.second.preMulRotation[0] << " " << m.second.preMulRotation[1] << " " << m.second.preMulRotation[2] << " " << m.second.preMulRotation[3]
+			<< " " << m.second.postMulRotation[0] << " " << m.second.postMulRotation[1] << " " << m.second.postMulRotation[2] << " " << m.second.postMulRotation[3]
+			<< " " << m.second.orientationEstimationAlgorithmID << std::endl;
 	}
 
 	stream << "CalibrationAlgoID: " << sProfile.calibrationAlgorithmID << std::endl;
@@ -318,10 +323,14 @@ SerializableCostumeProfile SerializableCostumeProfile::deserialize(std::istream 
 								ss >> sd.offset[0];
 								ss >> sd.offset[1];
 								ss >> sd.offset[2];
-								ss >> sd.rotation[0];
-								ss >> sd.rotation[1];
-								ss >> sd.rotation[2];
-								ss >> sd.rotation[3];
+								ss >> sd.preMulRotation[0];
+								ss >> sd.preMulRotation[1];
+								ss >> sd.preMulRotation[2];
+								ss >> sd.preMulRotation[3];
+								ss >> sd.postMulRotation[0];
+								ss >> sd.postMulRotation[1];
+								ss >> sd.postMulRotation[2];
+								ss >> sd.postMulRotation[3];
 								ss >> sd.orientationEstimationAlgorithmID;
 
 								ret.sensorsDescriptions.insert(SensorsDescriptions::value_type(sID, sd));

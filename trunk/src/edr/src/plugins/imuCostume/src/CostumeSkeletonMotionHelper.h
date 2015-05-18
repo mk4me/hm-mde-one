@@ -67,7 +67,7 @@ private slots:
 
 private:
 
-	void estimate(const IMU::SensorsStreamData & streamData);
+	void estimate(IMU::SensorsStreamData & streamData);
 	
 	//! Zwraca minimalny licznik inicjowanych algorytmów
 	unsigned int minCounter() const;
