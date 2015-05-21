@@ -52,6 +52,7 @@ private:
 		kinematic::SkeletonPtr skeleton;
 		acclaim::Skeleton acclaimSkeleton;
 		acclaim::Skeleton::HelperMotionData helperMotionData;
+		kinematic::SkeletonState::AcclaimActiveSkeletonMappingLocal activeMapping;
 		kinematic::LinearizedSkeleton::GlobalMapping mapping;
 	};
 

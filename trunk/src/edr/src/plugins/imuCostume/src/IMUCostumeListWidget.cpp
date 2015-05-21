@@ -609,9 +609,10 @@ void IMUCostumeWidget::innerInitializeAndLoad(IMU::CostumeProfilePtr profile,
 	for (const auto & ca : calibrationAdjustments)
 	{
 		auto it = sa.find(ca.first);
-		it->second.offset = ca.second.offset;
-		it->second.preMulRotation = ca.second.preMulRotation;
-		it->second.postMulRotation = ca.second.postMulRotation;
+		auto pit = profile->sensorsDescriptions.find(ca.first);
+		pit->second.offset = it->second.offset = ca.second.offset;
+		pit->second.preMulRotation = it->second.preMulRotation = ca.second.preMulRotation;
+		pit->second.postMulRotation = it->second.postMulRotation = ca.second.postMulRotation;		
 	}
 
 	PLUGIN_LOG_DEBUG("Costume initialization done");
@@ -845,9 +846,17 @@ void IMUCostumeWidget::saveMotionData()
 			kinematic::SkeletonState::applyState(*(it->second.skeleton), state);
 			auto localRigidState = kinematic::SkeletonState::localRigidState(*(it->second.skeleton));
 			acclaim::MotionData::FrameData fd;
-			fd.bonesData = kinematic::SkeletonState::convert(it->second.acclaimSkeleton, localRigidState, {}, it->second.helperMotionData);
+			fd.bonesData = kinematic::SkeletonState::convert(it->second.acclaimSkeleton, localRigidState, it->second.activeMapping, it->second.helperMotionData);
 			fd.id = id;
-			
+
+			//korekcja ujemnych zer
+			for (auto & bd : fd.bonesData)
+			{
+				for (auto & cv : bd.channelValues)
+				{
+					cv = utils::correctNegativeZero(cv);
+				}
+			}
 			acclaim::AmcParser::serialize(fd, output);			
 		}
 
@@ -976,7 +985,7 @@ void IMUCostumeWidget::onRecord(const bool record)
 					rd.skeleton = utils::make_shared<kinematic::Skeleton>(*(cd.profile->skeleton));
 					rd.path = recordingOutputDirectory / recordingDir(c.first, now);					
 					rd.mapping = kinematic::LinearizedSkeleton::createCompleteMapping(*(cd.profile->skeleton));
-					rd.acclaimSkeleton.name = "IMU";
+					rd.acclaimSkeleton.name = c.first.ip;
 					const auto angleType = kinematicUtils::Rad;
 					rd.acclaimSkeleton.units.setAngleType(angleType);
 					kinematic::Skeleton::convert(*(rd.skeleton), rd.acclaimSkeleton, rd.acclaimSkeleton.axisOrder, angleType);
@@ -1004,6 +1013,7 @@ void IMUCostumeWidget::onRecord(const bool record)
 					}
 
 					rd.helperMotionData = acclaim::Skeleton::helperMotionData(rd.acclaimSkeleton);
+					rd.activeMapping = kinematic::SkeletonState::createAcclaimActiveMappingLocal(*(rd.skeleton), rd.acclaimSkeleton.bones);
 
 					it = recordingDetails.insert({ c.first, rd }).first;
 				}
@@ -1047,23 +1057,18 @@ void IMUCostumeWidget::onRecord(const bool record)
 					}
 
 					if (skeletonExists == false){
-						std::ofstream outputSkeletonFile((it->second.path / (it->first.ip + "skeleton.asf")).string());
+						std::ofstream outputSkeletonFile((it->second.path / ("skeleton.asf")).string());
 						if (outputSkeletonFile.is_open() == true){
-							auto cd = ds->costumeDescription(c.first);
-							acclaim::Skeleton skeleton;
-							kinematic::Skeleton::convert(*(cd.profile->skeleton), skeleton,
-								kinematicUtils::AxisOrder::XYZ,	kinematicUtils::Deg);
-
-							skeleton.name = "Costume " + c.first.ip;
-
-							acclaim::AsfParser::serialize(outputSkeletonFile, skeleton);
+							acclaim::AsfParser::serialize(outputSkeletonFile, it->second.acclaimSkeleton);
 						}
 					}
 				}
 
 				//nowy plik AMC z danymi ruchu do zapisu
 				auto counter = ++it->second.counter;
-				it->second.motionOutput = utils::make_shared<std::ofstream>((it->second.path / ("recording_" + boost::lexical_cast<std::string>(counter)+".amc")).string().c_str());
+				auto op = (it->second.path / ("recording_" + std::to_string(counter)+".amc")).string();
+				it->second.motionOutput = utils::make_shared<std::ofstream>(op.c_str());
+				acclaim::AmcParser::initSerialize(*(it->second.motionOutput), kinematicUtils::Deg);
 			}
 
 			{
@@ -1115,6 +1120,11 @@ void IMUCostumeWidget::onRecord(const bool record)
 		outputFile->close();
 		outputFile.reset();
 		recordOutput.reset();
+
+		for (auto & rd : recordingDetails)
+		{
+			rd.second.motionOutput->close();
+		}		
 	}
 }
 

@@ -18,7 +18,7 @@ DegreeOfFreedom Bone::defaultRotationDof(const kinematicUtils::Channel channel,
 
 	case kinematicUtils::Rad:
 		ret.minLimit = -osg::PI;
-		ret.minLimit = osg::PI;
+		ret.maxLimit = osg::PI;
 		break;	
 	}
 

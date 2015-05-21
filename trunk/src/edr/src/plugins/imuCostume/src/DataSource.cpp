@@ -1653,9 +1653,13 @@ void IMU::IMUCostumeDataSource::tryRecord(std::set<imuCostume::CostumeRawIO::Cos
 						rcd.sensorsData.insert({ sID, rsd });
 					}
 
-					//TODO
 					//zapis stanu szkieletu
-					//rcd.skeletonData
+					//TODO
+					//globalny stan
+					for (const auto & sd : sdata.data())
+					{
+						rcd.skeletonData.push_back({ sd, kinematic::SkeletonState::NonRigidJointState() });
+					}
 
 					cdf.insert({ ctr.first, rcd });
 				}

@@ -484,7 +484,7 @@ bool createJoint(Skeleton::JointPtr parentJoint, const acclaim::Skeleton & skele
 	const auto nextPos = currentBone.direction * currentBone.length;
 	//taka jest konwencja ASF - podajemy przesuniecie rodzica, dla wyja�nienia spojrze� na tworzenie li�ci hierarchi
 	for (auto it = range.first; (it != range.second) && (ret == true); ++it){
-		ret = createJoint(joint, skeleton, nextPos, skeleton.bones.at(it->second), names);
+		ret = createJoint(joint, skeleton, nextPos, skeleton.bones.find(it->second)->second, names);
 	}
 	//przerywamy rekurencje tworzenia hierarchi
 	static const int TERMINATOR = -0xdead;
@@ -515,7 +515,7 @@ bool Skeleton::convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSke
 	auto joint = Skeleton::Joint::create(jointData);
 	auto range = srcSkeleton.hierarchy.left.equal_range(srcSkeleton.root);
 	for (auto it = range.first; (it != range.second) && (ret == true); ++it) {
-		ret = createJoint(joint, srcSkeleton, srcSkeleton.position, srcSkeleton.bones.at(it->second), names);
+		ret = createJoint(joint, srcSkeleton, srcSkeleton.position, srcSkeleton.bones.find(it->second)->second, names);
 	}
 
 	if (joint->isLeaf() == true || ret == false){
@@ -592,6 +592,7 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 
 						if (joint->children().size() == 1){
 							bone.direction = correctNegativeZero(joint->children().front()->value().localPosition());
+							//bone.direction = correctNegativeZero(joint->value().localPosition());
 							bone.length = bone.direction.length();							
 							bone.direction.normalize();
 						}
@@ -599,6 +600,7 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 							bone.length = 0.0;
 						}
 
+						//TODO
 						/*
 						bone.axis = osg::Vec3(0, 0, 0);
 						bone.axis = kinematicUtils::convert(joint->value().orientation, bone.axisOrder);
