@@ -200,9 +200,9 @@ public:
 	//! \param orientation Globalna orientacja
 	void setGlobal(const osg::Quat & orientation)
 	{
-		node->setAttitude(parentGlobalOrientation().inverse() * orientation);
+		node->setAttitude(orientation * parentGlobalOrientation().inverse());
 		//TODO weryfikacja w testach ze to dziala
-		//UTILS_ASSERT(std::fabs((globalOrientation().inverse() * orientation).w()) < osg::DegreesToRadians(0.05));
+		//UTILS_ASSERT(std::fabs((orientation * parentGlobalOrientation().inverse()).w()) < osg::DegreesToRadians(0.05));
 	}
 	//! \param orientation Globalna orientacja
 	void setLocal(const osg::Quat & orientation)

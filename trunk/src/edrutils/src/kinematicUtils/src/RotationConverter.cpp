@@ -79,6 +79,77 @@ namespace kinematicUtils
 		return ret;
 	}
 
+	EulerConverter eulerConverter(const AxisOrder::Type axisOrder)
+	{
+		EulerConverter ret = nullptr;
+
+		switch (axisOrder)
+		{
+		case AxisOrder::XYX:
+
+			ret = &convertXYX;
+			break;
+
+		case AxisOrder::XYZ:
+
+			ret = &convertXYZ;
+			break;
+
+		case AxisOrder::XZX:
+
+			ret = &convertXZX;
+			break;
+
+		case AxisOrder::XZY:
+
+			ret = &convertXZY;
+			break;
+
+		case AxisOrder::YXY:
+
+			ret = &convertYXY;
+			break;
+
+		case AxisOrder::YXZ:
+
+			ret = &convertYXZ;
+			break;
+
+		case AxisOrder::YZX:
+
+			ret = &convertYZX;
+			break;
+
+		case AxisOrder::YZY:
+
+			ret = &convertYZY;
+			break;
+
+		case AxisOrder::ZXY:
+
+			ret = &convertZXY;
+			break;
+
+		case AxisOrder::ZXZ:
+
+			ret = &convertZXZ;
+			break;
+
+		case AxisOrder::ZYX:
+
+			ret = &convertZYX;
+			break;
+
+		case AxisOrder::ZYZ:
+
+			ret = &convertZYZ;
+			break;
+		}
+
+		return ret;	
+	}
+
+
 	osg::Quat convertXYX(const osg::Vec3d & rotation)
 	{
 		const osg::Vec3d halfAngle(rotation / 2.0);
@@ -238,68 +309,73 @@ namespace kinematicUtils
 
 	osg::Quat convert(const osg::Vec3d & rotation, const AxisOrder::Type axisOrder)
 	{
-		osg::Quat ret(0, 0, 0, 1);
+		return eulerConverter(axisOrder)(rotation);
+	}
+
+	QuaternionConverter quaternionConverter(const AxisOrder::Type axisOrder)
+	{
+		QuaternionConverter ret = nullptr;
 
 		switch (axisOrder)
 		{
 		case AxisOrder::XYX:
 
-			ret = convertXYX(rotation);
+			ret = &convertXYX;
 			break;
 
 		case AxisOrder::XYZ:
 
-			ret = convertXYZ(rotation);
+			ret = &convertXYZ;
 			break;
 
 		case AxisOrder::XZX:
 
-			ret = convertXZX(rotation);
+			ret = &convertXZX;
 			break;
 
 		case AxisOrder::XZY:
 
-			ret = convertXZY(rotation);
+			ret = &convertXZY;
 			break;
 
 		case AxisOrder::YXY:
 
-			ret = convertYXY(rotation);
+			ret = &convertYXY;
 			break;
 
 		case AxisOrder::YXZ:
 
-			ret = convertYXZ(rotation);
+			ret = &convertYXZ;
 			break;
 
 		case AxisOrder::YZX:
 
-			ret = convertYZX(rotation);
+			ret = &convertYZX;
 			break;
 
 		case AxisOrder::YZY:
 
-			ret = convertYZY(rotation);
+			ret = &convertYZY;
 			break;
 
 		case AxisOrder::ZXY:
 
-			ret = convertZXY(rotation);
+			ret = &convertZXY;
 			break;
 
 		case AxisOrder::ZXZ:
 
-			ret = convertZXZ(rotation);
+			ret = &convertZXZ;
 			break;
 
 		case AxisOrder::ZYX:
 
-			ret = convertZYX(rotation);
+			ret = &convertZYX;
 			break;
 
 		case AxisOrder::ZYZ:
 
-			ret = convertZYZ(rotation);
+			ret = &convertZYZ;
 			break;
 		}
 
@@ -416,72 +492,7 @@ namespace kinematicUtils
 
 	osg::Vec3d convert(const osg::Quat & rotation, const AxisOrder::Type axisOrder)
 	{
-		osg::Vec3d ret(0, 0, 0);
-
-		switch (axisOrder)
-		{
-		case AxisOrder::XYX:
-
-			ret = convertXYX(rotation);
-			break;
-
-		case AxisOrder::XYZ:
-
-			ret = convertXYZ(rotation);
-			break;
-
-		case AxisOrder::XZX:
-
-			ret = convertXZX(rotation);
-			break;
-
-		case AxisOrder::XZY:
-
-			ret = convertXZY(rotation);
-			break;
-
-		case AxisOrder::YXY:
-
-			ret = convertYXY(rotation);
-			break;
-
-		case AxisOrder::YXZ:
-
-			ret = convertYXZ(rotation);
-			break;
-
-		case AxisOrder::YZX:
-
-			ret = convertYZX(rotation);
-			break;
-
-		case AxisOrder::YZY:
-
-			ret = convertYZY(rotation);
-			break;
-
-		case AxisOrder::ZXY:
-
-			ret = convertZXY(rotation);
-			break;
-
-		case AxisOrder::ZXZ:
-
-			ret = convertZXZ(rotation);
-			break;
-
-		case AxisOrder::ZYX:
-
-			ret = convertZYX(rotation);
-			break;
-
-		case AxisOrder::ZYZ:
-
-			ret = convertZYZ(rotation);
-			break;
-		}
-
-		return ret;
+		return quaternionConverter(axisOrder)(rotation);
 	}
 
 	osg::Vec3d toRadians(const osg::Vec3d & rotation)

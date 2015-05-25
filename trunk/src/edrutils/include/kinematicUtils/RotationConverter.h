@@ -30,6 +30,10 @@ namespace kinematicUtils
 		return 0.0;
 	}
 
+	using EulerConverter = osg::Quat(*)(const osg::Vec3d &);
+
+	EulerConverter eulerConverter(const AxisOrder::Type axisOrder);
+
 	osg::Quat convertXYX(const osg::Vec3d & rotation);
 	osg::Quat convertXYZ(const osg::Vec3d & rotation);
 	osg::Quat convertXZX(const osg::Vec3d & rotation);
@@ -52,6 +56,10 @@ namespace kinematicUtils
 	}
 
 	osg::Vec3d orderedAngles(const osg::Vec3d & angles, const AxisOrder::Type axisOrder);
+
+	using QuaternionConverter = osg::Vec3d(*)(const osg::Quat &);
+
+	QuaternionConverter quaternionConverter(const AxisOrder::Type axisOrder);
 	
 	osg::Vec3d convertXYX(const osg::Quat & rotation);
 	osg::Vec3d convertXYZ(const osg::Quat & rotation);
@@ -66,6 +74,7 @@ namespace kinematicUtils
 	osg::Vec3d convertZYX(const osg::Quat & rotation);
 	osg::Vec3d convertZYZ(const osg::Quat & rotation);
 	osg::Vec3d convert(const osg::Quat & rotation, const AxisOrder::Type axisOrder);
+
 
 	template<int AxisOrder>
 	inline osg::Vec3d convert(const osg::Quat & rotation)

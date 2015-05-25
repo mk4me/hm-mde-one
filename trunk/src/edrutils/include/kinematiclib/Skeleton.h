@@ -158,7 +158,6 @@ namespace kinematic
 		//! \param topology Topologia dla której tworzymy szkielet
 		//! \return Szkielet na bazie topologii
 		static bool convert(TopologyNodeConstPtr topology, Skeleton & skeleton);
-
 		//! \tparam JPtr Typ wskaźnika na joint
 		template<typename JPtr>
 		//! \param root Głowa struktury szkieletu

@@ -101,11 +101,11 @@ public:
 		visualizer->getOrCreateWidget();
 
 		auto serieX = visualizer->createSerie(xwrapper->data()->getTypeInfo(), xwrapper);
-		serieX->serie()->setName("X_" + suffix);
+		serieX->serie()->setName(xAxisName.isEmpty() == false ? xAxisName.toStdString() : "X_" + suffix);
 		auto serieY = visualizer->createSerie(ywrapper->data()->getTypeInfo(), ywrapper);
-		serieY->serie()->setName("Y_" + suffix);
+		serieY->serie()->setName(yAxisName.isEmpty() == false ? yAxisName.toStdString() : "Y_" + suffix);
 		auto serieZ = visualizer->createSerie(zwrapper->data()->getTypeInfo(), zwrapper);
-		serieZ->serie()->setName("Z_" + suffix);
+		serieZ->serie()->setName(zAxisName.isEmpty() == false ? zAxisName.toStdString() : "Z_" + suffix);
 
 		INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->serie());
 		INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->serie());
@@ -125,9 +125,13 @@ public:
 		const core::VariantConstPtr& ywrapper,
 		const core::VariantConstPtr& zwrapper,
 		const QString & name, const QString & units,
-		const double yMin, const double yMax) :
+		const double yMin, const double yMax,
+		const QString & xAxisName = QString(),
+		const QString & yAxisName = QString(),
+		const QString & zAxisName = QString()) :
 		WrappedItemHelper(wrapper), xwrapper(xwrapper), ywrapper(ywrapper),
-		zwrapper(zwrapper), name(name), units(units), yMin(yMin), yMax(yMax)
+		zwrapper(zwrapper), name(name), units(units), yMin(yMin), yMax(yMax),
+		xAxisName(xAxisName), yAxisName(yAxisName), zAxisName(zAxisName)
 	{
 	}
 
@@ -146,6 +150,9 @@ private:
 	const core::VariantConstPtr zwrapper;
 	const double yMin;
 	const double yMax;
+	const QString xAxisName;
+	const QString yAxisName;
+	const QString zAxisName;
 };
 
 //! klasa pomocnicza przy tworzeniu wykresów z wektora 3-elementowego
@@ -926,7 +933,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 		item = utils::make_shared<core::HierarchyDataItem>(kow, QIcon(), QObject::tr("Kinematic stream"), QObject::tr("Kinematic 3D stream"));
 		root->appendChild(item);
 
-		auto ajitem = utils::make_shared<core::HierarchyItem>(QObject::tr("Active joints"), QObject::tr("Joints with sensors"));
+		auto ajitem = utils::make_shared<core::HierarchyItem>(QObject::tr("Dynamic joints"), QObject::tr("Joints with sensors"));
 		item->appendChild(ajitem);
 		//TODO
 		//dodać gałęzie z jointami i ich danymi: lokalny kąt w szkielecie, globalny kąt w świecie, lokalna pozycja względem rodzica, globalna pozycja
@@ -982,7 +989,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 			}
 		}
 
-		ajitem = utils::make_shared<core::HierarchyItem>(QObject::tr("Inactive joints"), QObject::tr("Joints with no sensors attached"));
+		ajitem = utils::make_shared<core::HierarchyItem>(QObject::tr("Static joints"), QObject::tr("Joints with no sensors attached"));
 		item->appendChild(ajitem);
 
 		SensorData sd;
@@ -1518,18 +1525,20 @@ void IMUCostumeDataSource::unpackSensorsStream(IMU::SensorsStreamPtr stream,
 		auto imuStream = utils::shared_ptr<IMUStream>(new threadingUtils::StreamAdapterT<IMU::SensorsStreamData, IMU::IMUStream::value_type, IMU::IMUExtractor>(stream, IMU::IMUExtractor(sd.first)));
 
 		auto ow = core::Variant::create<IMUStream>();
-		ow->setMetadata("core/name", QObject::tr("IMU %1 Data").arg(sd.first).toStdString());
+		auto jname = profile->sensorsDescriptions.find(sd.first)->second.jointName;
+		auto name = QObject::tr("IMU %1 Data (joint: %2)").arg(sd.first).arg(jname.c_str());
+		ow->setMetadata("core/name", name.toStdString());
 		ow->set(imuStream);
 		sd.second.domainData.push_back(ow);
 		domainData.push_back(ow);
 
-		auto imuItem = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("IMU %1 Data").arg(sd.first), QObject::tr("IMU %1 Data").arg(sd.first));
+		auto imuItem = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), name, name);
 		root->appendChild(imuItem);		
 
 		//ACC
 		{
 			imuItem->appendChild(extracImuStreamVector<IMUStream, IMU::IMUCostumeDataSource::SensorData, IMU::TimeMemberExtractoraccelerometer>(domainData, imuStream,
-				sd.second, sensorParameterName(0), QString("m/s^2"), -15.0, 15.0));			
+				sd.second, sensorParameterName(0), QString("m/s^2"), -15.0, 15.0));
 		}
 
 		//GYRO

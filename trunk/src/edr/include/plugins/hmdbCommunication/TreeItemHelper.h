@@ -49,7 +49,11 @@ class HMDBCOMMUNICATION_EXPORT NewVector3ItemHelper : public core::WrappedItemHe
 public:
     //! Konstruktor pobiera obiekt z wrapperem wektora 3D
     //! \param wrapper 
-	NewVector3ItemHelper(const core::VariantConstPtr& wrapper, const c3dlib::EventsCollectionConstPtr& events = c3dlib::EventsCollectionConstPtr());
+	NewVector3ItemHelper(const core::VariantConstPtr& wrapper,
+		const c3dlib::EventsCollectionConstPtr& events = c3dlib::EventsCollectionConstPtr(),
+		const QString & xAxisName = QString(),
+		const QString & yAxisName = QString(),
+		const QString & zAxisName = QString());
 
 public:
     //! zwraca utworzone serie danych
@@ -63,6 +67,9 @@ public:
     std::vector<utils::TypeInfo> getTypeInfos() const;
 private:
 	c3dlib::EventsCollectionConstPtr events;
+	const QString xAxisName;
+	const QString yAxisName;
+	const QString zAxisName;
 };
 typedef utils::shared_ptr<NewVector3ItemHelper> NewVector3ItemHelperPtr;
 typedef utils::shared_ptr<const NewVector3ItemHelper> NewVector3ItemHelperConstPtr;

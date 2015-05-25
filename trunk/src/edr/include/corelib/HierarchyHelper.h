@@ -89,6 +89,29 @@ protected:
 };
 DEFINE_SMART_POINTERS(WrappedItemHelper);
 
+//! Najbardziej podstawowy helper dla drzewa danych
+//! Tworzy domyślny wizualizator dla wrappera, bez dodatkowych operacji
+class CORELIB_EXPORT MetaTitlePatternWrappedItemHelper : public WrappedItemHelper
+{
+public:
+	//! Konstruktor wymaga podania wrappera z danymi
+	//! \param wrapper 
+	MetaTitlePatternWrappedItemHelper(const VariantConstPtr & wrapper,
+		const QString & pattern, const std::list<std::string> & metadata);
+	virtual ~MetaTitlePatternWrappedItemHelper();
+
+public:
+	//! zwraca utworzone serie danych
+	//! \param visualizer wizualizator, który będzie tworzył serie
+	//! \param path ścieżka dla timeline
+	//! \param series tutaj trafia stworzone serie 
+	virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series);	
+private:
+	const QString pattern;
+	const std::list<std::string> metadata;
+};
+DEFINE_SMART_POINTERS(WrappedItemHelper);
+
 }
 
 #endif

@@ -59,3 +59,32 @@ void HierarchyHelper::getSeries( const VisualizerPtr & visualizer, const QString
 		visualizer->setActiveSerie(series.front());
 	}
 }
+
+MetaTitlePatternWrappedItemHelper::MetaTitlePatternWrappedItemHelper(const VariantConstPtr & wrapper,
+	const QString & pattern, const std::list<std::string> & metadata)
+	: WrappedItemHelper(wrapper), pattern(pattern), metadata(metadata)
+{
+	UTILS_ASSERT(!metadata.empty(), "Metadata should not be empty");
+}
+
+MetaTitlePatternWrappedItemHelper::~MetaTitlePatternWrappedItemHelper()
+{
+
+}
+
+void MetaTitlePatternWrappedItemHelper::createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series)
+{
+	QString serieName(pattern);
+
+	for (const auto & meta : metadata)
+	{
+		std::string value;
+		if (wrapper->getMetadata(meta, value) == false){
+			value = "[meta:|" + meta + "|]";
+		}
+
+		serieName = serieName.arg(value.c_str());
+	}
+
+	WrappedItemHelper::createSeries(visualizer, serieName, series);
+}

@@ -7,6 +7,27 @@
 
 using namespace kinematic;
 
+template<int AngleInRadians>
+osg::Vec3d resolveRadians(const osg::Vec3d& toResolve)
+{
+	static_assert((AngleInRadians == 0) || (AngleInRadians == 1), "Nalezy użyć jednej z dwóch wersji");
+	return osg::Vec3d(0,0,0);
+}
+
+using RadiansResolver = osg::Vec3d(*)(const osg::Vec3d &);
+
+template<>
+osg::Vec3d resolveRadians<1>(const osg::Vec3d& toResolve)
+{
+	return toResolve;
+}
+
+template<>
+osg::Vec3d resolveRadians<0>(const osg::Vec3d& toResolve)
+{
+	return kinematicUtils::toRadians(toResolve);
+}
+
 osg::Vec3d resolveRadians(const bool angleInRadians, const osg::Vec3d& toResolve)
 {
 	return angleInRadians == true ? toResolve : kinematicUtils::toRadians(toResolve);
@@ -73,6 +94,167 @@ SkeletonState::AcclaimActiveSkeletonMappingGlobal SkeletonState::createAcclaimAc
 	ret.insert({ skeletonMapping.data().left.begin()->get_left(), bones.begin()->first });
 
 	return AcclaimActiveSkeletonMappingGlobal(ret);
+}
+
+SkeletonState::AcclaimNameActiveSkeletonMappingLocal SkeletonState::createAcclaimNameActiveMappingLocal(const Skeleton & skeleton,
+	const acclaim::Skeleton::Bones & bones)
+{
+	const auto skeletonMapping = LinearizedSkeleton::createNonLeafMapping(skeleton);
+
+	AcclaimNameActiveSkeletonMapping ret;
+
+	for (const auto & bd : bones)
+	{
+		if (bd.second.isActive() == true){
+			auto it = skeletonMapping.data().right.find(bd.second.name);
+			if (it != skeletonMapping.data().right.end())
+			{
+				ret.insert({ bd.second.name, it->get_left() });
+			}
+		}
+	}
+
+	//root - bo w mapowaniu mogą się róznić nazwy rootów
+	ret.insert({ bones.begin()->second.name, skeletonMapping.data().left.begin()->get_left() });
+
+	return AcclaimNameActiveSkeletonMappingLocal(ret);
+}
+
+SkeletonState::AcclaimNameActiveSkeletonMappingGlobal SkeletonState::createAcclaimNameActiveMappingGlobal(const Skeleton & skeleton,
+	const acclaim::Skeleton::Bones & bones)
+{
+	const auto skeletonMapping = LinearizedSkeleton::createCompleteMapping(skeleton);
+
+	AcclaimNameActiveSkeletonMapping ret;
+
+	for (const auto & bd : bones)
+	{
+		if (bd.second.isActive() == true){
+			auto it = skeletonMapping.data().right.find(bd.second.name);
+			if (it != skeletonMapping.data().right.end())
+			{
+				ret.insert({ bd.second.name, it->get_left() });
+			}
+		}
+	}
+
+	//root - bo w mapowaniu mogą się róznić nazwy rootów
+	ret.insert({ bones.begin()->second.name, skeletonMapping.data().left.begin()->get_left() });
+
+	return AcclaimNameActiveSkeletonMappingGlobal(ret);
+}
+
+std::array<unsigned int, 3> positionIndicies(const acclaim::Bone & bone)
+{
+	std::array<unsigned int, 3> ret;
+	unsigned int idx = 0;
+	unsigned int pos = 0;
+	for (const auto & dof : bone.dofs)
+	{
+		switch (dof.channel)
+		{
+		case kinematicUtils::ChannelType::TX:
+			ret[0] = idx;
+			++pos;
+			break;
+
+		case kinematicUtils::ChannelType::TY:
+			ret[1] = idx;
+			++pos;
+			break;
+
+		case kinematicUtils::ChannelType::TZ:
+			ret[2] = idx;
+			++pos;
+			break;
+		}	
+
+		if (pos == 3){
+			break;
+		}
+
+		++idx;
+	}
+
+	return ret;
+}
+
+std::array<unsigned int, 3> orientationIndicies(const acclaim::Bone & bone)
+{
+	std::array<unsigned int, 3> ret;
+	unsigned int idx = 0;
+	unsigned int pos = 0;
+	for (const auto & dof : bone.dofs)
+	{
+		switch (dof.channel)
+		{
+		case kinematicUtils::ChannelType::RX:
+			ret[pos++] = idx;
+			break;
+
+		case kinematicUtils::ChannelType::RY:
+			ret[pos++] = idx;			
+			break;
+
+		case kinematicUtils::ChannelType::RZ:
+			ret[pos++] = idx;			
+			break;
+		}	
+
+		if (pos == 3){
+			break;
+		}
+
+		++idx;
+	}
+
+	return ret;
+}
+
+osg::Vec3d extractVector(const acclaim::MotionData::ChannelValues & channelValues, int XPos, int YPos, int ZPos)
+{
+	return{ channelValues[XPos], channelValues[YPos], channelValues[ZPos] };
+}
+
+osg::Vec3d extractPosition(const acclaim::MotionData::ChannelValues & channelValues,
+	const acclaim::Bone & bone)
+{
+	if (bone.dofs.size() != channelValues.size()){
+		throw std::runtime_error("Acclaim motion data mismatch skeleton structure degrees of freedom for node " + bone.name + ". In model declared " + boost::lexical_cast<std::string>(bone.dofs.size()) + " dof`s but data contains " + boost::lexical_cast<std::string>(channelValues.size()) + " dof`s.");
+	}
+
+	osg::Vec3d ret(0, 0, 0);
+	unsigned char transi = 0;
+	unsigned char i = 0;
+
+	for (const auto & dof : bone.dofs)
+	{
+		switch (dof.channel)
+		{
+		case kinematicUtils::ChannelType::TX:
+			ret.x() = channelValues[i];
+			++transi;
+			break;
+
+		case kinematicUtils::ChannelType::TY:
+			ret.y() = channelValues[i];
+			++transi;
+			break;
+
+		case kinematicUtils::ChannelType::TZ:
+			ret.z() = channelValues[i];
+			++transi;
+			break;
+		}
+
+		++i;
+
+		if (transi == 3){
+			break;
+		}
+	}
+
+	return ret;
 }
 
 SkeletonState::NonRigidJointState convert(const acclaim::Skeleton::Bones & skeletonBones,
@@ -150,6 +332,38 @@ SkeletonState::NonRigidJointState convert(const acclaim::Skeleton::Bones & skele
 	return ret;
 }
 
+SkeletonState::BoneRotationConverter createBoneOrienationExtractor(
+	const acclaim::Bone & bone,	RadiansResolver radiansResolver)
+{
+	auto rotOrder = bone.rotationOrder();
+
+	osg::Quat c = kinematicUtils::convert(radiansResolver(bone.axis), bone.axisOrder);
+	osg::Quat cInv = c.inverse();
+
+	auto indicies = orientationIndicies(bone);
+	kinematicUtils::EulerConverter angleConverter = kinematicUtils::eulerConverter(rotOrder);
+
+	return [c, cInv, indicies, angleConverter, radiansResolver](const acclaim::MotionData::ChannelValues & channelValues)
+	{
+		return cInv * angleConverter(radiansResolver(osg::Vec3d(channelValues[indicies[0]], channelValues[indicies[1]], channelValues[indicies[2]]))) * c;
+	};	
+}
+
+SkeletonState::RotationConvertersMap createRotationConvertersMap(const acclaim::Skeleton & skeleton,
+	RadiansResolver radiansResolver)
+{
+	SkeletonState::RotationConvertersMap ret;
+
+	for (const auto & bd : skeleton.bones)
+	{
+		if (bd.second.isActive() == true){
+			ret.insert({ bd.second.name, createBoneOrienationExtractor(bd.second, radiansResolver) });
+		}
+	}
+
+	return ret;
+}
+
 void orderChanges(const acclaim::Skeleton & skeleton, const int currentBoneID,
 	const std::map<std::string, SkeletonState::NonRigidJointState> & changes,
 	SkeletonState::NonRigidCompleteState & state)
@@ -204,6 +418,29 @@ SkeletonState::RigidPartialStateLocal SkeletonState::convert(
 			ret.data().position = jointState.position;
 		}
 	}
+
+	return ret;
+}
+
+SkeletonState::RigidPartialStateLocal SkeletonState::convert(const acclaim::MotionData::BonesData & motionData,
+	const AcclaimNameActiveSkeletonMappingLocal & activeMapping,
+	const ConvertHelper & convertHelper)
+{
+	RigidPartialStateLocal ret;
+	bool wasRoot = false;
+	
+	for (const auto & bd : motionData)
+	{
+		auto nit = activeMapping.data().find(bd.name);
+		auto cit = convertHelper.rotationConverters.find(bd.name);
+		auto q = cit->second(bd.channelValues);
+		ret.data().orientations.insert({ nit->second, q});
+
+		if ((wasRoot == false) && (bd.name == "root")){			
+			ret.data().position = convertHelper.rootPositionExtractor(bd.channelValues);
+			wasRoot = true;
+		}
+	}	
 
 	return ret;
 }
@@ -280,10 +517,6 @@ acclaim::MotionData::BonesData SkeletonState::convert(const acclaim::Skeleton & 
 			const auto & bData = skeleton.bones.find(acclaimID)->second;
 			bd.name = bData.name;
 			const auto & hData = helperMotionData.find(acclaimID)->second;
-			//osg::Quat c = kinematicUtils::convert(resolveRadians(angleInRadians, sIT->second.axis), sIT->second.axisOrder);
-			//osg::Quat cinv = c.inverse();
-
-			//auto orient = kinematicUtils::convert(c * joint->value().localOrientation() * cinv, sIT->second.rotationOrder());
 			auto rotationOrder = bData.rotationOrder();
 			auto orient = kinematicUtils::convert(hData.c * skeletonState.data().orientations[i] * hData.cInv, rotationOrder);
 
@@ -581,4 +814,25 @@ void SkeletonState::applyGlobalState(Skeleton & skeleton, const NonRigidPartialS
 			}
 		}
 	});
+}
+
+SkeletonState::RotationConvertersMap SkeletonState::prepareRotationConvertersMap(const acclaim::Skeleton & skeleton)
+{
+	RadiansResolver radiansResolver = &resolveRadians < 0 > ;
+
+	if (skeleton.units.isAngleInRadians()){
+		radiansResolver = &resolveRadians < 1 > ;
+	}
+	
+	return createRotationConvertersMap(skeleton, radiansResolver);
+}
+
+SkeletonState::ConvertHelper SkeletonState::prepareConvertHelper(const acclaim::Skeleton & skeleton)
+{
+	auto indicies = positionIndicies(skeleton.bones.begin()->second);
+
+	return{ prepareRotationConvertersMap(skeleton), [indicies](const acclaim::MotionData::ChannelValues & channelValues)
+	{
+		return osg::Vec3d(channelValues[indicies[0]], channelValues[indicies[1]], channelValues[indicies[2]]);
+	} };
 }

@@ -25,8 +25,26 @@ namespace kinematic
 	struct SkeletonState
 	{
 	public:
+
+		using AcclaimNameActiveSkeletonMapping = std::map < std::string, LinearizedSkeleton::NodeIDX > ;
+
+		using AcclaimNameActiveSkeletonMappingLocal = LocalData < AcclaimNameActiveSkeletonMapping >;
+		using AcclaimNameActiveSkeletonMappingGlobal = GlobalData < AcclaimNameActiveSkeletonMapping >;
+
 		//! Typ mapowania identyfikatorów kosci aktywnych szkieletu acclaim do odpowadajacych jointow naszego szkieletu
 		using AcclaimActiveSkeletonMapping = boost::bimap < LinearizedSkeleton::NodeIDX, acclaim::Bone::ID > ;
+		//! Funktor do wyznaczania orientacji stawu
+		using BoneRotationConverter = std::function < osg::Quat(const acclaim::MotionData::ChannelValues &) > ;
+		//! Funktor do wyznaczania orientacji stawu
+		using BonePositionExtractor = std::function < osg::Vec3d(const acclaim::MotionData::ChannelValues &) > ;
+		//! Mapa funktorów wyznaczających orientacje stawów
+		using RotationConvertersMap = std::map < std::string, BoneRotationConverter >;	
+
+		struct ConvertHelper
+		{
+			RotationConvertersMap rotationConverters;
+			BonePositionExtractor rootPositionExtractor;
+		};
 
 		using AcclaimActiveSkeletonMappingLocal = LocalData < AcclaimActiveSkeletonMapping >;
 		using AcclaimActiveSkeletonMappingGlobal = GlobalData < AcclaimActiveSkeletonMapping >;
@@ -79,6 +97,9 @@ namespace kinematic
 		using NonRigidPartialStateLocal = LocalData < NonRigidPartialState >;
 		using NonRigidPartialStateGlobal = GlobalData < NonRigidPartialState >;
 
+		//! Funktor do wyznaczania orientacji stawu
+		using BonesConverter = std::function < RigidPartialStateLocal(const acclaim::MotionData::BonesData &) > ;
+
 		//! \param skeleton Szkielet dla którego tworzymy stan
 		//! \return Globalny stan sztywnego szkieletu
 		static RigidCompleteStateGlobal globalRigidState(const Skeleton & skeleton);
@@ -130,6 +151,10 @@ namespace kinematic
 			applyGlobalState(skeleton, state.data());
 		}
 
+		static RotationConvertersMap prepareRotationConvertersMap(const acclaim::Skeleton & skeleton);
+
+		static ConvertHelper prepareConvertHelper(const acclaim::Skeleton & skeleton);
+
 		//! \param skeleton Szkielet
 		//! \param bones Kości
 		//! \return Zlinearyzowane mapowanie aktywnych kości
@@ -142,6 +167,18 @@ namespace kinematic
 		static AcclaimActiveSkeletonMappingGlobal createAcclaimActiveMappingGlobal(const Skeleton & skeleton,
 			const acclaim::Skeleton::Bones & bones);
 
+		//! \param skeleton Szkielet
+		//! \param bones Kości
+		//! \return Zlinearyzowane mapowanie aktywnych kości
+		static AcclaimNameActiveSkeletonMappingLocal createAcclaimNameActiveMappingLocal(const Skeleton & skeleton,
+			const acclaim::Skeleton::Bones & bones);
+
+		//! \param skeleton Szkielet
+		//! \param bones Kości
+		//! \return Zlinearyzowane mapowanie aktywnych kości
+		static AcclaimNameActiveSkeletonMappingGlobal createAcclaimNameActiveMappingGlobal(const Skeleton & skeleton,
+			const acclaim::Skeleton::Bones & bones);
+
 		//! \param skeleton Szkielet dla którego tworzymy zmianę stanu szkieletu
 		//! \param motionData Dane ruchu w formacie acclaim - ramka danych
 		//! \param mapping Mapowanie danych acclaim do szkieletu
@@ -152,6 +189,14 @@ namespace kinematic
 			const AcclaimActiveSkeletonMappingLocal & activeMapping,
 			const acclaim::Skeleton::HelperMotionData & helperMotionData,
 			const bool angleInRadians);
+
+		//! \param skeleton Szkielet dla którego tworzymy zmianę stanu szkieletu
+		//! \param motionData Dane ruchu w formacie acclaim - ramka danych
+		//! \param mapping Mapowanie danych acclaim do szkieletu
+		//! \return Zmiana stanu szkieletu
+		static RigidPartialStateLocal convert(const acclaim::MotionData::BonesData & motionData,
+			const AcclaimNameActiveSkeletonMappingLocal & activeMapping,
+			const ConvertHelper & convertHelper);
 
 		//! \param skeleton Szkielet dla którego tworzymy zmianę stanu szkieletu
 		//! \param motionData Dane ruchu w formacie acclaim - ramka danych

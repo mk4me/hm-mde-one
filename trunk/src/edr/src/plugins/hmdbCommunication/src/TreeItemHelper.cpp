@@ -210,11 +210,11 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     visualizer->getOrCreateWidget();
 
 	auto serieX = visualizer->createSerie(wrapperX->data()->getTypeInfo(), wrapperX);
-	serieX->serie()->setName("X_" + suffix);
+	serieX->serie()->setName(xAxisName.isEmpty() == false ? xAxisName.toStdString() : ("X_" + suffix));
 	auto serieY = visualizer->createSerie(wrapperY->data()->getTypeInfo(), wrapperY);
-	serieY->serie()->setName("Y_" + suffix);
+	serieY->serie()->setName(yAxisName.isEmpty() == false ? yAxisName.toStdString() : ("Y_" + suffix));
 	auto serieZ = visualizer->createSerie(wrapperZ->data()->getTypeInfo(), wrapperZ);
-	serieZ->serie()->setName("Z_" + suffix);
+	serieZ->serie()->setName(zAxisName.isEmpty() == false ? zAxisName.toStdString() : ("Z_" + suffix));
 
     INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->serie());
     INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->serie());
@@ -241,9 +241,10 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     series.push_back(serieZ);
 }
 
-NewVector3ItemHelper::NewVector3ItemHelper(const core::VariantConstPtr& wrapper, const c3dlib::EventsCollectionConstPtr& events) :
-    WrappedItemHelper(wrapper),
-    events(events)
+NewVector3ItemHelper::NewVector3ItemHelper(const core::VariantConstPtr& wrapper, const c3dlib::EventsCollectionConstPtr& events,
+	const QString & xAxisName, const QString & yAxisName, const QString & zAxisName) :
+	WrappedItemHelper(wrapper), events(events),
+	xAxisName(xAxisName), yAxisName(yAxisName), zAxisName(zAxisName)
 {
 }
 
