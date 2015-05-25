@@ -109,7 +109,8 @@ SkeletonStateChange::NonRigidPartialStateChange SkeletonStateChange::difference(
 	{
 		auto oIT = src.find(d.first);
 		if (oIT != src.end()){
-			ret.insert(ret.end(), { d.first, { d.second.position - oIT->second.position, d.second.orientation / oIT->second.orientation } });
+			NonRigidJointStateChange sc = { d.second.position - oIT->second.position, d.second.orientation / oIT->second.orientation };
+			ret.insert(ret.end(), std::make_pair(d.first, sc));
 		}
 	}
 
@@ -124,7 +125,8 @@ SkeletonStateChange::NonRigidPartialStateChange SkeletonStateChange::difference(
 
 	for (const auto & d : src)
 	{
-		ret.insert(ret.end(), { d.first, { dest[d.first].position - d.second.position, dest[d.first].orientation / d.second.orientation } });
+		NonRigidJointStateChange sc = { dest[d.first].position - d.second.position, dest[d.first].orientation / d.second.orientation };
+		ret.insert(ret.end(), std::make_pair(d.first, sc));
 	}
 
 	return ret;
