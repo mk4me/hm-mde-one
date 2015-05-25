@@ -92,7 +92,8 @@ SkeletonStateChange::NonRigidPartialStateChange SkeletonStateChange::difference(
 
 	for (const auto & d : dest)
 	{
-		ret.insert(ret.end(), { d.first, { d.second.position - src[d.first].position, d.second.orientation / src[d.first].orientation } });
+		NonRigidJointStateChange sc = { d.second.position - src[d.first].position, d.second.orientation / src[d.first].orientation };
+		ret.insert(ret.end(), std::make_pair(d.first, sc));
 	}
 
 	return ret;
