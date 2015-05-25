@@ -711,7 +711,12 @@ IHMDBStorage::OStreamPtr TmpFileTransferIO::prepareOutput()
 
 void TmpFileTransferIO::closeOutput()
 {
-	stream->flush();
+	if (stream)	{
+		stream->flush();
+	} else {
+		PLUGIN_LOG_DEBUG("TmpeFileTransferIO : stream problem");
+	}
+
 }
 
 void TmpFileTransferIO::release()

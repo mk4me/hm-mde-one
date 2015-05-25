@@ -43,6 +43,8 @@
 #include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
 #include <plugins/hmdbCommunication/DataSourceDefaultContent.h>
 #include <plugins/dicom/AnnotationStatusFilter.h>
+#include "ImageTableWidget.h"
+#include "ImageTableModel.h"
 
 using namespace core;
 
@@ -51,6 +53,7 @@ class MEDUSAHMDBSourceView : public hmdbCommunication::IHMDBSourceViewManager::I
 public:
 	//! \return Nazwa widoku
 	virtual const QString name() const { return QObject::tr("MEDUSA view"); }
+
 	//! \param shallowCopyContext Kontekst p�ytkiej kopii bazy danych jakim zasilamy widok
 	//! \return Widok obs�uguj�cy kontekst
 	virtual QWidget * createView(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext, hmdbCommunication::IHMDBSourceViewManager * viewManager) {
@@ -68,7 +71,6 @@ public:
 		}
 
 		auto scrc = shallowCopyContext->shallowCopyRemoteContext();
-
 		if (scrc != nullptr){
 
 			for (unsigned int i = 0; i < fs; ++i){
@@ -286,8 +288,12 @@ void MdeMainWindow::customViewInit(QWidget * console)
 		   ccfg.name = tr("Default PJWSTK MEDUSA data connection");
 		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
 		   ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
-		   ccfg.motionServicesConfiguration.userConfiguration.user = "test-student";
-		   ccfg.motionServicesConfiguration.userConfiguration.password = "test-Medusa";
+		   //ccfg.motionServicesConfiguration.userConfiguration.user = "test-student";
+		   //ccfg.motionServicesConfiguration.userConfiguration.password = "test-Medusa";
+#ifdef _DEBUG
+		   ccfg.motionServicesConfiguration.userConfiguration.user = "usg-medusapl";
+		   ccfg.motionServicesConfiguration.userConfiguration.password = "usg-medusaxx";
+#endif
 		   ccfg.motionServicesConfiguration.serviceConfiguration.url = "https://v21.pjwstk.edu.pl/HMDB";
 		   ccfg.motionServicesConfiguration.serviceConfiguration.caPath = QString::fromStdString((plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string());
 
@@ -356,7 +362,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
    controller.addToolbarButton(exporterButton);
    connect(exporterButton, SIGNAL(clicked()), this, SLOT(showMedusaExporterDialog()));
 
-   
+   addTab(coreUI::IMdeTabPtr(new ImageTableTab(aw, QIcon(":/mde/icons/Operacje.png"), tr("TableView"))));
    emit activateTab(*tabs.begin());
 }
 
@@ -531,3 +537,4 @@ void MdeMainWindow::showMedusaExporterDialog()
 		dlg->show();
 	}
 }
+

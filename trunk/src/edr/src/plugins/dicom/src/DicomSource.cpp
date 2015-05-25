@@ -20,7 +20,7 @@
 #include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
 #include <corelib/ISourceManager.h>
-#include "DicomPerspective.h"
+#include "plugins/dicom/DicomPerspective.h"
 #include <fstream>
 //#include "AnnotationStatusFilter.h"
 

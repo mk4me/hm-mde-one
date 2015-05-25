@@ -8,7 +8,7 @@
 #include "DicomSource.h"
 #include "LayeredImageVisualizer.h"
 #include "LayeredImage.h"
-#include "DicomPerspective.h"
+#include "plugins/dicom/DicomPerspective.h"
 #include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
 #include <corelib/ISourceManager.h>

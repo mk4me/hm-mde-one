@@ -88,7 +88,6 @@ medusaExporter::ExporterModel::ExporterModel(core::IFileDataManager* fileManager
 
 }
 
-
 void medusaExporter::ExporterModel::addExporter(const IExporterConstPtr& exporter)
 {
 	exporters.push_back(exporter);
@@ -114,8 +113,6 @@ void medusaExporter::ExporterModel::addExporter(const IExporterConstPtr& exporte
 //
 //	return annotations;
 //}
-
-
 
 
 void medusaExporter::ExporterModel::extractData(const QString& path)

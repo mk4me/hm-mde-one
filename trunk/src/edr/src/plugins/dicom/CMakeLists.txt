@@ -9,6 +9,7 @@ SET_PUBLIC_HEADERS (
 	Annotations.h
 	ValueLayer.h
 	AnnotationStatusFilter.h
+	DicomPerspective.h
 )
 
 SET_PRIVATE_HEADERS (
@@ -37,7 +38,6 @@ SET_PRIVATE_HEADERS (
 	PngParser.h
     Serializers.h
 	spline.h
-	DicomPerspective.h
 	LayersXmlParser.h
 	InternalXmlParser.h
     qstring_serialization.h

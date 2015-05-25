@@ -1,5 +1,5 @@
 #include "DicomPCH.h"
-#include "DicomPerspective.h"
+#include "plugins/dicom/DicomPerspective.h"
 #include <corelib/HierarchyItem.h>
 
 #include <corelib/IDataManagerReader.h>
@@ -215,7 +215,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
     return core::IHierarchyItemPtr();
 }
 
-core::HierarchyDataItemPtr dicom::DicomPerspective::tryGetHierarchyItem( const std::string& filename )
+core::HierarchyDataItemPtr dicom::DicomPerspective::tryGetHierarchyItem( const std::string& filename ) const
 {
     auto it = name2hierarchy.find(filename);
     if (it != name2hierarchy.end()) {

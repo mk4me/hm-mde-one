@@ -14,11 +14,12 @@
 #include <corelib/HierarchyHelper.h>
 #include <corelib/Visualizer.h>
 #include <corelib/HierarchyDataItem.h>
+#include "plugins/dicom/Export.h"
 
 namespace dicom {
 
 //! Klasa pomocnicza przy tworzeniu wizualizatorów
-class DicomHelper : public core::WrappedItemHelper
+class PLUGIN_DICOM_EXPORT DicomHelper : public core::WrappedItemHelper
 {
 public:
     DicomHelper(const core::VariantConstPtr & wrapper, const core::ConstVariantsList& layers,
@@ -33,7 +34,7 @@ private:
 DEFINE_SMART_POINTERS(DicomHelper);
 
 //! Klasa pomocnicza przy tworzeniu wizualizatorów
-class DicomMultiHelper : public core::HierarchyHelper
+class PLUGIN_DICOM_EXPORT DicomMultiHelper : public core::HierarchyHelper
 {
 public:
 	DicomMultiHelper(const std::vector<DicomHelperPtr>& helpers);
@@ -50,14 +51,14 @@ private:
 DEFINE_SMART_POINTERS(DicomMultiHelper);
 
 //! Klasa realizuj¹ca perspektywe danych
-class DicomPerspective : public hmdbCommunication::IHierarchyPerspective
+class PLUGIN_DICOM_EXPORT DicomPerspective : public hmdbCommunication::IHierarchyPerspective
 {
 public:
 	virtual ~DicomPerspective() {}
 
     virtual core::IHierarchyItemPtr getPerspective( PluginSubject::SubjectPtr subject );
 
-    core::HierarchyDataItemPtr tryGetHierarchyItem(const std::string& filename);
+    core::HierarchyDataItemPtr tryGetHierarchyItem(const std::string& filename) const;
 
 private:
     std::map<std::string, core::HierarchyDataItemWeakPtr> name2hierarchy;

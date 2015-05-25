@@ -1,15 +1,7 @@
 BEGIN_PROJECT("executable")
 
 SET_PRIVATE_HEADERS(
-	#IMdeTab.h
-	#IContextRoot.h
-	#AbstractTab.h
-	#SimpleTab.h
 	AnalysisTab.h
-	#ReportsTab.h
-	#ReportsThumbnailContext.h
-	#IAppUsageContext.h
-	#IAppUsageContextManager.h
 	AboutDialog.h
 	MdeMainWindow.h
 	AnalisisWidget.h
@@ -18,18 +10,15 @@ SET_PRIVATE_HEADERS(
 	MdeContexts.h
 	SummaryWindow.h
 	AnalysisTreeContext.h
-	#ContextAutoPlacer.h
 	VisualizerEventFilter.h
     MdeServiceWindow.h
+	ImageTableModel.h
+	ImageTableWidget.h
 	MdePCH.h
 )
 
 SET_SOURCE_FILES (
-	#AbstractTab.cpp
-	#SimpleTab.cpp
 	AnalysisTab.cpp
-	#ReportsTab.cpp
-	#ReportsThumbnailContext.cpp
 	AboutDialog.cpp
 	main.cpp
 	MdeMainWindow.cpp
@@ -38,16 +27,16 @@ SET_SOURCE_FILES (
 	AnalisisWidget.cpp
 	AnalysisTreeContext.cpp
 	SummaryWindow.cpp
-	#ContextAutoPlacer.cpp
 	ContextEventFilter.cpp
 	VisualizerEventFilter.cpp
     MdeServiceWindow.cpp
+	ImageTableModel.cpp
+	ImageTableWidget.cpp
 	MdePCH.cpp
 )
 
 SET_MOC_FILES(
 	AboutDialog.h
-	#SimpleTab.h
 	AnalysisTab.h
 	ContextEventFilter.h
 	VisualizerEventFilter.h
@@ -60,6 +49,8 @@ SET_MOC_FILES(
 	AnalysisTreeContext.h
 	SummaryWindow.h
     MdeServiceWindow.h
+	ImageTableWidget.h
+	ImageTableModel.h
 )
 
 SET_UI_FILES(
