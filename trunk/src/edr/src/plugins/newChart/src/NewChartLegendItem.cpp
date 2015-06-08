@@ -93,5 +93,6 @@ void NewChartLegendItem::setTooltip( const QString& val )
 void NewChartLegendItem::setData( const QwtLegendData& data )
 {
     button->setIcon(QIcon(data.icon().toPixmap()));
-    button->setText(data.title().text());
+	QString title = data.title().text();
+    button->setText(title);
 }

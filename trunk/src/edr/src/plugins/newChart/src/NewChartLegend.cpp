@@ -23,10 +23,10 @@ void NewChartLegend::onCheck(bool checked)
     }
 }
 
-void NewChartLegend::updateLegend( const QVariant &v, const QList<QwtLegendData> & d)
-{
-    QwtLegend::updateLegend(v, d);
-}
+//void NewChartLegend::updateLegend( const QVariant &v, const QList<QwtLegendData> & d)
+//{
+//    QwtLegend::updateLegend(v, d);
+//}
 
 void NewChartLegend::updateWidget( QWidget* w, const QwtLegendData& data )
 {

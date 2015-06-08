@@ -43,7 +43,7 @@ signals:
 public slots:
     //! Aktualizacja legendy
     //virtual void updateLegend( const QwtPlotItem *, const QList<QwtLegendData> & );
-    virtual void updateLegend( const QVariant &, const QList<QwtLegendData> & );
+    //virtual void updateLegend( const QVariant &, const QList<QwtLegendData> & );
     //! Aktualizacja pojedynczego elementu legendy
     //! \param w element klasy NewChartLegendItem
     //! \param data zmienione dane elementu

@@ -17,9 +17,10 @@ void NewChartSerie::setData(const utils::TypeInfo & requestedType,
 		const core::VariantConstPtr & data) {
 	this->data = data;
 	this->requestedType = requestedType;
-	std::string name;
-	data->getMetadata("core/name", name);
-
+	std::string name = getName();
+	if (name.empty()) {
+		data->getMetadata("core/name", name);
+	}
 	curve = new NewChartCurve(name.c_str());
 	data->tryGet(reader);
 	c3dlib::ScalarChannelReaderInterfacePtr nonConstChannel;
@@ -202,6 +203,9 @@ QColor NewChartSerie::getColor() const {
 
 void NewChartSerie::setName(const std::string & name) {
 	this->name = name;
+	if (curve) {
+		curve->setTitle(QwtText(QString::fromStdString(name)));
+	}
 }
 
 const std::string NewChartSerie::getName() const {
