@@ -156,6 +156,10 @@ namespace IMU
 		void uploadSession(const core::Filesystem::Path & configuration,
 			const core::Filesystem::FilesList & recordings);
 
+		virtual void loadRecordedData(const core::Filesystem::Path & asfFile,
+			const core::Filesystem::Path & amcFile,
+			const core::Filesystem::Path & configFile) override;
+
 	private:
 
 		static CostumeStatus innerCreateCostumeStatus(const IMUCostumeDataSource::CostumeData & cData);
@@ -205,6 +209,8 @@ namespace IMU
 		mutable std::recursive_mutex synch;		
 		//! Manager danych w pamiêci
 		core::IMemoryDataManager * memoryDM;
+		//! Manager danych w plikach
+		core::IFileDataManager * fileDM;
 		//! Korzen drzewa dla analiz
 		core::HierarchyItemPtr root;
 		//! Dane strumieniowe

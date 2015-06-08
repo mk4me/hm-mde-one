@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>521</width>
+    <width>707</width>
     <height>729</height>
    </rect>
   </property>
@@ -423,6 +423,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="openPushButton">
+       <property name="text">
+        <string>Open</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -544,6 +551,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>openPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>IMUCostumeListWidget</receiver>
+   <slot>onOpen()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>659</x>
+     <y>108</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>353</x>
+     <y>364</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onCostumesListContextMenu(QPoint)</slot>
@@ -553,5 +576,6 @@
   <slot>onSensoresListContextMenu(QPoint)</slot>
   <slot>onOptions()</slot>
   <slot>onConnectCostume()</slot>
+  <slot>onOpen()</slot>
  </slots>
 </ui>

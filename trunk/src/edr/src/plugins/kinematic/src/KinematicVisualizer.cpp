@@ -260,6 +260,10 @@ QWidget* KinematicVisualizer::createWidget()
 	connect(showJointsOrientationsAction, SIGNAL(triggered()), this, SLOT(showJointsOrientations()));
 	widget->addAction(showJointsOrientationsAction);
 
+	coreUI::CoreAction* showBodyPlanesAction = new CoreAction(tr("Manipulators"), QIcon(":/kinematic/icons/manipulator-translate.png"), tr("Body planes"), widget, CoreTitleBar::Left);
+	connect(showBodyPlanesAction, SIGNAL(triggered()), this, SLOT(showBodyPlanes()));
+	widget->addAction(showBodyPlanesAction);
+
     osg::Vec3 pos (0.0f, 9.0f, 3.0f);
     osg::Vec3 up(0,0,1);
 
@@ -942,6 +946,13 @@ void KinematicVisualizer::showJointsOrientations()
 	}
 }
 
+void KinematicVisualizer::showBodyPlanes()
+{
+	AbstractSkeletonSerie* serie = dynamic_cast<AbstractSkeletonSerie*>(tryGetCurrentSerie());
+	if (serie) {
+		serie->setBodyPlanesVisible();
+	}
+}
 
 bool KinematicDraggerCallback::receive( const osgManipulator::MotionCommand& mc)
 {

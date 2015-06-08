@@ -117,7 +117,7 @@ namespace utils
 		//! \param Visitor Obiekt odwiedzaj¹cy wêz³y
 		static void visit(const TreeType & tree, Visitor visitor = Visitor())
 		{
-			TreeVisitOrder::visit(tree, ConsumingVisitor<Visitor>(visitor));
+			VisitOrder::visit(tree, ConsumingVisitor<Visitor>(visitor));
 		}
 
 		//! \tparam NPtr Typ wskaxnika wêz³a drzewa z którego zaczynamy
@@ -127,7 +127,7 @@ namespace utils
 		//! \param Visitor Obiekt odwiedzaj¹cy wêz³y
 		static void visit(TreeType & tree, Visitor visitor = Visitor())
 		{
-			TreeVisitOrder::visit(tree, ConsumingVisitor<Visitor>(visitor));
+			VisitOrder::visit(tree, ConsumingVisitor<Visitor>(visitor));
 		}
 
 		//! \tparam NPtr Typ wskaxnika wêz³a drzewa z którego zaczynamy

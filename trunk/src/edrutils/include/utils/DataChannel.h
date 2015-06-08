@@ -15,7 +15,6 @@
 #include <boost/call_traits.hpp>
 #include <type_traits>
 #include <utils/SmartPtr.h>
-#include <utils/SmartPtr.h>
 
 #include <utils/Debug.h>
 #include <utils/ObserverPattern.h>

@@ -116,8 +116,7 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 				//motionItem->appendChild(skeletonItem);
 			}
 
-			if (motion->hasObject(typeid(SkeletonWithStates), false)) {
-				JointsItemHelperPtr skeletonHelper(new JointsItemHelper(motion));
+			if (motion->hasObject(typeid(SkeletonWithStates), false)) {			
 			
 				core::ConstVariantsList jCollections;
 				motion->getObjects(jCollections, typeid(SkeletonWithStates), false);
@@ -126,6 +125,8 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 				}
 
 				core::VariantConstPtr joints = jCollections.front();
+
+				JointsItemHelperPtr skeletonHelper(new JointsItemHelper(joints));
 
 				auto skeletonItem = core::IHierarchyItemPtr(new core::HierarchyDataItem(joints, QIcon(), QString("3D"), desc, skeletonHelper));
 				motionItem->appendChild(skeletonItem);

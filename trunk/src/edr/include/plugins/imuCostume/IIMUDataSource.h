@@ -16,7 +16,7 @@
 #include <plugins/imuCostume/IMUCostumeMotionEstimationAlgorithm.h>
 #include <kinematiclib/SkeletonState.h>
 #include <plugins/imuCostume/CostumeProfile.h>
-#include <plugins/imuCostume/CostumeProfile.h>
+#include <corelib/Filesystem.h>
 
 namespace IMU
 {
@@ -219,6 +219,10 @@ namespace IMU
 		virtual SkeletonModels skeletonModels() const = 0;
 		//! \return Profile kostiumu
 		virtual CostumesProfiles costumesProfiles() const = 0;
+
+		virtual void loadRecordedData(const core::Filesystem::Path & asfFile,
+			const core::Filesystem::Path & amcFile,
+			const core::Filesystem::Path & configFile) = 0;
 	};
 }
 

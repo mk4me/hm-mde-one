@@ -226,6 +226,8 @@ private slots:
     void showGhost(bool);
 	void showJointsOrientations();
 
+	void showBodyPlanes();
+
 private:
     //! główny węzeł sceny 3d
     osg::ref_ptr<osg::Group> rootNode;

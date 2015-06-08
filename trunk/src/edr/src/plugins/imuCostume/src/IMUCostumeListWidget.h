@@ -98,6 +98,8 @@ private slots:
 
 	void onOptions();
 
+	void onOpen();
+
 private:
 
 	void tryLoadCostume(IMU::CostumeProfile profile);

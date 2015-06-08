@@ -255,6 +255,24 @@ struct StreamTools
 	}
 };
 
+class StringStreamBufferGrabber : public std::stringstream
+{
+public:
+	StringStreamBufferGrabber(std::ostream & os) : old(nullptr), os(os)
+	{
+		old = os.rdbuf(rdbuf());
+	}
+
+	~StringStreamBufferGrabber()
+	{
+		os.rdbuf(old);
+	}
+
+private:
+	std::streambuf* old;
+	std::ostream & os;
+};
+
 //------------------------------------------------------------------------------
 
 //! \tparam T Typ dla któego wykonujemy swap bajtów

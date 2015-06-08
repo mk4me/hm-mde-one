@@ -10,6 +10,7 @@
 #include "corelib/IVisualizerManager.h"
 #include "corelib/PluginCommon.h"
 #include "utils/ObjectWrapper.h"
+/*
 #include "osg/PositionAttitudeTransform"
 #include "osg/MatrixTransform"
 #include "osg/Geode"
@@ -20,6 +21,7 @@
 #include "osg/LineWidth"
 #include "osg/StateAttribute"
 #include "osg/StateSet"
+*/
 #include <imucostumelib/CostumeRawIO.h>
 #include <imucostumelib/ImuCostume.h>
 #include <imucostumelib/CANopenSensor.h>
@@ -1134,6 +1136,49 @@ void IMUCostumeWidget::onOptions()
 
 	if (dir.isEmpty() == false){
 		recordingOutputDirectory = dir.toStdString();
+	}
+}
+
+void IMUCostumeWidget::onOpen()
+{
+	auto dir = QFileDialog::getExistingDirectory(this, tr("Recorded data"), QString::fromStdString(recordingOutputDirectory.string()));
+
+	if (dir.isEmpty() == false){
+		coreUI::CoreCursorChanger cursorChanger;
+		//TODO
+		//weryfikacja czy mamy asf amc
+		auto path = core::Filesystem::Path(dir.toStdString());
+		auto files = core::Filesystem::listFiles(path);
+
+		core::Filesystem::Path asfFile;
+		core::Filesystem::Path amcFile;
+		core::Filesystem::Path cfgFile;
+
+		for (const auto & file : files)
+		{
+			if (asfFile.empty() == true && file.extension() == ".asf"){
+				asfFile = file;
+			}
+
+			if (amcFile.empty() == true && file.extension() == ".amc"){
+				amcFile = file;
+			}
+
+			if (cfgFile.empty() == true && file.extension() == ".ccfg"){
+				cfgFile = file;
+			}
+
+			if (amcFile.empty() == false && asfFile.empty() == false && cfgFile.empty() == false){
+				break;
+			}
+		}
+
+		if (amcFile.empty() == true || asfFile.empty() == true){
+			//INFO że nie mamu kompletnych danych
+			return;
+		}
+
+		ds->loadRecordedData(asfFile, amcFile, cfgFile);
 	}
 }
 

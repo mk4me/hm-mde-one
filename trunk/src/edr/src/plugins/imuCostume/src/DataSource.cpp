@@ -5,6 +5,7 @@
 #include <QtCore/QCoreApplication>
 #include <corelib/PluginCommon.h>
 #include <corelib/ISourceManager.h>
+#include <corelib/IFileDataManager.h>
 #include "IMUCostumeListWidget.h"
 #include <QtCore/QCoreApplication>
 #include <corelib/HierarchyHelper.h>
@@ -22,7 +23,41 @@
 #include <plugins/newChart/INewChartVisualizer.h>
 #include <corelib/Exceptions.h>
 #include <plugins/imuCostume/Streams.h>
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
+#include <plugins/c3d/C3DChannels.h>
 
+struct PrecalculatedJointFrame
+{
+	osg::Vec3d localPosition;
+	osg::Vec3d globalPosition;
+	osg::Vec3d localOrientation;
+	osg::Vec3d globalOrientation;
+};
+
+#define FRAME_MEMBER_EXTRACTOR_NAME(memberName) FrameMemberExtractor##memberName
+
+#define FRAME_MEMBER_EXTRACTOR(memberName) \
+struct FRAME_MEMBER_EXTRACTOR_NAME(memberName){\
+inline static const osg::Vec3d & extract(const PrecalculatedJointFrame & frame) {\
+	return frame.memberName;\
+	}\
+};
+
+FRAME_MEMBER_EXTRACTOR(localPosition);
+FRAME_MEMBER_EXTRACTOR(globalPosition);
+FRAME_MEMBER_EXTRACTOR(localOrientation);
+FRAME_MEMBER_EXTRACTOR(globalOrientation);
+
+using PrecalculatedSkeletonFrame = std::vector < PrecalculatedJointFrame > ;
+using PrecalculatedSkeletonFrames = std::vector < PrecalculatedSkeletonFrame >;
+
+struct MotionDescription
+{
+	PrecalculatedSkeletonFrames frames;
+	float frameTime;
+	float duration;
+};
 
 std::string vectorParameterName(const unsigned int idx)
 {
@@ -35,6 +70,127 @@ std::string vectorParameterName(const unsigned int idx)
 	default: return QObject::tr("Unknown").toStdString();
 	}
 }
+
+std::string bodyPlaneName(const unsigned int idx)
+{
+	switch (idx)
+	{
+	case 0:	return QObject::tr("sagittal pane").toStdString();
+	case 1:	return QObject::tr("coronal pane").toStdString();
+	case 2:	return QObject::tr("traverse pane").toStdString();	
+	default: return QObject::tr("Unknown body plane").toStdString();
+	}
+}
+
+//TODO
+//ten mechanizm woła o pomstę do nieba!! Data Channel do refaktoryzacji!!
+template<typename Extractor>
+class PrecalculatedDataAdapter : public c3dlib::VectorChannelReaderInterface
+{
+public:
+
+	PrecalculatedDataAdapter(utils::shared_ptr<MotionDescription> motionDescription,
+		const std::string & name, const std::string & timeUnit,
+		const std::string & valueUnit, const kinematic::LinearizedSkeleton::NodeIDX jointIdx)
+		: motionDescription(motionDescription), name(name), timeUnit(timeUnit),
+		valueUnit(valueUnit), jointIdx(jointIdx)
+	{
+
+	}
+
+	virtual ~PrecalculatedDataAdapter() {}
+
+	//! \return Sklonowany kanał kanału
+	virtual PrecalculatedDataAdapter* clone() const
+	{
+		return nullptr;
+	}
+
+	//! \return Nazwa kanału
+	virtual const std::string& getName() const
+	{
+		return name;
+	}
+
+	//! \return Czas trwania kanału
+	virtual time_type getLength() const
+	{
+		return motionDescription->duration;
+	}
+
+	//! \param idx Indeks próbki
+	//! \return Wartość czasu dla danego indeksu
+	virtual time_type argument(size_type idx) const
+	{
+		return motionDescription->frameTime * idx;
+	}
+
+	//! \param idx Indeks próbki
+	//! \return Wartość próbki dla danego indeksu
+	virtual point_type_const_reference value(size_type idx) const
+	{
+		const auto & v = Extractor::extract(motionDescription->frames[idx][jointIdx]);
+
+		value_.x() = v.x();
+		value_.y() = v.y();
+		value_.z() = v.z();
+
+		return value_;
+	}
+
+	//! \return Ilość próbek w kanale
+	virtual size_type size() const
+	{
+		return motionDescription->frames.size();
+	}
+
+	//! \return Czy kanał nie zawiera danych
+	virtual bool empty() const
+	{
+		return motionDescription->frames.empty();
+	}
+
+	//! \return Czas trwania kanału
+	virtual float getSamplesPerSecond() const
+	{
+		return 1.0 / getSampleDuration();
+	}
+
+	//! \return Czas trwania jednej próbki
+	virtual float getSampleDuration() const
+	{
+		return motionDescription->frameTime;
+	}
+
+	virtual const std::string& getTimeBaseUnit() const
+	{
+		return timeUnit;
+	}
+
+	virtual float getTimeScaleFactor() const
+	{
+		return 1.0;
+	}
+
+	//! \return
+	virtual const std::string& getValueBaseUnit() const
+	{
+		return valueUnit;
+	}
+
+	virtual float getValueScaleFactor() const
+	{
+		return 1.0;
+	}
+
+private:
+	const std::string name;
+	const std::string timeUnit;
+	const std::string valueUnit;
+	mutable osg::Vec3 value_;
+	const kinematic::LinearizedSkeleton::NodeIDX jointIdx;
+	utils::shared_ptr<MotionDescription> motionDescription;
+};
 
 class JointStreamExtractor
 {
@@ -83,8 +239,8 @@ public:
 			UTILS_ASSERT(false);
 			throw core::runtime_error("Wrong visualizer type!");
 		}
-		else {
-			chart->setTitle(QString("%1 [%2]").arg(name).arg(units));
+		else {			
+			chart->setTitle(name + (units.isEmpty() == false ? " ["+units+"]" : ""));
 			chart->setAxisScale(INewChartVisualizer::AxisX, 0, 5);
 			chart->setAxisScale(INewChartVisualizer::AxisY, yMin, yMax);
 		}
@@ -101,11 +257,11 @@ public:
 		visualizer->getOrCreateWidget();
 
 		auto serieX = visualizer->createSerie(xwrapper->data()->getTypeInfo(), xwrapper);
-		serieX->serie()->setName(xAxisName.isEmpty() == false ? xAxisName.toStdString() : "X_" + suffix);
+		//serieX->serie()->setName(xAxisName.isEmpty() == false ? xAxisName.toStdString() : "X_" + suffix);
 		auto serieY = visualizer->createSerie(ywrapper->data()->getTypeInfo(), ywrapper);
-		serieY->serie()->setName(yAxisName.isEmpty() == false ? yAxisName.toStdString() : "Y_" + suffix);
+		//serieY->serie()->setName(yAxisName.isEmpty() == false ? yAxisName.toStdString() : "Y_" + suffix);
 		auto serieZ = visualizer->createSerie(zwrapper->data()->getTypeInfo(), zwrapper);
-		serieZ->serie()->setName(zAxisName.isEmpty() == false ? zAxisName.toStdString() : "Z_" + suffix);
+		//serieZ->serie()->setName(zAxisName.isEmpty() == false ? zAxisName.toStdString() : "Z_" + suffix);
 
 		INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->serie());
 		INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->serie());
@@ -249,38 +405,141 @@ core::HierarchyDataItemPtr extracImuStreamVector(core::VariantsList & domainData
 	utils::shared_ptr<StreamType> stream,
 	SensorDataType & sd,
 	const std::string & paramName,
-	const QString & units, const double minY, const double maxY)
+	const QString & units, const double minY, const double maxY,
+	const std::string & prefix = std::string())
 {
 	auto vec3Stream = utils::make_shared<threadingUtils::StreamAdapterT<typename StreamType::value_type, IMU::Vec3Stream::value_type, Extractor>>(stream);
 
-	auto ow = core::Variant::wrapp<IMU::Vec3Stream>(vec3Stream);
+	auto ow = core::Variant::wrap<IMU::Vec3Stream>(vec3Stream);
 	ow->setMetadata("core/name", paramName);
 	sd.domainData.push_back(ow);
 	domainData.push_back(ow);
 
 	std::vector<core::VariantConstPtr> vecDataObjects;
-	std::list<core::IHierarchyItemPtr> hierarchyItems;
+	//std::list<core::IHierarchyItemPtr> hierarchyItems;
 
 	for (unsigned int j = 0; j < 3; ++j){
 		auto scalarStream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::Vec3Stream::value_type, ScalarStream::value_type, IMU::CompoundArrayExtractor>>(vec3Stream, IMU::CompoundArrayExtractor(j));
 
-		auto ow = core::Variant::wrapp<ScalarStream>(scalarStream);
+		auto ow = core::Variant::wrap<ScalarStream>(scalarStream);
 		ow->setMetadata("core/name", vectorParameterName(j));
 		sd.domainData.push_back(ow);
 		domainData.push_back(ow);
 		vecDataObjects.push_back(ow);
 
-		hierarchyItems.push_back(utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(vectorParameterName(j)), QString::fromStdString(vectorParameterName(j))));
+		//hierarchyItems.push_back(utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(vectorParameterName(j)), QString::fromStdString(vectorParameterName(j))));
 	}
 
-	auto helper = utils::make_shared<NewStreamVector3ItemHelper>(ow, vecDataObjects[0], vecDataObjects[1], vecDataObjects[2], QString::fromStdString(paramName), units, minY, maxY);
+	auto helper = utils::make_shared<NewStreamVector3ItemHelper>(ow, vecDataObjects[0], vecDataObjects[1], vecDataObjects[2], QString::fromStdString(prefix + paramName), units, minY, maxY);
 
 	auto imuElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(paramName), QString::fromStdString(paramName), helper);
 
-	for (auto & hi : hierarchyItems)
+	/*for (auto & hi : hierarchyItems)
 	{
 		imuElement->appendChild(hi);
+	}*/
+
+	return imuElement;
+}
+
+template<typename ValueExtractor>
+class EulerAngleAdapter
+{
+public:
+	template<typename SrcType>
+	inline static bool verify(const SrcType &) { return true; }
+
+	template<typename SrcType>
+	inline static void extract(const SrcType & src, IMU::Vec3Stream::value_type & dest){
+		IMU::QuatStream::value_type val;
+		ValueExtractor::extract(src, val);
+		dest.first = val.first;
+		dest.second = kinematicUtils::toDegrees(kinematicUtils::convertXYZ(val.second));
 	}
+};
+
+template<typename StreamType, typename SensorDataType, typename Extractor>
+core::HierarchyDataItemPtr extracImuStreamLocalEuler(core::VariantsList & domainData,
+	utils::shared_ptr<StreamType> stream,
+	SensorDataType & sd,
+	const QString & paramName,
+	const QString & unit,
+	const QString & prefix = QString())
+{
+	auto orientStream = utils::shared_ptr<IMU::Vec3Stream>(new threadingUtils::StreamAdapterT<StreamType::value_type,
+		IMU::Vec3Stream::value_type, EulerAngleAdapter<Extractor>>(stream));
+
+	auto ow = core::Variant::wrap<IMU::Vec3Stream>(orientStream);
+	ow->setMetadata("core/name", paramName.toStdString());
+	sd.domainData.push_back(ow);
+	domainData.push_back(ow);
+
+	std::vector<core::VariantConstPtr> vecDataObjects;
+	//std::list<core::IHierarchyItemPtr> hierarchyItems;
+
+	for (unsigned int j = 0; j < 3; ++j){
+		auto scalarStream = utils::shared_ptr<ScalarStream>(new threadingUtils::StreamAdapterT<IMU::Vec3Stream::value_type, ScalarStream::value_type, IMU::CompoundArrayExtractor>(orientStream, IMU::CompoundArrayExtractor(j)));
+		auto pName = bodyPlaneName(j);
+		auto ow = core::Variant::wrap<ScalarStream>(scalarStream);
+		ow->setMetadata("core/name", pName);
+		sd.domainData.push_back(ow);
+		domainData.push_back(ow);
+		vecDataObjects.push_back(ow);
+
+		//hierarchyItems.push_back(utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(pName), QString::fromStdString(pName)));
+	}
+
+	auto helper = utils::make_shared<NewStreamVector3ItemHelper>(ow, vecDataObjects[0], vecDataObjects[1], vecDataObjects[2], prefix + paramName, unit, -180.0, 180.0);
+
+	auto imuElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), paramName, paramName, helper);
+
+	/*for (auto & hi : hierarchyItems)
+	{
+		imuElement->appendChild(hi);
+	}*/
+
+	return imuElement;
+}
+
+template<typename StreamType, typename SensorDataType, typename Extractor>
+core::HierarchyDataItemPtr extracImuStreamGlobalEuler(core::VariantsList & domainData,
+	utils::shared_ptr<StreamType> stream,
+	SensorDataType & sd,
+	const QString & paramName,
+	const QString & unit,
+	const QString & prefix = QString())
+{
+	auto orientStream = utils::shared_ptr<IMU::Vec3Stream>(new threadingUtils::StreamAdapterT<StreamType::value_type,
+		IMU::Vec3Stream::value_type, EulerAngleAdapter<Extractor >> (stream));
+
+	auto ow = core::Variant::wrap<IMU::Vec3Stream>(orientStream);
+	ow->setMetadata("core/name", paramName.toStdString());
+	sd.domainData.push_back(ow);
+	domainData.push_back(ow);
+
+	std::vector<core::VariantConstPtr> vecDataObjects;
+	//std::list<core::IHierarchyItemPtr> hierarchyItems;
+
+	for (unsigned int j = 0; j < 3; ++j){
+		auto scalarStream = utils::shared_ptr<ScalarStream>(new threadingUtils::StreamAdapterT<IMU::Vec3Stream::value_type, ScalarStream::value_type, IMU::CompoundArrayExtractor>(orientStream, IMU::CompoundArrayExtractor(j)));
+		auto pName = vectorParameterName(j);
+		auto ow = core::Variant::wrap<ScalarStream>(scalarStream);
+		ow->setMetadata("core/name", pName);
+		sd.domainData.push_back(ow);
+		domainData.push_back(ow);
+		vecDataObjects.push_back(ow);
+
+		//hierarchyItems.push_back(utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(pName), QString::fromStdString(pName)));
+	}
+
+	auto helper = utils::make_shared<NewStreamVector3ItemHelper>(ow, vecDataObjects[0], vecDataObjects[1], vecDataObjects[2], prefix + paramName, unit, -180.0, 180.0);
+
+	auto imuElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), paramName, paramName, helper);
+
+	/*for (auto & hi : hierarchyItems)
+	{
+	imuElement->appendChild(hi);
+	}*/
 
 	return imuElement;
 }
@@ -289,38 +548,39 @@ template<typename StreamType, typename SensorDataType, typename Extractor>
 core::HierarchyDataItemPtr extracImuStreamQuat(core::VariantsList & domainData,
 	utils::shared_ptr<StreamType> stream,
 	SensorDataType & sd,
-	const std::string & paramName)
+	const std::string & paramName,
+	const std::string & prefix = std::string())
 {
 	auto orientStream = utils::shared_ptr<IMU::QuatStream>(new threadingUtils::StreamAdapterT<StreamType::value_type, IMU::QuatStream::value_type, Extractor>(stream));
 
-	auto ow = core::Variant::wrapp<IMU::QuatStream>(orientStream);
+	auto ow = core::Variant::wrap<IMU::QuatStream>(orientStream);
 	ow->setMetadata("core/name", paramName);
 	sd.domainData.push_back(ow);
 	domainData.push_back(ow);
 
 	std::vector<core::VariantConstPtr> vecDataObjects;
-	std::list<core::IHierarchyItemPtr> hierarchyItems;
+	//std::list<core::IHierarchyItemPtr> hierarchyItems;
 
 	for (unsigned int j = 0; j < 4; ++j){
 		auto scalarStream = utils::shared_ptr<ScalarStream>(new threadingUtils::StreamAdapterT<IMU::QuatStream::value_type, ScalarStream::value_type, IMU::CompoundArrayExtractor>(orientStream, IMU::CompoundArrayExtractor(j)));
 
-		auto ow = core::Variant::wrapp<ScalarStream>(scalarStream);
+		auto ow = core::Variant::wrap<ScalarStream>(scalarStream);
 		ow->setMetadata("core/name", vectorParameterName(j));
 		sd.domainData.push_back(ow);
 		domainData.push_back(ow);
 		vecDataObjects.push_back(ow);
 
-		hierarchyItems.push_back(utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(vectorParameterName(j)), QString::fromStdString(vectorParameterName(j))));
+		//hierarchyItems.push_back(utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(vectorParameterName(j)), QString::fromStdString(vectorParameterName(j))));
 	}
 
-	auto helper = utils::make_shared<NewStreamQuaternionItemHelper>(ow, vecDataObjects[0], vecDataObjects[1], vecDataObjects[2], vecDataObjects[3], QString::fromStdString(paramName), -1, 1);
+	auto helper = utils::make_shared<NewStreamQuaternionItemHelper>(ow, vecDataObjects[0], vecDataObjects[1], vecDataObjects[2], vecDataObjects[3], QString::fromStdString(prefix + paramName), -1, 1);
 
 	auto imuElement = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QString::fromStdString(paramName), QString::fromStdString(paramName), helper);
 
-	for (auto & hi : hierarchyItems)
+	/*for (auto & hi : hierarchyItems)
 	{
-		imuElement->appendChild(hi);
-	}
+	imuElement->appendChild(hi);
+	}*/
 
 	return imuElement;
 }
@@ -363,6 +623,7 @@ void IMUCostumeDataSource::init(core::IMemoryDataManager * memoryDM,
 	core::IFileDataManager * fileDM)
 {
 	this->memoryDM = memoryDM;
+	this->fileDM = fileDM;
 	refreshThread = plugin::getThreadPool()->get(name(), "Costumes data reader");
 }
 
@@ -922,7 +1183,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 
 		auto sStateStream = utils::make_shared<threadingUtils::StreamAdapterT<MotionStream::value_type, IMU::SkeletonStateStream::value_type, KinematicStreamExtractor>>(cData.skeletonMotion->stream, KinematicStreamExtractor(std::move(skeleton)));
 
-		cData.domainData.push_back(core::Variant::wrapp<IMU::SkeletonStateStream>(sStateStream));
+		cData.domainData.push_back(core::Variant::wrap<IMU::SkeletonStateStream>(sStateStream));
 
 		kStream->states.reset(new threadingUtils::StreamAdapterT<IMU::SkeletonStateStream::value_type, ::SkeletonStateStream::value_type, IMU::TimeRemoverExtractor>(sStateStream));
 
@@ -955,34 +1216,40 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 
 				//TODO
 				//dodać gałąź jointa active!!
-
+				auto jname = (*it)->value().name();
 				auto stream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::SkeletonStateStream::value_type, JointStream::value_type, JointStreamExtractor>>(sStateStream, JointStreamExtractor(*it));
-				cData.domainData.push_back(core::Variant::wrapp<JointStream>(stream));
-				auto jitem = utils::make_shared<core::HierarchyItem>(QString::fromStdString((*it)->value().name()), QString::fromStdString((*it)->value().name()));
+				cData.domainData.push_back(core::Variant::wrap<JointStream>(stream));
+				auto jitem = utils::make_shared<core::HierarchyItem>(QString::fromStdString(jname), QString::fromStdString(jname));
 				ajitem->appendChild(jitem);
 
 				//global orient
 				{
-					jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalOrientation>(cData.domainData, stream,
-						sIT->second, QObject::tr("Global orientation").toStdString()));
+					jitem->appendChild(extracImuStreamGlobalEuler<JointStream, IMU::IMUCostumeDataSource::SensorData,
+						TimeMemberExtractorglobalOrientation>(cData.domainData, stream,
+					//jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalOrientation>(cData.domainData, stream,
+						sIT->second, QObject::tr("Global orientation"), QObject::tr("deg"), QString::fromStdString(jname + "\n")));
 				}
 
 				//local orient
 				{
-					jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalOrientation>(cData.domainData, stream,
-						sIT->second, QObject::tr("Local orientation").toStdString()));
+					jitem->appendChild(extracImuStreamLocalEuler<JointStream, IMU::IMUCostumeDataSource::SensorData,
+						TimeMemberExtractorlocalOrientation>(cData.domainData, stream,
+						//jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalOrientation>(cData.domainData, stream,
+						sIT->second, QObject::tr("Local orientation"), QObject::tr("deg"), QString::fromStdString(jname + "\n")));					
 				}
 
 				//local pos
 				{
 					jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalPosition>(cData.domainData, stream,
-						sIT->second, QObject::tr("Global position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()));
+					//jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalPosition>(cData.domainData, stream,
+						sIT->second, QObject::tr("Global position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), jname + "\n"));
 				}
 
 				//global pos
 				{
 					jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalPosition>(cData.domainData, stream,
-						sIT->second, QObject::tr("Local position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()));
+					//jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalPosition>(cData.domainData, stream,
+						sIT->second, QObject::tr("Local position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), jname + "\n"));
 				}
 
 				joints.erase(it);
@@ -995,34 +1262,38 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 		SensorData sd;
 
 		for (const auto & joint : joints){
-
+			auto jname = joint->value().name();
 			auto stream = utils::make_shared<threadingUtils::StreamAdapterT<IMU::SkeletonStateStream::value_type, JointStream::value_type, JointStreamExtractor>>(sStateStream, JointStreamExtractor(joint));
-			cData.domainData.push_back(core::Variant::wrapp<JointStream>(stream));
-			auto jitem = utils::make_shared<core::HierarchyItem>(QString::fromStdString(joint->value().name()), QString::fromStdString(joint->value().name()));
+			cData.domainData.push_back(core::Variant::wrap<JointStream>(stream));
+			auto jitem = utils::make_shared<core::HierarchyItem>(QString::fromStdString(jname), QString::fromStdString(jname));
 			ajitem->appendChild(jitem);
 
 			//global orient
 			{
-				jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalOrientation>(cData.domainData, stream,
-					sd, QObject::tr("Global orientation").toStdString()));
+				jitem->appendChild(extracImuStreamGlobalEuler<JointStream, IMU::IMUCostumeDataSource::SensorData,
+					TimeMemberExtractorglobalOrientation>(cData.domainData, stream,
+					//jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalOrientation>(cData.domainData, stream,
+					sd, QObject::tr("Global orientation"), QObject::tr("deg"), QString::fromStdString(jname + "\n")));				
 			}
 
 			//local orient
 			{
-				jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalOrientation>(cData.domainData, stream,
-					sd, QObject::tr("Local orientation").toStdString()));
+				jitem->appendChild(extracImuStreamLocalEuler<JointStream, IMU::IMUCostumeDataSource::SensorData,
+					TimeMemberExtractorlocalOrientation>(cData.domainData, stream,
+					//jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalOrientation>(cData.domainData, stream,
+					sd, QObject::tr("Local orientation"), QObject::tr("deg"), QString::fromStdString(jname + "\n")));				
 			}
 
 			//local pos
 			{
 				jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalPosition>(cData.domainData, stream,
-					sd, QObject::tr("Global position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()));
+					sd, QObject::tr("Global position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), jname + "\n"));
 			}
 
 			//global pos
 			{
 				jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalPosition>(cData.domainData, stream,
-					sd, QObject::tr("Local position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()));
+					sd, QObject::tr("Local position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), jname + "\n"));
 			}
 		}
 
@@ -1361,7 +1632,7 @@ hmdbCommunication::IHMDBShallowCopyContextPtr IMUCostumeDataSource::selectUpload
 					items << m.first;
 				}
 
-				auto item = QInputDialog::getItem(nullptr, QObject::tr("Select upload context"), QObject::tr("Database connection"), items, 0, &ok);
+				auto item = QInputDialog::getItem(nullptr, QObject::tr("Select upload context"), QObject::tr("Database connection"), items, 0, false, &ok);
 				if (ok == true){
 					ret = mapping.find(item)->second;
 				}
@@ -1565,6 +1836,163 @@ void IMUCostumeDataSource::uploadSession(const core::Filesystem::Path & configur
 	const core::Filesystem::FilesList & recordings)
 {
 
+}
+
+void IMUCostumeDataSource::loadRecordedData(const core::Filesystem::Path & asfFile,
+	const core::Filesystem::Path & amcFile,
+	const core::Filesystem::Path & configFile)
+{
+	auto transaction = fileDM->transaction();	
+	transaction->addFile(amcFile);
+	transaction->addFile(asfFile);
+	core::ConstVariantsList oList;
+
+	transaction->getObjects(amcFile, oList);
+	auto wrp1 = *oList.begin();
+	transaction->getObjects(asfFile, oList);
+	auto wrp2 = *(++oList.begin());
+
+	acclaim::MotionDataConstPtr data = wrp1->get();
+	acclaim::SkeletonConstPtr model = wrp2->get();
+	kinematic::SkeletonPtr skeleton = utils::make_shared<kinematic::Skeleton>();
+	if (!kinematic::Skeleton::convert(*model, *skeleton)) {
+		throw std::runtime_error("Unable to convert skeleton");
+	}
+	SkeletonStatesPtr states = utils::make_shared<SkeletonStates>();
+	states->frameTime = data->frameTime;
+
+	const auto amapping = acclaim::Skeleton::createMapping(model->bones);	
+	const auto activeMapping = kinematic::SkeletonState::createAcclaimActiveMappingLocal(*skeleton, model->bones);
+	const auto helperData = acclaim::Skeleton::helperMotionData(*model);
+
+	const auto size = skeleton->root()->size();
+
+	auto precalculatedFrames = utils::make_shared<MotionDescription>();
+	precalculatedFrames->frameTime = data->frameTime;
+	precalculatedFrames->duration = data->frameTime * (float)data->frames.size();
+
+	precalculatedFrames->frames.reserve(data->frames.size());
+
+	kinematic::Skeleton helperSkeleton(*skeleton);
+
+	for (auto& frame : data->frames) {
+		PrecalculatedSkeletonFrame sf;
+		sf.reserve(size);
+		auto sChange = kinematic::SkeletonState::convert(model->bones, amapping, frame.bonesData, activeMapping, helperData, model->units.isAngleInRadians());
+		states->frames.push_back(sChange);
+
+		kinematic::SkeletonState::applyState(helperSkeleton, sChange);
+		kinematic::LinearizedSkeleton::Visitor::visit(helperSkeleton, [&sf](kinematic::Skeleton::JointConstPtr joint)
+		{
+			PrecalculatedJointFrame jf;
+			jf.localOrientation = kinematicUtils::toDegrees(kinematicUtils::convertXYZ(joint->value().localOrientation()));
+			jf.globalOrientation = kinematicUtils::toDegrees(kinematicUtils::convertXYZ(joint->value().globalOrientation()));
+			jf.localPosition = joint->value().localPosition();
+			jf.globalPosition = joint->value().globalPosition();
+			sf.push_back(jf);
+		});
+
+		precalculatedFrames->frames.push_back(sf);
+	}
+
+	auto sws = utils::make_shared<SkeletonWithStates>();
+	sws->skeleton = skeleton;
+	sws->states = states;
+	sws->nodesMapping = kinematic::LinearizedSkeleton::createCompleteMapping(*skeleton);
+	auto object = core::Variant::create<SkeletonWithStates>();
+	object->set(sws);
+
+	//próbujemy dodac opis na bazie cfg
+	QString desc;
+
+	if (configFile.empty() == false && core::Filesystem::pathExists(configFile) == true){
+		//deserialize ccfg file and generate description
+		QFile f(configFile.string().c_str());
+		if (f.open(QFile::ReadOnly | QFile::Text) == true){
+			QTextStream in(&f);
+			desc = in.readAll();
+		}
+	}
+
+	bool addItem = false;
+
+	if (recordedItems == nullptr){
+		addItem = true;
+		recordedItems = utils::make_shared<core::HierarchyItem>(QObject::tr("Recorded data"), "", QIcon());
+	}
+
+	auto idx = recordedItems->getNumChildren();
+
+	auto item = utils::make_shared<core::HierarchyItem>(QObject::tr("Recording %1").arg(idx + 1), desc, QIcon());
+	recordedItems->appendChild(item);
+
+	core::HierarchyDataItemPtr ditem = utils::make_shared<core::HierarchyDataItem>(object, QIcon(), QObject::tr("Kinematic skeleton motion"), "");
+	item->appendChild(ditem);
+
+	kinematic::LinearizedSkeleton::NodeIDX nidx = 0;
+
+	//adaptery dla jointów lokalnych, wyliczyć globale orientacje i pozycje
+	//wygenerować hierarchię	
+
+	kinematic::LinearizedSkeleton::Visitor::visit(*skeleton, [&nidx, &ditem, &precalculatedFrames](kinematic::Skeleton::JointPtr joint)
+	{
+		auto item = utils::make_shared<core::HierarchyItem>(QString::fromStdString(joint->value().name()), "", QIcon());
+
+		//local orientatrion
+		{
+			auto data = utils::make_shared<PrecalculatedDataAdapter<FRAME_MEMBER_EXTRACTOR_NAME(localOrientation)>>(precalculatedFrames,
+				joint->value().name() + "\n" + QObject::tr("Local orientation").toStdString(), QObject::tr("s").toStdString(), QObject::tr("deg").toStdString(), nidx);
+			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
+			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Local orientation"), "", utils::make_shared<NewVector3ItemHelper>(ow,
+				c3dlib::EventsCollectionConstPtr(), QString::fromStdString(bodyPlaneName(0)), QString::fromStdString(bodyPlaneName(1)), QString::fromStdString(bodyPlaneName(2))));
+			item->appendChild(di);
+		}
+
+
+		//global orientation
+		{			
+			auto data = utils::make_shared<PrecalculatedDataAdapter<FRAME_MEMBER_EXTRACTOR_NAME(globalOrientation)>>(precalculatedFrames,
+				joint->value().name() + "\n" + QObject::tr("Global orientation").toStdString(), QObject::tr("s").toStdString(), QObject::tr("deg").toStdString(), nidx);
+			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
+			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Global orientation"), "", utils::make_shared<NewVector3ItemHelper>(ow,
+				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
+			item->appendChild(di);
+		}
+
+		//local position
+		{
+			auto data = utils::make_shared<PrecalculatedDataAdapter<FRAME_MEMBER_EXTRACTOR_NAME(localPosition)>>(precalculatedFrames,
+				joint->value().name() + "\n" + QObject::tr("Local position").toStdString(), QObject::tr("s").toStdString(), "", nidx);
+			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
+			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Local position"), "", utils::make_shared<NewVector3ItemHelper>(ow,
+				c3dlib::EventsCollectionConstPtr(), QString::fromStdString(bodyPlaneName(0)), QString::fromStdString(bodyPlaneName(1)), QString::fromStdString(bodyPlaneName(2))));
+			item->appendChild(di);
+		}
+
+		//global position
+		{
+			auto data = utils::make_shared<PrecalculatedDataAdapter<FRAME_MEMBER_EXTRACTOR_NAME(globalPosition)>>(precalculatedFrames,
+				joint->value().name() + "\n" + QObject::tr("Global position").toStdString(), QObject::tr("s").toStdString(), "", nidx);
+			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
+			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Global position"), "", utils::make_shared<NewVector3ItemHelper>(ow,
+				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
+			item->appendChild(di);
+		}
+
+		ditem->appendChild(item);
+
+		++nidx;
+
+	});
+
+	auto hierarchyTransaction = memoryDM->hierarchyTransaction();
+	
+	if (addItem == true){
+		hierarchyTransaction->addRoot(recordedItems);
+	}
+	else{
+		hierarchyTransaction->updateRoot(recordedItems);
+	}
 }
 
 void IMU::IMUCostumeDataSource::updateSensorsStatus(const imuCostume::CostumeCANopenIO::Frame &frame,

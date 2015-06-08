@@ -12,7 +12,6 @@
 #include <utils/PtrPolicyStd.h>
 #include <utils/ClonePolicies.h>
 #include <utils/ObjectWrapper.h>
-#include <utils/DataChannelDescriptors.h>
 #include <threadingUtils/StreamData.h>
 #include <c3dlib/C3DTypes.h>
 

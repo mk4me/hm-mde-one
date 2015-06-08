@@ -202,7 +202,7 @@ public:\
 	static ObjectWrapperPtr create(ObjectWrapperTraits<typeT>::Ptr data = ObjectWrapperTraits<typeT>::Ptr()){\
 		return ObjectWrapperPtr(data ? new ObjectWrapperT : new ObjectWrapperT(data));\
 	}\
-	static ObjectWrapperPtr wrapp(ObjectWrapperTraits<typeT>::Ptr data){\
+	static ObjectWrapperPtr wrap(ObjectWrapperTraits<typeT>::Ptr data){\
 		return ObjectWrapperPtr(new ObjectWrapperT(data)); \
 	}\
 };

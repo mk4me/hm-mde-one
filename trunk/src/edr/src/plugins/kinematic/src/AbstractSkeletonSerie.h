@@ -75,6 +75,7 @@ public:
 
 
 	void setJointsOrientationsVisible();
+	void setBodyPlanesVisible();
 
 
 protected:
@@ -89,6 +90,10 @@ protected:
 	void setAxis(bool xyz);
 
 	kinematic::SkeletonPtr getSkeleton();
+
+private:
+
+	void initBodyPlanes();
 
 private:
 
@@ -115,6 +120,8 @@ private:
 
 	kinematic::SkeletonPtr skeleton;
 	PointsOrientationsDrawer pointsAxesDrawer;
+	osg::ref_ptr<osg::Switch> bodyPlanesSwitch;
+	osg::ref_ptr<osg::PositionAttitudeTransform> bodyPlanesPAT;
 protected:
 	//! stworzone połączenia między punktami
 	osgutils::SegmentsDescriptors connections;

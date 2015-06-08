@@ -122,9 +122,9 @@ namespace utils {
 		//! \param value Wartość z jaką chcemy utowrzyć OW
 		//! \return Wrapper obiektu.
 		template <class T>
-		static const ObjectWrapperPtr wrapp(typename ObjectWrapperTraits<T>::Ptr value)
+		static const ObjectWrapperPtr wrap(typename ObjectWrapperTraits<T>::Ptr value)
 		{			
-			return ObjectWrapperT<T>::wrapp(value);
+			return ObjectWrapperT<T>::wrap(value);
 		}
 
 		//! \tparam T Typ obiektu ktorego nazwe OW chcemy pobrac

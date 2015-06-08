@@ -87,11 +87,8 @@ VisualizerPtr JointsItemHelper::createVisualizer(core::IVisualizerManager* manag
 
 void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
 {
-	ConstVariantsList m;
-	motion->getObjects(m, typeid(SkeletonWithStates), false);
-    core::VariantConstPtr joints = m.front();
-    if (joints && joints->getRawPtr() != nullptr) {
-		auto s = visualizer->createSerie(typeid(SkeletonWithStates), joints);
+	if (skeletonWithStates && skeletonWithStates->getRawPtr() != nullptr) {
+		auto s = visualizer->createSerie(typeid(SkeletonWithStates), skeletonWithStates);
 		s->serie()->setName(path.toStdString());
         series.push_back(s);
     } else {
@@ -106,8 +103,8 @@ std::vector<utils::TypeInfo> JointsItemHelper::getTypeInfos() const
     return ret;
 }
 
-JointsItemHelper::JointsItemHelper(const PluginSubject::MotionConstPtr & motion ) :
-    motion(motion)
+JointsItemHelper::JointsItemHelper(core::VariantConstPtr skeletonWithStates) :
+skeletonWithStates(skeletonWithStates)
 {
 }
 
@@ -174,9 +171,12 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer(core::IVisualizerManager* m
         std::string title;
 		c3dlib::VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
         title += vectorChannel->getName();
-        title += " [";
-        title += vectorChannel->getValueBaseUnit();
-        title += "]";
+		auto units = vectorChannel->getValueBaseUnit();
+		if (units.empty() == false){
+			title += " [";
+			title += vectorChannel->getValueBaseUnit();
+			title += "]";
+		}
         chart->setTitle(QString(title.c_str()));
     }
     return visualizer;

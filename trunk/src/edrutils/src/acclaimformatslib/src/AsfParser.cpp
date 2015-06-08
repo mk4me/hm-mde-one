@@ -369,7 +369,8 @@ bool parseHierarchy(const std::string& hierarchyString, Skeleton & model)
 	root.axis = model.orientation;
 	root.axisOrder = model.axisOrder;
 	root.length = 0.0;
-	root.direction = osg::Vec3d(0, 1, 0);	
+	root.direction = model.position;
+	root.direction.normalize();
 
 	for (unsigned int i = 0; i < model.dataOrder.size(); ++i) {
 		root.dofs.push_back(DegreeOfFreedom(model.dataOrder[i]));

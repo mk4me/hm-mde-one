@@ -28,7 +28,7 @@ SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer, const utils::Type
 void SkeletonSerie::update()
 {
 	auto t = std::max(lastUpdateTime, 0.0);
-	int frameNo = lastUpdateTime / skeletonWithStates->states->frameTime;
+	int frameNo = t / skeletonWithStates->states->frameTime;
 	int maxSize = skeletonWithStates->states->frames.size();
 	frameNo = frameNo >= maxSize ? maxSize - 1 : frameNo;
 	//kinematic::SkeletonState::applyLocalState(*getSkeleton(), skeletonWithStates->states->frames[frameNo], nodesMapping);

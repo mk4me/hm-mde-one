@@ -515,7 +515,8 @@ bool Skeleton::convert(const acclaim::Skeleton & srcSkeleton, Skeleton & destSke
 	auto joint = Skeleton::Joint::create(jointData);
 	auto range = srcSkeleton.hierarchy.left.equal_range(srcSkeleton.root);
 	for (auto it = range.first; (it != range.second) && (ret == true); ++it) {
-		ret = createJoint(joint, srcSkeleton, srcSkeleton.position, srcSkeleton.bones.find(it->second)->second, names);
+		//ret = createJoint(joint, srcSkeleton, srcSkeleton.position, srcSkeleton.bones.find(it->second)->second, names);
+		ret = createJoint(joint, srcSkeleton, osg::Vec3d(0,0,0), srcSkeleton.bones.find(it->second)->second, names);
 	}
 
 	if (joint->isLeaf() == true || ret == false){
@@ -566,11 +567,12 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 		acclaim::Bone bone;
 		bone.id = id;
 		bone.name = "root";
+		bone.axis = localSkeleton.orientation;
 		bone.axisOrder = localSkeleton.axisOrder;
 		bone.direction = localSkeleton.position;
-		bone.length = bone.direction.length();
 		bone.direction.normalize();
-
+		bone.length = 0.0;
+		
 		localSkeleton.bones.insert({ bone.id, bone }).first;
 		localSkeleton.root = bone.id;
 
@@ -586,19 +588,78 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 							return;
 						}
 
+						auto parentID = localSkeleton.root;
+
 						acclaim::Bone bone;
 						bone.name = joint->value().name();
 						bone.axisOrder = findJointAxis(bone.name, jointsAxis, axisOrder);
 
+						const auto pc = joint->parent()->children();
+
+						if (pc.size() > 1){
+
+							auto it = pc.begin();
+
+							const auto pos = (*it)->value().localPosition();
+							++it;
+
+							bool ok = true;
+
+							for (; it != pc.end(); ++it)
+							{
+								if (pos != (*it)->value().localPosition()){
+									ok = false;
+									break;
+								}
+							}
+
+							//sprawdzamy czy nie trzeba dodać dummy bone!
+							//tylko wtedy kiedy nasza pozycja jest inna niż pozycja rodzica a ma on więcej dzieci
+							if (ok == false){
+
+								acclaim::Bone dummyBone;
+								dummyBone.name = "dummy_" + bone.name;
+								dummyBone.axis = osg::Vec3d(0, 0, 0);
+								dummyBone.axisOrder = findJointAxis(dummyBone.name, jointsAxis, axisOrder);
+								dummyBone.direction = joint->value().localPosition();
+								dummyBone.length = dummyBone.direction.length();
+								dummyBone.direction.normalize();
+								dummyBone.id = id + 1;
+
+								localSkeleton.bones.insert(localSkeleton.bones.end(), { dummyBone.id, dummyBone });
+
+								if (joint->parent()->isRoot() == false){
+									auto parentName = joint->parent()->value().name();
+									auto it = std::find_if(localSkeleton.bones.begin(), localSkeleton.bones.end(),
+										[&parentName](const acclaim::Skeleton::Bones::value_type & bd)
+									{
+										return bd.second.name == parentName;
+									});
+
+									if (it == localSkeleton.bones.end()){
+										throw std::runtime_error("Could not find parent bone");
+									}
+
+									parentID = it->first;
+								}
+
+								localSkeleton.hierarchy.left.insert({ parentID, dummyBone.id });
+								id = dummyBone.id;
+
+								parentID = dummyBone.id;
+							}
+
+						}
+						
 						if (joint->children().size() == 1){
 							bone.direction = correctNegativeZero(joint->children().front()->value().localPosition());
 							//bone.direction = correctNegativeZero(joint->value().localPosition());
-							bone.length = bone.direction.length();							
+							bone.length = bone.direction.length();
 							bone.direction.normalize();
 						}
 						else{
 							bone.length = 0.0;
-						}
+						}						
 
 						//TODO
 						/*
@@ -611,21 +672,22 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 
 						localSkeleton.bones.insert(localSkeleton.bones.end(), { bone.id, bone });
 
-						auto parentID = localSkeleton.root;
+						if (parentID == localSkeleton.root){
 
-						if (joint->parent()->isRoot() == false){
-							auto parentName = joint->parent()->value().name();
-							auto it = std::find_if(localSkeleton.bones.begin(), localSkeleton.bones.end(),
-								[&parentName](const acclaim::Skeleton::Bones::value_type & bd)
-							{
-								return bd.second.name == parentName;
-							});
+							if (joint->parent()->isRoot() == false){
+								auto parentName = joint->parent()->value().name();
+								auto it = std::find_if(localSkeleton.bones.begin(), localSkeleton.bones.end(),
+									[&parentName](const acclaim::Skeleton::Bones::value_type & bd)
+								{
+									return bd.second.name == parentName;
+								});
 
-							if (it == localSkeleton.bones.end()){
-								throw std::runtime_error("Could not find parent bone");
+								if (it == localSkeleton.bones.end()){
+									throw std::runtime_error("Could not find parent bone");
+								}
+
+								parentID = it->first;
 							}
-
-							parentID = it->first;
 						}
 
 						localSkeleton.hierarchy.left.insert({ parentID, bone.id });

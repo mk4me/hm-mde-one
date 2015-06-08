@@ -127,18 +127,18 @@ namespace core
 		//! \param value Wartość z jaką chcemy utowrzyć OW
 		//! \return Wrapper obiektu.
 		template <class T>
-		static VariantPtr wrapp(typename utils::ObjectWrapperTraits<T>::Ptr value)
+		static VariantPtr wrap(typename utils::ObjectWrapperTraits<T>::Ptr value)
 		{
-			return VariantPtr(new Variant(utils::ObjectWrapper::wrapp<T>(value)));
+			return VariantPtr(new Variant(utils::ObjectWrapper::wrap<T>(value)));
 		}
 
 		//! \tparam T Typ obiektu dla ktorego chcemy utworzych OW
 		//! \param value Wartość z jaką chcemy utowrzyć OW
 		//! \return Wrapper obiektu.
 		template <class T, class U>
-		static VariantPtr wrapp(typename utils::ObjectWrapperTraits<T>::PtrPolicy::template Ptr<U>::Type value)
+		static VariantPtr wrap(typename utils::ObjectWrapperTraits<T>::PtrPolicy::template Ptr<U>::Type value)
 		{
-			return VariantPtr(new Variant(utils::ObjectWrapper::wrapp<T>(typename utils::ObjectWrapperTraits<T>::Ptr(value))));
+			return VariantPtr(new Variant(utils::ObjectWrapper::wrap<T>(typename utils::ObjectWrapperTraits<T>::Ptr(value))));
 		}
 
 		//! \tparam Ptr

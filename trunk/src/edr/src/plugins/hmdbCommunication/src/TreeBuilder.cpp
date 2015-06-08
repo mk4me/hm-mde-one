@@ -244,7 +244,6 @@ core::IHierarchyItemPtr TreeBuilder::createJointsBranch( const MotionConstPtr & 
 	bool hasJoints = motion->hasObject(typeid(SkeletonWithStates), false);
     core::IHierarchyItemPtr skeletonItem;
     if (hasJoints) {    
-        JointsItemHelperPtr skeletonHelper(new JointsItemHelper(motion));
         // todo setmotion
         //skeletonHelper->setMotion(motion);
         
@@ -255,6 +254,8 @@ core::IHierarchyItemPtr TreeBuilder::createJointsBranch( const MotionConstPtr & 
         }
 
         core::VariantConstPtr joints = jCollections.front();
+
+		JointsItemHelperPtr skeletonHelper(new JointsItemHelper(joints));
 
         skeletonItem = core::IHierarchyItemPtr(new core::HierarchyDataItem(joints, rootIcon, rootName, desc, skeletonHelper));
     } else {

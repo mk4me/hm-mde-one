@@ -220,24 +220,6 @@ public:
     }
 };
 
-class StringStreamBuf : public std::stringstream
-{
-public:
-    StringStreamBuf(std::ostream & os) : old(nullptr), os(os)
-    {
-        old = os.rdbuf( rdbuf() );
-    }
-
-    ~StringStreamBuf()
-    {
-        os.rdbuf(old);
-    }
-
-private:
-    std::streambuf* old;
-    std::ostream & os;
-};
-
 C3DParser::C3DParser() :
     data( new __data)
 {
@@ -321,7 +303,7 @@ void C3DParser::importFrom( const std::vector<std::string>& filenames, std::stri
 
     // łączenie danych z plików
     int shift = !this->data->aquisitionPointer ? 0 : 1;
-    StringStreamBuf err(std::cerr);
+	utils::StringStreamBufferGrabber err(std::cerr);
     btk::MergeAcquisitionFilter::Pointer merger = btk::MergeAcquisitionFilter::New();
     merger->SetInput(0, this->data->aquisitionPointer);
     for (unsigned int i = 0 ; i < readers.size() ; ++i) {

@@ -145,7 +145,7 @@ class HMDBCOMMUNICATION_EXPORT JointsItemHelper : public core::HierarchyHelper
 public:
     //! Konstruktor
     //! \param motion motion, z którego beda wyciagane elementy do stworzenia JointAnglesCollection
-    JointsItemHelper(const PluginSubject::MotionConstPtr & motion);
+    JointsItemHelper(core::VariantConstPtr skeletonWithStates);
 
 public:
     //! zwraca utworzone serie danych
@@ -160,7 +160,7 @@ public:
 
 private:
     //! motion, z którego beda wyciagane elementy do stworzenia JointAnglesCollection
-    PluginSubject::MotionConstPtr motion;
+	core::VariantConstPtr skeletonWithStates;
 };
 typedef utils::shared_ptr<JointsItemHelper> JointsItemHelperPtr;
 typedef utils::shared_ptr<const JointsItemHelper> JointsItemHelperConstPtr;
