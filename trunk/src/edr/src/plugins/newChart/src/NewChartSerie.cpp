@@ -3,13 +3,14 @@
 #include "NewChartSerie.h"
 #include "NewChartVisualizer.h"
 #include "NewChartSeriesData.h"
+#include <QtWidgets/QTreeWidgetItem>
 
 const int ACTIVE_WIDTH = 2;
 const int NON_ACTIVE_WIDTH = 1;
 
 NewChartSerie::NewChartSerie(NewChartVisualizer * visualizer) :
 		visualizer(visualizer), curve(nullptr), active(false), time(0.0f), _z(
-				0), _zBase(0) {
+				0), _zBase(0), statsEntry(nullptr) {
 
 }
 
@@ -42,6 +43,11 @@ void NewChartSerie::setData(const utils::TypeInfo & requestedType,
 
 	_zBase = curve->z();
 	curve->setZ(_zBase + _z);
+}
+
+void NewChartSerie::setStatsEntry(QTreeWidgetItem * statsEntry)
+{
+	this->statsEntry = statsEntry;
 }
 
 const utils::TypeInfo & NewChartSerie::getRequestedDataType() const {
@@ -205,6 +211,10 @@ void NewChartSerie::setName(const std::string & name) {
 	this->name = name;
 	if (curve) {
 		curve->setTitle(QwtText(QString::fromStdString(name)));
+	}
+
+	if (statsEntry){
+		statsEntry->setText(0, QString::fromStdString(name));
 	}
 }
 

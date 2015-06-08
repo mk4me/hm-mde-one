@@ -152,8 +152,7 @@ public:
 	virtual const float size(const unsigned int idx) const;
 
 private:
-	typedef osg::ref_ptr<osg::ShapeDrawable> ShapeDrawablePtr;
-	//std::vector<ShapeDrawablePtr> connectionsInstances;
+	typedef osg::ref_ptr<osg::ShapeDrawable> ShapeDrawablePtr;	
 	osg::ref_ptr<osg::Switch> node;
 	unsigned int complexity;
 	std::vector<utils::shared_ptr<ConnectionSphereInstance>> connectionsInstances;

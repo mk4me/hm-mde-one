@@ -21,6 +21,7 @@
 
 class NewChartCurve;
 class NewChartVisualizer;
+class QTreeWidgetItem;
 
 //! Podstawowa seria danych wizualizatora 2D
 class NewChartSerie : public INewChartSeriePrivate, public EventSerieBase
@@ -87,6 +88,8 @@ public:
 
 	virtual void update();
 
+	void setStatsEntry(QTreeWidgetItem * statsEntry);
+
     //! \return ekstrema krzywej
     Scales getScales() const;
     //! \return czy krzywa jest aktywna
@@ -145,6 +148,8 @@ private:
     std::string name;
     //! OW z danymi
     core::VariantConstPtr data;
+
+	QTreeWidgetItem * statsEntry;
 
 	utils::TypeInfo requestedType;
     //! wizualizowana krzywa

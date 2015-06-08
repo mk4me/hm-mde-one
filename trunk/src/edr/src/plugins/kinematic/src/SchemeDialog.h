@@ -12,15 +12,22 @@
 
 
 #include <corelib/IVisualizer.h>
-#include <osg/Geode>
-#include <boost/tuple/tuple.hpp>
-#include "TrajectoriesDrawer.h"
+#include <osgutils/OsgSchemeDrawer.h>
+#include <QtWidgets/QDialog>
+//#include <osg/Geode>
+//#include <boost/tuple/tuple.hpp>
+//#include "TrajectoriesDrawer.h"
 //#include "GlLineSchemeDrawer.h"
 //#include "GlPointSchemeDrawer.h"
-#include "ui_TrajectoriesDialog.h"
+//#include "ui_TrajectoriesDialog.h"
+
+class QTreeWidget;
+class QTreeWidgetItem;
+class QCheckBox;
+class QPushButton;
 
 //! Dialog Qt służący do zarządzania widocznościa elementów na scenie
-class SchemeDialog : public QDialog, private Ui::TrajectoriesDialog
+class SchemeDialog : public QDialog//, private Ui::TrajectoriesDialog
 {
 	Q_OBJECT;
 public:
@@ -35,8 +42,12 @@ public:
 	void setDrawer(osgutils::IBaseDrawerSchemePtr drawer, const QString& rootName, const QStringList& names, const osgutils::IConnectionDrawerWithDescriptors& connections);
 
 private slots:
+
+	void pointItemChanged(QTreeWidgetItem * item, int column);
+	void connectionItemChanged(QTreeWidgetItem * item, int column);
+
     //! zmieniono widoczność pojedynczego węzła
-    //! \param visible czy widoczny
+    //! \param visible czy widoczny	
     void visibilityChanged(bool visible);
     //! zmieniono widoczność roota (działa na całość)
     //! \param visible czy widoczny
@@ -67,11 +78,16 @@ private:
 
 private:
     //! mapa (element drzewa - > krotka(punkty, linie, nr markera))
-	std::map<QTreeWidgetItem*, std::pair<osgutils::IBaseDrawerSchemePtr, int>> item2Drawer;
+	std::map<QTreeWidgetItem*, std::pair<osgutils::IBaseDrawerSchemePtr, int>> pointItem2Drawer;
+	std::map<QTreeWidgetItem*, std::pair<osgutils::IBaseDrawerSchemePtr, int>> connectionItem2Drawer;
 
 	std::map<osgutils::IBaseDrawerSchemePtr, osgutils::IConnectionDrawerWithDescriptors> drawer2Connections;
     ////! mapa (element drzewa -> głowny drawer obiektu powiązanego z elementem drzewa)
     //std::map<QTreeWidgetItem*, IBaseDrawerSchemePtr> item2Root;
+	QCheckBox * autoHideSegments;
+
+	QTreeWidget * pointsTree;
+	QTreeWidget * connectionsTree;
 };
 
 

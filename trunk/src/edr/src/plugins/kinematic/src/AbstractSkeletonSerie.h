@@ -26,6 +26,19 @@ class IConnectionsSchemeDrawer;
 class SkeletonJointsMapping;
 class TrajectoryDrawerManager;
 
+struct NonDummyJointFilter
+{
+	template<typename NPtr>
+	bool operator()(NPtr node) const
+	{
+		const auto pos = node->value().localPosition();
+		return !((pos[0] == 0.0) && (pos[1] == 0.0) && (pos[2] == 0.0));
+	}
+};
+
+template<typename Visitor>
+using NonDummyJointVisitor = utils::VisitorFilter < NonDummyJointFilter, Visitor >;
+
 //! struktura odpowiedzialna za rysowanie osi dla jointów szkieletu
 struct PointsOrientationsDrawer
 {
@@ -77,6 +90,19 @@ public:
 	void setJointsOrientationsVisible();
 	void setBodyPlanesVisible();
 
+	//! Obiekt rysujący punkty
+	utils::shared_ptr<osgutils::IPointsSchemeDrawer> getPointsDrawer() const
+	{
+		return pointsDrawer;
+	}
+
+	//! Obiekt rysujący połączenia
+	osgutils::IConnectionDrawerWithDescriptors getConnectionsDrawer() const
+	{
+		return std::make_pair(connectionsDrawer, connections);
+	}
+
+	kinematic::SkeletonPtr getSkeleton();
 
 protected:
 	//! Abstrakcyjny setter do czasu, metoda z inną sygnaturą może uchronić przed błędami
@@ -89,7 +115,6 @@ protected:
 	//! \param xyz
 	void setAxis(bool xyz);
 
-	kinematic::SkeletonPtr getSkeleton();
 
 private:
 
@@ -122,6 +147,8 @@ private:
 	PointsOrientationsDrawer pointsAxesDrawer;
 	osg::ref_ptr<osg::Switch> bodyPlanesSwitch;
 	osg::ref_ptr<osg::PositionAttitudeTransform> bodyPlanesPAT;
+
+	std::list<kinematic::LinearizedSkeleton::NodeIDX> nonDummyJoints;
 protected:
 	//! stworzone połączenia między punktami
 	osgutils::SegmentsDescriptors connections;

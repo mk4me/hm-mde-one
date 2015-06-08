@@ -139,8 +139,7 @@ namespace utils
 			//! Konstruktor domyslny
 			LinearizeVisitor() {}
 			//! Destruktor
-			~LinearizeVisitor() {}
-			//! \tparam NPtr Typ wska�nika w�z�a
+			~LinearizeVisitor() {}			
 			//! \tparam Args argumenty, np. dla przechodzenia wg poziomów
 			template<typename... Args>
 			//! \param node odwiedzany w�ze�

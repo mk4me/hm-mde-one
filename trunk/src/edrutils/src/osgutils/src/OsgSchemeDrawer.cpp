@@ -357,28 +357,28 @@ void ConnectionsSphereDrawer::update(const std::vector<osg::Vec3> & positions)
 
 void ConnectionsSphereDrawer::setSize(const float size)
 {
-//	ConnectionSphereInstance::setSize(connectionsInstances, size);
+	//ConnectionSphereInstance::setSize(connectionsInstances, size);
 }
 
 void ConnectionsSphereDrawer::setColor(const osg::Vec4 & color)
 {
-	ConnectionSphereInstance::setColor(connectionsInstances, color);
+	//ConnectionSphereInstance::setColor(connectionsInstances, color);
 }
 
 void ConnectionsSphereDrawer::setVisible(const bool visible)
 {
-	/*if(visible == true){
-		for(auto it = updateCache.begin(); it != updateCache.end(); ++it){
+	if(visible == true){
+		/*for(auto it = updateCache.begin(); it != updateCache.end(); ++it){
 			connectionsInstances[it->first]->updatePositionOrientation(it->second.first,
 				it->second.second, connectionsInstances[it->first]->posAtt);
 		}
 
-		std::map<unsigned int, std::pair<osg::Vec3, osg::Vec3>>().swap(updateCache);
+		std::map<unsigned int, std::pair<osg::Vec3, osg::Vec3>>().swap(updateCache);*/
 
 		node->setAllChildrenOn();
 	}else{
 		node->setAllChildrenOff();
-	}*/
+	}
 }
 
 void ConnectionsSphereDrawer::setSize(const unsigned int idx, const float size)
@@ -393,9 +393,9 @@ void ConnectionsSphereDrawer::setColor(const unsigned int idx, const osg::Vec4 &
 
 void ConnectionsSphereDrawer::setVisible(const unsigned int idx, const bool visible)
 {
-	/*if(node->getValue(idx) != visible){
+	if(node->getValue(idx) != visible){
 
-		if(visible == true){		
+		/*if(visible == true){		
 			auto it = updateCache.find(idx);
 			if(it != updateCache.end()){
 				connectionsInstances[idx]->updatePositionOrientation(it->second.first,
@@ -403,28 +403,28 @@ void ConnectionsSphereDrawer::setVisible(const unsigned int idx, const bool visi
 
 				updateCache.erase(it);
 			}
-		}
+		}*/
 
 		node->setValue(idx, visible);
-	}*/	
+	}
 }
 
 const osg::Vec4 & ConnectionsSphereDrawer::color(const unsigned int idx) const
 {
-	//return connectionsInstances[idx]->sphere.colors->at(0);
-	return osg::Vec4();
+	return connectionsInstances[idx]->sphere.colors->at(0);
+	//return osg::Vec4();
 }
 
 const bool ConnectionsSphereDrawer::visible(const unsigned int idx) const
 {
-	//return node->getValue(idx);
-	return true;
+	return node->getValue(idx);
+	//return true;
 }
 
 const float ConnectionsSphereDrawer::size(const unsigned int idx) const
 {
-	//return connectionsInstances[idx]->sphere.radius;
-	return 1.0f;
+	return connectionsInstances[idx]->sphere.radius;
+	//return 1.0f;
 }
 
 class TrajectoryInstance

@@ -10,74 +10,12 @@
 
 #include <vector>
 #include <boost/bimap.hpp>
+#include <utils/TreeNodeHelperVisitors.h>
 #include <utils/TreeNode.h>
 #include <utils/Tree.h>
 
 namespace utils
 {
-	//! \tparam Visitor Typ odzwiedzaj¹cego
-	template<typename Visitor>
-	//! Klasa pozwalaj¹ca przechodziæ wszystkie wêz³y drzewa
-	class ConsumingVisitor
-	{
-	public:
-		ConsumingVisitor(Visitor & visitor) : visitor(visitor) {}
-		~ConsumingVisitor() {}
-
-		//! Operator "konsumuje" ewentualne nadmiarowe argumenty zostawiaj¹c tylko wêze³
-		template<typename NPtr, typename... Args>
-		void operator() (NPtr node, Args...)
-		{
-			visitor(node);
-		}
-
-	private:
-		Visitor & visitor;
-	};
-
-	//! \tparam Visitor Typ odzwiedzaj¹cego
-	template<typename Visitor>
-	//! Klasa realizuj¹ca filtracje nie-liœci w drzewie, pozwala przechodziæ wszystkie pozosta³e wêz³y
-	class NonLeafVisitor
-	{
-	public:
-		NonLeafVisitor(Visitor & visitor) : visitor(visitor) {}
-		~NonLeafVisitor() {}
-
-		template<typename NPtr, typename... Args>
-		void operator() (NPtr node, Args... args)
-		{
-			if (node->isLeaf() == false){
-				visitor(node, args...);
-			}
-		}
-
-	private:
-		Visitor & visitor;
-	};
-
-	//! \tparam Visitor Typ odzwiedzaj¹cego
-	template<typename Visitor>
-	//! Klasa wizutuj¹ca drzewo i indeksuj¹ca wêz³y
-	class IndexingVisitor
-	{
-	public:
-		//! \param visitor Odwiedzaj¹cy drzewo
-		IndexingVisitor(Visitor & visitor) : idx(0), visitor(visitor) {}
-		//! Destruktor
-		~IndexingVisitor() {}
-
-		template<typename NPtr, typename... Args>
-		void operator() (NPtr node, Args...)
-		{
-			visitor(node, idx++);
-		}
-
-	private:
-		TreeNode::SizeType idx;
-		Visitor & visitor;
-	};
-
 	struct LinearizedTree
 	{
 		//! Typ indeksu wêz³a

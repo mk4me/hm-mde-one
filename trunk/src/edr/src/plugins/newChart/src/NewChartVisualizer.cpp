@@ -275,7 +275,9 @@ plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie(const utils::TypeI
 
 		plotChanged();
 
-		statsTable->addEntry(QString("Whole chart"), QString(name.c_str()), chartSerie->getStats());
+		auto statsEntry = statsTable->addEntry(QString("Whole chart"), QString(name.c_str()), chartSerie->getStats());
+
+		chartSerie->setStatsEntry(statsEntry);
 
 		//NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(ret->getCurve()));
 		NewChartLegendItem * legendLabel = getLegendLabel(chartSerie->getCurve());

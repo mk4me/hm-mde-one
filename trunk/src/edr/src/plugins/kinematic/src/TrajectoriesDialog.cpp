@@ -44,7 +44,7 @@ const Qt::CheckState updateStatusDown(QTreeWidgetItem * current)
 	//najpierw w dół
 	auto schemeElementItem = dynamic_cast<SchemeElementWidgetItem*>(current);	
 
-	auto children = schemeElementItem->element()->children();
+	//auto children = schemeElementItem->element()->children();
 	Qt::CheckState cs = schemeElementItem->element()->visible() == true ? Qt::Checked : Qt::Unchecked;
 
 	for(unsigned int i = 0; i < current->childCount(); ++i){

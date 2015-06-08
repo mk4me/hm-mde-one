@@ -62,20 +62,33 @@ plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const utils::TypeI
 	}
 	else if (requestedType == typeid(SkeletonWithStates)) {
 		auto ss = new SkeletonSerie(this, requestedType, data);
+		QStringList allNames;
 		QStringList names;
-		for (int i = 1; i <= ss->getTrajectoriesManager()->count(); ++i) {
-			names.push_back(QString("Joint %1").arg(i));
-		}
-		trajectoriesDialog->setDrawer(ss->getTrajectoriesManager(), getRootName(data, tr("Skeleton")), names); //getSkeletonNames(data->get()));
+
+		NonDummyJointFilter ndjf;
+
+		kinematic::LinearizedSkeleton::Visitor::visit(*(ss->getSkeleton()), [&allNames, &names, &ndjf](kinematic::Skeleton::JointConstPtr joint)
+		{
+			allNames.push_back(QString::fromStdString(joint->value().name()));
+			if (joint->isRoot() == true || ndjf(joint) == true){
+				names.push_back(QString::fromStdString(joint->value().name()));
+			}
+		});
+		
+		trajectoriesDialog->setDrawer(ss->getTrajectoriesManager(), getRootName(data, tr("Skeleton")), allNames); //getSkeletonNames(data->get()));
+		//schemeDialog->setDrawer(ss->getConnectionsDrawer().first, getRootName(data, tr("Connections")), names, ss->getConnectionsDrawer());
+		schemeDialog->setDrawer(ss->getPointsDrawer(), getRootName(data, tr("Joints")), names, ss->getConnectionsDrawer());
+
 		ret = ss;
 	}
 	else if (requestedType == typeid(SkeletonWithStreamData)) {
 			auto ss = new SkeletonStateStreamSerie(this, requestedType, data);
-//			QStringList names;
-//			for (int i = 1; i <= ss->getTrajectoriesManager()->count(); ++i) {
-//				names.push_back(QString("Joint %1").arg(i));
-//			}
+			/*QStringList names;
+			for (int i = 1; i <= ss->getTrajectoriesManager()->count(); ++i) {
+				names.push_back(QString("Joint %1").arg(i));
+			}*/
 //			trajectoriesDialog->setDrawer(ss->getTrajectoriesManager(), getRootName(data, tr("Skeleton")), names); //getSkeletonNames(data->get()));
+			//schemeDialog->setDrawer(ss->getConnectionsDrawer().first, getRootName(data, tr("Connections")), getMarkersNames(data->get()), ss->getConnectionsDrawer());
 			ret = ss;
 	}
 	else if (requestedType == typeid(SkeletonDataStream)) {

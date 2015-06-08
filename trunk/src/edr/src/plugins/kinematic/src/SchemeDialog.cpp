@@ -1,28 +1,76 @@
 #include "PCH.h"
-#include <QtWidgets/QTableView>
 #include "SchemeDialog.h"
 #include <osgutils/OsgSchemeDrawer.h>
 #include <QtWidgets/QCheckBox>
+#include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QVBoxLayout>
 
 SchemeDialog::SchemeDialog( QWidget* parent) :
-	QDialog(parent)
+QDialog(parent), autoHideSegments(new QCheckBox(tr("Auto-hide connected segments"), this))
 {
-	Ui::TrajectoriesDialog::setupUi(this);
+
+	auto ml = new QVBoxLayout;
+
+	auto tabWidget = new QTabWidget(this);
+
+	ml->addWidget(tabWidget);
+
+	auto pointsWidget = new QWidget(tabWidget);
+
+	auto pl = new QVBoxLayout;
+
+	pointsTree = new QTreeWidget(pointsWidget);
+
+	pl->addWidget(pointsTree);
+	pl->addWidget(autoHideSegments);
+
+	pointsWidget->setLayout(pl);
+
+	tabWidget->addTab(pointsWidget, tr("Points"));
+
+	auto connectionsWidget = new QWidget(tabWidget);
+
+	auto cl = new QVBoxLayout;
+
+	connectionsTree = new QTreeWidget(connectionsWidget);
+
+	cl->addWidget(connectionsTree);
+
+	connectionsWidget->setLayout(cl);
+
+	tabWidget->addTab(connectionsWidget, tr("Connections"));
+
+	setLayout(ml);
+
+
+	autoHideSegments->setChecked(true);
     setWindowTitle(tr("Drawing schemes"));
-    Ui::TrajectoriesDialog::propertiesBox->setVisible(false);
 	QIcon icon( QString::fromUtf8(":/kinematic/icons/trajectory.png") );
-	QTreeWidgetItem* item = tree->headerItem();
-    tree->setColumnCount(3);
-	item->setIcon(0, icon);
-	item->setText(0, "");
-    item->setText(2, tr("Color"));
+	QTreeWidgetItem* pitem = pointsTree->headerItem();
+	pointsTree->setColumnCount(3);
+	pitem->setIcon(0, icon);
+	pitem->setText(0, "");
+    pitem->setText(2, tr("Color"));	
+
+	QTreeWidgetItem* citem = connectionsTree->headerItem();
+	connectionsTree->setColumnCount(4);
+	citem->setIcon(0, icon);
+	citem->setText(0, "");
+	citem->setText(1, tr("Parent"));
+	citem->setText(2, tr("Child"));
+	citem->setText(3, tr("Color"));
+
+	connect(pointsTree, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(pointItemChanged(QTreeWidgetItem*, int)));
+	connect(connectionsTree, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(connectionItemChanged(QTreeWidgetItem*, int)));
 }
 
 void SchemeDialog::setDrawer(osgutils::IBaseDrawerSchemePtr drawer, const QString& rootName, const QStringList& names, const osgutils::IConnectionDrawerWithDescriptors& connections)
 {
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(1, rootName);
-    tree->addTopLevelItem(root);
+    pointsTree->addTopLevelItem(root);
 
     //QPushButton* globalColorButton = new QPushButton();
     //globalColorButton->setFixedSize(16, 16);
@@ -38,16 +86,26 @@ void SchemeDialog::setDrawer(osgutils::IBaseDrawerSchemePtr drawer, const QStrin
     int count = names.size();
     for (int i = 0; i < count; ++i) {
         QTreeWidgetItem* item = new QTreeWidgetItem();
-
+		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+		item->setCheckState(0, Qt::Checked);
         item->setText(1, names[i]);
-        root->addChild(item);
-
-        QCheckBox* check1 = new QCheckBox(tree);
-        check1->setChecked(true);
-        tree->setItemWidget(item, 0, check1);
-        connect(check1, SIGNAL(clicked(bool)), this, SLOT(visibilityChanged(bool)));
-        item2Drawer[item] = std::make_pair(drawer, i);
+        root->addChild(item);        
+        pointItem2Drawer[item] = std::make_pair(drawer, i);
     }
+
+	root = new QTreeWidgetItem();
+	root->setText(1, tr("Connections"));
+	connectionsTree->addTopLevelItem(root);
+	
+	for (int i = 0; i < connections.second.size(); ++i) {
+		QTreeWidgetItem* item = new QTreeWidgetItem();
+		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+		item->setCheckState(0, Qt::Checked);
+		item->setText(1, names[connections.second[i].range.first]);
+		item->setText(2, names[connections.second[i].range.second]);
+		root->addChild(item);
+		connectionItem2Drawer[item] = std::make_pair(connections.first, i);
+	}
 }
     
 QColor SchemeDialog::transformColor( const osg::Vec4& color ) const
@@ -92,9 +150,9 @@ QTreeWidgetItem* _getItemWhichContainsRecurr(QTreeWidget* tree, QTreeWidgetItem*
 
 QTreeWidgetItem* SchemeDialog::getItemWhichContains( QObject* object ) const
 {
-	int count = tree->topLevelItemCount();
+	int count = pointsTree->topLevelItemCount();
 	for (int i = 0; i < count; ++i) {
-        QTreeWidgetItem* item = _getItemWhichContainsRecurr(tree, tree->topLevelItem(i), object);
+		QTreeWidgetItem* item = _getItemWhichContainsRecurr(pointsTree, pointsTree->topLevelItem(i), object);
         if (item) {
             return item;
         }
@@ -105,8 +163,8 @@ QTreeWidgetItem* SchemeDialog::getItemWhichContains( QObject* object ) const
 
 void SchemeDialog::setButtonColor( QPushButton* button, const QColor& color )
 {
-	QString style = QString("QPushButton { background-color: rgb( %1, %2, %3); }").arg(color.red()).arg(color.green()).arg(color.blue());
-	button->setStyleSheet(style);
+	//QString style = QString("QPushButton { background-color: rgb( %1, %2, %3); }").arg(color.red()).arg(color.green()).arg(color.blue());
+	//button->setStyleSheet(style);
 }
 
 void SchemeDialog::visibilityChanged( bool visible )
@@ -115,23 +173,26 @@ void SchemeDialog::visibilityChanged( bool visible )
 	if (box) {
 		QTreeWidgetItem* current = getItemWhichContains(box);
         //std::string name = current->text(1).toStdString();
-        auto it = item2Drawer.find(current);
-        if (it != item2Drawer.end()) {
+        auto it = pointItem2Drawer.find(current);
+        if (it != pointItem2Drawer.end()) {
             auto t = it->second;
 			osgutils::IBaseDrawerSchemePtr drawer = t.first;
             auto idx = t.second;
             drawer->setVisible(idx, box->isChecked());
 
-			osgutils::SegmentsDescriptors descriptions = drawer2Connections[drawer].second;
-			osgutils::IConnectionsSchemeDrawerPtr connections = drawer2Connections[drawer].first;
-            int count = descriptions.size();
-            for (int i = 0; i < count; ++i) {
-                auto a = descriptions[i].range.first;
-                auto b = descriptions[i].range.second;
-                if (a == idx || b == idx) {
-                    connections->setVisible(i, box->isChecked());
-                }
-            }
+			if (autoHideSegments->isChecked() == true){
+
+				osgutils::SegmentsDescriptors descriptions = drawer2Connections[drawer].second;
+				osgutils::IConnectionsSchemeDrawerPtr connections = drawer2Connections[drawer].first;
+				int count = descriptions.size();
+				for (int i = 0; i < count; ++i) {
+					auto a = descriptions[i].range.first;
+					auto b = descriptions[i].range.second;
+					if (a == idx || b == idx) {
+						connections->setVisible(i, box->isChecked());
+					}
+				}
+			}
         }
 	}
 }
@@ -139,11 +200,11 @@ void SchemeDialog::visibilityChanged( bool visible )
 void SchemeDialog::blockAllSignals( bool val )
 {
 	this->blockSignals(val);
-	startSlider->blockSignals(val);
+	/*startSlider->blockSignals(val);
 	startTimeSpin->blockSignals(val);
 	endTimeSpin->blockSignals(val);
 	endSlider->blockSignals(val);
-	thicknessSpin->blockSignals(val);
+	thicknessSpin->blockSignals(val);*/
 	
 }
 
@@ -170,3 +231,34 @@ void SchemeDialog::blockAllSignals( bool val )
 //        //}
 //    }
 //}
+
+void SchemeDialog::pointItemChanged(QTreeWidgetItem * item, int column)
+{
+	if (column == 0){
+
+		osgutils::IBaseDrawerSchemePtr drawer = pointItem2Drawer[item].first;
+		auto idx = pointItem2Drawer[item].second;
+		bool visible = item->checkState(0) == Qt::Checked ? true : false;
+		drawer->setVisible(idx, visible);
+
+		if (autoHideSegments->isChecked() == true){		
+			osgutils::SegmentsDescriptors descriptions = drawer2Connections[drawer].second;
+			osgutils::IConnectionsSchemeDrawerPtr connections = drawer2Connections[drawer].first;
+			int count = descriptions.size();
+			for (int i = 0; i < count; ++i) {
+				auto a = descriptions[i].range.first;
+				auto b = descriptions[i].range.second;
+				if (a == idx || b == idx) {
+					connections->setVisible(i, visible);
+				}
+			}
+		}
+	}
+}
+
+void SchemeDialog::connectionItemChanged(QTreeWidgetItem * item, int column)
+{
+	if (column == 0){
+		connectionItem2Drawer[item].first->setVisible(connectionItem2Drawer[item].second, item->checkState(0) == Qt::Checked ? true : false);
+	}
+}

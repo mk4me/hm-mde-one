@@ -28,27 +28,48 @@ void AbstractSkeletonSerie::init(double ratio, int pointsCount,
 	kinematic::SkeletonPtr skeleton, const kinematic::LinearizedSkeleton::GlobalMapping& mapping)
 {
 	this->skeleton = skeleton;
-	this->nodesMapping = mapping;
-	//joint2Index = kinematic::SkeletonState::createJoint2IndexMapping(*state, mapping);
-	localRootNode->setScale(osg::Vec3(ratio, ratio, ratio));
-	pointsDrawer->init(pointsCount);
-	pointsDrawer->setSize(0.02 / ratio);
-	pointsDrawer->setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
-	//localRootNode->addChild(pointsDrawer->getNode());
+	this->nodesMapping = mapping;		
+
+	NonDummyJointFilter ndjf;	
 
 	//inicjalizacja po³aczeñ na bazie indeksów jointów
-	kinematic::LinearizedSkeleton::Visitor::globalIndexedVisit(*skeleton, [this, &mapping]
+	kinematic::LinearizedSkeleton::Visitor::globalIndexedVisit(*skeleton,
+		[this, &mapping, &ndjf]
 		(kinematic::Skeleton::JointPtr joint, const kinematic::LinearizedSkeleton::NodeIDX idx)
 	{
 		for (const auto & c : joint->children())
 		{
-			osgutils::SegmentDescriptor sd;
-			sd.length = c->value().localPosition().length();
-			sd.range.first = idx;
-			sd.range.second = mapping.data().right.find(c->value().name())->get_left();
-			connections.push_back(sd);
+			const auto l2 = c->value().localPosition().length2();
+			if (l2 > 0.0)
+			{
+				auto locJoint = joint;
+
+				while (locJoint->isRoot() == false && ndjf(locJoint) == false) { locJoint = locJoint->parent(); }
+
+				osgutils::SegmentDescriptor sd;
+				sd.length = std::sqrt(l2);
+				sd.range.first = ((locJoint == joint) ? idx : mapping.data().right.find(locJoint->value().name())->get_left());
+				sd.range.second = mapping.data().right.find(c->value().name())->get_left();
+				connections.push_back(sd);
+			}
+		}
+
+		if (joint->isRoot() == true || ndjf(joint) == true){
+			nonDummyJoints.push_back(idx);
 		}
 	});
+
+	for (auto & c : connections)
+	{
+		c.range.first = std::distance(nonDummyJoints.begin(), std::find(nonDummyJoints.begin(), nonDummyJoints.end(), c.range.first));
+		c.range.second = std::distance(nonDummyJoints.begin(), std::find(nonDummyJoints.begin(), nonDummyJoints.end(), c.range.second));
+	}
+
+	localRootNode->setScale(osg::Vec3(ratio, ratio, ratio));
+	pointsDrawer->init(nonDummyJoints.size());
+	pointsDrawer->setSize(0.02 / ratio);
+	pointsDrawer->setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
+	localRootNode->addChild(pointsDrawer->getNode());
 
 	connectionsDrawer->init(connections);
 	connectionsDrawer->setColor(osg::Vec4(0.7, 0.7, 0.7, 0.5));
@@ -225,10 +246,19 @@ void AbstractSkeletonSerie::update()
 {
 	std::vector<osg::Vec3> pos;
 	pos.reserve(nodesMapping.data().size());
+
+	auto it = nonDummyJoints.begin();
 		
-	kinematic::LinearizedSkeleton::Visitor::visit(*skeleton, [&pos](kinematic::Skeleton::JointConstPtr node)
+	kinematic::LinearizedSkeleton::Visitor::globalIndexedVisit(*skeleton,
+		[&pos, this, &it](kinematic::Skeleton::JointConstPtr node,
+		const kinematic::LinearizedSkeleton::NodeIDX idx)
 	{
-		pos.push_back(node->value().globalPosition());
+		if (it != nonDummyJoints.end()){
+			if (idx == *it){
+				pos.push_back(node->value().globalPosition());
+				++it;
+			}
+		}	
 	});
 
 	pointsDrawer->update(pos);

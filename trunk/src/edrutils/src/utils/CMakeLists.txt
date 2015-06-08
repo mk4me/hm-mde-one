@@ -52,6 +52,7 @@ SET_PUBLIC_HEADERS(
 	TreeNode.h
 	Tree.h
 	LinearizedTree.h
+	TreeNodeHelperVisitors.h
 )
 
 #------------------------------------------------------------------------------
