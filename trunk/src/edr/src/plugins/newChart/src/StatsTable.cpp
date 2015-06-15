@@ -42,7 +42,8 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
      item->setText(++i, QString("%1 (%2)").arg(stats->maxValue()).arg(valueUnit));
      item->setText(++i, QString("%1 (%2)").arg(stats->maxArgument()).arg(timeUnit));
      item->setText(++i, QString("%1 (%2)").arg(stats->meanValue()).arg(valueUnit));
-     item->setText(++i, QString("%1 (%2)").arg(stats->varianceValue()).arg(valueUnit));
+	 item->setText(++i, QString("%1 (%2)").arg(stats->stdValue()).arg(valueUnit));
+     item->setText(++i, QString("%1 (%2^2)").arg(stats->varianceValue()).arg(valueUnit));
 
      for (int i = 1; i < item->columnCount(); ++i) {
         item->setBackgroundColor(i, backgroundColor);

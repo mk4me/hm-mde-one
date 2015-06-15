@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_NEW_CHART__NEWCHARTLABEL_H__
 #define HEADER_GUARD_NEW_CHART__NEWCHARTLABEL_H__
 
-#include <plugins/c3d/C3DChannels.h>
+//#include <plugins/c3d/C3DChannels.h>
 #include "NewChartDot.h"
 
 //! Klasa reprezentuje etykietę na wykresie

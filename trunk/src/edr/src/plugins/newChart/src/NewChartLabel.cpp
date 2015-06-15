@@ -3,8 +3,8 @@
 #include "NewChartDotFixed.h"
 
 // nieladna kopia z NewChartMarker
-const int LABEL_WIDTH = 100;
-const int LABEL_HEIGHT = 35;
+const int LABEL_WIDTH = 200;
+const int LABEL_HEIGHT = 45;
 const int LABEL_PDIST = 20;
 const int LABEL_BOUND = 3;
 const float MIN_LERP_DIST = 15.0f;
@@ -30,11 +30,21 @@ void NewChartLabel::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtS
     UTILS_ASSERT(point1);
     QPoint transformed1 = QwtScaleMap::transform(xMap, yMap, point1->getPosition()).toPoint();
 
-    QRect textRect;
-    textRect.setX(transformed1.x() + shift.x());
-    textRect.setY(transformed1.y() + shift.y());
-    textRect.setWidth(LABEL_WIDTH);
-    textRect.setHeight(LABEL_HEIGHT);
+	QFontMetrics fm(painter->font());
+
+	QRect textRect;
+	textRect.setX(transformed1.x() + shift.x());
+	textRect.setY(transformed1.y() + shift.y());
+	textRect.setWidth(LABEL_WIDTH);
+	textRect.setHeight(LABEL_HEIGHT);
+
+	textRect = fm.boundingRect(textRect, Qt::AlignCenter, text);
+	auto w = textRect.width() + 20;
+	auto h = textRect.height() + 10;
+	textRect.setX(std::max((transformed1.x() + shift.x() + LABEL_WIDTH / 2) - w / 2, 10));
+	textRect.setY(transformed1.y() + shift.y());
+	textRect.setWidth(w);
+	textRect.setHeight(h);
 
     QRect boxRect;
     boxRect.setX(textRect.x() - LABEL_BOUND);

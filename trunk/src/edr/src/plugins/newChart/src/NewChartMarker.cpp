@@ -4,8 +4,8 @@
 #include <QtGui/QPainter>
 #include "NewChartSerie.h"
 
-const int LABEL_WIDTH = 100;
-const int LABEL_HEIGHT = 35;
+const int LABEL_WIDTH = 200;
+const int LABEL_HEIGHT = 45;
 const int LABEL_PDIST = 20;
 const int LABEL_BOUND = 3;
 const float MIN_LERP_DIST = 15.0f;
@@ -89,11 +89,30 @@ void NewChartMarker::drawLabel( QPainter *painter, const QRectF &rect, const QPo
 
     painter->drawLine(point.x() + 3, point.y() + 3, lineX, lineY);
    
-    QRect textRect;
-    textRect.setX(static_cast<int>(position.x()));
-    textRect.setY(static_cast<int>(position.y()));
-    textRect.setWidth(LABEL_WIDTH);
-    textRect.setHeight(LABEL_HEIGHT);
+	//QString text = QObject::tr("Time: %1\nValue: %2").arg(xValue()).arg(yValue());
+	QString text1 = QObject::tr("Time: %1").arg(xValue());
+	QString text2 = QObject::tr("Value: %1").arg(yValue());
+	auto text = text1 + "\n" + text2;
+	QFontMetrics fm(painter->font());
+
+	QRect textRect;
+	textRect.setX(static_cast<int>(position.x()));
+	textRect.setY(static_cast<int>(position.y()));
+	textRect.setWidth(LABEL_WIDTH);
+	textRect.setHeight(LABEL_HEIGHT);
+
+	textRect = fm.boundingRect(textRect, Qt::AlignCenter, text);
+	auto w = textRect.width() + 20;
+	auto h = textRect.height() + 10;
+	textRect.setX(std::max(lineX - w / 2, 10));
+	textRect.setY(position.y());
+	textRect.setWidth(w);
+	textRect.setHeight(h);
+    //QRect textRect;
+    //textRect.setX(static_cast<int>(position.x()));
+    //textRect.setY(static_cast<int>(position.y()));
+    //textRect.setWidth(LABEL_WIDTH);
+    //textRect.setHeight(LABEL_HEIGHT);
     
     QRect boxRect;
     boxRect.setX(textRect.x() - LABEL_BOUND);
@@ -102,7 +121,6 @@ void NewChartMarker::drawLabel( QPainter *painter, const QRectF &rect, const QPo
     boxRect.setHeight(textRect.height() + LABEL_BOUND * 2);
    
     painter->drawRoundedRect(boxRect, 6, 6);
-    QString text = QObject::tr("Time: %1\nValue: %2").arg(xValue()).arg(yValue());
 
     painter->setPen(QPen(QColor(100, 100, 100)));
     painter->drawText(textRect, Qt::AlignCenter, text);
@@ -121,9 +139,3 @@ void NewChartMarker::drawDot( QPainter * painter, const QPointF & point, int siz
     painter->setBrush(b);
     painter->drawEllipse(point, size, size);
 }
-
-
-
-
-
-

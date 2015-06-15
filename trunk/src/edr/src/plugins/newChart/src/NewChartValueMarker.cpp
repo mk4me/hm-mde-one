@@ -99,9 +99,9 @@ void NewChartValueMarker::updateLabels()
 {
     for (auto it = labels.begin(); it != labels.end(); ++it) {
         const QPointF& p = (*it)->dot1->getPosition();
-        (*it)->label->setText(QObject::tr("Time: %1\nValue: %2").arg(p.x()).arg(p.y()));
+		QString text1 = QObject::tr("Time: %1").arg(p.x());
+		QString text2 = QObject::tr("Value: %1").arg(p.y());
+		auto text = text1 + "\n" + text2;
+        (*it)->label->setText(text);
     }
 }
-
-
-
