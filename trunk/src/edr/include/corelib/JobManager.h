@@ -26,23 +26,6 @@ namespace core
 
 	private:
 
-		struct ErrorLogCallPolicy
-		{
-			//! \param eptr Wskaznik do wyjatku
-			static void handle(std::exception_ptr eptr)
-			{
-				try{
-					std::rethrow_exception(eptr);
-				}
-				catch (std::exception & e){
-					JobManager::logError(e.what());
-				}
-				catch (...){
-					JobManager::logError();
-				}
-			}
-		};
-
 		//! Polityka braku obs³ugi przerwania - ponownie rzuca ten sam wyj¹tek
 		struct LogResetableInterruptHandlingPolicy
 		{
@@ -63,7 +46,7 @@ namespace core
 		};
 
 	public:
-		typedef threadingUtils::InterruptibleWorkManager<threadingUtils::StealingMultipleWorkQueuePolicy, ThreadPool::Thread, ErrorLogCallPolicy, LogResetableInterruptHandlingPolicy> InnerWorkManager;
+		typedef threadingUtils::InterruptibleWorkManager<threadingUtils::StealingMultipleWorkQueuePolicy, ThreadPool::Thread, threadingUtils::ConsumeExceptionHandlePolicy, LogResetableInterruptHandlingPolicy> InnerWorkManager;
 		typedef threadingUtils::InterruptibleJobManager<InnerWorkManager> InnerJobManager;
 
 		class CORELIB_EXPORT JobBase
@@ -219,8 +202,8 @@ namespace core
 			auto innerJob = jm->create(
 				[=]() -> result_type
 			{
+				JobGuard guard(description);
 				try{
-					JobGuard guard(description);
 					return (result_type)ff();
 				}
 				catch (std::exception & e){

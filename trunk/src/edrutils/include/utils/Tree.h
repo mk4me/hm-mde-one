@@ -20,12 +20,18 @@ namespace utils
 		//! Struktura opisuje minimalny i maksymalny stopień węzłów drzewa
 		struct DegreeLimits
 		{
+			//! Domyślny konstruktor
 			DegreeLimits() : min(std::numeric_limits<SizeType>::max()), 
 			max(std::numeric_limits<SizeType>::min()) {}
 
+			//! \param other Kopiowany obiekt
+			DegreeLimits(const DegreeLimits & other) : min(other.min), max(other.max) {}
+			//! Destruktor
 			~DegreeLimits() {}
 
+			//! Minimalny stopień drzewa
 			SizeType min;
+			//! Maksymalny stopień drzewa
 			SizeType max;
 			//! \return Czy zaakres stopni jest poprawny
 			inline bool valid() const { return min <= max; }
@@ -35,7 +41,9 @@ namespace utils
 		class DegreeLimitsVisitor
 		{
 		public:
+			//! Konstruktor domyslny
 			DegreeLimitsVisitor() {}
+			//! Destruktor
 			~DegreeLimitsVisitor() {}
 
 			//! \tparam NPtr Typ wska�nika w�z�a
@@ -49,14 +57,17 @@ namespace utils
 				degreeLimits_.max = std::max(degreeLimits_.max, degree);
 			}
 
+			//! Resetuje limity stopni drzewa
 			void reset()
 			{
 				degreeLimits_ = DegreeLimits();
 			}
 
+			//! \return Limity stopni drzewa
 			const DegreeLimits & degreeLimits() const { return degreeLimits_; }
 
 		private:
+			//! Limity stopni drzewa
 			DegreeLimits degreeLimits_;
 		};
 
@@ -283,7 +294,7 @@ namespace utils
 			return TreeNode::compare(treeA.root(), treeB.root(), comp);
 		}
 
-
+		//! Polityka przechodzenia drzewa schematem PreOrder
 		struct PreOrderVisitPolicy
 		{
 			using NodeVisitOrder = TreeNode::PreOrderVisitPolicy;
@@ -315,6 +326,7 @@ namespace utils
 			}
 		};
 
+		//! Polityka przechodzenia drzewa schematem PostOrder
 		struct PostOrderVisitPolicy
 		{
 			using NodeVisitOrder = TreeNode::PostOrderVisitPolicy;
@@ -346,6 +358,7 @@ namespace utils
 			}
 		};
 
+		//! Polityka przechodzenia drzewa schematem LevelOrder
 		struct LevelOrderVisitPolicy
 		{
 			using NodeVisitOrder = TreeNode::LevelOrderVisitPolicy;
@@ -377,7 +390,9 @@ namespace utils
 			}
 		};
 
+		//! \tparam NodeVisitOrderT Polityka przechodzenia drzewa którą odwracamy
 		template<typename NodeVisitOrderT>
+		//! Polityka przechodzenia drzewa schematem odwrotnym do danego
 		struct ReverseOrderVisitPolicy
 		{			
 			using NodeVisitOrder = TreeNode::ReverseOrderVisitPolicy<NodeVisitOrderT>;
@@ -407,9 +422,9 @@ namespace utils
 			}
 		};
 
+		//! Polityka przechodzenia drzewa schematem LevelOrder z warunkiem
 		struct LevelOrderWhileVisitPolicy
 		{
-
 			using NodeVisitOrder = LevelOrderWhileVisitPolicy;
 
 			//! \tparam TreeType Typ drzewa
@@ -441,6 +456,7 @@ namespace utils
 			}
 		};
 
+		//! Polityka przechodzenia drzewa schematem PreOrder z warunkiem
 		struct PreOrderWhileVisitPolicy
 		{
 			using NodeVisitOrder = PreOrderWhileVisitPolicy;
@@ -476,6 +492,7 @@ namespace utils
 			}
 		};
 
+		//! Polityka przechodzenia drzewa schematem PostOrder z warunkiem
 		struct PostOrderWhileVisitPolicy
 		{
 			using NodeVisitOrder = PostOrderWhileVisitPolicy;
@@ -511,8 +528,9 @@ namespace utils
 			}
 		};
 
-		//! \tparam VisitOrder Spos�b oryginalnego odwiedzania, kt�re chcemy odwr�ci�
+		//! \tparam NodeVisitOrderT Polityka przechodzenia drzewa którą odwracamy
 		template<typename NodeVisitOrderT>
+		//! Polityka przechodzenia drzewa schematem odwrotnym do danego z warunkiem
 		struct ReverseOrderWhileVisitPolicy
 		{			
 			using NodeVisitOrder = TreeNode::ReverseOrderWhileVisitPolicy<NodeVisitOrderT>;

@@ -38,9 +38,9 @@ namespace utils
 		template<typename T>
 		using NodeWeakConstPtr = utils::weak_ptr <const TreeNodeT<T> > ;
 
-		//Typ kolekcji węzłów
 		//! \tparam Typ dziecka
 		template<typename T>
+		//Typ kolekcji węzłów
 		using Nodes = std::list < T > ;		
 
 		//! Typ rozmiaru

@@ -824,7 +824,7 @@ void IMUCostumeWidget::saveMotionData()
 	IMU::IIMUDataSource::CostumesRecordingDataBuffer::ListT data;
 	recordOutput->costumesDataBuffer.data(data);
 
-	IMU::CostumeParser::save(*outputFile, data, costumesMapping, recordIndex);
+	//IMU::CostumeParser::save(*outputFile, data, costumesMapping, recordIndex);
 
 	auto id = recordIndex;
 
@@ -879,7 +879,7 @@ void IMUCostumeWidget::saveMotionData()
 	}
 
 	recordIndex += data.size();
-	outputFile->flush();
+	//outputFile->flush();
 }
 
 void IMUCostumeWidget::watchRecordedData()
@@ -959,22 +959,44 @@ void IMUCostumeWidget::onRecord(const bool record)
 			auto cd = ds->costumeDescription(costumeID);
 			costumes.insert({ costumeID, cd.sensorsConfiguration.find(imuCostume::Costume::IMU)->second });
 			cm.insert({ costumeID, IMU::CostumeParser::createMapping(cd.profile->sensorsDescriptions, kinematic::LinearizedSkeleton::createCompleteMapping(*(cd.profile->skeleton))) });
+
+			auto & costumeSensors = costumes.find(costumeID)->second;
+			auto & profileSensors = cm.find(costumeID)->second;
+
+			auto it = costumeSensors.begin();
+
+			while (it != costumeSensors.end()){
+
+				auto fIT = cd.profile->sensorsDescriptions.find(*it);
+
+				if (fIT == cd.profile->sensorsDescriptions.end()){
+					it = costumeSensors.erase(it);
+				}
+				else if(fIT->second.jointIdx == -1 || fIT->second.jointName.empty() == true ||
+				fIT->second.orientationEstimationAlgorithm == nullptr){
+					it = costumeSensors.erase(it);
+					profileSensors.erase(*it);
+				}
+				else{
+					++it;
+				}
+			}
 		}
 
 		costumesMapping = cm;
 
-		RecordingWizard w(costumes, this);
+		//RecordingWizard w(costumes, this);
 
-		auto ret = w.exec();
+		//auto ret = w.exec();
 
-		if (ret == QWizard::Accepted){
+		//if (ret == QWizard::Accepted){
 
 			coreUI::CoreCursorChanger cc;
 
 			const auto now = std::chrono::system_clock::now();
 
 			//faktyczne kostiumy do nagrań
-			costumes = w.costumes();
+			//costumes = w.costumes();
 			//dla każdego kostiumu
 			for (const auto & c : costumes)
 			{
@@ -1074,41 +1096,43 @@ void IMUCostumeWidget::onRecord(const bool record)
 			}
 
 			{
-				outputFile = utils::make_shared<std::ofstream>(w.outputPath().toStdString().c_str());
+				//outputFile = utils::make_shared<std::ofstream>(w.outputPath().toStdString().c_str());
 
-				if (outputFile->is_open() == true){					
+				//if (outputFile->is_open() == true){					
 
-					for (const auto & c : costumes)
+					/*for (const auto & c : costumes)
 					{
 						auto cd = ds->costumeDescription(c.first);
 						serializeRecordedCostumeConfiguration(*outputFile, c.first, c.second, cd);
 					}
 
-					(*outputFile) << "Data" << std::endl;
+					(*outputFile) << "Data" << std::endl;*/
 
 					recordOutput = utils::make_shared<IMU::IIMUDataSource::RecordingConfiguration>();
 					recordOutput->costumesDataBuffer.setMaxBufferSize(10000);
-					recordOutput->costumesToRecord = w.costumes();
+					//recordOutput->costumesToRecord = w.costumes();
+					recordOutput->costumesToRecord = costumes;
 
 					recordTimer.start(500);
 					recordIndex = 0;
 					ds->startRecording(recordOutput);
-				}
-				else{
+				//}
+				//else{
 
-					//TODO - info �e si� nie uda�o jednak pliku stworzy� do zapisu
-					ui->recordPushButton->blockSignals(true);
-					ui->recordPushButton->setChecked(!record);
-					ui->recordPushButton->blockSignals(false);
-				}
+				//	//TODO - info �e si� nie uda�o jednak pliku stworzy� do zapisu
+				//	ui->recordPushButton->blockSignals(true);
+				//	ui->recordPushButton->setChecked(!record);
+				//	ui->recordPushButton->blockSignals(false);
+				//}
 			}
-		}
-		else{
+			/*}
+			else{
 			ui->recordPushButton->blockSignals(true);
 			ui->recordPushButton->setChecked(!record);
 			ui->recordPushButton->blockSignals(false);
-		}
+			}*/
 
+			ui->recordPushButton->setText(tr("Recording..."));
 	}
 	else{
 		coreUI::CoreCursorChanger cc;
@@ -1119,14 +1143,16 @@ void IMUCostumeWidget::onRecord(const bool record)
 
 		saveMotionData();
 
-		outputFile->close();
-		outputFile.reset();
+		//outputFile->close();
+		//outputFile.reset();
 		recordOutput.reset();
 
 		for (auto & rd : recordingDetails)
 		{
 			rd.second.motionOutput->close();
-		}		
+		}
+
+		ui->recordPushButton->setText(tr("Record"));
 	}
 }
 

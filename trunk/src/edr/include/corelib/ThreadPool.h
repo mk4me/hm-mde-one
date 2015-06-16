@@ -29,23 +29,6 @@ namespace core
 
 	private:
 
-		struct ErrorLogCallPolicy
-		{
-			//! \param eptr Wskaznik do wyjatku
-			static void handle(std::exception_ptr eptr)
-			{
-				try{
-					std::rethrow_exception(eptr);
-				}
-				catch (std::exception & e){
-					ThreadPool::logError(e.what());
-				}
-				catch (...){
-					ThreadPool::logError();
-				}
-			}			
-		};
-
 		//! Polityka braku obs�ugi przerwania - ponownie rzuca ten sam wyj�tek
 		struct LogResetableInterruptHandlingPolicy
 		{			
@@ -56,11 +39,11 @@ namespace core
 		};
 
 		//! Przerywalny w�tek z funkcj� runnable
-		typedef threadingUtils::RunnableThread<std::thread, ErrorLogCallPolicy> InnerRunnableThread;
+		typedef threadingUtils::RunnableThread<std::thread, threadingUtils::ConsumeExceptionHandlePolicy> InnerRunnableThread;
 
 	public:
 
-		typedef threadingUtils::InterruptibleMultipleRunThread<InnerRunnableThread, ErrorLogCallPolicy, LogResetableInterruptHandlingPolicy, threadingUtils::InterrupltiblePolicy> InnerInterruptibleMultipleRunThread;
+		typedef threadingUtils::InterruptibleMultipleRunThread<InnerRunnableThread, threadingUtils::ConsumeExceptionHandlePolicy, LogResetableInterruptHandlingPolicy, threadingUtils::InterrupltiblePolicy> InnerInterruptibleMultipleRunThread;
 
 		//! Wewn�trza realizacja puli w�tk�w
 		typedef threadingUtils::InterruptibleThreadPool<InnerInterruptibleMultipleRunThread> InnerThreadPool;
@@ -132,11 +115,11 @@ namespace core
 					try{
 						ff();
 					}
-					catch (std::exception&){
-
+					catch (std::exception & e){
+						ThreadPool::logError(UTILS_FORMAT_STRING(" failed with error: " << e.what()));						
 					}
 					catch (...){
-
+						ThreadPool::logError(" failed with UNKNOWN error");
 					}
 				}, description);
 			}
@@ -165,6 +148,8 @@ namespace core
 			//! Opis w�tku
 			static TLS tlsTD;
 		};
+
+		friend class Thread;
 
 		typedef std::list<Thread> Threads;
 

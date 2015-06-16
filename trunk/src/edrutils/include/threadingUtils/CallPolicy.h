@@ -8,6 +8,7 @@
 #ifndef __HEADER_GUARD_THREADINGUTILS__CALLPOLICY_H__
 #define __HEADER_GUARD_THREADINGUTILS__CALLPOLICY_H__
 
+#include <exception>
 #include <type_traits>
 
 namespace threadingUtils

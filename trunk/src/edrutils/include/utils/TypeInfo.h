@@ -116,7 +116,7 @@ namespace utils {
 			return ExtendedTypeInfo(typeid(T), typeSize<T>(std::is_void<T>::type));
 		}
 
-		//! Destruktor
+		//! Destruktor wirtualny
 		virtual ~ExtendedTypeInfo();
 
 		//! Jawny operator rzutowania na type_info.

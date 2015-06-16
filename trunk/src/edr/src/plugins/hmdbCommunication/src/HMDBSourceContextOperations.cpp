@@ -803,6 +803,7 @@ void FileDownload::start()
 void FileDownload::wait()
 {
 	plugin::getJobManager()->waitForOtherJob(job);
+	//job.wait();
 }
 
 void FileDownload::abort()
@@ -914,14 +915,11 @@ void FileDownload::download()
 		else{
 			release();
 		}
-	try{
+	//try{
 		++progress_;
 		prepareHMDB->clearHMDB();
 		++progress_;
-	}
-	catch (...){
-
-	}
+	//}catch (...){}
 }
 
 MultipleFilesDownloadAndStore::MultipleFilesDownloadAndStore(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads,

@@ -193,13 +193,5 @@ void ThreadPool::setLog(LogPtr log)
 
 void ThreadPool::logError(const std::string & message)
 {
-	std::string locMessage(message);
-	if (locMessage.empty() == true){
-		locMessage = " failed with UNKNOWN error";
-	}
-	else{
-		locMessage = " failed with error: " + locMessage;
-	}
-
-	LOG_ERROR(log_, "Thread ID " << std::this_thread::get_id() << " owned by " << ThreadPool::Thread::currentOwner() << " for " << ThreadPool::Thread::currentDestination() << locMessage << ". Finalizing thread.");
+	LOG_ERROR(log_, "Thread ID " << std::this_thread::get_id() << " owned by " << ThreadPool::Thread::currentOwner() << " for " << ThreadPool::Thread::currentDestination() << message << ". Finalizing thread.");
 }

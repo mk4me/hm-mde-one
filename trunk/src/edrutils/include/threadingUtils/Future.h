@@ -67,8 +67,13 @@ namespace std
 		}
 
 		void operator()(_ArgTypes... _Args) {
-			(*_my_func)(forward<_ArgTypes>(_Args)...);
-			_my_promise.set_value();
+			try{
+				(*_my_func)(forward<_ArgTypes>(_Args)...);
+				_my_promise.set_value();
+			}
+			catch (...){
+				_my_promise.set_exception(std::current_exception());
+			}
 		}
 
 		void reset() {
