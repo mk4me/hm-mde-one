@@ -855,67 +855,73 @@ void FileDownload::release()
 
 void FileDownload::download()
 {
-	if (status_ == FileDownload::Aborted){
-		return;
-	}
-
-	auto const filePath = prepareHMDB->prepareFilePath();
-
-	if (filePath.empty() == true){
-		throw core::runtime_error("Empty file path to retrieve");
-	}
-	++progress_;
-
-	if (status_ == FileDownload::Aborted){
-		prepareHMDB->clearHMDB();
-		++progress_;
-		return;
-	}
 	
-	auto output = transferIO->prepareOutput();
+		if (status_ == FileDownload::Aborted){
+			return;
+		}
 
-	if (output == nullptr){
-		prepareHMDB->clearHMDB();
+		auto const filePath = prepareHMDB->prepareFilePath();
+
+		if (filePath.empty() == true){
+			throw core::runtime_error("Empty file path to retrieve");
+		}
 		++progress_;
-		throw core::runtime_error("Uninitialized output stream");
-	}
-	++progress_;
 
-	if (status_ == FileDownload::Aborted){
+		if (status_ == FileDownload::Aborted){
+			prepareHMDB->clearHMDB();
+			++progress_;
+			return;
+		}
+	
+		auto output = transferIO->prepareOutput();
+
+		if (output == nullptr){
+			prepareHMDB->clearHMDB();
+			++progress_;
+			throw core::runtime_error("Uninitialized output stream");
+		}
+		++progress_;
+
+		if (status_ == FileDownload::Aborted){
+			transferIO->closeOutput();
+			release();
+			++progress_;
+			prepareHMDB->clearHMDB();
+			++progress_;
+			return;
+		}
+
+		transfer = ftp->prepareGet(filePath, output, fileID_.fileSize);
+
+		if (transfer == nullptr){
+			transferIO->closeOutput();
+			release();
+			++progress_;
+			prepareHMDB->clearHMDB();
+			++progress_;
+			throw core::runtime_error("Uninitialized data transfer");
+		}
+
+		transfer->start();
+		transfer->wait();
+		PLUGIN_LOG_DEBUG("Finished downloading file:" << fileID_.fileName);
+
 		transferIO->closeOutput();
-		release();
+
+		if (transfer->status() == threadingUtils::IOperation::Finished){
+			downloaded_ = true;
+		}
+		else{
+			release();
+		}
+	try{
 		++progress_;
 		prepareHMDB->clearHMDB();
 		++progress_;
-		return;
 	}
+	catch (...){
 
-	transfer = ftp->prepareGet(filePath, output, fileID_.fileSize);
-	
-	if (transfer == nullptr){
-		transferIO->closeOutput();
-		release();
-		++progress_;
-		prepareHMDB->clearHMDB();
-		++progress_;
-		throw core::runtime_error("Uninitialized data transfer");
 	}
-	
-	transfer->start();
-	transfer->wait();
-		
-	transferIO->closeOutput();
-
-	if (transfer->status() == threadingUtils::IOperation::Finished){		
-		downloaded_ = true;
-	}
-	else{		
-		release();
-	}
-
-	++progress_;
-	prepareHMDB->clearHMDB();
-	++progress_;
 }
 
 MultipleFilesDownloadAndStore::MultipleFilesDownloadAndStore(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads,
