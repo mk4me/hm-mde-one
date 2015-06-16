@@ -671,6 +671,7 @@ namespace utils
 			//wspólny rodzic? To znaczy że zamieniamy ich tylko miejscami
 			if (nodeToReplace->parent() == node->parent())
 			{
+				auto parentNode = nodeToReplace->parent();
 				auto itA = std::find(parentNode->children_.begin(), parentNode->children_.end(), nodeToReplace);
 				auto itB = std::find(parentNode->children_.begin(), parentNode->children_.end(), node);
 
@@ -689,7 +690,7 @@ namespace utils
 
 				parentNode = nodeToReplace->parent();
 				if (parentNode != nullptr){
-					it = std::find(parentNode->children_.begin(), parentNode->children_.end(), node);
+					auto it = std::find(parentNode->children_.begin(), parentNode->children_.end(), node);
 					*it = nodeToReplace;
 				}
 			}
@@ -784,7 +785,7 @@ namespace utils
 			if (isLeaf() == false){				
 				for (const auto & child : children_)
 				{
-					FindMaxLevelVisitor mlVisitor;
+					TreeNode::FindMaxLevelVisitor mlVisitor;
 					visitLevelOrder(child, mlVisitor);
 					l = std::max(l, mlVisitor.maxLevel());
 				}

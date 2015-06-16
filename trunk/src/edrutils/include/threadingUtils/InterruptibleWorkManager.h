@@ -20,17 +20,17 @@
 
 namespace threadingUtils
 {
-	//! \tparam WorkQueue Typ kolejki zadañ
-	//! \tparam InterruptibleThread Typ w¹tku który mo¿na uruchamiaæ (run) oraz przerywaæ (interrupt)
-	//! \tparam CallPolicy Typ polityki wo³ania zadañ
-	//! Klasa realizuj¹ca funkcjonalnoœæ managera prac, zarz¹dzaj¹cego zleconymi zadaniami i ich realizacj¹
-	//! na zarz¹dzanych w¹tkach
+	//! \tparam WorkQueue Typ kolejki zadaï¿½
+	//! \tparam InterruptibleThread Typ wï¿½tku ktï¿½ry moï¿½na uruchamiaï¿½ (run) oraz przerywaï¿½ (interrupt)
+	//! \tparam CallPolicy Typ polityki woï¿½ania zadaï¿½
+	//! Klasa realizujï¿½ca funkcjonalnoï¿½ï¿½ managera prac, zarzï¿½dzajï¿½cego zleconymi zadaniami i ich realizacjï¿½
+	//! na zarzï¿½dzanych wï¿½tkach
 	template<class WorkQueue, class InterruptibleThread, typename WorkExceptionHandlePolicy, typename InterruptHandlePolicy>
 	class InterruptibleWorkManager
 	{
 	private:
 
-		//! RAII pomocne przy wyznaczaniu iloœci bezrobotnych, wisz¹cych na zmiennej warunkowej
+		//! RAII pomocne przy wyznaczaniu iloï¿½ci bezrobotnych, wiszï¿½cych na zmiennej warunkowej
 		template<typename T>
 		struct ThreadGuard
 		{
@@ -48,7 +48,7 @@ namespace threadingUtils
 			T & counter;
 		};
 
-		//! RAII pomocne przy wyznaczaniu iloœci bezrobotnych, wisz¹cych na zmiennej warunkowej
+		//! RAII pomocne przy wyznaczaniu iloï¿½ci bezrobotnych, wiszï¿½cych na zmiennej warunkowej
 		template<typename T>
 		struct ActiveThreadGuard
 		{
@@ -66,7 +66,7 @@ namespace threadingUtils
 			T & counter;
 		};
 
-		//! RAII pomocnicze przy rozró¿nianiu w¹tków workerów od innych zlecaj¹cych zadania
+		//! RAII pomocnicze przy rozrï¿½nianiu wï¿½tkï¿½w workerï¿½w od innych zlecajï¿½cych zadania
 		struct LocalThreadGuard
 		{
 			LocalThreadGuard()
@@ -82,17 +82,17 @@ namespace threadingUtils
 
 		friend struct LocalThreadGuard;
 
-		//! Klasa obs³uguj¹ca przetwarzanie zleconych zadañ w pojedynczym w¹tku
+		//! Klasa obsï¿½ugujï¿½ca przetwarzanie zleconych zadaï¿½ w pojedynczym wï¿½tku
 		class WorkExecutor
 		{
 		private:
 
-			//! RAII do obs³ugi inicjalizacji/deinicjalizacji obs³ugi w¹tku przez kolejkê zadañ
+			//! RAII do obsï¿½ugi inicjalizacji/deinicjalizacji obsï¿½ugi wï¿½tku przez kolejkï¿½ zadaï¿½
 			struct ThreadLocalWorkQueueController
 			{
 			public:
 
-				//! \param workQueue Kolejka zadañ z której ko¿ysta aktualny w¹tek
+				//! \param workQueue Kolejka zadaï¿½ z ktï¿½rej koï¿½ysta aktualny wï¿½tek
 				ThreadLocalWorkQueueController(WorkQueue & workQueue) : workQueue(workQueue)
 				{
 					workQueue.initializeThread();
@@ -105,11 +105,11 @@ namespace threadingUtils
 				}
 
 			private:
-				//! Kolejka zadañ z której ko¿ysta aktualny w¹tek
+				//! Kolejka zadaï¿½ z ktï¿½rej koï¿½ysta aktualny wï¿½tek
 				WorkQueue & workQueue;
 			};
 
-			//! Struktura opisuj¹ca wspólny stan w¹tku i obiektu zarz¹dzaj¹cego jego prac¹ przy przetwarzaniu zleconych zadañ
+			//! Struktura opisujï¿½ca wspï¿½lny stan wï¿½tku i obiektu zarzï¿½dzajï¿½cego jego pracï¿½ przy przetwarzaniu zleconych zadaï¿½
 			struct SharedState
 			{
 				SharedState() : workManager(nullptr), forceFinalize(false)
@@ -129,15 +129,15 @@ namespace threadingUtils
 
 				}
 
-				//! Manager zadañ
+				//! Manager zadaï¿½
 				InterruptibleWorkManager * workManager;
-				//! Czy w¹tek ma zakoñczyæ przetwarzanie zadañ
+				//! Czy wï¿½tek ma zakoï¿½czyï¿½ przetwarzanie zadaï¿½
 				volatile bool forceFinalize;
 			};
 
 		public:
-			//! \param jobManager Manager zadañ
-			//! \param thread W¹tek który przejmujemy na potrzeby prztwarzania zleconych zadañ
+			//! \param jobManager Manager zadaï¿½
+			//! \param thread Wï¿½tek ktï¿½ry przejmujemy na potrzeby prztwarzania zleconych zadaï¿½
 			WorkExecutor(InterruptibleWorkManager * workManager, InterruptibleThread && thread)
 				: sharedState(utils::make_shared<SharedState>(workManager, false)), thread(std::move(thread))
 			{				
@@ -151,7 +151,7 @@ namespace threadingUtils
 				}, sharedState);
 			}
 
-			//! \param Other Obiekt którego zasoby przejmujemy
+			//! \param Other Obiekt ktï¿½rego zasoby przejmujemy
 			WorkExecutor(WorkExecutor && Other) : sharedState(std::move(Other.sharedState)), thread(std::move(Other.thread))
 			{
 
@@ -172,7 +172,7 @@ namespace threadingUtils
 				}
 			}
 
-			//! Metoda koñczy dzia³anie przetwarzania zadañ przez obs³ugiwany w¹tek
+			//! Metoda koï¿½czy dziaï¿½anie przetwarzania zadaï¿½ przez obsï¿½ugiwany wï¿½tek
 			void forceFinalize()
 			{
 				finalize();
@@ -187,13 +187,13 @@ namespace threadingUtils
 				}
 			}
 
-			//! Metoda czeka na zakoñæzenie w¹tku
+			//! Metoda czeka na zakoï¿½ï¿½zenie wï¿½tku
 			void join()
 			{
 				thread.join();
 			}
 
-			//! Metoda przerywa dzia³anie watku
+			//! Metoda przerywa dziaï¿½anie watku
 			void interrupt()
 			{
 				thread.interrupt();
@@ -204,22 +204,22 @@ namespace threadingUtils
 				return thread.interruptible();
 			}
 
-			//! \return Czy na w¹tek mo¿na czekaæ
+			//! \return Czy na wï¿½tek moï¿½na czekaï¿½
 			const bool joinable()
 			{
 				return thread.joinable();
 			}
 
-			//! \return Identyfikator w¹tku
+			//! \return Identyfikator wï¿½tku
 			const std::thread::id get_id() const
 			{
 				return thread.get_id();
 			}
 
 		private:
-			//! Wspó³dzielony stan przez który kontrolujemy w¹tek obs³uguj¹cy zlecone zadania
+			//! Wspï¿½dzielony stan przez ktï¿½ry kontrolujemy wï¿½tek obsï¿½ugujï¿½cy zlecone zadania
 			utils::shared_ptr<SharedState> sharedState;
-			//! W¹tek obs³uguj¹cy zlecone zadania
+			//! Wï¿½tek obsï¿½ugujï¿½cy zlecone zadania
 			InterruptibleThread thread;
 		};
 
@@ -248,7 +248,7 @@ namespace threadingUtils
 
 	public:
 
-		//! Konstruktor domyœlny
+		//! Konstruktor domyï¿½lny
 		InterruptibleWorkManager() : finalize_(false), forceFinalize_(false),
 			activeCounter(0) {};
 		//! Destruktor
@@ -257,11 +257,11 @@ namespace threadingUtils
 			join(true);
 		}
 
-		//! \tparam F Typ funkcji jak¹ chcemy wykonaæ
+		//! \tparam F Typ funkcji jakï¿½ chcemy wykonaï¿½
 		//! \tparam Args Argumenty funkcji
-		//! \param f Funkcja któr¹ chcemy wykonaæ
-		//! \param arguments Argumenty z jakimi chcemy wykonaæ funkcjê
-		//! \return Future pozwalaj¹cy czekaæ na rezultat zleconego zadania
+		//! \param f Funkcja ktï¿½rï¿½ chcemy wykonaï¿½
+		//! \param arguments Argumenty z jakimi chcemy wykonaï¿½ funkcjï¿½
+		//! \return Future pozwalajï¿½cy czekaï¿½ na rezultat zleconego zadania
 		template<typename F, class ...Args>
 		FutureType<typename std::result_of<F(Args...)>::type> submit(F&& f, Args&& ...arguments)
 		{
@@ -326,8 +326,8 @@ namespace threadingUtils
 			});
 		}
 
-		//! \param thread Dodawany w¹tek realizuj¹cy zadania
-		//! \return Identyfikator w¹tku
+		//! \param thread Dodawany wï¿½tek realizujï¿½cy zadania
+		//! \return Identyfikator wï¿½tku
 		const std::thread::id addWorkerThread(InterruptibleThread && thread)
 		{
 			if (finalize_ == true)
@@ -337,12 +337,13 @@ namespace threadingUtils
 
 			WorkExecutor workExecutor(this, std::move(thread));
 			const auto ret = workExecutor.get_id();
-			workExecutors.insert({ ret, std::move(workExecutor) });
+			auto pair = std::make_pair(ret, std::move(workExecutor) );
+			workExecutors.insert(std::move(pair));
 			++activeCounter;
 			return ret;
 		}
 
-		//! \param threadID Identyfikator usuwanego w¹teku realizuj¹cego zadania
+		//! \param threadID Identyfikator usuwanego wï¿½teku realizujï¿½cego zadania
 		void removeWorkerThread(const std::thread::id threadID)
 		{
 			auto it = workExecutors.find(threadID);
@@ -357,7 +358,7 @@ namespace threadingUtils
 			}
 		}
 
-		//! \return Iloœæ w¹tków realizuj¹cych zadania
+		//! \return Iloï¿½ï¿½ wï¿½tkï¿½w realizujï¿½cych zadania
 		const unsigned int workerThreadsCount() const
 		{
 			return workExecutors.size();
@@ -365,15 +366,15 @@ namespace threadingUtils
 
 		//! \tparam T Typ wyniku future
 		//! \tparam FuturePolicy Typ future (shared | future)
-		//! \param future Future na którego wykonanie czekamy realizuj¹c inne zadania
+		//! \param future Future na ktï¿½rego wykonanie czekamy realizujï¿½c inne zadania
 		template<typename Future>
 		void waitForOtherTask(Future & future)
 		{			
 			while (future.wait_for(std::chrono::seconds(0)) == std::future_status::timeout) { runPendingTask(); }			
 		}
 
-		//! Metoda czeka na zakoñczenie przetwarzanych zadañ
-		//! \param force Czy wymyszamy koniec obs³ugi zleconych zadañ
+		//! Metoda czeka na zakoï¿½czenie przetwarzanych zadaï¿½
+		//! \param force Czy wymyszamy koniec obsï¿½ugi zleconych zadaï¿½
 		void join(const bool force = false)
 		{
 			{
@@ -401,7 +402,7 @@ namespace threadingUtils
 			}
 		}
 
-		//! Metoda sygnalizuje koniec przetwarzania dla wszystkich w¹tków przetwarzaj¹cych
+		//! Metoda sygnalizuje koniec przetwarzania dla wszystkich wï¿½tkï¿½w przetwarzajï¿½cych
 		void forceFinalize()
 		{
 			for (auto & we : workExecutors){
@@ -409,7 +410,7 @@ namespace threadingUtils
 			}
 		}
 
-		//! Metoda pobieraj¹ca i przetwarzaj¹ca kolejne zadania z kolejki zadañ
+		//! Metoda pobierajï¿½ca i przetwarzajï¿½ca kolejne zadania z kolejki zadaï¿½
 		void runPendingTask()
 		{
 			Task task;
@@ -431,21 +432,21 @@ namespace threadingUtils
 		}
 
 	private:
-		//! Mapa identyfikatorów w¹tków i obiektó obs³uguj¹cych ich przetwarzanie
+		//! Mapa identyfikatorï¿½w wï¿½tkï¿½w i obiektï¿½ obsï¿½ugujï¿½cych ich przetwarzanie
 		WorkExecutorsMap workExecutors;
-		//! Iloœæ aktualnie przetwarzaj¹cych w¹tków
+		//! Iloï¿½ï¿½ aktualnie przetwarzajï¿½cych wï¿½tkï¿½w
 		std::atomic<size_type> activeCounter;
-		//! Kolejka obs³uguj¹ca zlecane zadania
+		//! Kolejka obsï¿½ugujï¿½ca zlecane zadania
 		WorkQueue workQueue;
-		//! Czy koñczymy dzia³anie managera zadañ - dodawanie nowych nie bêdzie mo¿liwe
+		//! Czy koï¿½czymy dziaï¿½anie managera zadaï¿½ - dodawanie nowych nie bï¿½dzie moï¿½liwe
 		volatile bool finalize_;
-		//! Czy koñczymy dzia³anie managera zadañ - dodawanie nowych nie bêdzie mo¿liwe
+		//! Czy koï¿½czymy dziaï¿½anie managera zadaï¿½ - dodawanie nowych nie bï¿½dzie moï¿½liwe
 		volatile bool forceFinalize_;
 		//! Zmienna warunkowa do czekania na zadanie
 		std::condition_variable taskCV;
-		//! Obiekt synchronizuj¹cy
+		//! Obiekt synchronizujï¿½cy
 		std::mutex taskMutex;
-		//! Info czy w¹tek jest workerem czy nie
+		//! Info czy wï¿½tek jest workerem czy nie
 		static thread_local bool isLocalThread;
 	};
 

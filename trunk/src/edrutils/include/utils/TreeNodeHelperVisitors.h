@@ -45,7 +45,7 @@ namespace utils
 	public:
 		//! \param filter Filtr dla węzłów
 		//! \param visitor Odwiedzający przefiltrowane węzły
-		VisitorFilter(Visitor & visitor, FilterType & filter = FilterType())
+		VisitorFilter(Visitor & visitor, FilterType  filter = FilterType())
 			: visitor(visitor), filter(filter){}
 		//! Destruktor
 		~VisitorFilter() {}

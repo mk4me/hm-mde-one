@@ -128,10 +128,11 @@ void FileSource::loadAsfAmc()
 		states->frames.push_back(sChange);
 	}
 
+	/*
 	auto sws = utils::make_shared<SkeletonWithStates>();
 	sws->skeleton = skeleton;
 	sws->states = states;
-	sws->nodesMapping = kinematic::LinearizedSkeleton::createCompleteMapping(*skeleton);;
+	sws->nodesMapping = kinematic::LinearizedSkeleton::createCompleteMapping(*skeleton);
 	auto object = core::Variant::create<SkeletonWithStates>();
 	object->set(sws);
 	
@@ -139,7 +140,7 @@ void FileSource::loadAsfAmc()
 	core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>(p1.filename().string().c_str(), p1.string().c_str(), QIcon());
 	core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(object, QString());
 	root->appendChild(item);
-	hierarchyTransaction->addRoot(root);
+	hierarchyTransaction->addRoot(root);*/
 }
 
 void FileSource::addChartStream()

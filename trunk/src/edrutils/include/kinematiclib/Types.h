@@ -18,9 +18,9 @@ namespace kinematic
 	};	
 
 	//! \tparam T Typ bazowy, wrapowany
-	//! \tparam Type Wartoœæ reprezentuj¹ca typ
+	//! \tparam Type Wartoï¿½ï¿½ reprezentujï¿½ca typ
 	template<typename T, int Type>
-	//! Klasa wrapuj¹ca dane ruchu (stan, zmianê) dodaj¹ca informacje o charakterze tych danych - lokalne|globalne
+	//! Klasa wrapujï¿½ca dane ruchu (stan, zmianï¿½) dodajï¿½ca informacje o charakterze tych danych - lokalne|globalne
 	class Data
 	{
 		static_assert(Type == Local || Type == Global, "Type must be Local or Global");
@@ -28,12 +28,18 @@ namespace kinematic
 	public:
 		//! Konstruktor domyslny
 		Data() {}
-		//! Konstruktor kopiuj¹cy
+		//! Konstruktor kopiujï¿½cy
 		//! \param data Kopiowane dane
 		Data(const Data & data) : data_(data.data_) {}
-		//! Konstruktor przenosz¹cy
+		//! Konstruktor przenoszï¿½cy
 		//! \param data Przenoszone dane
 		Data(Data && data) : data_(std::move(data.data_)) {}
+
+		Data& operator=(const Data& d)
+		{
+			data_ = d.data_;
+			return *this;;
+		}
 		//! Konstruktor
 		//! \param data Kopiowane dane
 		explicit Data(const T & data) : data_(data) {}

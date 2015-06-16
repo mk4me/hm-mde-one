@@ -10,6 +10,8 @@
 #include "corelib/IVisualizerManager.h"
 #include "corelib/PluginCommon.h"
 #include "utils/ObjectWrapper.h"
+#include <iomanip>
+#include <ctime>
 /*
 #include "osg/PositionAttitudeTransform"
 #include "osg/MatrixTransform"
@@ -1214,7 +1216,21 @@ std::string IMUCostumeWidget::recordingDir(const imuCostume::CostumeRawIO::Costu
 	const auto now_t = std::chrono::system_clock::to_time_t(now);
 	std::stringstream ss;
 
+#ifdef WIN32
 	ss << std::put_time(std::localtime(&now_t), "%Y%m%d_%H%M%S");
+#else
+	// put_time nie jest zaimplementowany w gcc 4.7
+	auto tm = *std::localtime(&now_t);
+	ss << std::setfill('0');
+	// tm_year to lata od 1900
+	ss << (1900 + tm.tm_year);
+	// tm_mon jest z przedzialu 0,11
+	ss << std::setw(2) <<(tm.tm_mon + 1);
+	ss << std::setw(2) << tm.tm_mday << "_";
+	ss << std::setw(2) << tm.tm_hour;
+	ss << std::setw(2) << tm.tm_min;
+	ss << std::setw(2) << tm.tm_sec << "\n";
+#endif
 	ss << "_" << id.ip << "_" << id.port;
 
 	return ss.str();

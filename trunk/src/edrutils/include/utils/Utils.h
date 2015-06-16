@@ -20,6 +20,7 @@
 #include <cstdint>
 #include <utility>
 #include <algorithm>
+#include <csetjmp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
@@ -126,7 +127,7 @@ struct ArrayTraits
 		template <typename T>
 		//! \param array Tablica
 		//! \return Wypakowany element
-		static inline decltype(std::declval<const T>()[0]) extract(const T & array)
+		inline decltype(std::declval<const T>()[0]) extract(const T & array)
 		{
 			return array[idx];
 		}
@@ -136,7 +137,7 @@ struct ArrayTraits
 		template <typename T, std::size_t Size>
 		//! \param array Tablica
 		//! \return Wypakowany element
-		static inline T extract(const T(&array)[Size])
+		inline T extract(const T(&array)[Size])
 		{			
 			return array[idx];
 		}

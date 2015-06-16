@@ -11,6 +11,7 @@
 #include <kinematicUtils/Types.h>
 #include <osg/Vec3d>
 #include <osg/Quat>
+#include <utils/Debug.h>
 
 namespace kinematicUtils
 {

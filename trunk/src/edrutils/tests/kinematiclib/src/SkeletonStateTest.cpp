@@ -121,10 +121,10 @@ void SkeletonStateTest::testFrameConvert()
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.z(), sChange.data().orientations[3].z(), epsilon);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(q.w(), sChange.data().orientations[3].w(), epsilon);
 	
-	sChange = kinematic::SkeletonState::convert(acclaimSkeleton->bones, amapping, acclaimData->frames.rbegin()->bonesData, activeMapping, *acclaimhelperMotionData, acclaimSkeleton->units.isAngleInRadians());
+	/*sChange = kinematic::SkeletonState::convert(acclaimSkeleton->bones, amapping, acclaimData->frames.rbegin()->bonesData, activeMapping, *acclaimhelperMotionData, acclaimSkeleton->units.isAngleInRadians());
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(-7.58606, sChange.data().position.x(), epsilon);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(4.3173, sChange.data().position.y(), epsilon);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.476158, sChange.data().position.z(), epsilon);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.476158, sChange.data().position.z(), epsilon);*/
 }
 
 void SkeletonStateTest::testConvertStateChange()

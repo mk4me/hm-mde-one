@@ -1,10 +1,10 @@
 /********************************************************************
-	created:  2015/05/06	15:04:24
-	filename: LinearizedTree.h
-	author:	  Mateusz Janiak
+ created:  2015/05/06	15:04:24
+ filename: LinearizedTree.h
+ author:	  Mateusz Janiak
 
-	purpose:
-*********************************************************************/
+ purpose:
+ *********************************************************************/
 #ifndef __HEADER_GUARD_UTILS__LINEARIZEDTREE_H__
 #define __HEADER_GUARD_UTILS__LINEARIZEDTREE_H__
 
@@ -14,320 +14,346 @@
 #include <utils/TreeNode.h>
 #include <utils/Tree.h>
 
-namespace utils
-{
-	struct LinearizedTree
-	{
-		//! Typ indeksu wêz³a
-		using NodeIDX = TreeNode::SizeType;
+namespace utils {
+struct LinearizedTree {
+	//! Typ indeksu wï¿½zï¿½a
+	using NodeIDX = TreeNode::SizeType;
 
-		template<typename T>
-		//! Typ bimapy indeksów wêz³ów do zadanej wartosci
-		using Mapping = boost::bimap < NodeIDX, T > ;
+	template<typename T>
+	//! Typ bimapy indeksï¿½w wï¿½zï¿½ï¿½w do zadanej wartosci
+	using Mapping = boost::bimap < NodeIDX, T >;
 
-		template<typename T>
-		//! Typ porzadkujacy po indeksach
-		using Order = std::vector < T > ;
+	template<typename T>
+	//! Typ porzadkujacy po indeksach
+	using Order = std::vector < T >;
 
-		template<typename T>
-		//! \param order Porz¹dek
-		//! \return Mapowanie wynikajace z porzadku
-		static Mapping<T> convert(const Order<T> & order)
-		{
-			Mapping<T> ret;
-			for (Order<T>::size_type i = 0; i < order.size(); ++i)
-			{
-				ret.insert(ret.end(), { i, order[i] });
-			}
-			return ret;
+	template<typename T>
+	//! \param order Porzï¿½dek
+	//! \return Mapowanie wynikajace z porzadku
+	static Mapping<T> convert(const Order<T> & order) {
+		Mapping<T> ret;
+
+		for (typename Order<T>::size_type i = 0; i < order.size(); ++i) {
+			ret.insert(ret.end(), { i, order[i] });
 		}
-	};
+		return ret;
+	}
+};
 
-	template<typename TreeVisitOrder>
-	struct LinearizedTreeT : public LinearizedTree
-	{
-		using VisitOrder = TreeVisitOrder;
+template<typename TreeVisitOrder>
+struct LinearizedTreeT: public LinearizedTree {
+	using VisitOrder = TreeVisitOrder;
 
-		//! \tparam NPtr Typ wskaxnika wêz³a drzewa z którego zaczynamy
-		//! \tparam Visitor Typ odwiedzaj¹cego
-		template<typename TreeType, typename Visitor>
-		//! \param node Wêze³ od którego zaczynamy odwiedzanie struktury
-		//! \param Visitor Obiekt odwiedzaj¹cy wêz³y
-		static void visit(const TreeType & tree, Visitor visitor = Visitor())
-		{
-			VisitOrder::visit(tree, ConsumingVisitor<Visitor>(visitor));
-		}
+	//! \tparam NPtr Typ wskaxnika wï¿½zï¿½a drzewa z ktï¿½rego zaczynamy
+	//! \tparam Visitor Typ odwiedzajï¿½cego
+	template<typename TreeType, typename Visitor>
+	//! \param node Wï¿½zeï¿½ od ktï¿½rego zaczynamy odwiedzanie struktury
+	//! \param Visitor Obiekt odwiedzajï¿½cy wï¿½zï¿½y
+	static void visit(const TreeType & tree, Visitor visitor = Visitor()) {
+		ConsumingVisitor<Visitor> cv(visitor);
+		VisitOrder::visit(tree, cv);
+	}
 
-		//! \tparam NPtr Typ wskaxnika wêz³a drzewa z którego zaczynamy
-		//! \tparam Visitor Typ odwiedzaj¹cego
-		template<typename TreeType, typename Visitor>
-		//! \param node Wêze³ od którego zaczynamy odwiedzanie struktury
-		//! \param Visitor Obiekt odwiedzaj¹cy wêz³y
-		static void visit(TreeType & tree, Visitor visitor = Visitor())
-		{
-			VisitOrder::visit(tree, ConsumingVisitor<Visitor>(visitor));
-		}
+	//! \tparam NPtr Typ wskaxnika wï¿½zï¿½a drzewa z ktï¿½rego zaczynamy
+	//! \tparam Visitor Typ odwiedzajï¿½cego
+	template<typename TreeType, typename Visitor>
+	//! \param node Wï¿½zeï¿½ od ktï¿½rego zaczynamy odwiedzanie struktury
+	//! \param Visitor Obiekt odwiedzajï¿½cy wï¿½zï¿½y
+	static void visit(TreeType & tree, Visitor visitor = Visitor()) {
+		ConsumingVisitor<Visitor> cv(visitor);
+		VisitOrder::visit(tree, cv);
+	}
 
-		//! \tparam NPtr Typ wskaxnika wêz³a drzewa z którego zaczynamy
-		//! \tparam Visitor Typ odwiedzaj¹cego
-		template<typename TreeType, typename Visitor>
-		//! \param node Wêze³ od którego zaczynamy odwiedzanie struktury
-		//! \param Visitor Obiekt odwiedzaj¹cy wêz³y
-		static void globalIndexedVisit(const TreeType & tree, Visitor visitor = Visitor())
-		{
-			visit(tree, IndexingVisitor<Visitor>(visitor));
-		}
+	//! \tparam NPtr Typ wskaxnika wï¿½zï¿½a drzewa z ktï¿½rego zaczynamy
+	//! \tparam Visitor Typ odwiedzajï¿½cego
+	template<typename TreeType, typename Visitor>
+	//! \param node Wï¿½zeï¿½ od ktï¿½rego zaczynamy odwiedzanie struktury
+	//! \param Visitor Obiekt odwiedzajï¿½cy wï¿½zï¿½y
+	static void globalIndexedVisit(const TreeType & tree, Visitor visitor =
+			Visitor()) {
+		visit(tree, IndexingVisitor<Visitor>(visitor));
+	}
 
-		//! \tparam NPtr Typ wskaxnika wêz³a drzewa z którego zaczynamy
-		//! \tparam Visitor Typ odwiedzaj¹cego
-		template<typename TreeType, typename Visitor>
-		//! \param node Wêze³ od którego zaczynamy odwiedzanie struktury
-		//! \param Visitor Obiekt odwiedzaj¹cy wêz³y
-		static void globalIndexedVisit(TreeType & tree, Visitor visitor = Visitor())
-		{
-			visit(tree, IndexingVisitor<Visitor>(visitor));
-		}
+	//! \tparam NPtr Typ wskaxnika wï¿½zï¿½a drzewa z ktï¿½rego zaczynamy
+	//! \tparam Visitor Typ odwiedzajï¿½cego
+	template<typename TreeType, typename Visitor>
+	//! \param node Wï¿½zeï¿½ od ktï¿½rego zaczynamy odwiedzanie struktury
+	//! \param Visitor Obiekt odwiedzajï¿½cy wï¿½zï¿½y
+	static void globalIndexedVisit(TreeType & tree, Visitor visitor =
+			Visitor()) {
+		visit(tree, IndexingVisitor<Visitor>(visitor));
+	}
 
-		//! \tparam NPtr Typ wskaxnika wêz³a drzewa z którego zaczynamy
-		//! \tparam Visitor Typ odwiedzaj¹cego
-		template<typename TreeType, typename Visitor>
-		//! \param node Wêze³ od którego zaczynamy odwiedzanie struktury
-		//! \param Visitor Obiekt odwiedzaj¹cy wêz³y nie liœcie
-		static void visitNonLeaf(const TreeType & tree, Visitor visitor = Visitor())
-		{
-			visit(tree, NonLeafVisitor<Visitor>(visitor));
-		}
+	//! \tparam NPtr Typ wskaxnika wï¿½zï¿½a drzewa z ktï¿½rego zaczynamy
+	//! \tparam Visitor Typ odwiedzajï¿½cego
+	template<typename TreeType, typename Visitor>
+	//! \param node Wï¿½zeï¿½ od ktï¿½rego zaczynamy odwiedzanie struktury
+	//! \param Visitor Obiekt odwiedzajï¿½cy wï¿½zï¿½y nie liï¿½cie
+	static void visitNonLeaf(const TreeType & tree, Visitor visitor =
+			Visitor()) {
+		NonLeafVisitor<Visitor> nlv(visitor);
+		visit(tree, nlv);
+	}
 
-		//! \tparam NPtr Typ wskaxnika wêz³a drzewa z którego zaczynamy
-		//! \tparam Visitor Typ odwiedzaj¹cego
-		template<typename TreeType, typename Visitor>
-		//! \param node Wêze³ od którego zaczynamy odwiedzanie struktury
-		//! \param Visitor Obiekt odwiedzaj¹cy wêz³y nie liœcie
-		static void visitNonLeaf(TreeType & tree, Visitor visitor = Visitor())
-		{
-			visit(tree, NonLeafVisitor<Visitor>(visitor));
-		}
+	//! \tparam NPtr Typ wskaxnika wï¿½zï¿½a drzewa z ktï¿½rego zaczynamy
+	//! \tparam Visitor Typ odwiedzajï¿½cego
+	template<typename TreeType, typename Visitor>
+	//! \param node Wï¿½zeï¿½ od ktï¿½rego zaczynamy odwiedzanie struktury
+	//! \param Visitor Obiekt odwiedzajï¿½cy wï¿½zï¿½y nie liï¿½cie
+	static void visitNonLeaf(TreeType & tree, Visitor visitor = Visitor()) {
+		visit(tree, NonLeafVisitor<Visitor>(visitor));
+	}
 
-		//! \tparam NPtr Typ wskaxnika wêz³a drzewa z którego zaczynamy
-		//! \tparam Visitor Typ odwiedzaj¹cego
-		template<typename TreeType, typename Visitor>
-		//! \param node Wêze³ od którego zaczynamy odwiedzanie struktury
-		//! \param Visitor Obiekt odwiedzaj¹cy wêz³y nie liœcie
-		static void localIndexedVisitNonLeaf(const TreeType & tree, Visitor visitor = Visitor())
-		{
-			visit(tree, NonLeafVisitor<IndexingVisitor<Visitor >>(IndexingVisitor<Visitor>(visitor)));
-		}
+	//! \tparam NPtr Typ wskaxnika wï¿½zï¿½a drzewa z ktï¿½rego zaczynamy
+	//! \tparam Visitor Typ odwiedzajï¿½cego
+	template<typename TreeType, typename Visitor>
+	//! \param node Wï¿½zeï¿½ od ktï¿½rego zaczynamy odwiedzanie struktury
+	//! \param Visitor Obiekt odwiedzajï¿½cy wï¿½zï¿½y nie liï¿½cie
+	static void localIndexedVisitNonLeaf(const TreeType & tree,
+			Visitor visitor = Visitor()) {
+		visit(tree,
+				NonLeafVisitor<IndexingVisitor<Visitor>>(
+						IndexingVisitor<Visitor>(visitor)));
+	}
 
-		//! \tparam NPtr Typ wskaxnika wêz³a drzewa z którego zaczynamy
-		//! \tparam Visitor Typ odwiedzaj¹cego
-		template<typename TreeType, typename Visitor>
-		//! \param node Wêze³ od którego zaczynamy odwiedzanie struktury
-		//! \param Visitor Obiekt odwiedzaj¹cy wêz³y nie liœcie
-		static void localIndexedVisitNonLeaf(TreeType & tree, Visitor visitor = Visitor())
-		{
-			visit(tree, NonLeafVisitor<IndexingVisitor<Visitor >>(IndexingVisitor<Visitor>(visitor)));
-		}
+	//! \tparam NPtr Typ wskaxnika wï¿½zï¿½a drzewa z ktï¿½rego zaczynamy
 
-		//! \tparam NPtr Typ wskaxnika wêz³a drzewa z którego zaczynamy
-		//! \tparam Visitor Typ odwiedzaj¹cego
-		template<typename TreeType, typename Visitor>
-		//! \param node Wêze³ od którego zaczynamy odwiedzanie struktury
-		//! \param Visitor Obiekt odwiedzaj¹cy wêz³y nie liœcie
-		static void globalIndexedVisitNonLeaf(const TreeType & tree, Visitor visitor = Visitor())
-		{
-			visit(tree, IndexingVisitor<NonLeafVisitor<Visitor >>(NonLeafVisitor<Visitor>(visitor)));
-		}
+	//! \tparam NPtr Typ wskaxnika wï¿½zï¿½a drzewa z ktï¿½rego zaczynamy
+	//! \tparam Visitor Typ odwiedzajï¿½cego
+	template<typename TreeType, typename Visitor>
+	//! \param node Wï¿½zeï¿½ od ktï¿½rego zaczynamy odwiedzanie struktury
+	//! \param Visitor Obiekt odwiedzajï¿½cy wï¿½zï¿½y nie liï¿½cie
+	static void localIndexedVisitNonLeaf(TreeType & tree, Visitor visitor =
+			Visitor()) {
+		IndexingVisitor<Visitor> iv(visitor);
+		NonLeafVisitor<IndexingVisitor<Visitor>> nlv(iv);
+		visit(tree, nlv);
+	}
 
-		//! \tparam NPtr Typ wskaxnika wêz³a drzewa z którego zaczynamy
-		//! \tparam Visitor Typ odwiedzaj¹cego
-		template<typename TreeType, typename Visitor>
-		//! \param node Wêze³ od którego zaczynamy odwiedzanie struktury
-		//! \param Visitor Obiekt odwiedzaj¹cy wêz³y nie liœcie
-		static void globalIndexedVisitNonLeaf(TreeType & tree, Visitor visitor = Visitor())
-		{
-			visit(tree, IndexingVisitor<NonLeafVisitor<Visitor >>(NonLeafVisitor<Visitor>(visitor)));
-		}
+	//! \tparam NPtr Typ wskaxnika wï¿½zï¿½a drzewa z ktï¿½rego zaczynamy
+	//! \tparam Visitor Typ odwiedzajï¿½cego
+	template<typename TreeType, typename Visitor>
+	//! \param node Wï¿½zeï¿½ od ktï¿½rego zaczynamy odwiedzanie struktury
+	//! \param Visitor Obiekt odwiedzajï¿½cy wï¿½zï¿½y nie liï¿½cie
+	static void globalIndexedVisitNonLeaf(const TreeType & tree,
+			Visitor visitor = Visitor()) {
+		visit(tree,
+				IndexingVisitor<NonLeafVisitor<Visitor>>(
+						NonLeafVisitor<Visitor>(visitor)));
+	}
 
-		//! \tparam TreeType Typ drzewa
-		template<typename TreeType>
-		//! \param skeleton Szkielet dla którego generujemy mapowanie wszystkich jointów
-		//! \return Mapowanie jointów szkieletu
-		static Order<decltype(tree.root())> createCompleteOrder(const TreeType & tree)
-		{
-			TreeNode::LinearizeVisitor<decltype(tree.root()), TreeNode::Forward> lv;
+	//! \tparam NPtr Typ wskaxnika wï¿½zï¿½a drzewa z ktï¿½rego zaczynamy
+	//! \tparam Visitor Typ odwiedzajï¿½cego
+	template<typename TreeType, typename Visitor>
+	//! \param node Wï¿½zeï¿½ od ktï¿½rego zaczynamy odwiedzanie struktury
+	//! \param Visitor Obiekt odwiedzajï¿½cy wï¿½zï¿½y nie liï¿½cie
+	static void globalIndexedVisitNonLeaf(TreeType & tree, Visitor visitor =
+			Visitor()) {
+		visit(tree,
+				IndexingVisitor<NonLeafVisitor<Visitor>>(
+						NonLeafVisitor<Visitor>(visitor)));
+	}
 
-			visit(tree, lv);
+	//! \tparam TreeType Typ drzewa
+	template<typename TreeType>
+	//! \param skeleton Szkielet dla ktï¿½rego generujemy mapowanie wszystkich jointï¿½w
+	//! \return Mapowanie jointï¿½w szkieletu
+	static auto createCompleteOrder(
+			const TreeType & tree) -> Order<decltype(tree.root())> {
+		TreeNode::LinearizeVisitor<decltype(tree.root()), TreeNode::Forward> lv;
 
-			return Order<decltype(tree.root())>(lv.linearizedNode().begin(), lv.linearizedNode().end());
-		}
+		visit(tree, lv);
 
-		//! \tparam TreeType Typ drzewa
-		template<typename TreeType, typename KeyExtractor>
-		//! \param skeleton Szkielet dla którego generujemy mapowanie wszystkich jointów
-		//! \return Mapowanie jointów szkieletu
-		static Order<decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> createCompleteOrderKey(const TreeType & tree, KeyExtractor keyExtractor = KeyExtractor())
-		{
-			Order<decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> ret;
+		return Order<decltype(tree.root())>(lv.linearizedNode().begin(),
+				lv.linearizedNode().end());
+	}
 
-			visit(tree, [&ret, &keyExtractor](decltype(tree.root()) node)
-			{
-				ret.push_back(keyExtractor(node->value()));
-			});
+	//! \tparam TreeType Typ drzewa
+	template<typename TreeType, typename KeyExtractor>
+	//! \param skeleton Szkielet dla ktï¿½rego generujemy mapowanie wszystkich jointï¿½w
+	//! \return Mapowanie jointï¿½w szkieletu
+	static Order<
+			decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> createCompleteOrderKey(
+			const TreeType & tree, KeyExtractor keyExtractor = KeyExtractor()) {
+		Order<
+				decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> ret;
 
-			return ret;
-		}
+		auto vis = [&ret, &keyExtractor](decltype(tree.root()) node)
+				{
+					ret.push_back(keyExtractor(node->value()));
+				};
+		visit(tree, vis);
 
-		//! \tparam TreeType Typ drzewa
-		template<typename TreeType>
-		//! \param skeleton Szkielet dla którego generujemy mapowanie wszystkich jointów
-		//! \return Mapowanie jointów szkieletu
-		static Order<decltype(tree.root())> createCompleteOrder(TreeType & tree)
-		{
-			TreeNode::LinearizeVisitor<decltype(tree.root()), TreeNode::Forward> lv;
+		return ret;
+	}
 
-			visit(tree, lv);
+	//! \tparam TreeType Typ drzewa
+	template<typename TreeType>
+	//! \param skeleton Szkielet dla ktï¿½rego generujemy mapowanie wszystkich jointï¿½w
+	//! \return Mapowanie jointï¿½w szkieletu
+	static auto createCompleteOrder(
+			TreeType & tree) -> Order<decltype(tree.root())> {
+		TreeNode::LinearizeVisitor<decltype(tree.root()), TreeNode::Forward> lv;
 
-			return Order<decltype(tree.root())>(lv.linearizedNode().begin(), lv.linearizedNode().end());
-		}
+		visit(tree, lv);
 
-		//! \tparam TreeType Typ drzewa
-		template<typename TreeType>
-		//! \param skeleton Szkielet dla którego generujemy mapowanie wszystkich jointów
-		//! \return Mapowanie jointów szkieletu
-		static Mapping<decltype(tree.root())> createCompleteMapping(const TreeType & tree)
-		{
-			Mapping<decltype(tree.root())> ret;
+		return Order<decltype(tree.root())>(lv.linearizedNode().begin(),
+				lv.linearizedNode().end());
+	}
 
-			globalIndexedVisit(tree, [&ret](decltype(tree.root()) node, const LinearizedTree::NodeIDX idx)
-			{
-				ret.left.insert(ret.left.end(), { idx, node });
-			});
+	//! \tparam TreeType Typ drzewa
+	template<typename TreeType>
+	//! \param skeleton Szkielet dla ktï¿½rego generujemy mapowanie wszystkich jointï¿½w
+	//! \return Mapowanie jointï¿½w szkieletu
+	static auto createCompleteMapping(
+			const TreeType & tree) -> Mapping<decltype(tree.root())> {
+		Mapping<decltype(tree.root())> ret;
 
-			return ret;
-		}
+		globalIndexedVisit(tree,
+				[&ret](decltype(tree.root()) node, const LinearizedTree::NodeIDX idx)
+				{
+					ret.left.insert(ret.left.end(), {idx, node});
+				});
 
-		//! \tparam TreeType Typ drzewa
-		template<typename TreeType, typename KeyExtractor>
-		//! \param skeleton Szkielet dla którego generujemy mapowanie wszystkich jointów
-		//! \return Mapowanie jointów szkieletu
-		static Mapping<decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> createCompleteMappingKey(const TreeType & tree, KeyExtractor keyExtractor = KeyExtractor())
-		{
-			Mapping<decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> ret;
+		return ret;
+	}
 
-			globalIndexedVisit(tree, [&ret, &keyExtractor](decltype(tree.root()) node, const LinearizedTree::NodeIDX idx)
-			{
-				ret.left.insert(ret.left.end(), { idx, keyExtractor(node->value()) });
-			});
+	//! \tparam TreeType Typ drzewa
+	template<typename TreeType, typename KeyExtractor>
+	//! \param skeleton Szkielet dla ktï¿½rego generujemy mapowanie wszystkich jointï¿½w
+	//! \return Mapowanie jointï¿½w szkieletu
+	static Mapping<
+			decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> createCompleteMappingKey(
+			const TreeType & tree, KeyExtractor keyExtractor = KeyExtractor()) {
+		Mapping<
+				decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> ret;
 
-			return ret;
-		}
+		globalIndexedVisit(tree,
+				[&ret, &keyExtractor](decltype(tree.root()) node, const LinearizedTree::NodeIDX idx)
+				{
+					ret.left.insert(ret.left.end(), {idx, keyExtractor(node->value())});
+				});
 
-		//! \tparam TreeType Typ drzewa
-		template<typename TreeType>
-		//! \param skeleton Szkielet dla którego generujemy mapowanie wszystkich jointów
-		//! \return Mapowanie jointów szkieletu
-		static Mapping<decltype(tree.root())> createCompleteMapping(TreeType & tree)
-		{
-			Mapping<decltype(tree.root())> ret;
+		return ret;
+	}
 
-			globalIndexedVisit(tree, [&ret](decltype(tree.root()) node, const LinearizedTree::NodeIDX idx)
-			{
-				ret.left.insert(ret.left.end(), { idx, node });
-			});
+	//! \tparam TreeType Typ drzewa
+	template<typename TreeType>
+	//! \param skeleton Szkielet dla ktï¿½rego generujemy mapowanie wszystkich jointï¿½w
+	//! \return Mapowanie jointï¿½w szkieletu
+	static auto createCompleteMapping(
+			TreeType & tree) -> Mapping<decltype(tree.root())> {
+		Mapping<decltype(tree.root())> ret;
 
-			return ret;
-		}
+		globalIndexedVisit(tree,
+				[&ret](decltype(tree.root()) node, const LinearizedTree::NodeIDX idx)
+				{
+					ret.left.insert(ret.left.end(), {idx, node});
+				});
 
-		//! \tparam TreeType Typ drzewa
-		template<typename TreeType>
-		//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (maj¹cych dzieci)
-		//! \return Mapowanie aktywnych jointów szkieletu
-		static Order<decltype(tree.root())> createNonLeafOrder(const TreeType & tree)
-		{
-			TreeNode::LinearizeVisitor<decltype(tree.root()), TreeNode::Forward> lv;
+		return ret;
+	}
 
-			visitNonLeaf(tree, lv);
+	//! \tparam TreeType Typ drzewa
+	template<typename TreeType>
+	//! \param skeleton Szkielet dla ktï¿½rego generujemy mapowanie aktywnych jointï¿½w (majï¿½cych dzieci)
+	//! \return Mapowanie aktywnych jointï¿½w szkieletu
+	static auto createNonLeafOrder(
+			const TreeType & tree) -> Order<decltype(tree.root())> {
+		TreeNode::LinearizeVisitor<decltype(tree.root()), TreeNode::Forward> lv;
 
-			return Order<decltype(tree.root())>(lv.linearizedNode().begin(), lv.linearizedNode().end());
-		}
+		visitNonLeaf(tree, lv);
 
-		//! \tparam TreeType Typ drzewa
-		template<typename TreeType, typename KeyExtractor>
-		//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (maj¹cych dzieci)
-		//! \return Mapowanie aktywnych jointów szkieletu
-		static Order<decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> createNonLeafOrderKey(const TreeType & tree, KeyExtractor keyExtractor = KeyExtractor())
-		{
-			Order<decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> ret;
+		return Order<decltype(tree.root())>(lv.linearizedNode().begin(),
+				lv.linearizedNode().end());
+	}
 
-			visitNonLeaf(tree, [&ret, &keyExtractor](decltype(tree.root()) node)
-			{
-				ret.push_back(keyExtractor(node->value()));
-			});
+	//! \tparam TreeType Typ drzewa
+	template<typename TreeType, typename KeyExtractor>
+	//! \param skeleton Szkielet dla ktï¿½rego generujemy mapowanie aktywnych jointï¿½w (majï¿½cych dzieci)
+	//! \return Mapowanie aktywnych jointï¿½w szkieletu
+	static Order<
+			decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> createNonLeafOrderKey(
+			const TreeType & tree, KeyExtractor keyExtractor = KeyExtractor()) {
+		Order<
+				decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> ret;
 
-			return ret;
-		}
+		auto vis = [&ret, &keyExtractor](decltype(tree.root()) node)
+				{
+					ret.push_back(keyExtractor(node->value()));
+				};
+		visitNonLeaf(tree, vis);
 
-		//! \tparam TreeType Typ drzewa
-		template<typename TreeType>
-		//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (maj¹cych dzieci)
-		//! \return Mapowanie aktywnych jointów szkieletu
-		static Order<decltype(tree.root())> createNonLeafOrder(TreeType & tree)
-		{
-			TreeNode::LinearizeVisitor<decltype(tree.root()), TreeNode::Forward> lv;
+		return ret;
+	}
 
-			visitNonLeaf(tree, lv);
+	//! \tparam TreeType Typ drzewa
+	template<typename TreeType>
+	//! \param skeleton Szkielet dla ktï¿½rego generujemy mapowanie aktywnych jointï¿½w (majï¿½cych dzieci)
+	//! \return Mapowanie aktywnych jointï¿½w szkieletu
+	static auto createNonLeafOrder(
+			TreeType & tree) -> Order<decltype(tree.root())> {
+		TreeNode::LinearizeVisitor<decltype(tree.root()), TreeNode::Forward> lv;
 
-			return Order<decltype(tree.root())>(lv.linearizedNode().begin(), lv.linearizedNode().end());
-		}
+		visitNonLeaf(tree, lv);
 
-		//! \tparam TreeType Typ drzewa
-		template<typename TreeType>
-		//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (maj¹cych dzieci)
-		//! \return Mapowanie aktywnych jointów szkieletu
-		static Mapping<decltype(tree.root())> createNonLeafMapping(const TreeType & tree)
-		{
-			Mapping<decltype(tree.root())> ret;
+		return Order<decltype(tree.root())>(lv.linearizedNode().begin(),
+				lv.linearizedNode().end());
+	}
 
-			globalIndexedVisitNonLeaf(tree, [&ret](decltype(tree.root()) node, const LinearizedTree::NodeIDX idx)
-			{
-				ret.left.insert(ret.left.end(), { idx, node });
-			});
+	//! \tparam TreeType Typ drzewa
+	template<typename TreeType>
+	//! \param skeleton Szkielet dla ktï¿½rego generujemy mapowanie aktywnych jointï¿½w (majï¿½cych dzieci)
+	//! \return Mapowanie aktywnych jointï¿½w szkieletu
+	static auto createNonLeafMapping(
+			const TreeType & tree) -> Order<decltype(tree.root())> {
+		Mapping<decltype(tree.root())> ret;
 
-			return ret;
-		}
+		globalIndexedVisitNonLeaf(tree,
+				[&ret](decltype(tree.root()) node, const LinearizedTree::NodeIDX idx)
+				{
+					ret.left.insert(ret.left.end(), {idx, node});
+				});
 
-		//! \tparam TreeType Typ drzewa
-		template<typename TreeType, typename KeyExtractor>
-		//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (maj¹cych dzieci)
-		//! \return Mapowanie aktywnych jointów szkieletu
-		static Mapping<decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> createNonLeafMappingKey(const TreeType & tree, KeyExtractor keyExtractor = KeyExtractor())
-		{
-			Mapping<decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> ret;
+		return ret;
+	}
 
-			globalIndexedVisitNonLeaf(tree,[&ret, &keyExtractor](decltype(tree.root()) node, const LinearizedTree::NodeIDX idx)
-			{
-				ret.left.insert(ret.left.end(), { idx, keyExtractor(node->value()) });
-			});
+	//! \tparam TreeType Typ drzewa
+	template<typename TreeType, typename KeyExtractor>
+	//! \param skeleton Szkielet dla ktï¿½rego generujemy mapowanie aktywnych jointï¿½w (majï¿½cych dzieci)
+	//! \return Mapowanie aktywnych jointï¿½w szkieletu
+	static Mapping<
+			decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> createNonLeafMappingKey(
+			const TreeType & tree, KeyExtractor keyExtractor = KeyExtractor()) {
+		Mapping<
+				decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))> ret;
 
-			return ret;
-		}
+		globalIndexedVisitNonLeaf(tree,
+				[&ret, &keyExtractor](decltype(tree.root()) node, const LinearizedTree::NodeIDX idx)
+				{
+					ret.left.insert(ret.left.end(), {idx, keyExtractor(node->value())});
+				});
 
-		//! \tparam TreeType Typ drzewa
-		template<typename TreeType>
-		//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (maj¹cych dzieci)
-		//! \return Mapowanie aktywnych jointów szkieletu
-		static Mapping<decltype(tree.root())> createNonLeafMapping(TreeType & tree)
-		{
-			Mapping<decltype(tree.root())> ret;
+		return ret;
+	}
 
-			globalIndexedVisitNonLeaf(tree, [&ret](decltype(tree.root()) node, const LinearizedTree::NodeIDX idx)
-			{
-				ret.left.insert(ret.left.end(), { idx, node });
-			});
+	//! \tparam TreeType Typ drzewa
+	template<typename TreeType>
+	//! \param skeleton Szkielet dla ktï¿½rego generujemy mapowanie aktywnych jointï¿½w (majï¿½cych dzieci)
+	//! \return Mapowanie aktywnych jointï¿½w szkieletu
+	static auto createNonLeafMapping(
+			TreeType & tree) -> Mapping<decltype(tree.root())> {
+		Mapping<decltype(tree.root())> ret;
 
-			return ret;
-		}
-	};
+		globalIndexedVisitNonLeaf(tree,
+				[&ret](decltype(tree.root()) node, const LinearizedTree::NodeIDX idx)
+				{
+					ret.left.insert(ret.left.end(), {idx, node});
+				});
+
+		return ret;
+	}
+};
 }
 
 #endif	// __HEADER_GUARD_UTILS__LINEARIZEDTREE_H__

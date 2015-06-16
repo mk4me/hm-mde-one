@@ -429,15 +429,15 @@ const bool verify(const Skeleton & skeleton)
 	}
 
 	std::set<std::string> uniqueNames;
+	auto fun = [&uniqueNames](Skeleton::JointConstPtr joint)
+		{
+			if (joint == nullptr){
+				return false;
+			}
 
-	return utils::TreeNode::PreOrderWhileVisitPolicy::visitWhile(skeleton.root(), [&uniqueNames](Skeleton::JointConstPtr joint)
-	{
-		if (joint == nullptr){
-			return false;
-		}
-
-		return uniqueNames.insert(joint->value().name()).second;
-	});
+			return uniqueNames.insert(joint->value().name()).second;
+		};
+	return utils::TreeNode::PreOrderWhileVisitPolicy::visitWhile(skeleton.root(), fun);
 }
 
 void createJoint(Skeleton::JointPtr parentJoint, TopologyNodeConstPtr topologyJoint)

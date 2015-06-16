@@ -73,8 +73,8 @@ namespace kinematic
 			std::map<LinearizedSkeleton::NodeIDX, osg::Quat> orientations;
 		};
 
-		using RigidPartialStateLocal = LocalData < RigidPartialState >;
-		using RigidPartialStateGlobal = GlobalData < RigidPartialState >;
+		typedef LocalData < RigidPartialState > RigidPartialStateLocal ;
+		typedef GlobalData < RigidPartialState > RigidPartialStateGlobal;
 
 		//! Stan jointa ciała nie sztywnego
 		struct NonRigidJointState

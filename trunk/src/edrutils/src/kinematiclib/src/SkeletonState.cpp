@@ -648,10 +648,11 @@ SkeletonState::RigidCompleteStateGlobal SkeletonState::globalRigidState(const Sk
 
 	if (skeleton.root() != nullptr){
 		ret.data().position = skeleton.root()->value().globalPosition();
-		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, [&ret](Skeleton::JointConstPtr joint)
-		{
-			ret.data().orientations.push_back(joint->value().globalOrientation());
-		});
+		auto filter = [&ret](Skeleton::JointConstPtr joint)
+				{
+					ret.data().orientations.push_back(joint->value().globalOrientation());
+				};
+		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, filter);
 	}
 
 	return ret;
@@ -663,10 +664,11 @@ SkeletonState::RigidCompleteStateLocal SkeletonState::localRigidState(const Skel
 
 	if (skeleton.root() != nullptr){
 		ret.data().position = skeleton.root()->value().localPosition();
-		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, [&ret](Skeleton::JointConstPtr joint)
-		{
-			ret.data().orientations.push_back(joint->value().localOrientation());
-		});
+		auto filter = [&ret](Skeleton::JointConstPtr joint)
+				{
+					ret.data().orientations.push_back(joint->value().localOrientation());
+				};
+		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, filter);
 	}
 
 	return ret;
@@ -677,10 +679,11 @@ SkeletonState::NonRigidCompleteStateGlobal SkeletonState::globalNonRigidState(co
 	NonRigidCompleteStateGlobal ret;
 
 	if (skeleton.root() != nullptr){		
-		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, [&ret](Skeleton::JointConstPtr joint)
-		{
-			ret.data().push_back({ joint->value().globalPosition(), joint->value().globalOrientation() });
-		});
+		auto filter = [&ret](Skeleton::JointConstPtr joint)
+				{
+					ret.data().push_back({ joint->value().globalPosition(), joint->value().globalOrientation() });
+				};
+		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, filter);
 	}
 
 	return ret;
@@ -691,10 +694,11 @@ SkeletonState::NonRigidCompleteStateLocal SkeletonState::localNonRigidState(cons
 	NonRigidCompleteStateLocal ret;
 
 	if (skeleton.root() != nullptr){
-		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, [&ret](Skeleton::JointConstPtr joint)
-		{
-			ret.data().push_back({ joint->value().localPosition(), joint->value().localOrientation() });
-		});
+		auto filter = [&ret](Skeleton::JointConstPtr joint)
+				{
+					ret.data().push_back({ joint->value().localPosition(), joint->value().localOrientation() });
+				};
+		LinearizedSkeleton::Visitor::visitNonLeaf(skeleton, filter);
 	}
 
 	return ret;
