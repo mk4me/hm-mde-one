@@ -143,10 +143,10 @@ namespace threadingUtils
 			{				
 				this->thread.run([](utils::shared_ptr<SharedState> sharedState){
 					LocalThreadGuard localThreadGuard;
-					ThreadGuard<std::atomic<size_type>> guard(sharedState->workManager->activeCounter);
+					//ThreadGuard<std::atomic<size_type>> guard(sharedState->workManager->activeCounter);
 					ThreadLocalWorkQueueController tlwqc(sharedState->workManager->workQueue);
 					while (sharedState->forceFinalize == false && sharedState->workManager->forceFinalize_ == false){
-						sharedState->workManager->runPendingTask();
+						sharedState->workManager->runPendingTask(std::chrono::milliseconds(100), false);
 					}
 				}, sharedState);
 			}
@@ -249,8 +249,10 @@ namespace threadingUtils
 	public:
 
 		//! Konstruktor domyï¿½lny
-		InterruptibleWorkManager() : finalize_(false), forceFinalize_(false),
-			activeCounter(0) {};
+		InterruptibleWorkManager() : finalize_(false), forceFinalize_(false)//,activeCounter(0)
+		{
+
+		};
 		//! Destruktor
 		~InterruptibleWorkManager()
 		{
@@ -339,7 +341,7 @@ namespace threadingUtils
 			const auto ret = workExecutor.get_id();
 			auto pair = std::make_pair(ret, std::move(workExecutor) );
 			workExecutors.insert(std::move(pair));
-			++activeCounter;
+			//++activeCounter;
 			return ret;
 		}
 
@@ -365,12 +367,14 @@ namespace threadingUtils
 		}
 
 		//! \tparam T Typ wyniku future
-		//! \tparam FuturePolicy Typ future (shared | future)
+		//! \tparam Rep Typ reprezentacji czasu
+		//! \tparam Per Typ okresu czasu		
+		template<typename Future, class Rep = long long, class Per = std::milli>
 		//! \param future Future na ktï¿½rego wykonanie czekamy realizujï¿½c inne zadania
-		template<typename Future>
-		void waitForOtherTask(Future & future)
+		//! \param timeout Czas uspania podczas czekania
+		void waitForOtherTask(Future & future, const std::chrono::duration<Rep, Per> & timeout = std::chrono::duration<Rep, Per>(std::chrono::milliseconds(100)))
 		{			
-			while (future.wait_for(std::chrono::seconds(0)) == std::future_status::timeout) { runPendingTask(); }			
+			while (future.wait_for(std::chrono::seconds(0)) == std::future_status::timeout) { runPendingTask(timeout, true); }
 		}
 
 		//! Metoda czeka na zakoï¿½czenie przetwarzanych zadaï¿½
@@ -408,10 +412,16 @@ namespace threadingUtils
 			for (auto & we : workExecutors){
 				we.second.forceFinalize();
 			}
-		}
+		}		
 
 		//! Metoda pobierajï¿½ca i przetwarzajï¿½ca kolejne zadania z kolejki zadaï¿½
-		void runPendingTask()
+		//! \tparam Rep Typ reprezentacji czasu
+		//! \tparam Per Typ okresu czasu	
+		template<class Rep = long long, class Per = std::milli>
+		//! \param timeout Czas uspania podczas czekania
+		//! \param waitForOther Czy oczekujemy na inne zadanie - wtedy nie mozemy sie uspaæ
+		void runPendingTask(const std::chrono::duration<Rep, Per> & timeout = std::chrono::duration<Rep, Per>(std::chrono::milliseconds(100)),
+			const bool waitForOther = false)
 		{
 			Task task;
 			if (workQueue.tryGet(task) == true){
@@ -419,15 +429,21 @@ namespace threadingUtils
 			}
 			else if (isLocalThread == true){
 				std::unique_lock<std::mutex> lock(taskMutex);
-				ActiveThreadGuard<std::atomic<size_type>> guard(activeCounter);
-				if ((activeCounter == 0) && ((forceFinalize_ == true) || ((finalize_ == true) && (workQueue.empty() == true)))){
+				//ActiveThreadGuard<std::atomic<size_type>> guard(activeCounter);
+				//if ((activeCounter == 0) && ((forceFinalize_ == true) || ((finalize_ == true) && (workQueue.empty() == true)))){
+				if ((forceFinalize_ == true) || ((finalize_ == true) && (workQueue.empty() == true))){
 					forceFinalize_ = true;
 					lock.unlock();
 					taskCV.notify_all();
 				}
-				else{
+				else if (waitForOther == true){
+					std::this_thread::sleep_for(timeout);
+				}else{
 					taskCV.wait(lock);
 				}				
+			}
+			else{
+				std::this_thread::sleep_for(timeout);
 			}
 		}
 
@@ -435,7 +451,7 @@ namespace threadingUtils
 		//! Mapa identyfikatorï¿½w wï¿½tkï¿½w i obiektï¿½ obsï¿½ugujï¿½cych ich przetwarzanie
 		WorkExecutorsMap workExecutors;
 		//! Iloï¿½ï¿½ aktualnie przetwarzajï¿½cych wï¿½tkï¿½w
-		std::atomic<size_type> activeCounter;
+		//std::atomic<size_type> activeCounter;
 		//! Kolejka obsï¿½ugujï¿½ca zlecane zadania
 		WorkQueue workQueue;
 		//! Czy koï¿½czymy dziaï¿½anie managera zadaï¿½ - dodawanie nowych nie bï¿½dzie moï¿½liwe

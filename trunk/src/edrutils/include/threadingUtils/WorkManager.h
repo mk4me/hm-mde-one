@@ -122,10 +122,10 @@ namespace threadingUtils {
 			{
 				this->thread.run([](utils::shared_ptr<SharedState> sharedState) {
 					WorkerThreadGuard localThreadGuard;
-					ThreadGuard<std::atomic<size_type>> guard(sharedState->workManager->activeCounter);
+					//ThreadGuard<std::atomic<size_type>> guard(sharedState->workManager->activeCounter);
 					LocalWorkQueueGuard lqqg(sharedState->workManager->workQueue);
 					while (sharedState->forceFinalize == false && sharedState->workManager->forceFinalize == false){
-						sharedState->workManager->runPendingTask();
+						sharedState->workManager->runPendingTask(std::chrono::milliseconds(100), false);
 					}
 				}, sharedState);
 			}
@@ -257,7 +257,7 @@ namespace threadingUtils {
 			WorkExecutor workExecutor(this, std::move(thread));
 			const auto ret = workExecutor.get_id();
 			workExecutors.insert({ ret, std::move(workExecutor) });
-			++activeCounter;
+			//++activeCounter;
 			return ret;
 		}
 
@@ -283,12 +283,14 @@ namespace threadingUtils {
 		}
 
 		//! \tparam T Typ wyniku future
-		//! \tparam FuturePolicy Typ future (shared | future)
-		//! \param future Future na którego wykonanie czekamy realizuj¹c inne zadania
-		template<typename Future>
-		void waitForOtherTask(Future & future)
+		//! \tparam Rep Typ reprezentacji czasu
+		//! \tparam Per Typ okresu czasu		
+		template<typename Future, class Rep = long long, class Per = std::milli>
+		//! \param future Future na ktï¿½rego wykonanie czekamy realizujï¿½c inne zadania
+		//! \param timeout Czas uspania podczas czekania
+		void waitForOtherTask(Future & future, const std::chrono::duration<Rep, Per> & timeout = std::chrono::duration<Rep, Per>(std::chrono::milliseconds(100)))
 		{
-			while (future.wait_for(std::chrono::seconds(0)) == std::future_status::timeout) { runPendingTask(); }
+			while (future.wait_for(std::chrono::seconds(0)) == std::future_status::timeout) { runPendingTask(timeout, true); }
 		}
 
 		//! Metoda czeka na zakoñczenie przetwarzanych zadañ
@@ -328,8 +330,14 @@ namespace threadingUtils {
 			}
 		}
 
-		//! Metoda pobieraj¹ca i przetwarzaj¹ca kolejne zadania z kolejki zadañ
-		void runPendingTask()
+		//! Metoda pobierajï¿½ca i przetwarzajï¿½ca kolejne zadania z kolejki zadaï¿½
+		//! \tparam Rep Typ reprezentacji czasu
+		//! \tparam Per Typ okresu czasu	
+		template<class Rep = long long, class Per = std::milli>
+		//! \param timeout Czas uspania podczas czekania
+		//! \param waitForOther Czy oczekujemy na inne zadanie - wtedy nie mozemy sie uspaæ
+		void runPendingTask(const std::chrono::duration<Rep, Per> & timeout = std::chrono::duration<Rep, Per>(std::chrono::milliseconds(100)),
+			const bool waitForOther = false)
 		{
 			Task task;
 			if (workQueue.tryGet(task) == true){
@@ -337,15 +345,22 @@ namespace threadingUtils {
 			}
 			else if (isLocalThread == true){
 				std::unique_lock<std::mutex> lock(taskMutex);
-				ActiveThreadGuard(activeCounter);
-				if ((activeCounter == 0) && ((forceFinalize_ == true) || ((finalize_ == true) && (workQueue.empty() == true))){
+				//ActiveThreadGuard<std::atomic<size_type>> guard(activeCounter);
+				//if ((activeCounter == 0) && ((forceFinalize_ == true) || ((finalize_ == true) && (workQueue.empty() == true)))){
+				if ((forceFinalize_ == true) || ((finalize_ == true) && (workQueue.empty() == true))){
 					forceFinalize_ = true;
 					lock.unlock();
 					taskCV.notify_all();
 				}
+				else if (waitForOther == true){
+					std::this_thread::sleep_for(timeout);
+				}
 				else{
 					taskCV.wait(lock);
-				}				
+				}
+			}
+			else{
+				std::this_thread::sleep_for(timeout);
 			}
 		}
 
