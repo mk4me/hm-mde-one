@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_TIMELINE__CHANNELSTREEHEADERWIDGET_H__
 #define HEADER_GUARD_TIMELINE__CHANNELSTREEHEADERWIDGET_H__
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 class ChannelsTreeHeaderWidget : public QWidget
 {

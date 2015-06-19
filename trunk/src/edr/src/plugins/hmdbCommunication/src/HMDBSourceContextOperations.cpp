@@ -802,8 +802,8 @@ void FileDownload::start()
 
 void FileDownload::wait()
 {
-	plugin::getJobManager()->waitForOtherJob(job);
-	//job.wait();
+	//plugin::getJobManager()->waitForOtherJob(job);
+	job.wait();
 }
 
 void FileDownload::abort()

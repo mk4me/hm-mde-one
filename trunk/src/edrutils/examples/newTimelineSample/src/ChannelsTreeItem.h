@@ -10,7 +10,7 @@
 #define HEADER_GUARD_TIMELINE__CHANNELSTREEITEM_H__
 
 #include <timelinelib/Model.h>
-#include <QtGui/QTreeWidgetItem>
+#include <QtWidgets/QTreeWidgetItem>
 
 class ChannelsTreeItem : public QTreeWidgetItem
 {

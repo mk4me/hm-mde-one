@@ -13,7 +13,7 @@
 #include <timelinelib/Model.h>
 #include <utils/Debug.h>
 #include <utils/ObserverPattern.h>
-#include <QtGui/QTreeWidget>
+#include <QtWidgets/QTreeWidget>
 
 class ChannelsTree : public QTreeWidget, public utils::Observer<timeline::Model>
 {

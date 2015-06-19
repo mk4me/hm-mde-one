@@ -14,8 +14,8 @@
 #include <timelinelib/Model.h>
 #include <utils/Debug.h>
 #include <utils/ObserverPattern.h>
-#include <QtGui/QWidget>
-#include <QtGui/QTreeWidget>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QTreeWidget>
 #include <QtCore/QSharedPointer>
 #include <QtCore/QWeakPointer>
 #include "ChannelsTreeItem.h"

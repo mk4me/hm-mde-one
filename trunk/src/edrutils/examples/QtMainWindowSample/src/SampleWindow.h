@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_QTSAMPLE__SAMPLEWIDGET_H__
 #define HEADER_GUARD_QTSAMPLE__SAMPLEWIDGET_H__
 
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QMainWindow>
 #include "ui_SampleWindow.h"
 
 class SampleWindow : public QMainWindow, public Ui::SampleWindow

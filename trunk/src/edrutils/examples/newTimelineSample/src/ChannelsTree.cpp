@@ -1,6 +1,6 @@
 #include "ChannelsTree.h"
 #include "TimeChannelWidget.h"
-#include <QtGui/QCheckBox>
+#include <QtWidgets/QCheckBox>
 
 ChannelsTree::ChannelsTree(QWidget* parent, const timeline::ModelPtr & model) : QTreeWidget(parent), model(model) {
     if(model != nullptr){

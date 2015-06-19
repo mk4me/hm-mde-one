@@ -10,8 +10,7 @@
 #define HEADER_GUARD_TIMELINE__TIMECHANNELWIDGET_H__
 
 #include <utils/Debug.h>
-#include <QtGui/QWidget>
-#include <QtGui/QFrame>
+#include <QtWidgets/QFrame>
 
 //! Klasa reprezentujaca pojedynczy kanal w czasie - rysuje jego zakres na osi ze wzgledu na parametry begin i end,
 //! które stanowia znormalizowane wartosci. Root zajmuje zawsze caly dostepny kanal, jego dlugosc jest punktem 

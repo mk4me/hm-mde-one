@@ -11,7 +11,7 @@
 
 #include <OpenThreads/Mutex>
 #include <OpenThreads/Thread>
-#include <QtGui/QSlider>
+#include <QtWidgets/QSlider>
 
 class TimeCounter : public OpenThreads::Thread
 {

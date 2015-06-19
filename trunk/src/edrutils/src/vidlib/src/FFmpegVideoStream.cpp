@@ -323,7 +323,7 @@ bool FFmpegVideoStream::commonInit(const std::string & streamName, int wantedVid
 	//! Ustawienia dla kodeka - ilość wątków do dekodowania
 	AVDictionary * codec_opts = nullptr;
 	av_dict_set(&codec_opts, "threads", "auto", 0);
-	av_dict_set(&codec_opts, "b", "2.5M", 0);
+	av_dict_set(&codec_opts, "b", "3M", 0);
 
 	// otwieramy kodek
 	if ((error = avcodec_open2(codecContext.get(), pCodec, &codec_opts)) < 0) {

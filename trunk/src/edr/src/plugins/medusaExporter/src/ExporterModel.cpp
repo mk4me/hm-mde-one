@@ -20,7 +20,7 @@
 using namespace medusaExporter;
 typedef core::Filesystem fs;
 
-// ponizsze dwie funkcje pochodz¹ z QuaZip, szkoda, ze byly private
+// ponizsze dwie funkcje pochodzï¿½ z QuaZip, szkoda, ze byly private
 
 bool copyData(QIODevice &inFile, QIODevice &outFile)
 {

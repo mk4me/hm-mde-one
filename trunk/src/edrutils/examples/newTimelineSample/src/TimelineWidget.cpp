@@ -1,5 +1,5 @@
 #include "TimelineWidget.h"
-#include <QtGui/QCheckBox>
+#include <QtWidgets/QCheckBox>
 #include <QtGui/QResizeEvent>
 #include <QtGui/QPainter>
 

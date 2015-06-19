@@ -1,8 +1,8 @@
 #include "SampleWindow.h"
 #include "TimeChannelWidget.h"
-#include <QtGui/QDockWidget>
-#include <QtGui/QLayout>
-#include <QtGui/QCheckBox>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QCheckBox>
 #include <boost/shared_ptr.hpp>
 
 #include "TestClientChannel.h"

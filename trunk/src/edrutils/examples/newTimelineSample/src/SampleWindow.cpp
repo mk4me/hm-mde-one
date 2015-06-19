@@ -1,5 +1,5 @@
 #include "SampleWindow.h"
-#include "QtGui/QMessageBox"
+#include "QtWidgets/QMessageBox"
 
 
 SampleWindow::SampleWindow()

@@ -1278,7 +1278,14 @@ void HMDBShallowCopyRemoteContext::synchronize(const ShallowCopyConstPtr shallow
 void HMDBShallowCopyRemoteContext::synchronize(const SynchronizeOperationPtr downloadOperations)
 {
 	downloadOperations->start();
-	downloadOperations->wait();
+	try {
+		downloadOperations->wait();
+	} catch (std::exception& e) {
+		PLUGIN_LOG_WARNING(e.what());
+	} catch (...) {
+		auto a = std::current_exception();
+		int b = 0;
+	}
 	
 	if (downloadOperations->status() == threadingUtils::IOperation::Finished){		
 		auto sc = downloadOperations->shallowCopy();
