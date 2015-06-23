@@ -42,10 +42,14 @@ std::string getUserName(const void * data)
 {
     auto comm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
 	if (comm != nullptr){
-		auto shallowCtx = comm->shallowContextForData(data);
-		if (shallowCtx != nullptr){
+		auto shallowCtx = comm->shallowContext(0);
+		if (shallowCtx != nullptr) {
 			return shallowCtx->shallowCopyLocalContext()->localContext()->dataContext()->userName();
 		}
+		/*auto shallowCtx = comm->shallowContextForData(data);
+		if (shallowCtx != nullptr){
+		return shallowCtx->shallowCopyLocalContext()->localContext()->dataContext()->userName();
+		}*/
 	}
 
 	return std::string();
