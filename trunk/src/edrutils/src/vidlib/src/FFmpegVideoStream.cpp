@@ -397,7 +397,8 @@ static int readFunction(void* opaque, uint8_t* buf, int buf_size) {
 	int ret = 0;
 
 	if (me->eof() == false){
-		ret = me->readsome(reinterpret_cast<char*>(buf), buf_size);
+		//ret = me->readsome(reinterpret_cast<char*>(buf), buf_size);
+		ret = utils::StreamTools::forceReadSome(*me, reinterpret_cast<char*>(buf), buf_size);
 	}
 
 	return ret;

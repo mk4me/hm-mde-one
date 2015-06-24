@@ -3,6 +3,7 @@
 
 if (CONFIG_VIDLIB_ENABLE_OSG)
 	ADD_PROJECT(videoPlayerOSG "vidlib;OSG")
+	ADD_PROJECT(videoPlayerStreamOSG "vidlib;OSG;sqliteUtils")
 endif()
 
 if (CONFIG_VIDLIB_ENABLE_OSG)
