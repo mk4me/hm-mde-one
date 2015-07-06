@@ -116,7 +116,7 @@ purpose:
 // Makro zamieniające definicję zawierającą przecinki na łańcuch.
 #ifdef __GNUC__
 // Dla gcc parametry trzeba "rozbić"
-#define COMA_AWARE_STRINGIZE(...) __FOR_EACH(STRINGIZE, ",", __VA_ARGS__)
+#define COMA_AWARE_STRINGIZE(...) # __VA_ARGS__ //__FOR_EACH(STRINGIZE, ",", __VA_ARGS__)
 #else // __GNUC__
 // Liczymy na to, że sobie poradzi (tak jak MSVC)
 #define COMA_AWARE_STRINGIZE(...) __STRINGIZE(__VA_ARGS__)

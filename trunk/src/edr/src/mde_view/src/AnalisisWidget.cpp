@@ -112,6 +112,7 @@ QDockWidget* AnalisisWidget::createDockVisualizer(const core::VisualizerPtr & vi
     connect(visualizer.get(), SIGNAL(screenshotTaken(const QPixmap&)), this, SLOT(addToReports(const QPixmap&)));
 
     auto visWidget = new coreUI::CoreVisualizerWidget(visualizer);
+    //visWidget->show();
 
     auto dockVisWidget = coreUI::CoreDockWidget::embeddWidget(visWidget, titleName, Qt::AllDockWidgetAreas, false);
 

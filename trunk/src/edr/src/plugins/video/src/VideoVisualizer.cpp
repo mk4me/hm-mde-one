@@ -77,7 +77,16 @@ void VideoVisualizer::VideoSerie::setData(const utils::TypeInfo & requestedType,
 
     std::string delayIt;
     if (data->getMetadata("movieDelay", delayIt)) {
-        this->offset = boost::lexical_cast<double>(delayIt);
+        try {
+        	this->offset = boost::lexical_cast<double>(delayIt);
+        } catch (const boost::bad_lexical_cast& ) {
+        	std::replace(delayIt.begin(), delayIt.end(), ',', '.');
+        	try {
+        		this->offset =  boost::lexical_cast<double>(delayIt);
+        	} catch (const boost::bad_lexical_cast& ) {
+        		PLUGIN_LOG_WARNING("Unable to parse movie delay");
+        	}
+        }
     }
 	if (data->data()->isSupported(typeid(VideoStream))) {
 		auto clonedData = data->clone();
@@ -351,6 +360,10 @@ QWidget* VideoVisualizer::createWidget()
 
     viewer->setFocusPolicy(Qt::StrongFocus);
 
+#ifdef __linux__
+    // hack, bez tego tworzyl sie  kontekst graficzny w lewym gornym rogu..
+    viewer->show();
+#endif
     return viewer;
 }
 

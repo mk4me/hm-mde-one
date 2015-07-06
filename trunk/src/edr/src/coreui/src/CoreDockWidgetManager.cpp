@@ -106,13 +106,10 @@ CoreDockWidgetSet* CoreDockWidgetManager::autoAddDockWidget( QDockWidget* widget
 
 CoreDockWidgetSet* CoreDockWidgetManager::autoAddDockWidget( QDockWidget* widget, const QString & label )
 {
-	CoreDockWidgetSet* set = nullptr;
-	for (auto it = dockList.begin(); it != dockList.end(); ++it) {
-		if ((*it)->isAdditionPossible() == true) {
-			set = *it;
-			break;
-		}
-	}
+	auto it = std::find_if(dockList.begin(), dockList.end(),
+			[](const CoreDockWidgetSet* set) {return set->isAdditionPossible(); });
+
+	CoreDockWidgetSet* set = it != dockList.end() ? *it : nullptr;
 
 	if(set == nullptr){
 		set = new CoreDockWidgetSet();

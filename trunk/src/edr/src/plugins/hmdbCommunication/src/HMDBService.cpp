@@ -295,7 +295,8 @@ void HMDBService::init(core::ISourceManager * sourceManager,
 	XmlUtils::TMPFILESDIR = (plugin::getPaths()->getTempPath()).string();
 	PLUGIN_LOG_INFO("XmlUtils TMPFILESDIR: " << XmlUtils::TMPFILESDIR);
 #else
-	UTILS_ASSERT(false); // co zrobic z tym SCHEMADIR??
+	//UTILS_ASSERT(false); // co zrobic z tym SCHEMADIR??
+	// wyglada na to , ze dziala
 #endif
 }
 

@@ -122,7 +122,14 @@ void openStorage()
 		std::auto_ptr<sqliteUtils::SQLiteBLOBStreamBufferT<>> buf(new sqliteUtils::SQLiteBLOBStreamBufferT<>(path, "files_table", "file", rowID, sqlite3_blob_bytes(blob), "main", key));
 		typedef utils::shared_ptr<std::iostream> IOStreamPtr;
 		auto stream = IOStreamPtr(new StreamWrapper<std::iostream, sqliteUtils::SQLiteBLOBStreamBufferT<>>(buf.release()));
+		unsigned char* buffer = new unsigned char(256);
+		try {
+		stream->readsome(buffer, 256);
 		std::auto_ptr<FFmpegVideoStream> innerStream(new vidlib::FFmpegVideoStream(stream, filename));
+		} catch (std::exception& e) {
+			std::string s(e.what());
+			int a =0;
+		}
 	}
 
 
