@@ -10,6 +10,7 @@
 
 #include <QtWidgets/QWidget>
 #include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
+#include <plugins/hmdbCommunication/Export.h>
 
 class QMainWindow;
 
@@ -42,7 +43,7 @@ namespace hmdbServices
 
 class ServerStatusWidget;
 
-class SourceOptionsWidget : public QWidget
+class HMDBCOMMUNICATION_EXPORT SourceOptionsWidget : public QWidget
 {
 	Q_OBJECT
 
@@ -56,6 +57,19 @@ public:
 	const QMainWindow * sourcesPlaceholder() const;
 
 	const bool verify(QStringList & messages);
+
+#ifdef DEMO_MODE
+	static void login()
+	{
+		if (instance) {
+			instance->onLogin();
+		} else {
+			throw std::runtime_error("There is no instance of SourceOptionsWidget");
+		}
+	}
+private:
+	static SourceOptionsWidget* instance;
+#endif // DEMO_MODE
 
 private:
 
@@ -112,5 +126,8 @@ private:
 	ServerStatusWidget * serverStatusWidget;
 	QMainWindow * sourcesPlaceholder_;
 };
+
+
+
 
 #endif	// __HEADER_GUARD_HMDBCOMMUNICATION__SOURCEOPTIONSWIDGET_H__

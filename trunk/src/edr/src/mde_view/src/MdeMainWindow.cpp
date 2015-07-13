@@ -37,6 +37,7 @@
 #include "MDEPerspectiveWidget.h"
 #include <plugins/hmdbCommunication/DataSourcePerspective.h>
 #include <plugins/hmdbCommunication/DataSourceDefaultContent.h>
+#include "plugins/hmdbCommunication/SourceOptionsWidget.h"
 
 using namespace core;
 
@@ -145,7 +146,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
 		   ccfg.name = tr("Default PJWSTK MDE data connection");
 		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
 		   ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
-#ifdef _DEBUG
+#ifdef _DEBUG 
 		   ccfg.motionServicesConfiguration.userConfiguration.user = "test_PJWSTK";
 		   ccfg.motionServicesConfiguration.userConfiguration.password = "PJtestP@ss";
 #endif
@@ -218,6 +219,10 @@ void MdeMainWindow::customViewInit(QWidget * console)
 
    emit modelChanged();
    emit activateTab(*tabs.begin());
+
+#ifdef DEMO_MODE
+   SourceOptionsWidget::login();
+#endif // DEMO_MODE
 }
 
 void MdeMainWindow::addTab( coreUI::IMdeTabPtr tab )

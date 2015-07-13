@@ -22,6 +22,11 @@
 #include <QtGui/QStandardItemModel>
 #include <hmdbserviceslib/IAuthorizationWS.h>
 
+
+#ifdef DEMO_MODE
+SourceOptionsWidget* SourceOptionsWidget::instance = nullptr;
+#endif // DEMO_MODE
+
 const bool verifyFileExistance(const QString & filePath)
 {
 	bool ret = true;
@@ -62,6 +67,16 @@ SourceOptionsWidget::SourceOptionsWidget(QWidget * parent, Qt::WindowFlags f)
 	onRefreshViews();
 	onRefreshConfigurations();
 	setLoginAdvanceConfiguration(false);
+
+#ifdef DEMO_MODE
+	ui->onlineModeCheckBox->setCheckState(Qt::Unchecked);
+	ui->onlineModeCheckBox->setEnabled(false);
+	ui->loginLineEdit->setText("test_PJWSTK");
+	ui->loginLineEdit->setEnabled(false);
+	ui->passwordLineEdit->setText("PJtestP@ss");
+	ui->passwordLineEdit->setEnabled(false);
+	this->instance = this;
+#endif // DEMO_MODE
 }
 
 SourceOptionsWidget::~SourceOptionsWidget()
@@ -898,3 +913,4 @@ void SourceOptionsWidget::onVerifyLogin()
 		QMessageBox::information(this, tr("Configuration status"), tr("Correct configuration"));
 	}
 }
+
