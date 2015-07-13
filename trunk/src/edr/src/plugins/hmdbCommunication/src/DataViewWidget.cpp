@@ -510,6 +510,9 @@ const hmdbCommunication::DataStatus DataViewWidget::refrshItemContent(QTreeWidge
 	}
 
 	item->setIcon(statusColumn, statusIcon(status));
+#ifdef DEMO_MODE
+	item->setHidden(status.storage() == hmdbCommunication::DataStatus::Remote);
+#endif
 
 	//TODO
 	//stan œci¹gania dla elementów

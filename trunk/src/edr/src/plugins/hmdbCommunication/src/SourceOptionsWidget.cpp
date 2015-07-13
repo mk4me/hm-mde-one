@@ -71,10 +71,11 @@ SourceOptionsWidget::SourceOptionsWidget(QWidget * parent, Qt::WindowFlags f)
 #ifdef DEMO_MODE
 	ui->onlineModeCheckBox->setCheckState(Qt::Unchecked);
 	ui->onlineModeCheckBox->setEnabled(false);
-	ui->loginLineEdit->setText("test_PJWSTK");
+	ui->loginLineEdit->setText("motion_admin");
 	ui->loginLineEdit->setEnabled(false);
-	ui->passwordLineEdit->setText("PJtestP@ss");
+	ui->passwordLineEdit->setText("HMDBP@ss");
 	ui->passwordLineEdit->setEnabled(false);
+	this->setVisible(false);
 	this->instance = this;
 #endif // DEMO_MODE
 }

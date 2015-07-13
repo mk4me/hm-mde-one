@@ -6,6 +6,7 @@
 #include <QtWidgets/QDesktopWidget>
 #include <QtCore/QThread>
 #include <QtCore/QCoreApplication>
+#include "corelib/PluginCommon.h"
 
 using namespace coreUI;
 
@@ -74,6 +75,7 @@ void coreUI::CorePopupStarter::start( const QString& title, const QString& messa
 
 void coreUI::CorePopupStarter::start(const QString& title, const QString& message, int ms, const QRect& rect) 
 {
+	PLUGIN_LOG_INFO(title.toStdString() << ": " << message.toStdString());
     CorePopupPrivate* popup = new CorePopupPrivate(title, message, ms, rect, nullptr, Qt::Dialog | Qt::FramelessWindowHint);
     QObject::connect(popup, SIGNAL(done(CorePopupPrivate*)), &deleter, SLOT(deletePopup(CorePopupPrivate*)));
     popup->start();

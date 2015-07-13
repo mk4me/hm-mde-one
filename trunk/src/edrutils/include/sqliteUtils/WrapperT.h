@@ -22,6 +22,12 @@ namespace sqliteUtils
 
 		}
 
+		//! \param wrapper Obs³ugiwany uchwyt
+		WrapperT(WrapperT&& wrapper) : elem_(std::move(wrapper.elem_))
+		{
+
+		}
+
 		//! \param elem Obs³ugiwany uchwyt
 		//! \param del Obiekt zwalniaj¹cy zasoby uchwuty
 		explicit WrapperT(T * elem, D del) : elem_(elem, del)
