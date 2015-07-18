@@ -3,7 +3,7 @@
 
 #include <corelib/BaseDataTypes.h>
 #include <threadingUtils/StreamData.h>
-#include <osgUtils/PtrPolicyOSG.h>
+#include <osgutils/PtrPolicyOSG.h>
 #include <utils/PtrPolicyStd.h>
 #include <utils/ClonePolicies.h>
 #include <osg/PositionAttitudeTransform>

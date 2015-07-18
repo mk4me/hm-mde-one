@@ -1,7 +1,7 @@
 #include "../PCH.h"
 #include "../VidLibPrivate.h"
 #include <vidlib/osg/OsgAdapter.h>
-#include <osgUtils/PtrPolicyOSG.h>
+#include <osgutils/PtrPolicyOSG.h>
 
 namespace vidlib 
 {
