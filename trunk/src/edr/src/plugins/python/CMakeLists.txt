@@ -12,12 +12,18 @@ SET_PRIVATE_HEADERS(
 	PythonPCH.h
 )
 
+SET_PUBLIC_HEADERS(
+	PythonPluginUtils.h
+	Export.h
+)
+
 SET_SOURCE_FILES (
 	PythonService.cpp
 	PythonConsole.cpp
 	PythonDataChannel.cpp
 	PythonProcessingBlock.cpp
 	PythonPlugin.cpp
+	PythonPluginUtils.cpp
 	PythonHighlighter.cpp
 	PythonLogic.cpp
 	MdeBridge.cpp

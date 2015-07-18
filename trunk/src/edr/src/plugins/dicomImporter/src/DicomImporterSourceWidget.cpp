@@ -19,6 +19,7 @@
 #include "DicomImporter.h"
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include "DicomSplitterModel.h"
 
 using namespace dicomImporter;
 
@@ -31,6 +32,7 @@ DicomImporterSourceWidget::DicomImporterSourceWidget( DicomImporterSource* sourc
     connect(ui->exportToButton, SIGNAL(clicked()), this, SLOT(onSelectSaveDir()));
     connect(ui->importButton, SIGNAL(clicked()), this, SLOT(onImport()));
 	connect(ui->importSingleButton, SIGNAL(clicked()), this, SLOT(onImportSingle()));
+	connect(ui->saveButton, SIGNAL(clicked()), this, SLOT(onSave()));
 }
 
 
@@ -76,11 +78,11 @@ void dicomImporter::DicomImporterSourceWidget::onImport()
         Refresher r(&progress, &importer);
         std::vector<DicomInternalStructPtr> splits = importer.split(inter);
 
-        DicomSaver saver;
-        for (auto it = splits.begin(); it != splits.end(); ++it) {
-            importer.convertImages(*it, from, to);
-            saver.save(to, *it);
-        }
+		splitterModel = utils::make_shared<DicomSplitterModel>(this, std::move(splits));
+		ui->tableView->setModel(splitterModel.get());
+		return;
+
+        
 
     } else {
         QMessageBox::critical(this, tr("Error"), tr("Unable to import DICOM structure, check directories"));
@@ -106,6 +108,7 @@ void dicomImporter::DicomImporterSourceWidget::onSelectSaveDir()
 
 void dicomImporter::DicomImporterSourceWidget::onImportSingle()
 {
+	
 //	std::string filename = "E:/programming/WORK/PET_CT_dane/De_Lorme_Urbanczyk^Iwona_673675/CT_10190/2/1.2.840.113704.1.111.5596.1264074742.2380.dcm";
 //	DicomImagePtr image = object->get();
 //	QPixmap pixmap = convertToPixmap(image);
@@ -136,6 +139,24 @@ void dicomImporter::DicomImporterSourceWidget::onImportSingle()
 	}
 	else {
 		QMessageBox::critical(this, tr("Error"), tr("Unable to import DICOM structure, check directories"));
+	}
+}
+
+void dicomImporter::DicomImporterSourceWidget::onSave()
+{
+	DicomSaver saver;
+	DicomImporter importer(ui->startIndex->value());
+	QString importFrom = ui->importFromEdit->text();
+	QString exportTo = ui->exportToEdit->text();
+	QDir dir;
+	if (dir.exists(importFrom) && dir.exists(exportTo)) {
+		core::Filesystem::Path from = importFrom.toStdString();
+		core::Filesystem::Path to = exportTo.toStdString();
+		const auto& splits = splitterModel->getSplits();
+		for (auto it = splits.begin(); it != splits.end(); ++it) {
+			importer.convertImages(*it, from, to);
+			saver.save(to, *it);
+		}
 	}
 }
 

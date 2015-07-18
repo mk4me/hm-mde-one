@@ -10,6 +10,7 @@
 #ifndef HEADER_GUARD_DICOMIMPORTER__IDICOMINTERNALSTRUCT_H__
 #define HEADER_GUARD_DICOMIMPORTER__IDICOMINTERNALSTRUCT_H__
 
+#include "utils/SmartPtr.h"
 namespace dicomImporter {
 class IDicomInternalStruct
 {

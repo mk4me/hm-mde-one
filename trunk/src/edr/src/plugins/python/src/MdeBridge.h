@@ -51,6 +51,13 @@ namespace python {
 
 		PythonDataChannel createVectorChannel();
 
+	//public: 
+	//	static core::ISourceManager *     getSourceManager() { return sourceManager; }
+	//	static core::IVisualizerManager * getVisualizerManager() { return visualizerManager; }
+	//	static core::IMemoryDataManager * getMemoryDataManager() { return memoryDataManager; }
+	//	static core::IStreamDataManager * getStreamDataManager() { return streamDataManager; }
+	//	static core::IFileDataManager *   getFileDataManager() { return fileDataManager; }
+
 	private:
 		core::ISourceManager * sourceManager;
 		core::IVisualizerManager * visualizerManager;

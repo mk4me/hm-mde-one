@@ -1,5 +1,8 @@
 BEGIN_PROJECT("dynamic")
 
+SET_PUBLIC_HEADERS(
+	IFileSource.h
+)
 
 SET_PRIVATE_HEADERS (
 	FileSource.h

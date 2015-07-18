@@ -13,8 +13,9 @@
 #include <corelib/ISource.h>
 #include <corelib/Filesystem.h>
 #include <plugins/newChart/Wrappers.h>
+#include <plugins/fileSource/IFileSource.h>
 
-class FileSource : public plugin::ISource
+class FileSource : public plugin::ISource, public fileSource::IFileSource
 {
     UNIQUE_ID("{D9DBFE39-29BC-42C9-92AA-691B88635892}")
     CLASS_DESCRIPTION("File Source", "File Source")

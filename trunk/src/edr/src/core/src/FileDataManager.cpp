@@ -488,7 +488,7 @@ private:
 		if (streamFileParser != nullptr) {
 
 			auto path = getPath().string();
-			utils::shared_ptr<std::ifstream> localStream(new std::ifstream(path));
+			utils::shared_ptr<std::ifstream> localStream(new std::ifstream(path, std::ifstream::in | std::ifstream::binary));
 			if (localStream->good() == true) {
 				streamFileParser->parse(localStream, path);
 			} else {

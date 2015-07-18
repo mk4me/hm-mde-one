@@ -26,7 +26,7 @@ UTILS_PUSH_WARNINGS
 UTILS_POP_WARNINGS
 
 #include <utils/PtrWrapper.h>
-#include <utils/PtrPolicyOSG.h>
+#include <osgUtils/PtrPolicyOSG.h>
 #include <vidlib/PixelFormat.h>
 #include <vidlib/VideoStream.h>
 

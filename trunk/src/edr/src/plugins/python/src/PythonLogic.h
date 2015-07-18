@@ -51,6 +51,8 @@ namespace python {
 	};
 	typedef utils::shared_ptr<PythonLogic> PythonLogicPtr;
 	typedef utils::shared_ptr<const PythonLogic> PythonLogicConstPtr;
+
+	
 }
 
 #endif

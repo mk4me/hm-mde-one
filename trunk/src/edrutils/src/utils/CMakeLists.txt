@@ -23,7 +23,6 @@ SET_PUBLIC_HEADERS(
 	PtrPolicyRaw.h
 	PtrPolicyBoost.h
 	PtrPolicyStd.h
-	PtrPolicyOSG.h
 	PtrPolicyHelper.h
 	PtrWrapper.h
 	ObserverPattern.h

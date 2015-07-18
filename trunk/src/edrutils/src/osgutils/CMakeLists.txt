@@ -3,6 +3,7 @@ BEGIN_PROJECT("static")
 SET_PUBLIC_HEADERS(
 	CustomPrimitivesFactory.h
 	OsgSchemeDrawer.h
+	PtrPolicyOSG.h
 )
 
 SET_PRIVATE_HEADERS( PCH.h )

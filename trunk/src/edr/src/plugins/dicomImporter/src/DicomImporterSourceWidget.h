@@ -12,6 +12,8 @@
 
 #include <QtWidgets/QWidget>
 #include <corelib/IFileDataManager.h>
+#include "utils/SmartPtr.h"
+#include "DicomSplitterModel.h"
 
 class QPushButton;
 class QLayout;
@@ -41,10 +43,12 @@ namespace dicomImporter {
 		void onImportSingle();
         void onSelectImportDir();
         void onSelectSaveDir();
+		void onSave();
         
     private:
         DicomImporterSource* dicomSource;
         Ui::DicomSource* ui;
+		utils::shared_ptr<DicomSplitterModel> splitterModel;
     };
 }
 

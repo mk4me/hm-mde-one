@@ -14,6 +14,7 @@ SET_PRIVATE_HEADERS (
 	DicomImporter.h
 	DicomInternalStruct.h
 	DicomVisualizer.h
+	DicomSplitterModel.h
 )
 
 SET_SOURCE_FILES(
@@ -25,11 +26,13 @@ SET_SOURCE_FILES(
 	DicomVisualizer.cpp
 	DicomImporterPCH.cpp
 	DicomParser.cpp
+	DicomSplitterModel.cpp
 )
 
 SET_MOC_FILES(
 	DicomImporterSourceWidget.h
 	DicomVisualizer.h
+	DicomSplitterModel.h
 )
 SET_UI_FILES(
 	dicomSource.ui

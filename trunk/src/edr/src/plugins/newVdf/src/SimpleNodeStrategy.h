@@ -12,6 +12,7 @@
 
 #include <plugins/newVdf/INodeStrategy.h>
 #include <QtCore/QRect>
+#include <string>
 
 namespace vdf {
 

@@ -2,6 +2,7 @@
 #include "VidLibPrivate.h"
 #include <vidlib/FFmpegError.h>
 #include <vidlib/FFmpegVideoStream.h>
+#include <utils/Utils.h>
 //!
 #define AVIO_FFMPE_ENABLE_DUMP_INFO
 
@@ -397,8 +398,7 @@ static int readFunction(void* opaque, uint8_t* buf, int buf_size) {
 	int ret = 0;
 
 	if (me->eof() == false){
-		ret = me->readsome(reinterpret_cast<char*>(buf), buf_size);
-		//ret = utils::StreamTools::forceReadSome(*me, reinterpret_cast<char*>(buf), buf_size);
+		ret = utils::StreamTools::forceReadSome(*me, reinterpret_cast<char*>(buf), buf_size);
 	}
 
 	return ret;
@@ -440,7 +440,8 @@ bool FFmpegVideoStream::init(std::istream * source, const std::string & streamNa
 
 	AVProbeData probeData;
 	probeData.buf = buffer.get();
-	probeData.buf_size = source->readsome((char*)probeData.buf, BufferSize);
+	int buf_size = utils::StreamTools::forceReadSome(*source, (char*)probeData.buf, BufferSize);
+	probeData.buf_size = buf_size;
 	probeData.filename = "";
 	source->seekg(0, std::ios::beg);
 	
