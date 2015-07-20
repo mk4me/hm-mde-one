@@ -116,9 +116,10 @@ namespace hmdbCommunication
 		//! (nie zainicjalizowaniu!) wszystkich us³ug.
 		virtual void init(core::ISourceManager * sourceManager,
 			core::IVisualizerManager * visualizerManager,
-			core::IMemoryDataManager * memoryDataManager,
+			core::IDataManager * memoryDataManager,
 			core::IStreamDataManager * streamDataManager,
-			core::IFileDataManager * fileDataManager);
+			core::IFileDataManager * fileDataManager,
+			core::IDataHierarchyManager * hierarchyManager);
 
 		//! PóŸna inicjalizacja us³ug, nastêpuje po wczytaniu i inicjalizacji wszystkich us³ug
 		//! \return Czy us³uga poprawnie zainicjalizowana czy nie - mo¿e brakuje innych us³ug zale¿nych i sama nie ma jak dzia³aæ

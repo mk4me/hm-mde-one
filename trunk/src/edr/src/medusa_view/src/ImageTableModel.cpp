@@ -56,7 +56,7 @@ core::ConstVariantsList ImageTableModel::getLayersObjects()
 {
 	core::IDataManagerReader* dm = plugin::getDataManagerReader();
 	core::ConstVariantsList objects;
-	dm->getObjects(objects, typeid(dicom::LayersVector), false);
+	dm->transaction()->getObjects(objects, typeid(dicom::LayersVector), false);
 	return objects;
 }
 

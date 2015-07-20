@@ -34,9 +34,10 @@ namespace medusaExporter {
 		//! \param managersAccessor 
 		virtual void init(core::ISourceManager * sourceManager,
 			core::IVisualizerManager * visualizerManager,
-			core::IMemoryDataManager * memoryDataManager,
+			core::IDataManager * memoryDataManager,
 			core::IStreamDataManager * streamDataManager,
-			core::IFileDataManager * fileDataManager);
+			core::IFileDataManager * fileDataManager,
+			core::IDataHierarchyManager * hierarchyManager);
 		//! 
 		//! \param actions 
 		virtual QWidget* getWidget();
@@ -53,7 +54,7 @@ namespace medusaExporter {
 				
 	private:
 		MedusaExporterServiceWidget* exportWidget;
-		core::IMemoryDataManager * memoryManager;
+		core::IDataManager * memoryManager;
 		ExporterModelPtr exporterModel;
 	};
 	DEFINE_SMART_POINTERS(MedusaExporterService);

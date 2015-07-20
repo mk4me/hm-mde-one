@@ -103,7 +103,7 @@ void AbstractSkeletonSerie::initBodyPlanes()
 	localRootNode->accept(cbv);
 	osg::BoundingBox bb = cbv.getBoundingBox();	
 
-	//powi�kszamy bounding box
+	//powiększamy bounding box
 	auto distX = (bb.xMax() - bb.xMin()) * 0.1;
 	auto distY = (bb.yMax() - bb.yMin()) * 0.1;
 	auto distZ = (bb.zMax() - bb.zMin()) * 0.2;
@@ -111,7 +111,7 @@ void AbstractSkeletonSerie::initBodyPlanes()
 	// geoda
 	osg::ref_ptr<osg::Geode> groot = new osg::Geode;
 
-	//geometria sciany prostopad�ej dla osi X
+	//geometria sciany prostopadłej dla osi X
 	// w prawo
 	{
 		osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
@@ -137,7 +137,7 @@ void AbstractSkeletonSerie::initBodyPlanes()
 		groot->addDrawable(quad.get());
 	}
 
-	//geometria sciany prostopad�ej dla osi Y
+	//geometria sciany prostopadłej dla osi Y
 	// do przodu
 	{
 		osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
@@ -163,7 +163,7 @@ void AbstractSkeletonSerie::initBodyPlanes()
 		groot->addDrawable(quad.get());
 	}
 
-	//geometria sciany prostopad�ej dla osi Z
+	//geometria sciany prostopadłej dla osi Z
 	{
 		osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
 		vertices->push_back(osg::Vec3(bb.xMax() + distX, bb.yMax() + distY, 0.0f));

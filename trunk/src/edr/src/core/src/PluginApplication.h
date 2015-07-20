@@ -13,7 +13,7 @@
 #include "VisualizerManager.h"
 #include "ServiceManager.h"
 #include "SourceManager.h"
-#include "MemoryDataManager.h"
+#include "DataManager.h"
 #include "StreamDataManager.h"
 #include "FileDataManager.h"
 
@@ -42,6 +42,8 @@ public:
 	virtual IStreamManagerReader * streamDataManagerReader();
 	//! \return Interfejs do czytania danych strumieniowych
 	virtual IFileManagerReader * fileDataManagerReader();
+	//! \return Interfejs do czytania opisu zarejestrowanych danych
+	virtual IRegisteredDataTypesManagerReader * registeredDataTypesManagerReader();
 	//! \return Interfejs do czytania opisu zarejestrowanych danych
 	virtual IDataHierarchyManagerReader * dataHierarchyManagerReader();
 	//! \return Interfejs do dedykowanej przestrzeni sk³¹dowania danych
@@ -87,6 +89,8 @@ public:
 	//! \return Interfejs do czytania danych strumieniowych
 	virtual IFileManagerReader * fileDataManagerReader();
 	//! \return Interfejs do czytania opisu zarejestrowanych danych
+	virtual IRegisteredDataTypesManagerReader * registeredDataTypesManagerReader();
+	//! \return Interfejs do czytania opisu hierarchi danych
 	virtual IDataHierarchyManagerReader * dataHierarchyManagerReader();
 	//! \return Interfejs do dedykowanej przestrzeni sk³¹dowania danych
 	virtual IPluginStorage * pluginStorage();
@@ -100,6 +104,10 @@ public:
 	virtual ThreadPool * threadPool();
 	//! \return Interfejs dostêpu do serwisów
 	virtual JobManager * jobManager();
+
+private:
+	//! \return Interfejs do logowania
+	virtual ILog * exceptionLog();
 };
 
 }

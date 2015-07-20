@@ -45,7 +45,7 @@ class LayerHelper : public core::HierarchyHelper
 {
 public:
     LayerHelper(const core::VariantConstPtr& imgWrapper);
-    virtual void createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series );
+    virtual void createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series );
     virtual core::VisualizerPtr createVisualizer( core::IVisualizerManager* manager );
     virtual std::vector<utils::TypeInfo> getTypeInfos() const;
 
@@ -68,7 +68,8 @@ public:
 	virtual ~DicomSource() {}
 
 public:
-    virtual void init( core::IMemoryDataManager * memoryDM, core::IStreamDataManager * streamDM, core::IFileDataManager * fileDM );
+    virtual void init( core::IDataManager * memoryDM, core::IStreamDataManager * streamDM, core::IFileDataManager * fileDM,
+		core::IDataHierarchyManager * hierarchyDM);
     virtual bool lateInit();
     virtual void finalize();
     virtual void update( double deltaTime );
@@ -96,7 +97,7 @@ public:
     static QString createDesc(const internalData::Serie& serie); 
     static QString createDesc(const internalData::Image& image);
 private:
-    core::IMemoryDataManager* memoryDM;
+    core::IDataHierarchyManager* hierarchyDM;
     core::IFileDataManager* fileDM;
     core::IStreamDataManager* streamDM;
 };

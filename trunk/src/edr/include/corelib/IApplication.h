@@ -9,8 +9,6 @@
 #ifndef HEADER_GUARD___IAPPLICATION_H__
 #define HEADER_GUARD___IAPPLICATION_H__
 
-#include <corelib/ThreadPool.h>
-
 namespace core {
 
 	class ILog;
@@ -19,6 +17,7 @@ namespace core {
 	class IParserManagerReader;
 	class IStreamManagerReader;
 	class IFileManagerReader;
+	class IRegisteredDataTypesManagerReader;	
 	class IDataHierarchyManagerReader;
 	class IPluginStorage;
 	class IServiceManager;	
@@ -27,7 +26,7 @@ namespace core {
 	class IApplicationDescription;
 	class ILanguagesManager;
 	class JobManager;
-	class ThreadPool;
+	class ThreadPool;	
 
 	//! Interfejs klasy dostarczaj¹cej pluginom ogólnych zasobów aplikacji:
 	//! interfejs œcie¿ek, interfejs do czytania danych,
@@ -36,7 +35,7 @@ namespace core {
 
 	//! WA¯NE - pozosta³e elementy aplikacji których tutaj nie ma bêd¹ dostarczane poszczególnym modu³om indywidualnie
 	//! wg przyjêtych regu³ i potrzeb - patrz serwisy, Ÿród³a danych
-	class IApplication {
+	class IApplication {		
 
 	public:
 		//! Destruktor wirtualny
@@ -58,6 +57,8 @@ namespace core {
 		//! \return Interfejs do czytania danych strumieniowych
 		virtual IFileManagerReader * fileDataManagerReader() = 0;
 		//! \return Interfejs do czytania opisu zarejestrowanych danych
+		virtual IRegisteredDataTypesManagerReader * registeredDataTypesManagerReader() = 0;
+		//! \return Interfejs do czytania opisu hierarchi danych
 		virtual IDataHierarchyManagerReader * dataHierarchyManagerReader() = 0;
 		//! \return Interfejs do dedykowanej przestrzeni sk³¹dowania danych
 		virtual IPluginStorage * pluginStorage() = 0;
@@ -71,7 +72,6 @@ namespace core {
 		virtual ThreadPool * threadPool() = 0;
 		//! \return Interfejs managera wizualizatorów
 		virtual JobManager * jobManager() = 0;
-
 	};
 }
 

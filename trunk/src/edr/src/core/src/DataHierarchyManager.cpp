@@ -1,102 +1,170 @@
 #include "CorePCH.h"
 #include "DataHierarchyManager.h"
 #include "ApplicationCommon.h"
-#include <utils/Debug.h>
 #include <corelib/Exceptions.h>
 
-namespace core {
+using namespace core;
 
-	VariantPtr DataHierarchyManager::createWrapper(const utils::TypeInfo & typeInfo) const
+class DataHierarchyManager::HierarchyTransaction : public IDataHierarchyManager::ITransaction
 {
-	auto it = typesHierarchy.find(typeInfo);
-	if(it != typesHierarchy.end() && it->second.prototype != nullptr) {
-		return Variant::create(it->second.prototype->create());
+private:
+    DataHierarchyManager* mdm;
+    ChangeList modifications;
+    bool transactionRollbacked;
+
+public:
+    HierarchyTransaction(DataHierarchyManager * mdm) : mdm(mdm), transactionRollbacked(false)
+    {
+        mdm->sync.lock();
+    }
+
+    ~HierarchyTransaction()
+    {
+        if(transactionRollbacked == false){
+            if(modifications.empty() == false){
+                mdm->updateObservers(modifications);
+            }
+            mdm->sync.unlock();
+        }
+    }
+
+public:
+
+    virtual const bool isRolledback() const
+    {
+        return transactionRollbacked;
+    }
+
+    virtual void rollback()
+    {
+        transactionRollbacked = true;
+
+        // TODO
+        // W obecnym modelu zarzadzania updateami nie można  ich sensownie cofnąć 
+
+        ////cofanie pozosta�ych zmian od ko�ca
+        for(auto it = modifications.rbegin(); it != modifications.rend(); ++it){
+            switch((*it).modification){
+
+			case IDataHierarchyManagerReader::ADD_ITEM:
+                mdm->rawRemoveRoot((*it).item);
+                break;
+
+			case IDataHierarchyManagerReader::REMOVE_ITEM:
+                mdm->rawAddRoot(utils::const_pointer_cast<IHierarchyItem>((*it).item));
+                break;
+            }
+        }
+
+        mdm->sync.unlock();
+    }
+
+    virtual void updateRoot( IHierarchyItemConstPtr ptr )
+    {
+		throw std::runtime_error("Not implemented");
+        Change hc;
+        hc.item = ptr;
+		hc.modification = IDataHierarchyManagerReader::UPDATE_ITEM;
+        modifications.push_back(hc);
+    }
+
+    virtual void addRoot( IHierarchyItemConstPtr ptr )
+    {
+        Change hc;
+        hc.item = ptr;
+		hc.modification = IDataHierarchyManagerReader::ADD_ITEM;
+        modifications.push_back(hc);
+        mdm->rawAddRoot(ptr);
+    }
+
+    virtual void removeRoot( IHierarchyItemConstPtr ptr )
+    {
+        Change hc;
+        hc.item = ptr;
+		hc.modification = IDataHierarchyManagerReader::REMOVE_ITEM;
+        modifications.push_back(hc);
+        mdm->rawRemoveRoot(ptr);
+    }
+
+	virtual ConstIterator hierarchyBegin() const
+	{
+		return mdm->roots.cbegin();
 	}
 
-	return VariantPtr();
+	virtual ConstIterator hierarchyEnd() const
+	{
+		return mdm->roots.cend();
+	}
+
+};
+
+
+IDataHierarchyManager::TransactionPtr core::DataHierarchyManager::transaction()
+{
+	return IDataHierarchyManager::TransactionPtr(new HierarchyTransaction(this));
 }
 
-	void DataHierarchyManager::getRegisteredTypes(utils::TypeInfoSet & registeredTypes) const
+IDataHierarchyManagerReader::TransactionPtr core::DataHierarchyManager::transaction() const
 {
-	for(auto it = typesHierarchy.begin(); it != typesHierarchy.end(); ++it){
-		if(it->second.prototype != nullptr){
-			registeredTypes.insert(it->first);
-		}
-	}
+	return IDataHierarchyManagerReader::TransactionPtr(new HierarchyTransaction(const_cast<DataHierarchyManager*>(this)));
 }
 
-const bool DataHierarchyManager::isRegistered(const utils::TypeInfo & typeInfo) const
+void core::DataHierarchyManager::rawAddRoot( IHierarchyItemConstPtr ptr )
 {
-	auto it = typesHierarchy.find(typeInfo);
-	if(it == typesHierarchy.end() || it->second.prototype == nullptr) {
-		return false;
-	}
+    if (roots.find(ptr) != roots.end()) {
+        throw core::runtime_error("HierarchyDataManager - root is already added");
+    }
 
-	return true;
+    roots.insert(ptr);
 }
 
-const bool DataHierarchyManager::isTypeCompatible(const utils::TypeInfo & base, const utils::TypeInfo & derrived) const
+void core::DataHierarchyManager::rawRemoveRoot( IHierarchyItemConstPtr ptr )
 {
-	auto baseIT = typesHierarchy.find(base);
-	auto derrivedIT = typesHierarchy.find(derrived);
+    auto it = roots.find(ptr);
+    if (it == roots.end()) {
+        throw core::runtime_error("HierarchyDataManager - root was not found");
+    }
 
-	if(baseIT == typesHierarchy.end() || derrivedIT == typesHierarchy.end() || baseIT->second.prototype == nullptr || derrivedIT->second.prototype == nullptr){
-		return false;
-	}
-
-	return (baseIT == derrivedIT) || (derrivedIT->second.baseTypes.find(base) != derrivedIT->second.baseTypes.end());
+    roots.erase(it);
+    
 }
 
-void DataHierarchyManager::getTypeBaseTypes(const utils::TypeInfo & type, utils::TypeInfoSet & baseTypes) const
+void core::DataHierarchyManager::rawUpdateRoot( IHierarchyItemConstPtr ptr )
 {
-	auto it = typesHierarchy.find(type);
-	if(it != typesHierarchy.end() && it->second.prototype != nullptr) {
-		baseTypes.insert(it->second.baseTypes.begin(), it->second.baseTypes.end());
-	}
+    UTILS_ASSERT(false, "NYI");
 }
 
-void DataHierarchyManager::getTypeDerrivedTypes(const utils::TypeInfo & type, utils::TypeInfoSet & derrivedTypes) const
+void core::DataHierarchyManager::addObserver( const ObserverPtr & objectWatcher )
 {
-	auto it = typesHierarchy.find(type);
-	if(it != typesHierarchy.end() && it->second.prototype != nullptr) {
-		derrivedTypes.insert(it->second.derrivedTypes.begin(), it->second.derrivedTypes.end());
-	}
+    ScopedLock lock(sync);
+    if(std::find(observers.begin(), observers.end(), objectWatcher) != observers.end()){
+        throw core::runtime_error("Watcher already registered");
+    }
+
+    observers.push_back(objectWatcher);
 }
 
-void DataHierarchyManager::registerObjectWrapperPrototype(const utils::ObjectWrapperPtr & owp)
+void core::DataHierarchyManager::removeObserver( const ObserverPtr & objectWatcher )
 {
-	UTILS_ASSERT((owp->getRawPtr() == nullptr), "Obiekt powinien byc pusty jako prototyp");
-	const utils::TypeInfo & typeInfo = owp->getTypeInfo();
-	auto it = typesHierarchy.find(typeInfo);
-	if(it == typesHierarchy.end()){
-		TypeHierarchy th;
-		th.prototype = owp->create();
-		it = typesHierarchy.insert(TypesHierarchy::value_type(typeInfo, th)).first;
-	}else if(it->second.prototype != nullptr) {
-		throw core::runtime_error("Type already registered");
-	}else{
-		it->second.prototype = owp->create();
-	}
+    ScopedLock lock(sync);
+    auto it = std::find(observers.begin(), observers.end(), objectWatcher);
+    if(it == observers.end()){
+        throw core::runtime_error("Watcher not registered");
+    }
 
-	//pobieramy typy bazowe
-	utils::TypeInfoList baseTypes;
-	it->second.prototype->getSupportedTypes(baseTypes);
-	baseTypes.remove(typeInfo);
-	//inicjujemy typy bazowe
-	it->second.baseTypes.insert(baseTypes.begin(), baseTypes.end());
-	//aktualizujemy typy bazowe
-	for(auto it = baseTypes.begin(); it != baseTypes.end(); ++it){
-		auto thIT = typesHierarchy.find(*it);
-		if(thIT == typesHierarchy.end()){
-			//rejestrujemy typ pochodny przed typem bazowym - nieco niebezpieczne bo nie wiadomo czy typ bazowy b�dzie potem zarejestrowany
-			TypeHierarchy thBase;
-			thBase.derrivedTypes.insert(typeInfo);
-			typesHierarchy.insert(TypesHierarchy::value_type(*it, thBase));
-			CORE_LOG_WARNING("Registering derrived type before base type. Derrived type name: " << typeInfo.name() << ", base type name: " << (*it).name());
-		}else{
-			thIT->second.derrivedTypes.insert(typeInfo);
-		}
-	}
+    observers.erase(it);
 }
 
+void core::DataHierarchyManager::updateObservers(const ChangeList & changes )
+{
+    for(auto it = observers.begin(); it != observers.end(); ++it){
+        try{
+            (*it)->observe(changes);
+        }catch(...){
+            //TODO
+            //rozwin�� obserwator�w aby si� jako� identyfikowali!! ewentualnie robi� to przez w�asn� implementacj� dostarczan� konretnym obiektom
+            //(osobne interfejsy reader�w dla ka�dego elemnentu �adowanego do aplikacji - service, source, datasink, itp)
+            CORE_LOG_WARNING("Error while updating memory data manager observer");
+        }
+    }
 }

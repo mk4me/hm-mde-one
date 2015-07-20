@@ -1,645 +1,581 @@
 #include "CorePCH.h"
 #include "DataManager.h"
-
-#include "Log.h"
-#include <core/Filesystem.h>
-#include <boost/algorithm/string.hpp>
-#include <algorithm>
-#include <utils/Push.h>
-#include "ServiceManager.h"
+#include "RegisteredDataTypesManager.h"
+#
+#include "ApplicationCommon.h"
+#include <corelib/Exceptions.h>
 
 using namespace core;
-using namespace std;
 
-//! Wewnętrzna reprezentacja parsera używana przez DataManagera.
-class DataManager::Parser
+class DataManager::Transaction : public IDataManager::ITransaction
 {
 private:
-    //! Prawdziwy wewnętrzny parser.
-    const IParserPtr parser;
-    //! Parsowany plik.
-    const Filesystem::Path filePath;
-    //! Czy przeparsowano plik?
-    bool parsed;
-    //! Czy użyto parsera do przeparsowania?
-    bool used;
-    //! Czy właśnie parsujemy?
-    bool parsing;
+	DataManager * mdm;	
+	utils::shared_ptr<std::lock_guard<std::recursive_mutex>> lock;
+	DataManager::ChangeList modyfications;
+	bool transactionRollbacked;
 
 public:
-    //! \param parser Faktyczny parser. To ten obiekt kontroluje jego
-    //!     czas życia.
-    //! \param resource Czy parser jest związany z zasobami stałymi?
-    Parser(IParser* parser, const Filesystem::Path& path) :
-      parser(parser), parsed(false), used(false), filePath(path), parsing(false)
-      {
-          UTILS_ASSERT(parser);
-          UTILS_ASSERT(!filePath.empty());
-      }
-      //! Destruktor drukujący wiadomość o wyładowaniu pliku.
-      ~Parser()
-      {
-          if ( isParsed() ) {
-              LOG_DEBUG("Unloading parser for file: " << getPath() );
-          } else if ( isUsed() ) {
-              LOG_DEBUG("Unloading invalid parser for file: " << getPath() );
-          } else {
-              LOG_DEBUG("Unloading unused parser for file: " << getPath() );
-          }
-      }
-
-public:
-    //! \return Czy użyto tego parsera?
-    inline bool isUsed() const
-    {
-        return used;
-    }
-    //! \return Czy udało się przeparsować plik?
-    inline bool isParsed() const
-    {
-        return parsed;
-    }
-
-    inline void reset()
-    {
-        used = false;
-        parsed = false;
-    }
-
-    //!
-    inline bool isParsing() const
-    {
-        return parsing;
-    }
-
-    //! \return Ścieżka do pliku.
-    inline const Filesystem::Path& getPath() const
-    {
-        return filePath;
-    }
-    //! \return
-    inline IParserPtr getParser() const
-    {
-        return parser;
-    }
-
-    //! Może rzucać wyjątkami!
-    void parseFile()
-    {
-        UTILS_ASSERT(!isUsed());
-        UTILS_ASSERT(!filePath.empty());
-        LOG_DEBUG("Parsing file: " << getPath() );
-        used = true;
-        utils::Push<bool> parsingPushed(parsing, true);
-        parser->parseFile(filePath.string());
-        parsed = true;
-    }
-    //! Nie rzuca wyjątkami.
-    //! \return Czy udało się przeparsować?
-    bool tryParse()
-    {
-        try {
-            parseFile();
-            return true;
-        } catch (const std::exception& ex) {
-            LOG_ERROR("Error during parsing file " << getPath() << ": " << ex.what());
-            return false;
-        }
-    }
-    //! \param objects Lista wrappowanych obiektów, zainicjowanych (przeparsowany parser)
-    //!         bądź nie.
-    inline void getObjects(core::Objects& objects)
-    {
-        parser->getObjects(objects);
-    }
-};
-
-void DataManager::initializeDataWithParser(core::ObjectWrapper & object, const ParserPtr & parser)
-{
-	if(parser->isUsed() == true){
-		parser->reset();
+	Transaction(DataManager * mdm) : mdm(mdm),
+		lock(new std::lock_guard<std::recursive_mutex>(mdm->sync)),
+		transactionRollbacked(false)
+	{		
 	}
 
-    if(parser->tryParse() == true){
-        LOG_DEBUG("Parser ID " << parser->getParser()->getID() << " successfully initialized object of type " << object.getTypeInfo().name() << " parsing file " << parser->getPath());
-		core::Objects objects;
-		parser->getObjects(objects);
+	~Transaction()
+	{
+		if(transactionRollbacked == false){
+			if(modyfications.empty() == false){
+				mdm->updateObservers(modyfications);
+			}			
+		}
+	}
 
-		for(auto it = objects.begin(); it != objects.end(); ++it){
-			if((*it)->isNull() == true){
-				LOG_DEBUG("Data type initialization failed: " << (*it)->getTypeInfo().name() << " using Parser ID " << parser->getParser()->getID() << " for file " << parser->getPath());
+public:
+
+	virtual const bool isRolledback() const
+	{
+		return transactionRollbacked;
+	}
+
+	virtual void rollback()
+	{
+		transactionRollbacked = true;
+
+		ConstVariantsSet firstChanges;
+
+		//szybkie cofanie edycji - tylko pierwotna jest przywracana
+		for(auto it = modyfications.begin(); it != modyfications.end(); ++it){
+			if((*it).modyfication == IDataManagerReader::UPDATE_OBJECT && firstChanges.find((*it).currentValue) == firstChanges.end())
+			{
+				firstChanges.insert((*it).currentValue);
+				mdm->rawUpdateData((*it).currentValue, (*it).previousValue);
 			}
 		}
 
-    }else if(object.isNull() == true){
-        LOG_DEBUG("Parser ID " << parser->getParser()->getID() << " failed to initialized object of type " << object.getTypeInfo().name() << " parsing file " << parser->getPath());
-    }
-}
+		//cofanie pozosta�ych zmian od ko�ca
+		for(auto it = modyfications.rbegin(); it != modyfications.rend(); ++it){
+			switch((*it).modyfication){
 
-template <>
-DataManager * ManagerHelper<DataManager>::manager = nullptr;
+			case IDataManagerReader::ADD_OBJECT:
+				mdm->rawRemoveData((*it).currentValue);
+				break;
+
+			case IDataManagerReader::REMOVE_OBJECT:
+				mdm->rawAddData(utils::const_pointer_cast<Variant>((*it).previousValue));
+				break;
+			}
+		}
+
+		lock.reset();
+	}
+
+	//! \data Dane wchodz�ce pod kontrol� DM
+	virtual void addData(const VariantPtr & data)
+	{
+		if(transactionRollbacked == true){
+			throw core::runtime_error("Memory transaction rolled-back");
+		}
+
+		if(mdm->rawIsManaged(data) == true){
+			rollback();
+			throw core::runtime_error("Memory transaction tried to add data already managed by manager");
+		}
+
+		rawAddData(data);
+	}
+
+	//! Dane usuwane z DM
+	virtual void removeData(const VariantConstPtr & data)
+	{
+		if(transactionRollbacked == true){
+			throw core::runtime_error("Memory transaction rolled-back");
+		}
+
+		if(mdm->rawIsManaged(data) == false){
+			rollback();
+			throw core::runtime_error("Memory transaction tried to remove data not managed by manager");
+		}
+
+		rawRemoveData(data);
+	}
+
+	//! \param data Aktualizowane dane
+	//! \param newData Nowa warto�� danych
+	virtual void updateData(const VariantConstPtr & data, const VariantConstPtr & newData)
+	{
+		if(transactionRollbacked == true){
+			throw core::runtime_error("Memory transaction rolled-back");
+		}
+
+		if(mdm->rawIsManaged(data) == false){
+			rollback();
+			throw core::runtime_error("Memory transaction tried to edit data not managed by manager");
+		}
+
+		try{
+			rawUpdateData(data, newData);
+		}catch(...){
+			rollback();
+			throw;
+		}
+	}
+
+	virtual const bool tryAddData(const VariantPtr & data)
+	{
+		if(transactionRollbacked == true || mdm->rawIsManaged(data) == true){
+			return false;
+		}
+
+		try{
+			rawAddData(data);
+		}catch(...){
+			return false;
+		}
+
+		return true;
+	}
+
+	virtual const bool tryRemoveData(const VariantConstPtr & data)
+	{
+		if(transactionRollbacked == true || mdm->rawIsManaged(data) == false){
+			return false;
+		}
+
+		try{
+			rawRemoveData(data);
+		}catch(...){
+			return false;
+		}
+
+		return true;
+	}
+
+	virtual const bool tryUpdateData(const VariantConstPtr & data, const VariantConstPtr & newData)
+	{
+		if(transactionRollbacked == true || mdm->rawIsManaged(data) == false){
+			return false;
+		}
+
+		try{
+			rawUpdateData(data, newData);
+		}catch(...){
+			return false;
+		}
+
+		return true;
+	}
+
+	virtual void getObjects(ConstVariantsList & objects) const
+	{
+		if(transactionRollbacked == true){
+			throw core::runtime_error("Memory transaction rolled-back");
+		}
+
+		mdm->rawGetObjects(objects);
+	}
+
+	virtual void getObjects(ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const
+	{
+		if(transactionRollbacked == true){
+			throw core::runtime_error("Memory transaction rolled-back");
+		}
+
+		mdm->rawGetObjects(objects, type, exact);
+	}
+
+	virtual void getObjects(VariantsCollection& objects) const
+	{
+		if(transactionRollbacked == true){
+			throw core::runtime_error("Memory transaction rolled-back");
+		}
+
+		mdm->rawGetObjects(objects);
+	}
+
+	virtual const bool isManaged(const VariantConstPtr & object) const
+	{
+		if(transactionRollbacked == true){
+			throw core::runtime_error("Memory transaction rolled-back");
+		}
+
+		return mdm->rawIsManaged(object);
+	}
+
+	virtual const bool hasObject(const utils::TypeInfo & type, bool exact) const
+	{
+		if(transactionRollbacked == true){
+			throw core::runtime_error("Memory transaction rolled-back");
+		}
+
+		return mdm->rawHasObject(type, exact);
+	}
+
+private:
+
+	void rawAddData(const VariantPtr & data)
+	{
+		//dodajemy dane do dm
+		mdm->rawAddData(data);
+		//aktualizujemy liste zmian
+		Change change;
+		change.currentValue = data;
+		change.modyfication = IDataManagerReader::ADD_OBJECT;
+		change.type = data->data()->getTypeInfo();
+		modyfications.push_back(change);
+	}
+
+	void rawRemoveData(const VariantConstPtr & data)
+	{
+		//dodajemy dane do dm
+		mdm->rawRemoveData(data);
+		//aktualizujemy liste zmian
+		Change change;
+		change.previousValue = data;
+		change.modyfication = IDataManagerReader::REMOVE_OBJECT;
+		change.type = data->data()->getTypeInfo();
+		modyfications.push_back(change);
+	}
+
+	void rawUpdateData(const VariantConstPtr & data, const VariantConstPtr & newData)
+	{
+		Change change;
+		change.previousValue = data->clone();
+		//dodajemy dane do dm
+		mdm->rawUpdateData(data, newData);
+		//aktualizujemy liste zmian
+		change.currentValue = data;
+		change.modyfication = IDataManagerReader::UPDATE_OBJECT;
+		change.type = data->data()->getTypeInfo();
+		modyfications.push_back(change);
+	}
+};
+
+class DataManager::ReaderTransaction : public IDataManagerReader::IOperations
+{
+public:
+	ReaderTransaction(DataManager * mdm) : mdm(mdm)
+	{
+		mdm->sync.lock();
+	}
+
+	~ReaderTransaction()
+	{
+		mdm->sync.unlock();
+	}
+
+public:
+
+	virtual void getObjects(ConstVariantsList & objects) const
+	{
+		mdm->rawGetObjects(objects);
+	}
+
+	virtual void getObjects(ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const
+	{
+		mdm->rawGetObjects(objects, type, exact);
+	}
+
+	virtual void getObjects(VariantsCollection& objects) const
+	{
+		mdm->rawGetObjects(objects);
+	}
+
+	virtual const bool isManaged(const VariantConstPtr & object) const
+	{
+		return mdm->rawIsManaged(object);
+	}
+
+	virtual const bool hasObject(const utils::TypeInfo & type, bool exact) const
+	{
+		return mdm->rawHasObject(type, exact);
+	}
+
+
+private:
+	DataManager * mdm;
+};
 
 DataManager::DataManager()
 {
+
 }
 
 DataManager::~DataManager()
 {
-
+	ObjectsByTypes().swap(objectsByTypes);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void DataManager::registerParser(const core::IParserPtr & parser)
+void DataManager::addObserver(const ObserverPtr & objectWatcher)
 {
-    //unikalne ID parsera
-    if(registeredParsers.find(parser->getID()) == registeredParsers.end()) {
-        // uzupełnienie słownika rozszerzeń
-        core::IParser::Extensions extensions;
-        // pobranie słownika rozszerzeń z parsera
-        parser->getSupportedExtensions(extensions);
-
-        if(extensions.empty() == true){
-            std::stringstream str;
-            str << "Parser ID: "<< parser->getID() << " Trying to register parser with 0 supported extensions";
-            throw std::runtime_error(str.str());
-        }
-
-        //weryfikacja rozszerzeń
-        for(auto it = extensions.begin(); it != extensions.end(); ++it){
-
-            if(it->first.empty() == true){
-                std::stringstream str;
-                str << "Parser ID: "<< parser->getID() << " Trying to register extension of length 0";
-                throw std::runtime_error(str.str());
-            }
-
-            std::string ext(it->first);
-            prepareExtension(ext);
-
-            if(it->second.types.empty() == true){
-                std::stringstream str;
-                str << "Trying to register extension " << ext << " without supported types for parser " << parser->getID();
-                throw std::runtime_error(str.str());
-            }
-        }
-
-        for(auto it = extensions.begin(); it != extensions.end(); ++it){
-            //właściwe rozszerzenie
-            std::string extension(it->first);
-
-            prepareExtension(extension);
-
-            auto extIT = registeredExtensions.find(extension);
-
-            if(extIT != registeredExtensions.end()) {
-                LOG_WARNING("There is at least one parser that supports extension " << extension);
-            }else{
-                //tworzymy nowy wpis dla nowego rozszerzenia
-                extIT = registeredExtensions.insert(SupportedExtensionsPersistenceData::value_type(extension, ExtendedExtensionDescription())).first;
-                this->extensions.insert(extension);
-            }
-
-            // aktualizujemy parsery dla danego rozszerzenia
-            extIT->second.parsers.insert(parser);
-            //prubujemy aktualizaować opisy tego rozszerzenia
-            if(it->second.description.empty() == false){
-                extIT->second.descriptions.push_back(it->second.description);
-            }
-            //aktualizujemy typy tego rozszerzenia
-            extIT->second.types.insert(it->second.types.begin(), it->second.types.end());
-
-            LOG_INFO("Parser for extension " << extension << " registered. Parser ID: " << parser->getID());
-        }
-        // uzupełnienie pozostałych kolekcji
-        registeredParsers.insert(std::make_pair(parser->getID(), parser));
-    } else {
-        throw std::runtime_error("Parser with this ID already registered.");
-    }
-}
-
-int DataManager::getNumRegisteredParsers() const
-{
-    return static_cast<int>(registeredParsers.size());
-}
-
-core::IParserConstPtr DataManager::getRegisteredParser( int idx ) const
-{
-    UTILS_ASSERT(idx >= 0 && idx < getNumRegisteredParsers());
-    auto it = registeredParsers.begin();
-    std::advance( it, idx );
-    return const_pointer_cast<const IParser>(it->second);
-}
-
-//core::ObjectWrapperPtr DataManager::getWrapper(void * rawPtr) const
-//{
-//    ScopedLock lock(stateMutex);
-//
-//    auto it = rawPointerToObjectWrapper.find(rawPtr);
-//    if(it != rawPointerToObjectWrapper.end()){
-//        return it->second;
-//    }
-//
-//    return ObjectWrapperPtr();
-//}
-
-void DataManager::getManagedData(core::Objects & objects) const
-{
-    ScopedLock lock(stateMutex);
-    objects.insert(this->objects.begin(), this->objects.end());
-}
-
-void DataManager::nonNotifyAddData(const core::ObjectWrapperPtr & data, const core::ObjectWrapper::LazyInitializer & initializer)
-{
-    ScopedLock lock(stateMutex);
-
-    auto it = objects.find(data);
-
-    if(it != objects.end()){
-        throw std::runtime_error("Trying to add data already managed by DataManager");
-    }
-
-    if(data->isNull() == false || initializer.empty() == false){
-
-		//dodaj do grupowania po typach
-		core::TypeInfoList types;
-		data->getSupportedTypes(types);
-
-        objects.insert(data);
-
-        for(auto it = types.begin(); it != types.end(); ++it){
-            objectsByTypes[*it].insert(data);
-        }
-
-    }else{
-        throw std::runtime_error("Attempting to add empty data without initializer");
-    }
-}
-
-void DataManager::removeDataImpl(const core::ObjectWrapperPtr & data)
-{
-	objects.erase(data);
-
-	//usun z grupowania po typach
-	core::TypeInfoList types;
-	data->getSupportedTypes(types);
-
-	for(auto it = types.begin(); it != types.end(); ++it){
-		auto IT = objectsByTypes.find(*it);
-		IT->second.erase(data);
-		if(IT->second.empty() == true){
-			objectsByTypes.erase(IT);
-		}
-	}
-}
-
-
-void DataManager::nonNotifyRemoveData(const core::ObjectWrapperPtr & data)
-{
-    ScopedLock lock(stateMutex);
-
-    auto it = objects.find(data);
-
-    if(it == objects.end()){
-        throw std::runtime_error("Trying to remove data not managed by DataManager");
-    }
-
-    removeDataImpl(data);
-}
-
-void DataManager::getManagedFiles(core::Files & files) const
-{
-    ScopedLock lock(stateMutex);
-
-    for(auto it = parsersByFiles.begin(); it != parsersByFiles.end(); ++it){
-        files.insert(it->first);
-    }
-}
-
-const bool DataManager::isFileManaged(const core::Filesystem::Path & file) const
-{
-    ScopedLock lock(stateMutex);
-    return parsersByFiles.find(file) != parsersByFiles.end();
-}
-
-void DataManager::nonNotifyAddFile(const core::Filesystem::Path & file, std::vector<ObjectWrapperPtr> & objects)
-{
-    ScopedLock lock(stateMutex);
-
-    auto extIT = registeredExtensions.find(file.extension().string());
-
-    if(extIT == registeredExtensions.end()){
-        throw std::runtime_error("Trying to add unsupported file. Extension not registered by any parser");
-    }
-
-    auto fileIT = parsersByFiles.find(file);
-    if(fileIT != parsersByFiles.end()){
-        throw std::runtime_error("Trying to add file that already is managed by DataManager");
-    }
-
-    Parsers parsers;
-    Objects totalObjects;
-
-    //jeśli pliku nie ma dodaj go, stwórz parsery i rozszerz dostępne dane wraz z ich opisem
-    for(auto parserIT = extIT->second.parsers.begin(); parserIT != extIT->second.parsers.end(); ++parserIT){
-        //twworzymy własne opakowanie parsera klienckiego
-        ParserPtr parser(new Parser((*parserIT)->create(), file));
-        Objects objects;
-        //pobieramy udostępniane obiekty
-        parser->getObjects(objects);
-
-        Objects verifiedObjects;
-
-        //zarejestrowanie obiektów i ich związku z parserem i typami danych
-        for(auto objectIT = objects.begin(); objectIT != objects.end(); ++objectIT){
-
-            if(*objectIT == nullptr){
-
-                LOG_DEBUG("Unitialized object " << parser->getPath() << " for parser ID " << parser->getParser()->getID());
-
-            }else{
-
-				//TODO
-				//dodac inicjalizator, jesli jest to warning!!
-
-                //ObjectByParsers
-                verifiedObjects.insert(*objectIT);
-                //ParsersByObjects
-                parsersByObjects[*objectIT] = parser;
-
-                nonNotifyAddData(*objectIT, boost::bind(&DataManager::initializeDataWithParser, this, _1, parser));
-
-                //UWAGA!!
-                //mapowanie surowego wskaźnika do ObjectWrappera jest robione podczas parsowania!!
-                //teraz mamy leniwą inicjalizację
-            }
-        }
-
-        if(verifiedObjects.empty() == false){
-            //pomocnicza zmienna - żebyt nie czytać mapy za każdym razem dla tego samego argumentu
-            objectsByParsers[parser].insert(verifiedObjects.begin(), verifiedObjects.end());
-            //kojarzymy nowy parser z plikiem
-            parsers.insert(parser);
-
-            totalObjects.insert(verifiedObjects.begin(), verifiedObjects.end());
-        }
-    }
-
-    if(parsers.empty() == true){
-        LOG_DEBUG("Any of known parsers did not provide proper object wrappers for file: " << file);
-    }else{
-
-        for(auto it = totalObjects.begin(); it != totalObjects.end(); ++it){
-            objects.push_back(*it);
-        }
-        parsersByFiles.insert(ParsersByFiles::value_type(file, parsers));
-        LOG_INFO("File: " << file << " sussesfully loaded to DataManager");
-    }
-}
-
-void DataManager::nonNotifyRemoveFile(const core::Filesystem::Path & file)
-{
-    ScopedLock lock(stateMutex);
-
-    auto fileIT = parsersByFiles.find(file);
-    if(fileIT == parsersByFiles.end()){
-        throw std::runtime_error("Trying to remove file that is not managed by DataManager");
-    }
-
-    Objects totalObjects;
-
-    //zwalniamy zasoby parserów żeby potem zwolnić same parsery
-    for(auto parserIT = fileIT->second.begin(); parserIT != fileIT->second.end(); ++parserIT){
-        auto objectsByParserIT = objectsByParsers.find(*parserIT);
-
-        totalObjects.insert(objectsByParserIT->second.begin(), objectsByParserIT->second.end());
-
-        for(auto objectIT = objectsByParserIT->second.begin(); objectIT != objectsByParserIT->second.end(); ++objectIT){
-
-            nonNotifyRemoveData(*objectIT);
-
-            parsersByObjects.erase(*objectIT);
-        }
-
-        //usuwamy ten wpis
-        objectsByParsers.erase(objectsByParserIT);
-    }
-
-    //usuwamy ten wpis
-    parsersByFiles.erase(fileIT);
-}
-
-void DataManager::getObjectsForFile(const core::Filesystem::Path & file, std::vector<core::ObjectWrapperPtr> & objects) const
-{
-    ScopedLock lock(stateMutex);
-
-    auto fileIT = parsersByFiles.find(file);
-    if(fileIT == parsersByFiles.end()){
-        throw std::runtime_error("Trying to get object for file that is not managed by DataManager");
-    }
-
-    for(auto parserIT = fileIT->second.begin(); parserIT != fileIT->second.end(); ++parserIT){
-        auto it = objectsByParsers.find(*parserIT);
-        objects.insert(objects.end(), it->second.begin(), it->second.end());
-    }
-}
-
-const DataManager::Extensions & DataManager::getSupportedFilesExtensions() const
-{
-	ScopedLock lock(stateMutex);
-    return extensions;
-}
-
-bool DataManager::isExtensionSupported(const std::string & extension) const
-{
-	ScopedLock lock(stateMutex);
-    std::string ext(extension);
-
-    prepareExtension(ext);
-
-    return extensions.find(ext) != extensions.end();
-}
-
-const IFileDataManager::ExtensionDescription & DataManager::getExtensionDescription(const std::string & extension) const
-{
-	ScopedLock lock(stateMutex);
-    std::string ext(extension);
-
-    prepareExtension(ext);
-
-    auto it = registeredExtensions.find(ext);
-    if(it == registeredExtensions.end()){
-        std::stringstream str;
-        str << "Request for description of unsupported/unregistered extension " << ext;
-        throw std::runtime_error(str.str());
-    }
-
-    return it->second;
-}
-
-const core::Types & DataManager::getSupportedTypes() const
-{
-	ScopedLock lock(stateMutex);
-    return registeredTypes;
-}
-
-const core::Types & DataManager::getTypeBaseTypes(const core::TypeInfo & type) const
-{
-	ScopedLock lock(stateMutex);
-    auto it = typesHierarchy.find(type);
-    if(it == typesHierarchy.end()){
-        throw std::runtime_error("Request for description of unsupported type");
-    }
-
-    return it->second.first;
-}
-
-const core::Types & DataManager::getTypeDerrivedTypes(const core::TypeInfo & type) const
-{
-	ScopedLock lock(stateMutex);
-    auto it = typesHierarchy.find(type);
-    if(it == typesHierarchy.end()){
-        throw std::runtime_error("Request for description of unsupported type");
-    }
-
-    return it->second.second;
-}
-
-void DataManager::getObjects(core::ObjectWrapperCollection& objects)
-{
-    ScopedLock lock(stateMutex);
-    std::vector<core::ObjectWrapperConstPtr> ob;
-    getObjects(ob, objects.getTypeInfo(), objects.exactTypes());
-    objects.nonCheckInsert(objects.end(), ob.begin(), ob.end());
-}
-
-void DataManager::getObjects( std::vector<core::ObjectWrapperConstPtr>& objects, const core::TypeInfo& type, bool exact /*= false*/)
-{
-    ScopedLock lock(stateMutex);
-
-    if(registeredTypes.find(type) == registeredTypes.end()){
-        std::stringstream str;
-        str << "Request for unsupported data type " << type.name();
-        throw std::runtime_error(str.str());
-    }
-
-    core::Objects invalid;
-    core::Types types;
-    types.insert(type);
-
-    if(exact == false){
-        auto & derrived = getTypeDerrivedTypes(type);
-        types.insert(derrived.begin(), derrived.end());
-    }
-
-    for(auto typeIT = types.begin(); typeIT != types.end(); ++typeIT){
-
-        auto typeObjectsIT = objectsByTypes.find(*typeIT);
-
-        if(typeObjectsIT == objectsByTypes.end()){
-            //nie mamy jeszcze zadnego obiektu tego typu wiec idziemyu dalej
-            continue;
-        }
-
-        for(auto objectIT = typeObjectsIT->second.begin(); objectIT != typeObjectsIT->second.end(); ++objectIT){
-
-            core::ObjectWrapperPtr wrapper(*objectIT);
-
-			if(wrapper->isNull() == false){
-				objects.push_back(wrapper);
-			}
-        }
-    }
-
-	//TODO
-	//move to initializer
-	/*if ( invalid.empty() == false ) {
-
-	NotifyBlocker<core::IMemoryDataManager> blocker(*this);
-
-	LOG_DEBUG("Removing " << invalid.size() << " null or untrustfull objects after data request of type " << type.name());
-	for(auto it = invalid.begin(); it != invalid.end(); ++it){
-
-	removeData(*it);
-	}
-	}*/
-}
-
-void DataManager::prepareExtension(std::string & extension)
-{
-    if(extension.empty() == false && extension.front() != '.'){
-        extension.insert(0, ".");
-        boost::to_lower(extension);
-    }
-}
-
-void DataManager::registerObjectWrapperPrototype( const core::ObjectWrapperConstPtr & prototype )
-{
-	ScopedLock lock(stateMutex);
-
-    core::TypeInfo type = prototype->getTypeInfo();
-    auto it = registeredTypes.find(type);
-
-    if ( it != registeredTypes.end() ) {
-        LOG_ERROR("Prototype for " << type.name() << " already exists.");
-    }else{
-
-        //rejestrujemy typ i jego prototyp
-        registeredTypesPrototypes.insert(std::make_pair(type, prototype));
-
-        //aktualizujemy hierarchię typów
-        registeredTypes.insert(type);
-
-        //hierarchia typów
-        core::TypeInfoList types;
-        prototype->getSupportedTypes(types);
-
-        types.remove(type);
-
-        typesHierarchy[type].first.insert(types.begin(), types.end());
-
-        for(auto typeIT = types.begin(); typeIT != types.end(); ++typeIT){
-            typesHierarchy[*typeIT].second.insert(type);
-        }
-    }
-}
-
-core::ObjectWrapperCollectionPtr DataManager::createWrapperCollection(const core::TypeInfo& typeInfo)
-{
-    auto found = registeredTypesPrototypes.find(typeInfo);
-    if ( found != registeredTypesPrototypes.end() ) {
-        //return ObjectWrapperCollectionPtr(found->second->createWrapperCollection());
-    } else {
-        // TODO: elaborate
-        throw std::runtime_error("Type not supported.");
-    }
-}
-
-const core::ObjectWrapperConstPtr & DataManager::getTypePrototype(const core::TypeInfo & typeInfo) const
-{
-    auto it = registeredTypesPrototypes.find(typeInfo);
-    if(it == registeredTypesPrototypes.end()){
-        throw std::runtime_error("Given type is not supported! It was not registered in application.");
-    }
-
-    return it->second;
-}
-
-bool DataManager::isTypeCompatible(const core::TypeInfo & sourceTypeInfo, const core::TypeInfo & destTypeInfo) const
-{
-	if(sourceTypeInfo == destTypeInfo){
-		return true;
+	ScopedLock lock(sync);
+	if(std::find(observers.begin(), observers.end(), objectWatcher) != observers.end()){
+		throw core::runtime_error("Watcher already registered");
 	}
 
-	ScopedLock lock(stateMutex);
+	observers.push_back(objectWatcher);
+}
 
-	bool ret = false;
+void DataManager::removeObserver(const ObserverPtr & objectWatcher)
+{
+	ScopedLock lock(sync);
+	auto it = std::find(observers.begin(), observers.end(), objectWatcher);
+	if(it == observers.end()){
+		throw core::runtime_error("Watcher not registered");
+	}
 
-	auto const & typesSet = getTypeBaseTypes(sourceTypeInfo);
+	observers.erase(it);
+}
 
-	if(typesSet.find(destTypeInfo) != typesSet.end()){
-		ret = true;
+void DataManager::getObjects(ConstVariantsList & objects) const
+{
+	ScopedLock lock(sync);
+	rawGetObjects(objects);
+}
+
+void DataManager::getObjects(ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const
+{
+	ScopedLock lock(sync);
+	rawGetObjects(objects, type, exact);
+}
+
+void DataManager::getObjects(VariantsCollection& objects) const
+{
+	ScopedLock lock(sync);
+	rawGetObjects(objects);
+}
+
+const bool DataManager::isManaged(const VariantConstPtr & object) const
+{
+	ScopedLock lock(sync);
+	return rawIsManaged(object);
+}
+
+void DataManager::addData(const VariantPtr & data)
+{
+	ScopedLock lock(sync);
+
+	if(rawIsManaged(data) == true){
+		throw core::runtime_error("Object already managed by manager");
+	}
+
+	rawAddData(data);
+	ChangeList changes;
+	Change change;
+	change.currentValue = data;
+	change.modyfication = IDataManagerReader::ADD_OBJECT;
+	change.type = data->data()->getTypeInfo();
+	changes.push_back(change);
+	updateObservers(changes);
+}
+
+void DataManager::removeData(const VariantConstPtr & data)
+{
+	ScopedLock lock(sync);
+
+	if(rawIsManaged(data) == false){
+		throw core::runtime_error("Object not managed by manager");
+	}
+
+	rawRemoveData(data);
+
+	ChangeList changes;
+	Change change;
+	change.previousValue = data;
+	change.modyfication = IDataManagerReader::REMOVE_OBJECT;
+	change.type = data->data()->getTypeInfo();
+	changes.push_back(change);
+	updateObservers(changes);
+}
+
+void DataManager::updateData(const VariantConstPtr & data, const VariantConstPtr & newData)
+{
+	ScopedLock lock(sync);
+
+	if(rawIsManaged(data) == false){
+		throw core::runtime_error("Object not managed by manager");
+	}
+
+	ChangeList changes;
+	Change change;
+	change.previousValue = data->clone();
+
+	rawUpdateData(data, newData);
+
+	change.currentValue = data;
+
+	change.modyfication = IDataManagerReader::UPDATE_OBJECT;
+	change.type = data->data()->getTypeInfo();
+	changes.push_back(change);
+	updateObservers(changes);
+}
+
+const bool DataManager::tryAddData(const VariantPtr & data)
+{
+	bool ret = true;
+
+	try{
+		addData(data);
+	}catch(...){
+		ret = false;
 	}
 
 	return ret;
 }
+
+const bool DataManager::tryRemoveData(const VariantConstPtr & data)
+{
+	bool ret = true;
+
+	try{
+		removeData(data);
+	}catch(...){
+		ret = false;
+	}
+
+	return ret;
+}
+
+const bool DataManager::tryUpdateData(const VariantConstPtr & data, const VariantConstPtr & newData)
+{
+	bool ret = true;
+
+	try{
+		updateData(data, newData);
+	}catch(...){
+		ret = false;
+	}
+
+	return ret;
+}
+
+IDataManager::TransactionPtr DataManager::transaction()
+{	
+	return IDataManager::TransactionPtr(new Transaction(this));
+}
+
+IDataManagerReader::TransactionPtr DataManager::transaction() const
+{	
+	return IDataManagerReader::TransactionPtr(new ReaderTransaction(const_cast<DataManager*>(this)));
+}
+
+void DataManager::rawGetObjects(ConstVariantsList & objects) const
+{
+	for(auto it = objectsByTypes.begin(); it != objectsByTypes.end(); ++it){
+		objects.insert(objects.end(), it->second.begin(), it->second.end());
+	}
+}
+
+void DataManager::rawGetObjects(ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const
+{
+	utils::TypeInfoSet types;
+	requestedTypes(type, exact, types);
+
+	for(auto it = types.begin(); it != types.end(); ++it)
+	{
+		auto dataIT = objectsByTypes.find(*it);
+		if(dataIT != objectsByTypes.end()){
+			objects.insert(objects.end(), dataIT->second.begin(), dataIT->second.end());
+		}
+	}
+}
+
+void DataManager::rawGetObjects(VariantsCollection& objects) const
+{
+	ConstVariantsList locObjects;
+	rawGetObjects(locObjects, objects.getTypeInfo(), objects.exactTypes());
+	objects.nonCheckInsert(objects.end(), locObjects.begin(), locObjects.end());
+}
+
+void DataManager::rawAddData(const VariantPtr & data)
+{
+	objectsByTypes[data->data()->getTypeInfo()].insert(data);
+}
+
+void DataManager::rawRemoveData(const VariantConstPtr & data)
+{
+	auto it = objectsByTypes.find(data->data()->getTypeInfo());
+	if (it != objectsByTypes.end()){
+		it->second.erase(utils::const_pointer_cast<Variant>(data));
+		if (it->second.empty() == true){
+			objectsByTypes.erase(it);
+		}
+	}
+}
+
+void DataManager::rawUpdateData(const VariantConstPtr & data, const VariantConstPtr & newData)
+{
+	//TODO
+	//assign value - clone?
+
+	auto d = utils::const_pointer_cast<Variant>(data);
+
+	d->copyData(*newData);
+	d->copyMetadata(*newData);
+}
+
+const bool DataManager::rawIsManaged(const VariantConstPtr & object) const
+{
+	auto type = object->data()->getTypeInfo();
+	if(getRegisteredDataTypesManager()->isRegistered(type) == false){
+		throw core::runtime_error(std::string("Type not registered: ") + type.name());
+	}
+
+	auto it = objectsByTypes.find(type);
+	if(it != objectsByTypes.end() && std::find(it->second.begin(), it->second.end(), object) != it->second.end()){
+		return true;
+	}
+
+	return false;
+}
+
+void DataManager::updateObservers(const ChangeList & changes )
+{
+	for(auto it = observers.begin(); it != observers.end(); ++it){
+		try{
+			(*it)->observe(changes);
+		}catch(...){
+			//TODO
+			//rozwin�� obserwator�w aby si� jako� identyfikowali!! ewentualnie robi� to przez w�asn� implementacj� dostarczan� konretnym obiektom
+			//(osobne interfejsy reader�w dla ka�dego elemnentu �adowanego do aplikacji - service, source, datasink, itp)
+			CORE_LOG_WARNING("Error while updating memory data manager observer");
+		}
+	}
+}
+
+const bool DataManager::hasObject(const utils::TypeInfo & type, bool exact) const
+{
+	ScopedLock lock(sync);
+	return rawHasObject(type, exact);
+};
+
+
+const bool DataManager::rawHasObject(const utils::TypeInfo & type, bool exact) const
+{
+	bool ret = false;
+
+	utils::TypeInfoSet types;
+	requestedTypes(type, exact, types);
+
+	for(auto it = types.begin(); it != types.end(); ++it)
+	{
+		auto dataIT = objectsByTypes.find(*it);
+		if(dataIT != objectsByTypes.end() && dataIT->second.empty() == false){
+			ret = true;
+			break;
+		}
+	}
+
+	return ret;
+}
+
+void DataManager::requestedTypes(const utils::TypeInfo & type, bool exact, utils::TypeInfoSet & types)
+{
+	types.insert(type);
+
+	if(exact == false){
+		auto dt = getRegisteredDataTypesManager()->derrivedTypes(type);
+		types.insert(dt.begin(), dt.end());
+	}
+}
+

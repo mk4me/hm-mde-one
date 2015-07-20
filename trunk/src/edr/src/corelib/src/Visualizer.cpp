@@ -13,7 +13,7 @@ class Visualizer::VisualizerImpl
 {
 private:
 	//! Klasa pomocnicza implementacji wizualizatora przy obserwowaniu zmian danych dla serii
-	class VisualizerHelper : public IDataManagerReader::IObjectObserver
+	class VisualizerHelper : public IDataManagerReader::IObserver
 	{
 	public:
 		//! \param visualizer Wizualizaotor który wspieramy
@@ -56,29 +56,29 @@ private:
 		}
 
 		//! \param serie Seria której dane będą obserwowane
-		void addSerieToObserve(Visualizer::VisualizerSerie* serie)
+		void addSerieToObserve(Visualizer::Serie* serie)
 		{
 			std::lock_guard<std::mutex> lock(sync);
-			dataSeriesToObserve[serie->serie()->getData()].push_back(serie);
+			dataSeriesToObserve[serie->innerSerie()->getData()].push_back(serie);
 		}
 
 		//! \param serie Seria której dane nie będą obserwowane
-		void removeSerieToObserve(Visualizer::VisualizerSerie* serie)
+		void removeSerieToObserve(Visualizer::Serie* serie)
 		{
 			std::lock_guard<std::mutex> lock(sync);
-			dataSeriesToObserve[serie->serie()->getData()].remove(serie);
-			dataToUpdate[serie->serie()->getData()].remove(serie);
+			dataSeriesToObserve[serie->innerSerie()->getData()].remove(serie);
+			dataToUpdate[serie->innerSerie()->getData()].remove(serie);
 		}
 
 		//! \param dataSource Nowe źródło danych na potrzeby pobierania danych dostępnych dla wizualizatorów
-		void addDataSource(VisualizerDataSourcePtr dataSource)
+		void addDataSource(DataSourcePtr dataSource)
 		{
 			std::lock_guard<std::mutex> lock(sourcesSync);
 			sources_.push_back(dataSource);
 		}
 
 		//! \param dataSource Usuwane źródło danych na potrzeby pobierania danych dostępnych dla wizualizatorów
-		void removeDataSource(VisualizerDataSourcePtr dataSource)
+		void removeDataSource(DataSourcePtr dataSource)
 		{
 			std::lock_guard<std::mutex> lock(sourcesSync);
 			sources_.remove(dataSource);
@@ -93,7 +93,7 @@ private:
 
 		//! \param idx Indeks źródła danych
 		//! \return Źródło danych o zadanym indeksie
-		VisualizerDataSourcePtr getDataSource(int idx)
+		DataSourcePtr getDataSource(int idx)
 		{
 			std::lock_guard<std::mutex> lock(sourcesSync);
 			auto it = sources_.begin();
@@ -127,11 +127,11 @@ private:
 		{
 			for (auto dataIT = dataToUpdate.begin(); dataIT != dataToUpdate.end(); ++dataIT){
 				for (auto serieIT = dataIT->second.begin(); serieIT != dataIT->second.end(); ++serieIT){
-					(*serieIT)->serie()->requestUpdate();
+					(*serieIT)->innerSerie()->requestUpdate();
 				}
 			}
 
-			std::map<VariantConstPtr, std::list<Visualizer::VisualizerSerie*>>().swap(dataToUpdate);
+			std::map<VariantConstPtr, std::list<Visualizer::Serie*>>().swap(dataToUpdate);
 		}
 
 	private:
@@ -146,9 +146,9 @@ private:
 		//! Czy live observe jest aktywne
 		bool liveObserve;
 		//! Mapa seri wizualizatorów obserwujących dane
-		std::map<VariantConstPtr, std::list<Visualizer::VisualizerSerie*>> dataSeriesToObserve;
+		std::map<VariantConstPtr, std::list<Visualizer::Serie*>> dataSeriesToObserve;
 		//! Mapa danych do aktualizacji (odświeżenia) w seriach
-		std::map<VariantConstPtr, std::list<Visualizer::VisualizerSerie*>> dataToUpdate;
+		std::map<VariantConstPtr, std::list<Visualizer::Serie*>> dataToUpdate;
 	};
 
 	//! Zaprzyjaźniona klasa pomocnicza wizualizatora
@@ -301,13 +301,13 @@ public:
 	//! \param requestedType Typ danych oczekiwanych do wyświetlenia
 	//! \param data Dane
 	//! \return Seria danych wizualizatora
-	Visualizer::VisualizerSerie * createSerie(const utils::TypeInfo & requestedType, const VariantConstPtr & data)
+	Visualizer::Serie * createSerie(const utils::TypeInfo & requestedType, const VariantConstPtr & data)
 	{
 		std::lock_guard<std::recursive_mutex> lock(sync);
-		VisualizerSerie * serie = nullptr;
+		Visualizer::Serie * serie = nullptr;
 		auto s = innerVisualizer_->createSerie(requestedType, data);
 		if (s != nullptr){
-			serie = new VisualizerSerie(visualizer_, s);
+			serie = new Visualizer::Serie(visualizer_, s);
 			dataSeries.push_back(serie);
 			visualizerHelper_->addSerieToObserve(serie);
 			notifyChange(serie, ADD_SERIE);
@@ -321,14 +321,14 @@ public:
 
 	//! \param serie Seria danych do sklonowania
 	//! \return sklonowana seria danych
-	Visualizer::VisualizerSerie * createSerie(VisualizerSerie * serie)
+	Visualizer::Serie * createSerie(Visualizer::Serie * serie)
 	{
 		std::lock_guard<std::recursive_mutex> lock(sync);
-		VisualizerSerie * retserie = nullptr;
+		Visualizer::Serie * retserie = nullptr;
 		if (serie->visualizer_ == visualizer_){
-			auto s = innerVisualizer_->createSerie(serie->serie());
+			auto s = innerVisualizer_->createSerie(serie->innerSerie());
 			if (s != nullptr){
-				retserie = new VisualizerSerie(visualizer_, s);
+				retserie = new Visualizer::Serie(visualizer_, s);
 				dataSeries.push_back(retserie);
 				visualizerHelper_->addSerieToObserve(serie);
 				notifyChange(serie, ADD_SERIE);
@@ -339,7 +339,7 @@ public:
 	}
 
 	//! \param serie Seria danych do usunięcia/zniszczenia
-	void destroySerie(VisualizerSerie * serie)
+	void destroySerie(Visualizer::Serie * serie)
 	{
 		std::lock_guard<std::recursive_mutex> lock(sync);
 		if (serie->visualizer_ == visualizer_){
@@ -361,14 +361,14 @@ public:
 			notifyChange(serie, REMOVE_SERIE);
 			dataSeries.remove(serie);
 			visualizerHelper_->removeSerieToObserve(serie);
-			innerVisualizer_->removeSerie(serie->serie());
+			innerVisualizer_->removeSerie(serie->innerSerie());
 			delete serie;
 		}
 	}
 
 	//! \param serie Seria danych do odświeżenia
 	//! \param modyfication typ modyfikacji serii
-	void notifyChange(VisualizerSerie * serie, SerieModyfication modyfication)
+	void notifyChange(Visualizer::Serie * serie, SerieModyfication modyfication)
 	{
 		for (auto it = observers_.begin(); it != observers_.end(); ++it){
 			(*it)->update(serie, modyfication);
@@ -390,22 +390,22 @@ public:
 	}
 
 	//! \param observer Obiekt obserwujący wizualizator
-	void addObserver(IVisualizerObserver * observer)
+	void addObserver(Visualizer::IObserver * observer)
 	{
 		observers_.push_back(observer);
 	}
 	//! \param observer Usuwany obiekt obserwujący wizualizator
-	void removeObserver(IVisualizerObserver * observer)
+	void removeObserver(Visualizer::IObserver * observer)
 	{
 		observers_.remove(observer);
 	}
 	//! \param dataSource Nowe źródło danych wizualizatora
-	void addDataSource(VisualizerDataSourcePtr dataSource)
+	void addDataSource(DataSourcePtr dataSource)
 	{
 		visualizerHelper_->addDataSource(dataSource);
 	}
 	//! \param dataSource Usuwane źródło dancyh wizualizatora
-	void removeDataSource(VisualizerDataSourcePtr dataSource)
+	void removeDataSource(DataSourcePtr dataSource)
 	{
 		visualizerHelper_->removeDataSource(dataSource);
 	}
@@ -416,7 +416,7 @@ public:
 	}
 	//! \param idx Indeks źródła danych wizualizatora
 	//! \return Źródło danych
-	Visualizer::VisualizerDataSourcePtr getDataSource(int idx)
+	Visualizer::DataSourcePtr getDataSource(int idx)
 	{
 		return visualizerHelper_->getDataSource(idx);
 	}
@@ -445,7 +445,7 @@ public:
 		return dataSeries.size();
 	}
 
-	Visualizer::VisualizerSerie * getSerie(int idx)
+	Visualizer::Serie * getSerie(int idx)
 	{
 		std::lock_guard<std::recursive_mutex> lock(sync);
 		auto it = dataSeries.begin();
@@ -453,7 +453,7 @@ public:
 		return *it;
 	}
 
-	const int serieIdx(VisualizerSerie * serie) const
+	const int serieIdx(Visualizer::Serie * serie) const
 	{
 		std::lock_guard<std::recursive_mutex> lock(sync);
 		auto it = std::find(dataSeries.begin(), dataSeries.end(), serie);
@@ -464,7 +464,7 @@ public:
 		return std::distance(dataSeries.begin(), it);
 	}
 
-	void setActiveSerie(VisualizerSerie * serie)
+	void setActiveSerie(Visualizer::Serie * serie)
 	{
 		std::lock_guard<std::recursive_mutex> lock(sync);
 
@@ -472,7 +472,7 @@ public:
 			innerVisualizer_->setActiveSerie(nullptr);
 		}
 		else{
-			innerVisualizer_->setActiveSerie(serie->serie());
+			innerVisualizer_->setActiveSerie(serie->innerSerie());
 		}
 
 		activeSerie = serie;
@@ -480,13 +480,13 @@ public:
 		notifyChange(activeSerie, Visualizer::ACTIVE_SERIE_CHANGED);
 	}
 
-	const Visualizer::VisualizerSerie * getActiveSerie() const
+	const Visualizer::Serie * getActiveSerie() const
 	{
 		std::lock_guard<std::recursive_mutex> lock(sync);
 		return activeSerie;
 	}
 
-	Visualizer::VisualizerSerie * getActiveSerie()
+	Visualizer::Serie * getActiveSerie()
 	{
 		std::lock_guard<std::recursive_mutex> lock(sync);
 		return activeSerie;
@@ -499,7 +499,7 @@ public:
 		for (auto & serie : dataSeries)
 		{
 			try{
-				serie->serie()->tryUpdate();
+				serie->innerSerie()->tryUpdate();
 			}
 			catch (std::exception & e){
 				/*
@@ -528,48 +528,48 @@ private:
 	//! Serie danych utrworzone przez użytkownika
 	DataSeries dataSeries;
 	//! Lista obserwujących
-	std::list<IVisualizerObserver*> observers_;
+	std::list<Visualizer::IObserver*> observers_;
 
 	//! DataManagerReader
 	IDataManagerReader * dmr;
 	//! VisualizerManager
 	IVisualizerManager * visManager;
 	//! Aktywna seria
-	VisualizerSerie * activeSerie;
+	Visualizer::Serie * activeSerie;
 	//! Obiekt synchronizujący stan
 	mutable std::recursive_mutex sync;
 	//! Obsługiwany wizualizator
 	Visualizer * visualizer_;
 };
 
-Visualizer::VisualizerSerie::VisualizerSerie(Visualizer * visualizer, plugin::IVisualizer::ISerie * serieBase)
-: visualizer_(visualizer), serie_(serieBase)
+Visualizer::Serie::Serie(Visualizer * visualizer, plugin::IVisualizer::ISerie * serieBase)
+: visualizer_(visualizer), innerSerie_(serieBase)
 {
 }
 
-Visualizer::VisualizerSerie::~VisualizerSerie()
+Visualizer::Serie::~Serie()
 {
-	delete serie_;
+	delete innerSerie_;
 }
 
-const Visualizer * Visualizer::VisualizerSerie::visualizer() const
+const Visualizer * Visualizer::Serie::visualizer() const
 {
 	return visualizer_;
 }
 
-Visualizer * Visualizer::VisualizerSerie::visualizer()
+Visualizer * Visualizer::Serie::visualizer()
 {
 	return visualizer_;
 }
 
-const plugin::IVisualizer::ISerie * Visualizer::VisualizerSerie::serie() const
+const plugin::IVisualizer::ISerie * Visualizer::Serie::innerSerie() const
 {
-	return serie_;
+	return innerSerie_;
 }
 
-plugin::IVisualizer::ISerie * Visualizer::VisualizerSerie::serie()
+plugin::IVisualizer::ISerie * Visualizer::Serie::innerSerie()
 {
-	return serie_;
+	return innerSerie_;
 }
 
 Visualizer::Visualizer(plugin::IVisualizerPtr vis, IDataManagerReader * dmr, IVisualizerManager * visManager) :
@@ -648,17 +648,17 @@ void Visualizer::getSupportedTypes(utils::TypeInfoSet & supportedTypes) const
 	visualizerImpl->getSupportedTypes(supportedTypes);
 }
 
-Visualizer::VisualizerSerie * Visualizer::createSerie(const utils::TypeInfo & requestedType, const VariantConstPtr & data)
+Visualizer::Serie * Visualizer::createSerie(const utils::TypeInfo & requestedType, const VariantConstPtr & data)
 {
 	return visualizerImpl->createSerie(requestedType, data);
 }
 
-Visualizer::VisualizerSerie * Visualizer::createSerie(VisualizerSerie * serie)
+Visualizer::Serie * Visualizer::createSerie(Serie * serie)
 {
 	return visualizerImpl->createSerie(serie);
 }
 
-void Visualizer::destroySerie(VisualizerSerie * serie)
+void Visualizer::destroySerie(Serie * serie)
 {
 	visualizerImpl->destroySerie(serie);
 }
@@ -668,12 +668,12 @@ void Visualizer::destroyAllSeries()
 	visualizerImpl->destroyAllSeries();
 }
 
-void Visualizer::addObserver(IVisualizerObserver * observer)
+void Visualizer::addObserver(IObserver * observer)
 {
 	visualizerImpl->addObserver(observer);
 }
 
-void Visualizer::removeObserver(IVisualizerObserver * observer)
+void Visualizer::removeObserver(IObserver * observer)
 {
 	visualizerImpl->removeObserver(observer);
 }
@@ -685,12 +685,12 @@ void Visualizer::onScreenshotTrigger()
 	}
 }
 
-void Visualizer::addDataSource(VisualizerDataSourcePtr dataSource)
+void Visualizer::addDataSource(DataSourcePtr dataSource)
 {
 	visualizerImpl->addDataSource(dataSource);
 }
 
-void Visualizer::removeDataSource(VisualizerDataSourcePtr dataSource)
+void Visualizer::removeDataSource(DataSourcePtr dataSource)
 {
 	visualizerImpl->removeDataSource(dataSource);
 }
@@ -700,7 +700,7 @@ const int Visualizer::getNumDataSources() const
 	return visualizerImpl->getNumDataSources();
 }
 
-Visualizer::VisualizerDataSourcePtr Visualizer::getDataSource(int idx)
+Visualizer::DataSourcePtr Visualizer::getDataSource(int idx)
 {
 	return visualizerImpl->getDataSource(idx);
 }
@@ -725,27 +725,27 @@ const int Visualizer::getNumSeries() const
 	return visualizerImpl->getNumSeries();
 }
 
-Visualizer::VisualizerSerie * Visualizer::getSerie(int idx)
+Visualizer::Serie * Visualizer::getSerie(int idx)
 {
 	return visualizerImpl->getSerie(idx);
 }
 
-const int Visualizer::serieIdx(VisualizerSerie * serie) const
+const int Visualizer::serieIdx(Serie * serie) const
 {
 	return visualizerImpl->serieIdx(serie);
 }
 
-void Visualizer::setActiveSerie(VisualizerSerie * serie)
+void Visualizer::setActiveSerie(Serie * serie)
 {
 	visualizerImpl->setActiveSerie(serie);
 }
 
-const Visualizer::VisualizerSerie * Visualizer::getActiveSerie() const
+const Visualizer::Serie * Visualizer::getActiveSerie() const
 {
 	return visualizerImpl->getActiveSerie();
 }
 
-Visualizer::VisualizerSerie * Visualizer::getActiveSerie()
+Visualizer::Serie * Visualizer::getActiveSerie()
 {
 	return visualizerImpl->getActiveSerie();
 }
@@ -761,5 +761,5 @@ VisualizerMemoryDataSource::VisualizerMemoryDataSource(core::IDataManagerReader 
 
 void VisualizerMemoryDataSource::getData(const utils::TypeInfo & type, ConstVariantsList & objects, bool exact) const
 {
-	dmr->getObjects(objects, type, exact);
+	dmr->transaction()->getObjects(objects, type, exact);
 }

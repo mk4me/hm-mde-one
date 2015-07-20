@@ -38,7 +38,7 @@ class PropertiesWindow;
 class PresetsWidget;
 class MergedWidget;
 
-class PLUGIN_NEWVDF_EXPORT NewVdfService : public QObject, public plugin::IService, public core::IMemoryDataManagerHierarchy::IHierarchyObserver,
+class PLUGIN_NEWVDF_EXPORT NewVdfService : public QObject, public plugin::IService, public core::IDataHierarchyManagerReader::IObserver,
     public utils::enable_shared_from_this<NewVdfService>//, public IDataFlowProvider
 {
     Q_OBJECT
@@ -59,9 +59,10 @@ public:
     //! \param managersAccessor 
 	virtual void init(core::ISourceManager * sourceManager,
 		core::IVisualizerManager * visualizerManager,
-		core::IMemoryDataManager * memoryDataManager,
+		core::IDataManager * memoryDataManager,
 		core::IStreamDataManager * streamDataManager,
-		core::IFileDataManager * fileDataManager);
+		core::IFileDataManager * fileDataManager,
+		core::IDataHierarchyManager * hierarchyManager);
     //! 
     //! \param actions 
     virtual QWidget* getWidget();
@@ -69,7 +70,7 @@ public:
     //! \param actions 
     virtual QWidgetList getPropertiesWidgets();
 
-    virtual void observe( const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes );
+    virtual void observe( const core::IDataHierarchyManagerReader::ChangeList & changes );
 
 	virtual const bool lateInit();
 	virtual void finalize();
@@ -97,7 +98,7 @@ private:
 
     coreUI::HierarchyTreeModel resultsModel;
 
-    core::IMemoryDataManager * memoryManager;
+    core::IDataHierarchyManager * hierarchyManager;
 	//QListWidget* commandStackDebug;
 	utils::ICommandStackPtr commandStack;
 	IDataProcessorManagerPtr dataProcessorManager;

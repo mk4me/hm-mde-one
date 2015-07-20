@@ -8,6 +8,7 @@
 #include <corelib/IFileDataManager.h>
 #include "IMUCostumeListWidget.h"
 #include <QtCore/QCoreApplication>
+#include <corelib/IDataHierarchyManager.h>
 #include <corelib/HierarchyHelper.h>
 #include <corelib/HierarchyDataItem.h>
 #include <plugins/hmdbCommunication/IHMDBSource.h>
@@ -247,7 +248,7 @@ public:
 		return visualizer;
 	}
 
-	void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series)
+	void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series)
 	{
 		static int number = 0;
 		// hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
@@ -263,9 +264,9 @@ public:
 		auto serieZ = visualizer->createSerie(zwrapper->data()->getTypeInfo(), zwrapper);
 		//serieZ->serie()->setName(zAxisName.isEmpty() == false ? zAxisName.toStdString() : "Z_" + suffix);
 
-		INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->serie());
-		INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->serie());
-		INewChartSerie* chartSerieZ = dynamic_cast<INewChartSerie*>(serieZ->serie());
+		INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->innerSerie());
+		INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->innerSerie());
+		INewChartSerie* chartSerieZ = dynamic_cast<INewChartSerie*>(serieZ->innerSerie());
 
 		chartSerieX->setColor(QColor(255, 0, 0));
 		chartSerieY->setColor(QColor(0, 255, 0));
@@ -338,7 +339,7 @@ public:
 		return visualizer;
 	}
 
-	void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series)
+	void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series)
 	{
 		static int number = 0;
 		// hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
@@ -348,18 +349,18 @@ public:
 		visualizer->getOrCreateWidget();
 
 		auto serieX = visualizer->createSerie(xwrapper->data()->getTypeInfo(), xwrapper);
-		serieX->serie()->setName("X_" + suffix);
+		serieX->innerSerie()->setName("X_" + suffix);
 		auto serieY = visualizer->createSerie(ywrapper->data()->getTypeInfo(), ywrapper);
-		serieY->serie()->setName("Y_" + suffix);
+		serieY->innerSerie()->setName("Y_" + suffix);
 		auto serieZ = visualizer->createSerie(zwrapper->data()->getTypeInfo(), zwrapper);
-		serieZ->serie()->setName("Z_" + suffix);
+		serieZ->innerSerie()->setName("Z_" + suffix);
 		auto serieW = visualizer->createSerie(wwrapper->data()->getTypeInfo(), wwrapper);
-		serieZ->serie()->setName("W_" + suffix);
+		serieZ->innerSerie()->setName("W_" + suffix);
 
-		INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->serie());
-		INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->serie());
-		INewChartSerie* chartSerieZ = dynamic_cast<INewChartSerie*>(serieZ->serie());
-		INewChartSerie* chartSerieW = dynamic_cast<INewChartSerie*>(serieW->serie());
+		INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->innerSerie());
+		INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->innerSerie());
+		INewChartSerie* chartSerieZ = dynamic_cast<INewChartSerie*>(serieZ->innerSerie());
+		INewChartSerie* chartSerieW = dynamic_cast<INewChartSerie*>(serieW->innerSerie());
 
 		chartSerieX->setColor(QColor(255, 0, 0));
 		chartSerieY->setColor(QColor(0, 255, 0));
@@ -609,7 +610,7 @@ enum
 using namespace IMU;
 
 IMUCostumeDataSource::IMUCostumeDataSource()
-	: memoryDM(nullptr), finish(false)
+	: memoryDM(nullptr), hierarchyDM(nullptr), finish(false)
 {
 
 }
@@ -618,12 +619,14 @@ IMUCostumeDataSource::~IMUCostumeDataSource()
 {
 }
 
-void IMUCostumeDataSource::init(core::IMemoryDataManager * memoryDM,
+void IMUCostumeDataSource::init(core::IDataManager * memoryDM,
 	core::IStreamDataManager * streamDM,
-	core::IFileDataManager * fileDM)
+	core::IFileDataManager * fileDM,
+	core::IDataHierarchyManager * hierarchyDM)
 {
 	this->memoryDM = memoryDM;
 	this->fileDM = fileDM;
+	this->hierarchyDM = hierarchyDM;
 	refreshThread = plugin::getThreadPool()->get(name(), "Costumes data reader");
 }
 
@@ -1011,7 +1014,7 @@ std::string sensorParameterName(const unsigned int idx)
 
 core::HierarchyItemPtr IMUCostumeDataSource::fillRawCostumeData(CostumeData & cData)
 {
-	auto hierarchyTransaction = memoryDM->hierarchyTransaction();
+	auto hierarchyTransaction = hierarchyDM->transaction();
 	//core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>("Raw Data", "Raw communication data", QIcon());	
 	//hierarchyTransaction->addRoot(root);
 
@@ -1315,7 +1318,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 		//troot->appendChild(hItem);
 		//troot->appendChild(root);
 		//memoryDM->hierarchyTransaction()->addRoot(troot);
-		memoryDM->hierarchyTransaction()->addRoot(root);
+		hierarchyDM->transaction()->addRoot(root);
 
 		//it->second.hierarchyRootItem = troot;
 		it->second.hierarchyRootItem = root;
@@ -1424,7 +1427,7 @@ void IMUCostumeDataSource::tryCreateRootItem()
 {
 	if (root == nullptr){
 		root = createRootItem();
-		auto hierarchyTransaction = memoryDM->hierarchyTransaction();
+		auto hierarchyTransaction = hierarchyDM->transaction();
 		hierarchyTransaction->addRoot(root);
 	}
 }
@@ -1844,7 +1847,7 @@ void IMUCostumeDataSource::loadRecordedData(const core::Filesystem::Path & asfFi
 {
 	auto transaction = fileDM->transaction();	
 	transaction->addFile(amcFile);
-	transaction->addFile(asfFile);
+	transaction->tryAddFile(asfFile);
 	core::ConstVariantsList oList;
 
 	transaction->getObjects(amcFile, oList);
@@ -1965,7 +1968,7 @@ void IMUCostumeDataSource::loadRecordedData(const core::Filesystem::Path & asfFi
 				joint->value().name() + "\n" + QObject::tr("Local position").toStdString(), QObject::tr("s").toStdString(), "", nidx);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Local position"), "", utils::make_shared<NewVector3ItemHelper>(ow,
-				c3dlib::EventsCollectionConstPtr(), QString::fromStdString(bodyPlaneName(0)), QString::fromStdString(bodyPlaneName(1)), QString::fromStdString(bodyPlaneName(2))));
+				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
 			item->appendChild(di);
 		}
 
@@ -1985,7 +1988,7 @@ void IMUCostumeDataSource::loadRecordedData(const core::Filesystem::Path & asfFi
 
 	});
 
-	auto hierarchyTransaction = memoryDM->hierarchyTransaction();
+	auto hierarchyTransaction = hierarchyDM->transaction();
 	
 	if (addItem == true){
 		hierarchyTransaction->addRoot(recordedItems);

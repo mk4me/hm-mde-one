@@ -20,7 +20,7 @@ purpose:
 namespace core {
 
 	class FParser;
-	class FileDataManager : public IFileDataManager, public IFileManagerReader, public IDataManagerReader::IObjectObserver
+	class FileDataManager : public IFileDataManager, public IDataManagerReader::IObserver
 	{
 	private:
 		//! Forward declaration
@@ -91,7 +91,7 @@ namespace core {
 		mutable SyncPolicy sync;
 
 		//! Obiekty obserwują		ce stan DM
-			std::list<FileObserverPtr> observers;
+			std::list<ObserverPtr> observers;
 
 		//! Zmienna pozwalają		ca szybko opuscic update memory data managera
 			volatile bool skipUpdate;
@@ -101,11 +101,11 @@ namespace core {
 		template<typename ParserT>
 		void initializeParsers(const IParserManagerReader::ParserPrototypes & parsers, const std::string & path, VariantsList & objects);
 
-		void rawRemoveFile(const Filesystem::Path & file, const IMemoryDataManager::TransactionPtr & memTransaction);
+		void rawRemoveFile(const Filesystem::Path & file, const IDataManager::TransactionPtr & memTransaction);
 
-		void rawAddFile(const Filesystem::Path & file, const IMemoryDataManager::TransactionPtr & memTransaction);
+		void rawAddFile(const Filesystem::Path & file, const IDataManager::TransactionPtr & memTransaction);
 
-		void rawReloadFile(const Filesystem::Path & file, const bool compleately, const IMemoryDataManager::TransactionPtr & memTransaction);
+		void rawReloadFile(const Filesystem::Path & file, const bool compleately, const IDataManager::TransactionPtr & memTransaction);
 
 		const bool rawIsManaged(const Filesystem::Path & file) const;
 
@@ -154,8 +154,8 @@ namespace core {
 
 		//IFileManagerReader API
 
-		virtual void addObserver(const FileObserverPtr & fileWatcher);
-		virtual void removeObserver(const FileObserverPtr & fileWatcher);
+		virtual void addObserver(const ObserverPtr & fileWatcher);
+		virtual void removeObserver(const ObserverPtr & fileWatcher);
 
 		//! \param files Zbi�r plik�w ktrymi aktualnie zarz�dza ten DataManager
 		virtual void getFiles(Filesystem::FilesList & files) const;
@@ -201,7 +201,7 @@ namespace core {
 	void FileDataManager::initializeParsers(const IParserManagerReader::ParserPrototypes & parsers, const std::string & path, VariantsList & objects)
 	{
 		auto pm = getParserManager();
-		auto hm = getDataHierarchyManager();
+		auto hm = getRegisteredDataTypesManager();
 
 		//je�li pliku nie ma dodaj go, stw�rz parsery i rozszerz dost�pne dane wraz z ich opisem
 		for (auto parserIT = parsers.begin(); parserIT != parsers.end(); ++parserIT) {

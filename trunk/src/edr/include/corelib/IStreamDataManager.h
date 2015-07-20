@@ -12,15 +12,16 @@
 #include <utils/SmartPtr.h>
 #include <corelib/ITransaction.h>
 #include <corelib/IStreamManagerReader.h>
-#include <corelib/IMemoryDataManager.h>
+#include <corelib/IDataManager.h>
 #include <corelib/IParser.h>
 
 namespace core {
 
-	//! Zbiór operacji na strumieniach obs³ugiwanych przez aplikacjê
-	class IStreamDataManagerOperations
+	//! Manager udostêpniaj¹cy operacje na strumieniach zarz¹dzanych przez DM w oparciu o zarejestrowane parsery i rozszerzenia
+	class IStreamDataManager : public IStreamManagerReader
 	{
 	public:
+
 		//! Typ strumienia dla grabbera
 		typedef plugin::IStreamParser::IStreamPtr IStreamPtr;
 
@@ -39,38 +40,37 @@ namespace core {
 		//! WskaŸnik obiektu dostarczaj¹cego struemienia
 		typedef utils::shared_ptr<IStreamGrabber> StreamGrabberPtr;
 
-	public:
-		//! Destrutkor wirtualny
-		virtual ~IStreamDataManagerOperations() {}
+		//! Zbiór operacji na strumieniach obs³ugiwanych przez aplikacjê
+		class IOperations
+		{
+		public:
+			//! Destrutkor wirtualny
+			virtual ~IOperations() {}
 
-		//! \param stream Strumieñ dodawany do managera
-		//! Rzuca wyj¹tkiem jeœli coœ siê nie powiedzie
-		virtual void addStream(const StreamGrabberPtr streamGrabber) = 0;
-		//! \param stream Strumieñ usuwany z DM
-		//! Rzuca wyj¹tkiem jeœli coœ siê nie powiedzie
-		virtual void removeStream(const std::string & stream) = 0;
-		//! \param stream Strumieñ dodawany do managera
-		//! \return Prawda jeœli pomyœlnie dodano strumieñ
-		virtual const bool tryAddStream(const StreamGrabberPtr streamGrabber) = 0;
-		//! \param stream Strumieñ usuwany z managera
-		//! \return Prawda jeœli pomyœlnie usuniêto strumieñ
-		virtual const bool tryRemoveStream(const std::string & stream) = 0;
-	};
+			//! \param stream Strumieñ dodawany do managera
+			//! Rzuca wyj¹tkiem jeœli coœ siê nie powiedzie
+			virtual void addStream(const StreamGrabberPtr streamGrabber) = 0;
+			//! \param stream Strumieñ usuwany z DM
+			//! Rzuca wyj¹tkiem jeœli coœ siê nie powiedzie
+			virtual void removeStream(const std::string & stream) = 0;
+			//! \param stream Strumieñ dodawany do managera
+			//! \return Prawda jeœli pomyœlnie dodano strumieñ
+			virtual const bool tryAddStream(const StreamGrabberPtr streamGrabber) = 0;
+			//! \param stream Strumieñ usuwany z managera
+			//! \return Prawda jeœli pomyœlnie usuniêto strumieñ
+			virtual const bool tryRemoveStream(const std::string & stream) = 0;
+		};
 
-	//! Manager udostêpniaj¹cy operacje na strumieniach zarz¹dzanych przez DM w oparciu o zarejestrowane parsery i rozszerzenia
-	class IStreamDataManager : public IStreamDataManagerOperations
-	{
-	public:
 		//! Interfejs transakcji managera strumieni
-		class IStreamDataManagerTransaction : public ITransaction, public IStreamDataManagerOperations, public IStreamManagerReaderOperations
+		class ITransaction : public core::ITransaction, public IOperations, public IStreamManagerReader::IOperations
 		{
 		public:
 			//! Destruktor wirtualny
-			virtual ~IStreamDataManagerTransaction() {}
+			virtual ~ITransaction() {}
 		};
 
 		//! Typ transkacji na strumieniach - dzia³a w oparciu o RAII -> próbuje "commitowaæ" zmiany przy niszczeniu obiektu transakcji
-		typedef utils::shared_ptr<IStreamDataManagerTransaction> TransactionPtr;
+		typedef utils::shared_ptr<ITransaction> TransactionPtr;
 
 	public:
 		//! Destruktor wirtualny

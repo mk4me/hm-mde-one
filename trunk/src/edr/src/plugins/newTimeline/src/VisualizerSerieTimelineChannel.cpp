@@ -2,7 +2,7 @@
 #include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
 #include <plugins/newTimeline/ITimelineService.h>
 
-VisualizerSerieTimelineChannel::VisualizerSerieTimelineChannel(core::Visualizer * visualizer, core::Visualizer::VisualizerSerie * serie)
+VisualizerSerieTimelineChannel::VisualizerSerieTimelineChannel(core::Visualizer * visualizer, core::Visualizer::Serie * serie)
     : visualizer(visualizer), serie(serie), timeAvareSerieFeatures(serie->serieFeatures<plugin::IVisualizer::ITimeAvareSerieFeatures>()), 
 	timeEditableSerieFeatures(serie->serieFeatures<plugin::IVisualizer::ITimeEditableSerieFeatures>())
 {
@@ -48,7 +48,7 @@ VisualizerSerieTimelineChannel * VisualizerSerieTimelineChannel::clone() const
     return nullptr;
 }
 
-const core::Visualizer::VisualizerSerie * VisualizerSerieTimelineChannel::getSerie() const
+const core::Visualizer::Serie * VisualizerSerieTimelineChannel::getSerie() const
 {
     return serie;
 }
@@ -149,7 +149,7 @@ VisualizerTimelineHelper::~VisualizerTimelineHelper()
 	}
 }
 
-void VisualizerTimelineHelper::update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication)
+void VisualizerTimelineHelper::update(core::Visualizer::Serie * serie, core::Visualizer::SerieModyfication modyfication)
 {
 	static int idx = 0;
 	if(modyfication == core::Visualizer::ADD_SERIE){

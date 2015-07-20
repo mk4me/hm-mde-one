@@ -1,7 +1,7 @@
 #include "CorePCH.h"
 #include "FileDataManager.h"
-#include "MemoryDataManager.h"
-#include "DataHierarchyManager.h"
+#include "DataManager.h"
+#include "RegisteredDataTypesManager.h"
 #include "ApplicationCommon.h"
 #include "ParserManager.h"
 #include <utils/Push.h>
@@ -10,14 +10,14 @@
 
 using namespace core;
 
-class FileDataManager::FileTransaction : public IFileDataManager::IFileDataManagerTransaction
+class FileDataManager::FileTransaction : public IFileDataManager::ITransaction
 {
 private:
 
-	typedef std::map<Filesystem::Path, IFileManagerReader::FileChange> FileModyfications;
+	typedef std::map<Filesystem::Path, IFileManagerReader::Change> FileModyfications;
 
 private:
-	IMemoryDataManager::TransactionPtr mdmTransaction;
+	IDataManager::TransactionPtr mdmTransaction;
 	FileDataManager * fdm;
 	std::atomic<bool> transactionRolledback;
 	utils::shared_ptr<std::lock_guard<std::recursive_mutex>> lock;
@@ -26,7 +26,7 @@ private:
 
 public:
 	FileTransaction(FileDataManager * fdm)
-		: mdmTransaction(getMemoryDataManager()->transaction()),
+		: mdmTransaction(getDataManager()->transaction()),
 		fdm(fdm), transactionRolledback(false),
 		lock(new std::lock_guard<std::recursive_mutex>(fdm->sync)),
 		oldSkipUpdate(fdm->skipUpdate)
@@ -45,7 +45,7 @@ public:
 			if (modyfications.empty() == false) {
 				FileDataManager::ChangeList changes;
 				for (auto it = modyfications.begin(); it != modyfications.end(); ++it) {
-					FileDataManager::FileChange change;
+					FileDataManager::Change change;
 					change.filePath = it->first;
 					change.modyfication = it->second.modyfication;
 					changes.push_back(change);
@@ -232,7 +232,7 @@ private:
 		//dodajemy dane do dm
 		fdm->rawAddFile(file, mdmTransaction);
 		//aktualizujemy liste zmian
-		IFileManagerReader::FileChange mod;
+		IFileManagerReader::Change mod;
 		mod.modyfication = IFileManagerReader::ADD_FILE;
 		fdm->getObjects(file, mod.currentData);
 		modyfications.insert(FileModyfications::value_type(file, mod));
@@ -240,7 +240,7 @@ private:
 
 	void rawRemoveFile(const Filesystem::Path & file)
 	{
-		IFileManagerReader::FileChange mod;
+		IFileManagerReader::Change mod;
 		mod.modyfication = IFileManagerReader::REMOVE_FILE;
 		fdm->rawGetObjects(file, mod.previousData);
 		//dodajemy dane do dm
@@ -256,7 +256,7 @@ private:
 			return;
 		}
 
-		IFileManagerReader::FileChange mod;
+		IFileManagerReader::Change mod;
 		mod.modyfication = IFileManagerReader::RELOAD_FILE;
 		fdm->rawGetObjects(file, mod.previousData);
 
@@ -273,7 +273,7 @@ private:
 	}
 };
 
-class FileDataManager::FileReaderTransaction : public IFileManagerReaderOperations
+class FileDataManager::FileReaderTransaction : public IFileManagerReader::IOperations
 {
 public:
 	FileReaderTransaction(FileDataManager * fdm) : fdm(fdm),
@@ -533,14 +533,14 @@ FileDataManager::FileDataManager() : skipUpdate(false)
 FileDataManager::~FileDataManager()
 {
 	skipUpdate = true;
-	auto mt = getMemoryDataManager()->transaction();
+	auto mt = getDataManager()->transaction();
 	auto tmpObjectsByFiles = objectsByFiles;
 	for (auto it = tmpObjectsByFiles.begin(); it != tmpObjectsByFiles.end(); ++it) {
 		rawRemoveFile(it->first, mt);
 	}
 }
 
-void FileDataManager::rawRemoveFile(const Filesystem::Path & file, const IMemoryDataManager::TransactionPtr & memTransaction)
+void FileDataManager::rawRemoveFile(const Filesystem::Path & file, const IDataManager::TransactionPtr & memTransaction)
 {
 	bool ok = true;
 	VariantsList toRemove;
@@ -566,7 +566,7 @@ void FileDataManager::rawRemoveFile(const Filesystem::Path & file, const IMemory
 	}
 }
 
-void FileDataManager::rawAddFile(const Filesystem::Path & file, const IMemoryDataManager::TransactionPtr & memTransaction)
+void FileDataManager::rawAddFile(const Filesystem::Path & file, const IDataManager::TransactionPtr & memTransaction)
 {
 	IParserManagerReader::ParserPrototypes sourceParsers;
 	getParserManager()->sourceParsers(file.string(), sourceParsers);
@@ -623,7 +623,7 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file, const IMemoryDat
 	}
 }
 
-void FileDataManager::rawReloadFile(const Filesystem::Path & file, const bool compleately, const IMemoryDataManager::TransactionPtr & memTransaction)
+void FileDataManager::rawReloadFile(const Filesystem::Path & file, const bool compleately, const IDataManager::TransactionPtr & memTransaction)
 {
 	if (compleately == true) {
 
@@ -643,7 +643,7 @@ void FileDataManager::rawReloadFile(const Filesystem::Path & file, const bool co
 
 	if (it != missingObjects.end()) {
 
-		auto dhm = core::getDataHierarchyManager();
+		auto dhm = core::getRegisteredDataTypesManager();
 
 		VariantsList objectsAdded;
 
@@ -747,11 +747,11 @@ void FileDataManager::removeFile(const Filesystem::Path & file)
 	{
 		utils::Push<volatile bool> _skipUpdate(skipUpdate, true);
 		//usuï¿½ plik
-		rawRemoveFile(file, getMemoryDataManager()->transaction());
+		rawRemoveFile(file, getDataManager()->transaction());
 	}
 	//notyfikuj
 	ChangeList changes;
-	FileChange change;
+	Change change;
 	change.filePath = file;
 	change.modyfication = IFileManagerReader::REMOVE_FILE;
 	changes.push_back(change);
@@ -777,12 +777,12 @@ void FileDataManager::addFile(const Filesystem::Path & file)
 	{
 		utils::Push<volatile bool> _skipUpdate(skipUpdate, true);
 		//dodaj plik
-		rawAddFile(file, getMemoryDataManager()->transaction());
+		rawAddFile(file, getDataManager()->transaction());
 	}
 
 	//notyfikuj
 	ChangeList changes;
-	FileChange change;
+	Change change;
 	change.filePath = file;
 	change.modyfication = IFileManagerReader::ADD_FILE;
 	changes.push_back(change);
@@ -797,7 +797,7 @@ void FileDataManager::reloadFile(const Filesystem::Path & file, const bool compl
 		throw std::runtime_error("File not managed");
 	}
 
-	FileChange change;
+	Change change;
 
 	rawGetObjects(file, change.previousData);
 
@@ -808,7 +808,7 @@ void FileDataManager::reloadFile(const Filesystem::Path & file, const bool compl
 	{
 		utils::Push<volatile bool> _skipUpdate(skipUpdate, true);
 		//dodaj plik
-		rawReloadFile(file, complete, getMemoryDataManager()->transaction());
+		rawReloadFile(file, complete, getDataManager()->transaction());
 	}
 
 	rawGetObjects(file, change.currentData);
@@ -926,7 +926,7 @@ void FileDataManager::observe(const IDataManagerReader::ChangeList & changes)
 	}
 }
 
-void FileDataManager::addObserver(const FileObserverPtr & fileWatcher)
+void FileDataManager::addObserver(const ObserverPtr & fileWatcher)
 {
 	ScopedLock lock(sync);
 	if (std::find(observers.begin(), observers.end(), fileWatcher) != observers.end()) {
@@ -936,7 +936,7 @@ void FileDataManager::addObserver(const FileObserverPtr & fileWatcher)
 	observers.push_back(fileWatcher);
 }
 
-void FileDataManager::removeObserver(const FileObserverPtr & fileWatcher)
+void FileDataManager::removeObserver(const ObserverPtr & fileWatcher)
 {
 	ScopedLock lock(sync);
 	auto it = std::find(observers.begin(), observers.end(), fileWatcher);
@@ -986,7 +986,7 @@ void core::FileDataManager::tryRemoveUnusedFile(const core::Filesystem::Path & f
 	//sprawdzam czy nie moge juz usun±æ‡ pliku i notyfikowÄ‡ o zmianie
 	if (it != objectsByFiles.end() && it->second.empty() == true) {
 		CORE_LOG_INFO("Removing unused file " << file << " because of lack of delivered objects to memory data manager.");
-		FileChange change;
+		Change change;
 		change.filePath = it->first;
 		change.modyfication = IFileManagerReader::REMOVE_UNUSED_FILE;
 		changes.push_back(change);
@@ -1044,7 +1044,7 @@ core::FileDataManager::CompoundInitializer::CompoundDataPtr core::FileDataManage
 
 	void core::FileDataManager::CompoundInitializer::initialize(Variant * object)
 	{
-		auto mt = getMemoryDataManager()->transaction();
+		auto mt = getDataManager()->transaction();
 		std::list<int> toDelete;
 		if (data->parser->tryParse() == false) {
 			CORE_LOG_NAMED_INFO("parser", "Parser " << data->parser->getParser()->ID() << " (" << data->parser->getParser()->shortName() << ") failed for file " << data->parser->getPath());

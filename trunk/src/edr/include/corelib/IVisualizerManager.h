@@ -33,7 +33,7 @@ namespace core
 			Destruction	//! Wyrejestrowywanie wizualizatora
 		};
 
-		class IVisualizerManagerObserver
+		class IObserver
 		{
 		public:
 			virtual void update(VisuzalizerOperation modification, Visualizer * visualizer);
@@ -54,9 +54,9 @@ namespace core
 		//! \param visInstances [out] Obiekt do ktorego zapiszemy aktualnie zyjace instancje wizualizatorow
 		virtual void getVisualizersInstances(VisualizerInstances & visInstances) const = 0;
 		//! \param observer Obserwator tworzonych wizualziatorów w³¹czony do obserwacji
-		virtual void registerObserver(IVisualizerManagerObserver * observer) = 0;
+		virtual void registerObserver(IObserver * observer) = 0;
 		//! \param observer Obserwator tworzonych wizualziatorów wy³anczany z obserwacji
-		virtual void unregisterObserver(IVisualizerManagerObserver * observer) = 0;
+		virtual void unregisterObserver(IObserver * observer) = 0;
 
 	private:
 

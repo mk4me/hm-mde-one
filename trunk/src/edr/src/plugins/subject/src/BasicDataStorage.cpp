@@ -47,7 +47,7 @@ void BasicDataStorage::getObjects(core::VariantsCollection& objects) const
 const bool BasicDataStorage::isManaged(const core::VariantConstPtr & object) const
 {
 	auto type = object->data()->getTypeInfo();
-	if(plugin::getDataHierachyManagerReader()->isRegistered(type) == false){
+	if(plugin::getRegisteredDataTypesManagerReader()->isRegistered(type) == false){
 		throw core::runtime_error(std::string("Type not registered: ") + type.name());
 	}
 
@@ -85,7 +85,7 @@ const bool BasicDataStorage::hasObject(const utils::TypeInfo & type, bool exact)
 void BasicDataStorage::addData(const core::VariantConstPtr & data)
 {
 	auto type = data->data()->getTypeInfo();
-	if (plugin::getDataHierachyManagerReader()->isRegistered(type) == false){
+	if (plugin::getRegisteredDataTypesManagerReader()->isRegistered(type) == false){
 		throw core::runtime_error(std::string("Type not registered: ") + type.name());
 	}
 
@@ -106,7 +106,7 @@ void BasicDataStorage::addData(const core::VariantConstPtr & data)
 void BasicDataStorage::removeData(const core::VariantConstPtr & data)
 {
 	auto type = data->data()->getTypeInfo();
-	if (plugin::getDataHierachyManagerReader()->isRegistered(type) == false){
+	if (plugin::getRegisteredDataTypesManagerReader()->isRegistered(type) == false){
 		throw core::runtime_error(std::string("Type not registered: ") + type.name());
 	}
 
@@ -152,8 +152,9 @@ void BasicDataStorage::requestedTypes( const utils::TypeInfo & type, bool exact,
 {
 	types.insert(type);
 
-	if(exact == false){		
-		plugin::getDataHierachyManagerReader()->getTypeDerrivedTypes(type, types);
+	if(exact == false){
+		auto t = plugin::getRegisteredDataTypesManagerReader()->derrivedTypes(type);
+		types.insert(t.begin(), t.end());
 	}
 }
 

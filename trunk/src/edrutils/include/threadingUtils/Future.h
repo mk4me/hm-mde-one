@@ -17,7 +17,7 @@
 namespace std
 {
 
-	//! Specjalizacja poprawiaj¹ca b³¹d implementacji dla VS
+	//! Specjalizacja poprawiaj¹ca b³¹d implementacji dla VS dla operacji zwracaj¹cych void
 	template<class... _ArgTypes>
 	class packaged_task < void(_ArgTypes...) >
 	{
@@ -77,7 +77,7 @@ namespace std
 		}
 
 		void reset() {
-			_my_promise.swap(promise<void>());
+			promise<void>().swap(_my_promise);
 			_my_func.reset();
 		}
 	};

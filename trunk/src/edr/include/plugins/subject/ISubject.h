@@ -13,13 +13,13 @@
 #include <utils/ClonePolicies.h>
 #include <plugins/subject/Types.h>
 #include <corelib/BaseDataTypes.h>
-#include <corelib/IMemoryDataManager.h>
+#include <corelib/IDataManager.h>
 
 namespace PluginSubject {
 
 //! Abstrakcyjna klasa reprezentująca obiekt wykonujący ruch - człowiek, zwierzę, avatar
 
-class ISubject : public core::IDataManagerReaderOperations
+class ISubject : public core::IDataManagerReader::IOperations
 {
 public:
 

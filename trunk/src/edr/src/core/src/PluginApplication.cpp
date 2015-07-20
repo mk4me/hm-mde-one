@@ -3,9 +3,10 @@
 #include "ApplicationCommon.h"
 #include "PluginPath.h"
 #include "ParserManager.h"
-#include "DataHierarchyManager.h"
+#include "RegisteredDataTypesManager.h"
 #include "LanguagesManager.h"
 #include "ApplicationDescription.h"
+#include "DataHierarchyManager.h"
 
 using namespace core;
 
@@ -28,7 +29,7 @@ IPath * PluginApplication::paths()
 
 IDataManagerReader * PluginApplication::dataManagerReader()
 {
-	return getMemoryDataManager();
+	return getDataManager();
 }
 
 IPluginStorage * PluginApplication::pluginStorage()
@@ -69,6 +70,11 @@ IFileManagerReader * PluginApplication::fileDataManagerReader()
 IDataHierarchyManagerReader * PluginApplication::dataHierarchyManagerReader()
 {
 	return getDataHierarchyManager();
+}
+
+IRegisteredDataTypesManagerReader * PluginApplication::registeredDataTypesManagerReader()
+{
+	return getRegisteredDataTypesManager();
 }
 
 IVisualizerManager * PluginApplication::visualizerManager()
@@ -123,7 +129,7 @@ IPath * MainViewApplication::paths()
 
 IDataManagerReader * MainViewApplication::dataManagerReader()
 {
-	return getMemoryDataManager();
+	return getDataManager();
 }
 
 IPluginStorage * MainViewApplication::pluginStorage()
@@ -132,6 +138,11 @@ IPluginStorage * MainViewApplication::pluginStorage()
 }
 
 ILog * MainViewApplication::log()
+{
+	return getLogInterface();
+}
+
+ILog * MainViewApplication::exceptionLog()
 {
 	return getLogInterface();
 }
@@ -164,6 +175,11 @@ IFileManagerReader * MainViewApplication::fileDataManagerReader()
 IDataHierarchyManagerReader * MainViewApplication::dataHierarchyManagerReader()
 {
 	return getDataHierarchyManager();
+}
+
+IRegisteredDataTypesManagerReader * MainViewApplication::registeredDataTypesManagerReader()
+{
+	return getRegisteredDataTypesManager();
 }
 
 IVisualizerManager * MainViewApplication::visualizerManager()

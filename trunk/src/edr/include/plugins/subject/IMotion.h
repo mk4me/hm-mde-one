@@ -15,12 +15,12 @@
 #include <plugins/subject/Types.h>
 #include <corelib/BaseDataTypes.h>
 #include <plugins/subject/ISession.h>
-#include <corelib/IMemoryDataManager.h>
+#include <corelib/IDataManager.h>
 
 namespace PluginSubject{
 
 //! Abstrakcyjna klasa reprezentująca pojedynczy ruch obiektu w ramach sesji
-class IMotion : public core::IDataManagerReaderOperations
+class IMotion : public core::IDataManagerReader::IOperations
 {
 public:
 

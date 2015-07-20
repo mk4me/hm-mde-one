@@ -26,42 +26,6 @@ namespace threadingUtils {
 
 	private:
 
-		//! RAII pomocne przy wyznaczaniu iloœci bezrobotnych, wisz¹cych na zmiennej warunkowej
-		template<typename T>
-		struct ThreadGuard
-		{
-		public:
-			ThreadGuard(T & counter) : counter(counter)
-			{
-				
-			}
-
-			~ThreadGuard()
-			{
-				--counter;
-			}
-		private:
-			T & counter;
-		};
-
-		//! RAII pomocne przy wyznaczaniu iloœci bezrobotnych, wisz¹cych na zmiennej warunkowej
-		template<typename T>
-		struct ActiveThreadGuard
-		{
-		public:
-			ActiveThreadGuard(T & counter) : counter(counter)
-			{
-				--counter;
-			}
-
-			~ActiveThreadGuard()
-			{
-				++counter;
-			}
-		private:
-			T & counter;
-		};
-
 		//! RAII pomocnicze przy rozró¿nianiu w¹tków workerów od innych zlecaj¹cych zadania
 		struct WorkerThreadGuard
 		{
@@ -122,7 +86,6 @@ namespace threadingUtils {
 			{
 				this->thread.run([](utils::shared_ptr<SharedState> sharedState) {
 					WorkerThreadGuard localThreadGuard;
-					//ThreadGuard<std::atomic<size_type>> guard(sharedState->workManager->activeCounter);
 					LocalWorkQueueGuard lqqg(sharedState->workManager->workQueue);
 					while (sharedState->forceFinalize == false && sharedState->workManager->forceFinalize == false){
 						sharedState->workManager->runPendingTask(std::chrono::milliseconds(100), false);
@@ -345,8 +308,6 @@ namespace threadingUtils {
 			}
 			else if (isLocalThread == true){
 				std::unique_lock<std::mutex> lock(taskMutex);
-				//ActiveThreadGuard<std::atomic<size_type>> guard(activeCounter);
-				//if ((activeCounter == 0) && ((forceFinalize_ == true) || ((finalize_ == true) && (workQueue.empty() == true)))){
 				if ((forceFinalize_ == true) || ((finalize_ == true) && (workQueue.empty() == true))){
 					forceFinalize_ = true;
 					lock.unlock();

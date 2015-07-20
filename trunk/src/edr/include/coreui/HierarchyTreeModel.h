@@ -16,7 +16,8 @@
 #include <corelib/HierarchyHelper.h>
 #include <corelib/IHierarchyItem.h>
 #include <corelib/IHierarchyDataItem.h>
-#include <corelib/IMemoryDataManager.h>
+#include <corelib/IDataManager.h>
+#include <corelib/IDataHierarchyManagerReader.h>
 #include <coreui/Export.h>
 #include <corelib/IFilterCommand.h>
 
@@ -47,8 +48,8 @@ namespace coreUI {
 
 		core::IHierarchyItemConstPtr internalSmart(const QModelIndex& idx) const;
 
-		void applyChange(const core::IMemoryDataManagerHierarchy::HierarchyChange& change);
-		void applyChanges(const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes);
+		void applyChange(const core::IDataHierarchyManagerReader::Change& change);
+		void applyChanges(const core::IDataHierarchyManagerReader::ChangeList & changes);
 
 		void setFilter(const core::IFilterCommandPtr& filter);
 

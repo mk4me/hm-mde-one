@@ -9,6 +9,7 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__HMDBSHALLOWCOPYCONTEXT_H__
 
 #include <utils/SmartPtr.h>
+#include <corelib/IDataHierarchyManager.h>
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
 #include <plugins/subject/Types.h>
@@ -54,7 +55,7 @@ namespace hmdbCommunication
 		//! \param shallowCopyContext Kontekst p³ytkiej kopii bazy danych
 		//! \param localContext Lokalny kontekst
 		HMDBShallowCopyLocalContext(IHMDBShallowCopyDataContextPtr shallowCopyContext,
-			IHMDBLocalContextPtr localContext, core::IMemoryDataManager * mdm);
+			IHMDBLocalContextPtr localContext, core::IDataHierarchyManager * hdm);
 
 		//! Destruktor wirtualny
 		virtual ~HMDBShallowCopyLocalContext();
@@ -94,7 +95,7 @@ namespace hmdbCommunication
 	private:
 
 		void updateOrAddRoot(core::IHierarchyItemConstPtr root, std::set<core::IHierarchyItemConstPtr>& roots,
-			core::IMemoryDataManager::HierarchyTransactionPtr hierarchyTransaction);
+			core::IDataHierarchyManager::TransactionPtr hierarchyTransaction);
 
 		const core::VariantPtr findObjectByType(const DataType type,
 			const hmdbServices::ID id,
@@ -144,7 +145,7 @@ namespace hmdbCommunication
 
 	private:
 		//! Manager na potrzeby hierarchi
-		core::IMemoryDataManager * mdm;
+		core::IDataHierarchyManager * hdm;
 		//! Mapa danych
 		mutable GroupedData data_;
 		//! Kontekst p³ytkiej kopii bazy danych

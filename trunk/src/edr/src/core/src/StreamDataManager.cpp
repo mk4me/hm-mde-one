@@ -1,6 +1,6 @@
 ﻿#include "CorePCH.h"
 #include "StreamDataManager.h"
-#include "MemoryDataManager.h"
+#include "DataManager.h"
 #include "ApplicationCommon.h"
 #include "ParserManager.h"
 #include <utils/Push.h>
@@ -9,7 +9,7 @@
 
 using namespace core;
 
-class StreamDataManager::StreamTransaction : public IStreamDataManager::IStreamDataManagerTransaction
+class StreamDataManager::StreamTransaction : public IStreamDataManager::ITransaction
 {
 private:
 
@@ -22,7 +22,7 @@ private:
 	typedef std::map<std::string, Modyfication> StreamModyfications;
 
 private:
-	IMemoryDataManager::TransactionPtr mdmTransaction;
+	IDataManager::TransactionPtr mdmTransaction;
 	StreamDataManager * sdm;
 	utils::shared_ptr<std::lock_guard<std::recursive_mutex>> lock;
 	StreamModyfications modyfications;
@@ -30,7 +30,7 @@ private:
 	bool oldSkipUpdate;
 
 public:
-	StreamTransaction(StreamDataManager * sdm) : mdmTransaction(getMemoryDataManager()->transaction()),
+	StreamTransaction(StreamDataManager * sdm) : mdmTransaction(getDataManager()->transaction()),
 		sdm(sdm), lock(new std::lock_guard<std::recursive_mutex>(sdm->sync)),
 		transactionRolledback(false), oldSkipUpdate(sdm->skipUpdate)
 	{
@@ -47,7 +47,7 @@ public:
 			if (modyfications.empty() == false) {
 				StreamDataManager::ChangeList changes;
 				for (auto it = modyfications.begin(); it != modyfications.end(); ++it) {
-					StreamDataManager::StreamChange change;
+					StreamDataManager::Change change;
 					change.stream = it->first;
 					change.modyfication = it->second.modyfication;
 					changes.push_back(change);
@@ -226,7 +226,7 @@ private:
 	}
 };
 
-class StreamDataManager::StreamReaderTransaction : public IStreamManagerReaderOperations
+class StreamDataManager::StreamReaderTransaction : public IStreamManagerReader::IOperations
 {
 public:
 	StreamReaderTransaction(StreamDataManager * sdm) : sdm(sdm)
@@ -278,7 +278,7 @@ private:
 	//! Prawdziwy wewn�trzny parser.
 	const plugin::IParserPtr parser;
 	//! Opis źródła danych
-	const IStreamDataManagerOperations::StreamGrabberPtr sg;
+	const IStreamDataManager::StreamGrabberPtr sg;
 	//! Czy przeparsowano plik?
 	bool parsed;
 	//! Czy u�yto parsera do przeparsowania?
@@ -294,7 +294,7 @@ public:
 	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
 	//!     czas �ycia.
 	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
-	StParser(plugin::IParser * parser, const IStreamDataManagerOperations::StreamGrabberPtr sg) :
+	StParser(plugin::IParser * parser, const IStreamDataManager::StreamGrabberPtr sg) :
 		parser(parser), parsed(false), used(false), sg(sg)
 	{
 		UTILS_ASSERT(parser != nullptr);
@@ -331,7 +331,7 @@ public:
 		parsed = false;
 	}
 
-	const IStreamDataManagerOperations::IStreamPtr getStream() const
+	const IStreamDataManager::IStreamPtr getStream() const
 	{
 		return sg->stream();
 	}
@@ -394,7 +394,7 @@ public:
 	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
 	//!     czas �ycia.
 	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
-	StreamParser(plugin::IParser * parser, const IStreamDataManagerOperations::StreamGrabberPtr sg)
+	StreamParser(plugin::IParser * parser, const IStreamDataManager::StreamGrabberPtr sg)
 		: StParser(parser, sg), streamParser(nullptr)
 	{
 
@@ -439,7 +439,7 @@ public:
 	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
 	//!     czas �ycia.
 	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
-	FileStreamParser(plugin::IParser * parser, const IStreamDataManagerOperations::StreamGrabberPtr sg)
+	FileStreamParser(plugin::IParser * parser, const IStreamDataManager::StreamGrabberPtr sg)
 		: StParser(parser, sg), sourceParser(nullptr)
 	{
 
@@ -528,14 +528,14 @@ StreamDataManager::StreamDataManager() : skipUpdate(false)
 StreamDataManager::~StreamDataManager()
 {
 	skipUpdate = true;
-	auto mt = getMemoryDataManager()->transaction();
+	auto mt = getDataManager()->transaction();
 	auto tmpObjectsByStreams = objectsByStreams;
 	for (auto it = tmpObjectsByStreams.begin(); it != tmpObjectsByStreams.end(); ++it) {
 		rawRemoveStream(it->first, mt);
 	}
 }
 
-void StreamDataManager::rawRemoveStream(const std::string & stream, const IMemoryDataManager::TransactionPtr & memTransaction)
+void StreamDataManager::rawRemoveStream(const std::string & stream, const IDataManager::TransactionPtr & memTransaction)
 {
 	bool ok = true;
 	VariantsList toRemove;
@@ -561,7 +561,7 @@ void StreamDataManager::rawRemoveStream(const std::string & stream, const IMemor
 	}
 }
 
-void StreamDataManager::rawAddStream(const StreamGrabberPtr stream, const IMemoryDataManager::TransactionPtr & memTransaction)
+void StreamDataManager::rawAddStream(const StreamGrabberPtr stream, const IDataManager::TransactionPtr & memTransaction)
 {
 	const auto streamName = stream->name();
 	IParserManagerReader::ParserPrototypes sourceParsers;
@@ -700,11 +700,11 @@ void StreamDataManager::removeStream(const std::string & stream)
 	{
 		utils::Push<volatile bool> _skipUpdate(skipUpdate, true);
 		//usu� plik
-		rawRemoveStream(stream, getMemoryDataManager()->transaction());
+		rawRemoveStream(stream, getDataManager()->transaction());
 	}
 	//notyfikuj
 	ChangeList changes;
-	StreamChange change;
+	Change change;
 	change.stream = stream;
 	change.modyfication = IStreamManagerReader::REMOVE_STREAM;
 	changes.push_back(change);
@@ -728,12 +728,12 @@ void StreamDataManager::addStream(const StreamGrabberPtr stream)
 	{
 		utils::Push<volatile bool> _skipUpdate(skipUpdate, true);
 		//dodaj plik
-		rawAddStream(stream, getMemoryDataManager()->transaction());
+		rawAddStream(stream, getDataManager()->transaction());
 	}
 
 	//notyfikuj
 	ChangeList changes;
-	StreamChange change;
+	Change change;
 	change.stream = streamName;
 	change.modyfication = IStreamManagerReader::ADD_STREAM;
 	changes.push_back(change);
@@ -829,7 +829,7 @@ void StreamDataManager::observe(const IDataManagerReader::ChangeList & changes)
 	}
 }
 
-void StreamDataManager::addObserver(const StreamObserverPtr & streamWatcher)
+void StreamDataManager::addObserver(const ObserverPtr & streamWatcher)
 {
 	ScopedLock lock(sync);
 	if (std::find(observers.begin(), observers.end(), streamWatcher) != observers.end()) {
@@ -839,7 +839,7 @@ void StreamDataManager::addObserver(const StreamObserverPtr & streamWatcher)
 	observers.push_back(streamWatcher);
 }
 
-void StreamDataManager::removeObserver(const StreamObserverPtr & streamWatcher)
+void StreamDataManager::removeObserver(const ObserverPtr & streamWatcher)
 {
 	ScopedLock lock(sync);
 	auto it = std::find(observers.begin(), observers.end(), streamWatcher);
@@ -888,7 +888,7 @@ void StreamDataManager::tryRemoveUnusedStream(const std::string & stream, Change
 	//sprawdzam czy nie moge juz usunąć strumienia i notyfikowć o zmianie
 	if (it != objectsByStreams.end() && it->second.empty() == true) {
 		CORE_LOG_INFO("Removing unused stream " << stream << " because of lack of delivered objects to memory data manager.");
-		StreamChange change;
+		Change change;
 		change.stream = it->first;
 		change.modyfication = IStreamManagerReader::REMOVE_UNUSED_STREAM;
 		changeList.push_back(change);
@@ -900,7 +900,7 @@ void StreamDataManager::tryRemoveUnusedStream(const std::string & stream, Change
 
 void core::StreamDataManager::CompoundInitializer::initialize(Variant * object)
 {
-	auto mt = getMemoryDataManager()->transaction();
+	auto mt = getDataManager()->transaction();
 	std::list<int> toDelete;
 	if (data->parser->tryParse() == false) {
 		CORE_LOG_NAMED_INFO("parser", "Parser " << data->parser->getParser()->ID() << " (" << data->parser->getParser()->shortName() << ") failed for stream " << data->parser->getStreamName());

@@ -473,7 +473,11 @@ void IMUCostumeWidget::onLoadProfile()
 
 	auto profile = utils::make_shared<IMU::CostumeProfile>(*(it->second));
 
-	auto ret = QMessageBox::question(this, tr("Profile edition?"), tr("Would You like to edit selected profile or use it directly?"), tr("Edit"), tr("Use"));
+	auto ret = 0;
+
+	if (profile->skeleton != nullptr){
+		ret = QMessageBox::question(this, tr("Profile edition?"), tr("Would You like to edit selected profile or use it directly?"), tr("Edit"), tr("Use"));
+	}
 
 	//czy edytujemy
 	if (ret == 0){
@@ -826,7 +830,7 @@ void IMUCostumeWidget::saveMotionData()
 	IMU::IIMUDataSource::CostumesRecordingDataBuffer::ListT data;
 	recordOutput->costumesDataBuffer.data(data);
 
-	//IMU::CostumeParser::save(*outputFile, data, costumesMapping, recordIndex);
+	IMU::CostumeParser::save(*outputFile, data, costumesMapping, recordIndex);
 
 	auto id = recordIndex;
 
@@ -881,7 +885,7 @@ void IMUCostumeWidget::saveMotionData()
 	}
 
 	recordIndex += data.size();
-	//outputFile->flush();
+	outputFile->flush();
 }
 
 void IMUCostumeWidget::watchRecordedData()
@@ -1095,20 +1099,21 @@ void IMUCostumeWidget::onRecord(const bool record)
 				auto op = (it->second.path / ("recording_" + std::to_string(counter)+".amc")).string();
 				it->second.motionOutput = utils::make_shared<std::ofstream>(op.c_str());
 				acclaim::AmcParser::initSerialize(*(it->second.motionOutput), kinematicUtils::Deg);
-			}
 
-			{
+			
 				//outputFile = utils::make_shared<std::ofstream>(w.outputPath().toStdString().c_str());
+
+				outputFile = utils::make_shared<std::ofstream>((it->second.path / ("recording_" + std::to_string(counter) + ".imudata")).string().c_str());
 
 				//if (outputFile->is_open() == true){					
 
-					/*for (const auto & c : costumes)
+					for (const auto & c : costumes)
 					{
 						auto cd = ds->costumeDescription(c.first);
 						serializeRecordedCostumeConfiguration(*outputFile, c.first, c.second, cd);
 					}
 
-					(*outputFile) << "Data" << std::endl;*/
+					(*outputFile) << "Data" << std::endl;
 
 					recordOutput = utils::make_shared<IMU::IIMUDataSource::RecordingConfiguration>();
 					recordOutput->costumesDataBuffer.setMaxBufferSize(10000);
@@ -1145,8 +1150,8 @@ void IMUCostumeWidget::onRecord(const bool record)
 
 		saveMotionData();
 
-		//outputFile->close();
-		//outputFile.reset();
+		outputFile->close();
+		outputFile.reset();
 		recordOutput.reset();
 
 		for (auto & rd : recordingDetails)
@@ -1179,7 +1184,7 @@ void IMUCostumeWidget::onOpen()
 		auto files = core::Filesystem::listFiles(path);
 
 		core::Filesystem::Path asfFile;
-		core::Filesystem::Path amcFile;
+		core::Filesystem::PathsList amcFiles;
 		core::Filesystem::Path cfgFile;
 
 		for (const auto & file : files)
@@ -1188,25 +1193,24 @@ void IMUCostumeWidget::onOpen()
 				asfFile = file;
 			}
 
-			if (amcFile.empty() == true && file.extension() == ".amc"){
-				amcFile = file;
+			if (file.extension() == ".amc"){
+				amcFiles.push_back(file);
 			}
 
 			if (cfgFile.empty() == true && file.extension() == ".ccfg"){
 				cfgFile = file;
 			}
-
-			if (amcFile.empty() == false && asfFile.empty() == false && cfgFile.empty() == false){
-				break;
-			}
 		}
 
-		if (amcFile.empty() == true || asfFile.empty() == true){
+		if (amcFiles.empty() == true || asfFile.empty() == true){
 			//INFO że nie mamu kompletnych danych
 			return;
 		}
 
-		ds->loadRecordedData(asfFile, amcFile, cfgFile);
+		for (const auto & amcFile : amcFiles)
+		{
+			ds->loadRecordedData(asfFile, amcFile, cfgFile);
+		}
 	}
 }
 

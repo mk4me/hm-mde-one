@@ -11,9 +11,9 @@
 
 using namespace core;
 
-void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
+void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::Serie*>& series )
 {
-	std::vector<Visualizer::VisualizerSerie*> tmpSeries;
+	std::vector<Visualizer::Serie*> tmpSeries;
 
 	try{
 		if (motion->hasObject(typeid(c3dlib::MarkerCollection), false)) {
@@ -21,7 +21,7 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 			motion->getObjects(m, typeid(c3dlib::MarkerCollection), false);
 			if(m.front()->getRawPtr() != nullptr){
 				auto s = visualizer->createSerie(typeid(c3dlib::MarkerCollection), m.front());
-				s->serie()->setName(path.toStdString());
+				s->innerSerie()->setName(path.toStdString());
 				tmpSeries.push_back(s);
 			}else{
 				throw core::runtime_error("Empty object - markers");
@@ -32,7 +32,7 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 			motion->getObjects(m, typeid(SkeletonWithStates), false);
 			if(m.front()->getRawPtr() != nullptr){
 				auto s = visualizer->createSerie(typeid(SkeletonWithStates), m.front());
-				s->serie()->setName(path.toStdString());
+				s->innerSerie()->setName(path.toStdString());
 				tmpSeries.push_back(s);
 			}else{
 				throw core::runtime_error("Empty object - joints");
@@ -43,7 +43,7 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 			motion->getObjects(m, typeid(c3dlib::GRFCollection), false);
 			if(m.front()->getRawPtr() != nullptr){
 				auto s = visualizer->createSerie(typeid(c3dlib::GRFCollection), m.front());
-				s->serie()->setName(path.toStdString());
+				s->innerSerie()->setName(path.toStdString());
 				tmpSeries.push_back(s);
 			}else{
 				throw core::runtime_error("Empty object - grfs");
@@ -85,11 +85,11 @@ VisualizerPtr JointsItemHelper::createVisualizer(core::IVisualizerManager* manag
 	return VisualizerPtr(prototypes.front()->create());
 }
 
-void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
+void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::Serie*>& series )
 {
 	if (skeletonWithStates && skeletonWithStates->getRawPtr() != nullptr) {
 		auto s = visualizer->createSerie(typeid(SkeletonWithStates), skeletonWithStates);
-		s->serie()->setName(path.toStdString());
+		s->innerSerie()->setName(path.toStdString());
         series.push_back(s);
     } else {
         throw core::runtime_error("Empty object - joints");
@@ -135,10 +135,10 @@ VisualizerPtr NewChartItemHelper::createVisualizer(core::IVisualizerManager* man
 }
 
 
-void NewChartItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
+void NewChartItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::Serie*>& series )
 {
     auto serie = visualizer->createSerie(wrapper->data()->getTypeInfo(), wrapper);
-	serie->serie()->setName(path.toStdString());
+	serie->innerSerie()->setName(path.toStdString());
     series.push_back(serie);
 }
 
@@ -182,7 +182,7 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer(core::IVisualizerManager* m
     return visualizer;
 }
 
-void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
+void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::Serie*>& series )
 {
 	c3dlib::VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
 
@@ -210,24 +210,24 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
     visualizer->getOrCreateWidget();
 
 	auto serieX = visualizer->createSerie(wrapperX->data()->getTypeInfo(), wrapperX);
-	serieX->serie()->setName(xAxisName.isEmpty() == false ? xAxisName.toStdString() : ("X_" + suffix));
+	serieX->innerSerie()->setName(xAxisName.isEmpty() == false ? xAxisName.toStdString() : ("X_" + suffix));
 	auto serieY = visualizer->createSerie(wrapperY->data()->getTypeInfo(), wrapperY);
-	serieY->serie()->setName(yAxisName.isEmpty() == false ? yAxisName.toStdString() : ("Y_" + suffix));
+	serieY->innerSerie()->setName(yAxisName.isEmpty() == false ? yAxisName.toStdString() : ("Y_" + suffix));
 	auto serieZ = visualizer->createSerie(wrapperZ->data()->getTypeInfo(), wrapperZ);
-	serieZ->serie()->setName(zAxisName.isEmpty() == false ? zAxisName.toStdString() : ("Z_" + suffix));
+	serieZ->innerSerie()->setName(zAxisName.isEmpty() == false ? zAxisName.toStdString() : ("Z_" + suffix));
 
-    INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->serie());
-    INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->serie());
-    INewChartSerie* chartSerieZ = dynamic_cast<INewChartSerie*>(serieZ->serie());
+	INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->innerSerie());
+	INewChartSerie* chartSerieY = dynamic_cast<INewChartSerie*>(serieY->innerSerie());
+	INewChartSerie* chartSerieZ = dynamic_cast<INewChartSerie*>(serieZ->innerSerie());
 
     chartSerieX->setColor(QColor(255, 0, 0));
     chartSerieY->setColor(QColor(0, 255, 0));
     chartSerieZ->setColor(QColor(0, 0, 255));
 
     if (events) {
-    	EventSerieBase* eventSerieX = dynamic_cast<EventSerieBase*>(serieX->serie());
-    	EventSerieBase* eventSerieY = dynamic_cast<EventSerieBase*>(serieX->serie());
-    	EventSerieBase* eventSerieZ = dynamic_cast<EventSerieBase*>(serieX->serie());
+		EventSerieBase* eventSerieX = dynamic_cast<EventSerieBase*>(serieX->innerSerie());
+		EventSerieBase* eventSerieY = dynamic_cast<EventSerieBase*>(serieX->innerSerie());
+		EventSerieBase* eventSerieZ = dynamic_cast<EventSerieBase*>(serieX->innerSerie());
     	if (eventSerieX && eventSerieY && eventSerieZ) {
     		eventSerieX->setEvents(events);
     		eventSerieY->setEvents(events);
@@ -255,7 +255,7 @@ std::vector<utils::TypeInfo> NewVector3ItemHelper::getTypeInfos() const
     return ret;
 }
 
-void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
+void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::Serie*>& series )
 {
     int count = wrappers.size();
     for (int i = 0; i < count; ++i) {
@@ -263,12 +263,12 @@ void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const 
 		std::string source;
 		wrapper->getMetadata("core/source", source);
 		auto serieX = visualizer->createSerie(wrapper->data()->getTypeInfo(), wrapper);
-		serieX->serie()->setName(source);
+		serieX->innerSerie()->setName(source);
         if (wrappers[i].events) {
-            EventSerieBase * eventSerie = dynamic_cast<EventSerieBase*>(serieX->serie());
+			EventSerieBase * eventSerie = dynamic_cast<EventSerieBase*>(serieX->innerSerie());
             eventSerie->setEvents(wrappers[i].events);
         }
-        INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->serie());
+		INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->innerSerie());
 
         chartSerieX->setColor(colorStrategy->getColor(chartSerieX, wrapper));
         series.push_back(serieX);
@@ -328,7 +328,7 @@ EMGFilterHelper::EMGFilterHelper(const core::VariantConstPtr& wrapper, const c3d
 }
 
 
-void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
+void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series )
 {
 	c3dlib::ScalarChannelReaderInterfacePtr channel = wrapper->clone()->get();
 
@@ -347,11 +347,11 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
     wrapperX->getMetadata("core/name", name);    
 	auto s = visualizer->createSerie(typeid(c3dlib::ScalarChannelReaderInterface), wrapperX);
 
-    EventSerieBase* chartSerie = dynamic_cast<EventSerieBase*>(s->serie());
+	EventSerieBase* chartSerie = dynamic_cast<EventSerieBase*>(s->innerSerie());
     if (events && chartSerie) {
         chartSerie->setEvents(events);
     }
-    s->serie()->setName(name);
+	s->innerSerie()->setName(name);
     series.push_back(s);
 
 }

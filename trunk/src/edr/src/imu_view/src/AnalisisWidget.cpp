@@ -441,13 +441,13 @@ void AnalysisTreeContextMenu::addAdditionMenuSection( QMenu * menu, const core::
     addTo->setEnabled(false);
     connect(addTo, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
     connect(addTo, SIGNAL(hovered(QAction*)), this, SLOT(menuHighlightVisualizer(QAction*)));
+	auto dtr = plugin::getRegisteredDataTypesManagerReader();
     for(auto set : widget->topMainWindow->getDockSet()) {
         QMenu* group = new QMenu(widget->topMainWindow->setText(widget->topMainWindow->indexOf(set)), menu);
         for(auto dock : set->getDockWidgets()) {
             coreUI::CoreVisualizerWidget* vw = dynamic_cast<coreUI::CoreVisualizerWidget*>(dock->widget());
             if (vw ) {
                 core::VisualizerPtr visualizer = vw->getVisualizer();
-                auto hierarchyManager = plugin::getDataHierachyManagerReader();
                 bool compatibile = false;
                 utils::TypeInfoSet supportedTypes;
                 visualizer->getSupportedTypes(supportedTypes);
@@ -457,8 +457,10 @@ void AnalysisTreeContextMenu::addAdditionMenuSection( QMenu * menu, const core::
                     if(supportedTypes.find(types[h]) != supportedTypes.end()){
                         compatibile = true;
                     }else {
+						
                         for(auto it = supportedTypes.begin(); it != supportedTypes.end(); ++it){
-                            if(hierarchyManager->isTypeCompatible(*it, types[h]) == true){
+							if (dtr->isDerrived(*it, types[h]) == true){
+                            //if(hierarchyManager->isTypeCompatible(*it, types[h]) == true){
                                 compatibile = true;
                                 break;
                             }

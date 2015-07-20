@@ -117,7 +117,7 @@ public:
 
 private:
 	//! Transakcja MDM
-	core::IMemoryDataManager::TransactionPtr mdm;
+	core::IDataManager::TransactionPtr mdm;
 	//! Transakcja SDM
 	core::IStreamDataManager::TransactionPtr sdm;
 	//! Lokalny kontekst
@@ -169,7 +169,7 @@ if (file->fileName == zipName){
 
 */
 
-HMDBLocalContext::HMDBLocalContext(IHMDBDataContextPtr dataContext, core::IMemoryDataManager * mdm,
+HMDBLocalContext::HMDBLocalContext(IHMDBDataContextPtr dataContext, core::IDataManager * mdm,
 	core::IStreamDataManager * sdm) : dataContext_(dataContext), mdm(mdm), sdm(sdm)
 {
 
@@ -279,7 +279,7 @@ const bool HMDBLocalContext::rawIsLoaded(const std::string & fileName, const cor
 	return streamTransaction->isManaged(sName);
 }
 
-const bool HMDBLocalContext::rawLoad(const core::VariantPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction)
+const bool HMDBLocalContext::rawLoad(const core::VariantPtr data, const core::IDataManager::TransactionPtr memoryTransaction)
 {
 	bool ret = false;
 
@@ -292,7 +292,7 @@ const bool HMDBLocalContext::rawLoad(const core::VariantPtr data, const core::IM
 	return ret;
 }
 
-const bool HMDBLocalContext::rawUnload(const core::VariantConstPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction)
+const bool HMDBLocalContext::rawUnload(const core::VariantConstPtr data, const core::IDataManager::TransactionPtr memoryTransaction)
 {
 	bool ret = false;	
 
@@ -313,12 +313,12 @@ const bool HMDBLocalContext::rawUnload(const core::VariantConstPtr data, const c
 	return ret;
 }
 
-const bool HMDBLocalContext::rawIsMyData(const core::VariantConstPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction) const
+const bool HMDBLocalContext::rawIsMyData(const core::VariantConstPtr data, const core::IDataManager::TransactionPtr memoryTransaction) const
 {	
 	return std::find(myData_.begin(), myData_.end(), data) != myData_.end();
 }
 
-const bool HMDBLocalContext::rawIsMyData(const void * data, const core::IMemoryDataManager::TransactionPtr memoryTransaction) const
+const bool HMDBLocalContext::rawIsMyData(const void * data, const core::IDataManager::TransactionPtr memoryTransaction) const
 {
 	auto it = std::find_if(myData_.begin(), myData_.end(), [=](const core::VariantConstPtr d) -> bool {
 		if (d->getRawPtr() == data){

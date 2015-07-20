@@ -31,13 +31,15 @@ HMDBSource::~HMDBSource()
 
 }
 
-void HMDBSource::init(core::IMemoryDataManager * memoryDM,
+void HMDBSource::init(core::IDataManager * memoryDM,
 	core::IStreamDataManager * streamDM,
-	core::IFileDataManager * fileDM)
+	core::IFileDataManager * fileDM,
+	core::IDataHierarchyManager * hierarchyDM)
 {
 	this->memoryDM = memoryDM;
 	this->streamDM = streamDM;
 	this->fileDM = fileDM;
+	this->hierarchyDM = hierarchyDM;
 }
 
 bool HMDBSource::lateInit()
@@ -110,7 +112,7 @@ const IHMDBShallowCopyContextPtr HMDBSource::createShallowCopyContext(IHMDBSourc
 	if (sourceContext != nullptr && sourceContext->dataContext() != nullptr
 		&& sourceContext->localContext() != nullptr){
 		IHMDBShallowCopyDataContextPtr scdc(new HMDBShallowCopyDataContext());
-		IHMDBShallowCopyLocalContextPtr sclc(new HMDBShallowCopyLocalContext(scdc, sourceContext->localContext(), memoryDM));
+		IHMDBShallowCopyLocalContextPtr sclc(new HMDBShallowCopyLocalContext(scdc, sourceContext->localContext(), hierarchyDM));
 		IHMDBShallowCopyRemoteContextPtr scrc;
 
 		if (sourceContext->remoteContext() != nullptr){

@@ -21,9 +21,10 @@ namespace core {
 
 	class ISourceManager;
 	class IVisualizerManager;
-	class IMemoryDataManager;
+	class IDataManager;
 	class IStreamDataManager;
 	class IFileDataManager;
+	class IDataHierarchyManager;
 }
 
 namespace plugin 
@@ -38,9 +39,10 @@ namespace plugin
         //! (nie zainicjalizowaniu!) wszystkich usług.
 		virtual void init(core::ISourceManager * sourceManager,
 			core::IVisualizerManager * visualizerManager,
-			core::IMemoryDataManager * memoryDataManager,
+			core::IDataManager * memoryDataManager,
 			core::IStreamDataManager * streamDataManager,
-			core::IFileDataManager * fileDataManager) = 0;
+			core::IFileDataManager * fileDataManager,
+			core::IDataHierarchyManager * hierarchyDataManager) = 0;
 
         //! Późna inicjalizacja usług, następuje po wczytaniu i inicjalizacji wszystkich usług
 		//! \return Czy usługa poprawnie zainicjalizowana czy nie - może brakuje innych usług zależnych i sama nie ma jak działać

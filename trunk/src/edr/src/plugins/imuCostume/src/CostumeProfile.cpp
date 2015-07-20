@@ -111,12 +111,15 @@ CostumeProfile SerializableCostumeProfile::unpack(const SerializableCostumeProfi
 	CostumeProfile ret;
 	ret.name = profile.name;
 
+	kinematic::LinearizedSkeleton::LocalMapping localMapping;
+
 	//szkielet
 	{
 		auto sIT = skeletons.find(profile.skeletonID);
 
 		if (sIT != skeletons.end()){
 			ret.skeleton = utils::make_shared < IMU::Skeleton >(*sIT->second);
+			localMapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*ret.skeleton);
 		}
 	}
 
@@ -138,8 +141,6 @@ CostumeProfile SerializableCostumeProfile::unpack(const SerializableCostumeProfi
 		}
 	}
 
-	const auto localMapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*ret.skeleton);
-
 	IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions sds;	
 
 	//konfiguracja sensorów
@@ -147,7 +148,14 @@ CostumeProfile SerializableCostumeProfile::unpack(const SerializableCostumeProfi
 	{
 		CostumeProfile::SensorDescription local;
 		local.jointName = ea.second.jointName;
-		local.jointIdx = localMapping.data().right.find(local.jointName)->get_left();
+		local.jointIdx = -1;
+
+		auto it = localMapping.data().right.find(local.jointName);
+
+		if (it != localMapping.data().right.end()){
+			local.jointIdx = it->get_left();
+		}
+		
 		local.offset = ea.second.offset;
 		local.preMulRotation = ea.second.preMulRotation;
 		local.postMulRotation = ea.second.postMulRotation;

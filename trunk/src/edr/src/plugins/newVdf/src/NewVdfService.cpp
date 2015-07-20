@@ -14,10 +14,10 @@
 #include <corelib/PluginCommon.h>
 #include "DataSinkManager.h"
 #include "DataProcessorManager.h"
-#include <corelib/IMemoryDataManager.h>
+#include <corelib/IDataManager.h>
 #include "DataSourceManager.h"
 #include <boost/chrono/thread_clock.hpp>
-#include <corelib/IMemoryDataManager.h>
+#include <corelib/IDataManager.h>
 #include "PresetsWidget.h"
 #include "MergedWidget.h"
 
@@ -29,36 +29,7 @@ NewVdfService::NewVdfService() :
 	dataProcessorManager(new DataProcessorManager()),
 	dataSourceManager(new DataSourceManager())
 {
-    CanvasStyleEditorPtr canvas(new CanvasStyleEditor());
-	SceneModelPtr scene(new SceneModel(canvas));
-    newVdfWidget = new NewVdfWidget(commandStack, scene, &resultsModel);
-//	commandStackDebug = new CommandStackDebug(commandStack);
-//	QObject::connect(commandStack.get(), SIGNAL(changed()), commandStackDebug, SLOT(refresh()));
-//	commandStack->addCommand(ICommandPtr(new NullCommand()));
-    typesWindow = new TypesWindow(commandStack, canvas, scene);
-    propertiesWindow = new PropertiesWindow(commandStack);
-    QObject::connect(newVdfWidget, SIGNAL(singleNodeSelected(IVisualNodePtr)), propertiesWindow, SLOT(onNodeSelected(IVisualNodePtr)));
-	dataSourceManager->attach(typesWindow);
-	dataProcessorManager->attach(typesWindow);
-	dataSinkManager->attach(typesWindow);
-    canvasStyleEditorWidget = new CanvasStyleEditorWidget(canvas);
-	QObject::connect(canvasStyleEditorWidget, SIGNAL(backgroundAccepted(IBackgroundStrategyPtr)), newVdfWidget->getScene() , SLOT(setBackgroundStrategy(IBackgroundStrategyPtr)));
-
-    resultsView = new QTreeView();
-    resultsView->setModel(&resultsModel);
-    resultProperty = new QWidget();
-    resultButton = new QPushButton();
-    resultButton->setText(tr("Transfer results"));
-    resultProperty->setLayout(new QVBoxLayout());
-    resultProperty->layout()->addWidget(resultsView);
-    resultProperty->layout()->addWidget(resultButton);
-    connect(resultButton, SIGNAL(clicked()), this, SLOT(onTransferResults()));
-    resultProperty->setObjectName("Result view");
-
-    mergedWidget = new MergedWidget();
-    mergedWidget->setObjectName("Merged");
-    presetsWidget = new PresetsWidget(newVdfWidget->getSceneModel(), typesWindow);
-    presetsWidget->setObjectName("Presets");
+    
 }
 
 NewVdfService::~NewVdfService()
@@ -152,11 +123,46 @@ void NewVdfService::update( double time )
     }
 }
 
-void NewVdfService::init( core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager )
+void NewVdfService::init( core::ISourceManager * sourceManager,
+	core::IVisualizerManager * visualizerManager,
+	core::IDataManager * memoryDataManager,
+	core::IStreamDataManager * streamDataManager,
+	core::IFileDataManager * fileDataManager,
+	core::IDataHierarchyManager * hierarchyManager)
 {
-    this->memoryManager = memoryDataManager;
-    auto memoryManager = plugin::getHierarchyManagerReader();
-    memoryManager->addObserver(shared_from_this());
+	this->hierarchyManager = hierarchyManager;
+	hierarchyManager->addObserver(shared_from_this());
+
+	CanvasStyleEditorPtr canvas(new CanvasStyleEditor());
+	SceneModelPtr scene(new SceneModel(canvas, hierarchyManager));
+	newVdfWidget = new NewVdfWidget(commandStack, scene, &resultsModel);
+	//	commandStackDebug = new CommandStackDebug(commandStack);
+	//	QObject::connect(commandStack.get(), SIGNAL(changed()), commandStackDebug, SLOT(refresh()));
+	//	commandStack->addCommand(ICommandPtr(new NullCommand()));
+	typesWindow = new TypesWindow(commandStack, canvas, scene);
+	propertiesWindow = new PropertiesWindow(commandStack);
+	QObject::connect(newVdfWidget, SIGNAL(singleNodeSelected(IVisualNodePtr)), propertiesWindow, SLOT(onNodeSelected(IVisualNodePtr)));
+	dataSourceManager->attach(typesWindow);
+	dataProcessorManager->attach(typesWindow);
+	dataSinkManager->attach(typesWindow);
+	canvasStyleEditorWidget = new CanvasStyleEditorWidget(canvas);
+	QObject::connect(canvasStyleEditorWidget, SIGNAL(backgroundAccepted(IBackgroundStrategyPtr)), newVdfWidget->getScene(), SLOT(setBackgroundStrategy(IBackgroundStrategyPtr)));
+
+	resultsView = new QTreeView();
+	resultsView->setModel(&resultsModel);
+	resultProperty = new QWidget();
+	resultButton = new QPushButton();
+	resultButton->setText(tr("Transfer results"));
+	resultProperty->setLayout(new QVBoxLayout());
+	resultProperty->layout()->addWidget(resultsView);
+	resultProperty->layout()->addWidget(resultButton);
+	connect(resultButton, SIGNAL(clicked()), this, SLOT(onTransferResults()));
+	resultProperty->setObjectName("Result view");
+
+	mergedWidget = new MergedWidget();
+	mergedWidget->setObjectName("Merged");
+	presetsWidget = new PresetsWidget(newVdfWidget->getSceneModel(), typesWindow);
+	presetsWidget->setObjectName("Presets");
 }
 
 
@@ -178,15 +184,14 @@ void vdf::NewVdfService::registerDataProcessor( const IDataProcessorPtr & dataPr
     processorManager->registerDataProcessor(dataProcessor);
 }
 
-void vdf::NewVdfService::observe( const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes )
+void vdf::NewVdfService::observe( const core::IDataHierarchyManagerReader::ChangeList & changes )
 {
-    auto memoryManager = plugin::getHierarchyManagerReader();
     auto model = newVdfWidget->getSceneModel();
     auto items = model->getVisualItems<IVisualSourceNodePtr>();
     for (auto it = items.begin(); it != items.end(); ++it) {
         auto observer = dynamic_cast<vdf::INodeHierarchyObserver*>((*it)->getModelNode());
         if (observer) {
-            observer->refresh(memoryManager, changes);
+            observer->refresh(hierarchyManager, changes);
         }
     }
 }
@@ -200,8 +205,7 @@ void vdf::NewVdfService::onTransferResults()
         root->appendChild(itm);
     }
 
-    auto transaction = this->memoryManager->hierarchyTransaction();
-    transaction->addRoot(root);
+    this->hierarchyManager->transaction()->addRoot(root);
 
     emit transferResults();
     resultsModel.clear();

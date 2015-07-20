@@ -17,12 +17,12 @@
 #include "ApplicationCommon.h"
 #include "VisualizerManager.h"
 #include "ServiceManager.h"
-#include "MemoryDataManager.h"
+#include "DataManager.h"
 #include "ParserManager.h"
 #include "StreamDataManager.h"
 #include "FileDataManager.h"
 #include "DataHierarchyManager.h"
-#include "HierarchyDataManager.h"
+#include "RegisteredDataTypesManager.h"
 #include "SourceManager.h"
 #include "LogInitializer.h"
 #include "PluginLoader.h"
@@ -158,7 +158,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 	}
 
 	//! DOPIERO OD TEGO MOMENTU MOG� LOGOWAC INFORMACJE!!
-	ExceptionLogger::setLog(logger_);
+	//ExceptionLogger::setLog(logger_);
 
 	CORE_LOG_INFO("UserDataPath: " << paths_->getUserDataPath());
 	CORE_LOG_INFO("ApplicationDataPath: " << paths_->getApplicationDataPath());
@@ -266,7 +266,8 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	showSplashScreenMessage(QObject::tr("Initializing core managers"));
 
 	dataHierarchyManager_.reset(new DataHierarchyManager());
-	memoryDataManager_.reset(new HierarchyDataManager());
+	registeredDataTypesManager_.reset(new RegisteredDataTypesManager);
+	dataManager_.reset(new DataManager());
 	parserManager_.reset(new ParserManager());
 	streamDataManager_.reset(new StreamDataManager());
 	fileDataManager_.reset(new FileDataManager());
@@ -274,8 +275,8 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	sourceManager_.reset(new SourceManager());
 	visualizerManager_.reset(new VisualizerManager());
 
-	memoryDataManager_->addObserver(fileDataManager_);
-	memoryDataManager_->addObserver(streamDataManager_);
+	dataManager_->addObserver(fileDataManager_);
+	dataManager_->addObserver(streamDataManager_);
 
 	//Wielow�tkowo��
 	{
@@ -386,7 +387,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	for (int i = 0; i < serviceManager_->getNumServices(); ++i) {
 		try{
 			serviceManager_->getService(i)->init(sourceManager_.get(),
-				visualizerManager_.get(), memoryDataManager_.get(), streamDataManager_.get(), fileDataManager_.get());
+				visualizerManager_.get(), dataManager_.get(), streamDataManager_.get(), fileDataManager_.get(), dataHierarchyManager_.get());
 		}
 		catch (std::exception & e){
 			skipServices.insert(serviceManager_->getService(i));
@@ -446,7 +447,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	std::set<plugin::ISourcePtr> skipSources;
 	for (int i = 0; i < sourceManager_->getNumSources(); ++i) {
 		try{
-			sourceManager_->getSource(i)->init(memoryDataManager_.get(), streamDataManager_.get(), fileDataManager_.get());
+			sourceManager_->getSource(i)->init(dataManager_.get(), streamDataManager_.get(), fileDataManager_.get(), dataHierarchyManager_.get());
 		}
 		catch (std::exception & e){
 			skipSources.insert(sourceManager_->getSource(i));
@@ -550,17 +551,19 @@ Application::~Application()
 		CORE_LOG_INFO("Releasing visualizer manager");
 		visualizerManager_.reset();
 		CORE_LOG_INFO("Releasing stream data manager");
-		memoryDataManager_->removeObserver(streamDataManager_);
+		dataManager_->removeObserver(streamDataManager_);
 		streamDataManager_.reset();
 		CORE_LOG_INFO("Releasing file data manager");
-		memoryDataManager_->removeObserver(fileDataManager_);
+		dataManager_->removeObserver(fileDataManager_);
 		fileDataManager_.reset();
 		CORE_LOG_INFO("Releasing parsers manager");
 		parserManager_.reset();
 		CORE_LOG_INFO("Releasing memory data manager");
-		memoryDataManager_.reset();
-		CORE_LOG_INFO("Releasing hierarchy data manager");
+		dataManager_.reset();
+		CORE_LOG_INFO("Releasing data hierarchy manager");
 		dataHierarchyManager_.reset();
+		CORE_LOG_INFO("Releasing registered data types manager");
+		registeredDataTypesManager_.reset();
 		CORE_LOG_INFO("Reseting plugins");
 		pluginLoader_->reset();
 
@@ -605,9 +608,9 @@ LanguagesManager * Application::languageManager()
 	return languagesManager_.get();
 }
 
-MemoryDataManager* Application::memoryDataManager()
+DataManager* Application::dataManager()
 {
-	return memoryDataManager_.get();
+	return dataManager_.get();
 }
 
 StreamDataManager* Application::streamDataManager()
@@ -638,6 +641,11 @@ Path* Application::paths()
 DataHierarchyManager* Application::dataHierarchyManager()
 {
 	return dataHierarchyManager_.get();
+}
+
+RegisteredDataTypesManager* Application::registeredDataTypesManager()
+{
+	return registeredDataTypesManager_.get();
 }
 
 ParserManager* Application::parserManager()
@@ -809,7 +817,7 @@ void Application::safeRegisterParser(const plugin::IParserPtr & parser)
 void Application::safeRegisterObjectWrapperPrototype(const utils::ObjectWrapperPtr & prototype)
 {
 	try{
-		dataHierarchyManager_->registerObjectWrapperPrototype(prototype);
+		registeredDataTypesManager_->registerObjectWrapperPrototype(prototype);
 	}
 	catch (std::exception & e){
 		CORE_LOG_WARNING("Object wrapper prototype for type " << prototype->getTypeInfo().name() << " has caused an error during registration: "

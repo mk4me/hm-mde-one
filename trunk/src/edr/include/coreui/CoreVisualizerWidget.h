@@ -45,8 +45,8 @@ private:
 	//! Użyte indeksy dla danych bez opisu
 	std::set<int> usedLocalNameIndexes;
 	//! Mapa danych aktywnych - dane do serii wg typów
-	std::map<utils::TypeInfo, std::map<core::VariantConstPtr, core::Visualizer::VisualizerSerie*>> activeData;
-	std::map<core::Visualizer::VisualizerSerie*, int> serieLocalIdx;
+	std::map<utils::TypeInfo, std::map<core::VariantConstPtr, core::Visualizer::Serie*>> activeData;
+	std::map<core::Visualizer::Serie*, int> serieLocalIdx;
 
 public:
     //! Zerujący konstruktor.

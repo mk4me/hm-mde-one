@@ -222,24 +222,24 @@ void coreUI::HierarchyTreeModel::clear()
 	endResetModel();
 }
 
-void coreUI::HierarchyTreeModel::applyChange(const core::IMemoryDataManagerHierarchy::HierarchyChange& change)
+void coreUI::HierarchyTreeModel::applyChange(const core::IDataHierarchyManagerReader::Change& change)
 {
 	switch (change.modification) {
-	case core::IDataManagerReader::ADD_OBJECT:
-		addRootItem(change.value);
+	case core::IDataHierarchyManagerReader::ADD_ITEM:
+		addRootItem(change.item);
 		break;
-	case  core::IDataManagerReader::REMOVE_OBJECT:
-		removeRootItem(change.value);
+	case  core::IDataHierarchyManagerReader::REMOVE_ITEM:
+		removeRootItem(change.item);
 		break;
-	case core::IDataManagerReader::UPDATE_OBJECT:
-		updateItem(change.value);
+	case core::IDataHierarchyManagerReader::UPDATE_ITEM:
+		updateItem(change.item);
 		break;
 	default:
 		UTILS_ASSERT(false);
 	}
 }
 
-void coreUI::HierarchyTreeModel::applyChanges(const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes)
+void coreUI::HierarchyTreeModel::applyChanges(const core::IDataHierarchyManagerReader::ChangeList & changes)
 {
 	for (auto it = changes.begin(); it != changes.end(); ++it) {
 		applyChange(*it);

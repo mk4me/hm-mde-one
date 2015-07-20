@@ -40,7 +40,8 @@ public:
     //! \param hmm obiekt widoku HMM 
     //! \param margin margines dla filtrów
     //! \param flags flagi Qt
-    AnalisisWidget(AnalisisModelPtr model, ContextEventFilterPtr contextEventFilter, QWidget* parent, int margin = 2, Qt::WindowFlags flags = 0);
+    AnalisisWidget(AnalisisModelPtr model, ContextEventFilterPtr contextEventFilter, QWidget* parent,
+		int margin = 2, Qt::WindowFlags flags = 0);
     virtual ~AnalisisWidget() {}
 
 public:
@@ -201,7 +202,7 @@ private:
     //! Model analiz, potrzebny do pobrania danych z hierarchii
     AnalisisModelPtr model;
     //! Widget analiz, przekazuje informacje o kliknięciach 
-    AnalisisWidget* widget;
+	AnalisisWidget* widget;
 };
 
 #endif

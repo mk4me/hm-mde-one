@@ -1,7 +1,7 @@
 #include "CorePCH.h"
 #include "VisualizerManager.h"
-#include "DataHierarchyManager.h"
-#include "MemoryDataManager.h"
+#include "RegisteredDataTypesManager.h"
+#include "DataManager.h"
 #include <utils/Push.h>
 #include "ApplicationCommon.h"
 #include <corelib/Exceptions.h>
@@ -85,13 +85,13 @@ void VisualizerManager::unregisterVisualizer(Visualizer* visualizer)
 	notify(visualizer, IVisualizerManager::Destruction);
 }
 
-void VisualizerManager::registerObserver(IVisualizerManagerObserver * observer)
+void VisualizerManager::registerObserver(IVisualizerManager::IObserver * observer)
 {
 	ScopedLock lock(observerSync);
 	observers_.insert(observer);
 }
 
-void VisualizerManager::unregisterObserver(IVisualizerManagerObserver * observer)
+void VisualizerManager::unregisterObserver(IVisualizerManager::IObserver * observer)
 {
 	if(skipNotify == true){
 		return;
@@ -129,16 +129,17 @@ void VisualizerManager::registerVisualizerPrototype(plugin::IVisualizerPtr visua
 	VisualizerPrototypeData protoData;
 	{
 		utils::Push<bool> localSkipNotify(skipNotify, true);
-		protoData.visualizerPrototype.reset(new Visualizer(visualizerPrototype, getMemoryDataManager(), this));
+		protoData.visualizerPrototype.reset(new Visualizer(visualizerPrototype, getDataManager(), this));
 	}
 
-	auto dhm = getDataHierarchyManager();
+	auto dhm = getRegisteredDataTypesManager();
 
 	utils::TypeInfoList visTypes;
 	visualizerPrototype->getSupportedTypes(visTypes);
 	protoData.basicSupportedTypes.insert(visTypes.begin(), visTypes.end());
 	for(auto it = visTypes.begin(); it != visTypes.end(); ++it){
-		dhm->getTypeDerrivedTypes(*it, protoData.derrivedSupportedTypes);
+		auto dt = dhm->derrivedTypes(*it);
+		protoData.derrivedSupportedTypes.insert(dt.begin(), dt.end());
 	}
 
 	visualizerPrototypes_.insert(VisualizerPrototypes::value_type(visualizerPrototype->ID(), protoData));

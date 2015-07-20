@@ -59,7 +59,8 @@ private:
 		const IMU::IIMUDataSource::OrientationEstimationAlgorithms & orientAlgorithms,
 		const IMU::IIMUDataSource::CostumeCalibrationAlgorithms & calibAlgorithms,
 		const IMU::IIMUDataSource::CostumeMotionEstimationAlgorithms & motionAlgorithms,
-		const IMU::IIMUDataSource::SkeletonModels & skeletonModels);
+		const IMU::IIMUDataSource::SkeletonModels & skeletonModels,
+		const IMU::CostumeProfile::SensorsDescriptions & sensorsDescriptions = IMU::CostumeProfile::SensorsDescriptions());
 
 	void refreshProfile();
 	bool verifyCalibrationAndMotionAlgorithms() const;

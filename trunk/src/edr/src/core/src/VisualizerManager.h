@@ -36,7 +36,7 @@ namespace core {
 		//! Lista prototypów vizualizatorów
 		typedef std::map<UniqueID, VisualizerPrototypeData> VisualizerPrototypes;
 		//! Typ listy obserwatorów
-		typedef std::set<IVisualizerManagerObserver*> Observers;
+		typedef std::set<IVisualizerManager::IObserver*> Observers;
 		//! Obsługa synchronizacji
 		typedef std::recursive_mutex SyncPolicy;
 		typedef std::lock_guard<SyncPolicy> ScopedLock;
@@ -77,9 +77,9 @@ namespace core {
 		//! \param visInstances [out] Aktualne instancje wizualizatorów
 		virtual void getVisualizersInstances(VisualizerInstances & visInstances) const;
 		//! \param observer Obserwator tworzonych wizualziatorów włączony do obserwacji
-		virtual void registerObserver(IVisualizerManagerObserver * observer);
+		virtual void registerObserver(IVisualizerManager::IObserver * observer);
 		//! \param observer Obserwator tworzonych wizualziatorów wyłanczany z obserwacji
-		virtual void unregisterObserver(IVisualizerManagerObserver * observer);
+		virtual void unregisterObserver(IVisualizerManager::IObserver * observer);
 
 	private:
 		//! \param visualizer Wizualizator który się tworzy i jest rejestrowany w managerze

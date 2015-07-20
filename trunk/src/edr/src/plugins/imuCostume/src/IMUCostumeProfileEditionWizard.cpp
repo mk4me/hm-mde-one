@@ -122,7 +122,10 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 {
 	//ui->setupUi(this);
 	init(profile->name.empty() == true ? tr("New profile") : QString::fromStdString(profile->name),
-		costumeSensors,	orientAlgorithms, calibAlgorithms, motionAlgorithms, skeletonModels);
+		costumeSensors,	orientAlgorithms, calibAlgorithms, motionAlgorithms, skeletonModels,
+		profile->sensorsDescriptions);
+
+	kinematic::LinearizedSkeleton::LocalMapping localMapping;
 
 	if (profile->skeleton != nullptr){
 
@@ -133,9 +136,10 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 				break;
 			}
 		}
-	}
 
-	const auto localMapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*(profile->skeleton));
+		localMapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*(profile->skeleton));
+
+	}
 
 	imuCostume::Costume::SensorIDsSet allCostumeSensors(costumeSensors);
 
@@ -197,15 +201,19 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 			//tylko kostium
 			use = true;
 			sensorIDValid = false;
-		}
+		}		
 
 		//JOINT column
 		{
 			auto it = localMapping.data().right.find(jointName.toStdString());
-			//ui->sensorsConfigurationTableWidget->setItem(row, JointIDX, new QTableWidgetItem(jointName.isEmpty() == true ? SkeletonJointsDelegate::defaultText() : jointName));
-			ui->sensorsConfigurationTableWidget->setItem(row, JointIDX, new QTableWidgetItem(it == localMapping.data().right.end() ? SkeletonJointsDelegate::defaultText() : jointName));
+			if (profile->skeleton == nullptr){
+				ui->sensorsConfigurationTableWidget->setItem(row, JointIDX, new QTableWidgetItem(jointName.isEmpty() == true ? SkeletonJointsDelegate::defaultText() : jointName));
+			}
+			else{				
+				ui->sensorsConfigurationTableWidget->setItem(row, JointIDX, new QTableWidgetItem(it == localMapping.data().right.end() ? SkeletonJointsDelegate::defaultText() : jointName));
+			}		
 			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, JointIDX), it != localMapping.data().right.end() ? it->get_left() : SkeletonJointsDelegate::defaultValue(), Qt::UserRole);
-		}
+		}		
 
 		//ALGORITHM column
 		{
@@ -307,7 +315,8 @@ void IMUCostumeProfileEditionWizard::init(const QString & profileName,
 	const IMU::IIMUDataSource::OrientationEstimationAlgorithms & orientAlgorithms,
 	const IMU::IIMUDataSource::CostumeCalibrationAlgorithms & calibAlgorithms,
 	const IMU::IIMUDataSource::CostumeMotionEstimationAlgorithms & motionAlgorithms,
-	const IMU::IIMUDataSource::SkeletonModels & skeletonModels)
+	const IMU::IIMUDataSource::SkeletonModels & skeletonModels,
+	const IMU::CostumeProfile::SensorsDescriptions & sensorsDescriptions)
 {
 	ui->setupUi(this);
 	setWindowTitle(windowTitle().arg(profileName));
@@ -331,6 +340,13 @@ void IMUCostumeProfileEditionWizard::init(const QString & profileName,
 	ui->sensorsConfigurationTableWidget->setItemDelegateForColumn(PostMulRotationIDX, orientationDelegate);
 	ui->sensorsConfigurationTableWidget->setItemDelegateForColumn(OffsetIDX, vector3DDelegate);
 
+	std::set<std::string> profileJointsNames;
+
+	for (const auto & sd : sensorsDescriptions)
+	{
+		profileJointsNames.insert(sd.second.jointName);
+	}
+
 	//MODEL combobox
 	{
 		ui->modelComboBox->addItem(tr("Select model..."));
@@ -351,6 +367,24 @@ void IMUCostumeProfileEditionWizard::init(const QString & profileName,
 			unsigned int jointsCount = m.second->root()->size();
 			unsigned int activeJointsCount = kinematic::LinearizedSkeleton::createNonLeafOrder(*m.second).size();
 			ui->modelComboBox->addItem(tr("Model %1: %2 joints (%3 active)").arg(QString::fromStdString(m.second->name)).arg(jointsCount).arg(activeJointsCount), QVariant::fromValue(m.second));
+
+			if (profileJointsNames.empty() == false){
+				std::set<std::string> skeletonJointsNames;
+				kinematic::LinearizedSkeleton::Visitor::visit(*(m.second), [&skeletonJointsNames](kinematic::Skeleton::JointConstPtr joint)
+				{
+					skeletonJointsNames.insert(joint->value().name());
+				});
+
+				std::vector<std::string> jointsDifference(std::max(skeletonJointsNames.size(), profileJointsNames.size()));
+
+				auto it = std::set_difference(profileJointsNames.begin(), profileJointsNames.end(), skeletonJointsNames.begin(), skeletonJointsNames.end(), jointsDifference.begin());
+				if (it != jointsDifference.begin()){
+					auto item = model->item(ui->modelComboBox->count()-1);
+					item->setFlags(item->flags() & ~(Qt::ItemIsSelectable | Qt::ItemIsEnabled));
+					// visually disable by greying out - works only if combobox has been painted already and palette returns the wanted color
+					item->setData(ui->modelComboBox->palette().color(QPalette::Disabled, QPalette::Text));
+				}
+			}			
 		}
 	}
 
@@ -649,8 +683,8 @@ void IMUCostumeProfileEditionWizard::verifyModel(int idx)
 		for (unsigned int i = 0; i < model->rowCount(); ++i)
 		{
 			auto index = model->index(i, JointIDX);
-			auto jointIDX = model->data(index, Qt::UserRole).toInt();
-			if (joints.left.find(jointIDX) == joints.left.end()){
+			auto jointName = model->data(index, Qt::DisplayRole).toString().toStdString();
+			if (joints.right.find(jointName) == joints.right.end()){
 				model->setData(index, SkeletonJointsDelegate::defaultText());
 				model->setData(index, SkeletonJointsDelegate::defaultValue(), Qt::UserRole);
 			}
@@ -889,7 +923,52 @@ void IMUCostumeProfileEditionWizard::onLoadModel()
 			unsigned int jointsCount = registeredSkeleton->root()->size();
 			unsigned int activeJointsCount = kinematic::LinearizedSkeleton::createNonLeafOrder(*registeredSkeleton).size();
 			ui->modelComboBox->addItem(tr("Model %1: %2 joints (%3 active").arg(QString::fromStdString(registeredSkeleton->name)).arg(jointsCount).arg(activeJointsCount), QVariant::fromValue(registeredSkeleton));
+
+			///------------------------------------------------
+			std::set<std::string> profileJointsNames;			
+
+			for (unsigned int i = 0; i < ui->sensorsConfigurationTableWidget->rowCount(); ++i)
+			{
+				profileJointsNames.insert(ui->sensorsConfigurationTableWidget->item(i, JointIDX)->data(Qt::DisplayRole).toString().toStdString());
+			}
+
+			if (profileJointsNames.size() != ui->sensorsConfigurationTableWidget->rowCount())
+			{
+				std::set<std::string>().swap(profileJointsNames);
+			}
+
+			if (profileJointsNames.empty() == false){
+
+				const QStandardItemModel* model = qobject_cast<const QStandardItemModel*>(ui->modelComboBox->model());
+
+				std::set<std::string> skeletonJointsNames;
+				kinematic::LinearizedSkeleton::Visitor::visit(*registeredSkeleton, [&skeletonJointsNames](kinematic::Skeleton::JointConstPtr joint)
+				{
+					skeletonJointsNames.insert(joint->value().name());
+				});
+
+				std::vector<std::string> jointsDifference(std::max(skeletonJointsNames.size(), profileJointsNames.size()));
+
+				auto it = std::set_difference(profileJointsNames.begin(), profileJointsNames.end(), skeletonJointsNames.begin(), skeletonJointsNames.end(), jointsDifference.begin());
+				if (it != jointsDifference.begin()){
+					auto item = model->item(ui->modelComboBox->count()-1);
+					item->setFlags(item->flags() & ~(Qt::ItemIsSelectable | Qt::ItemIsEnabled));
+					// visually disable by greying out - works only if combobox has been painted already and palette returns the wanted color
+					item->setData(ui->modelComboBox->palette().color(QPalette::Disabled, QPalette::Text));
+				}
+			}
+			///------------------------------------------------
+
 			ui->modelComboBox->setCurrentIndex(ui->modelComboBox->count() - 1);
+
+			//poprawić indexy stawów w konfiguracji
+			auto localMapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*registeredSkeleton);
+			
+			for (unsigned int i = 0; i < ui->sensorsConfigurationTableWidget->rowCount(); ++i)
+			{
+				auto it = localMapping.data().right.find(ui->sensorsConfigurationTableWidget->item(i, JointIDX)->data(Qt::DisplayRole).toString().toStdString());
+				ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(i, JointIDX), it->get_left(), Qt::UserRole);
+			}
 		}
 		catch (std::exception & e){
 			QMessageBox::critical(this, tr("Loading model failure"), tr("Failed to load model file: %1 with following error: ").arg(file) + QString::fromStdString(e.what()));

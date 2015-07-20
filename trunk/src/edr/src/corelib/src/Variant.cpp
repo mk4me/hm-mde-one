@@ -23,7 +23,7 @@ const utils::ObjectWrapperConstPtr Variant::data_t::operator->() const
 VariantPtr Variant::create(const utils::ObjectWrapperPtr & wrapper)
 {
 	if (wrapper == nullptr){
-		throw core::runtime_error("Empty data placeholder");
+		throw std::runtime_error("Empty data placeholder");
 	}
 
 	return VariantPtr(new Variant(wrapper));

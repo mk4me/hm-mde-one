@@ -28,9 +28,9 @@ extern Application * __application;
 //! \return Bie¿¹ca instancja data managera readera. Rozwi¹zanie w ten sposób, w stosunku do
 //! klasycznego upublicznienia tylko nag³ówków funkcji i schowania definicji, pozwala
 //! na rozwijanie, wiêc jest potencjalnie szybsze.
-inline MemoryDataManager* getMemoryDataManager()
+inline DataManager* getDataManager()
 {
-	return __application->memoryDataManager();
+	return __application->dataManager();
 }
 
 inline StreamDataManager* getStreamDataManager()
@@ -46,6 +46,11 @@ inline FileDataManager* getFileDataManager()
 inline DataHierarchyManager* getDataHierarchyManager()
 {
 	return __application->dataHierarchyManager();
+}
+
+inline RegisteredDataTypesManager* getRegisteredDataTypesManager()
+{
+	return __application->registeredDataTypesManager();
 }
 
 inline ParserManager* getParserManager()
@@ -98,6 +103,12 @@ inline Path* getPaths()
 
 //! \return Interfejs logowania informacji
 inline ILog* getLogInterface()
+{
+	return __application->logger();
+}
+
+//! \return Interfejs logowania informacji
+inline ILog* getExceptionLogInterface()
 {
 	return __application->logger();
 }

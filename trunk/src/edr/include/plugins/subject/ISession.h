@@ -14,12 +14,12 @@
 #include <utils/ClonePolicies.h>
 #include <plugins/subject/Types.h>
 #include <corelib/BaseDataTypes.h>
-#include <corelib/IMemoryDataManager.h>
+#include <corelib/IDataManager.h>
 
 namespace PluginSubject {
 
 //! Abstrakcyjna klasa reprezentująca zbiór ruchów w ramach jednego celu/badania/grupy
-class ISession : public core::IDataManagerReaderOperations
+class ISession : public core::IDataManagerReader::IOperations
 {
 public:
     virtual ~ISession() {}

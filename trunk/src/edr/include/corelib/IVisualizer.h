@@ -85,9 +85,9 @@ namespace plugin
 			//! \param time Aktualny czas serii - najprawdopodobniej timeline będzie go ustawiał
 			virtual void setTime(double time) = 0;
 			//! \return Czas trwania serii
-			virtual double getLength() const = 0;
+			virtual double getLength() const { return getEnd() - getBegin(); }
 			//! \return Początek czasu
-			virtual double getBegin() const = 0;
+			virtual double getBegin() const { return 0.0; }
 			//! \return Koniec czasu
 			virtual double getEnd() const = 0;
 		};

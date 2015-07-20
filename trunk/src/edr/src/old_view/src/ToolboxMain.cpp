@@ -158,7 +158,7 @@ void ToolboxMain::actionCreateVisualizer()
 	auto visProto = getVisualizerManager()->getVisualizerPrototype(action->data().value<UniqueID>());
 	VisualizerWidget * dockWidget = new VisualizerWidget();
 	CoreVisualizerWidget* widget = new CoreVisualizerWidget(VisualizerPtr(visProto->create()), this);//, Qt::WindowTitleHint);
-	widget->getVisualizer()->addDataSource(core::Visualizer::VisualizerDataSourcePtr(new core::VisualizerMemoryDataSource(plugin::getDataManagerReader())));
+	widget->getVisualizer()->addDataSource(core::Visualizer::DataSourcePtr(new core::VisualizerMemoryDataSource(plugin::getDataManagerReader())));
 
 	widget->getVisualizer()->addObserver(helper);
 

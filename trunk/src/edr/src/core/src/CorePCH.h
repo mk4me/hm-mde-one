@@ -51,11 +51,11 @@
 #include <utils/PtrPolicyStd.h>
 #include "Application.h"
 #include "ServiceManager.h"
-#include "MemoryDataManager.h"
+#include "DataManager.h"
 #include "ParserManager.h"
 #include "StreamDataManager.h"
 #include "FileDataManager.h"
-#include "DataHierarchyManager.h"
+#include "RegisteredDataTypesManager.h"
 #include "SourceManager.h"
 #include "VisualizerManager.h"
 #include "ApplicationCommon.h"

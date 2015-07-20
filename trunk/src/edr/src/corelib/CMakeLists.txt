@@ -27,13 +27,15 @@ SET_PUBLIC_HEADERS(
 	IPath.h
 	IParserManagerReader.h
 	IParser.h
-	IMemoryDataManager.h
+	IDataManager.h
+	IDataHierarchyManager.h
+	IDataHierarchyManagerReader.h
 	ILog.h
 	IIdentifiable.h
 	IFileManagerReader.h
 	IFileDataManager.h
 	IDataManagerReader.h
-	IDataHierarchyManagerReader.h
+	IRegisteredDataTypesManagerReader.h
 	IClonable.h
 	IApplication.h
 	HierarchyDataItem.h

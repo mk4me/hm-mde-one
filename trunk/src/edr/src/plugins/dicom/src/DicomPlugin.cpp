@@ -13,6 +13,7 @@
 #include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
 #include <corelib/ISourceManager.h>
 #include <corelib/Filesystem.h>
+#include <corelib/IDataHierarchyManager.h>
 #include "LayersXmlParser.h"
 #include "InternalXmlParser.h"
 //#include "AnnotationStatusFilter.h"
@@ -94,7 +95,7 @@ UNIQUE_ID("{2B0AE786-F194-46DE-A161-CCCFF317E44B}")
 CLASS_DESCRIPTION("DicomTempService", "DicomTempService");							
 
 public:
-	DicomTempService() : sourceManager(nullptr), memoryDataManager(nullptr), perspective(new DicomPerspective)
+	DicomTempService() : sourceManager(nullptr), hierarchyManager(nullptr), perspective(new DicomPerspective)
 	{
 
 	}
@@ -105,10 +106,11 @@ public:
 	}
 
 	virtual void init(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager,
-		core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager)
+		core::IDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager,
+		core::IDataHierarchyManager * hierarchyManager)
 	{
 		this->sourceManager = sourceManager;
-		this->memoryDataManager = memoryDataManager;
+		this->hierarchyManager = hierarchyManager;
 	}
 
     virtual const bool lateInit()  
@@ -136,8 +138,7 @@ public:
         auto item = perspective->tryGetHierarchyItem(filename);
         if (item) {
             item->setIcon(icon);
-            auto transaction = memoryDataManager->transaction();
-            auto hierarchyTransaction = memoryDataManager->hierarchyTransaction();
+            auto hierarchyTransaction = hierarchyManager->transaction();
             core::IHierarchyItemConstPtr root = item;
             while (root->getParent() && root->getParent()->getParent()) {
                 root = root->getParent();
@@ -150,7 +151,7 @@ public:
 
 private:
 	core::ISourceManager *sourceManager;
-	core::IMemoryDataManager* memoryDataManager;
+	core::IDataHierarchyManager* hierarchyManager;
 	DicomPerspectivePtr perspective;
 };
 

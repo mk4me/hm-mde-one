@@ -45,7 +45,7 @@ private:
 //! Klasa realizuje widok aplikacji dla medyków
 //! Z czasem klasa zaczela się rozrastac, wymaga glebszej refaktoryzacji
 class MdeMainWindow : public coreUI::CoreMainWindow, public coreUI::SingleInstanceWindow,
-	public coreUI::IAppUsageContextManager//, private core::Visualizer::IVisualizerObserver
+	public coreUI::IAppUsageContextManager//, private core::Visualizer::IObserver
 {
     Q_OBJECT;
     friend class MdeMainWindowController;

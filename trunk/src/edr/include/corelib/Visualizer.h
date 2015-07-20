@@ -40,7 +40,7 @@ namespace core {
 	public:
 
 		//! Seria vizualizatora
-		class CORELIB_EXPORT VisualizerSerie
+		class CORELIB_EXPORT Serie
 		{
 			//! Zaprzyjaźnienie z wizualizatorem
 			friend class Visualizer;
@@ -49,9 +49,9 @@ namespace core {
 			//! \param visualizer Wizualizator który stworzył ta serię
 			//! \param serieBase Faktyczna seria zaimplementowana przez opakowany wizualizator
 			//! \param timeSerieFeatures Możliwości serii pod kątem zarządzania czasem - nie muszą być implementowane -> wtedy nullptr
-			VisualizerSerie(Visualizer * visualizer, plugin::IVisualizer::ISerie * serieBase);
+			Serie(Visualizer * visualizer, plugin::IVisualizer::ISerie * serieBase);
 			//! Prywatny destruktor - tylko wizualizator może niszczyć serie danych
-			~VisualizerSerie();
+			~Serie();
 
 		public:
 			//! \return Wizualizator który stworzył ta serie danych
@@ -59,35 +59,44 @@ namespace core {
 			//! \return Wizualizator który stworzył ta serie danych
 			const Visualizer * visualizer() const;
 			//! \return Podstawowy interfejs serii danych
-			const plugin::IVisualizer::ISerie * serie() const;
+			const plugin::IVisualizer::ISerie * innerSerie() const;
 			//! \return Podstawowy interfejs serii danych
-			plugin::IVisualizer::ISerie * serie();
+			plugin::IVisualizer::ISerie * innerSerie();
 			//! \tparam Typ który powinna wspierać seria danych
 			template<typename T>
 			//! \return Wskaźnik do danego typu jeśli go wspiera, nullptr jesli nie ma serii
 			//! lub nie wspiera typu
-			T * serieFeatures()
+			T * serieFeatures(T * dummy = nullptr)
 			{
-				return dynamic_cast<T*>(serie());
+				return dynamic_cast<T*>(innerSerie());
 			}
 			//! \tparam Typ który powinna wspierać seria danych
 			template<typename T>
 			//! \return Wskaźnik do danego typu jeśli go wspiera, nullptr jesli nie ma serii
 			//! lub nie wspiera typu
-			const T * serieFeatures() const
+			const T * serieFeatures(T * dummy = nullptr) const
 			{
-				return dynamic_cast<const T*>(serie());
+				return dynamic_cast<const T*>(innerSerie());
+			}
+
+			//! \tparam Typ który powinna wspierać seria danych
+			template<typename T>
+			//! \return Wskaźnik do danego typu jeśli go wspiera, nullptr jesli nie ma serii
+			//! lub nie wspiera typu
+			bool serieHasFeatures(T * dummy = nullptr) const
+			{
+				return serieFeatures<T>() != nullptr;
 			}
 
 		private:
 			//! Seria danych
-			plugin::IVisualizer::ISerie * serie_;
+			plugin::IVisualizer::ISerie * innerSerie_;
 			//! Wizualizator
 			Visualizer * visualizer_;
 		};
 
 		//! Interfejs źródła danych wizualizatora
-		class IVisualizerDataSource
+		class IDataSource
 		{
 		public:
 			//! \param type Typdanych jaki nas interesuje
@@ -97,12 +106,12 @@ namespace core {
 		};
 
 		//! Smart pointer do źródła
-		typedef utils::shared_ptr<IVisualizerDataSource> VisualizerDataSourcePtr;
+		typedef utils::shared_ptr<IDataSource> DataSourcePtr;
 		//! Agregat źródeł danych
-		typedef std::list<VisualizerDataSourcePtr> DataSources;
+		typedef std::list<DataSourcePtr> DataSources;
 
 		//! Agregat aktualnie istniejących serii danych
-		typedef std::list<VisualizerSerie*> DataSeries;
+		typedef std::list<Serie*> DataSeries;
 
 		//! Opis zmian w seriach danych
 		enum SerieModyfication {
@@ -112,12 +121,12 @@ namespace core {
 		};
 
 		//! Interfejs obiektu obserwującego zmiany w seriach danych wizualizatora
-		class IVisualizerObserver
+		class IObserver
 		{
 		public:
 			//! \param serie Seria która ulega modyfikacji
 			//! \param modyfication Typ modyfikacji na serii danych
-			virtual void update(VisualizerSerie * serie, SerieModyfication modyfication) = 0;
+			virtual void update(Serie * serie, SerieModyfication modyfication) = 0;
 		};
 
 	private:
@@ -169,28 +178,28 @@ namespace core {
 		//! \param data Dane na bazie których ma powstać seria, muszą być wspierane przez wizualizator,
 		//! w przeciwnym wypadku seria nie zostanie stworozna i dostaniemy nullptr, podobna reakcja będzie miała miejsce
 		//! gdy osiągneliśmy już maksymalną ilość seri jaką wspiera wizualizator i chcemy utworzyć nową
-		VisualizerSerie * createSerie(const utils::TypeInfo & requestedType, const VariantConstPtr & data);
+		Serie * createSerie(const utils::TypeInfo & requestedType, const VariantConstPtr & data);
 		//! \param serie Seria na bazie której ma powstać nowa seria, musi pochodzić od tego wizualizatora,
 		//! w przeciwnym wypadku seria nie zostanie stworzozna i dostaniemy nullptr, podobna reakcja będzie miała miejsce
 		//! gdy osiągneliśmy już maksymalną ilość seri jaką wspiera wizualizator i chcemy utworzyć nową
-		VisualizerSerie * createSerie(VisualizerSerie * serie);
+		Serie * createSerie(Serie * serie);
 		//! \param serie Seria do zniszczenia, musi pochodzić z tego wizualizatora
-		void destroySerie(VisualizerSerie * serie);
+		void destroySerie(Serie * serie);
 		//! \return Ilośc serii w wizualizatorze
 		const int getNumSeries() const;
 		//! \param idx Indeks serii
 		//! \return Seria dla zadanego indeksu
-		VisualizerSerie * getSerie(int idx);
+		Serie * getSerie(int idx);
 		//! \param serie Seria danych wizualizatora
 		//! \return Aktualny indeks serii danych
-		const int serieIdx(VisualizerSerie * serie) const;
+		const int serieIdx(Serie * serie) const;
 
 		//! Ustawia daną serię aktywną
-		void setActiveSerie(VisualizerSerie * serie);
+		void setActiveSerie(Serie * serie);
 		//! \return Pobiera aktywną serię, nullptr gdy nie ma żadnej aktywnej
-		const VisualizerSerie * getActiveSerie() const;
+		const Serie * getActiveSerie() const;
 		//! \return Pobiera aktywną serię, nullptr gdy nie ma żadnej aktywnej
-		VisualizerSerie * getActiveSerie();
+		Serie * getActiveSerie();
 
 		//! \return Zbiór wspieranych typów przez wizualizator (od nich można też brać pochodne, któe je wspierają -> iść w górę ścieżki typów)
 		void getSupportedTypes(utils::TypeInfoSet & supportedTypes) const;
@@ -198,18 +207,18 @@ namespace core {
 		void destroyAllSeries();
 
 		//! \param observer Obserwator do dodania
-		void addObserver(IVisualizerObserver * observer);
+		void addObserver(IObserver * observer);
 		//! \param observer Obserwator do usunięcia
-		void removeObserver(IVisualizerObserver * observer);
+		void removeObserver(IObserver * observer);
 
 		//! \param datSource Źródło danych wizualizatora do dodania
-		void addDataSource(VisualizerDataSourcePtr dataSource);
+		void addDataSource(DataSourcePtr dataSource);
 		//! \param datSource Źródło danych wizualizatora do usunięcia
-		void removeDataSource(VisualizerDataSourcePtr dataSource);
+		void removeDataSource(DataSourcePtr dataSource);
 		//! \return ilość źródeł
 		const int getNumDataSources() const;
 		//! \param idx Indeks źródła które chcemy pobrać
-		VisualizerDataSourcePtr getDataSource(int idx);
+		DataSourcePtr getDataSource(int idx);
 
 		//! \param type Typ danych jaki chcemy pobrać
 		//! \param objects [out] Lista obiektów z danymi zadanego typu
@@ -230,7 +239,7 @@ namespace core {
 	DEFINE_SMART_POINTERS(Visualizer);
 
 	//! Klasa obsługująca jako źródło danych manager danych
-	class CORELIB_EXPORT VisualizerMemoryDataSource : public Visualizer::IVisualizerDataSource
+	class CORELIB_EXPORT VisualizerMemoryDataSource : public Visualizer::IDataSource
 	{
 	public:
 		//! \param dmr DataManagerReader jako źródło danych

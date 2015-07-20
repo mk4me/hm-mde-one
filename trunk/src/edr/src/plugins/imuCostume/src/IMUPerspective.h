@@ -27,7 +27,7 @@ namespace IMU {
 //public:
 //    DicomHelper(const core::VariantConstPtr & wrapper, const core::ConstVariantsList& layers,
 //        const std::string& xmlFilename, const std::string& trialName);
-//    virtual void createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series );
+//    virtual void createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series );
 //
 //private:
 //    core::ConstVariantsList layers;
@@ -40,12 +40,12 @@ namespace IMU {
 class IMUPerspective : public hmdbCommunication::IHierarchyPerspective
 {
 public:
-	IMUPerspective(core::IMemoryDataManager * memoryDataManager);
+	IMUPerspective(core::IDataManager * memoryDataManager);
 	virtual ~IMUPerspective() {}
 
     virtual core::IHierarchyItemPtr getPerspective( PluginSubject::SubjectPtr subject );
 
-	static void createIMUBranch(core::ConstVariantsList &framesV, IMU::IMUConfigConstPtr config, const std::string& sourceName, core::HierarchyItemPtr sessionItem, core::IMemoryDataManager * memoryDataManager = nullptr);
+	static void createIMUBranch(core::ConstVariantsList &framesV, IMU::IMUConfigConstPtr config, const std::string& sourceName, core::HierarchyItemPtr sessionItem, core::IDataManager * memoryDataManager = nullptr);
 
 	static void createIMUBranch(core::ConstVariantsList &oList, core::HierarchyItemPtr root);
 
@@ -61,7 +61,7 @@ private:
 	//void generateAnglesChannelBranch(kinematic::JointAnglesCollectionPtr ja, core::IHierarchyItemPtr skeletonItem);
 private:
     std::map<std::string, core::HierarchyDataItemWeakPtr> name2hierarchy;
-	core::IMemoryDataManager * memoryDataManager;
+	core::IDataManager * memoryDataManager;
 };
 DEFINE_SMART_POINTERS(IMUPerspective);
 
@@ -76,7 +76,9 @@ public:
 public:
 	virtual const bool lateInit();
 
-	virtual void init(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager);
+	virtual void init(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager,
+		core::IDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager,
+		core::IFileDataManager * fileDataManager, core::IDataHierarchyManager * hierarchyManager);
 
 	virtual void finalize();
 
@@ -87,7 +89,7 @@ public:
 	virtual QWidgetList getPropertiesWidgets();
 private:
 	core::ISourceManager * sourceManager;
-	core::IMemoryDataManager * memoryDataManager;
+	core::IDataManager * memoryDataManager;
 };
 
 }

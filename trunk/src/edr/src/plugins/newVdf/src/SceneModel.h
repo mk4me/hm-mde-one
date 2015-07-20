@@ -88,7 +88,7 @@ namespace vdf {
 		DEFINE_SMART_POINTERS(MergedItem);
 
 	public:
-		SceneModel(CanvasStyleEditorPtr factories);//, core::ThreadPool* threadpool = plugin::getThreadPool());
+		SceneModel(CanvasStyleEditorPtr factories, core::IDataHierarchyManager * hm);//, core::ThreadPool* threadpool = plugin::getThreadPool());
 		virtual ~SceneModel() {}
 
 		public slots:
@@ -253,6 +253,7 @@ namespace vdf {
 		};
 
 	private:
+		core::IDataHierarchyManager * hm;
 		std::map<QGraphicsItem*, IVisualItemPtr> graphics2Visual;
 		SceneBuilder builder;
 		std::list<IVisualInputPinPtr> inputPins;

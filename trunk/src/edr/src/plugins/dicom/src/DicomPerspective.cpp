@@ -230,7 +230,7 @@ core::HierarchyDataItemPtr dicom::DicomPerspective::tryGetHierarchyItem( const s
 }
 
 
-void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
+void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series )
 {
     UTILS_ASSERT(wrapper, "Item should be initialized");
     core::VariantPtr wrp = utils::const_pointer_cast<core::Variant>(wrapper);
@@ -241,7 +241,7 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
     wrp->setMetadata("TRIAL_NAME", trialName);
     //core::VariantPtr wrp = wrapper->clone();
     auto serie = visualizer->createSerie(wrp->data()->getTypeInfo(), wrp);
-    auto layeredSerie = dynamic_cast<LayeredSerie*>(serie->serie());
+    auto layeredSerie = dynamic_cast<LayeredSerie*>(serie->innerSerie());
     UTILS_ASSERT(layeredSerie);
     layeredSerie->setName(path.toStdString());
                         
@@ -426,7 +426,7 @@ dicom::DicomHelper::DicomHelper( const core::VariantConstPtr & wrapper, const co
 
 }
 
-void dicom::DicomMultiHelper::createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series)
+void dicom::DicomMultiHelper::createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series)
 {
 	for (auto& helper : helpers) {
 		helper->createSeries(visualizer, path, series);

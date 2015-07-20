@@ -4,8 +4,8 @@
 #include <corelib/Filesystem.h>
 #include <corelib/IServiceManager.h>
 #include <corelib/PluginCommon.h>
-#include <corelib/IMemoryDataManager.h>
-#include <corelib/IMemoryDataManager.h>
+#include <corelib/IDataManager.h>
+#include <corelib/IDataManager.h>
 
 using namespace medusaExporter;
 
@@ -44,7 +44,9 @@ void MedusaExporterService::update(double time)
 	
 }
 
-void MedusaExporterService::init(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager)
+void MedusaExporterService::init(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager,
+	core::IDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager,
+	core::IFileDataManager * fileDataManager, core::IDataHierarchyManager * hierarchyManager)
 {
 	this->memoryManager = memoryDataManager;
 	exporterModel = utils::make_shared<ExporterModel>(fileDataManager, this->memoryManager);

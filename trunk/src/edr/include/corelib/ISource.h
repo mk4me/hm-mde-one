@@ -17,10 +17,11 @@ class QWidget;
 
 namespace core {
 
-	class IMemoryDataManager;
+	class IDataManager;
 	class IFileDataManager;
 	class IStreamDataManager;
 	class IServiceManager;
+	class IDataHierarchyManager;
 
 }
 
@@ -35,9 +36,10 @@ namespace plugin
 
         //! Inicjalizacja źródła. Następuje już po wczytaniu pluginów i skonstruowaniu
         //! (nie zainicjalizowaniu!) wszystkich źródeł.
-        virtual void init(core::IMemoryDataManager * memoryDM,
+        virtual void init(core::IDataManager * memoryDM,
 			core::IStreamDataManager * streamDM,
-			core::IFileDataManager * fileDM) = 0;
+			core::IFileDataManager * fileDM,
+			core::IDataHierarchyManager * hierarchyDM) = 0;
 
 		//! Zobacz podobną metode dla IService
         //! Późna inicjalizacja źródła, następuje po wczytaniu i inicjalizacji wszystkich innych źródeł

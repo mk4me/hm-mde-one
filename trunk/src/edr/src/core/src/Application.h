@@ -32,12 +32,13 @@ namespace coreUI {
 }
 
 namespace core {
-	class MemoryDataManager;
+	class DataManager;
 	class StreamDataManager;
 	class FileDataManager;
 	class Log;
 	class Path;
 	class DataHierarchyManager;
+	class RegisteredDataTypesManager;
 	class ParserManager;
 	class LogInitializer;
 	class PluginLoader;
@@ -64,7 +65,8 @@ namespace core {
 		utils::shared_ptr<LanguagesManager> languagesManager_;
 		utils::shared_ptr<PluginLoader> pluginLoader_;
 		utils::shared_ptr<DataHierarchyManager> dataHierarchyManager_;
-		utils::shared_ptr<MemoryDataManager> memoryDataManager_;
+		utils::shared_ptr<RegisteredDataTypesManager> registeredDataTypesManager_;
+		utils::shared_ptr<DataManager> dataManager_;
 		utils::shared_ptr<ParserManager> parserManager_;
 		utils::shared_ptr<StreamDataManager> streamDataManager_;
 		utils::shared_ptr<FileDataManager> fileDataManager_;
@@ -125,13 +127,15 @@ namespace core {
 
 		ApplicationDescription * description();
 		LanguagesManager * languageManager();
-		MemoryDataManager* memoryDataManager();
+		DataManager* dataManager();
 		StreamDataManager* streamDataManager();
 		FileDataManager* fileDataManager();
 		ILog* logger();
+		ILog* exceptionLogger();
 		ILog* loggerPrototype();
 		Path* paths();
 		DataHierarchyManager* dataHierarchyManager();
+		RegisteredDataTypesManager* registeredDataTypesManager();
 		ParserManager* parserManager();
 		VisualizerManager* visualizerManager();
 		ServiceManager* serviceManager();

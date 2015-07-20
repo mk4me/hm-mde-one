@@ -52,7 +52,7 @@ namespace utils {
 		};
 
 		//! Lista typów.
-		typedef TypeInfoList Types;
+		typedef TypeInfoList Types;		
 
 		//! Return type resolver
 		struct get_t

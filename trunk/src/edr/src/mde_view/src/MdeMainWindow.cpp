@@ -122,8 +122,7 @@ void MdeMainWindow::showSplashScreenMessage(const QString & message)
 
 void MdeMainWindow::customViewInit(QWidget * console)
 {
-   auto memoryManager = plugin::getHierarchyManagerReader();
-   memoryManager->addObserver(analysisModel);
+   plugin::getDataHierarchyManagerReader()->addObserver(analysisModel);
    trySetStyleByName("hmm");
  
 #ifdef WIN32

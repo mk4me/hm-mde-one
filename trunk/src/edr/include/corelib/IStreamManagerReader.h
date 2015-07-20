@@ -14,38 +14,37 @@
 #include <corelib/VariantsCollection.h>
 
 namespace core {
-	
-	class IStreamManagerReaderOperations
+
+	//! Interfejs zapewniaj¹cy dostêp do danych strumieniowych zarzazanych przez aplikacjê
+	class IStreamManagerReader
 	{
 	public:
 
 		//! Lista danych strumieni
 		typedef std::list<std::string> StreamsList;
 
-	public:
-		//! Destruktor wirtualny
-		virtual ~IStreamManagerReaderOperations() {}
+		class IOperations
+		{
+		public:
+			//! Destruktor wirtualny
+			virtual ~IOperations() {}
 
-		//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
-		virtual void getStreams(StreamsList & streams) const = 0;
+			//! \param files Zbiór plików ktrymi aktualnie zarz¹dza ten DataManager
+			virtual void getStreams(StreamsList & streams) const = 0;
 
-		//! \param stream Nazwa strumienia
-		//! \return Prawda jeœli strumieñ jest zarz¹dzany przez ten DM
-		virtual const bool isManaged(const std::string & stream) const = 0;
+			//! \param stream Nazwa strumienia
+			//! \return Prawda jeœli strumieñ jest zarz¹dzany przez ten DM
+			virtual const bool isManaged(const std::string & stream) const = 0;
 
-		//! \param stream Strumieñ który weryfikujemy czy jest w pe³ni za³adowany
-		//! \return Prawda jeœli strumieñ jest w pe³ni za³adowany
-		virtual const bool isLoadedCompleately(const std::string & stream) const = 0;
+			//! \param stream Strumieñ który weryfikujemy czy jest w pe³ni za³adowany
+			//! \return Prawda jeœli strumieñ jest w pe³ni za³adowany
+			virtual const bool isLoadedCompleately(const std::string & stream) const = 0;
 
-		//! \param stream Nazwa strumienia
-		//! \return Mapa obiektów wzglêdem plików z których pochodza
-		virtual void getObjects(const std::string & stream, ConstVariantsList & objects) const = 0;
-	};
+			//! \param stream Nazwa strumienia
+			//! \return Mapa obiektów wzglêdem plików z których pochodza
+			virtual void getObjects(const std::string & stream, ConstVariantsList & objects) const = 0;
+		};
 
-	//! Interfejs zapewniaj¹cy dostêp do danych strumieniowych zarzazanych przez aplikacjê
-	class IStreamManagerReader : public IStreamManagerReaderOperations
-	{
-	public:
 		//! Typ zmian danych w managerze
 		enum ModificationType {
 			ADD_STREAM,				//! Dodajemy strumieñ do DM
@@ -54,22 +53,22 @@ namespace core {
 		};
 
 		//! Obiekt opisuj¹cy zmianê w DM
-		struct StreamChange
+		struct Change
 		{
 			std::string stream;				//! Strumieñ
 			ModificationType modyfication;	//! Typ zmiany na strumieniu
 		};
 
 		//! Agregat zmian w DM
-		typedef std::list<StreamChange> ChangeList;
+		typedef std::list<Change> ChangeList;
 
 		//! Interfejs obserwatora zmian
-		typedef IChangesObserver<ChangeList> IStreamObserver;
+		typedef IChangesObserver<ChangeList> IObserver;
 
 		//! WskaŸnik na obiek obserwuj¹cy zmiany
-		typedef utils::shared_ptr<IStreamObserver> StreamObserverPtr;
+		typedef utils::shared_ptr<IObserver> ObserverPtr;
 		//! WskaŸnik transakcji
-		typedef utils::shared_ptr<IStreamManagerReaderOperations> TransactionPtr;
+		typedef utils::shared_ptr<IOperations> TransactionPtr;
 
 	public:
 
@@ -83,9 +82,9 @@ namespace core {
 		}
 
 		//! \param streamWatcher Rejestrowany obiekt obserwuj¹cy zmiany managera strumieni
-		virtual void addObserver(const StreamObserverPtr & streamWatcher) = 0;
+		virtual void addObserver(const ObserverPtr & streamWatcher) = 0;
 		//! \param streamWatcher Wyrejestrowywany obiekt obserwuj¹cy zmiany managera strumieni
-		virtual void removeObserver(const StreamObserverPtr & streamWatcher) = 0;
+		virtual void removeObserver(const ObserverPtr & streamWatcher) = 0;
 		//! \return Nowa transakcja
 		virtual const TransactionPtr transaction() const = 0;
 	};

@@ -19,7 +19,7 @@ class FileSource;
 
 namespace core
 {
-    class IMemoryDataManager;
+    class IDataManager;
 }
 
 class FileSourceWidget : public QWidget

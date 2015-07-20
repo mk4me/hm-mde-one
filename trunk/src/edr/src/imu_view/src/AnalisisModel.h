@@ -18,11 +18,11 @@
 #include "ContextEventFilter.h"
 #include <coreui/CoreVisualizerWidget.h>
 #include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
-#include <corelib/IMemoryDataManager.h>
+#include <corelib/IDataManager.h>
 
 class QDockWidget;
 
-class AnalisisModel : public QObject, public core::IMemoryDataManagerHierarchy::IHierarchyObserver, public core::Visualizer::IVisualizerObserver
+class AnalisisModel : public QObject, public core::IDataHierarchyManagerReader::IObserver, public core::Visualizer::IObserver
 {
     Q_OBJECT
 public:
@@ -68,7 +68,7 @@ public:
 	virtual ~AnalisisModel() {}
 
 public:
-    virtual void observe(const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes);
+	virtual void observe(const core::IDataHierarchyManagerReader::ChangeList & changes);
     coreUI::HierarchyTreeModel* getTreeModel() { return &model; }
     void addFilterBundles( const core::IFilterProvider::FilterBundles& bundles );
     void applyFilter( core::IFilterCommandPtr filter );
@@ -77,7 +77,7 @@ public:
     DataItemDescriptionConstPtr getVisualizerDataDescription(const core::VisualizerPtr& visualizer);
     core::HierarchyHelperPtr getHelper(const DataItemDescriptionConstPtr& desc);
 
-    virtual void update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication );
+    virtual void update(core::Visualizer::Serie * serie, core::Visualizer::SerieModyfication modyfication );
     void addSeriesToVisualizer(core::VisualizerPtr visualizer, core::HierarchyHelperPtr helper, QString &path, QDockWidget * visualizerDockWidget );
 
 Q_SIGNALS:
@@ -100,7 +100,7 @@ private:
     std::multimap<core::HierarchyHelperWeakPtr, DataItemDescriptionPtr> items2Descriptions;
     std::map<core::HierarchyHelperWeakPtr, core::IHierarchyDataItemConstWeakPtr> helper2hierarchyItem;
 
-    std::map<core::Visualizer::VisualizerSerie*, std::string> seriesToPaths;
+    std::map<core::Visualizer::Serie*, std::string> seriesToPaths;
 };
 DEFINE_SMART_POINTERS(AnalisisModel);
 

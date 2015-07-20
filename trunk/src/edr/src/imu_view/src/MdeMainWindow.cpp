@@ -190,8 +190,8 @@ void MdeMainWindow::customViewInit(QWidget * console)
 		if (name == "HMDB Source") return "Data";
 		return name;
 	};
-   auto memoryManager = plugin::getHierarchyManagerReader();
-   memoryManager->addObserver(analysisModel);
+
+	plugin::getDataHierarchyManagerReader()->addObserver(analysisModel);
    //trySetStyleByName("hmm");
  
    this->showFullScreen();

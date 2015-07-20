@@ -86,8 +86,8 @@ IVisualConnectionPtr SceneModel::addConnection(IVisualOutputPinPtr outputPin, IV
 	return connection;
 }
 
-SceneModel::SceneModel(CanvasStyleEditorPtr factories) ://, core::IThreadPool* threadpool) :
-builder(factories),
+SceneModel::SceneModel(CanvasStyleEditorPtr factories, core::IDataHierarchyManager * hm) :
+builder(factories), hm(hm),
 model(new df::Model)
 //dfThreadFactory(new VDFThreadPool(threadpool))
 {
@@ -163,7 +163,7 @@ void SceneModel::addNode(df::INode* node)
 		df::ISourceNode* source = dynamic_cast<df::ISourceNode*>(node);
 		auto dmNode = dynamic_cast<INodeHierarchyObserver*>(source);
 		if (dmNode) {
-			dmNode->refresh(plugin::getHierarchyManagerReader(), core::IMemoryDataManagerHierarchy::HierarchyChangeList());
+			dmNode->refresh(hm, core::IDataHierarchyManagerReader::ChangeList());
 		}
 		model->addNode(source);
 	} return;

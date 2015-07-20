@@ -24,7 +24,7 @@ class PLUGIN_DICOM_EXPORT DicomHelper : public core::WrappedItemHelper
 public:
     DicomHelper(const core::VariantConstPtr & wrapper, const core::ConstVariantsList& layers,
         const std::string& xmlFilename, const std::string& trialName);
-    virtual void createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series );
+    virtual void createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series );
 
 private:
     core::ConstVariantsList layers;
@@ -40,7 +40,7 @@ public:
 	DicomMultiHelper(const std::vector<DicomHelperPtr>& helpers);
 
 protected:
-	virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
+	virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series);
 public:
 	virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
 	virtual std::vector<utils::TypeInfo> getTypeInfos() const;

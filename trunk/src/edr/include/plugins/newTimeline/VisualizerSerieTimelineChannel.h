@@ -20,7 +20,7 @@ class PLUGINTIMELINE_EXPORT VisualizerSerieTimelineChannel : public timeline::IC
 {
 public:
 
-	VisualizerSerieTimelineChannel(core::Visualizer * visualizer, core::Visualizer::VisualizerSerie * serie);
+	VisualizerSerieTimelineChannel(core::Visualizer * visualizer, core::Visualizer::Serie * serie);
 
 	virtual ~VisualizerSerieTimelineChannel();
 
@@ -40,14 +40,14 @@ public:
 	//! \param newScale Nowa skala ustawiona kanałowi
 	virtual void scaleChanged(double newScale);
 
-	const core::Visualizer::VisualizerSerie * getSerie() const;
+	const core::Visualizer::Serie * getSerie() const;
 
 	const core::Visualizer * getVisualizer() const;
 
 private:
 
 	core::Visualizer * visualizer;
-	core::Visualizer::VisualizerSerie * serie;
+	core::Visualizer::Serie * serie;
 	plugin::IVisualizer::ITimeAvareSerieFeatures * timeAvareSerieFeatures;
 	plugin::IVisualizer::ITimeEditableSerieFeatures * timeEditableSerieFeatures;
 };
@@ -57,7 +57,7 @@ class PLUGINTIMELINE_EXPORT VisualizerSerieTimelineMultiChannel : public timelin
 {
 public:
 
-	typedef std::list<core::Visualizer::VisualizerSerie*> VisualizersSeries;
+	typedef std::list<core::Visualizer::Serie*> VisualizersSeries;
 
 public:
 
@@ -91,18 +91,18 @@ private:
 	std::list<plugin::IVisualizer::ITimeEditableSerieFeatures*> tesfs;
 };
 
-class PLUGINTIMELINE_EXPORT VisualizerTimelineHelper : public core::Visualizer::IVisualizerObserver
+class PLUGINTIMELINE_EXPORT VisualizerTimelineHelper : public core::Visualizer::IObserver
 {
 public:
 	VisualizerTimelineHelper(ITimelineService * timeline);
 	virtual ~VisualizerTimelineHelper();
 
 public:
-	virtual void update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication);
+	virtual void update(core::Visualizer::Serie * serie, core::Visualizer::SerieModyfication modyfication);
 
 private:
 	ITimelineService * timeline;
-	std::map<core::Visualizer::VisualizerSerie *, std::pair<int, utils::shared_ptr<timeline::IChannel>>> seriesToChannels;
+	std::map<core::Visualizer::Serie *, std::pair<int, utils::shared_ptr<timeline::IChannel>>> seriesToChannels;
 };
 
 #endif	//	HEADER_GUARD___VISUALIZERCHANNEL_H__

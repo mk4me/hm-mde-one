@@ -1,6 +1,6 @@
 #include "CorePCH.h"
 #include "ParserManager.h"
-#include "DataHierarchyManager.h"
+#include "RegisteredDataTypesManager.h"
 #include "ApplicationCommon.h"
 #include <corelib/Exceptions.h>
 #include <boost/lexical_cast.hpp>
@@ -135,7 +135,7 @@ void ParserManager::registerParser(const plugin::IParserPtr & parser)
 		throw core::runtime_error("Parser does not support any sources");
 	}
 
-	auto typesHierarchy = getDataHierarchyManager();
+	auto typesHierarchy = getRegisteredDataTypesManager();
 
 	//! Weryfikujemy oferowane typy - zawężamy jeśli coś jest nieznane
 	for (auto it = expressions.begin(); it != expressions.end(); ++it){

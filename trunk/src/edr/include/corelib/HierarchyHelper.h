@@ -29,7 +29,7 @@ protected:
     //! \param visualizer wizualizator, który będzie tworzył serie
     //! \param path ścieżka dla timeline
     //! \param series tutaj trafia stworzone serie
-    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series) = 0;
+    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::Serie*>& series) = 0;
 
 public:
     //! \return utworzony obiekt wizualizatora
@@ -38,7 +38,7 @@ public:
     //! \param visualizer wizualizator, który będzie tworzył serie
     //! \param path ścieżka dla timeline
     //! \param series tutaj trafia stworzone serie
-    void getSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series);
+    void getSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::Serie*>& series);
     //! \return opis do np. menu kontekstowego -> 'multichart/create x from session"
     QString getText() const { return text; }
     //! ustawia opis do np. menu kontekstowego -> 'multichart/create x from session"
@@ -76,7 +76,7 @@ public:
     //! \param visualizer wizualizator, który będzie tworzył serie
     //! \param path ścieżka dla timeline
     //! \param series tutaj trafia stworzone serie 
-    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series);
+    virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::Serie*>& series);
     //! \return tworzy wizualizator o typie zgodnym z wrapperem (gdy w systemie jest zarejstrowanych wiecej wizualizatorów danego typu to tworzony jest przpadkowy)
     virtual VisualizerPtr createVisualizer(IVisualizerManager* manager);
     //! \return typ wspierany przez helper (typ wpisany do wrappera)
@@ -105,7 +105,7 @@ public:
 	//! \param visualizer wizualizator, który będzie tworzył serie
 	//! \param path ścieżka dla timeline
 	//! \param series tutaj trafia stworzone serie 
-	virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series);	
+	virtual void createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::Serie*>& series);	
 private:
 	const QString pattern;
 	const std::list<std::string> metadata;

@@ -2,6 +2,7 @@
 #include <corelib/Filesystem.h>
 #include <corelib/HierarchyItem.h>
 #include <corelib/HierarchyDataItem.h>
+#include <corelib/IDataHierarchyManager.h>
 #include "DicomSourceWidget.h"
 #include <corelib/HierarchyHelper.h>
 #include <plugins/dicom/Dicom.h>
@@ -38,7 +39,7 @@ public:
 
       }
 
-      virtual void createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
+      virtual void createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series )
       {
           for (auto it = helpers.begin(); it != helpers.end(); ++it) {
               (*it)->createSeries(visualizer, path, series);
@@ -54,16 +55,17 @@ DEFINE_SMART_POINTERS(MultiHelper);
 
 DicomSource::DicomSource() :
     fileDM(nullptr),
-    memoryDM(nullptr)
+    hierarchyDM(nullptr)
 {
 
 }
 
 
-void DicomSource::init( core::IMemoryDataManager * memoryDM, core::IStreamDataManager * streamDM, core::IFileDataManager * fileDM )
+void DicomSource::init( core::IDataManager * memoryDM, core::IStreamDataManager * streamDM, core::IFileDataManager * fileDM,
+	core::IDataHierarchyManager * hierarchyDM)
 {
     this->fileDM = fileDM;
-    this->memoryDM = memoryDM;
+	this->hierarchyDM = hierarchyDM;
     this->streamDM = streamDM;
 }
 
@@ -105,8 +107,7 @@ void DicomSource::getOfferedTypes( utils::TypeInfoList & offeredTypes ) const
 void DicomSource::addFile( const core::Filesystem::Path& path )
 {
     auto root = transactionPart<core::WrappedItemHelper>(path);
-    auto hierarchyTransaction = memoryDM->hierarchyTransaction();
-    hierarchyTransaction->addRoot(root);
+    hierarchyDM->transaction()->addRoot(root);
 }
 
 const bool DicomSource::userIsReviewer(hmdbCommunication::IHMDBSession * session)
@@ -262,8 +263,7 @@ void dicom::DicomSource::openInternalDataMainFile( core::Filesystem::Path path )
             }
 
             if (sessionItem->getNumChildren()) {
-                auto hierarchyTransaction = memoryDM->hierarchyTransaction();
-                hierarchyTransaction->addRoot(sessionItem);
+                hierarchyDM->transaction()->addRoot(sessionItem);
             }
         }
     }
@@ -329,10 +329,10 @@ core::VisualizerPtr dicom::LayerHelper::createVisualizer( core::IVisualizerManag
     return core::VisualizerPtr(vis->create());
 }
 
-void dicom::LayerHelper::createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series )
+void dicom::LayerHelper::createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series )
 {
     auto serie = visualizer->createSerie(imageWrapper->data()->getTypeInfo(), imageWrapper);
-    serie->serie()->setName(path.toStdString());
+    serie->innerSerie()->setName(path.toStdString());
     series.push_back(serie);
 }
 
@@ -341,4 +341,3 @@ imageWrapper(imgWrapper)
 {
 
 }
-

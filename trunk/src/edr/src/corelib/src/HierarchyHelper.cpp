@@ -24,13 +24,13 @@ VisualizerPtr WrappedItemHelper::createVisualizer(IVisualizerManager* manager)
     return VisualizerPtr(prototypes.front()->create());
 }
 
-void WrappedItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
+void WrappedItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::Serie*>& series )
 {
     UTILS_ASSERT(wrapper, "Item should be initialized");
 	//wrapper->getRawPtr();
 	
 	auto serie = visualizer->createSerie(wrapper->data()->getTypeInfo(), wrapper);
-	serie->serie()->setName(path.toStdString());
+	serie->innerSerie()->setName(path.toStdString());
     series.push_back(serie);
 }
 
@@ -41,7 +41,7 @@ std::vector<utils::TypeInfo> WrappedItemHelper::getTypeInfos() const
     return ret;
 }
 
-void HierarchyHelper::getSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series )
+void HierarchyHelper::getSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::Serie*>& series )
 {
     createSeries(visualizer, path, series);
 
@@ -65,7 +65,7 @@ MetaTitlePatternWrappedItemHelper::~MetaTitlePatternWrappedItemHelper()
 
 }
 
-void MetaTitlePatternWrappedItemHelper::createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::VisualizerSerie*>& series)
+void MetaTitlePatternWrappedItemHelper::createSeries(const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::Serie*>& series)
 {
 	QString serieName(pattern);
 

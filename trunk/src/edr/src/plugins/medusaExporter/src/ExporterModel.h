@@ -11,7 +11,7 @@
 #define HEADER_GUARD_MEDUSA_EXPORTER__EXPORTERMODEL_H__
 
 
-#include <corelib/IMemoryDataManager.h>
+#include <corelib/IDataManager.h>
 #include <functional>
 #include "IExporter.h"
 #include "AnnotationData.h"
@@ -26,7 +26,7 @@ namespace medusaExporter {
 	public:
 		typedef std::function<void(double, const QString&)> CallbackFunction;
 	public:
-		ExporterModel(core::IFileDataManager* fileManager, core::IMemoryDataManager* dataManager);
+		ExporterModel(core::IFileDataManager* fileManager, core::IDataManager* dataManager);
 		virtual ~ExporterModel() {}
 
 
@@ -53,7 +53,7 @@ namespace medusaExporter {
 
 	private:
 		std::vector<IExporterConstPtr> exporters;
-		core::IMemoryDataManager* dataManager;
+		core::IDataManager* dataManager;
 		core::IFileDataManager* fileManager;
     };
 	DEFINE_SMART_POINTERS(ExporterModel);

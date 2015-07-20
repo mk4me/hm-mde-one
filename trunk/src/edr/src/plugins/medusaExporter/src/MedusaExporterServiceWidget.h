@@ -22,7 +22,7 @@ class QLayout;
 
 namespace core
 {
-    class IMemoryDataManager;
+    class IDataManager;
 }
 
 namespace Ui {

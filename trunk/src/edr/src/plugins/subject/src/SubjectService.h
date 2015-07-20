@@ -28,9 +28,10 @@ public:
 
 	virtual void init(core::ISourceManager * sourceManager,
 		core::IVisualizerManager * visualizerManager,
-		core::IMemoryDataManager * memoryDataManager,
+		core::IDataManager * memoryDataManager,
 		core::IStreamDataManager * streamDataManager,
-		core::IFileDataManager * fileDataManager);
+		core::IFileDataManager * fileDataManager,
+		core::IDataHierarchyManager * hierarchyManager);
 
 	//! 
 	//! \param actions 

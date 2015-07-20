@@ -270,9 +270,10 @@ void HMDBService::detach(IHMDBSessionPtr session)
 
 void HMDBService::init(core::ISourceManager * sourceManager,
 	core::IVisualizerManager * visualizerManager,
-	core::IMemoryDataManager * memoryDataManager,
+	core::IDataManager * memoryDataManager,
 	core::IStreamDataManager * streamDataManager,
-	core::IFileDataManager * fileDataManager)
+	core::IFileDataManager * fileDataManager,
+	core::IDataHierarchyManager * hierarchyManager)
 {
 	core::ThreadPool::Threads threads;
 

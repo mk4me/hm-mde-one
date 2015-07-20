@@ -69,9 +69,10 @@ namespace IMU
 
 		//! Inicjalizacja Ÿród³a. Nastêpuje ju¿ po wczytaniu pluginów i skonstruowaniu
 		//! (nie zainicjalizowaniu!) wszystkich Ÿróde³.
-		virtual void init(core::IMemoryDataManager * memoryDM,
+		virtual void init(core::IDataManager * memoryDM,
 			core::IStreamDataManager * streamDM,
-			core::IFileDataManager * fileDM);
+			core::IFileDataManager * fileDM,
+			core::IDataHierarchyManager * hierarchyDM);
 
 		//! Zobacz podobn¹ metode dla IService
 		//! PóŸna inicjalizacja Ÿród³a, nastêpuje po wczytaniu i inicjalizacji wszystkich innych Ÿróde³
@@ -208,7 +209,9 @@ namespace IMU
 		//! Obiekt synchronizuj¹cy
 		mutable std::recursive_mutex synch;		
 		//! Manager danych w pamiêci
-		core::IMemoryDataManager * memoryDM;
+		core::IDataManager * memoryDM;
+		//! Manager danych w pamiêci
+		core::IDataHierarchyManager * hierarchyDM;
 		//! Manager danych w plikach
 		core::IFileDataManager * fileDM;
 		//! Korzen drzewa dla analiz

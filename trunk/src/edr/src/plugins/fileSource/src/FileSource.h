@@ -25,7 +25,8 @@ public:
 
 
 public:
-    virtual void init( core::IMemoryDataManager * memoryDM, core::IStreamDataManager * streamDM, core::IFileDataManager * fileDM );
+    virtual void init( core::IDataManager * memoryDM, core::IStreamDataManager * streamDM, core::IFileDataManager * fileDM,
+		core::IDataHierarchyManager * hierarchyDM);
 
     virtual bool lateInit();
 
@@ -49,7 +50,8 @@ public:
 	void fillStream();
 
 private:
-    core::IMemoryDataManager* memoryDM;
+    core::IDataManager* memoryDM;
+	core::IDataHierarchyManager * hierarchyDM;
     core::IFileDataManager* fileDM;
     core::IStreamDataManager* streamDM;
     std::vector<ScalarStreamPtr> streams;

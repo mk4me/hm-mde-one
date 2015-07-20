@@ -10,14 +10,14 @@
 
 #include <plugins/hmdbCommunication/IHMDBLocalContext.h>
 #include <corelib/IDataManagerReader.h>
-#include <corelib/IMemoryDataManager.h>
+#include <corelib/IDataManager.h>
 #include <corelib/IStreamDataManager.h>
 //#include <corelib/IHierarchyItem.h>
 
 namespace hmdbCommunication
 {
 
-	class HMDBLocalContext : public IHMDBLocalContext, public core::IDataManagerReader::IObjectObserver
+	class HMDBLocalContext : public IHMDBLocalContext, public core::IDataManagerReader::IObserver
 	{
 	private:
 
@@ -29,7 +29,7 @@ namespace hmdbCommunication
 		//! \param dataContext Kontekst dancyh z dostepem do storage
 		//! \param mdm MemoryManager
 		//! \param sdm StreaManager
-		HMDBLocalContext(IHMDBDataContextPtr dataContext, core::IMemoryDataManager * mdm,
+		HMDBLocalContext(IHMDBDataContextPtr dataContext, core::IDataManager * mdm,
 			core::IStreamDataManager * sdm);
 
 		//! Destruktor wirtualny
@@ -82,11 +82,11 @@ namespace hmdbCommunication
 		const bool rawLoad(const std::string & fileName, const core::IStreamDataManager::TransactionPtr streamTransaction);
 		const bool rawUnload(const std::string & fileName, const core::IStreamDataManager::TransactionPtr streamTransaction);
 
-		const bool rawLoad(const core::VariantPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction);
-		const bool rawUnload(const core::VariantConstPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction);
+		const bool rawLoad(const core::VariantPtr data, const core::IDataManager::TransactionPtr memoryTransaction);
+		const bool rawUnload(const core::VariantConstPtr data, const core::IDataManager::TransactionPtr memoryTransaction);
 
-		const bool rawIsMyData(const core::VariantConstPtr data, const core::IMemoryDataManager::TransactionPtr memoryTransaction) const;
-		const bool rawIsMyData(const void * data, const core::IMemoryDataManager::TransactionPtr memoryTransaction) const;
+		const bool rawIsMyData(const core::VariantConstPtr data, const core::IDataManager::TransactionPtr memoryTransaction) const;
+		const bool rawIsMyData(const void * data, const core::IDataManager::TransactionPtr memoryTransaction) const;
 
 		const bool rawIsLoaded(const std::string & fileName, const core::IStreamDataManager::TransactionPtr streamTransaction) const;
 
@@ -94,7 +94,7 @@ namespace hmdbCommunication
 		//! kontekst danych
 		IHMDBDataContextPtr dataContext_;
 		//! Manager danych
-		core::IMemoryDataManager * mdm;
+		core::IDataManager * mdm;
 		//! Manager strumieni
 		core::IStreamDataManager * sdm;
 		//! Zbiór danych którym zarz¹dzam

@@ -71,12 +71,13 @@ namespace vdf {
             return isNodeValid() ? QString() : QString("Source is not set");
         }
 
-        virtual void refresh( core::IMemoryDataManagerHierarchy* dm, const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes )
+		virtual void refresh(core::IDataHierarchyManager* hm, const core::IDataHierarchyManager::ChangeList & changes)
         {
             if (changes.empty()) {
+				auto t = hm->transaction();
                 model.clear();
                 model.setFilter(filter);
-                for (auto it = dm->hierarchyBegin(); it != dm->hierarchyEnd(); ++it) {
+                for (auto it = t->hierarchyBegin(); it != t->hierarchyEnd(); ++it) {
                     model.addRootItem(*it);
                 }
             } else {

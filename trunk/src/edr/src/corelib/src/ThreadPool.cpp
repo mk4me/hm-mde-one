@@ -136,7 +136,7 @@ ThreadPool::Thread::TLS ThreadPool::Thread::tlsTD;
 ThreadPool::ThreadPool(InnerThreadPool * tp) : tp(tp)
 {
 	if (tp == nullptr){
-		throw core::runtime_error("Uninitialized inner thread");
+		throw std::runtime_error("Uninitialized inner thread");
 	}
 }
 

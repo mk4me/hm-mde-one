@@ -1,64 +1,72 @@
 /********************************************************************
-    created:  2013/01/09
-    created:  9:1:2013   8:17
-    filename: DataHierarchyManager.h
-    author:   Mateusz Janiak
-    
-    purpose:  
+	created:	2013/07/21
+	created:	21:7:2013   12:53
+	filename: 	HierarchyDataManager.h
+	author:		Wojciech Kniec
+	
+	purpose:	
 *********************************************************************/
-#ifndef HEADER_GUARD___DATAHIERARCHYMANAGER_H__
-#define HEADER_GUARD___DATAHIERARCHYMANAGER_H__
 
-#include <corelib/IDataHierarchyManagerReader.h>
-#include <map>
+#ifndef HEADER_GUARD_CORE__HIERARCHYDATAMANAGER_H__
+#define HEADER_GUARD_CORE__HIERARCHYDATAMANAGER_H__
+
+#include <corelib/IDataHierarchyManager.h>
+#include <mutex>
 
 namespace core {
 
-class DataHierarchyManager : public IDataHierarchyManagerReader
+class DataHierarchyManager : public IDataHierarchyManager
 {
-private:
-	//! Opis hierarchi typu
-	struct TypeHierarchy {
+	typedef std::lock_guard<std::recursive_mutex> ScopedLock;
 
-		utils::ObjectWrapperPtr prototype;	//! Prototyp ObjectWrappera
-		utils::TypeInfoSet baseTypes;		//! Lista typów bazowych
-		utils::TypeInfoSet derrivedTypes;	//! Lista typów pochodnych
+    //! Interfejs obserwatora zmian
+    template <class Changes>
+    class IChangesObserver
+    {
+    public:
 
-	};
+        virtual ~IChangesObserver() {}
 
-	//! S³ownik hierarchii typow -> mapuje typ do jego typow bazowych (hierarchia dziedziczenia) [first] i do typów po nim dziedziczacych [second]
-	typedef std::map<utils::TypeInfo, TypeHierarchy > TypesHierarchy;
+        //! \param previousValue 
+        //! \param currentVal 
+        //! \param type 
+        //! \param modyfication 
+        virtual void observe(const Changes & changes) = 0;
+    };
+public:
+	virtual ~DataHierarchyManager() {}
 
 public:
-	//! \param typeInfo Typ zarejestrowany w DM dla któego chemy utworzyæ OW
-	//! \return Pusty OW dla zadanego typu lub wyj¹tek/nullptr gdy typ niezarejestrowany
-	virtual VariantPtr createWrapper(const utils::TypeInfo & typeInfo) const;
-
-	//! \return Zarejestrowane w aplikacji typy danych
-	virtual void getRegisteredTypes(utils::TypeInfoSet & registeredTypes) const;
-
-	virtual const bool isRegistered(const utils::TypeInfo &) const;
-
-	//! \return Hierarchia typów danych - jakie operacje moge realizowaæ, po czym dziedzicze
-	virtual void getTypeBaseTypes(const utils::TypeInfo & type, utils::TypeInfoSet & baseTypes) const;
-
-	//! \return Hierarchia typów danych - jakie typy po mnie dziedzicza, kto wspiera moj interfejs i mo¿e byæ downcastowany na mnie
-	virtual void getTypeDerrivedTypes(const utils::TypeInfo & type, utils::TypeInfoSet & derrivedTypes) const;
-
-	//! \param base Typ bazowy którego kompatybilnoœc sprawdzamy
-	//! \param derrived Typ pochodny wzglêdem kótrego sprawdzamy kompatybilnoœc typu bazowego
-	//! \return Prawda kiedy typ bazowy jest faktycznie wspierany przez typ pochodny
-	virtual const bool isTypeCompatible(const utils::TypeInfo & base, const utils::TypeInfo & derrived) const;
-
-	//! \param owp Rejestrowany ObjectWrapper, które niesie informacjê o typach danych
-	void registerObjectWrapperPrototype(const utils::ObjectWrapperPtr & owp);
+	virtual IDataHierarchyManager::TransactionPtr transaction();
+	virtual IDataHierarchyManagerReader::TransactionPtr transaction() const;
+        
+    // IDataManagerReader API
+    //! \param objectWatcher Obserwator DM do zarejestrowania
+	virtual void addObserver(const ObserverPtr & objectWatcher);
+    //! \param objectWatcher Obserwator DM do wyrejestrowania
+	virtual void removeObserver(const ObserverPtr & objectWatcher);
+	virtual void updateObservers(const ChangeList & changes);
 
 private:
-	//! Opis hierarchi wszystkich zarejestrowanych typów
-	TypesHierarchy typesHierarchy;
 
+	void rawAddRoot(IHierarchyItemConstPtr ptr);
+
+	void rawRemoveRoot(IHierarchyItemConstPtr ptr);
+
+	void rawUpdateRoot(IHierarchyItemConstPtr ptr);
+
+private:
+    class HierarchyTransaction;
+    friend class HierarchyTransaction;
+
+private:
+    std::set<IHierarchyItemConstPtr> roots;
+    //! Obiekty obserwuj¹ce stan DM
+	std::list<IDataHierarchyManagerReader::ObserverPtr> observers;
+	//!
+	std::recursive_mutex sync;
 };
-
+DEFINE_SMART_POINTERS(DataHierarchyManager);
 }
 
-#endif	//	HEADER_GUARD___DATAHIERARCHYMANAGER_H__
+#endif

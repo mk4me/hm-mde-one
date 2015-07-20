@@ -25,8 +25,8 @@ SET_PRIVATE_HEADERS(
 	ParserManager.h
 	ApplicationCommon.h
 	DataHierarchyManager.h
-	HierarchyDataManager.h
-	MemoryDataManager.h
+	RegisteredDataTypesManager.h
+	DataManager.h
 	FileDataManager.h
 	StreamDataManager.h
 	PluginApplication.h
@@ -63,8 +63,8 @@ SET_SOURCE_FILES(
 	ParserManager.cpp
 	Log.cpp
 	DataHierarchyManager.cpp
-	HierarchyDataManager.cpp
-	MemoryDataManager.cpp
+	RegisteredDataTypesManager.cpp
+	DataManager.cpp
 	FileDataManager.cpp
 	StreamDataManager.cpp
 	PluginApplication.cpp

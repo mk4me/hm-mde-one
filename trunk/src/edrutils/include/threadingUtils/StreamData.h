@@ -115,15 +115,13 @@ namespace threadingUtils {
 		{
 			std::lock_guard<std::mutex> lock(synch_);
 			maxSize = size;
-			if (maxSize > 0){
-				while (bufferData.size() > maxSize) { bufferData.pop_front(); }
-			}
+			adjustBufferSize();
 		}
 
 		//! \return Maksymalny rozmiar bufora
 		const size_type maxBufferSize() const
 		{
-			std::lock_guard<std::mutex> lock(synch_);			
+			std::lock_guard<std::mutex> lock(synch_);
 			return maxSize;
 		}
 
@@ -138,33 +136,33 @@ namespace threadingUtils {
 		void pushData(const_ref_type data)
 		{
 			std::lock_guard<std::mutex> lock(synch_);
-
-			if (maxSize > 0 && bufferData.size() == maxSize){
-				bufferData.pop_front();
-			}
-
 			bufferData.push_back(data);
-
+			adjustBufferSize();
 		}
 
 		//! \param data Dane do włożenia do bufora
 		void pushData(T && data)
 		{
 			std::lock_guard<std::mutex> lock(synch_);
-
-			if (maxSize > 0 && bufferData.size() == maxSize){
-				bufferData.pop_front();
-			}
-
-			bufferData.push_back(data);
+			bufferData.push_back(std::move(data));
+			adjustBufferSize();
 		}
 
 		//! \param data [out] Obiekt docelowy dla danych bufora
 		void data(ListT & data)
 		{
 			std::lock_guard<std::mutex> lock(synch_);
-			data.insert(data.end(), bufferData.begin(), bufferData.end());
-			ListT().swap(bufferData);
+			data.splice(data.end(), bufferData);
+		}
+
+	private:
+
+		//! Metoda dostosowuje rozmiar bufora danych do zadanej wielkości
+		void adjustBufferSize()
+		{
+			if (maxSize > 0){
+				while (bufferData.size() > maxSize) { bufferData.pop_front(); }
+			}
 		}
 
 	private:
@@ -235,8 +233,7 @@ namespace threadingUtils {
 		//! Return Czy podłączono jakieś bufory
 		const bool buffersAttached() const
 		{
-			std::lock_guard<std::recursive_mutex> lock(synch_);
-			return !streamBufferList.empty();
+			return streamBufferList.empty() == false;
 		}
 
 		//! \param data Data received from the stream
@@ -244,7 +241,7 @@ namespace threadingUtils {
 		{
 			UTILS_ASSERT(streamBufferList.empty() == true, "Stream data with no buffers");
 
-			for (auto buff : streamBufferList){
+			for (auto & buff : streamBufferList){
 				buff->pushData(data);
 			}
 		}
@@ -257,7 +254,7 @@ namespace threadingUtils {
 	//! Generyczny obiekt strumienia, synchronizuje dane
 	//! \tparam T Typ danych w strumieniu
 	template<typename T>
-	class StreamT : public IStreamT<T>
+	class StreamT : public IStreamT < T >
 	{
 	public:
 		//! Domyślny konstruktor
@@ -268,11 +265,7 @@ namespace threadingUtils {
 		{
 			std::lock_guard<std::recursive_mutex> lock(this->synch_);
 
-			try{
-				pushBufferData(data);
-			}
-			catch (...){
-			}
+			pushBufferData(data);
 
 			data_ = data;
 
@@ -284,11 +277,7 @@ namespace threadingUtils {
 		{
 			std::lock_guard<std::recursive_mutex> lock(this->synch_);
 
-			try{
-				pushBufferData(std::forward<T>(data));
-			}
-			catch (...){
-			}
+			pushBufferData(std::forward<T>(data));
 
 			data_ = std::move(data);
 
@@ -310,45 +299,79 @@ namespace threadingUtils {
 		T data_;
 	};
 
+	//! Klasa obserwujaca strumien bazowy
+	//! \tparam DestStream Strumień docelowy
+	template<typename DestStream>
+	class BaseStreamUpdater : public IStreamStatusObserver
+	{
+	public:
+		//! \param destStream Strumien docelowy
+		BaseStreamUpdater(DestStream * destStream)
+			: destStream(destStream)
+		{
+		}
+
+		//! Lapie zmiane w strumieniu zrodlowym i propaguje na nasz strumien
+		virtual void update()
+		{
+			destStream->localUpdate();
+		}
+
+	private:
+		//! Strumien docelowy
+		DestStream * destStream;
+	};
+
+	template<typename T, typename MyDestStream, typename BT = T>
+	class StreamModifierBase : public IStreamT < T >
+	{
+	public:
+		//! Typ strumienia bazowego
+		typedef IStreamT<BT> BaseStreamType;
+
+		//! Wskaźnik na strumień bazowy
+		typedef utils::shared_ptr<BaseStreamType> BaseStreamTypePtr;
+
+	protected:
+
+		StreamModifierBase(BaseStreamTypePtr baseStream, MyDestStream * destStream)
+			: baseStream_(baseStream)
+		{
+			if (baseStream_ == nullptr){
+				throw std::invalid_argument("Uninitialized base stream");
+			}
+
+			sourceStreamObserver.reset(new BaseStreamUpdater<MyDestStream>(destStream));
+			baseStream_->attachObserver(sourceStreamObserver);
+		}
+
+		virtual ~StreamModifierBase()
+		{
+			baseStream_->detachObserver(sourceStreamObserver);
+		}
+
+	protected:
+
+		//! Strumień który przykrywam
+		BaseStreamTypePtr baseStream_;
+
+	private:
+		//! Obserwator strumienia bazowego
+		StreamStatusObserverPtr sourceStreamObserver;
+	};
+
 	//! Klasa zmieniająca reprezentację strumienia
 	template<typename T, typename Filter>
-	class StreamFilterT : public IStreamT < T >
+	class StreamFilterT : public StreamModifierBase < T, StreamFilterT<T, Filter> >
 	{
 	public:
 
 		//! Typ adaptera
 		typedef StreamFilterT<T, Filter> StreamFilterType;
 
-		//! Typ strumienia bazowego
-		typedef IStreamT<T> BaseStreamType;
+		typedef StreamModifierBase < T, StreamFilterT<T, Filter> > MyStreamModifierBase;
 
-		//! Wskaźnik na strumień bazowy
-		typedef utils::shared_ptr<BaseStreamType> BaseStreamTypePtr;
-
-	private:
-
-		//! Klasa obserwujaca strumien bazowy
-		class BaseStreamUpdater : public IStreamStatusObserver
-		{
-		public:
-			//! \param destStream Strumien docelowy
-			BaseStreamUpdater(StreamFilterType * destStream)
-				: destStream(destStream)
-			{
-			}
-
-			//! Lapie zmiane w strumieniu zrodlowym i propaguje na nasz strumien
-			virtual void update()
-			{
-				destStream->localUpdate();
-			}
-
-		private:
-			//! Strumien docelowy
-			StreamFilterType * destStream;
-		};
-
-		friend class BaseStreamUpdater;
+		friend class BaseStreamUpdater < StreamFilterType > ;
 
 	public:
 
@@ -356,66 +379,46 @@ namespace threadingUtils {
 		//! \param filter Obiekt filtrujący zmiany strumienia
 		StreamFilterT(BaseStreamTypePtr baseStream,
 			const Filter & filter = Filter(), const T & startValue = T())
-			: baseStream_(baseStream), filter_(filter),
+			: MyStreamModifierBase(baseStream, this), filter_(filter),
 			currentData_(startValue)
 		{
-			if (baseStream_ == nullptr){
-				throw std::invalid_argument("Uninitialized base stream");
-			}
 
-			sourceStreamObserver.reset(new BaseStreamUpdater(this));
-			baseStream_->attachObserver(sourceStreamObserver);
 		}
 
 		//! \param baseStream Strumień który filtruję
 		//! \param filter Obiekt filtrujący zmiany strumienia
 		StreamFilterT(BaseStreamTypePtr baseStream,
 			const Filter & filter, T && startValue)
-			: baseStream_(baseStream), filter_(filter),
+			: MyStreamModifierBase(baseStream, this), filter_(filter),
 			currentData_(std::move(startValue))
 		{
-			if (baseStream_ == nullptr){
-				throw std::invalid_argument("Uninitialized base stream");
-			}
 
-			sourceStreamObserver.reset(new BaseStreamUpdater(this));
-			baseStream_->attachObserver(sourceStreamObserver);
 		}
 
 		//! \param baseStream Strumień który filtruję
 		//! \param filter Obiekt filtrujący zmiany strumienia
 		StreamFilterT(BaseStreamTypePtr baseStream,
 			Filter && filter, const T & startValue = T())
-			: baseStream_(std::move(baseStream)), filter_(filter),
+			: MyStreamModifierBase(baseStream, this), filter_(std::move(filter)),
 			currentData_(startValue)
 		{
-			if (baseStream_ == nullptr){
-				throw std::invalid_argument("Uninitialized base stream");
-			}
 
-			sourceStreamObserver.reset(new BaseStreamUpdater(this));
-			baseStream_->attachObserver(sourceStreamObserver);
 		}
 
 		//! \param baseStream Strumień który filtruję
 		//! \param filter Obiekt filtrujący zmiany strumienia
 		StreamFilterT(BaseStreamTypePtr baseStream,
 			Filter && filter, T && startValue)
-			: baseStream_(std::move(baseStream)), filter_(filter),
+			: MyStreamModifierBase(baseStream, this), filter_(std::move(filter)),
 			currentData_(std::move(startValue))
 		{
-			if (baseStream_ == nullptr){
-				throw std::invalid_argument("Uninitialized base stream");
-			}
 
-			sourceStreamObserver.reset(new BaseStreamUpdater(this));
-			baseStream_->attachObserver(sourceStreamObserver);
 		}
 
 		//! Destruktor wirtualny
 		virtual ~StreamFilterT()
 		{
-			baseStream_->detachObserver(sourceStreamObserver);
+
 		}
 
 		//! \param d [out]  Obiekt docelowy dla aktualnych danych ze strumienia po filtracji
@@ -448,53 +451,22 @@ namespace threadingUtils {
 	private:
 		//! Aktualne dane
 		mutable T currentData_;
-		//! Strumień który przykrywam
-		BaseStreamTypePtr baseStream_;
 		//! Obiekt do filtrowania danych danych
 		Filter filter_;
-		//! Obserwator strumienia bazowego
-		StreamStatusObserverPtr sourceStreamObserver;
 	};
 
 	//! Klasa zmieniająca reprezentację strumienia
 	template<typename T, typename Processor>
-	class StreamProcessorT : public IStreamT < T >
+	class StreamProcessorT : public StreamModifierBase < T, StreamProcessorT<T, Processor> >
 	{
 	public:
 
 		//! Typ adaptera
 		typedef StreamProcessorT<T, Processor> StreamProcessorType;
 
-		//! Typ strumienia bazowego
-		typedef IStreamT<T> BaseStreamType;
+		typedef StreamModifierBase < T, StreamProcessorT<T, Processor> > MyStreamModifierBase;
 
-		//! Wskaźnik na strumień bazowy
-		typedef utils::shared_ptr<BaseStreamType> BaseStreamTypePtr;
-
-	private:
-
-		//! Klasa obserwujaca strumien bazowy
-		class BaseStreamUpdater : public IStreamStatusObserver
-		{
-		public:
-			//! \param destStream Strumien docelowy
-			BaseStreamUpdater(StreamProcessorType * destStream)
-				: destStream(destStream)
-			{
-			}
-
-			//! Lapie zmiane w strumieniu zrodlowym i propaguje na nasz strumien
-			virtual void update()
-			{
-				destStream->localUpdate();
-			}
-
-		private:
-			//! Strumien docelowy
-			StreamProcessorType * destStream;
-		};
-
-		friend class BaseStreamUpdater;
+		friend class BaseStreamUpdater < StreamProcessorType > ;
 
 	public:
 
@@ -502,74 +474,54 @@ namespace threadingUtils {
 		//! \param filter Obiekt filtrujący zmiany strumienia
 		StreamProcessorT(BaseStreamTypePtr baseStream,
 			const Processor & processor = Processor(), const T & startValue = T())
-			: baseStream_(baseStream), processor_(processor),
+			: MyStreamModifierBase(baseStream, this), processor_(processor),
 			currentData_(startValue), processReuired(false)
 		{
-			if (baseStream_ == nullptr){
-				throw std::invalid_argument("Uninitialized base stream");
-			}
 
-			sourceStreamObserver.reset(new BaseStreamUpdater(this));
-			baseStream_->attachObserver(sourceStreamObserver);
 		}
 
 		//! \param baseStream Strumień który filtruję
 		//! \param filter Obiekt filtrujący zmiany strumienia
 		StreamProcessorT(BaseStreamTypePtr baseStream,
 			const Processor & processor, T && startValue)
-			: baseStream_(baseStream), processor_(processor),
+			: MyStreamModifierBase(baseStream, this), processor_(processor),
 			currentData_(std::move(startValue)), processReuired(false)
 		{
-			if (baseStream_ == nullptr){
-				throw std::invalid_argument("Uninitialized base stream");
-			}
 
-			sourceStreamObserver.reset(new BaseStreamUpdater(this));
-			baseStream_->attachObserver(sourceStreamObserver);
 		}
 
 		//! \param baseStream Strumień który filtruję
 		//! \param filter Obiekt filtrujący zmiany strumienia
 		StreamProcessorT(BaseStreamTypePtr baseStream,
 			Processor && processor, const T & startValue = T())
-			: baseStream_(baseStream), processor_(std::move(processor)),
+			: MyStreamModifierBase(baseStream, this), processor_(std::move(processor)),
 			currentData_(startValue), processReuired(false)
 		{
-			if (baseStream_ == nullptr){
-				throw std::invalid_argument("Uninitialized base stream");
-			}
 
-			sourceStreamObserver.reset(new BaseStreamUpdater(this));
-			baseStream_->attachObserver(sourceStreamObserver);
 		}
 
 		//! \param baseStream Strumień który filtruję
 		//! \param filter Obiekt filtrujący zmiany strumienia
 		StreamProcessorT(BaseStreamTypePtr baseStream,
 			Processor && processor, T && startValue)
-			: baseStream_(baseStream), processor_(std::move(processor)),
+			: MyStreamModifierBase(baseStream, this), processor_(std::move(processor)),
 			currentData_(std::move(startValue)), processReuired(false)
 		{
-			if (baseStream_ == nullptr){
-				throw std::invalid_argument("Uninitialized base stream");
-			}
 
-			sourceStreamObserver.reset(new BaseStreamUpdater(this));
-			baseStream_->attachObserver(sourceStreamObserver);
 		}
 
 		//! Destruktor wirtualny
 		virtual ~StreamProcessorT()
 		{
-			baseStream_->detachObserver(sourceStreamObserver);
+
 		}
 
 		//! \param d [out]  Obiekt docelowy dla aktualnych danych ze strumienia po filtracji
 		virtual void data(typename IStreamT<T>::ref_type d) const override
 		{
-			std::lock_guard<std::recursive_mutex> lock(this->synch_);		
-			if (processReuired == true){				
-				process();				
+			std::lock_guard<std::recursive_mutex> lock(this->synch_);
+			if (processReuired == true){
+				process();
 			}
 
 			d = currentData_;
@@ -588,7 +540,7 @@ namespace threadingUtils {
 		void localUpdate()
 		{
 			std::lock_guard<std::recursive_mutex> lock(this->synch_);
-			
+
 			baseStream_->data(currentData_);
 
 			if (this->buffersAttached() == true){
@@ -605,55 +557,24 @@ namespace threadingUtils {
 	private:
 		//! Aktualne dane
 		mutable T currentData_;
-		//! Strumień który przykrywam
-		BaseStreamTypePtr baseStream_;
 		//! Obiekt do przetwarzania danych danych
 		mutable Processor processor_;
-		//! Obserwator strumienia bazowego
-		StreamStatusObserverPtr sourceStreamObserver;
 		//! Czy należy przetworzyć dane czy zostały już przetworzone
 		volatile mutable bool processReuired;
-	};	
+	};
 
 	//! Klasa zmieniająca reprezentację strumienia
 	template<typename Base, typename Dest, typename Extractor>
-	class StreamAdapterT : public IStreamT<Dest>
+	class StreamAdapterT : public StreamModifierBase < Dest, StreamAdapterT<Base, Dest, Extractor>, Base >
 	{
 	public:
 
 		//! Typ adaptera
 		typedef StreamAdapterT<Base, Dest, Extractor> StreamAdapterType;
 
-		//! Typ strumienia bazowego
-		typedef IStreamT<Base> BaseStreamType;
+		typedef StreamModifierBase < Dest, StreamAdapterT<Base, Dest, Extractor>, Base > MyStreamModifierBase;
 
-		//! Wskaźnik na strumień bazowy
-		typedef utils::shared_ptr<BaseStreamType> BaseStreamTypePtr;
-
-	private:
-
-		//! Klasa obserwujaca strumien bazowy
-		class BaseStreamUpdater : public IStreamStatusObserver
-		{
-		public:
-			//! \param destStream Strumien docelowy
-			BaseStreamUpdater(StreamAdapterType * destStream)
-				: destStream(destStream)
-			{
-			}
-
-			//! Lapie zmiane w strumieniu zrodlowym i propaguje na nasz strumien
-			virtual void update()
-			{
-				destStream->localUpdate();
-			}
-
-		private:
-			//! Strumien docelowy
-			StreamAdapterType * destStream;
-		};
-
-		friend class BaseStreamUpdater;
+		friend class BaseStreamUpdater < StreamAdapterType > ;
 
 	public:
 
@@ -661,66 +582,46 @@ namespace threadingUtils {
 		//! \param extractorFunction Funktor realizujące przepakowanie typów danych
 		StreamAdapterT(BaseStreamTypePtr baseStream,
 			const Extractor & extractor = Extractor(), const Dest & startValue = Dest())
-			: baseStream_(baseStream), extractor_(extractor),
+			: MyStreamModifierBase(baseStream, this), extractor_(extractor),
 			currentData_(startValue), unpackRequired_(false)
 		{
-			if (baseStream_ == nullptr){
-				throw std::invalid_argument("Uninitialized base stream");
-			}
 
-			sourceStreamObserver.reset(new BaseStreamUpdater(this));
-			baseStream_->attachObserver(sourceStreamObserver);
 		}
 
 		//! \param baseStream Strumień którego reprezentację zmieniamy
 		//! \param extractorFunction Funktor realizujące przepakowanie typów danych
 		StreamAdapterT(BaseStreamTypePtr baseStream,
 			Extractor && extractor, const Dest & startValue = Dest())
-			: baseStream_(baseStream), extractor_(std::move(extractor)),
+			: MyStreamModifierBase(baseStream, this), extractor_(std::move(extractor)),
 			currentData_(startValue), unpackRequired_(false)
 		{
-			if (baseStream_ == nullptr){
-				throw std::invalid_argument("Uninitialized base stream");
-			}
 
-			sourceStreamObserver.reset(new BaseStreamUpdater(this));
-			baseStream_->attachObserver(sourceStreamObserver);
 		}
 
 		//! \param baseStream Strumień którego reprezentację zmieniamy
 		//! \param extractorFunction Funktor realizujące przepakowanie typów danych
 		StreamAdapterT(BaseStreamTypePtr baseStream,
 			const Extractor & extractor, Dest && startValue)
-			: baseStream_(baseStream), extractor_(extractor),
+			: MyStreamModifierBase(baseStream, this), extractor_(extractor),
 			currentData_(std::move(startValue)), unpackRequired_(false)
 		{
-			if (baseStream_ == nullptr){
-				throw std::invalid_argument("Uninitialized base stream");
-			}
 
-			sourceStreamObserver.reset(new BaseStreamUpdater(this));
-			baseStream_->attachObserver(sourceStreamObserver);
 		}
 
 		//! \param baseStream Strumień którego reprezentację zmieniamy
 		//! \param extractorFunction Funktor realizujące przepakowanie typów danych
 		StreamAdapterT(BaseStreamTypePtr baseStream,
 			Extractor && extractor, Dest && startValue)
-			: baseStream_(baseStream), extractor_(std::move(extractor)),
+			: MyStreamModifierBase(baseStream, this), extractor_(std::move(extractor)),
 			currentData_(std::move(startValue)), unpackRequired_(false)
 		{
-			if (baseStream_ == nullptr){
-				throw std::invalid_argument("Uninitialized base stream");
-			}
 
-			sourceStreamObserver.reset(new BaseStreamUpdater(this));
-			baseStream_->attachObserver(sourceStreamObserver);
 		}
 
 		//! Destruktor wirtualny
 		virtual ~StreamAdapterT()
 		{
-			baseStream_->detachObserver(sourceStreamObserver);
+
 		}
 
 		//! \param d [out]  Obiekt docelowy dla aktualnych danych ze strumienia po przepakowaniu
@@ -749,7 +650,7 @@ namespace threadingUtils {
 				if (this->buffersAttached() == true){
 					extractor_.extract(bd, currentData_);
 					unpackRequired_ = false;
-					pushBufferData(currentData_);					
+					pushBufferData(currentData_);
 				}
 				else{
 					unpackRequired_ = true;
@@ -765,12 +666,8 @@ namespace threadingUtils {
 		mutable Base baseData_;
 		//! current data
 		mutable Dest currentData_;
-		//! Strumień który przykrywam
-		BaseStreamTypePtr baseStream_;
 		//! Funktor do weryfikacji i wypakowywania danych
 		Extractor extractor_;
-		//! Obserwator strumienia bazowego
-		StreamStatusObserverPtr sourceStreamObserver;
 		//! Czy dane wymagają pobrania ze źródła
 		mutable volatile bool unpackRequired_;
 	};

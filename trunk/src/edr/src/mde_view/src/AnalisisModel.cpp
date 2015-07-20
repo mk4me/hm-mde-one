@@ -11,22 +11,22 @@ AnalisisModel::AnalisisModel()
 {
 }
 
-void AnalisisModel::observe( const core::IMemoryDataManagerHierarchy::HierarchyChangeList & changes )
+void AnalisisModel::observe(const core::IDataHierarchyManagerReader::ChangeList & changes)
 {
     for (auto it = changes.begin(); it != changes.end(); ++it) {
         switch (it->modification) {
         case core::IDataManagerReader::ADD_OBJECT:
-            model.addRootItem(it->value);
+            model.addRootItem(it->item);
             if (model.getNumChildren() == 1) {
                 emit expandTree(1);
             }
             emit dataAdded();
             break;
         case core::IDataManagerReader::REMOVE_OBJECT:
-            model.removeRootItem(it->value);
+			model.removeRootItem(it->item);
             break;
         case core::IDataManagerReader::UPDATE_OBJECT:
-            model.updateItem(it->value);
+			model.updateItem(it->item);
         }
     }
 }
@@ -125,7 +125,7 @@ AnalisisModel::DataItemDescription::DataItemDescription( coreUI::CoreVisualizerW
 
 
 
-void AnalisisModel::update(core::Visualizer::VisualizerSerie * serie, core::Visualizer::SerieModyfication modyfication )
+void AnalisisModel::update(core::Visualizer::Serie * serie, core::Visualizer::SerieModyfication modyfication )
 {
     if(modyfication == core::Visualizer::REMOVE_SERIE){
         auto it = seriesToPaths.find(serie);
@@ -171,7 +171,7 @@ void AnalisisModel::update(core::Visualizer::VisualizerSerie * serie, core::Visu
 
 void AnalisisModel::addSeriesToVisualizer( core::VisualizerPtr visualizer, core::HierarchyHelperPtr helper, const QString &path, QDockWidget * visualizerDockWidget )
 {
-    std::vector<core::Visualizer::VisualizerSerie*> series;
+    std::vector<core::Visualizer::Serie*> series;
     helper->getSeries(visualizer, path, series);
     if (!series.empty()) {
 

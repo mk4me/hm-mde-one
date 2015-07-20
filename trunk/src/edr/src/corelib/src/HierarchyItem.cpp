@@ -91,7 +91,7 @@ void HierarchyItem::removeChild( IHierarchyItemPtr child )
         //auto ptr = utils::const_pointer_cast<IHierarchyItem>(child);
         child->setParent(IHierarchyItemPtr());
     } else {
-        throw core::runtime_error("HierarchyItem : child was not found");
+        throw std::runtime_error("HierarchyItem : child was not found");
     }
 }
 

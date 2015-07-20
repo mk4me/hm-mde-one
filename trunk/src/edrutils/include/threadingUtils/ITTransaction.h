@@ -12,7 +12,7 @@
 
 namespace threadingUtils
 {
-	//! \tparam T Typ fla którego realizujemy transakcjê
+	//! \tparam T Typ dla którego realizujemy transakcjê
 	template<typename T>
 	class ITWritableTransaction
 	{
@@ -36,7 +36,7 @@ namespace threadingUtils
 		virtual ~ITWritableTransactionObject() {}
 	};
 
-	//! \tparam T Typ fla którego realizujemy transakcjê
+	//! \tparam T Typ dla którego realizujemy transakcjê
 	template<typename T>
 	class ITReadableTransaction
 	{
@@ -60,7 +60,7 @@ namespace threadingUtils
 		virtual ~ITReadableTransactionObject() {}
 	};
 
-	//! \tparam T Typ fla którego realizujemy transakcjê
+	//! \tparam T Typ dla którego realizujemy transakcjê
 	template<typename T>
 	class ITTransaction : public ITWritableTransaction<T>, public ITReadableTransaction<T>
 	{
@@ -72,7 +72,7 @@ namespace threadingUtils
 		using ITReadableTransaction<T>::transaction;
 	};
 
-	//! \tparam T Typ fla którego realizujemy transakcjê
+	//! \tparam T Typ dla którego realizujemy transakcjê
 	template<typename T>
 	class ITTransactionObject : public T, public ITTransaction<T>
 	{
@@ -81,5 +81,10 @@ namespace threadingUtils
 		virtual ~ITTransactionObject() {}
 	};
 }
+
+#define TRANSACTION(obj) obj->transaction()
+#define TRANSACTION_PART __t
+#define BEGIN_TRANSACTION(obj) { auto TRANSACTION_PART = TRANSACTION(obj);
+#define END_TRANSACTION }
 
 #endif	// __HEADER_GUARD_THREADINGUTILS__ITTRANSACTION_H__

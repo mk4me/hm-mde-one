@@ -26,7 +26,7 @@ struct FutureSerieData {
 };
 
 Q_DECLARE_METATYPE(FutureSerieData);
-Q_DECLARE_METATYPE(core::Visualizer::VisualizerSerie*);
+Q_DECLARE_METATYPE(core::Visualizer::Serie*);
 
 QWidget * CoreVisualizerWidget::createSourceMenuWidget(QWidget * parent)
 {
@@ -230,7 +230,7 @@ void CoreVisualizerWidget::fillSourcesMenu()
 				std::string dataSource = unknownDataSource.toStdString();
 				getDataSource(dataIT->first, dataSource);
 				
-				auto action = typeMenu->addAction(dataActionName.arg(QString::fromStdString(dataSource)).arg(QString::fromStdString(dataIT->second->serie()->getName())));
+				auto action = typeMenu->addAction(dataActionName.arg(QString::fromStdString(dataSource)).arg(QString::fromStdString(dataIT->second->innerSerie()->getName())));
 				action->setCheckable(true);
 				action->setChecked(true);
 				QVariant data;
@@ -340,8 +340,8 @@ void CoreVisualizerWidget::removeAllSeries()
 		tryRefreshActiveSerieSwitchesContent();
 	}
 	std::set<int>().swap(usedLocalNameIndexes);
-	std::map<utils::TypeInfo, std::map<core::VariantConstPtr, core::Visualizer::VisualizerSerie*>>().swap(activeData);
-	std::map<core::Visualizer::VisualizerSerie*, int>().swap(serieLocalIdx);
+	std::map<utils::TypeInfo, std::map<core::VariantConstPtr, core::Visualizer::Serie*>>().swap(activeData);
+	std::map<core::Visualizer::Serie*, int>().swap(serieLocalIdx);
 	visualizer_->destroyAllSeries();
 }
 
@@ -350,7 +350,7 @@ void CoreVisualizerWidget::serieSelected(int idx)
 	if(idx == 0){
 		visualizer_->setActiveSerie(nullptr);
 	}else{
-		visualizer_->setActiveSerie(persistentActiveSerieSwitch->itemData(idx).value<core::Visualizer::VisualizerSerie*>());
+		visualizer_->setActiveSerie(persistentActiveSerieSwitch->itemData(idx).value<core::Visualizer::Serie*>());
 	}
 }
 
@@ -359,8 +359,8 @@ void CoreVisualizerWidget::addSerie()
 	QAction * action = qobject_cast<QAction*>(sender());
 	FutureSerieData data = action->data().value<FutureSerieData>();
 	auto serie = visualizer_->createSerie(data.requestedType, data.data);
-	serie->serie()->setName(data.serieName);
-	activeData[data.requestedType].insert(std::map<core::VariantConstPtr, core::Visualizer::VisualizerSerie*>::value_type(data.data, serie));
+	serie->innerSerie()->setName(data.serieName);
+	activeData[data.requestedType].insert(std::map<core::VariantConstPtr, core::Visualizer::Serie*>::value_type(data.data, serie));
 	if(data.localIdx > -1){
 		serieLocalIdx[serie] = data.localIdx;
 		usedLocalNameIndexes.insert(data.localIdx);
@@ -383,11 +383,11 @@ void CoreVisualizerWidget::addSerie()
 void CoreVisualizerWidget::removeSerie()
 {
 	QAction * action = qobject_cast<QAction*>(sender());
-	core::Visualizer::VisualizerSerie * serie = action->data().value<core::Visualizer::VisualizerSerie *>();
+	core::Visualizer::Serie * serie = action->data().value<core::Visualizer::Serie *>();
 
-	auto activeDataIT = activeData.find(serie->serie()->getRequestedDataType());
+	auto activeDataIT = activeData.find(serie->innerSerie()->getRequestedDataType());
 
-	activeDataIT->second.erase(serie->serie()->getData());
+	activeDataIT->second.erase(serie->innerSerie()->getData());
 
 	if(activeDataIT->second.empty() == true){
 		activeData.erase(activeDataIT);

@@ -153,7 +153,7 @@ void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &oList, core::
 	}
 }
 
-void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &framesV, IMU::IMUConfigConstPtr config, const std::string& sourceName, core::HierarchyItemPtr sessionItem, core::IMemoryDataManager * memoryDataManager)
+void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &framesV, IMU::IMUConfigConstPtr config, const std::string& sourceName, core::HierarchyItemPtr sessionItem, core::IDataManager * memoryDataManager)
 {
 	auto accWrapper = utils::ObjectWrapper::create<c3dlib::VectorChannelCollection>();
 	auto magWrapper = utils::ObjectWrapper::create<c3dlib::VectorChannelCollection>();
@@ -269,7 +269,7 @@ core::IHierarchyItemPtr IMU::IMUPerspective::createImuCollectionItem(int i, c3dl
 	return collectionItem;
 }
 
-IMU::IMUPerspective::IMUPerspective(core::IMemoryDataManager * memoryDataManager) : 
+IMU::IMUPerspective::IMUPerspective(core::IDataManager * memoryDataManager) : 
 	memoryDataManager(memoryDataManager)
 {
 
@@ -329,7 +329,10 @@ void IMU::IMUPerspective::generateAnglesChannelBranch(kinematic::JointAnglesColl
 	}
 }*/
 
-void IMU::IMUPerspectiveService::init(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager)
+void IMU::IMUPerspectiveService::init(core::ISourceManager * sourceManager,
+	core::IVisualizerManager * visualizerManager, core::IDataManager * memoryDataManager, 
+	core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager,
+	core::IDataHierarchyManager * hierarchyManager)
 {
 	this->sourceManager = sourceManager;
 	this->memoryDataManager = memoryDataManager;

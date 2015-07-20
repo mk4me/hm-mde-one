@@ -1,5 +1,6 @@
 #include "FileSource.h"
 #include <corelib/Filesystem.h>
+#include <corelib/IDataHierarchyManager.h>
 #include <corelib/HierarchyItem.h>
 #include <corelib/HierarchyDataItem.h>
 #include <corelib/PluginCommon.h>
@@ -13,16 +14,20 @@
 
 
 FileSource::FileSource() :
-    fileDM(nullptr),
-    memoryDM(nullptr)
+fileDM(nullptr),
+memoryDM(nullptr),
+hierarchyDM(nullptr),
+streamDM(nullptr)
 {
 
 }
 
 
-void FileSource::init( core::IMemoryDataManager * memoryDM, core::IStreamDataManager * streamDM, core::IFileDataManager * fileDM )
+void FileSource::init( core::IDataManager * memoryDM, core::IStreamDataManager * streamDM, core::IFileDataManager * fileDM,
+	core::IDataHierarchyManager * hierarchyDM)
 {
     this->fileDM = fileDM;
+	this->hierarchyDM = hierarchyDM;
     this->memoryDM = memoryDM;
     this->streamDM = streamDM;
 }
@@ -80,7 +85,7 @@ void FileSource::addFile( const core::Filesystem::Path& path )
     core::ConstVariantsList oList;
     transaction->getObjects(path, oList);
 
-    auto hierarchyTransaction = memoryDM->hierarchyTransaction();
+    auto hierarchyTransaction = hierarchyDM->transaction();
     core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>(path.filename().string().c_str(), path.string().c_str(), QIcon());
     for (auto it = oList.begin(); it != oList.end(); ++it) {
         core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(*it, QString());
@@ -96,10 +101,12 @@ void FileSource::loadAsfAmc()
 	//core::Filesystem::Path p1 = "C:/Users/Mateusz/Desktop/test.amc";
 	//core::Filesystem::Path p2 = "C:/Users/Mateusz/Desktop/test.asf";
 
+	core::Filesystem::Path p1 = "c:/ProgramData/PJWSTK/IMU-MDE/plugins/imuCostume/recordings/20150601_101449_192.168.001.173_1234/recording_1.amc";
+	core::Filesystem::Path p2 = "c:/ProgramData/PJWSTK/IMU-MDE/plugins/imuCostume/recordings/20150601_101449_192.168.001.173_1234/skeleton.asf";
 	//core::Filesystem::Path p1 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test.amc";
 	//core::Filesystem::Path p2 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test.asf";
-	core::Filesystem::Path p1 = "C:/Users/Wojciech/Desktop/test.amc";
-	core::Filesystem::Path p2 = "C:/Users/Wojciech/Desktop/test.asf";
+	//core::Filesystem::Path p1 = "C:/Users/Wojciech/Desktop/test.amc";
+	//core::Filesystem::Path p2 = "C:/Users/Wojciech/Desktop/test.asf";
 	transaction->addFile(p1);
 	transaction->addFile(p2);
 	core::ConstVariantsList oList;
@@ -151,7 +158,7 @@ void FileSource::addChartStream()
 	auto object = core::Variant::create<ScalarStream>();
 	object->set(stream);
 
-	auto hierarchyTransaction = memoryDM->hierarchyTransaction();
+	auto hierarchyTransaction = hierarchyDM->transaction();
 	core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>("Chart Stream", "Chart Stream" , QIcon());
 	core::HierarchyDataItemPtr item = utils::make_shared<core::HierarchyDataItem>(object, QString());
 	root->appendChild(item);

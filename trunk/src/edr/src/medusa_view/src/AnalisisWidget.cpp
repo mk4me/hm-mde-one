@@ -1,5 +1,6 @@
 #include "MdePCH.h"
 #include "AnalisisWidget.h"
+#include <corelib/IDataHierarchyManager.h>
 #include <corelib/IServiceManager.h>
 #include <corelib/IIdentifiable.h>
 #include <corelib/PluginCommon.h>
@@ -40,7 +41,8 @@ public:
     }
 };
 
-AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr contextEventFilter, QWidget* parent, int margin /*= 2*/, Qt::WindowFlags flags /*= 0*/ ) : 
+AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr contextEventFilter, QWidget* parent,
+	int margin /*= 2*/, Qt::WindowFlags flags /*= 0*/ ) : 
     QWidget(parent, flags),
     contextEventFilter(contextEventFilter),
     model(model),
@@ -67,7 +69,7 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     proxyModel->sort(0, Qt::AscendingOrder);
     treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     
-    contextMenu = new AnalysisTreeContextMenu(model, this);
+	contextMenu = new AnalysisTreeContextMenu(model, this);
     connect(treeView, SIGNAL(customContextMenuRequested(const QPoint &)), contextMenu ,SLOT(contextualMenu(const QPoint &)));
     connect(treeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(onTreeItemActivated(const QModelIndex&)));
 	connect(treeView, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onTreeItemDoubleClicked(const QModelIndex&)));
@@ -493,7 +495,7 @@ void AnalisisWidget::switchToFirstTab()
 
 
 
-AnalysisTreeContextMenu::AnalysisTreeContextMenu( AnalisisModelPtr model, AnalisisWidget* widget ) :
+AnalysisTreeContextMenu::AnalysisTreeContextMenu( AnalisisModelPtr model, AnalisisWidget* widget) :
 model(model),
     widget(widget)
 {
@@ -552,13 +554,13 @@ void AnalysisTreeContextMenu::addAdditionMenuSection( QMenu * menu, const core::
     addTo->setEnabled(false);
     connect(addTo, SIGNAL(aboutToHide()), this, SLOT(menuHighlightVisualizer()));
     connect(addTo, SIGNAL(hovered(QAction*)), this, SLOT(menuHighlightVisualizer(QAction*)));
+	auto dtr = plugin::getRegisteredDataTypesManagerReader();
     for(auto set : widget->topMainWindow->getDockSet()) {
         QMenu* group = new QMenu(widget->topMainWindow->setText(widget->topMainWindow->indexOf(set)), menu);
         for(auto dock : set->getDockWidgets()) {
             coreUI::CoreVisualizerWidget* vw = dynamic_cast<coreUI::CoreVisualizerWidget*>(dock->widget());
             if (vw ) {
                 core::VisualizerPtr visualizer = vw->getVisualizer();
-                auto hierarchyManager = plugin::getDataHierachyManagerReader();
                 bool compatibile = false;
                 utils::TypeInfoSet supportedTypes;
                 visualizer->getSupportedTypes(supportedTypes);
@@ -569,7 +571,8 @@ void AnalysisTreeContextMenu::addAdditionMenuSection( QMenu * menu, const core::
                         compatibile = true;
                     }else {
                         for(auto it = supportedTypes.begin(); it != supportedTypes.end(); ++it){
-                            if(hierarchyManager->isTypeCompatible(*it, types[h]) == true){
+							if (dtr->isDerrived(*it, types[h]) == true){
+                            //if(hierarchyManager->isTypeCompatible(*it, types[h]) == true){
                                 compatibile = true;
                                 break;
                             }

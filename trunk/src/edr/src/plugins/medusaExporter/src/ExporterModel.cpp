@@ -81,7 +81,7 @@ bool compressFile(QuaZip* zip, QString fileName, QString fileDest) {
 
 
 
-medusaExporter::ExporterModel::ExporterModel(core::IFileDataManager* fileManager, core::IMemoryDataManager* dataManager):
+medusaExporter::ExporterModel::ExporterModel(core::IFileDataManager* fileManager, core::IDataManager* dataManager):
 	dataManager(dataManager),
 	fileManager(fileManager)
 {

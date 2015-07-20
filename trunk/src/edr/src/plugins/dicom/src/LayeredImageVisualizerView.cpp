@@ -425,15 +425,16 @@ const bool dicom::LayeredImageVisualizerView::verifySerie()
 
 const dicom::LayeredImageVisualizerView::AnnotationStatus dicom::LayeredImageVisualizerView::annotationStatus(bool refresh /*= true*/) const
 {
-	try{
-		return getAnnotationStatus(model->getActiveSerie(), model->getCurrentLayerUserName(), model->currnetTrialID(), refresh);
+	dicom::LayeredImageVisualizerView::AnnotationStatus ret;
 
+	try{
+		ret = getAnnotationStatus(model->getActiveSerie(), model->getCurrentLayerUserName(), model->currnetTrialID(), refresh);
 	}
 	catch (...){
 		coreUI::CorePopup::showMessage(tr("Failed to get annotation status"), tr("Annotation status request failed. Please try again or contact software developers"));
 	}
 
-	
+	return ret;
 }
 
 void dicom::LayeredImageVisualizerView::selectionChanged(const QModelIndex &)

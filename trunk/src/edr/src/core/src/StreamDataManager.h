@@ -13,7 +13,7 @@ purpose:
 #include <list>
 #include <mutex>
 #include "ParserManager.h"
-#include "DataHierarchyManager.h"
+#include "RegisteredDataTypesManager.h"
 #include <corelib/IParserManagerReader.h>
 #include <corelib/IStreamDataManager.h>
 #include <corelib/IStreamManagerReader.h>
@@ -28,7 +28,7 @@ namespace core {
 
 	class StParser;
 	class SimpleInitializer;
-	class StreamDataManager : public IStreamDataManager, public IStreamManagerReader, public IDataManagerReader::IObjectObserver
+	class StreamDataManager : public IStreamDataManager, public IDataManagerReader::IObserver
 	{
 	private:
 
@@ -104,16 +104,16 @@ namespace core {
 		mutable SyncPolicy sync;
 
 		//! Obiekty obserwujące stan DM
-		std::list<StreamObserverPtr> observers;
+		std::list<ObserverPtr> observers;
 
 		//! Zmienna pozwalająca szybko opuscic update memory data managera
 		volatile bool skipUpdate;
 
 	private:
 
-		void rawRemoveStream(const std::string & stream, const IMemoryDataManager::TransactionPtr & memTransaction);
+		void rawRemoveStream(const std::string & stream, const IDataManager::TransactionPtr & memTransaction);
 
-		void rawAddStream(const StreamGrabberPtr stream, const IMemoryDataManager::TransactionPtr & memTransaction);
+		void rawAddStream(const StreamGrabberPtr stream, const IDataManager::TransactionPtr & memTransaction);
 
 		const bool rawIsManaged(const std::string & stream) const;
 
@@ -167,9 +167,9 @@ namespace core {
 		virtual void getObjects(const std::string & stream, VariantsCollection & objects) const;
 
 		//! \param streamWatcher Rejestrowany obiekt obserwujący zmiany managera strumieni
-		virtual void addObserver(const StreamObserverPtr & streamWatcher);
+		virtual void addObserver(const ObserverPtr & streamWatcher);
 		//! \param streamWatcher Wyrejestrowywany obiekt obserwujący zmiany managera strumieni
-		virtual void removeObserver(const StreamObserverPtr & streamWatcher);
+		virtual void removeObserver(const ObserverPtr & streamWatcher);
 		//! \return Nowa transakcja
 		virtual const IStreamManagerReader::TransactionPtr transaction() const;
 
@@ -185,16 +185,16 @@ namespace core {
 
 		template<typename ParserT>
 		void initializeParsers(const IParserManagerReader::ParserPrototypes & parsers,
-							   const IStreamDataManagerOperations::StreamGrabberPtr stream,
+							   const IStreamDataManager::StreamGrabberPtr stream,
 							   VariantsList & objects);
 	};
 
 	template<typename ParserT>
 	void StreamDataManager::initializeParsers(const IParserManagerReader::ParserPrototypes & parsers,
-											  const IStreamDataManagerOperations::StreamGrabberPtr stream, VariantsList & objects)
+											  const IStreamDataManager::StreamGrabberPtr stream, VariantsList & objects)
 	{
 		auto pm = getParserManager();
-		auto hm = getDataHierarchyManager();
+		auto hm = getRegisteredDataTypesManager();
 
 		//je�li pliku nie ma dodaj go, stw�rz parsery i rozszerz dost�pne dane wraz z ich opisem
 		for (auto parserIT = parsers.begin(); parserIT != parsers.end(); ++parserIT) {

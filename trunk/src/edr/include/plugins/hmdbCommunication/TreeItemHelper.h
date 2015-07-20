@@ -33,7 +33,7 @@ public:
     //! \param visualizer wizualizator, który będzie tworzył serie
     //! \param path ścieżka dla timeline
     //! \param series tutaj trafia stworzone serie 
-    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
+    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series);
     //! \return typ ScalarChannelReaderInterface
     std::vector<utils::TypeInfo> getTypeInfos() const;
 
@@ -60,7 +60,7 @@ public:
     //! \param visualizer wizualizator, który będzie tworzył serie
     //! \param path ścieżka dla timeline
     //! \param series tutaj trafia stworzone serie
-    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
+    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series);
     //! \return wizualizator 2D
     virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
     //! \return typ ScalarChannelReaderInterface
@@ -116,7 +116,7 @@ public:
     //! \param visualizer wizualizator, który będzie tworzył serie
     //! \param path ścieżka dla timeline
     //! \param series tutaj trafią stworzone serie 
-    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
+    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series);
     //! \return wizualizator 2D
     virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
     //! \return tytuł wizualizatora 2D
@@ -152,7 +152,7 @@ public:
     //! \param visualizer wizualizator, który będzie tworzył serie
     //! \param path ścieżka dla timeline
     //! \param series tutaj trafia stworzone serie 
-    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
+    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series);
     //! \return wizualizator 3D
     virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
     //! \return typ JointAnglesCollection
@@ -178,7 +178,7 @@ public:
     //! \param visualizer wizualizator, który będzie tworzył serie
     //! \param path ścieżka dla timeline
     //! \param series tutaj trafia stworzone serie 
-    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
+    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series);
     //! \return wizualizator 3D
     virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
     //! \return kolekcja ze wspieranymi przez wizualizator 3D typami
@@ -206,7 +206,7 @@ public:
     //! \param visualizer wizualizator, który będzie tworzył serie
     //! \param path ścieżka dla timeline'a
     //! \param series zwracana seria 
-    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::VisualizerSerie*>& series);
+    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series);
 };
 typedef utils::shared_ptr<EMGFilterHelper> EMGFilterHelperPtr;
 typedef utils::shared_ptr<const EMGFilterHelper> EMGFilterHelperConstPtr;

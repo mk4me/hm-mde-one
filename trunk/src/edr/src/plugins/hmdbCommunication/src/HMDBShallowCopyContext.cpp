@@ -63,8 +63,8 @@ void HMDBShallowCopyDataContext::setShallowCopy(const ShallowCopyConstPtr shallo
 }
 
 HMDBShallowCopyLocalContext::HMDBShallowCopyLocalContext(IHMDBShallowCopyDataContextPtr shallowCopyContext,
-	IHMDBLocalContextPtr localContext, core::IMemoryDataManager * mdm) : shallowCopyContext_(shallowCopyContext),
-	localContext_(localContext), mdm(mdm)
+	IHMDBLocalContextPtr localContext, core::IDataHierarchyManager * hdm) : shallowCopyContext_(shallowCopyContext),
+	localContext_(localContext), hdm(hdm)
 {
 
 }
@@ -901,7 +901,7 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 		auto hmdbSource = core::querySource<IHMDBSource>(plugin::getSourceManager());
 		
 		if (hmdbSource != nullptr){
-			auto hierarchyTransaction = mdm->hierarchyTransaction();
+			auto hierarchyTransaction = hdm->transaction();
 			std::set<core::IHierarchyItemConstPtr> roots;
 			for (int i = 0; i < hmdbSource->viewManager()->hierarchyPerspectivesCount(); ++i) {				
 				auto root = hmdbSource->viewManager()->hierarchyPerspective(i)->getPerspective(subPtr);
@@ -989,7 +989,7 @@ bool hasChild(core::IHierarchyItemConstPtr root, const QString& childName)
 }
 
 void HMDBShallowCopyLocalContext::updateOrAddRoot(core::IHierarchyItemConstPtr root, std::set<core::IHierarchyItemConstPtr>& roots,
-	core::IMemoryDataManager::HierarchyTransactionPtr hierarchyTransaction)
+	core::IDataHierarchyManager::TransactionPtr hierarchyTransaction)
 {
 	auto it = name2root.find(root->getName());
 	if (it != name2root.end()) {
@@ -1038,7 +1038,7 @@ const bool HMDBShallowCopyLocalContext::unload(const DataType type,
 			auto hmdbSource = core::querySource<IHMDBSource>(plugin::getSourceManager());
 
 			if (hmdbSource != nullptr){
-				auto hierarchyTransaction = mdm->hierarchyTransaction();
+				auto hierarchyTransaction = hdm->transaction();
 				auto entry = files2roots.find(unloadFiles);
 				if (entry != files2roots.end()) {
 					auto roots = entry->second;

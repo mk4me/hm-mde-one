@@ -23,7 +23,7 @@ class MemoryDataManager;
 //! Klasa służy do agregowania obiektów domenowych tego samego typu lub pocohdnych od tego samego typu
 class CORELIB_EXPORT VariantsCollection
 {
-    friend class MemoryDataManager;
+    friend class DataManager;
 
 public:
     typedef ConstVariantsList::size_type size_type;
