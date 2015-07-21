@@ -1,7 +1,7 @@
 #include <utils/TypeInfo.h>
 #include <typeindex>
 
-const bool areTypesEqual(const std::type_info& t1, const std::type_info& t2)
+static inline const bool areTypesEqual(const std::type_info& t1, const std::type_info& t2)
 {
 	//TODO - czy to konieczne, czy da siê to robiæ bezpiecznie bez typeindex?
 	return std::type_index(t1) == std::type_index(t2);
@@ -110,5 +110,5 @@ ExtendedTypeInfo& ExtendedTypeInfo::operator =(const ExtendedTypeInfo & other)
 
 const bool ExtendedTypeInfo::compare(const ExtendedTypeInfo& obj) const
 {
-	return size_ == obj.size_ && TypeInfo::compare(obj);
+	return (size_ == obj.size_) && (TypeInfo::compare(obj) == true);
 }

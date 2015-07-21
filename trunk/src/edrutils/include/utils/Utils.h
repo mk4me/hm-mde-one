@@ -26,20 +26,27 @@
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
+//! \tparam T Typ wartości zmiennoprzecinkowej 
 template<typename T>
-T correctNegativeZero(const T value)
+//! \param value Wartość dla której eliminujemy ujemne zero
+//! \return Wartość nieujemna
+static inline T correctNegativeZero(const T value)
 {
 	static_assert(std::is_floating_point<T>::value, "T must be floating point type");
-	if (value == T()){
+	if (value == T(0)){
 		return std::fabs(value);
 	}
 
 	return value;
 }
 
-//
+//! \param T Typ clampowanej wartości
 template <class T>
-inline T clamp(const T& v, const T& min, const T& max)
+//! \param v Clampowana wartość
+//! \param min Minimalna wartość
+//! \param max Maksymalna wartość
+//! \return Wartość w zadanym przedziale
+static inline T clamp(const T& v, const T& min, const T& max)
 {
     return ( v < min ) ? min : ((v > max) ? max : v);
 }
@@ -47,9 +54,10 @@ inline T clamp(const T& v, const T& min, const T& max)
 //------------------------------------------------------------------------------
 
 //! Zeruje zadany obiekt.
-//! \param object Obiekt do wyzerowania.
+//! \tparam T Typ zerowanego obiektu
 template <class T>
-inline void zero(T & object)
+//! \param object Obiekt do wyzerowania.
+static inline void zero(T & object)
 {
     memset(&object, 0, sizeof(T));
 }
@@ -62,22 +70,40 @@ return (std::forward<T>(val));
 }
 
 //! Zwalnia zadany wskaźnik oraz zeruje jego wartość.
-//! \param ptr Wskaźnik do zwolnienia.
+//! \tparam T Typ wskaźnika
 template <class T>
-inline void deletePtr(T *& ptr)
+//! \param ptr Wskaźnik do zwolnienia.
+static inline void deletePtr(T *& ptr)
 {
 	UTILS_DELETEPTR(ptr);
 }
 
 //------------------------------------------------------------------------------
-
-//! Zwraca znak liczby. Używane do uproszczenia mnożenia.
-//! \param value
-//! \return 1 albo -1
-template <class T>
-inline T sign(T value)
+//! \tparam Typ wartości dla której wyznaczamy znak
+template <typename T>
+//! \param value Wartość dla której wyciągamy znak
+//! \return 1 albo -1 w zależności od znaku
+static inline int sign(const T x, std::false_type)
 {
-    return value >= 0 ? T(1) : T(-1);
+	return T(0) < x;
+}
+
+//! \tparam Typ wartości dla której wyznaczamy znak
+template <typename T>
+//! \param value Wartość dla której wyciągamy znak
+//! \return 1 albo -1 w zależności od znaku
+static inline int sign(const T x, std::true_type)
+{
+	return (T(0) < x) - (x < T(0));
+}
+
+//! \tparam Typ wartości dla której wyznaczamy znak
+template <typename T>
+//! \param value Wartość dla której wyciągamy znak
+//! \return 1 albo -1 w zależności od znaku
+static inline int sign(const T x)
+{
+	return sign(x, std::is_signed<T>());
 }
 
 // ------------------------------------------------------------------------------
@@ -280,7 +306,7 @@ private:
 //! \param value Wartość dla któej wykonujemy swap bajtów
 //! \return Wartość ze zmienioną kolejnością bajtów
 template<typename T>
-inline T EndianSwap(const T value)
+static inline T EndianSwap(const T value)
 {
 	union
 	{
@@ -342,7 +368,7 @@ private:
 //! \param b Druga kolekcja łączona
 //! \return Kolekcja będąca rezultatem dołączonia do kolekcji a kolekcji b
 template<class T>
-T mergeUnordered(const T & a, const T & b)
+static inline T mergeUnordered(const T & a, const T & b)
 {
 	T ret(a);
 	ret.insert(ret.end(), b.begin(), b.end());
@@ -356,7 +382,7 @@ T mergeUnordered(const T & a, const T & b)
 //! \param b Druga kolekcja łączona
 //! \return Kolekcja będąca rezultatem dołączonia elementó kolekcji b do elementów kolekcji kolekcji a
 template<class T>
-T mergeOrdered(const T & a, const T & b)
+static inline T mergeOrdered(const T & a, const T & b)
 {
 	T ret(a);
 	ret.insert(b.begin(), b.end());

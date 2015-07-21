@@ -37,6 +37,15 @@ namespace utils {
 		//! Destruktor niewirtualny
 		virtual ~TypeInfo();
 
+		//! Konstruktor
+		//! \tparam T Typ obiektu
+		template<typename T>
+		//! \return Informacje o obiekcie
+		static inline TypeInfo info(const T * dummy = nullptr)
+		{
+			return TypeInfo(typeid(T));
+		}
+
         //! Jawny operator rzutowania na type_info.
         TypeInfo& operator =(const TypeInfo & other);
 
@@ -70,6 +79,7 @@ namespace utils {
         const size_t hash_code() const;
     };
 
+	//! Struktura reprezentująca typ obiektu z informacją o jego rozmiarze
 	class ExtendedTypeInfo : public TypeInfo
 	{
 	private:
@@ -81,7 +91,7 @@ namespace utils {
 		//! \tpara T Typ dla którego chcemy pobrać rozmiar
 		//! Wersja kiedy T = void
 		template<typename T>
-		static const unsigned long long typeSize(std::true_type)
+		static inline const std::size_t typeSize(std::true_type)
 		{
 			return 0;
 		}
@@ -89,7 +99,7 @@ namespace utils {
 		//! \tpara T Typ dla którego chcemy pobrać rozmiar
 		//! Wersja kiedy T != void
 		template<typename T>
-		static const unsigned long long typeSize(std::false_type)
+		static inline const std::size_t typeSize(std::false_type)
 		{
 			return sizeof(T);
 		}
@@ -106,14 +116,14 @@ namespace utils {
 
 		//! Konstruktor
 		//! \param eit Rozszerzona informacja o typie
-		explicit ExtendedTypeInfo(const ExtendedTypeInfo & eti);
+		ExtendedTypeInfo(const ExtendedTypeInfo & eti);
 
 		//! Konstruktor
 		//! \tparam T Typ obiektu
 		template<typename T>
-		const ExtendedTypeInfo info(const T * dummy = nullptr)
+		static inline ExtendedTypeInfo info(const T * dummy = nullptr)
 		{
-			return ExtendedTypeInfo(typeid(T), typeSize<T>(std::is_void<T>::type));
+			return ExtendedTypeInfo(typeid(T), typeSize<T>(std::is_void<T>()));
 		}
 
 		//! Destruktor wirtualny
