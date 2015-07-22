@@ -698,7 +698,7 @@ void StreamDataManager::removeStream(const std::string & stream)
 	}
 
 	{
-		utils::Push<volatile bool> _skipUpdate(skipUpdate, true);
+		utils::Push _skipUpdate(skipUpdate, true);
 		//usu� plik
 		rawRemoveStream(stream, getDataManager()->transaction());
 	}
@@ -726,7 +726,7 @@ void StreamDataManager::addStream(const StreamGrabberPtr stream)
 	}
 
 	{
-		utils::Push<volatile bool> _skipUpdate(skipUpdate, true);
+		utils::Push _skipUpdate(skipUpdate, true);
 		//dodaj plik
 		rawAddStream(stream, getDataManager()->transaction());
 	}

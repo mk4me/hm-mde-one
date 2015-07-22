@@ -128,7 +128,7 @@ void VisualizerManager::registerVisualizerPrototype(plugin::IVisualizerPtr visua
 
 	VisualizerPrototypeData protoData;
 	{
-		utils::Push<bool> localSkipNotify(skipNotify, true);
+		utils::Push localSkipNotify(skipNotify, true);
 		protoData.visualizerPrototype.reset(new Visualizer(visualizerPrototype, getDataManager(), this));
 	}
 

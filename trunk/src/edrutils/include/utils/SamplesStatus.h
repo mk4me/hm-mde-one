@@ -24,9 +24,9 @@ namespace utils
 		typedef std::map<float, int> StatusMap;
 
 		enum SampleType{
-			Positive,
-			Negative,
-			PositiveNegative
+			Positive = 2,
+			Negative = 4,
+			Unspecified = Positive | Negative
 		};
 
 	public:
@@ -54,7 +54,7 @@ namespace utils
 		//! Dodajemy negatywn¹ próbkê
 		void negativeSample();
 		//! Dodajemy pozytywn¹/negatywn¹ próbkê
-		void positiveNegativeSample();
+		void unspecifiedSample();
 		//! Dodajemy próbkê
 		//! \param val Wartoœæ próbki
 		void sample(const SampleType val);

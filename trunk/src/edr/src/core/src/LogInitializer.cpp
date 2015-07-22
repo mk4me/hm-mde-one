@@ -5,7 +5,7 @@
 #include <osg/Notify>
 #include <boost/algorithm/string.hpp>
 #include <utils/Debug.h>
-#include <coreui/CoreConsoleWidget.h>
+#include <coreui/CoreLogWidget.h>
 #include "ApplicationCommon.h"
 
 using namespace core;
@@ -80,44 +80,44 @@ public:
 	  }
 };
 
-class ConsoleWidgetAppender : public AppenderSkeleton
+class LogWidgetAppender : public AppenderSkeleton
 {
 private:
     //! Konsola właściwa.
-    CoreConsoleWidget* console;
+    CoreLogWidget* log;
     //! Kolejka wiadomości dla konsoli. Używana, gdy pojawiają się zdarzenia logowania,
     //! a konsoli jeszcze nie ma (inicjalizacja).
-    std::queue<CoreConsoleWidgetEntryPtr> queuedEntries;
+    std::queue<CoreLogWidgetEntryPtr> queuedEntries;
 
 public:
-    DECLARE_LOG4CXX_OBJECT(ConsoleWidgetAppender)
+    DECLARE_LOG4CXX_OBJECT(LogWidgetAppender)
     BEGIN_LOG4CXX_CAST_MAP()
-        LOG4CXX_CAST_ENTRY(ConsoleWidgetAppender)
+        LOG4CXX_CAST_ENTRY(LogWidgetAppender)
         LOG4CXX_CAST_ENTRY_CHAIN(AppenderSkeleton)
     END_LOG4CXX_CAST_MAP()
 
 public:
     //! Zerujący konstruktor
-    ConsoleWidgetAppender() :
-    console(nullptr)
+    LogWidgetAppender() :
+    log(nullptr)
     {}
     //!
-    virtual ~ConsoleWidgetAppender()
+    virtual ~LogWidgetAppender()
     {
-        UTILS_ASSERT(console == nullptr, "Wskaźnik powinien zostać jawnie wyzerowany metodą setConsole!");
+        UTILS_ASSERT(log == nullptr, "Wskaźnik powinien zostać jawnie wyzerowany metodą setLog!");
     }
 
 public:
-    //! \param console Widget konsoli.
-    void setConsole(CoreConsoleWidget* console)
+    //! \param log Widget loga.
+    void setLog(CoreLogWidget* log)
     {
         // korzytamy z muteksa z klasy bazowej !
         helpers::synchronized sync(mutex);
-        this->console = console;
+        this->log = log;
         // opróżniamy kolejkę komunikatów
-        if ( console ) {
+        if ( log ) {
             for ( ; !queuedEntries.empty(); queuedEntries.pop() ) {
-                console->logOrQueueEntry(queuedEntries.front());
+                log->logOrQueueEntry(queuedEntries.front());
             }
         }
     }
@@ -126,8 +126,8 @@ public:
 public:
     virtual void close()
 	{
-		setConsole(nullptr);
-		std::queue<CoreConsoleWidgetEntryPtr>().swap(queuedEntries);
+		setLog(nullptr);
+		std::queue<CoreLogWidgetEntryPtr>().swap(queuedEntries);
 	}
 
     virtual bool requiresLayout() const
@@ -142,7 +142,7 @@ protected:
         LogString buf;
         layout->format(buf, event, p);
 
-        CoreConsoleWidgetEntryPtr entry(new CoreConsoleWidgetEntry());
+        CoreLogWidgetEntryPtr entry(new CoreLogWidgetEntry());
         int level = event->getLevel()->toInt();
         if ( level <= Level::DEBUG_INT ) {
             entry->severity = core::ILog::LogSeverityDebug;
@@ -198,9 +198,9 @@ protected:
 			// korzytamy z muteksa z klasy bazowej !
 			helpers::synchronized sync(mutex);
 
-			if ( console ) {
+			if ( log ) {
 				// mamy konsolę - wysłamy jej komunikat
-				console->logOrQueueEntry(entry);
+				log->logOrQueueEntry(entry);
 			} else {
 				// nie ma konsoli - kolejkujemy
 				queuedEntries.push(entry);
@@ -209,14 +209,14 @@ protected:
     }
 };
 
-IMPLEMENT_LOG4CXX_OBJECT(ConsoleWidgetAppender)
-typedef log4cxx::helpers::ObjectPtrT<ConsoleWidgetAppender> ConsoleWidgetAppenderPtr;
+IMPLEMENT_LOG4CXX_OBJECT(LogWidgetAppender)
+typedef log4cxx::helpers::ObjectPtrT<LogWidgetAppender> LogWidgetAppenderPtr;
 
 //------------------------------------------------------------------------------
 
 LogInitializer::LogInitializer( const core::Filesystem::Path & configPath )
 {
-    ConsoleWidgetAppender::registerClass();
+    LogWidgetAppender::registerClass();
     // załadowanie parametów logowania
     PropertyConfigurator::configure(configPath.string());
     osg::setNotifyHandler( new OsgNotifyHandlerLog4cxx());
@@ -228,27 +228,27 @@ LogInitializer::~LogInitializer()
 	// koniecznie trzeba przywrócić, inaczej będzie błąd
     qInstallMessageHandler(0);
 	osg::setNotifyHandler( new osg::StandardNotifyHandler() );
-	setConsoleWidget(nullptr);
+	setLogWidget(nullptr);
 }
 
-void LogInitializer::setConsoleWidget( CoreConsoleWidget* widget )
+void LogInitializer::setLogWidget( CoreLogWidget* widget )
 {
     // pobranie wszystkich appenderów dla konsoli
     LoggerList loggers;
     Logger::getRootLogger()->getLoggerRepository()->getCurrentLoggers().swap(loggers);
     loggers.push_back( Logger::getRootLogger() );
-    std::set<ConsoleWidgetAppenderPtr> consoleAppenders;
+    std::set<LogWidgetAppenderPtr> logAppenders;
     for(auto logger : loggers) {
         AppenderList appenders = logger->getAllAppenders();
         for(auto appender : appenders) {
-            if ( ConsoleWidgetAppenderPtr consoleAppender = appender ) {
-                consoleAppenders.insert(consoleAppender);
+            if ( LogWidgetAppenderPtr logAppender = appender ) {
+                logAppenders.insert(logAppender);
             }
         }
     }
     // ustawienie konsoli
-    for(auto consoleAppender : consoleAppenders) {
-        consoleAppender->setConsole(widget);
+    for(auto logAppender : logAppenders) {
+        logAppender->setLog(widget);
     }
 }
 
@@ -275,26 +275,26 @@ void QtMessageHandler(QtMsgType type, const char *msg)
 }
 
 /** Strumień przekierowywujący logowania do konsoli */
-class OsgNotifyHandlerConsoleWidget : public osg::NotifyHandler
+class OsgNotifyHandlerLogWidget : public osg::NotifyHandler
 {
 private:
     //! Konsola właściwa.
-    CoreConsoleWidget* console;
+    CoreLogWidget* log;
 
 	osg::ref_ptr<osg::NotifyHandler> defaultHandler;
     //! Kolejka wiadomości dla konsoli. Używana, gdy pojawiają się zdarzenia logowania,
     //! a konsoli jeszcze nie ma (inicjalizacja).
-    std::queue<CoreConsoleWidgetEntryPtr> queuedEntries;
+    std::queue<CoreLogWidgetEntryPtr> queuedEntries;
     typedef std::lock_guard<std::mutex> ScopedLock;
     std::mutex queueMutex;
 
 public:
-    //! \param console Konsola.
-    OsgNotifyHandlerConsoleWidget(osg::NotifyHandler* handler) :
-    console(nullptr), defaultHandler(handler)
+    //! \param log Log.
+    OsgNotifyHandlerLogWidget(osg::NotifyHandler* handler) :
+    log(nullptr), defaultHandler(handler)
     {}
 
-	virtual ~OsgNotifyHandlerConsoleWidget() {}
+	virtual ~OsgNotifyHandlerLogWidget() {}
 
 	//! \return Domyślny handler.
 	osg::NotifyHandler* getDefaultHandler()
@@ -302,17 +302,17 @@ public:
 		return defaultHandler.get();
 	}
 
-    //! \param console
-    void setConsole(CoreConsoleWidget* console)
+    //! \param log
+    void setLog(CoreLogWidget* log)
     {
 		// nie ma konsoli - kolejkujemy
 		ScopedLock lock(queueMutex);
 
-        this->console = console;
+        this->log = log;
         // opróżniamy kolejkę komunikatów
-        if ( console ) {
+        if ( log ) {
             for ( ; !queuedEntries.empty(); queuedEntries.pop() ) {
-                console->logOrQueueEntry(queuedEntries.front());
+                log->logOrQueueEntry(queuedEntries.front());
             }
         }
     }
@@ -328,7 +328,7 @@ public:
         std::string msg(message);
         boost::trim(msg);
 
-        CoreConsoleWidgetEntryPtr entry(new CoreConsoleWidgetEntry());
+        CoreLogWidgetEntryPtr entry(new CoreLogWidgetEntry());
         if ( severity >= osg::DEBUG_INFO ) {
             entry->severity = core::ILog::LogSeverityDebug;
         } else if ( severity >= osg::NOTICE ) {
@@ -344,9 +344,9 @@ public:
         entry->theadId = QThread::currentThreadId();
 		{
 			ScopedLock lock(queueMutex);
-			if ( console ) {
+			if ( log ) {
 				// mamy konsolę - wysłamy jej komunikat
-				console->logOrQueueEntry(entry);
+				log->logOrQueueEntry(entry);
 			} else {
 				queuedEntries.push(entry);
 			}
@@ -358,23 +358,23 @@ public:
 LogInitializer::LogInitializer( const core::Filesystem::Path & configPath )
 {
     qInstallMsgHandler(QtMessageHandler);
-    osg::setNotifyHandler( new OsgNotifyHandlerConsoleWidget(osg::getNotifyHandler()) );
+    osg::setNotifyHandler( new OsgNotifyHandlerLogWidget(osg::getNotifyHandler()) );
 }
 
 LogInitializer::~LogInitializer()
 {
 	qInstallMsgHandler(0);
-    OsgNotifyHandlerConsoleWidget* handler = dynamic_cast<OsgNotifyHandlerConsoleWidget*>(osg::getNotifyHandler());
+    OsgNotifyHandlerLogWidget* handler = dynamic_cast<OsgNotifyHandlerLogWidget*>(osg::getNotifyHandler());
     UTILS_ASSERT(handler);
     osg::setNotifyHandler( handler->getDefaultHandler() );
 }
 
 
-void LogInitializer::setConsoleWidget( CoreConsoleWidget* widget )
+void LogInitializer::setLogWidget( CoreLogWidget* widget )
 {
-    OsgNotifyHandlerConsoleWidget* handler = dynamic_cast<OsgNotifyHandlerConsoleWidget*>(osg::getNotifyHandler());
+    OsgNotifyHandlerLogWidget* handler = dynamic_cast<OsgNotifyHandlerLogWidget*>(osg::getNotifyHandler());
     UTILS_ASSERT(handler);
-    handler->setConsole(widget);
+    handler->setLog(widget);
 }
 
 #endif
@@ -386,11 +386,11 @@ void QtMessageHandler(QtMsgType type, const char *msg)
 }
 
 /** Strumień przekierowywujący logowania do konsoli */
-class OsgNotifyHandlerConsoleWidget : public osg::NotifyHandler
+class OsgNotifyHandlerLogWidget : public osg::NotifyHandler
 {
 public:
-	//! \param console Konsola.
-	OsgNotifyHandlerConsoleWidget()
+
+	OsgNotifyHandlerLogWidget()
 	{
 
 	}
@@ -407,7 +407,7 @@ public:
 LogInitializer::LogInitializer( const core::Filesystem::Path & configPath )
 {
 	qInstallMsgHandler(QtMessageHandler);
-	osg::setNotifyHandler( new OsgNotifyHandlerConsoleWidget() );
+	osg::setNotifyHandler( new OsgNotifyHandlerLogWidget() );
 }
 
 LogInitializer::~LogInitializer()
@@ -417,7 +417,7 @@ LogInitializer::~LogInitializer()
 }
 
 
-void LogInitializer::setConsoleWidget( CoreConsoleWidget* widget )
+void LogInitializer::setLogWidget( CoreLogWidget* widget )
 {
 	
 }

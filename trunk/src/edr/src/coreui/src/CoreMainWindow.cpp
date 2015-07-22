@@ -2,7 +2,7 @@
 #include <coreui/CoreMainWindow.h>
 #include <corelib/PluginCommon.h>
 #include <QtWidgets/QSplashScreen>
-#include <coreui/CoreConsoleWidget.h>
+#include <coreui/CoreLogWidget.h>
 #include <coreui/CoreDockWidget.h>
 #include <QtCore/QFile>
 #include <QtCore/QSettings>
@@ -72,12 +72,12 @@ bool CoreMainWindow::trySetStyleByName( const std::string& styleName )
 }
 
 CoreMainWindow::CoreMainWindow(const CloseUpOperations & closeUpOperations): QMainWindow(nullptr), splashScreen_(nullptr),
-	widgetConsole(new CoreConsoleWidget()), closeUpOperations_(closeUpOperations), closeConfirmationRequired_(true),
+	widgetLog(new CoreLogWidget()), closeUpOperations_(closeUpOperations), closeConfirmationRequired_(true),
 	closePerformed(false)
 {
 	initCoreResources();
 
-	connect(&consoleTimer, SIGNAL(timeout()), widgetConsole, SLOT(flushQueue()));
+	connect(&consoleTimer, SIGNAL(timeout()), widgetLog, SLOT(flushQueue()));
 
 	consoleTimer.start(1000/25);
 }
@@ -102,9 +102,9 @@ void CoreMainWindow::showSplashScreenMessage(const QString & message)
 	splashScreen()->showMessage(message);
 }
 
-CoreConsoleWidget* CoreMainWindow::getConsole()
+CoreLogWidget* CoreMainWindow::getLog()
 {
-	return widgetConsole;
+	return widgetLog;
 }
 
 void CoreMainWindow::init(core::IApplication * coreApplication)
@@ -116,7 +116,7 @@ void CoreMainWindow::init(core::IApplication * coreApplication)
 	applicationSkinsPaths.insert(applicationSkinsPaths.end(), temp.begin(), temp.end());
 
     readSettings(QSettings(), true);
-	customViewInit(widgetConsole);
+	customViewInit(widgetLog);
 }
 
 CoreMainWindow::~CoreMainWindow()

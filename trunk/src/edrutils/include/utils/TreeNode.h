@@ -23,20 +23,20 @@ namespace utils
 	struct TreeNode
 	{
 		//! Typ wyliczeniowy opisujący kierunek linearyzacji drzewa
-		enum Order {
+		enum VisitOrder {
 			Forward, //! Zgodnie z kolejnością
 			Backward //! W odwrotrnej kolejności
 		};
 
 		//! Wskaźniki
 		template<typename T>
-		using NodePtr = utils::shared_ptr < TreeNodeT<T> > ;
+		using NodePtr = utils::shared_ptr < TreeNodeT<T> >;
 		template<typename T>
-		using NodeConstPtr = utils::shared_ptr <const TreeNodeT<T> > ;
+		using NodeConstPtr = utils::shared_ptr < const TreeNodeT<T> >;
 		template<typename T>
-		using NodeWeakPtr = utils::weak_ptr <TreeNodeT<T> > ;
+		using NodeWeakPtr = utils::weak_ptr < TreeNodeT<T> >;
 		template<typename T>
-		using NodeWeakConstPtr = utils::weak_ptr <const TreeNodeT<T> > ;
+		using NodeWeakConstPtr = utils::weak_ptr < TreeNodeT<T> >;
 
 		//! \tparam Typ dziecka
 		template<typename T>
@@ -84,11 +84,11 @@ namespace utils
 		};
 
 		//! \tparam NPtr Typ wska�nika w�z�a
-		template<typename NPtr, int Order>
+		template<typename NPtr, int VisitOrder>
 		//! Klasa linearyzująca drzewo
 		class LinearizeVisitor
 		{
-			static_assert(Order == Forward || Order == Backward, "Undefined order");
+			static_assert(VisitOrder == Forward || VisitOrder == Backward, "Undefined order");
 
 		public:
 
@@ -522,13 +522,13 @@ namespace utils
 
 		//! \tparam NPtr Typ wska�nika w�z�a
 		//! \tparam Visitor Typ odwiedzaj�cego w�z�y
-		template<typename NPtr, typename LinearizationVisitPolicy = PreOrderVisitPolicy, int Order = Forward>
+		template<typename NPtr, typename LinearizationVisitPolicy = PreOrderVisitPolicy, int VisitOrder = Forward>
 		//! \param node Węzeł od którego zaczynamy linearyzacje struktury
 		//! \param lp Polityka linearyzowania drzewa
 		//! \return Ścieżka zlinearyzowanego drzewa
 		static Nodes<NPtr> linearize(NPtr node)
 		{
-			LinearizeVisitor<NPtr, Order> tlv;
+			LinearizeVisitor<NPtr, VisitOrder> tlv;
 			LinearizationVisitPolicy::visit(node, tlv);
 			return tlv.linearizedNode();
 		}

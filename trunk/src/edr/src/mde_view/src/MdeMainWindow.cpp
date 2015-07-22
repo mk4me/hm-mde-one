@@ -120,7 +120,7 @@ void MdeMainWindow::showSplashScreenMessage(const QString & message)
     splashScreen()->showMessage(message, Qt::AlignBottom | Qt::AlignLeft, Qt::red);
 }
 
-void MdeMainWindow::customViewInit(QWidget * console)
+void MdeMainWindow::customViewInit(QWidget * log)
 {
    plugin::getDataHierarchyManagerReader()->addObserver(analysisModel);
    trySetStyleByName("hmm");
@@ -192,7 +192,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
    connect(aw, SIGNAL(reportCreated(const QString& )), reportsTab.get(), SLOT(enable()));
    reportsTab->setEnabled(false);
    addTab(reportsTab);
-   addTab(coreUI::IMdeTabPtr(new SimpleTab(console, QIcon(":/mde/icons/Operacje.png"),tr("Console"))));
+   addTab(coreUI::IMdeTabPtr(new SimpleTab(log, QIcon(":/mde/icons/Operacje.png"),tr("Log"))));
 
    // TODO : najlepiej byloby przeniesc to do kontrolera
    bool cc = connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));

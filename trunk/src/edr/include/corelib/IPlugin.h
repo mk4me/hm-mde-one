@@ -119,7 +119,7 @@ extern "C" UTILS_DECL_EXPORT void CORE_PLUGIN_LOAD_LOGIC_CONTENT_FUNCTION_NAME(c
 //! \param id ID pluginu
 #define CORE_PLUGIN_BEGIN(name, id)	CORE_EXT_PLUGIN_BEGIN(name, id, "en", \
 	nullptr, nullptr, nullptr, \
-	"Polsko-Japońska Wyższa Szkoła Technik Komputerowych, Oddział zamiejscowy w Bytomiu", "PJWSTK Bytom", "Uczelnia prywatna", "marek.kulbacki@gmail.com", \
+	"Polsko-Japońska Akademia Technik Komputerowych, Oddział zamiejscowy w Bytomiu", "PJATK Bytom", "Uczelnia prywatna", "marek.kulbacki@gmail.com", \
 	1, 0, 0)
 
 //! Kończy rejestrację pluginu.
@@ -157,6 +157,16 @@ extern "C" UTILS_DECL_EXPORT void CORE_PLUGIN_LOAD_LOGIC_CONTENT_FUNCTION_NAME(c
 	catch(std::exception & e) { PLUGIN_LOG_DEBUG("Error while loading visualizer class " << #className << ": " << e.what()); } \
 	catch(...) { PLUGIN_LOG_DEBUG("UNKNOWN error while loading visualizer class " << #className); } \
 } 
+
+/*
+//! Dodaje wizualizator zadanego typu do pluginu.
+#define CORE_PLUGIN_ADD_VISUALIZER_ACTION(visualizerID, actionClassName)                           \
+{																		\
+	try { plugin->addVisualizerPrototype( plugin::IVisualizerPtr(new className) ); }		\
+	catch(std::exception & e) { PLUGIN_LOG_DEBUG("Error while loading visualizer class " << #className << ": " << e.what()); } \
+	catch(...) { PLUGIN_LOG_DEBUG("UNKNOWN error while loading visualizer class " << #className); } \
+}
+*/
 
 //! Dodanie nowego typu domenowego poprzez utworzenie dla niego ObjectWrapperFactory
 #define CORE_PLUGIN_ADD_OBJECT_WRAPPER(className)               \
@@ -225,6 +235,8 @@ public:
 	virtual void addSource(plugin::ISourcePtr source) = 0;
 	//! \param visualizerPrototype Prototyp wizualizatora
 	virtual void addVisualizerPrototype(plugin::IVisualizerPtr visualizerPrototype) = 0;
+	//! \param visualizerPrototype Prototyp wizualizatora
+	//virtual void addVisualizerActionPrototype(plugin::IVisualizer * visualizerPrototype) = 0;
 	//! \param parserPrototype Prototyp parsera
 	virtual void addParserPrototype(plugin::IParserPtr parserPrototype) = 0;
 	//! \param objectWrapperPrototype Prototyp obiektu domenowego

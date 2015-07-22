@@ -15,18 +15,15 @@
 #include <sstream>
 #include <boost/assert.hpp>
 #include <chrono>
+#include <thread>
+#include <boost/lexical_cast.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
-class Debug
+struct Debug
 {
-private:
-    //! Klasa bez instancji.
-    Debug() {}
-
-public:
     //!
     //! \param file
     //! \param line
@@ -45,10 +42,17 @@ public:
     static void formatMessage(char * buffer, int bufferSize);
 };
 
+
+//! \tparam TimeT Typ czasu
+//! \tparam ClockT Typ zegara
 template<typename TimeT = std::chrono::milliseconds,
 	typename ClockT = std::chrono::high_resolution_clock>
+//! Klasa pozwalająca mierzyć czas wykonania
 struct MeasureDuration
 {
+	//! \tparam F Typ funkcji
+	//! \tparam Args Typ(y) arugmentu(ów) funkcji
+	//! \return Czas wykonania
 	template<typename F, typename ...Args>
 	inline static typename TimeT::rep execute(F f, Args&&... args)
 	{
@@ -56,33 +60,42 @@ struct MeasureDuration
 		
 		f(std::forward<Args>(args)...);
 
-		const auto duration = std::chrono::duration_cast<TimeT>(ClockT::now() - start);
-
-		return duration.count();
+		return std::chrono::duration_cast<TimeT>(ClockT::now() - start).count();
 	}
 };
 
-//TODO
-//na bazie MeasureDuration dodać logowanie czasu zakresu z nazwami zakresów + wątki
-
+//! RAII dla mierzenia czasu życia obiektu - może posłużyć do profilowania funkcji -> pierwszy obiekt w ciele funkcji
 class ScopeTimePrinter
 {
 public:
+	//! \param scopeName Nazwa zakresu
 	ScopeTimePrinter(const std::string& scopeName);
+	//! \param scopeName Nazwa zakresu
+	//! \param file Plik
+	//! \param line Linia w pliku
 	ScopeTimePrinter(const std::string& scopeName, const char * file, int line);
+	//! Destruktor wirtualny
 	virtual ~ScopeTimePrinter();
 private:
+	//! Nazwa zakresu
 	std::string scopeName;
+	//! Czas rozpoczęcia życia obiektu
 	std::chrono::high_resolution_clock::time_point tick;
 };
 
-class MultithreadedScopeTimePrinter : public ScopeTimePrinter
-{
-public:
-	MultithreadedScopeTimePrinter(const std::string& scopeName);
-	MultithreadedScopeTimePrinter(const std::string& scopeName, const char * file, int line);
-	virtual ~MultithreadedScopeTimePrinter();
-};
+#define DEFAULT_SCOPETIMEPRINTER_NAME __stp__
+
+#define CUSTOM_SIMPLE_ST_TIME_PRINTER(var, name) ScopeTimePrinter var(name);
+#define CUSTOM_EXTENDED_ST_TIME_PRINTER(var, name) ScopeTimePrinter var(name, __FILE__, __LINE__);
+
+#define DEFAULT_SIMPLE_ST_TIME_PRINTER(name) ScopeTimePrinter DEFAULT_SCOPETIMEPRINTER_NAME(name);
+#define DEFAULT_EXTENDED_ST_TIME_PRINTER(name) ScopeTimePrinter DEFAULT_SCOPETIMEPRINTER_NAME(name, __FILE__, __LINE__);
+
+#define CUSTOM_SIMPLE_MT_TIME_PRINTER(var, name) ScopeTimePrinter var(std::string(name) + " - thread " + boost::lexical_cast<std::string>(std::this_thread::get_id()));
+#define CUSTOM_EXTENDED_MT_TIME_PRINTER(var, name) ScopeTimePrinter var(std::string(name) + " - thread " + boost::lexical_cast<std::string>(std::this_thread::get_id()), __FILE__, __LINE__);
+
+#define DEFAULT_SIMPLE_MT_TIME_PRINTER(var, name) ScopeTimePrinter DEFAULT_SCOPETIMEPRINTER_NAME(std::string(name) + " - thread " + boost::lexical_cast<std::string>(std::this_thread::get_id()));
+#define DEFAULT_EXTENDED_MT_TIME_PRINTER(var, name) ScopeTimePrinter DEFAULT_SCOPETIMEPRINTER_NAME(std::string(name) + " - thread " + boost::lexical_cast<std::string>(std::this_thread::get_id()), __FILE__, __LINE__);
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace utils

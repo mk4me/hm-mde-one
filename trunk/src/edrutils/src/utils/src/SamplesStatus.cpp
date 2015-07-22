@@ -62,9 +62,9 @@ void SamplesStatus::negativeSample()
 	sample(Negative);
 }
 
-void SamplesStatus::positiveNegativeSample()
+void SamplesStatus::unspecifiedSample()
 {
-	sample(PositiveNegative);
+	sample(Unspecified);
 }
 
 void SamplesStatus::sample(const SampleType val)

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CoreConsoleWidget</class>
- <widget class="QWidget" name="CoreConsoleWidget">
+ <class>CoreLogWidget</class>
+ <widget class="QWidget" name="CoreLogWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,17 +11,29 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Console</string>
+   <string>Log</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
     <number>0</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item>
-    <widget class="QTextEdit" name="textEdit">
+    <widget class="QTextBrowser" name="textBrowser">
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
@@ -40,20 +52,17 @@ p, li { white-space: pre-wrap; }
      </property>
     </widget>
    </item>
-   <item>
-    <widget class="QLineEdit" name="lineEdit"/>
-   </item>
   </layout>
-  <action name="actionClear_console">
+  <action name="actionClear_log">
    <property name="icon">
     <iconset resource="CoreIcons.qrc">
      <normaloff>:/coreUI/icons/clear_console.png</normaloff>:/coreUI/icons/clear_console.png</iconset>
    </property>
    <property name="text">
-    <string>Clear console</string>
+    <string>Clear log</string>
    </property>
    <property name="toolTip">
-    <string>Clears all console logs</string>
+    <string>Clears all logs</string>
    </property>
   </action>
   <action name="actionToogle_word_wrap">
@@ -71,6 +80,17 @@ p, li { white-space: pre-wrap; }
     <string>Toogles word wrapping in console - wrapping words by default</string>
    </property>
   </action>
+  <action name="actionFind">
+   <property name="text">
+    <string>Find</string>
+   </property>
+   <property name="toolTip">
+    <string>Search in log</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="CoreIcons.qrc"/>
@@ -79,7 +99,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>actionToogle_word_wrap</sender>
    <signal>toggled(bool)</signal>
-   <receiver>CoreConsoleWidget</receiver>
+   <receiver>CoreLogWidget</receiver>
    <slot>setWordWrap(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -93,10 +113,10 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>actionClear_console</sender>
+   <sender>actionFind</sender>
    <signal>triggered()</signal>
-   <receiver>textEdit</receiver>
-   <slot>clear()</slot>
+   <receiver>CoreLogWidget</receiver>
+   <slot>onFind()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -104,12 +124,30 @@ p, li { white-space: pre-wrap; }
     </hint>
     <hint type="destinationlabel">
      <x>342</x>
-     <y>217</y>
+     <y>227</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>textBrowser</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>CoreLogWidget</receiver>
+   <slot>onTextContextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>342</x>
+     <y>227</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>342</x>
+     <y>227</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
   <slot>setWordWrap(bool)</slot>
+  <slot>onFind()</slot>
+  <slot>onTextContextMenu(QPoint)</slot>
  </slots>
 </ui>

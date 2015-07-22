@@ -50,6 +50,7 @@ private:
 	typedef std::map<QObject *, SideType> ObjectsSides;
 
 public:
+	//! Destruktor wirtualny
     virtual ~CoreTitleBar();
 
 public:
@@ -64,6 +65,7 @@ public:
 	QAction * actionAt(int x, int y) const;
 	void addAction(QAction * action);
 	void addAction(QAction * action, SideType side);
+	SideType actionSide(QAction * action) const;
 	QAction * addAction(const QString & text, SideType side = Left);
 	QAction * addAction(const QIcon & icon, const QString & text, SideType side = Left);
 	QAction * addAction(const QString & text, const QObject * receiver, const char * member, SideType side = Left);

@@ -13,7 +13,7 @@ SET_PUBLIC_HEADERS(
 	GraphicSceneWithStateMachine.h
 	CoreDockWidgetSet.h
 	CoreDockWidgetManager.h
-	CoreConsoleWidget.h
+	CoreLogWidget.h
 	CoreMainWindow.h	
 	CoreAction.h
 	CoreDockWidget.h
@@ -71,7 +71,7 @@ SET_SOURCE_FILES(
 	CoreDockWidgetManager.cpp
 	CoreVisualizerWidget.cpp
 	CoreMainWindow.cpp
-	CoreConsoleWidget.cpp
+	CoreLogWidget.cpp
 	CoreAction.cpp
 	CorePopupPrivate.cpp
 	CoreDockWidget.cpp
@@ -125,7 +125,7 @@ SET_MOC_FILES(
 	CoreSplitableDockWidget.h
 	CoreDockWidgetSet.h
 	CoreDockWidgetManager.h
-	CoreConsoleWidget.h
+	CoreLogWidget.h
 	CoreMainWindow.h	
 	CoreAction.h	
 	CorePopupPrivate.h
@@ -152,7 +152,7 @@ SET_MOC_FILES(
 SET_UI_FILES(
 	CoreEulerAnglesEditorWidget.ui
 	CoreQuaternionEditorWidget.ui
-	CoreConsoleWidget.ui
+	CoreLogWidget.ui
 	CoreFlexiToolBarSection.ui
 	CoreTitleBar.ui
 	CorePopup.ui

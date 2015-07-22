@@ -232,6 +232,23 @@ void CoreTitleBar::addAction(QAction * action, SideType side)
 	}
 }
 
+CoreTitleBar::SideType CoreTitleBar::actionSide(QAction * action) const
+{
+	SideType side = Left;
+
+	if (leftToolbar->actions().contains(action) == true){
+
+	}
+	else if (rightToolbar->actions().contains(action) == true){
+		side = Right;
+	}
+	else{
+		throw std::runtime_error("Action not found");
+	}
+
+	return side;
+}
+
 QAction * CoreTitleBar::addAction(const QString & text, SideType side)
 {
 	QAction * ret = nullptr;

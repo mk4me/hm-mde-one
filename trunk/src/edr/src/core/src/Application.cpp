@@ -515,7 +515,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 
 	showSplashScreenMessage(QObject::tr("Initializing console"));
 
-	logInitializer_->setConsoleWidget(mainWindow->getConsole());
+	logInitializer_->setLogWidget(mainWindow->getLog());
 
 	showSplashScreenMessage(QObject::tr("Initializing main view"));
 
@@ -895,7 +895,7 @@ void Application::finalizeUI(){
 			pluginLoader_->deinitialize();
 
 			CORE_LOG_INFO("Closing log widget console");
-			logInitializer_->setConsoleWidget(nullptr);
+			logInitializer_->setLogWidget(nullptr);
 
 			CORE_LOG_INFO("Reseting log system");
 			logInitializer_.reset();

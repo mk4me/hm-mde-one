@@ -14,6 +14,7 @@
 #include <utils/SmartPtr.h>
 #include <corelib/Variant.h>
 #include <corelib/IIdentifiable.h>
+#include <corelib/Version.h>
 #include <threadingUtils/StreamData.h>
 #include <QtGui/QPixmap>
 
@@ -104,6 +105,32 @@ namespace plugin
 			//! \param scale Zmienia skalę serii danych
 			virtual void setScale(double scale) = 0;
 		};
+
+		//! Interfejs opisujący akcje vizualizatorów dla serii danych
+		class IAction : public plugin::IIdentifiable
+		{
+		public:
+			//! Destruktor wirtualny
+			virtual ~IAction() {}
+			//! \param visualizer Wizualizator dla którego tworzona jest akcja
+			//! \return Instancja akcji
+			virtual IAction * create(IVisualizer * visualizer) = 0;
+			//! \return Nazwa akcji
+			virtual QString name() const = 0;
+			//! \param serie Dodawana seria danych			
+			virtual void addSerie(ISerie * serie) = 0;
+			//! \param serie Usuwana seria danych			
+			virtual void removeSerie(ISerie * serie) = 0;
+			//! \param serie Aktywna seria dancyh
+			virtual void setActiveSerie(ISerie * serie) {}
+			//! \return Widget konfiguracyjny
+			virtual QWidget * configurationWidget() { return nullptr; }
+			//! \return Opis akcji
+			virtual QString description() const = 0;
+			//! \return Wersja akcji
+			virtual core::Version version() const = 0;
+		};
+
 
 	public:
 		//! Destruktor wirtualny

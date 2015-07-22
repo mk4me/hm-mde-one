@@ -15,7 +15,7 @@
 
 namespace coreUI {
 
-class CoreConsoleWidget;
+class CoreLogWidget;
 
 }
 
@@ -31,9 +31,8 @@ public:
     ~LogInitializer();
 
 public:
-    //! \param console Widget konsoli.
-    //void setConsoleWidget(ConsoleWidget* widget);
-    void setConsoleWidget(coreUI::CoreConsoleWidget* widget);
+    //! \param log Widget konsoli.    
+    void setLogWidget(coreUI::CoreLogWidget* widget);
 };
 
 }

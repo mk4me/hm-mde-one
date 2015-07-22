@@ -29,7 +29,7 @@ namespace core {
 
 namespace coreUI {
 
-	class CoreConsoleWidget;
+	class CoreLogWidget;
 
     template<class T>
     T* createNamedObject(const QString & objectName) {
@@ -53,7 +53,7 @@ namespace coreUI {
 		//! Widget ze sceną jakiegoś grafu OSG.
 		//SceneGraphWidget* widgetSceneGraph;
 		//! Widget konsoli.
-		CoreConsoleWidget* widgetConsole;
+		CoreLogWidget* widgetLog;
         //! Lista zasobów.
         std::vector<std::string> resourcesPaths;
         //! Lista skórek dla UI
@@ -75,7 +75,7 @@ namespace coreUI {
 
 		//! \return Customizowany splash screen dla danego widoku aplikacji, jeśli null to domyslny splash screen
 		virtual void initializeSplashScreen(QSplashScreen * splashScreen) = 0;
-		virtual void customViewInit(QWidget * console) = 0;
+		virtual void customViewInit(QWidget * log) = 0;
 
 	protected:
 
@@ -104,7 +104,7 @@ namespace coreUI {
 		bool trySetStyleByName(const std::string& styleName);
 
 		//! \return Widget konsoli, który przechodzi pod kontrolę obiektu dziedziczącego - musi jakoś obsłużyć konsolę a na koniec ją usunąć
-		CoreConsoleWidget* getConsole();
+		CoreLogWidget* getLog();
 
 		virtual void showSplashScreenMessage(const QString & message);
 

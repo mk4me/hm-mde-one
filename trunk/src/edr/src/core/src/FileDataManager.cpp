@@ -745,7 +745,7 @@ void FileDataManager::removeFile(const Filesystem::Path & file)
 	}
 
 	{
-		utils::Push<volatile bool> _skipUpdate(skipUpdate, true);
+		utils::Push _skipUpdate(skipUpdate, true);
 		//usu� plik
 		rawRemoveFile(file, getDataManager()->transaction());
 	}
@@ -775,7 +775,7 @@ void FileDataManager::addFile(const Filesystem::Path & file)
 	}
 
 	{
-		utils::Push<volatile bool> _skipUpdate(skipUpdate, true);
+		utils::Push _skipUpdate(skipUpdate, true);
 		//dodaj plik
 		rawAddFile(file, getDataManager()->transaction());
 	}
@@ -806,7 +806,7 @@ void FileDataManager::reloadFile(const Filesystem::Path & file, const bool compl
 	}
 
 	{
-		utils::Push<volatile bool> _skipUpdate(skipUpdate, true);
+		utils::Push _skipUpdate(skipUpdate, true);
 		//dodaj plik
 		rawReloadFile(file, complete, getDataManager()->transaction());
 	}

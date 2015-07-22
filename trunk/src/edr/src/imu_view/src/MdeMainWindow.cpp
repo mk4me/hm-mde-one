@@ -175,7 +175,7 @@ public:
 };
 
 
-void MdeMainWindow::customViewInit(QWidget * console)
+void MdeMainWindow::customViewInit(QWidget * log)
 {
 	auto name2icon = [](const std::string& name, bool source) -> QIcon {
 		if (name == "Scripting")  return QIcon(":/mde/icons/skrypty.png");
@@ -280,7 +280,7 @@ void MdeMainWindow::customViewInit(QWidget * console)
 
    coreUI::IMdeTabPtr reportsTab  = coreUI::IMdeTabPtr(new coreUI::ReportsTab(QIcon(":/mde/icons/Raporty.png"), tr("Reports")));
    addTab(reportsTab);
-   addTab(coreUI::IMdeTabPtr(new SimpleTab(console, QIcon(":/mde/icons/log.png"),tr("Log"))));
+   addTab(coreUI::IMdeTabPtr(new SimpleTab(log, QIcon(":/mde/icons/log.png"),tr("Log"))));
 
    bool cc = connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
 	emit modelChanged();

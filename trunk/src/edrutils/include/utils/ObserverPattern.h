@@ -32,27 +32,19 @@ class Observable;
 template <class T>
 class Observer
 {
-    friend class Observable<T>;
+public:
+	//!
+	typedef T ObservedType;
+	//!
+	typedef Observer<T> ObserverType;
+
+	typedef Observable<T> ObservableType;
+
+	typedef ObservableType* ObservablePtr;
 
 public:
-    //!
-    typedef T ObservedType;
-    //!
-    typedef Observer<T> ObserverType;
-
-    typedef Observable<T> ObservableType;
-
-    typedef ObservableType* ObservablePtr;
-
-public:
-    //! Polimorficzny destruktor.
-    virtual ~Observer()
-    {
-		//TODO tak nie moze być! Zawsze musi być zagwarantowane że obserwowany obiekt zyje dłużej!!
-        /*for(auto it = observedObjects.begin(); it != observedObjects.end(); ++it){
-            (*it)->observers.erase(this);
-        }*/
-    }
+	//! Polimorficzny destruktor.
+	virtual ~Observer() {}
     //! Aktualizacja obserwatora.
     //! \param subject Obiekt podany obserwacji.
     virtual void update(const T * subject) = 0;
@@ -67,8 +59,6 @@ public:
 template <class T>
 class Observable
 {
-    friend class Observer<T>;
-
 public:
     //! Bieżący typ.
     typedef Observer<T> ObserverType;
@@ -159,15 +149,6 @@ protected:
 	{
 		Observers().swap(observers);
 	}
-};
-
-
-class GeneralObservable : public Observable<GeneralObservable>
-{
-public:
-	GeneralObservable() {}
-
-	virtual ~GeneralObservable() {}
 };
 
 //------------------------------------------------------------------------------

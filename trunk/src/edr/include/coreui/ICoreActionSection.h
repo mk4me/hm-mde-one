@@ -16,7 +16,7 @@ namespace coreUI {
 class ICoreActionSection
 {
 public:
-
+	//! \return Nazwa sekcji w jakiej powinna znaleŸæ siê akcja
 	virtual const QString section() const = 0;
 
 };

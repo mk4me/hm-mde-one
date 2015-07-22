@@ -2024,7 +2024,7 @@ void IMU::IMUCostumeDataSource::updateSensorsStatus(const imuCostume::CostumeCAN
 						sd.second.samplesStatus->positiveSample();
 					}
 					else if (ptr->dataStatus() > 0x00 && ptr->dataStatus() < 0x08){
-						sd.second.samplesStatus->positiveNegativeSample();
+						sd.second.samplesStatus->unspecifiedSample();
 					}
 					else{
 						sd.second.samplesStatus->negativeSample();

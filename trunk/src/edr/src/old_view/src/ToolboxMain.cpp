@@ -64,11 +64,11 @@ void ToolboxMain::initializeSplashScreen(QSplashScreen * splashScreen)
 
 }
 
-void ToolboxMain::customViewInit(QWidget * console)
+void ToolboxMain::customViewInit(QWidget * log)
 {
 	trySetStyleByName("dark");
 	connect(ui->menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));	
-	auto dockConsole = coreUI::CoreDockWidget::embeddWidget(console, tr("Console"), Qt::BottomDockWidgetArea, true);
+	auto dockConsole = coreUI::CoreDockWidget::embeddWidget(log, tr("Log"), Qt::BottomDockWidgetArea, true);
 	addDockWidget(Qt::BottomDockWidgetArea, dockConsole);
 	dockConsole->setFeatures(dockConsole->features() | QDockWidget::DockWidgetVerticalTitleBar);
 	dockConsole->setObjectName(QString::fromUtf8("ConsoleWidget"));

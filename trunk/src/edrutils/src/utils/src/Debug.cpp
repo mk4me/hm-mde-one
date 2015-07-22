@@ -56,7 +56,7 @@ ScopeTimePrinter::ScopeTimePrinter(const std::string& scopeName) :
 scopeName(scopeName)
 {
 	PRINT((scopeName + std::string(" - start \n")).c_str());
-	this->tick = std::chrono::high_resolution_clock::now();;
+	this->tick = std::chrono::high_resolution_clock::now();
 }
 
 ScopeTimePrinter::ScopeTimePrinter(const std::string& scopeName, const char * file, int line)
@@ -70,23 +70,6 @@ ScopeTimePrinter::~ScopeTimePrinter()
 {
 	auto msdiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - tick);
 	PRINT((scopeName + std::string(" - ") + boost::lexical_cast<std::string>(msdiff.count()) + std::string("\n")).c_str());
-}
-
-MultithreadedScopeTimePrinter::MultithreadedScopeTimePrinter(const std::string& scopeName)
-	: ScopeTimePrinter(scopeName + " - thread " + boost::lexical_cast<std::string>(std::this_thread::get_id()))
-{
-
-}
-
-MultithreadedScopeTimePrinter::MultithreadedScopeTimePrinter(const std::string& scopeName, const char * file, int line)
-	: ScopeTimePrinter(scopeName + " - thread " + boost::lexical_cast<std::string>(std::this_thread::get_id()), file, line)
-{
-
-}
-
-MultithreadedScopeTimePrinter::~MultithreadedScopeTimePrinter()
-{
-
 }
 
 } // namespace utils
