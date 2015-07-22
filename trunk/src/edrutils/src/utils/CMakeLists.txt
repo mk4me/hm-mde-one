@@ -48,10 +48,6 @@ SET_PUBLIC_HEADERS(
 	modeltest.h
 	StringConversionTools.h
 	SamplesStatus.h
-	TreeNode.h
-	Tree.h
-	LinearizedTree.h
-	TreeNodeHelperVisitors.h
 )
 
 #------------------------------------------------------------------------------

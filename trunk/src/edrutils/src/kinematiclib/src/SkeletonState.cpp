@@ -2,7 +2,7 @@
 #include <osg/PositionAttitudeTransform>
 #include <boost/lexical_cast.hpp>
 #include <kinematicUtils/RotationConverter.h>
-#include <utils/TreeNode.h>
+#include <treecontainerlib/NodeT.h>
 #include <utils/Debug.h>
 
 using namespace kinematic;

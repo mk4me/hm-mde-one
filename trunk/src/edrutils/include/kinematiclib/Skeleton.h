@@ -6,7 +6,6 @@
 #include <biovisionformatslib/Skeleton.h>
 #include <kinematicUtils/Types.h>
 #include <kinematiclib/Topology.h>
-#include <utils/TreeNode.h>
 
 namespace kinematic
 {
@@ -103,7 +102,7 @@ namespace kinematic
 		};
 
 		//! Typ jointa stanu
-		typedef utils::TreeNodeT<JointData> Joint;
+		typedef treeContainer::NodeT<JointData> Joint;
 		//! Typ wska�nik�w do joint�w
 		DEFINE_SMART_POINTERS(Joint);
 
@@ -171,7 +170,7 @@ namespace kinematic
 				ret.insert({ joint->value().name(), joint });
 			};
 
-			utils::TreeNode::PreOrderVisitPolicy::visit(root, v);
+			treeContainer::VisitPolicies::Node::PreOrder::visit(root, v);
 
 			return ret;
 		}

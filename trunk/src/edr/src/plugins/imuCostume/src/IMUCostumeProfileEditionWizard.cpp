@@ -675,7 +675,7 @@ void IMUCostumeProfileEditionWizard::verifyModel(int idx)
 	if (enable == true){
 		auto skeleton = ui->modelComboBox->currentData(Qt::UserRole).value<IMU::SkeletonConstPtr>();
 		const auto order = kinematic::LinearizedSkeleton::createNonLeafOrder(*skeleton);
-		const auto joints = utils::LinearizedTree::convert(order);
+		const auto joints = treeContainer::Linearization::convert(order);
 		skeletonJointDelegate->setJoints(joints);
 
 		//przejść przez kolumne z jointami w mapowaniu i wyzerować te dla których nie ma odpowiednika w aktualnym szkielecie

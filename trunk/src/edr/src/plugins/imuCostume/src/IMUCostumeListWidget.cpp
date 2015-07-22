@@ -931,7 +931,7 @@ void serializeRecordedCostumeConfiguration(std::ostream & stream,
 
 	for (const auto & c : profile->skeleton->root()->children())
 	{
-		utils::TreeNode::PreOrderVisitPolicy::visit(c, visitor);
+		treeContainer::VisitPolicies::Node::PreOrder::visit(c, visitor);
 	}
 
 	stream << "MappingDetails " << sensorsToRecord.size() << std::endl;

@@ -5,8 +5,8 @@
 #include <deque>
 #include <stdexcept>
 #include <utils/Debug.h>
-#include <utils/TreeNode.h>
-#include <utils/Tree.h>
+#include <treecontainerlib/NodeT.h>
+#include <treecontainerlib/TreeT.h>
 #include <osg/PositionAttitudeTransform>
 
 using namespace kinematic;
@@ -437,7 +437,7 @@ const bool verify(const Skeleton & skeleton)
 
 			return uniqueNames.insert(joint->value().name()).second;
 		};
-	return utils::TreeNode::PreOrderWhileVisitPolicy::visitWhile(skeleton.root(), fun);
+	return treeContainer::VisitPolicies::Node::PreOrderWhile::visitWhile(skeleton.root(), fun);
 }
 
 void createJoint(Skeleton::JointPtr parentJoint, TopologyNodeConstPtr topologyJoint)
@@ -693,7 +693,7 @@ bool Skeleton::convert(const Skeleton & srcSkeleton, acclaim::Skeleton & destSke
 						localSkeleton.hierarchy.left.insert({ parentID, bone.id });
 						id = bone.id;
 					};
-			utils::TreeNode::PreOrderVisitPolicy::visit(c, vis);
+			treeContainer::VisitPolicies::Node::PreOrder::visit(c, vis);
 		}
 
 		destSkeleton = localSkeleton;

@@ -9,7 +9,7 @@
 #define __HEADER_GUARD_KINEMATIC__TOPOLOGY_H__
 
 #include <string>
-#include <utils/TreeNode.h>
+#include <treecontainerlib/NodeT.h>
 #include <utils/SmartPtr.h>
 
 namespace kinematic
@@ -22,7 +22,7 @@ namespace kinematic
 	};
 
 	//! Typ wêz³a topologii szkieletu
-	typedef utils::TreeNodeT<TopologyData> TopologyNode;
+	typedef treeContainer::NodeT<TopologyData> TopologyNode;
 
 	DEFINE_SMART_POINTERS(TopologyNode);
 }

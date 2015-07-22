@@ -1,4 +1,5 @@
 ADD_PROJECT(utils "BOOST;QT")
+ADD_PROJECT(treecontainerlib "utils")
 ADD_PROJECT(osgutils "utils;OSG")
 ADD_PROJECT(threadingUtils "utils")
 
@@ -16,7 +17,7 @@ ADD_PROJECT(c3dlib "BTK;BOOST;OSG;utils")
 END_PROJECTS_GROUP()
 
 ADD_PROJECT(kinematicUtils "OSG;utils")
-ADD_PROJECT(kinematiclib "BOOST;TINYXML2;OSG;utils;hanimlib;acclaimformatslib;biovisionformatslib")
+ADD_PROJECT(kinematiclib "BOOST;TINYXML2;OSG;utils;hanimlib;acclaimformatslib;biovisionformatslib;treecontainerlib")
 ADD_PROJECT(imucostumelib "BOOST;threadingUtils;utils;OSG")
 ADD_PROJECT(osgui "utils;OSG;QT;BOOST")
 ADD_PROJECT(dflib "BOOST;QT;utils")

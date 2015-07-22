@@ -30,5 +30,5 @@ LinearizedSkeleton::LocalMapping LinearizedSkeleton::createNonLeafMapping(const 
 {
 	auto order = Visitor::createNonLeafOrderKey(skeleton, NameKeyExtractor());
 	
-	return LocalMapping(Visitor::convert(order));
+	return LocalMapping(treeContainer::Linearization::convert(order));
 }

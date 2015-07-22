@@ -13,24 +13,25 @@
 #include <boost/bimap.hpp>
 #include <kinematiclib/Skeleton.h>
 #include <kinematiclib/Types.h>
-#include <utils/LinearizedTree.h>
+#include <treecontainerlib/Linearization.h>
+#include <treecontainerlib/TreeVisitPolicies.h>
 
 namespace kinematic
 {
 	struct LinearizedSkeleton
 	{
 		//! Typ bimapy indeksów węzłów do nazw węzłów
-		using Order = utils::LinearizedTree::Order< std::string > ;
+		using Order = treeContainer::Linearization::Order< std::string > ;
 		//! Typ indeksu węzła
-		using NodeIDX = utils::LinearizedTree::NodeIDX;
+		using NodeIDX = treeContainer::Linearization::NodeIDX;
 		//! Typ bimapy indeksów węzłów do nazw węzłów
-		using Mapping = utils::LinearizedTree::Mapping< std::string >;
+		using Mapping = treeContainer::Linearization::Mapping< std::string >;
 
 		using LocalMapping = LocalData < Mapping > ;
 		using GlobalMapping = GlobalData < Mapping >;
 
 		//! Typ obsługujący przechodzenie po zlinearyzowanym szkielecie
-		using Visitor = utils::LinearizedTreeT < utils::Tree::LevelOrderVisitPolicy > ;
+		using Visitor = treeContainer::LinearizationT < treeContainer::VisitPolicies::Tree::LevelOrder >;
 
 		//! \param skeleton Szkielet dla którego generujemy mapowanie wszystkich jointów
 		//! \return Mapowanie jointów szkieletu
