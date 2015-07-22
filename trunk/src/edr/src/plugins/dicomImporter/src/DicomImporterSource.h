@@ -47,7 +47,10 @@ public:
 
 
 public:
-    virtual void init( core::IMemoryDataManager * memoryDM, core::IStreamDataManager * streamDM, core::IFileDataManager * fileDM );
+	virtual void init(core::IDataManager * memoryDM,
+					  core::IStreamDataManager * streamDM,
+					  core::IFileDataManager * fileDM,
+					  core::IDataHierarchyManager * hierarchyDM);
 
     virtual bool lateInit();
 
@@ -76,7 +79,7 @@ public:
 //    template <class Helper>
 //    core::IHierarchyItemPtr transactionPart( const core::Filesystem::Path &path );
 private:
-    core::IMemoryDataManager* memoryDM;
+    core::IDataManager* memoryDM;
     core::IFileDataManager* fileDM;
     core::IStreamDataManager* streamDM;
 };

@@ -13,7 +13,7 @@
 #include "PythonDataChannel.h"
 #include <corelib/ISourceManager.h>
 #include <corelib/IVisualizerManager.h>
-#include <corelib/IMemoryDataManager.h>
+#include <corelib/IDataManager.h>
 #include <corelib/IStreamDataManager.h>
 #include <corelib/IFileDataManager.h>
 
@@ -35,7 +35,8 @@ namespace python {
 		//! \param streamDataManager
 		//! \param fileDataManager
 		void setManagers(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager,
-			core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager);
+						 core::IDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager,
+						 core::IDataHierarchyManager * hierarchyDataManager);
 		//! 
 		//! \param sessionDesc
 		//! \param dataDesc
@@ -51,19 +52,13 @@ namespace python {
 
 		PythonDataChannel createVectorChannel();
 
-	//public: 
-	//	static core::ISourceManager *     getSourceManager() { return sourceManager; }
-	//	static core::IVisualizerManager * getVisualizerManager() { return visualizerManager; }
-	//	static core::IMemoryDataManager * getMemoryDataManager() { return memoryDataManager; }
-	//	static core::IStreamDataManager * getStreamDataManager() { return streamDataManager; }
-	//	static core::IFileDataManager *   getFileDataManager() { return fileDataManager; }
-
 	private:
 		core::ISourceManager * sourceManager;
 		core::IVisualizerManager * visualizerManager;
-		core::IMemoryDataManager * memoryDataManager;
+		core::IDataManager * memoryDataManager;
 		core::IStreamDataManager * streamDataManager;
 		core::IFileDataManager * fileDataManager;
+		core::IDataHierarchyManager * hierarchyDataManager;
 	};
 	DEFINE_SMART_POINTERS(MdeBridge);
 }

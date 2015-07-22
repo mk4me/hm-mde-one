@@ -24,6 +24,8 @@ namespace  python {
 		protected:
 			core::IServiceManager* getServiceManager();
 			core::ISourceManager* getSourceManager();
+			core::IDataHierarchyManager* getHierarchyManager();
+			core::IVisualizerManager* getVisualizerManager();
 	};
 	DEFINE_SMART_POINTERS(PythonPluginUtils);
 }

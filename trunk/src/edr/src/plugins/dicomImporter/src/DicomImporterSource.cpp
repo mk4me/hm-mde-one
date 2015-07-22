@@ -91,7 +91,10 @@ DicomImporterSource::DicomImporterSource() :
 }
 
 
-void DicomImporterSource::init( core::IMemoryDataManager * memoryDM, core::IStreamDataManager * streamDM, core::IFileDataManager * fileDM )
+void DicomImporterSource::init(core::IDataManager * memoryDM,
+							   core::IStreamDataManager * streamDM,
+							   core::IFileDataManager * fileDM,
+							   core::IDataHierarchyManager * hierarchyDM)
 {
     this->fileDM = fileDM;
     this->memoryDM = memoryDM;
@@ -194,7 +197,7 @@ void DicomImporterSource::getOfferedTypes( utils::TypeInfoList & offeredTypes ) 
 //        } 
 //
 //    } else {
-//        throw core::runtime_error("file not found");
+//        throw loglib::runtime_error("file not found");
 //    }
 //}
 //

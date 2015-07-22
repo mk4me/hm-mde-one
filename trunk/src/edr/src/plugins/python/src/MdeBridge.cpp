@@ -3,15 +3,17 @@
 #include "utils/ObjectWrapper.h"
 #include "corelib/HierarchyHelper.h"
 #include "corelib/IHierarchyItem.h"
-#include "corelib/IMemoryDataManager.h"
+#include "corelib/IDataManager.h"
 #include "plugins/hmdbCommunication/TreeItemHelper.h"
 #include "corelib/HierarchyDataItem.h"
 #include "corelib/Variant.h"
+#include "corelib/IDataHierarchyManager.h"
 
 namespace py = boost::python;
 
 
-void python::MdeBridge::setManagers(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager)
+void python::MdeBridge::setManagers(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IDataManager * memoryDataManager, 
+									core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager,	core::IDataHierarchyManager * hierarchyDataManager)
 {
 	this->sourceManager = sourceManager;
 	this->visualizerManager = visualizerManager;
@@ -62,8 +64,7 @@ void python::MdeBridge::addVectorChannel(const PythonDataChannel& channel)
 		name = wrapper->data()->getClassName();
 	}
 	core::IHierarchyItemPtr dataItem = core::HierarchyItemPtr(new core::HierarchyDataItem(wrapper, QIcon(), QString::fromStdString(name), QString(), helper));
-	
-	auto hierarchyTransaction = memoryDataManager->hierarchyTransaction();
+	auto hierarchyTransaction = hierarchyDataManager->transaction();
 	hierarchyTransaction->addRoot(dataItem);
 }
 

@@ -34,7 +34,12 @@ namespace python {
 
 		//core::IService
 	public:
-		virtual void init(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager);
+		virtual void init(core::ISourceManager * sourceManager,
+						  core::IVisualizerManager * visualizerManager,
+						  core::IDataManager * memoryDataManager,
+						  core::IStreamDataManager * streamDataManager,
+						  core::IFileDataManager * fileDataManager,
+						  core::IDataHierarchyManager * hierarchyDataManager);
 		virtual QWidget* getWidget();
 
 
@@ -49,12 +54,16 @@ namespace python {
 		virtual void update(double deltaTime);
 
 		virtual QWidgetList getPropertiesWidgets();
+
+	public:
+		core::IDataHierarchyManager* getHierarchyManager() { return hierarchyManager;  }
 		
 	private:
 		PythonLogicPtr logic;
 		QTextEdit* editor;
 		python::PythonConsole* console;
 		MdeBridgePtr bridge;
+		core::IDataHierarchyManager* hierarchyManager;
 	};
 }
 #endif //   HEADER_GUARD_SUBJECT__SUBJECTSERVICE_H__

@@ -20,7 +20,8 @@
 using namespace python;
 
 PythonService::PythonService() :
-    editor(nullptr)
+	editor(nullptr), 
+	hierarchyManager(nullptr)
 {
 
 }
@@ -31,12 +32,17 @@ PythonService::~PythonService()
 }
 
 
-void PythonService::init( core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager, 
-	core::IMemoryDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager )
+void PythonService::init(core::ISourceManager * sourceManager,
+						 core::IVisualizerManager * visualizerManager,
+						 core::IDataManager * memoryDataManager,
+						 core::IStreamDataManager * streamDataManager,
+						 core::IFileDataManager * fileDataManager,
+						 core::IDataHierarchyManager * hierarchyDataManager)
 {
 	bridge = utils::make_shared<MdeBridge>();
-	bridge->setManagers(sourceManager, visualizerManager, memoryDataManager, streamDataManager, fileDataManager);
+	bridge->setManagers(sourceManager, visualizerManager, memoryDataManager, streamDataManager, fileDataManager, hierarchyDataManager);
 	logic = utils::make_shared<PythonLogic>(bridge);
+	hierarchyManager = hierarchyDataManager;
 }
 
 QWidget* PythonService::getWidget( )
