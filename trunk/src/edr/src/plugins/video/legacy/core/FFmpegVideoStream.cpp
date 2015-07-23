@@ -88,8 +88,7 @@ static void FFmpegLogForwarder(void* ptr, int level, const char* fmt, va_list vl
 
     // wersja wzorowana na av_log_default_callback (log.c)
     static int print_prefix=1;
-    static char line[4096] = { 0 };
-    static char buffer[4096];
+    static char line[4096] = { 0 };    
 
     AVClass* avc = ptr ? *reinterpret_cast<AVClass**>(ptr) : NULL;
 
@@ -239,8 +238,7 @@ FFmpegVideoStream::FFmpegVideoStream( const std::string& source, int wantedVideo
   wantedTime = INVALID_TIMESTAMP;
   init( source, wantedVideoStream );
 
-  // sprawdzanie pewnych warunków
-  int frameCount = static_cast<int>(videoStream->duration/frameSpan);
+  // sprawdzanie pewnych warunków  
   //UTILS_ASSERT(frameCount==getFrameCount(), "Frame count does not match (%d vs %d)", frameCount, getFrameCount());
 }
 
@@ -383,7 +381,7 @@ bool FFmpegVideoStream::setTime( double time )
     // TODO
     // ffmpeg źle ustawia się przy seeku do zerowego czasu (wypluwa ostatnią odczytaną ramkę)
     // tymczasowe, do stawiania breakpointów jeśli czas == 0
-    int brr = 0;
+    //int brr = 0;
   }
 
   // ustawiamy czas
@@ -429,8 +427,7 @@ bool FFmpegVideoStream::setTime( double time )
     }
   }
 
-  if ( seekThenSkipFrames ) {
-    int repeatCount = 3;
+  if ( seekThenSkipFrames ) {    
     // wyszukujemy tamki
     BREAK_ON_ERROR(seekToKeyframe(targetTimestamp, false));
     // dla niektórych strumieni seek zatrzymuje się za ramką, której szukamy;

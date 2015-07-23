@@ -283,8 +283,6 @@ private:
 	bool parsed;
 	//! Czy u�yto parsera do przeparsowania?
 	bool used;
-	//! Czy w�a�nie parsujemy?
-	bool parsing;
 
 private:
 

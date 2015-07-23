@@ -169,7 +169,8 @@ double VideoVisualizer::VideoSerie::getOffset() const
 }
 
 VideoVisualizer::VideoVisualizer() :
-useTextureRect(true), prevStreamTime(-1), currentStreamTime(-1), prevStreamWidth(-1), currentSerie_(nullptr)
+useTextureRect(true), prevStreamTime(-1), currentStreamTime(-1), prevStreamWidth(-1), currentSerie_(nullptr),
+widget(nullptr)
 {
 
 }

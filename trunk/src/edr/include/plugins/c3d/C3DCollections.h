@@ -12,7 +12,7 @@
 
 #include <plugins/c3d/Export.h>
 #include <c3dlib/C3DCollectionTypes.h>
-#include <utils/ObjectWrapper.h>
+#include <objectwrapperlib/ObjectWrapper.h>
 
 DEFINE_WRAPPER(c3dlib::EMGCollection, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(c3dlib::C3DEventsCollection, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);

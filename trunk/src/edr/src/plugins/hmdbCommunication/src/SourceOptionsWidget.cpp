@@ -215,8 +215,7 @@ void SourceOptionsWidget::onRemoveProfile()
 }
 
 void SourceOptionsWidget::setLoginAdvanceConfiguration(bool show)
-{
-	bool locShow = !show;
+{	
 	ui->line_16->setVisible(show);
 	ui->loginStorageGroupBox->setVisible(show);
 	ui->line_17->setVisible(show);
@@ -314,11 +313,11 @@ void SourceOptionsWidget::setConnectionProfile(const hmdbCommunication::IHMDBSou
 	ui->storagePathLineEdit->setText(connectionProfile.storageConfiguration.path);
 	ui->storagePasswordLineEdit->setText(connectionProfile.storageConfiguration.password);
 
-	bool online = false;
-
 	if (connectionProfile.motionDataConfiguration.userConfiguration.user.isEmpty() == false
 		&& connectionProfile.motionDataConfiguration.userConfiguration.password.isEmpty() == false){
 
+		bool online = false;
+		
 		if (connectionProfile.motionServicesConfiguration.serviceConfiguration.url.isEmpty() == false
 			&& connectionProfile.motionDataConfiguration.serviceConfiguration.url.isEmpty() == false){
 			ui->motionServiceURLLineEdit->setText(connectionProfile.motionServicesConfiguration.serviceConfiguration.url);
@@ -542,9 +541,7 @@ void SourceOptionsWidget::onRegister()
 
 void SourceOptionsWidget::onActivate()
 {
-	coreUI::CoreCursorChanger ccc;
-
-	char ret = ServerStatusWidget::UnknownStatus;
+	coreUI::CoreCursorChanger ccc;	
 
 	QString message(tr("Account %1 activation failed for service %2 with UNKNOWN error"));
 
@@ -579,9 +576,7 @@ void SourceOptionsWidget::onActivate()
 
 void SourceOptionsWidget::onPasswordReset()
 {
-	coreUI::CoreCursorChanger ccc;
-
-	char ret = ServerStatusWidget::UnknownStatus;
+	coreUI::CoreCursorChanger ccc;	
 
 	QString message(tr("Password reset for email %1 failed within service %2 with UNKNOWN error"));
 

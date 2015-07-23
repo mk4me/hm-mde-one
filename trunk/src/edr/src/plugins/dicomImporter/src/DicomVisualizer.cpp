@@ -18,7 +18,7 @@ QPixmap dicomImporter::convertToPixmap( DicomImagePtr image )
 		/* get image extension */
 		const int width = (int)(image->getWidth());
 		const int height = (int)(image->getHeight());
-		const int depth = (int)(image->getDepth());
+		//const int depth = (int)(image->getDepth());
 		char header[32];
 		/* create PGM header */
 		sprintf(header, "P%i\n%i %i\n255\n", image->isMonochrome() ? 5 : 6, width, height);

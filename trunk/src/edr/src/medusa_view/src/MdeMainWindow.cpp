@@ -399,8 +399,7 @@ void MdeMainWindow::addPropertiesToServiceWindow( plugin::IServicePtr service, M
 {
     QWidgetList properites = service->getPropertiesWidgets();
     if (!properites.empty()) {
-        w->loadLayout();
-        int propNo = 0;
+        w->loadLayout();        
         QString serviceName = QString::fromStdString(service->name());
         for (auto it = properites.begin(); it != properites.end(); ++it) {
             w->createMdeDock(serviceName, *it);

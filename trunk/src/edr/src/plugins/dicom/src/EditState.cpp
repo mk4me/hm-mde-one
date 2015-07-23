@@ -217,7 +217,6 @@ int dicom::AddPointCommand::getBestIdx()
     
     if (startD - minDist2 < 0.001f ) {
         minIdx = 0;
-        minDist2 = startD;
     }
     return minIdx;
 }

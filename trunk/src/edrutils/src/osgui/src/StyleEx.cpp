@@ -280,7 +280,7 @@ bool StyleEx::handleExWidgets(osgWidget::Widget* w, osgWidget::Reader r){
 		osg::Vec2   vec2;
 		osg::Vec3   vec3;
 		osg::Vec4   vec4;
-		float       f;
+		float f;
 
 		if(dynamic_cast<IBorderized*>(w) != nullptr){
             ret = true;

@@ -65,7 +65,7 @@ namespace hmdbServices
 			bool ret = false;
 
 			std::string sValue;
-			if (extractAttributeValue(root, attribute.c_str(), sValue) == true){
+			if (extractAttributeValue(root, attribute, sValue) == true){
 				value = T::convert(sValue);
 				ret = true;
 			}
@@ -79,7 +79,7 @@ namespace hmdbServices
 			bool ret = false;
 
 			std::string sValue;
-			if (extractTagValue(root, tag.c_str(), sValue) == true){
+			if (extractTagValue(root, tag, sValue) == true){
 				value = T::convert(sValue);
 				ret = true;
 			}

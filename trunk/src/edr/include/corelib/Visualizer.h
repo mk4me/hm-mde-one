@@ -11,8 +11,8 @@
 
 #include <corelib/Export.h>
 #include <utils/SmartPtr.h>
-#include <utils/DataChannel.h>
-#include <utils/DataChannelDescriptors.h>
+#include <datachannellib/DataChannel.h>
+#include <datachannellib/DataChannelDescriptors.h>
 #include <threadingUtils/StreamData.h>
 #include <corelib/VariantsCollection.h>
 #include <corelib/IVisualizer.h>

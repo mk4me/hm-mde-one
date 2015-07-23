@@ -13,7 +13,7 @@
 #include <plugins/dfElements/DFPins.h>
 #include <QtWidgets/QDoubleSpinBox>
 #include <plugins/dfElements/DFPins.h>
-#include <utils/ObjectWrapper.h>
+#include <objectwrapperlib/ObjectWrapper.h>
 #include <QtWidgets/QTreeWidget>
 #include <QtGui/QIcon>
 #include <coreui/HierarchyTreeModel.h>

@@ -273,7 +273,7 @@ std::string Profiler::createCSV()
 #else
     struct tm * timeinfo;
     timeinfo = localtime ( &rawtime );
-    output<<"Profiling date:\t"<<asctime(timeinfo);
+    output<<"Profiling date:\t"<<strftime(timeinfo);
 #endif
 
 

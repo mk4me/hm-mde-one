@@ -127,9 +127,7 @@ void parseLimit(const std::string& token, std::vector<double>& limitValues)
 
 bool parseSingleBone(const std::string& singleBone, Bone& bone, int & id,
 	const bool createUniqueIndicies) {
-	std::istringstream is(singleBone);
-
-	std::vector<std::string> rawBones;
+	std::istringstream is(singleBone);	
 	kinematicUtils::AxisOrder::Type order = kinematicUtils::AxisOrder::XYZ;
 
 	std::string token;
@@ -177,8 +175,7 @@ bool parseSingleBone(const std::string& singleBone, Bone& bone, int & id,
 		}
 		else if (localToken.compare("dof") == 0) {
 			std::getline(is, token);
-			std::istringstream dofs(token);
-			std::string rotOrder;
+			std::istringstream dofs(token);			
 			//unsigned int ti = 0;
 			//unsigned int ri = 0;
 			while (dofs >> token) {
@@ -232,10 +229,8 @@ bool parseSingleBone(const std::string& singleBone, Bone& bone, int & id,
 }
 
 bool parseBones(const std::string& bones, Skeleton & model, const bool createUniqueIndicies) {
-	static const std::string::size_type shift = 5; //std::string("begin").size();
-	std::istringstream is(bones);
-	std::string boneData;
-	std::string token;
+	static const std::string::size_type shift = 5; //std::string("begin").size();	
+	std::string boneData;	
 	std::string::size_type begin = 0;
 	std::string::size_type end = 0;
 	int id = 0;
@@ -440,9 +435,7 @@ void saveSingleBone(std::ostream& out, const Bone& bone, const Skeleton & model)
 		utils::correctNegativeZero(bone.axis[1]) << " " <<
 		utils::correctNegativeZero(bone.axis[2]) << " " <<
 		Axis::getAxisOrderName(bone.axisOrder) <<
-		std::endl;
-
-	int count = bone.dofs.size();
+		std::endl;	
 
 	if (bone.dofs.empty() == false) {
 		auto count = bone.dofs.size();

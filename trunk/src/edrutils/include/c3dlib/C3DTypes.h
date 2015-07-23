@@ -11,12 +11,12 @@
 #define HEADER_GUARD_C3DLIB__C3DTypes_H__
 
 #include <osg/Vec3>
-#include <utils/DataChannel.h>
-#include <utils/DataChannelModifiers.h>
-#include <utils/DataChannelStats.h>
-#include <utils/DataChannelCollection.h>
-#include <utils/DataChannelAccessors.h>
-#include <utils/DataChannelTimers.h>
+#include <datachannellib/DataChannel.h>
+#include <datachannellib/DataChannelModifiers.h>
+#include <datachannellib/DataChannelStats.h>
+#include <datachannellib/DataChannelCollection.h>
+#include <datachannellib/DataChannelAccessors.h>
+#include <datachannellib/DataChannelTimers.h>
 #include <utils/SmartPtr.h>
 #include <utils/PtrPolicyStd.h>
 #include <utils/ClonePolicies.h>

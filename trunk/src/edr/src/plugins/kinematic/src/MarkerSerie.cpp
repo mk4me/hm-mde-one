@@ -31,8 +31,7 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 	pointsDrawer->setSize(0.02);
 
 	
-	std::vector<osg::Vec4> connectionsColors;
-	std::map<unsigned int, osg::Vec4> pointsColors;
+	std::vector<osg::Vec4> connectionsColors;	
 
 	if(vsk != nullptr){
 
@@ -82,8 +81,7 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 		for (auto it = vskMarkers.begin(); it != vskMarkers.end(); ++it) {
 			auto found = std::find(mapping.begin(), mapping.end(), it->name);
 			if (found != mapping.end()) {
-				auto d = std::distance(mapping.begin(), found);
-				pointsColors[d] = it->color;
+				auto d = std::distance(mapping.begin(), found);				
 				pointsDrawer->setColor(d, it->color);
 			}
 		}
@@ -136,9 +134,7 @@ const std::vector<std::vector<osg::Vec3>> MarkerSerie::createPointsPositions(con
 {
 	std::vector<std::vector<osg::Vec3>> ret;
 
-	const auto step = markersCollection->getChannel(0)->getLength() / (double)density;
-
-	double t = 0.0;
+	const auto step = markersCollection->getChannel(0)->getLength() / (double)density;	
 
 	for(unsigned int i = 0; i < density; ++i){
 		ret.push_back(markersCollection->getValues(step * (double)i));

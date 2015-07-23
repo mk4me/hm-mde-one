@@ -195,7 +195,7 @@ void MdeMainWindow::customViewInit(QWidget * log)
    addTab(coreUI::IMdeTabPtr(new SimpleTab(log, QIcon(":/mde/icons/Operacje.png"),tr("Log"))));
 
    // TODO : najlepiej byloby przeniesc to do kontrolera
-   bool cc = connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
+   connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
    auto serviceManager = plugin::getServiceManager();
    auto timeline = plugin::getServiceManager()->getService(core::UID::GenerateUniqueID("{0157346E-D1F3-4A4F-854F-37C87FA3E5F9}"));
    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
@@ -259,7 +259,6 @@ void MdeMainWindow::addPropertiesToServiceWindow( plugin::IServicePtr service, M
     QWidgetList properites = service->getPropertiesWidgets();
     if (!properites.empty()) {
         w->loadLayout();
-        int propNo = 0;
         QString serviceName = QString::fromStdString(service->name());
         for (auto it = properites.begin(); it != properites.end(); ++it) {
             w->createMdeDock(serviceName, *it);

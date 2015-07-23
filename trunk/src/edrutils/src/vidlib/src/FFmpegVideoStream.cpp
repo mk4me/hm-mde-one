@@ -152,9 +152,7 @@ static void FFmpegLogForwarder(void* ptr, int level, const char* fmt, va_list vl
     }
 
     // przekierowanie do callbacka właściwego
-    logCallback(severity, line, itemClass.ptr ? &itemClass : NULL, parentClass.ptr ? &parentClass : NULL);
-    line[0] = 0;
-    len = 0;
+    logCallback(severity, line, itemClass.ptr ? &itemClass : NULL, parentClass.ptr ? &parentClass : NULL);        
 }
 
 ////////////////////////////////////////////////////////////////////////////////

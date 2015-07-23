@@ -15,8 +15,8 @@
 #include <vidlib/osg/VideoImageStream.h>
 #include <vidlib/osg/OsgAdapter.h>
 #include <vidlib/FFmpegVideoStream.h>
-#include <utils/DataChannel.h>
-#include <utils/DataChannelCollection.h>
+#include <datachannellib/DataChannel.h>
+#include <datachannellib/DataChannelCollection.h>
 
 
 typedef osg::ref_ptr<vidlib::VideoImage> VideoImageOsgPtr;

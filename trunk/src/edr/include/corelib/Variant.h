@@ -10,7 +10,7 @@
 
 #include <corelib/Export.h>
 #include <utils/SmartPtr.h>
-#include <utils/ObjectWrapper.h>
+#include <objectwrapperlib/ObjectWrapper.h>
 #include <mutex>
 #include <list>
 #include <set>

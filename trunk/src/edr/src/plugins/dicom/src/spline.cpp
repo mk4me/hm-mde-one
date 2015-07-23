@@ -48,11 +48,10 @@ static int lookup( double x, const QPolygonF &values )
     {
         i1 = 0;
         int i2 = size - 2;
-        int i3 = 0;
 
         while ( i2 - i1 > 1 )
         {
-            i3 = i1 + ( ( i2 - i1 ) >> 1 );
+            auto i3 = i1 + ( ( i2 - i1 ) >> 1 );
 
             if ( values[i3].x() > x )
                 i2 = i3;

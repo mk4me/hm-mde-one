@@ -145,7 +145,7 @@ void do_Stuff()
 }
 
 
-void extractFile(const sqliteUtils::SQLiteDB::Wrapper& db, const std::string& filename, const std::string outFile,
+void extractFile(const sqliteUtils::SQLiteDB::Wrapper& db, const std::string& filename, const std::string & outFile,
 					const std::string& dbPath, const std::string& dbKey, const std::vector<std::string>& availible)
 {
 	auto it = std::find(availible.begin(), availible.end(), filename);
@@ -175,8 +175,7 @@ void extractFile(const sqliteUtils::SQLiteDB::Wrapper& db, const std::string& fi
 std::vector<std::string> listFiles(const sqliteUtils::SQLiteDB::Wrapper& db)
 {
 	std::vector<std::string> files;
-	
-	char *err_msg = 0;
+		
 	char *sql = "SELECT file_name FROM files_table";
 
 	sqlite3_stmt *result;
@@ -228,13 +227,13 @@ void updateFile(const sqliteUtils::SQLiteDB::Wrapper& db, const std::string& fil
 			if (store == nullptr) {
 				throw std::runtime_error("Unable to prepare statement : " + query);
 			}
-			auto rc = sqlite3_bind_zeroblob(store, 1, size);
-			rc = sqlite3_step(store);
+			sqlite3_bind_zeroblob(store, 1, size);
+			sqlite3_step(store);
 		}
 
 		{
 			sqliteUtils::SQLiteBLOB::Wrapper blob(sqliteUtils::SQLiteBLOB::open(db, "files_table", "file", rowID, 1), sqliteUtils::SQLiteBLOB::Close(maxSqliteExecTries, sqliteExecWaitMS));
-			int errorCode = sqlite3_blob_write(blob, buffer.data(), size, 0);//(sqlite3_blob *, const void *z, int n, int iOffset);
+			sqlite3_blob_write(blob, buffer.data(), size, 0);//(sqlite3_blob *, const void *z, int n, int iOffset);
 			//sqlite3_blob_close(blob);
 		}
 	}

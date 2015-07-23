@@ -5,7 +5,7 @@
 #include <plugins/subject/IMotion.h>
 #include <corelib/HierarchyItem.h>
 #include <corelib/HierarchyDataItem.h>
-#include <utils/ObjectWrapper.h>
+#include <objectwrapperlib/ObjectWrapper.h>
 #include "TreeBuilder.h"
 #include <plugins/hmdbCommunication/TreeItemHelper.h>
 #include <plugins/kinematic/Wrappers.h>
@@ -13,7 +13,7 @@
 #include <plugins/subject/ISubject.h>
 #include <plugins/hmdbCommunication/IPatient.h>
 #include <corelib/PluginCommon.h>
-#include <utils/ObjectWrapper.h>
+#include <objectwrapperlib/ObjectWrapper.h>
 #include <boost/lexical_cast.hpp>
 
 using namespace PluginSubject;
@@ -567,8 +567,7 @@ QString TreeBuilder::createDescription( PluginSubject::MotionConstPtr motion )
     text += QObject::tr("Motion: ") + QString::fromStdString(motion->getLocalName()) + "\n";
     text += QObject::tr("Session: ") + QString::fromStdString(session->getLocalName()) + "\n";
     text += QObject::tr("Subject: ") + QString::fromStdString(subject->getName()) + "\n";
-   
-    std::vector<core::VariantConstPtr> metadata;      
+       
     try {
 
 		std::string groupName, groupID;

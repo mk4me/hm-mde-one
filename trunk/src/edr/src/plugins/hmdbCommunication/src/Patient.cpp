@@ -87,9 +87,11 @@ IPatient::Gender Patient::decodeGender(char g)
 	switch(gUpper){
 	case 'M':
 		ret = IPatient::Male;
+		break;
 	case 'F':
 	case 'W':
 		ret = IPatient::Female;
+		break;
 	}
 
 	return ret;

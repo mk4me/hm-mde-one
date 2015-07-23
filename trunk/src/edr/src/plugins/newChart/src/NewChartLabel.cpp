@@ -18,7 +18,8 @@ text(text),
     pen(QColor(135, 173, 255)),
     brush(QColor(Qt::white)),
     point1(nullptr),
-    point2(nullptr)
+    point2(nullptr),
+	connectionStyle(Simple)
 {
     setZ( 1000 );
     brush.setStyle(Qt::SolidPattern);

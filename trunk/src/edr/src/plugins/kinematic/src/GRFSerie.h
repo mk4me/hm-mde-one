@@ -12,7 +12,7 @@
 
 #include <list>
 #include <corelib/IVisualizer.h>
-#include <utils/DataChannel.h>
+#include <datachannellib/DataChannel.h>
 #include <c3dlib/IForcePlatform.h>
 #include <osg/Geode>
 #include "KinematicVisualizer.h"

@@ -50,8 +50,7 @@ HorizontalScrollBar::HorizontalScrollBar( const std::string& name /*= ""*/ )
 void HorizontalScrollBar::setValue( double value )
 {
   value = std::max(0.0, std::min(value, 1.0) );
-  if ( currentValue != value ) {
-    double temp = currentValue;
+  if ( currentValue != value ) {    
     currentValue = value;
     fireEvent(EventIDValueChanged, this, value);
   }

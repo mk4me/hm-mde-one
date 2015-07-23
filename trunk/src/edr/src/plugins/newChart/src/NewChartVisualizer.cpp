@@ -1089,7 +1089,7 @@ void NewChartVisualizer::setMovingAverageTimeWindow(double timeWindow)
 void NewChartVisualizer::simpleMovingAverage(int startIdx, int endIdx, const std::vector<float> & inReal,
     int optInTimePeriod, int & outBegIdx, int & outNBElement, std::vector<float> & outReal)
 {
-    double periodTotal, tempReal;
+    double periodTotal = 0, tempReal = 0;
     int i, outIdx, trailingIdx, lookbackTotal;
     lookbackTotal = (optInTimePeriod-1);
     if( startIdx < lookbackTotal )

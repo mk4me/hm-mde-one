@@ -469,7 +469,6 @@ dicom::LayeredModelView::Expands dicom::LayeredModelView::getExpands() const
             exp.push_back(std::make_pair(createIndex(row, 0, (void*)getData(row, -1)), image->getTagVisible(image->getTag(row))));
         }
     } else {
-        int row = -1;
         for (int i = image->getNumTags() - 1; i >= 0; --i) {
             if (image->getTag(i) == layeredVisualizer->getUserName()) {
                 exp.push_back(std::make_pair(createIndex(0, 0, (void*)getData(i, -1)), image->getTagVisible(image->getTag(i))));

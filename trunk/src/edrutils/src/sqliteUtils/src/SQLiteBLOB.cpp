@@ -31,8 +31,7 @@ sqlite3_blob * SQLiteBLOB::open(sqlite3 * db, const std::string & tableName,
 	const std::string & columnName, const sqlite3_int64 rowID,
 	const int flags, const std::string & dbName)
 {
-	sqlite3_blob * ret = nullptr;
-	unsigned int n = 0;
+	sqlite3_blob * ret = nullptr;	
 	int rc = sqlite3_blob_open(db, dbName.c_str(), tableName.c_str(),
 			columnName.c_str(), rowID, flags, &ret);
 

@@ -4,7 +4,6 @@
 #include <timelinelib/Types.h>
 #include <timelinelib/IChannel.h>
 #include <utils/NamedTree.h>
-#include <utils/DataChannel.h>
 #include <utils/ObserverPattern.h>
 
 namespace timeline {

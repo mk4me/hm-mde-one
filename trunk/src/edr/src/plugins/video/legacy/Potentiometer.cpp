@@ -55,8 +55,8 @@ bool Potentiometer::mouseDrag( double x, double y, const osgWidget::WindowManage
   pushDelta += osgWidget::XYCoord(x, y);
 
   // obracamy zgodnie z ruchem myszki
-  x /= getWidth();
-  x *= osg::PI * 2;
+  //x /= getWidth();
+  //x *= osg::PI * 2;
   //setValue( getValue() + x );
 
   return false;

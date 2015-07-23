@@ -10,7 +10,7 @@
 
 SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer, const utils::TypeInfo & requestedType, const core::VariantConstPtr & data) :
 		AbstractSkeletonTimeSerie(visualizer, requestedType, data),
-		name("Skeleton")
+		name("Skeleton"), visualizer(visualizer)
 {
 	data->getMetadata("core/name", name);
 	skeletonWithStates = data->get();

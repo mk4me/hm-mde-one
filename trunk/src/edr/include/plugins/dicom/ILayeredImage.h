@@ -13,7 +13,7 @@
 
 #include <plugins/dicom/ILayer.h>
 #include <vector>
-#include <utils/ObjectWrapper.h>
+#include <objectwrapperlib/ObjectWrapper.h>
 #include <utils/PtrPolicyBoost.h>
 #include <utils/ClonePolicies.h>
 #include <boost/range/iterator_range_core.hpp>

@@ -252,8 +252,8 @@ public:
 	{
 		static int number = 0;
 		// hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
-		std::string suffix = boost::lexical_cast<std::string>(number++);
-		std::string p = path.toStdString();
+		//std::string suffix = boost::lexical_cast<std::string>(number++);
+		//std::string p = path.toStdString();
 
 		visualizer->getOrCreateWidget();
 
@@ -344,7 +344,7 @@ public:
 		static int number = 0;
 		// hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
 		std::string suffix = boost::lexical_cast<std::string>(number++);
-		std::string p = path.toStdString();
+		//std::string p = path.toStdString();
 
 		visualizer->getOrCreateWidget();
 
@@ -610,7 +610,7 @@ enum
 using namespace IMU;
 
 IMUCostumeDataSource::IMUCostumeDataSource()
-	: memoryDM(nullptr), hierarchyDM(nullptr), finish(false)
+	: memoryDM(nullptr), fileDM(nullptr), hierarchyDM(nullptr), finish(false)
 {
 
 }
@@ -1018,7 +1018,7 @@ core::HierarchyItemPtr IMUCostumeDataSource::fillRawCostumeData(CostumeData & cD
 	//core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>("Raw Data", "Raw communication data", QIcon());	
 	//hierarchyTransaction->addRoot(root);
 
-	const auto & sc = cData.sensorsConfiguration;
+	//const auto & sc = cData.sensorsConfiguration;
 	auto ow = core::Variant::create<RawDataStream>();
 	ow->setMetadata("core/name", QObject::tr("Raw Data").toStdString());
 	ow->set(cData.rawDataStream);

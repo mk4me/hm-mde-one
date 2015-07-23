@@ -55,7 +55,8 @@ DEFINE_SMART_POINTERS(MultiHelper);
 
 DicomSource::DicomSource() :
     fileDM(nullptr),
-    hierarchyDM(nullptr)
+    hierarchyDM(nullptr),
+	streamDM(nullptr)
 {
 
 }

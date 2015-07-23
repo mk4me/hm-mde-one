@@ -2,8 +2,8 @@
 #include <list>
 #include <c3dlib/IForcePlatform.h>
 #include <c3dlib/C3DTypes.h>
-#include <utils/DataChannel.h>
-#include <utils/DataChannelCollection.h>
+#include <datachannellib/DataChannel.h>
+#include <datachannellib/DataChannelCollection.h>
 
 namespace c3dlib {
 

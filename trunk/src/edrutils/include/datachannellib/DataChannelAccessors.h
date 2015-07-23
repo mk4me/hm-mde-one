@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD___DATACHANNELACCESSORS_H__
 #define HEADER_GUARD___DATACHANNELACCESSORS_H__
 
-#include <utils/DataChannel.h>
+#include <datachannellib/DataChannel.h>
 #include <utils/SmartPtr.h>
 
 namespace utils {

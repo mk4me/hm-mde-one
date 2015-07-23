@@ -11,7 +11,7 @@
 #define HEADER_GUARD_NEWVDF__IDATAFLOWPROVIDER_H__
 
 #include <list>
-#include <utils/ObjectWrapper.h>
+//#include <objectwrapperlib/ObjectWrapper.h>
 #include <plugins/newVdf/IWorkflowItemBase.h>
 #include <plugins/newVdf/DataProcessor.h>
 #include <plugins/newVdf/DataSource.h>

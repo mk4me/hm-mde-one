@@ -85,7 +85,8 @@ using namespace dicomImporter;
 
 DicomImporterSource::DicomImporterSource() :
     fileDM(nullptr),
-    memoryDM(nullptr)
+    memoryDM(nullptr),
+	streamDM(nullptr)
 {
 
 }

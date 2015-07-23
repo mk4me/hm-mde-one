@@ -40,6 +40,63 @@ namespace utils {
 		{
 			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
 		};
+
+		template<class PtrIn>
+		static const bool tryGetData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
+		{
+			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+			return false;
+		}
+
+		template<class PtrIn>
+		static const bool tryGetConstData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
+		{		
+			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+			return false;
+		}
+
+		/*static const ObjectWrapper::TypeInfoPair ptrTypeInfo()
+		{
+			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+			return ObjectWrapper::TypeInfoPair();
+		}*/
+
+		static const bool ptrTypeSupported(const TypeInfo & ptrInfo)
+		{
+			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+			return false;
+		}
+		
+		static const bool typeSupported(const TypeInfo & type)
+		{
+			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+			return false;
+		}
+		
+		/*static void supportedTypes(ObjectWrapper::Types & types)
+		{
+			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+		}*/
+		
+		static const TypeInfo typeInfo()
+		{
+			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+			return TypeInfo();
+		}
+
+		template<class PtrIn>
+		static const bool tryGetBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
+		{
+			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+			return false;
+		}
+
+		template<class PtrIn>
+		static const bool tryGetConstBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
+		{
+			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
+			return false;
+		}
 	};
 
 ////////////////////////////////////////////////////////////////////////////////

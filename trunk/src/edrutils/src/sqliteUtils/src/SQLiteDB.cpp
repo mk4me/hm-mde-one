@@ -17,8 +17,7 @@ const bool SQLiteDB::Close::operator()(sqlite3 * db)
 	bool ret = SQLiteDB::close(db);
 	if (ret == false && force == true){
 
-		int tries = 0;
-		bool retry = false;
+		int tries = 0;		
 		
 		while (tries++ <= retriesCount && SQLiteDB::finalizeStatements(db, maxStatements, retriesCount, stepWaitTime) == true && sqlite3_next_stmt(db, nullptr) != nullptr) {}
 

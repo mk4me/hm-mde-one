@@ -66,7 +66,7 @@ public:
             img->removeMaxWidth(node1);
             CPPUNIT_ASSERT(img->getMaxWidth() == 16 && img->s() <= 16);
             node0 = nullptr; img->refresh();
-            CPPUNIT_ASSERT(img->s() == stream->getWidth() && img->s() == stream->getWidth());
+            CPPUNIT_ASSERT(img->s() == stream->getWidth());
         }
 
         {

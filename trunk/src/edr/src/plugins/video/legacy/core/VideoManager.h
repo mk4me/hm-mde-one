@@ -67,7 +67,7 @@ public:
 
 private:
   //!
-  bool init();
+  //bool init();
 };
 
 

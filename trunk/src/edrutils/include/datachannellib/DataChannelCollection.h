@@ -15,8 +15,8 @@
 #include <iterator>
 #include <utils/SmartPtr.h>
 #include <boost/tuple/tuple.hpp>
-#include <utils/DataChannelDescriptors.h>
-#include <utils/DataChannelAccessors.h>
+#include <datachannellib/DataChannelDescriptors.h>
+#include <datachannellib/DataChannelAccessors.h>
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
 	////////////////////////////////////////////////////////////////////////////////

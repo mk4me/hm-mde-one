@@ -20,7 +20,7 @@
 using namespace python;
 
 PythonService::PythonService() :
-	editor(nullptr), 
+    editor(nullptr), 
 	hierarchyManager(nullptr)
 {
 

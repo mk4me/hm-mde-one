@@ -331,7 +331,6 @@ void setAnnotationStatus(ImageTableRow &row, const AnnotationData& data)
 
 void setAnnotationStatuses(std::vector<ImageTableRow>& rows)
 {
-	std::string res;
 	auto data = getComunnicationData();
 	if (data) {
 		for (auto& row : rows) {

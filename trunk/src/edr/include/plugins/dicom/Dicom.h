@@ -13,7 +13,7 @@
 //#include <dcmtk/config/osconfig.h>
 //#include <dcmtk/dcmdata/dcdatset.h>
 //#include <dcmtk/dcmimgle/dcmimage.h>
-//#include <utils/ObjectWrapper.h>
+//#include <objectwrapperlib/ObjectWrapper.h>
 //#include <QtGui/QPixmap>
 //#include <plugins/dicom/Export.h>
 //

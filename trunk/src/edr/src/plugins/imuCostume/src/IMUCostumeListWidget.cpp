@@ -9,7 +9,7 @@
 #include <corelib/Filesystem.h>
 #include "corelib/IVisualizerManager.h"
 #include "corelib/PluginCommon.h"
-#include "utils/ObjectWrapper.h"
+#include <objectwrapperlib/ObjectWrapper.h>
 #include <iomanip>
 #include <ctime>
 /*
@@ -684,12 +684,10 @@ void IMUCostumeWidget::testCommunication()
 		}
 	}
 	catch (std::exception & e){
-		std::string errorcode = e.what();
-		errorcode += "_";
+		
 	}
 	catch (...){
-		std::string errorcode = "unknown error";
-		errorcode += "_";
+		
 	}
 }
 

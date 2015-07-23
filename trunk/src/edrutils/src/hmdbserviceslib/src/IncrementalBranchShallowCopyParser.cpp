@@ -328,7 +328,6 @@ namespace hmdbServices
 			/*file.trial = trial;
 			file.session = trial->session;*/
 			file.fileSize = 0;
-			unsigned int s = 0;
 
 			XMLHelper::extractAttributeValue(file_element, "FileName", file.fileName);
 			XMLHelper::extractAttributeValue(file_element, "FileDescription", file.fileDescription);

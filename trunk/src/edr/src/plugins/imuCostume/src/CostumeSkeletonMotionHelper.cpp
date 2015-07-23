@@ -84,11 +84,11 @@ cw(nullptr)
 
 	connect(pd, SIGNAL(reset()), pd, SLOT(cancel()));
 
-	auto res = connect(pd, SIGNAL(accepted()), dialog, SLOT(accept()));
-	res = connect(pd, SIGNAL(finished(int)), dialog, SLOT(done(int)));
-	res = connect(pd, SIGNAL(rejected()), dialog, SLOT(reject()));
+	connect(pd, SIGNAL(accepted()), dialog, SLOT(accept()));
+	connect(pd, SIGNAL(finished(int)), dialog, SLOT(done(int)));
+	connect(pd, SIGNAL(rejected()), dialog, SLOT(reject()));
 	connect(pd, SIGNAL(canceled()), this, SLOT(cancel()));
-	res = connect(pd, SIGNAL(canceled()), dialog, SLOT(reject()));
+	connect(pd, SIGNAL(canceled()), dialog, SLOT(reject()));
 
 	
 	connect(&timer, SIGNAL(timeout()), this, SLOT(perform()));

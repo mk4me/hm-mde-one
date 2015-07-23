@@ -33,7 +33,7 @@ void __Helper::onElementHovered( const QString& name, bool selected ) {
 
 void __Helper::onItemSelected( const QString& name, bool selected )
 {
-    UTILS_ASSERT(namesDictionary.size() > 0);
+    UTILS_ASSERT(namesDictionary.empty() == false);
     auto it = namesDictionary.find(name);
     if (it != namesDictionary.end()) {
         function(it->second.first, selected ? 1 : 0);

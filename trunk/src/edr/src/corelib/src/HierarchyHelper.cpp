@@ -46,7 +46,7 @@ void HierarchyHelper::getSeries( const VisualizerPtr & visualizer, const QString
     createSeries(visualizer, path, series);
 
 	//filtrujemy serie -> przechodza tylko te różne od nullptr
-    std::remove(series.begin(), series.end(), nullptr);
+    series.erase(std::remove(series.begin(), series.end(), nullptr), series.end());
 
 	if(series.empty() == false && visualizer->getActiveSerie() == nullptr){
 		visualizer->setActiveSerie(series.front());

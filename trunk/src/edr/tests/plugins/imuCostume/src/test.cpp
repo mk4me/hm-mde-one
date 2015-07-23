@@ -21,7 +21,7 @@ int main()
     if (GetIsReady() && modelsCount > 0) {
         size_t id = 0;
         size_t jointsCount = GetJointsCount(id);
-        size_t segmentsCount = GetSegmentsCount(id);
+        //size_t segmentsCount = GetSegmentsCount(id);
         while (true)								//Pêtla aktualizuj¹ca model
         {
             BICVector3 v = GetGlobalPosition(id, 0);			//Pobranie pozycji pierwszego (g³ównego) stawu

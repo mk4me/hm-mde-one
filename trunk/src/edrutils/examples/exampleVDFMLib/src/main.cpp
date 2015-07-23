@@ -146,7 +146,7 @@ int main(int argc, char** argv) {
 		//osgWidget::WindowManager::WM_USE_PYTHON
     );
 
-	for(StylesSet::iterator it = styleSet.begin(); it != styleSet.end(); it++){
+	for(StylesSet::iterator it = styleSet.begin(); it != styleSet.end(); ++it){
 		wm->getStyleManager()->addStyle(*it);
 	}
 

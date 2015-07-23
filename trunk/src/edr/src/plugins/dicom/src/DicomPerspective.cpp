@@ -10,7 +10,7 @@
 #include <plugins/subject/ISubject.h>
 #include <plugins/hmdbCommunication/IPatient.h>
 #include <corelib/PluginCommon.h>
-#include <utils/ObjectWrapper.h>
+#include <objectwrapperlib/ObjectWrapper.h>
 #include "plugins/dicom/ILayeredImage.h"
 #include "DicomInternalStruct.h"
 #include "LayeredImage.h"

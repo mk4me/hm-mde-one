@@ -20,8 +20,6 @@
 #include <functional>
 #include <type_traits>
 
-#include <utils/DataChannel.h>
-#include <utils/DataChannelCollection.h>
 #include <utils/SmartPtr.h>
 
 #include <plugins/c3d/C3DChannels.h>

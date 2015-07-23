@@ -11,7 +11,7 @@
 
 #include <QtWidgets/QWidget>
 #include <QtCore/QTimer>
-#include <utils/ObjectWrapper.h>
+//#include <objectwrapperlib/ObjectWrapper.h>
 #include <threadingUtils/StreamData.h>
 #include <imucostumelib/ProtocolSendBufferHelper.h>
 #include <imucostumelib/ImuCostume.h>

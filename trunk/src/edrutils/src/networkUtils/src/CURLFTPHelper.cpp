@@ -87,8 +87,7 @@ size_t _write(void *buffer, size_t size, size_t nmemb, void *stream)
 {
 	std::ostream * ostream = static_cast<std::ostream*>(stream);
 	char * start = static_cast<char*>(buffer);
-	auto offset = size * nmemb;
-	char * end = start + offset;
+	auto offset = size * nmemb;	
 	try{
 		ostream->write((char*)buffer, offset);
 		if (ostream->fail() == true || ostream->bad() == true){

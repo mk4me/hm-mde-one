@@ -92,7 +92,6 @@ GeodePtr MainWindow::createFloor()
 void MainWindow::initViewer() {
     viewer = new core::QOsgDefaultWidget(this);
     ui->vbox->addWidget(viewer);
-    const osg::GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
     // tworzenie kamery
     viewer->getCamera()->setClearColor(osg::Vec4(0.705f, 0.92f, 0.705f, 1));
     viewer->getCamera()->setNearFarRatio(0.000000001);
@@ -144,7 +143,7 @@ void MainWindow::on_loadSkeletonButton_clicked()
         } else {
            MessageBox("Wrong file", QMessageBox::Critical);
         }
-    } catch (kinematic::Exception e) {
+    } catch (kinematic::Exception & e) {
         MessageBox(e.what(), QMessageBox::Critical);
     }
 }

@@ -1,4 +1,6 @@
 ADD_PROJECT(utils "BOOST;QT")
+ADD_PROJECT(objectwrapperlib "utils")
+ADD_PROJECT(datachannellib "utils")
 ADD_PROJECT(treecontainerlib "utils")
 ADD_PROJECT(osgutils "utils;OSG")
 ADD_PROJECT(threadingUtils "utils")
@@ -7,13 +9,12 @@ ADD_PROJECT_VARIABLE_DEPENDENCIES(VIDLIB_ENABLE_LOG4CXX "Enable logging with LOG
 ADD_PROJECT_VARIABLE_DEPENDENCIES(VIDLIB_ENABLE_OSG "Enable osg for vidlib?" ON "OSG")
 ADD_PROJECT(vidlib "BOOST;FFMPEG;osgutils;STDINT;OPENTHREADS")
 
-ADD_PROJECT(kinematicUtils "OSG;utils")
 BEGIN_PROJECTS_GROUP("motion file formats")
 ADD_PROJECT(acclaimformatslib "OSG;utils;kinematicUtils")
 ADD_PROJECT(biovisionformatslib "OSG;utils;kinematicUtils")
 ADD_PROJECT(viconformatslib "OSG;utils;TINYXML2")
 ADD_PROJECT(hanimlib "OSG;utils")
-ADD_PROJECT(c3dlib "BTK;BOOST;OSG;utils")
+ADD_PROJECT(c3dlib "BTK;BOOST;OSG;utils;datachannellib")
 END_PROJECTS_GROUP()
 
 ADD_PROJECT(kinematicUtils "OSG;utils")

@@ -15,13 +15,9 @@ Costume::SensorsConfiguration Costume::sensorsConfiguration(const void * data, c
 
 		const auto cobID = d.header().cobID();
 
-		if (cobID.value != 0xFFF){
-			uint8_t nodeID = 0;
-			
-			if (cobID.value >= 0x500 && cobID.value < 0x580){
-				nodeID = (cobID.value - 0x500) / 4;
-				localConfiguration[Costume::IMU].insert(nodeID);
-			}
+		if (cobID.value != 0xFFF && cobID.value >= 0x500 && cobID.value < 0x580){
+			uint8_t nodeID = (cobID.value - 0x500) / 4;
+			localConfiguration[Costume::IMU].insert(nodeID);
 		}
 	}
 

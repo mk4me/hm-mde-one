@@ -14,7 +14,7 @@
 #include <list>
 #include <algorithm>
 #include <utils/SmartPtr.h>
-#include <utils/ObjectWrapperTraits.h>
+#include <objectwrapperlib/ObjectWrapperTraits.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
@@ -414,7 +414,7 @@ bool operator!=(const utils::ObjectWrapper & a, const utils::ObjectWrapper & b);
 ////////////////////////////////////////////////////////////////////////////////
 
 // wciągamy implementację
-#include <utils/ObjectWrapperT.h>
+#include <objectwrapperlib/ObjectWrapperT.h>
 
 // Makro tworzące specjalizację ObjectWrapperT. Musi występować w globalnym
 // namespace. Drugim parametrem może być dowolny typ mający cechy ptrPolicy,

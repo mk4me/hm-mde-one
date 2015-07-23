@@ -23,7 +23,7 @@ purpose:
 #include <boost/accumulators/framework/depends_on.hpp>
 #include <boost/accumulators/statistics_fwd.hpp>
 #include <type_traits>
-#include <utils/DataChannel.h>
+#include <datachannellib/DataChannel.h>
 
 // Implementacje dodatkowych akumulatorow
 namespace boost {

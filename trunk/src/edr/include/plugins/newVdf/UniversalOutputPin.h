@@ -13,7 +13,6 @@
 #include <plugins/newVdf/Export.h>
 #include <corelib/Variant.h>
 #include <dflib/IDFPin.h>
-#include <utils/ObjectWrapper.h>
 #include <dflib/IDFPin.h>
 #include <dflib/Pin.h>
 

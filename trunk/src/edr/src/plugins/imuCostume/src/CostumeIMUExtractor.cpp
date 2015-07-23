@@ -62,7 +62,7 @@ bool CostumeCompleteDataFilter::operator()(const IMU::CostumeStream::value_type 
 	{
 		if (d->type() == imuCostume::Costume::IMU){
 			auto imuData = utils::static_pointer_cast<const imuCostume::Costume::IMUSensor>(d);
-			if (imuData->dataStatus() | 0x0F)
+			if (imuData->dataStatus() & 0x0F)
 			{
 				locSensorsIDs.erase(d->id());
 			}
@@ -131,23 +131,23 @@ bool CostumeIMUExtractor::verify(const IMU::CostumeStream::value_type & streamDa
 
 			const auto status = imuData->dataStatus();
 
-			if (status | imuCostume::Costume::IMUSensor::ACC_DATA){
+			if (status & imuCostume::Costume::IMUSensor::ACC_DATA){
 				it->second.accelerometer = imuData->accelerometer();
 			}
 
-			if (status | imuCostume::Costume::IMUSensor::GYRO_DATA){
+			if (status & imuCostume::Costume::IMUSensor::GYRO_DATA){
 				it->second.gyroscope = imuData->gyroscope();
 			}
 
-			if (status | imuCostume::Costume::IMUSensor::MAG_DATA){
+			if (status & imuCostume::Costume::IMUSensor::MAG_DATA){
 				it->second.magnetometer = imuData->magnetometer();
 			}
 
-			if (status | imuCostume::Costume::IMUSensor::ORIENT_DATA){
+			if (status & imuCostume::Costume::IMUSensor::ORIENT_DATA){
 				it->second.orientation = imuData->orientation();
 			}
 
-			if((it->second.status |= status) | 0x0F){			
+			if((it->second.status |= status) & 0x0F){			
 				ret = true;
 			}
 		}

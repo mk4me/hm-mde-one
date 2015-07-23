@@ -33,7 +33,8 @@
 
 using namespace dicom;
 
-LayeredImageVisualizer::LayeredImageVisualizer() : currentTrialID(-1), mainWidget(nullptr)
+LayeredImageVisualizer::LayeredImageVisualizer()
+: currentTrialID(-1), mainWidget(nullptr), isReviewer(false)
 {
 	
 	currentSerie = -1;
@@ -86,10 +87,8 @@ void LayeredImageVisualizer::setStatus(const hmdbServices::xmlWsdl::AnnotationSt
 			}
 		});
 
-		int userid = -1;
-
 		if (it != usersList.end()){
-			userid = it->id;
+			auto userid = it->id;
 			auto updateService = remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->session()->motionUpdate();
 
 			if (userIsReviewer() == true){

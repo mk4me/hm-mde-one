@@ -9,8 +9,8 @@
 #ifndef HEADER_GUARD_UTILS__DATACHANNELTIMERS_H__
 #define HEADER_GUARD_UTILS__DATACHANNELTIMERS_H__
 
-#include <utils/DataChannel.h>
-#include <utils/DataChannelAccessors.h>
+#include <datachannellib/DataChannel.h>
+#include <datachannellib/DataChannelAccessors.h>
 #include <utils/SmartPtr.h>
 
 namespace utils {

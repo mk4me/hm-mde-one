@@ -222,8 +222,7 @@ void CoreVisualizerWidget::fillSourcesMenu()
 		//TODO
 		//oznaczyć serie które są w wizualizatorze ale nie ma ich już w samych danych wizualizatora!!
 
-		//najpierw serie aktywne
-		std::map<utils::TypeInfo, QMenu*> typeMenus;
+		//najpierw serie aktywne		
 		for(auto typeIT = activeData.begin(); typeIT != activeData.end(); ++typeIT){
 			auto typeMenu = activeDataSubmenu->addMenu(QString::fromUtf8(typeIT->first.name()));
 			for(auto dataIT = typeIT->second.begin(); dataIT != typeIT->second.end(); ++dataIT){

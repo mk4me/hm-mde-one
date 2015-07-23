@@ -219,7 +219,6 @@ std::vector<QPointF> dicom::PointsLayer::getPointsCloud(int density , int normal
     std::vector<QPointF> res;
     if (DrawersBuilder::isCurved((annotations::annotationsIdx)getAdnotationIdx()) || normalizeLength > 0) {
 		QPainterPath path = pointsDrawer->createPath(points); 
-		int count = path.elementCount();
         int newCount = normalizeLength > 0 ? normalizeLength : points.size() * (density + 1);
 		for (int i = 0; i < newCount; ++i) {
             float percent = float(i) / newCount;

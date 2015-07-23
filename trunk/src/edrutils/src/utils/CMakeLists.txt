@@ -10,13 +10,6 @@ CONFIG_OPTION(UTILS_ENABLE_PRIVATE_TESTS "Enable private class members testing?"
 SET_PUBLIC_HEADERS(
 	Align.h
 	ClonePolicies.h
-	DataChannel.h
-	DataChannelAccessors.h
-	DataChannelTimers.h
-	DataChannelDescriptors.h
-	DataChannelCollection.h
-	DataChannelModifiers.h
-	DataChannelStats.h
 	Pool.h
 	Enum.h
 	NamedTree.h
@@ -36,9 +29,6 @@ SET_PUBLIC_HEADERS(
 	Push.h
 	Serializable.h
 	TypeInfo.h
-	ObjectWrapper.h
-	ObjectWrapperT.h
-	ObjectWrapperTraits.h
 	Export.h
 	SmartPtr.h
 	ICommand.h
@@ -58,7 +48,6 @@ SET_SOURCE_FILES(
 	NamedTree.cpp
 	Profiler.cpp
 	TypeInfo.cpp
-	ObjectWrapper.cpp
 	CommandStack.cpp
 	dynamictreemodel.cpp
 	modeltest.cpp

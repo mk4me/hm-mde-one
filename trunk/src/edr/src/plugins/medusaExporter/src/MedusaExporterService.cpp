@@ -10,6 +10,7 @@
 using namespace medusaExporter;
 
 MedusaExporterService::MedusaExporterService()
+: exportWidget(nullptr), memoryManager(nullptr)
 {
 	
 }

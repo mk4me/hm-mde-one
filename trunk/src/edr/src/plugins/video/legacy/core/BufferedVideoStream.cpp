@@ -80,8 +80,7 @@ double BufferedVideoStream::getNextFrameTimestamp() const
 
 bool BufferedVideoStream::setTime( double time )
 {
-    VM_FUNCTION_PROLOG;
-    double prevTime = wantedTime;
+    VM_FUNCTION_PROLOG;    
     wantedTime = time;
 
     // czy ramka jest przekonwertowana?
@@ -106,8 +105,6 @@ bool BufferedVideoStream::setTime( double time )
                 // pobieramy ramkę
                 target = popBuffer(time);
                 innerStream->getFrame( *target );
-            } else {
-                int test = 0;
             }
         }
 

@@ -267,7 +267,7 @@ void TrajectoriesDialog::colorClicked()
         for (int i = 0; i < count; ++i) {
             QTreeWidgetItem* item = topItem->child(i);
             if (item && item->isSelected()) {
-                std::string name = item->text(1).toStdString();
+                //std::string name = item->text(1).toStdString();
                 //currentTrajectories->setColor(name, transformColor(color));
                 auto manager = item2Root[topItem];
                 auto idx = item2Trajectories[item];
@@ -286,7 +286,7 @@ void TrajectoriesDialog::startTimeChanged( double time )
         for (int i = 0; i < count; ++i) {
             QTreeWidgetItem* item = topItem->child(i);
             if (item && item->isSelected()) {
-                std::string name = item->text(1).toStdString();
+                //std::string name = item->text(1).toStdString();
 				TrajectoryDrawerManagerPtr manager = item2Root[topItem];
 				int idx = item2Trajectories[item];
 				osgutils::IRangeDrawer::Range times = manager->range(idx);

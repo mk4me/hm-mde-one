@@ -143,8 +143,7 @@ void QOsgDeprecatedWidget::mouseMoveEvent( QMouseEvent* event )
 void QOsgDeprecatedWidget::wheelEvent( QWheelEvent* event )
 {
     using namespace osgGA;
-    GUIEventAdapter::ScrollingMotion motion = event->delta() > 0 ? GUIEventAdapter::SCROLL_UP : GUIEventAdapter::SCROLL_DOWN;
-    double time = graphicsWindow->getEventQueue()->getTime();
+    GUIEventAdapter::ScrollingMotion motion = event->delta() > 0 ? GUIEventAdapter::SCROLL_UP : GUIEventAdapter::SCROLL_DOWN;    
     graphicsWindow->getEventQueue()->mouseScroll(motion);
 }
 
@@ -264,8 +263,6 @@ void QOsgDeprecatedViewer::paintGL()
 {
     if ( isVisible() ) {
         frame();
-    } else {
-        int deb = 0; 
     }
 }
 

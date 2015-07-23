@@ -11,7 +11,7 @@
 #include <kinematiclib/SkeletonState.h>
 #include <plugins/imuCostume/Types.h>
 #include <utils/SmartPtr.h>
-#include <utils/ObjectWrapper.h>
+#include <objectwrapperlib/ObjectWrapper.h>
 #include <threadingUtils/StreamData.h>
 #include <imucostumelib/CostumeCANopenIO.h>
 #include <imucostumelib/ProtocolSendBufferHelper.h>

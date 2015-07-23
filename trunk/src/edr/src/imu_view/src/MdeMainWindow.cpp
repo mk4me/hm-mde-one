@@ -282,8 +282,8 @@ void MdeMainWindow::customViewInit(QWidget * log)
    addTab(reportsTab);
    addTab(coreUI::IMdeTabPtr(new SimpleTab(log, QIcon(":/mde/icons/log.png"),tr("Log"))));
 
-   bool cc = connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
-	emit modelChanged();
+   connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
+   emit modelChanged();
    emit activateTab(*tabs.begin());
 }
 
@@ -321,8 +321,7 @@ void MdeMainWindow::addPropertiesToServiceWindow( plugin::IServicePtr service, M
 {
     QWidgetList properites = service->getPropertiesWidgets();
     if (!properites.empty()) {
-        w->loadLayout();
-        int propNo = 0;
+        w->loadLayout();        
         QString serviceName = QString::fromStdString(service->name());
         for (auto it = properites.begin(); it != properites.end(); ++it) {
             w->createMdeDock(serviceName, *it);

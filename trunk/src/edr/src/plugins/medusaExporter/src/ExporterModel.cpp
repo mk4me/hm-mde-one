@@ -495,8 +495,7 @@ void medusaExporter::CallbackCollector::innerCallback(double ratio, const QStrin
 }
 
 void medusaExporter::CallbackCollector::run()
-{
-    double sum = getWeightSum();
+{    
 	auto callback = (std::bind(&CallbackCollector::innerCallback, this, std::placeholders::_1, std::placeholders::_2));
     currentOperation = 0;
     for (auto it = operations.begin(); it != operations.end(); ++it) {

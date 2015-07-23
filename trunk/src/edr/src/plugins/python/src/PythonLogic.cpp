@@ -119,7 +119,7 @@ std::string python::PythonLogic::run(const std::string& script)
         
 	}
 	catch (std::exception& e) {
-		int aaa = 1;
+		
 	}
 	catch (boost::python::error_already_set) {
 		PyErr_Print();
@@ -181,7 +181,7 @@ std::string python::PythonStdIoRedirect::GetOutput()
 	std::stringstream ss;
 	for (boost::circular_buffer<std::string>::const_iterator it = m_outputs.begin();
 		it != m_outputs.end();
-		it++)
+		++it)
 	{
 		ss << *it;
 	}

@@ -21,6 +21,7 @@ using namespace hmdbCommunication;
 
 HMDBSource::HMDBSource()
 	: memoryDM(nullptr), streamDM(nullptr), fileDM(nullptr),
+	hierarchyDM(nullptr),
 	mainWidget(nullptr), viewManager_(new HMDBSourceViewManager)
 {
 

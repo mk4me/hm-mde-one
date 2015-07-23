@@ -138,8 +138,7 @@ QWidget* KinematicVisualizer::createWidget()
     widget->setTimerActive(true);
 
     trajectoriesDialog = new TrajectoriesDialog(widget);
-    schemeDialog = new SchemeDialog(widget);
-    const osg::GraphicsContext::Traits* traits = widget->getCamera()->getGraphicsContext()->getTraits();
+    schemeDialog = new SchemeDialog(widget);    
 
     widget->addEventHandler(new osgGA::StateSetManipulator(
         widget->getCamera()->getOrCreateStateSet()

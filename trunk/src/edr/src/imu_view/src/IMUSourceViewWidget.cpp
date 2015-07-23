@@ -23,8 +23,8 @@ IMUSourceViewWidget::IMUSourceViewWidget(hmdbCommunication::IHMDBShallowCopyCont
 	l->addWidget(operationProgress);
 	setLayout(l);
 
-	auto res = connect(dataView, SIGNAL(operationAboutToStart()), this, SLOT(onOperationStarts()));
-	res = connect(dataView, SIGNAL(operationFinished()), this, SLOT(onOperationEnds()));
+	connect(dataView, SIGNAL(operationAboutToStart()), this, SLOT(onOperationStarts()));
+	connect(dataView, SIGNAL(operationFinished()), this, SLOT(onOperationEnds()));
 }
 
 IMUSourceViewWidget::~IMUSourceViewWidget()

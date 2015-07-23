@@ -10,8 +10,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( NetworkUtilsTest );
 
 void NetworkUtilsTest::testOpen()
 {
-   sqlite3 *db;
-   char *zErrMsg = 0;
+   sqlite3 *db;   
    int rc;
 
    rc = sqlite3_open("test.db", &db);

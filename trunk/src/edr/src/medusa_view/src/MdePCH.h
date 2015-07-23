@@ -31,7 +31,7 @@
 #include <QtWidgets/QApplication>
 
 #include <utils/Utils.h>
-#include <utils/ObjectWrapper.h>
+#include <objectwrapperlib/ObjectWrapper.h>
 #include <utils/SmartPtr.h>
 
 #include <corelib/IVisualizer.h>

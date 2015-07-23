@@ -12,7 +12,7 @@
 #include <corelib/IParser.h>
 #include <utils/SmartPtr.h>
 #include <plugins/imuCostume/IIMUDataSource.h>
-#include <utils/ObjectWrapper.h>
+#include <objectwrapperlib/ObjectWrapper.h>
 #include <utils/ClonePolicies.h>
 
 namespace IMU

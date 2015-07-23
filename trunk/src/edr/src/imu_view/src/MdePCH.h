@@ -32,7 +32,7 @@
 
 #include <utils/Utils.h>
 #include <utils/SmartPtr.h>
-#include <utils/ObjectWrapper.h>
+#include <objectwrapperlib/ObjectWrapper.h>
 
 #include <corelib/IVisualizer.h>
 #include <plugins/c3d/C3DChannels.h>

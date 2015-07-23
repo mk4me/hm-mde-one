@@ -170,7 +170,7 @@ void C3DParser::getObject(core::Variant & object, const unsigned int idx) const
 {
 	object.set(data[idx]);
 	object.setMetadata("core/source", path);
-	if (0 <= idx && idx < 4){
+	if (idx < 4){
 		c3dlib::GRFChannelPtr ptr = data[idx]->get();
 		if (ptr) {
 			object.setMetadata("core/name", ptr->getName());

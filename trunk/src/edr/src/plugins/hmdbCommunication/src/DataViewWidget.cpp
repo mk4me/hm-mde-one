@@ -1251,7 +1251,7 @@ void DataViewWidget::onLoad()
 				PLUGIN_LOG_ERROR("Failed to load data");
 			}
 
-			if (dataStatusRefreshRequired = true){
+			if (dataStatusRefreshRequired == true){
 				refreshDataStatus(true);
 			}
 		}
@@ -1307,7 +1307,7 @@ void DataViewWidget::onUnload()
 				PLUGIN_LOG_ERROR("Failed to unload data");
 			}
 
-			if (dataStatusRefreshRequired = true){
+			if (dataStatusRefreshRequired == true){
 				refreshDataStatus(true);
 			}
 		}

@@ -32,10 +32,10 @@ void ImageTableTab::setActive(bool val)
 		QThread* thread = new QThread;
 		worker->moveToThread(thread);
 
-		bool a = connect(worker, SIGNAL(rowProduced(const ImageTableRow&)), tableModel, SLOT(addRow(const ImageTableRow&)));
-		bool b = connect(thread, SIGNAL(started()), worker, SLOT(process()));
-		bool c = connect(thread, SIGNAL(finished()), worker, SLOT(deleteLater()));
-		bool d = connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+		connect(worker, SIGNAL(rowProduced(const ImageTableRow&)), tableModel, SLOT(addRow(const ImageTableRow&)));
+		connect(thread, SIGNAL(started()), worker, SLOT(process()));
+		connect(thread, SIGNAL(finished()), worker, SLOT(deleteLater()));
+		connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 		thread->start();
 	}
 }

@@ -17,7 +17,6 @@
 #include <QtWidgets/QMessageBox>
 #include "OrientationDelegate.h"
 #include <boost/lexical_cast.hpp>
-#include <utils/TreeNode.h>
 #include "OrientationDelegate.h"
 #include "Vector3DDelegate.h"
 #include "SensorIDDelegate.h"
@@ -163,7 +162,7 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 		auto sensorText = SensorIDDelegate::defaultText();
 
 		bool use = false;
-		bool sensorIDValid = false;
+		//bool sensorIDValid = false;
 
 		QString jointName;
 		osg::Vec3d offset(0, 0, 0);
@@ -176,7 +175,7 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 
 			//mam wartość dla obu wpisów
 			use = true;
-			sensorIDValid = true;
+			//sensorIDValid = true;
 			sID = id;
 			sensorText = QString("%1").arg(id);
 			jointName = QString::fromStdString(pIT->second.jointName);
@@ -189,7 +188,7 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 			//tylko profil
 
 			use = false;
-			sensorIDValid = false;
+			//sensorIDValid = false;
 
 			jointName = QString::fromStdString(pIT->second.jointName);
 			offset = pIT->second.offset;
@@ -200,7 +199,7 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 		else{
 			//tylko kostium
 			use = true;
-			sensorIDValid = false;
+			//sensorIDValid = false;
 		}		
 
 		//JOINT column
@@ -759,9 +758,6 @@ void IMUCostumeProfileEditionWizard::onOneToOneMappingChanged(int state)
 
 void IMUCostumeProfileEditionWizard::onSensorConfigurationCellChange(int row, int column)
 {
-	int checked = 0;
-	int partial = 0;
-
 	auto checkStateChanged = false;
 
 	if (column == UseIDX){
@@ -776,7 +772,8 @@ void IMUCostumeProfileEditionWizard::onSensorConfigurationCellChange(int row, in
 			ui->sensorsConfigurationTableWidget->blockSignals(false);			
 		}
 		else{
-			++checked;
+
+			int partial = 0;
 
 			auto sensorIDData = ui->sensorsConfigurationTableWidget->item(row, SensorIDX)->data(Qt::DisplayRole);
 			auto jointData = ui->sensorsConfigurationTableWidget->item(row, JointIDX)->data(Qt::DisplayRole);

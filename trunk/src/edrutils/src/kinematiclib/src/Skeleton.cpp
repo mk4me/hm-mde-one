@@ -753,9 +753,7 @@ bool Skeleton::convert(const hAnim::Humanoid & srcSkeleton, Skeleton & destSkele
 {
 	if (srcSkeleton.joints.empty() == true){
 		return false;
-	}
-
-	std::set<std::string> names;
+	}	
 
 	/*
 	//TODO

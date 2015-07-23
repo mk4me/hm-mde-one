@@ -309,15 +309,12 @@ void osgVDFNode::graphSetStatus(osgVDFBaseNode::VisualStatus nodeVisualStatus) {
 	m_pNodeLayoutGrid->getByRowCol(0,2)->setStyle("vdf.node.border.BR." + status);
 		
 	m_pMainGrid->getByRowCol(1,0)->setStyle("vdf.node.body.Center." + status);
-	osgWidget::Widget * w = m_pTopGrid->getByRowCol(0,0);
-	m_pTopGrid->getByRowCol(0,0)->setStyle("vdf.node.body.TL." + status);
-	w = m_pTopGrid->getByRowCol(0,1);
+	m_pTopGrid->getByRowCol(0,0)->setStyle("vdf.node.body.TL." + status);	
 	m_pTopGrid->getByRowCol(0,1)->setStyle("vdf.node.body.TNameLabel." + status);
 	//m_pNodeNameLabel->setStyle("vdf.node.body.nameLabel." + status);
 	m_pTopGrid->getByRowCol(0,2)->setStyle("vdf.node.body.TConfigBCG." + status);
 	m_pTopGrid->getByRowCol(0,3)->setStyle("vdf.node.body.TDeleteBCG." + status);
-	m_pTopGrid->getByRowCol(0,4)->setStyle("vdf.node.body.TR." + status);
-	w = m_pTopGrid->getByRowCol(0,4);
+	m_pTopGrid->getByRowCol(0,4)->setStyle("vdf.node.body.TR." + status);	
 
 	m_pConfigure->setStyle("vdf.node.body.config." + status);
 	m_pDelete->setStyle("vdf.node.body.delete." + status);

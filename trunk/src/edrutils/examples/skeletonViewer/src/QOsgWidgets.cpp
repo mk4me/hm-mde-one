@@ -127,11 +127,7 @@ void QOsgViewer::paintGL()
     if ( isTimerActive() ) {
         if ( !skipFramesIfInvisible || ( isVisible() && !isHidden() )  ) {
             frame();
-        }  else {
-            int debuggable = 0;
         }
-    } else {
-        int debuggable = 0;
     }
 }
 

@@ -235,8 +235,6 @@ SerializableCostumeProfile::VerificationStatus SerializableCostumeProfile::verif
 
 void SerializableCostumeProfile::serialize(std::ostream & stream, const SerializableCostumeProfile & sProfile)
 {
-	unsigned int nodesCount = 0;	
-
 	stream << "ProfileName: " << sProfile.name << std::endl;
 	stream << "SkeletonID: " << sProfile.skeletonID << std::endl;
 	stream << "SensorsConfiguration: " << sProfile.sensorsDescriptions.size() << std::endl;

@@ -11,8 +11,6 @@
 #define HEADER_GUARD_HMMLIB__FILTERCOMMAND_H__
 
 #include <set>
-#include <utils/DataChannel.h>
-#include <utils/DataChannelCollection.h>
 #include <utils/SmartPtr.h>
 #include <corelib/IFilterCommand.h>
 #include <corelib/HierarchyItem.h>

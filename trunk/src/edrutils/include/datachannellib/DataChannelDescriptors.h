@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_UTILS__DATACHANNELDESCRIPTORS_H__
 #define HEADER_GUARD_UTILS__DATACHANNELDESCRIPTORS_H__
 
-#include <utils/DataChannel.h>
+#include <datachannellib/DataChannel.h>
 
 namespace utils {
 

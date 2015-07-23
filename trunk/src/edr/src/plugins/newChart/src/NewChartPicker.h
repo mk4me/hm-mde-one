@@ -60,7 +60,7 @@ private:
 
 private:
     //! płótno wykresu
-    QwtPlotCanvas* canvas;
+    //QwtPlotCanvas* canvas;
     //! tolerancja, czyli maksymalna odległość od krzywej zaliczająca kliknięcie w nią
     int pixelTolerance;
     //! aktualnie wybrana krzywa, kliknięcie w nią będzie ignorowane

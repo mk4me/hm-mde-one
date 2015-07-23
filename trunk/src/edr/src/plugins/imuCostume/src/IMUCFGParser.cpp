@@ -4,7 +4,7 @@
 #include <utils/Debug.h>
 #include <kinematiclib/Skeleton.h>
 #include <corelib/IParser.h>
-#include <utils/ObjectWrapper.h>
+//#include <objectwrapperlib/ObjectWrapper.h>
 #include <kinematicUtils/RotationConverter.h>
 
 IMU::IMUConfigPtr IMU::IMUCFGParser::rawParse(const std::string& path)

@@ -21,9 +21,8 @@ public:
 void SynchronizedTest::testInharitanceOfClass()
 {
     typedef Synchronized<EmptyClass, utils::StrictSyncPolicy> SynchEC;
-    bool isDerived = false;
-    
-    isDerived = boost::is_base_of<EmptyClass, SynchEC>::value;
+    bool isDerived = boost::is_base_of<EmptyClass, SynchEC>::value;
+        
     CPPUNIT_ASSERT(isDerived == true);
 
     SynchEC x;

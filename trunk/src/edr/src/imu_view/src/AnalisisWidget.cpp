@@ -253,7 +253,7 @@ void AnalisisWidget::onFilterBundleAdded( core::IFilterBundlePtr bundle )
 void AnalisisWidget::addDataFilterWidget( coreUI::DataFilterWidget* filter )
 {
     filterBundleWidgets.push_back(filter);
-    bool c = connect(filter, SIGNAL(activityChanged(coreUI::DataFilterWidget*)), this, SLOT(onBundleActivated(coreUI::DataFilterWidget*)));
+    connect(filter, SIGNAL(activityChanged(coreUI::DataFilterWidget*)), this, SLOT(onBundleActivated(coreUI::DataFilterWidget*)));
     if (filterWidth < 0 && filterHeight < 0) {
         filterWidth = filter->width();
         filterHeight = filter->height();
@@ -644,8 +644,7 @@ void AnalisisWidget::removeFromVisualizers( HelperAction* action, bool once)
 {
     UTILS_ASSERT(action);
     if (action) {
-        typedef std::list<AnalisisModel::DataItemDescriptionConstPtr> DescList;
-        std::list<DescList::iterator> toErase;
+        typedef std::list<AnalisisModel::DataItemDescriptionConstPtr> DescList;        
         DescList descriptors = model->getVisualizerDataDescriptions(action->getHelper());
 
         auto it = descriptors.begin();

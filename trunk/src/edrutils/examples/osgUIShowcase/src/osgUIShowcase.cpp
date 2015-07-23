@@ -132,7 +132,7 @@ void createExample(osgViewer::View& view, int w, int h)
     styleSet.insert(new osgui::StyleEx("osgui.tooltip.base", "color " + colorToStr(osgWidget::Color(0.0f,0.0f,0.0f,0.0f))));
     styleSet.insert(new osgui::StyleEx("osgui.tooltip.text", "color " + colorToStr(osgWidget::Color(0.94,0.94,0.96,1.0f)) + "\nfont_color " + colorToStr(osgWidget::Color(0,0,0,1.0f)) + "\nfont_size 13\nfont_type \"c:\\Windows\\Fonts\\segoeui.ttf\"\nborder_color " + colorToStr(osgWidget::Color(0,0,0,1.0f))));
 
-    for(StyleSet::iterator it = styleSet.begin(); it != styleSet.end(); it++)
+    for(StyleSet::iterator it = styleSet.begin(); it != styleSet.end(); ++it)
     {
         wm->getStyleManager()->addStyle(*it);
     }

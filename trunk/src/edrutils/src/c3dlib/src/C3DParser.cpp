@@ -21,7 +21,8 @@
 #include <list>
 #include <btkMergeAcquisitionFilter.h>
 #include <utils/Debug.h>
-#include <utils/DataChannelCollection.h>
+#include <datachannellib/DataChannelCollection.h>
+
 namespace c3dlib {
 
 //! kanał analogowy, implementacja przykrywa obiekt btk::Analog
@@ -440,8 +441,7 @@ void C3DParser::loadAcquisition()
 		a->setAnalog(*it);
 		this->analogs.push_back(a);
     }
-    
-    double analogFrq = getAnalogFrequency();
+        
     double pointFrq = getPointFrequency();
     double offset = this->data->firstFrame / pointFrq;
     // Event

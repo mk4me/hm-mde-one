@@ -188,9 +188,7 @@ QDockWidget* AnalisisWidget::createDockVisualizer(const core::VisualizerPtr & vi
     
 	auto dockVisWidget = coreUI::CoreDockWidget::embeddWidget(visWidget, QString::fromStdString(visualizer->getName() + "[*]"),
         Qt::AllDockWidgetAreas,
-        false);
-
-	bool res = false;
+        false);	
 
 	//! HACK
 	// kolejny hack... - jak inaczej przechwycić zamknięcie wyedytowanego widgeta?
@@ -761,7 +759,6 @@ void AnalisisWidget::removeFromVisualizers( HelperAction* action, bool once)
         typedef std::list<AnalisisModel::DataItemDescriptionConstPtr> DescList;
         std::list<DescList::iterator> toErase;
         DescList descriptors = model->getVisualizerDataDescriptions(action->getHelper());
-
         auto it = descriptors.begin();
         while(it != descriptors.end() ) {
             // na razie kopia, w przeciwnym razie jest problem z usuwaniem.

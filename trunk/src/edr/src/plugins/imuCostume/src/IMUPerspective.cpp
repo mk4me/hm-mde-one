@@ -10,7 +10,7 @@
 #include <plugins/subject/ISubject.h>
 #include <plugins/hmdbCommunication/IPatient.h>
 #include <corelib/PluginCommon.h>
-#include <utils/ObjectWrapper.h>
+#include <objectwrapperlib/ObjectWrapper.h>
 #include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
 #include <corelib/ISourceManager.h>

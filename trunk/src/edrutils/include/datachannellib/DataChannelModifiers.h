@@ -10,8 +10,8 @@
 #ifndef HEADER_GUARD_UTILS__DATACHANNELMODIFIERS_H__
 #define HEADER_GUARD_UTILS__DATACHANNELMODIFIERS_H__
 
-#include <utils/DataChannel.h>
-#include <utils/DataChannelDescriptors.h>
+#include <datachannellib/DataChannel.h>
+#include <datachannellib/DataChannelDescriptors.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
