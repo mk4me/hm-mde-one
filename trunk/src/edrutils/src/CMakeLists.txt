@@ -1,9 +1,11 @@
 ADD_PROJECT(utils "BOOST;QT")
 ADD_PROJECT(objectwrapperlib "utils")
 ADD_PROJECT(datachannellib "utils")
+ADD_PROJECT(loglib "utils")
 ADD_PROJECT(treecontainerlib "utils")
 ADD_PROJECT(osgutils "utils;OSG")
 ADD_PROJECT(threadingUtils "utils")
+
 
 ADD_PROJECT_VARIABLE_DEPENDENCIES(VIDLIB_ENABLE_LOG4CXX "Enable logging with LOG4CXX?" OFF "LOG4CXX")
 ADD_PROJECT_VARIABLE_DEPENDENCIES(VIDLIB_ENABLE_OSG "Enable osg for vidlib?" ON "OSG")
@@ -18,7 +20,7 @@ ADD_PROJECT(c3dlib "BTK;BOOST;OSG;utils;datachannellib")
 END_PROJECTS_GROUP()
 
 ADD_PROJECT(kinematicUtils "OSG;utils")
-ADD_PROJECT(kinematiclib "BOOST;TINYXML2;OSG;utils;hanimlib;acclaimformatslib;biovisionformatslib;treecontainerlib")
+ADD_PROJECT(kinematiclib "BOOST;TINYXML2;OSG;utils;hanimlib;acclaimformatslib;biovisionformatslib;treecontainerlib;loglib")
 ADD_PROJECT(imucostumelib "BOOST;threadingUtils;utils;OSG")
 ADD_PROJECT(osgui "utils;OSG;QT;BOOST")
 ADD_PROJECT(dflib "BOOST;QT;utils")

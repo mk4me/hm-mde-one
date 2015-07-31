@@ -8,6 +8,8 @@
 #include <treecontainerlib/NodeT.h>
 #include <treecontainerlib/TreeT.h>
 #include <osg/PositionAttitudeTransform>
+#include "loglib/Logger.h"
+#include "loglib/Exceptions.h"
 
 using namespace kinematic;
 

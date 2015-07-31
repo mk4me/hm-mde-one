@@ -2,7 +2,7 @@
 #include "CostumeSkeletonMotionHelper.h"
 #include <chrono>
 #include <thread>
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 #include <corelib/IPlugin.h>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>

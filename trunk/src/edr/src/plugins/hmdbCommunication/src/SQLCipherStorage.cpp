@@ -11,7 +11,7 @@
 #include <sqliteUtils/SQLiteDB.h>
 #include <sqliteUtils/SQLitePreparedStatement.h>
 #include <sqliteUtils/SQLiteBLOBStreamBufferT.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 static const unsigned int sqliteExecWaitMS = 50;
 static const unsigned int maxSqliteExecTries = 2400;
@@ -73,7 +73,7 @@ public:
 		sqliteUtils::SQLiteDB::Close(maxSqliteExecTries, sqliteExecWaitMS))
 	{		
 		if (db == nullptr){
-			throw core::runtime_error("Failed to create transaction");
+			throw loglib::runtime_error("Failed to create transaction");
 		}
 	}
 

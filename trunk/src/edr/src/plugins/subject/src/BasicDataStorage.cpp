@@ -48,7 +48,7 @@ const bool BasicDataStorage::isManaged(const core::VariantConstPtr & object) con
 {
 	auto type = object->data()->getTypeInfo();
 	if(plugin::getRegisteredDataTypesManagerReader()->isRegistered(type) == false){
-		throw core::runtime_error(std::string("Type not registered: ") + type.name());
+		throw loglib::runtime_error(std::string("Type not registered: ") + type.name());
 	}
 
 	ScopedLock lock(sync);
@@ -86,14 +86,14 @@ void BasicDataStorage::addData(const core::VariantConstPtr & data)
 {
 	auto type = data->data()->getTypeInfo();
 	if (plugin::getRegisteredDataTypesManagerReader()->isRegistered(type) == false){
-		throw core::runtime_error(std::string("Type not registered: ") + type.name());
+		throw loglib::runtime_error(std::string("Type not registered: ") + type.name());
 	}
 
 	ScopedLock lock(sync);
 
 	auto found = find(data);
 	if(found.first != objectsByTypes.end() && found.second != found.first->second.end()){
-		throw core::runtime_error("Object already managed");
+		throw loglib::runtime_error("Object already managed");
 	}
 
 	if(found.first != objectsByTypes.end()){
@@ -107,14 +107,14 @@ void BasicDataStorage::removeData(const core::VariantConstPtr & data)
 {
 	auto type = data->data()->getTypeInfo();
 	if (plugin::getRegisteredDataTypesManagerReader()->isRegistered(type) == false){
-		throw core::runtime_error(std::string("Type not registered: ") + type.name());
+		throw loglib::runtime_error(std::string("Type not registered: ") + type.name());
 	}
 
 	ScopedLock lock(sync);
 
 	auto found = find(data);
 	if(found.first == objectsByTypes.end() || found.second == found.first->second.end()){
-		throw core::runtime_error("Object not managed");
+		throw loglib::runtime_error("Object not managed");
 	}
 
 	found.first->second.erase(found.second);

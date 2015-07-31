@@ -1,7 +1,7 @@
 #include "CorePCH.h"
 #include "ServiceManager.h"
 #include "ApplicationCommon.h"
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 namespace core {
 
@@ -36,7 +36,7 @@ void ServiceManager::finalizeServices()
             (*it)->finalize();
             CORE_LOG_DEBUG("ServiceManager: finalized correctly " << (*it)->name() << " service");
         }
-        catch(core::runtime_error & e){
+        catch(loglib::runtime_error & e){
             CORE_LOG_ERROR("ServiceManager: Error finalizing " << (*it)->name() << " service with error " << e.what());
         }
         catch(std::invalid_argument & e){
@@ -58,7 +58,7 @@ void ServiceManager::registerService(plugin::IServicePtr service)
         servicesList.push_back(service);
         CORE_LOG_INFO("Service " << service->name() << " registered.");
     } else {
-        throw core::runtime_error("Service with this ID already registered.");
+        throw loglib::runtime_error("Service with this ID already registered.");
     }
 };
 

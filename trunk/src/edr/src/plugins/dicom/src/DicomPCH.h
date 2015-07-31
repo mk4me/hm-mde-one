@@ -22,7 +22,7 @@
 #include <utils/Debug.h>
 #include <utils/SmartPtr.h>
 
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 #include <corelib/IPlugin.h>
 
 #endif

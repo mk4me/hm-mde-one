@@ -7,10 +7,10 @@
 #include <tinyxml2.h>
 #include <osgGA/Event>
 #include <corelib/PluginCommon.h>
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 #include <osg/ImageSequence>
 #include <osgDB/ReadFile>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 using namespace vidlib;
 
@@ -106,28 +106,28 @@ void VideoParser::parse(const std::string & source) {
 		tinyxml2::XMLDocument document;
 		if (!document.LoadFile(path.string().c_str())) {
 			errbuff << "Unable to load file: " << path.string();
-			throw core::runtime_error(errbuff.str());
+			throw loglib::runtime_error(errbuff.str());
 		}
 		tinyxml2::XMLHandle hDocument(&document);
 		tinyxml2::XMLElement* seq =
 				hDocument.FirstChildElement("ImageSequence").ToElement();
 		if (!seq) {
 			errbuff << "Missing ImageSequence node";
-			throw core::runtime_error(errbuff.str());
+			throw loglib::runtime_error(errbuff.str());
 		} else {
 			std::string directory;
 			double framerate;
 			auto ptr = seq->Attribute("directory");
 			if (!ptr) {
 				errbuff << "Missing directory attribute";
-				throw core::runtime_error(errbuff.str());
+				throw loglib::runtime_error(errbuff.str());
 			} else {
 				directory = std::string(ptr);
 			}
 			if (seq->QueryDoubleAttribute("framerate", &framerate)
 					!= tinyxml2::XML_SUCCESS) {
 				errbuff << "Missing framerate attribute";
-				throw core::runtime_error(errbuff.str());
+				throw loglib::runtime_error(errbuff.str());
 			}
 			PLUGIN_LOG_INFO(directory << " " << framerate);
 

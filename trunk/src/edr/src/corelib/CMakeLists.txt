@@ -9,7 +9,7 @@ SET_PUBLIC_HEADERS(
 	BaseDataTypes.h
 	DataAccessors.h
 	Filesystem.h	
-	Exceptions.h
+	#Exceptions.h
 	Visualizer.h
 	VariantsCollection.h
 	PluginCommon.h
@@ -30,7 +30,7 @@ SET_PUBLIC_HEADERS(
 	IDataManager.h
 	IDataHierarchyManager.h
 	IDataHierarchyManagerReader.h
-	ILog.h
+	#ILog.h
 	IIdentifiable.h
 	IFileManagerReader.h
 	IFileDataManager.h
@@ -69,7 +69,7 @@ SET_SOURCE_FILES(
 	Variant.cpp
 	ThreadPool.cpp
 	JobManager.cpp
-	Exceptions.cpp
+	#Exceptions.cpp
 )
 
 SET_PRIVATE_HEADERS(

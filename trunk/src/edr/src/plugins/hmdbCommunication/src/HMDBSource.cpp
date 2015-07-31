@@ -15,7 +15,7 @@
 #include "HMDBShallowCopyContext.h"
 #include "HMDBSourceViewManager.h"
 #include "TreeBuilder.h"
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 using namespace hmdbCommunication;
 
@@ -139,15 +139,15 @@ const networkUtils::IWSDLServicePtr createSystemService(const std::string & url,
 			ret = hmdbService->createHMDBSystemService(url, caPath, networkUtils::HVMatch);
 
 			if (ret == nullptr){
-				throw core::runtime_error("Could not create system service");
+				throw loglib::runtime_error("Could not create system service");
 			}
 		}
 		else{
-			throw core::runtime_error("Could not find HMDBService");
+			throw loglib::runtime_error("Could not find HMDBService");
 		}
 	}
 	else{
-		throw core::runtime_error("Uninitialized service manager");
+		throw loglib::runtime_error("Uninitialized service manager");
 	}
 
 	return ret;

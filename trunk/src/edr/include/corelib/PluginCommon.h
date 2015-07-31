@@ -12,7 +12,7 @@
 #include <corelib/Filesystem.h>
 #include <corelib/IApplication.h>
 #include <corelib/IPath.h>
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 #include <utils/Macros.h>
 #include <corelib/IDataManager.h>
 #include <corelib/IPlugin.h>
@@ -88,7 +88,7 @@ namespace plugin
 	}
 
     //! \return Interfejs logowania informacji
-	inline core::ILog* getLogInterface()
+	inline loglib::ILog* getLogInterface()
 	{
 		return getApplication()->log();
 	}

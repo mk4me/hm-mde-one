@@ -36,6 +36,6 @@ vicon::VskConstPtr Vsk::get( MarkersCount count )
         return Count53;
 
     default:
-        throw core::runtime_error("Wrong VSK scheme was requested");
+        throw loglib::runtime_error("Wrong VSK scheme was requested");
     }
 }

@@ -45,7 +45,7 @@
 #include <boost/range.hpp>
 #include <boost/iterator.hpp>
 
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 #include <corelib/BaseDataTypes.h>
 #include <utils/SmartPtr.h>
 #include <utils/PtrPolicyStd.h>

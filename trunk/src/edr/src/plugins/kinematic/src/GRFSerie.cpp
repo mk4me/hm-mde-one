@@ -349,7 +349,7 @@ osg::ref_ptr<osg::Texture2D> GRFSerie::getTexture( int number )
 			t->setDataVariance(osg::Object::DYNAMIC); 
 			osg::Image* i = osgDB::readImageFile(plugin::getResourcePath("images/1.png").string());
 			if (!i) {
-				throw core::runtime_error("Unable to load texture: images/1.png");
+				throw loglib::runtime_error("Unable to load texture: images/1.png");
 			}
 			t->setImage(i);
 			t->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::NEAREST);
@@ -363,7 +363,7 @@ osg::ref_ptr<osg::Texture2D> GRFSerie::getTexture( int number )
 			t->setDataVariance(osg::Object::DYNAMIC); 
 			osg::Image* i = osgDB::readImageFile(plugin::getResourcePath("images/2.png").string());
 			if (!i) {
-				throw core::runtime_error("Unable to load texture: images/2.png");
+				throw loglib::runtime_error("Unable to load texture: images/2.png");
 			}
 			t->setImage(i);
 			t->setFilter(osg::Texture2D::MIN_FILTER, osg::Texture2D::NEAREST);
@@ -373,7 +373,7 @@ osg::ref_ptr<osg::Texture2D> GRFSerie::getTexture( int number )
 		return texture2;
 	} else {
 		UTILS_ASSERT(false);
-		throw core::runtime_error("Wrong texture number");
+		throw loglib::runtime_error("Wrong texture number");
 	}
 }
 

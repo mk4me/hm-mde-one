@@ -9,7 +9,8 @@
 
 #include <log4cxx/logger.h>
 
-class LogImpl : public core::ILog
+
+class LogImpl : public loglib::ILog
 {
 public:
 
@@ -74,9 +75,9 @@ public:
 		}		
 	}
 
-	virtual core::LogPtr subLog(const std::string & name) const
+	virtual loglib::ILogPtr subLog(const std::string & name) const
 	{
-		return core::LogPtr(new LogImpl(this->name.empty() == true ? name : this->name + "." + name));
+		return loglib::ILogPtr(new LogImpl(this->name.empty() == true ? name : this->name + "." + name));
 	}
 
 private:
@@ -89,7 +90,7 @@ private:
 
 #include <osg/Notify>
 
-class LogImpl : public core::ILog
+class LogImpl : public loglib::ILog
 {
 public:
 
@@ -168,7 +169,7 @@ void Log::log(LogSeverity severity, const std::string& message)
 	logImpl->log(severity, message);
 }
 
-core::LogPtr Log::subLog(const std::string & name) const
+loglib::ILogPtr Log::subLog(const std::string & name) const
 {
 	return logImpl->subLog(name);
 }

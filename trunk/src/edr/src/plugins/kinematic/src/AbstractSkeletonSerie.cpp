@@ -300,7 +300,7 @@ void PointsOrientationsDrawer::init(kinematic::Skeleton::JointConstPtr root)
 		this->root = root;
 		setVisible(visible);
 	} else {
-		throw core::runtime_error("Cannot call init method twice");
+		throw loglib::runtime_error("Cannot call init method twice");
 	}
 }
 

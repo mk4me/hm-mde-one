@@ -1,10 +1,10 @@
 #include "CorePCH.h"
 #include "SourceManager.h"
 
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 #include <corelib/PluginCommon.h>
 #include "ApplicationCommon.h"
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 namespace core{
 
@@ -55,7 +55,7 @@ void SourceManager::registerSource(const plugin::ISourcePtr & source)
 		sourcesList.push_back(source);
 		CORE_LOG_INFO("Source " << source->name() << " registered.");
 	} else {
-		throw core::runtime_error("Source with this ID already registered.");
+		throw loglib::runtime_error("Source with this ID already registered.");
 	}
 };
 

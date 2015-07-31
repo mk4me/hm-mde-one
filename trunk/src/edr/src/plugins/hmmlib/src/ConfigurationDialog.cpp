@@ -4,7 +4,7 @@
 #include <QtWidgets/QListWidgetItem>
 #include <utils/Debug.h>
 #include <tinyxml2.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 #include "ui_FilterConfiguratorWidget.h"
 
 const float SCALE = 0.6f;
@@ -97,12 +97,12 @@ void ConfigurationWidget::loadXml(ConfigurationPainter& painter, const QString &
     QString path = fileInfo.absolutePath();
     tinyxml2::XMLDocument document;
 	if (document.LoadFile(filename.toStdString().c_str()) != tinyxml2::XML_SUCCESS) {
-        throw core::runtime_error("Unable to load file");
+        throw loglib::runtime_error("Unable to load file");
     }
     tinyxml2::XMLHandle hDocument(&document);
     tinyxml2::XMLElement* root = hDocument.FirstChildElement().ToElement();
     if (!root) {
-        throw core::runtime_error("Unable to load file");
+        throw loglib::runtime_error("Unable to load file");
     }
 
     QString background(root->Attribute("BackgroundFilename"));

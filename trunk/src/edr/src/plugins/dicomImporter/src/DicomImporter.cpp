@@ -147,7 +147,7 @@ dicomImporter::DicomInternalStructPtr DicomImporter::import( const core::Filesys
         } 
 
     } else {
-        throw core::runtime_error("file not found");
+        throw loglib::runtime_error("file not found");
     }
 
     return internalStruct;
@@ -319,7 +319,7 @@ void DicomSaver::save( const core::Filesystem::Path& to, DicomInternalStructPtr 
         oa << BOOST_SERIALIZATION_NVP(inter);
         ofs.close();
     } else {
-        throw core::runtime_error("Unable to create file");
+        throw loglib::runtime_error("Unable to create file");
     }
 }
 

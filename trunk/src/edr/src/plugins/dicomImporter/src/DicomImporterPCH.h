@@ -24,6 +24,6 @@
 #include <utils/SmartPtr.h>
 
 #include <corelib/IPlugin.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 #endif

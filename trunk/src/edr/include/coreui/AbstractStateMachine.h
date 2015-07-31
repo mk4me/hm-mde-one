@@ -14,7 +14,7 @@
 #include <QtGui/QWheelEvent>
 #include <coreui/Export.h>
 #include <coreui/AbstractState.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 namespace coreUI {
     
@@ -69,7 +69,7 @@ TPtr coreUI::AbstractStateMachine::getState()
         }
     }
 
-    throw core::runtime_error("coreUI::AbstractStateMachine::getState() - Unable to find state");
+    throw loglib::runtime_error("coreUI::AbstractStateMachine::getState() - Unable to find state");
 }
 
 }

@@ -28,7 +28,7 @@ CoreCustomWidgetAction::CoreCustomWidgetAction(QObject *parent, WidgetCreator wi
 	: QWidgetAction(parent), sectionName_(sectionName), side_(side), widgetCreator_(widgetCreator)
 {
 	if(widgetCreator == false){
-		throw core::runtime_error("Empty widget creator");
+		throw loglib::runtime_error("Empty widget creator");
 	}
 }
 

@@ -465,5 +465,5 @@ QTreeWidgetItem* TrajectoriesDialog::getItemWhichContains( QObject* object ) con
         }
     }
 
-    throw core::runtime_error("Tree item not found");
+    throw loglib::runtime_error("Tree item not found");
 }

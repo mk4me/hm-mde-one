@@ -1,7 +1,7 @@
 #include "CoreLibPCH.h"
 #include <corelib/Variant.h>
 #include <utils/Push.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 using namespace core;
 

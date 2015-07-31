@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="pl_PL">
+<TS version="2.1" language="pl_PL">
 <context>
     <name>NewChartVisualizer</name>
     <message>
@@ -122,33 +122,33 @@
         <translation>Średnia krocząca</translation>
     </message>
     <message>
-        <location filename="../src/NewChartVisualizer.cpp" line="580"/>
-        <location filename="../src/NewChartVisualizer.cpp" line="611"/>
-        <location filename="../src/NewChartVisualizer.cpp" line="619"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="615"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="649"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="660"/>
         <source>Left</source>
         <translation>Lewa</translation>
     </message>
     <message>
-        <location filename="../src/NewChartVisualizer.cpp" line="580"/>
-        <location filename="../src/NewChartVisualizer.cpp" line="619"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="615"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="660"/>
         <source>%1: Left step %2</source>
         <translation>%1: Lewy krok %2</translation>
     </message>
     <message>
-        <location filename="../src/NewChartVisualizer.cpp" line="584"/>
-        <location filename="../src/NewChartVisualizer.cpp" line="611"/>
-        <location filename="../src/NewChartVisualizer.cpp" line="623"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="619"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="649"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="664"/>
         <source>Right</source>
         <translation>Prawa</translation>
     </message>
     <message>
-        <location filename="../src/NewChartVisualizer.cpp" line="584"/>
-        <location filename="../src/NewChartVisualizer.cpp" line="623"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="619"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="664"/>
         <source>%1: Right step %2</source>
         <translation>%1: Prawy krok %2</translation>
     </message>
     <message>
-        <location filename="../src/NewChartVisualizer.cpp" line="608"/>
+        <location filename="../src/NewChartVisualizer.cpp" line="645"/>
         <source>Whole chart</source>
         <translation>Cały wykres</translation>
     </message>
@@ -156,9 +156,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/NewChartMarker.cpp" line="105"/>
         <location filename="../src/NewChartValueMarker.cpp" line="84"/>
-        <location filename="../src/NewChartValueMarker.cpp" line="102"/>
         <source>Time: %1
 Value: %2</source>
         <translation>Czas: %1 Wartość: %2</translation>
@@ -173,6 +171,18 @@ Value: %2</source>
         <source>Foot Off</source>
         <translation>Oderwanie stopy</translation>
     </message>
+    <message>
+        <location filename="../src/NewChartMarker.cpp" line="93"/>
+        <location filename="../src/NewChartValueMarker.cpp" line="102"/>
+        <source>Time: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/NewChartMarker.cpp" line="94"/>
+        <location filename="../src/NewChartValueMarker.cpp" line="103"/>
+        <source>Value: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>StatsTable</name>
@@ -182,47 +192,52 @@ Value: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/statsTable.ui" line="94"/>
+        <location filename="../ui/statsTable.ui" line="112"/>
         <source>&lt;b&gt;Statistics&lt;/b&gt;</source>
         <translation>&lt;b&gt;Statystyki&lt;b&gt;</translation>
     </message>
     <message>
-        <location filename="../ui/statsTable.ui" line="162"/>
+        <location filename="../ui/statsTable.ui" line="180"/>
         <source>Serie</source>
         <translation>Seria</translation>
     </message>
     <message>
-        <location filename="../ui/statsTable.ui" line="167"/>
+        <location filename="../ui/statsTable.ui" line="185"/>
         <source>TimeSpan</source>
         <translation>Czas trwania</translation>
     </message>
     <message>
-        <location filename="../ui/statsTable.ui" line="172"/>
+        <location filename="../ui/statsTable.ui" line="190"/>
         <source>Min</source>
         <translation>Minimum</translation>
     </message>
     <message>
-        <location filename="../ui/statsTable.ui" line="177"/>
+        <location filename="../ui/statsTable.ui" line="195"/>
         <source>Min time</source>
         <translation>Czas minimalny</translation>
     </message>
     <message>
-        <location filename="../ui/statsTable.ui" line="182"/>
+        <location filename="../ui/statsTable.ui" line="200"/>
         <source>Max</source>
         <translation>Maksimum</translation>
     </message>
     <message>
-        <location filename="../ui/statsTable.ui" line="187"/>
+        <location filename="../ui/statsTable.ui" line="205"/>
         <source>Max time</source>
         <translation>Czas maksymalny</translation>
     </message>
     <message>
-        <location filename="../ui/statsTable.ui" line="192"/>
+        <location filename="../ui/statsTable.ui" line="210"/>
         <source>Mean</source>
         <translation>Średnia</translation>
     </message>
     <message>
-        <location filename="../ui/statsTable.ui" line="197"/>
+        <location filename="../ui/statsTable.ui" line="215"/>
+        <source>Standard Deviation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/statsTable.ui" line="220"/>
         <source>Variance</source>
         <translation>Wariancja</translation>
     </message>

@@ -76,7 +76,7 @@ void CoreCompoundVisualizerWidget::switchDestroyed(QObject * visSwitch)
 QWidget * CoreCompoundVisualizerWidget::createVisualizerSwitch(QWidget * parent)
 {
 	if(visualizerSwitch != nullptr){
-		throw core::runtime_error("Visualizer switch already exists");
+		throw loglib::runtime_error("Visualizer switch already exists");
 	}
 
 	visualizerSwitch = new QComboBox(parent);	

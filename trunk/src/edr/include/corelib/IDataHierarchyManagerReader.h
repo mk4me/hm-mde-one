@@ -9,6 +9,7 @@
 #define __HEADER_GUARD___IDATAHIERARCHYMANAGERREADER_H__
 
 #include <corelib/IHierarchyItem.h>
+#include <corelib/BaseDataTypes.h>
 
 namespace core
 {

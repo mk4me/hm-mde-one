@@ -10,11 +10,11 @@
 #define __HEADER_GUARD__CORE_LOG_H__
 
 #include <string>
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 
 namespace core {
 
-class Log : public core::ILog
+class Log : public loglib::ILog
 {
 public:
 
@@ -27,10 +27,10 @@ public:
 
 	virtual void log(LogSeverity severity, const std::string& message);
 
-	virtual core::LogPtr subLog(const std::string & name) const;
+	virtual loglib::ILogPtr subLog(const std::string & name) const;
 
 private:
-	core::LogPtr logImpl;
+	loglib::ILogPtr logImpl;
 };
 
 }

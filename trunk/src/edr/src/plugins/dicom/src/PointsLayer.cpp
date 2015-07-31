@@ -426,7 +426,7 @@ std::pair<QColor, QColor> dicom::DrawersBuilder::getColors( annotations::annotat
         case annotations::noise:                           
             return std::make_pair(QColor(200, 200, 200), QColor(150, 150, 150));
         default:
-            throw core::runtime_error("Unknown annotation");
+            throw loglib::runtime_error("Unknown annotation");
     }
 }
 
@@ -463,7 +463,7 @@ bool dicom::DrawersBuilder::isOpenLine( annotations::annotationsIdx annotationId
     case annotations::noise:                           
         return false;
     default:
-        throw core::runtime_error("Unknown annotation");
+        throw loglib::runtime_error("Unknown annotation");
     }
 }
 
@@ -489,7 +489,7 @@ bool dicom::DrawersBuilder::isCurved( annotations::annotationsIdx annotationIdx 
     case annotations::noise:                           
         return false;
     default:
-        throw core::runtime_error("Unknown annotation");
+        throw loglib::runtime_error("Unknown annotation");
     }
 }
 

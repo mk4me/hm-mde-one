@@ -15,7 +15,7 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/INewChartSerie.h>
 #include <plugins/hmmlib/Export.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 using namespace core;
 
@@ -38,7 +38,7 @@ public:
         UTILS_ASSERT((channel != nullptr), "Wrong channel for Tracker");
 
         if(channel == nullptr){
-            throw core::runtime_error("Wrong channel for Tracker");
+            throw loglib::runtime_error("Wrong channel for Tracker");
         }
     }
     virtual ~ChannelNoCopyModifier() {}
@@ -65,7 +65,7 @@ public:
     virtual void setObservedChannel(const _MyChannelPtr & channel)
     {
         if(channel == nullptr){
-            throw core::runtime_error("Wrong channel for Tracker");
+            throw loglib::runtime_error("Wrong channel for Tracker");
         }
 
         //this->channel->detach(notifier.get());

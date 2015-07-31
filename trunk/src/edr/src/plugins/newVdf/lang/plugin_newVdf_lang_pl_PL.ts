@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="pl_PL">
+<TS version="2.1" language="pl_PL">
 <context>
     <name>CanvasStyleEditor</name>
     <message>
@@ -81,12 +81,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/NormalState.cpp" line="81"/>
+        <location filename="../src/NormalState.cpp" line="82"/>
         <source>Change node name</source>
         <translation>Zmień nazwę węzła</translation>
     </message>
     <message>
-        <location filename="../src/NormalState.cpp" line="82"/>
+        <location filename="../src/NormalState.cpp" line="83"/>
         <source>New name:</source>
         <translation>Nowa nazwa:</translation>
     </message>
@@ -133,7 +133,7 @@
 <context>
     <name>vdf::MergedWidget</name>
     <message>
-        <location filename="../src/MergedWidget.cpp" line="11"/>
+        <location filename="../src/MergedWidget.cpp" line="12"/>
         <source>Merged items</source>
         <translation type="unfinished"></translation>
     </message>
@@ -141,12 +141,12 @@
 <context>
     <name>vdf::NewVdfService</name>
     <message>
-        <location filename="../src/NewVdfService.cpp" line="51"/>
+        <location filename="../src/NewVdfService.cpp" line="155"/>
         <source>Transfer results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfService.cpp" line="196"/>
+        <location filename="../src/NewVdfService.cpp" line="201"/>
         <source>Processed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -154,83 +154,83 @@
 <context>
     <name>vdf::NewVdfWidget</name>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="36"/>
         <location filename="../src/NewVdfWidget.cpp" line="37"/>
-        <location filename="../src/NewVdfWidget.cpp" line="44"/>
+        <location filename="../src/NewVdfWidget.cpp" line="38"/>
+        <location filename="../src/NewVdfWidget.cpp" line="45"/>
         <source>Edit</source>
         <translation>Edytuj</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="36"/>
+        <location filename="../src/NewVdfWidget.cpp" line="37"/>
         <source>Undo</source>
         <translation>Cofnij</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="37"/>
+        <location filename="../src/NewVdfWidget.cpp" line="38"/>
         <source>Redo</source>
         <translation>Powtórz</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="39"/>
         <location filename="../src/NewVdfWidget.cpp" line="40"/>
         <location filename="../src/NewVdfWidget.cpp" line="41"/>
+        <location filename="../src/NewVdfWidget.cpp" line="42"/>
         <source>Misc</source>
         <translation>Inne</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="39"/>
+        <location filename="../src/NewVdfWidget.cpp" line="40"/>
         <source>Merge</source>
         <translation>Połącz</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="40"/>
+        <location filename="../src/NewVdfWidget.cpp" line="41"/>
         <source>Demerge</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="41"/>
+        <location filename="../src/NewVdfWidget.cpp" line="42"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="43"/>
+        <location filename="../src/NewVdfWidget.cpp" line="44"/>
         <source>Clear</source>
         <translation>Wyczyść</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="43"/>
+        <location filename="../src/NewVdfWidget.cpp" line="44"/>
         <source>Scene</source>
         <translation>Scena</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="44"/>
+        <location filename="../src/NewVdfWidget.cpp" line="45"/>
         <source>Delete</source>
         <translation>Usuń</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="45"/>
+        <location filename="../src/NewVdfWidget.cpp" line="46"/>
         <source>Run</source>
         <translation>Uruchom</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="116"/>
+        <location filename="../src/NewVdfWidget.cpp" line="117"/>
         <source>Confirm operation</source>
         <translation>Potwierdz operację</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="116"/>
+        <location filename="../src/NewVdfWidget.cpp" line="117"/>
         <source>Are You sure You want to clear scene?</source>
         <translation>Czy jesteś pewien że chcesz wyczyścić scenę?</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="131"/>
-        <location filename="../src/NewVdfWidget.cpp" line="152"/>
-        <location filename="../src/NewVdfWidget.cpp" line="154"/>
+        <location filename="../src/NewVdfWidget.cpp" line="135"/>
+        <location filename="../src/NewVdfWidget.cpp" line="157"/>
+        <location filename="../src/NewVdfWidget.cpp" line="159"/>
         <source>Error</source>
         <translation>Błąd</translation>
     </message>
     <message>
-        <location filename="../src/NewVdfWidget.cpp" line="154"/>
+        <location filename="../src/NewVdfWidget.cpp" line="159"/>
         <source>Unknown error</source>
         <translation>Nieznany błąd</translation>
     </message>
@@ -238,12 +238,12 @@
 <context>
     <name>vdf::PresetsWidget</name>
     <message>
-        <location filename="../src/PresetsWidget.cpp" line="17"/>
+        <location filename="../src/PresetsWidget.cpp" line="21"/>
         <source>Load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/PresetsWidget.cpp" line="18"/>
+        <location filename="../src/PresetsWidget.cpp" line="22"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>

@@ -8,7 +8,7 @@
 #include <QtCore/QTimer>
 #include <utils/Debug.h> 
 #include <corelib/PluginCommon.h>
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 #include <corelib/IFileDataManager.h>
 #include <corelib/Filesystem.h>
 #include <QtWidgets/QFileDialog>

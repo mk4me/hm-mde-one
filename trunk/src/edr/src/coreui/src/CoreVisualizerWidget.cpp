@@ -134,7 +134,7 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 	auto visWidget = visualizer->getOrCreateWidget();
 
 	if(visWidget == nullptr){
-		throw core::runtime_error("nullptr instead of QWidget obtained from Visualizer");
+		throw loglib::runtime_error("nullptr instead of QWidget obtained from Visualizer");
 	}
 	visualizer_->getSupportedTypes(supportedDataTypes);
 

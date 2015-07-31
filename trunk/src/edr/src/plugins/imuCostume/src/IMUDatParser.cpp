@@ -2,7 +2,7 @@
 #include "IMUDatParser.h"
 #include <fstream>
 #include <array>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 
 
@@ -73,7 +73,7 @@ std::pair<IMU::Frames, int> IMU::IMUDatParser::parse(const core::Filesystem::Pat
 		return std::make_pair(parse(path, maxCount), maxCount);
 	}
 
-	throw core::runtime_error("Unable to load file");
+	throw loglib::runtime_error("Unable to load file");
 }
 
 void IMU::IMUDatParser::save(const core::Filesystem::Path& path, const Frames& frames)
@@ -122,7 +122,7 @@ std::vector<IMU::Frames> IMU::IMUDatSplitter::split(const Frames& frames, const 
         int start = it->first;
         int end = it->second;
         if (end <= start) {
-            throw core::runtime_error("Invalid split format");
+            throw loglib::runtime_error("Invalid split format");
         }
         Frames f;
         for (int i = start; i <= end; ++i) {

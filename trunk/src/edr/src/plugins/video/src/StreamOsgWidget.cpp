@@ -2,7 +2,7 @@
 #include "StreamOsgWidget.h"
 #include <vidlib/osg/VideoImageStream.h>
 #include <corelib/PluginCommon.h>
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 #include <osg/TextureRectangle>
 
 ////////////////////////////////////////////////////////////////////////////////

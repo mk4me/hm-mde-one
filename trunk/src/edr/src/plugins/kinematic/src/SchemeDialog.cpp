@@ -158,7 +158,7 @@ QTreeWidgetItem* SchemeDialog::getItemWhichContains( QObject* object ) const
         }
 		
 	}
-	throw core::runtime_error("Tree item not found");
+	throw loglib::runtime_error("Tree item not found");
 }
 
 void SchemeDialog::setButtonColor( QPushButton* button, const QColor& color )

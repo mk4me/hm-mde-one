@@ -16,7 +16,7 @@
 #include <dflib/IDFNode.h>
 #include <dflib/Node.h>
 #include <functional>
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 #include <plugins/newVdf/INodeConfiguration.h>
 #include <QtWidgets/QLabel>
 

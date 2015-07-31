@@ -6,7 +6,7 @@
 #include <utils/Debug.h>
 #include <plugins/kinematic/Wrappers.h>
 #include <plugins/hmmlib/EMGFilter.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 #include <boost/lexical_cast.hpp>
 
 using namespace core;
@@ -24,7 +24,7 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 				s->innerSerie()->setName(path.toStdString());
 				tmpSeries.push_back(s);
 			}else{
-				throw core::runtime_error("Empty object - markers");
+				throw loglib::runtime_error("Empty object - markers");
 			}
 		}
 		if (motion->hasObject(typeid(SkeletonWithStates), false)) {
@@ -35,7 +35,7 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 				s->innerSerie()->setName(path.toStdString());
 				tmpSeries.push_back(s);
 			}else{
-				throw core::runtime_error("Empty object - joints");
+				throw loglib::runtime_error("Empty object - joints");
 			}
 		}
 		if (motion->hasObject(typeid(c3dlib::GRFCollection), false)) {
@@ -46,7 +46,7 @@ void Multiserie3D::createSeries( const VisualizerPtr & visualizer, const QString
 				s->innerSerie()->setName(path.toStdString());
 				tmpSeries.push_back(s);
 			}else{
-				throw core::runtime_error("Empty object - grfs");
+				throw loglib::runtime_error("Empty object - grfs");
 			}
 		}
 	}catch(...){
@@ -92,7 +92,7 @@ void JointsItemHelper::createSeries( const VisualizerPtr & visualizer, const QSt
 		s->innerSerie()->setName(path.toStdString());
         series.push_back(s);
     } else {
-        throw core::runtime_error("Empty object - joints");
+        throw loglib::runtime_error("Empty object - joints");
     }
 }
 
@@ -120,7 +120,7 @@ VisualizerPtr NewChartItemHelper::createVisualizer(core::IVisualizerManager* man
     INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
     if (!chart) {
         UTILS_ASSERT(false);
-        throw core::runtime_error("Wrong visualizer type!");
+        throw loglib::runtime_error("Wrong visualizer type!");
     } else {
         std::string title;
 		c3dlib::ScalarChannelReaderInterfaceConstPtr scalar = wrapper->get();
@@ -166,7 +166,7 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer(core::IVisualizerManager* m
     INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
     if (!chart) {
         UTILS_ASSERT(false);
-        throw core::runtime_error("Wrong visualizer type!");
+        throw loglib::runtime_error("Wrong visualizer type!");
     } else {
         std::string title;
 		c3dlib::VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
@@ -288,7 +288,7 @@ VisualizerPtr NewMultiserieHelper::createVisualizer(core::IVisualizerManager* ma
     INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
     if (!chart) {
         UTILS_ASSERT(false);
-        throw core::runtime_error("Wrong visualizer type!");
+        throw loglib::runtime_error("Wrong visualizer type!");
     } else {
         chart->setTitle(title);
         //chart->setShowLegend(false);

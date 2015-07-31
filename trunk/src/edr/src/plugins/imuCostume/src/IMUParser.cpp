@@ -22,7 +22,7 @@ using namespace IMU;
 //    if (cfgFiles.size() == 1) {
 //        config = IMUCFGParser::parse(cfgFiles[0].string());
 //    } else {
-//        //throw core::runtime_error("No config file");
+//        //throw loglib::runtime_error("No config file");
 //    }
 //    VectorChannelCollectionPtr accelerations = utils::make_shared<VectorChannelCollection>();
 //    VectorChannelCollectionPtr magnetometers = utils::make_shared<VectorChannelCollection>();

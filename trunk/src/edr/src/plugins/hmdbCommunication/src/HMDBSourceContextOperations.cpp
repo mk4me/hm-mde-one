@@ -17,7 +17,7 @@
 #include <numeric>
 #include <fstream>
 #include <corelib/PluginCommon.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 
 using namespace hmdbCommunication;
@@ -216,7 +216,7 @@ const std::list<IHMDBRemoteContext::DownloadOperationPtr> & DownloadHelper::down
 void DownloadHelper::store()
 {	
 	if (downloaded_.empty() == true){
-		throw core::runtime_error("Downloads failed. Could not synchronize");
+		throw loglib::runtime_error("Downloads failed. Could not synchronize");
 	}
 
 	auto t = storage->transaction();
@@ -864,7 +864,7 @@ void FileDownload::download()
 		auto const filePath = prepareHMDB->prepareFilePath();
 
 		if (filePath.empty() == true){
-			throw core::runtime_error("Empty file path to retrieve");
+			throw loglib::runtime_error("Empty file path to retrieve");
 		}
 		++progress_;
 
@@ -879,7 +879,7 @@ void FileDownload::download()
 		if (output == nullptr){
 			prepareHMDB->clearHMDB();
 			++progress_;
-			throw core::runtime_error("Uninitialized output stream");
+			throw loglib::runtime_error("Uninitialized output stream");
 		}
 		++progress_;
 
@@ -900,7 +900,7 @@ void FileDownload::download()
 			++progress_;
 			prepareHMDB->clearHMDB();
 			++progress_;
-			throw core::runtime_error("Uninitialized data transfer");
+			throw loglib::runtime_error("Uninitialized data transfer");
 		}
 
 		transfer->start();

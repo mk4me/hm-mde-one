@@ -17,7 +17,7 @@
 #include <boost/serialization/string.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 namespace boost {
     namespace serialization {
@@ -82,7 +82,7 @@ namespace boost {
                     v.push_back(QPointF(numbers[i], numbers[i + 1]));
                 }
             } else {
-                throw core::runtime_error("Wrong points number in xml file");
+                throw loglib::runtime_error("Wrong points number in xml file");
             }
         }
 

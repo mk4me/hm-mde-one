@@ -10,14 +10,14 @@
 #ifndef HEADER_GUARD_utils__Exceptions_H__
 #define HEADER_GUARD_utils__Exceptions_H__
 
-#include <corelib/PluginCommon.h>
-#include "ILog.h"
+#include <loglib/ILog.h>
+#include <loglib/Logger.h>
 #include <type_traits>
 #include <typeinfo>
 #include <future>
 
 
-namespace  core {
+namespace loglib {
 
 	class Exception
 	{
@@ -27,10 +27,9 @@ namespace  core {
 		template<typename MessageType>
 		inline static void log(const char * typeName, const MessageType & message)
 		{
-			static auto el = plugin::getApplication()->log()->subLog("exception");
+			static auto el = Logger::getLog();// ::getApplication()->log()->subLog("exception");
 			LOG_DEBUG(el, "First chance exception [type -> " << typeName << "]: " << message);
 		}
-
 	private:
 
 		//! klasa dodaje logowanie do standardowych wyj�tk�w z stl-a

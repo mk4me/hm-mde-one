@@ -10,7 +10,7 @@
 #include <QtCore/QDir>
 #include <utils/PtrPolicyStd.h>
 #include "Config.h"
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 #include <coreui/CoreMainWindow.h>
 #include <QtWidgets/QSplashScreen>
 #include <QtWidgets/QMessageBox>
@@ -144,7 +144,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 
 		//sprawdzamy czy uda?o si? wygenerowac poprawne sciezki alikacji
 		if (paths_ == nullptr){
-			throw core::runtime_error("Could not initialize application path interface");
+			throw loglib::runtime_error("Could not initialize application path interface");
 		}
 	}
 
@@ -154,6 +154,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 		logInitializer_.reset(new LogInitializer((paths_->getApplicationDataPath() / "resources" / "settings" / "log.ini").string()));
 
 		loggerPrototype_.reset(new Log());
+		loglib::Logger::setLog(loggerPrototype_->subLog("utils"));
 		logger_ = loggerPrototype_->subLog("core");
 	}
 
@@ -571,11 +572,11 @@ Application::~Application()
 		jobManager_.reset();
 		innerJobManager_.reset();
 		innerWorkManager_.reset();		
-		core::JobManager::setLog(LogPtr());
+		core::JobManager::setLog(loglib::ILogPtr());
 		CORE_LOG_INFO("Releasing thread pool");
 		threadPool_.reset();
 		innerThreadPool.reset();
-		core::ThreadPool::setLog(LogPtr());
+		core::ThreadPool::setLog(loglib::ILogPtr());
 		CORE_LOG_INFO("Cleaning translations");
 		languagesManager_.reset();
 
@@ -623,12 +624,12 @@ FileDataManager* Application::fileDataManager()
 	return fileDataManager_.get();
 }
 
-ILog* Application::logger()
+loglib::ILog* Application::logger()
 {
 	return logger_.get();
 }
 
-ILog* Application::loggerPrototype()
+loglib::ILog* Application::loggerPrototype()
 {
 	return loggerPrototype_.get();
 }

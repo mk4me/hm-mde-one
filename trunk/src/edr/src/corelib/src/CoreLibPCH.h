@@ -36,14 +36,14 @@
 #include <utils/SmartPtr.h>
 #include <utils/Export.h>
 
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 #include <corelib/BaseDataTypes.h>
 #include <corelib/VariantsCollection.h>
 #include <corelib/Filesystem.h>
 #include <corelib/IApplication.h>
 #include <corelib/PluginCommon.h>
 #include <corelib/IPath.h>
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 #include <corelib/IService.h>
 #include <corelib/ISource.h>
 #include <corelib/IVisualizer.h>

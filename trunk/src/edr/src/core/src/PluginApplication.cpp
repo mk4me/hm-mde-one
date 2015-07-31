@@ -37,7 +37,7 @@ IPluginStorage * PluginApplication::pluginStorage()
 	return nullptr;
 }
 
-ILog * PluginApplication::log()
+loglib::ILog * PluginApplication::log()
 {
 	return log_.get();
 }
@@ -137,12 +137,12 @@ IPluginStorage * MainViewApplication::pluginStorage()
 	return nullptr;
 }
 
-ILog * MainViewApplication::log()
+loglib::ILog * MainViewApplication::log()
 {
 	return getLogInterface();
 }
 
-ILog * MainViewApplication::exceptionLog()
+loglib::ILog * MainViewApplication::exceptionLog()
 {
 	return getLogInterface();
 }

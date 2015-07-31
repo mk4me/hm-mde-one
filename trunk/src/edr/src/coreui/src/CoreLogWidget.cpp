@@ -30,11 +30,11 @@ void CoreLogWidget::logEntry( const CoreLogWidgetEntry& entry )
 {
     QTextCharFormat fmt;
 
-    if ( entry.severity == core::ILog::LogSeverityInfo ) {
+    if ( entry.severity == loglib::ILog::LogSeverityInfo ) {
         fmt.setForeground( QColor(0, 0, 0, 255) );
-    } else if ( entry.severity == core::ILog::LogSeverityWarning ) {
+	} else if (entry.severity == loglib::ILog::LogSeverityWarning) {
         fmt.setForeground( QColor(255, 130, 0, 255) );
-    } else if ( entry.severity == core::ILog::LogSeverityError ) {
+	} else if (entry.severity == loglib::ILog::LogSeverityError) {
         fmt.setForeground( QColor(255, 0, 0, 255) );
     } else {
         fmt.setForeground( QColor(100, 150, 50, 255) );

@@ -17,7 +17,7 @@
 #include <utils/SmartPtr.h>
 #include <boost/thread/tss.hpp>
 #include <corelib/Export.h>
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 
 namespace core
 {
@@ -175,7 +175,7 @@ namespace core
 			const std::string & who, const std::string & destination = std::string());
 
 		//! \param log Logger kt�rego u�ywamy do logowania
-		static void setLog(LogPtr log);
+		static void setLog(loglib::ILogPtr log);
 
 	private:
 
@@ -185,7 +185,7 @@ namespace core
 		//! Wewn�trzny tp
 		InnerThreadPool * tp;
 		//! Logger
-		static LogPtr log_;
+		static loglib::ILogPtr log_;
 	};
 
 	typedef ThreadPool::Thread Thread;

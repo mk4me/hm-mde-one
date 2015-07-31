@@ -16,7 +16,7 @@
 #include <utils/SmartPtr.h>
 #include <QtCore/QString>
 #include <QtCore/QObject>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 class QWidget;
 
@@ -81,11 +81,11 @@ private:
     void activate(QWidget * contextWidget = nullptr)
     {
         if(active == true){
-            throw core::runtime_error("Trying to activate already active context");
+            throw loglib::runtime_error("Trying to activate already active context");
         }
 
         if(contextWidget != nullptr && contextWidgets.find(contextWidget) == contextWidgets.end()){
-            throw core::runtime_error("Trying to activate context from unsupported widget");
+            throw loglib::runtime_error("Trying to activate context from unsupported widget");
         }
 
         active = false;
@@ -110,7 +110,7 @@ private:
     void deactivate(QWidget * nextContextWidget = nullptr, bool refresh = false)
     {
         if(active == false){
-            throw core::runtime_error("Trying to deactivate inactive context");
+            throw loglib::runtime_error("Trying to deactivate inactive context");
         }
 
         deactivateContext(nextContextWidget, refresh);

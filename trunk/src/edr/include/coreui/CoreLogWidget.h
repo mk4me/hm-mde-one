@@ -11,7 +11,7 @@
 
 #include <coreui/Export.h>
 #include <utils/SmartPtr.h>
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 #include <queue>
 #include <QtWidgets/QWidget>
 #include <QtCore/QDate>
@@ -31,7 +31,7 @@ namespace coreUI {
 //! Wpis do konsoli.
 struct COREUI_EXPORT CoreLogWidgetEntry {
     //! Poziom ważności komuniaktu.
-    core::ILog::LogSeverity severity;
+	loglib::ILog::LogSeverity severity;
     //! Wiadomość.
     QString message;
     //! Plik źródłowy.

@@ -33,7 +33,7 @@ public:
 	//! \return Interfejs œcie¿ek aplikacji
 	virtual IPath * paths();
 	//! \return Interfejs do logowania
-	virtual ILog * log();
+	virtual loglib::ILog * log();
 	//! \return Interfejs do czytania danych
 	virtual IDataManagerReader * dataManagerReader();
 	//! \return Interfejs do czytania informacji o parserach
@@ -62,7 +62,7 @@ public:
 private:
 
 	utils::shared_ptr<IPath> path_;
-	utils::shared_ptr<ILog> log_;
+	utils::shared_ptr<loglib::ILog> log_;
 };
 
 class MainViewApplication : public IApplication
@@ -79,7 +79,7 @@ public:
 	//! \return Interfejs œcie¿ek aplikacji
 	virtual IPath * paths();
 	//! \return Interfejs do logowania
-	virtual ILog * log();
+	virtual loglib::ILog * log();
 	//! \return Interfejs do czytania danych
 	virtual IDataManagerReader * dataManagerReader();
 	//! \return Interfejs do czytania informacji o parserach
@@ -107,7 +107,7 @@ public:
 
 private:
 	//! \return Interfejs do logowania
-	virtual ILog * exceptionLog();
+	virtual loglib::ILog * exceptionLog();
 };
 
 }

@@ -22,7 +22,7 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QLayout>
 #include <plugins/newChart/INewChartVisualizer.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 #include <plugins/imuCostume/Streams.h>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
@@ -238,7 +238,7 @@ public:
 		INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
 		if (!chart) {
 			UTILS_ASSERT(false);
-			throw core::runtime_error("Wrong visualizer type!");
+			throw loglib::runtime_error("Wrong visualizer type!");
 		}
 		else {			
 			chart->setTitle(name + (units.isEmpty() == false ? " ["+units+"]" : ""));
@@ -329,7 +329,7 @@ public:
 		INewChartVisualizer* chart = dynamic_cast<INewChartVisualizer*>(visualizer->visualizer());
 		if (!chart) {
 			UTILS_ASSERT(false);
-			throw core::runtime_error("Wrong visualizer type!");
+			throw loglib::runtime_error("Wrong visualizer type!");
 		}
 		else {
 			chart->setTitle(name);

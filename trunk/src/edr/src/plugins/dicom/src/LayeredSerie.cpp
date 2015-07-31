@@ -399,7 +399,7 @@ std::string dicom::LayeredSerie::getImageFilename() const
         return sourceFile;
     }
 
-    throw core::runtime_error("Unable to find image file name");
+    throw loglib::runtime_error("Unable to find image file name");
 }
 
 

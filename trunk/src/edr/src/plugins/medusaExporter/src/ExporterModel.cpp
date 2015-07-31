@@ -129,7 +129,7 @@ void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFun
 		if (core::Filesystem::isDirectory(dir)) {
 			int count = icomm->shallowContextsCount();
 			if (count == 0 || count > 1) {
-				throw core::runtime_error("Only one user can be logged");
+				throw loglib::runtime_error("Only one user can be logged");
 			}
 			const hmdbCommunication::IHMDBShallowCopyContextPtr context =  icomm->shallowContext(0);
 			auto& shallowCopy = context->shallowCopyDataContext()->shallowCopy()->motionShallowCopy;
@@ -166,7 +166,7 @@ void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFun
 							catch (...){
 
 							}
-							throw core::runtime_error("Error while file extraction");
+							throw loglib::runtime_error("Error while file extraction");
 						}
 					}
 				}
@@ -186,14 +186,14 @@ void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFun
                 icomm->extractDataFromLocalStorage(dir);
                 fun(1.0f, QObject::tr("Done extracting"));
             } else {
-                throw core::runtime_error("User not logged");
+                throw loglib::runtime_error("User not logged");
             }
 			*/
 		} else {
-			throw core::runtime_error("Extracting error: invalid directory");
+			throw loglib::runtime_error("Extracting error: invalid directory");
 		}
 	} else {
-		throw core::runtime_error("Extracting error: communication plugin not found");
+		throw loglib::runtime_error("Extracting error: communication plugin not found");
 	}
 	
 }
@@ -205,7 +205,7 @@ void medusaExporter::ExporterModel::pack(const QString& dirPath, const QString& 
 		auto files = fs::listFilteredFiles(dir, true, filter);
 		int count = files.size();
 		if (count == 0) {
-			throw core::runtime_error("No files to pack");
+			throw loglib::runtime_error("No files to pack");
 		}
 		QuaZip zip(outFile);
 		zip.open(QuaZip::mdCreate);
@@ -221,13 +221,13 @@ void medusaExporter::ExporterModel::pack(const QString& dirPath, const QString& 
             auto tst = zip.getMode();
 			bool res = compressFile(&zip, filePath, fileDesc);
 			if (!res) {
-                throw core::runtime_error("Zip creation error");
+                throw loglib::runtime_error("Zip creation error");
 			}
 		}
 		zip.close();
 		fun(1.0f, "Done");
 	} else {
-		throw core::runtime_error("Problem with packing: wrong directory");
+		throw loglib::runtime_error("Problem with packing: wrong directory");
 	}
 }
 
@@ -361,7 +361,7 @@ std::map<std::string, bool> medusaExporter::ExporterModel::gatherPowerDopplers(c
 	auto transaction = fileManager->transaction();
 	float ratio = 0.05f;
 	if (files.empty()) {
-		throw core::runtime_error("No power doppler info");
+		throw loglib::runtime_error("No power doppler info");
 	}
 	float delta = (1.0f / files.size()) / 10.0f;
 	for (auto it = files.begin(); it != files.end(); ++it) {
@@ -457,7 +457,7 @@ void medusaExporter::ExporterModel::clearMedusaExportDir()
             fs::deleteDirectory(*it);
         }
     } else {
-        throw core::runtime_error("Wrong directory path");
+        throw loglib::runtime_error("Wrong directory path");
     }
 }
 

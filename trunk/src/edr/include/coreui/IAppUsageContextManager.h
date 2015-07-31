@@ -28,15 +28,15 @@ public:
     void addContext(const IAppUsageContextPtr & context, const IAppUsageContextPtr & parerntContext = IAppUsageContextPtr())
     {
         if(context == nullptr){
-            throw core::runtime_error("Trying to register uninitialized context");
+            throw loglib::runtime_error("Trying to register uninitialized context");
         }
 
         if(context == parerntContext){
-            throw core::runtime_error("Trying to create context loop");
+            throw loglib::runtime_error("Trying to create context loop");
         }
 
         if(parerntContext != nullptr && contexts.find(parerntContext) == contexts.end()){
-            throw core::runtime_error("Trying to register context within unregistered parent context");
+            throw loglib::runtime_error("Trying to register context within unregistered parent context");
         }
 
         auto contextIT = contexts.find(context);
@@ -61,23 +61,23 @@ public:
     void addWidgetToContext(const IAppUsageContextPtr & context, QWidget * contextWidget)
     {
         if(context == nullptr){
-            throw core::runtime_error("Trying to register uninitialized context");
+            throw loglib::runtime_error("Trying to register uninitialized context");
         }
 
         if(contextWidget == nullptr){
-            throw core::runtime_error("Trying to register uninitialized widget");
+            throw loglib::runtime_error("Trying to register uninitialized widget");
         }
 
         auto contextIT = contexts.find(context);
 
         if(contextIT == contexts.end()){
-            throw core::runtime_error("Trying to register widget to unregistered context");
+            throw loglib::runtime_error("Trying to register widget to unregistered context");
         }
 
         auto contextWidgetIT = widgets.find(contextWidget);
 
         if(contextWidgetIT != widgets.end()){
-            throw core::runtime_error("Trying to register already registered widget");
+            throw loglib::runtime_error("Trying to register already registered widget");
         }
 
         widgetContexts[contextWidget] = context;
@@ -91,7 +91,7 @@ public:
         auto contextIT = contexts.find(context);
 
         if(contextIT == contexts.end()){
-            throw core::runtime_error("Trying to remove unregistered context");
+            throw loglib::runtime_error("Trying to remove unregistered context");
         }
 
         if(context->isActive() == true){
@@ -117,7 +117,7 @@ public:
         auto it = widgetContexts.find(contextWidget);
 
         if(it == widgetContexts.end()){
-            throw core::runtime_error("Trying to remove unregistered context widget");
+            throw loglib::runtime_error("Trying to remove unregistered context widget");
         }
 
         if(it->second->isActive() == true && it->second->getCurrentContextWidget() == contextWidget){
@@ -212,11 +212,11 @@ public:
         auto contextIT = contexts.find(context);
 
         if(contextIT == contexts.end()){
-            throw core::runtime_error("Trying to set unregistered context");
+            throw loglib::runtime_error("Trying to set unregistered context");
         }
 
         if(contextWidget != nullptr && context->contextWidgets.find(contextWidget) == context->contextWidgets.end()){
-            throw core::runtime_error("Trying to set widget not registered within context");
+            throw loglib::runtime_error("Trying to set widget not registered within context");
         }
 
         innerSetCurrentContext(context, contextWidget);
@@ -240,7 +240,7 @@ public:
             auto it = widgetContexts.find(contextWidget);
 
             if(it == widgetContexts.end()){
-                throw core::runtime_error("Trying to activate unregistered context widget");
+                throw loglib::runtime_error("Trying to activate unregistered context widget");
             }
 
             innerSetCurrentContext(it->second, contextWidget);

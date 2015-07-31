@@ -39,7 +39,7 @@
 #include <utils/Push.h>
 
 #include <corelib/BaseDataTypes.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 #include <corelib/IService.h>
 #include <corelib/PluginCommon.h>
 #include <corelib/IDataManagerReader.h>

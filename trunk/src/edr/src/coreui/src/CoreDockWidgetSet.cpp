@@ -61,7 +61,7 @@ void CoreDockWidgetSet::addDockWidget(QDockWidget* widget, Qt::DockWidgetArea ar
         connect(widget, SIGNAL(dockLocationChanged ( Qt::DockWidgetArea )), this, SLOT(onDockWidgetLocationChanged(Qt::DockWidgetArea)));
         widgetsList.push_back(widget);
     } else {
-        throw core::runtime_error("Unable to add widget");
+        throw loglib::runtime_error("Unable to add widget");
     }
     QWidget::setUpdatesEnabled(true);
     raise();

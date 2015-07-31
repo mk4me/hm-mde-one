@@ -19,7 +19,7 @@
 #include <utils/Macros.h>
 
 #include <corelib/PluginCommon.h>
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 #include <corelib/IPath.h>
 #include <utils/SmartPtr.h>
 #include <corelib/IService.h> 

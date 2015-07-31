@@ -23,7 +23,7 @@
 #include <utils/SmartPtr.h>
 
 #include <corelib/IPlugin.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 //UTILS_PUSH_WARNINGS
 
 //UTILS_POP_WARNINGS

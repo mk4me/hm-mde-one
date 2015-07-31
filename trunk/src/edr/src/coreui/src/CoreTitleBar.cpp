@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <QtWidgets/QMenu>
 #include <QtGui/QPainter>
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 #include <corelib/PluginCommon.h>
 #include <coreui/CoreTitleBar.h>
 #include "ui_CoreTitleBar.h"

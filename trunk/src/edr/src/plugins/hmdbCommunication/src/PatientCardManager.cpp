@@ -1,7 +1,7 @@
 #include "CommunicationPCH.h"
 #include "PatientCardManager.h"
 #include <utils/Debug.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 PatientCardManager::PatientCardManager() :currentPatientCard_(-1)
 {
@@ -19,20 +19,20 @@ int PatientCardManager::registerPatientCard(hmdbCommunication::IPatientCard * pa
 
 	for(auto it = patientCards.begin(); it != patientCards.end(); ++it){
 		if((*it).patientCard.get() == patientCard){
-			throw core::runtime_error("Patient card already registered");
+			throw loglib::runtime_error("Patient card already registered");
 		}
 	}
 
 	std::string name(patientCard->name());
 
 	if(name.empty() == true){
-		throw core::runtime_error("Unnamed patient card");
+		throw loglib::runtime_error("Unnamed patient card");
 	}
 
 	QWidget * widget = patientCard->widget();
 
 	if(widget == nullptr){
-		throw core::runtime_error("Patient card without widget");
+		throw loglib::runtime_error("Patient card without widget");
 	}
 
 	int ret = patientCards.size();

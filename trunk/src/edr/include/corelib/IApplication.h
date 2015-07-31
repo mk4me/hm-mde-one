@@ -9,9 +9,11 @@
 #ifndef HEADER_GUARD___IAPPLICATION_H__
 #define HEADER_GUARD___IAPPLICATION_H__
 
+namespace loglib {
+	class ILog;
+}
 namespace core {
 
-	class ILog;
 	class IPath;
 	class IDataManagerReader;
 	class IParserManagerReader;
@@ -47,7 +49,7 @@ namespace core {
 		//! \return Interfejs œcie¿ek aplikacji
 		virtual IPath * paths() = 0;
 		//! \return Interfejs do logowania
-		virtual ILog * log() = 0;
+		virtual loglib::ILog * log() = 0;
 		//! \return Interfejs do czytania danych
 		virtual IDataManagerReader * dataManagerReader() = 0;
 		//! \return Interfejs do czytania informacji o parserach

@@ -15,6 +15,6 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 #include <utils/SmartPtr.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 #endif

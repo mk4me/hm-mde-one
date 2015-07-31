@@ -17,7 +17,7 @@
 #include <threadingUtils/WorkQueuePolicy.h>
 #include <corelib/ThreadPool.h>
 #include <corelib/Export.h>
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 
 namespace core
 {
@@ -226,7 +226,7 @@ namespace core
 		}
 
 		//! \param log Logger którego u¿ywamy do logowania
-		static void setLog(LogPtr log);
+		static void setLog(loglib::ILogPtr log);
 
 	private:
 
@@ -238,7 +238,7 @@ namespace core
 		InnerJobManager * jm;
 
 		//! Logger
-		static LogPtr log_;
+		static loglib::ILogPtr log_;
 	};
 }
 

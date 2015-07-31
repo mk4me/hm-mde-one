@@ -4,7 +4,7 @@
 #include "CURLFTPProgress.h"
 #include "CURLFTPTransferData.h"
 #include <curl/curl.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 using namespace hmdbCommunication;
 
@@ -16,7 +16,7 @@ CURLFTPTransfer::CURLFTPTransfer(const Direction direction, CURL * curl,
 	utils::shared_ptr<CURLFTPTransferData> * td = nullptr;
 	auto ret = curl_easy_getinfo(curl, CURLINFO_PRIVATE, &td);
 	if (ret != CURLE_OK || td == nullptr){
-		throw core::runtime_error("Improperly configured connection");
+		throw loglib::runtime_error("Improperly configured connection");
 	}
 
 	data_ = *td;

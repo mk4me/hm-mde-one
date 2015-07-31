@@ -102,19 +102,19 @@ inline Path* getPaths()
 }
 
 //! \return Interfejs logowania informacji
-inline ILog* getLogInterface()
+inline loglib::ILog* getLogInterface()
 {
 	return __application->logger();
 }
 
 //! \return Interfejs logowania informacji
-inline ILog* getExceptionLogInterface()
+inline loglib::ILog* getExceptionLogInterface()
 {
 	return __application->logger();
 }
 
 //! \return Interfejs logowania informacji
-inline ILog* getPrototypeLogInterface()
+inline loglib::ILog* getPrototypeLogInterface()
 {
 	return __application->loggerPrototype();
 }

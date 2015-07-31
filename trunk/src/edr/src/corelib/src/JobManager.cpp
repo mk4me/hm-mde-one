@@ -3,7 +3,7 @@
 
 using namespace core;
 
-LogPtr JobManager::log_;
+loglib::ILogPtr JobManager::log_;
 JobManager::JobBase::TLS JobManager::JobBase::tlsJD;
 
 void JobManager::logError(const std::string & message)
@@ -11,7 +11,7 @@ void JobManager::logError(const std::string & message)
 	LOG_ERROR(log_, "Job " << JobBase::currentName() << " owned by " << JobBase::currentOwner() << message << ". Job processing finished.");
 }
 
-void JobManager::setLog(LogPtr log)
+void JobManager::setLog(loglib::ILogPtr log)
 {
 	log_ = log;
 }

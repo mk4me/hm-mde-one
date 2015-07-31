@@ -2,12 +2,12 @@
 #include <corelib/ThreadPool.h>
 #include <corelib/PluginCommon.h>
 #include <corelib/IApplication.h>
-#include <corelib/ILog.h>
-#include <corelib/Exceptions.h>
+#include <loglib/ILog.h>
+#include <loglib/Exceptions.h>
 
 using namespace core;
 
-LogPtr ThreadPool::log_;
+loglib::ILogPtr ThreadPool::log_;
 
 ThreadPool::Thread::DescriptionLocalGuard::DescriptionLocalGuard(utils::shared_ptr<ThreadPool::Thread::Description> td)
 {
@@ -186,7 +186,7 @@ const ThreadPool::size_type ThreadPool::get(const size_type groupSize,
 	return ret;
 }
 
-void ThreadPool::setLog(LogPtr log)
+void ThreadPool::setLog(loglib::ILogPtr log)
 {
 	log_ = log;	
 }

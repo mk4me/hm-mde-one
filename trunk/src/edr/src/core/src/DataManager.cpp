@@ -3,7 +3,7 @@
 #include "RegisteredDataTypesManager.h"
 #
 #include "ApplicationCommon.h"
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 using namespace core;
 
@@ -74,12 +74,12 @@ public:
 	virtual void addData(const VariantPtr & data)
 	{
 		if(transactionRollbacked == true){
-			throw core::runtime_error("Memory transaction rolled-back");
+			throw loglib::runtime_error("Memory transaction rolled-back");
 		}
 
 		if(mdm->rawIsManaged(data) == true){
 			rollback();
-			throw core::runtime_error("Memory transaction tried to add data already managed by manager");
+			throw loglib::runtime_error("Memory transaction tried to add data already managed by manager");
 		}
 
 		rawAddData(data);
@@ -89,12 +89,12 @@ public:
 	virtual void removeData(const VariantConstPtr & data)
 	{
 		if(transactionRollbacked == true){
-			throw core::runtime_error("Memory transaction rolled-back");
+			throw loglib::runtime_error("Memory transaction rolled-back");
 		}
 
 		if(mdm->rawIsManaged(data) == false){
 			rollback();
-			throw core::runtime_error("Memory transaction tried to remove data not managed by manager");
+			throw loglib::runtime_error("Memory transaction tried to remove data not managed by manager");
 		}
 
 		rawRemoveData(data);
@@ -105,12 +105,12 @@ public:
 	virtual void updateData(const VariantConstPtr & data, const VariantConstPtr & newData)
 	{
 		if(transactionRollbacked == true){
-			throw core::runtime_error("Memory transaction rolled-back");
+			throw loglib::runtime_error("Memory transaction rolled-back");
 		}
 
 		if(mdm->rawIsManaged(data) == false){
 			rollback();
-			throw core::runtime_error("Memory transaction tried to edit data not managed by manager");
+			throw loglib::runtime_error("Memory transaction tried to edit data not managed by manager");
 		}
 
 		try{
@@ -169,7 +169,7 @@ public:
 	virtual void getObjects(ConstVariantsList & objects) const
 	{
 		if(transactionRollbacked == true){
-			throw core::runtime_error("Memory transaction rolled-back");
+			throw loglib::runtime_error("Memory transaction rolled-back");
 		}
 
 		mdm->rawGetObjects(objects);
@@ -178,7 +178,7 @@ public:
 	virtual void getObjects(ConstVariantsList & objects, const utils::TypeInfo & type, bool exact) const
 	{
 		if(transactionRollbacked == true){
-			throw core::runtime_error("Memory transaction rolled-back");
+			throw loglib::runtime_error("Memory transaction rolled-back");
 		}
 
 		mdm->rawGetObjects(objects, type, exact);
@@ -187,7 +187,7 @@ public:
 	virtual void getObjects(VariantsCollection& objects) const
 	{
 		if(transactionRollbacked == true){
-			throw core::runtime_error("Memory transaction rolled-back");
+			throw loglib::runtime_error("Memory transaction rolled-back");
 		}
 
 		mdm->rawGetObjects(objects);
@@ -196,7 +196,7 @@ public:
 	virtual const bool isManaged(const VariantConstPtr & object) const
 	{
 		if(transactionRollbacked == true){
-			throw core::runtime_error("Memory transaction rolled-back");
+			throw loglib::runtime_error("Memory transaction rolled-back");
 		}
 
 		return mdm->rawIsManaged(object);
@@ -205,7 +205,7 @@ public:
 	virtual const bool hasObject(const utils::TypeInfo & type, bool exact) const
 	{
 		if(transactionRollbacked == true){
-			throw core::runtime_error("Memory transaction rolled-back");
+			throw loglib::runtime_error("Memory transaction rolled-back");
 		}
 
 		return mdm->rawHasObject(type, exact);
@@ -310,7 +310,7 @@ void DataManager::addObserver(const ObserverPtr & objectWatcher)
 {
 	ScopedLock lock(sync);
 	if(std::find(observers.begin(), observers.end(), objectWatcher) != observers.end()){
-		throw core::runtime_error("Watcher already registered");
+		throw loglib::runtime_error("Watcher already registered");
 	}
 
 	observers.push_back(objectWatcher);
@@ -321,7 +321,7 @@ void DataManager::removeObserver(const ObserverPtr & objectWatcher)
 	ScopedLock lock(sync);
 	auto it = std::find(observers.begin(), observers.end(), objectWatcher);
 	if(it == observers.end()){
-		throw core::runtime_error("Watcher not registered");
+		throw loglib::runtime_error("Watcher not registered");
 	}
 
 	observers.erase(it);
@@ -356,7 +356,7 @@ void DataManager::addData(const VariantPtr & data)
 	ScopedLock lock(sync);
 
 	if(rawIsManaged(data) == true){
-		throw core::runtime_error("Object already managed by manager");
+		throw loglib::runtime_error("Object already managed by manager");
 	}
 
 	rawAddData(data);
@@ -374,7 +374,7 @@ void DataManager::removeData(const VariantConstPtr & data)
 	ScopedLock lock(sync);
 
 	if(rawIsManaged(data) == false){
-		throw core::runtime_error("Object not managed by manager");
+		throw loglib::runtime_error("Object not managed by manager");
 	}
 
 	rawRemoveData(data);
@@ -393,7 +393,7 @@ void DataManager::updateData(const VariantConstPtr & data, const VariantConstPtr
 	ScopedLock lock(sync);
 
 	if(rawIsManaged(data) == false){
-		throw core::runtime_error("Object not managed by manager");
+		throw loglib::runtime_error("Object not managed by manager");
 	}
 
 	ChangeList changes;
@@ -518,7 +518,7 @@ const bool DataManager::rawIsManaged(const VariantConstPtr & object) const
 {
 	auto type = object->data()->getTypeInfo();
 	if(getRegisteredDataTypesManager()->isRegistered(type) == false){
-		throw core::runtime_error(std::string("Type not registered: ") + type.name());
+		throw loglib::runtime_error(std::string("Type not registered: ") + type.name());
 	}
 
 	auto it = objectsByTypes.find(type);

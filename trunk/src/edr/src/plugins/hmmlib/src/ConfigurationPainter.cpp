@@ -2,7 +2,7 @@
 #include <QtGui/QCloseEvent>
 #include <stdexcept>
 #include <utils/Debug.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 ConfigurationPainter::ConfigurationPainter( QWidget* parent ) :
 QWidget(parent),
@@ -30,7 +30,7 @@ void ConfigurationPainter::addArea( const IAreaPtr & data )
 {
     for (auto it = areas.begin(); it != areas.end(); ++it) {
         if ((*it)->getName() == data->getName()) {
-            throw core::runtime_error("Picture already added!");
+            throw loglib::runtime_error("Picture already added!");
         }
     }
     data->setScale(scale);
@@ -46,7 +46,7 @@ void ConfigurationPainter::removeArea( const QString& name )
         }
     }
 
-    throw core::runtime_error("Picture not found!");
+    throw loglib::runtime_error("Picture not found!");
 }
 
 void ConfigurationPainter::mouseMoveEvent( QMouseEvent * event )

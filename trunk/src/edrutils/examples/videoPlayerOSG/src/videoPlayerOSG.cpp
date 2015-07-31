@@ -40,6 +40,10 @@
 #include <iostream>
 
 #include <vidlib/osg/ReaderWriterVidLib.h>
+
+#include <loglib/ILog.h>
+#include "loglib/Logger.h"
+#include "loglib/Exceptions.h"
 USE_OSGPLUGIN_VIDLIB();
 
 class MovieEventHandler : public osgGA::GUIEventHandler

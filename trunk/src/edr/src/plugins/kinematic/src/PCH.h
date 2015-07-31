@@ -14,7 +14,7 @@
 #include <type_traits>
 #include <boost/lexical_cast.hpp>
 
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 #include <corelib/IPlugin.h>
 #include <utils/SmartPtr.h>
 

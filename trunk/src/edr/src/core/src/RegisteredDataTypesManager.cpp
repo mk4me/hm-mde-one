@@ -2,7 +2,7 @@
 #include "RegisteredDataTypesManager.h"
 #include "ApplicationCommon.h"
 #include <utils/Debug.h>
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 namespace core {
 
@@ -104,7 +104,7 @@ namespace core {
 		th.prototype = owp->create();
 		it = typesHierarchy.insert(TypesHierarchy::value_type(typeInfo, th)).first;
 	}else if(it->second.prototype != nullptr) {
-		throw core::runtime_error("Type already registered");
+		throw loglib::runtime_error("Type already registered");
 	}else{
 		it->second.prototype = owp->create();
 	}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de_DE">
+<TS version="2.1" language="de_DE">
 <context>
     <name>ChannelWidget</name>
     <message>
@@ -35,17 +35,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TimelineWidget.cpp" line="131"/>
+        <location filename="../src/TimelineWidget.cpp" line="133"/>
         <source>Channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TimelineWidget.cpp" line="131"/>
+        <location filename="../src/TimelineWidget.cpp" line="133"/>
         <source>Active</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/TimelineWidget.cpp" line="131"/>
+        <location filename="../src/TimelineWidget.cpp" line="133"/>
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>

@@ -12,7 +12,7 @@
 #include <utils/SmartPtr.h>
 #include <corelib/Version.h>
 #include <corelib/BaseDataTypes.h>
-#include <corelib/ILog.h>
+#include <loglib/ILog.h>
 #include <corelib/IVisualizer.h>
 #include <corelib/ISource.h>
 #include <corelib/IService.h>
@@ -59,8 +59,8 @@ namespace core {
 		ExtendedVersion version_;
 		utils::shared_ptr<Path> paths_;
 		utils::shared_ptr<LogInitializer> logInitializer_;
-		LogPtr loggerPrototype_;
-		LogPtr logger_;
+		loglib::ILogPtr loggerPrototype_;
+		loglib::ILogPtr logger_;
 		utils::shared_ptr<ApplicationDescription> applicationDescription_;
 		utils::shared_ptr<LanguagesManager> languagesManager_;
 		utils::shared_ptr<PluginLoader> pluginLoader_;
@@ -130,9 +130,9 @@ namespace core {
 		DataManager* dataManager();
 		StreamDataManager* streamDataManager();
 		FileDataManager* fileDataManager();
-		ILog* logger();
-		ILog* exceptionLogger();
-		ILog* loggerPrototype();
+		loglib::ILog* logger();
+		loglib::ILog* exceptionLogger();
+		loglib::ILog* loggerPrototype();
 		Path* paths();
 		DataHierarchyManager* dataHierarchyManager();
 		RegisteredDataTypesManager* registeredDataTypesManager();

@@ -30,7 +30,7 @@ void SkeletonJointsMapping::init(kinematic::SkeletonConstPtr skeleton,
 
 			} else {
 				missing[it->first] = it->second;
-				//throw core::runtime_error("Could not perform joints mapping");
+				//throw loglib::runtime_error("Could not perform joints mapping");
 			}
 		} else {
 			++index;

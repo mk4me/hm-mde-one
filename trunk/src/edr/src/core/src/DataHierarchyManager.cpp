@@ -1,7 +1,7 @@
 #include "CorePCH.h"
 #include "DataHierarchyManager.h"
 #include "ApplicationCommon.h"
-#include <corelib/Exceptions.h>
+#include <loglib/Exceptions.h>
 
 using namespace core;
 
@@ -112,7 +112,7 @@ IDataHierarchyManagerReader::TransactionPtr core::DataHierarchyManager::transact
 void core::DataHierarchyManager::rawAddRoot( IHierarchyItemConstPtr ptr )
 {
     if (roots.find(ptr) != roots.end()) {
-        throw core::runtime_error("HierarchyDataManager - root is already added");
+        throw loglib::runtime_error("HierarchyDataManager - root is already added");
     }
 
     roots.insert(ptr);
@@ -122,7 +122,7 @@ void core::DataHierarchyManager::rawRemoveRoot( IHierarchyItemConstPtr ptr )
 {
     auto it = roots.find(ptr);
     if (it == roots.end()) {
-        throw core::runtime_error("HierarchyDataManager - root was not found");
+        throw loglib::runtime_error("HierarchyDataManager - root was not found");
     }
 
     roots.erase(it);
@@ -138,7 +138,7 @@ void core::DataHierarchyManager::addObserver( const ObserverPtr & objectWatcher 
 {
     ScopedLock lock(sync);
     if(std::find(observers.begin(), observers.end(), objectWatcher) != observers.end()){
-        throw core::runtime_error("Watcher already registered");
+        throw loglib::runtime_error("Watcher already registered");
     }
 
     observers.push_back(objectWatcher);
@@ -149,7 +149,7 @@ void core::DataHierarchyManager::removeObserver( const ObserverPtr & objectWatch
     ScopedLock lock(sync);
     auto it = std::find(observers.begin(), observers.end(), objectWatcher);
     if(it == observers.end()){
-        throw core::runtime_error("Watcher not registered");
+        throw loglib::runtime_error("Watcher not registered");
     }
 
     observers.erase(it);
