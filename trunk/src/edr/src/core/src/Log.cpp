@@ -27,19 +27,19 @@ public:
 		log4cxx::spi::LocationInfo location(fileName.c_str(), funcName.c_str(), lineNo);
 		switch(severity)
 		{
-		case LogSeverityDebug:
+		case Debug:
 			logger->debug(message, location);
 			break;
 
-		case LogSeverityError:
+		case Error:
 			logger->error(message, location);
 			break;
 
-		case LogSeverityInfo:
+		case Info:
 			logger->info(message, location);
 			break;
 
-		case LogSeverityWarning:
+		case Warning:
 			logger->warn(message, location);
 			break;
 
@@ -53,19 +53,19 @@ public:
 	{
 		switch(severity)
 		{
-		case LogSeverityDebug:
+		case Debug:
 			logger->debug(message);
 			break;
 
-		case LogSeverityError:
+		case Error:
 			logger->error(message);
 			break;
 
-		case LogSeverityInfo:
+		case Info:
 			logger->info(message);
 			break;
 
-		case LogSeverityWarning:
+		case Warning:
 			logger->warn(message);
 			break;
 
@@ -113,19 +113,19 @@ public:
 	{
 		switch(severity)
 		{
-		case LogSeverityDebug:
+		case Debug:
 			OSG_DEBUG << prefix << message << std::endl;
 			break;
 
-		case LogSeverityError:
+		case Error:
 			OSG_FATAL << prefix << message << std::endl;
 			break;
 
-		case LogSeverityInfo:
+		case Info:
 			OSG_NOTICE << prefix << message << std::endl;
 			break;
 
-		case LogSeverityWarning:
+		case Warning:
 			OSG_WARN << prefix << message << std::endl;
 			break;
 

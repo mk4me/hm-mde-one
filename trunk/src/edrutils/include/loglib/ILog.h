@@ -25,10 +25,10 @@ namespace loglib
 	public:
 		//! Poziom ważności wiadomości.
 		enum LogSeverity {
-			LogSeverityError,   //Błąd
-			LogSeverityWarning, //Ostrzeżenie
-			LogSeverityInfo,    //Informacja
-			LogSeverityDebug    //Testowanie
+			Error,   //Błąd
+			Warning, //Ostrzeżenie
+			Info,    //Informacja
+			Debug    //Testowanie
 		};
 
 	public:
@@ -55,13 +55,13 @@ namespace loglib
 
 #define LOG__(logger, severity, msg) do { logger->log(severity, UTILS_FORMAT_STRING(msg), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
 
-#define LOG_DEBUG(logger, msg)				LOG__(logger, loglib::ILog::LogSeverityDebug, msg)
+#define LOG_DEBUG(logger, msg)				LOG__(logger, loglib::ILog::Debug, msg)
 //! Makro logujące błąd
-#define LOG_ERROR(logger, msg)				LOG__(logger, loglib::ILog::LogSeverityError, msg)
+#define LOG_ERROR(logger, msg)				LOG__(logger, loglib::ILog::Error, msg)
 //! Makro logujące informację
-#define LOG_INFO(logger, msg)				LOG__(logger, loglib::ILog::LogSeverityInfo, msg)
+#define LOG_INFO(logger, msg)				LOG__(logger, loglib::ILog::Info, msg)
 //! Makro logujące ostrzeżenia
-#define LOG_WARNING(logger, msg)			LOG__(logger, loglib::ILog::LogSeverityWarning, msg)
+#define LOG_WARNING(logger, msg)			LOG__(logger, loglib::ILog::Warning, msg)
 
 #define SUB_LOG_DEBUG(logger, name, msg)	LOG_DEBUG(logger->subLog(name), msg)
 //! Makro logujące błąd

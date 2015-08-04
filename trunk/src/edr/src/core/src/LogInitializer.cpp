@@ -145,13 +145,13 @@ protected:
         CoreLogWidgetEntryPtr entry(new CoreLogWidgetEntry());
         int level = event->getLevel()->toInt();
         if ( level <= Level::DEBUG_INT ) {
-            entry->severity = loglib::ILog::LogSeverityDebug;
+            entry->severity = loglib::ILog::Debug;
         } else if ( level <= Level::INFO_INT ) {
-            entry->severity = loglib::ILog::LogSeverityInfo;
+            entry->severity = loglib::ILog::Info;
         } else if ( level <= Level::WARN_INT ) {
-            entry->severity = loglib::ILog::LogSeverityWarning;
+            entry->severity = loglib::ILog::Warning;
         } else {
-            entry->severity = loglib::ILog::LogSeverityError;
+            entry->severity = loglib::ILog::Error;
         }
 
         // rev - jakie flagi/ustawienia powoduja roznice? trzeba znalezc uniwersalne rozwiazanie
@@ -330,13 +330,13 @@ public:
 
         CoreLogWidgetEntryPtr entry(new CoreLogWidgetEntry());
         if ( severity >= osg::DEBUG_INFO ) {
-            entry->severity = loglib::ILog::LogSeverityDebug;
+            entry->severity = loglib::ILog::Debug;
         } else if ( severity >= osg::NOTICE ) {
-            entry->severity = loglib::ILog::LogSeverityInfo;
+            entry->severity = loglib::ILog::Info;
         } else if ( severity >= osg::WARN ) {
-            entry->severity = loglib::ILog::LogSeverityWarning;
+            entry->severity = loglib::ILog::Warning;
         } else {
-            entry->severity = loglib::ILog::LogSeverityError;
+            entry->severity = loglib::ILog::Error;
         }
         entry->message = QString::fromStdString(msg);
         entry->line = -1;

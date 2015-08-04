@@ -26,9 +26,7 @@ streamDM(nullptr)
 void FileSource::init( core::IDataManager * memoryDM, core::IStreamDataManager * streamDM, core::IFileDataManager * fileDM,
 	core::IDataHierarchyManager * hierarchyDM)
 {
-	auto logger = plugin::getLogInterface();
-	logger->log(loglib::ILog::LogSeverityInfo, std::string("Info..."), std::string("func name"), std::string("func name"), 10);
-    this->fileDM = fileDM;
+	this->fileDM = fileDM;
 	this->hierarchyDM = hierarchyDM;
     this->memoryDM = memoryDM;
     this->streamDM = streamDM;
