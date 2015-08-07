@@ -237,6 +237,28 @@ namespace threadingUtils
 			} while (cv.wait_for(lock, timeout) == std::cv_status::timeout);
 		}
 
+		template<class Rep, class Period, class Rep2, class Period2>
+		static void wait_for(std::condition_variable & cv,
+						 std::unique_lock<std::mutex> & lock,
+						 const std::chrono::duration<Rep, Period> & timeout,
+						 const std::chrono::duration<Rep2, Period2> & checkTime = DefaultTimeout)
+		{
+			auto start = std::chrono::system_clock::now();
+			interruptionPoint();
+			InterruptFlag::threadInterruptFlag()->setConditionVariable(cv);
+			InterruptFlag::ClearConditionVariableOnDestruct guard;
+			do {
+				interruptionPoint();
+				auto end = std::chrono::system_clock::now();
+				std::chrono::duration<double> diff = end - start;
+				if (diff >= timeout) {
+					return;
+				}
+			} while (cv.wait_for(lock, checkTime) == std::cv_status::timeout);
+		}
+
+
+
 		template<typename Predicate>
 		static void wait(std::condition_variable & cv,
 			std::unique_lock<std::mutex> & lock,

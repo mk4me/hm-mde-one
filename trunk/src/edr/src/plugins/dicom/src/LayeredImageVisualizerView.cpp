@@ -18,6 +18,7 @@
 #include <hmdbserviceslib/IAuthorizationWS.h>
 #include <coreui/CorePopup.h>
 #include <coreui/CoreCursorChanger.h>
+#include "plugins/dicom/AnnotationStatusManager.h"
 
 using namespace dicom;
 hmdbServices::DateTime LayeredImageVisualizerView::lastUpdate;
@@ -428,7 +429,8 @@ const dicom::LayeredImageVisualizerView::AnnotationStatus dicom::LayeredImageVis
 	dicom::LayeredImageVisualizerView::AnnotationStatus ret;
 
 	try{
-		ret = getAnnotationStatus(model->getActiveSerie(), model->getCurrentLayerUserName(), model->currnetTrialID(), refresh);
+		//ret = getAnnotationStatus(model->getActiveSerie(), model->getCurrentLayerUserName(), model->currnetTrialID(), refresh);
+		ret = getAnnotationStatus(model->getCurrentLayerUserName(), model->currnetTrialID(), refresh);
 	}
 	catch (...){
 		coreUI::CorePopup::showMessage(tr("Failed to get annotation status"), tr("Annotation status request failed. Please try again or contact software developers"));
@@ -578,58 +580,19 @@ void dicom::LayeredImageVisualizerView::changeSelection(const QModelIndex &mi)
 	selectionChanged(mi);
 }
 
-const dicom::LayeredImageVisualizerView::AnnotationStatus dicom::LayeredImageVisualizerView::getAnnotationStatus(const plugin::IVisualizer::ISerie* serie, const std::string& user, int trialId, bool refresh /*= true*/) const
+const dicom::LayeredImageVisualizerView::AnnotationStatus dicom::LayeredImageVisualizerView::getAnnotationStatus(const std::string& user, int trialId, bool refresh /*= true*/) const
 {
-	auto rsc = LayeredImageVisualizer::remoteShallowContext(serie);
-	auto remote = rsc->shallowCopyRemoteContext();
-	if (remote) {
-
-		auto session = remote->remoteContext()->session();
-
-		auto modTime = refresh ? session->motionQueries()->dataModificationTime() : lastUpdate;
-		if (lastUpdate < modTime){
-			auto resp = session->motionQueries()->listAnnotationsXML();
-			auto annotations = hmdbServices::xmlWsdl::parseAnnotations(resp);
-
-			std::map<int, std::map<int, AnnotationStatus>> annotationsByUsers;
-
-			for (const hmdbServices::xmlWsdl::Annotation & a : annotations){
-				AnnotationStatus as;
-				as.status = a.status;
-				as.comment = a.comment;
-				as.note = a.note;
-				annotationsByUsers[a.trialID][a.userID] = as;
-			}
-
-			auto respUsers = session->authorization()->listUsers();
-			usersList = hmdbServices::xmlWsdl::parseUsersList(respUsers);
-
-			this->annotations = annotationsByUsers;
-			lastUpdate = modTime;
-		}
-
-		auto sIT = annotations.find(trialId);
-		if (sIT != annotations.end()){
-			auto it = std::find_if(usersList.begin(), usersList.end(), [=](const hmdbServices::xmlWsdl::UserDetails & ud)
-			{
-				if (ud.login == user){
-					return true;
-				}
-				else{
-					return false;
-				}
-			});
-
-			if (it != usersList.end()){
-				auto IT = sIT->second.find(it->id);
-				if (IT != sIT->second.end()){
-					return IT->second;
-				}
-			}
-		}
+	try {
+		/*const AnnotationStatusManager::AnnotationData* ad = AnnotationStatusManager::instance()->getAnnotationData();
+		return ad->annotations.at(trialId).at(ad->user2Id.at(QString::fromStdString(user)));*/
+		return AnnotationStatusManager::instance()->getAnnotationStatus(user, trialId);
 	}
+	catch (...) {
+		PLUGIN_LOG_WARNING("Unable to get annotation status");
+	}
+
 	AnnotationStatus as;
 	as.status = hmdbServices::xmlWsdl::AnnotationStatus::Unspecified;
+	return as; 
 
-	return as;
 }

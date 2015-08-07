@@ -37,11 +37,7 @@ namespace dicom {
 
 	public:
 
-		struct AnnotationStatus {
-			hmdbServices::xmlWsdl::AnnotationStatus::Type status;
-			std::string comment;
-			std::string note;
-		};
+		typedef hmdbServices::xmlWsdl::Annotation AnnotationStatus;
 
 	public:
 		//! Standardowy konstruktor
@@ -90,7 +86,7 @@ namespace dicom {
 		void refreshChat(const AnnotationStatus & as);
 
 
-		const AnnotationStatus getAnnotationStatus(const plugin::IVisualizer::ISerie* serie, const std::string& user, int trialId, bool refresh = true) const;
+		const AnnotationStatus getAnnotationStatus(const std::string& user, int trialId, bool refresh = true) const;
 
 		const bool verifySerie();
 

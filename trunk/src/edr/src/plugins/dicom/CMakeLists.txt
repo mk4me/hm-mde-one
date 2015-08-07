@@ -9,6 +9,7 @@ SET_PUBLIC_HEADERS (
 	Annotations.h
 	ValueLayer.h
 	AnnotationStatusFilter.h
+	AnnotationStatusManager.h
 	DicomPerspective.h
 )
 
@@ -68,6 +69,7 @@ SET_SOURCE_FILES(
 	PngParser.cpp
 	LayeredModelView.cpp
 	spline.cpp
+	AnnotationStatusManager.cpp
 	DicomPerspective.cpp
 	LayersXmlParser.cpp
 	InternalXmlParser.cpp

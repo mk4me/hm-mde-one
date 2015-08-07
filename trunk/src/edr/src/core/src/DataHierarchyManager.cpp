@@ -61,7 +61,7 @@ public:
 
     virtual void updateRoot( IHierarchyItemConstPtr ptr )
     {
-		throw std::runtime_error("Not implemented");
+		//throw std::runtime_error("Not implemented");
         Change hc;
         hc.item = ptr;
 		hc.modification = IDataHierarchyManagerReader::UPDATE_ITEM;

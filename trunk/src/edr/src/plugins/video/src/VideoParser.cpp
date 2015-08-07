@@ -61,7 +61,6 @@ VideoParser::~VideoParser() {
 
 void VideoParser::parse(const IStreamPtr stream, const std::string & source) {
 	this->stream = stream;
-
 #ifndef WIN32
 	const auto tmpPath = (plugin::getPaths()->getTempFilePath()).string();
 	std::ofstream fle(tmpPath);
