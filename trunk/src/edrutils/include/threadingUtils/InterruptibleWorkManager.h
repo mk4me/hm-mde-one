@@ -213,7 +213,7 @@ namespace threadingUtils
 	public:
 
 		//! Konstruktor domy�lny
-		InterruptibleWorkManager(const WorkExceptionHandlePolicy & wehp = WorkExceptionHandlePolicy()
+		InterruptibleWorkManager(const WorkExceptionHandlePolicy & wehp = WorkExceptionHandlePolicy(),
 			const InterruptHandlePolicy & ihp = InterruptHandlePolicy())
 			: WorkExceptionHandlePolicy(wehp), InterruptHandlePolicy(ihp),
 			finalize_(false), forceFinalize_(false)//,activeCounter(0)

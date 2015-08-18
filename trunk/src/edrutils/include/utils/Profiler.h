@@ -270,7 +270,7 @@ struct ProfilerEntry
 
     //! \param length Długość nazwy.
     //! \return Nazwa typu. Nie jest zakończona zerem!
-    const char* getTypeName(int& length) const;
+    const char* getTypeName(std::size_t& length) const;
     //! \return Typ.
     const char* getFunctionName() const;
 };

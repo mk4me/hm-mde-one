@@ -11,7 +11,7 @@
 
 //! Te definy pochodz¹ z CMake - dodajemy je w Logic/ProjectUtils.cmake w zlae¿noœci od platformy
 #ifndef UTILS_DECL_EXPORT
-#  if defined(__WIN32__)
+#  if defined(_WINDOWS)
 #    define UTILS_DECL_EXPORT __declspec(dllexport)
 #  elif defined(__UNIX__)
 #    define UTILS_DECL_EXPORT __attribute__((visibility("default")))
@@ -22,7 +22,7 @@
 #  endif
 #endif
 #ifndef UTILS_DECL_IMPORT
-#  if defined(__WIN32__)
+#  if defined(_WINDOWS)
 #    define UTILS_DECL_IMPORT __declspec(dllimport)
 #  else
 #    define UTILS_DECL_IMPORT

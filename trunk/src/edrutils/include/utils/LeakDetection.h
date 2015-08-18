@@ -12,7 +12,7 @@
 
 #include <utils/Config.h>
 
-#ifdef __WIN32__
+#if defined(_WINDOWS)
 
 #   ifdef UTILS_ENABLE_LEAK_DETECTION_VLD
 

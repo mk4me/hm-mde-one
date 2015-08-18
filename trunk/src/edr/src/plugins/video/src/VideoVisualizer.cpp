@@ -7,6 +7,7 @@
 #include <osgWidget/Box>
 
 #include <osgViewer/Viewer>
+#include <osgViewer/ViewerEventHandlers>
 
 #include <osgui/AspectRatioKeeper.h>
 #include <osgui/OsgWidgetUtils.h>

@@ -3,7 +3,7 @@
 #include <boost/lexical_cast.hpp>
 #include <thread>
 
-#ifdef __WIN32__
+#if defined(_WINDOWS)
 #define NOMINMAX
 #include <Windows.h>
 #include <strsafe.h>

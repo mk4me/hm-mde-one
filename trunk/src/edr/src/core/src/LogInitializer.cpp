@@ -157,7 +157,7 @@ protected:
         // rev - jakie flagi/ustawienia powoduja roznice? trzeba znalezc uniwersalne rozwiazanie
         // jeśli Utf16 jest ustawiane w konfiguracji, to nie można tego tak zahardcodować
 
-        #ifdef __WIN32__
+		#if defined(_WINDOWS)
 			#if LOG4CXX_LOGCHAR_IS_WCHAR
 				entry->message = QString::fromUtf16( reinterpret_cast<const ushort*>(buf.c_str()) );
 			#endif

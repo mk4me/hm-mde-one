@@ -142,11 +142,6 @@ loglib::ILog * MainViewApplication::log()
 	return getLogInterface();
 }
 
-loglib::ILog * MainViewApplication::exceptionLog()
-{
-	return getLogInterface();
-}
-
 ISourceManager * MainViewApplication::sourceManager()
 {
 	return getSourceManager();

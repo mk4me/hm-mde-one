@@ -13,7 +13,7 @@
 
 namespace core
 {
-	class CORELIB_EXPORT JobManager : public IJobManager
+	class JobManager : public IJobManager
 	{
 	public:
 

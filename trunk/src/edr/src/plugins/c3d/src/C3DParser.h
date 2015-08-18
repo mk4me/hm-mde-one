@@ -43,7 +43,7 @@ public:
     virtual void parse(const std::string & source);
     //! \return pusty obiekt nowego parsera
     virtual plugin::IParser* create() const;
-	virtual void getObject(core::Variant & object, const unsigned int idx) const;
+	virtual void getObject(core::Variant & object, const core::VariantsVector::size_type idx) const;
     //! Zwraca rozszerzenia, które są obsługiwane przez parser (tylko c3d)
     //! \param extensions kolecja z roszerzeniami
     virtual void acceptedExpressions(Expressions & expressions) const;

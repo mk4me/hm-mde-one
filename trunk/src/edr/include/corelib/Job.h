@@ -12,6 +12,7 @@
 #include <corelib/Export.h>
 #include <boost/thread/tss.hpp>
 #include <utils/SmartPtr.h>
+#include <corelib/JobManagerTypes.h>
 
 namespace core
 {
@@ -29,22 +30,11 @@ namespace core
 			std::string name;
 		};
 
-		struct JobGuard
+		struct CORELIB_EXPORT JobGuard
 		{
-			JobGuard(utils::shared_ptr<Description> description)
-			{
-				if (JobBase::tlsJD.get() == nullptr){
-					JobBase::tlsJD.reset(new utils::shared_ptr<Description>(description));
-				}
-				else{
-					(*JobBase::tlsJD) = description;
-				}
-			}
+			JobGuard(utils::shared_ptr<Description> description);
 
-			~JobGuard()
-			{
-				(*(*JobBase::tlsJD)) = Description({ "No explicit owner", "No explicit name" });
-			}
+			~JobGuard();
 		};
 
 		friend struct JobGuard;
@@ -55,61 +45,32 @@ namespace core
 
 	protected:
 
-		JobBase() = default;
+		JobBase();
 
 		JobBase(const JobBase & Other) = delete;
 
-		JobBase(utils::shared_ptr<Description> description)
-			: description(description)
-		{
+		JobBase(utils::shared_ptr<Description> description);
 
-		}
+		JobBase(JobBase && Other);
 
-		JobBase(JobBase && Other) : description(std::move(Other.description))
-		{
-
-		}
-
-		virtual ~JobBase()
-		{
-
-		}
+		virtual ~JobBase();
 
 		//! \param Other W¹tek którego zasoby przejmujemy
-		JobBase& operator=(JobBase&& Other) NOEXCEPT
-		{
-			description = std::move(Other.description);
-			return *this;
-		}
+		JobBase& operator=(JobBase&& Other) NOEXCEPT;
 
 		JobBase& operator=(const JobBase&) = delete;
 
-		void swap(JobBase & Other) NOEXCEPT
-		{
-			std::swap(description, Other.description);
-		}
+		void swap(JobBase & Other) NOEXCEPT;
 
 	public:
 
-		const std::string owner() const
-		{
-			return description != nullptr ? description->owner : "No explicit owner";
-		}
+		const std::string owner() const;
 
-		const std::string name() const
-		{
-			return description != nullptr ? description->name : "No explicit name";
-		}
+		const std::string name() const;
 
-		static const std::string currentOwner()
-		{
-			return (*tlsJD)->owner;
-		}
+		static const std::string currentOwner();
 
-		static const std::string currentName()
-		{
-			return (*tlsJD)->name;
-		}
+		static const std::string currentName();
 
 	private:
 

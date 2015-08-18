@@ -108,7 +108,7 @@ void PluginLoader::unloadPlugins()
 void PluginLoader::load()
 {
 
-#if defined(__WIN32__)
+#if defined(_WINDOWS)
 	static const std::regex pluginFilter("^plugin_.*\\.dll$");
 #elif defined(__UNIX__)
     // GCC cos nie radzi sobie ze znakami początku i końca linii !?
@@ -169,7 +169,7 @@ void PluginLoader::load()
 
 HMODULE PluginLoader::loadSharedLibrary(const Filesystem::Path & path)
 {
-#if defined(__WIN32__)
+#if defined(_WINDOWS)
 	return ::LoadLibrary( path.string().c_str() );
 #elif defined(__UNIX__)
 	return dlopen(path.string().c_str(), RTLD_LAZY);
@@ -182,7 +182,7 @@ HMODULE PluginLoader::loadSharedLibrary(const Filesystem::Path & path)
 void PluginLoader::unloadSharedLibrary(HMODULE library)
 {
 	if(library){
-#if defined(__WIN32__)
+#if defined(_WINDOWS)
 		FreeLibrary(library);
 #elif defined(__UNIX__)
 		dlclose(library);
@@ -194,7 +194,7 @@ void PluginLoader::unloadSharedLibrary(HMODULE library)
 
 const std::string PluginLoader::lastLoadSharedLibraryError()
 {
-#if defined(__WIN32__)
+#if defined(_WINDOWS)
 	DWORD err = ::GetLastError();
 	LPSTR errStr;
 	if (::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, err, 0, reinterpret_cast<LPSTR>(&errStr), 0, nullptr)) {

@@ -73,6 +73,7 @@ SET_SOURCE_FILES(
 	Variant.cpp
 	#Exceptions.cpp
 	Thread.cpp
+	Job.cpp
 )
 
 SET_PRIVATE_HEADERS(

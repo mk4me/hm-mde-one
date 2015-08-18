@@ -213,7 +213,7 @@ OrientationEstimator::~OrientationEstimator()
 
 }
 
-ArrayExtractor::ArrayExtractor(const unsigned int idx)
+ArrayExtractor::ArrayExtractor(const std::size_t idx)
 	: idx(idx)
 {
 
@@ -231,7 +231,7 @@ ArrayExtractor::~ArrayExtractor()
 }
 
 //! \param idx Index obiketu który chcemy wypakowywaæ z wektora
-CompoundArrayExtractor::CompoundArrayExtractor(const unsigned int idx)
+CompoundArrayExtractor::CompoundArrayExtractor(const std::size_t idx)
 	: idx(idx)
 {
 

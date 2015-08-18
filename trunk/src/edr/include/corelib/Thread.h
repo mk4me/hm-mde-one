@@ -55,8 +55,11 @@ namespace core
 		template<typename T>
 		Thread(const T & logger, InnerThreadPool::Thread && innerThread, const std::string & owner,
 			const std::string & destination) : logger(logger), innerThread(std::move(innerThread)),
-			description(std::make_shared<Description>({ owner, destination }))
-		{}
+			description(std::make_shared<Description>())
+		{
+			description->owner = owner;
+			description->destination = destination;
+		}
 
 		//! Domy�lny konstruktor
 		Thread();

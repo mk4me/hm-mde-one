@@ -7,7 +7,7 @@
 #include <utils/Macros.h>
 #include <utils/System.h>
 
-#if __WIN32__
+#if defined(_WINDOWS)
 #define NOMINMAX
 #include <Windows.h>
 #endif
@@ -264,7 +264,7 @@ std::string Profiler::createCSV()
     // pobranie bieżącego czasu
     time_t rawtime;
     time ( &rawtime );
-#ifdef __WIN32__
+#if defined(_WINDOWS)
     struct tm timeinfo;
     localtime_s(&timeinfo, &rawtime);
     char timeBuffer[26] = { 0 };
@@ -307,7 +307,7 @@ void Profiler::addEntry( ProfilerEntry * entry )
     // jest podjęte w celu optymalizacji czasowej
     if ( entry->id == ProfilerEntry::InvalidID ) {
         // czemu nie instance.nextID++? ponieważ tutaj jest mniejsze prawdopodobieństwo błędu.
-#if __WIN32__
+#if defined(_WINDOWS)
         entry->id = InterlockedIncrement(&instance.nextID) - 1;
 #else
         entry->id = ++instance.nextID - 1;
@@ -328,7 +328,7 @@ void Profiler::setThreadEnabled( bool enabled )
         } else {
             disableThread(thread);
         }
-#if __WIN32__
+#if defined(_WINDOWS)
     }
     InterlockedExchangeAdd64(&overhead, getTick() - start);
 #else
@@ -355,7 +355,7 @@ Profiler::State* Profiler::getState()
                 result = threadList[idx].second;
             }
         }
-#if __WIN32__
+#if defined(_WINDOWS)
     }
     InterlockedExchangeAdd64(&overhead, getTick() - start);
 #else
@@ -448,7 +448,7 @@ void Profiler::stateToCSV( const State& state, std::ostream& output, const threa
         if ( measurement->entrances ) {
             // bezpieczny dostęp nawet w warunkach wyścigu
             ProfilerEntry* entry = entires[i];
-            int nameLength;
+            std::size_t nameLength;
             const char* typeName = entry->getTypeName(nameLength);
             // opcjonalna kolumna z id wątku
             if ( id ) {
@@ -481,7 +481,7 @@ ProfilerEntry::~ProfilerEntry()
 {
 }
 
-const char* ProfilerEntry::getTypeName(int& length) const
+const char* ProfilerEntry::getTypeName(std::size_t& length) const
 {
     // początek bloku argumentów
     int parasynthesisDepth = 0;
@@ -529,7 +529,7 @@ const char* ProfilerEntry::getTypeName(int& length) const
 
 const char* ProfilerEntry::getFunctionName() const
 {
-#if defined(__WIN32__)
+#if defined(_WINDOWS)
     const char * end = strrchr(function, ':');
     if ( end ) {
         return end+1;

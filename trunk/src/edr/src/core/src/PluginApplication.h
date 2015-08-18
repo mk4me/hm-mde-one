@@ -16,6 +16,8 @@
 #include "DataManager.h"
 #include "StreamDataManager.h"
 #include "FileDataManager.h"
+#include "ThreadPool.h"
+#include "JobManager.h"
 
 namespace core {
 
@@ -104,10 +106,6 @@ public:
 	virtual ThreadPool * threadPool();
 	//! \return Interfejs dostêpu do serwisów
 	virtual JobManager * jobManager();
-
-private:
-	//! \return Interfejs do logowania
-	virtual loglib::ILog * exceptionLog();
 };
 
 }

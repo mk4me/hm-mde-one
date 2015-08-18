@@ -1,9 +1,10 @@
 #include "PCH.h"
 #include "GRFSerie.h"
 
-using namespace osg;
-using namespace boost;
-using namespace std;
+//using namespace core;
+//using namespace osg;
+//using namespace boost;
+//using namespace std;
 
 //! skala strzałki ukazującej siłę nacisku
 const osg::Vec3 arrowScale(0.01f, 0.01f, 1.0f);
@@ -61,11 +62,11 @@ osg::ref_ptr<osg::Group> GRFSerie::createPlatformsGroup(const c3dlib::IForcePlat
 		
 		platformGeode->setStateSet(stateset);
 
-        osg::ref_ptr<osg::Box> box = new osg::Box((*it)->getCenter() - Vec3(0,0, 0.025f), (*it)->getWidth(), (*it)->getLength(), 0.025f);		
+		osg::ref_ptr<osg::Box> box = new osg::Box((*it)->getCenter() - osg::Vec3(0, 0, 0.025f), (*it)->getWidth(), (*it)->getLength(), 0.025f);
 		
         osg::ref_ptr<osg::ShapeDrawable> platform1 = new osg::ShapeDrawable(box);
         platform2Shape[*it] = platform1;
-        platform1->setColor(Vec4(0.5f, 0.5f, 0.3f, 1.0f));
+		platform1->setColor(osg::Vec4(0.5f, 0.5f, 0.3f, 1.0f));
         platformGeode->addDrawable(platform1.get());
 		
 		++i;
@@ -111,7 +112,7 @@ GRFSerie::GeodePtr GRFSerie::createStep(c3dlib::IForcePlatform::IStepConstPtr st
     float delta = (f1->getLength() / static_cast<float>(numSegments));
     GeodePtr geode = new osg::Geode();
     osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array;
-    Vec3 v;
+	osg::Vec3 v;
     osg::Vec3 origin1 = platform->getCenter();
 
     osg::Vec4 highColor(1.0f, 0.0f, 0.0f, 0.7f);
@@ -246,8 +247,8 @@ GRFSerie::ArrowPtr GRFSerie::createArrow()
 	GeodePtr boxGeode = new osg::Geode();
 	GeodePtr coneGeode = new osg::Geode();
 
-	osg::ref_ptr<osg::Box> unitBox = new osg::Box(Vec3(0, 0, 0), 0.5f, 0.5f, 0.9f);
-	osg::ref_ptr<osg::Cone> unitCone = new osg::Cone(Vec3(0, 0, 0), 1.0f, 0.1f);
+	osg::ref_ptr<osg::Box> unitBox = new osg::Box(osg::Vec3(0, 0, 0), 0.5f, 0.5f, 0.9f);
+	osg::ref_ptr<osg::Cone> unitCone = new osg::Cone(osg::Vec3(0, 0, 0), 1.0f, 0.1f);
 	osg::ref_ptr<osg::ShapeDrawable> boxShape = new osg::ShapeDrawable(unitBox);
 	osg::ref_ptr<osg::ShapeDrawable> coneShape = new osg::ShapeDrawable(unitCone);
 
@@ -260,10 +261,10 @@ GRFSerie::ArrowPtr GRFSerie::createArrow()
 
 	transformBox->addChild(boxGeode);
 	transformBox->setName("BOX");
-	transformBox->setPosition(Vec3(0, 0, 0.45f));
+	transformBox->setPosition(osg::Vec3(0, 0, 0.45f));
 	transformCone->addChild(coneGeode);
 	transformCone->setName("CONE");
-	transformCone->setPosition(Vec3(0, 0, 0.45f));
+	transformCone->setPosition(osg::Vec3(0, 0, 0.45f));
 
 	transform->setScale(arrowScale);
 
@@ -302,7 +303,7 @@ GRFSerie::TransformPtr GRFSerie::createPlatformTransform(osg::Texture2D* texture
 	GeometryPtr geometry = new osg::Geometry();
 	//geode->addDrawable(geometry);
 	osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array;
-	Vec3 v;
+	osg::Vec3 v;
 	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
 	osg::ref_ptr<osg::Vec2Array> coord = new osg::Vec2Array;
 
@@ -323,7 +324,7 @@ GRFSerie::TransformPtr GRFSerie::createPlatformTransform(osg::Texture2D* texture
 	geometry->setTexCoordArray(0, coord);
 	
 	geometry->setColorArray(colors);
-	geometry->setColorBinding(Geometry::BIND_OVERALL);
+	geometry->setColorBinding(osg::Geometry::BIND_OVERALL);
 	geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, verts->size()));
 	//geometry->setPrimitiveSet(0, indices);
 	
@@ -416,11 +417,11 @@ double GRFSerie::getEnd() const
 
 
 
-void GRFSerie::Arrow::setArrow( Vec3 from, Vec3 to )
+void GRFSerie::Arrow::setArrow(osg::Vec3 from, osg::Vec3 to)
 {
-	Vec3 dir = to - from;
-	Vec3 zero;
-	Vec3 up(0.0f, 1.0f, 0.0f);
+	osg::Vec3 dir = to - from;
+	osg::Vec3 zero;
+	osg::Vec3 up(0.0f, 1.0f, 0.0f);
 	float length = dir.normalize();
     if (length < 0.01f) {
         dir.set(0,0,0.1f);
@@ -429,9 +430,9 @@ void GRFSerie::Arrow::setArrow( Vec3 from, Vec3 to )
 	osg::Matrix mat;
 	osg::Quat rotation;
 	mat.makeLookAt(zero, -dir, up);
-	rotation.set(Matrix::inverse(mat));
+	rotation.set(osg::Matrix::inverse(mat));
 
-	mainPtr->setScale(Vec3(arrowScale[0], arrowScale[1], arrowScale[2] * length));
+	mainPtr->setScale(osg::Vec3(arrowScale[0], arrowScale[1], arrowScale[2] * length));
 	mainPtr->setAttitude(rotation);
 	mainPtr->setPosition(from);
 }

@@ -283,7 +283,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	{
 		showSplashScreenMessage(QObject::tr("Initializing threading"));		
 
-		core::ThreadPool::setLog(logger_->subLog("threadPool"));
+		//core::ThreadPool::setLog(logger_->subLog("threadPool"));
 		auto minThreads = std::thread::hardware_concurrency();
 		if (minThreads < 2){
 			//tyle by wypada�o �eby nowe maszyny dawa�y rad� - 2xCore x2 threads per core
@@ -294,15 +294,15 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 			--minThreads;
 		}
 
-		innerThreadPool.reset(new core::ThreadPool::InnerThreadPool(minThreads, minThreads * 10));
+		innerThreadPool.reset(new core::InnerThreadPool(minThreads, minThreads * 10));
 		threadPool_.reset(new core::ThreadPool(innerThreadPool.get()));
 
-		core::JobManager::setLog(logger_->subLog("jobManager"));
-		innerWorkManager_.reset(new core::JobManager::InnerWorkManager);
-		innerJobManager_.reset(new core::JobManager::InnerJobManager(innerWorkManager_.get()));
+		//core::JobManager::setLog(logger_->subLog("jobManager"));
+		innerWorkManager_.reset(new core::InnerWorkManager);
+		innerJobManager_.reset(new core::InnerJobManager(innerWorkManager_.get()));
 		jobManager_.reset(new core::JobManager(innerJobManager_.get()));
 			
-		core::Threads threads;
+		core::IThreadPool::Threads threads;
 		threadPool_->get(std::thread::hardware_concurrency() - 1, threads,  true, "Core", "JobManager worker thread");
 
 		for (auto && t : threads){			
@@ -572,11 +572,11 @@ Application::~Application()
 		jobManager_.reset();
 		innerJobManager_.reset();
 		innerWorkManager_.reset();		
-		core::JobManager::setLog(loglib::ILogPtr());
+		//core::JobManager::setLog(loglib::ILogPtr());
 		CORE_LOG_INFO("Releasing thread pool");
 		threadPool_.reset();
 		innerThreadPool.reset();
-		core::ThreadPool::setLog(loglib::ILogPtr());
+		//core::ThreadPool::setLog(loglib::ILogPtr());
 		CORE_LOG_INFO("Cleaning translations");
 		languagesManager_.reset();
 

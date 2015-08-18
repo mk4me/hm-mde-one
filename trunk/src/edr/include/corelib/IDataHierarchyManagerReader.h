@@ -8,6 +8,7 @@
 #ifndef __HEADER_GUARD___IDATAHIERARCHYMANAGERREADER_H__
 #define __HEADER_GUARD___IDATAHIERARCHYMANAGERREADER_H__
 
+#include <set>
 #include <corelib/IHierarchyItem.h>
 #include <corelib/BaseDataTypes.h>
 

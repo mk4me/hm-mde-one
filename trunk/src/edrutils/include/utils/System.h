@@ -10,7 +10,7 @@
 #define HEADER_GUARD__SYSTEM_H__
 
 #include <utils/Config.h>
-#if defined(__WIN32__)
+#if defined(_WINDOWS)
 #define NOMINMAX
 #include <Windows.h>
 #elif defined(__UNIX__)
@@ -27,7 +27,7 @@ namespace utils {
 namespace __system {
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef __WIN32__
+#if defined(_WINDOWS)
 
 //! Typ tyknięcia zegara.
 typedef long long Tick;

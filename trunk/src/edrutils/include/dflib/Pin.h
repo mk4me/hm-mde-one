@@ -324,7 +324,7 @@ public:
 
 	virtual void removeConnection(IConnection * connection);
 
-	virtual const bool dependsOn(const IInputPin * pin) const;
+	virtual const bool dependsOn(const IInputPin * pin) const;	
 
 	virtual const size_type dependencySize() const;
 

@@ -32,7 +32,7 @@ public:
 	};
 
 	//! Typ iloœci po³¹czeñ
-	typedef unsigned int size_type;
+	typedef std::size_t size_type;
 
 public:
 	//! \return Typ pinu

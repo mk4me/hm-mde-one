@@ -166,7 +166,7 @@ void C3DParser::reset()
 	utils::ObjectsVector().swap(data);
 }
 
-void C3DParser::getObject(core::Variant & object, const unsigned int idx) const
+void C3DParser::getObject(core::Variant & object, const core::VariantsVector::size_type idx) const
 {
 	object.set(data[idx]);
 	object.setMetadata("core/source", path);
