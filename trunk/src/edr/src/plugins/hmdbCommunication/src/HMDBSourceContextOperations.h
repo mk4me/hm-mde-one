@@ -8,13 +8,13 @@
 #ifndef __HEADER_GUARD_HMDBCOMMUNICATION__HMDBSOURCECONTEXTOPERATIONS_H__
 #define __HEADER_GUARD_HMDBCOMMUNICATION__HMDBSOURCECONTEXTOPERATIONS_H__
 
-#include <corelib/JobManager.h>
+#include <corelib/IJobManager.h>
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <plugins/hmdbCommunication/IHMDBFtp.h>
 #include "ShallowCopyUtils.h"
 #include <atomic>
 #include <corelib/Filesystem.h>
-#include <corelib/JobManager.h>
+#include <corelib/IJobManager.h>
 #include <hmdbserviceslib/IncrementalBranchShallowCopy.h>
 
 namespace hmdbServices
@@ -238,13 +238,13 @@ namespace hmdbCommunication
 		//! Schemat wykonania
 		const ExecutionSchema es;
 		//! Wątek realizujacy operacje
-		core::ThreadPool::Thread workerThread;
+		core::Thread workerThread;
 		//! Operacja która spowodowała błąd
 		mutable IHMDBRemoteContext::OperationPtr errorOperation;
 		//! Status
 		mutable std::atomic<Status> status_;
 		//! Job
-		core::JobManager::Job<void> job;
+		core::Job<void> job;
 	};
 
 	//! Klasa realizująca upload danych, dostarcza informacji o identyfikatorze pliku po zapisie w bazie
@@ -310,7 +310,7 @@ namespace hmdbCommunication
 		//! Operacja zapisująca plik do bazy
 		HMDBStore store;
 
-		core::JobManager::Job<void> job;
+		core::Job<void> job;
 	};
 
 	//! Interfejs zadania dostarczającego mapy plików do ściągnięcia
@@ -465,7 +465,7 @@ namespace hmdbCommunication
 		//! Operacja sciagajaca przygotowany plik z FTP
 		IHMDBFtp::TransferPtr transfer;
 
-		core::JobManager::Job<void> job;
+		core::Job<void> job;
 	};
 
 	class MultipleFilesDownloadAndStore : public IHMDBRemoteContext::IOperation
@@ -500,7 +500,7 @@ namespace hmdbCommunication
 		std::string error_;
 		DownloadHelper downloadHelper;
 		std::atomic<Status> status_;
-		core::JobManager::Job<void> job;
+		core::Job<void> job;
 	};
 
 	class MultipleFilesDownloadStoreAndStatusUpdate : public MultipleFilesDownloadAndStore

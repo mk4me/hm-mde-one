@@ -1,48 +1,36 @@
 /********************************************************************
-	created:  2013/07/05
-	created:  5:7:2013   11:42
+	created:  2014/10/26	16:59:40
 	filename: JobManager.h
-	author:   Mateusz Janiak
+	author:	  Mateusz Janiak
 
-	purpose:  Implementacja managera zadañ
-	*********************************************************************/
-#ifndef HEADER_GUARD_CORE__JOBMANAGER_H__
-#define HEADER_GUARD_CORE__JOBMANAGER_H__
+	purpose:
+*********************************************************************/
+#ifndef __HEADER_GUARD_CORELIB__JOBMANAGER_H__
+#define __HEADER_GUARD_CORELIB__JOBMANAGER_H__
 
-
-#include <corelib/BaseDataTypes.h>
+#include <corelib/IJobManager.h>
+#include <loglib/ILog.h>
 
 namespace core
 {
-	class JobManager : public IJobManager
+	class CORELIB_EXPORT JobManager : public IJobManager
 	{
 	public:
 
-		//! Konstruktor
-		JobManager(threadingUtils::IThreadPtr managmentThread);
-
-		//! Wirualny destruktor
-		virtual ~JobManager();
-
-		//! Metoda dodaje zadanie wraz z opisem zlecaj¹cego i opisem zadania do
-		//! kolejki przetwarzania zwracaj¹c uchwyt do zadania
-		virtual IJobPtr addJob(const std::string & who, const std::string & name,
-			threadingUtils::IRunnablePtr runnable);
-
-		virtual const bool execute(const std::string & who, const std::string & name,
-			threadingUtils::FunctorRunnable::Functor f);
-
-		//! \param workerThread W¹tek wykonuj¹cy czynnoœci w poolu
-		void addWorkerThread(threadingUtils::IThreadPtr workerThread);
-		//! \param workerThread Usuwany w¹tek wykonuj¹cy czynnoœci w poolu
-		void removeWorkerThread(threadingUtils::IThreadPtr workerThread);
+		//! Domyœlny konstruktor
+		JobManager(InnerJobManager * jm);
+		//! Desturktor
+		virtual ~JobManager();		
 
 	private:
-		//! Faktyczny jobManager
-		utils::shared_ptr<threadingUtils::JobManager> jobManager_;
-		//! Obiekt synchronizuj¹cy
-		mutable threadingUtils::StrictSyncPolicy synch_;
+
+		virtual void logError(const std::string & message) override;
+
+	private:
+
+		//! Logger
+		loglib::ILogPtr logger_;
 	};
 }
 
-#endif	//	HEADER_GUARD_CORE__JOBMANAGER_H__
+#endif	// __HEADER_GUARD_CORELIB__JOBMANAGER_H__

@@ -22,8 +22,8 @@ namespace threadingUtils {
 	//! \tparam InterruptPolicy Polityka przerywania działania wątku
 	//! \tparam InterruptHandlingPolicy Polityka obsługi przerwania wątku
 	//! Klasa realizująca funkcjonalność puli wątków
-	template<class MultipleRunThread>
-	class ThreadPool
+	template<class MultipleRunThreadFactory>
+	class ThreadPool : private MultipleRunThreadFactory
 	{
 	private:
 		//! Typ puli wątków
@@ -32,6 +32,9 @@ namespace threadingUtils {
 		typedef std::list<MultipleRunThread> InnerThreadsList;
 
 	public:
+
+		typedef decltype(std::declval<MultipleRunThreadFactory>().create()) MultipleRunThread;
+
 		//! Typ opisujący ilość
 		typedef unsigned int size_type;
 
@@ -123,10 +126,12 @@ namespace threadingUtils {
 		ThreadPool(ThreadPool && other) = delete;
 
 		//! Domyślny konstruktor
-		ThreadPool() : ThreadPool((std::thread::hardware_concurrency() > 1 ? std::thread::hardware_concurrency() - 1 : 1), std::max<unsigned int>(std::thread::hardware_concurrency() * 8, 4)) {}
+		ThreadPool(const MultipleRunThreadFactory & mrtf = MultipleRunThreadFactory())
+			: ThreadPool((std::thread::hardware_concurrency() > 1 ? std::thread::hardware_concurrency() - 1 : 1), std::max<unsigned int>(std::thread::hardware_concurrency() * 8, 4), mrtf) {}
 		//! \param minThreads Minimalna ilość wątków do utrzymania
 		//! \param maxThreads Maksymalna ilość wątków do utrzymania
-		ThreadPool(size_type minThreads, size_type maxThreads) : minThreads(minThreads), maxThreads(maxThreads), threadsCount_(0)
+		ThreadPool(size_type minThreads, size_type maxThreads, const MultipleRunThreadFactory & mrtf = MultipleRunThreadFactory())
+			: MultipleRunThreadFactory(mrtf), minThreads(minThreads), maxThreads(maxThreads), threadsCount_(0)
 		{
 			if (maxThreads_ <= 0){
 				throw ThreadPoolConfigurationException("Improper max threads value. Must be greater than 0");
@@ -200,13 +205,14 @@ namespace threadingUtils {
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			if (threadsCount_ < maxThreads_){
-				MultipleRunThread ith;
+				Thread th;
 				if (innerThreads.empty() == false){
-					ith = std::move(innerThreads.front());
+					th = Thread(this, std::move(innerThreads.front()));
 					innerThreads.pop_front();
 				}
-
-				Thread th(this, std::move(ith));
+				else{
+					th = Thread(this, MultipleRunThreadFactory::create());
+				}			
 				++threadsCount_;
 				return th;
 			}
@@ -240,7 +246,7 @@ namespace threadingUtils {
 
 				while (size < toDeliver)
 				{
-					threads.push_back(Thread(this));
+					threads.push_back(Thread(this, MultipleRunThreadFactory::create()));
 					++size;
 				}
 

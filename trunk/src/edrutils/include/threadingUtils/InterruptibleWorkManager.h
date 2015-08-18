@@ -26,7 +26,8 @@ namespace threadingUtils
 	//! Klasa realizuj�ca funkcjonalno�� managera prac, zarz�dzaj�cego zleconymi zadaniami i ich realizacj�
 	//! na zarz�dzanych w�tkach
 	template<class WorkQueue, class InterruptibleThread, typename WorkExceptionHandlePolicy, typename InterruptHandlePolicy>
-	class InterruptibleWorkManager
+	class InterruptibleWorkManager : private WorkExceptionHandlePolicy,
+		private InterruptHandlePolicy
 	{
 	private:
 
@@ -212,7 +213,10 @@ namespace threadingUtils
 	public:
 
 		//! Konstruktor domy�lny
-		InterruptibleWorkManager() : finalize_(false), forceFinalize_(false)//,activeCounter(0)
+		InterruptibleWorkManager(const WorkExceptionHandlePolicy & wehp = WorkExceptionHandlePolicy()
+			const InterruptHandlePolicy & ihp = InterruptHandlePolicy())
+			: WorkExceptionHandlePolicy(wehp), InterruptHandlePolicy(ihp),
+			finalize_(false), forceFinalize_(false)//,activeCounter(0)
 		{
 
 		};
@@ -268,7 +272,7 @@ namespace threadingUtils
 		template<typename Ret>
 		std::future<Ret> submitWork(utils::shared_ptr<WorkSharedState> sharedState, std::function<Ret()> intf)
 		{
-			return workQueue.submit([sharedState, intf]
+			return workQueue.submit([sharedState, intf, this]
 			{
 				if (*(sharedState->interrupt) == true){
 					throw ThreadInterruptedException();
@@ -280,12 +284,12 @@ namespace threadingUtils
 					return intf();
 				}
 				catch (ThreadInterruptedException & e){
-					InterruptHandlePolicy::handle(e);
+					this->InterruptHandlePolicy::handle(e);
 					throw;
 				}
 				catch (...){
 					auto e = std::current_exception();
-					WorkExceptionHandlePolicy::handle(e);
+					this->WorkExceptionHandlePolicy::handle(e);
 					std::rethrow_exception(e);
 				}
 			});

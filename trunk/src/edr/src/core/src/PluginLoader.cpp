@@ -129,7 +129,7 @@ void PluginLoader::load()
 
 	}
 
-	/*std::list<core::JobManager::Job<void>> jobsList;
+	/*std::list<core::Job<void>> jobsList;
 
 	auto jm = core::getJobManager();
 
@@ -138,7 +138,7 @@ void PluginLoader::load()
 		jobsList.push_back(jm->create("core", "Plugin loader", [this, jm](core::Filesystem::Path path){
 
 			auto localFiles = core::Filesystem::listFiles(path, true);
-			std::list<core::JobManager::Job<bool>> jobsList;
+			std::list<core::Job<bool>> jobsList;
 
 			for (auto fileIT = localFiles.begin(); fileIT != localFiles.end(); ++fileIT){
 

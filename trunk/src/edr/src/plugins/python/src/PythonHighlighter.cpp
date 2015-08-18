@@ -1,6 +1,6 @@
 #include "PythonPCH.h"
 #include "PythonHighlighter.h"
-#include <utils/ObjectWrapper.h>
+#include <objectwrapperlib/ObjectWrapper.h>
 #include <QtWidgets/QLabel>
 
 const char * const keywords[] = {

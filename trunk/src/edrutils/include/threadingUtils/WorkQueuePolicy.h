@@ -55,10 +55,10 @@ namespace threadingUtils
 
 		const size_type size() const;
 
-		template<typename FunctionType>
-		std::future<typename std::result_of<FunctionType()>::type> submit(FunctionType f)
+		template<typename DataChannelFeatures>
+		std::future<typename std::result_of<DataChannelFeatures()>::type> submit(DataChannelFeatures f)
 		{
-			typedef typename std::result_of<FunctionType()>::type result_type;
+			typedef typename std::result_of<DataChannelFeatures()>::type result_type;
 			std::packaged_task<result_type()> innerTask(f);
 			std::future<result_type> ret(innerTask.get_future());
 

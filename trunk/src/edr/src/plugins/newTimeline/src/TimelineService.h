@@ -10,7 +10,7 @@
 #define HEADER_GUARD_TIMELINE__TIMELINESERVICE_H__
 
 #include <plugins/newTimeline/ITimelineService.h>
-#include <corelib/ThreadPool.h>
+#include <corelib/IThreadPool.h>
 
 class TimelineWidget;
 
@@ -25,7 +25,7 @@ private:
     //! Model timeline'a.
     timeline::ControllerPtr controller;
 	//! Wątek obsługujący odtwarzanie w kontrolerze
-	core::ThreadPool::Thread thread;
+	core::Thread thread;
 
 public:
     TimelineService();

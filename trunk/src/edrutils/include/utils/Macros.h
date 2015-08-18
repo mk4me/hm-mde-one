@@ -89,6 +89,8 @@ purpose:
 
 //------------------------------------------------------------------------------
 // Makro podstawiające nazwę aktualnej funkcji
+//TODO
+//użyć BOOST_CURRENT_FUNCTION (boost/current_function.hpp)
 #if defined __GNUC__
 	#define __UTILS_PORTABLE_FUNCTION_NAME __func__
 #elif defined _MSC_VER

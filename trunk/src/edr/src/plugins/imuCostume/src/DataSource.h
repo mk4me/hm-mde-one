@@ -17,7 +17,7 @@
 #include <imucostumelib/CostumeCANopenIO.h>
 #include <imucostumelib/ProtocolSendBufferHelper.h>
 #include <corelib/HierarchyItem.h>
-#include <corelib/ThreadPool.h>
+#include <corelib/IThreadPool.h>
 #include <corelib/HierarchyDataItem.h>
 #include <plugins/imuCostume/CostumeIMUExtractor.h>
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>

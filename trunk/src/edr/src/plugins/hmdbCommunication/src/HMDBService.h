@@ -10,7 +10,7 @@
 
 #include <plugins/hmdbCommunication/IHMDBService.h>
 #include <corelib/IService.h>
-#include <corelib/ThreadPool.h>
+#include <corelib/IThreadPool.h>
 #include "CURLFTPManager.h"
 #include <networkUtils/CURLManager.h>
 #include <atomic>
@@ -153,9 +153,9 @@ namespace hmdbCommunication
 		//! Widget
 		QWidget * mainWidget;
 		//! W¹tek us³ug
-		core::ThreadPool::Thread servicesThread;
+		core::Thread servicesThread;
 		//! W¹tek danych
-		core::ThreadPool::Thread dataThread;
+		core::Thread dataThread;
 		//! Manager us³ug
 		networkUtils::CURLManagerPtr servicesManager;
 		//! Manager danych

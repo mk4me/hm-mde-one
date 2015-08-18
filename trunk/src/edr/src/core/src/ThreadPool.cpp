@@ -1,64 +1,76 @@
+#include "CorePCH.h"
 #include "ThreadPool.h"
-#include "Thread.h"
+#include "ApplicationCommon.h"
+#include <loglib/ILog.h>
+#include <loglib/Exceptions.h>
 
-core::ThreadPool::ThreadPool(threadingUtils::IThreadFactoryPtr threadFactory,
-	const size_type minThreads, const size_type maxThreads)
-	: threadPool_(new threadingUtils::ThreadPool(threadFactory,
-	minThreads, maxThreads))
+using namespace core;
+		
+ThreadPool::ThreadPool(InnerThreadPool * tp) : tp(tp),
+logger(getLogInterface()->subLog("threads"))
 {
+	if (tp == nullptr){
+		throw std::runtime_error("Uninitialized inner thread");
+	}
 }
 
-core::ThreadPool::~ThreadPool()
+ThreadPool::~ThreadPool()
 {
+
 }
 
-const core::ThreadPool::size_type core::ThreadPool::max() const
+const ThreadPool::size_type ThreadPool::maxThreads() const
 {
-	threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
-	return threadPool_->maxThreads();
+	return tp->maxThreads();
 }
 
-const core::ThreadPool::size_type core::ThreadPool::min() const
+const ThreadPool::size_type ThreadPool::minThreads() const
 {
-	threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
-	return threadPool_->minThreads();
+	return tp->minThreads();
 }
 
-const core::ThreadPool::size_type core::ThreadPool::free() const
+const ThreadPool::size_type ThreadPool::threadsCount() const
 {
-	threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
-	return threadPool_->maxThreads() - threadPool_->threadsCount();
+	return tp->threadsCount();
 }
 
-const core::ThreadPool::size_type core::ThreadPool::count() const
+Thread ThreadPool::create(InnerThreadPool::Thread && innerThread,
+	const std::string & who, const std::string & destination)
 {
-	threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
-	return threadPool_->threadsCount();
+	return Thread([this](const std::string & message)
+	{
+		LOG_ERROR(logger, "Thread ID " << std::this_thread::get_id() << " owned by " << Thread::currentOwner() << " for "
+			<< Thread::currentDestination() << " failed with message: "	<< message);
+	}, std::move(innerThread), who, destination);
 }
 
-void core::ThreadPool::getThreads(const std::string & who,
-	Threads & threads, const size_type count, const bool exact)
-{
-	threadingUtils::IThreadPool::Threads ts;
-	threadPool_->getThreads(count, ts, exact);
+Thread ThreadPool::get(const std::string & who, const std::string & destination)
+{		
+	return create(tp->get(), who, destination);
+}
 
-	Threads ret;
+const ThreadPool::size_type ThreadPool::get(const size_type groupSize,
+	Threads & threads, const bool exact, const std::string & who,
+	const std::string & destination)
+{	
+	InnerThreadPool::Threads innerThreads;
+	auto ret = tp->get(groupSize, innerThreads, exact);
 
-	for (auto it = ts.begin(); it != ts.end(); ++it){
-		ret.push_back(IThreadPtr(new Thread(who, *it)));
+	auto dest(destination);
+
+	if (dest.empty() == true){
+		dest = std::string("No explicit destination");
 	}
 
-	threads.insert(threads.end(), ret.begin(), ret.end());
+	for (auto & t : innerThreads)
+	{
+		threads.push_back(create(std::move(t), who, destination));
+	}
+
+	return ret;
 }
 
-void core::ThreadPool::setMaxThreads(size_type maxThreads)
+InnerThreadPool::CustomThreadProxy ThreadPool::getCustom(const size_type groupSize)
 {
-	threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
-	threadPool_->setMaxThreads(maxThreads);
-}
-
-void core::ThreadPool::setMinThreads(size_type minThreads)
-{
-	threadingUtils::ScopedLock<threadingUtils::StrictSyncPolicy> lock(synch_);
-	threadPool_->setMinThreads(minThreads);
+	return tp->getCustom(groupSize);
 }

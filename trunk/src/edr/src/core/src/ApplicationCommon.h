@@ -25,6 +25,11 @@ extern Application * __application;
 //! Makro definiuj¹ce zmienn¹ przechowuj¹c¹ managery. Automatycznie u¿ywane w pluginach.
 #define DEFINE_CORE_APPLICATION_ACCESSOR namespace core { Application * __application = nullptr; }
 
+inline Application * getApplication()
+{
+	return __application;
+}
+
 //! \return Bie¿¹ca instancja data managera readera. Rozwi¹zanie w ten sposób, w stosunku do
 //! klasycznego upublicznienia tylko nag³ówków funkcji i schowania definicji, pozwala
 //! na rozwijanie, wiêc jest potencjalnie szybsze.

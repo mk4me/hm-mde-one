@@ -1401,7 +1401,8 @@ void DataViewWidget::onSynchronize()
 
 		auto sOp = shallowCopyContext_->shallowCopyRemoteContext()->prepareSynchronization(shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage());
 
-		auto t = plugin::getThreadPool()->get("DataViewWidget", "Synchronization");		
+		auto t = plugin::getThreadPool()->get("DataViewWidget", "Synchronization");
+
 		if (remoteOperationThread.joinable() == true){
 			remoteOperationThread.join();
 		}
@@ -1519,7 +1520,7 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 			shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage(),
 			shallowCopyContext_->shallowCopyDataContext()->dataStatusManager(), shallowCopyContext_->shallowCopyDataContext()->shallowCopy()));
 
-		core::ThreadPool::Thread t = plugin::getThreadPool()->get("DataViewWidget", "Remote operation");				
+		core::Thread t = plugin::getThreadPool()->get("DataViewWidget", "Remote operation");				
 
 		if (remoteOperationThread.joinable() == true){
 			remoteOperationThread.join();

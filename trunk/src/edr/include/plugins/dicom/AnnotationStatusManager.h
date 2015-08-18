@@ -16,7 +16,7 @@
 #include "hmdbserviceslib/Entity.h"
 #include <QtCore/QString>
 #include "utils/ObserverPattern.h"
-#include "corelib/ThreadPool.h"
+#include <corelib/IThreadPool.h>
 
 namespace  dicom {
 
@@ -57,7 +57,7 @@ private:
 
 private:
 	std::unique_ptr<AnnotationData> data;
-	core::ThreadPool::Thread thread;
+	core::Thread thread;
 	std::mutex dataMutex;
 };
 }

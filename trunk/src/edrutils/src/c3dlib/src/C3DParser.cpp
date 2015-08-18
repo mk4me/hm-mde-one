@@ -21,7 +21,6 @@
 #include <list>
 #include <btkMergeAcquisitionFilter.h>
 #include <utils/Debug.h>
-#include <datachannellib/DataChannelCollection.h>
 
 namespace c3dlib {
 

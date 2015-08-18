@@ -16,7 +16,7 @@
 #include <coreui/CoreCursorChanger.h>
 #include <plugins/hmdbCommunication/DataStatus.h>
 #include <plugins/hmdbCommunication/Types.h>
-#include <corelib/ThreadPool.h>
+#include <corelib/IThreadPool.h>
 
 class QTreeWidgetItem;
 
@@ -142,8 +142,8 @@ private:
 	void setupDownload(const hmdbCommunication::StorageFileNames & files);
 
 private:
-	core::ThreadPool::Thread remoteOperationThread;
-	core::ThreadPool::Thread filteringThread;
+	core::Thread remoteOperationThread;
+	core::Thread filteringThread;
 	hmdbCommunication::ShallowCopyConstPtr currentShallowCopy_;
 	hmdbCommunication::ShallowCopyConstPtr completeShallowCopy_;
 	hmdbCommunication::IDataSourcePerspective * perspective_;

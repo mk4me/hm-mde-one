@@ -11,14 +11,15 @@
 
 #include <utils/SmartPtr.h>
 #include <corelib/Version.h>
+#include <corelib/JobManagerTypes.h>
 #include <corelib/BaseDataTypes.h>
 #include <loglib/ILog.h>
 #include <corelib/IVisualizer.h>
 #include <corelib/ISource.h>
 #include <corelib/IService.h>
 #include <corelib/IParser.h>
-#include <corelib/JobManager.h>
-#include <corelib/ThreadPool.h>
+#include "JobManager.h"
+#include "ThreadPool.h"
 #include "Plugin.h"
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
@@ -75,10 +76,10 @@ namespace core {
 		utils::shared_ptr<ServiceManager> serviceManager_;
 		utils::shared_ptr<SourceManager> sourceManager_;
 		utils::shared_ptr<VisualizerManager> visualizerManager_;
-		utils::shared_ptr<ThreadPool::InnerThreadPool> innerThreadPool;
+		utils::shared_ptr<InnerThreadPool> innerThreadPool;
 		utils::shared_ptr<ThreadPool> threadPool_;
-		utils::shared_ptr<JobManager::InnerWorkManager> innerWorkManager_;
-		utils::shared_ptr<JobManager::InnerJobManager> innerJobManager_;
+		utils::shared_ptr<InnerWorkManager> innerWorkManager_;
+		utils::shared_ptr<InnerJobManager> innerJobManager_;
 		utils::shared_ptr<JobManager> jobManager_;
 
 		Filesystem::Path additionalPluginsPath;

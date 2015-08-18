@@ -275,7 +275,7 @@ void HMDBService::init(core::ISourceManager * sourceManager,
 	core::IFileDataManager * fileDataManager,
 	core::IDataHierarchyManager * hierarchyManager)
 {
-	core::ThreadPool::Threads threads;
+	core::IThreadPool::Threads threads;
 
 	plugin::getThreadPool()->get(2, threads, true, "HMDB Service", "Network operations");
 

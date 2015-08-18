@@ -55,9 +55,9 @@ public:
 	//! \return Interfejs managera wizualizatorów
 	virtual IVisualizerManager * visualizerManager();
 	//! \return Interfejs managera wizualizatorów
-	virtual ThreadPool * threadPool();
+	virtual IThreadPool * threadPool();
 	//! \return Interfejs dostêpu do serwisów
-	virtual JobManager * jobManager();
+	virtual IJobManager * jobManager();
 
 private:
 

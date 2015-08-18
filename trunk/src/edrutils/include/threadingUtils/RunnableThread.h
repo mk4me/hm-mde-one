@@ -22,20 +22,34 @@ namespace threadingUtils
 	//! \tparam Thread Typ w�tku jaki wrapujemy do postaci runnable
 	//! \tparam CallPolicy Spos�b wo�ania metod przez w�tek
 	template<typename Thread, typename ExceptionHandlePolicy = RethrowExceptionHandlePolicy>
-	class RunnableThread
+	class RunnableThread : private ExceptionHandlePolicy
 	{
 	public:
 
 		//! Konstruktor domy�lny
-		RunnableThread()  : launched(false) {}
+		RunnableThread(Thread && innerThread, const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy())
+			: ExceptionHandlePolicy(ehp), thread(std::move(innerThread)), launched(false) {}
+
+		template<class... Args>
+		RunnableThread(const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(), Args&&... arguments)
+			: ExceptionHandlePolicy(ehp), thread(std::forward(arguments)), launched(false) {}
+
 		//! \param Other W�tek kt�rego zasoby przejmujemy
-		RunnableThread(RunnableThread&& Other)  : launched(std::move(Other.launched)), thread(std::move(Other.thread)) {}
+		RunnableThread(RunnableThread&& Other)
+			: ExceptionHandlePolicy(std::move(Other)), launched(std::move(Other.launched)), thread(std::move(Other.thread)) {}
 		RunnableThread(const RunnableThread&) = delete;
 		//! Destruktor
 		~RunnableThread() {}
 		
 		//! \param Other W�tek kt�rego zasoby przejmujemy
-		RunnableThread& operator=(RunnableThread&& Other) { launched = std::move(Other.launched); thread = std::move(Other.thread); return *this; }
+		RunnableThread& operator=(RunnableThread&& Other)
+		{
+			ExceptionHandlePolicy::operator=(std::move(Other));
+			launched = std::move(Other.launched);
+			thread = std::move(Other.thread);
+			return *this;
+		}
+
 		RunnableThread& operator=(const RunnableThread&) = delete;
 
 		template<class F, class... Args>
@@ -74,7 +88,7 @@ namespace threadingUtils
 	};
 
 	template<typename Thread, typename ExceptionHandlePolicy = ConsumeExceptionHandlePolicy>
-	class MultipleRunThread
+	class MultipleRunThread : private ExceptionHandlePolicy
 	{
 	private:
 
@@ -90,13 +104,25 @@ namespace threadingUtils
 
 	public:
 
-		MultipleRunThread() = default;
-		MultipleRunThread(MultipleRunThread&& Other) : sharedState(std::move(Other.sharedState)), thread(std::move(Other.thread)) {}
+		MultipleRunThread(Thread && innerThread, const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy())
+			: ExceptionHandlePolicy(ehp), thread(std::move(innerThread)) {}
+
+		template<class... Args>
+		MultipleRunThread(const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(), Args&&... arguments) : ExceptionHandlePolicy(ehp), thread(std::forward(arguments)) {}
+
+		MultipleRunThread(MultipleRunThread&& Other) : ExceptionHandlePolicy(std::move(Other)), sharedState(std::move(Other.sharedState)), thread(std::move(Other.thread)) {}
 		MultipleRunThread(const MultipleRunThread&) = delete;
 		~MultipleRunThread() { }
 
 
-		MultipleRunThread& operator=(MultipleRunThread&& Other) { sharedState = std::move(Other.sharedState); thread = std::move(Other.thread); }
+		MultipleRunThread& operator=(MultipleRunThread&& Other)
+		{
+			ExceptionHandlePolicy::operator=(std::move(Other));
+			sharedState = std::move(Other.sharedState);
+			thread = std::move(Other.thread);
+			return *this;
+		}
+
 		MultipleRunThread& operator=(const MultipleRunThread&) = delete;
 
 		template<typename F, class ...Args>

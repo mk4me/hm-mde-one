@@ -302,7 +302,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 		innerJobManager_.reset(new core::JobManager::InnerJobManager(innerWorkManager_.get()));
 		jobManager_.reset(new core::JobManager(innerJobManager_.get()));
 			
-		core::ThreadPool::Threads threads;
+		core::Threads threads;
 		threadPool_->get(std::thread::hardware_concurrency() - 1, threads,  true, "Core", "JobManager worker thread");
 
 		for (auto && t : threads){			

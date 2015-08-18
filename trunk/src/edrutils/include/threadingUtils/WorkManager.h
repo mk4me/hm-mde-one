@@ -21,7 +21,7 @@ namespace threadingUtils {
 	//! Klasa realizuj¹ca funkcjonalnoœæ managera prac, zarz¹dzaj¹cego zleconymi zadaniami i ich realizacj¹
 	//! na zarz¹dzanych w¹tkach
 	template<class WorkQueue, class RunnableThread, typename WorkExceptionHandlePolicy = ConsumeExceptionHandlePolicy>
-	class WorkManager
+	class WorkManager : private WorkExceptionHandlePolicy
 	{
 
 	private:
@@ -151,7 +151,8 @@ namespace threadingUtils {
 	public:
 
 		//! Konstruktor domyœlny
-		WorkManager()
+		WorkManager(const WorkExceptionHandlePolicy & wehp = WorkExceptionHandlePolicy())
+			: WorkExceptionHandlePolicy(wehp)
 		{
 
 		}

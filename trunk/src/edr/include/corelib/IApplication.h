@@ -27,8 +27,8 @@ namespace core {
 	class IVisualizerManager;
 	class IApplicationDescription;
 	class ILanguagesManager;
-	class JobManager;
-	class ThreadPool;	
+	class IJobManager;
+	class IThreadPool;	
 
 	//! Interfejs klasy dostarczaj¹cej pluginom ogólnych zasobów aplikacji:
 	//! interfejs œcie¿ek, interfejs do czytania danych,
@@ -71,9 +71,9 @@ namespace core {
 		//! \return Interfejs managera wizualizatorów
 		virtual IVisualizerManager * visualizerManager() = 0;
 		//! \return Interfejs dostêpu do Ÿróde³
-		virtual ThreadPool * threadPool() = 0;
+		virtual IThreadPool * threadPool() = 0;
 		//! \return Interfejs managera wizualizatorów
-		virtual JobManager * jobManager() = 0;
+		virtual IJobManager * jobManager() = 0;
 	};
 }
 

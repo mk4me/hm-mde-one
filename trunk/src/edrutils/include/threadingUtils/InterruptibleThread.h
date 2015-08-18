@@ -22,7 +22,7 @@ namespace threadingUtils
 	//! \tparam InterruptHandlingPolicy Polityka obs�ugi przerwania w w�tku
 	//! \tparam InteruptiblePolicy Polityka realizuj�ca przerywanie w�tku
 	template<typename RunnableThread, typename ExceptionHandlePolicy = ConsumeExceptionHandlePolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InterruptiblePolicyT = NoInterruptiblePolicy>
-	class InterrubtibleThread
+	class InterrubtibleThread : private ExceptionHandlePolicy, private InterruptHandlingPolicy
 	{
 	public:
 		//! Typ polityki przerywania wątku
@@ -38,18 +38,42 @@ namespace threadingUtils
 
 	public:
 
-		//! Kosntruktor domyślny
-		InterrubtibleThread() : sharedState(utils::make_shared<SharedState>())  {}
+		//! Konstruktor
+		InterrubtibleThread(RunnableThread && innerThread,
+			const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(),
+			const InterruptHandlingPolicy & ihp = InterruptHandlingPolicy())
+			: ExceptionHandlePolicy(ehp), InterruptHandlingPolicy(ihp),
+			thread(std::move(innerThread)) {}
+
+		//! Konstruktor
+		template<class... Args>
+		InterrubtibleThread(const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(),
+			const InterruptHandlingPolicy & ihp = InterruptHandlingPolicy(),
+			Args &&... arguments)
+			: ExceptionHandlePolicy(ehp), InterruptHandlingPolicy(ihp), thread(std::forward(arguments)...) {}
+
 		//! \param Other Przenoszony wątek
-		InterrubtibleThread(InterrubtibleThread&& Other)  : sharedState(std::move(Other.sharedState)), thread(std::move(Other.thread)) {}
+		InterrubtibleThread(InterrubtibleThread&& Other)
+			: ExceptionHandlePolicy(std::move(Other)),
+			InterruptHandlingPolicy(std::move(Other)),
+			sharedState(std::move(Other.sharedState)),
+			thread(std::move(Other.thread)) {}
+
 		//! Konstruktor kopiujący
 		InterrubtibleThread(const InterrubtibleThread&) = delete;
-		//! Destruktor wirtualny
+		//! Destruktor
 		~InterrubtibleThread() {}
 
 		//! Operator przypisania
 		//! \param Other przenoszony wątek
-		InterrubtibleThread& operator=(InterrubtibleThread&& Other) { sharedState = std::move(Other.sharedState); thread = std::move(Other.thread); }
+		InterrubtibleThread& operator=(InterrubtibleThread&& Other)
+		{
+			ExceptionHandlePolicy::operator=(std::move(Other));
+			InterruptHandlingPolicy::operator=(std::move(Other));				
+			sharedState = std::move(Other.sharedState);
+			thread = std::move(Other.thread);
+			return *this;
+		}
 		//! Operator przypisania		
 		InterrubtibleThread& operator=(const InterrubtibleThread&) = delete;
 
@@ -61,7 +85,7 @@ namespace threadingUtils
 		void run(F&& f, Args &&... arguments)
 		{
 			std::function<void()> ff(std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...));
-
+			sharedState = utils::make_shared<SharedState>();
 			thread.run([=](utils::shared_ptr<SharedState> sharedState)
 			{
 				InterruptibleThreadGuard<InterrupltiblePolicy> guard(sharedState->interruptible);
@@ -79,7 +103,13 @@ namespace threadingUtils
 		}
 
 		//! \param Other Zamieniany wątek
-		void swap(InterrubtibleThread& Other) { std::swap(sharedState, Other.sharedState); std::swap(thread, Other.thread); }
+		void swap(InterrubtibleThread& Other)
+		{
+			std::swap((ExceptionHandlePolicy&)*this, (ExceptionHandlePolicy&)Other);
+			std::swap((InterruptHandlingPolicy&)*this, (InterruptHandlingPolicy&)Other);
+			std::swap(sharedState, Other.sharedState);
+			std::swap(thread, Other.thread);
+		}
 		//! \return Czy można dołączyć do wątku
 		const bool joinable() const { return thread.joinable(); }
 		//! Dołancza się do wątku, czeka na jego zakończenie
@@ -91,7 +121,7 @@ namespace threadingUtils
 		//! \return Uchwyt wątku specyficzny dla platformy
 		std::thread::native_handle_type native_handle() { return thread.native_handle(); }
 		//! Przerwania wątku
-		void interrupt() { interruptible.interrupt(); }
+		void interrupt() { sharedState->interruptible.interrupt(); }
 		//! \return Czy wątek jest przerywalny
 		const bool interruptible() const { return sharedState->interruptible.interruptible(); }
 		//! Sprawdzenie przerwania wątku
@@ -99,17 +129,15 @@ namespace threadingUtils
 		//! Reset przerwania wątku
 		static void resetInterruption() { InterruptiblePolicy::resetInterruption(); }
 
-	protected:
+	private:
 		//! Faktyczny wątek
 		RunnableThread thread;
-
-	private:
 		//! Prywatny stan wątku
 		utils::shared_ptr<SharedState> sharedState;
 	};
 
 	template<typename RunnableThread, typename ExceptionHandlePolicy = ConsumeExceptionHandlePolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InterruptiblePolicyT = NoInterruptiblePolicy>
-	class InterruptibleMultipleRunThread
+	class InterruptibleMultipleRunThread : private ExceptionHandlePolicy, private InterruptHandlingPolicy
 	{
 	public:
 
@@ -128,14 +156,35 @@ namespace threadingUtils
 			InterruptiblePolicy interruptible;
 		};
 
-	public:		
-		InterruptibleMultipleRunThread() {}
-		InterruptibleMultipleRunThread(InterruptibleMultipleRunThread&& Other) : sharedState(std::move(Other.sharedState)), thread(std::move(Other.thread)) {}
+	public:
+
+		InterruptibleMultipleRunThread(RunnableThread && innerThread,
+			const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(),
+			const InterruptHandlingPolicy & ihp = InterruptHandlingPolicy())
+			: ExceptionHandlePolicy(ehp), InterruptHandlingPolicy(ihp),
+			thread(std::move(innerThread)) {}
+
+		template<class... Args>
+		InterruptibleMultipleRunThread(const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(),
+			const InterruptHandlingPolicy & ihp = InterruptHandlingPolicy(), Args&&... arguments)
+			: ExceptionHandlePolicy(ehp), InterruptHandlingPolicy(ihp), thread(std::forward(arguments)...) {}
+
+		InterruptibleMultipleRunThread(InterruptibleMultipleRunThread&& Other)
+			: ExceptionHandlePolicy(std::move(Other)), InterruptHandlingPolicy(std::move(Other)),
+			sharedState(std::move(Other.sharedState)), thread(std::move(Other.thread)) {}
+
 		InterruptibleMultipleRunThread(const InterruptibleMultipleRunThread&) = delete;
 		~InterruptibleMultipleRunThread() { }
 
 
-		InterruptibleMultipleRunThread& operator=(InterruptibleMultipleRunThread&& Other) { sharedState = std::move(Other.sharedState); thread = std::move(Other.thread); return *this; }
+		InterruptibleMultipleRunThread& operator=(InterruptibleMultipleRunThread&& Other)
+		{
+			ExceptionHandlePolicy::operator=(std::move(Other));
+			InterruptHandlingPolicy::operator=(std::move(Other));
+			sharedState = std::move(Other.sharedState);
+			thread = std::move(Other.thread);
+			return *this;
+		}
 		InterruptibleMultipleRunThread& operator=(const InterruptibleMultipleRunThread&) = delete;
 
 		template<typename F, class ...Args>
@@ -216,7 +265,10 @@ namespace threadingUtils
 			return ret;
 		}
 
-		void swap(InterruptibleMultipleRunThread& Other) {
+		void swap(InterruptibleMultipleRunThread& Other)
+		{
+			std::swap((ExceptionHandlePolicy&)*this, (ExceptionHandlePolicy&)Other);
+			std::swap((InterruptHandlingPolicy&)*this, (InterruptHandlingPolicy&)Other);
 			std::swap(sharedState,Other.sharedState);
 			std::swap(thread, Other.thread);
 		}
@@ -244,7 +296,7 @@ namespace threadingUtils
 
 		std::thread::id get_id() const { return thread.get_id(); }
 		std::thread::native_handle_type native_handle() { return thread.native_handle(); }
-		void interrupt() { if (sharedState == nullptr) { throw std::logic_error("Operation not permitted"); } sharedState->interruptible.interrupt(); }
+		void interrupt() { sharedState->interruptible.interrupt(); }
 		const bool interruptible() const { return sharedState != nullptr && sharedState->interruptible.interruptible(); }
 		static void interruptionPoint() { InterruptiblePolicy::interruptionPoint(); }
 		static void resetInterruption() { InterruptiblePolicy::resetInterruption(); }

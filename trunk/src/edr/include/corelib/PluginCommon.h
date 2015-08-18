@@ -94,13 +94,13 @@ namespace plugin
 	}
 
 	//! \return Interfejs logowania informacji
-	inline core::ThreadPool* getThreadPool()
+	inline core::IThreadPool* getThreadPool()
 	{
 		return getApplication()->threadPool();
 	}
 
 	//! \return Interfejs logowania informacji
-	inline core::JobManager* getJobManager()
+	inline core::IJobManager* getJobManager()
 	{
 		return getApplication()->jobManager();
 	}

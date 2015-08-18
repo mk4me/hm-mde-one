@@ -20,10 +20,12 @@ namespace threadingUtils
 	//! \tparam InterruptPolicy Polityka przerywania dzia³ania w¹tku
 	//! \tparam InterruptHandlingPolicy Polityka obs³ugi przerwania w¹tku
 	//! Klasa realizuj¹ca funkcjonalnoœæ puli w¹tków
-	template<class InterruptibleMultipleRunThread>
-	class InterruptibleThreadPool
+	template<class InterruptibleMultipleRunThreadFactory>
+	class InterruptibleThreadPool : private InterruptibleMultipleRunThreadFactory
 	{
 	public:		
+
+		typedef decltype(std::declval<InterruptibleMultipleRunThreadFactory>().create()) InterruptibleMultipleRunThread;
 
 		//! Typ listy w¹tków wielokrotnego uruchamiania
 		typedef std::list<InterruptibleMultipleRunThread> InnerThreadsList;
@@ -39,7 +41,8 @@ namespace threadingUtils
 
 		public:
 			//! Typ puli w¹tków
-			typedef InterruptibleThreadPool<InterruptibleMultipleRunThread> MyThreadPoolType;			
+			typedef InterruptibleThreadPool<InterruptibleMultipleRunThread> MyThreadPoolType;
+			typedef typename InterruptibleMultipleRunThread::InterruptiblePolicy InterruptiblePolicy;
 
 		private:
 
@@ -96,7 +99,16 @@ namespace threadingUtils
 				finalize();
 			}
 
-			Thread& operator=(Thread&& Other) { finalize(); threadPool = std::move(Other.threadPool); Other.threadPool = nullptr; thread = std::move(Other.thread); futureWrapper = std::move(Other.futureWrapper); return *this; }
+			Thread& operator=(Thread&& Other)
+			{
+				finalize();
+				threadPool = std::move(Other.threadPool);
+				Other.threadPool = nullptr;
+				thread = std::move(Other.thread);
+				futureWrapper = std::move(Other.futureWrapper);
+				return *this;
+			}
+
 			Thread& operator=(const Thread&) = delete;
 
 			template<typename F, class ...Args>
@@ -105,7 +117,13 @@ namespace threadingUtils
 				futureWrapper = std::move(thread.run(std::move(f), std::move(arguments)...));
 			}
 
-			void swap(Thread& Other) { std::swap(threadPool, Other.threadPool); std::swap(thread, Other.thread); std::swap(futureWrapper, Other.futureWrapper); }
+			void swap(Thread& Other)
+			{
+				std::swap(threadPool, Other.threadPool);
+				std::swap(thread, Other.thread);
+				std::swap(futureWrapper, Other.futureWrapper);
+			}
+
 			const bool joinable() const { return futureWrapper.valid() && thread.joinable(); }
 			void join() { futureWrapper.wait(); }
 			void detach() { threadPool->detach(); threadPool = nullptr; futureWrapper.reset(); thread.detach(); }
@@ -128,6 +146,36 @@ namespace threadingUtils
 		//! ZaprzyjaŸnienie w¹tku z pula w¹tków
 		friend class Thread;
 
+		class CustomThread
+		{
+			friend class InterruptibleThreadPool;
+		private:
+			CustomThread(InterruptibleThreadPool * tp, size_type size)
+				: tp(tp), size_(size)
+			{
+				if (tp == nullptr){
+					throw std::runtime_error("Invalid custom threads configuration");
+				}
+			}
+
+		public:
+
+			~CustomThread()
+			{
+				tp->returnCustom(size_);
+			}
+
+			size_type size() const { return size_; }
+
+		private:
+			InterruptibleThreadPool * tp;
+			const size_type size_;
+		};
+
+		friend class CustomThread;
+
+		typedef utils::scoped_ptr<CustomThread> CustomThreadProxy;
+
 		//! Typ agreguj¹cy w¹tki które pobieraj¹ klienci
 		typedef std::list<Thread> Threads;
 
@@ -138,9 +186,14 @@ namespace threadingUtils
 
 		//! \param minThreads Minimalna iloœæ w¹tków do utrzymania
 		//! \param maxThreads Maksymalna iloœæ w¹tków do utrzymania
-		InterruptibleThreadPool(const size_type minThreads, const size_type maxThreads) : minThreads_(minThreads), maxThreads_(maxThreads), threadsCount_(0) {}
+		InterruptibleThreadPool(const size_type minThreads, const size_type maxThreads,
+			const InterruptibleMultipleRunThreadFactory & imrtf = InterruptibleMultipleRunThreadFactory())
+			: InterruptibleMultipleRunThreadFactory(imrtf), minThreads_(minThreads),
+			maxThreads_(maxThreads), threadsCount_(0) {}
+		
 		//! Domyœlny konstruktor
-		InterruptibleThreadPool() : InterruptibleThreadPool((std::thread::hardware_concurrency() > 1 ? std::thread::hardware_concurrency() - 1 : 1), std::max<unsigned int>(std::thread::hardware_concurrency() * 8, 4)) {}
+		InterruptibleThreadPool(const InterruptibleMultipleRunThreadFactory & imrtf = InterruptibleMultipleRunThreadFactory())
+			: InterruptibleThreadPool((std::thread::hardware_concurrency() > 1 ? std::thread::hardware_concurrency() - 1 : 1), std::max<unsigned int>(std::thread::hardware_concurrency() * 8, 4), imrtf) {}
 		
 		//! Desturktor
 		~InterruptibleThreadPool()
@@ -210,13 +263,14 @@ namespace threadingUtils
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			if (threadsCount_ < maxThreads_){
-				InterruptibleMultipleRunThread ith;
+				Thread th;
 				if (innerThreads.empty() == false){
-					ith = std::move(innerThreads.front());
+					th = Thread(this, std::move(innerThreads.front()));
 					innerThreads.pop_front();
 				}
-
-				Thread th(this, std::move(ith));
+				else{
+					th = Thread(this, InterruptibleMultipleRunThreadFactory::create());
+				}				
 				++threadsCount_;
 				return th;
 			}
@@ -232,7 +286,7 @@ namespace threadingUtils
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 
-			if (exact == true && groupSize + threadsCount_ > maxThreads_){
+			if (exact == true && ((groupSize + threadsCount_) > maxThreads_)){
 				throw std::runtime_error("ThreadPool limited resources");
 			}
 
@@ -250,7 +304,7 @@ namespace threadingUtils
 
 				while (size < toDeliver)
 				{
-					threads.push_back(Thread(this));
+					threads.push_back(Thread(this, InterruptibleMultipleRunThreadFactory::create()));
 					++size;
 				}
 
@@ -260,10 +314,36 @@ namespace threadingUtils
 			return toDeliver;
 		}
 
+		CustomThreadProxy getCustom(const size_type size, bool exact = true)
+		{
+			if (size <= 0){
+				throw std::invalid_argument("Invalid number of custom threads");
+			}
+
+			std::lock_guard<std::mutex> lock(mutex);
+
+			if (exact == true && ((size + threadsCount_) > maxThreads_)){
+				throw std::runtime_error("ThreadPool limited resources");
+			}
+
+			auto s = std::min(maxThreads_ - threadsCount_, size);
+
+			threadsCount_ += s;
+
+			return CustomThreadProxy(new CustomThread(this, s));
+		}
+
 	private:
 
 		//! Metoda zmniejsza aktualn¹ iloœc w¹tków w puli
 		void detach() { --threadsCount_; }
+
+		//! Metoda zwraca customowe w¹tki tworzone poza thread pool
+		void returnCustom(const size_type size)
+		{			
+			std::lock_guard<std::mutex> lock(mutex);
+			threadsCount_ -= size;		
+		}
 
 		//! \param innerThread Wewnêtrzny w¹tek wielokrotnego uruchamiania, który próbujemy zwróciæ przy niszczeniu dostarczonego w¹tku
 		void tryReturn(InterruptibleMultipleRunThread & innerThread)
@@ -277,7 +357,7 @@ namespace threadingUtils
 
 	private:
 		//! Aktualna iloœæ w¹tków w puli
-		std::atomic<size_type> threadsCount_;
+		volatile size_type threadsCount_;
 		//! Minimalna iloœc w¹tków w puli jak¹ chcemy utrzymywaæ
 		size_type minThreads_;
 		//! Maksymalna iloœæ w¹tków jakie pozwala stworzyæ pula

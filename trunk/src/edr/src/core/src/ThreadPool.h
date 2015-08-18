@@ -1,62 +1,54 @@
 /********************************************************************
-	created:  2013/07/05
-	created:  5:7:2013   13:31
+	created:  2014/10/26	16:22:44
 	filename: ThreadPool.h
-	author:   Mateusz Janiak
+	author:	  Mateusz Janiak
 
-	purpose:  Implementacja puli w¹tków
-	*********************************************************************/
-#ifndef HEADER_GUARD_CORE__THREADPOOL_H__
-#define HEADER_GUARD_CORE__THREADPOOL_H__
+	purpose:
+*********************************************************************/
+#ifndef __HEADER_GUARD_CORELIB__THREADPOOL_H__
+#define __HEADER_GUARD_CORELIB__THREADPOOL_H__
 
 #include <corelib/IThreadPool.h>
-#include <threadingUtils/ThreadPool.h>
-#include <corelib/BaseDataTypes.h>
-#include <threadingUtils/SynchronizationPolicies.h>
+#include <loglib/ILog.h>
 
 namespace core
 {
 	class ThreadPool : public IThreadPool
 	{
 	public:
+		//! Domyï¿½lny konstruktor
+		ThreadPool(InnerThreadPool * tp);
+		//! Desturktor
+		~ThreadPool();
 
-		//! \param threadFactory Fabryka w¹tków
-		//! \param minThreads Minimalna iloœæ w¹tków jakie nale¿y utrzymywaæ
-		//! \param maxThreads Maksymalna iloœæ w¹tków
-		ThreadPool(threadingUtils::IThreadFactoryPtr threadFactory,
-			const size_type minThreads, const size_type maxThreads);
+		//! \return Maksymalna iloï¿½c wï¿½tkï¿½w jakie moï¿½na utworzyï¿½
+		const size_type maxThreads() const override;
+		//! \return Minimalna iloï¿½ï¿½ wï¿½tkï¿½w utrzymywana przez manager
+		const size_type minThreads() const override;
+		//! \return Iloï¿½ï¿½ aktualnie zajï¿½tych wï¿½tkï¿½w
+		const size_type threadsCount() const override;
+		//! \return Nowy wï¿½tek		
+		Thread get(const std::string & who, const std::string & destination) override;
 
-		//! Destruktor wirtualny
-		virtual ~ThreadPool();
+		//! \param groupSize Iloï¿½ï¿½ wï¿½tkï¿½w w grupie
+		//! \param threads [out] Lista z nowymi wï¿½tkami, dopisujemy zawsze na koï¿½cu
+		//! \return Iloï¿½ï¿½ faktycznie dostarczonych wï¿½tkï¿½w
+		const size_type get(const size_type groupSize, Threads & threads, const bool exact,
+			const std::string & who, const std::string & destination = std::string()) override;
 
-		//! \return Maksymalna iloœæ w¹tków jak¹ oferuje pula
-		virtual const size_type max() const;
-		//! \return Minimalna iloœæ utrzymywanych w¹tków jak¹ utrzymuje pula
-		virtual const size_type min() const;
-		//! \return Iloœæ wolnych aktualnie w¹tków utrzymywanych przez pulê
-		virtual const size_type free() const;
-		//! \return Aktualna iloœæ w¹tków
-		virtual const size_type count() const;
-
-		//! Metoda pobiera w¹tki z puli podaj¹c kto i po co pobiera
-		//! \param who Kto pobiera w¹tki
-		//! \param[out] threads Agregat ³¹dowany pobieranymi w¹tkami
-		//! \param count Iloœæ w¹tków do pobrania
-		//! \param exact Czy mo¿na pobraæ mniej w¹tków ni¿ ¿¹dano
-		virtual void getThreads(const std::string & who,
-			Threads & threads, const size_type count, const bool exact);
-
-		//! \param maxThreads Maksymalna iloœæ w¹tków jakie mo¿e dostarczyæ pula
-		void setMaxThreads(size_type maxThreads);
-		//! \param minThreads Minimalna iloœc w¹tków jakie powinn utrzymywaæ pula
-		void setMinThreads(size_type minThreads);
+		//! \param groupSize IloÅ›Ä‡ wÄ…tkÃ³w jakie tworzymy poza ThreadPoolem
+		virtual InnerThreadPool::CustomThreadProxy getCustom(const size_type groupSize = 1) override;
 
 	private:
-		//! Faktyczny pool
-		utils::shared_ptr<threadingUtils::ThreadPool> threadPool_;
-		//! Obiekt synchronizuj¹cy
-		mutable threadingUtils::StrictSyncPolicy synch_;
-	};
+		
+		Thread create(InnerThreadPool::Thread && innerThread,
+			const std::string & who, const std::string & destination);
+
+	private:
+		//! Wewnï¿½trzny tp
+		InnerThreadPool * tp;	
+		loglib::ILogPtr logger;
+	};	
 }
 
-#endif	//	HEADER_GUARD_CORE__THREADPOOL_H__
+#endif	// __HEADER_GUARD_CORELIB__THREADPOOL_H__

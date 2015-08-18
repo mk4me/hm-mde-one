@@ -34,6 +34,7 @@ SET_PUBLIC_HEADERS(
 	InterruptFlag.h
 	ThreadPolicyHelper.h
 	CallPolicy.h
+	ThreadFactoryT.h
 )
 
 SET_SOURCE_FILES(

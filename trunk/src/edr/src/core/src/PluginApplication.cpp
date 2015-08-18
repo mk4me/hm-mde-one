@@ -82,12 +82,12 @@ IVisualizerManager * PluginApplication::visualizerManager()
 	return getVisualizerManager();
 }
 
-ThreadPool * PluginApplication::threadPool()
+IThreadPool * PluginApplication::threadPool()
 {
 	return getThreadPool();
 }
 
-JobManager * PluginApplication::jobManager()
+IJobManager * PluginApplication::jobManager()
 {
 	return getJobManager();
 }
