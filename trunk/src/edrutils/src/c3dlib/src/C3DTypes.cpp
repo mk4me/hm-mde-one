@@ -94,17 +94,17 @@ float VectorToScalarAdaptor::getSampleDuration() const
 
 const std::string& VectorToScalarAdaptor::getTimeBaseUnit() const
 {
-	return descriptor.argumentUnit();
+	return descriptor.getTimeBaseUnit();
 }
 
 float VectorToScalarAdaptor::getTimeScaleFactor() const
 {
-	return descriptor.argumentScaleFactor();
+	return descriptor.getTimeScaleFactor();
 }
 
 const std::string& VectorToScalarAdaptor::getValueBaseUnit() const
 {
-	return descriptor.valueUnit();
+	return descriptor.getValueBaseUnit();
 }
 
 float VectorToScalarAdaptor::getValueScaleFactor() const
@@ -112,9 +112,9 @@ float VectorToScalarAdaptor::getValueScaleFactor() const
 	return descriptor.getValueScaleFactor();
 }
 
-void VectorToScalarAdaptor::setArgumentUnit(const std::string& timeBaseUnit)
+void VectorToScalarAdaptor::setTimeBaseUnit(const std::string& timeBaseUnit)
 {
-	descriptor.setArgumentUnit(timeBaseUnit);
+	descriptor.setTimeBaseUnit(timeBaseUnit);
 }
 
 void VectorToScalarAdaptor::setTimeScaleFactor(float timeScaleFactor)
@@ -122,9 +122,9 @@ void VectorToScalarAdaptor::setTimeScaleFactor(float timeScaleFactor)
 	descriptor.setTimeScaleFactor(timeScaleFactor);
 }
 
-void VectorToScalarAdaptor::setValueUnit(const std::string& valueBaseUnit)
+void VectorToScalarAdaptor::setValueBaseUnit(const std::string& valueBaseUnit)
 {
-	descriptor.setValueUnit(valueBaseUnit);
+	descriptor.setValueBaseUnit(valueBaseUnit);
 }
 
 void VectorToScalarAdaptor::setValueScaleFactor(float valueScaleFactor)
@@ -209,17 +209,17 @@ float ScalarWithTimeSegment::getSampleDuration() const
 
 const std::string& ScalarWithTimeSegment::getTimeBaseUnit() const
 {
-	return descriptor.argumentUnit();
+	return descriptor.getTimeBaseUnit();
 }
 
 float ScalarWithTimeSegment::getTimeScaleFactor() const
 {
-	return descriptor.argumentScaleFactor();
+	return descriptor.getTimeScaleFactor();
 }
 
 const std::string& ScalarWithTimeSegment::getValueBaseUnit() const
 {
-	return descriptor.valueUnit();
+	return descriptor.getValueBaseUnit();
 }
 
 float ScalarWithTimeSegment::getValueScaleFactor() const
@@ -227,9 +227,9 @@ float ScalarWithTimeSegment::getValueScaleFactor() const
 	return descriptor.getValueScaleFactor();
 }
 
-void ScalarWithTimeSegment::setArgumentUnit(const std::string& timeBaseUnit)
+void ScalarWithTimeSegment::setTimeBaseUnit(const std::string& timeBaseUnit)
 {
-	descriptor.setArgumentUnit(timeBaseUnit);
+	descriptor.setTimeBaseUnit(timeBaseUnit);
 }
 
 void ScalarWithTimeSegment::setTimeScaleFactor(float timeScaleFactor)
@@ -237,9 +237,9 @@ void ScalarWithTimeSegment::setTimeScaleFactor(float timeScaleFactor)
 	descriptor.setTimeScaleFactor(timeScaleFactor);
 }
 
-void ScalarWithTimeSegment::setValueUnit(const std::string& valueBaseUnit)
+void ScalarWithTimeSegment::setValueBaseUnit(const std::string& valueBaseUnit)
 {
-	descriptor.setValueUnit(valueBaseUnit);
+	descriptor.setValueBaseUnit(valueBaseUnit);
 }
 
 void ScalarWithTimeSegment::setValueScaleFactor(float valueScaleFactor)
