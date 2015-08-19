@@ -80,7 +80,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::int_type SQLite
 		//zapamietuje poprzedni rozmiar aby ewentualnie rozmiar bufora dopasowac
 		const auto oldBlobSize = blobSize;
 
-		const auto offset = std::min(_Mysb::epptr() - _Mysb::pbase(), toStreamPos(blobSeekhigh - blobWriteBase));
+		const auto offset = std::min<int>(_Mysb::epptr() - _Mysb::pbase(), toStreamPos(blobSeekhigh - blobWriteBase));
 
 		//zapisuje bufor w stumieniu
 		if (flushBuffer(_Mysb::pbase(), offset, blobWriteBase) == false){
@@ -124,7 +124,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::int_type SQLite
 			const auto oldBlobSize = blobSize;
 
 			//zapisuje bufor w stumieniu
-			if (flushBuffer(_Mysb::eback(), std::min(_Mysb::egptr() - _Mysb::eback(), toStreamPos(blobSeekhigh - blobReadBase)), blobReadBase) == false){
+			if (flushBuffer(_Mysb::eback(), std::min<int>(_Mysb::egptr() - _Mysb::eback(), toStreamPos(blobSeekhigh - blobReadBase)), blobReadBase) == false){
 				return (_Traits::eof());	// zapis sie nie powiodlo, fail
 			}
 
@@ -214,7 +214,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::int_type SQLite
 
 			const auto oldBlobSize = blobSize;
 
-			if (flushBuffer(_Mysb::pbase(), std::min(_Mysb::epptr() - _Mysb::pbase(), toStreamPos(blobSeekhigh - blobWriteBase)), blobWriteBase) == false){
+			if (flushBuffer(_Mysb::pbase(), std::min<int>(_Mysb::epptr() - _Mysb::pbase(), toStreamPos(blobSeekhigh - blobWriteBase)), blobWriteBase) == false){
 				blobSeekhigh = oldSeekhigh;
 				return (_Traits::eof());	// zapis sie nie powiodlo, fail
 			}
@@ -245,7 +245,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::int_type SQLite
 		const auto oldBlobSize = blobSize;
 
 		//zapisuje bufor w stumieniu
-		if (flushBuffer(_Mysb::eback(), std::min(_Mysb::egptr() - _Mysb::eback(), toStreamPos(blobSeekhigh - blobReadBase)), blobReadBase) == false){
+		if (flushBuffer(_Mysb::eback(), std::min<int>(_Mysb::egptr() - _Mysb::eback(), toStreamPos(blobSeekhigh - blobReadBase)), blobReadBase) == false){
 			blobSeekhigh = oldSeekhigh;
 			return (_Traits::eof());	// zapis sie nie powiodlo, fail
 		}
@@ -423,7 +423,7 @@ int SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::sync()
 
 		if (_Mysb::pptr() != nullptr){
 			auto oldBlobSize = blobSize;
-			if (flushBuffer(_Mysb::pbase(), std::min(_Mysb::epptr() - _Mysb::pbase(), toStreamPos(blobSeekhigh - blobWriteBase)), blobWriteBase) == true){
+			if (flushBuffer(_Mysb::pbase(), std::min<int>(_Mysb::epptr() - _Mysb::pbase(), toStreamPos(blobSeekhigh - blobWriteBase)), blobWriteBase) == true){
 				if (oldBlobSize < blobSize){
 					auto ss = streamBufferSize();
 					if (ss < buffer.updateSize(toStreamPos(blobSize))){
@@ -440,7 +440,7 @@ int SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy>::sync()
 		}
 		else if (putBackWrite == true){
 			auto oldBlobSize = blobSize;
-			if (flushBuffer(_Mysb::eback(), std::min(_Mysb::egptr() - _Mysb::eback(), toStreamPos(blobSeekhigh - blobReadBase)), blobReadBase) == true){
+			if (flushBuffer(_Mysb::eback(), std::min<int>(_Mysb::egptr() - _Mysb::eback(), toStreamPos(blobSeekhigh - blobReadBase)), blobReadBase) == true){
 				if (oldBlobSize < blobSize){
 					auto ss = streamBufferSize();
 					if (ss < buffer.updateSize(toStreamPos(blobSize))){

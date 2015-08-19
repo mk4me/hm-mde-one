@@ -41,7 +41,7 @@ namespace threadingUtils
 
 		public:
 			//! Typ puli w¹tków
-			typedef InterruptibleThreadPool<InterruptibleMultipleRunThread> MyThreadPoolType;
+			typedef InterruptibleThreadPool<InterruptibleMultipleRunThreadFactory> MyThreadPoolType;
 			typedef typename InterruptibleMultipleRunThread::InterruptiblePolicy InterruptiblePolicy;
 
 		private:

@@ -11,9 +11,7 @@
 
 #include <corelib/Export.h>
 #include <utils/SmartPtr.h>
-#include <datachannellib/DataChannel.h>
-#include <datachannellib/DataChannelDescriptors.h>
-#include <threadingUtils/StreamData.h>
+//#include <threadingUtils/StreamData.h>
 #include <corelib/VariantsCollection.h>
 #include <corelib/IVisualizer.h>
 #include <QtCore/QObject>

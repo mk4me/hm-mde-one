@@ -28,7 +28,7 @@ namespace sqliteUtils
 	template<typename T, int Size = DefaultBufferSize>
 	class FixedBufferPolicy
 	{
-		static_assert((Size > 0 && Size <= std::numeric_limits<int>::max()), "Fixed buffer size must be greater than 0");
+		static_assert((Size > 0), "Fixed buffer size must be greater than 0");
 
 	private:
 		//! Typ kolekcji przechowujacej dane

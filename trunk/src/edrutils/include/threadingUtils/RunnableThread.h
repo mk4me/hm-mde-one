@@ -32,7 +32,7 @@ namespace threadingUtils
 
 		template<class... Args>
 		RunnableThread(const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(), Args&&... arguments)
-			: ExceptionHandlePolicy(ehp), thread(std::forward(arguments)), launched(false) {}
+			: ExceptionHandlePolicy(ehp), thread(std::forward(arguments)...), launched(false) {}
 
 		//! \param Other W�tek kt�rego zasoby przejmujemy
 		RunnableThread(RunnableThread&& Other)
