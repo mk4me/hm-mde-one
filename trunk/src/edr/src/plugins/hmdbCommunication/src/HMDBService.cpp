@@ -69,6 +69,7 @@ public:
 	virtual CURLcode execute(CURL * curl)
 	{
 		HMDBService::curlEnableLog(curl);
+		curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_SSLv3);
 		auto f = manager->addRequest(curl);
 		return f.get();
 	}

@@ -436,6 +436,7 @@ bool FFmpegVideoStream::init(std::istream * source, const std::string & streamNa
 	auto formatContextPtr = formatContext.get();
 	formatContext->pb = ioContext.get();
 
+	/*
 	AVProbeData probeData;
 	probeData.buf = buffer.get();
 	int buf_size = utils::StreamTools::forceReadSome(*source, (char*)probeData.buf, BufferSize);
@@ -444,6 +445,12 @@ bool FFmpegVideoStream::init(std::istream * source, const std::string & streamNa
 	source->seekg(0, std::ios::beg);
 	
 	formatContext->iformat = av_probe_input_format(&probeData, 1);
+	*/
+
+	if (av_probe_input_buffer(formatContext->pb, &(formatContext->iformat), streamName.c_str(), nullptr, 0, 0) != 0){
+		return false;
+	}
+
 	formatContext->flags |= (AVFMT_FLAG_CUSTOM_IO | AVFMT_FLAG_NONBLOCK);
 
 	// otwieramy strumień
@@ -667,7 +674,7 @@ bool FFmpegVideoStream::readFrame()
 
     for (;;) {
         // czy to koniec?
-        if ( url_feof(formatContext->pb) ) {
+		if (avio_feof(formatContext->pb)) {
             nextFrameTimestamp = frameTimestamp = videoStream->duration;
             return true;
             //VIDLIB_ERROR( FFmpegError("End of videoStream reached.") );
