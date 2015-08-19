@@ -32,7 +32,7 @@ namespace threadingUtils
 
 		template<class... Args>
 		RunnableThread(const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(), Args&&... arguments)
-			: ExceptionHandlePolicy(ehp), thread(std::forward(arguments)...), launched(false) {}
+			: ExceptionHandlePolicy(ehp), thread(std::forward<Args>(arguments)...), launched(false) {}
 
 		//! \param Other W�tek kt�rego zasoby przejmujemy
 		RunnableThread(RunnableThread&& Other)
@@ -108,7 +108,7 @@ namespace threadingUtils
 			: ExceptionHandlePolicy(ehp), thread(std::move(innerThread)) {}
 
 		template<class... Args>
-		MultipleRunThread(const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(), Args&&... arguments) : ExceptionHandlePolicy(ehp), thread(std::forward(arguments)) {}
+		MultipleRunThread(const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(), Args&&... arguments) : ExceptionHandlePolicy(ehp), thread(std::forward(arguments)...) {}
 
 		MultipleRunThread(MultipleRunThread&& Other) : ExceptionHandlePolicy(std::move(Other)), sharedState(std::move(Other.sharedState)), thread(std::move(Other.thread)) {}
 		MultipleRunThread(const MultipleRunThread&) = delete;
