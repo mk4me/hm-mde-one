@@ -47,7 +47,7 @@ namespace treeContainer
 		{
 			DegreeLimitsVisitor v;
 			
-			VisitPolicies:Node:::PreOrder::visit(tree, v);
+			VisitPolicies::Node::PreOrder::visit(tree, v);
 
 			return v.degreeLimits();
 		}

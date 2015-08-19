@@ -11,7 +11,7 @@
 #include <vector>
 #include <boost/bimap.hpp>
 #include <treecontainerlib/HelperVisitors.h>
-#include <treecontainerlib/Tree.h>
+//#include <treecontainerlib/Tree.h>
 
 namespace treeContainer {
 
@@ -178,9 +178,9 @@ struct LinearizationT
 	template<typename TreeType>
 	//! \param skeleton Szkielet dla kt�rego generujemy mapowanie wszystkich joint�w
 	//! \return Mapowanie joint�w szkieletu
-	static Linearization::Order<decltype(tree.root())>
+	static Linearization::Order<decltype(std::declval<TreeType>().root())>
 		createCompleteOrder(const TreeType & tree) {
-		Node::LinearizeVisitor<decltype(tree.root()), Forward> lv;
+		LinearizeVisitor<decltype(tree.root()), Forward> lv;
 
 		visit(tree, lv);
 
@@ -210,10 +210,10 @@ struct LinearizationT
 	template<typename TreeType>
 	//! \param skeleton Szkielet dla kt�rego generujemy mapowanie wszystkich joint�w
 	//! \return Mapowanie joint�w szkieletu
-	static Linearization::Order<decltype(tree.root())>
+	static Linearization::Order<decltype(std::declval<TreeType>().root())>
 		createCompleteOrder(TreeType & tree)
 	{
-		Node::LinearizeVisitor<decltype(tree.root()), Forward> lv;
+		LinearizeVisitor<decltype(tree.root()), Forward> lv;
 
 		visit(tree, lv);
 
@@ -225,7 +225,7 @@ struct LinearizationT
 	template<typename TreeType>
 	//! \param skeleton Szkielet dla kt�rego generujemy mapowanie wszystkich joint�w
 	//! \return Mapowanie joint�w szkieletu
-	static Linearization::Mapping<decltype(tree.root())>
+	static Linearization::Mapping<decltype(std::declval<TreeType>().root())>
 		createCompleteMapping(const TreeType & tree)
 	{
 		Linearization::Mapping<decltype(tree.root())> ret;
@@ -261,7 +261,7 @@ struct LinearizationT
 	template<typename TreeType>
 	//! \param skeleton Szkielet dla kt�rego generujemy mapowanie wszystkich joint�w
 	//! \return Mapowanie joint�w szkieletu
-	static Linearization::Mapping<decltype(tree.root())>
+	static Linearization::Mapping<decltype(std::declval<TreeType>().root())>
 		createCompleteMapping(TreeType & tree)
 	{
 		Linearization::Mapping<decltype(tree.root())> ret;
@@ -279,10 +279,10 @@ struct LinearizationT
 	template<typename TreeType>
 	//! \param skeleton Szkielet dla kt�rego generujemy mapowanie aktywnych joint�w (maj�cych dzieci)
 	//! \return Mapowanie aktywnych joint�w szkieletu
-	static Linearization::Order<decltype(tree.root())>
+	static Linearization::Order<decltype(std::declval<TreeType>().root())>
 		createNonLeafOrder(const TreeType & tree)
 	{
-		Node::LinearizeVisitor<decltype(tree.root()), Forward> lv;
+		LinearizeVisitor<decltype(tree.root()), Forward> lv;
 
 		visitNonLeaf(tree, lv);
 
@@ -312,10 +312,10 @@ struct LinearizationT
 	template<typename TreeType>
 	//! \param skeleton Szkielet dla kt�rego generujemy mapowanie aktywnych joint�w (maj�cych dzieci)
 	//! \return Mapowanie aktywnych joint�w szkieletu
-	static Linearization::Order<decltype(tree.root())>
+	static Linearization::Order<decltype(std::declval<TreeType>().root())>
 		createNonLeafOrder(TreeType & tree)
 	{
-		Node::LinearizeVisitor<decltype(tree.root()), Forward> lv;
+		LinearizeVisitor<decltype(tree.root()), Forward> lv;
 
 		visitNonLeaf(tree, lv);
 
@@ -327,7 +327,7 @@ struct LinearizationT
 	template<typename TreeType>
 	//! \param skeleton Szkielet dla kt�rego generujemy mapowanie aktywnych joint�w (maj�cych dzieci)
 	//! \return Mapowanie aktywnych joint�w szkieletu
-	static Linearization::Order<decltype(tree.root())>
+	static Linearization::Order<decltype(std::declval<TreeType>().root())>
 		createNonLeafMapping(const TreeType & tree)
 	{
 		Linearization::Mapping<decltype(tree.root())> ret;
@@ -363,7 +363,7 @@ struct LinearizationT
 	template<typename TreeType>
 	//! \param skeleton Szkielet dla kt�rego generujemy mapowanie aktywnych joint�w (maj�cych dzieci)
 	//! \return Mapowanie aktywnych joint�w szkieletu
-	static Linearization::Mapping<decltype(tree.root())>
+	static Linearization::Mapping<decltype(std::declval<TreeType>().root())>
 		createNonLeafMapping(TreeType & tree)
 	{
 		Linearization::Mapping<decltype(tree.root())> ret;

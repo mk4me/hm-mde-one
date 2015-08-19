@@ -210,7 +210,7 @@ void Profiler::scopeToCSV( std::ostringstream& str, FwdIter first, FwdIter last 
             Measurement* measurement = state->measurements + i;
             if ( measurement->entrances ) {
                 ProfilerEntry* entry = entires[i];
-                int nameLength;
+                std::size_t nameLength;
                 const char* typeName = entry->getTypeName(nameLength);
                 if ( perThreadDumpEnabled ) {
                     str<<id<<'\t';
@@ -273,7 +273,9 @@ std::string Profiler::createCSV()
 #else
     struct tm * timeinfo;
     timeinfo = localtime ( &rawtime );
-    output<<"Profiling date:\t"<<strftime(timeinfo);
+    char buffer [80];
+    strftime (buffer,80,"%I:%M%p.",timeinfo);
+    output << "Profiling date:\t" << buffer;
 #endif
 
 

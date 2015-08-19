@@ -373,6 +373,8 @@ namespace threadingUtils {
 
 		friend class BaseStreamUpdater < StreamFilterType > ;
 
+		typedef typename MyStreamModifierBase::BaseStreamTypePtr BaseStreamTypePtr;
+
 	public:
 
 		//! \param baseStream Strumień który filtruję
@@ -436,7 +438,7 @@ namespace threadingUtils {
 			std::lock_guard<std::recursive_mutex> lock(this->synch_);
 
 			T bd;
-			baseStream_->data(bd);
+			MyStreamModifierBase::baseStream_->data(bd);
 
 			if (filter(bd) == true){
 				currentData_ = bd;
@@ -465,6 +467,7 @@ namespace threadingUtils {
 		typedef StreamProcessorT<T, Processor> StreamProcessorType;
 
 		typedef StreamModifierBase < T, StreamProcessorT<T, Processor> > MyStreamModifierBase;
+		typedef typename MyStreamModifierBase::BaseStreamTypePtr BaseStreamTypePtr;
 
 		friend class BaseStreamUpdater < StreamProcessorType > ;
 
@@ -541,7 +544,7 @@ namespace threadingUtils {
 		{
 			std::lock_guard<std::recursive_mutex> lock(this->synch_);
 
-			baseStream_->data(currentData_);
+			MyStreamModifierBase::baseStream_->data(currentData_);
 
 			if (this->buffersAttached() == true){
 				process();
@@ -573,6 +576,7 @@ namespace threadingUtils {
 		typedef StreamAdapterT<Base, Dest, Extractor> StreamAdapterType;
 
 		typedef StreamModifierBase < Dest, StreamAdapterT<Base, Dest, Extractor>, Base > MyStreamModifierBase;
+		typedef typename MyStreamModifierBase::BaseStreamTypePtr BaseStreamTypePtr;
 
 		friend class BaseStreamUpdater < StreamAdapterType > ;
 
@@ -644,7 +648,7 @@ namespace threadingUtils {
 			std::lock_guard<std::recursive_mutex> lock(this->synch_);
 
 			Base bd;
-			baseStream_->data(bd);
+			MyStreamModifierBase::baseStream_->data(bd);
 
 			if (extractor_.verify(bd) == true){
 				if (this->buffersAttached() == true){

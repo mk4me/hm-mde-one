@@ -35,7 +35,7 @@ namespace core {
     void queryDataIsConvertible__(IDataManagerReader::IOperations*, std::vector<Ptr>&, bool, boost::false_type)
     {
         // rev
-        static_assert( false, "Niewłaściwy typ elementu wektora lub niezdefiniowno wrap. Sprawdz CORE_DEFINE_WRAPPER dla poszukiwanego typu." );
+        //static_assert( false, "Niewłaściwy typ elementu wektora lub niezdefiniowno wrap. Sprawdz CORE_DEFINE_WRAPPER dla poszukiwanego typu." );
     }
 
     //! \param manager Data manager.

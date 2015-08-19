@@ -123,7 +123,7 @@ namespace treeContainer
 					while (nodes.empty() == false)
 					{
 						//pobieramy dla nast�pnego poziomu dzieci
-						Nodes<NPtr> nextLevelNodes;
+						treeContainer::Node::Nodes<NPtr> nextLevelNodes;
 						for (const auto & node : nodes)
 						{
 							if (condVisitor(node, level) == false){
