@@ -98,12 +98,15 @@ private:
     };
 
 private:
-    //! Kontekst formatu
-    utils::shared_ptr<AVFormatContext> formatContext;
+	//! Ewentualny buffor na dane
+	//utils::shared_ptr<unsigned char> buffer;
 	//! Kontekst I/O
 	utils::shared_ptr<AVIOContext> ioContext;
+    //! Kontekst formatu
+	AVFormatContext * formatContext;
+    //utils::shared_ptr<AVFormatContext> formatContext;
     //! Kodek video.
-	utils::shared_ptr<AVCodecContext> codecContext;
+	AVCodecContext * codecContext;
     //! Strumień.
 	AVStream * videoStream;
     //! Bieżąca ramka.
@@ -129,8 +132,6 @@ private:
 	utils::shared_ptr<AVPacket> packet;
     //! Prawdziwy używany w momencie, gdy źródłowy nie ma wyalignowanych danych.
 	utils::shared_ptr<AVPacket> alignedPacket;
-	//! Ewentualny buffor na dane
-	utils::shared_ptr<unsigned char> buffer;
 	//! Strumień
 	utils::shared_ptr<std::istream> stream;
 

@@ -127,11 +127,16 @@ const utils::TypeInfo & VideoVisualizer::VideoSerie::getRequestedDataType() cons
 	return requestedType;
 }
 
+void VideoVisualizer::VideoSerie::safeSetTime(const double time)
+{
+	visualizer->currentStreamTime = std::min(std::max(0.0, time - offset), getLength());
+}
+
 void VideoVisualizer::VideoSerie::update()
 {
 	/*VideoStreamConstPtr stream;
 	data->get(stream);*/
-	visualizer->currentStreamTime = visualizer->stream->getTime();
+	safeSetTime(visualizer->stream->getTime());
 }
 
 const core::VariantConstPtr & VideoVisualizer::VideoSerie::getData() const
@@ -156,7 +161,7 @@ double VideoVisualizer::VideoSerie::getEnd() const
 
 void VideoVisualizer::VideoSerie::setTime(double time)
 {
-	visualizer->currentStreamTime = time - offset;
+	safeSetTime(time);
 }
 
 void VideoVisualizer::VideoSerie::setOffset( double val )

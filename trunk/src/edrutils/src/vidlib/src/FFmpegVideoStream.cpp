@@ -284,6 +284,15 @@ FFmpegVideoStream::~FFmpegVideoStream()
 	if(videoStream != nullptr){
 		videoStream->discard = AVDISCARD_ALL;
 	}
+
+	avformat_close_input(&formatContext);
+	avformat_free_context(formatContext);
+
+	//formatContext.reset();	
+	if (ioContext != nullptr){
+		av_free(ioContext->buffer);
+		ioContext->buffer = nullptr;		
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -299,7 +308,8 @@ bool FFmpegVideoStream::commonInit(const std::string & streamName, int wantedVid
 		if (selectedStream->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
 			// czy to jest ten strumień, który chcemy otworzyć?
 			if (wantedVideoStream < 0 || wantedVideoStream == static_cast<int>(i)) {
-				codecContext.reset(selectedStream->codec, &avcodec_close);
+				//codecContext.reset(selectedStream->codec, &avcodec_close);
+				codecContext = selectedStream->codec;
 				videoStream = selectedStream;
 				break;
 			}
@@ -325,7 +335,7 @@ bool FFmpegVideoStream::commonInit(const std::string & streamName, int wantedVid
 	av_dict_set(&codec_opts, "b", "3M", 0);
 
 	// otwieramy kodek
-	if ((error = avcodec_open2(codecContext.get(), pCodec, &codec_opts)) < 0) {
+	if ((error = avcodec_open2(codecContext, pCodec, &codec_opts)) < 0) {
 		av_dict_free(&codec_opts);
 		VIDLIB_ERROR(FFmpegError("avcodec_open2", error));
 	}
@@ -373,19 +383,20 @@ bool FFmpegVideoStream::init( const std::string& source, int wantedVideoStream /
     VIDLIB_FUNCTION_PROLOG;
     int error = 0;
 	//inicjuję kontekst formatu
-	formatContext.reset(avformat_alloc_context(), &avformat_free_context);
-	auto formatContextPtr = formatContext.get();
+	//formatContext.reset(avformat_alloc_context(), &avformat_free_context);
+	formatContext = avformat_alloc_context();
+	//auto formatContextPtr = formatContext.get();
     // otwieramy plik
-	if ((error = avformat_open_input(&formatContextPtr, source.c_str(), NULL, 0)) != 0) {
+	if ((error = avformat_open_input(&formatContext, source.c_str(), NULL, 0)) != 0) {
         VIDLIB_ERROR(FFmpegError( "avformat_open_input error", error ));
     }
     // info o kodekach
-    if ( (error=avformat_find_stream_info(formatContext.get(), nullptr)) < 0 ) {
+	if ((error = avformat_find_stream_info(formatContext, nullptr)) < 0) {
         VIDLIB_ERROR(FFmpegError( "avformat_find_stream_info error", error ));
     }
 
 #ifdef VIDLIB_DEBUG
-	av_dump_format(formatContext.get(), 0, source.c_str(), false);
+	av_dump_format(formatContext, 0, source.c_str(), false);
 #endif // VIDLIB_DEBUG
 
 	return commonInit(source, wantedVideoStream);
@@ -427,15 +438,17 @@ bool FFmpegVideoStream::init(std::istream * source, const std::string & streamNa
 
 	static const unsigned int BufferSize = 1024 * 512;
 	//inicjuję bufor
-	buffer.reset(reinterpret_cast<unsigned char*>(av_malloc(BufferSize + FF_INPUT_BUFFER_PADDING_SIZE)), &av_free);
+	std::unique_ptr<unsigned char, decltype(&av_free)> buffer(reinterpret_cast<unsigned char*>(av_malloc(BufferSize + FF_INPUT_BUFFER_PADDING_SIZE)), &av_free);
 	int error = 0;
 	//inicjuję kontekst własnego I/O w oparciu o strumień i bufor
 	ioContext.reset(avio_alloc_context(buffer.get(), BufferSize, 0, reinterpret_cast<void*>(source), &readFunction, nullptr, &seekFunction), &av_free);
+	//auto ioContext = avio_alloc_context(buffer.get(), BufferSize, 0, reinterpret_cast<void*>(source), &readFunction, nullptr, &seekFunction);
+	buffer.release();
 	//inicjuję kontekst formatu
-	formatContext.reset(avformat_alloc_context(), &avformat_free_context);
-	auto formatContextPtr = formatContext.get();
+	//formatContext.reset(avformat_alloc_context(), &avformat_free_context);
+	formatContext = avformat_alloc_context();
+	//auto formatContextPtr = formatContext.get();
 	formatContext->pb = ioContext.get();
-
 	/*
 	AVProbeData probeData;
 	probeData.buf = buffer.get();
@@ -454,18 +467,18 @@ bool FFmpegVideoStream::init(std::istream * source, const std::string & streamNa
 	formatContext->flags |= (AVFMT_FLAG_CUSTOM_IO | AVFMT_FLAG_NONBLOCK);
 
 	// otwieramy strumień
-	if ((error = avformat_open_input(&formatContextPtr, streamName.c_str(), nullptr, nullptr)) != 0) {
+	if ((error = avformat_open_input(&formatContext, streamName.c_str(), formatContext->iformat, nullptr)) != 0) {
 		char errorBuf[AV_ERROR_MAX_STRING_SIZE] = { 0 };
 		av_strerror(error, errorBuf, AV_ERROR_MAX_STRING_SIZE);
 		VIDLIB_ERROR(FFmpegError("avformat_open_input error", error));
 	}
 	// info o kodekach
-	if ((error = avformat_find_stream_info(formatContext.get(), nullptr)) < 0) {
+	if ((error = avformat_find_stream_info(formatContext, nullptr)) < 0) {
 		VIDLIB_ERROR(FFmpegError("avformat_find_stream_info error", error));
 	}
 
 #ifdef VIDLIB_DEBUG
-	av_dump_format(formatContext.get(), 0, streamName.c_str(), false);
+	av_dump_format(formatContext, 0, streamName.c_str(), false);
 #endif // VIDLIB_DEBUG
 
 	return commonInit(streamName, wantedVideoStream);
@@ -624,12 +637,12 @@ bool FFmpegVideoStream::seekToKeyframe( int64_t timestamp, bool pickNextframe )
         int64_t seekMax = !pickNextframe ? seekTarget : std::numeric_limits<int64_t>::max();
         // +- 2 wprowadzone z powodu błędu zaokrągleń
         // seek        
-		error = avformat_seek_file(formatContext.get(), streamIdx, seekMin, seekTarget, seekMax, 0);		
+		error = avformat_seek_file(formatContext, streamIdx, seekMin, seekTarget, seekMax, 0);
 #else // AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
         int flags = (pickNextframe ? 0 : AVSEEK_FLAG_BACKWARD);
-        if ( av_seek_frame(formatContext.get(), streamIdx, seekTarget, flags) < 0 ) {
+		if ( av_seek_frame(formatContext, streamIdx, seekTarget, flags) < 0 ) {
             flags ^= AVSEEK_FLAG_BACKWARD;
-            error = av_seek_frame(formatContext.get(), streamIdx, seekTarget, flags);
+			error = av_seek_frame(formatContext, streamIdx, seekTarget, flags);
         }
 #endif // AVIO_FFMPEG_ENABLE_EXPERIMENTAL_API
 
@@ -638,7 +651,7 @@ bool FFmpegVideoStream::seekToKeyframe( int64_t timestamp, bool pickNextframe )
         }
 
         // flush buffers
-        avcodec_flush_buffers(codecContext.get());
+        avcodec_flush_buffers(codecContext);
 
         // "symulujemy" timestamp, aby nextFrameTimestamp został ustawiony
         nextFrameTimestamp = frameTimestamp = AV_NOPTS_VALUE;
@@ -685,7 +698,7 @@ bool FFmpegVideoStream::readFrame()
 
         // odczytujemy pakiet
         {
-            error = av_read_frame(formatContext.get(), packet.get());
+			error = av_read_frame(formatContext, packet.get());
             if ( error < 0 ) {
                 if ( error == AVERROR_EOF ) {
                     //VIDLIB_ERROR( FFmpegError("Unexpected EOF", error));
@@ -707,7 +720,7 @@ bool FFmpegVideoStream::readFrame()
             // pomocnicza zmienna
             codecContext->reordered_opaque = packet->pts;
             {
-                error = avcodec_decode_video2(codecContext.get(), frame, &gotPicture, packet.get());
+                error = avcodec_decode_video2(codecContext, frame, &gotPicture, packet.get());
                 if ( error < 0 ) {
                     // tolerujemy błąd
                 }

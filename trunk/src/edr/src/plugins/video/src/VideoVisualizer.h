@@ -77,6 +77,10 @@ private:
         void setOffset(double val);
 
 	private:
+
+		void safeSetTime(const double time);
+
+	private:
 		VideoVisualizer * visualizer;
 		std::string name;
 		core::VariantConstPtr data;
