@@ -160,7 +160,7 @@ private:
 	void init()
 	{
 		{
-			utils::scoped_ptr<QIcon> i(innerVisualizer_->createIcon());
+			utils::unique_ptr<QIcon> i(innerVisualizer_->createIcon());
 			icon = *i;
 		}
 

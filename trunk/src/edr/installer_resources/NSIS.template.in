@@ -22,10 +22,14 @@
 ;--------------------------------
 ;Include Modern UI
 
+  !include "LogicLib.nsh"
+  !include "x64.nsh"
   !include "MUI.nsh"
 
+  ; disable registry redirection (enable access to 64-bit portion of registry)
+  SetRegView 64
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
+  InstallDir "$PROGRAMFILES64\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
 
 ;--------------------------------
 ;General

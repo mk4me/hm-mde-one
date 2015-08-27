@@ -37,7 +37,7 @@
 #include <utils/LeakDetection.h>
 #endif
 
-#ifdef WIN32
+#ifdef _WINDOWS_
 #define NOMINMAX
 #include <Windows.h>
 #endif
@@ -315,7 +315,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	//inicjalizacja obiektu ?aduj?cego pluginy
 	pluginLoader_.reset(new PluginLoader(Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path()));
 
-#if defined(__WIN32__)
+#if defined(_WINDOWS)
 	if (additionalPluginsPath.empty() == true) {
 		additionalPluginsPath = getPaths()->getPluginPath();
 	}
@@ -687,7 +687,7 @@ const Filesystem::Path resourcesPath()
 bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path,
 	const std::string & appName)
 {
-#ifdef WIN32
+#if defined(_WINDOWS)
 	//TODO
 	//u�y� vendor info do generowania sciezki
 #define KEY_PATH TEXT("Software\\PJWSTK\\")
@@ -756,7 +756,7 @@ void Application::setDefaultPaths(utils::shared_ptr<Path> & path, const std::str
 	//ciagnac to info z vendor info?
 	//mie? na uwadze nazw? aplikacji i PJWSTK
 	auto userPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0).toStdString()) / "PJWSTK" / appName;
-#ifdef WIN32
+#if defined(_WINDOWS)
 	//HACK �eby dosta� si� do �cie�ek roaming dla usera, Qt w innych przypadkach podaje �ciezki w local
 	QString settingsPath = QFileInfo(QSettings().fileName()).absolutePath();
 	auto userAppDataPath = Filesystem::Path(settingsPath.toStdString()).parent_path() / "PJWSTK" / appName;

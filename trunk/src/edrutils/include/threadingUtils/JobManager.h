@@ -12,7 +12,6 @@
 
 #include <threadingUtils/IJob.h>
 #include <threadingUtils/FunctionWrapper.h>
-#include <atomic>
 #include <mutex>
 #include <type_traits>
 #include <utils/SmartPtr.h>
@@ -36,7 +35,7 @@ namespace threadingUtils
 			//! Wrapper opakowanego zadania
 			std::function<T()> functionWrapper;
 			//! Status zadania
-			std::atomic<Status> status_;
+			volatile Status status_;
 			//! Obiekt synchronizuj¹cy status
 			std::recursive_mutex satusMutex;
 		};
@@ -222,7 +221,7 @@ namespace threadingUtils
 			//! Wrapper opakowanego zadania
 			std::function<T&()> functionWrapper;
 			//! Status zadania
-			std::atomic<Status> status_;
+			volatile Status status_;
 			//! Obiekt synchronizuj¹cy status
 			std::recursive_mutex satusMutex;
 		};
@@ -406,7 +405,7 @@ namespace threadingUtils
 			//! Wrapper opakowanego zadania
 			std::function<void()> functionWrapper;
 			//! Status zadania
-			std::atomic<Status> status_;
+			volatile Status status_;
 			//! Obiekt synchronizuj¹cy status
 			std::recursive_mutex satusMutex;
 		};

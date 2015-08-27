@@ -38,13 +38,13 @@ namespace hmdbCommunication
 	struct CURLFTPUploadTransferData : public CURLFTPTransferData
 	{
 	public:
-		IHMDBStorage::IStreamPtr stream;
+		IHMDBStorageOperations::IStreamPtr stream;
 	};
 
 	struct CURLFTPDownloadTransferData : public CURLFTPTransferData
 	{
 	public:
-		IHMDBStorage::OStreamPtr stream;
+		IHMDBStorageOperations::OStreamPtr stream;
 	};
 }
 

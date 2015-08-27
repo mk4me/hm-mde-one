@@ -30,9 +30,7 @@ namespace sqliteUtils
 		private:
 			const unsigned int retriesCount;
 			const unsigned int stepWaitTime;
-		};
-
-		typedef WrapperT<sqlite3_stmt, Finalizer> Wrapper;
+		};		
 
 		//! \param db Uchwyt bazy danych
 		//! \param sql Zapytanie
@@ -47,6 +45,12 @@ namespace sqliteUtils
 		//! \return Kod operacji wykonania
 		static const int step(sqlite3_stmt * statement);
 	};
+}
+
+template<>
+void std::default_delete<sqlite3_stmt>::operator()(sqlite3_stmt *statement) const
+{	// delete a pointer
+	sqliteUtils::SQLitePreparedStatement::finalize(statement);
 }
 
 #endif	// __HEADER_GUARD_SQLITEUTILS__SQLITEPREPAREDSTATEMENT_H__

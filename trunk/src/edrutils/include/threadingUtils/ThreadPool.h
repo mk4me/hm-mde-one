@@ -101,7 +101,7 @@ namespace threadingUtils {
 			void swap(Thread& Other) { std::swap(threadPool, Other.threadPool); std::swap(thread, Other.thread); std::swap(futureWrapper, Other.futureWrapper); }
 			const bool joinable() const { return futureWrapper.valid() && thread.joinable(); }
 			void join() { futureWrapper.wait(); }
-			void detach() { threadPool->detach(); threadPool = nullptr; futureWrapper.reset(); thread.detach(); }
+			void detach() { threadPool->secureDetach(); threadPool = nullptr; futureWrapper.reset(); thread.detach(); }
 			std::thread::id get_id() const { return thread.get_id(); }
 			std::thread::native_handle_type native_handle() { return thread.native_handle(); }
 
@@ -261,6 +261,12 @@ namespace threadingUtils {
 		//! Metoda zmniejsza aktualną ilośc wątków w puli
 		void detach() { --threadsCount_; }
 
+		void secureDetach()
+		{
+			std::lock_guard<std::mutex> lock(mutex);
+			detach();
+		}
+
 		//! \param innerThread Wewnętrzny wątek wielokrotnego uruchamiania, który próbujemy zwrócić przy niszczeniu dostarczonego wątku
 		void tryReturn(MultipleRunThread & innerThread)
 		{
@@ -273,7 +279,7 @@ namespace threadingUtils {
 
 	private:
 		//! Aktualna ilość wątków w puli
-		std::atomic<size_type> threadsCount_;
+		volatile size_type threadsCount_;
 		//! Minimalna ilośc wątków w puli jaką chcemy utrzymywać
 		size_type minThreads_;
 		//! Maksymalna ilość wątków jakie pozwala stworzyć pula

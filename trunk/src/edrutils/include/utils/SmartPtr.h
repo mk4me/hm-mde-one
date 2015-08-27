@@ -18,7 +18,7 @@
 #include <boost/shared_array.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/make_shared.hpp>
-#include <boost/scoped_ptr.hpp>
+#include <boost/unique_ptr.hpp>
 
 #elif defined UTILS_CXX0X
 
@@ -40,11 +40,12 @@ namespace utils {
 	using boost::shared_array;
 	using boost::shared_ptr;
 	using boost::weak_ptr;
-	using boost::scoped_ptr;
+	template<typename T> using unique_ptr = boost::unique_ptr<T>;
 	using boost::dynamic_pointer_cast;
 	using boost::static_pointer_cast;
 	using boost::const_pointer_cast;
 	using boost::make_shared;
+	using boost::allocate_shared;
 
 #elif defined UTILS_CXX0X
 
@@ -52,21 +53,15 @@ namespace utils {
 	using std::shared_ptr;
 	template<typename T> using shared_array = std::shared_ptr<T>;
 	using std::weak_ptr;
-
-	template<typename T> using scoped_ptr = std::unique_ptr<T>;
+	template<typename T, class Dd = std::default_delete<T>> using unique_ptr = std::unique_ptr<T, Dd>;
 	using std::dynamic_pointer_cast;
 	using std::static_pointer_cast;
 	using std::const_pointer_cast;
 	using std::make_shared;
+	using std::allocate_shared;
 
 	template< typename T >
-	struct array_deleter
-	{
-		void operator ()(T const * p)
-		{
-			delete[] p;
-		}
-	};
+	using array_deleter = std::default_delete<T[]>;	
 
 #endif
 

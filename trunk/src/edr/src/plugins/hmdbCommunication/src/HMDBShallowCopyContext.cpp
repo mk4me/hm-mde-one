@@ -58,7 +58,7 @@ void HMDBShallowCopyDataContext::setShallowCopy(const ShallowCopyConstPtr shallo
 {
 	shallowCopy_ = shallowCopy;
 	if (shallowCopy_ != nullptr){
-		//statusManager_->rebuild(shallowCopy_);
+		//statusManager_->transaction()->rebuild(shallowCopy_);
 	}
 }
 
@@ -290,7 +290,7 @@ void filterAndInsertData(core::ConstVariantsList & inputData, core::ConstVariant
 {
 	auto it = inputData.begin();
 	while (it != inputData.end()){
-		if (localContext->isMyData(*it) == false){
+		if (localContext->transaction()->isMyData(*it) == false){
 			it = inputData.erase(it);
 		}
 		else{
@@ -480,7 +480,7 @@ void HMDBShallowCopyLocalContext::addPatientObject(const hmdbServices::MedicalSh
 	auto pOW = core::Variant::create<hmdbCommunication::IPatient>();
 	pOW->set(pPtr);
 
-	localContext_->load(pOW);
+	localContext_->transaction()->load(pOW);
 
 	//zapami�tuje
 	data_[PatientType][subjectID].push_back(pOW);
@@ -593,7 +593,7 @@ core::VariantPtr HMDBShallowCopyLocalContext::getSubject(const hmdbServices::ID 
 		subOW->setMetadata("label", label.str());
 
 		//dodaj� do DM
-		localContext_->load(subOW);
+		localContext_->transaction()->load(subOW);
 
 		//zapami�tuj� mapowanie
 		data_[SubjectType][id].push_back(subOW);
@@ -671,8 +671,9 @@ core::VariantPtr HMDBShallowCopyLocalContext::getSession(const std::pair<Indexes
 		}
 
 		//dodaj� do DM
-		localContext_->load(antroOW);
-		localContext_->load(sOW);		
+		auto t = localContext_->transaction();
+		t->load(antroOW);
+		t->load(sOW);
 
 		//zapami�tuj� mapowanie
 		data_[SessionType][id].push_back(sOW);
@@ -796,7 +797,8 @@ core::VariantPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & motionFi
 
 		mOW->setMetadata("label", m->trialName);
 
-		localContext_->load(mOW);
+		auto t = localContext_->transaction();
+		t->load(mOW);
 
 		//zapami�tuj� mapowanie
 		data_[MotionType][id].push_back(mOW);
@@ -804,7 +806,7 @@ core::VariantPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & motionFi
 		if (jointsWrapper != nullptr){
 
 			data_[MotionType][id].push_back(jointsWrapper);
-			localContext_->load(jointsWrapper);
+			t->load(jointsWrapper);
 		}
 
 		sPtr->addMotion(mOW);
@@ -1120,8 +1122,9 @@ void HMDBShallowCopyLocalContext::unloadSubjectHierarchy(const IndexedData & unl
 				//czy usunalem calego motiona?
 				if (motionIT->second.size() == shallowCopy->motionShallowCopy.trials.find(motionIT->first)->second->files.size()){
 					auto data = data_[MotionType][motionIT->first];
+					auto t = localContext_->transaction();
 					for (auto it = data.begin(); it != data.end(); ++it){
-						localContext_->unload(*it);
+						 t->unload(*it);
 					}
 
 					data_[MotionType].erase(motionIT->first);
@@ -1147,8 +1150,9 @@ void HMDBShallowCopyLocalContext::unloadSubjectHierarchy(const IndexedData & unl
 			if (motions.empty() == true){
 
 				auto data = data_[SessionType][sessionIT->first];
+				auto t = localContext_->transaction();
 				for (auto it = data.begin(); it != data.end(); ++it){
-					localContext_->unload(*it);
+					t->unload(*it);
 				}
 
 				data_[SessionType].erase(sessionIT->first);
@@ -1166,8 +1170,9 @@ void HMDBShallowCopyLocalContext::unloadSubjectHierarchy(const IndexedData & unl
 		if (sessions.empty() == true){
 
 			auto data = data_[SubjectType][subjectIT->first];
+			auto t = localContext_->transaction();
 			for (auto it = data.begin(); it != data.end(); ++it){
-				localContext_->unload(*it);
+				t->unload(*it);
 			}
 
 			data_[SubjectType].erase(subjectIT->first);
@@ -1182,7 +1187,7 @@ void HMDBShallowCopyLocalContext::unloadSubjectHierarchy(const IndexedData & unl
 
 					auto data = pIT->second;
 					for (auto d : data){
-						localContext_->unload(d);
+						t->unload(d);
 					}
 
 					it->second.erase(pIT);

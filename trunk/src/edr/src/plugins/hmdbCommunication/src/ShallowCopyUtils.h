@@ -126,7 +126,7 @@ namespace hmdbCommunication
 		//! \param storage Skład w którym zapisujemy
 		static void storeShallowCopy(const std::string & userHash,
 			const IHMDBRemoteContext::DataReference dataReference,
-			const ShallowCopyType shallowType, IHMDBStorage::IStreamPtr stream,
+			const ShallowCopyType shallowType, IHMDBStorageOperations::IStreamPtr stream,
 			IHMDBStorage::TransactionPtr storage);
 
 		//! \param userHash Skrót użytkownika
@@ -134,7 +134,7 @@ namespace hmdbCommunication
 		//! \param shallowType Typ płytkiej kopii bazy danych		
 		//! \param storage Skład w którym zapisujemy
 		//! \return Strumien do czytania danych lub nullptr jeśli nie ma
-		static const IHMDBStorage::IStreamPtr shallowCopyStream(const std::string & userHash,
+		static const IHMDBStorageOperations::IStreamPtr shallowCopyStream(const std::string & userHash,
 			const IHMDBRemoteContext::DataReference dataReference,
 			const ShallowCopyType shallowType, const IHMDBStorage::TransactionConstPtr storage);
 

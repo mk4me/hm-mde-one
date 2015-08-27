@@ -1,5 +1,4 @@
 #include <threadingUtils/StreamData.h>
-#include <atomic>
 #include <algorithm>
 
 using namespace threadingUtils;
@@ -25,7 +24,7 @@ public:
 	}
 
 private:
-	mutable std::atomic<bool> modified_;
+	mutable volatile bool modified_;
 	mutable std::recursive_mutex sync_;
 };
 

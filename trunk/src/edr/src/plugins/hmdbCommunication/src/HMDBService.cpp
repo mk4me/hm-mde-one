@@ -293,7 +293,7 @@ void HMDBService::init(core::ISourceManager * sourceManager,
 	WsdlPull::SCHEMADIR = (plugin::getPaths()->getResourcesPath() / "schemas/").string();
 	PLUGIN_LOG_INFO("WSDLPULL SCHEMADIR: " << WsdlPull::SCHEMADIR);
 
-#if ((defined _WIN32) || (defined _WIN64))
+#if defined(_WINDOWS)
 	XmlUtils::TMPFILESDIR = (plugin::getPaths()->getTempPath()).string();
 	PLUGIN_LOG_INFO("XmlUtils TMPFILESDIR: " << XmlUtils::TMPFILESDIR);
 #else

@@ -267,7 +267,7 @@ const bool DataViewWidget::tryRebuildDataStatus()
 {
 	if (currentShallowCopy_ != nullptr){
 		coreUI::CoreCursorChanger cc;
-		shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->rebuild(shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage(), currentShallowCopy_);
+		shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->transaction()->rebuild(shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage(), currentShallowCopy_);
 	}
 
 	return currentShallowCopy_ != nullptr;
@@ -435,7 +435,7 @@ const hmdbCommunication::DataStatus DataViewWidget::refreshDataStatus(QTreeWidge
 			//wystarczy switch + dynamic_cast
 			DataType dt = FileType;
 			if (mapContentTypeToDataType(contentItem->contentType(), dt) == true){
-				status = shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->dataStatus(dt, id);
+				status = shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->transaction()->dataStatus(dt, id);
 			}
 		}
 	}
@@ -499,7 +499,7 @@ const hmdbCommunication::DataStatus DataViewWidget::refrshItemContent(QTreeWidge
 			//wystarczy switch + dynamic_cast
 			DataType dt = hmdbCommunication::FileType;
 			if (mapContentTypeToDataType(contentItem->contentType(), dt) == true){
-				status = shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->dataStatus(dt, id);
+				status = shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->transaction()->dataStatus(dt, id);
 			}
 		}
 	}	
@@ -1500,12 +1500,13 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 		});
 
 		auto storage = shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage();
-		if (storage->canStore(size) == false){
+		auto st = storage->transaction();
+		if (st->canStore(size) == false){
 			QMessageBox::warning(this, tr("Download disk space requirements"), tr("Requested download requires %1 to store and it exceeds capability of the storage. Please limit amount of elements for download and try again.").arg(formatFileSize(size)));
 			return;
 		}
 
-		if (storage->shareDiskSpace(plugin::getPaths()->getTempPath()) == true){
+		if (st->shareDiskSpace(plugin::getPaths()->getTempPath()) == true){
 			size <<= 1;
 		}
 		
@@ -1517,7 +1518,7 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 		}
 
 		hmdbCommunication::IHMDBRemoteContext::OperationPtr op(new hmdbCommunication::MultipleFilesDownloadStoreAndStatusUpdate(downloads,
-			shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage(),
+			storage,
 			shallowCopyContext_->shallowCopyDataContext()->dataStatusManager(), shallowCopyContext_->shallowCopyDataContext()->shallowCopy()));
 
 		core::Thread t = plugin::getThreadPool()->get("DataViewWidget", "Remote operation");				
@@ -1741,7 +1742,7 @@ void DataViewWidget::onContextMenu(QPoint position)
 
 				localActionsSet = true;
 
-				auto ds = shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->dataStatus(dt, citem->id());
+				auto ds = shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->transaction()->dataStatus(dt, citem->id());
 				
 				ui->actionLoad->setEnabled((ds.usage() & hmdbCommunication::DataStatus::Unloaded) && (ds.storage() & hmdbCommunication::DataStatus::Local));
 				ui->actionUnload->setEnabled(ds.usage() & hmdbCommunication::DataStatus::Loaded);

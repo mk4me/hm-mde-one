@@ -149,7 +149,7 @@ namespace threadingUtils
 
 		struct SharedState
 		{
-			std::atomic<bool> finalize;
+			volatile bool finalize;
 			std::mutex functionMutex;
 			std::condition_variable functionCondition;
 			utils::shared_ptr<FunctionWrapper> functionWrapper;

@@ -11,6 +11,7 @@
 #include <string>
 #include <set>
 #include <threadingUtils/ITTransaction.h>
+#include <threadingUtils/SmartPtr.h>
 #include <corelib/Filesystem.h>
 #include <networkUtils/CURLFTPHelper.h>
 
@@ -78,7 +79,7 @@ namespace hmdbCommunication
 		virtual const bool shareDiskSpace(const core::Filesystem::Path & path) const { return false; }
 	};
 
-	class IHMDBStorage : public IHMDBStorageOperations, public threadingUtils::ITTransaction<IHMDBStorageOperations>
+	class IHMDBStorage : public threadingUtils::ITTransaction<IHMDBStorageOperations, threadingUtils::shared_ptr>
 	{
 	public:
 		//! Destruktor wirtualny

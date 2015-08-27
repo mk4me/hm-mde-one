@@ -53,7 +53,7 @@ public:
 
 private:
     class Impl;
-    utils::scoped_ptr<Impl> impl;
+    utils::unique_ptr<Impl> impl;
 };
 DEFINE_SMART_POINTERS(AbstractStateMachine);
 

@@ -11,7 +11,6 @@
 #include <threadingUtils/IJob.h>
 #include <threadingUtils/FunctionWrapper.h>
 #include <future>
-#include <atomic>
 #include <mutex>
 #include <functional>
 #include <type_traits>
@@ -42,7 +41,7 @@ namespace threadingUtils
 		struct SharedState
 		{
 			std::function<T()> functionWrapper;
-			std::atomic<Status> status_;
+			volatile Status status_;
 			std::recursive_mutex statusMutex;
 		};
 
@@ -225,7 +224,7 @@ namespace threadingUtils
 		struct SharedState
 		{
 			std::function<T&()> functionWrapper;
-			std::atomic<Status> status_;
+			volatile Status status_;
 			std::recursive_mutex statusMutex;
 		};
 
@@ -407,7 +406,7 @@ namespace threadingUtils
 		struct SharedState
 		{
 			std::function<void()> functionWrapper;
-			std::atomic<Status> status_;
+			volatile Status status_;
 			std::recursive_mutex statusMutex;
 		};
 

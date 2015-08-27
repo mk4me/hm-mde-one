@@ -120,7 +120,7 @@ const HMDBRemoteContext::DownloadOperationPtr HMDBRemoteContext::prepareFileDown
 }
 
 const IHMDBFtp::TransferPtr HMDBRemoteContext::prepareFileUpload(const std::string & fileName,
-	const std::string & path, IHMDBStorage::IStreamPtr source,
+	const std::string & path, IHMDBStorageOperations::IStreamPtr source,
 	const DataReference dataReference, const hmdbServices::FileSize fileSize)
 {
 

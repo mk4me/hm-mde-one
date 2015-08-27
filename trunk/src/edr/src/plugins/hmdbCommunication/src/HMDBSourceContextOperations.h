@@ -345,12 +345,12 @@ namespace hmdbCommunication
 		virtual ~ITransferIO() {}
 
 		//! \return Wyjscia dla sciaganych plikow
-		virtual IHMDBStorage::OStreamPtr prepareOutput() = 0;
+		virtual IHMDBStorageOperations::OStreamPtr prepareOutput() = 0;
 		//! Metoda zamyka zasoby użyte do zapisu danych przychodzących
 		virtual void closeOutput() = 0;
 
 		//! \return Otiera nasz output do czytania
-		virtual IHMDBStorage::IStreamPtr openInput() = 0;
+		virtual IHMDBStorageOperations::IStreamPtr openInput() = 0;
 		//! Metoda zamyka otwarty do czytania output i zwalnia wszystkie jego zasoby
 		virtual void closeInput() = 0;
 		//! Metoda zwalnia wszystkie zasoby niezależnie czy to input czy output
@@ -365,12 +365,12 @@ namespace hmdbCommunication
 		//! Destruktor wirtualny
 		virtual ~TmpFileTransferIO();
 		//! \return Wyjscia dla sciaganych plikow
-		virtual IHMDBStorage::OStreamPtr prepareOutput();
+		virtual IHMDBStorageOperations::OStreamPtr prepareOutput();
 		//! Metoda zamyka zasoby użyte do zapisu danych przychodzących
 		virtual void closeOutput();
 
 		//! \return Otiera nasz output do czytania
-		virtual IHMDBStorage::IStreamPtr openInput();
+		virtual IHMDBStorageOperations::IStreamPtr openInput();
 		//! Metoda zamyka otwarty do czytania output i zwalnia wszystkie jego zasoby
 		virtual void closeInput();
 		//! Metoda zwalnia wszystkie zasoby niezależnie czy to input czy output
@@ -391,12 +391,12 @@ namespace hmdbCommunication
 		//! Destruktor wirtualny
 		virtual ~MemoryTransferIO();
 		//! \return Wyjscia dla sciaganych plikow
-		virtual IHMDBStorage::OStreamPtr prepareOutput();
+		virtual IHMDBStorageOperations::OStreamPtr prepareOutput();
 		//! Metoda zamyka zasoby użyte do zapisu danych przychodzących
 		virtual void closeOutput();
 
 		//! \return Otiera nasz output do czytania
-		virtual IHMDBStorage::IStreamPtr openInput();
+		virtual IHMDBStorageOperations::IStreamPtr openInput();
 		//! Metoda zamyka otwarty do czytania output i zwalnia wszystkie jego zasoby
 		virtual void closeInput();
 		//! Metoda zwalnia wszystkie zasoby niezależnie czy to input czy output
@@ -404,7 +404,7 @@ namespace hmdbCommunication
 
 	private:
 		//! Strumień z danymi
-		IHMDBStorage::IOStreamPtr stream;
+		IHMDBStorageOperations::IOStreamPtr stream;
 	};
 
 	//! Operacja pozwalajaca realizowac sciaganie plikow z HMDB
@@ -439,7 +439,7 @@ namespace hmdbCommunication
 		//! \return Czy plik jest dostepny w storage (ściągnięto i poprawnie zapisano, choć reszta operacji mogła pójsć nie tak)
 		virtual const bool fileDownloaded() const;
 		//! \return Strumień ściągniętych danych
-		virtual const IHMDBStorage::IStreamPtr stream() const;
+		virtual const IHMDBStorageOperations::IStreamPtr stream() const;
 		//! Metoda czyści zapisane dane
 		virtual void release();
 

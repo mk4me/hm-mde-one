@@ -35,7 +35,7 @@ void CoreDockWidget::setDockWidgetPermament(QDockWidget * dockWidget, bool perma
 CoreDockWidget* CoreDockWidget::embeddWidget(QWidget * widget, const QString & windowTitle,
 	const Qt::DockWidgetArea allowedAreas, const bool permanent)
 {
-	std::auto_ptr<CoreDockWidget> embeddedDockWidget(new CoreDockWidget(windowTitle));
+	std::unique_ptr<CoreDockWidget> embeddedDockWidget(new CoreDockWidget(windowTitle));
 	embeddedDockWidget->setWidget(widget);
 	embeddedDockWidget->setAllowedAreas(allowedAreas);
 	embeddedDockWidget->setPermanent(permanent);

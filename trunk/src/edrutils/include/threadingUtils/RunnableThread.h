@@ -9,7 +9,6 @@
 #define __HEADER_GUARD_THREADINGUTILS__RUNNABLETHREAD_H__
 
 #include <thread>
-#include <atomic>
 #include <mutex>
 #include <condition_variable>
 #include <type_traits>
@@ -96,7 +95,7 @@ namespace threadingUtils
 
 		struct SharedState
 		{
-			std::atomic<bool> finalize;
+			volatile bool finalize;
 			std::mutex functionMutex;
 			std::condition_variable functionCondition;
 			utils::shared_ptr<FunctionWrapper> functionWrapper;			

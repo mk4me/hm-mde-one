@@ -753,7 +753,7 @@ const bool SourceOptionsWidget::verify(QStringList & messages)
 	}
 
 	if (storageCreated == false && core::Filesystem::pathExists(storagePath) == true) {
-		std::auto_ptr<hmdbCommunication::SQLCipherStorage> storage(new hmdbCommunication::SQLCipherStorage);
+		std::unique_ptr<hmdbCommunication::SQLCipherStorage> storage(new hmdbCommunication::SQLCipherStorage);
 
 		storage->open(ui->storagePathLineEdit->text().toStdString(),
 			ui->storagePasswordLineEdit->text().toStdString());

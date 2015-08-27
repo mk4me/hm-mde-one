@@ -17,26 +17,23 @@ namespace sqliteUtils
 {
 	class SQLITEUTILS_EXPORT SQLiteDB
 	{
-	public:
+	public:		
 
 		class SQLITEUTILS_EXPORT Close
 		{
 		public:
 			//! \param force Czy wymusiæ zamkniêcie przez przerwanie zapyatañ
-			Close(const bool force = false, const unsigned int maxStatements = 0,
+			Close(const unsigned int maxStatements = 0,
 				const unsigned int retriesCount = 0,
 				const unsigned int stepWaitTime = 150);
 
 			const bool operator()(sqlite3 * db);
 
 		private:
-			const bool force;
 			const unsigned int maxStatements;
 			const unsigned int retriesCount;
 			const unsigned int stepWaitTime;
 		};
-
-		typedef WrapperT<sqlite3, Close> Wrapper;
 
 		//! \param db Weryfikowana baza danych
 		//! \return Prawda jeœli uda³o siê zweryfikowaæ poprawnoœæ uchwytu bazy danych
@@ -73,6 +70,12 @@ namespace sqliteUtils
 		static const int exec(sqlite3 * db, const std::string & query,
 			const unsigned int retriesCount = 0, const unsigned int stepWaitTime = 0);
 	};
+}
+
+template<>
+void std::default_delete<sqlite3>::operator()(sqlite3 *db) const
+{	// delete a pointer
+	sqliteUtils::SQLiteDB::close(db);
 }
 
 #endif	// __HEADER_GUARD_SQLITEUTILS__SQLITEDB_H__

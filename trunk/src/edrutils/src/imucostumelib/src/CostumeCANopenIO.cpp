@@ -10,7 +10,7 @@ const bool CostumeCANopenIO::send(const uint8_t seqNumber, const void * data,
 	const uint16_t length, const uint16_t timeout, CostumeRawIO & costume)
 {
 	const auto totalLength = sizeof(Header) + length;
-	utils::scoped_ptr<uint8_t[]> dataToTransmit(new uint8_t[totalLength]);
+	utils::unique_ptr<uint8_t[]> dataToTransmit(new uint8_t[totalLength]);
 
 	// nag��wek ramki - wymusza wys�anie reszty na CAN
 	dataToTransmit[0] = 0x02;

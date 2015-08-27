@@ -30,9 +30,7 @@ namespace sqliteUtils
 		private:
 			const unsigned int retriesCount;
 			const unsigned int stepWaitTime;
-		};
-
-		typedef WrapperT<sqlite3_blob, Close> Wrapper;
+		};		
 		
 		//! \param db Uchwyt bazy danych na której próbujê otworzyæ bloba
 		//! \param tableName Nazwa tabeli
@@ -51,6 +49,12 @@ namespace sqliteUtils
 		//! \return Czy uda³o siê zamkn¹æ bloba
 		static const bool close(sqlite3_blob * blob);
 	};
+}
+
+template<>
+void std::default_delete<sqlite3_blob>::operator()(sqlite3_blob *blob) const
+{	// delete a pointer
+	sqliteUtils::SQLiteBLOB::close(blob);
 }
 
 #endif	// __HEADER_GUARD_SQLITEUTILS__SQLITEBLOB_H__

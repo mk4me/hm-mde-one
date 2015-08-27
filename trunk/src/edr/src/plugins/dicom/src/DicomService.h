@@ -53,7 +53,7 @@ namespace dicom {
 		core::IDataHierarchyManager* hierarchyManager;
 		DicomPerspectivePtr perspective;
 		std::mutex statusMutex;
-		utils::scoped_ptr<AnnotationStatusManager> statusManager;
+		utils::unique_ptr<AnnotationStatusManager> statusManager;
 	};
 
 }

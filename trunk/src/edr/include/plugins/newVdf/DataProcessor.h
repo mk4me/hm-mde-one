@@ -41,7 +41,7 @@ public:
 
 private:
     QIcon icon;
-	utils::scoped_ptr<df::IProcessingNode> _impl;
+	utils::unique_ptr<df::IProcessingNode> _impl;
 	std::string _desc;
 	std::string _name;
 	core::UniqueID _id;

@@ -19,11 +19,15 @@ namespace sqliteUtils
 	//! \tparam _Elem Elementy sk³adowane w blobach
 	//! \tparam _Traits Cechy obiektu typu _Elem
 	//! \tparam _BufferPolicy Polityka zarzadzania buforem danych
-	template<typename _Elem = char,
-		typename _Traits = std::char_traits<_Elem>,
-		typename _BufferPolicy = FixedBufferPolicy<_Elem > >
+	template<typename _Elem = uint8_t,
+		typename _Traits = std::char_traits<_Elem>>
 	class SQLiteBLOBStreamBufferT : public std::basic_streambuf<_Elem, _Traits>
 	{
+	public:
+
+		typedef IBufferPolicyT<_Elem> _BufferPolicy;
+		typedef utils::unique_ptr<_BufferPolicy> _BufferPolicyPtr;
+
 	private:
 
 		enum
@@ -46,7 +50,7 @@ namespace sqliteUtils
 
 	public:
 		//! Typ mojego bufora
-		typedef SQLiteBLOBStreamBufferT<_Elem, _Traits, _BufferPolicy> _Myt;
+		typedef SQLiteBLOBStreamBufferT<_Elem, _Traits> _Myt;
 		//! Typ bufora strumienia
 		typedef std::basic_streambuf<_Elem, _Traits> _Mysb;
 		//! Typ mojego stanu
@@ -63,9 +67,8 @@ namespace sqliteUtils
 		//! \param table Nazwa tabeli
 		//! \param column Nazwa kolumny
 		//! \param rowID Unikalny identyfikator wiersza w zadanej tabeli		
-		SQLiteBLOBStreamBufferT(const std::string & path, const std::string & table,
-			const std::string & column, const sqlite3_int64 rowID, const int initialSize,
-			const std::string & dbName = "main", const std::string & key = "",
+		SQLiteBLOBStreamBufferT(_BufferPolicyPtr && buffer, sqlite3 * db, const std::string & table,
+			const std::string & column, const sqlite3_int64 rowID, const std::string & dbName = "main",
 			std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 
 		//! Destruktor wirtualny
@@ -159,10 +162,10 @@ namespace sqliteUtils
 
 		//! ------------ OPIS DANYCH W SQLITE ------------------
 		const std::ios_base::openmode mode_;
-		//! Œcie¿ka do bazy danych
-		const std::string path;
-		//! Has³o bazy
-		const std::string key;
+		//! Uchwyt bazy danych
+		sqlite3 * db;
+		//! Uchwyt bloba
+		UniqueWrapperT<sqlite3_blob> blob;
 		//! Nazwa bazy
 		std::string dbName;
 		//! Nazwa tabeli
@@ -176,7 +179,7 @@ namespace sqliteUtils
 
 		//! ----------------- STAN BUFORÓW --------------------
 		//! Bufor
-		_BufferPolicy buffer;
+		_BufferPolicyPtr buffer;
 		//! Aktualny indeks wewn¹trz bloba dla bufora odczytu
 		int blobReadBase;
 		//! Aktualny indeks wewn¹trz bloba dla bufora zapisu

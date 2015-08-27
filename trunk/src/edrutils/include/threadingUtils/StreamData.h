@@ -13,7 +13,6 @@ purpose:  Baza dla danych strumieniowych
 #include <utils/SmartPtr.h>
 #include <limits>
 #include <type_traits>
-#include <atomic>
 #include <mutex>
 #include <functional>
 #include <utils/Debug.h>

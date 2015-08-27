@@ -9,7 +9,7 @@
 
 #include <regex>
 
-#if defined(__WIN32__)
+#if defined(_WINDOWS)
 #define NOMINMAX
 #include <windows.h>
 #elif defined(__UNIX__)

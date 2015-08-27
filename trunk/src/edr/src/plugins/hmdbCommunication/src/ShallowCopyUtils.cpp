@@ -97,7 +97,7 @@ void ShallowCopyUtils::removeAllShallowCopies(IHMDBStorage::TransactionPtr stora
 
 void ShallowCopyUtils::storeShallowCopy(const std::string & userHash,
 	const IHMDBRemoteContext::DataReference dataReference,
-	const ShallowCopyType shallowType, IHMDBStorage::IStreamPtr stream,
+	const ShallowCopyType shallowType, IHMDBStorageOperations::IStreamPtr stream,
 	IHMDBStorage::TransactionPtr storage)
 {
 	const auto scname = shallowCopyName(userHash, dataReference, shallowType);
@@ -106,7 +106,7 @@ void ShallowCopyUtils::storeShallowCopy(const std::string & userHash,
 	}
 }
 
-const IHMDBStorage::IStreamPtr ShallowCopyUtils::shallowCopyStream(const std::string & userHash,
+const IHMDBStorageOperations::IStreamPtr ShallowCopyUtils::shallowCopyStream(const std::string & userHash,
 	const IHMDBRemoteContext::DataReference dataReference,
 	const ShallowCopyType shallowType,
 	const IHMDBStorage::TransactionConstPtr storage)

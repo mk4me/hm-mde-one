@@ -124,8 +124,8 @@ namespace dicom {
         virtual PointsLayer* clone() const;
         
     private:
-        utils::scoped_ptr<QGraphicsItemGroup> group;
-        utils::scoped_ptr<QGraphicsPathItem> pathItem; 
+        utils::unique_ptr<QGraphicsItemGroup> group;
+        utils::unique_ptr<QGraphicsPathItem> pathItem; 
         QVector<QGraphicsItem*> points;
         QString name;
         IPointsDrawerPtr pointsDrawer;

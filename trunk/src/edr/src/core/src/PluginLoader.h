@@ -7,7 +7,7 @@
 #include <mutex>
 
 // rev
-#ifdef WIN32
+#if defined(_WINDOWS)
 #	define NOMINMAX
 #   include "Windows.h"
 #else

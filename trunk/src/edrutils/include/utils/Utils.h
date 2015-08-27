@@ -268,9 +268,11 @@ struct StreamTools
 	//! \return Strumień zapisany w stringu
 	inline static std::string read(std::istream & stream)
 	{
-		unsigned int BufferSize = 1024 * 512;
-		std::unique_ptr<char[]> buffer(new char[BufferSize] {0});
-		return read(stream, buffer.get(), BufferSize);
+		char buffer[1024 * 512] = { 0 };
+		//unsigned int BufferSize = 1024 * 512;
+		//std::unique_ptr<char[]> buffer(new char[BufferSize] {0});
+		//return read(stream, buffer.get(), BufferSize);
+		return read(stream, buffer);
 	}
 
 	template<typename T, unsigned int Size>

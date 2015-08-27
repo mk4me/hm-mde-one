@@ -4,9 +4,9 @@
 
 using namespace sqliteUtils;
 
-SQLiteDB::Close::Close(const bool force, const unsigned int maxStatements,
+SQLiteDB::Close::Close(const unsigned int maxStatements,
 	const unsigned int retriesCount, const unsigned int stepWaitTime)
-	: force(force), maxStatements(maxStatements), retriesCount(retriesCount),
+	: maxStatements(maxStatements), retriesCount(retriesCount),
 	stepWaitTime(stepWaitTime)
 {
 
@@ -15,11 +15,11 @@ SQLiteDB::Close::Close(const bool force, const unsigned int maxStatements,
 const bool SQLiteDB::Close::operator()(sqlite3 * db)
 {
 	bool ret = SQLiteDB::close(db);
-	if (ret == false && force == true){
+	if (ret == false){
 
 		int tries = 0;		
 		
-		while (tries++ <= retriesCount && SQLiteDB::finalizeStatements(db, maxStatements, retriesCount, stepWaitTime) == true && sqlite3_next_stmt(db, nullptr) != nullptr) {}
+		while (tries++ < retriesCount && SQLiteDB::finalizeStatements(db, maxStatements, retriesCount, stepWaitTime) == true && sqlite3_next_stmt(db, nullptr) != nullptr) {}
 
 		ret = SQLiteDB::close(db);
 	}
@@ -29,7 +29,7 @@ const bool SQLiteDB::Close::operator()(sqlite3 * db)
 
 const bool SQLiteDB::close(sqlite3 * db)
 {
-	bool ret = true;
+	bool ret = false;
 	if (db != nullptr){
 		ret = (sqlite3_close(db) == SQLITE_OK);
 	}

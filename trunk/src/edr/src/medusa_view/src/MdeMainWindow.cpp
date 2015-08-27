@@ -268,7 +268,7 @@ void MdeMainWindow::customViewInit(QWidget * log)
 	plugin::getDataHierarchyManagerReader()->addObserver(analysisModel);
    trySetStyleByName("hmm");
  
-#ifdef WIN32
+#if defined(_WINDOWS)
    this->showFullScreen();
    this->setFixedSize(this->width(), this->height());
 #endif

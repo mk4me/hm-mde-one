@@ -50,7 +50,7 @@ namespace hmdbCommunication
 		virtual const bool unload(const core::VariantConstPtr data) = 0;
 	};
 
-	class IHMDBLocalContext : public threadingUtils::ITTransactionObject<IHMDBLocalContextOperations>
+	class IHMDBLocalContext : public threadingUtils::ITTransaction<IHMDBLocalContextOperations>
 	{
 	public:
 		//! Destruktor wirtualny

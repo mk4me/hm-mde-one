@@ -330,7 +330,7 @@ namespace threadingUtils {
 		//! Mapa identyfikatorów w¹tków i obiektó obs³uguj¹cych ich przetwarzanie
 		WorkExecutorsMap workExecutors;
 		//! Iloœæ aktualnie przetwarzaj¹cych w¹tków
-		std::atomic<WorkExecutorsMap::size_type> activeCounter;
+		//std::atomic<WorkExecutorsMap::size_type> activeCounter;
 		//! Kolejka obs³uguj¹ca zlecane zadania
 		WorkQueue workQueue;
 		//! Czy koñczymy dzia³anie managera zadañ - dodawanie nowych nie bêdzie mo¿liwe

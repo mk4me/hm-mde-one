@@ -83,7 +83,7 @@ void SubjectHierarchyCompoundFilter::filterSubjects(const core::ConstVariantsLis
 		localInput.swap(localOutput);			
 	}
 
-	outputSubjects.insert(outputSubjects.end(), localInput.begin(), localInput.end());
+	outputSubjects.splice(outputSubjects.end(), localInput);
 }
 
 void SubjectHierarchyCompoundFilter::filterSubjectData(const core::VariantConstPtr & subject, core::ConstVariantsList & outputSubjectData) const
@@ -140,7 +140,7 @@ void SubjectHierarchyCompoundFilter::filterSessions(const core::ConstVariantsLis
 		localInput.swap(localOutput);
 	}
 
-	outputSessions.insert(outputSessions.end(), localInput.begin(), localInput.end());
+	outputSessions.splice(outputSessions.end(), localInput);
 }
 
 void SubjectHierarchyCompoundFilter::filterSessionData(const core::VariantConstPtr & session, core::ConstVariantsList & outputSessionData) const
@@ -197,7 +197,7 @@ void SubjectHierarchyCompoundFilter::filterMotions(const core::ConstVariantsList
 		localInput.swap(localOutput);
 	}
 
-	outputMotions.insert(outputMotions.end(), localInput.begin(), localInput.end());
+	outputMotions.splice(outputMotions.end(), localInput);
 }
 
 void SubjectHierarchyCompoundFilter::filterMotionData(const core::VariantConstPtr & motion, core::ConstVariantsList & outputMotionData) const

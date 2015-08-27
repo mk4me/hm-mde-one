@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#ifdef WIN32
+#if defined(_WINDOWS)
 // blok definicji dla ffmpeg'a
 #define inline _inline
 #define snprintf _snprintf
@@ -436,9 +436,9 @@ bool FFmpegVideoStream::init(std::istream * source, const std::string & streamNa
 {
 	VIDLIB_FUNCTION_PROLOG;
 
-	static const unsigned int BufferSize = 1024 * 512;
+	static const unsigned int BufferSize = 1024 * 1024;
 	//inicjuję bufor
-	std::unique_ptr<unsigned char, decltype(&av_free)> buffer(reinterpret_cast<unsigned char*>(av_malloc(BufferSize + FF_INPUT_BUFFER_PADDING_SIZE)), &av_free);
+	std::unique_ptr<unsigned char, decltype(&av_free)> buffer(reinterpret_cast<unsigned char*>(av_malloc(BufferSize + AV_INPUT_BUFFER_PADDING_SIZE)), &av_free);
 	int error = 0;
 	//inicjuję kontekst własnego I/O w oparciu o strumień i bufor
 	ioContext.reset(avio_alloc_context(buffer.get(), BufferSize, 0, reinterpret_cast<void*>(source), &readFunction, nullptr, &seekFunction), &av_free);

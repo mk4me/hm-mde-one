@@ -50,6 +50,11 @@ private:
 		data.insert(position, first, last);
 	}
 
+	void nonCheckSplice(iterator position, ConstVariantsList & vl)
+	{
+		data.splice(position, vl);
+	}
+
 private:
 
 	VariantsCollection() {}

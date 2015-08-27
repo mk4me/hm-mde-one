@@ -616,7 +616,7 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file, const IDataManag
 		}
 
 		// jak wszystko ok to zapami�tuje
-		objectsByFiles.insert(ObjectsByFiles::value_type(file, objectsAdded));
+		objectsByFiles.insert({ file, std::move(objectsAdded) });
 		CORE_LOG_INFO("File: " << file << " successfully loaded to manager. Extracted data : " << objects.size() << "| data loaded to memory data manager : " << objectsAdded.size());
 	}
 }

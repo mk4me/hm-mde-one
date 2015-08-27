@@ -2,7 +2,7 @@
 #include "VidLibPrivate.h"
 #include "Converter.h"
 
-#ifdef WIN32
+#if defined(_WINDOWS)
 // blok definicji dla ffmpeg'a
 #define inline _inline
 #define snprintf _snprintf

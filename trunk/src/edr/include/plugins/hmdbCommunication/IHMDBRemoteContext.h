@@ -90,7 +90,7 @@ namespace hmdbCommunication
 			//! \return Czy plik jest dostepny w storage (œci¹gniêto i poprawnie zapisano, choæ reszta operacji mog³a pójsæ nie tak)
 			virtual const bool fileDownloaded() const = 0;
 			//! \return Strumieñ œci¹gniêtych danych
-			virtual const IHMDBStorage::IStreamPtr stream() const = 0;
+			virtual const IHMDBStorageOperations::IStreamPtr stream() const = 0;
 			//! Metoda czyœci zapisane dane
 			virtual void release() = 0;
 		};
@@ -128,7 +128,7 @@ namespace hmdbCommunication
 		//! \param fileSize Rozmiar strumienia który chcemy uploadowaæ
 		//! \return Transfer
 		virtual const IHMDBFtp::TransferPtr prepareFileUpload(const std::string & fileName,
-			const std::string & path, IHMDBStorage::IStreamPtr source,
+			const std::string & path, IHMDBStorageOperations::IStreamPtr source,
 			const DataReference dataReference,
 			const hmdbServices::FileSize fileSize = 0) = 0;
 	};

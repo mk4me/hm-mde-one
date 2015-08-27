@@ -7,6 +7,29 @@
 
 using namespace hmdbCommunication;
 
+template<class Base>
+class StreamWrapper : public Base
+{
+public:
+
+	StreamWrapper(decltype(std::declval<Base>().rdbuf()) sb, IHMDBStorage::TransactionConstPtr transaction) : Base(sb), transaction(transaction) {}
+
+	StreamWrapper(const StreamWrapper&) = delete;
+	StreamWrapper& operator=(const StreamWrapper&) = delete;
+
+	virtual ~StreamWrapper()
+	{	// destroy the object
+		auto toDelete = Base::rdbuf(nullptr);
+		if (toDelete != nullptr){
+			delete toDelete;
+		}
+	}
+
+private:
+
+	IHMDBStorage::TransactionConstPtr transaction;
+};
+
 class StorageStreamGrabber : public core::IStreamDataManager::IStreamGrabber
 {
 public:
@@ -28,7 +51,9 @@ public:
 	//! \return Strumieñ
 	virtual const plugin::IStreamParser::IStreamPtr stream() const
 	{
-		return plugin::IStreamParser::IStreamPtr(storage->get(name_));
+		auto t = storage->transaction();
+		auto s = t->get(name_);
+		return plugin::IStreamParser::IStreamPtr(new StreamWrapper<std::istream>(s->rdbuf(nullptr), t));
 	}
 
 	//! \return Nazwa, identyfikator strumienia
@@ -50,12 +75,12 @@ private:
 	const std::string name_;
 };
 
-class HMDBLocalContext::HMDBLocalContextTransaction : public IHMDBLocalContextOperations
+class HMDBLocalContextTransaction : public threadingUtils::TransactionImplHelper<IHMDBLocalContext::transaction_type, HMDBLocalContext::TransactionSharedState>
 {
 public:
-	HMDBLocalContextTransaction(HMDBLocalContext * localContext)
-		: localContext(localContext), mdm(localContext->mdm->transaction()),
-		sdm(localContext->sdm->transaction())
+	HMDBLocalContextTransaction(HMDBLocalContext::SharedStatePtr sharedState) : ImplType(sharedState),
+		mdm(sharedState->innerState.mdm->transaction()),
+		sdm(sharedState->innerState.sdm->transaction())
 	{
 
 	}
@@ -68,51 +93,113 @@ public:
 	//! \return Czy dane o które pytamy pochodza z tego Ÿród³a
 	virtual const bool isMyData(const core::VariantConstPtr data) const
 	{
-		return localContext->rawIsMyData(data, mdm);
+		return std::find(sharedState().myData_.begin(), sharedState().myData_.end(), data) != sharedState().myData_.end();
 	}
 
 	virtual const bool isMyData(const void * data) const
 	{
-		return localContext->isMyData(data);
+		auto it = std::find_if(sharedState().myData_.begin(), sharedState().myData_.end(), [=](const core::VariantConstPtr d) -> bool {
+			if (d->getRawPtr() == data){
+				return true;
+			}
+
+			return false;
+		});
+
+
+		return it != sharedState().myData_.end();
 	}
 
 	//! \param fileName Nazwa pliku ze storage
 	//! \return Dane skojarzone z tym plikiem
 	virtual const core::ConstVariantsList data(const std::string & fileName) const
 	{
-		return localContext->rawData(fileName, sdm);
+		const auto sName = core::IStreamManagerReader::streamName(sharedState().dataContext_->storage()->protocol(), fileName);
+
+		core::ConstVariantsList oList;
+
+		if (sdm->isManaged(sName) == true){
+			sdm->getObjects(sName, oList);
+		}
+
+		return oList;
 	}
 
 	//! \param fileName Plik jaki bêdê ³adowaæ ze storage do StreamManagera
 	//! \return Czy uda³o siê za³adowac plik
 	virtual const bool load(const std::string & fileName)
 	{
-		return localContext->rawLoad(fileName, sdm);
+		bool ret = false;
+
+		if (isLoaded(fileName) == false){
+			core::IStreamDataManager::StreamGrabberPtr sg(new StorageStreamGrabber(sharedState().dataContext_->storage(), fileName));
+			sdm->addStream(sg);
+			core::ConstVariantsList oList;
+			sdm->getObjects(sg->name(), oList);
+			sharedState().myData_.splice(sharedState().myData_.end(), oList);
+			ret = true;
+		}
+
+		return ret;
 	}
 	//! \param fileName Plik jaki bêdê wy³adowywaæ ze StreamManagera
 	//! \return Czy uda³o siê wy³adowac plik
 	virtual const bool unload(const std::string & fileName)
 	{
-		return localContext->rawUnload(fileName, sdm);
+		bool ret = false;
+
+		const auto sName = core::IStreamManagerReader::streamName(sharedState().dataContext_->storage()->protocol(), fileName);
+
+		if (sdm->isManaged(sName) == true){
+			sdm->removeStream(sName);
+			ret = true;
+		}
+
+		return ret;
 	}
 	//! \param fileName Plik o który pytam czy jest za³¹dowany
 	//! \return Czy plik jest za³adowany
 	virtual const bool isLoaded(const std::string & fileName) const
 	{
-		return localContext->rawIsLoaded(fileName, sdm);
+		const auto sName = core::IStreamManagerReader::streamName(sharedState().dataContext_->storage()->protocol(), fileName);
+		return sdm->isManaged(sName);
 	}
 
 	//! \param data Dane jakie bêdê ³adowa³ do MemoryManagera
 	//! \return Czy uda³o siê za³adowac dane
 	virtual const bool load(const core::VariantPtr data)
 	{
-		return localContext->rawLoad(data, mdm);
+		bool ret = false;
+
+		if (mdm->isManaged(data) == false){
+			mdm->addData(data);
+			sharedState().myData_.push_back(data);
+			ret = true;
+		}
+
+		return ret;
 	}
 	//! \param data Dane jakie bêdê wy³adowa³ z MemoryManagera
 	//! \return Czy uda³o siê wy³adowac dane
 	virtual const bool unload(const core::VariantConstPtr data)
 	{
-		return localContext->rawUnload(data, mdm);
+		bool ret = false;
+
+		auto it = std::find(sharedState().myData_.begin(), sharedState().myData_.end(), data);
+
+		if (it != sharedState().myData_.end()){
+
+			if (mdm->isManaged(data) == true){
+				mdm->removeData(data);
+			}
+			else{
+				sharedState().myData_.erase(it);
+			}
+
+			ret = true;
+		}
+
+		return ret;
 	}
 
 private:
@@ -120,8 +207,6 @@ private:
 	core::IDataManager::TransactionPtr mdm;
 	//! Transakcja SDM
 	core::IStreamDataManager::TransactionPtr sdm;
-	//! Lokalny kontekst
-	HMDBLocalContext * localContext;
 };
 
 /*
@@ -170,9 +255,11 @@ if (file->fileName == zipName){
 */
 
 HMDBLocalContext::HMDBLocalContext(IHMDBDataContextPtr dataContext, core::IDataManager * mdm,
-	core::IStreamDataManager * sdm) : dataContext_(dataContext), mdm(mdm), sdm(sdm)
+	core::IStreamDataManager * sdm) : sharedState(utils::make_shared<TransactionSharedState>())
 {
-
+	sharedState->innerState.dataContext_ = dataContext;
+	sharedState->innerState.mdm = mdm;
+	sharedState->innerState.sdm = sdm;
 }
 
 HMDBLocalContext::~HMDBLocalContext()
@@ -182,167 +269,22 @@ HMDBLocalContext::~HMDBLocalContext()
 
 const IHMDBDataContextPtr HMDBLocalContext::dataContext()
 {
-	return dataContext_;
+	return sharedState->innerState.dataContext_;
 }
 
 const IHMDBDataContextConstPtr HMDBLocalContext::dataContext() const
 {
-	return dataContext_;
+	return sharedState->innerState.dataContext_;
 }
 
-const bool HMDBLocalContext::isMyData(const core::VariantConstPtr data) const
+HMDBLocalContext::TransactionPtr HMDBLocalContext::transaction()
 {
-	return rawIsMyData(data, mdm->transaction());
+	return TransactionPtr(new HMDBLocalContextTransaction(sharedState));
 }
 
-const bool HMDBLocalContext::isMyData(const void * data) const
+HMDBLocalContext::TransactionConstPtr HMDBLocalContext::transaction() const
 {
-	return rawIsMyData(data, mdm->transaction());
-}
-
-const core::ConstVariantsList HMDBLocalContext::data(const std::string & fileName) const
-{
-	return rawData(fileName, sdm->transaction());
-}
-
-const bool HMDBLocalContext::load(const std::string & fileName)
-{
-	return rawLoad(fileName, sdm->transaction());
-}
-
-const bool HMDBLocalContext::unload(const std::string & fileName)
-{
-	return rawUnload(fileName, sdm->transaction());
-}
-
-const bool HMDBLocalContext::isLoaded(const std::string & fileName) const
-{
-	return rawIsLoaded(fileName, sdm->transaction());
-}
-
-const bool HMDBLocalContext::load(const core::VariantPtr data)
-{
-	return rawLoad(data, mdm->transaction());
-}
-
-const bool HMDBLocalContext::unload(const core::VariantConstPtr data)
-{
-	return rawUnload(data, mdm->transaction());
-}
-
-const HMDBLocalContext::TransactionPtr HMDBLocalContext::transaction()
-{
-	return TransactionPtr(new HMDBLocalContextTransaction(this));
-}
-
-const HMDBLocalContext::TransactionConstPtr HMDBLocalContext::transaction() const
-{
-	return TransactionConstPtr(new HMDBLocalContextTransaction(const_cast<HMDBLocalContext*>(this)));
-}
-
-const bool HMDBLocalContext::rawLoad(const std::string & fileName, const core::IStreamDataManager::TransactionPtr streamTransaction)
-{
-	bool ret = false;
-
-	auto dsTransaction = dataContext()->storage()->transaction();		
-
-	if (rawIsLoaded(fileName, streamTransaction) == false){
-		core::IStreamDataManager::StreamGrabberPtr sg(new StorageStreamGrabber(dataContext_->storage(), fileName));
-		streamTransaction->addStream(sg);
-		core::ConstVariantsList oList;
-		streamTransaction->getObjects(sg->name(), oList);
-		myData_.insert(myData_.end(), oList.begin(), oList.end());
-		ret = true;
-	}
-
-	return ret;
-}
-
-const bool HMDBLocalContext::rawUnload(const std::string & fileName,
-	const core::IStreamDataManager::TransactionPtr streamTransaction)
-{
-	bool ret = false;
-
-	const auto sName = core::IStreamManagerReader::streamName(dataContext_->storage()->protocol(), fileName);
-
-	if (streamTransaction->isManaged(sName) == true){		
-		streamTransaction->removeStream(sName);
-		ret = true;
-	}
-
-	return ret;
-}
-
-const bool HMDBLocalContext::rawIsLoaded(const std::string & fileName, const core::IStreamDataManager::TransactionPtr streamTransaction) const
-{
-	const auto sName = core::IStreamManagerReader::streamName(dataContext_->storage()->protocol(), fileName);
-	return streamTransaction->isManaged(sName);
-}
-
-const bool HMDBLocalContext::rawLoad(const core::VariantPtr data, const core::IDataManager::TransactionPtr memoryTransaction)
-{
-	bool ret = false;
-
-	if (memoryTransaction->isManaged(data) == false){
-		memoryTransaction->addData(data);
-		myData_.push_back(data);
-		ret = true;
-	}
-
-	return ret;
-}
-
-const bool HMDBLocalContext::rawUnload(const core::VariantConstPtr data, const core::IDataManager::TransactionPtr memoryTransaction)
-{
-	bool ret = false;	
-
-	auto it = std::find(myData_.begin(), myData_.end(), data);
-
-	if (it != myData_.end()){
-
-		if (memoryTransaction->isManaged(data) == true){
-			memoryTransaction->removeData(data);
-		}
-		else{
-			myData_.erase(it);
-		}
-
-		ret = true;
-	}
-
-	return ret;
-}
-
-const bool HMDBLocalContext::rawIsMyData(const core::VariantConstPtr data, const core::IDataManager::TransactionPtr memoryTransaction) const
-{	
-	return std::find(myData_.begin(), myData_.end(), data) != myData_.end();
-}
-
-const bool HMDBLocalContext::rawIsMyData(const void * data, const core::IDataManager::TransactionPtr memoryTransaction) const
-{
-	auto it = std::find_if(myData_.begin(), myData_.end(), [=](const core::VariantConstPtr d) -> bool {
-		if (d->getRawPtr() == data){
-			return true;
-		}
-
-		return false;
-	});
-
-
-	return it != myData_.end();
-}
-
-const core::ConstVariantsList HMDBLocalContext::rawData(const std::string & fileName, const core::IStreamDataManager::TransactionPtr streamTransaction) const
-{
-	const auto sName = core::IStreamManagerReader::streamName(dataContext_->storage()->protocol(), fileName);
-	
-	core::ConstVariantsList oList;
-	
-	if (streamTransaction->isManaged(sName) == true){
-		streamTransaction->getObjects(sName, oList);
-	}
-
-	return oList;
+	return TransactionConstPtr(new HMDBLocalContextTransaction(sharedState));
 }
 
 void HMDBLocalContext::observe(const core::IDataManagerReader::ChangeList & changes)
@@ -352,7 +294,7 @@ void HMDBLocalContext::observe(const core::IDataManagerReader::ChangeList & chan
 		auto oc = *it;
 		
 		if (oc.modyfication == core::IDataManagerReader::REMOVE_OBJECT){
-			myData_.remove(oc.previousValue);
+			sharedState->innerState.myData_.remove(oc.previousValue);
 		}
 	}
 }

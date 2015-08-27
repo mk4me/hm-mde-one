@@ -156,7 +156,7 @@ namespace threadingUtils
 	class InterrupltiblePolicy
 	{
 	private:
-		utils::shared_ptr<std::atomic<bool>> interuptible_;
+		utils::shared_ptr<bool> interuptible_;
 		InterruptFlag flag;	
 
 	public:
@@ -201,7 +201,7 @@ namespace threadingUtils
 			}
 		}
 
-		void initializeThread() { InterruptFlag::threadInterruptFlag() = &flag; interuptible_ = utils::make_shared<std::atomic<bool>>(true); }
+		void initializeThread() { InterruptFlag::threadInterruptFlag() = &flag; interuptible_ = utils::make_shared<bool>(true); }
 		void deinitializeThread() { interuptible_.reset(); InterruptFlag::threadInterruptFlag() = nullptr; }
 		const bool interruptible() const { return interuptible_ != nullptr && *interuptible_ == true; }
 

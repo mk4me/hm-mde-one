@@ -42,7 +42,7 @@ namespace hmdbCommunication
 		//! \param dataReference Której bazy dotyczy upload
 		//! \return Transfer
 		virtual const IHMDBFtp::TransferPtr prepareFileUpload(const std::string & fileName,
-			const std::string & path, IHMDBStorage::IStreamPtr source,
+			const std::string & path, IHMDBStorageOperations::IStreamPtr source,
 			const DataReference dataReference,
 			const hmdbServices::FileSize fileSize);
 

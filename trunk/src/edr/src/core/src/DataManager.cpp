@@ -484,7 +484,7 @@ void DataManager::rawGetObjects(VariantsCollection& objects) const
 {
 	ConstVariantsList locObjects;
 	rawGetObjects(locObjects, objects.getTypeInfo(), objects.exactTypes());
-	objects.nonCheckInsert(objects.end(), locObjects.begin(), locObjects.end());
+	objects.nonCheckSplice(objects.end(), locObjects);
 }
 
 void DataManager::rawAddData(const VariantPtr & data)

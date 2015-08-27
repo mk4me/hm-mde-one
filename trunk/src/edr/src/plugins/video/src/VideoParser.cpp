@@ -61,7 +61,7 @@ VideoParser::~VideoParser() {
 
 void VideoParser::parse(const IStreamPtr stream, const std::string & source) {
 	this->stream = stream;
-#ifndef WIN32
+#ifndef _WINDOWS
 	const auto tmpPath = (plugin::getPaths()->getTempFilePath()).string();
 	std::ofstream fle(tmpPath);
 	fle << stream->rdbuf();
@@ -75,7 +75,7 @@ void VideoParser::parse(const IStreamPtr stream, const std::string & source) {
 	localData.push_back(utils::ObjectWrapper::create<VideoChannel>());
 
 	// tworzymy strumień ffmpeg
-	std::auto_ptr<FFmpegVideoStream> innerStream(
+	std::unique_ptr<FFmpegVideoStream> innerStream(
 			new FFmpegVideoStream(this->stream, source));
 	// UTILS_ASSERT(!innerStream->getLastError());
 
@@ -147,7 +147,7 @@ void VideoParser::parse(const std::string & source) {
 			// tworzymy strumień z sekwencji plików
 			osg::ref_ptr<osgDB::Options> options = new osgDB::Options();
 			options->setObjectCacheHint(osgDB::Options::CACHE_NONE);
-			std::auto_ptr<FileSequenceVideoStream> innerStream(
+			std::unique_ptr<FileSequenceVideoStream> innerStream(
 					new FileSequenceVideoStream(directory, framerate, ffiles,
 							new OsgImageLoader(options)));
 
@@ -163,7 +163,7 @@ void VideoParser::parse(const std::string & source) {
 		localData.push_back(utils::ObjectWrapper::create<VideoChannel>());
 
 		// tworzymy strumień ffmpeg
-		std::auto_ptr<FFmpegVideoStream> innerStream(
+		std::unique_ptr<FFmpegVideoStream> innerStream(
 				new FFmpegVideoStream(path.string()));
 		// UTILS_ASSERT(!innerStream->getLastError());
 

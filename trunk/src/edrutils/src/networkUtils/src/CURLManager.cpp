@@ -1,7 +1,6 @@
 #include <networkUtils/CURLManager.h>
 #include <mutex>
 #include <condition_variable>
-#include <atomic>
 #include <map>
 #include <set>
 #include <list>
@@ -88,11 +87,12 @@ public:
 		
 		// usuwam jeœli by³ w kolejce do usuniêcia
 		toRemoveCurlsSet.erase(curl);
-
+		//dodajemy do kolejki
+		auto f = toAddCurlsSet[curl].get_future();
 		// budzimy przetwarzanie
 		condVar.notify_one();
-
-		return toAddCurlsSet[curl].get_future();
+		//zwracamy przez przeniesienie
+		return std::move(f);
 	}
 
 	void removeRequest(CURL * curl)
@@ -116,6 +116,29 @@ public:
 			// do usuniecia
 			toRemoveCurlsSet.insert(curl);
 		}
+		//TODO = do weryfikacji
+		condVar.notify_one();
+	}
+
+	void updateHandles()
+	{
+		//najpierw próbujemy usuwaæ
+		innerRemove();
+
+		//czuszczê kolejkê do usuniêcia
+		CURLsSet().swap(toRemoveCurlsSet);
+
+		//teraz próbujemy dodawaæ
+		for (auto it = toAddCurlsSet.begin(); it != toAddCurlsSet.end(); ++it){
+			auto curl = it->first;
+			if (curl_multi_add_handle(multi, curl) == CURLM_OK){
+				manager->onAddRequest(curl);
+				currentCurls.insert(std::move(*it));
+			}
+		}
+
+		//czuszczê kolejkê do dodania
+		CURLsWaitMap().swap(toAddCurlsSet);
 	}
 
 	const bool process()
@@ -128,31 +151,27 @@ public:
 		int running_handles = 0;
 
 		{
-			//w³aœciwe przetwarzanie
-			ScopedLock lock(sync);
-
-			//najpierw próbujemy usuwaæ
-			innerRemove();
-
-			//czuszczê kolejkê do usuniêcia
-			CURLsSet().swap(toRemoveCurlsSet);
-
-			//teraz próbujemy dodawaæ
-			for (auto it = toAddCurlsSet.begin(); it != toAddCurlsSet.end(); ++it){
-				auto curl = it->first;
-				if (curl_multi_add_handle(multi, curl) == CURLM_OK){
-					manager->onAddRequest(curl);
-					currentCurls.insert(std::move(*it));
-				}
+			{
+				//w³aœciwe przetwarzanie
+				ScopedLock lock(sync);
+				updateHandles();
 			}
-
-			//czuszczê kolejkê do dodania
-			CURLsWaitMap().swap(toAddCurlsSet);
 
 			CURLMcode ret = CURLM_OK;
 
 			// tak d³ugo jak curl potrzebuje pozwalam mu operowaæ na danych
-			while ((ret = curl_multi_perform(multi, &running_handles)) == CURLM_CALL_MULTI_PERFORM);
+			while ((ret = curl_multi_perform(multi, &running_handles)) == CURLM_CALL_MULTI_PERFORM)
+			{
+				//TODO - wnêtrzne while jest experymentalne!!
+				if (toRemoveCurlsSet.empty() == false || toAddCurlsSet.empty() == false)
+				{
+					ScopedLock lock(sync);
+					if (toRemoveCurlsSet.empty() == false || toAddCurlsSet.empty() == false)
+					{
+						updateHandles();
+					}
+				}
+			};
 
 			// curl zakoñczy³ przetwarzanie dostêpnych danych - mamy chwilê na ich przetworzenie
 			if (ret != CURLM_OK && ret != CURLM_CALL_MULTI_PERFORM){
@@ -213,7 +232,11 @@ public:
 		else{
 			//wait condition variable woken up when some new handles are added or removed
 			std::unique_lock<std::mutex> lock(waitSync);
-			condVar.wait(lock);
+			// TODO - warunki dodane dla spurious wakeups - jak coœ jest do zrobienia to robimy
+			condVar.wait(lock, [this]{ return toAddCurlsSet.empty() == false
+				|| currentCurls.empty() == false
+				|| toRemoveCurlsSet.empty() == false
+				|| finalize_ == true; });
 		}
 
 		return true;
@@ -221,7 +244,7 @@ public:
 
 private:
 	//! Czy mamy ju¿ koñczyæ dzia³anie managera
-	std::atomic<bool> finalize_;
+	volatile bool finalize_;
 	//! Czas oczekiwania na dane [ms]
 	static const int waitTime = 500;
 	//! Obiekt realizuj¹cy czekanie na nowe uchwyty

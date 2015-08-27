@@ -19,92 +19,33 @@ namespace hmdbCommunication
 
 	class HMDBStatusManager : public IHMDBStatusManager
 	{
-	private:
-
-		typedef std::lock_guard<std::recursive_mutex> ScopedLock;
-
-		class HMDBStatusManagerTransaction;
-		friend class HMDBStatusManagerTransaction;
-
 	public:
 
 		typedef std::map<hmdbServices::ID, DataStatus> StatusByID;
 		typedef std::map<DataType, StatusByID> Statuses;
 		typedef std::map<DataType, std::set<hmdbServices::ID>> UpdateData;
 
+		struct SharedState
+		{
+			//! Statusy danych
+			Statuses statuses;
+			//! Mapa aktualizacji
+			UpdateData updateData;
+		};
+
+		typedef threadingUtils::TransactionSharedState<SharedState> TransactionSharedState;
+		typedef threadingUtils::TransactionImplHelper<IHMDBStatusManager::transaction_type, TransactionSharedState>::SharedStatePtr SharedStatePtr;
+
 	public:
 		HMDBStatusManager();
 		virtual ~HMDBStatusManager();
 
-		virtual const TransactionPtr transaction();
-		virtual const TransactionConstPtr transaction() const;
-
-		//! \param dataType Typ danych
-		//! \param id Identyfikator danych
-		//! \return Status danych
-		virtual const DataStatus dataStatus(const DataType dataType,
-			const hmdbServices::ID id) const;
-
-		//! \param dataType Typ danych
-		//! \param id Identyfikator danych
-		//! \param dataStatus Status danych
-		virtual void setDataStatus(const DataType dataType,
-			const hmdbServices::ID id, const DataStatus & dataStatus);
-
-		virtual void updateDataStatus(const DataType dataType,
-			const hmdbServices::ID id, const DataStatus & dataStatus);
-
-		//! \param dataType Typ danych
-		//! \param id Identyfikator danych		
-		virtual void removeDataStatus(const DataType dataType,
-			const hmdbServices::ID id);
-
-
-		virtual void removeDataStatus(const DataType dataType);
-
-		virtual void tryUpdate(const ShallowCopyConstPtr shallowCopy);
-
-		virtual void rebuild(const IHMDBStorageConstPtr storage, const ShallowCopyConstPtr shallowCopy);
+		virtual TransactionPtr transaction() override;
+		virtual TransactionConstPtr transaction() const override;
 
 	private:
-
-		const UpdateData fullUpdateData(const ShallowCopyConstPtr shallowCopy);
-
-		//! \param dataType Typ danych
-		//! \param id Identyfikator danych
-		//! \return Status danych
-		const DataStatus rawDataStatus(const DataType dataType,
-			const hmdbServices::ID id) const;
-
-		//! \param dataType Typ danych
-		//! \param id Identyfikator danych
-		//! \param dataStatus Status danych
-		void rawSetDataStatus(const DataType dataType,
-			const hmdbServices::ID id, const DataStatus & dataStatus);
-
-		void rawUpdateDataStatus(const DataType dataType,
-			const hmdbServices::ID id, const DataStatus& dataStatus);
-
-		//! \param dataType Typ danych
-		//! \param id Identyfikator danych		
-		void rawRemoveDataStatus(const DataType dataType,
-			const hmdbServices::ID id);
-
-		void rawRemoveDataStatus(const DataType dataType);
-
-		void refresh(const DataType type, hmdbServices::ID id);
-
-		void rawTryUpdate(const ShallowCopyConstPtr shallowCopy);
-
-		void rawRebuild(const IHMDBStorageConstPtr storage, const ShallowCopyConstPtr shallowCopy);
-
-	private:
-		//! Statusy danych
-		Statuses statuses;
-		//! Obiekt synchronizuj¹cy
-		mutable std::recursive_mutex synch_;
-		//! Mapa aktualizacji
-		UpdateData updateData;
+		
+		SharedStatePtr sharedState;
 	};
 }
 

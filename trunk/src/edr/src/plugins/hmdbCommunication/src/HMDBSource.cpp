@@ -223,11 +223,11 @@ const IHMDBSourceViewManager * HMDBSource::viewManager() const
 
 const IHMDBSourceContextPtr HMDBSource::sourceContextForData(const core::VariantConstPtr data) const
 {
-	auto it = std::find_if(sourceContexts_.begin(), sourceContexts_.end(), [=](const IHMDBSourceContextWeakPtr wsc)
+	auto it = std::find_if(sourceContexts_.begin(), sourceContexts_.end(), [=](const IHMDBSourceContextConstWeakPtr wsc)
 	{
 		auto sc = wsc.lock();
 		if (sc != nullptr){
-			if (sc->localContext()->isMyData(data) == true){
+			if (sc->localContext()->transaction()->isMyData(data) == true){
 				return true;
 			}
 		}
@@ -250,11 +250,11 @@ const IHMDBSourceContextPtr HMDBSource::sourceContextForData(const core::Variant
 
 const IHMDBShallowCopyContextPtr HMDBSource::shallowContextForData(const core::VariantConstPtr data) const
 {
-	auto it = std::find_if(shallowContexts_.begin(), shallowContexts_.end(), [=](const IHMDBShallowCopyContextWeakPtr wsc)
+	auto it = std::find_if(shallowContexts_.begin(), shallowContexts_.end(), [=](const IHMDBShallowCopyContextConstWeakPtr wsc)
 	{
 		auto sc = wsc.lock();
 		if (sc != nullptr){
-			if (sc->shallowCopyLocalContext()->localContext()->isMyData(data) == true){
+			if (sc->shallowCopyLocalContext()->localContext()->transaction()->isMyData(data) == true){
 				return true;
 			}
 		}
@@ -271,11 +271,11 @@ const IHMDBShallowCopyContextPtr HMDBSource::shallowContextForData(const core::V
 
 const IHMDBSourceContextPtr HMDBSource::sourceContextForData(const void * data) const
 {
-	auto it = std::find_if(sourceContexts_.begin(), sourceContexts_.end(), [=](const IHMDBSourceContextWeakPtr wsc)
+	auto it = std::find_if(sourceContexts_.begin(), sourceContexts_.end(), [=](const IHMDBSourceContextConstWeakPtr wsc)
 	{
 		auto sc = wsc.lock();
 		if (sc != nullptr){
-			if (sc->localContext()->isMyData(data) == true){
+			if (sc->localContext()->transaction()->isMyData(data) == true){
 				return true;
 			}
 		}
@@ -298,11 +298,11 @@ const IHMDBSourceContextPtr HMDBSource::sourceContextForData(const void * data) 
 
 const IHMDBShallowCopyContextPtr HMDBSource::shallowContextForData(const void * data) const
 {
-	auto it = std::find_if(shallowContexts_.begin(), shallowContexts_.end(), [=](const IHMDBShallowCopyContextWeakPtr wsc)
+	auto it = std::find_if(shallowContexts_.begin(), shallowContexts_.end(), [=](const IHMDBShallowCopyContextConstWeakPtr wsc)
 	{
 		auto sc = wsc.lock();
 		if (sc != nullptr){
-			if (sc->shallowCopyLocalContext()->localContext()->isMyData(data) == true){
+			if (sc->shallowCopyLocalContext()->localContext()->transaction()->isMyData(data) == true){
 				return true;
 			}
 		}

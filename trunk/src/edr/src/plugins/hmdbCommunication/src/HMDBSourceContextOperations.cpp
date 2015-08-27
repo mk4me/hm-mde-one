@@ -685,7 +685,7 @@ TmpFileTransferIO::~TmpFileTransferIO()
 	release();
 }
 
-IHMDBStorage::OStreamPtr TmpFileTransferIO::prepareOutput()
+IHMDBStorageOperations::OStreamPtr TmpFileTransferIO::prepareOutput()
 {
 	int i = 0;
 	while (core::Filesystem::pathExists(tmpFilePath = plugin::getPaths()->getTempFilePath()) == true && i++ < 10) {}
@@ -730,7 +730,7 @@ void TmpFileTransferIO::release()
 	}
 }
 
-IHMDBStorage::IStreamPtr TmpFileTransferIO::openInput()
+IHMDBStorageOperations::IStreamPtr TmpFileTransferIO::openInput()
 {	
 	stream->seekg(0, std::ios::beg);
 	return stream;
@@ -751,7 +751,7 @@ MemoryTransferIO::~MemoryTransferIO()
 
 }
 
-IHMDBStorage::OStreamPtr MemoryTransferIO::prepareOutput()
+IHMDBStorageOperations::OStreamPtr MemoryTransferIO::prepareOutput()
 {
 	stream.reset(new std::stringstream);
 	return stream;
@@ -762,7 +762,7 @@ void MemoryTransferIO::closeOutput()
 	stream->flush();
 }
 
-IHMDBStorage::IStreamPtr MemoryTransferIO::openInput()
+IHMDBStorageOperations::IStreamPtr MemoryTransferIO::openInput()
 {
 	stream->seekg(0, std::ios::beg);
 	return stream;
@@ -844,7 +844,7 @@ const bool FileDownload::fileDownloaded() const
 	return downloaded_;
 }
 
-const IHMDBStorage::IStreamPtr FileDownload::stream() const
+const IHMDBStorageOperations::IStreamPtr FileDownload::stream() const
 {
 	return transferIO->openInput();
 }
@@ -1052,7 +1052,7 @@ void MultipleFilesDownloadStoreAndStatusUpdate::downloadFinished(const std::list
 	};
 
 	if (shallowCopy != nullptr){
-		statusManager->tryUpdate(shallowCopy);
+		statusManager->transaction()->tryUpdate(shallowCopy);
 	}
 }
 

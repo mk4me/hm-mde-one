@@ -174,7 +174,7 @@ namespace threadingUtils
 
 		friend class CustomThread;
 
-		typedef utils::scoped_ptr<CustomThread> CustomThreadProxy;
+		typedef utils::unique_ptr<CustomThread> CustomThreadProxy;
 
 		//! Typ agreguj¹cy w¹tki które pobieraj¹ klienci
 		typedef std::list<Thread> Threads;

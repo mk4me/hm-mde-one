@@ -1218,7 +1218,7 @@ std::string IMUCostumeWidget::recordingDir(const imuCostume::CostumeRawIO::Costu
 	const auto now_t = std::chrono::system_clock::to_time_t(now);
 	std::stringstream ss;
 
-#ifdef WIN32
+#if defined(_WINDOWS)
 	ss << std::put_time(std::localtime(&now_t), "%Y%m%d_%H%M%S");
 #else
 	// put_time nie jest zaimplementowany w gcc 4.7
