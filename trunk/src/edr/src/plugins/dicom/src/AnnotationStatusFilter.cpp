@@ -4,7 +4,7 @@
 #include <plugins/hmdbCommunication/ShallowCopy.h>
 #include <hmdbserviceslib/IBasicQueriesWS.h>
 #include <hmdbserviceslib/Entity.h>
-#include "DicomSource.h"
+#include "DicomService.h"
 
 using namespace dicom;
 
@@ -53,7 +53,7 @@ void AnnotationStatusFilter::groupAnnotations(hmdbCommunication::IHMDBSession * 
 	AnnotationStatusFilter::Identifiers & verified)
 {
 	try{
-		bool userIsReviewer = DicomSource::userIsReviewer(session);
+		bool userIsReviewer = dicom::DicomService::userIsReviewer(session);
 		if (userIsReviewer == true){
 			auto resp = session->motionQueries()->listAnnotationsXML();
 			auto annotations = hmdbServices::xmlWsdl::parseAnnotations(resp);

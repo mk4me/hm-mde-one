@@ -7,7 +7,6 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QLabel>
 #include <QtGui/QFont>
-#include <utils/ObjectWrapper.h>
 #include "PythonConsole.h"
 #include "QtWidgets/QAction"
 #include "PythonEditor.h"

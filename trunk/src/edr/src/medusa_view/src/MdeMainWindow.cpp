@@ -287,11 +287,11 @@ void MdeMainWindow::customViewInit(QWidget * log)
 		   ccfg.name = tr("Default PJWSTK MEDUSA data connection");
 		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
 		   ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
-		   //ccfg.motionServicesConfiguration.userConfiguration.user = "test-student";
-		   //ccfg.motionServicesConfiguration.userConfiguration.password = "test-Medusa";
 #ifdef _DEBUG
-		   ccfg.motionServicesConfiguration.userConfiguration.user = "usg-medusapl";
-		   ccfg.motionServicesConfiguration.userConfiguration.password = "usg-medusaxx";
+		   //ccfg.motionServicesConfiguration.userConfiguration.user = "usg-medusapl";
+		   //ccfg.motionServicesConfiguration.userConfiguration.password = "usg-medusaxx";
+		   ccfg.motionServicesConfiguration.userConfiguration.user = "test-student";
+		   ccfg.motionServicesConfiguration.userConfiguration.password = "test-Medusa";
 #endif
 		   ccfg.motionServicesConfiguration.serviceConfiguration.url = "https://v21.pjwstk.edu.pl/HMDB";
 		   ccfg.motionServicesConfiguration.serviceConfiguration.caPath = QString::fromStdString((plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string());

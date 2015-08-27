@@ -4,8 +4,6 @@
 #include <plugins/dicom/Dicom.h>
 #include <plugins/dicom/ILayeredImage.h>
 #include "PngParser.h"
-#include "DicomVisualizer.h"
-#include "DicomSource.h"
 #include "LayeredImageVisualizer.h"
 #include "LayeredImage.h"
 #include "plugins/dicom/DicomPerspective.h"
@@ -16,8 +14,11 @@
 #include <corelib/IDataHierarchyManager.h>
 #include "LayersXmlParser.h"
 #include "InternalXmlParser.h"
+#include "DicomService.h"
 //#include "AnnotationStatusFilter.h"
 #include <hmdbserviceslib/IBasicQueriesWS.h>
+#include "plugins/dicom/IDicomInternalStruct.h"
+#include "DicomInternalStruct.h"
 
 using namespace dicom;
 
@@ -89,71 +90,6 @@ using namespace dicom;
 
 
 
-class DicomTempService : public IDicomService
-{																		
-UNIQUE_ID("{2B0AE786-F194-46DE-A161-CCCFF317E44B}")						
-CLASS_DESCRIPTION("DicomTempService", "DicomTempService");							
-
-public:
-	DicomTempService() : sourceManager(nullptr), hierarchyManager(nullptr), perspective(new DicomPerspective)
-	{
-
-	}
-
-	virtual ~DicomTempService()
-	{
-
-	}
-
-	virtual void init(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager,
-		core::IDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager,
-		core::IDataHierarchyManager * hierarchyManager)
-	{
-		this->sourceManager = sourceManager;
-		this->hierarchyManager = hierarchyManager;
-	}
-
-    virtual const bool lateInit()  
-    {
-		auto comm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
-		if (comm != nullptr){
-			comm->viewManager()->addHierarchyPerspective(perspective);
-			return true;
-		}
-
-		return false;
-	}
-
-	virtual void finalize()
-	{
-		
-	}
-
-	virtual void update(double deltaTime) {}
-	virtual QWidget* getWidget() { return nullptr; }
-	virtual QWidgetList getPropertiesWidgets() { return QWidgetList(); }
-
-    virtual void updateItemIcon( const std::string& filename, const QIcon& icon )
-    {
-        auto item = perspective->tryGetHierarchyItem(filename);
-        if (item) {
-            item->setIcon(icon);
-            auto hierarchyTransaction = hierarchyManager->transaction();
-            core::IHierarchyItemConstPtr root = item;
-            while (root->getParent() && root->getParent()->getParent()) {
-                root = root->getParent();
-            }
-            if (root) {
-                hierarchyTransaction->updateRoot(root);        
-            }
-        }
-    }
-
-private:
-	core::ISourceManager *sourceManager;
-	core::IDataHierarchyManager* hierarchyManager;
-	DicomPerspectivePtr perspective;
-};
 
 CORE_PLUGIN_BEGIN("dicom", core::UID::GenerateUniqueID("{09E8994A-99B4-42D6-9E72-C695ABFEAB1E}"))
     //CORE_PLUGIN_ADD_SOURCE(DicomSource);
@@ -166,5 +102,5 @@ CORE_PLUGIN_BEGIN("dicom", core::UID::GenerateUniqueID("{09E8994A-99B4-42D6-9E72
     CORE_PLUGIN_ADD_VISUALIZER(LayeredImageVisualizer);
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(ILayeredImage);
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(LayeredImage);
-    CORE_PLUGIN_ADD_SERVICE(DicomTempService);
+    CORE_PLUGIN_ADD_SERVICE(DicomService);
 CORE_PLUGIN_END

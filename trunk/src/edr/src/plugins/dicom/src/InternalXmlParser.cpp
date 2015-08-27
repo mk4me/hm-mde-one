@@ -3,9 +3,10 @@
 #include <corelib/Filesystem.h>
 #include "LayeredImage.h"
 #include <plugins/dicom/Dicom.h>
-#include "DicomSource.h"
+#include "DicomService.h"
 #include "DicomInternalStruct.h"
 #include <regex>
+#include "DicomLoader.h"
 
 using namespace dicom;
 
@@ -23,7 +24,7 @@ InternalXmlParser::~InternalXmlParser()
 void InternalXmlParser::parse( const std::string & source  )
 {
 	sessionInternal = utils::ObjectWrapper::create<DicomInternalStruct>();
-    DicomInternalStructPtr inter = DicomLoader::load(source);
+    DicomInternalStructPtr inter = dicom::DicomLoader::load(source);
 	sessionInternal->set(inter);
     //LayeredImagePtr l = utils::make_shared<LayeredImage>(source);
     //image->set(l);

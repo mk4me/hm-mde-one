@@ -27,9 +27,9 @@
 #include <plugins/dicom/Annotations.h>
 #include <hmdbserviceslib/IBasicUpdatesWS.h>
 #include <hmdbserviceslib/IAuthorizationWS.h>
-#include "DicomSource.h"
 #include <hmdbserviceslib/IFileStoremanWS.h>
 #include <fstream>
+#include "DicomService.h"
 
 using namespace dicom;
 
@@ -634,7 +634,7 @@ void dicom::LayeredImageVisualizer::gatherCommunicationInfo(const plugin::IVisua
 	if (remoteSrcContext != nullptr){
 		userName = remoteSrcContext->shallowCopyLocalContext()->localContext()->dataContext()->userName();
 		auto remote = remoteSrcContext->shallowCopyRemoteContext();
-		isReviewer = remote ? DicomSource::userIsReviewer(remote->remoteContext()->session().get()) : false;
+		isReviewer = remote ? DicomService::userIsReviewer(remote->remoteContext()->session().get()) : false;
 	} else {
 		UTILS_ASSERT(false, "No shallow context");
 	}

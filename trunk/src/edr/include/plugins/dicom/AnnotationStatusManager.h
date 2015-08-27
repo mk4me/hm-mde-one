@@ -36,10 +36,11 @@ public:
 			
 
 public:
+	AnnotationStatusManager();
 		virtual ~AnnotationStatusManager();
 
 public:
-	static AnnotationStatusManager* instance();
+	//static AnnotationStatusManager* instance();
 	void start();
 	hmdbServices::xmlWsdl::Annotation getAnnotationStatus(const std::string& user, int trialId);
 

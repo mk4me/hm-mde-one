@@ -1,6 +1,5 @@
 #include "PythonPCH.h"
 #include "MdeBridge.h"
-#include "utils/ObjectWrapper.h"
 #include "corelib/HierarchyHelper.h"
 #include "corelib/IHierarchyItem.h"
 #include "corelib/IDataManager.h"
@@ -8,6 +7,7 @@
 #include "corelib/HierarchyDataItem.h"
 #include "corelib/Variant.h"
 #include "corelib/IDataHierarchyManager.h"
+#include "objectwrapperlib/ObjectWrapper.h"
 
 namespace py = boost::python;
 

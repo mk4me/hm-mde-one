@@ -12,13 +12,20 @@
 #include <queue>
 #include <stack>
 
-dicom::AnnotationStatusManager* dicom::AnnotationStatusManager::instance()
+dicom::AnnotationStatusManager::AnnotationStatusManager()
 {
-	static AnnotationStatusManager sm;
-	sm.refreshData();
-	sm.start();
-	return &sm;
+	refreshData();
+	start();
 }
+
+//dicom::AnnotationStatusManager* dicom::AnnotationStatusManager::instance()
+//{
+//	static AnnotationStatusManager sm;
+//	// przeniesione do konstruktora
+//	/*sm.refreshData();
+//	sm.start();*/
+//	return &sm;
+//}
 
 hmdbCommunication::IHMDBSession * dicom::AnnotationStatusManager::getSession(hmdbCommunication::IHMDBShallowCopyContext* srcContext)
 {
@@ -129,3 +136,5 @@ hmdbServices::xmlWsdl::Annotation dicom::AnnotationStatusManager::getAnnotationS
 	//const AnnotationStatusManager::AnnotationData* ad = getAnnotationData();
 	return data->annotations.at(trialId).at(data->user2Id.at(QString::fromStdString(user)));
 }
+
+

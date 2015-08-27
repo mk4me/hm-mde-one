@@ -16,7 +16,7 @@
 #include <QtWidgets/QGraphicsPathItem>
 #include <qwt_spline.h>
 #include <plugins/dicom/ValueLayer.h>
-
+#include <QtGui/QPen>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/serialization/string.hpp>

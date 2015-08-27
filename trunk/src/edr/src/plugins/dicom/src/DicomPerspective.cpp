@@ -17,13 +17,14 @@
 #include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <corelib/ISourceManager.h>
 #include <corelib/PluginCommon.h>
-#include "DicomSource.h"
 #include "PointsLayer.h"
 #include <corelib/ISourceManager.h>
 #include <boost/format.hpp>
 #include "LayeredSerie.h"
 #include "LayeredImageVisualizerView.h"
 #include "plugins/hmdbCommunication/IHMDBShallowCopyContext.h"
+#include "DicomLoader.h"
+#include "DescriptionMaker.h"
 
 typedef core::Filesystem fs;
 
@@ -102,7 +103,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
             dicom::DicomInternalStructConstPtr internalStruct = sessionWrp->get();
             auto session = internalStruct->tryGetSession(label.toStdString());
             if (session) {
-                desc = DicomSource::createDesc(*session);
+                desc = dicom::DescriptionMaker::createDesc(*session);
             }
             //DicomInternalStructConstPtr test = (*inter.begin())->get();
 		} else {
@@ -146,7 +147,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
                             dicom::DicomInternalStructConstPtr internalStruct = sessionWrp->get();
                             auto internalImage = internalStruct->tryGetImage(imageFilename + ".png");
                             if (internalImage) {
-                                desc = DicomSource::createDesc(*internalImage);
+								desc = dicom::DescriptionMaker::createDesc(*internalImage);
 								ncimg->setIsPowerDoppler(internalImage->isPowerDoppler);
                             }
                         }

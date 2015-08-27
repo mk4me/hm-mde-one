@@ -3,7 +3,8 @@
 #include "LayeredImage.h"
 #include <corelib/Filesystem.h>
 #include <plugins/dicom/Dicom.h>
-#include "DicomSource.h"
+#include "DicomService.h"
+#include "DicomLoader.h"
 
 using namespace dicom;
 
@@ -21,7 +22,7 @@ LayersXmlParser::~LayersXmlParser()
 void LayersXmlParser::parse( const std::string & source  )
 {
 	layers = utils::ObjectWrapper::create<LayersVector>();
-    LayersVectorPtr layers = DicomLoader::loadLayers(source);
+    LayersVectorPtr layers = dicom::DicomLoader::loadLayers(source);
     this->layers->set(layers);
 }
 

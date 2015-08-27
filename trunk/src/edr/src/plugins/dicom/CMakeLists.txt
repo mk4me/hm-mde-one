@@ -21,9 +21,10 @@ SET_PRIVATE_HEADERS (
 	#DicomParser.h
 	DicomPCH.h
 	#DicomVisualizer.h
-	DicomSource.h
-	DicomSourceWidget.h
 	#DicomImporter.h
+	DicomService.h
+	DicomLoader.h
+	DescriptionMaker.h
 	DicomInternalStruct.h
 	PointsState.h
 	EditState.h
@@ -53,12 +54,13 @@ SET_SOURCE_FILES(
 	NormalState.cpp
 	MoveState.cpp
 	EditState.cpp
+	DescriptionMaker.cpp
 	LayeredSerie.cpp
 	DicomPlugin.cpp
-	#DicomParser.cpp
-	#DicomVisualizer.cpp
-	DicomSource.cpp
-	DicomSourceWidget.cpp
+	DicomService.cpp
+	DicomLoader.cpp
+	#DicomSource.cpp
+	#DicomSourceWidget.cpp
 	DicomInternalStruct.cpp
 	#DicomImporter.cpp
 	BackgroundLayer.cpp
@@ -83,7 +85,7 @@ SET_MOC_FILES(
 	LayeredStateMachine.h
 	LayeredImageVisualizer.h
 	#DicomVisualizer.h
-	DicomSourceWidget.h
+	#DicomSourceWidget.h
 	LayeredImageVisualizerView.h
 	LayeredModelView.h
 	PointsState.h
@@ -92,7 +94,7 @@ SET_MOC_FILES(
 )
 SET_UI_FILES(
 	layeredImageVisualizer.ui
-	dicomSource.ui
+	#dicomSource.ui
 	messageDialog.ui
 )
 

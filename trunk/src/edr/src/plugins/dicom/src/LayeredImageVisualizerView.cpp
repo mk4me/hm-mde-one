@@ -19,6 +19,7 @@
 #include <coreui/CorePopup.h>
 #include <coreui/CoreCursorChanger.h>
 #include "plugins/dicom/AnnotationStatusManager.h"
+#include "DicomService.h"
 
 using namespace dicom;
 hmdbServices::DateTime LayeredImageVisualizerView::lastUpdate;
@@ -585,7 +586,8 @@ const dicom::LayeredImageVisualizerView::AnnotationStatus dicom::LayeredImageVis
 	try {
 		/*const AnnotationStatusManager::AnnotationData* ad = AnnotationStatusManager::instance()->getAnnotationData();
 		return ad->annotations.at(trialId).at(ad->user2Id.at(QString::fromStdString(user)));*/
-		return AnnotationStatusManager::instance()->getAnnotationStatus(user, trialId);
+		auto dicomService = core::queryService<dicom::DicomService>(plugin::getServiceManager());
+		return dicomService->getAnnotationStatusManager()->getAnnotationStatus(user, trialId);
 	}
 	catch (...) {
 		PLUGIN_LOG_WARNING("Unable to get annotation status");
