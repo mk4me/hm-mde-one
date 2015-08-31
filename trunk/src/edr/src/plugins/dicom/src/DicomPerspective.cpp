@@ -209,7 +209,7 @@ core::IHierarchyItemPtr dicom::DicomPerspective::getPerspective( PluginSubject::
             }
         }
 
-		DicomMultiHelperPtr helper = utils::make_shared<DicomMultiHelper>(helpers);
+		DicomMultiHelperPtr helper = utils::make_shared<DicomMultiHelper>(sessionItem);
 		sessionItem->addHelper(helper);
     }
 
@@ -429,23 +429,64 @@ dicom::DicomHelper::DicomHelper( const core::VariantConstPtr & wrapper, const co
 
 void dicom::DicomMultiHelper::createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series)
 {
-	for (auto& helper : helpers) {
-		helper->createSeries(visualizer, path, series);
+	auto item = sessionItem.lock();
+	if (item) {
+		auto helpers = getHelpers(item.get());
+
+		for (auto& helper : helpers) {
+			helper->createSeries(visualizer, path, series);
+		}
 	}
 }
 
 core::VisualizerPtr dicom::DicomMultiHelper::createVisualizer(core::IVisualizerManager* manager)
 {
-	return helpers[0]->createVisualizer(manager);
+	auto item = sessionItem.lock();
+	if (item) {
+		auto helpers = getHelpers(item.get());
+		return helpers[0]->createVisualizer(manager);
+	}
+
+	throw std::runtime_error("Unable to create visualizer");
 }
 
 std::vector<utils::TypeInfo> dicom::DicomMultiHelper::getTypeInfos() const
 {
-	return helpers[0]->getTypeInfos();
+	auto item = sessionItem.lock();
+	if (item) {
+		auto helpers = getHelpers(item.get());
+		return helpers[0]->getTypeInfos();
+	}
+
+	throw std::runtime_error("Unable to get type infos");
 }
 
-dicom::DicomMultiHelper::DicomMultiHelper(const std::vector<DicomHelperPtr>& helpers)
+//dicom::DicomMultiHelper::DicomMultiHelper(const std::vector<DicomHelperPtr>& helpers)
+//{
+//	this->helpers = helpers;
+//	UTILS_ASSERT(helpers.empty() == false);
+//}
+
+dicom::DicomMultiHelper::DicomMultiHelper(core::IHierarchyItemWeakPtr item) : 
+	sessionItem(item)
 {
-	this->helpers = helpers;
-	UTILS_ASSERT(helpers.empty() == false);
+
+}
+
+std::vector<dicom::DicomHelperPtr> dicom::DicomMultiHelper::getHelpers(core::IHierarchyItem* item) const
+{
+	std::vector<DicomHelperPtr> ret;
+	auto count = item->getNumChildren();
+	for (auto i = 0; i < count; i++) {
+		auto data = dynamic_cast<const core::IHierarchyDataItem*>(item->getChild(i).get());
+		auto helpers = data->getHelpers();
+		for (auto& h : helpers) {
+			auto dh = utils::dynamic_pointer_cast<DicomHelper>(h);
+			if (dh) {
+				ret.push_back(dh);
+			}
+		}
+
+	}
+	return ret;
 }

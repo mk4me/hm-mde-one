@@ -37,16 +37,21 @@ DEFINE_SMART_POINTERS(DicomHelper);
 class PLUGIN_DICOM_EXPORT DicomMultiHelper : public core::HierarchyHelper
 {
 public:
-	DicomMultiHelper(const std::vector<DicomHelperPtr>& helpers);
+	//DicomMultiHelper(const std::vector<DicomHelperPtr>& helpers);
+	DicomMultiHelper(core::IHierarchyItemWeakPtr sessionItem);
 
 protected:
 	virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series);
+
+	std::vector<DicomHelperPtr> getHelpers(core::IHierarchyItem* item) const;
+
 public:
 	virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
 	virtual std::vector<utils::TypeInfo> getTypeInfos() const;
 
 private:
-	std::vector<DicomHelperPtr> helpers;
+	//std::vector<DicomHelperPtr> helpers;
+	core::IHierarchyItemWeakPtr sessionItem;
 };
 DEFINE_SMART_POINTERS(DicomMultiHelper);
 
