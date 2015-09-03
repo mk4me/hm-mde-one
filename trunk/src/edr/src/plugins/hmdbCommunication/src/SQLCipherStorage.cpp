@@ -1,11 +1,9 @@
 #include "CommunicationPCH.h"
-//#include <threadingUtils/ThreadAfinityVerifier.h>
 #include "SQLCipherStorage.h"
 #include <streambuf>
 
 #include <utils/SmartPtr.h>
 #include <boost/format.hpp>
-#include <boost/array.hpp>
 #include <sqlite3.h>
 #include <sqliteUtils/BufferPolicyT.h>
 #include <sqliteUtils/SQLiteBLOB.h>

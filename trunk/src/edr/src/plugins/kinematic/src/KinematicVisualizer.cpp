@@ -132,10 +132,10 @@ void KinematicVisualizer::removeSerie(plugin::IVisualizer::ISerie *serie)
 
 QWidget* KinematicVisualizer::createWidget()
 {
-	osg::DisplaySettings::instance()->setNumMultiSamples( 8 );
+	//osg::DisplaySettings::instance()->setNumMultiSamples( 8 );
 
     widget = new osgui::QOsgDefaultWidget();
-    widget->setTimerActive(true);
+    //widget->setTimerActive(true);
 
     trajectoriesDialog = new TrajectoriesDialog(widget);
     schemeDialog = new SchemeDialog(widget);    
@@ -292,7 +292,7 @@ QWidget* KinematicVisualizer::createWidget()
 
 	//dodajemy tez event handler ze statystykami
 	widget->addEventHandler( new osgViewer::StatsHandler() );
-	widget->setTimerActive(true);
+	//widget->setTimerActive(true);
 
 #endif
 

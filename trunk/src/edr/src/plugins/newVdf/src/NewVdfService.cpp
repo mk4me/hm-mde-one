@@ -16,10 +16,10 @@
 #include "DataProcessorManager.h"
 #include <corelib/IDataManager.h>
 #include "DataSourceManager.h"
-#include <boost/chrono/thread_clock.hpp>
 #include <corelib/IDataManager.h>
 #include "PresetsWidget.h"
 #include "MergedWidget.h"
+#include <chrono>
 
 using namespace vdf;
 
@@ -100,11 +100,10 @@ void NewVdfService::finalize()
 }                                                  
 
 void NewVdfService::update( double time )
-{
-    using namespace boost::chrono;
-    static thread_clock::time_point startTime = thread_clock::now();
-    thread_clock::time_point currentTime = thread_clock::now();  
-    if (duration_cast<milliseconds>(currentTime - startTime).count()  > 1000) {
+{    
+	static auto startTime = std::chrono::steady_clock::now();
+	auto currentTime = std::chrono::steady_clock::now();
+	if (std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - startTime).count()  > 1000) {
         startTime = currentTime;
 
         // TODO : tutaj tylko tymczasowo

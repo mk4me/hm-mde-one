@@ -321,7 +321,8 @@ namespace hmdbCommunication
 		//! \param toPrepare Pliki do przygotowania do ściągnięcia po stronie HMDB
 		//! \param Polityka wykonania
 		PrepareHMDB(hmdbServices::IFileStoremanWS * fs,
-			const hmdbServices::ID fileID);
+			const hmdbServices::ID fileID,
+			const hmdbServices::DateTime & since = hmdbServices::DateTime::now());
 
 		//! Destruktor wirtualny
 		virtual ~PrepareHMDB();
@@ -336,6 +337,7 @@ namespace hmdbCommunication
 		hmdbServices::IFileStoremanWS * fs;
 		const hmdbServices::ID fileID_;
 		std::string preparedFilePath_;
+		const hmdbServices::DateTime since;
 	};
 
 	class ITransferIO

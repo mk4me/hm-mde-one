@@ -115,7 +115,7 @@ namespace hmdbCommunication
 		//---------- Operacje kontekstu -----------------
 
 		//! \return Operacja opisuj¹ca odœwie¿enia p³ytkiej kopii bazy danych
-		virtual const std::list<DownloadOperationPtr> prepareSynchronization() = 0;
+		virtual const std::list<DownloadOperationPtr> prepareSynchronization(const hmdbServices::DateTime & since = hmdbServices::DateTime::now()) = 0;
 
 		//! \param fd Opis pliku do œci¹gniêcia
 		//! \return Transfer danych

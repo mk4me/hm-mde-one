@@ -1241,7 +1241,18 @@ const std::list<IHMDBRemoteContext::DownloadOperationPtr> HMDBShallowCopyRemoteC
 
 const HMDBShallowCopyRemoteContext::SynchronizeOperationPtr HMDBShallowCopyRemoteContext::prepareSynchronization(IHMDBStoragePtr storage)
 {
-	auto sDownloads = remoteContext()->prepareSynchronization();
+	auto since = hmdbServices::DateTime::now();
+	//dla pewności przesuwam się w przyszłość
+	//jak nie mam shallow to ściągam wszystko więc przyrost mi nie jest potrzebny
+	since.setYear(since.getYear() + 1);
+
+	if (shallowCopyContext_ != nullptr){
+		if (shallowCopyContext_->shallowCopy() != nullptr){
+			since = shallowCopyContext_->shallowCopy()->motionShallowCopy.timestamp;
+		}
+	}
+
+	auto sDownloads = remoteContext()->prepareSynchronization(since);
 	return SynchronizeOperationPtr(new hmdbCommunication::SynchronizeOperation(sDownloads, storage));
 }
 

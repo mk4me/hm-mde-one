@@ -607,7 +607,8 @@ const std::string retrieveData(hmdbServices::IBasicStoremanWS * service, const i
 	return service->retrieve(id).fileLocation;
 }
 
-const std::string retrievePerspective(hmdbServices::IShallowStoremanWS * service, const int id)
+const std::string retrievePerspective(hmdbServices::IShallowStoremanWS * service, const int id,
+	const hmdbServices::DateTime & since = hmdbServices::DateTime::now())
 {
 	std::string ret;
 	switch (id)
@@ -621,7 +622,7 @@ const std::string retrievePerspective(hmdbServices::IShallowStoremanWS * service
 		break;
 
 	case ShallowCopyUtils::IncrementalShallowCopyFileID:
-		ret = service->getShallowCopyIncrement(hmdbServices::toString(hmdbServices::DateTime::now()));
+		ret = service->getShallowCopyBranchesIncrement(hmdbServices::toString(since));
 		break;
 
 	case ShallowCopyUtils::IncrementalMetadataFileID:
@@ -637,8 +638,9 @@ const std::string retrievePerspective(hmdbServices::IShallowStoremanWS * service
 }
 
 PrepareHMDB::PrepareHMDB(hmdbServices::IFileStoremanWS * fs,
-	const hmdbServices::ID fileID)
-	: fs(fs), fileID_(fileID)
+	const hmdbServices::ID fileID,
+	const hmdbServices::DateTime & since)
+	: fs(fs), fileID_(fileID), since(since)
 {
 	
 }
@@ -654,7 +656,7 @@ const std::string PrepareHMDB::prepareFilePath()
 		preparedFilePath_ = retrieveData(fs, fileID_);
 	}
 	else{
-		preparedFilePath_ = retrievePerspective(fs, fileID_);
+		preparedFilePath_ = retrievePerspective(fs, fileID_, since);
 	}
 
 	return preparedFilePath_;

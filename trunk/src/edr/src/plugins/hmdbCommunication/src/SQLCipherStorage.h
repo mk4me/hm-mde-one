@@ -12,7 +12,6 @@
 #include <corelib/Filesystem.h>
 #include <mutex>
 #include <sqlite3.h>
-#include <boost/thread/shared_mutex.hpp>
 
 namespace hmdbCommunication
 {

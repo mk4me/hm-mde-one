@@ -29,7 +29,7 @@ const IHMDBSessionConstPtr HMDBRemoteContext::session() const
 	return session_;
 }
 
-const std::list<IHMDBRemoteContext::DownloadOperationPtr> HMDBRemoteContext::prepareSynchronization()
+const std::list<IHMDBRemoteContext::DownloadOperationPtr> HMDBRemoteContext::prepareSynchronization(const hmdbServices::DateTime & since)
 {	
 	std::list<IHMDBRemoteContext::DownloadOperationPtr> downloads;	
 
@@ -43,7 +43,7 @@ const std::list<IHMDBRemoteContext::DownloadOperationPtr> HMDBRemoteContext::pre
 			fd.id.fileID = ShallowCopyUtils::MetadataFileID;
 			fd.fileName = ShallowCopyUtils::shallowCopyName(userHash, fd.id.dataReference, ShallowCopyUtils::Meta);
 			utils::shared_ptr<MemoryTransferIO> ptoOp(new MemoryTransferIO());
-			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->medicalFilestoreman(), fd.id.fileID));
+			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->medicalFilestoreman(), fd.id.fileID, since));
 			downloads.push_back(IHMDBRemoteContext::DownloadOperationPtr(new FileDownload(fd, pftdOp, ptoOp, session_->medicalFtp())));			
 		}
 
@@ -51,7 +51,7 @@ const std::list<IHMDBRemoteContext::DownloadOperationPtr> HMDBRemoteContext::pre
 			fd.id.fileID = ShallowCopyUtils::ShallowCopyFileID;
 			fd.fileName = ShallowCopyUtils::shallowCopyName(userHash, fd.id.dataReference, ShallowCopyUtils::Shallow);
 			utils::shared_ptr<MemoryTransferIO> ptoOp(new MemoryTransferIO());
-			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->medicalFilestoreman(), fd.id.fileID));
+			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->medicalFilestoreman(), fd.id.fileID, since));
 			downloads.push_back(IHMDBRemoteContext::DownloadOperationPtr(new FileDownload(fd, pftdOp, ptoOp, session_->medicalFtp())));			
 		}
 
@@ -66,7 +66,7 @@ const std::list<IHMDBRemoteContext::DownloadOperationPtr> HMDBRemoteContext::pre
 			fd.id.fileID = ShallowCopyUtils::MetadataFileID;
 			fd.fileName = ShallowCopyUtils::shallowCopyName(userHash, fd.id.dataReference, ShallowCopyUtils::Meta);
 			utils::shared_ptr<MemoryTransferIO> ptoOp(new MemoryTransferIO());
-			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->motionFilestoreman(), fd.id.fileID));
+			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->motionFilestoreman(), fd.id.fileID, since));
 			downloads.push_back(IHMDBRemoteContext::DownloadOperationPtr(new FileDownload(fd, pftdOp, ptoOp, session_->motionFtp())));
 		}
 
@@ -74,7 +74,7 @@ const std::list<IHMDBRemoteContext::DownloadOperationPtr> HMDBRemoteContext::pre
 			fd.id.fileID = ShallowCopyUtils::ShallowCopyFileID;
 			fd.fileName = ShallowCopyUtils::shallowCopyName(userHash, fd.id.dataReference, ShallowCopyUtils::Shallow);
 			utils::shared_ptr<MemoryTransferIO> ptoOp(new MemoryTransferIO());
-			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->motionFilestoreman(), fd.id.fileID));
+			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->motionFilestoreman(), fd.id.fileID, since));
 			downloads.push_back(IHMDBRemoteContext::DownloadOperationPtr(new FileDownload(fd, pftdOp, ptoOp, session_->motionFtp())));			
 		}
 
@@ -82,7 +82,7 @@ const std::list<IHMDBRemoteContext::DownloadOperationPtr> HMDBRemoteContext::pre
 			fd.id.fileID = ShallowCopyUtils::IncrementalShallowCopyFileID;
 			fd.fileName = ShallowCopyUtils::shallowCopyName(userHash, fd.id.dataReference, ShallowCopyUtils::IncrementalShallow);
 			utils::shared_ptr<MemoryTransferIO> ptoOp(new MemoryTransferIO());
-			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->motionFilestoreman(), fd.id.fileID));
+			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->motionFilestoreman(), fd.id.fileID, since));
 			downloads.push_back(IHMDBRemoteContext::DownloadOperationPtr(new FileDownload(fd, pftdOp, ptoOp, session_->motionFtp())));			
 		}
 	}	

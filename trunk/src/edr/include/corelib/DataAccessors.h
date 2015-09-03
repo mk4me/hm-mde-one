@@ -10,7 +10,6 @@
 #define HEADER_GUARD___DATAACCESSORS_H__
 
 #include <vector>
-#include <boost/type_traits.hpp>
 #include <utils/Debug.h>
 #include <corelib/IDataManagerReader.h>
 

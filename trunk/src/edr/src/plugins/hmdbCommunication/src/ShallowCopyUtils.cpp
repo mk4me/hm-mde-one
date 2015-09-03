@@ -4,7 +4,7 @@
 #include <hmdbserviceslib/ShallowCopyParser.h>
 #include <hmdbserviceslib/MetadataParser.h>
 #include <plugins/hmdbCommunication/IHMDBStorage.h>
-#include <boost/regex.hpp>
+#include <regex>
 
 using namespace hmdbCommunication;
 
@@ -158,15 +158,15 @@ const std::string ShallowCopyUtils::shallowCopyName(const std::string & userHash
 
 const std::list<std::string> ShallowCopyUtils::allShallowCopiesNames(IHMDBStorage::TransactionConstPtr storage)
 {
-	static const boost::regex r("^(med|m)_[[::alpha::]*?_[inc](s|m)\.xml\.shallow$");
+	static const std::regex r("^(med|m)_[[::alpha::]*?_[inc](s|m)\.xml\.shallow$");
 
 	std::list<std::string> ret;
 
 	const auto sfiles = storage->keys();
 
 	for (auto it = sfiles.begin(); it != sfiles.end(); ++it){
-		boost::smatch what;
-		if (boost::regex_match(*it, what, r) == true){
+		std::smatch what;
+		if (std::regex_match(*it, what, r) == true){
 
 			ret.push_back(*it);
 		}
@@ -208,13 +208,13 @@ const std::list<std::string> ShallowCopyUtils::filterShallowCopiesNames(const st
 		break;
 	}
 
-	boost::regex r("^" + start + "_[[::alpha::]*?_" + end + "\.xml\.shallow$");
+	std::regex r("^" + start + "_[[::alpha::]*?_" + end + "\.xml\.shallow$");
 
 	std::list<std::string> ret;
 
 	for (auto it = src.begin(); it != src.end(); ++it){
-		boost::smatch what;
-		if (boost::regex_match(*it, what, r) == true){
+		std::smatch what;
+		if (std::regex_match(*it, what, r) == true){
 
 			ret.push_back(*it);
 		}
