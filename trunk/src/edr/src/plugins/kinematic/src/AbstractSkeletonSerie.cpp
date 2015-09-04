@@ -18,7 +18,7 @@ AbstractSkeletonSerie::AbstractSkeletonSerie(KinematicVisualizer * visualizer,
 	data(data), requestedType(requestedType),
 	lastUpdateTime(std::numeric_limits<double>::min()),
 	xyzAxis(false),
-	pointsDrawer(new osgutils::PointsDrawer(15)),
+	pointsDrawer(new osgutils::PointsDrawer(3)),
 	connectionsDrawer(new osgutils::ConnectionsSphereDrawer(3)),
 	localRootNode(new osg::PositionAttitudeTransform)
 {
