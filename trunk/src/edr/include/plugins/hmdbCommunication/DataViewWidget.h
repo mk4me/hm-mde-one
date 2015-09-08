@@ -98,6 +98,7 @@ private slots:
 	void onDownloadFinished();
 	void initializeShallowCopy();
 	void onContextMenu(QPoint position);
+	void onUpdateModifiedTrials();
 
 signals:
 
@@ -105,6 +106,7 @@ signals:
 	void operationAboutToStart();
 	void operationFinished();
 	void shallowCopyChanged();
+	void modifiedTrialsPresent();
 
 private:
 	static void extractItem(const QTreeWidgetItem * item, int & id, char & type);
@@ -131,6 +133,8 @@ private:
 	const QIcon statusIcon(const hmdbCommunication::DataStatus dataStatus);
 
 	void onSynchronize();
+	
+
 	void initializeActions();
 	void setDefaultPerspectiveHeaders();
 
@@ -140,6 +144,10 @@ private:
 		utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger);
 
 	void setupDownload(const hmdbCommunication::StorageFileNames & files);
+
+	
+	const hmdbCommunication::StorageFileNames filterModifiedTrialFiles(hmdbCommunication::IncrementalBranchShallowCopyConstPtr incShallowCopy);
+	bool isTrialLocal(const hmdbServices::IncrementalBranchShallowCopy::Trial& trial);
 
 private:
 	core::Thread remoteOperationThread;
@@ -153,6 +161,9 @@ private:
 	Ui::DataViewWidget * ui;
 	IOperationPtr operation_;
 	std::map<hmdbCommunication::DataStatus, QIcon> icons;
+
+	hmdbCommunication::StorageFileNames modifiedTrialsFiles;
 };
+
 
 #endif	// __HEADER_GUARD_HMDBCOMMUNICATION__DATAVIEWWIDGET_H__

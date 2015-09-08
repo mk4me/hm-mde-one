@@ -43,6 +43,7 @@ SET_PRIVATE_HEADERS(
 	HMDBServicesVerificationHelper.h
 	MemoryStorage.h
 	HMDBSourceViewManager.h
+	UpdateFilesDialog.h
 )
 
 SET_PUBLIC_HEADERS (
@@ -135,6 +136,7 @@ SET_SOURCE_FILES(
 	OperationProgressWidget.cpp
 	GeneralSourceViewWidget.cpp
 	DataViewConfigurationWidget.cpp
+	UpdateFilesDialog.cpp
 )
 
 SET_MOC_FILES(
@@ -153,6 +155,7 @@ SET_MOC_FILES(
 	OperationProgressWidget.h
 	GeneralSourceViewWidget.h
 	DataViewConfigurationWidget.h
+	UpdateFilesDialog.h
 )
 
 SET_UI_FILES(
@@ -167,6 +170,7 @@ SET_UI_FILES(
 	OperationProgressWidget.ui
 	GeneralSourceViewWidget.ui
 	DataViewConfigurationWidget.ui
+	UpdateFilesDialog.ui
 )
 
 SET_RC_FILES (

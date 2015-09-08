@@ -88,7 +88,6 @@ void AbstractSkeletonSerie::init(double ratio, int pointsCount,
 	//bodyplanes
 	initBodyPlanes();
 
-	//setAxis(true);
 
 	pointsAxesDrawer.setLength(0.1);
 	pointsAxesDrawer.init(skeleton->root());
@@ -220,7 +219,7 @@ void AbstractSkeletonSerie::initBodyPlanes()
 void AbstractSkeletonSerie::setAxis(bool xyz)
 {
 	//TODO - sprawdzic jak to dziala
-	//localRootNode->setAttitude(xyz == true ? invQXYZ : osg::Quat());
+	localRootNode->setAttitude(xyz == true ? invQXYZ : osg::Quat());
 
 	//localRootNode->computeLocalToWorldMatrix(lToW, nullptr);
 }

@@ -6,6 +6,7 @@
 #include <threadingUtils/StreamData.h>
 #include <kinematiclib/SkeletonState.h>
 #include "osgManipulator/TranslateAxisDragger"
+#include "KinematicVisualizer.h"
 
 
 SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer, const utils::TypeInfo & requestedType, const core::VariantConstPtr & data) :
@@ -20,7 +21,7 @@ SkeletonSerie::SkeletonSerie(KinematicVisualizer * visualizer, const utils::Type
 	int pointsCount =  skeletonWithStates->nodesMapping.data().left.size();
 	AbstractSkeletonSerie::init(ratio, pointsCount, skeleton, skeletonWithStates->nodesMapping);
 	setTime(0.0);
-	setAxis(true);
+	setAxis(visualizer->getAxisXYZ());
 }
 
 

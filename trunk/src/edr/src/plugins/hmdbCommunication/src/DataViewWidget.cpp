@@ -24,6 +24,7 @@
 #include "HMDBSourceContextOperations.h"
 #include <QtWidgets/QMenu>
 #include <corelib/PluginCommon.h>
+#include "UpdateFilesDialog.h"
 
 class OperationImpl : public DataViewWidget::IOperation
 {
@@ -228,6 +229,8 @@ DataViewWidget::DataViewWidget(hmdbCommunication::IHMDBShallowCopyContextPtr sha
 	}
 
 	QTimer::singleShot(0, this, SLOT(initializeShallowCopy()));
+
+	connect(this, SIGNAL(modifiedTrialsPresent()), this, SLOT(onUpdateModifiedTrials()), Qt::QueuedConnection);
 }
 
 DataViewWidget::~DataViewWidget()
@@ -1351,7 +1354,12 @@ void DataViewWidget::onSynchronizeFinished()
 	setRemoteOperationsEnabled(true);
 	emit operationFinished();
 	emit shallowCopyChanged();
+	if (!this->modifiedTrialsFiles.empty()) {
+		emit modifiedTrialsPresent();//updateModifiedTrials(mod);
+	}
 }
+
+
 
 void DataViewWidget::synchronize(hmdbCommunication::IHMDBShallowCopyRemoteContext::SynchronizeOperationPtr sOp,
 	utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger)
@@ -1363,6 +1371,11 @@ void DataViewWidget::synchronize(hmdbCommunication::IHMDBShallowCopyRemoteContex
 		rawFilterShallowCopy();
 	}
 
+	hmdbCommunication::StorageFileNames mod = filterModifiedTrialFiles(sOp->incrementalBranchShallowCopy());
+	if (!mod.empty()) {
+		this->modifiedTrialsFiles = mod;
+		//emit modifiedTrialsPresent();//updateModifiedTrials(mod);
+	}
 	tryRebuildDataStatus();
 	//onRefreshStatus();	
 	QMetaObject::invokeMethod(this, "onSynchronizeFinished", Qt::BlockingQueuedConnection);
@@ -1522,16 +1535,19 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 			shallowCopyContext_->shallowCopyDataContext()->dataStatusManager(), shallowCopyContext_->shallowCopyDataContext()->shallowCopy()));
 
 		core::Thread t = plugin::getThreadPool()->get("DataViewWidget", "Remote operation");				
-
+		
 		if (remoteOperationThread.joinable() == true){
 			remoteOperationThread.join();
 		}
-
+		
 		remoteOperationThread = std::move(t);
 			
 		operation_.reset(new OperationImpl(tr("Downloading"), op));
 		setRemoteOperationsEnabled(false);
 		emit operationAboutToStart();
+		
+		//core::Job<void> job(plugin::getJobManager()->create("DataViewWidget", "Download operation", &DataViewWidget::download, this, op, cursorChanger));
+		//job.start();
 		remoteOperationThread.run(&DataViewWidget::download, this, op, cursorChanger);
 	}
 	catch (...){
@@ -1761,3 +1777,50 @@ void DataViewWidget::onContextMenu(QPoint position)
 
 	menu.exec(ui->treeWidget->mapToGlobal(position));
 }
+
+
+void extractFiles(StorageFileNames & storageFiles,
+				  const hmdbServices::IncrementalBranchShallowCopy::Files & files)
+{
+	for (auto fit = files.begin(); fit != files.end(); ++fit) {
+		IHMDBRemoteContext::FileDescriptor fd;
+		fd.id.fileID = fit->fileID;
+		fd.fileName = fit->fileName;
+		fd.fileSize = fit->fileSize;
+		fd.id.dataReference = IHMDBRemoteContext::Motion;
+		storageFiles[fit->fileID] = fd;
+	}
+}
+
+const hmdbCommunication::StorageFileNames DataViewWidget::filterModifiedTrialFiles(IncrementalBranchShallowCopyConstPtr incShallowCopy)
+{
+	hmdbServices::IncrementalBranchShallowCopy::Files raws;
+	for (auto& trial : incShallowCopy->modified.trials) {
+		if (isTrialLocal(trial)) {
+			raws.insert(raws.end(), trial.addedFiles.begin(), trial.addedFiles.end());
+			raws.insert(raws.end(), trial.modifiedFiles.begin(), trial.modifiedFiles.end());
+		}
+	}
+	hmdbCommunication::StorageFileNames files;
+	extractFiles(files, raws);
+	return files;
+}
+
+bool DataViewWidget::isTrialLocal(const hmdbServices::IncrementalBranchShallowCopy::Trial& trial)
+{
+	auto transaction = shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->transaction();
+	auto status = transaction->dataStatus(hmdbCommunication::MotionType, trial.trialID).storage();
+	return status == hmdbCommunication::DataStatus::Local || status == hmdbCommunication::DataStatus::PartiallyLocal;
+}
+
+void DataViewWidget::onUpdateModifiedTrials()
+{
+	UpdateFilesDialog dlg(this, this->modifiedTrialsFiles);
+
+	if (dlg.exec() == QDialog::Accepted) {
+		setupDownload(this->modifiedTrialsFiles);
+	}
+}
+
+
+	

@@ -33,6 +33,7 @@ SET_PRIVATE_HEADERS(
 
 SET_PUBLIC_HEADERS (
 	Wrappers.h
+	IKinematicVisualizer.h
 )
 
 SET_SOURCE_FILES(

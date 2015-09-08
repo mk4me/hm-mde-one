@@ -29,6 +29,7 @@
 
 #include <coreui/CoreWidgetAction.h>
 #include "SchemeDialog.h"
+#include "plugins/kinematic/IKinematicVisualizer.h"
 
 class QDoubleSpinBox;
 
@@ -38,7 +39,7 @@ namespace coreUI {
 }
 
 /*! Klasa dostarcza scenę 3d i zarządza obiektami na niej */
-class KinematicVisualizer :  private QObject, public plugin::IVisualizer
+class KinematicVisualizer :  private QObject, public plugin::IVisualizer, public kinematic::IKinematicVisualizer
 {
 	// wszystkie możliwe serie przeniesione do osobnego pliku
 	//friend class GRFSerie;
@@ -102,6 +103,10 @@ public:
     virtual QPixmap takeScreenshot() const;
 	//! resetuje ustawienia sceny 3d
 	void resetScene();
+
+
+	virtual bool getAxisXYZ() const { return AxisXYZ; }
+	virtual void setAxisXYZ(bool val) { AxisXYZ = val; }
 
 private:
 
@@ -293,6 +298,8 @@ private:
     DraggerContainerPtr currentDragger;
     //! ostatnio ustawiony czas, pomocne przy odświeżaniu wizualizatora
     double lastTime;
+
+	bool AxisXYZ = false;
 };
 
 //! Klasa pomocnicza do obsługi komunikatów pochodzących od manipulatorów

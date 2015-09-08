@@ -38,6 +38,8 @@
 #include <plugins/hmdbCommunication/DataSourcePerspective.h>
 #include <plugins/hmdbCommunication/DataSourceDefaultContent.h>
 #include "plugins/hmdbCommunication/SourceOptionsWidget.h"
+#include "plugins/kinematic/IKinematicVisualizer.h"
+#include "corelib/IVisualizerManager.h"
 
 using namespace core;
 
@@ -214,6 +216,13 @@ void MdeMainWindow::customViewInit(QWidget * log)
         if (filterProvider) {
             analysisModel->addFilterBundles(filterProvider->getFilterBundles());
         }
+   }
+   // hack, modyfikuje prototyp, zeby ustalic osie w tworzonych wizualizatorach, moze warto pomyslec o konfiguracjach?
+   auto visManager = plugin::getVisualizerManager();
+   auto proto = visManager->getVisualizerPrototype(core::UID::GenerateUniqueID("{E8B5DEB2-5C57-4323-937D-1FFD288B65B9}"));
+   auto kinematicProto = dynamic_cast<kinematic::IKinematicVisualizer*>(const_cast<plugin::IVisualizer*>(proto->visualizer()));
+   if (kinematicProto) {
+		kinematicProto->setAxisXYZ(true);
    }
 
    emit modelChanged();

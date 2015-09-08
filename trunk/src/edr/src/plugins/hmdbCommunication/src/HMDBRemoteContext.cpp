@@ -82,6 +82,7 @@ const std::list<IHMDBRemoteContext::DownloadOperationPtr> HMDBRemoteContext::pre
 			fd.id.fileID = ShallowCopyUtils::IncrementalShallowCopyFileID;
 			fd.fileName = ShallowCopyUtils::shallowCopyName(userHash, fd.id.dataReference, ShallowCopyUtils::IncrementalShallow);
 			utils::shared_ptr<MemoryTransferIO> ptoOp(new MemoryTransferIO());
+			//auto since2 = hmdbServices::DateTime(2015, 9, 1);
 			utils::shared_ptr<PrepareHMDB> pftdOp(new PrepareHMDB(session_->motionFilestoreman(), fd.id.fileID, since));
 			downloads.push_back(IHMDBRemoteContext::DownloadOperationPtr(new FileDownload(fd, pftdOp, ptoOp, session_->motionFtp())));			
 		}

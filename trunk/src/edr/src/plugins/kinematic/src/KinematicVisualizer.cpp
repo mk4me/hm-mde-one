@@ -29,7 +29,9 @@ KinematicVisualizer::KinematicVisualizer() :
 
 plugin::IVisualizer* KinematicVisualizer::create() const
 {
-    return new KinematicVisualizer();
+	auto kv = new KinematicVisualizer();
+	kv->setAxisXYZ(getAxisXYZ());
+	return kv;
 }
 
 void KinematicVisualizer::getSupportedTypes(utils::TypeInfoList & supportedTypes) const
