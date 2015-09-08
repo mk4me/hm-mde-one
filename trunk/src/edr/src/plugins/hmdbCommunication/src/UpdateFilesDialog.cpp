@@ -13,4 +13,5 @@ UpdateFilesDialog::UpdateFilesDialog(QWidget* parent, const hmdbCommunication::S
 	}
 	model.setStringList(list);
 	tableView->setModel(&model);
+	tableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
 }
