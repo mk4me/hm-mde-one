@@ -49,12 +49,12 @@ void C3DParser::initObjects(utils::ObjectsVector & objects)
 void C3DParser::parse( const std::string & source  )
 {
 	core::Filesystem::Path path(source);
-	parserPtr = utils::make_shared<c3dlib::C3DParser>();
+	c3dlib::C3DParser parser;
 
     std::vector<std::string> files;
     files.push_back(path.string());
 	std::string importWarnings;
-    parserPtr->importFrom(files, importWarnings);
+    parser.importFrom(files, importWarnings);
 
 	utils::ObjectsVector localData;
 
@@ -63,10 +63,10 @@ void C3DParser::parse( const std::string & source  )
     // wczytanie danych analogowych
 	c3dlib::GRFCollectionPtr grfs(new c3dlib::GRFCollection());
 	c3dlib::EMGCollectionPtr e(new c3dlib::EMGCollection());
-    if (parserPtr->getNumAnalogs() == 28)
+    if (parser.getNumAnalogs() == 28)
     {
         for (int i = 0; i < 4; ++i) {
-			c3dlib::GRFChannelPtr ptr(new c3dlib::GRFChannel(*parserPtr, i));
+			c3dlib::GRFChannelPtr ptr(new c3dlib::GRFChannel(parser, i));
             localData[i]->set(ptr);			
             grfs->addChannel(ptr);
         }
@@ -74,7 +74,7 @@ void C3DParser::parse( const std::string & source  )
 		localData[20]->set(grfs);        
 
         for (int i = 12; i < 28; ++i) {
-			c3dlib::EMGChannelPtr ptr(new c3dlib::EMGChannel(*parserPtr, i));
+			c3dlib::EMGChannelPtr ptr(new c3dlib::EMGChannel(parser, i));
             localData[4+i-12]->set(ptr);			
             e->addChannel(ptr);
         }
@@ -83,17 +83,17 @@ void C3DParser::parse( const std::string & source  )
     }
 
     // wczytanie eventów
-	int count = parserPtr->getNumEvents();
+	int count = parser.getNumEvents();
 	c3dlib::EventsCollectionPtr allEventsCollection(new c3dlib::C3DEventsCollection());
 	for (int i = 0; i < count; ++i) {
-		c3dlib::C3DParser::IEventPtr event = parserPtr->getEvent(i);
+		c3dlib::C3DParser::IEventPtr event = parser.getEvent(i);
 		c3dlib::C3DEventsCollection::EventPtr e(event->clone());
         allEventsCollection->addEvent(e);
 	}
     
 	localData[22]->set(allEventsCollection);	
 
-	c3dlib::MovieDelaysPtr delays = utils::make_shared<c3dlib::MovieDelays>(parserPtr->getMovieDelays());
+	c3dlib::MovieDelaysPtr delays = utils::make_shared<c3dlib::MovieDelays>(parser.getMovieDelays());
 	localData[23]->set(delays);	
 
     // wczytanie plików *vsk, które dostarczaja opis do markerów
@@ -116,27 +116,27 @@ void C3DParser::parse( const std::string & source  )
 	localData[27]->set(moments);
 	localData[28]->set(powers);	
 
-	int markersCount = parserPtr->getNumPoints();
+	int markersCount = parser.getNumPoints();
 	for (int i = 0; i < markersCount; ++i) {
-		switch (parserPtr->getPoint(i)->getType()) {
+		switch (parser.getPoint(i)->getType()) {
 			case c3dlib::C3DParser::IPoint::Angle: {
-				c3dlib::AngleChannelPtr ptr(new c3dlib::AngleChannel(*parserPtr, i));
+				c3dlib::AngleChannelPtr ptr(new c3dlib::AngleChannel(parser, i));
                 angles->addChannel(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Marker: {
-				c3dlib::MarkerChannelPtr ptr(new c3dlib::MarkerChannel(*parserPtr, i));
+				c3dlib::MarkerChannelPtr ptr(new c3dlib::MarkerChannel(parser, i));
                 markers->addChannel(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Force: {
-				c3dlib::ForceChannelPtr ptr(new c3dlib::ForceChannel(*parserPtr, i));
+				c3dlib::ForceChannelPtr ptr(new c3dlib::ForceChannel(parser, i));
                 forces->addChannel(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Moment: {
-				c3dlib::MomentChannelPtr ptr(new c3dlib::MomentChannel(*parserPtr, i));
+				c3dlib::MomentChannelPtr ptr(new c3dlib::MomentChannel(parser, i));
                 moments->addChannel(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Power: {
-				c3dlib::PowerChannelPtr ptr(new c3dlib::PowerChannel(*parserPtr, i));
+				c3dlib::PowerChannelPtr ptr(new c3dlib::PowerChannel(parser, i));
                 powers->addChannel(ptr);
             } break;
 		}
@@ -144,7 +144,7 @@ void C3DParser::parse( const std::string & source  )
 
     try {
 		c3dlib::IForcePlatformCollection platforms;
-        auto parsedPlatforms = parserPtr->getForcePlatformsStruct();
+        auto parsedPlatforms = parser.getForcePlatformsStruct();
         int count = static_cast<int>(parsedPlatforms.size());
         for (int i = 0; i < count;  ++i) {
 			c3dlib::ForcePlatformPtr fp(new c3dlib::ForcePlatform(parsedPlatforms[i]));
@@ -206,11 +206,4 @@ void C3DParser::acceptedExpressions(Expressions & expressions) const
 	}	
 
     expressions.insert(Expressions::value_type(".*\\.c3d$", expDesc));
-}
-
-void C3DParser::saveFile( const core::Filesystem::Path& path )
-{
-	if (parserPtr) {
-		parserPtr->save(path.string());
-	}
 }

@@ -25,6 +25,7 @@ class QTreeWidget;
 class QTreeWidgetItem;
 class QCheckBox;
 class QPushButton;
+class KinematicVisualizer;
 
 //! Dialog Qt służący do zarządzania widocznościa elementów na scenie
 class SchemeDialog : public QDialog//, private Ui::TrajectoriesDialog
@@ -33,7 +34,7 @@ class SchemeDialog : public QDialog//, private Ui::TrajectoriesDialog
 public:
     //! Kontruktor widgeta
     //! \param parent parent dialogu
-	SchemeDialog(QWidget* parent);
+	SchemeDialog(QWidget* parent, KinematicVisualizer * visualizer);
 
 public:
     //! Dodanie do dialogu drawera, który będzie modyfikowany
@@ -88,6 +89,7 @@ private:
 
 	QTreeWidget * pointsTree;
 	QTreeWidget * connectionsTree;
+	KinematicVisualizer * visualizer;
 };
 
 

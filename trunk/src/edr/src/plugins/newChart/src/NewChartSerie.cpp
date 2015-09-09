@@ -60,6 +60,7 @@ void NewChartSerie::update() {
 
 void NewChartSerie::setTime(double time) {
 	this->time = time;
+	requestUpdate();
 }
 
 void NewChartSerie::setZ(double z, bool replot) {

@@ -32,6 +32,7 @@
 #include "plugins/kinematic/IKinematicVisualizer.h"
 
 class QDoubleSpinBox;
+class AbstractSkeletonSerie;
 
 namespace coreUI {
 	class CoreAction;
@@ -45,6 +46,7 @@ class KinematicVisualizer :  private QObject, public plugin::IVisualizer, public
 	//friend class GRFSerie;
 	friend class MarkerSerie;
 	friend class SkeletonSerie;
+	friend class AbstractSkeletonSerie;
 	//friend class SkeletonSerie2;
     friend class KinematicDraggerCallback;
     typedef osg::ref_ptr<osg::Geode> GeodePtr;
@@ -56,6 +58,25 @@ class KinematicVisualizer :  private QObject, public plugin::IVisualizer, public
 private:
 
 	typedef std::pair<coreUI::CoreLabeledWidget*, QDoubleSpinBox*> LabeledDoubleSpinBox;
+
+public:
+
+	class UpdateProxy
+	{
+	public:
+		UpdateProxy(KinematicVisualizer * visualizer) : visualizer(visualizer) {}
+		UpdateProxy(UpdateProxy && Other) : visualizer(Other.visualizer)
+		{
+			Other.visualizer = nullptr;
+		}
+
+		~UpdateProxy() { if(visualizer != nullptr) visualizer->requestUpdate(); }
+
+		KinematicVisualizer* operator->() { return visualizer; }
+
+	private:
+		KinematicVisualizer * visualizer;
+	};
 
 public:
     KinematicVisualizer();
@@ -113,7 +134,7 @@ private:
 	void updateIndicator();
 
     //! \return węzeł z siatką reprezentującą podlogę
-    osg::ref_ptr<osg::Group> createFloor();
+    osg::Node* createFloor();
     //! \return aktywna seria, o ile taka została wybrana
     KinematicSerieBase* tryGetCurrentSerie();
 	plugin::IVisualizer::ISerie* tryGetCurrentISerie();

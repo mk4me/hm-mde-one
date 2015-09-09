@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include "SkeletonStreamSerie.h"
+#include "KinematicVisualizer.h"
 #include <osgutils/OsgSchemeDrawer.h>
 #include "TrajectoriesDrawer.h"
 #include "SkeletalVisualizationSchemeHelper.h"

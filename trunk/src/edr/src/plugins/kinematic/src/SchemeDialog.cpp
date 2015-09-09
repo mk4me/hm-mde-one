@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include "SchemeDialog.h"
+#include "KinematicVisualizer.h"
 #include <osgutils/OsgSchemeDrawer.h>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QTreeWidget>
@@ -7,8 +8,8 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QVBoxLayout>
 
-SchemeDialog::SchemeDialog( QWidget* parent) :
-QDialog(parent), autoHideSegments(new QCheckBox(tr("Auto-hide connected segments"), this))
+SchemeDialog::SchemeDialog(QWidget* parent, KinematicVisualizer * visualizer) :
+QDialog(parent), visualizer(visualizer), autoHideSegments(new QCheckBox(tr("Auto-hide connected segments"), this))
 {
 
 	auto ml = new QVBoxLayout;
@@ -193,6 +194,8 @@ void SchemeDialog::visibilityChanged( bool visible )
 					}
 				}
 			}
+
+			visualizer->requestUpdate();
         }
 	}
 }
@@ -253,6 +256,8 @@ void SchemeDialog::pointItemChanged(QTreeWidgetItem * item, int column)
 				}
 			}
 		}
+
+		visualizer->requestUpdate();
 	}
 }
 
@@ -260,5 +265,6 @@ void SchemeDialog::connectionItemChanged(QTreeWidgetItem * item, int column)
 {
 	if (column == 0){
 		connectionItem2Drawer[item].first->setVisible(connectionItem2Drawer[item].second, item->checkState(0) == Qt::Checked ? true : false);
+		visualizer->requestUpdate();
 	}
 }

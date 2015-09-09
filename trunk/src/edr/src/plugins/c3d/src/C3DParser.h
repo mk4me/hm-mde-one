@@ -21,12 +21,9 @@ class C3DParser : public plugin::ISourceParser
 {
     UNIQUE_ID("{D7801231-BACA-42C6-9A8E-706F561A563F}")
 	CLASS_DESCRIPTION("C3D parser", "C3D parser")
-	typedef utils::shared_ptr<c3dlib::C3DParser> ParserPtr;
 private:
 	//! Dane parsera po parsowaniu
 	utils::ObjectsVector data;
-    //! wskaźnik do właściwego parsera z biblioteki c3dlib
-	ParserPtr parserPtr;
 	std::string path;
 
 private:
@@ -47,9 +44,6 @@ public:
     //! Zwraca rozszerzenia, które są obsługiwane przez parser (tylko c3d)
     //! \param extensions kolecja z roszerzeniami
     virtual void acceptedExpressions(Expressions & expressions) const;
-	//! Zapisauje dane w konkretnym miejscu, nie używane
-	//! \param path ścieżka zapisu
-	void saveFile(const core::Filesystem::Path& path);
 	virtual void reset();
 };
 

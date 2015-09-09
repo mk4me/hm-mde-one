@@ -10,7 +10,9 @@ namespace osgutils
 
 osg::Vec3Array * convert(const std::vector<osg::Vec3> & input)
 {
-	return new osg::Vec3Array(input.begin(), input.end());
+	auto ret = new osg::Vec3Array(input.begin(), input.end());
+	ret->setDataVariance(osg::Object::STATIC);
+	return ret;
 }
 
 class PointInstance
@@ -45,15 +47,20 @@ const std::vector<utils::shared_ptr<PointInstance>> PointInstance::createPointsS
 	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
 	stateset->setMode( GL_LIGHTING, osg::StateAttribute::ON );
 	stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
+	stateset->setDataVariance(osg::Object::STATIC);
     
+	auto geode = new osg::Geode;
+	geode->setStateSet(stateset);
+	auto sphere = osgutils::CustomPrimitivesFactory::createSphere(complexity, 1.0, osg::Vec4(0.5, 0.5, 0.5, 0.5));
+	geode->addDrawable(sphere.geom);
+	auto pat = new osg::PositionAttitudeTransform;
+	pat->addChild(geode);
+
 	for(unsigned int i = 0; i < pointsNum; ++i){
 		utils::shared_ptr<PointInstance> lpi(new PointInstance);
-        lpi->sphere = osgutils::CustomPrimitivesFactory::createSphere(complexity, 1.0, osg::Vec4(0.5, 0.5, 0.5, 0.5));
-		lpi->geode = new osg::Geode;
-		lpi->geode->setStateSet(stateset);
-		lpi->posAtt = new osg::PositionAttitudeTransform;
-		lpi->geode->addDrawable(lpi->sphere.geom);
-		lpi->posAtt->addChild(lpi->geode);
+		lpi->sphere = sphere;
+		lpi->geode = geode;
+		lpi->posAtt = dynamic_cast<osg::PositionAttitudeTransform*>(pat->clone(osg::CopyOp::SHALLOW_COPY));
 		ret[i] = lpi;
 	}
 
@@ -242,18 +249,36 @@ const std::vector<utils::shared_ptr<ConnectionSphereInstance>> ConnectionSphereI
 	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
 	stateset->setMode( GL_LIGHTING, osg::StateAttribute::ON );
 	stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
+	stateset->setDataVariance(osg::Object::STATIC);
+
+	auto sphere = osgutils::CustomPrimitivesFactory::createSphere(complexity, 1, osg::Vec4(0.5, 0.5, 0.5, 0.5));
+	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+	geode->setStateSet(stateset);
+	geode->addDrawable(sphere.geom);
+	osg::ref_ptr<osg::PositionAttitudeTransform> pat = new osg::PositionAttitudeTransform;
+	pat->addChild(geode);
 
 	for(unsigned int i = 0; i < connections.size(); ++i){
 		utils::shared_ptr<ConnectionSphereInstance> lci(new ConnectionSphereInstance);
 		lci->connectionIndices = connections[i].range;
 		float r = connections[i].length / 2;
-		lci->sphere = osgutils::CustomPrimitivesFactory::createSphere(complexity, r > 0 ? r : 0.001, osg::Vec4(0.5, 0.5, 0.5, 0.5));
-		lci->geode = new osg::Geode;
-		lci->geode->setStateSet(stateset);
-		lci->posAtt = new osg::PositionAttitudeTransform;
-		lci->posAtt->setScale(osg::Vec3(0.3, 0.3, 1.0));
-		lci->geode->addDrawable(lci->sphere.geom);
-		lci->posAtt->addChild(lci->geode);		
+
+		r = std::max(r, 0.001f);
+
+		/*auto vertices = dynamic_cast<osg::Vec3Array*>(sphere.geomBase.verticies->clone(osg::CopyOp::DEEP_COPY_ALL));
+
+		for (auto & v : *vertices)
+		{
+			v *= r;
+		}*/		
+
+		lci->sphere = sphere;
+		//lci->sphere.geomBase.verticies = vertices;
+		//lci->sphere.geom = dynamic_cast<osg::Geometry*>(sphere.geom->clone(osg::CopyOp::SHALLOW_COPY));
+		//lci->sphere.geom->setVertexArray(vertices);
+		lci->geode = geode;
+		lci->posAtt = dynamic_cast<osg::PositionAttitudeTransform*>(pat->clone(osg::CopyOp::SHALLOW_COPY));
+		lci->posAtt->setScale(osg::Vec3(0.3, 0.3, 1.0) * r);		
 		ret[i] = lci;
 	}
 
@@ -314,29 +339,46 @@ void ConnectionsSphereDrawer::init(const SegmentsDescriptors & connections)
 	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
 	stateset->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 	stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
-	osg::ref_ptr<osg::Switch> tmpNode(new osg::Switch);
+	stateset->setDataVariance(osg::Object::STATIC);
+
+	osg::ref_ptr<osg::Switch> tmpNode(new osg::Switch);	
+	std::vector<utils::shared_ptr<ConnectionSphereInstance>> tmpConnections;
+
+	auto sphere = osgutils::CustomPrimitivesFactory::createSphere(3, 1, osg::Vec4(0.5, 0.5, 0.5, 0.5));
+	osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+	geode->setStateSet(stateset);
+	geode->addDrawable(sphere.geom);
+	osg::ref_ptr<osg::PositionAttitudeTransform> pat = new osg::PositionAttitudeTransform;
+	pat->addChild(geode);
+
 	for (unsigned int i = 0; i < connections.size(); ++i){
 		utils::shared_ptr<ConnectionSphereInstance> lci(new ConnectionSphereInstance);
 		lci->connectionIndices = connections[i].range;
 		float r = connections[i].length / 2;
-		lci->sphere = osgutils::CustomPrimitivesFactory::createSphere(3, r > 0 ? r : 0.001, osg::Vec4(0.5, 0.5, 0.5, 0.5)); //new osg::Sphere(osg::Vec3(), r > 0 ? r : 0.001);
-		//osg::ShapeDrawable* sd = new osg::ShapeDrawable(lci->sphere);
-		lci->geode = new osg::Geode();
-		lci->geode->addDrawable(lci->sphere.geom);//sd);
-		lci->posAtt = new osg::PositionAttitudeTransform;
-		lci->posAtt->setScale(osg::Vec3(0.3, 0.3, 1.0));
-		lci->posAtt->addChild(lci->geode);
-		//ret[i] = sd;
-		connectionsInstances.push_back(lci);
+		r = std::max(r, 0.001f);
+
+		/*auto vertices = dynamic_cast<osg::Vec3Array*>(sphere.geomBase.verticies->clone(osg::CopyOp::DEEP_COPY_ALL));
+
+		for (auto & v : *vertices)
+		{
+			v *= r;
+		}*/
+
+		lci->sphere = sphere;
+		//lci->sphere.geomBase.verticies = vertices;
+		//lci->sphere.geom = dynamic_cast<osg::Geometry*>(sphere.geom->clone(osg::CopyOp::SHALLOW_COPY));
+		//lci->sphere.geom->setVertexArray(vertices);
+		lci->geode = geode;
+		lci->posAtt = dynamic_cast<osg::PositionAttitudeTransform*>(pat->clone(osg::CopyOp::SHALLOW_COPY));
+		lci->posAtt->setScale(osg::Vec3(0.3, 0.3, 1.0) * r);		
+		tmpConnections.push_back(lci);
 		tmpNode->addChild(lci->posAtt, true);
 	}
-
-	
 
 	/*for(unsigned int i = 0; i < locConnsInst.size(); ++i){		
 		tmpNode->addChild(locConnsInst[i]->posAtt, true);
 	}*/
-
+	std::swap(connectionsInstances, tmpConnections);
 	std::swap(node, tmpNode);
 }
 
@@ -447,11 +489,13 @@ void TrajectorySchemeDrawer::init(const std::vector<osg::Vec3> & points)
 	tmpTrajectory->lineWidth = new osg::LineWidth(2.0);
 	tmpTrajectory->da = new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP, 0, points.size());
 	tmpTrajectory->geom = new osg::Geometry;
-
+	//tmpTrajectory->geom->setUseDisplayList(false);
+	//tmpTrajectory->geom->setUseVertexBufferObjects(true);
 	tmpTrajectory->geom->setVertexArray(convert(points));
 	tmpTrajectory->geom->setColorArray(tmpTrajectory->colors);
 	tmpTrajectory->geom->setColorBinding(osg::Geometry::BIND_OVERALL);
 	tmpTrajectory->geom->addPrimitiveSet(tmpTrajectory->da);
+	tmpTrajectory->geom->setDataVariance(osg::Object::DYNAMIC);
 
 	osg::StateSet * ss;
 
@@ -459,16 +503,19 @@ void TrajectorySchemeDrawer::init(const std::vector<osg::Vec3> & points)
 		ss = dynamic_cast<osg::StateSet*>(trajectory->geom->getStateSet()->clone(osg::CopyOp::SHALLOW_COPY));
 	}else{
 		ss = tmpTrajectory->geom->getOrCreateStateSet();
-		ss->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-		ss->setMode( GL_BLEND, osg::StateAttribute::ON );
-		ss->setMode( GL_LINE_SMOOTH, osg::StateAttribute::ON );
-		ss->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
 	}
+
+	ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+	ss->setMode(GL_BLEND, osg::StateAttribute::ON);
+	ss->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
+	ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+	ss->setDataVariance(osg::Object::STATIC);
 
 	ss->setAttribute(tmpTrajectory->lineWidth);
 
 	tmpTrajectory->geode = new osg::Geode;
 	tmpTrajectory->geode->addDrawable(tmpTrajectory->geom);
+	tmpTrajectory->geode->setStateSet(ss);
 	
 	std::swap(trajectory, tmpTrajectory);
 }
@@ -770,23 +817,20 @@ void GhostSchemeDrawer::init(const std::vector<std::vector<osg::Vec3>> & points,
 
 		for(unsigned int j = 0; j < tmpGhost->pointsInstances.size(); ++j){		
 
-			auto pat = dynamic_cast<osg::PositionAttitudeTransform*>(tmpGhost->pointsInstances[j]->posAtt->clone(osg::CopyOp::SHALLOW_COPY));
+			auto pat = dynamic_cast<osg::PositionAttitudeTransform*>(tmpGhost->pointsInstances[0]->posAtt->clone(osg::CopyOp::SHALLOW_COPY));
 			pat->setPosition(points[i][j]);
 			tmpGhost->frames[i].first.push_back(pat);
-			//tmpGhost->node->addChild(pat);
+			tmpGhost->node->addChild(pat);
 		}
 
 		for(unsigned int j = 0; j < tmpGhost->connectionsInstances.size(); ++j){
 
-			auto pat = dynamic_cast<osg::PositionAttitudeTransform*>(tmpGhost->connectionsInstances[j]->posAtt->clone(osg::CopyOp::SHALLOW_COPY));			
+			auto pat = dynamic_cast<osg::PositionAttitudeTransform*>(tmpGhost->connectionsInstances[j]->posAtt->clone(osg::CopyOp::SHALLOW_COPY));
 			ConnectionSphereInstance::updatePositionOrientation(points[i][tmpGhost->connectionsInstances[j]->connectionIndices.first],
 				points[i][tmpGhost->connectionsInstances[j]->connectionIndices.second], pat);
 			tmpGhost->frames[i].second.push_back(pat);
-
 			tmpGhost->node->addChild(pat);
-
 		}
-
 	}
 
 	GhostInstance::Frame cF;
@@ -809,7 +853,7 @@ void GhostSchemeDrawer::init(const std::vector<std::vector<osg::Vec3>> & points,
 	}
 
 	tmpGhost->frames.back().second = cF;
-
+	tmpGhost->node->setDataVariance(osg::Object::STATIC);
 	std::swap(ghostInstance, tmpGhost);
 }
 

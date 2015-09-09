@@ -109,8 +109,8 @@ QOsgContextWidget(parent, traits, f), skipFramesIfInvisible(true)
 
 void QOsgViewer::init()
 {
-    setThreadingModel(osgViewer::Viewer::SingleThreaded);
-
+	setThreadingModel(osgViewer::Viewer::SingleThreaded);
+	setRunFrameScheme(osgViewer::ViewerBase::ON_DEMAND);
     int width = getGraphicsWindow()->getTraits()->width;
     int height = getGraphicsWindow()->getTraits()->height;
 
@@ -125,8 +125,8 @@ void QOsgViewer::init()
     frameTimer.start();
 }
 
-void QOsgViewer::paintGL()
-{
+//void QOsgViewer::paintGL()
+//{
 //     // rysujemy tylko gdy event pochodzi z timera
 //     if ( isTimerActive() ) {
 //         if ( !skipFramesIfInvisible || (isVisible() && !isHidden()) ) {
@@ -137,7 +137,7 @@ void QOsgViewer::paintGL()
 //     } else {
 //         int debuggable = 0;
 //     }
-}
+//}
 
 //! \param camera
 osg::GraphicsOperation* QOsgViewer::createRenderer(osg::Camera* camera)
@@ -173,7 +173,30 @@ QOsgViewer::~QOsgViewer()
 void QOsgViewer::paintEvent( QPaintEvent* event )
 {
     if ( !skipFramesIfInvisible || (isVisible() && !isHidden()) ) {
-        frame();
+		//frame();
+		
+		// avoid excessive CPU loading when no frame is required in ON_DEMAND mode
+		if (getRunFrameScheme() == osgViewer::ViewerBase::ON_DEMAND)
+		{			
+			if (_lastFrameStartTime.time_s() < 0.01)
+				return;
+		}
+
+		// record start frame time
+		_lastFrameStartTime.setStartTick();
+
+		// make frame
+		if (getRunFrameScheme() == osgViewer::ViewerBase::ON_DEMAND)
+		{
+			if (checkNeedToDoFrame())
+			{
+				frame();
+			}
+		}
+		else
+		{
+			frame();
+		}
     }
     // if ( isTimerActive() ) {
     //     if ( !skipFramesIfInvisible || ( isVisible() && !isHidden() )  ) {

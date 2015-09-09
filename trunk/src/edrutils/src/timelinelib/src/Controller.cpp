@@ -1,10 +1,12 @@
 #include <timelinelib/Controller.h>
 
+static const unsigned int DefaultDelay = 1000000 / 60;
+
 namespace timeline {
 
 Controller::Controller() : IController(&dirtyState),
     model(new Model()), constModel(model), timeUpdateMode(AsynchTimeUpdate),
-    playbackDirection(PlayForward), timer(new Timer(40000)),
+	playbackDirection(PlayForward), timer(new Timer(DefaultDelay)),
     timeGenerator(&Controller::forwardTimeUpdate)
 {
     timer->setController(this);

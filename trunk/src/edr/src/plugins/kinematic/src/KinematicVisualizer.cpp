@@ -109,6 +109,7 @@ plugin::IVisualizer::ISerie *KinematicVisualizer::createSerie(const utils::TypeI
     }
 
     refreshSpinboxes();
+	//widget->requestRedraw();
     return dynamic_cast<plugin::IVisualizer::ISerie*>(ret);
 }
 
@@ -130,17 +131,27 @@ void KinematicVisualizer::removeSerie(plugin::IVisualizer::ISerie *serie)
 
     transformNode->removeChild((*it)->getMatrixTransformNode());
     series.erase(it);
+	//widget->requestRedraw();
+}
+
+void KinematicVisualizer::requestUpdate()
+{
+	innerUpdate = true;
+}
+
+bool KinematicVisualizer::innerUpdateRequired()
+{
+	return innerUpdate.exchange(false);
 }
 
 QWidget* KinematicVisualizer::createWidget()
 {
-	//osg::DisplaySettings::instance()->setNumMultiSamples( 8 );
+	osg::DisplaySettings::instance()->setNumMultiSamples( 8 );
 
     widget = new osgui::QOsgDefaultWidget();
-    //widget->setTimerActive(true);
 
-    trajectoriesDialog = new TrajectoriesDialog(widget);
-    schemeDialog = new SchemeDialog(widget);    
+    trajectoriesDialog = new TrajectoriesDialog(widget, this);
+    schemeDialog = new SchemeDialog(widget, this);    
 
     widget->addEventHandler(new osgGA::StateSetManipulator(
         widget->getCamera()->getOrCreateStateSet()
@@ -156,7 +167,7 @@ QWidget* KinematicVisualizer::createWidget()
     light->setAmbient(osg::Vec4(0.0f, 0.0f, 0.0f, 1.0f));
     light->setDiffuse(osg::Vec4(1.0f,1.0f,1.0f,0.0f));
     light->setConstantAttenuation(1.0f);
-
+	light->setDataVariance(osg::Object::STATIC);
     widget->setLight(light);
     // tworzenie kamery
     widget->getCamera()->setClearColor(osg::Vec4(0.0f, 0.0f, 0.1f, 1));
@@ -290,13 +301,13 @@ QWidget* KinematicVisualizer::createWidget()
 
     indicatorNode = createIndicator();
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 
 	//dodajemy tez event handler ze statystykami
 	widget->addEventHandler( new osgViewer::StatsHandler() );
 	//widget->setTimerActive(true);
 
-#endif
+//#endif
 
 	widget->setFocusPolicy(Qt::StrongFocus);
 
@@ -323,7 +334,7 @@ QWidget* KinematicVisualizer::createWidget()
 
 
 	resetScene();
-
+	//widget->requestRedraw();
 	widget->show();
     return widget;
 }
@@ -337,47 +348,51 @@ coreUI::CoreWidgetAction * KinematicVisualizer::createWidgetAction(QWidget * wid
 
 void KinematicVisualizer::update( double deltaTime )
 {
+	if (deltaTime > 0.0){
+		auto s = tryGetCurrentISerie();
 
-	for(auto it = series.begin(); it != series.end(); ++it){
-		(dynamic_cast<plugin::IVisualizer::ISerie*>(*it))->tryUpdate();
-	}
+		if (s != nullptr) {
+			auto serie = dynamic_cast<KinematicSerieBase*>(s);
+			if (currentDragger && serie) {
 
-	auto s = tryGetCurrentISerie();
+				//auto bs = serie->getMatrixTransformNode()->getBound();
 
-	if(s != nullptr) {
-		auto serie = dynamic_cast<KinematicSerieBase*>(s);
-		if (currentDragger && serie) {
+				//bs.center().z() + bs.radius() * 1.05
 
-			//auto bs = serie->getMatrixTransformNode()->getBound();
+				currentDragger->setDraggerPivot(osg::Vec3(
+					translateSpinWidgetX.second->value(),
+					translateSpinWidgetY.second->value(),
+					translateSpinWidgetZ.second->value()));
+			}
 
-			//bs.center().z() + bs.radius() * 1.05
+			updateIndicator();
 
-			currentDragger->setDraggerPivot(osg::Vec3(
-				translateSpinWidgetX.second->value(),
-				translateSpinWidgetY.second->value(),
-				translateSpinWidgetZ.second->value()));
+			refreshSpinboxes();
+			widget->requestRedraw();
 		}
-
-		updateIndicator();
-
-		refreshSpinboxes();	
+	}
+	else{
+		widget->requestRedraw();
 	}
 }
 
-osg::ref_ptr<osg::Group> KinematicVisualizer::createFloor()
-{
-	osg::ref_ptr<osg::Group> group = new osg::Group;
+osg::Node* KinematicVisualizer::createFloor()
+{	
 	osg::ref_ptr<osg::StateSet> stateset = new osg::StateSet;
     stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );	
 	stateset->setMode( GL_BLEND, osg::StateAttribute::ON );
 	stateset->setMode( GL_LINE_SMOOTH, osg::StateAttribute::ON );
 	stateset->setRenderingHint( osg::StateSet::TRANSPARENT_BIN );
+	stateset->setDataVariance(osg::Object::STATIC);
 	osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
 	colors->push_back(osg::Vec4(0.05f, 0.05f, 0.3f, 1.0f));
+	colors->setDataVariance(osg::Object::STATIC);
 
-    GeodePtr geode = new osg::Geode();
+    osg::Geode* geode = new osg::Geode();
     // todo sparametryzować
     osg::ref_ptr<osg::Geometry> linesGeom = new osg::Geometry();
+	//linesGeom->setUseDisplayList(false);
+	//linesGeom->setUseVertexBufferObjects(true);
 
 	float length = 3.5f;
 
@@ -395,17 +410,21 @@ osg::ref_ptr<osg::Group> KinematicVisualizer::createFloor()
     }
 
     linesGeom->setVertexArray(vertices);
-    linesGeom->setDataVariance(osg::Object::DYNAMIC);
+    linesGeom->setDataVariance(osg::Object::STATIC);
     geode->setStateSet(stateset);
+	geode->setDataVariance(osg::Object::STATIC);
     linesGeom->setColorArray(colors);
     linesGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
 
     linesGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, 44));
 
-    geode->addDrawable(linesGeom);
-	group->addChild(geode);
-
-    return group;
+    geode->addDrawable(linesGeom);	
+	
+	stateset->setDataVariance(osg::Object::STATIC);
+	geode->setDataVariance(osg::Object::STATIC);
+	linesGeom->setDataVariance(osg::Object::STATIC);
+	vertices->setDataVariance(osg::Object::STATIC);	
+    return geode;
 }
 
 QIcon* KinematicVisualizer::createIcon()
@@ -429,6 +448,7 @@ void KinematicVisualizer::setRight()
 	this->cameraManipulator->setHeading(osg::DegreesToRadians(-90.0));
 	this->cameraManipulator->setElevation(0);
 	this->cameraManipulator->setDistance(8);
+	requestUpdate();
 }
 
 void KinematicVisualizer::setLeft()
@@ -436,6 +456,7 @@ void KinematicVisualizer::setLeft()
 	this->cameraManipulator->setHeading(osg::DegreesToRadians(90.0));
 	this->cameraManipulator->setElevation(0);
 	this->cameraManipulator->setDistance(8);
+	requestUpdate();
 }
 
 void KinematicVisualizer::setFront()
@@ -443,6 +464,7 @@ void KinematicVisualizer::setFront()
 	this->cameraManipulator->setHeading(0);
 	this->cameraManipulator->setElevation(0);
 	this->cameraManipulator->setDistance(8);
+	requestUpdate();
 }
 
 void KinematicVisualizer::setBehind()
@@ -450,6 +472,7 @@ void KinematicVisualizer::setBehind()
 	this->cameraManipulator->setHeading(osg::DegreesToRadians(180.0));
 	this->cameraManipulator->setElevation(0);
 	this->cameraManipulator->setDistance(8);
+	requestUpdate();
 }
 
 void KinematicVisualizer::setBottom()
@@ -457,6 +480,7 @@ void KinematicVisualizer::setBottom()
 	this->cameraManipulator->setHeading(0);
 	this->cameraManipulator->setElevation(osg::DegreesToRadians(-90.0));
 	this->cameraManipulator->setDistance(8);
+	requestUpdate();
 }
 
 void KinematicVisualizer::setTop()
@@ -464,6 +488,7 @@ void KinematicVisualizer::setTop()
 	this->cameraManipulator->setHeading(0);
 	this->cameraManipulator->setElevation(osg::DegreesToRadians(90.0));
 	this->cameraManipulator->setDistance(8);
+	requestUpdate();
 }
 
 void KinematicVisualizer::showTrajectoriesDialog()
@@ -592,6 +617,16 @@ osg::ref_ptr<osg::PositionAttitudeTransform> KinematicVisualizer::createIndicato
     orientation.set(mat);
     transform->setAttitude(orientation);
     transform->setPosition(osg::Vec3(0.0f, 0.0f, 1.5f));
+
+	boxGeode->setDataVariance(osg::Object::STATIC);
+	coneGeode->setDataVariance(osg::Object::STATIC);
+	unitBox->setDataVariance(osg::Object::STATIC);
+	unitCone->setDataVariance(osg::Object::STATIC);
+	boxShape->setDataVariance(osg::Object::STATIC);
+	coneShape->setDataVariance(osg::Object::STATIC);
+	transformBox->setDataVariance(osg::Object::STATIC);
+	transformCone->setDataVariance(osg::Object::STATIC);
+
     return transform;
 }
 

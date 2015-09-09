@@ -418,12 +418,6 @@ public:
 				states->frameTime = data->frameTime;
 				auto firstFrame = data->frames[0];
 
-				/*
-				for (auto& bone : firstFrame.bonesData) {
-					states->jointNames.push_back(bone.name);
-				}
-				*/
-
 				const auto amapping = acclaim::Skeleton::createMapping(model->bones);
 				const auto mapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*skeleton);
 				const auto activeMapping = kinematic::SkeletonState::createAcclaimActiveMappingLocal(*skeleton, model->bones);
@@ -440,9 +434,6 @@ public:
 				sws->nodesMapping = kinematic::LinearizedSkeleton::createCompleteMapping(*skeleton);
 				sws->scale = 0.25;
 				object->set(sws);
-				//kinematic::JointAnglesCollectionPtr joints(new kinematic::JointAnglesCollection());
-				//joints->setSkeletal(skeleton, *states);
-				//object->set(joints);
 			} else {
 				// 
 			}

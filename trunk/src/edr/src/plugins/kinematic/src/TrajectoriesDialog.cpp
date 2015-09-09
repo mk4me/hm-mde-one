@@ -5,6 +5,7 @@
 #include "TrajectoriesDrawer.h"
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QColorDialog>
+#include "KinematicVisualizer.h"
 
 class SchemeElementWidgetItem : public QTreeWidgetItem
 {
@@ -92,8 +93,8 @@ const Qt::CheckState initializeSchemeElementTree(SchemeParametersEditor::TreeSch
 }
 
 
-SchemeParametersEditor::SchemeParametersEditor(QWidget * parent, Qt::WindowFlags f)
-	: QWidget(parent, f), treeWidget(new QTreeWidget)
+SchemeParametersEditor::SchemeParametersEditor(KinematicVisualizer * visualizer, QWidget * parent, Qt::WindowFlags f)
+	: QWidget(parent, f), treeWidget(new QTreeWidget), visualizer(visualizer)
 {
 	auto l = new QHBoxLayout;
 	l->addWidget(treeWidget);
@@ -150,6 +151,8 @@ void SchemeParametersEditor::onItemChanged(QTreeWidgetItem * current, int column
 		treeWidget->blockSignals(true);
 		updateStatus(current);
 		treeWidget->blockSignals(false);
+
+		visualizer->requestUpdate();
 	}
 }
 
@@ -175,8 +178,8 @@ void SchemeParametersEditor::onItemChanged(QTreeWidgetItem * current, int column
 
 
 
-TrajectoriesDialog::TrajectoriesDialog( QWidget* parent) :
-	QDialog(parent)
+TrajectoriesDialog::TrajectoriesDialog(QWidget* parent, KinematicVisualizer * visualizer) :
+QDialog(parent), visualizer(visualizer)
 {
 	Ui::TrajectoriesDialog::setupUi(this);
 	QIcon icon( QString::fromUtf8(":/kinematic/icons/trajectory.png") );
@@ -276,6 +279,8 @@ void TrajectoriesDialog::colorClicked()
             }
         }
     }
+
+	visualizer->requestUpdate();
 }
 
 void TrajectoriesDialog::startTimeChanged( double time )
@@ -299,6 +304,8 @@ void TrajectoriesDialog::startTimeChanged( double time )
             }
         }
     }
+
+	visualizer->requestUpdate();
 }
 
 void TrajectoriesDialog::endTimeChanged( double time )
@@ -323,6 +330,8 @@ void TrajectoriesDialog::endTimeChanged( double time )
             }
         }
     }
+
+	visualizer->requestUpdate();
 }
 
 void TrajectoriesDialog::treeItemChanged( QTreeWidgetItem * current, QTreeWidgetItem * previous )
@@ -391,6 +400,7 @@ void TrajectoriesDialog::rootVisibilityChanged( bool visible )
     if (box) {
         QTreeWidgetItem* item = getItemWhichContains(box);
         item2Root[item]->setVisible(visible);
+		visualizer->requestUpdate();
     }
 }
 
@@ -408,6 +418,8 @@ void TrajectoriesDialog::widthChanged( double width )
             }
         }
     }
+
+	visualizer->requestUpdate();
 }
 
 void TrajectoriesDialog::visibilityChanged( bool visible )
@@ -432,6 +444,8 @@ void TrajectoriesDialog::visibilityChanged( bool visible )
         }
 
         treeItemChanged(item, nullptr);
+
+		visualizer->requestUpdate();
     }
 }
 

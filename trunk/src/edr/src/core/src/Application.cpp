@@ -45,7 +45,7 @@
 DEFINE_WRAPPER(int, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 DEFINE_WRAPPER(double, utils::PtrPolicyStd, utils::ClonePolicyCopyConstructor);
 
-const double TimeDelta = 1000.0 / 25.0;
+const double TimeDelta = 1000.0 / 60.0;
 
 namespace coreUI {
 	class UIApplication : public QApplication
@@ -249,19 +249,6 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	catch (...){
 		CORE_LOG_ERROR("Could not create temporary directory: " << paths_->getTempPath());
 		throw;
-	}
-
-	showSplashScreenMessage(QObject::tr("Initializing 3D context"));
-
-	{
-		//HACK - wymuszamy statyczne linkowanie z bibliotek? osgQt.
-		// to gwarantuje poprawne zainicjowanie obiektu HeartBeat odpowiedzialnego
-		// za obs?ug? scen OpenGL po stronie widget?w OSG.
-		// Cho? niekoniecznie w tym w?tku z tego kozystamy ( nie musimy mie? tworzonych na starcie ?adnych widget?w OSG)
-		// jest to niezb?dne dla prawid?owej deinicjalizacji tego obiektu - czasu ?ycia jego zasob?w.
-		// W przeciwnym wypadku powstanie kilka instancji tego obiektu - po jednej dla ka?dego pluginu dostarczaj?cego widget?w OSG
-		// Bardzo niebezpieczne!! Powodowa?o crash aplikacji przy inicjalizacji a potem przy zamykaniu
-		utils::shared_ptr<QWidget> w(new osgQt::GLWidget());
 	}
 
 	showSplashScreenMessage(QObject::tr("Initializing core managers"));

@@ -15,7 +15,8 @@ const CustomCylinderDescription CustomPrimitivesFactory::createCylinder( const u
 	ret.radius = radius;
 
 	ret.geom = new osg::Geometry();
-	ret.geom->setUseDisplayList(false);
+	//ret.geom->setUseDisplayList(false);
+	//ret.geom->setUseVertexBufferObjects(true);
 	ret.geomBase = CustomPrimitivesHelper::createCylinderGeometryBase(height, radius, complex);
 
 	ret.geom->setVertexArray(ret.geomBase.verticies);
@@ -57,7 +58,8 @@ const CustomSphereDescription CustomPrimitivesFactory::createSphere( const unsig
 	ret.radius = radius;
 
 	ret.geom = new osg::Geometry();
-	ret.geom->setUseDisplayList(false);
+	//ret.geom->setUseDisplayList(false);
+	//ret.geom->setUseVertexBufferObjects(true);
 	ret.geomBase = CustomPrimitivesHelper::createSphereGeometryBase(radius, complex);
 
 	const int n = complex;	
@@ -85,8 +87,6 @@ const CustomSphereDescription CustomPrimitivesFactory::createSphere( const unsig
 			ret.geom->addPrimitiveSet(d2);
 		}
 	}
-
-	
 
 	for (unsigned int i = 0; i < numberOfSeparators; ++i) {
 		osg::ref_ptr<osg::DrawElementsUInt> d = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
@@ -287,8 +287,11 @@ void CustomPrimitivesHelper::setColor(CustonGeometryDescriptionBase & primitiveD
 void CustomPrimitivesHelper::updatePrimitiveShape(CustonGeometryDescriptionBase & primitiveDescription,
 	osg::Vec3Array * vertices)
 {
-	primitiveDescription.geom->setVertexArray(vertices);
-	primitiveDescription.geom->dirtyDisplayList();	
+	const auto count = primitiveDescription.geom->referenceCount();
+	if (count == 1 || (count > 1 && primitiveDescription.geom->getVertexArray() != vertices)){
+		primitiveDescription.geom->setVertexArray(vertices);
+		primitiveDescription.geom->dirtyDisplayList();
+	}
 }
 
 const CustomSphereDescription CustomPrimitivesHelper::cloneForRadiusChange(const CustomSphereDescription & sphereDesription,

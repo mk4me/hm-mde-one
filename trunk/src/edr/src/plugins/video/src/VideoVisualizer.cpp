@@ -136,7 +136,7 @@ void VideoVisualizer::VideoSerie::update()
 {
 	/*VideoStreamConstPtr stream;
 	data->get(stream);*/
-	safeSetTime(visualizer->stream->getTime());
+	//safeSetTime(visualizer->stream->getTime());
 }
 
 const core::VariantConstPtr & VideoVisualizer::VideoSerie::getData() const
@@ -162,6 +162,7 @@ double VideoVisualizer::VideoSerie::getEnd() const
 void VideoVisualizer::VideoSerie::setTime(double time)
 {
 	safeSetTime(time);
+	requestUpdate();
 }
 
 void VideoVisualizer::VideoSerie::setOffset( double val )
@@ -287,7 +288,7 @@ void VideoVisualizer::update( double deltaTime )
     }
 
 	if ( needsUpdate ) {		
-		viewer->update();
+		viewer->requestRedraw();
 	}
 }
 
@@ -312,7 +313,7 @@ QWidget* VideoVisualizer::createWidget()
 
     viewer = new QOsgDefaultWidget();
 	viewer->setMinimumSize(50,50);
-    viewer->setTimerActive(false);
+    //viewer->setTimerActive(false);
 
     // pobranie cech kontekstu graficznego
     const GraphicsContext::Traits* traits = viewer->getCamera()->getGraphicsContext()->getTraits();
@@ -361,7 +362,7 @@ QWidget* VideoVisualizer::createWidget()
 
     //dodajemy tez event handler ze statystykami
     viewer->addEventHandler( new osgViewer::StatsHandler() );
-    viewer->setTimerActive(true);
+    //viewer->setTimerActive(true);
 
 #endif
 

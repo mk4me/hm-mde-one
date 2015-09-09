@@ -84,13 +84,15 @@ class QOsgViewer : public QOsgContextWidget, public osgViewer::Viewer
 {
 public:
     //! Domyślny okres timera.
-    static const int defaultInterval = 16;
+    static const int defaultInterval = 1000 / 60;
 
 private:
-    //! Timer odmierzający kolejne ramki.
+    //! Timer wyzwalający kolejne ramki.
     QTimer frameTimer;
     //! Czy ramki mają być omijane gdy widget jest niewidoczny? Działa tylko dla automatycznego timera.
     bool skipFramesIfInvisible;
+	//! Timer
+	osg::Timer _lastFrameStartTime;
 
 public:
     //! \param parent
@@ -148,7 +150,7 @@ public:
 
 protected:
     //! 
-    virtual void paintGL();
+    //virtual void paintGL();
     //!
     virtual void paintEvent( QPaintEvent* event );
 

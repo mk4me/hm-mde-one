@@ -10,7 +10,7 @@
 #define HEADER_GUARD_CORE__IVISUALIZER_H__
 
 #include <string>
-#include <mutex>
+#include <atomic>
 #include <utils/SmartPtr.h>
 #include <corelib/Variant.h>
 #include <corelib/IIdentifiable.h>
@@ -37,7 +37,7 @@ namespace plugin
 			virtual void update() = 0;
 
 		protected:
-			ISerie() : update_(true) {}
+			ISerie(const bool update = true) : update_(update) {}
 		public:
 			//! Destrutkor prywatny
 			virtual ~ISerie() {}
@@ -50,30 +50,26 @@ namespace plugin
 			//! \return Typ, jak mają być traktowane dane - może chcę pokazać dane z niższego typu
 			virtual const utils::TypeInfo & getRequestedDataType() const = 0;
 			//! Próbujemy odświeżać dane jeśli jest to konieczne
-			void tryUpdate()
+			bool tryUpdate()
 			{
-				bool needUpdate = false;
-				{
-					std::lock_guard<std::recursive_mutex> lock(synch_);
-					needUpdate = update_;
-					update_ = false;
-				}
+				const bool needUpdate = update_.exchange(false);					
 
 				if (needUpdate == true){
 					update();					
 				}
+
+				return needUpdate;
 			}
 
 			//! Metoda zaznacza potrzebę odświeżenia serii danych
 			void requestUpdate()
-			{
-				std::lock_guard<std::recursive_mutex> lock(synch_);
+			{				
 				update_ = true;
 			}
 
 		private:
-			std::recursive_mutex synch_;
-			bool update_;
+			//! Czy wymagana jest aktualizacja serii
+			std::atomic<bool> update_;
 		};
 		//! Seria o charakterze czasowym - pozwala manipulować czasem w serii danych
 		//! setTime może być wołane poza watkiem UI - trzeba to uwzględniać przy update
@@ -150,7 +146,8 @@ namespace plugin
 		//! \return Screenshot z wizualizatora
 		virtual QPixmap takeScreenshot() const = 0;
 		//! Aktualizacja wyświetlania. NIE aktualizacja stanu wyświetlanych danych.
-		//! \param deltaTime Zmiana czasu od ostatniego update
+		//! \param deltaTime Zmiana czasu od ostatniego update,
+		//! czas ujemny oznacza update serwisowy - po create serie, removeSerie, setActiveSerie oraz innerUpdateRequired
 		virtual void update(double deltaTime) = 0;
 		//! \param requestedType Typ danych który faktycznie ma być przedstawiony w serii
 		//! \param data Dane które będą brane do wizualizaowania w serii
@@ -180,6 +177,8 @@ namespace plugin
 		//! ISerie to klasa delegata, która implementuje specyficzne dla danego wizualizatora operacje ustawiania nazwy serii i jej danych. Kazdy wizualizator może inaczej ustawiac te informacje i prezentować je.
 		//! \return Maksymalna ilość serii danych jaka może obsłużyc wizualizator, wartość 0 i mniej oznacza maksumalny zakres dla INT, inna wartość stanowi górna granice
 		virtual int getMaxDataSeries() const = 0;
+		//! \return Czy wymagany jest wewnętrzny update
+		virtual bool innerUpdateRequired() { return false; }
 	};
 
 	DEFINE_SMART_POINTERS(IVisualizer);

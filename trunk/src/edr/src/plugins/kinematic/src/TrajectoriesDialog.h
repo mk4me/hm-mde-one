@@ -16,7 +16,7 @@
 
 class QTreeWidget;
 class QTreeWidgetItem;
-
+class KinematicVisualizer;
 
 template<class T>
 class ITTreeElement : public T
@@ -53,7 +53,7 @@ public:
 
 public:
 
-	explicit SchemeParametersEditor(QWidget * parent = nullptr, Qt::WindowFlags f = 0);
+	explicit SchemeParametersEditor(KinematicVisualizer * visualizer, QWidget * parent = nullptr, Qt::WindowFlags f = 0);
 	virtual ~SchemeParametersEditor();
 
 	void initialize(TreeSchemeElement * root);	
@@ -69,6 +69,7 @@ private slots:
 
 private:	
 	QTreeWidget * treeWidget;
+	KinematicVisualizer * visualizer;
 
 };
 
@@ -130,7 +131,7 @@ class TrajectoriesDialog : public QDialog, private Ui::TrajectoriesDialog
 public:
     //! Kontruktor widgeta
     //! \param parent parent dialogu
-    TrajectoriesDialog(QWidget* parent);
+    TrajectoriesDialog(QWidget* parent, KinematicVisualizer * visualizer);
 
 public:
     //! Dodanie do dialogu drawera, który bêdzie modyfikowany
@@ -195,6 +196,8 @@ private:
     std::map<QTreeWidgetItem*, int> item2Trajectories;
     //! mapa element drzewa -> drawer bêd¹cy parentem dla drawera z trajektoriami
     std::map<QTreeWidgetItem*, TrajectoryDrawerManagerPtr> item2Root;
+
+	KinematicVisualizer * visualizer;
 };
 
 #endif

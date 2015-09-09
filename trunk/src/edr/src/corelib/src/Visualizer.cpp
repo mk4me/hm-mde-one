@@ -182,7 +182,8 @@ public:
 		innerVisualizer_(vis),
 		widget(nullptr),
 		dmr(dmr), visManager(visManager),
-		activeSerie(nullptr)
+		activeSerie(nullptr),
+		currentDeltaTime(0.0)
 	{
 		init();
 	}
@@ -195,7 +196,8 @@ public:
 		innerVisualizer_(vis.visualizer()->create()),
 		widget(nullptr),
 		dmr(vis.dmr), visManager(vis.visManager),
-		activeSerie(nullptr)
+		activeSerie(nullptr),
+		currentDeltaTime(0.0)
 	{
 		init();
 
@@ -223,8 +225,6 @@ public:
 	//! Destruktor
 	VisualizerImpl::~VisualizerImpl()
 	{
-		std::lock_guard<std::recursive_mutex> lock(sync);
-		//innerVisualizer_->setActiveSerie(nullptr);
 		dmr->removeObserver(visualizerHelper_);
 		visManager->unregisterVisualizer(visualizer_);
 		destroyAllSeries();
@@ -495,11 +495,13 @@ public:
 	void update(double deltaTime)
 	{
 		std::lock_guard<std::recursive_mutex> lock(sync);
-		innerVisualizer_->update(deltaTime);
+		
+		bool needUpdate = false;
+
 		for (auto & serie : dataSeries)
 		{
 			try{
-				serie->innerSerie()->tryUpdate();
+				needUpdate |= serie->innerSerie()->tryUpdate();
 			}
 			catch (std::exception & e){
 				/*
@@ -509,6 +511,15 @@ public:
 					<< serie->serie()->getRequestedDataType().name());
 					*/
 			}
+		}
+
+		if (needUpdate == true){
+			innerVisualizer_->update(currentDeltaTime + deltaTime);
+			currentDeltaTime = 0.0;
+		}
+		else if (innerVisualizer_->innerUpdateRequired() == true){		
+			innerVisualizer_->update(-1);
+			currentDeltaTime += deltaTime;
 		}
 	}
 
@@ -540,6 +551,8 @@ private:
 	mutable std::recursive_mutex sync;
 	//! Obsługiwany wizualizator
 	Visualizer * visualizer_;
+	//! Faktyczna delta
+	double currentDeltaTime;
 };
 
 Visualizer::Serie::Serie(Visualizer * visualizer, plugin::IVisualizer::ISerie * serieBase)

@@ -11,7 +11,6 @@
 
 #include <corelib/Export.h>
 #include <utils/SmartPtr.h>
-//#include <threadingUtils/StreamData.h>
 #include <corelib/VariantsCollection.h>
 #include <corelib/IVisualizer.h>
 #include <QtCore/QObject>
@@ -92,6 +91,8 @@ namespace core {
 			//! Wizualizator
 			Visualizer * visualizer_;
 		};
+
+		friend class Serie;
 
 		//! Interfejs źródła danych wizualizatora
 		class IDataSource
@@ -226,7 +227,7 @@ namespace core {
 		//! \return Wizualizator opakowany
 		plugin::IVisualizer * visualizer();
 		//! \return Wizualizator opakowany
-		const plugin::IVisualizer * visualizer() const;
+		const plugin::IVisualizer * visualizer() const;		
 
 	private:
 		//! Metoda aktualizująca wizualizator

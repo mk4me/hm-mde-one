@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include "AbstractSkeletonSerie.h"
+#include "KinematicVisualizer.h"
 #include <osgutils/OsgSchemeDrawer.h>
 #include "TrajectoriesDrawer.h"
 #include "SkeletalVisualizationSchemeHelper.h"
@@ -84,6 +85,7 @@ void AbstractSkeletonSerie::init(double ratio, int pointsCount,
 	rootPosition = osg::Vec3();// skeletonWithStates->getRootPosition(0.0);
 	bodyPlanesPAT = new osg::PositionAttitudeTransform;
 	update();
+	visualizer->widget->frame();
 
 	//bodyplanes
 	initBodyPlanes();
@@ -133,6 +135,7 @@ void AbstractSkeletonSerie::initBodyPlanes()
 		quad->setColorBinding(osg::Geometry::BIND_OVERALL);
 
 		quad->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
+		quad->setDataVariance(osg::Object::STATIC);
 		groot->addDrawable(quad.get());
 	}
 
@@ -159,6 +162,7 @@ void AbstractSkeletonSerie::initBodyPlanes()
 		quad->setColorBinding(osg::Geometry::BIND_OVERALL);
 
 		quad->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
+		quad->setDataVariance(osg::Object::STATIC);
 		groot->addDrawable(quad.get());
 	}
 
@@ -184,12 +188,14 @@ void AbstractSkeletonSerie::initBodyPlanes()
 		quad->setColorBinding(osg::Geometry::BIND_OVERALL);
 
 		quad->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
+		quad->setDataVariance(osg::Object::STATIC);
 		groot->addDrawable(quad.get());
 	}
 
 	// Create and set up a state set using the texture from above:
 	osg::StateSet* gstateSet = new osg::StateSet();
-	groot->setStateSet(gstateSet);	
+	groot->setStateSet(gstateSet);
+	groot->setDataVariance(osg::Object::STATIC);
 
 	// For this state set, turn blending on (so alpha texture looks right)
 	gstateSet->setMode(GL_BLEND, osg::StateAttribute::ON);
@@ -276,6 +282,7 @@ const utils::TypeInfo & AbstractSkeletonSerie::getRequestedDataType() const
 void AbstractSkeletonSerie::setJointsOrientationsVisible()
 {
 	pointsAxesDrawer.setVisible(!pointsAxesDrawer.isVisible());
+	visualizer->requestUpdate();
 }
 
 void AbstractSkeletonSerie::setBodyPlanesVisible()
@@ -287,6 +294,7 @@ void AbstractSkeletonSerie::setBodyPlanesVisible()
 void PointsOrientationsDrawer::init(kinematic::Skeleton::JointConstPtr root)
 {
 	if (pointAxes.empty()) {
+
 		auto visitor = [&](kinematic::Skeleton::JointConstPtr node, kinematic::Skeleton::Joint::size_type level)
 		{
 			osg::ref_ptr<osgManipulator::TranslateAxisDragger> ne = new osgManipulator::TranslateAxisDragger();

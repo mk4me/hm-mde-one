@@ -100,7 +100,7 @@ private:
 		//! \param maxSize maksymalny rozmiar stosu strzałek
 		//! \param hookNode węzeł, pod który beda podczepiane strzałki
 		//! \param color kolor strzałek
-		GhostStack(int maxSize, GroupPtr hookNode, const osg::Vec4& color );
+		GhostStack(int maxSize, GroupPtr hookNode, const osg::Vec4& color, osg::StateSet * stateset);
         //! Dodanie strzałki do stosu i usuwa najstarsza strzałke, jeśli jest taka potrzeba
         //! \param state 
         void addState(const ArrowState& state);
@@ -135,7 +135,7 @@ private:
     //! \param maxLength maksymalna długość siły, jest to pomocne przy kolorowaniu wektora
     //! \param platform plaforma, dla której tworzona jest geometria
     //! \return utworzony węzeł 
-	GeodePtr createStep(c3dlib::IForcePlatform::IStepConstPtr step, float &maxLength, c3dlib::IForcePlatformConstPtr platform) const;
+	GeodePtr createStep(c3dlib::IForcePlatform::IStepConstPtr step, float &maxLength, c3dlib::IForcePlatformConstPtr platform, osg::StateSet * stateset) const;
     //! Tworzy węzeł z geometria pojedynczej płyty GRF
     //! \param texture tekstura, która ma być na prostopadloscianie, może być nullptr
     //! \param origin punkt, w którym znajduje się lewy górny róg płyty
@@ -146,7 +146,7 @@ private:
     TransformPtr createPlatformTransform(osg::Texture2D* texture, const osg::Vec3& origin, float width, float lenght, float height) const;
 	//! Statyczna metoda, tworzy strukture z geometria i opisem strzałki
     //! \return utworzony węzeł
-	static ArrowPtr createArrow();
+	static ArrowPtr createArrow(osg::StateSet * stateset);
 	//! Pobiera teksture z resource'ów
 	//! \param number obecnie 1 lub 2
     //! \return zaladowana tekstura, wyjątek w przypadku bledu
@@ -178,6 +178,10 @@ private:
     std::string name;
     //! mapa, która ułatwia pobranie geometrii na postawie platformy z C3D
     Platform2Shape platform2Shape;
+
+	double minTime;
+
+	double maxTime;
 };
 
 
