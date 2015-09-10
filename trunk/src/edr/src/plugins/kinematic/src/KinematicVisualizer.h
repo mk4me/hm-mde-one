@@ -125,6 +125,9 @@ public:
 	//! resetuje ustawienia sceny 3d
 	void resetScene();
 
+	virtual bool innerUpdateRequired();
+
+	void requestUpdate();
 
 	virtual bool getAxisXYZ() const { return AxisXYZ; }
 	virtual void setAxisXYZ(bool val) { AxisXYZ = val; }
@@ -321,6 +324,8 @@ private:
     double lastTime;
 
 	bool AxisXYZ = false;
+
+	std::atomic<bool> innerUpdate;
 };
 
 //! Klasa pomocnicza do obsługi komunikatów pochodzących od manipulatorów

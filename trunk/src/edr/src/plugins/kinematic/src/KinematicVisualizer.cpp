@@ -22,7 +22,8 @@ using namespace coreUI;
 
 KinematicVisualizer::KinematicVisualizer() :
 	actionGhost(nullptr), actionSwitchAxes(nullptr), lastTime(-1.0f),
-	currentSerie(-1), trajectoriesDialog(nullptr), schemeDialog(nullptr)
+	currentSerie(-1), trajectoriesDialog(nullptr), schemeDialog(nullptr),
+	innerUpdate(false)
 {
 	
 }
