@@ -677,7 +677,7 @@ bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path,
 #if defined(_WINDOWS)
 	//TODO
 	//u�y� vendor info do generowania sciezki
-#define KEY_PATH TEXT("Software\\PJWSTK\\")
+#define KEY_PATH TEXT("Software\\PJATK\\")
 #define PATH_BUFFER_SIZE 1024
 	HKEY hKey;
 	char buffer[PATH_BUFFER_SIZE];

@@ -1,6 +1,6 @@
 #include "SummaryWindow.h"
 #include "AnalisisWidget.h"
-#include <plugins/hmdbCommunication/IPatient.h>
+//#include <plugins/hmdbCommunication/IPatient.h>
 
 void SummaryWindow::initialize()
 {
