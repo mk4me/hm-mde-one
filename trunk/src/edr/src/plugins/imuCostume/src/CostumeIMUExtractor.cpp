@@ -93,7 +93,7 @@ CostumeIMUExtractor::CostumeIMUExtractor(const imuCostume::Costume::SensorIDsSet
 	{
 		SensorDataWithStatus isd;
 		isd.status = 0;
-		currentData.insert(std::map<imuCostume::Costume::SensorID, SensorDataWithStatus>::value_type(id, isd));
+		currentData.insert({ id, isd });
 	}
 }
 
@@ -107,7 +107,7 @@ CostumeIMUExtractor::CostumeIMUExtractor(const imuCostume::Costume::SensorsConfi
 		{
 			SensorDataWithStatus isd;
 			isd.status = 0;
-			currentData.insert(std::map<imuCostume::Costume::SensorID, SensorDataWithStatus>::value_type(id, isd));
+			currentData.insert({ id, isd });
 		}
 	}
 }
@@ -121,7 +121,7 @@ bool CostumeIMUExtractor::verify(const IMU::CostumeStream::value_type & streamDa
 {
 	bool ret = false;
 	
-	for (auto const & sd : streamData.sensorsData)
+	for (const auto sd : streamData.sensorsData)
 	{
 		auto it = currentData.find(sd->id());
 
@@ -168,7 +168,7 @@ void CostumeIMUExtractor::extract(const IMU::CostumeStream::value_type & streamD
 
 			if (it->second.status | 0x0F){				
 
-				locData.insert(IMU::SensorsData::value_type(d->id(), IMU::SensorData(it->second)));
+				locData.insert({ d->id(), IMU::SensorData(it->second) });
 			}
 		}
 	}		
@@ -196,7 +196,7 @@ void OrientationEstimator::operator()(IMU::SensorsStreamData & data) const
 			auto tIT = lastUpdateTime.find(d.first);
 
 			if (tIT == lastUpdateTime.end()){
-				lastUpdateTime.insert(std::map<imuCostume::Costume::SensorID, uint32_t>::value_type(d.first, data.timestamp));
+				lastUpdateTime.insert({ d.first, data.timestamp });
 			}
 			else{				
 				deltaT = calculateDelta(data.timestamp, tIT->second);				

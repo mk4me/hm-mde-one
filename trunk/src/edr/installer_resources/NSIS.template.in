@@ -25,9 +25,7 @@
   !include "LogicLib.nsh"
   !include "x64.nsh"
   !include "MUI.nsh"
-
-  ; disable registry redirection (enable access to 64-bit portion of registry)
-  SetRegView 64
+  
   ;Default installation folder
   InstallDir "$PROGRAMFILES64\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
 
@@ -78,7 +76,7 @@ Var AR_RegFlags
   ;  This macro reads component installed flag from the registry and
   ;changes checked state of the section on the components page.
   ;Input: section index constant name specified in Section command.
-   
+  
   ClearErrors
   ;Reading component status from registry
   ReadRegDWORD $AR_RegFlags HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@\Components\${SecName}" "Installed"
@@ -211,6 +209,8 @@ FunctionEnd
 ;        Note - Win9x systems requires reboot
  
 Function AddToPath
+; disable registry redirection (enable access to 64-bit portion of registry)
+  SetRegView 64
   Exch $0
   Push $1
   Push $2
@@ -299,6 +299,8 @@ FunctionEnd
 ;     Input: head of the stack
  
 Function un.RemoveFromPath
+; disable registry redirection (enable access to 64-bit portion of registry)
+  SetRegView 64
   Exch $0
   Push $1
   Push $2
@@ -415,6 +417,8 @@ FunctionEnd
  
 !macro IsNT un
 Function ${un}IsNT
+; disable registry redirection (enable access to 64-bit portion of registry)
+  SetRegView 64
   Push $0
   ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
   StrCmp $0 "" 0 IsNT_yes
@@ -497,6 +501,8 @@ Done:
 FunctionEnd
 
 Function ConditionalAddToRegisty
+; disable registry redirection (enable access to 64-bit portion of registry)
+  SetRegView 64
   Pop $0
   Pop $1
   StrCmp "$0" "" ConditionalAddToRegisty_EmptyString
@@ -559,6 +565,8 @@ FunctionEnd
   !insertmacro MUI_PAGE_DIRECTORY
   
   Function licensePre
+  ; disable registry redirection (enable access to 64-bit portion of registry)
+  SetRegView 64
 	@CPACK_NSIS_CUSTOM_SHOW_LICENSE_CODE@
   FunctionEnd
   
@@ -606,6 +614,8 @@ LangString ConfirmUninstall ${LANG_POLISH} "Czy chcesz zachowaæ dane u¿ytkownika
 ;Installer Sections
 
 Section "-Core installation"
+; disable registry redirection (enable access to 64-bit portion of registry)
+  SetRegView 64
   ;Use the entire tree produced by the INSTALL target.  Keep the
   ;list of directories here in sync with the RMDir commands below.
   SetOutPath "$INSTDIR"
@@ -748,6 +758,8 @@ SectionEnd
 ;--------------------------------
 ; Create custom pages
 Function InstallOptionsPage
+; disable registry redirection (enable access to 64-bit portion of registry)
+  SetRegView 64
   !insertmacro MUI_HEADER_TEXT "Install Options" "Choose options for installing @CPACK_NSIS_PACKAGE_NAME@"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "NSIS.InstallOptions.ini"
 
@@ -756,7 +768,8 @@ FunctionEnd
 ;--------------------------------
 ; determine admin versus local install
 Function un.onInit
-
+; disable registry redirection (enable access to 64-bit portion of registry)
+  SetRegView 64
 ReadRegDWORD  $LANGUAGE HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_DIRECTORY@\Components\${SecName}" \
   "Language" 
   ClearErrors
@@ -836,6 +849,8 @@ RMDir /r "$APPDATA\@CPACK_PACKAGE_VENDOR@\@CPACK_NSIS_PACKAGE_NAME@"
 RMDir "$APPDATA\@CPACK_PACKAGE_VENDOR@"
 SectionEnd
 Section un.main main
+; disable registry redirection (enable access to 64-bit portion of registry)
+  SetRegView 64
   ReadRegStr $START_MENU SHCTX \
    "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "StartMenu"
   ReadRegStr $DO_NOT_ADD_TO_PATH SHCTX \
@@ -935,8 +950,9 @@ SectionEnd
 Section "Microsoft Visual C++ 2013 Redistributable Package (x86)" SectionVSRedist
 ;-------------------------------
 
-	File "@CPACK_INSTALLER_ADDITIONAL_RESOURCES@\vcredist_x86.exe" 
-	ExecWait '$INSTDIR\vcredist_x86.exe /q:a'
+	File "@CPACK_INSTALLER_ADDITIONAL_RESOURCES@\vcredist_x64.exe" 
+	ExecWait '$INSTDIR\vcredist_x64.exe /q:a'
+	Delete "$INSTDIR\vcredist_x64.exe"
 
 SectionEnd
 
@@ -951,7 +967,8 @@ SectionEnd
 ; "Program Files" for AllUsers, "My Documents" for JustMe...
 
 Function .onInit
-
+; disable registry redirection (enable access to 64-bit portion of registry)
+  SetRegView 64
 ; Funkcja sprawdza czy nie mamy ju¿ drugiej instancji naszego instalatora uruchomionej - jak tak to j¹ dajemy na pierwszy plan a t¹ zamykamy
 BringToFront
 ; Check if already running

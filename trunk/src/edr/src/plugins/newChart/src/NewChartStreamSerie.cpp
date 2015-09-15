@@ -64,7 +64,7 @@ visualizer(visualizer),
 void NewChartStreamSerie::setData(const utils::TypeInfo & requestedType, const core::VariantConstPtr & data )
 {
 	if (scalarStream != nullptr){
-		utils::const_pointer_cast<ScalarStream>(scalarStream)->detachObserver(updater);
+		utils::const_pointer_cast<ScalarStream>(scalarStream)->detach(updater);
 	}
 
     this->data = data;
@@ -77,7 +77,7 @@ void NewChartStreamSerie::setData(const utils::TypeInfo & requestedType, const c
     curve = new NewChartCurve(name.c_str());
 	curve->setRenderHint(QwtPlotItem::RenderAntialiased);
     visualizer->addPlotCurve(curve, getScales());
-    utils::const_pointer_cast<ScalarStream>(scalarStream)->attachObserver(updater);
+    utils::const_pointer_cast<ScalarStream>(scalarStream)->attach(updater);
 }
 
 const utils::TypeInfo & NewChartStreamSerie::getRequestedDataType() const
@@ -145,7 +145,7 @@ NewChartStreamSerie::~NewChartStreamSerie()
 	curve = nullptr;
 
 	if (scalarStream != nullptr && updater != nullptr){
-		utils::const_pointer_cast<ScalarStream>(scalarStream)->detachObserver(updater);
+		utils::const_pointer_cast<ScalarStream>(scalarStream)->detach(updater);
 	}
 }
 

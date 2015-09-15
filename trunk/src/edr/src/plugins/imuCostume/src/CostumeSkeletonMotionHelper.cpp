@@ -68,7 +68,7 @@ cw(nullptr)
 		algorithmsProgress.insert({ sa.first, ap });
 	}	
 
-	sensorsStream->attachObserver(observer);		
+	sensorsStream->attach(observer);		
 	pd->setWindowTitle(tr("Costume initialization"));
 	dialog->setWindowTitle(tr("Costume initialization"));
 	pd->setValue(0);	
@@ -96,7 +96,7 @@ cw(nullptr)
 
 CostumeSkeletonMotionHelper::~CostumeSkeletonMotionHelper()
 {
-	sensorsStream->detachObserver(observer);
+	sensorsStream->detach(observer);
 }
 
 int CostumeSkeletonMotionHelper::exec()

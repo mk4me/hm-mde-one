@@ -416,9 +416,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="optionsPushButton">
+      <widget class="QPushButton" name="outputPushButton">
        <property name="text">
-        <string>Options</string>
+        <string>Output...</string>
        </property>
       </widget>
      </item>
@@ -520,7 +520,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>optionsPushButton</sender>
+   <sender>outputPushButton</sender>
    <signal>clicked()</signal>
    <receiver>IMUCostumeListWidget</receiver>
    <slot>onOptions()</slot>

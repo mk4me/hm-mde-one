@@ -43,13 +43,13 @@ SkeletonStreamSerie::SkeletonStreamSerie(KinematicVisualizer * visualizer,
 
 	updater.reset(new plugin::StreamDataSerieUpdater(this));
 
-	skeletalData->jointsStream->attachObserver(updater);
+	skeletalData->jointsStream->attach(updater);
 }
 
 SkeletonStreamSerie::~SkeletonStreamSerie()
 {
 	if (skeletalData != nullptr){
-		skeletalData->jointsStream->detachObserver(updater);
+		skeletalData->jointsStream->detach(updater);
 	}
 }
 

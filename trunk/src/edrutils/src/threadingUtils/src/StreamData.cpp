@@ -63,7 +63,7 @@ StreamBase::~StreamBase()
 {
 }
 
-void StreamBase::attachObserver(StreamStatusObserverPtr observer)
+void StreamBase::attach(StreamStatusObserverPtr observer)
 {
 	std::lock_guard<std::recursive_mutex> lock(synch_);
 	if (observer == nullptr){
@@ -75,7 +75,7 @@ void StreamBase::attachObserver(StreamStatusObserverPtr observer)
 	}
 }
 
-void StreamBase::detachObserver(StreamStatusObserverPtr observer)
+void StreamBase::detach(StreamStatusObserverPtr observer)
 {
 	std::lock_guard<std::recursive_mutex> lock(synch_);
 	observers.remove(observer);

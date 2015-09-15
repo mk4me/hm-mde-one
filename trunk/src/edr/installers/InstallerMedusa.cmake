@@ -1,7 +1,7 @@
 BEGIN_INSTALLER("MEDUSA" "Medusa" "MedusaInstaller.cmake" "product")
 
-SET_INSTALLER_VENDOR("PJWSTK")
-SET_INSTALLER_VERSION("0.0.1")
+SET_INSTALLER_VENDOR("PJATK")
+SET_INSTALLER_VERSION("0.0.2")
 SET_INSTALLER_ADDITIONAL_INFO("http://hm.pjwstk.edu.pl" "http://hmkb.pjwstk.edu.pl" "Marek.Kulbacki@pjwstk.edu.pl")
 
 ADD_INSTALLATION_TYPE(Full "Complete installation")

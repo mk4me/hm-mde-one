@@ -593,22 +593,24 @@ void IMUCostumeWidget::innerInitializeAndLoad(IMU::CostumeProfilePtr profile,
 		calibSteps = 6000;
 	}
 
-	// inicjalizacja algorytm?w estymacji orientacji czujnik?w + kalibracja
-	CostumeSkeletonMotionHelper csmh(extractorAdapter,
-		profile, initializeFramesCount + calibSteps,
-		initializeFramesCount, this);
+	{
+		// inicjalizacja algorytm?w estymacji orientacji czujnik?w + kalibracja
+		CostumeSkeletonMotionHelper csmh(extractorAdapter,
+			profile, initializeFramesCount + calibSteps,
+			initializeFramesCount, this);
 
-	auto res = csmh.exec();
+		auto res = csmh.exec();
 
-	//czy anulowano
-	if (res == QDialog::Rejected){
-		return;
-	}
+		//czy anulowano
+		if (res == QDialog::Rejected){
+			return;
+		}
 
-	//czy kalibracja ok?
-	if (csmh.isComplete() == false){
-		QMessageBox::information(this, tr("Costume initialization failed"), tr("Failed to calibrate costume with given configuration. Change configuration and try again or simply retry."));
-		return;
+		//czy kalibracja ok?
+		if (csmh.isComplete() == false){
+			QMessageBox::information(this, tr("Costume initialization failed"), tr("Failed to calibrate costume with given configuration. Change configuration and try again or simply retry."));
+			return;
+		}
 	}
 
 	// pobieramy efekt kalibracji

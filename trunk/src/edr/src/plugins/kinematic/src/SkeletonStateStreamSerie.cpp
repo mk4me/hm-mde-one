@@ -20,13 +20,13 @@ SkeletonStateStreamSerie::SkeletonStateStreamSerie(KinematicVisualizer * visuali
 	AbstractSkeletonSerie::init(ratio, pointsCount, skeleton, skeletalData->nodesMapping);
 
 	updater.reset(new plugin::StreamDataSerieUpdater(this));
-	skeletalData->states->attachObserver(updater);
+	skeletalData->states->attach(updater);
 }
 
 SkeletonStateStreamSerie::~SkeletonStateStreamSerie()
 {
 	if (skeletalData != nullptr){
-		skeletalData->states->detachObserver(updater);
+		skeletalData->states->detach(updater);
 	}
 }
 
