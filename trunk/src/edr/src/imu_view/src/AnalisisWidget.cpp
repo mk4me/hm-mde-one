@@ -55,6 +55,8 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     //auto vdfService = core::queryServices<vdf::NewVdfService>(plugin::getServiceManager());
     //connect(vdfService.get(), SIGNAL(transferResults()), this, SLOT(addRoot(core::IHierarchyItemPtr)));
     connect(model.get(), SIGNAL(filterBundleAdded(core::IFilterBundlePtr)), this, SLOT(onFilterBundleAdded(core::IFilterBundlePtr)));
+	topMainWindow->setAutoCloseEmptySets(true);
+	connect(topMainWindow, SIGNAL(setCloseRequested(int)), this, SLOT(closeSet(int)));
 
     connect(applyButton, SIGNAL(clicked()), this, SLOT(applyClicked()));
     
@@ -809,4 +811,9 @@ void AnalisisWidget::initReportsCombos()
     QDir cssDir(dirPath, "*.css");
     styleComboBox->addItem(tr("Empty"));
     //styleComboBox->addItems(cssDir.entryList());
+}
+
+void AnalisisWidget::closeSet(int idx)
+{
+	topMainWindow->removeSet(idx);
 }

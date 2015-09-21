@@ -77,6 +77,7 @@ Q_SIGNALS:
     void dataAdded();
 
 private Q_SLOTS:
+	void closeSet(int idx);
     void visualizerDestroyed(QObject * visualizer);
     void onFilterBundleAdded(core::IFilterBundlePtr bundle);
     void onFilterClicked(core::IFilterCommandPtr filter);
