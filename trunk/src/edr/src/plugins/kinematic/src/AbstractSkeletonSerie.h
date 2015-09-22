@@ -48,7 +48,9 @@ public:
 	void update();
 	void setLength(double length);
 	void setVisible(bool visible);
-	bool isVisible();
+	void setVisible(bool visible, unsigned int idx);
+	bool isVisible(unsigned int idx) const;
+	bool isVisible() const;
 
 private:
 	std::vector<osg::ref_ptr<osgManipulator::TranslateAxisDragger>> pointAxes;
@@ -86,7 +88,7 @@ public:
 
 	//utils::shared_ptr<TrajectoryDrawerManager> getTrajectoriesManager();
 
-
+	PointsOrientationsDrawer * pointsAxisDrawer();
 	void setJointsOrientationsVisible();
 	void setBodyPlanesVisible();
 

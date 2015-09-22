@@ -7,11 +7,14 @@
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QVBoxLayout>
+#include "AbstractSkeletonSerie.h"
 
 SchemeDialog::SchemeDialog(QWidget* parent, KinematicVisualizer * visualizer) :
-QDialog(parent), visualizer(visualizer), autoHideSegments(new QCheckBox(tr("Auto-hide connected segments"), this))
+QDialog(parent), visualizer(visualizer),
+autoHideSegments(new QCheckBox(tr("Auto-hide connected segments"), this)),
+pointsTree(nullptr), connectionsTree(nullptr),
+pointsOrientationsDrawer(nullptr)
 {
-
 	auto ml = new QVBoxLayout;
 
 	auto tabWidget = new QTabWidget(this);
@@ -67,8 +70,10 @@ QDialog(parent), visualizer(visualizer), autoHideSegments(new QCheckBox(tr("Auto
 	connect(connectionsTree, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(connectionItemChanged(QTreeWidgetItem*, int)));
 }
 
-void SchemeDialog::setDrawer(osgutils::IBaseDrawerSchemePtr drawer, const QString& rootName, const QStringList& names, const osgutils::IConnectionDrawerWithDescriptors& connections)
+void SchemeDialog::setDrawer(osgutils::IBaseDrawerSchemePtr drawer, const QString& rootName, const QStringList& names, const osgutils::IConnectionDrawerWithDescriptors& connections,
+	PointsOrientationsDrawer * pointsOrientationsDrawer)
 {
+	this->pointsOrientationsDrawer = pointsOrientationsDrawer;
     QTreeWidgetItem* root = new QTreeWidgetItem();
     root->setText(1, rootName);
     pointsTree->addTopLevelItem(root);
@@ -88,7 +93,7 @@ void SchemeDialog::setDrawer(osgutils::IBaseDrawerSchemePtr drawer, const QStrin
     for (int i = 0; i < count; ++i) {
         QTreeWidgetItem* item = new QTreeWidgetItem();
 		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-		item->setCheckState(0, Qt::Checked);
+		item->setCheckState(0, drawer->visible(i) ? Qt::Checked : Qt::Unchecked);
         item->setText(1, names[i]);
         root->addChild(item);        
         pointItem2Drawer[item] = std::make_pair(drawer, i);
@@ -101,7 +106,7 @@ void SchemeDialog::setDrawer(osgutils::IBaseDrawerSchemePtr drawer, const QStrin
 	for (int i = 0; i < connections.second.size(); ++i) {
 		QTreeWidgetItem* item = new QTreeWidgetItem();
 		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-		item->setCheckState(0, Qt::Checked);
+		item->setCheckState(0, connections.first->visible(i) ? Qt::Checked : Qt::Unchecked);
 		item->setText(1, names[connections.second[i].range.first]);
 		item->setText(2, names[connections.second[i].range.second]);
 		root->addChild(item);
@@ -176,13 +181,19 @@ void SchemeDialog::visibilityChanged( bool visible )
         //std::string name = current->text(1).toStdString();
         auto it = pointItem2Drawer.find(current);
         if (it != pointItem2Drawer.end()) {
+			const bool visible = box->isChecked();
             auto t = it->second;
 			osgutils::IBaseDrawerSchemePtr drawer = t.first;
             auto idx = t.second;
-            drawer->setVisible(idx, box->isChecked());
+			drawer->setVisible(idx, visible);
+			if (pointsOrientationsDrawer != nullptr){
+				pointsOrientationsDrawer->setVisible(visible, idx);
+			}
 
 			if (autoHideSegments->isChecked() == true){
 
+				connectionsTree->blockSignals(true);
+				auto root = connectionsTree->topLevelItem(0);
 				osgutils::SegmentsDescriptors descriptions = drawer2Connections[drawer].second;
 				osgutils::IConnectionsSchemeDrawerPtr connections = drawer2Connections[drawer].first;
 				int count = descriptions.size();
@@ -190,9 +201,12 @@ void SchemeDialog::visibilityChanged( bool visible )
 					auto a = descriptions[i].range.first;
 					auto b = descriptions[i].range.second;
 					if (a == idx || b == idx) {
-						connections->setVisible(i, box->isChecked());
+						connections->setVisible(i, visible);
+						root->child(i)->setCheckState(0, visible ? Qt::Checked : Qt::Unchecked);
 					}
 				}
+
+				connectionsTree->blockSignals(false);
 			}
 
 			visualizer->requestUpdate();
@@ -241,10 +255,15 @@ void SchemeDialog::pointItemChanged(QTreeWidgetItem * item, int column)
 
 		osgutils::IBaseDrawerSchemePtr drawer = pointItem2Drawer[item].first;
 		auto idx = pointItem2Drawer[item].second;
-		bool visible = item->checkState(0) == Qt::Checked ? true : false;
+		const bool visible = item->checkState(0) == Qt::Checked ? true : false;
 		drawer->setVisible(idx, visible);
+		if (pointsOrientationsDrawer != nullptr){
+			pointsOrientationsDrawer->setVisible(visible, idx);
+		}
 
-		if (autoHideSegments->isChecked() == true){		
+		if (autoHideSegments->isChecked() == true){
+			connectionsTree->blockSignals(true);
+			auto root = connectionsTree->topLevelItem(0);
 			osgutils::SegmentsDescriptors descriptions = drawer2Connections[drawer].second;
 			osgutils::IConnectionsSchemeDrawerPtr connections = drawer2Connections[drawer].first;
 			int count = descriptions.size();
@@ -253,8 +272,10 @@ void SchemeDialog::pointItemChanged(QTreeWidgetItem * item, int column)
 				auto b = descriptions[i].range.second;
 				if (a == idx || b == idx) {
 					connections->setVisible(i, visible);
+					root->child(i)->setCheckState(0, visible ? Qt::Checked : Qt::Unchecked);
 				}
 			}
+			connectionsTree->blockSignals(false);
 		}
 
 		visualizer->requestUpdate();

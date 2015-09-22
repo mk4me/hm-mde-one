@@ -63,9 +63,10 @@ CostumeProfile * CostumeProfile::clone() const
 	{
 		SensorDescription locsd;
 		locsd.jointName = sd.second.jointName;
-		locsd.offset = sd.second.offset;
-		locsd.preMulRotation = sd.second.preMulRotation;
-		locsd.postMulRotation = sd.second.postMulRotation;
+		locsd.jointIdx = sd.second.jointIdx;
+		locsd.adjustment.offset = sd.second.adjustment.offset;
+		locsd.adjustment.preMulRotation = sd.second.adjustment.preMulRotation;
+		locsd.adjustment.postMulRotation = sd.second.adjustment.postMulRotation;
 		if (sd.second.orientationEstimationAlgorithm != nullptr){
 			locsd.orientationEstimationAlgorithm.reset(sd.second.orientationEstimationAlgorithm->create());
 		}
@@ -90,9 +91,9 @@ SerializableCostumeProfile SerializableCostumeProfile::pack(const CostumeProfile
 	{
 		SensorDescription local;
 		local.jointName = sd.second.jointName;
-		local.offset = sd.second.offset;
-		local.preMulRotation = sd.second.preMulRotation;
-		local.postMulRotation = sd.second.postMulRotation;
+		local.offset = sd.second.adjustment.offset;
+		local.preMulRotation = sd.second.adjustment.preMulRotation;
+		local.postMulRotation = sd.second.adjustment.postMulRotation;
 		local.orientationEstimationAlgorithmID = sd.second.orientationEstimationAlgorithm == nullptr ? boost::uuids::nil_uuid() : sd.second.orientationEstimationAlgorithm->ID();
 		ret.sensorsDescriptions.insert(SensorsDescriptions::value_type(sd.first, local));
 	}
@@ -156,9 +157,9 @@ CostumeProfile SerializableCostumeProfile::unpack(const SerializableCostumeProfi
 			local.jointIdx = it->get_left();
 		}
 		
-		local.offset = ea.second.offset;
-		local.preMulRotation = ea.second.preMulRotation;
-		local.postMulRotation = ea.second.postMulRotation;
+		local.adjustment.offset = ea.second.offset;
+		local.adjustment.preMulRotation = ea.second.preMulRotation;
+		local.adjustment.postMulRotation = ea.second.postMulRotation;
 
 		auto eIT = orientationEstimationAlgos.find(ea.second.orientationEstimationAlgorithmID);
 		if (eIT != orientationEstimationAlgos.end()){

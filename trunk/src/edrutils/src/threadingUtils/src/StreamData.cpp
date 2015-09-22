@@ -1,5 +1,6 @@
 #include <threadingUtils/StreamData.h>
 #include <algorithm>
+#include <atomic>
 
 using namespace threadingUtils;
 
@@ -10,22 +11,17 @@ public:
 	~ResetableStreamStatusImpl() {}
 
 	const bool modified() const
-	{
-		std::lock_guard<std::recursive_mutex> lock(sync_);
-		bool ret = modified_;
-		modified_ = false;
-		return ret;
+	{		
+		return modified_.exchange(false);
 	}
 
 	void update()
 	{
-		std::lock_guard<std::recursive_mutex> lock(sync_);
 		modified_ = true;
 	}
 
 private:
-	mutable volatile bool modified_;
-	mutable std::recursive_mutex sync_;
+	mutable std::atomic<bool> modified_;
 };
 
 ResetableStreamStatusObserver::ResetableStreamStatusObserver()

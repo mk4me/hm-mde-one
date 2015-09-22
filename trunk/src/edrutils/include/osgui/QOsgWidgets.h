@@ -149,8 +149,6 @@ public:
     void setRenderingEnabled(bool renderingEnabled);
 
 protected:
-    //! 
-    //virtual void paintGL();
     //!
     virtual void paintEvent( QPaintEvent* event );
 

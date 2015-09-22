@@ -48,9 +48,22 @@ namespace sqliteUtils
 }
 
 template<>
-void std::default_delete<sqlite3_stmt>::operator()(sqlite3_stmt *statement) const
-{	// delete a pointer
-	sqliteUtils::SQLitePreparedStatement::finalize(statement);
-}
+struct std::default_delete<sqlite3_stmt>
+{
+	default_delete() = default;
+
+	~default_delete() = default;
+
+	template<class U>	
+	default_delete(const default_delete<U>&) throw()
+	{	// construct from another default_delete
+		static_assert(is_convertible<_Ty2 *, _Ty *>::value, "Type U must be convertible to sqlite3_stmt");
+	}
+
+	void operator()(sqlite3_stmt * statement) const throw()
+	{	// delete a pointer
+		sqliteUtils::SQLitePreparedStatement::finalize(statement);
+	}
+};
 
 #endif	// __HEADER_GUARD_SQLITEUTILS__SQLITEPREPAREDSTATEMENT_H__

@@ -26,6 +26,7 @@ class QTreeWidgetItem;
 class QCheckBox;
 class QPushButton;
 class KinematicVisualizer;
+class PointsOrientationsDrawer;
 
 //! Dialog Qt służący do zarządzania widocznościa elementów na scenie
 class SchemeDialog : public QDialog//, private Ui::TrajectoriesDialog
@@ -40,7 +41,8 @@ public:
     //! Dodanie do dialogu drawera, który będzie modyfikowany
     //! \param drawer obiekt drawera osg
     //! \param rootName wyświetlana nazwa
-	void setDrawer(osgutils::IBaseDrawerSchemePtr drawer, const QString& rootName, const QStringList& names, const osgutils::IConnectionDrawerWithDescriptors& connections);
+	void setDrawer(osgutils::IBaseDrawerSchemePtr drawer, const QString& rootName, const QStringList& names, const osgutils::IConnectionDrawerWithDescriptors& connections,
+		PointsOrientationsDrawer * pointsOrientationsDrawer = nullptr);
 
 private slots:
 
@@ -90,6 +92,7 @@ private:
 	QTreeWidget * pointsTree;
 	QTreeWidget * connectionsTree;
 	KinematicVisualizer * visualizer;
+	PointsOrientationsDrawer * pointsOrientationsDrawer;
 };
 
 

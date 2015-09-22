@@ -111,6 +111,7 @@ void QOsgViewer::init()
 {
 	setThreadingModel(osgViewer::Viewer::SingleThreaded);
 	setRunFrameScheme(osgViewer::ViewerBase::ON_DEMAND);
+	setKeyEventSetsDone(0);
     int width = getGraphicsWindow()->getTraits()->width;
     int height = getGraphicsWindow()->getTraits()->height;
 
@@ -119,25 +120,10 @@ void QOsgViewer::init()
     _camera->setViewport( new osg::Viewport(0, 0, width, height) );
     _camera->setProjectionMatrixAsPerspective(45.0f, static_cast<double>(width)/height, 1.0f, 10000.0f );
 
-    frameTimer.setInterval(defaultInterval);
-    //connect(&frameTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
+    frameTimer.setInterval(defaultInterval);    
     connect(&frameTimer, SIGNAL(timeout()), this, SLOT(update()));
     frameTimer.start();
 }
-
-//void QOsgViewer::paintGL()
-//{
-//     // rysujemy tylko gdy event pochodzi z timera
-//     if ( isTimerActive() ) {
-//         if ( !skipFramesIfInvisible || (isVisible() && !isHidden()) ) {
-//             frame();
-//         }  else {
-//             int debuggable = 0;
-//         }
-//     } else {
-//         int debuggable = 0;
-//     }
-//}
 
 //! \param camera
 osg::GraphicsOperation* QOsgViewer::createRenderer(osg::Camera* camera)
@@ -172,8 +158,7 @@ QOsgViewer::~QOsgViewer()
 
 void QOsgViewer::paintEvent( QPaintEvent* event )
 {
-    if ( !skipFramesIfInvisible || (isVisible() && !isHidden()) ) {
-		//frame();
+    if (!skipFramesIfInvisible || (isVisible() && !isHidden()) ) {		
 		
 		// avoid excessive CPU loading when no frame is required in ON_DEMAND mode
 		if (getRunFrameScheme() == osgViewer::ViewerBase::ON_DEMAND)
@@ -198,15 +183,6 @@ void QOsgViewer::paintEvent( QPaintEvent* event )
 			frame();
 		}
     }
-    // if ( isTimerActive() ) {
-    //     if ( !skipFramesIfInvisible || ( isVisible() && !isHidden() )  ) {
-    //         frame();
-    //     }  else {
-    //         int debuggable = 0;
-    //     }
-    // } else {
-    //     int debuggable = 0;
-    // }
 }
 
 void QOsgViewer::setTimerActive( bool active )

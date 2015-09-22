@@ -1125,7 +1125,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 	ow->set(IMU::SensorsStreamPtr(cData.completeImuStream));
 	cData.domainData.push_back(ow);
 
-	core::IHierarchyItemPtr item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("IMU stream"), QObject::tr("IMU sensors data stream"));
+	core::IHierarchyItemPtr item = utils::make_shared<core::HierarchyItem>(QObject::tr("IMU stream"), QObject::tr("IMU sensors data stream"));
 	root->appendChild(item);
 
 	unpackSensorsStream(cData.completeImuStream, cData.sensorsData, item, cData.domainData, profile);
@@ -1138,7 +1138,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 	ow->set(IMU::SensorsStreamPtr(estimatedData));
 	cData.domainData.push_back(ow);
 
-	item = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Filtered IMU stream"), QObject::tr("IMU filtered orientation stream"));
+	item = utils::make_shared<core::HierarchyItem>(QObject::tr("Filtered IMU stream"), QObject::tr("IMU filtered orientation stream"));
 	root->appendChild(item);
 
 	unpackSensorsStream(estimatedData, cData.sensorsData, item, cData.domainData, profile);
@@ -1342,13 +1342,20 @@ void IMUCostumeDataSource::unloadCostume(const CostumeID & id)
 			transaction->tryRemoveData(d);
 		}
 
-		//TODO - update hierarchy in analysis
-		//core::HierarchyDataItemPtr hierarchyRootItem;
-		it->second.skeletonMotion.reset();
+		hierarchyDM->transaction()->removeRoot(it->second.hierarchyRootItem);
+
+		it->second.hierarchyRootItem.reset();
 		it->second.CANopenStream.reset();
+		it->second.completeImuStream.reset();
 		it->second.costumeStream.reset();
-		it->second.completeImuStream.reset();		
 		core::VariantsList().swap(it->second.domainData);
+		it->second.profile.reset();
+		it->second.skeletonMotion.reset();
+		
+		for (auto & sd : it->second.sensorsData)
+		{
+			core::VariantsList().swap(sd.second.domainData);
+		}
 	}
 	else{
 		throw std::runtime_error("Costume not loaded");
@@ -1403,52 +1410,52 @@ void IMUCostumeDataSource::stopRecording(RecordingConfigurationPtr recording)
 	}
 }
 
-core::HierarchyItemPtr IMUCostumeDataSource::createRootItem()
-{
-	return utils::make_shared<core::HierarchyItem>(QObject::tr("Costumes data"), QObject::tr("Costumes data"), QIcon());
-}
+//core::HierarchyItemPtr IMUCostumeDataSource::createRootItem()
+//{
+//	return utils::make_shared<core::HierarchyItem>(QObject::tr("Costumes data"), QObject::tr("Costumes data"), QIcon());
+//}
+//
+//core::HierarchyItemPtr IMUCostumeDataSource::createStreamItem()
+//{
+//	return utils::make_shared<core::HierarchyItem>(QObject::tr("Streams"), QObject::tr("Costumes data streams"), QIcon());
+//}
+//
+//core::HierarchyItemPtr IMUCostumeDataSource::createRecordItem()
+//{
+//	return utils::make_shared<core::HierarchyItem>(QObject::tr("Recordings"), QObject::tr("Costumes data recordings"), QIcon());
+//}
+//
+//core::HierarchyItemPtr IMUCostumeDataSource::createIMUsItem()
+//{
+//	return utils::make_shared<core::HierarchyItem>(QObject::tr("IMUs"), QObject::tr("IMUs data"), QIcon());
+//}
 
-core::HierarchyItemPtr IMUCostumeDataSource::createStreamItem()
-{
-	return utils::make_shared<core::HierarchyItem>(QObject::tr("Streams"), QObject::tr("Costumes data streams"), QIcon());
-}
-
-core::HierarchyItemPtr IMUCostumeDataSource::createRecordItem()
-{
-	return utils::make_shared<core::HierarchyItem>(QObject::tr("Recordings"), QObject::tr("Costumes data recordings"), QIcon());
-}
-
-core::HierarchyItemPtr IMUCostumeDataSource::createIMUsItem()
-{
-	return utils::make_shared<core::HierarchyItem>(QObject::tr("IMUs"), QObject::tr("IMUs data"), QIcon());
-}
-
-void IMUCostumeDataSource::tryCreateRootItem()
-{
-	if (root == nullptr){
-		root = createRootItem();
-		auto hierarchyTransaction = hierarchyDM->transaction();
-		hierarchyTransaction->addRoot(root);
-	}
-}
-
-void IMUCostumeDataSource::tryCreateStreamItem()
-{
-	if (streamItems == nullptr){
-		streamItems = createStreamItem();
-		tryCreateRootItem();
-		root->appendChild(streamItems);
-	}
-}
-
-void IMUCostumeDataSource::tryCreateRecordedItem()
-{
-	if (recordedItems == nullptr){
-		recordedItems = createRecordItem();
-		tryCreateRootItem();
-		root->appendChild(recordedItems);
-	}
-}
+//void IMUCostumeDataSource::tryCreateRootItem()
+//{
+//	if (root == nullptr){
+//		root = createRootItem();
+//		auto hierarchyTransaction = hierarchyDM->transaction();
+//		hierarchyTransaction->addRoot(root);
+//	}
+//}
+//
+//void IMUCostumeDataSource::tryCreateStreamItem()
+//{
+//	if (streamItems == nullptr){
+//		streamItems = createStreamItem();
+//		tryCreateRootItem();
+//		root->appendChild(streamItems);
+//	}
+//}
+//
+//void IMUCostumeDataSource::tryCreateRecordedItem()
+//{
+//	if (recordedItems == nullptr){
+//		recordedItems = createRecordItem();
+//		tryCreateRootItem();
+//		root->appendChild(recordedItems);
+//	}
+//}
 
 void IMUCostumeDataSource::registerOrientationEstimationAlgorithm(IIMUOrientationEstimationAlgorithmPtr algorithm)
 {
@@ -1806,7 +1813,7 @@ void IMUCostumeDataSource::unpackSensorsStream(IMU::SensorsStreamPtr stream,
 		sd.second.domainData.push_back(ow);
 		domainData.push_back(ow);
 
-		auto imuItem = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), name, name);
+		auto imuItem = utils::make_shared<core::HierarchyItem>(name, name);
 		root->appendChild(imuItem);		
 
 		//ACC

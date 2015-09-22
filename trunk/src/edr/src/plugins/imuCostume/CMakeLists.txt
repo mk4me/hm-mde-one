@@ -31,6 +31,10 @@ SET_PRIVATE_HEADERS (
 	SkeletonJointsDelegate.h
 	Vector3DDelegate.h
 	ConnectCostumeInputDialog.h
+	ModelConfigurationWizardPage.h
+	ModelPhysicalDimensionsWizardPage.h
+	MotionEstimationConfigurationWizardPage.h
+	SensorsConfigurationWizardPage.h
 )
 
 SET_SOURCE_FILES(
@@ -55,6 +59,10 @@ SET_SOURCE_FILES(
 	SkeletonJointsDelegate.cpp
 	Vector3DDelegate.cpp
 	ConnectCostumeInputDialog.cpp
+	ModelConfigurationWizardPage.cpp
+	ModelPhysicalDimensionsWizardPage.cpp
+	MotionEstimationConfigurationWizardPage.cpp
+	SensorsConfigurationWizardPage.cpp
 )
 
 SET_MOC_FILES(
@@ -67,11 +75,18 @@ SET_MOC_FILES(
 	OrientationEstimationAlgorithmDelegate.h
 	SensorIDDelegate.h
 	ConnectCostumeInputDialog.h
+	ModelConfigurationWizardPage.h
+	ModelPhysicalDimensionsWizardPage.h
+	MotionEstimationConfigurationWizardPage.h
+	SensorsConfigurationWizardPage.h
 )
 
 SET_UI_FILES(
-	IMUCostumeListWidget.ui	
-	IMUCostumeProfileEditionWizard.ui
+	IMUCostumeListWidget.ui
+	ModelConfigurationWizardPage.ui
+	ModelPhysicalDimensionsWizardPage.ui
+	MotionEstimationConfigurationWizardPage.ui
+	SensorsConfigurationWizardPage.ui
 	RecordingWizard.ui
 	ConnectCostumeInputDialog.ui
 )

@@ -471,7 +471,7 @@ void IMUCostumeWidget::onLoadProfile()
 		return;
 	}
 
-	auto profile = utils::make_shared<IMU::CostumeProfile>(*(it->second));
+	IMU::CostumeProfilePtr profile(it->second->clone());
 
 	auto ret = 0;
 
@@ -496,7 +496,7 @@ void IMUCostumeWidget::onLoadProfile()
 			return;
 		}
 
-		profile = utils::make_shared<IMU::CostumeProfile>(ew.costumeProfile());
+		profile.reset(ew.costumeProfile().clone());
 
 		res = QMessageBox::question(this, tr("Save new profile"), tr("Would You like to save new profile?"));
 
@@ -551,15 +551,27 @@ void IMUCostumeWidget::innerInitializeAndLoad(IMU::CostumeProfilePtr profile,
 	{
 		IMU::IMUCostumeCalibrationAlgorithm::SensorDescription localsd;
 		localsd.jointName = sd.second.jointName;
-		localsd.jointIdx = localMapping.data().right.find(localsd.jointName)->get_left();;
-		localsd.offset = sd.second.offset;
-		localsd.preMulRotation = sd.second.preMulRotation;
-		localsd.postMulRotation = sd.second.postMulRotation;
+		localsd.jointIdx = localMapping.data().right.find(localsd.jointName)->get_left();
+		localsd.adjustment.offset = sd.second.adjustment.offset;
+		localsd.adjustment.preMulRotation = sd.second.adjustment.preMulRotation;
+		localsd.adjustment.postMulRotation = sd.second.adjustment.postMulRotation;
 
 		sa.insert(IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions::value_type(sd.first, localsd));
 	}
 
-	profile->calibrationAlgorithm->initialize(profile->skeleton, sa);
+	try{
+
+		profile->calibrationAlgorithm->initialize(profile->skeleton, sa);
+
+	}
+	catch (const std::exception & e){
+		QMessageBox::critical(this, tr("Calibration initialization failure"), tr("Could not initialize calibration algorithm. Reason: %1").arg(e.what()));
+		return;
+	}
+	catch (...){
+		QMessageBox::critical(this, tr("Calibration initialization failure"), tr("Could not initialize calibration algorithm. Unknown reason"));
+		return;
+	}
 
 	PLUGIN_LOG_DEBUG("Calibration initialized");
 
@@ -620,9 +632,9 @@ void IMUCostumeWidget::innerInitializeAndLoad(IMU::CostumeProfilePtr profile,
 	{
 		auto it = sa.find(ca.first);
 		auto pit = profile->sensorsDescriptions.find(ca.first);
-		pit->second.offset = it->second.offset = ca.second.offset;
-		pit->second.preMulRotation = it->second.preMulRotation = ca.second.preMulRotation;
-		pit->second.postMulRotation = it->second.postMulRotation = ca.second.postMulRotation;		
+		pit->second.adjustment.offset = it->second.adjustment.offset = ca.second.offset;
+		pit->second.adjustment.preMulRotation = it->second.adjustment.preMulRotation = ca.second.preMulRotation;
+		pit->second.adjustment.postMulRotation = it->second.adjustment.postMulRotation = ca.second.postMulRotation;
 	}
 
 	PLUGIN_LOG_DEBUG("Costume initialization done");
@@ -940,11 +952,11 @@ void serializeRecordedCostumeConfiguration(std::ostream & stream,
 	{
 		auto it = profile->sensorsDescriptions.find(sID);
 		stream << std::to_string(sID) << " " << it->second.jointName << " ";
-		serialize(stream, it->second.offset);
+		serialize(stream, it->second.adjustment.offset);
 		stream << " ";
-		serialize(stream, it->second.preMulRotation);
+		serialize(stream, it->second.adjustment.preMulRotation);
 		stream << " ";
-		serialize(stream, it->second.postMulRotation);
+		serialize(stream, it->second.adjustment.postMulRotation);
 		stream << " " << boost::lexical_cast<std::string>(it->second.orientationEstimationAlgorithm->ID()) << std::endl;
 	}
 

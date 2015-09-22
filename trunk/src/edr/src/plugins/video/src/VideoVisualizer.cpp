@@ -313,6 +313,7 @@ QWidget* VideoVisualizer::createWidget()
 
     viewer = new QOsgDefaultWidget();
 	viewer->setMinimumSize(50,50);
+	viewer->setKeyEventSetsDone(0);
     //viewer->setTimerActive(false);
 
     // pobranie cech kontekstu graficznego
@@ -358,13 +359,13 @@ QWidget* VideoVisualizer::createWidget()
 
     refresh(float(viewer->width()), float(viewer->height()));
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 
     //dodajemy tez event handler ze statystykami
     viewer->addEventHandler( new osgViewer::StatsHandler() );
     //viewer->setTimerActive(true);
 
-#endif
+//#endif
 
     viewer->setFocusPolicy(Qt::StrongFocus);
 

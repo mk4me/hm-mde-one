@@ -173,19 +173,19 @@ namespace IMU
 		void innerLoadCostume(const unsigned int idx);
 		void innerUnloadCostume(const unsigned int idx);		
 
-		static core::HierarchyItemPtr createRootItem();
+		/*static core::HierarchyItemPtr createRootItem();
 		static core::HierarchyItemPtr createStreamItem();
 		static core::HierarchyItemPtr createRecordItem();
-		static core::HierarchyItemPtr createIMUsItem();
+		static core::HierarchyItemPtr createIMUsItem();*/
 
 		void generateCostumeItem(const unsigned int idx,
 			const core::VariantsList & data,
 			core::HierarchyItemPtr parent);
 
-		void tryCreateRootItem();
+		/*void tryCreateRootItem();
 
 		void tryCreateStreamItem();
-		void tryCreateRecordedItem();
+		void tryCreateRecordedItem();*/
 
 		void resfreshCostumesData();
 
@@ -215,9 +215,9 @@ namespace IMU
 		//! Manager danych w plikach
 		core::IFileDataManager * fileDM;
 		//! Korzen drzewa dla analiz
-		core::HierarchyItemPtr root;
+		//core::HierarchyItemPtr root;
 		//! Dane strumieniowe
-		core::HierarchyItemPtr streamItems;
+		//core::HierarchyItemPtr streamItems;
 		//! Dane nagrane
 		core::HierarchyItemPtr recordedItems;
 

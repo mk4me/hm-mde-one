@@ -340,9 +340,9 @@ void ExtractCostumeMotion::extract(const IMU::SensorsStreamData & input, IMU::Mo
 	{
 		auto it = profile->sensorsDescriptions.find(i.first);
 		if (it != profile->sensorsDescriptions.end()){
-			const auto & adj = it->second;
+			const auto & sd = it->second;
 			//jointsGlobalOrientations[it->second.jointIdx] = i.second.orientation * adj.rotation.inverse();
-			jointsGlobalOrientations[it->second.jointIdx] = adj.preMulRotation * i.second.orientation * adj.postMulRotation;
+			jointsGlobalOrientations[it->second.jointIdx] = sd.adjustment.preMulRotation * i.second.orientation * sd.adjustment.postMulRotation;
 		}
 	}
 	

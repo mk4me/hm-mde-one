@@ -110,15 +110,14 @@ void MdeMainWindow::customViewInit(QWidget * log)
    addTab(analysisTab);*/
 
    addTab(coreUI::IMdeTabPtr(new AnalysisTab(aw, QIcon(":/mde/icons/Analizy.png"), tr("Analysis"))));
-   /*QIcon reportsIcon;
+   QIcon reportsIcon;
    reportsIcon.addPixmap(QPixmap(":/mde/icons/Raporty.png"),QIcon::Active);
    reportsIcon.addPixmap(QPixmap(":/mde/icons/RaportyH.png"),QIcon::Disabled);
    auto reportsTab = utils::make_shared<coreUI::ReportsTab>(reportsIcon, tr("Reports"));
    connect(aw, SIGNAL(reportCreated(const QString& )), reportsTab.get(), SLOT(enable()));
    reportsTab->setEnabled(false);
    addTab(reportsTab);
-   addTab(coreUI::IMdeTabPtr(new SimpleTab(console, QIcon(":/mde/icons/Operacje.png"),tr("Console"))));
-*/
+   //addTab(coreUI::IMdeTabPtr(new SimpleTab(console, QIcon(":/mde/icons/Operacje.png"),tr("Console"))));
    // TODO : najlepiej byloby przeniesc to do kontrolera
    auto serviceManager = plugin::getServiceManager();
    auto timeline = plugin::getServiceManager()->getService(core::UID::GenerateUniqueID("{0157346E-D1F3-4A4F-854F-37C87FA3E5F9}"));
@@ -140,7 +139,7 @@ void MdeMainWindow::customViewInit(QWidget * log)
         }
    }
 
-   coreUI::IMdeTabPtr reportsTab  = coreUI::IMdeTabPtr(new coreUI::ReportsTab(QIcon(":/mde/icons/Raporty.png"), tr("Reports")));
+   //coreUI::IMdeTabPtr reportsTab  = coreUI::IMdeTabPtr(new coreUI::ReportsTab(QIcon(":/mde/icons/Raporty.png"), tr("Reports")));
    //addTab(reportsTab);
    //addTab(coreUI::IMdeTabPtr(new SimpleTab(log, QIcon(":/mde/icons/log.png"),tr("Log"))));
 

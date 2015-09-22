@@ -19,7 +19,7 @@ ADD_PROJECT(plugin_fileSource "BOOST;corelib;c3dlib;kinematiclib;osgutils;kinema
 ADD_PROJECT(plugin_video "vidlib;FFMPEG;corelib;osgui" "plugins/video")
 ADD_PROJECT(plugin_newTimeline "QWT;corelib;timelinelib;OPENTHREADS" "plugins/newTimeline")
 ADD_PROJECT(plugin_kinematic "coreui;plugin_c3d;kinematiclib;kinematicUtils;hanimlib;acclaimformatslib;biovisionformatslib;viconformatslib;osgui;osgutils" "plugins/kinematic")
-ADD_PROJECT(plugin_hmdbCommunication "CURL;WSDLPULL;corelib;coreui;hmdbserviceslib;qthtmlgenlib;sqliteUtils;SQLCIPHER;QUAZIP;plugin_kinematic;plugin_video;threadingUtils;networkUtils" "plugins/hmdbCommunication")
+ADD_PROJECT(plugin_hmdbCommunication "CURL;WSDLPULL;corelib;coreui;hmdbserviceslib;qthtmlgenlib;sqliteUtils;SQLCIPHER;QUAZIP;plugin_video;plugin_kinematic;threadingUtils;networkUtils" "plugins/hmdbCommunication")
 ADD_PROJECT(plugin_newChart "QWT;coreui;plugin_c3d" "plugins/newChart")
 ADD_PROJECT(plugin_subject "corelib;vidlib;plugin_c3d" "plugins/subject")
 ADD_PROJECT(plugin_hmm "corelib;coreui;c3dlib;QWT;vidlib;osgutils;kinematiclib;plugin_subject" "plugins/hmmlib")

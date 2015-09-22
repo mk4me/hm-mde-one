@@ -82,7 +82,8 @@ cw(nullptr)
 
 	dialog->setLayout(l);
 
-	connect(pd, SIGNAL(reset()), pd, SLOT(cancel()));
+	//connect(pd, SIGNAL(reset()), pd, SLOT(cancel()));
+	//connect(pd, SIGNAL(canceled()), pd, SLOT(cancel()));
 
 	connect(pd, SIGNAL(accepted()), dialog, SLOT(accept()));
 	connect(pd, SIGNAL(finished(int)), dialog, SLOT(done(int)));
@@ -153,7 +154,6 @@ void CostumeSkeletonMotionHelper::perform()
 		}
 
 		estimate(data);
-		auto val = pd->value();
 		if (pd->value() >= calibratinStageChangeValue){
 			if (cw != nullptr){
 				if (cw->isVisible() == false){
@@ -173,13 +173,19 @@ void CostumeSkeletonMotionHelper::perform()
 		}
 		else {
 			previousTime = data.timestamp;
+			auto val = minCounter();
 
-			if (pd->value() < calibratinStageChangeValue){
-
-				pd->setValue(minCounter());
+			if (val >= pd->maximum()){
+				cancel();
+				dialog->reject();
 			}
-			else{
-				pd->setValue(minCounter() + calibratinStageChangeValue);
+			else {
+
+				if (pd->value() >= calibratinStageChangeValue){
+					val += calibratinStageChangeValue;
+				}
+
+				pd->setValue(val);
 			}
 		}
 	}

@@ -177,12 +177,12 @@ CoreVisualizerWidget::CoreVisualizerWidget(core::VisualizerPtr visualizer, QWidg
 	connect(dataDeselectAll, SIGNAL(triggered()), this, SLOT(removeAllSeries()));
 
 	//! Akcja odpowiedzialna za przełanczanie pomiędzy aktywnym obserwowaniem dataManagera w przyapdku zmian danych związanych z seriami danych
-	CoreAction * liveObserveDataAction = new CoreAction(tr("Utils"), QIcon(), tr("Live data update"), this, CoreTitleBar::Right);
-	liveObserveDataAction->setCheckable(true);
-	liveObserveDataAction->setChecked(true);
-	connect(liveObserveDataAction, SIGNAL(triggered(bool)), this, SLOT(onLiveObserveChange(bool)));
+	//CoreAction * liveObserveDataAction = new CoreAction(tr("Utils"), QIcon(), tr("Live data update"), this, CoreTitleBar::Right);
+	//liveObserveDataAction->setCheckable(true);
+	//liveObserveDataAction->setChecked(true);
+	//connect(liveObserveDataAction, SIGNAL(triggered(bool)), this, SLOT(onLiveObserveChange(bool)));
 
-	addAction(liveObserveDataAction);
+	//addAction(liveObserveDataAction);
 }
 
 CoreVisualizerWidget::CoreVisualizerWidget(const CoreVisualizerWidget & visualizer)

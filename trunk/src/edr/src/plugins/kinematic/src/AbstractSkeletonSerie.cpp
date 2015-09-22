@@ -290,20 +290,27 @@ void AbstractSkeletonSerie::setBodyPlanesVisible()
 	bodyPlanesSwitch->setNodeMask(~(bodyPlanesSwitch->getNodeMask()));
 }
 
+PointsOrientationsDrawer * AbstractSkeletonSerie::pointsAxisDrawer()
+{
+	return &pointsAxesDrawer;
+}
 
 void PointsOrientationsDrawer::init(kinematic::Skeleton::JointConstPtr root)
 {
-	if (pointAxes.empty()) {
+	if (pointAxes.empty()) {		
 
-		auto visitor = [&](kinematic::Skeleton::JointConstPtr node, kinematic::Skeleton::Joint::size_type level)
-		{
-			osg::ref_ptr<osgManipulator::TranslateAxisDragger> ne = new osgManipulator::TranslateAxisDragger();
-			ne->setupDefaultGeometry();
-			pointAxes.push_back(ne);
-			localNode->addChild(ne);
-		};
+		NonDummyJointFilter ndjf;
 
-		kinematic::LinearizedSkeleton::Visitor::VisitOrder::NodeVisitOrder::visit(root, visitor);
+		treeContainer::VisitPolicies::Node::LevelOrder::visit(root, [&](kinematic::Skeleton::JointConstPtr joint, unsigned int idx)
+		{			
+			if (joint->isRoot() == true || ndjf(joint) == true){
+				osg::ref_ptr<osgManipulator::TranslateAxisDragger> ne = new osgManipulator::TranslateAxisDragger();
+				ne->setupDefaultGeometry();
+				pointAxes.push_back(ne);
+				localNode->addChild(ne);
+			}
+		});
+		
 		this->root = root;
 		setVisible(visible);
 	} else {
@@ -320,17 +327,19 @@ void PointsOrientationsDrawer::update()
 {
 	auto root = this->root.lock();
 	if (root) {
-		auto it = pointAxes.begin();
-		auto visitor = [&](kinematic::Skeleton::JointConstPtr node, kinematic::Skeleton::Joint::size_type level)
+		unsigned int nidx = 0;
+		NonDummyJointFilter ndjf;
+		treeContainer::VisitPolicies::Node::LevelOrder::visit(root, [&](kinematic::Skeleton::JointConstPtr joint, unsigned int idx)
 		{
-			auto ne = *(it++);
-			osg::Matrix mat;
-			mat.set(node->value().globalOrientation());
-			mat.setTrans(node->value().globalPosition());
-			mat.preMultScale(osg::Vec3(scale, scale, scale));
-			ne->setMatrix(mat);
-		};
-		kinematic::LinearizedSkeleton::Visitor::VisitOrder::NodeVisitOrder::visit(root, visitor);
+			if (joint->isRoot() == true || ndjf(joint) == true){
+				auto ne = pointAxes[nidx++];
+				osg::Matrix mat;
+				mat.set(joint->value().globalOrientation());
+				mat.setTrans(joint->value().globalPosition());
+				mat.preMultScale(osg::Vec3(scale, scale, scale));
+				ne->setMatrix(mat);
+			}
+		});		
 	}
 }
 
@@ -342,15 +351,20 @@ void PointsOrientationsDrawer::setLength(double length)
 void PointsOrientationsDrawer::setVisible(bool visible)
 {
 	this->visible = visible;
-	if (visible == true) {
-		localNode->setAllChildrenOn();
-	} else {
-		localNode->setAllChildrenOff();
-	}
-
+	localNode->setNodeMask((visible == true) ? ~0 : 0);
 }
 
-bool PointsOrientationsDrawer::isVisible()
+bool PointsOrientationsDrawer::isVisible() const
 {
 	return this->visible;
+}
+
+void PointsOrientationsDrawer::setVisible(bool visible, unsigned int idx)
+{
+	localNode->setValue(idx, visible);
+}
+
+bool PointsOrientationsDrawer::isVisible(unsigned int idx) const
+{
+	return localNode->getValue(idx);
 }

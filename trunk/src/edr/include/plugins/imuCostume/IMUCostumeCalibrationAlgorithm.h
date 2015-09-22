@@ -39,12 +39,14 @@ namespace IMU
 		};
 
 		//! Struktura opisuj¹ca konfiguracjê sensorów
-		struct SensorDescription : public SensorAdjustment
+		struct SensorDescription
 		{
 			//! Nazwa jointa na którym umiejscowiony jest sensor
 			std::string jointName;
 			//! ID jointa w zlinearyzowanym szkielecie (lokalne, bez liœci)
 			kinematic::LinearizedSkeleton::NodeIDX jointIdx;
+			//! Ustawienie
+			SensorAdjustment adjustment;
 		};
 
 		//! Mapa poprawek sensorów: ID -> poprawka
