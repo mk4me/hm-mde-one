@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="pl_PL">
+<TS version="2.1" language="pl_PL">
 <context>
     <name>ConfigurationDialog</name>
     <message>
@@ -179,7 +179,7 @@ p, li { white-space: pre-wrap; }
         <source>Wykonaj test</source>
         <translation type="unfinished"></translation>
     </message>
-    <message utf8="true">
+    <message>
         <location filename="../ui/OsgWidget.ui" line="41"/>
         <source>Naciśnij mnie</source>
         <translation type="unfinished"></translation>
@@ -474,7 +474,7 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/CoreTextEditWidget.cpp" line="470"/>
         <source>ODF files (*.odt);;HTML-Files (*.htm *.html);;All Files (*)</source>
-        <translation>Pliki ODF (*.odt); Pliki HTML (*.htm *.html); Wszystkie pliki (*)</translation>
+        <translation type="unfinished">Pliki ODF (*.odt);; Pliki HTML (*.htm *.html);; Wszystkie pliki (*)</translation>
     </message>
     <message>
         <location filename="../src/CoreTextEditWidget.cpp" line="488"/>

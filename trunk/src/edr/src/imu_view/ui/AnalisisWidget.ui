@@ -372,7 +372,7 @@
            <normaloff>:/mde/icons/karta.png</normaloff>:/mde/icons/karta.png</iconset>
          </attribute>
          <attribute name="title">
-          <string>Raports</string>
+          <string>Reports</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
@@ -405,6 +405,9 @@
                  </sizepolicy>
                 </property>
                 <layout class="QFormLayout" name="formLayout">
+                 <property name="fieldGrowthPolicy">
+                  <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                 </property>
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_2">
                    <property name="text">
@@ -422,15 +425,15 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="1" column="1">
+                  <widget class="QComboBox" name="templateComboBox"/>
+                 </item>
                  <item row="2" column="0">
                   <widget class="QLabel" name="label_4">
                    <property name="text">
                     <string>Style</string>
                    </property>
                   </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QComboBox" name="templateComboBox"/>
                  </item>
                  <item row="2" column="1">
                   <widget class="QComboBox" name="styleComboBox"/>
@@ -439,6 +442,13 @@
                   <widget class="QPushButton" name="createReportButton">
                    <property name="text">
                     <string>Create Report</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QPushButton" name="deleteLastButton">
+                   <property name="text">
+                    <string>Delete last</string>
                    </property>
                   </widget>
                  </item>

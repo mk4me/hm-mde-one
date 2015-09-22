@@ -225,6 +225,7 @@ void AnalisisWidget::setContextItems( coreUI::IAppUsageContextManager* manager, 
     //manager->addWidgetToContext(visualizerUsageContext, this->raportsArea);
     //connect(visualizerUsageContext.get(), SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
     connect(createReportButton, SIGNAL(clicked()), this, SLOT(createReportClicked()));
+	connect(deleteLastButton, SIGNAL(clicked()), this, SLOT(deleteLastClicked()));
     connect(this, SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
     AnalysisTreeContextPtr treeContext = utils::make_shared<AnalysisTreeContext>(flexiTabWidget, model->getTreeModel(), contextMenu);
     manager->addContext(treeContext, parent);
@@ -816,4 +817,17 @@ void AnalisisWidget::initReportsCombos()
 void AnalisisWidget::closeSet(int idx)
 {
 	topMainWindow->removeSet(idx);
+}
+
+void AnalisisWidget::deleteLastClicked()
+{
+	
+	int idx = raportsArea->layout()->count() - 1;
+	if (idx >= 0) {
+		auto item = raportsArea->layout()->itemAt(idx);
+		if (item) {
+			//raportsArea->layout()->removeWidget(item->widget());
+			delete item->widget();
+		}
+	}
 }
