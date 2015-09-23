@@ -225,7 +225,8 @@ void AnalisisWidget::setContextItems( coreUI::IAppUsageContextManager* manager, 
     //manager->addWidgetToContext(visualizerUsageContext, this->raportsArea);
     //connect(visualizerUsageContext.get(), SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
     connect(createReportButton, SIGNAL(clicked()), this, SLOT(createReportClicked()));
-	connect(this, SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
+	connect(clearAllButton, SIGNAL(clicked()), this, SLOT(clearAllClicked()));
+    connect(this, SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
     AnalysisTreeContextPtr treeContext = utils::make_shared<AnalysisTreeContext>(flexiTabWidget, model->getTreeModel(), contextMenu);
     manager->addContext(treeContext, parent);
     getContextEventFilter()->registerPermamentContextWidget(treeView);
@@ -817,4 +818,13 @@ void AnalisisWidget::initReportsCombos()
 void AnalisisWidget::closeSet(int idx)
 {
 	topMainWindow->removeSet(idx);
+}
+
+void AnalisisWidget::clearAllClicked()
+{
+	auto objects = raportsArea->findChildren<ReportsThumb *>();
+	for(QObject* obj : objects)
+	{
+		delete obj;
+	}
 }

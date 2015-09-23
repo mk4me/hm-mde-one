@@ -135,7 +135,7 @@ private Q_SLOTS:
     void onVisualizerFocus(QWidget* w);
 
     void createReportClicked();
-	
+	void clearAllClicked();
 private:
     coreUI::CoreDockWidgetManager* topMainWindow;
     QFrame* bottomMainWindow;
