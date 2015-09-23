@@ -89,7 +89,7 @@ IMUCostumeProfileEditionWizard::IMUCostumeProfileEditionWizard(const imuCostume:
 		}
 
 		if (profile->motionEstimationAlgorithm != nullptr){
-			cID = profile->motionEstimationAlgorithm->ID();
+			mID = profile->motionEstimationAlgorithm->ID();
 		}
 
 		addPage(new MotionEstimationConfigurationWizardPage(calibAlgorithms, motionAlgorithms, cID, mID));

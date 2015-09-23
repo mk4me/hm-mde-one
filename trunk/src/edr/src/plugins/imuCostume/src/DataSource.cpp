@@ -723,7 +723,7 @@ bool IMUCostumeDataSource::lateInit()
 	refreshThread.run(&IMUCostumeDataSource::resfreshCostumesData, this);
 
 	try{
-		auto p = plugin::getResourcesPath() / "profiles.pro";
+		auto p = plugin::getApplicationDataPath() / "profiles.pro";
 
 		if (core::Filesystem::pathExists(p) == true){
 			std::ifstream f(p.string());
@@ -760,9 +760,9 @@ void IMUCostumeDataSource::finalize()
 	}
 
 	if (costumesProfiles_.empty() == false){
-
+		auto p = plugin::getApplicationDataPath() / "profiles.pro";
+		PLUGIN_LOG_INFO("Trying to write " << costumesProfiles_.size() <<" profiles to " << p.string());
 		try{
-			auto p = plugin::getResourcesPath() / "profiles.pro";
 		
 			std::ofstream f(p.string());
 

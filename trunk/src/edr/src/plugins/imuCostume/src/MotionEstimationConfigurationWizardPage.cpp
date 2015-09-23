@@ -72,12 +72,14 @@ MotionEstimationConfigurationWizardPage::MotionEstimationConfigurationWizardPage
 	{
 		const auto size = ui->calibrationAlgorithmComboBox->count();
 
-		for (std::remove_const<decltype(size)>::type i = 0; i < size; ++i)
+		for (std::remove_const<decltype(size)>::type i = 1; i < size; ++i)
 		{
-			auto s = ui->calibrationAlgorithmComboBox->itemData(i).value<IMU::IMUCostumeCalibrationAlgorithmConstPtr>();
-			if (s->ID() == currentCalibID){
-				ui->calibrationAlgorithmComboBox->setCurrentIndex(i);
-				break;
+			if (ui->calibrationAlgorithmComboBox->itemData(i).canConvert<IMU::IMUCostumeCalibrationAlgorithmConstPtr>() == true){
+				auto s = ui->calibrationAlgorithmComboBox->itemData(i).value<IMU::IMUCostumeCalibrationAlgorithmConstPtr>();
+				if (s->ID() == currentCalibID){
+					ui->calibrationAlgorithmComboBox->setCurrentIndex(i);
+					break;
+				}
 			}
 		}
 	}
@@ -86,12 +88,14 @@ MotionEstimationConfigurationWizardPage::MotionEstimationConfigurationWizardPage
 	{
 		const auto size = ui->motionEstimationAglorithmComboBox->count();
 
-		for (std::remove_const<decltype(size)>::type i = 0; i < size; ++i)
+		for (std::remove_const<decltype(size)>::type i = 1; i < size; ++i)
 		{
-			auto s = ui->motionEstimationAglorithmComboBox->itemData(i).value<IMU::IMUCostumeMotionEstimationAlgorithmConstPtr>();
-			if (s->ID() == currentMotionID){
-				ui->motionEstimationAglorithmComboBox->setCurrentIndex(i);
-				break;
+			if (ui->motionEstimationAglorithmComboBox->itemData(i).canConvert<IMU::IMUCostumeMotionEstimationAlgorithmConstPtr>() == true){
+				auto s = ui->motionEstimationAglorithmComboBox->itemData(i).value<IMU::IMUCostumeMotionEstimationAlgorithmConstPtr>();
+				if (s->ID() == currentMotionID){
+					ui->motionEstimationAglorithmComboBox->setCurrentIndex(i);
+					break;
+				}
 			}
 		}
 	}

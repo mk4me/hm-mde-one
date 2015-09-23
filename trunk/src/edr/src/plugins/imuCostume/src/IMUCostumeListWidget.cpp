@@ -670,7 +670,13 @@ void IMUCostumeWidget::onLoadAll()
 
 void IMUCostumeWidget::onUnloadAll()
 {
-	//ds->unloadAllCostumes();
+	coreUI::CoreCursorChanger cc;
+	ui->recordPushButton->setEnabled(false);
+	for (unsigned int i = 0; i < ui->costumesTreeWidget->topLevelItemCount(); ++i){
+		const auto id = ui->costumesTreeWidget->currentItem()->data(i, Qt::UserRole).value<imuCostume::CostumeRawIO::CostumeAddress>();
+		ds->unloadCostume(id);
+		recordingDetails.erase(id);
+	}	
 }
 
 void IMUCostumeWidget::onLoadDatFile()

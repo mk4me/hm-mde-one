@@ -45,12 +45,14 @@ ModelConfigurationWizardPage::ModelConfigurationWizardPage(const IMU::IIMUDataSo
 {
 	const auto size = ui->modelComboBox->count();
 
-	for (std::remove_const<decltype(size)>::type i = 0; i < size; ++i)
+	for (std::remove_const<decltype(size)>::type i = 1; i < size; ++i)
 	{
-		auto s = ui->modelComboBox->itemData(i).value<IMU::SkeletonConstPtr>();
-		if (s->ID() == currentID){
-			ui->modelComboBox->setCurrentIndex(i);
-			break;
+		if (ui->modelComboBox->itemData(i).canConvert<IMU::SkeletonConstPtr>() == true){
+			const auto s = ui->modelComboBox->itemData(i).value<IMU::SkeletonConstPtr>();
+			if (s->ID() == currentID){
+				ui->modelComboBox->setCurrentIndex(i);
+				break;
+			}
 		}
 	}
 }

@@ -60,8 +60,11 @@ SensorsConfigurationWizardPage::SensorsConfigurationWizardPage(
 	ui->sensorsConfigurationTableWidget->setItemDelegateForColumn(OffsetIDX, vector3DDelegate);
 
 	ui->sensorsConfigurationTableWidget->setRowCount(costumeSensors.size());
+	
 	ui->sensorsConfigurationTableWidget->blockSignals(true);
-	unsigned int row = 0;
+	ui->sensorsConfigurationTableWidget->model()->blockSignals(true);
+
+	unsigned int row = 0;	
 
 	//idziemy po wszystkich sensorach
 	for (const auto & id : costumeSensors)
@@ -70,7 +73,7 @@ SensorsConfigurationWizardPage::SensorsConfigurationWizardPage(
 		{
 			auto sensorItem = new QTableWidgetItem(QString("%1").arg(id));
 			sensorItem->setFlags(sensorItem->flags() | Qt::ItemFlag::ItemIsUserCheckable | Qt::ItemFlag::ItemIsEnabled);
-			sensorItem->setCheckState(checkStates[row]);
+			sensorItem->setCheckState(Qt::Unchecked);
 			ui->sensorsConfigurationTableWidget->setItem(row, SensorIDX, sensorItem);
 			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, SensorIDX), QVariant(id));
 		}
@@ -109,6 +112,7 @@ SensorsConfigurationWizardPage::SensorsConfigurationWizardPage(
 	}
 
 	ui->sensorsConfigurationTableWidget->blockSignals(false);
+	ui->sensorsConfigurationTableWidget->model()->blockSignals(false);
 }
 
 SensorsConfigurationWizardPage::SensorsConfigurationWizardPage(
@@ -119,6 +123,9 @@ SensorsConfigurationWizardPage::SensorsConfigurationWizardPage(
 	: SensorsConfigurationWizardPage(costumeSensors, orientAlgorithms, modelPage, parent)
 {
 	int row = 0;
+
+	ui->sensorsConfigurationTableWidget->blockSignals(true);
+	ui->sensorsConfigurationTableWidget->model()->blockSignals(true);
 
 	for (const auto & id : costumeSensors)
 	{
@@ -196,6 +203,9 @@ SensorsConfigurationWizardPage::SensorsConfigurationWizardPage(
 
 		++row;
 	}
+
+	ui->sensorsConfigurationTableWidget->blockSignals(false);
+	ui->sensorsConfigurationTableWidget->model()->blockSignals(false);
 }
 
 SensorsConfigurationWizardPage::~SensorsConfigurationWizardPage()
