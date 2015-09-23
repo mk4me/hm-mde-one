@@ -225,8 +225,7 @@ void AnalisisWidget::setContextItems( coreUI::IAppUsageContextManager* manager, 
     //manager->addWidgetToContext(visualizerUsageContext, this->raportsArea);
     //connect(visualizerUsageContext.get(), SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
     connect(createReportButton, SIGNAL(clicked()), this, SLOT(createReportClicked()));
-	connect(deleteLastButton, SIGNAL(clicked()), this, SLOT(deleteLastClicked()));
-    connect(this, SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
+	connect(this, SIGNAL(reportCreated(const QString&)), model.get(), SIGNAL(reportCreated(const QString&)));
     AnalysisTreeContextPtr treeContext = utils::make_shared<AnalysisTreeContext>(flexiTabWidget, model->getTreeModel(), contextMenu);
     manager->addContext(treeContext, parent);
     getContextEventFilter()->registerPermamentContextWidget(treeView);
@@ -346,7 +345,7 @@ void AnalisisWidget::addToReports( const QPixmap& pixmap )
     const int maxH = 128;
     const int maxW = 128;
     QWidget* list = raportsArea;
-    QLabel* thumb = new QLabel();
+	ReportsThumb* thumb = new ReportsThumb();
 
     if (pixmap.width() > pixmap.height()) {
         int newHeight = static_cast<int>(1.0 * maxH * pixmap.height() / pixmap.width());
@@ -358,6 +357,7 @@ void AnalisisWidget::addToReports( const QPixmap& pixmap )
 
     thumb->setScaledContents(true);
     thumb->setPixmap(pixmap);
+
 
     QGridLayout* grid = qobject_cast<QGridLayout*>(list->layout());
     if (grid) {
@@ -817,17 +817,4 @@ void AnalisisWidget::initReportsCombos()
 void AnalisisWidget::closeSet(int idx)
 {
 	topMainWindow->removeSet(idx);
-}
-
-void AnalisisWidget::deleteLastClicked()
-{
-	
-	int idx = raportsArea->layout()->count() - 1;
-	if (idx >= 0) {
-		auto item = raportsArea->layout()->itemAt(idx);
-		if (item) {
-			//raportsArea->layout()->removeWidget(item->widget());
-			delete item->widget();
-		}
-	}
 }

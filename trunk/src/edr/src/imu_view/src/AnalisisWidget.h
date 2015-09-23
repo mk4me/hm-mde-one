@@ -23,11 +23,38 @@
 #include <coreui/IAppUsageContext.h>
 #include "SummaryWindow.h"
 #include "VisualizerEventFilter.h"
+#include <QtWidgets/QMenu>
+#include <QtGui/QContextMenuEvent>
 
 class AnalisisTreeWidget;
 class AnalysisTreeContextMenu;
 
 class HelperAction;
+
+class ReportsThumb : public QLabel
+{
+	Q_OBJECT;
+public:
+	virtual ~ReportsThumb() {}
+	ReportsThumb(QWidget* parent = nullptr) : 
+		QLabel(parent),
+		deleteMe(tr("Delete"), parent)
+	{
+		setMouseTracking(true);
+		connect(&deleteMe, SIGNAL(triggered()), this, SLOT(deleteLater()));
+	}
+protected:
+	virtual void enterEvent(QEvent *e) { setStyleSheet("border: 2px solid"); }
+	virtual void leaveEvent(QEvent *e) { setStyleSheet("border: 0px solid"); }
+	virtual void contextMenuEvent(QContextMenuEvent *event)
+	{
+		QMenu menu(this);
+		menu.addAction(&deleteMe);
+		menu.exec(event->globalPos());
+	}
+
+	QAction deleteMe;
+};
 
 //! Klasa jest odpowiedzialna za widok zakładki analiz
 class AnalisisWidget : public QWidget, private Ui::AnalisisWidget
@@ -108,7 +135,7 @@ private Q_SLOTS:
     void onVisualizerFocus(QWidget* w);
 
     void createReportClicked();
-	void deleteLastClicked();
+	
 private:
     coreUI::CoreDockWidgetManager* topMainWindow;
     QFrame* bottomMainWindow;

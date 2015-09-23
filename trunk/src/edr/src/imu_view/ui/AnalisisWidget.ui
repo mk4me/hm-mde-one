@@ -354,8 +354,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>312</width>
-                  <height>438</height>
+                  <width>63</width>
+                  <height>16</height>
                  </rect>
                 </property>
                </widget>
@@ -442,13 +442,6 @@
                   <widget class="QPushButton" name="createReportButton">
                    <property name="text">
                     <string>Create Report</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QPushButton" name="deleteLastButton">
-                   <property name="text">
-                    <string>Delete last</string>
                    </property>
                   </widget>
                  </item>
