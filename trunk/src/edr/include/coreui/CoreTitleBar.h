@@ -17,6 +17,7 @@
 class QToolBar;
 class QAction;
 class QDockWidget;
+class QMouseEvent;
 
 namespace Ui {
 	class CoreTitleBar;
@@ -34,8 +35,11 @@ class COREUI_EXPORT CoreTitleBar : public QWidget
     Q_OBJECT
 
 public:
+	//! Typ wyliczeniowy opisuj¹cy domyœlny mechanizm dwukliku na tytule okna
+	enum ToggleType { Dock, FullScreen };
+
 	//! Typ opisuj¹cy stronê do której ma trafiæ dana akcja
-	enum SideType {Left, Right};
+	enum SideType {Left, Right, Both, Any};
 	//! Interfejs akcji chc¹cych potencjalnie dzia³aæ z corowym titlebarem
 	class ICoreTitleBarAction
 	{
@@ -43,11 +47,6 @@ public:
 		//! \return Strona po której ma siê pojawiæ akcja
 		virtual SideType side() const = 0;
 	};
-
-private:
-
-	//! Typ œledz¹cy rozmieszczenie akcji wg stron
-	typedef std::map<QObject *, SideType> ObjectsSides;
 
 public:
 	//! Destruktor wirtualny
@@ -71,21 +70,31 @@ public:
 	QAction * addAction(const QString & text, const QObject * receiver, const char * member, SideType side = Left);
 	QAction * addAction(const QIcon & icon, const QString & text, const QObject * receiver, const char * member, SideType side = Left);
 	QAction * addSeparator(SideType side = Left);
-	QAction * addWidget(QWidget * widget, SideType side = Left);
-	void clearAll();
-	void clearSide(SideType side = Left);
+	QAction * addWidget(QWidget * widget, SideType side = Left);	
+	void clearActions(SideType side);
+	void setActionsEnabled(SideType side, bool enable);
+	void setActionsVisible(SideType side, bool visible);
 	QSize iconSize () const;
 	QAction * insertSeparator(QAction * before);
 	QAction * insertWidget(QAction * before, QWidget * widget);
-	QAction * toggleViewAction() const;
+	QAction * toggleVisibilityAction();
 	Qt::ToolButtonStyle titlebarButtonStyle() const;
-	QWidget * widgetForAction(QAction * action) const;
+	QWidget * widgetForAction(QAction * action);
 
     bool isTitleVisible() const;
+
+	void setToggleType(ToggleType toggleType);
+	ToggleType toggleType() const;
     
 public slots:
 
     void setTitleVisible(bool visible);
+	void setToggleDockButtonVisible(bool visible);
+	void setToggleDockButtonEnabled(bool enable);
+	void setToggleFullScreenButtonVisible(bool visible);
+	void setToggleFullScreenButtonEnabled(bool enable);
+	void setCloseButtonVisible(bool visible);
+	void setCloseButtonEnabled(bool enable);
 
 	//! Qt API obslugujace kssztalt i rozmiar dla akcji
 	void setIconSize(const QSize & iconSize);
@@ -94,12 +103,14 @@ public slots:
 private slots:
 
 	void toggleFloating(bool floating);
+	void toggleFullScreen(bool fullScreen);
+	void toggleVisibility(bool visible);
 
 	void refreshFeatures(QDockWidget::DockWidgetFeatures features);
 
 	void onActionTriggeredLeft(QAction * action);
 	void onActionTriggeredRight(QAction * action);
-	void onToogleView(bool b);
+	
 
 	void onTopLevelChanged(bool floating);
 
@@ -112,23 +123,27 @@ signals:
 	void visibilityChanged(bool visible);
 
 protected:
+
+	virtual void mouseDoubleClickEvent(QMouseEvent * event);
+
     //virtual void paintEvent(QPaintEvent *paintEvent);
 	virtual void changeEvent(QEvent * event);
 	virtual bool event(QEvent * event);
 	virtual void paintEvent(QPaintEvent * event);
 
 private:
-	CoreTitleBar(bool floating, QWidget * parent = nullptr);
+	CoreTitleBar(bool floating, QWidget * parent = nullptr, ToggleType toggleType = Dock);
 	void updateTitleOrientation();
 
-private:
-	QAction * toogleViewAction_;
-	Ui::CoreTitleBar * ui;
-    ObjectsSides objectsSides_;
+private:	
+	Ui::CoreTitleBar * ui;    
 	QToolBar * leftToolbar;
 	QToolBar * rightToolbar;
 	bool verticalOrientation_;
 	bool floating_;
+	bool wasFloating_;
+	bool updateFullScreen;
+	ToggleType toggleType_;
 };
 
 }

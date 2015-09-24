@@ -11,12 +11,13 @@
 #include <QtWidgets/QGraphicsProxyWidget>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QAction>
+#include <utils/Push.h>
 
 using namespace coreUI;
 
-CoreTitleBar::CoreTitleBar(bool floating, QWidget* parent) : QWidget(parent), ui(new Ui::CoreTitleBar),
-	floating_(floating), leftToolbar(new QToolBar), rightToolbar(new QToolBar),
-	toogleViewAction_(new QAction(nullptr)), verticalOrientation_(false)
+CoreTitleBar::CoreTitleBar(bool floating, QWidget* parent, ToggleType toggleType) : QWidget(parent), ui(new Ui::CoreTitleBar),
+floating_(floating), wasFloating_(floating), updateFullScreen(true), leftToolbar(new QToolBar), rightToolbar(new QToolBar),
+verticalOrientation_(false), toggleType_(toggleType)
 {
     ui->setupUi(this);
 	ui->titleLabel->setAttribute(Qt::WA_TransparentForMouseEvents, true);
@@ -24,6 +25,7 @@ CoreTitleBar::CoreTitleBar(bool floating, QWidget* parent) : QWidget(parent), ui
 	ui->actionDock_Undock->setChecked(!floating);
 	ui->buttonFloat->setDefaultAction(ui->actionDock_Undock);
 	ui->buttonClose->setDefaultAction(ui->actionClose);
+	ui->buttonFullscreen->setDefaultAction(ui->actionFull_screen_Window);
 	leftToolbar->setParent(ui->leftToolbarPlaceholder);
 	leftToolbar->setVisible(false);
 	rightToolbar->setParent(ui->rightToolbarPlaceholder);
@@ -33,10 +35,6 @@ CoreTitleBar::CoreTitleBar(bool floating, QWidget* parent) : QWidget(parent), ui
 
 	connect(leftToolbar, SIGNAL(actionTriggered(QAction*)), this, SLOT(onActionTriggeredLeft(QAction*)));
 	connect(rightToolbar, SIGNAL(actionTriggered(QAction*)), this, SLOT(onActionTriggeredRight(QAction*)));
-
-	toogleViewAction_->setParent(this);
-	toogleViewAction_->setCheckable(true);
-	connect(toogleViewAction_, SIGNAL(triggered(bool)), this, SLOT(onToogleView(bool)));
 	setIconSize(QSize(16,16));
 }
 
@@ -47,9 +45,9 @@ CoreTitleBar::~CoreTitleBar()
 
 void CoreTitleBar::onTopLevelChanged(bool floating)
 {
-	ui->buttonFloat->blockSignals(true);
-	ui->buttonFloat->setChecked(floating);
-	ui->buttonFloat->blockSignals(false);
+	ui->actionDock_Undock->blockSignals(true);
+	ui->actionDock_Undock->setChecked(floating);
+	ui->actionDock_Undock->blockSignals(false);
 }
 
 void CoreTitleBar::toggleFloating(bool floating)
@@ -57,6 +55,12 @@ void CoreTitleBar::toggleFloating(bool floating)
 	if(parentWidget() != nullptr){
 		QDockWidget *dockWidget = qobject_cast<QDockWidget*>(parentWidget());
 		if(dockWidget != nullptr) {
+
+			if (dockWidget->isFullScreen() == true){
+				//try return from fullscreen
+				dockWidget->showNormal();
+			}
+
 			dockWidget->setFloating(floating);
 		}
 	}
@@ -73,6 +77,42 @@ void CoreTitleBar::closeWindow()
 	}
 
 	this->close();
+}
+
+void CoreTitleBar::toggleFullScreen(bool fullScreen)
+{
+	if (parentWidget() != nullptr){
+		QDockWidget *dockWidget = qobject_cast<QDockWidget*>(parentWidget());
+		if (dockWidget != nullptr && dockWidget->isFullScreen() != fullScreen) {
+			utils::Push p(updateFullScreen, false);
+			if (fullScreen == true){
+				wasFloating_ = dockWidget->isFloating();
+				if (wasFloating_ == false){
+					dockWidget->setFloating(true);
+				}
+
+				dockWidget->showFullScreen();
+			}
+			else{
+
+				dockWidget->showNormal();
+
+				if (wasFloating_ == false){
+					dockWidget->setFloating(false);
+				}
+			}
+		}
+	}	
+}
+
+void CoreTitleBar::setToggleType(ToggleType toggleType)
+{
+	toggleType_ = toggleType;
+}
+
+CoreTitleBar::ToggleType CoreTitleBar::toggleType() const
+{
+	return toggleType_;
 }
 
 bool CoreTitleBar::eventFilter(QObject * watched, QEvent * event)
@@ -113,7 +153,7 @@ bool CoreTitleBar::eventFilter(QObject * watched, QEvent * event)
 		}
 
 		setWindowTitle(cap);
-		toogleViewAction_->setText(cap);
+		ui->actionToggle_visibility->setText(cap);
 		updateTitleOrientation();
 	}else if(event->type() == QEvent::WindowIconChange){
 		auto widget = qobject_cast<QWidget *>(watched);
@@ -130,6 +170,24 @@ bool CoreTitleBar::eventFilter(QObject * watched, QEvent * event)
 		auto iconText = widget->windowIconText();
 		ui->iconPlaceholder->setToolTip(iconText);
 	}
+	else if (updateFullScreen == true && event->type() == QEvent::WindowStateChange){
+		//zmiana stanu okna - fullscreen | normal |floating | dock?
+		auto widget = qobject_cast<QWidget *>(watched);
+
+		ui->actionFull_screen_Window->blockSignals(true);
+		ui->actionFull_screen_Window->setChecked(widget->isFullScreen());
+		ui->actionFull_screen_Window->blockSignals(false);
+
+		ui->actionDock_Undock->blockSignals(true);
+		if (widget->isFullScreen() == true){
+			wasFloating_ = ui->actionDock_Undock->isChecked();
+			ui->actionDock_Undock->setChecked(widget->isFullScreen());
+		}
+		else{
+			ui->actionDock_Undock->setChecked(wasFloating_);
+		}
+		ui->actionDock_Undock->blockSignals(false);
+	}
 
 	return QWidget::eventFilter(watched, event);
 }
@@ -138,7 +196,7 @@ void CoreTitleBar::changeEvent(QEvent * event)
 {
 	if(event->type() == QEvent::WindowTitleChange){
 		auto t = windowTitle();
-		toogleViewAction_->setText(t);
+		ui->actionToggle_visibility->setText(t);
 		updateTitleOrientation();	
 	}
 
@@ -153,7 +211,7 @@ bool CoreTitleBar::event(QEvent * event)
 			break;
 		// fallthrough intended
 	case QEvent::Show:
-		toogleViewAction_->setChecked(event->type() == QEvent::Show);
+		ui->actionToggle_visibility->setChecked(event->type() == QEvent::Show);
 		emit visibilityChanged(event->type() == QEvent::Show);
 		break;
 	}
@@ -229,6 +287,21 @@ void CoreTitleBar::addAction(QAction * action, SideType side)
 		rightToolbar->addAction(action);
 		rightToolbar->setVisible(true);
 		break;
+
+	case Any:
+		{
+			auto s = Left;
+			if (rightToolbar->actions().size() < leftToolbar->actions().size()){
+				s = Right;
+			}
+
+			addAction(action, s);
+			break;
+		}
+	case Both:
+		addAction(action, Left);
+		addAction(action, Right);
+		break;
 	}
 }
 
@@ -236,23 +309,28 @@ CoreTitleBar::SideType CoreTitleBar::actionSide(QAction * action) const
 {
 	SideType side = Left;
 
-	if (leftToolbar->actions().contains(action) == true){
+	char counter = 0;
 
+	if (leftToolbar->actions().contains(action) == true){
+		++counter;
 	}
-	else if (rightToolbar->actions().contains(action) == true){
+	
+	if (rightToolbar->actions().contains(action) == true){
+		++counter;
 		side = Right;
 	}
-	else{
+	
+	if (counter == 0){
 		throw std::runtime_error("Action not found");
 	}
 
-	return side;
+	return ((counter == 1) ? side : Both);
 }
 
 QAction * CoreTitleBar::addAction(const QString & text, SideType side)
 {
 	QAction * ret = nullptr;
-	switch(side){
+	switch (side){
 	case Left:
 		ret = leftToolbar->addAction(text);
 		leftToolbar->setVisible(true);
@@ -262,6 +340,16 @@ QAction * CoreTitleBar::addAction(const QString & text, SideType side)
 		ret = rightToolbar->addAction(text);
 		rightToolbar->setVisible(true);
 		break;
+	case Any:
+	{
+		auto s = Left;
+		if (rightToolbar->actions().size() < leftToolbar->actions().size()){
+			s = Right;
+		}
+
+		ret = addAction(text, s);
+		break;
+	}
 	}
 
 	return ret;
@@ -280,6 +368,16 @@ QAction * CoreTitleBar::addAction(const QIcon & icon, const QString & text, Side
 		ret = rightToolbar->addAction(icon, text);
 		rightToolbar->setVisible(true);
 		break;
+	case Any:
+	{
+		auto s = Left;
+		if (rightToolbar->actions().size() < leftToolbar->actions().size()){
+			s = Right;
+		}
+
+		ret = addAction(icon, text, s);
+		break;
+	}
 	}
 
 	return ret;
@@ -298,6 +396,16 @@ QAction * CoreTitleBar::addAction(const QString & text, const QObject * receiver
 		ret = rightToolbar->addAction(text, receiver, member);
 		rightToolbar->setVisible(true);
 		break;
+	case Any:
+	{
+		auto s = Left;
+		if (rightToolbar->actions().size() < leftToolbar->actions().size()){
+			s = Right;
+		}
+
+		ret = addAction(text, receiver, member, s);
+		break;
+	}
 	}
 
 	return ret;
@@ -316,6 +424,16 @@ QAction * CoreTitleBar::addAction(const QIcon & icon, const QString & text, cons
 		ret = rightToolbar->addAction(icon, text, receiver, member);
 		rightToolbar->setVisible(true);
 		break;
+	case Any:
+	{
+		auto s = Left;
+		if (rightToolbar->actions().size() < leftToolbar->actions().size()){
+			s = Right;
+		}
+
+		ret = addAction(icon, text, receiver, member, s);
+		break;
+	}
 	}
 
 	return ret;
@@ -334,6 +452,16 @@ QAction * CoreTitleBar::addSeparator(SideType side)
 		ret = rightToolbar->addSeparator();
 		rightToolbar->setVisible(true);
 		break;
+	case Any:
+	{
+		auto s = Left;
+		if (rightToolbar->actions().size() < leftToolbar->actions().size()){
+			s = Right;
+		}
+
+		ret = addSeparator(s);
+		break;
+	}
 	}
 
 	return ret;
@@ -342,7 +470,7 @@ QAction * CoreTitleBar::addSeparator(SideType side)
 QAction * CoreTitleBar::addWidget(QWidget * widget, SideType side)
 {
 	QAction * ret = nullptr;
-	switch(side){
+	switch (side){
 	case Left:
 		ret = leftToolbar->addWidget(widget);
 		leftToolbar->setVisible(true);
@@ -352,20 +480,24 @@ QAction * CoreTitleBar::addWidget(QWidget * widget, SideType side)
 		ret = rightToolbar->addWidget(widget);
 		rightToolbar->setVisible(true);
 		break;
+	case Any:
+	{
+		auto s = Left;
+		if (rightToolbar->actions().size() < leftToolbar->actions().size()){
+			s = Right;
+		}
+
+		ret = addWidget(widget, s);
+		break;
+	}
 	}
 
 	return ret;
 }
 
-void CoreTitleBar::clearAll()
+void CoreTitleBar::clearActions(SideType side)
 {
-	clearSide(Left);
-	clearSide(Right);
-}
-
-void CoreTitleBar::clearSide(SideType side)
-{
-	switch(side){
+	switch (side){
 	case Left:
 		leftToolbar->clear();
 		leftToolbar->setVisible(false);
@@ -374,6 +506,47 @@ void CoreTitleBar::clearSide(SideType side)
 	case Right:
 		rightToolbar->clear();
 		rightToolbar->setVisible(false);
+		break;
+
+	case Both:
+		clearActions(Left);
+		clearActions(Right);
+		break;
+	}
+}
+
+void CoreTitleBar::setActionsEnabled(SideType side, bool enable)
+{
+	switch (side){
+	case Left:
+		leftToolbar->setEnabled(enable);		
+		break;
+
+	case Right:	
+		rightToolbar->setEnabled(enable);
+		break;
+
+	case Both:
+		setActionsEnabled(Left, enable);
+		setActionsEnabled(Right, enable);
+		break;
+	}
+}
+
+void CoreTitleBar::setActionsVisible(SideType side, bool visible)
+{
+	switch (side){
+	case Left:
+		leftToolbar->setVisible(visible);
+		break;
+
+	case Right:
+		rightToolbar->setVisible(visible);
+		break;
+
+	case Both:
+		setActionsVisible(Left, visible);
+		setActionsVisible(Right, visible);
 		break;
 	}
 }
@@ -386,20 +559,23 @@ QSize CoreTitleBar::iconSize () const
 QAction * CoreTitleBar::insertSeparator(QAction * before)
 {
 	QAction * ret = nullptr;
-	auto it = objectsSides_.find(before);
-	if(it != objectsSides_.end()){
-		switch(it->second){
-		case Left:
-			ret = leftToolbar->insertSeparator(before);
-			leftToolbar->setVisible(true);
-			break;
+	auto s = actionSide(before);
+	
+	switch(s){
+	case Left:
+		ret = leftToolbar->insertSeparator(before);
+		leftToolbar->setVisible(true);
+		break;
 
-		case Right:
-			ret = rightToolbar->insertSeparator(before);
-			rightToolbar->setVisible(true);
-			break;
-		}
+	case Right:
+		ret = rightToolbar->insertSeparator(before);
+		rightToolbar->setVisible(true);
+		break;
+	case Both:
+	{
+		//TODO
 	}
+	}	
 
 	return ret;
 }
@@ -407,37 +583,34 @@ QAction * CoreTitleBar::insertSeparator(QAction * before)
 QAction * CoreTitleBar::insertWidget(QAction * before, QWidget * widget)
 {
 	QAction * ret = nullptr;
-	auto it = objectsSides_.find(before);
-	if(it != objectsSides_.end()){
-		switch(it->second){
-		case Left:
-			ret = leftToolbar->insertWidget(before, widget);
-			leftToolbar->setVisible(true);
-			break;
+	auto s = actionSide(before);
+	switch(s){
+	case Left:
+		ret = leftToolbar->insertWidget(before, widget);
+		leftToolbar->setVisible(true);
+		break;
 
-		case Right:
-			ret = rightToolbar->insertWidget(before, widget);
-			rightToolbar->setVisible(true);
-			break;
-		}
+	case Right:
+		ret = rightToolbar->insertWidget(before, widget);
+		rightToolbar->setVisible(true);
+		break;
+	case Both:
+	{
+		//TODO
 	}
+	}	
 
 	return ret;
 }
 
-void CoreTitleBar::onToogleView(bool b)
+void CoreTitleBar::toggleVisibility(bool visible)
 {
-	if (b == isHidden()) {
-		if (b)
-			setVisible(true);
-		else
-			setVisible(false);
-	}
+	setVisible(visible);
 }
 
-QAction * CoreTitleBar::toggleViewAction() const
+QAction * CoreTitleBar::toggleVisibilityAction()
 {
-	return toogleViewAction_;
+	return ui->actionToggle_visibility;
 }
 
 Qt::ToolButtonStyle CoreTitleBar::titlebarButtonStyle() const
@@ -445,20 +618,18 @@ Qt::ToolButtonStyle CoreTitleBar::titlebarButtonStyle() const
 	return leftToolbar->toolButtonStyle();
 }
 
-QWidget * CoreTitleBar::widgetForAction(QAction * action) const
+QWidget * CoreTitleBar::widgetForAction(QAction * action)
 {
 	QWidget * ret = nullptr;
-	auto it = objectsSides_.find(action);
-	if(it != objectsSides_.end()){
-		switch(it->second){
-		case Left:
-			ret = leftToolbar->widgetForAction(action);
-			break;
+	auto s = actionSide(action);
+	switch (s){
+	case Left:
+		ret = leftToolbar->widgetForAction(action);
+		break;
 
-		case Right:
-			ret = rightToolbar->widgetForAction(action);
-			break;
-		}
+	case Right:
+		ret = rightToolbar->widgetForAction(action);
+		break;
 	}
 
 	return ret;
@@ -486,29 +657,43 @@ void CoreTitleBar::setTitleVisible(bool visible)
     ui->titleLabel->setVisible(visible);
 }
 
+void CoreTitleBar::setToggleDockButtonVisible(bool visible)
+{
+	ui->buttonFloat->setVisible(visible);
+}
+
+void CoreTitleBar::setToggleDockButtonEnabled(bool enable)
+{
+	ui->buttonFloat->setEnabled(enable);
+}
+
+void CoreTitleBar::setToggleFullScreenButtonVisible(bool visible)
+{
+	ui->buttonFullscreen->setVisible(visible);
+}
+
+void CoreTitleBar::setToggleFullScreenButtonEnabled(bool enable)
+{
+	ui->buttonFullscreen->setEnabled(enable);
+}
+
+void CoreTitleBar::setCloseButtonVisible(bool visible)
+{
+	ui->buttonClose->setVisible(visible);
+}
+
+void CoreTitleBar::setCloseButtonEnabled(bool enable)
+{
+	ui->buttonClose->setEnabled(enable);
+}
+
 void CoreTitleBar::refreshFeatures(QDockWidget::DockWidgetFeatures features)
 {
-    if(features & QDockWidget::DockWidgetClosable){
-        ui->buttonClose->setVisible(true);
-    }else{
-        ui->buttonClose->setVisible(false);
-    }
+	ui->buttonClose->setVisible(features & QDockWidget::DockWidgetClosable);
+	ui->buttonFloat->setVisible(features & QDockWidget::DockWidgetFloatable);
+	setEnabled(features & QDockWidget::DockWidgetMovable);    
 
-    if(features & QDockWidget::DockWidgetFloatable){
-        ui->buttonFloat->setVisible(true);
-    }else{
-        ui->buttonFloat->setVisible(false);
-    }
-
-    if(features & QDockWidget::DockWidgetMovable){
-        setEnabled(true);
-		//blockSignals(true);
-    }else{
-        setEnabled(false);
-		//blockSignals(false);
-    }
-
-	bool vertical = (features & QDockWidget::DockWidgetVerticalTitleBar);
+	const bool vertical = (features & QDockWidget::DockWidgetVerticalTitleBar);
 	if(vertical != verticalOrientation_) {
 		verticalOrientation_ = vertical;
 
@@ -594,4 +779,14 @@ void CoreTitleBar::paintEvent(QPaintEvent * event)
 	opt.init(this);
 	QPainter p(this);
 	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}
+
+void CoreTitleBar::mouseDoubleClickEvent(QMouseEvent * event)
+{
+	if (toggleType_ == FullScreen){
+		ui->actionFull_screen_Window->toggle();
+	}
+	else{
+		ui->actionDock_Undock->toggle();
+	}
 }
