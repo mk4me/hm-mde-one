@@ -70,8 +70,9 @@ public:
 					}
 
 					mainWindow->init(plugin::__coreApplication);
+
 					//ustawiamy tutaj �eby nadpisa� ewentualne zmiany z widok�w
-					qApp->setOrganizationName("PJWSTK");
+					qApp->setOrganizationName("PJATK");
 
 					try{
 						//faktycznie blokowane wywo�anie

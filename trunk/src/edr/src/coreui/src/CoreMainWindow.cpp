@@ -124,6 +124,8 @@ CoreMainWindow::~CoreMainWindow()
 	if(splashScreen_ != nullptr){
 		delete splashScreen_;
 	}
+
+	onClose();
 }
 
 const core::Filesystem::Path & CoreMainWindow::getApplicationSkinsFilePath(int i)

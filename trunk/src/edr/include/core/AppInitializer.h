@@ -42,6 +42,7 @@ public:
 			AppInitializer application(argc, argv, appName);
 			//now it is safe to create view widget
 			FrontPageWidget widget(application.cleanUp(), appName);
+			widget.setAttribute(Qt::WA_DeleteOnClose, false);
 			//we run application
 			return application.start(&widget);
 		}catch(...){

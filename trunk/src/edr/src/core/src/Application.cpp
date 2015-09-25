@@ -88,8 +88,8 @@ void Application::updateServices()
 	serviceManager_->update(servicesTimeDelta);
 }
 
-Application::Application() : vendor_("Polsko-Japo�ska Wy�sza Szko�a Technik Komputerowych, Oddzia� zamiejscowy w Bytomiu",
-	"PJWSTK Bytom", "Uczelnia prywatna", "marek.kulbacki@gmail.com"),
+Application::Application() : vendor_("Polsko-Japońska Akademia Technik Komputerowych, Oddział zamiejscowy w Bytomiu",
+	"PJATK Bytom", "Uczelnia prywatna", "marek.kulbacki@gmail.com"),
 	visualizerTimeDelta(TimeDelta), servicesTimeDelta(TimeDelta), mainWindow(nullptr), uiInit(false)
 {
 }
