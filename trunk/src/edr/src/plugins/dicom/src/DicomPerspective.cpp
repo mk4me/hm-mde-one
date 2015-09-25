@@ -18,12 +18,14 @@
 #include <corelib/ISourceManager.h>
 #include <corelib/PluginCommon.h>
 #include "PointsLayer.h"
+#include <QtWidgets/QApplication>
 #include <corelib/ISourceManager.h>
 #include <boost/format.hpp>
 #include "LayeredSerie.h"
 #include "LayeredImageVisualizerView.h"
 #include "plugins/hmdbCommunication/IHMDBShallowCopyContext.h"
 #include "DicomLoader.h"
+#include <QtWidgets/QProgressDialog>
 #include "DescriptionMaker.h"
 
 typedef core::Filesystem fs;
@@ -263,6 +265,10 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
             localAdded = true;
         }
 
+		// TODO - sprawdzic, jakie sa warunki przy nullptr i czy nie wynika to z jakiegos bledu
+		if (!layersVector) {
+			continue;
+		}
 		bool bFound = false;
 		bool iFound = false;
 		bool fFound = false;
@@ -432,10 +438,22 @@ void dicom::DicomMultiHelper::createSeries(const core::VisualizerPtr & visualize
 	auto item = sessionItem.lock();
 	if (item) {
 		auto helpers = getHelpers(item.get());
-
+		QProgressDialog progress("Task in progress...", "Cancel", 0, helpers.size() + 1, visualizer->getWidget());
+		progress.setMinimumDuration(0);
+		progress.setWindowModality(Qt::WindowModal);
+		progress.setValue(0);
+		progress.setLabelText(QObject::tr("Processing..."));
+		QApplication::processEvents();
+		progress.setValue(1);
 		for (auto& helper : helpers) {
+			if (progress.wasCanceled()) {
+				break;
+			}
 			helper->createSeries(visualizer, path, series);
+			progress.setValue(progress.value() + 1);
+			progress.setLabelText(QObject::tr("Processing: ") + QString::fromStdString(helper->getTrialName()));
 		}
+		
 	}
 }
 

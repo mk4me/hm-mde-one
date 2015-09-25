@@ -107,7 +107,7 @@ CoreLogWidget* CoreMainWindow::getLog()
 	return widgetLog;
 }
 
-void CoreMainWindow::init(core::IApplication * coreApplication)
+bool CoreMainWindow::init(core::IApplication * coreApplication)
 {
 	plugin::__coreApplication = coreApplication;
 
@@ -116,7 +116,7 @@ void CoreMainWindow::init(core::IApplication * coreApplication)
 	applicationSkinsPaths.insert(applicationSkinsPaths.end(), temp.begin(), temp.end());
 
     readSettings(QSettings(), true);
-	customViewInit(widgetLog);
+	return customViewInit(widgetLog);
 }
 
 CoreMainWindow::~CoreMainWindow()

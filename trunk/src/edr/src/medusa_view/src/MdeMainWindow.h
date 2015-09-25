@@ -12,6 +12,7 @@
 #include "AnalisisModel.h"
 #include <coreui/SingleInstanceWindow.h>
 #include <coreui/SingleInstanceWindow.h>
+#include "plugins/hmdbCommunication/IHMDBSourceViewManager.h"
 
 class QWidget;
 class MdeServiceWindow;
@@ -71,7 +72,9 @@ private Q_SLOTS:
 
 private:	
 	virtual void initializeSplashScreen(QSplashScreen * splashScreen);
-	virtual void customViewInit(QWidget * log);
+	virtual bool customViewInit(QWidget * log);
+
+	hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration createHmdbConfig();
 
     void addPropertiesToServiceWindow( plugin::IServicePtr service, MdeServiceWindow * w );
     MdeServiceWindow* createServiceWidget( plugin::IServicePtr service );

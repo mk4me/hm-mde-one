@@ -14,6 +14,7 @@ SET_PRIVATE_HEADERS(
     MdeServiceWindow.h
 	ImageTableModel.h
 	ImageTableWidget.h
+	LoginDialog.h
 	MdePCH.h
 )
 
@@ -32,6 +33,7 @@ SET_SOURCE_FILES (
     MdeServiceWindow.cpp
 	ImageTableModel.cpp
 	ImageTableWidget.cpp
+	LoginDialog.cpp
 	MdePCH.cpp
 )
 
@@ -51,12 +53,14 @@ SET_MOC_FILES(
     MdeServiceWindow.h
 	ImageTableWidget.h
 	ImageTableModel.h
+	LoginDialog.h
 )
 
 SET_UI_FILES(
 	AboutDialog.ui
 	toolboxmaindeffile.ui
 	AnalisisWidget.ui
+	LoginDialog.ui
 )
 
 SET_RC_FILES (

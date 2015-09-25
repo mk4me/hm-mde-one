@@ -58,6 +58,9 @@ public:
 
 	const bool verify(QStringList & messages);
 
+	void setConnectionProfile(const hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration & connectionProfile);
+	const hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration& getConnectionProfile() const;
+
 #ifdef DEMO_MODE
 	static void login()
 	{
@@ -95,6 +98,7 @@ public slots:
 	void onRefreshViews();
 	void onRefreshConfigurations();
 	void setLoginAdvanceConfiguration(bool show);
+	void onLogin();
 
 private slots:
 
@@ -104,7 +108,6 @@ private slots:
 	void onProfileChange(int idx);
 	void onStoragePathBrowse();
 	void onServicesSSLCertificateBrowse();
-	void onLogin();
 	void onConnectionChanged(int idx);
 	void onAccountOperationServiceSSLCertificateBrowse();	
 	void onRegister();
@@ -117,14 +120,12 @@ private slots:
 	void onVerifyLogin();
 	void onConnectionProfileEdit();
 
-private:
-
-	void setConnectionProfile(const hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration & connectionProfile);
 
 private:
 	Ui::SourceOptionsWidget * ui;
 	ServerStatusWidget * serverStatusWidget;
 	QMainWindow * sourcesPlaceholder_;
+	hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration currentConnectionProfile;
 };
 
 

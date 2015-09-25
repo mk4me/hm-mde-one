@@ -45,6 +45,8 @@
 #include <plugins/dicom/AnnotationStatusFilter.h>
 #include "ImageTableWidget.h"
 #include "ImageTableModel.h"
+#include "LoginDialog.h"
+#include "plugins/hmdbCommunication/SourceOptionsWidget.h"
 
 using namespace core;
 
@@ -60,7 +62,6 @@ public:
 
 		auto ret = new GeneralSourceViewWidget(shallowCopyContext);
 		auto config = ret->dataViewConfiguration();
-
 		config->setPerspectiveVisible(false);
 		config->setContentVisible(false);
 		config->setFilterVisible(true);		
@@ -109,6 +110,7 @@ public:
 
 		ret->dataView()->setContent(content);
 
+		ret->setVisible(false);
 		return ret;
 	}
 	//! \return Czy dany widok wymaga po��czenia z us�ugami webowymi
@@ -230,7 +232,7 @@ MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations, const 
     ui = new Ui::HMMMain();
     ui->setupUi(this);
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
-
+	this->hide();
     contextPlaceholder = new QTabWidget(this);
     contextPlaceholder->setTabsClosable(false);
     contextPlaceholder->setDocumentMode(true);
@@ -263,7 +265,7 @@ void MdeMainWindow::showSplashScreenMessage(const QString & message)
     splashScreen()->showMessage(message, Qt::AlignBottom | Qt::AlignLeft, Qt::white);
 }
 
-void MdeMainWindow::customViewInit(QWidget * log)
+bool MdeMainWindow::customViewInit(QWidget * log)
 {
 	plugin::getDataHierarchyManagerReader()->addObserver(analysisModel);
    trySetStyleByName("hmm");
@@ -276,31 +278,14 @@ void MdeMainWindow::customViewInit(QWidget * log)
    plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(icomm);
 
 
+   auto hmdbView = new MEDUSAHMDBSourceView;
+   auto vm = icomm->viewManager();
    if (icomm != nullptr){
-	   auto vm = icomm->viewManager();
-	   auto hmdbView = new MEDUSAHMDBSourceView;
 
 	   vm->registerViewPrototype(hmdbView);
 
 	   {
-		   hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration ccfg;
-		   ccfg.name = tr("Default PJWSTK MEDUSA data connection");
-		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
-		   ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
-#ifdef _DEBUG
-		   //ccfg.motionServicesConfiguration.userConfiguration.user = "usg-medusapl";
-		   //ccfg.motionServicesConfiguration.userConfiguration.password = "usg-medusaxx";
-		   ccfg.motionServicesConfiguration.userConfiguration.user = "test-student";
-		   ccfg.motionServicesConfiguration.userConfiguration.password = "test-Medusa";
-#endif
-		   ccfg.motionServicesConfiguration.serviceConfiguration.url = "https://v21.pjwstk.edu.pl/HMDB";
-		   ccfg.motionServicesConfiguration.serviceConfiguration.caPath = QString::fromStdString((plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string());
-
-		   ccfg.motionDataConfiguration.serviceConfiguration.url = "ftps://v21.pjwstk.edu.pl";
-		   ccfg.motionDataConfiguration.serviceConfiguration.caPath = "";
-		   ccfg.motionDataConfiguration.userConfiguration.user = "testUser";
-		   ccfg.motionDataConfiguration.userConfiguration.password = "testUser";
-
+		   auto ccfg = createHmdbConfig();
 		   vm->registerConfiguration(ccfg, hmdbView->name());
 	   }
 
@@ -327,7 +312,12 @@ void MdeMainWindow::customViewInit(QWidget * log)
    QWidget* commWidget = commSource->getWidget();
    //icomm->setCompactMode(true);
    //commWidget->setMaximumWidth(304);
-
+   
+   //hack
+   auto list = commWidget->findChildren<SourceOptionsWidget*>();
+   UTILS_ASSERT(!list.isEmpty());
+   SourceOptionsWidget* sourceOptionsWidget = *list.begin();
+   sourceOptionsWidget->hide();
    QSplitter* compound = new QSplitter();
    AnalisisWidget* aw = new AnalisisWidget(analysisModel, contextEventFilter, nullptr);
    // -----------------------
@@ -363,6 +353,28 @@ void MdeMainWindow::customViewInit(QWidget * log)
 
    addTab(coreUI::IMdeTabPtr(new ImageTableTab(aw, QIcon(":/mde/icons/Operacje.png"), tr("TableView"))));
    emit activateTab(*tabs.begin());
+
+
+
+   bool done = false;
+   do {
+	   LoginDialog ld(nullptr);// (this);
+	   if (ld.exec() == QDialog::Accepted) {
+
+		   auto config = sourceOptionsWidget->getConnectionProfile();
+		   config.motionServicesConfiguration.userConfiguration.user = ld.getUser();
+		   config.motionServicesConfiguration.userConfiguration.password = ld.getPassword();
+		   sourceOptionsWidget->setConnectionProfile(config);
+		   sourceOptionsWidget->onLogin();
+		   QStringList errors;
+		   sourceOptionsWidget->verify(errors);
+		   done = errors.isEmpty();
+
+	   } else {
+		   return false;
+	   }
+   } while (!done);
+   return true;
 }
 
 void MdeMainWindow::addTab( coreUI::IMdeTabPtr tab )
@@ -534,5 +546,27 @@ void MdeMainWindow::showMedusaExporterDialog()
         dlg->setWindowModality(Qt::ApplicationModal);
 		dlg->show();
 	}
+}
+
+hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration MdeMainWindow::createHmdbConfig()
+{
+	hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration ccfg;
+	ccfg.name = tr("Default PJWSTK MEDUSA data connection");
+	ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
+	ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
+#ifdef _DEBUG
+	//ccfg.motionServicesConfiguration.userConfiguration.user = "usg-medusapl";
+	//ccfg.motionServicesConfiguration.userConfiguration.password = "usg-medusaxx";
+	ccfg.motionServicesConfiguration.userConfiguration.user = "test-student";
+	ccfg.motionServicesConfiguration.userConfiguration.password = "test-Medusa";
+#endif
+	ccfg.motionServicesConfiguration.serviceConfiguration.url = "https://v21.pjwstk.edu.pl/HMDB";
+	ccfg.motionServicesConfiguration.serviceConfiguration.caPath = QString::fromStdString((plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string());
+
+	ccfg.motionDataConfiguration.serviceConfiguration.url = "ftps://v21.pjwstk.edu.pl";
+	ccfg.motionDataConfiguration.serviceConfiguration.caPath = "";
+	ccfg.motionDataConfiguration.userConfiguration.user = "testUser";
+	ccfg.motionDataConfiguration.userConfiguration.password = "testUser";
+	return ccfg;
 }
 

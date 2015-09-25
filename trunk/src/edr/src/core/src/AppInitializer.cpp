@@ -69,7 +69,9 @@ public:
 						Filesystem::PathsList().swap(translations);
 					}
 
-					mainWindow->init(plugin::__coreApplication);
+					if (!mainWindow->init(plugin::__coreApplication)) {
+						return 1;
+					}
 
 					//ustawiamy tutaj �eby nadpisa� ewentualne zmiany z widok�w
 					qApp->setOrganizationName("PJATK");

@@ -5,7 +5,9 @@
 #include "plugins/hmdbCommunication/IHMDBSourceViewManager.h"
 #include "hmdbserviceslib/IAuthorizationWS.h"
 #include "plugins/dicom/AnnotationStatusManager.h"
-
+#include "plugins/hmdbCommunication/SourceOptionsWidget.h"
+#include "QCoreApplication"
+//#include "LoginDialog.h"
 
 dicom::DicomService::DicomService() : 
 	sourceManager(nullptr), hierarchyManager(nullptr), perspective(new DicomPerspective)
@@ -49,7 +51,38 @@ QWidget* dicom::DicomService::getWidget()
 
 void dicom::DicomService::update(double deltaTime)
 {
+	//static bool once = false;
+	//if (!once) {
+	//	once = true;
+	//	bool done = false;
+	//	do {
+	//		LoginDialog ld(nullptr);// (this);
+	//		if (ld.exec() == QDialog::Accepted) {
+	//			auto comm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
+	//			plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(comm);
+	//			QWidget* commWidget = commSource->getWidget();
+	//			//hack
+	//			auto list = commWidget->findChildren<SourceOptionsWidget*>();
+	//			UTILS_ASSERT(!list.isEmpty());
+	//			SourceOptionsWidget* sourceOptionsWidget = *list.begin();
+	//			sourceOptionsWidget->hide();
+	//			auto config = sourceOptionsWidget->getConnectionProfile();
+	//			config.motionServicesConfiguration.userConfiguration.user = ld.getUser();
+	//			config.motionServicesConfiguration.userConfiguration.password = ld.getPassword();
+	//			sourceOptionsWidget->setConnectionProfile(config);
+	//			sourceOptionsWidget->onLogin();
+	//			QStringList errors;
+	//			sourceOptionsWidget->verify(errors);
+	//			done = errors.isEmpty();
 
+	//		} else {
+	//			QCoreApplication::exit();
+	//			qApp->exit();
+	//			throw std::runtime_error("Exiting...");
+	//			done = true;
+	//		}
+	//	} while (!done);
+	//}
 }
 
 void dicom::DicomService::finalize()
@@ -102,6 +135,7 @@ const bool dicom::DicomService::lateInit()
 {
 	auto comm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
 	if (comm != nullptr) {
+		plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(comm);
 		comm->viewManager()->addHierarchyPerspective(perspective);
 		return true;
 	}

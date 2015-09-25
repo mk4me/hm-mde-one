@@ -64,7 +64,7 @@ void ToolboxMain::initializeSplashScreen(QSplashScreen * splashScreen)
 
 }
 
-void ToolboxMain::customViewInit(QWidget * log)
+bool ToolboxMain::customViewInit(QWidget * log)
 {
 	trySetStyleByName("dark");
 	connect(ui->menuWindow, SIGNAL(aboutToShow()), this, SLOT(populateWindowMenu()));	
@@ -74,6 +74,7 @@ void ToolboxMain::customViewInit(QWidget * log)
 	dockConsole->setObjectName(QString::fromUtf8("ConsoleWidget"));
 	populateVisualizersMenu(ui->menuCreateVisualizer);
 	initializeUI();
+	return true;
 }
 
 void ToolboxMain::initializeUI()

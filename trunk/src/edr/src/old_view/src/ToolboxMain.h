@@ -32,7 +32,7 @@ public:
 
 private:
 
-	virtual void customViewInit(QWidget * log);
+	virtual bool customViewInit(QWidget * log);
 
 public slots:
 

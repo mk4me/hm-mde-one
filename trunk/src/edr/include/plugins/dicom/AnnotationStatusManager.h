@@ -22,7 +22,7 @@ namespace  dicom {
 
 	
 
-	class AnnotationStatusManager : public utils::Observable<AnnotationStatusManager>
+class AnnotationStatusManager : public utils::Observable<AnnotationStatusManager>
 {
 public:
 		// [ trialId -> [ userId -> annotation ] ]

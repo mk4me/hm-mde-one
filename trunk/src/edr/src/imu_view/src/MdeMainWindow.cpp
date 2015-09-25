@@ -65,7 +65,7 @@ void MdeMainWindow::showSplashScreenMessage(const QString & message)
     splashScreen()->showMessage(message, Qt::AlignBottom | Qt::AlignLeft, Qt::white);
 }
 
-void MdeMainWindow::customViewInit(QWidget * log)
+bool MdeMainWindow::customViewInit(QWidget * log)
 {
 	auto name2icon = [](const std::string& name, bool source) -> QIcon {
 		if (name == "Scripting")  return QIcon(":/mde/icons/skrypty.png");
@@ -146,6 +146,7 @@ void MdeMainWindow::customViewInit(QWidget * log)
    connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
    emit modelChanged();
    emit activateTab(*tabs.begin());
+   return true;
 }
 
 void MdeMainWindow::addTab( coreUI::IMdeTabPtr tab )

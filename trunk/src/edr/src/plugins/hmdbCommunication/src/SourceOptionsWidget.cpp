@@ -289,6 +289,7 @@ void SourceOptionsWidget::onProfileChange(int idx)
 
 void SourceOptionsWidget::setConnectionProfile(const hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration & connectionProfile)
 {
+	this->currentConnectionProfile = connectionProfile;
 	ui->loginLineEdit->blockSignals(true);
 	ui->passwordLineEdit->blockSignals(true);
 	ui->storagePathLineEdit->blockSignals(true);
@@ -908,5 +909,10 @@ void SourceOptionsWidget::onVerifyLogin()
 	else{
 		QMessageBox::information(this, tr("Configuration status"), tr("Correct configuration"));
 	}
+}
+
+const hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration& SourceOptionsWidget::getConnectionProfile() const
+{
+	return this->currentConnectionProfile;
 }
 

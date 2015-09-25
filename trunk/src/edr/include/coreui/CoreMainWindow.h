@@ -75,7 +75,7 @@ namespace coreUI {
 
 		//! \return Customizowany splash screen dla danego widoku aplikacji, jeśli null to domyslny splash screen
 		virtual void initializeSplashScreen(QSplashScreen * splashScreen) = 0;
-		virtual void customViewInit(QWidget * log) = 0;
+		virtual bool customViewInit(QWidget * log) = 0;
 
 	protected:
 
@@ -90,7 +90,7 @@ namespace coreUI {
 		//! Dostarcza splash screen na potrzeby inicjalizacji aplikacji
 		QSplashScreen * splashScreen();
 		//! Inicjalizuje aplikację
-		void init(core::IApplication * coreApplication);
+		bool init(core::IApplication * coreApplication);
 
 		//! \param path Ścieżka stylu
 		void setStyle(const core::Filesystem::Path& path);

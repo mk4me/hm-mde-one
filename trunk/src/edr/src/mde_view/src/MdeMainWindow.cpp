@@ -122,7 +122,7 @@ void MdeMainWindow::showSplashScreenMessage(const QString & message)
     splashScreen()->showMessage(message, Qt::AlignBottom | Qt::AlignLeft, Qt::red);
 }
 
-void MdeMainWindow::customViewInit(QWidget * log)
+bool MdeMainWindow::customViewInit(QWidget * log)
 {
    plugin::getDataHierarchyManagerReader()->addObserver(analysisModel);
    trySetStyleByName("hmm");
@@ -231,6 +231,7 @@ void MdeMainWindow::customViewInit(QWidget * log)
 #ifdef DEMO_MODE
    SourceOptionsWidget::login();
 #endif // DEMO_MODE
+   return true;
 }
 
 void MdeMainWindow::addTab( coreUI::IMdeTabPtr tab )

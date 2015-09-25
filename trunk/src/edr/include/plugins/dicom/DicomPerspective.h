@@ -26,6 +26,8 @@ public:
         const std::string& xmlFilename, const std::string& trialName);
     virtual void createSeries( const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series );
 
+public:
+	const std::string& getTrialName() { return trialName;  }
 private:
     core::ConstVariantsList layers;
     std::string xmlFilename; 
