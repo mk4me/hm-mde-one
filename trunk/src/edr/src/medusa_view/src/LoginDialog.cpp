@@ -10,12 +10,12 @@ LoginDialog::LoginDialog(QWidget* parent) : QDialog(parent)
 	#endif
 }
 
-const QString& LoginDialog::getUser()
+QString LoginDialog::getUser()
 {
 	return loginLineEdit->text();
 }
 
-const QString& LoginDialog::getPassword()
+QString LoginDialog::getPassword()
 {
 	return passwordLineEdit->text();
 }

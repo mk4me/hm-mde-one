@@ -356,22 +356,16 @@ bool MdeMainWindow::customViewInit(QWidget * log)
    addTab(coreUI::IMdeTabPtr(new ImageTableTab(aw, QIcon(":/mde/icons/Operacje.png"), tr("TableView"))));
    emit activateTab(*tabs.begin());
 
-
-
-   PLUGIN_LOG_INFO("Logging: started");
    bool done = false;
    do {
 	   LoginDialog ld(this);
 	   if (ld.exec() == QDialog::Accepted) {
-		   PLUGIN_LOG_INFO("Logging: set connections profile");
 		   auto config = sourceOptionsWidget->getConnectionProfile();
 		   config.motionServicesConfiguration.userConfiguration.user = ld.getUser();
 		   config.motionServicesConfiguration.userConfiguration.password = ld.getPassword();
 		   sourceOptionsWidget->setConnectionProfile(config);
-		   PLUGIN_LOG_INFO("Logging: onLogin");
 		   sourceOptionsWidget->onLogin();
 		   QStringList errors;
-		   PLUGIN_LOG_INFO("Logging: veryfiying");
 		   sourceOptionsWidget->verify(errors);
 		   done = errors.isEmpty();
 

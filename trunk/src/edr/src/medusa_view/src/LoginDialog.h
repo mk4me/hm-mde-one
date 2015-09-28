@@ -20,8 +20,8 @@ public:
 	virtual ~LoginDialog() {}
 
 public:
-	const QString& getUser();
-	const QString& getPassword();
+	QString getUser();
+	QString getPassword();
 };
 
 #endif // HEADER_GUARD 
