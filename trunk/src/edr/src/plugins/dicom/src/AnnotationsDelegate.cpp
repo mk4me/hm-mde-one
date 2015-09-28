@@ -3,6 +3,7 @@
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QLineEdit>
 #include <plugins/dicom/Annotations.h>
+#include <QtWidgets/QListView>
 #include "LayeredModelView.h"
 
 using namespace dicom;
@@ -41,9 +42,10 @@ QWidget * AdnotationsDelegate::createEditor(QWidget *parent,
 				if(aidx > 7){
 
 					if(column == 1){
-
 						QComboBox *editor = new QComboBox(parent);
-
+						// z doc : "Sets the view to be used in the combobox popup to the given itemView. The combobox takes ownership of the view."
+						editor->setView(new QListView());
+						editor->setStyleSheet("QComboBox QAbstractItemView::item { min-height: 35px}");
 						switch(aidx) {
 
 						case annotations::bloodLevel:
