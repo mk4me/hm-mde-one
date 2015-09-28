@@ -54,6 +54,8 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     visualizerFilter(new VisualizerEventFilter(contextEventFilter))
 {
     setupUi(this);
+	TabBarMouseFilter* filter = new TabBarMouseFilter(this);
+	tabWidget->tabBar()->installEventFilter(filter);
     devideArea();
 
     //showTimeline();
@@ -76,6 +78,7 @@ AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr co
     connect(model.get(), SIGNAL(expandTree(int)), treeView, SLOT(expandToDepth(int)));
     connect(contextMenu, SIGNAL(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)), this, SLOT(createVisualizer(core::IHierarchyDataItemConstPtr, core::HierarchyHelperPtr)));
     connect(visualizerFilter.get(), SIGNAL(focusOn(QWidget*)), this, SLOT(onVisualizerFocus(QWidget*)));
+	//connect(hideButton, SIGNAL(clicked()), this, SIGNAL(hideCommunication()));
 
 	topMainWindow->setAutoCloseEmptySets(true);
     connect(topMainWindow, SIGNAL(setCloseRequested(int)), this, SLOT(closeSet(int)));
@@ -889,4 +892,15 @@ void AnalisisWidget::onVisualizerFocus( QWidget* w )
 void AnalisisWidget::closeSet( int idx )
 {
     topMainWindow->removeSet(idx);
+}
+
+bool TabBarMouseFilter::eventFilter(QObject *obj, QEvent *event)
+{
+	if (event->type() == QEvent::MouseButtonRelease) {
+		emit aw->hideCommunication();
+		return true;
+	} else {
+		// standard event processing
+		return QObject::eventFilter(obj, event);
+	}
 }

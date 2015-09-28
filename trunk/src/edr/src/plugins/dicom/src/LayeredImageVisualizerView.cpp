@@ -52,6 +52,11 @@ rejectAction(nullptr), toVerifyAction(nullptr)
 
 	connect(model, SIGNAL(changeSelection(const QModelIndex&)), this, SLOT(changeSelection(const QModelIndex &)));
 	connect(ui->treeView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(selectionChanged(const QModelIndex &)));
+	connect(ui->hideButton, &QPushButton::clicked, this, [&]() {
+		bool visible = this->ui->widget->isVisible();
+		this->ui->widget->setVisible(!visible);
+		this->ui->hideButton->setText(visible ? "<" : ">");
+	});
 
 	coreUI::CoreAction*  undo = new coreUI::CoreAction(tr("Edit"), QIcon(":/dicom/undo.png"), tr("Undo"), this, coreUI::CoreTitleBar::Left);
 	coreUI::CoreAction*  redo = new coreUI::CoreAction(tr("Edit"), QIcon(":/dicom/redo.png"), tr("Redo"), this, coreUI::CoreTitleBar::Left);

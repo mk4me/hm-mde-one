@@ -57,6 +57,9 @@ public Q_SLOTS:
     void switchToFirstTab();
     void createNewVisualizer();
 
+Q_SIGNALS:
+	void hideCommunication(); 
+
 private:
     void showTimeline();
     void devideArea();
@@ -158,6 +161,17 @@ private:
     core::VisualizerWeakPtr visualizer;
     //! set, do którego ma trafic wizualizator lub nullptr jeśli nie jest to sprecyzowane
     coreUI::CoreDockWidgetSet* set;
+};
+
+class TabBarMouseFilter : public QObject
+{
+	Q_OBJECT;
+public:
+	TabBarMouseFilter(AnalisisWidget* aw) : aw(aw), QObject(aw) {}
+protected:
+	bool eventFilter(QObject *obj, QEvent *event);
+private:
+	AnalisisWidget* aw;
 };
 
 

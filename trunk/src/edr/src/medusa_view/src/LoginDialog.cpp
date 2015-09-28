@@ -4,6 +4,10 @@
 LoginDialog::LoginDialog(QWidget* parent) : QDialog(parent)
 {
 	setupUi(this);
+	#ifdef _DEBUG 
+	loginLineEdit->setText("test-student");
+	passwordLineEdit->setText("test-Medusa");
+	#endif
 }
 
 const QString& LoginDialog::getUser()

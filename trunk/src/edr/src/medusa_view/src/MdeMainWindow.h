@@ -90,6 +90,7 @@ private:
     AnalisisModelPtr analysisModel;
     ContextEventFilterPtr contextEventFilter;
     Ui::HMMMain* ui;
+	QWidget* commWidget;
 };
 
 

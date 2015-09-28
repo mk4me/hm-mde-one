@@ -420,7 +420,7 @@ void SourceOptionsWidget::onLogin()
 		coreUI::CorePopup::showMessage(tr("Login failed"), formatErrorMessage(errors));
 		return;
 	}	
-
+	PLUGIN_LOG_INFO("Logging: getting managers");
 	auto sm = plugin::getServiceManager();	
 	auto hmdbService = core::queryService<hmdbCommunication::IHMDBService>(sm);	
 	auto srcm = plugin::getSourceManager();	
@@ -432,6 +432,7 @@ void SourceOptionsWidget::onLogin()
 
 		utils::shared_ptr<hmdbCommunication::SQLCipherStorage> storage(new hmdbCommunication::SQLCipherStorage);
 
+		PLUGIN_LOG_INFO("Logging: opening storage");
 		storage->open(ui->storagePathLineEdit->text().toStdString(),
 			ui->storagePasswordLineEdit->text().toStdString());
 
@@ -439,6 +440,7 @@ void SourceOptionsWidget::onLogin()
 
 		if (ui->onlineModeCheckBox->isChecked() == true){
 
+			PLUGIN_LOG_INFO("Logging: creating session");
 			session = hmdbService->createSession(ui->motionServiceURLLineEdit->text().toStdString(),
 				ui->medicalDataURLLineEdit->text().toStdString(),
 				ui->loginLineEdit->text().toStdString(),
@@ -449,15 +451,18 @@ void SourceOptionsWidget::onLogin()
 				networkUtils::HVMatch);
 		}
 
+		PLUGIN_LOG_INFO("Logging: creating source & shallow context");
 		auto sc = hmdbSource->createSourceContext(storage, ui->loginLineEdit->text().toStdString(),
 			ui->passwordLineEdit->text().toStdString(), session);
 		auto scc = hmdbSource->createShallowCopyContext(sc);		
 		//utworzenie widgeta aktualnie wybranego widoku z nowym kontekstem		
+		PLUGIN_LOG_INFO("Logging: creating view");
 		auto vm = hmdbSource->viewManager();
 		auto scvp = vm->viewPrototype(ui->viewComboBox->currentText());
 		if (scvp != nullptr){
 			auto view = scvp->createView(scc, vm);
 			if (view != nullptr){
+				PLUGIN_LOG_INFO("Logging: embedding widget");
 				auto dw = coreUI::CoreDockWidget::embeddWidget(view,
 					formatSourceWidgetTitle(scvp->name(), ui->loginLineEdit->text()),
 					Qt::AllDockWidgetAreas, true);
@@ -470,12 +475,14 @@ void SourceOptionsWidget::onLogin()
 					dw->setVisible(true);
 				}
 
+				PLUGIN_LOG_INFO("Logging: logged successfully");
 				message = tr("Logged successfully");
 				hmdbSource->registerShallowContext(scc);
 			}
 		}
 	}
 	catch (std::exception & e){
+		PLUGIN_LOG_INFO("Logging: problem occured - " << e.what());
 		message = QString::fromStdString(e.what());
 	}
 	catch (...){

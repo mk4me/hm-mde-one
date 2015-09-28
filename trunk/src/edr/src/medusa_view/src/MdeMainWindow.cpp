@@ -227,7 +227,7 @@ private:
 
 MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations, const std::string & appName)
 	: coreUI::CoreMainWindow(closeUpOperations), coreUI::SingleInstanceWindow(appName),
-    controller(this)
+	controller(this), commWidget(nullptr)
 {
     ui = new Ui::HMMMain();
     ui->setupUi(this);
@@ -309,7 +309,8 @@ bool MdeMainWindow::customViewInit(QWidget * log)
        }
    }
 
-   QWidget* commWidget = commSource->getWidget();
+   this->commWidget = commSource->getWidget();
+
    //icomm->setCompactMode(true);
    //commWidget->setMaximumWidth(304);
    
@@ -320,6 +321,7 @@ bool MdeMainWindow::customViewInit(QWidget * log)
    sourceOptionsWidget->hide();
    QSplitter* compound = new QSplitter();
    AnalisisWidget* aw = new AnalisisWidget(analysisModel, contextEventFilter, nullptr);
+   connect(aw, &AnalisisWidget::hideCommunication, this, [&]() {this->commWidget->setVisible(!this->commWidget->isVisible()); });
    // -----------------------
    compound->addWidget(commWidget);
    compound->addWidget(aw);
@@ -356,17 +358,20 @@ bool MdeMainWindow::customViewInit(QWidget * log)
 
 
 
+   PLUGIN_LOG_INFO("Logging: started");
    bool done = false;
    do {
-	   LoginDialog ld(nullptr);// (this);
+	   LoginDialog ld(this);
 	   if (ld.exec() == QDialog::Accepted) {
-
+		   PLUGIN_LOG_INFO("Logging: set connections profile");
 		   auto config = sourceOptionsWidget->getConnectionProfile();
 		   config.motionServicesConfiguration.userConfiguration.user = ld.getUser();
 		   config.motionServicesConfiguration.userConfiguration.password = ld.getPassword();
 		   sourceOptionsWidget->setConnectionProfile(config);
+		   PLUGIN_LOG_INFO("Logging: onLogin");
 		   sourceOptionsWidget->onLogin();
 		   QStringList errors;
+		   PLUGIN_LOG_INFO("Logging: veryfiying");
 		   sourceOptionsWidget->verify(errors);
 		   done = errors.isEmpty();
 
