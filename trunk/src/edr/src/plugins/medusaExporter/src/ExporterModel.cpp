@@ -10,11 +10,15 @@
 #include <quazip/quazipfile.h>
 #include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <corelib/PluginCommon.h>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsItem>
+#include <QtGui/QPainter>
 #include <corelib/IFileDataManager.h>
 #include <corelib/ISourceManager.h>
 #include "CSVExporter.h"
 #include <iosfwd>
 #include "utils/Utils.h"
+#include "plugins/dicom/Annotations.h"
 
 
 using namespace medusaExporter;
@@ -346,7 +350,9 @@ void medusaExporter::ExporterModel::exportData(const QString& outDir, const QStr
 		transaction->removeFile(*it);
 	}
 
-
+	if (config.recreateAnnotations != recreateNone) {
+		recreateAnnotationDrawings(outDir, user, *annotations, config.recreateAnnotations == recreateSynovitis, fun);
+	}
 	CSVExporter exporter;
 	exporter.exportAnnotations(core::Filesystem::Path(outDir.toStdString()), *annotations, config);
 	fun(1.0f, QObject::tr("Done"));
@@ -459,6 +465,63 @@ void medusaExporter::ExporterModel::clearMedusaExportDir()
     } else {
         throw loglib::runtime_error("Wrong directory path");
     }
+}
+
+void medusaExporter::ExporterModel::recreateAnnotationDrawings(const QString& outDir, const QString& userName, const AnnotationData& data, bool synovitisOnly, CallbackFunction fun)
+{
+	QString subDir = outDir + "/recreated." + userName;
+	QDir od(subDir);
+	bool makedir = od.mkdir(".");
+	
+	const auto& layers = data.getAnnotations();
+
+	for (auto itLayer = layers.begin(); itLayer != layers.end(); ++itLayer) {
+		/*if (config.skipIdentical && isIdentical(itLayer->second)) {
+			continue;
+		}*/
+
+		/*int graphicsCount = getGraphicsLayersCount(itLayer->second);
+		if (graphicsCount == 0) {
+			continue;
+		}*/
+		QString filename = QString("%1.png").arg(itLayer->first.imageName.c_str());
+		QPixmap pixmap(QString("%1/Data/%2").arg(outDir).arg(filename));
+		//pixmap.save(QString("%1/%2").arg(subDir).arg(filename));
+		QGraphicsScene scene;
+		QGraphicsPixmapItem background(pixmap);
+		scene.addItem(&background);
+		std::vector<dicom::ILayerGraphicItemPtr> clones;
+		for (auto it = itLayer->second.begin(); it != itLayer->second.end(); ++it) {
+			dicom::ILayerItemConstPtr itm = *it;
+
+			dicom::ILayerGraphicItemConstPtr graphic = boost::dynamic_pointer_cast<const dicom::ILayerGraphicItem>(itm);
+			if (graphic) {
+				if (!synovitisOnly || graphic->getAdnotationIdx() == dicom::annotations::inflammatory) {
+					dicom::ILayerGraphicItemPtr cln(graphic->clone());
+					scene.addItem(cln->getItem());
+					clones.push_back(cln);
+				}
+			}
+		/*	graphicsScene->addItem(image->getBackgroundLayer()->getItem());
+
+			for (auto tag : image->getTags()) {
+				int count = image->getNumGraphicLayerItems(tag);
+				for (int i = 0; i < count; ++i) {
+					auto vec = image->getLayerGraphicItem(tag, i);
+					if (vec && vec->getItem() != nullptr) {
+						graphicsScene->addItem(vec->getItem());
+					}
+				}
+			}*/
+
+			
+		}
+		QImage image = pixmap.toImage();
+		QPainter painter(&image);
+		//painter.setRenderHint(QPainter::Antialiasing);
+		scene.render(&painter);
+		image.save(QString("%1/%2").arg(subDir).arg(filename));
+	}
 }
 
 

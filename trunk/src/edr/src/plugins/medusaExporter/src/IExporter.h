@@ -14,12 +14,20 @@ namespace medusaExporter {
 
 	class AnnotationData;
 
+	enum RecreateAnnotationsEnum
+	{
+		recreateNone,
+		recreateSynovitis,
+		recreateAll
+	};
+
 	struct ExportConfig
 	{
 		bool skipIdentical;
 		bool pixelByPixel;
 		int pointsDensity;
         bool normalizePointVectorsLenght;
+		RecreateAnnotationsEnum recreateAnnotations;
 	};
 
 	class IExporter

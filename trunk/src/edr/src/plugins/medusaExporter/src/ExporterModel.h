@@ -24,6 +24,7 @@ namespace medusaExporter {
 	class ExporterModel
 	{
 	public:
+		
 		typedef std::function<void(double, const QString&)> CallbackFunction;
 	public:
 		ExporterModel(core::IFileDataManager* fileManager, core::IDataManager* dataManager);
@@ -44,6 +45,7 @@ namespace medusaExporter {
         void exportData(const QString& outDir, const QString& user, const QString& dirPath, const ExportConfig& config, CallbackFunction fun);
 		QStringList getUsers(const QString& path, const ExporterModel::CallbackFunction& fun) const;
         void clearMedusaExportDir();
+		void recreateAnnotationDrawings(const QString& outDir, const QString& userName, const AnnotationData& data, bool synovitisOnly, CallbackFunction fun);
 
 	private:
 		void pack(const QString& dirPath, const QString& outFile, std::function<bool(const core::Filesystem::Path&)> filter, CallbackFunction fun);

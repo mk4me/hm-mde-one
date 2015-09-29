@@ -69,7 +69,13 @@ void medusaExporter::MedusaExporterServiceWidget::onExport()
 	config.pixelByPixel = !isKeyPoints();
 	config.pointsDensity = ui->curveDensitySpinBox->value();
     config.normalizePointVectorsLenght = ui->normalizePointsCheck->isChecked();
-
+	RecreateAnnotationsEnum recreate = recreateNone;
+	if (ui->allRadio->isChecked()) {
+		recreate = recreateAll;
+	} else if (ui->synovitisRadio->isChecked()) {
+		recreate = recreateSynovitis;
+	}
+	config.recreateAnnotations = recreate;
 	try {
         ExporterThread* t = new ExporterThread();
         connect(t, SIGNAL(progressChanged(double, const QString&)), this, SLOT(callback(double, const QString&)), Qt::QueuedConnection);
