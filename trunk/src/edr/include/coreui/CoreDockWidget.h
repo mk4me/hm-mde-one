@@ -21,8 +21,8 @@ class COREUI_EXPORT CoreDockWidget : public QDockWidget
     Q_OBJECT
 
 public:
-    explicit CoreDockWidget(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = 0);
-    explicit CoreDockWidget(QWidget *parent = nullptr, Qt::WindowFlags flags = 0);
+    CoreDockWidget(const QString &title, QWidget *parent = 0, Qt::WindowFlags flags = 0);
+    CoreDockWidget(QWidget *parent = nullptr, Qt::WindowFlags flags = 0);
 	//! Destruktor wirtualny
     virtual ~CoreDockWidget();
 
@@ -40,9 +40,9 @@ public:
 		const QString & windowTitle, const Qt::DockWidgetArea allowedAreas,
 		const bool permanent);
 
-public Q_SLOTS:
+public slots:
     //! Zmienia stan dokowania.
-    void toggleFloating();	
+    void toggleFloating();
 
 public:
 	//! \return Czy DockWidget będzie żył po zamknięciu go

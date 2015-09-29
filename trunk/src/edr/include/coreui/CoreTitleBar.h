@@ -10,6 +10,7 @@
 #define HEADER_GUARD_CORE__CORETITLEBAR_H__
 
 #include <coreui/Export.h>
+#include <coreui/CoreDockFullScreenSwitch.h>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QDockWidget>
 #include <map>
@@ -54,11 +55,11 @@ public:
 
 public:
 
-	static CoreTitleBar * supplyWithCoreTitleBar(QDockWidget * dockWidget, const bool observe = true);
+	virtual bool eventFilter(QObject * watched, QEvent * event);
+
+	static CoreTitleBar * supplyWithCoreTitleBar(QDockWidget * dockWidget);
 	static void supplyCoreTitleBarWithActions(CoreTitleBar * titleBar, const QList<QAction *> & actions);
 	static void supplyCoreTitleBarWithActions(CoreTitleBar * titleBar, QWidget * widget);
-
-	virtual bool eventFilter(QObject * watched, QEvent * event);
 
 	QAction * actionAt(const QPoint & p) const;
 	QAction * actionAt(int x, int y) const;
@@ -108,9 +109,7 @@ private slots:
 
 	void refreshFeatures(QDockWidget::DockWidgetFeatures features);
 
-	void onActionTriggeredLeft(QAction * action);
-	void onActionTriggeredRight(QAction * action);
-	
+	void onActionTriggered(QAction * action);	
 
 	void onTopLevelChanged(bool floating);
 
@@ -125,14 +124,12 @@ signals:
 protected:
 
 	virtual void mouseDoubleClickEvent(QMouseEvent * event);
-
-    //virtual void paintEvent(QPaintEvent *paintEvent);
 	virtual void changeEvent(QEvent * event);
 	virtual bool event(QEvent * event);
 	virtual void paintEvent(QPaintEvent * event);
 
 private:
-	CoreTitleBar(bool floating, QWidget * parent = nullptr, ToggleType toggleType = Dock);
+	CoreTitleBar(QDockWidget * parent = nullptr, ToggleType toggleType = Dock);
 	void updateTitleOrientation();
 
 private:	
@@ -140,10 +137,8 @@ private:
 	QToolBar * leftToolbar;
 	QToolBar * rightToolbar;
 	bool verticalOrientation_;
-	bool floating_;
-	bool wasFloating_;
-	bool updateFullScreen;
 	ToggleType toggleType_;
+	CoreDockFullScreenSwitch fullScreenSwitch;
 };
 
 }

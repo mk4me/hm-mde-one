@@ -228,9 +228,9 @@ DataViewWidget::DataViewWidget(hmdbCommunication::IHMDBShallowCopyContextPtr sha
 		ui->treeWidget->setIconSize(QSize(60, 20));
 	}
 
-	QTimer::singleShot(0, this, SLOT(initializeShallowCopy()));
-
 	connect(this, SIGNAL(modifiedTrialsPresent()), this, SLOT(onUpdateModifiedTrials()), Qt::QueuedConnection);
+
+	QTimer::singleShot(0, this, SLOT(initializeShallowCopy()));
 }
 
 DataViewWidget::~DataViewWidget()
@@ -314,7 +314,9 @@ void DataViewWidget::extractLocalShallowCopyAndTryUpdate()
 
 	bool setShallow = true;
 	auto sc = shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->createShallowCopy();	
-	
+	shallowCopyContext_->shallowCopyDataContext()->setShallowCopy(sc);
+	setShallowCopy(sc);
+
 	const auto mq = shallowCopyContext_->shallowCopyRemoteContext()->remoteContext()->session()->motionQueries();
 	if (sc != nullptr && mq != nullptr){
 		const auto dbTime = mq->dataModificationTime();
@@ -327,9 +329,7 @@ void DataViewWidget::extractLocalShallowCopyAndTryUpdate()
 		}
 	}	
 
-	if (setShallow == true){
-		shallowCopyContext_->shallowCopyDataContext()->setShallowCopy(sc);
-		setShallowCopy(sc);
+	if (setShallow == true){		
 		emit shallowCopyChanged();
 	}
 }
@@ -1359,8 +1359,6 @@ void DataViewWidget::onSynchronizeFinished()
 	}
 }
 
-
-
 void DataViewWidget::synchronize(hmdbCommunication::IHMDBShallowCopyRemoteContext::SynchronizeOperationPtr sOp,
 	utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger)
 {
@@ -1795,10 +1793,13 @@ void extractFiles(StorageFileNames & storageFiles,
 const hmdbCommunication::StorageFileNames DataViewWidget::filterModifiedTrialFiles(IncrementalBranchShallowCopyConstPtr incShallowCopy)
 {
 	hmdbServices::IncrementalBranchShallowCopy::Files raws;
-	for (auto& trial : incShallowCopy->modified.trials) {
-		if (isTrialLocal(trial)) {
-			raws.insert(raws.end(), trial.addedFiles.begin(), trial.addedFiles.end());
-			raws.insert(raws.end(), trial.modifiedFiles.begin(), trial.modifiedFiles.end());
+	if (incShallowCopy->modified.trials.empty() == false){
+		auto transaction = shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->transaction();
+		for (auto& trial : incShallowCopy->modified.trials) {
+			if (isTrialLocal(trial, transaction)) {
+				raws.insert(raws.end(), trial.addedFiles.begin(), trial.addedFiles.end());
+				raws.insert(raws.end(), trial.modifiedFiles.begin(), trial.modifiedFiles.end());
+			}
 		}
 	}
 	hmdbCommunication::StorageFileNames files;
@@ -1806,11 +1807,11 @@ const hmdbCommunication::StorageFileNames DataViewWidget::filterModifiedTrialFil
 	return files;
 }
 
-bool DataViewWidget::isTrialLocal(const hmdbServices::IncrementalBranchShallowCopy::Trial& trial)
+bool DataViewWidget::isTrialLocal(const hmdbServices::IncrementalBranchShallowCopy::Trial& trial,
+	hmdbCommunication::IHMDBStatusManager::TransactionConstPtr transaction)
 {
-	auto transaction = shallowCopyContext_->shallowCopyDataContext()->dataStatusManager()->transaction();
-	auto status = transaction->dataStatus(hmdbCommunication::MotionType, trial.trialID).storage();
-	return status == hmdbCommunication::DataStatus::Local || status == hmdbCommunication::DataStatus::PartiallyLocal;
+	const auto status = transaction->dataStatus(hmdbCommunication::MotionType, trial.trialID).storage();
+	return (status == hmdbCommunication::DataStatus::Local) || (status == hmdbCommunication::DataStatus::PartiallyLocal);
 }
 
 void DataViewWidget::onUpdateModifiedTrials()

@@ -593,7 +593,7 @@ const bool SQLCipherStorage::verify(const core::Filesystem::Path & path,
 
 const bool SQLCipherStorage::isOpened() const
 {
-	return sharedState->innerState.path_.empty() == false;
+	return sharedState != nullptr && sharedState->innerState.path_.empty() == false;
 }
 
 const std::string SQLCipherStorage::name() const

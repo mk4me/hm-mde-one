@@ -13,6 +13,7 @@
 #include <plugins/hmdbCommunication/ShallowCopy.h>
 #include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
+#include <plugins/hmdbCommunication/IHMDBStatusManager.h>
 #include <coreui/CoreCursorChanger.h>
 #include <plugins/hmdbCommunication/DataStatus.h>
 #include <plugins/hmdbCommunication/Types.h>
@@ -147,7 +148,8 @@ private:
 
 	
 	const hmdbCommunication::StorageFileNames filterModifiedTrialFiles(hmdbCommunication::IncrementalBranchShallowCopyConstPtr incShallowCopy);
-	bool isTrialLocal(const hmdbServices::IncrementalBranchShallowCopy::Trial& trial);
+	bool isTrialLocal(const hmdbServices::IncrementalBranchShallowCopy::Trial& trial,
+		hmdbCommunication::IHMDBStatusManager::TransactionConstPtr transaction);
 
 private:
 	core::Thread remoteOperationThread;

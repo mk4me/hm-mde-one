@@ -48,6 +48,7 @@ SET_PUBLIC_HEADERS(
 	IMdeTab.h
 	SimpleTab.h
 	IContextRoot.h
+	CoreDockFullScreenSwitch.h
 	
 	findreplacedialog.h
 	finddialog.h
@@ -97,6 +98,7 @@ SET_SOURCE_FILES(
 	SimpleTab.cpp
 	ReportsThumbnailContext.cpp
 	ReportsTab.cpp
+	CoreDockFullScreenSwitch.cpp
 	
 	findreplacedialog.cpp
 	finddialog.cpp
@@ -142,6 +144,7 @@ SET_MOC_FILES(
 	ReportsThumbnailContext.h
 	ReportsTab.h
 	SimpleTab.h
+	CoreDockFullScreenSwitch.h
 	
 	findform.h
 	findreplaceform.h

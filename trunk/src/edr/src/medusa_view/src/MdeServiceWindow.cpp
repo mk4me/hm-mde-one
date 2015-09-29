@@ -30,7 +30,7 @@ MdeServiceWindow::~MdeServiceWindow()
 
 void MdeServiceWindow::saveLayout()
 {
-    QSettings settings("PJWSTK", "MEDUSA");
+    QSettings settings("PJATK", "MEDUSA");
 
     settings.beginGroup(id);
     settings.setValue("geometry", saveGeometry());
@@ -40,7 +40,7 @@ void MdeServiceWindow::saveLayout()
 
 void MdeServiceWindow::loadLayout()
 {
-    QSettings settings("PJWSTK", "MEDUSA");
+    QSettings settings("PJATK", "MEDUSA");
 
     settings.beginGroup(id);
     restoreGeometry(settings.value("geometry").toByteArray());

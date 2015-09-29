@@ -15,14 +15,26 @@
 
 using namespace coreUI;
 
-CoreTitleBar::CoreTitleBar(bool floating, QWidget* parent, ToggleType toggleType) : QWidget(parent), ui(new Ui::CoreTitleBar),
-floating_(floating), wasFloating_(floating), updateFullScreen(true), leftToolbar(new QToolBar), rightToolbar(new QToolBar),
-verticalOrientation_(false), toggleType_(toggleType)
+CoreTitleBar::CoreTitleBar(QDockWidget* parent, ToggleType toggleType)
+	: QWidget(parent), fullScreenSwitch(parent),
+	ui(new Ui::CoreTitleBar), leftToolbar(new QToolBar),
+	rightToolbar(new QToolBar), verticalOrientation_(false), toggleType_(toggleType)
 {
     ui->setupUi(this);
+
+	refreshFeatures(parent->features());
+	setWindowTitle(parent->windowTitle());
+	// obserwujemy zmiany tytulu okna
+	parent->installEventFilter(this);
+
+	//obserwujemy zmiany cech okna
+	connect(parent, SIGNAL(featuresChanged(QDockWidget::DockWidgetFeatures)), this, SLOT(refreshFeatures(QDockWidget::DockWidgetFeatures)));
+	//zmiana dokowania po stronie dockWidgeta z pominięciem titlebara
+	connect(parent, SIGNAL(topLevelChanged(bool)), this, SLOT(onTopLevelChanged(bool)));
+
 	ui->titleLabel->setAttribute(Qt::WA_TransparentForMouseEvents, true);
 	ui->iconPlaceholder->setVisible(false);
-	ui->actionDock_Undock->setChecked(!floating);
+	ui->actionDock_Undock->setChecked(!(parent->isFloating()));
 	ui->buttonFloat->setDefaultAction(ui->actionDock_Undock);
 	ui->buttonClose->setDefaultAction(ui->actionClose);
 	ui->buttonFullscreen->setDefaultAction(ui->actionFull_screen_Window);
@@ -33,8 +45,8 @@ verticalOrientation_(false), toggleType_(toggleType)
 	ui->leftToolbarPlaceholder->layout()->addWidget(leftToolbar);
 	ui->rightToolbarPlaceholder->layout()->addWidget(rightToolbar);
 
-	connect(leftToolbar, SIGNAL(actionTriggered(QAction*)), this, SLOT(onActionTriggeredLeft(QAction*)));
-	connect(rightToolbar, SIGNAL(actionTriggered(QAction*)), this, SLOT(onActionTriggeredRight(QAction*)));
+	connect(leftToolbar, SIGNAL(actionTriggered(QAction*)), this, SLOT(onActionTriggered(QAction*)));
+	connect(rightToolbar, SIGNAL(actionTriggered(QAction*)), this, SLOT(onActionTriggered(QAction*)));
 	setIconSize(QSize(16,16));
 }
 
@@ -83,24 +95,8 @@ void CoreTitleBar::toggleFullScreen(bool fullScreen)
 {
 	if (parentWidget() != nullptr){
 		QDockWidget *dockWidget = qobject_cast<QDockWidget*>(parentWidget());
-		if (dockWidget != nullptr && dockWidget->isFullScreen() != fullScreen) {
-			utils::Push p(updateFullScreen, false);
-			if (fullScreen == true){
-				wasFloating_ = dockWidget->isFloating();
-				if (wasFloating_ == false){
-					dockWidget->setFloating(true);
-				}
-
-				dockWidget->showFullScreen();
-			}
-			else{
-
-				dockWidget->showNormal();
-
-				if (wasFloating_ == false){
-					dockWidget->setFloating(false);
-				}
-			}
+		if (dockWidget != nullptr) {
+			fullScreenSwitch.toggleFullScreen();
 		}
 	}	
 }
@@ -170,23 +166,19 @@ bool CoreTitleBar::eventFilter(QObject * watched, QEvent * event)
 		auto iconText = widget->windowIconText();
 		ui->iconPlaceholder->setToolTip(iconText);
 	}
-	else if (updateFullScreen == true && event->type() == QEvent::WindowStateChange){
+	else if (event->type() == QEvent::WindowStateChange){
 		//zmiana stanu okna - fullscreen | normal |floating | dock?
 		auto widget = qobject_cast<QWidget *>(watched);
 
 		ui->actionFull_screen_Window->blockSignals(true);
 		ui->actionFull_screen_Window->setChecked(widget->isFullScreen());
 		ui->actionFull_screen_Window->blockSignals(false);
-
-		ui->actionDock_Undock->blockSignals(true);
+	
 		if (widget->isFullScreen() == true){
-			wasFloating_ = ui->actionDock_Undock->isChecked();
-			ui->actionDock_Undock->setChecked(widget->isFullScreen());
-		}
-		else{
-			ui->actionDock_Undock->setChecked(wasFloating_);
-		}
-		ui->actionDock_Undock->blockSignals(false);
+			ui->actionDock_Undock->blockSignals(true);
+			ui->actionDock_Undock->setChecked(true);
+			ui->actionDock_Undock->blockSignals(false);
+		}	
 	}
 
 	return QWidget::eventFilter(watched, event);
@@ -234,14 +226,9 @@ void CoreTitleBar::updateTitleOrientation()
 	ui->titleLabel->setText(newTitle);	
 }
 
-void CoreTitleBar::onActionTriggeredLeft(QAction * action)
+void CoreTitleBar::onActionTriggered(QAction * action)
 {
-	emit actionTriggered(action, Left);
-}
-
-void CoreTitleBar::onActionTriggeredRight(QAction * action)
-{
-	emit actionTriggered(action, Right);
+	emit actionTriggered(action, actionSide(action));
 }
 
 QAction * CoreTitleBar::actionAt(const QPoint & p) const
@@ -737,26 +724,14 @@ void CoreTitleBar::refreshFeatures(QDockWidget::DockWidgetFeatures features)
 	}
 }
 
-CoreTitleBar * CoreTitleBar::supplyWithCoreTitleBar(QDockWidget * dockWidget, const bool observe)
+CoreTitleBar * CoreTitleBar::supplyWithCoreTitleBar(QDockWidget * dockWidget)
 {
     if(dockWidget->titleBarWidget() != nullptr){
         return nullptr;
     }
 
-    auto titleBar = new CoreTitleBar(dockWidget->isFloating(), dockWidget);
+    auto titleBar = new CoreTitleBar(dockWidget);
 	dockWidget->setTitleBarWidget(titleBar);
-	titleBar->refreshFeatures(dockWidget->features());
-
-	if(observe == true){
-		titleBar->setWindowTitle(dockWidget->windowTitle());
-		// obserwujemy zmiany tytulu okna
-		dockWidget->installEventFilter(titleBar);
-	}
-
-	//obserwujemy zmiany cech okna
-    QObject::connect(dockWidget, SIGNAL(featuresChanged(QDockWidget::DockWidgetFeatures)), titleBar, SLOT(refreshFeatures(QDockWidget::DockWidgetFeatures)));
-	//zmiana dokowania po stronie dockWidgeta z pominięciem titlebara
-	QObject::connect(dockWidget, SIGNAL(topLevelChanged(bool)), titleBar, SLOT(onTopLevelChanged(bool)));
 
     return titleBar;
 }

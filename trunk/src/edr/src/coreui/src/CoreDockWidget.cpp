@@ -2,19 +2,21 @@
 #include <coreui/CoreDockWidget.h>
 #include <coreui/CoreAction.h>
 #include <coreui/CoreTitleBar.h>
+#include <utils/Push.h>
+#include <QtGui/QtEvents>
 
 using namespace coreUI;
 
 CoreDockWidget::CoreDockWidget(const QString &title, QWidget *parent, Qt::WindowFlags flags)
-    : QDockWidget(title, parent, flags)
+	: QDockWidget(title, parent, flags)//, wasFloating(false), updateFullScreen(true)
 {
-	setContentsMargins(0,0,0,0);
+	setContentsMargins(0,0,0,0);	
 }
 
 CoreDockWidget::CoreDockWidget(QWidget * parent, Qt::WindowFlags flags)
-    : QDockWidget(parent, flags)
+	: QDockWidget(parent, flags)//, wasFloating(false), updateFullScreen(true)
 {
-    setContentsMargins(0,0,0,0);
+    setContentsMargins(0,0,0,0);	
 }
 
 CoreDockWidget::~CoreDockWidget()
