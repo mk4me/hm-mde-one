@@ -69,12 +69,13 @@ void medusaExporter::MedusaExporterServiceWidget::onExport()
 	config.pixelByPixel = !isKeyPoints();
 	config.pointsDensity = ui->curveDensitySpinBox->value();
     config.normalizePointVectorsLenght = ui->normalizePointsCheck->isChecked();
-	RecreateAnnotationsEnum recreate = recreateNone;
-	if (ui->allRadio->isChecked()) {
-		recreate = recreateAll;
-	} else if (ui->synovitisRadio->isChecked()) {
-		recreate = recreateSynovitis;
-	}
+	RecreateAnnotationsConfig recreate;
+	recreate.recreate = ui->recreateGroup->isChecked();
+	recreate.merge = ui->mergeButton->isChecked();
+	recreate.drawJoints = ui->jointsButton->isChecked();
+	recreate.drawBones = ui->bonesButton->isChecked();
+	recreate.drawInflammations = ui->inflammationButton->isChecked();
+	recreate.drawSkins = ui->skinButton->isChecked();
 	config.recreateAnnotations = recreate;
 	try {
         ExporterThread* t = new ExporterThread();

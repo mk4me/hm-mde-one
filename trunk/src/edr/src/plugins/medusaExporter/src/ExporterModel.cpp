@@ -351,8 +351,8 @@ void medusaExporter::ExporterModel::exportData(const QString& outDir, const QStr
 		transaction->removeFile(*it);
 	}
 
-	if (config.recreateAnnotations != recreateNone) {
-		recreateAnnotationDrawings(outDir, user, *annotations, config.recreateAnnotations == recreateSynovitis, fun);
+	if (config.recreateAnnotations.recreate) {
+		recreateAnnotationDrawings(outDir, user, *annotations, config.recreateAnnotations, fun);
 	}
 	CSVExporter exporter;
 	exporter.exportAnnotations(core::Filesystem::Path(outDir.toStdString()), *annotations, config);
@@ -468,7 +468,7 @@ void medusaExporter::ExporterModel::clearMedusaExportDir()
     }
 }
 
-void medusaExporter::ExporterModel::recreateAnnotationDrawings(const QString& outDir, const QString& userName, const AnnotationData& data, bool synovitisOnly, CallbackFunction fun)
+void medusaExporter::ExporterModel::recreateAnnotationDrawings(const QString& outDir, const QString& userName, const AnnotationData& data, const RecreateAnnotationsConfig& config, CallbackFunction fun)
 {
 	QString subDir = outDir + "/recreated." + userName;
 	QDir od(subDir);
@@ -491,20 +491,43 @@ void medusaExporter::ExporterModel::recreateAnnotationDrawings(const QString& ou
 
 			dicom::ILayerGraphicItemConstPtr graphic = boost::dynamic_pointer_cast<const dicom::ILayerGraphicItem>(itm);
 			if (graphic) {
-				if (!synovitisOnly || graphic->getAdnotationIdx() == dicom::annotations::inflammatory) {
+				if (possibleToAdd(static_cast<dicom::annotations::annotationsIdx>(graphic->getAdnotationIdx()), config)) {
 					dicom::ILayerGraphicItemPtr cln(graphic->clone());
 					scene.addItem(cln->getItem());
 					clones.push_back(cln);
 				}
 			}
 		}
-		QImage image(pixmap.size(), pixmap.toImage().format());// = pixmap.toImage();
+		QSize size = pixmap.size();
+		size.setWidth(size.width() * (config.merge ? 2 : 1));
+		QImage image(size, pixmap.toImage().format());// = pixmap.toImage();
 		QPainter painter(&image);
 		//painter.setRenderHint(QPainter::Antialiasing);
-		scene.render(&painter);
+		if (config.merge) {
+			painter.drawPixmap(0, 0, pixmap);
+			scene.render(&painter, QRectF(pixmap.width(), 0, pixmap.width() * 2, pixmap.height()));
+		} else {
+			scene.render(&painter);
+		}
 		image.save(QString("%1/%2").arg(subDir).arg(filename));
 
 		fun(0.99f, QString("Recreating: %1").arg(filename));
+	}
+}
+
+bool medusaExporter::ExporterModel::possibleToAdd(dicom::annotations::annotationsIdx annotation, const RecreateAnnotationsConfig& config)
+{
+	switch(annotation) {
+	case dicom::annotations::inflammatory:
+		return config.drawInflammations;
+	case dicom::annotations::bone:
+		return config.drawBones;
+	case dicom::annotations::joint:
+		return config.drawJoints;
+	case dicom::annotations::skin:
+		return config.drawSkins;
+	default:
+		return false;
 	}
 }
 

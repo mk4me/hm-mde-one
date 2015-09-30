@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>439</width>
-    <height>670</height>
+    <height>738</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -313,32 +313,68 @@ color: white*/
             </widget>
            </item>
            <item row="3" column="0" colspan="3">
-            <widget class="QGroupBox" name="groupBox">
+            <widget class="QGroupBox" name="recreateGroup">
              <property name="title">
               <string>Recreate annotation images</string>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
-              <item>
-               <widget class="QRadioButton" name="noneRadio">
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="3" column="0" colspan="2">
+               <widget class="QCheckBox" name="mergeButton">
                 <property name="text">
-                 <string>None</string>
+                 <string>Merge with original image</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QCheckBox" name="bonesButton">
+                <property name="text">
+                 <string>Draw bones</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QRadioButton" name="synovitisRadio">
+              <item row="1" column="1">
+               <widget class="QCheckBox" name="skinButton">
                 <property name="text">
-                 <string>Draw synovitis only</string>
+                 <string>Draw skins</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QRadioButton" name="allRadio">
+              <item row="1" column="0">
+               <widget class="QCheckBox" name="inflammationButton">
                 <property name="text">
-                 <string>Draw all</string>
+                 <string>Draw inflammations</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QCheckBox" name="jointsButton">
+                <property name="text">
+                 <string>Draw joints</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="Line" name="line">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
                 </property>
                </widget>
               </item>

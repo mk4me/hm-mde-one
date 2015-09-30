@@ -14,11 +14,14 @@ namespace medusaExporter {
 
 	class AnnotationData;
 
-	enum RecreateAnnotationsEnum
+	struct RecreateAnnotationsConfig
 	{
-		recreateNone,
-		recreateSynovitis,
-		recreateAll
+		bool recreate = false;
+		bool merge = false;
+		bool drawJoints = true;
+		bool drawBones = true;
+		bool drawSkins = true;
+		bool drawInflammations = true;
 	};
 
 	struct ExportConfig
@@ -27,7 +30,7 @@ namespace medusaExporter {
 		bool pixelByPixel;
 		int pointsDensity;
         bool normalizePointVectorsLenght;
-		RecreateAnnotationsEnum recreateAnnotations;
+		RecreateAnnotationsConfig recreateAnnotations;
 	};
 
 	class IExporter
