@@ -13,6 +13,7 @@
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsItem>
 #include <QtGui/QPainter>
+#include <QtGui/QImage>
 #include <corelib/IFileDataManager.h>
 #include <corelib/ISourceManager.h>
 #include "CSVExporter.h"
@@ -479,14 +480,8 @@ void medusaExporter::ExporterModel::recreateAnnotationDrawings(const QString& ou
 		/*if (config.skipIdentical && isIdentical(itLayer->second)) {
 			continue;
 		}*/
-
-		/*int graphicsCount = getGraphicsLayersCount(itLayer->second);
-		if (graphicsCount == 0) {
-			continue;
-		}*/
 		QString filename = QString("%1.png").arg(itLayer->first.imageName.c_str());
 		QPixmap pixmap(QString("%1/Data/%2").arg(outDir).arg(filename));
-		//pixmap.save(QString("%1/%2").arg(subDir).arg(filename));
 		QGraphicsScene scene;
 		QGraphicsPixmapItem background(pixmap);
 		scene.addItem(&background);
@@ -502,25 +497,14 @@ void medusaExporter::ExporterModel::recreateAnnotationDrawings(const QString& ou
 					clones.push_back(cln);
 				}
 			}
-		/*	graphicsScene->addItem(image->getBackgroundLayer()->getItem());
-
-			for (auto tag : image->getTags()) {
-				int count = image->getNumGraphicLayerItems(tag);
-				for (int i = 0; i < count; ++i) {
-					auto vec = image->getLayerGraphicItem(tag, i);
-					if (vec && vec->getItem() != nullptr) {
-						graphicsScene->addItem(vec->getItem());
-					}
-				}
-			}*/
-
-			
 		}
-		QImage image = pixmap.toImage();
+		QImage image(pixmap.size(), pixmap.toImage().format());// = pixmap.toImage();
 		QPainter painter(&image);
 		//painter.setRenderHint(QPainter::Antialiasing);
 		scene.render(&painter);
 		image.save(QString("%1/%2").arg(subDir).arg(filename));
+
+		fun(0.99f, QString("Recreating: %1").arg(filename));
 	}
 }
 
