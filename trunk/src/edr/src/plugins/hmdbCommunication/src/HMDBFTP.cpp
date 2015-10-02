@@ -34,18 +34,19 @@ const HMDBFTP::TransferPtr HMDBFTP::preparePut(const std::string & destinationFi
 		return ret;
 	}
 
-	auto curl = curl_easy_init();
+	auto curl = networkUtils::createCurlEasy();
 	if (curl != nullptr){
 
-		utils::shared_ptr<CURLFTPUploadTransferData> * td(new utils::shared_ptr<CURLFTPUploadTransferData>(new CURLFTPUploadTransferData));
-		(*td)->stream = stream;
-		CURLFTPHelper::initializeFTPConnection(curl, user, password);
-		CURLFTPHelper::initializeFTPUpload(curl, url + "/" + destinationFileName, stream.get(), (*td)->progress.get());
-		curl_easy_setopt(curl, CURLOPT_PRIVATE, td);
-		curl_easy_setopt(curl, CURLOPT_INFILESIZE, size);
-		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, size);
-		HMDBService::curlEnableLog(curl);
-		ret.reset(new CURLFTPTransfer(CURLFTPTransfer::Upload, curl, m, destinationFileName, size));
+		utils::shared_ptr<CURLFTPUploadTransferData> td(new CURLFTPUploadTransferData);
+		td->stream = stream;
+		td->sharedState = utils::make_shared<CURLFTPTransferSharedState>();
+		td->sharedState->curl = curl;
+		CURLFTPHelper::initializeFTPConnection(curl.get(), user, password);
+		CURLFTPHelper::initializeFTPUpload(curl.get(), url + "/" + destinationFileName, td->stream.get(), &(td->progress));
+		curl_easy_setopt(curl.get(), CURLOPT_INFILESIZE, size);
+		curl_easy_setopt(curl.get(), CURLOPT_INFILESIZE_LARGE, size);
+		//HMDBService::curlEnableLog(curl.get());
+		ret.reset(new CURLFTPTransfer(CURLFTPTransfer::Upload, m, td, destinationFileName, size));
 	}
 
 	return ret;
@@ -62,16 +63,16 @@ const HMDBFTP::TransferPtr HMDBFTP::prepareGet(const std::string & destinationFi
 		return ret;
 	}
 
-	auto curl = curl_easy_init();
+	auto curl = networkUtils::createCurlEasy();
 	if (curl != nullptr){
 
-		utils::shared_ptr<CURLFTPDownloadTransferData> * td(new utils::shared_ptr<CURLFTPDownloadTransferData>(new CURLFTPDownloadTransferData));
-		(*td)->stream = stream;
-		CURLFTPHelper::initializeFTPConnection(curl, user, password);
-		CURLFTPHelper::initializeFTPDownload(curl, url + "/" + destinationFileName, stream.get(), (*td)->progress.get());
-		curl_easy_setopt(curl, CURLOPT_PRIVATE, td);
-
-		ret.reset(new CURLFTPTransfer(CURLFTPTransfer::Download, curl, m, destinationFileName, size));
+		utils::shared_ptr<CURLFTPDownloadTransferData> td(new CURLFTPDownloadTransferData);
+		td->stream = stream;
+		td->sharedState = utils::make_shared<CURLFTPTransferSharedState>();
+		td->sharedState->curl = curl;
+		CURLFTPHelper::initializeFTPConnection(curl.get(), user, password);
+		CURLFTPHelper::initializeFTPDownload(curl.get(), url + "/" + destinationFileName, td->stream.get(), &(td->progress));
+		ret.reset(new CURLFTPTransfer(CURLFTPTransfer::Download, m, td, destinationFileName, size));
 	}
 
 	return ret;

@@ -8,7 +8,6 @@
 #ifndef __HEADER_GUARD_IMU__IIMUDATASOURCE_H__
 #define __HEADER_GUARD_IMU__IIMUDATASOURCE_H__
 
-#include <atomic>
 #include <corelib/IIdentifiable.h>
 #include <corelib/Variant.h>
 #include <plugins/imuCostume/Streams.h>

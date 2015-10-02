@@ -10,6 +10,7 @@
 
 #include <string>
 #include <set>
+#include <threadingUtils/IProgress.h>
 #include <threadingUtils/ITTransaction.h>
 #include <threadingUtils/SmartPtr.h>
 #include <corelib/Filesystem.h>
@@ -18,7 +19,7 @@
 namespace hmdbCommunication
 {
 
-	class IHMDBStorageProgress : public networkUtils::ICURLFTPBasicProgress
+	class IHMDBStorageProgress : public threadingUtils::IProgressSupervisor
 	{
 	public:
 		//! Destruktor wirtualny

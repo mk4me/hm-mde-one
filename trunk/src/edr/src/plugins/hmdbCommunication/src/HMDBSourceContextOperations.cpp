@@ -714,7 +714,7 @@ IHMDBStorageOperations::OStreamPtr TmpFileTransferIO::prepareOutput()
 void TmpFileTransferIO::closeOutput()
 {
 	if (stream)	{
-		stream->flush();
+		stream->close();
 	} else {
 		PLUGIN_LOG_DEBUG("TmpeFileTransferIO : stream problem");
 	}
@@ -723,24 +723,31 @@ void TmpFileTransferIO::closeOutput()
 
 void TmpFileTransferIO::release()
 {
-	if (tmpFilePath.empty() == false && stream != nullptr){
-		stream->flush();
+	if (stream != nullptr){
 		stream->close();
 		stream.reset();
+	}
+	if (tmpFilePath.empty() == false){
 		core::Filesystem::deleteFile(tmpFilePath);
 		tmpFilePath = core::Filesystem::Path();
 	}
 }
 
 IHMDBStorageOperations::IStreamPtr TmpFileTransferIO::openInput()
-{	
-	stream->seekg(0, std::ios::beg);
+{
+	stream->open(tmpFilePath.string(), std::ios_base::in | std::ios_base::binary);
+	if (stream->is_open() == false){
+		stream.reset();
+	}
 	return stream;
 }
 
 void TmpFileTransferIO::closeInput()
 {
-	release();
+	if (stream != nullptr){
+		stream->close();
+		stream.reset();
+	}
 }
 
 MemoryTransferIO::MemoryTransferIO()
@@ -794,7 +801,7 @@ FileDownload::FileDownload(const IHMDBRemoteContext::FileDescriptor & fileToDown
 
 FileDownload::~FileDownload()
 {
-	transferIO->release();
+	release();
 }
 
 void FileDownload::start()
@@ -917,11 +924,18 @@ void FileDownload::download()
 		else{
 			release();
 		}
-	//try{
+	try{
 		++progress_;
 		prepareHMDB->clearHMDB();
 		++progress_;
-	//}catch (...){}
+	}catch (std::exception & e)
+	{
+		PLUGIN_LOG_DEBUG("Failed downloading file " << filePath << " with error " << e.what());
+	}
+	catch (...)
+	{
+		PLUGIN_LOG_DEBUG("Failed downloading file " << filePath << " with UNKNOWN error");
+	}
 }
 
 MultipleFilesDownloadAndStore::MultipleFilesDownloadAndStore(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads,

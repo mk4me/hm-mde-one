@@ -8,35 +8,19 @@
 
 using namespace hmdbCommunication;
 
-CURLFTPTransfer::CURLFTPTransfer(const Direction direction, CURL * curl,
-	CURLManagerPtr manager,	const std::string & file, const size_t size)
-	: file_(file), size_(size), direction_(direction), manager_(manager),
-	curl_(curl)
+CURLFTPTransfer::CURLFTPTransfer(const Direction direction,
+	CURLFTPManagerPtr manager, utils::shared_ptr<CURLFTPTransferData> data,
+	const std::string & file, const size_t size)
+	: file_(file), size_(size), data_(data), direction_(direction),
+	manager_(manager)
 {
-	utils::shared_ptr<CURLFTPTransferData> * td = nullptr;
-	auto ret = curl_easy_getinfo(curl, CURLINFO_PRIVATE, &td);
-	if (ret != CURLE_OK || td == nullptr){
-		throw loglib::runtime_error("Improperly configured connection");
-	}
 
-	data_ = *td;
 }
 
 CURLFTPTransfer::~CURLFTPTransfer()
 {
 	abort();
 	wait();
-	curl_easy_cleanup(curl_);
-}
-
-const CURL * CURLFTPTransfer::curl() const
-{
-	return curl_;
-}
-
-CURL * CURLFTPTransfer::curl()
-{
-	return curl_;
 }
 
 const std::string CURLFTPTransfer::file() const
@@ -46,7 +30,7 @@ const std::string CURLFTPTransfer::file() const
 
 const unsigned long long CURLFTPTransfer::processed() const
 {
-	return data_->progress->processedData();
+	return data_->progress.processedData();
 }
 
 const unsigned long long CURLFTPTransfer::size() const
@@ -58,54 +42,55 @@ void CURLFTPTransfer::start()
 {
 	ScopedLock lock(sync_);
 
-	if (data_->status->status() != IOperation::Initialized){
-		return;
+	if (data_->sharedState->status.status() != IOperation::Initialized){
+		throw std::runtime_error("Transfer already started");
 	}
 
 	auto l = manager_.lock();
 	if (l == nullptr){
-		data_->status->setError("Transfer manager expired");
-		data_->status->setStatus(Error);
+		data_->sharedState->status.setError("Transfer manager expired");
+		data_->sharedState->status.setStatus(Error);
 		return;
 	}	
 	
-	data_->status->setStatus(Pending);
-	data_->wait = l->addRequest(curl_);
+	data_->sharedState->status.setStatus(Pending);
+	data_->result = l->addRequest(data_->sharedState);
 }
 
 void CURLFTPTransfer::abort()
 {
-	data_->progress->abort();
+	data_->progress.abort();
 }
 
 void CURLFTPTransfer::wait()
 {
-	if (status() != CURLFTPTransfer::Finished
-		&& status() != CURLFTPTransfer::Error
-		&& status() != CURLFTPTransfer::Aborted){
-		data_->wait.wait();
+	try{
+		data_->result.wait();
+	}
+	catch (...){
+
 	}
 }
 
 const CURLFTPTransfer::Status CURLFTPTransfer::status() const
 {	
-	return data_->status->status();
+	return data_->sharedState->status.status();
 }
 
 const std::string CURLFTPTransfer::error() const
 {
-	return data_->status->error();
+	return data_->sharedState->status.error();
 }
 
 const float CURLFTPTransfer::normalizedProgress() const
 {
-	return data_->progress->progress();
+	return data_->progress.progress();
 }
 
 const float CURLFTPTransfer::elapsed() const
 {
 	double time = -1.0;
-	auto ret = curl_easy_getinfo(curl_, CURLINFO_TOTAL_TIME, &time);
+	auto ret = curl_easy_getinfo(data_->sharedState->curl.get(), CURLINFO_TOTAL_TIME, &time);
 	return ret;
 }
 

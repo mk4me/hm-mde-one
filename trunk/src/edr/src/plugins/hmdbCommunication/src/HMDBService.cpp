@@ -59,29 +59,25 @@ int curlLogDebugCallback(CURL *handle,
 	return 0;
 }
 
-class HMDBCURLExecutor : public XmlUtils::CURLExecutor
+template<typename T>
+class HMDBCURLExecutorT : public XmlUtils::CURLExecutor
 {
 public:
-	HMDBCURLExecutor(const networkUtils::CURLManagerPtr manager) : manager(manager) {}
+	HMDBCURLExecutorT(const utils::shared_ptr<T> manager) : manager(manager) {}
 
-	virtual ~HMDBCURLExecutor() {}
+	virtual ~HMDBCURLExecutorT() {}
 
 	virtual CURLcode execute(CURL * curl)
 	{
-		HMDBService::curlEnableLog(curl);
+		//HMDBService::curlEnableLog(curl);
 		curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_SSLv3);
-		auto f = manager->addRequest(curl);
+		auto f = manager->addRequest(utils::dummyWrap(curl));
 		return f.get();
 	}
 
 private:
-	const networkUtils::CURLManagerPtr manager;
+	const utils::shared_ptr<T> manager;
 };
-
-const utils::shared_ptr<XmlUtils::CURLExecutor> HMDBService::createCurlExecutor(const networkUtils::CURLManagerPtr manager)
-{
-	return utils::shared_ptr<XmlUtils::CURLExecutor>(new HMDBCURLExecutor(manager));
-}
 
 void HMDBService::curlEnableLog(CURL * curl)
 {
@@ -96,9 +92,7 @@ void HMDBService::curlDisableLog(CURL * curl)
 }
 
 
-HMDBService::HMDBService()
-	: mainWidget(nullptr), finalizeServices_(false),
-	finalizeData_(false)
+HMDBService::HMDBService() : mainWidget(nullptr)
 {	
 	curl_global_init(CURL_GLOBAL_DEFAULT);
 }
@@ -234,14 +228,14 @@ const bool HMDBService::serverOnline(const std::string & url,
 
 	bool ret = false;
 
-	try{		
-		auto f = servicesManager->addRequest(curl);
+	try{
+		auto scurl = networkUtils::wrapCurlEasy(curl);
+		auto f = servicesManager->addRequest(scurl);
 		if (f.get() == CURLE_OK){
 
 			long retcode = -1;
 			//kiedys CURLINFO_HTTP_CODE
-			auto resp = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &retcode);
-			curl_easy_cleanup(curl);
+			auto resp = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &retcode);			
 
 			if (resp == CURLE_OK && retcode == 200){
 				ret = true;
@@ -285,11 +279,10 @@ void HMDBService::init(core::ISourceManager * sourceManager,
 	servicesManager.reset(new networkUtils::CURLManager);
 	dataManager.reset(new CURLFTPManager);
 
-	dataCurlExecutor.reset(new HMDBCURLExecutor(dataManager));
-	serviceCurlExecutor.reset(new HMDBCURLExecutor(servicesManager));
+	serviceCurlExecutor.reset(new HMDBCURLExecutorT<networkUtils::CURLManager>(servicesManager));
 
-	servicesThread.run(&HMDBService::runServices, this);
-	dataThread.run(&HMDBService::runData, this);
+	servicesThread.run(&networkUtils::CURLManager::run, servicesManager);
+	dataThread.run(&CURLFTPManager::run, dataManager);
 	WsdlPull::SCHEMADIR = (plugin::getPaths()->getResourcesPath() / "schemas/").string();
 	PLUGIN_LOG_INFO("WSDLPULL SCHEMADIR: " << WsdlPull::SCHEMADIR);
 
@@ -309,9 +302,6 @@ const bool HMDBService::lateInit()
 
 void HMDBService::finalize()
 {
-	finalizeServices_ = true;
-	finalizeData_ = true;
-
 	servicesManager->finalize();
 	dataManager->finalize();
 
@@ -337,28 +327,4 @@ QWidget* HMDBService::getWidget()
 QWidgetList HMDBService::getPropertiesWidgets()
 {
 	return QWidgetList();
-}
-
-void HMDBService::runServices()
-{
-	while (finalizeServices_ == false){
-		try{
-			servicesManager->process();
-		}
-		catch (...){
-
-		}
-	}
-}
-
-void HMDBService::runData()
-{
-	while (finalizeData_ == false){
-		try{
-			dataManager->process();
-		}
-		catch (...){
-
-		}
-	}
 }

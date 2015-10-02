@@ -13,7 +13,6 @@
 #include <corelib/IThreadPool.h>
 #include "CURLFTPManager.h"
 #include <networkUtils/CURLManager.h>
-#include <atomic>
 #define NOMINMAX
 #include <xmlpull/XmlUtils.h>
 
@@ -28,9 +27,7 @@ namespace hmdbCommunication
 	public:
 
 		static void curlEnableLog(CURL * curl);
-		static void curlDisableLog(CURL * curl);
-
-		static const utils::shared_ptr<XmlUtils::CURLExecutor> createCurlExecutor(const networkUtils::CURLManagerPtr manager);
+		static void curlDisableLog(CURL * curl);		
 
 		static const networkUtils::IWSDLServicePtr createSecureWSDL(
 			const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
@@ -144,12 +141,6 @@ namespace hmdbCommunication
 		virtual QWidgetList getPropertiesWidgets();
 
 	private:
-
-		void runServices();
-		void runData();
-
-
-	private:
 		//! Widget
 		QWidget * mainWidget;
 		//! W¹tek us³ug
@@ -162,14 +153,9 @@ namespace hmdbCommunication
 		utils::shared_ptr<CURLFTPManager> dataManager;
 
 		utils::shared_ptr<XmlUtils::CURLExecutor> serviceCurlExecutor;
-		utils::shared_ptr<XmlUtils::CURLExecutor> dataCurlExecutor;
 
 		//! Obiekt synchronizuj¹cy
 		std::recursive_mutex sync_;
-		//! Czy zakoñczyæ dzia³anie us³ug
-		std::atomic<bool> finalizeServices_;
-		//! Czy zakoñczyæ dzia³anie danych
-		std::atomic<bool> finalizeData_;
 	};
 }
 

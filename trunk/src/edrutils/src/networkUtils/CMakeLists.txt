@@ -8,6 +8,7 @@ SET_PUBLIC_HEADERS(
 	Types.h
 	CURLManager.h
 	IFtpOperations.h
+	CURLUtils.h
 )
 
 SET_SOURCE_FILES(

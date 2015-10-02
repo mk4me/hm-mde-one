@@ -8,6 +8,7 @@
 #ifndef __HEADER_GUARD_NETWORKUTILS__CURLFTPHELPER_H__
 #define __HEADER_GUARD_NETWORKUTILS__CURLFTPHELPER_H__
 
+#include <threadingUtils/IProgress.h>
 #include <networkUtils/Export.h>
 #include <networkUtils/IFtpOperations.h>
 #include <networkUtils/Types.h>
@@ -16,26 +17,11 @@
 
 namespace networkUtils
 {
-	class ICURLFTPBasicProgress
+	class ICURLFTPProgress : public threadingUtils::IProgressSupervisor
 	{
 	public:
 		//! Destruktor wirtualny
-		virtual ~ICURLFTPBasicProgress() {}
-		//! \return Czy należy przerwać operację
-		virtual const bool aborted() const = 0;
-		//! \param progress Postęp od 0.0 do 1.0
-		virtual void setProgress(const float progress) = 0;
-	};
-
-	class ICURLFTPProgress : public ICURLFTPBasicProgress
-	{
-	public:
-		//! Destruktor wirtualny
-		virtual ~ICURLFTPProgress() {}
-		//! \return Czy należy przerwać operację
-		virtual const bool aborted() const = 0;
-		//! \param progress Postęp od 0.0 do 1.0
-		virtual void setProgress(const float progress) = 0;
+		virtual ~ICURLFTPProgress() {}		
 		//! \param processedData Ilosc przetworzonych danych [bytes]
 		virtual void setProcessedData(const unsigned long long processedData) = 0;
 	};

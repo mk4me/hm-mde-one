@@ -14,7 +14,6 @@ purpose:
 #include <string>
 #include <istream>
 #include <utils/SmartPtr.h>
-#include <networkUtils/Export.h>
 
 namespace networkUtils
 {

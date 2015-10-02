@@ -12,6 +12,7 @@
 #include <sqliteUtils/WrapperT.h>
 #include <sqlite3.h>
 #include <string>
+#include <memory>
 
 namespace sqliteUtils
 {
@@ -51,10 +52,13 @@ namespace sqliteUtils
 	};
 }
 
-template<>
-void std::default_delete<sqlite3_blob>::operator()(sqlite3_blob *blob) const
-{	// delete a pointer
-	sqliteUtils::SQLiteBLOB::close(blob);
+namespace std
+{
+	template<>
+	void default_delete<sqlite3_blob>::operator()(sqlite3_blob *blob) const
+	{	// delete a pointer
+		sqliteUtils::SQLiteBLOB::close(blob);
+	}
 }
 
 #endif	// __HEADER_GUARD_SQLITEUTILS__SQLITEBLOB_H__

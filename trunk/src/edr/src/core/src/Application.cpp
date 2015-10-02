@@ -752,7 +752,8 @@ void Application::setDefaultPaths(utils::shared_ptr<Path> & path, const std::str
 	auto userAppDataPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DataLocation).at(0).toStdString()).parent_path() / "PJATK" / appName;
 #endif // WIN32
 	//TODO - czy pod linux taka konwencja jest ok? jak tam dzia�aj� takie wsp�lne foldery?
-	auto appDataPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::GenericConfigLocation).at(1).toStdString()) / "PJATK" / appName;
+	auto genericpath = core::Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::GenericConfigLocation).at(0).toStdString()).root_path() / "ProgramData";
+	auto appDataPath = genericpath / "PJATK" / appName;
 
 	path.reset(new Path(userPath, appDataPath, userAppDataPath, resourcesPath(), userPath / "tmp", appDataPath / "plugins"));
 }

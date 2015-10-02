@@ -24,7 +24,33 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////	
+
+template<typename T>
+struct DummyDefaultDelete
+{	// default deleter for unique_ptr
+
+	DummyDefaultDelete() throw()
+	{	// default construct
+	}
+
+	template<class T2,
+	class = typename enable_if<is_convertible<T2 *, T *>::value,
+		void>::type>
+		DummyDefaultDelete(const DummyDefaultDelete<T2>&) throw()
+	{	// construct from another default_delete
+	}
+
+	void operator()(T *_Ptr) const throw()
+	{						
+	}
+};
+
+template<typename T>
+utils::shared_ptr<T> dummyWrap(T* t)
+{
+	return utils::shared_ptr<T>(t, DummyDefaultDelete<T>());
+}
 
 //! \tparam T Typ wartości zmiennoprzecinkowej 
 template<typename T>

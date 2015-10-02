@@ -5,7 +5,6 @@
 #include "ApplicationCommon.h"
 #include "ParserManager.h"
 #include <utils/Push.h>
-#include <atomic>
 #include <fstream>
 
 using namespace core;
@@ -19,7 +18,7 @@ private:
 private:
 	IDataManager::TransactionPtr mdmTransaction;
 	FileDataManager * fdm;
-	std::atomic<bool> transactionRolledback;
+	volatile bool transactionRolledback;
 	utils::shared_ptr<std::lock_guard<std::recursive_mutex>> lock;
 	const bool oldSkipUpdate;
 	FileModyfications modyfications;

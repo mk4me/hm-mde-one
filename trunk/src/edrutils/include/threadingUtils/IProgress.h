@@ -44,6 +44,18 @@ namespace threadingUtils {
 		//! \return Szacowany czas [s] jaki został do zakończenia zadania
 		virtual const float remaining() const = 0;
 	};
+
+	//! Interfejs nadzorujący zadanie z postępem - pozwala ustawiać postęp oraz odczytywać czy zadanie ma zostac przerwane
+	class IProgressSupervisor
+	{
+	public:
+		//! Destruktor wirtualny
+		virtual ~IProgressSupervisor() {}
+		//! \return Czy należy przerwać operację
+		virtual const bool aborted() const = 0;
+		//! \param progress Postęp od 0.0 do 1.0
+		virtual void setProgress(const float progress) = 0;
+	};
 }
 
 #endif	//	HEADER_GUARD_THREADINGUTILS__IPROGRESS_H__

@@ -9,7 +9,6 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__CURLFTPSTATUS_H__
 
 #include <threadingUtils/IOperation.h>
-#include <atomic>
 
 namespace hmdbCommunication
 {
@@ -31,7 +30,7 @@ namespace hmdbCommunication
 
 	private:
 		//! Status
-		std::atomic<threadingUtils::IOperation::Status> status_;
+		volatile threadingUtils::IOperation::Status status_;
 		//! Opis b³êdu
 		std::string error_;
 	};

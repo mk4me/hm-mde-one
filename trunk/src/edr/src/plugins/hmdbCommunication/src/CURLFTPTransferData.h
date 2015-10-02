@@ -9,41 +9,42 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__CURLFTPTRANSFERDATA_H__
 
 #include <networkUtils/CURLManager.h>
-#include <networkUtils/CURLFTPHelper.h>
 #include "CURLFTPStatus.h"
 #include "CURLFTPProgress.h"
 #include <plugins/hmdbCommunication/IHMDBStorage.h>
 
 namespace hmdbCommunication
 {
-	class CURLFTPProgress;
-
 	//! Struktura opisuj¹ca transfer
-	struct CURLFTPTransferData
+	struct CURLFTPTransferSharedState
 	{
-	public:
-		CURLFTPTransferData() : progress(new CURLFTPProgress), status(new CURLFTPStatus)
-		{
-
-		}
-
-		//! Obiekt do czekania
-		std::future<CURLcode> wait;
-		//! Obiekt postêpu
-		utils::shared_ptr<CURLFTPProgress> progress;
 		//! Obiekt statusu
-		utils::shared_ptr<CURLFTPStatus> status;
+		CURLFTPStatus status;
+		//! Uchwyt transferu
+		networkUtils::CURLPtr curl;
 	};
 
+	struct CURLFTPTransferData
+	{
+		//! Obiekt do czekania
+		std::future<CURLcode> result;
+		//! Obiekt postêpu
+		CURLFTPProgress progress;
+		//! Obiekt opisuj¹cy podstawy transferu
+		utils::shared_ptr<CURLFTPTransferSharedState> sharedState;
+	};
+
+	//! Opis uploadu
 	struct CURLFTPUploadTransferData : public CURLFTPTransferData
 	{
-	public:
+		//! Strumieñ Ÿród³owy
 		IHMDBStorageOperations::IStreamPtr stream;
 	};
 
+	//! Opis downloadu
 	struct CURLFTPDownloadTransferData : public CURLFTPTransferData
 	{
-	public:
+		//! Strumieñ docelowy
 		IHMDBStorageOperations::OStreamPtr stream;
 	};
 }

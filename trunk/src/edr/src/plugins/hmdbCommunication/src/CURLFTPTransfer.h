@@ -8,31 +8,32 @@
 #ifndef __HEADER_GUARD_HMDBCOMMUNICATION__CURLFTPTRANSFER_H__
 #define __HEADER_GUARD_HMDBCOMMUNICATION__CURLFTPTRANSFER_H__
 
-#include <networkUtils/CURLFTPHelper.h>
-#include <networkUtils/CURLManager.h>
 #include <mutex>
 #include <plugins/hmdbCommunication/IHMDBFtp.h>
+#include "CURLFTPManager.h"
 
 namespace hmdbCommunication
 {
 	struct CURLFTPTransferData;
-	typedef utils::shared_ptr<networkUtils::CURLManager> CURLManagerPtr;
-	typedef utils::weak_ptr<networkUtils::CURLManager> CURLManagerWPtr;
+	typedef utils::shared_ptr<CURLFTPManager> CURLFTPManagerPtr;
+	typedef utils::weak_ptr<CURLFTPManager> CURLFTPManagerWPtr;
 
 	class CURLFTPTransfer : public IHMDBFtp::ITransfer
 	{
 	private:
 		
-		typedef std::lock_guard<std::recursive_mutex> ScopedLock;
+		typedef std::lock_guard<std::mutex> ScopedLock;
 
 	public:
 
 		//! Konstruktor
 		//! \param curl Skonfigurowane po³¹czenie
 		//! \param manager Manager po³¹czeñ curla
+		//! \param data Postêp i dane
 		//! \param file Plik którego dotyczy transfer
 		//! \param size Rozmiar danych do przetworzenia
-		CURLFTPTransfer(const Direction direction, CURL * curl, CURLManagerPtr manager,
+		CURLFTPTransfer(const Direction direction, CURLFTPManagerPtr manager,
+			utils::shared_ptr<CURLFTPTransferData> data,
 			const std::string & file, const size_t size);
 		//! Destruktor wirtualny
 		virtual ~CURLFTPTransfer();
@@ -62,11 +63,6 @@ namespace hmdbCommunication
 		virtual const std::string error() const;
 		//! \return Typ transferu
 		virtual const Direction direction() const;
-		
-		//! \return Uchwyt do po³¹czenia
-		const CURL * curl() const;
-		//! \return Uchwyt do po³¹czenia
-		CURL * curl();
 
 	private:
 		//! Plik kórego dotyczy transfer
@@ -74,11 +70,9 @@ namespace hmdbCommunication
 		//! Rozmiar danych do przetworzenia
 		const size_t size_;
 		//! Obiekt synchronizujacy
-		mutable std::recursive_mutex sync_;
-		//! Po³¹czenie curla
-		CURL * curl_;
+		mutable std::mutex sync_;
 		//! Manager po³¹czeñ curlowych
-		CURLManagerWPtr manager_;
+		CURLFTPManagerWPtr manager_;
 		//! Dane transferu
 		utils::shared_ptr<CURLFTPTransferData> data_;
 		//! Typ transferu

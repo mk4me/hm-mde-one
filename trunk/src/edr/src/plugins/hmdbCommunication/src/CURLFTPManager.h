@@ -9,31 +9,35 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__CURLFTPMANAGER_H__
 
 #include <networkUtils/CURLManager.h>
+#include "CURLFTPTransferData.h"
 
 namespace hmdbCommunication
 {
-	class CURLFTPManager : public networkUtils::CURLManager
+	class CURLFTPManager
 	{
+		class StateCURLManager;		
+
 	public:
 		//! Domyœlny konstruktor
 		CURLFTPManager();
 		//! \param multi Transfer multi
-		explicit CURLFTPManager(CURLM * multi);
+		explicit CURLFTPManager(networkUtils::CURLMPtr multi);
 		//! Desturktor wirtualny
 		virtual ~CURLFTPManager();
 
+		//! \param curl Skonfigurowany uchwyt do obs³u¿enia
+		//! \param wait Obiekt pozwalaj¹cy zaczekaæ na zakoñæenie operacji curla
+		std::future<CURLcode> addRequest(utils::shared_ptr<CURLFTPTransferSharedState> transfer);
+		//! \param curl Uchwyt do usuniêcia
+		void removeRequest(networkUtils::CURLPtr curl);
+		//! Przetwarza zapytania
+		void run();
+		//! Koñczy potencjalne przetwarzanie
+		void finalize();
+
 	private:
-		//! \param curl Uchwyt który w³aœnie dodano
-		virtual void onAddRequest(CURL * curl);
-		//! \param curl Uchwyt który w³aœnie usuniêto
-		virtual void onRemoveRequest(CURL * curl);
-		//! \param curl Uchwyt który zosta³ anulowany
-		virtual void onCancelRequest(CURL * curl);
-		//! \param curl Uchwyt który spowodowa³ b³¹d
-		//! \param error Opis b³edu
-		virtual void onErrorRequest(CURL * curl, const std::string & error);
-		//! \param curl Uchwyt który zakoñczy³ przetwarzanie danych poprawnie
-		virtual void onFinishRequest(CURL * curl);
+		//! Obiekt realizujacy ca³a funkcjonalnoœæ
+		utils::shared_ptr<StateCURLManager> curlManager;
 	};
 }
 

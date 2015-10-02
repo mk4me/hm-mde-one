@@ -12,7 +12,6 @@
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <plugins/hmdbCommunication/IHMDBFtp.h>
 #include "ShallowCopyUtils.h"
-#include <atomic>
 #include <corelib/Filesystem.h>
 #include <corelib/IJobManager.h>
 #include <hmdbserviceslib/IncrementalBranchShallowCopy.h>
@@ -46,8 +45,8 @@ namespace hmdbCommunication
 
 	private:
 		std::string error_;
-		std::atomic<float> progress_;
-		std::atomic<bool> aborted_;
+		volatile float progress_;
+		volatile bool aborted_;
 	};
 
 	class HMDBCompondStorageProgress
@@ -72,7 +71,7 @@ namespace hmdbCommunication
 		private:
 			HMDBCompondStorageProgress * parent;
 			std::string error_;
-			std::atomic<float> progress_;
+			volatile float progress_;
 		};
 
 	public:
@@ -93,7 +92,7 @@ namespace hmdbCommunication
 		void abort();
 
 	private:
-		std::atomic<bool> aborted_;
+		volatile bool aborted_;
 		std::vector<utils::shared_ptr<HMDBCompondStorageSubProgress>> subProgresses;
 	};	
 
@@ -242,7 +241,7 @@ namespace hmdbCommunication
 		//! Operacja która spowodowała błąd
 		mutable IHMDBRemoteContext::OperationPtr errorOperation;
 		//! Status
-		mutable std::atomic<Status> status_;
+		mutable volatile Status status_;
 		//! Job
 		core::Job<void> job;
 	};
@@ -294,11 +293,11 @@ namespace hmdbCommunication
 
 	private:
 		//! Status
-		std::atomic<Status> status_;
+		volatile Status status_;
 		//! Postęp
-		std::atomic<float> progress_;
+		volatile float progress_;
 		//! ID pliku po upload
-		std::atomic<hmdbServices::ID> fileID_;
+		volatile hmdbServices::ID fileID_;
 		//! Nazwa pliku w bazie danych
 		const std::string fileName;
 		//! Opis pliku
@@ -453,11 +452,11 @@ namespace hmdbCommunication
 		//! Identyfikator ściąganego pliku
 		const IHMDBRemoteContext::FileDescriptor fileID_;
 		//! Czy plik został ściągnięty - można próbowac wyciągnąc go ze storage?
-		std::atomic<bool> downloaded_;
+		volatile bool downloaded_;
 		//! Czy plik został ściągnięty - można próbowac wyciągnąc go ze storage?
-		std::atomic<int> progress_;		
+		volatile int progress_;
 		//! Status ściągania
-		std::atomic<Status> status_;
+		volatile Status status_;
 		//! Operacja przygotowujaca pliki w HMDB
 		utils::shared_ptr<PrepareHMDB> prepareHMDB;
 		//! Operacja przygotowujaca output dla sciaganego pliku
@@ -501,7 +500,7 @@ namespace hmdbCommunication
 	private:
 		std::string error_;
 		DownloadHelper downloadHelper;
-		std::atomic<Status> status_;
+		volatile Status status_;
 		core::Job<void> job;
 	};
 
