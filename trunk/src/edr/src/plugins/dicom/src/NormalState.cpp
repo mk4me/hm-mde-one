@@ -137,6 +137,20 @@ void dicom::NormalState::begin(coreUI::AbstractStateConstPtr lastState)
 
 bool dicom::NormalState::mouseMoveEvent( QGraphicsSceneMouseEvent* e )
 {
+	if (item2layer.empty()) {
+		createItem2LayerMap();
+	}
+	for (auto& pair : item2layer) {
+		(pair.second)->setSelected(false);
+	}
+	auto items = machine->getGraphicsScene()->items(e->scenePos());
+	if (!items.isEmpty()) {
+		
+		auto it = item2layer.find(extractItem(items.first()));
+		if (it != item2layer.end()) {
+			(it->second)->setSelected(true);
+		}
+	}
     return true;
 }
 
@@ -250,6 +264,15 @@ void dicom::NormalState::addInflamatory()
 void dicom::NormalState::addNoise()
 {
     machine->setState(machine->getNoiseState());
+}
+
+bool dicom::NormalState::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e)
+{
+	int numSelected = getNumSelected();
+	if (numSelected == 1) {
+		edit();
+	}
+	return false;
 }
 
 

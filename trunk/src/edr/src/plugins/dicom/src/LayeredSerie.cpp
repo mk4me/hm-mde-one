@@ -160,6 +160,7 @@ dicom::LayeredSerie::LayeredSerie(LayeredImageVisualizer* visualizer, LayeredIma
     graphicsScene = new coreUI::GraphicSceneWithStateMachine(stateMachine);
     graphicsView = new coreUI::WheelGraphicsView(graphicsScene);
     graphicsView->setRenderHint(QPainter::Antialiasing, true);
+	graphicsView->setMouseTracking(true);
     graphicsScene->setSceneRect( graphicsView->rect() );
 
     QObject::connect(graphicsScene, SIGNAL(selectionChanged()), stateMachine.get(), SLOT(selectionChanged()));

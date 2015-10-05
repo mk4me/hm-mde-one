@@ -151,7 +151,7 @@ bool dicom::PointsState::mousePressEvent( QGraphicsSceneMouseEvent* e )
             return false;
         } else {
             auto pos = e->scenePos();
-            machine->getCommandStack()->addCommand(utils::make_shared<AddPointCommand>(layer, pos, false));
+            machine->getCommandStack()->addCommand(utils::make_shared<AddPointCommand>(layer, pos, true));
         }
     }
 
