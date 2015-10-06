@@ -306,12 +306,12 @@ private:
 	CURLsWaitMap currentCurls;
 };
 
-CURLManager::CURLManager() : impl(new CURLManagerImpl(utils::shared_ptr<CURLM>(curl_multi_init()), this))
+CURLManager::CURLManager() : impl(new CURLManagerImpl(createCurlMulti(), this))
 {
 
 }
 
-CURLManager::CURLManager(utils::shared_ptr<CURLM> multi) : impl(new CURLManagerImpl(multi, this))
+CURLManager::CURLManager(CURLMPtr multi) : impl(new CURLManagerImpl(multi, this))
 {
 	
 }

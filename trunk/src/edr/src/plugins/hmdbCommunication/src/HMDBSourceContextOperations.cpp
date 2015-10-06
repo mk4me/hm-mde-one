@@ -120,7 +120,7 @@ void HMDBCompondStorageProgress::setSize(const unsigned int size)
 	}
 }
 
-IHMDBStorageProgress * HMDBCompondStorageProgress::get(const unsigned int idx)
+HMDBCompondStorageProgress::HMDBCompondStorageSubProgress * HMDBCompondStorageProgress::get(const unsigned int idx)
 {
 	return subProgresses[idx].get();
 }
@@ -160,27 +160,28 @@ DownloadHelper::DownloadHelper(IHMDBStoragePtr storage, const std::list<IHMDBRem
 
 void DownloadHelper::download()
 {
-	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	PLUGIN_LOG_DEBUG("Downloading " << downloads.size() << " files.");
+	for(auto & d : downloads)
 	{
 		d->start();
-	});
+	};
 }
 
 void DownloadHelper::wait()
 {
-	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	for (auto & d : downloads)
 	{
 		d->wait();
-	});
+	};
 }
 
 void DownloadHelper::abort()
 {
 	storeProgress.abort();
-	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	for (auto & d : downloads)
 	{
 		d->abort();
-	});
+	};
 }
 
 const float DownloadHelper::progress() const
@@ -193,12 +194,12 @@ const std::list<IHMDBRemoteContext::DownloadOperationPtr> filterCompleteDownload
 {
 	std::list<IHMDBRemoteContext::DownloadOperationPtr> ret;
 
-	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	for (auto & d : downloads)
 	{
 		if (d->fileDownloaded() == true){
 			ret.push_back(d);
 		}
-	});
+	};
 
 	return ret;
 }
@@ -206,6 +207,7 @@ const std::list<IHMDBRemoteContext::DownloadOperationPtr> filterCompleteDownload
 void DownloadHelper::filterDownloaded()
 {
 	downloaded_ = filterCompleteDownloads(downloads);
+	PLUGIN_LOG_DEBUG("Prepaered " << downloads.size() << " files for store");
 }
 
 const std::list<IHMDBRemoteContext::DownloadOperationPtr> & DownloadHelper::downloaded() const
@@ -225,29 +227,33 @@ void DownloadHelper::store()
 	storeProgress.setSize(s);
 
 	int i = 0;
-	std::for_each(downloaded_.begin(), downloaded_.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	for (auto & d : downloaded_)
 	{
 		if (storeProgress.aborted() == true){
 			return;
 		}
 
 		try{
-			t->set(d->fileID().fileName, d->stream(), storeProgress.get(i++));
+			auto progress = storeProgress.get(i++);
+			t->set(d->fileID().fileName, d->stream(), progress);
+			if (progress->error().empty() == false){
+				PLUGIN_LOG_ERROR("Failed storing file: " << d->fileID().fileName << " with error " << progress->error());
+			}
 		}
 		catch (std::exception & e){
-
+			PLUGIN_LOG_ERROR("Failed storing file: " << d->fileID().fileName << " with error " << e.what());
 		}
-		catch (...){			
-
+		catch (...){
+			PLUGIN_LOG_ERROR("Failed storing file: " << d->fileID().fileName << " with UNKNOWN error");
 		}
-	});
+	}
 }
 
 void DownloadHelper::release()
 {
 	if (released == false){
 		released = true;
-		std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+		for (auto & d : downloads)
 		{
 			try{
 				if (d->fileDownloaded() == true){
@@ -260,7 +266,7 @@ void DownloadHelper::release()
 			catch (...){
 				PLUGIN_LOG_ERROR("Failed to release download");
 			}
-		});
+		};
 	}
 }
 
@@ -715,6 +721,7 @@ void TmpFileTransferIO::closeOutput()
 {
 	if (stream)	{
 		stream->close();
+		stream.reset();
 	} else {
 		PLUGIN_LOG_DEBUG("TmpeFileTransferIO : stream problem");
 	}
@@ -735,11 +742,16 @@ void TmpFileTransferIO::release()
 
 IHMDBStorageOperations::IStreamPtr TmpFileTransferIO::openInput()
 {
-	stream->open(tmpFilePath.string(), std::ios_base::in | std::ios_base::binary);
+	stream = utils::make_shared<std::fstream>(tmpFilePath.string(), std::ios_base::in | std::ios_base::binary);
 	if (stream->is_open() == false){
-		stream.reset();
+		PLUGIN_LOG_ERROR("Failed opening file " << tmpFilePath << " with error " << strerror(errno) << "(" << errno << ")");
 	}
-	return stream;
+
+	auto ret = stream;
+
+	stream.reset();
+
+	return ret;
 }
 
 void TmpFileTransferIO::closeInput()
@@ -774,6 +786,7 @@ void MemoryTransferIO::closeOutput()
 IHMDBStorageOperations::IStreamPtr MemoryTransferIO::openInput()
 {
 	stream->seekg(0, std::ios::beg);
+
 	return stream;
 }
 
@@ -865,7 +878,7 @@ void FileDownload::release()
 
 void FileDownload::download()
 {
-	
+	try{
 		if (status_ == FileDownload::Aborted){
 			return;
 		}
@@ -882,7 +895,7 @@ void FileDownload::download()
 			++progress_;
 			return;
 		}
-	
+
 		auto output = transferIO->prepareOutput();
 
 		if (output == nullptr){
@@ -893,6 +906,7 @@ void FileDownload::download()
 		++progress_;
 
 		if (status_ == FileDownload::Aborted){
+			output.reset();
 			transferIO->closeOutput();
 			release();
 			++progress_;
@@ -903,7 +917,10 @@ void FileDownload::download()
 
 		transfer = ftp->prepareGet(filePath, output, fileID_.fileSize);
 
+		output.reset();
+
 		if (transfer == nullptr){
+			PLUGIN_LOG_ERROR("Failed preparing ftp for file:" << fileID_.fileName);
 			transferIO->closeOutput();
 			release();
 			++progress_;
@@ -914,27 +931,40 @@ void FileDownload::download()
 
 		transfer->start();
 		transfer->wait();
-		PLUGIN_LOG_DEBUG("Finished downloading file:" << fileID_.fileName);
+		//PLUGIN_LOG_DEBUG("Finished downloading file:" << fileID_.fileName);
 
 		transferIO->closeOutput();
 
+		PLUGIN_LOG_DEBUG("File " << fileID_.fileName << " processed " << transfer->processed() << " / " << transfer->size());
+
 		if (transfer->status() == threadingUtils::IOperation::Finished){
 			downloaded_ = true;
+			PLUGIN_LOG_DEBUG("Finished downloading file:" << fileID_.fileName);
 		}
 		else{
 			release();
+			PLUGIN_LOG_ERROR("Failed downloading file:" << fileID_.fileName << " with status " << transfer->status() <<
+				((transfer->status() == threadingUtils::IOperation::Error) ? (" error: " + transfer->error()) : "" ));
 		}
-	try{
-		++progress_;
-		prepareHMDB->clearHMDB();
-		++progress_;
-	}catch (std::exception & e)
-	{
-		PLUGIN_LOG_DEBUG("Failed downloading file " << filePath << " with error " << e.what());
+		try{
+			++progress_;
+			prepareHMDB->clearHMDB();
+			++progress_;
+		}
+		catch (std::exception & e)
+		{
+			PLUGIN_LOG_ERROR("Failed clearing HMDB file " << filePath << " with error " << e.what());
+		}
+		catch (...)
+		{
+			PLUGIN_LOG_ERROR("Failed clearing HMDB file " << filePath << " with UNKNOWN error");
+		}
 	}
-	catch (...)
-	{
-		PLUGIN_LOG_DEBUG("Failed downloading file " << filePath << " with UNKNOWN error");
+	catch (std::exception & e){
+		PLUGIN_LOG_ERROR("Critical fail downloading file:" << fileID_.fileName << " with error: " << e.what());
+	}
+	catch (...){
+		PLUGIN_LOG_ERROR("Critical fail downloading file:" << fileID_.fileName);
 	}
 }
 
@@ -1143,7 +1173,7 @@ void ExtractShallowcopy::extract(const std::list<IHMDBRemoteContext::DownloadOpe
 	int currentStep = 1;
 	progress->setProgress(0.0);
 
-	std::for_each(downloads.begin(), downloads.end(), [&](IHMDBRemoteContext::DownloadOperationPtr d)
+	for(auto & d : downloads)
 	{
 		if (progress->aborted() == true){
 			return;
@@ -1160,7 +1190,7 @@ void ExtractShallowcopy::extract(const std::list<IHMDBRemoteContext::DownloadOpe
 		catch (std::exception & e){
 
 		}
-	});
+	};
 
 	if (progress->aborted() == false){
 		progress->setProgress(1.0);

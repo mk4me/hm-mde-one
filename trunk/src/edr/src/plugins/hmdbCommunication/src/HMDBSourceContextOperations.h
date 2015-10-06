@@ -81,7 +81,7 @@ namespace hmdbCommunication
 
 		void setSize(const unsigned int size);
 
-		IHMDBStorageProgress * get(const unsigned int idx);
+		HMDBCompondStorageSubProgress * get(const unsigned int idx);
 
 		virtual const bool aborted() const;
 

@@ -9,26 +9,7 @@
 #ifndef __HEADER_GUARD_UTILS__SMARTPTR_H__
 #define __HEADER_GUARD_UTILS__SMARTPTR_H__
 
-#include <utils/Macros.h>
-
-#ifdef UTILS_USE_BOOST_SMART_POINTERS
-
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/shared_array.hpp>
-#include <boost/weak_ptr.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/unique_ptr.hpp>
-
-#elif defined UTILS_CXX0X
-
-#include <memory>
-
-#else
-
-#error "No smart pointer policy choosen."
-
-#endif // UTILS_USE_BOOST_SMART_POINTERS
+#include <utils/memory.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace utils {
@@ -49,6 +30,9 @@ namespace utils {
 
 #elif defined UTILS_CXX0X
 
+	template< typename T >
+	using array_deleter = std::default_delete<T[]>;
+
 	using std::enable_shared_from_this;
 	using std::shared_ptr;
 	template<typename T> using shared_array = std::shared_ptr<T>;
@@ -59,9 +43,6 @@ namespace utils {
 	using std::const_pointer_cast;
 	using std::make_shared;
 	using std::allocate_shared;
-
-	template< typename T >
-	using array_deleter = std::default_delete<T[]>;	
 
 #endif
 

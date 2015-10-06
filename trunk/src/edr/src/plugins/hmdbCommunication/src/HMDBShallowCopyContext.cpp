@@ -860,10 +860,10 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 	SubjectFiles subjectHierarchy = groupDataInHierarchy(loadedFilesData, shallowCopy);
 	Indexes loadedFiles;
 
-	std::for_each(loadedFilesData.begin(), loadedFilesData.end(), [&loadedFiles](const IndexedData::value_type & val)
+	for(const auto & val : loadedFilesData)
 	{
 		loadedFiles.insert(val.first);
-	});
+	}
 
 	auto transaction = localContext_->transaction();
 	//auto hierarchyTransaction = mdm->hierarchyTransaction();

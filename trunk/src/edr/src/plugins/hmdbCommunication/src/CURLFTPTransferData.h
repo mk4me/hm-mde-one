@@ -32,6 +32,8 @@ namespace hmdbCommunication
 		CURLFTPProgress progress;
 		//! Obiekt opisuj¹cy podstawy transferu
 		utils::shared_ptr<CURLFTPTransferSharedState> sharedState;
+
+		virtual void resetStream() = 0;
 	};
 
 	//! Opis uploadu
@@ -39,6 +41,8 @@ namespace hmdbCommunication
 	{
 		//! Strumieñ Ÿród³owy
 		IHMDBStorageOperations::IStreamPtr stream;
+
+		virtual void resetStream() override { stream.reset(); }
 	};
 
 	//! Opis downloadu
@@ -46,6 +50,8 @@ namespace hmdbCommunication
 	{
 		//! Strumieñ docelowy
 		IHMDBStorageOperations::OStreamPtr stream;
+
+		virtual void resetStream() override { stream.reset(); }
 	};
 }
 

@@ -1504,11 +1504,11 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 
 		std::list<hmdbCommunication::IHMDBRemoteContext::DownloadOperationPtr> downloads;
 
-		std::for_each(files.begin(), files.end(), [&](const hmdbCommunication::StorageFileNames::value_type & i)
+		for(auto i : files)
 		{
 			downloads.push_back(shallowCopyContext_->shallowCopyRemoteContext()->remoteContext()->prepareFileDownload(i.second));
 			size += i.second.fileSize;
-		});
+		};
 
 		auto storage = shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage();
 		auto st = storage->transaction();
@@ -1559,12 +1559,12 @@ const hmdbCommunication::StorageFileNames filterOutLocalFiles(const hmdbCommunic
 	hmdbCommunication::StorageFileNames ret;
 	auto storageT = storage->transaction();
 
-	std::for_each(inputFiles.begin(), inputFiles.end(), [&](const hmdbCommunication::StorageFileNames::value_type & i)
+	for(const auto & i : inputFiles)
 	{
-		if (storageT->exists(i.second.fileName) == false){
+		if (storageT->exists(i.second.fileName) == false && i.second.fileSize > 0){
 			ret.insert(i);
 		}
-	});
+	}
 
 	return ret;
 }
@@ -1579,11 +1579,11 @@ void DataViewWidget::onDownload()
 
 		hmdbCommunication::StorageFileNames files;
 
-		std::for_each(sItems.begin(), sItems.end(), [&](const QTreeWidgetItem* i)
+		for(auto i : sItems)
 		{	
 			auto sf = extractItemFiles(i, *currentShallowCopy_);
 			files.insert(sf.begin(), sf.end());
-		});
+		}
 
 		if (files.empty() == true){
 			return;
@@ -1611,7 +1611,7 @@ void DataViewWidget::onDownloadAll()
 			return;
 		}
 
-		hmdbCommunication::StorageFileNames toDownloadFiles = filterOutLocalFiles(files, shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage());
+		hmdbCommunication::StorageFileNames toDownloadFiles = filterOutLocalFiles(files, shallowCopyContext_->shallowCopyLocalContext()->localContext()->dataContext()->storage());		
 
 		if (toDownloadFiles.empty() == true){
 			return;
@@ -1631,11 +1631,11 @@ void DataViewWidget::onForceDownload()
 
 		hmdbCommunication::StorageFileNames files;
 
-		std::for_each(sItems.begin(), sItems.end(), [&](const QTreeWidgetItem* i)
+		for(auto i : sItems)
 		{
 			auto sf = extractItemFiles(i, *currentShallowCopy_);
 			files.insert(sf.begin(), sf.end());
-		});
+		}
 
 		if (files.empty() == true){
 			return;

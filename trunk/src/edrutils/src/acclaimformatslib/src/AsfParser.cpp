@@ -513,7 +513,7 @@ void saveHierarchy(std::ostream& out, const Skeleton & model)
 		}
 
 		std::reverse(childrenIDs.begin(), childrenIDs.end());
-		std::for_each(childrenIDs.begin(), childrenIDs.end(), [&bonesID](const Bone::ID id) { bonesID.push_front(id); });
+		for(auto id : childrenIDs) { bonesID.push_front(id); }
 
 		out << std::endl;
 	}
@@ -544,7 +544,7 @@ void saveHierarchy(std::ostream& out, const Skeleton & model)
 			}
 
 			std::reverse(childrenIDs.begin(), childrenIDs.end());
-			std::for_each(childrenIDs.begin(), childrenIDs.end(), [&bonesID](const Bone::ID id) { bonesID.push_front(id); });
+			for(auto id : childrenIDs) { bonesID.push_front(id); }
 
 			out << std::endl;
 		}

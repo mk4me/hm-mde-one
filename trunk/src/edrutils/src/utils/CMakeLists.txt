@@ -38,6 +38,7 @@ SET_PUBLIC_HEADERS(
 	modeltest.h
 	StringConversionTools.h
 	SamplesStatus.h
+	memory.h
 )
 
 #------------------------------------------------------------------------------
@@ -52,6 +53,7 @@ SET_SOURCE_FILES(
 	dynamictreemodel.cpp
 	modeltest.cpp
 	SamplesStatus.cpp
+	memory.cpp
 )
 
 SET_CONFIGURATION_INPUT_FILES(

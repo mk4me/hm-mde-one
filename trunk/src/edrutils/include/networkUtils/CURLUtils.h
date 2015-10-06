@@ -28,12 +28,12 @@ namespace networkUtils
 
 	inline CURLPtr createCurlEasy()
 	{
-		return CURLPtr(curl_easy_init(), &curl_easy_cleanup);
+		return wrapCurlEasy(curl_easy_init());
 	}
 
 	inline CURLMPtr createCurlMulti()
 	{
-		return CURLMPtr(curl_multi_init(), &curl_multi_cleanup);
+		return wrapCurlMulti(curl_multi_init());
 	}
 }
 

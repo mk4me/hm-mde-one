@@ -66,6 +66,7 @@ void CURLFTPTransfer::wait()
 {
 	try{
 		data_->result.wait();
+		data_->resetStream();
 	}
 	catch (...){
 
