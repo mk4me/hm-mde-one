@@ -19,19 +19,13 @@ using namespace dicom;
 
 
 dicom::EditState::EditState( LayeredStateMachine* machine ) :
-    coreUI::AbstractState(machine),
-    machine(machine),
-    possibleMove(false),
+    AbstractEditState(machine),
     delPointIdx(-1)
 {
 
 }
 
 
-bool dicom::EditState::keyReleaseEvent( QKeyEvent *event )
-{
-    return true;
-}
 
 bool dicom::EditState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 {
@@ -80,6 +74,7 @@ bool dicom::EditState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 
 void dicom::EditState::begin( coreUI::AbstractStateConstPtr lastState )
 {
+	AbstractEditState::begin(lastState);
     layer = getLayerToEdit();
     layer->setSelected(false);
     layer->setEditable(true);
@@ -87,6 +82,7 @@ void dicom::EditState::begin( coreUI::AbstractStateConstPtr lastState )
 
 void dicom::EditState::end()
 {
+	AbstractEditState::end();
     //done();
     layer->setEditable(false);
 }
@@ -110,169 +106,10 @@ bool dicom::EditState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )
     return false;
 }
 
-bool dicom::EditState::mouseMoveEvent( QGraphicsSceneMouseEvent* e )
-{
-    if (possibleMove) {
-        layer->refresh();
-    }
-    return false;
-}
 
 void dicom::EditState::done()
 {
     machine->setState(machine->getNormalState());
-}
-
-QString dicom::AddPointCommand::name()
-{
-    return QString(typeid(this).name());
-}
-
-void dicom::AddPointCommand::undoIt()
-{
-    auto point = layer->removePoint(idx);
-    removedPoint = std::unique_ptr<QGraphicsItem>(point);
-    removedPoint->setVisible(false);
-    layer->refresh();
-}
-
-void dicom::AddPointCommand::doIt()
-{
-    if (removedPoint) {
-        removedPoint->setVisible(true);
-        layer->addPoint(removedPoint.release());
-        removedPoint = std::unique_ptr<QGraphicsItem>();
-    } else {
-        idx = bestFit ? getBestIdx() : layer->getNumPoint();
-        layer->addPoint(newP, idx);
-    }
-
-    layer->refresh();
-}
-
-dicom::AddPointCommand::AddPointCommand( PointsLayerPtr layer, const QPointF& newP, bool bestFit ) : 
-layer(layer),
-    newP(newP),
-    idx(-1),
-    removedPoint(nullptr),
-    bestFit(bestFit)
-{
-
-}
-
-float magnitude(const QPointF &l1,  const QPointF &l2)
-{
-    QPointF ofs = l2 - l1;
-    return sqrt(ofs.x() * ofs.x() + ofs.y() * ofs.y());
-}
-
-
-float distancePointLine( const QPointF &p, const QPointF &l1,  const QPointF &l2)
-{
-    float lineMag;
-    float u;
-    QPoint intersectPnt;
-
-    lineMag = magnitude( l2, l1 );
-
-    u = ( ( ( p.x() - l1.x() ) * ( l2.x() - l1.x() ) ) +
-        ( ( p.y() - l1.y() ) * ( l2.y() - l1.y() ) ) ) /
-        ( lineMag * lineMag );
-
-    if ( u < 0.0f) {
-        return magnitude(p, l1);
-    }
-    if ( u > 1.0f ) {
-        return magnitude(p, l2);
-    }
-
-    intersectPnt.setX( int( l1.x() + u * ( l2.x() - l1.x() ) ) );
-    intersectPnt.setY( int( l1.y() + u * ( l2.y() - l1.y() ) ) );
-
-    return magnitude( p, intersectPnt );
-}
-
-int dicom::AddPointCommand::getBestIdx()
-{
-    int count = layer->getNumPoint();
-    if (count < 2) {
-        return count;
-    } 
-    float minDist2 = std::numeric_limits<float>::max();
-    int minIdx = -1;
-    for (int i =  0; i < count - 1; ++i) {
-
-        float dist2 = distancePointLine(newP, layer->getPoint(i)->pos(), layer->getPoint(i + 1)->pos());
-        if (dist2 < minDist2) {
-            minDist2 = dist2;
-            minIdx = i + 1;
-        }
-    }
-    float endD = sqrt(getDistance2(layer->getPoint(count - 1)->pos()));
-    float startD = sqrt(getDistance2(layer->getPoint(0)->pos()));
-    if (endD - minDist2 < 0.001f ) {
-        minIdx = count;
-        minDist2 = endD;
-    } 
-    
-    if (startD - minDist2 < 0.001f ) {
-        minIdx = 0;
-    }
-    return minIdx;
-}
-
-float dicom::AddPointCommand::getDistance2( const QPointF& p )
-{
-    QPointF ofs = p - newP;
-    return ofs.x() * ofs.x() + ofs.y() * ofs.y();
-}
-
-//////////////////////////////////////////////////////////////////////////
-
-QString dicom::RemovePointCommand::name()
-{
-    return QString(typeid(this).name());
-}
-
-void dicom::RemovePointCommand::undoIt()
-{
-    removedPoint->setVisible(true);
-    layer->addPoint(removedPoint.release(), idx);
-}
-
-void dicom::RemovePointCommand::doIt()
-{
-    auto point = layer->removePoint(idx);
-    removedPoint = std::unique_ptr<QGraphicsItem>(point);
-    removedPoint->setVisible(false);
-    layer->refresh();
-}
-
-dicom::RemovePointCommand::RemovePointCommand( PointsLayerPtr layer, int idx ) : 
-    layer(layer),
-    idx(idx),
-    removedPoint(nullptr)
-{
-
-}
-
-void dicom::MovePathCommand::undoIt()
-{
-    MoveCommand::undoIt();
-    layer->refresh();
-}
-
-void dicom::MovePathCommand::doIt()
-{
-    MoveCommand::doIt();
-    layer->refresh();
-}
-
-dicom::MovePathCommand::MovePathCommand( PointsLayerPtr layer, QGraphicsItem* item, const QPointF& newP, const QPointF& oldP ) : 
-MoveCommand(item, newP, oldP),
-    layer(layer)
-{
-
 }
 
 
@@ -312,14 +149,5 @@ void dicom::EditState::deletePoint()
     } else {
         UTILS_ASSERT(false);
     }
-}
-
-bool dicom::EditState::focusOutEvent( QFocusEvent * event )
-{
-    if (!rightClickMenu.lock()) {
-        machine->setState(machine->getNormalState());
-        return true;
-    }
-    return false;
 }
 

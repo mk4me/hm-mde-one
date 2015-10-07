@@ -16,6 +16,7 @@
 #include "LayeredImageVisualizer.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
+#include "AbstractEditState.h"
 
 
 using namespace dicom;
@@ -98,20 +99,12 @@ private:
 
 
 dicom::PointsState::PointsState( LayeredStateMachine* machine, bool curved, bool openLine, annotations::annotationsIdx adnotationIdx ) :
-    coreUI::AbstractState(machine),
-    machine(machine),
-    possibleMove(false),
+    AbstractEditState(machine),
     curved(curved),
     openLine(openLine),
     adnotationIdx(adnotationIdx)
 {
 
-}
-
-
-bool dicom::PointsState::keyReleaseEvent( QKeyEvent *event )
-{
-    return true;
 }
 
 
@@ -186,6 +179,7 @@ void dicom::PointsState::addLayer( int adnIdx )
 
 void dicom::PointsState::begin( coreUI::AbstractStateConstPtr lastState )
 {
+	AbstractEditState::begin(lastState);
     if (this->curved) {
         QCursor c(QPixmap(":/dicom/add_curve.png"), 0, 0);
         machine->changeCursor(c);
@@ -205,6 +199,7 @@ void dicom::PointsState::begin( coreUI::AbstractStateConstPtr lastState )
 
 void dicom::PointsState::end()
 {
+	AbstractEditState::end();
     if (layer->getNumPoint() > 2) {
         addLayer(adnotationIdx);
     } else {
@@ -235,25 +230,9 @@ bool dicom::PointsState::mouseReleaseEvent( QGraphicsSceneMouseEvent* e )
     return false;
 }
 
-bool dicom::PointsState::mouseMoveEvent( QGraphicsSceneMouseEvent* e )
-{
-    if (possibleMove) {
-        layer->refresh();
-    }
-    return false;
-}
 
 void dicom::PointsState::resetLayer()
 {
     layer = boost::make_shared<PointsLayer>(adnotationIdx);
     layer->setPointsDrawer(DrawersBuilder::createDrawer(adnotationIdx));
-}
-
-bool dicom::PointsState::focusOutEvent( QFocusEvent * event )
-{
-    if (!rightClickMenu.lock()) {
-        machine->setState(machine->getNormalState());
-        return true;
-    }
-    return false;
 }

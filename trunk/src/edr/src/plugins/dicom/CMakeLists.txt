@@ -28,6 +28,7 @@ SET_PRIVATE_HEADERS (
 	DicomInternalStruct.h
 	PointsState.h
 	EditState.h
+	AbstractEditState.h
 	NormalState.h
 	MoveState.h
 	LayeredSerie.h
@@ -54,6 +55,7 @@ SET_SOURCE_FILES(
 	NormalState.cpp
 	MoveState.cpp
 	EditState.cpp
+	AbstractEditState.cpp
 	DescriptionMaker.cpp
 	LayeredSerie.cpp
 	DicomPlugin.cpp
@@ -90,6 +92,7 @@ SET_MOC_FILES(
 	LayeredModelView.h
 	PointsState.h
 	EditState.h
+	AbstractEditState.h
 	NormalState.h
 )
 SET_UI_FILES(

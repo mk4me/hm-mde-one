@@ -12,12 +12,13 @@
 
 #include <coreui/AbstractState.h>
 #include "PointsLayer.h"
+#include "AbstractEditState.h"
 
 namespace dicom {
 
 class LayeredStateMachine;
 
-class PointsState : public QObject, public coreUI::AbstractState
+class PointsState : public AbstractEditState
 {
     Q_OBJECT
 public:
@@ -25,11 +26,8 @@ public:
 	virtual ~PointsState() {}
     friend class AddLayerCommand;
 public:
-    virtual bool keyReleaseEvent( QKeyEvent *event );
-    virtual bool mouseMoveEvent(QGraphicsSceneMouseEvent* e);
     virtual bool mouseReleaseEvent( QGraphicsSceneMouseEvent* e );
     virtual bool mousePressEvent( QGraphicsSceneMouseEvent* e );
-    virtual bool focusOutEvent(QFocusEvent * event);
 
 private Q_SLOTS:
     void clear();
@@ -40,14 +38,9 @@ private Q_SLOTS:
     virtual void begin( coreUI::AbstractStateConstPtr lastState );
     virtual void end();
 private:
-    std::vector<std::pair<QGraphicsItem*, QPointF>> positionsToCheck;
-    PointsLayerPtr layer;
-    LayeredStateMachine* machine;
-    bool possibleMove;
     bool curved;
     bool openLine;
     annotations::annotationsIdx adnotationIdx;
-    utils::weak_ptr<QMenu> rightClickMenu;
 };
 DEFINE_SMART_POINTERS(PointsState);
 
