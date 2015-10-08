@@ -1,4 +1,4 @@
-#include <coreUI/CoreDockFullScreenSwitch.h>
+#include <coreui/CoreDockFullScreenSwitch.h>
 #include <QtWidgets/QDockWidget>
 #include <QtGui/QtEvents>
 #include <utils/Push.h>

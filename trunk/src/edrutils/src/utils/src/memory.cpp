@@ -205,7 +205,7 @@ namespace utils
 		return rhs >= lhs;
 	}
 
-	bool atomic_is_lock_free(const shared_ptr_void* p)
+	/*bool atomic_is_lock_free(const shared_ptr_void* p)
 	{
 		if (p == nullptr){
 			return false;
@@ -317,7 +317,7 @@ namespace utils
 		}
 
 		return std::atomic_compare_exchange_weak_explicit(&(p->impl), &(expected->impl), desired.impl, success, failure);
-	}
+	}*/
 
 	void swap(shared_ptr_void& lhs, shared_ptr_void& rhs)
 	{

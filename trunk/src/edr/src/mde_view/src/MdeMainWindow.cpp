@@ -147,6 +147,7 @@ bool MdeMainWindow::customViewInit(QWidget * log)
 		   ccfg.name = tr("Default PJATK MDE data connection");
 		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
 		   ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
+
 //#ifdef _DEBUG 
 		   ccfg.motionServicesConfiguration.userConfiguration.user = "test_PJWSTK";
 		   ccfg.motionServicesConfiguration.userConfiguration.password = "PJtestP@ss";

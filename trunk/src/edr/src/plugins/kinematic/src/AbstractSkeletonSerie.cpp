@@ -301,15 +301,16 @@ void PointsOrientationsDrawer::init(kinematic::Skeleton::JointConstPtr root)
 
 		NonDummyJointFilter ndjf;
 
-		treeContainer::VisitPolicies::Node::LevelOrder::visit(root, [&](kinematic::Skeleton::JointConstPtr joint, unsigned int idx)
-		{			
-			if (joint->isRoot() == true || ndjf(joint) == true){
-				osg::ref_ptr<osgManipulator::TranslateAxisDragger> ne = new osgManipulator::TranslateAxisDragger();
-				ne->setupDefaultGeometry();
-				pointAxes.push_back(ne);
-				localNode->addChild(ne);
-			}
-		});
+		auto fun = [&](kinematic::Skeleton::JointConstPtr joint, unsigned int idx)
+				{
+					if (joint->isRoot() == true || ndjf(joint) == true){
+						osg::ref_ptr<osgManipulator::TranslateAxisDragger> ne = new osgManipulator::TranslateAxisDragger();
+						ne->setupDefaultGeometry();
+						pointAxes.push_back(ne);
+						localNode->addChild(ne);
+					}
+				};
+		treeContainer::VisitPolicies::Node::LevelOrder::visit(root, fun );
 		
 		this->root = root;
 		setVisible(visible);
@@ -329,17 +330,18 @@ void PointsOrientationsDrawer::update()
 	if (root) {
 		unsigned int nidx = 0;
 		NonDummyJointFilter ndjf;
-		treeContainer::VisitPolicies::Node::LevelOrder::visit(root, [&](kinematic::Skeleton::JointConstPtr joint, unsigned int idx)
-		{
-			if (joint->isRoot() == true || ndjf(joint) == true){
-				auto ne = pointAxes[nidx++];
-				osg::Matrix mat;
-				mat.set(joint->value().globalOrientation());
-				mat.setTrans(joint->value().globalPosition());
-				mat.preMultScale(osg::Vec3(scale, scale, scale));
-				ne->setMatrix(mat);
-			}
-		});		
+		auto fun = [&](kinematic::Skeleton::JointConstPtr joint, unsigned int idx) -> void
+				{
+					if (joint->isRoot() == true || ndjf(joint) == true){
+						auto ne = pointAxes[nidx++];
+						osg::Matrix mat;
+						mat.set(joint->value().globalOrientation());
+						mat.setTrans(joint->value().globalPosition());
+						mat.preMultScale(osg::Vec3(scale, scale, scale));
+						ne->setMatrix(mat);
+					}
+				};
+		treeContainer::VisitPolicies::Node::LevelOrder::visit(root, fun);
 	}
 }
 

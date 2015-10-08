@@ -9,13 +9,14 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__CURLFTPTRANSFERDATA_H__
 
 #include <networkUtils/CURLManager.h>
+#include <networkUtils/CURLUtils.h>
 #include "CURLFTPStatus.h"
 #include "CURLFTPProgress.h"
 #include <plugins/hmdbCommunication/IHMDBStorage.h>
 
 namespace hmdbCommunication
 {
-	//! Struktura opisuj¹ca transfer
+	//! Struktura opisujï¿½ca transfer
 	struct CURLFTPTransferSharedState
 	{
 		//! Obiekt statusu
@@ -28,9 +29,9 @@ namespace hmdbCommunication
 	{
 		//! Obiekt do czekania
 		std::future<CURLcode> result;
-		//! Obiekt postêpu
+		//! Obiekt postï¿½pu
 		CURLFTPProgress progress;
-		//! Obiekt opisuj¹cy podstawy transferu
+		//! Obiekt opisujï¿½cy podstawy transferu
 		utils::shared_ptr<CURLFTPTransferSharedState> sharedState;
 
 		virtual void resetStream() = 0;
@@ -39,7 +40,7 @@ namespace hmdbCommunication
 	//! Opis uploadu
 	struct CURLFTPUploadTransferData : public CURLFTPTransferData
 	{
-		//! Strumieñ Ÿród³owy
+		//! Strumieï¿½ ï¿½rï¿½dï¿½owy
 		IHMDBStorageOperations::IStreamPtr stream;
 
 		virtual void resetStream() override { stream.reset(); }
@@ -48,7 +49,7 @@ namespace hmdbCommunication
 	//! Opis downloadu
 	struct CURLFTPDownloadTransferData : public CURLFTPTransferData
 	{
-		//! Strumieñ docelowy
+		//! Strumieï¿½ docelowy
 		IHMDBStorageOperations::OStreamPtr stream;
 
 		virtual void resetStream() override { stream.reset(); }

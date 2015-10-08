@@ -232,6 +232,7 @@ class shared_ptr_void {	// class for reference counted resource management
 			std::memory_order success, std::memory_order failure);
 
 public:
+	using element_type = void;
 	template<typename T>
 	class InnerDeleter {
 	public:
