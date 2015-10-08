@@ -5,6 +5,8 @@
 #include <set>
 #include <utils/Utils.h>
 #include <utils/Debug.h>
+#include <utils/SmartPtr.h>
+#include <curl/multi.h>
 
 using namespace networkUtils;
 using namespace utils;
@@ -14,9 +16,9 @@ class CURLManager::CURLManagerImpl
 private:
 	//! ScopedLock
 	typedef std::lock_guard<std::mutex> ScopedLock;
-	//! Zbiór uchwytów
+	//! ZbiÃ³r uchwytÃ³w
 	typedef std::set<CURLPtr> CURLsSet;
-	//! Mapa uchwytów i obiektów na których czekamy
+	//! Mapa uchwytÃ³w i obiektÃ³w na ktÃ³rych czekamy
 	typedef std::map<CURLPtr, std::promise<CURLcode>> CURLsWaitMap;
 
 private:
@@ -44,7 +46,7 @@ private:
 			unlockAndRemove(IT, CURLE_ABORTED_BY_CALLBACK);
 		}
 
-		//czuszczê kolejkê do usuniêcia
+		//czuszczÃª kolejkÃª do usuniÃªcia
 		CURLsSet().swap(toRemoveCurlsSet);
 	}
 
@@ -101,14 +103,14 @@ public:
 			throw std::runtime_error("Manager already finalized");
 		}
 
-		// czy jest ju¿ dodany do obs³ugi?
+		// czy jest juÂ¿ dodany do obsÂ³ugi?
 		if (currentCurls.find(curl) != currentCurls.end() ||
 			toAddCurlsSet.find(curl) != toAddCurlsSet.end()){
 
 			throw std::runtime_error("CURL handle already managed");
 		}
 		
-		// usuwam jeœli by³ w kolejce do usuniêcia
+		// usuwam jeÂœli byÂ³ w kolejce do usuniÃªcia
 		toRemoveCurlsSet.erase(curl);
 		//dodajemy do kolejki
 		auto f = toAddCurlsSet[curl].get_future();
@@ -152,12 +154,12 @@ public:
 			ScopedLock lock(sync);
 			if (toRemoveCurlsSet.empty() == false || toAddCurlsSet.empty() == false)
 			{
-				//najpierw próbujemy usuwaæ
+				//najpierw prÃ³bujemy usuwaÃ¦
 				innerRemove();
 
 				if (finalize_ == false){
 
-					//teraz próbujemy dodawaæ
+					//teraz prÃ³bujemy dodawaÃ¦
 					for (auto it = toAddCurlsSet.begin(); it != toAddCurlsSet.end(); ++it){
 						auto curl = it->first;
 						if (curl_multi_add_handle(multi.get(), curl.get()) == CURLM_OK){
@@ -166,7 +168,7 @@ public:
 						}
 					}
 
-					//czuszczê kolejkê do dodania
+					//czuszczÃª kolejkÃª do dodania
 					CURLsWaitMap().swap(toAddCurlsSet);
 				}
 			}
@@ -193,45 +195,45 @@ public:
 					t.second.set_value(CURLE_OK);
 				}
 
-				//czuszczê kolejkê do dodania
+				//czuszczÃª kolejkÃª do dodania
 				CURLsWaitMap().swap(toAddCurlsSet);				
 
 				return;
 			}
 		}
 
-		//iloœæ przetwarzanych transferów
+		//iloÂœÃ¦ przetwarzanych transferÃ³w
 		int runningHandles = 0;
 		{
 			updateHandles();
 
 			CURLMcode ret = CURLM_OK;
 
-			// tak d³ugo jak curl potrzebuje pozwalam mu operowaæ na danych
+			// tak dÂ³ugo jak curl potrzebuje pozwalam mu operowaÃ¦ na danych
 			while ((finalize_ == false) && ((ret = curl_multi_perform(multi.get(), &runningHandles)) == CURLM_CALL_MULTI_PERFORM))
 			{
 				updateHandles();
 			};
 
-			// curl zakoñczy³ przetwarzanie dostêpnych danych - mamy chwilê na ich przetworzenie
+			// curl zakoÃ±czyÂ³ przetwarzanie dostÃªpnych danych - mamy chwilÃª na ich przetworzenie
 			if (ret != CURLM_OK && ret != CURLM_CALL_MULTI_PERFORM){
-				// wewnêtrzny/krytyczny error przy obs³udze zleceñ - koñczê dalsze przetwarzanie
-				//TODO - abort aktualnych uchwytów jeœli nie zakoñczy³y poprawnie swoich dzia³añ i lecimy dalej
+				// wewnÃªtrzny/krytyczny error przy obsÂ³udze zleceÃ± - koÃ±czÃª dalsze przetwarzanie
+				//TODO - abort aktualnych uchwytÃ³w jeÂœli nie zakoÃ±czyÂ³y poprawnie swoich dziaÂ³aÃ± i lecimy dalej
 				//return false;
 			}
 
-			// informujemy ¿e ju¿ przetworzyliœmy dane uchwytów
+			// informujemy Â¿e juÂ¿ przetworzyliÂœmy dane uchwytÃ³w
 			manager->onProcess();
 
-			// teraz sprawdzamy status uchwytów
+			// teraz sprawdzamy status uchwytÃ³w
 			int messagesInfo = 0;
 			CURLMsg * info = nullptr;
 
-			//rezultaty zakoñczonych transferów
+			//rezultaty zakoÃ±czonych transferÃ³w
 			std::vector<std::pair<CURLsWaitMap::iterator, CURLcode>> results;
 
 			while ((info = curl_multi_info_read(multi.get(), &messagesInfo)) != nullptr) {
-				// czy uchwyt skoñczy³ ¿¹dane operacje
+				// czy uchwyt skoÃ±czyÂ³ Â¿Â¹dane operacje
 				if (info->msg == CURLMSG_DONE){
 					
 					auto it = currentCurls.find(utils::dummyWrap(info->easy_handle));
@@ -256,7 +258,7 @@ public:
 				}
 			}
 
-			//usuwamy zakoñczone
+			//usuwamy zakoÃ±czone
 			for (const auto & res : results){				
 				curl_multi_remove_handle(multi.get(), res.first->first.get());
 				toRemoveCurlsSet.erase(res.first->first);
@@ -265,7 +267,7 @@ public:
 		}
 
 		if (runningHandles > 0){
-			// czekamy a¿ coœ siê zacznie dziaæ z danymi uchwytów
+			// czekamy aÂ¿ coÂœ siÃª zacznie dziaÃ¦ z danymi uchwytÃ³w
 			int descriptorsNumber = 0;
 			while ((finalize_ == false) && (descriptorsNumber == 0)){
 				curl_multi_wait(multi.get(), nullptr, 0, waitTime, &descriptorsNumber);
@@ -274,7 +276,7 @@ public:
 		else{
 			//wait condition variable woken up when some new handles are added or removed
 			std::unique_lock<std::mutex> lock(waitSync);
-			// warunki dodane dla spurious wakeups - jak coœ jest do zrobienia to robimy
+			// warunki dodane dla spurious wakeups - jak coÂœ jest do zrobienia to robimy
 			while (changeToContinue() == false){
 				condVar.wait_for(lock, std::chrono::milliseconds(waitTime), [this]{ return changeToContinue(); });
 			}
@@ -282,27 +284,27 @@ public:
 	}
 
 private:
-	//! Czy mamy ju¿ koñczyæ dzia³anie managera
+	//! Czy mamy juÂ¿ koÃ±czyÃ¦ dziaÂ³anie managera
 	volatile bool finalize_;
-	//! Czy mamy ju¿ koñczyæ dzia³anie managera
+	//! Czy mamy juÂ¿ koÃ±czyÃ¦ dziaÂ³anie managera
 	volatile bool finalized_;
 	//! Czas oczekiwania na dane [ms]
 	static const int waitTime = 500;
-	//! Obiekt realizuj¹cy czekanie na nowe uchwyty
+	//! Obiekt realizujÂ¹cy czekanie na nowe uchwyty
 	std::mutex waitSync;
 	//! Conditional variable
 	std::condition_variable condVar;
 	//! Obiekt do synchronizacji stanu obiektu
 	std::mutex sync;
-	//! Uchwyt do interfejsu multi realizujacego po³¹czenia
+	//! Uchwyt do interfejsu multi realizujacego poÂ³Â¹czenia
 	CURLMPtr multi;
-	//! Manager dla którego funkcjonalnoœc realizujemy
+	//! Manager dla ktÃ³rego funkcjonalnoÂœc realizujemy
 	CURLManager * manager;
-	//! Zbiór uchwytów do dodania
+	//! ZbiÃ³r uchwytÃ³w do dodania
 	CURLsWaitMap toAddCurlsSet;
-	//! Zbiór uchwytów do usuniêcia
+	//! ZbiÃ³r uchwytÃ³w do usuniÃªcia
 	CURLsSet toRemoveCurlsSet;
-	//! Aktualnie obs³ugiwane uchwyty
+	//! Aktualnie obsÂ³ugiwane uchwyty
 	CURLsWaitMap currentCurls;
 };
 

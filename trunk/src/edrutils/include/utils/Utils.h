@@ -35,7 +35,7 @@ struct DummyDefaultDelete
 	}
 
 	template<class T2,
-	class = typename enable_if<is_convertible<T2 *, T *>::value,
+	class = typename std::enable_if<std::is_convertible<T2 *, T *>::value,
 		void>::type>
 		DummyDefaultDelete(const DummyDefaultDelete<T2>&) throw()
 	{	// construct from another default_delete

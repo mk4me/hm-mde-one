@@ -13,7 +13,7 @@
 
 namespace threadingUtils
 {
-	//! \tparam T Typ dla którego realizujemy transakcjê
+	//! \tparam T Typ dla ktÃ³rego realizujemy transakcjÃª
 	template<typename T, template<typename> class SmartPtr = utils::shared_ptr>
 	class ITWritableTransaction
 	{
@@ -21,7 +21,7 @@ namespace threadingUtils
 
 		typedef T transaction_type;
 
-		//! Typ wskaŸnika do transakcji
+		//! Typ wskaÂŸnika do transakcji
 		typedef SmartPtr<T> TransactionPtr;
 
 	public:
@@ -40,7 +40,7 @@ namespace threadingUtils
 		virtual ~ITWritableTransactionObject() {}
 	};
 
-	//! \tparam T Typ dla którego realizujemy transakcjê
+	//! \tparam T Typ dla ktÃ³rego realizujemy transakcjÃª
 	template<typename T, template<typename> class SmartPtr = utils::shared_ptr>
 	class ITReadableTransaction
 	{
@@ -48,7 +48,7 @@ namespace threadingUtils
 
 		typedef T transaction_type;
 
-		//! Typ wskaŸnika do sta³ej transakcji
+		//! Typ wskaÂŸnika do staÂ³ej transakcji
 		typedef SmartPtr<const T> TransactionConstPtr;
 
 	public:
@@ -67,7 +67,7 @@ namespace threadingUtils
 		virtual ~ITReadableTransactionObject() {}
 	};
 
-	//! \tparam T Typ dla którego realizujemy transakcjê
+	//! \tparam T Typ dla ktÃ³rego realizujemy transakcjÃª
 	template<typename T, template<typename> class SmartPtr = utils::shared_ptr>
 	class ITTransaction : public ITWritableTransaction<T, SmartPtr>, public ITReadableTransaction<T, SmartPtr>
 	{
@@ -83,7 +83,7 @@ namespace threadingUtils
 		using ITReadableTransaction<T, SmartPtr>::transaction;
 	};
 
-	//! \tparam T Typ dla którego realizujemy transakcjê
+	//! \tparam T Typ dla ktÃ³rego realizujemy transakcjÃª
 	template<typename T, template<typename> class SmartPtr = utils::shared_ptr>
 	class ITTransactionObject : public virtual T, public ITTransaction<T, SmartPtr>
 	{
@@ -96,14 +96,14 @@ namespace threadingUtils
 	template<typename TransactionT, typename SharedStateT>
 	class TransactionImplHelper;
 
-	//! Struktura wspoldzielonego stanu przez transakcje - obejmuje wewnêtrzny
-	//! stan transakcji oraz obiekt synchronizuj¹cy
-	//! \tparam SharedStateT Wspóldzielony stan kontekstu transakcji
-	//! \tparam MutexType Typ obiektu synchronizuj¹cego
+	//! Struktura wspoldzielonego stanu przez transakcje - obejmuje wewnÃªtrzny
+	//! stan transakcji oraz obiekt synchronizujÂ¹cy
+	//! \tparam SharedStateT WspÃ³ldzielony stan kontekstu transakcji
+	//! \tparam MutexType Typ obiektu synchronizujÂ¹cego
 	template<typename SharedStateT, class MutexType = std::recursive_mutex>
 	struct TransactionSharedState
 	{
-		template<typename TransactionT, typename SharedStateT>
+		template<typename TransactionT, typename SharedStateTT>
 		friend class TransactionImplHelper;
 
 	private:
@@ -115,18 +115,18 @@ namespace threadingUtils
 		typedef SharedStateT inner_shared_state_type;
 
 	public:
-		//! Wewnêtrzny stan
+		//! WewnÃªtrzny stan
 		SharedStateT innerState;
 
 	private:
-		//! Obiekt synchronizuj¹cy
+		//! Obiekt synchronizujÂ¹cy
 		MutexType sync;
 	};
 
 	//! Klasa pomocnicza przy implementacji transakcji
-	//! automatycznie zak³ada i œci¹ga blokadê
+	//! automatycznie zakÂ³ada i ÂœciÂ¹ga blokadÃª
 	//! \tparam TransactionT Typ transakcji
-	//! \tparam SharedStateT Typ wspó³dzielonego stanu
+	//! \tparam SharedStateT Typ wspÃ³Â³dzielonego stanu
 	template<typename TransactionT, typename SharedStateT>
 	class TransactionImplHelper : public TransactionT
 	{

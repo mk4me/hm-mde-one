@@ -1,5 +1,5 @@
 #include <utils/memory.h>
-
+#include <atomic>
 namespace utils
 {
 	weak_ptr_void::weak_ptr_void()

@@ -8,7 +8,11 @@
 #ifndef __HEADER_GUARD_THREADING_UTILS__SMARTPTR_H__
 #define __HEADER_GUARD_THREADING_UTILS__SMARTPTR_H__
 
+#include <cstddef>
+#include <functional>
+#include <boost/type_traits.hpp>
 #include <utils/SmartPtr.h>
+#include <utils/Macros.h>
 #include <threadingUtils/ThreadAfinityVerifier.h>
 
 namespace threadingUtils
@@ -56,17 +60,17 @@ namespace threadingUtils
 
 	private:
 
-		shared_ptr(utils::shared_ptr<_Ty> _Other) : ptr(_Other) _NOEXCEPT
+		shared_ptr(utils::shared_ptr<_Ty> _Other) : ptr(_Other)
 		{	// construct empty shared_ptr
 		}
 
 	public:
 
-		typedef shared_ptr<_Ty> _Myt;
+		//typedef shared_ptr<_Ty> shared_ptr<_Ty>;
 
-		_Myt* operator&() const = delete;
+		//shared_ptr<_Ty>* operator&() const = delete;
 
-		shared_ptr() _NOEXCEPT
+		shared_ptr() NOEXCEPT
 		{	// construct empty shared_ptr
 		}
 
@@ -81,19 +85,19 @@ namespace threadingUtils
 		{	// construct with _Px, deleter			
 		}
 
-		shared_ptr(nullptr_t) : ptr(nullptr_t)
+		shared_ptr(nullptr_t) : ptr(nullptr)
 		{	// construct empty shared_ptr
 		}
 
 		template<class _Dx>
-		shared_ptr(nullptr_t, _Dx _Dt) : ptr(nullptr_t, _Dt)
+		shared_ptr(nullptr_t, _Dx _Dt) : ptr(nullptr, _Dt)
 		{	// construct with nullptr, deleter
 		}
 
 		template<class _Dx,
 		class _Alloc>
 			shared_ptr(nullptr_t, _Dx _Dt, _Alloc _Ax)
-			: ptr(nullptr_t, _Dt, _Ax)
+			: ptr(nullptr, _Dt, _Ax)
 		{	// construct with nullptr, deleter, allocator			
 		}
 
@@ -112,7 +116,7 @@ namespace threadingUtils
 			_Right.verifyCurrentThreadAfinity();
 		}
 
-		shared_ptr(const _Myt& _Other)
+		shared_ptr(const shared_ptr<_Ty>& _Other)
 			: ptr(_Other.ptr)
 		{	// construct shared_ptr object that owns same resource as _Other
 			_Other.verifyCurrentThreadAfinity();
@@ -148,7 +152,7 @@ namespace threadingUtils
 		//	}
 		//}
 
-		template<class _Ty2>
+		/*template<class _Ty2>
 		shared_ptr(const shared_ptr<_Ty2>& _Other, const std::_Static_tag& _Tag)
 			: ptr(_Other.ptr, _Tag)
 		{	// construct shared_ptr object for static_pointer_cast
@@ -167,9 +171,9 @@ namespace threadingUtils
 			: ptr(_Other.ptr, _Tag)
 		{	// construct shared_ptr object for dynamic_pointer_cast
 			_Other.verifyCurrentThreadAfinity();
-		}
+		}*/
 
-		shared_ptr(_Myt&& _Right)		
+		shared_ptr(shared_ptr<_Ty>&& _Right)
 		{	// construct shared_ptr object that takes resource from _Right			
 			_Right.verifyCurrentThreadAfinity();
 			ptr = std::move(_Right.ptr);
@@ -194,44 +198,44 @@ namespace threadingUtils
 
 		template<class _Ux,
 		class _Dx>
-		_Myt& operator=(unique_ptr<_Ux, _Dx>&& _Right)
+		shared_ptr<_Ty>& operator=(unique_ptr<_Ux, _Dx>&& _Right)
 		{	// move from unique_ptr			
 			shared_ptr(std::move(_Right)).swap(*this);
 			return (*this);
 		}
 
-		_Myt& operator=(_Myt&& _Right)
+		shared_ptr<_Ty>& operator=(shared_ptr<_Ty>&& _Right)
 		{	// construct shared_ptr object that takes resource from _Right			
 			shared_ptr(std::move(_Right)).swap(*this);
 			return (*this);
 		}
 
 		template<class _Ty2>
-		_Myt& operator=(shared_ptr<_Ty2>&& _Right)
+		shared_ptr<_Ty>& operator=(shared_ptr<_Ty2>&& _Right)
 		{	// construct shared_ptr object that takes resource from _Right			
 			shared_ptr(std::move(_Right)).swap(*this);
 			return (*this);
 		}
 
-		~shared_ptr() _NOEXCEPT
+		~shared_ptr() NOEXCEPT
 		{	// release resource			
 		}
 
-		_Myt& operator=(const _Myt& _Right)
+		shared_ptr<_Ty>& operator=(const shared_ptr<_Ty>& _Right)
 		{	// assign shared ownership of resource owned by _Right			
 			shared_ptr(_Right).swap(*this);
 			return (*this);
 		}
 
 		template<class _Ty2>
-		_Myt& operator=(const shared_ptr<_Ty2>& _Right)
+		shared_ptr<_Ty>& operator=(const shared_ptr<_Ty2>& _Right)
 		{	// assign shared ownership of resource owned by _Right			
 			shared_ptr(_Right).swap(*this);
 			return (*this);
 		}
 
 		//template<class _Ty2>
-		//_Myt& operator=(auto_ptr<_Ty2>&& _Right)
+		//shared_ptr<_Ty>& operator=(auto_ptr<_Ty2>&& _Right)
 		//{	// assign ownership of resource pointed to by _Right			
 		//	shared_ptr(_STD move(_Right)).swap(*this);
 		//	return (*this);
@@ -263,7 +267,7 @@ namespace threadingUtils
 			shared_ptr(_Px, _Dt, _Ax).swap(*this);
 		}
 
-		void swap(_Myt & _Other)
+		void swap(shared_ptr<_Ty> & _Other)
 		{	// swap pointers
 			verifyCurrentThreadAfinity();
 			_Other.verifyCurrentThreadAfinity();
@@ -276,7 +280,7 @@ namespace threadingUtils
 			return ptr.get();
 		}
 
-		typename std::add_reference<_Ty>::type operator*() const
+		typename boost::add_reference<_Ty>::type operator*() const
 		{	// return reference to resource
 			verifyCurrentThreadAfinity();
 			return *ptr;
@@ -288,12 +292,12 @@ namespace threadingUtils
 			return ptr.operator ->();
 		}
 
-		bool unique() const _NOEXCEPT
+		bool unique() const NOEXCEPT
 		{	// return true if no other shared_ptr object owns this resource
 			return ptr.unique();
 		}
 
-		explicit operator bool() const _NOEXCEPT
+		explicit operator bool() const NOEXCEPT
 		{	// test if shared_ptr object owns no resource
 			return ptr;
 		}
@@ -319,15 +323,15 @@ namespace threadingUtils
 		return (!(_Left == _Right));
 	}
 
-		template<class _Ty1,
+	/*	template<class _Ty1,
 	class _Ty2>
 		bool operator<(const shared_ptr<_Ty1>& _Left,
 		const shared_ptr<_Ty2>& _Right)
 	{	// test if shared_ptr < shared_ptr
-		return (less<decltype(_Always_false<_Ty1>::value
+		return (std::less<decltype(_Always_false<_Ty1>::value
 		? _Left.get() : _Right.get())>()(
 		_Left.get(), _Right.get()));
-	}
+	}*/
 
 		template<class _Ty1,
 	class _Ty2>
@@ -385,14 +389,14 @@ namespace threadingUtils
 	bool operator<(const shared_ptr<_Ty>& _Left,
 		nullptr_t _Right)
 	{	// test if shared_ptr < nullptr
-		return (less<_Ty *>()(_Left.get(), (_Ty *)0));
+		return (std::less<_Ty *>()(_Left.get(), (_Ty *)0));
 	}
 
 		template<class _Ty>
 	bool operator<(nullptr_t _Left,
 		const shared_ptr<_Ty>& _Right)
 	{	// test if nullptr < shared_ptr
-		return (less<_Ty *>()((_Ty *)0, _Right.get()));
+		return (std::less<_Ty *>()((_Ty *)0, _Right.get()));
 	}
 
 		template<class _Ty>
@@ -508,7 +512,7 @@ namespace threadingUtils
 
 		weak_ptr* operator&() const volatile = delete;
 
-		weak_ptr() _NOEXCEPT
+		weak_ptr() NOEXCEPT
 		{	// construct empty weak_ptr object
 		}
 
@@ -534,7 +538,7 @@ namespace threadingUtils
 			_Other.verifyCurrentThreadAfinity();
 		}
 
-		~weak_ptr() _NOEXCEPT
+		~weak_ptr() NOEXCEPT
 		{	// release resource
 		}
 
@@ -574,7 +578,7 @@ namespace threadingUtils
 			ptr.swap(_Other.ptr);
 		}
 
-		bool expired() const _NOEXCEPT
+		bool expired() const NOEXCEPT
 		{	// return true if resource no longer exists
 			return ptr.expired();
 		}
@@ -615,7 +619,7 @@ namespace threadingUtils
 		}
 
 	protected:
-		enable_shared_from_this() _NOEXCEPT
+		enable_shared_from_this() NOEXCEPT
 		{	// construct (do nothing)
 		}
 
@@ -632,7 +636,7 @@ namespace threadingUtils
 			return (*this);
 		}
 
-		~enable_shared_from_this() _NOEXCEPT
+		~enable_shared_from_this() NOEXCEPT
 		{	// destroy (do nothing)
 		}
 
@@ -649,43 +653,43 @@ namespace threadingUtils
 		typedef _Ty element_type;
 		typedef _Dx deleter_type;
 
-		typedef unique_ptr<_Ty, _Dx> _Myt;
+		typedef unique_ptr<_Ty, _Dx> __Myt;
 
-		_Myt* operator&() const volatile = delete;
+		unique_ptr<_Ty, _Dx>* operator&() const volatile = delete;
 
-		unique_ptr() _NOEXCEPT			
+		unique_ptr() NOEXCEPT
 		{	// default construct			
 		}
 
-		unique_ptr(nullptr_t) _NOEXCEPT			
+		unique_ptr(nullptr_t) NOEXCEPT
 		{	// null pointer construct			
 		}
 
-		_Myt& operator=(nullptr_t)
+		unique_ptr<_Ty, _Dx>& operator=(nullptr_t)
 		{	// assign a null pointer
 			reset();
 			return (*this);
 		}
 
-		explicit unique_ptr(pointer _Ptr) _NOEXCEPT
+		explicit unique_ptr(pointer _Ptr) NOEXCEPT
 			: ptr(_Ptr)
 		{	// construct with pointer			
 		}
 
 		unique_ptr(pointer _Ptr,
 			typename std::conditional<std::is_reference<_Dx>::value, _Dx,
-			const typename std::remove_reference<_Dx>::type&>::type _Dt) _NOEXCEPT
+			const typename std::remove_reference<_Dx>::type&>::type _Dt) NOEXCEPT
 			: ptr(_Ptr, _Dt)
 		{	// construct with pointer and (maybe const) deleter&
 		}
 
 		unique_ptr(pointer _Ptr,
-			typename std::remove_reference<_Dx>::type&& _Dt) _NOEXCEPT
+			typename std::remove_reference<_Dx>::type&& _Dt) NOEXCEPT
 			: ptr(_Ptr, std::move(_Dt))
 		{	// construct by moving deleter			
 		}
 
-		unique_ptr(_Myt&& _Right)
+		unique_ptr(unique_ptr<_Ty, _Dx>&& _Right)
 			: ptr(_Right.release(),
 			std::forward<_Dx>(_Right.ptr.get_deleter()))
 		{	// construct by moving _Right
@@ -710,7 +714,7 @@ namespace threadingUtils
 		//class = typename enable_if<is_convertible<_Ty2 *, _Ty *>::value
 		//	&& is_same<_Dx, default_delete<_Ty> >::value,
 		//	void>::type>
-		//	unique_ptr(auto_ptr<_Ty2>&& _Right) _NOEXCEPT
+		//	unique_ptr(auto_ptr<_Ty2>&& _Right) NOEXCEPT
 		//	: ptr(_Right.release())
 		//{	// construct by moving _Right
 		//	try{
@@ -728,7 +732,7 @@ namespace threadingUtils
 			typename std::enable_if<!std::is_array<_Ty2>::value
 			&& std::is_convertible<typename unique_ptr<_Ty2, _Dx2>::pointer,
 			pointer>::value,
-			_Myt&>::type
+			unique_ptr<_Ty, _Dx>&>::type
 			operator=(unique_ptr<_Ty2, _Dx2>&& _Right)
 		{	// assign by moving _Right
 			_Right.verifyCurrentThreadAfinity();
@@ -737,7 +741,7 @@ namespace threadingUtils
 			return (*this);
 		}
 
-		_Myt& operator=(_Myt&& _Right)
+		unique_ptr<_Ty, _Dx>& operator=(unique_ptr<_Ty, _Dx>&& _Right)
 		{	// assign by moving _Right
 			if (this != &_Right)
 			{	// different, do the move				
@@ -747,17 +751,17 @@ namespace threadingUtils
 			return (*this);
 		}
 
-		void swap(_Myt& _Right)
+		void swap(unique_ptr<_Ty, _Dx>& _Right)
 		{	// swap elements
 			_Right.verifyCurrentThreadAfinity();
 			ptr.swap(_Right.ptr);			
 		}
 
-		~unique_ptr() _NOEXCEPT
+		~unique_ptr() NOEXCEPT
 		{	// destroy the object			
 		}
 
-		typename std::add_reference<_Ty>::type operator*() const
+		typename boost::add_reference<_Ty>::type operator*() const
 		{	// return reference to object
 			verifyCurrentThreadAfinity();
 			return *ptr;
@@ -804,14 +808,14 @@ namespace threadingUtils
 			return ptr.get_deleter();
 		}
 
-		typename std::add_reference<_Ty>::type operator[](std::size_t _Idx) const
+		typename boost::add_reference<_Ty>::type operator[](std::size_t _Idx) const
 		{	// return reference to object
 			verifyCurrentThreadAfinity();
 			return ptr[_Idx];
 		}
 
-		unique_ptr(const _Myt&) = delete;
-		_Myt& operator=(const _Myt&) = delete;\
+		unique_ptr(const unique_ptr<_Ty, _Dx>&) = delete;
+		unique_ptr<_Ty, _Dx>& operator=(const unique_ptr<_Ty, _Dx>&) = delete;\
 
 	private:
 
@@ -878,8 +882,8 @@ namespace threadingUtils
 	{	// test if unique_ptr _Left precedes _Right
 		typedef typename unique_ptr<_Ty1, _Dx1>::pointer _Ptr1;
 		typedef typename unique_ptr<_Ty2, _Dx2>::pointer _Ptr2;
-		typedef typename common_type<_Ptr1, _Ptr2>::type _Common;
-		return (less<_Common>()(_Left.get(), _Right.get()));
+		typedef typename std::common_type<_Ptr1, _Ptr2>::type _Common;
+		return (std::less<_Common>()(_Left.get(), _Right.get()));
 	}
 
 	template<class _Ty1,
@@ -915,7 +919,7 @@ namespace threadingUtils
 	template<class _Ty,
 	class _Dx>
 		bool operator==(const unique_ptr<_Ty, _Dx>& _Left,
-		nullptr_t) _NOEXCEPT
+		nullptr_t) NOEXCEPT
 	{	// test if unique_ptr == nullptr
 		return (!_Left);
 	}
@@ -923,7 +927,7 @@ namespace threadingUtils
 		template<class _Ty,
 	class _Dx>
 		bool operator==(nullptr_t,
-		const unique_ptr<_Ty, _Dx>& _Right) _NOEXCEPT
+		const unique_ptr<_Ty, _Dx>& _Right) NOEXCEPT
 	{	// test if nullptr == unique_ptr
 		return (!_Right);
 	}
@@ -931,7 +935,7 @@ namespace threadingUtils
 		template<class _Ty,
 	class _Dx>
 		bool operator!=(const unique_ptr<_Ty, _Dx>& _Left,
-		nullptr_t _Right) _NOEXCEPT
+		nullptr_t _Right) NOEXCEPT
 	{	// test if unique_ptr != nullptr
 		return (!(_Left == _Right));
 	}
@@ -939,7 +943,7 @@ namespace threadingUtils
 		template<class _Ty,
 	class _Dx>
 		bool operator!=(nullptr_t _Left,
-		const unique_ptr<_Ty, _Dx>& _Right) _NOEXCEPT
+		const unique_ptr<_Ty, _Dx>& _Right) NOEXCEPT
 	{	// test if nullptr != unique_ptr
 		return (!(_Left == _Right));
 	}
