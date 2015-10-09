@@ -10,6 +10,7 @@
 #define HEADER_GUARD___TIMELINEWIDGET_H__
 
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QSlider>
@@ -73,6 +74,9 @@ signals:
     void offsetChanged(double offset);
 
 private slots:
+
+	void onLoopbackStateChanged(int state);
+
     void onItemClicked(QTreeWidgetItem * item, int column);
     void onItemDblClicked(QTreeWidgetItem * item, int column);
 
@@ -145,6 +149,8 @@ private:
     QAction * playPauseAction;
     //! Akcja zatrzymująca timeline
     QAction * stopAction;
+	//! Powtarzanie odtwarzania
+	QCheckBox * loopbackCheckBox;
     //! Widget do precyzyjnego ustawiania czasu
     QDateTimeEdit * preciseTimeWidget;
     //! Kontener na akcje kontrolujące timeline

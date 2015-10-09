@@ -14,6 +14,7 @@ SET_PUBLIC_HEADERS(
 SET_SOURCE_FILES(
 	CURLFTPHelper.cpp
 	CURLManager.cpp
+	CURLUtils.cpp
 )
 
 END_PROJECT()

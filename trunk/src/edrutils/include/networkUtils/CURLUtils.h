@@ -8,6 +8,7 @@
 #ifndef __HEADER_GUARD_NETWORKUTILS__CURLUTILS_H__
 #define __HEADER_GUARD_NETWORKUTILS__CURLUTILS_H__
 
+#include <networkUtils/Export.h>
 #include <curl/curl.h>
 #include <utils/SmartPtr.h>
 
@@ -16,25 +17,13 @@ namespace networkUtils
 	DEFINE_SMART_POINTERS(CURLM);
 	DEFINE_SMART_POINTERS(CURL);
 
-	inline CURLPtr wrapCurlEasy(CURL * curl)
-	{
-		return CURLPtr(curl, &curl_easy_cleanup);
-	}
+	NETWORKUTILS_EXPORT CURLPtr wrapCurlEasy(CURL * curl);
 
-	inline CURLMPtr wrapCurlMulti(CURLM * curl)
-	{
-		return CURLMPtr(curl, &curl_multi_cleanup);
-	}
+	NETWORKUTILS_EXPORT CURLMPtr wrapCurlMulti(CURLM * curl);
 
-	inline CURLPtr createCurlEasy()
-	{
-		return wrapCurlEasy(curl_easy_init());
-	}
+	NETWORKUTILS_EXPORT CURLPtr createCurlEasy();
 
-	inline CURLMPtr createCurlMulti()
-	{
-		return wrapCurlMulti(curl_multi_init());
-	}
+	NETWORKUTILS_EXPORT CURLMPtr createCurlMulti();
 }
 
 #endif	// __HEADER_GUARD_NETWORKUTILS__CURLUTILS_H__

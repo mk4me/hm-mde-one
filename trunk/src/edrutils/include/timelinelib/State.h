@@ -14,7 +14,8 @@ struct State
 {
 public:
 
-    State() : time(0), length(0), normalizedTime(0), timeScaleFactor(1), isPlaying(false) {}
+    State() : time(0), length(0), normalizedTime(0),
+		timeScaleFactor(1), isPlaying(false), offset(0) {}
     ~State() {}
 
     //! Czas.

@@ -37,27 +37,27 @@ TypeInfo::operator const std::type_info&() const
 	return *typeinfo;
 }
 
-const bool TypeInfo::operator<(const TypeInfo& obj) const
+bool TypeInfo::operator<(const TypeInfo& obj) const
 {
 	return before(obj);
 }
 
-const bool TypeInfo::operator==(const TypeInfo& obj) const
+bool TypeInfo::operator==(const TypeInfo& obj) const
 {
 	return compare(obj);
 }
 
-const bool TypeInfo::operator!=(const TypeInfo& obj) const
+bool TypeInfo::operator!=(const TypeInfo& obj) const
 {
 	return !(*this == obj);
 }
 
-const bool TypeInfo::before(const TypeInfo& obj) const
+bool TypeInfo::before(const TypeInfo& obj) const
 {
 	return (*typeinfo).before(obj);
 }
 
-const bool TypeInfo::compare(const TypeInfo& obj) const
+bool TypeInfo::compare(const TypeInfo& obj) const
 {
 	return areTypesEqual(*typeinfo, *(obj.typeinfo));
 }
@@ -67,7 +67,7 @@ const char* TypeInfo::name() const
 	return (*typeinfo).name();
 }
 
-const size_t TypeInfo::hash_code() const
+size_t TypeInfo::hash_code() const
 {
 	return (*typeinfo).hash_code();
 }
@@ -96,7 +96,7 @@ ExtendedTypeInfo::~ExtendedTypeInfo()
 
 }
 
-const std::size_t ExtendedTypeInfo::size() const
+std::size_t ExtendedTypeInfo::size() const
 {
 	return size_;
 }
@@ -108,7 +108,7 @@ ExtendedTypeInfo& ExtendedTypeInfo::operator =(const ExtendedTypeInfo & other)
 	return *this;
 }
 
-const bool ExtendedTypeInfo::compare(const ExtendedTypeInfo& obj) const
+bool ExtendedTypeInfo::compare(const ExtendedTypeInfo& obj) const
 {
 	return (size_ == obj.size_) && (TypeInfo::compare(obj) == true);
 }

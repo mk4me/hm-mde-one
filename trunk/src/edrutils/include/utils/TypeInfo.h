@@ -10,14 +10,13 @@
 #define HEADER_GUARD_UTILS__TYPEINFO_H__
 
 #include <typeinfo>
-#include <stdlib.h>
 #include <list>
 #include <set>
 #include <vector>
 #include <type_traits>
 
 namespace utils {
-
+	
     //! Struktura reprezentująca typ obiektu.
     class TypeInfo
     {
@@ -34,7 +33,7 @@ namespace utils {
         //! \param type Kopiowany obiekt
         TypeInfo(const TypeInfo& type);
 
-		//! Destruktor niewirtualny
+		//! Destruktor virtualny
 		virtual ~TypeInfo();
 
 		//! Konstruktor
@@ -54,29 +53,29 @@ namespace utils {
 
 		//! \param obj Obiekt porównywany
 		//! \return Czy nasz typ jest przed obj
-        const bool operator<(const TypeInfo& obj) const;
+        bool operator<(const TypeInfo& obj) const;
 
 		//! \param obj Obiekt porównywany
 		//! \return Czy nasz typ równa się obj
-        const bool operator==(const TypeInfo& obj) const;
+        bool operator==(const TypeInfo& obj) const;
 
         //! \param obj Obiekt porównywany
 		//! \return Czy nasz typ różni się od obj
-        const bool operator!=(const TypeInfo& obj) const;
+        bool operator!=(const TypeInfo& obj) const;
 
         //! \param obj Obiekt porównywany
 		//! \return Czy nasz obiekt jest przed obj
-        virtual const bool before(const TypeInfo& obj) const;
+        bool before(const TypeInfo& obj) const;
 
 		//! \param obj Obiekt porównywany
 		//! \return Czy typy są identyczne
-		virtual const bool compare(const TypeInfo& obj) const;
+		bool compare(const TypeInfo& obj) const;
 
         //! \return Nazwa typu
         const char* name() const;
 
         //! \return Skrót informacji o typie
-        const size_t hash_code() const;
+        std::size_t hash_code() const;
     };
 
 	//! Struktura reprezentująca typ obiektu z informacją o jego rozmiarze
@@ -91,7 +90,7 @@ namespace utils {
 		//! \tpara T Typ dla którego chcemy pobrać rozmiar
 		//! Wersja kiedy T = void
 		template<typename T>
-		static inline const std::size_t typeSize(std::true_type)
+		static inline std::size_t typeSize(std::true_type)
 		{
 			return 0;
 		}
@@ -99,7 +98,7 @@ namespace utils {
 		//! \tpara T Typ dla którego chcemy pobrać rozmiar
 		//! Wersja kiedy T != void
 		template<typename T>
-		static inline const std::size_t typeSize(std::false_type)
+		static inline std::size_t typeSize(std::false_type)
 		{
 			return sizeof(T);
 		}
@@ -134,10 +133,10 @@ namespace utils {
 
 		//! \param obj Obiekt porównywany
 		//! \return Czy typy są identyczne
-		virtual const bool compare(const ExtendedTypeInfo& obj) const;
+		bool compare(const ExtendedTypeInfo& obj) const;
 
 		//! \return Rozmiar zajmowany przez ten typ
-		const std::size_t size() const;
+		std::size_t size() const;
 	};
 
     typedef std::list<TypeInfo> TypeInfoList;

@@ -37,6 +37,13 @@ namespace timeline{
 			PlayBackward = -1    // odtwarzanie do tyłu
 		};
 
+		//! Czy kontynujemy odtwarzeni po dotarciu do końca/początku czasu?
+		enum LoopbackMode
+		{
+			LoopbackOn,	//! Kontynuj odtwarzanie
+			LoopbackOff	//! Zakończ odtwarzanie
+		};
+
 		IController(State * state) : utils::Observable<State>(state) {}
 
 		//! \return Aktualny model kontrolera
@@ -63,6 +70,12 @@ namespace timeline{
 
 		//! \return Kierunek aktualizacji czasu w timeline
 		virtual PlaybackDirection getPlaybackDirection() const = 0;
+
+		//! \param loopbackMode
+		virtual void setLoopbackMode(LoopbackMode loopbackMode) = 0;
+
+		//! \return
+		virtual LoopbackMode getLoopbackMode() const = 0;
 
 		//------------------------------- Zarzadzanie odtwarzaniem ------------------------------
 
@@ -148,69 +161,24 @@ namespace timeline{
 
 	private:
 
-		typedef std::function<double(Controller *, unsigned long int)> TimeGenerator;
+		typedef double (Controller::*TimeGenerator)(unsigned long int);		
 
 		class Timer
 		{
 		public:
-			Timer(unsigned long int delay)
-				: delay(delay), finalize_(false)
-			{
-				UTILS_ASSERT((delay != 0), "Zły czas pomiędzy tikami tegara");
-			}
+			Timer(unsigned long int delay);
 
-			~Timer()
-			{
-				
-			}
+			~Timer();
 
-			void finalize()
-			{
-				finalize_ = true;
-				controller->cv.notify_all();
-			}
+			void finalize();
 
-			virtual void run()
-			{
-				if (controller == nullptr){
-					throw std::runtime_error("Wrong controller to update");
-				}
+			void run();
 
-				while (finalize_ == false){					
-					if (controller->isPlaying() == false){
-						// czy nie ma pauzy
-						std::unique_lock<std::mutex> lock(controller->pauseMutex);
-						controller->cv.wait(lock, [this]() { return controller->isPlaying() == true || finalize_ == true; });						
-					}
+			void setController(Controller * controller);
 
-					//aktualizujemy czas
-					//if (controller->setNextTime(delay) == true){
-					//	return;
-					//}
+			void setDelay(unsigned long int delay);
 
-					controller->setNextTime(delay);
-
-					//zasypiamy
-					std::this_thread::sleep_for(std::chrono::microseconds(delay));
-				}
-			}
-
-			void setController(Controller * controller)
-			{
-				UTILS_ASSERT((controller != nullptr), "Błędny kontroler do aktualizacji");
-				this->controller = controller;
-			}
-
-			void setDelay(unsigned long int delay)
-			{
-				UTILS_ASSERT((delay > 0), "Blędne opóźnienie zegara");
-				this->delay = delay;
-			}
-
-			unsigned long int getDelay() const
-			{
-				return delay;
-			}
+			unsigned long int getDelay() const;
 
 		private:
 			volatile bool finalize_;
@@ -238,6 +206,8 @@ namespace timeline{
 
 		//! Kierunek aktualizacji czasu
 		PlaybackDirection playbackDirection;
+
+		LoopbackMode loopbackMode;
 
 		//! Mutex do synchronizacji edycji modelu (struktura kanałów)
 		std::recursive_mutex modelMutex;
@@ -298,6 +268,12 @@ namespace timeline{
 
 		//! \return Kierunek aktualizacji czasu w timeline
 		virtual PlaybackDirection getPlaybackDirection() const;
+
+		//! \param loopbackMode
+		virtual void setLoopbackMode(LoopbackMode loopbackMode);
+
+		//! \return
+		virtual LoopbackMode getLoopbackMode() const;
 
 		//------------------------------- Zarzadzanie odtwarzaniem ------------------------------
 
@@ -389,15 +365,13 @@ namespace timeline{
 		//! \param state Bieżący stan.
 		void setState(const State& state);
 
-		//! \param controller Kontroler, którego czas aktualizujemy do przodu
 		//! \param realTimeDelta Rzeczywisty krok czasu w milisekundach
 		//! \return nowy czas do ustawienia
-		static double forwardTimeUpdate(Controller * controller, unsigned long int realTimeDelta);
+		double forwardTimeUpdate(unsigned long int realTimeDelta);
 
-		//! \param controller Kontroler, którego czas aktualizujemy do tyłu
 		//! \param realTimeDelta Rzeczywisty krok czasu w milisekundach
 		//! \return nowy czas do ustawienia
-		static double backwardTimeUpdate(Controller * controller, unsigned long int realTimeDelta);
+		double backwardTimeUpdate(unsigned long int realTimeDelta);
 
 		//! \param realTimeDelta Rzeczywisty krok czasu w milisekundach
 		//! \return Informacja czy osiągnięto/przekroczono limit czasu timeline

@@ -15,12 +15,13 @@
 
 TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidget * parent, Qt::WindowFlags f)
     : QWidget(parent, f), removeChannelsMenu(new QMenu()), /*scaleSpinBox(new QDoubleSpinBox()),*/
-    playbackDirectionAction(new QAction(QString("Playback direction"), this)), timeToBeginAction(new QAction(QString("Begin"), this)),
-    timeToEndAction(new QAction(QString("End"), this)), playPauseAction(new QAction(QString("Play"), this)),
-    stopAction(new QAction(QString("Stop"), this)), /*scaleLabel(new QLabel(QString("<font color=\"white\"><b>Scale:</b></font>"))),
+    playbackDirectionAction(new QAction(QString(tr("Playback direction")), this)), timeToBeginAction(new QAction(QString(tr("Begin")), this)),
+    timeToEndAction(new QAction(QString(tr("End")), this)), playPauseAction(new QAction(QString(tr("Play")), this)),
+    stopAction(new QAction(QString(tr("Stop")), this)), /*scaleLabel(new QLabel(QString("<font color=\"white\"><b>Scale:</b></font>"))),
     timeLabel(new QLabel(QString("<font color=\"white\"><b>Time:</b></font>"))),*/ rootItem(new QTreeWidgetItem()),
     slider(new TimeSliderWidget()), preciseTimeWidget(new QDateTimeEdit()), timelineTabs(new QWidget()),
-    leftTabButton(new QToolBar()), middleTabButton(new QToolBar()), rightTabButton(new QToolBar())
+    leftTabButton(new QToolBar()), middleTabButton(new QToolBar()), rightTabButton(new QToolBar()),
+	loopbackCheckBox(new QCheckBox(tr("Loopback")))
 {
     //ustawienie kontrolera
     setController(controller);
@@ -40,13 +41,13 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
 
     leftTabButton->setIconSize(QSize(16,15));
     leftTabButton->setContentsMargins(0,0,0,0);
-    middleTabButton->setIconSize(QSize(22,15));;
+    middleTabButton->setIconSize(QSize(22,15));
     middleTabButton->setContentsMargins(0,0,0,0);
     rightTabButton->setIconSize(QSize(16,15));
     rightTabButton->setContentsMargins(0,0,0,0);
 
     leftTabButton->setFixedHeight(22);
-    middleTabButton->setFixedHeight(22);;
+    middleTabButton->setFixedHeight(22);
     rightTabButton->setFixedHeight(22);
 
     leftTabButton->setObjectName(QString::fromUtf8("leftControls"));
@@ -96,6 +97,7 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
 
     //TODO
     //PRAWY TAB = aktualnie pusty!!
+	rightTabButton->addWidget(loopbackCheckBox);
 
     // toBegin action
     connect(timeToBeginAction, SIGNAL(triggered()), this, SLOT(toBegin()));
@@ -111,6 +113,8 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
 
     // edycja tekstowa czasu
     connect(preciseTimeWidget, SIGNAL(timeChanged(QTime)), this, SLOT(timeChanged(QTime)));
+
+	connect(loopbackCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onLoopbackStateChanged(int)));
 
     //skala
     //scaleSpinBox->setDecimals(2);
@@ -219,7 +223,7 @@ TimelineWidget::TimelineWidget(const timeline::ControllerPtr & controller, QWidg
     channelsWidget->setVisible(false);
     this->layout()->addWidget(widget);
 
-    rightTabButton->setVisible(false);
+    //rightTabButton->setVisible(false);
 
     /*int w = std::max(leftTabButton->sizeHint().width(), rightTabButton->sizeHint().width());
     leftTabButton->setMinimumWidth(w);
@@ -639,6 +643,16 @@ QWidget * TimelineWidget::createTreeItemWidget(QWidget * widget)
     widget->setVisible(true);
     ret->setVisible(true);
     return ret;
+}
+
+void TimelineWidget::onLoopbackStateChanged(int state)
+{
+	auto loopbackMode = timeline::IController::LoopbackOn;
+	if (state == Qt::Unchecked){
+		loopbackMode = timeline::IController::LoopbackOff;
+	}
+
+	getController()->setLoopbackMode(loopbackMode);
 }
 
 void TimelineWidget::onItemClicked(QTreeWidgetItem * item, int column)
