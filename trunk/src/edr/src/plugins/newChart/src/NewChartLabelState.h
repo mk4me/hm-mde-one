@@ -65,6 +65,8 @@ protected:
     //! \param curve krzywa pod która jest podpięta etykieta
     //! \param label przesuwana etykieta
     void move(const QPoint& pos, const QwtPlotCurve* curve, NewChartLabel* label);
+	//! usuwa etykietę z wykresu 
+	void removeLabel(LabelDataPtr data);
     //! próbuje pobrać dane etykiety
     //! \param pos pozycja na wykresie (współrzędne ekranowe)
     //! \return dane etykiety lub pusty wskaźnik

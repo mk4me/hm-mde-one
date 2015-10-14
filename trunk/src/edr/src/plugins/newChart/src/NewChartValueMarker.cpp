@@ -27,6 +27,11 @@ bool NewChartValueMarker::stateEventFilter( QObject *object, QEvent *event )
         QMouseEvent* mouseEvent = (QMouseEvent*)event;
         if (mouseEvent->button() == Qt::LeftButton) {
             currentLabel = getLabel(mouseEvent->pos(), currentSerie->getCurve());
+			if (currentLabel && currentLabel->label->isInsideClose(mouseEvent->pos())) {
+				removeLabel(utils::const_pointer_cast<LabelData>(currentLabel));
+				currentLabel = LabelDataConstPtr();
+				return true;
+			}
         } else {
             currentLabel = LabelDataConstPtr();
         }
@@ -67,7 +72,7 @@ bool NewChartValueMarker::stateEventFilter( QObject *object, QEvent *event )
 void NewChartValueMarker::stateBegin()
 {
     NewChartLabelState::stateBegin();
-    canvas->setCursor(Qt::ForbiddenCursor);
+    canvas->setCursor(Qt::ArrowCursor);
     visualizer->setManipulation(false);
     marker.attach(plot);
 }
@@ -85,6 +90,7 @@ void NewChartValueMarker::insertNewMarker( const QPointF& point, const QColor& c
     label->setPen(QPen(color));
     dot->attach(plot);
     label->attach(plot);
+	label->getConnectionsItem()->attach(plot);
     label->connectDot(dot);
 
     LabelDataPtr data(new LabelData());
@@ -105,3 +111,5 @@ void NewChartValueMarker::updateLabels()
         (*it)->label->setText(text);
     }
 }
+
+

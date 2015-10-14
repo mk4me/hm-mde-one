@@ -11,15 +11,14 @@ const float MIN_LERP_DIST = 15.0f;
 const float LERP_Y = 0.1f;
 const float LERP_X = 0.33f;
 
-NewChartLabel::NewChartLabel(const QString& text, const QPoint& shift, const QPoint& size) :
+NewChartLabel::NewChartLabel(const QString& text, const QPoint& shift, const QPoint& size, bool closeable) :
 text(text),
     size(size),
     shift(shift),
     pen(QColor(135, 173, 255)),
     brush(QColor(Qt::white)),
-    point1(nullptr),
-    point2(nullptr),
-	connectionStyle(Simple)
+	points(new NewChartVerticalsConnection(NewChartVerticalsConnection::Simple, this)),
+	closeable(closeable)
 {
     setZ( 1000 );
     brush.setStyle(Qt::SolidPattern);
@@ -28,9 +27,95 @@ text(text),
 
 void NewChartLabel::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect ) const
 {
-    UTILS_ASSERT(point1);
-    QPoint transformed1 = QwtScaleMap::transform(xMap, yMap, point1->getPosition()).toPoint();
+	UTILS_ASSERT(points->getPoint1());
+	QPoint transformed1 = QwtScaleMap::transform(xMap, yMap, points->getPoint1()->getPosition()).toPoint();
 
+	auto textRect = getTextRect(painter, transformed1);
+	QRect boxRect = getBoxRect(textRect);
+
+    painter->setPen(QPen(Qt::black));
+    painter->setBrush(QBrush(Qt::black));
+
+    painter->setPen(pen);
+    painter->setBrush(brush);
+    painter->drawRoundedRect(boxRect, 6, 6);
+
+	if (closeable) {
+		drawX(painter, boxRect);
+	}
+
+    painter->setPen(QPen(QColor(100, 100, 100)));
+    painter->drawText(textRect, Qt::AlignCenter, text);
+
+	this->boundingR.setRect(boxRect.x(), boxRect.y(), boxRect.width(), boxRect.height());
+}
+
+bool NewChartLabel::isInsideLabel( const QPoint& transformedPoint, const QwtPlotCurve* curve ) const
+{
+    QPoint pointingTransformed = getPoint1Transformed(curve);
+	/*QRect rect;
+	rect.setTopLeft(pointingTransformed + shift);
+	rect.setWidth(size.x());
+	rect.setHeight(size.y());*/
+ 
+    return boundingR.contains(transformedPoint);
+}
+
+QPoint NewChartLabel::getPoint1Transformed(const QwtPlotCurve* curve) const
+{
+	UTILS_ASSERT(plot() && points->getPoint1());
+    const double x = plot()->transform(curve->xAxis(), points->getPoint1()->getPosition().x() );
+    const double y = plot()->transform(curve->yAxis(), points->getPoint1()->getPosition().y() );
+    return QPoint(static_cast<int>(x), static_cast<int>(y));
+}
+
+QPoint NewChartLabel::getPoint2Transformed(const QwtPlotCurve* curve) const
+{
+	UTILS_ASSERT(plot() && points->getPoint2());
+    const double x = plot()->transform(curve->xAxis(), points->getPoint2()->getPosition().x() );
+    const double y = plot()->transform(curve->yAxis(), points->getPoint2()->getPosition().y() );
+    return QPoint(static_cast<int>(x), static_cast<int>(y));
+}
+
+void NewChartLabel::connectDot(NewChartDotConstPtr dot, NewChartVerticalsConnection::ConnectionStyle style /*= Simple*/)
+{
+    this->points->setPoint1(dot);
+    this->points->setPoint2(NewChartDotConstPtr());
+	this->points->setConnectionStyle(style);
+}
+
+void NewChartLabel::connectDots(NewChartDotConstPtr point1, NewChartDotConstPtr point2, NewChartVerticalsConnection::ConnectionStyle style)
+{
+    this->points->setPoint1(point1);
+	this->points->setPoint2(point2);
+	this->points->setConnectionStyle(style);
+}
+
+void NewChartLabel::connectDots(const QPointF& point1, const QPointF& point2, NewChartVerticalsConnection::ConnectionStyle style)
+{
+    NewChartDotPtr p1(new NewChartDotFixed(point1));
+    NewChartDotPtr p2(new NewChartDotFixed(point2));
+    connectDots(p1, p2, style);
+}
+
+QRect NewChartLabel::getBoxRect(QPainter * painter, QPoint &transformed1) const
+{
+	auto r = getTextRect(painter, transformed1);
+	return getBoxRect(r);
+}
+
+QRect NewChartLabel::getBoxRect(const QRect& textRect) const
+{
+	QRect boxRect;
+	boxRect.setX(textRect.x() - LABEL_BOUND);
+	boxRect.setY(textRect.y() - LABEL_BOUND);
+	boxRect.setWidth(textRect.width() + LABEL_BOUND * 2);
+	boxRect.setHeight(textRect.height() + LABEL_BOUND * 2);
+	return boxRect;
+}
+
+QRect NewChartLabel::getTextRect(QPainter * painter, const QPoint &transformed1) const
+{
 	QFontMetrics fm(painter->font());
 
 	QRect textRect;
@@ -46,147 +131,135 @@ void NewChartLabel::draw( QPainter *painter, const QwtScaleMap &xMap, const QwtS
 	textRect.setY(transformed1.y() + shift.y());
 	textRect.setWidth(w);
 	textRect.setHeight(h);
-
-    QRect boxRect;
-    boxRect.setX(textRect.x() - LABEL_BOUND);
-    boxRect.setY(textRect.y() - LABEL_BOUND);
-    boxRect.setWidth(textRect.width() + LABEL_BOUND * 2);
-    boxRect.setHeight(textRect.height() + LABEL_BOUND * 2);
-
-    painter->setPen(QPen(Qt::black));
-    painter->setBrush(QBrush(Qt::black));
-    if (!point2) {
-        drawConnection(painter, boxRect, transformed1, connectionStyle);
-    } else {
-        QPoint transformed2 = QwtScaleMap::transform(xMap, yMap, point2->getPosition()).toPoint();
-
-        if (connectionStyle == Horizontal) {
-            if (transformed1.x() > transformed2.x()) {
-                QPoint temp = transformed1;
-                transformed1 = transformed2;
-                transformed2 = temp;
-            }
-
-            drawConnection(painter, boxRect, transformed1, connectionStyle, boxRect.left() > transformed2.x());
-            drawConnection(painter, boxRect, transformed2,  connectionStyle, boxRect.right() < transformed1.x());
-        } else if (connectionStyle == Vertical) {
-            if (transformed1.y() > transformed2.y()) {
-                QPoint temp = transformed1;
-                transformed1 = transformed2;
-                transformed2 = temp;
-            }
-            drawConnection(painter, boxRect, transformed1, connectionStyle, boxRect.top() > transformed2.y());
-            drawConnection(painter, boxRect, transformed2,  connectionStyle, boxRect.bottom() < transformed1.y());
-        } else {
-            UTILS_ASSERT(false);
-        }
-    }
-
-    painter->setPen(pen);
-    painter->setBrush(brush);
-    painter->drawRoundedRect(boxRect, 6, 6);
-
-    painter->setPen(QPen(QColor(100, 100, 100)));
-    painter->drawText(textRect, Qt::AlignCenter, text);
+	return textRect;
 }
 
-bool NewChartLabel::isInsideLabel( const QPoint& transformedPoint, const QwtPlotCurve* curve ) const
+QRectF NewChartLabel::boundingRect() const
 {
-    QPoint pointingTransformed = getPoint1Transformed(curve);
-    QRect rect;
-    rect.setTopLeft(pointingTransformed + shift);
-    rect.setWidth(size.x());
-    rect.setHeight(size.y());
-
-    return rect.contains(transformedPoint);
+	return boundingR;
 }
 
-QPoint NewChartLabel::getPoint1Transformed(const QwtPlotCurve* curve) const
+void NewChartLabel::setVisible(bool visible)
 {
-    UTILS_ASSERT(plot() && point1);
-    const double x = plot()->transform(curve->xAxis(), point1->getPosition().x() );
-    const double y = plot()->transform(curve->yAxis(), point1->getPosition().y() );
-    return QPoint(static_cast<int>(x), static_cast<int>(y));
+	QwtPlotItem::setVisible(visible);
+	points->setVisible(visible);
 }
 
-QPoint NewChartLabel::getPoint2Transformed(const QwtPlotCurve* curve) const
+void NewChartLabel::drawX(QPainter * painter, const QRect& r) const
 {
-    UTILS_ASSERT(plot() && point2);
-    const double x = plot()->transform(curve->xAxis(), point2->getPosition().x() );
-    const double y = plot()->transform(curve->yAxis(), point2->getPosition().y() );
-    return QPoint(static_cast<int>(x), static_cast<int>(y));
+	QVector<QPoint> xLines;
+	xLines.push_back(QPoint(r.right() - 2, r.top() + 2));
+	xLines.push_back(QPoint(r.right() - 8, r.top() + 8));
+	xLines.push_back(QPoint(r.right() - 8, r.top() + 2));
+	xLines.push_back(QPoint(r.right() - 2, r.top() + 8));
+	painter->drawLines(xLines);
 }
 
-void NewChartLabel::connectDot( NewChartDotConstPtr dot, ConnectionStyle style /*= Simple*/ )
+bool NewChartLabel::isInsideClose(const QPoint& transformedPoint) const
 {
-    point1 = dot;
-    point2 = NewChartDotConstPtr();
-    connectionStyle = style;
+	if (!closeable) {
+		return false;
+	}
+
+	QRectF xR;
+	auto& r = boundingR;
+	xR.setRect(r.right() - 10, r.top(), 10, 10);
+	return xR.contains(transformedPoint);
 }
 
-void NewChartLabel::connectDots( NewChartDotConstPtr point1, NewChartDotConstPtr point2, ConnectionStyle style )
+void NewChartVerticalsConnection::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect) const
 {
-    this->point1 = point1;
-    this->point2 = point2;
-    this->connectionStyle = style;
+	if (!point1) {
+		return;
+	}
+	QPoint transformed1 = QwtScaleMap::transform(xMap, yMap, point1->getPosition()).toPoint();
+	auto boxRect = label->getBoxRect(painter, transformed1);
+	if (!point2) {
+		drawConnection(painter, boxRect, transformed1, connectionStyle);
+	} else {
+		QPoint transformed2 = QwtScaleMap::transform(xMap, yMap, point2->getPosition()).toPoint();
+
+		if (connectionStyle == Horizontal) {
+			if (transformed1.x() > transformed2.x()) {
+				QPoint temp = transformed1;
+				transformed1 = transformed2;
+				transformed2 = temp;
+			}
+
+			drawConnection(painter, boxRect, transformed1, connectionStyle, boxRect.left() > transformed2.x());
+			drawConnection(painter, boxRect, transformed2, connectionStyle, boxRect.right() < transformed1.x());
+		} else if (connectionStyle == Vertical) {
+			if (transformed1.y() > transformed2.y()) {
+				QPoint temp = transformed1;
+				transformed1 = transformed2;
+				transformed2 = temp;
+			}
+			drawConnection(painter, boxRect, transformed1, connectionStyle, boxRect.top() > transformed2.y());
+			drawConnection(painter, boxRect, transformed2, connectionStyle, boxRect.bottom() < transformed1.y());
+		} else {
+			UTILS_ASSERT(false);
+		}
+	}
 }
 
-void NewChartLabel::connectDots( const QPointF& point1, const QPointF& point2, ConnectionStyle style )
+NewChartVerticalsConnection::NewChartVerticalsConnection(ConnectionStyle connectionStyle, NewChartLabel* label) : 
+	label(label),
+	point1(nullptr),
+	point2(nullptr),
+	connectionStyle(NewChartVerticalsConnection::Simple)
 {
-    NewChartDotPtr p1(new NewChartDotFixed(point1));
-    NewChartDotPtr p2(new NewChartDotFixed(point2));
-    connectDots(p1, p2, style);
+
 }
 
-void NewChartLabel::drawConnection(QPainter* painter, const QRect& box, const QPoint& transformedTo, ConnectionStyle style, bool arrowOutside) const
+void NewChartVerticalsConnection::drawConnection(QPainter* painter, const QRect& box, const QPoint& transformedTo, ConnectionStyle style, bool arrowOutside /*= false*/) const
 {
-    switch(style) {
-    case Simple: {
-        int pX = utils::clamp(transformedTo.x(), box.left(), box.right());
-        int pY = utils::clamp(transformedTo.y(), box.top(), box.bottom());
-        drawArrow(painter, QPoint(pX, pY), transformedTo, arrowOutside);
-                 } break;
+	switch (style) {
+	case Simple: {
+		int pX = utils::clamp(transformedTo.x(), box.left(), box.right());
+		int pY = utils::clamp(transformedTo.y(), box.top(), box.bottom());
+		drawArrow(painter, QPoint(pX, pY), transformedTo, arrowOutside);
+	} break;
 
-    case Horizontal: {
-        QPoint transformedFrom(box.left(), box.top() + box.height() / 2);
-        QPoint p(transformedTo.x(), transformedFrom.y());
-        drawArrow(painter, transformedFrom, p, arrowOutside);
-        painter->drawLine(transformedTo, p);
-                     } break;
+	case Horizontal: {
+		QPoint transformedFrom(box.left(), box.top() + box.height() / 2);
+		QPoint p(transformedTo.x(), transformedFrom.y());
+		drawArrow(painter, transformedFrom, p, arrowOutside);
+		painter->drawLine(transformedTo, p);
+	} break;
 
-    case Vertical: {
-        QPoint transformedFrom(box.left() + box.width() / 2, box.top());
-        QPoint p(transformedFrom.x(), transformedTo.y());
-        drawArrow(painter, transformedFrom, p, arrowOutside);
-        painter->drawLine(p, transformedTo);
-                   } break;
+	case Vertical: {
+		QPoint transformedFrom(box.left() + box.width() / 2, box.top());
+		QPoint p(transformedFrom.x(), transformedTo.y());
+		drawArrow(painter, transformedFrom, p, arrowOutside);
+		painter->drawLine(p, transformedTo);
+	} break;
 
-    default:
-        UTILS_ASSERT(false);
-    }
+	default:
+		UTILS_ASSERT(false);
+	}
 }
 
-void NewChartLabel::drawArrow( QPainter* painter, const QPoint& transformedFrom, const QPoint& transformedTo, bool outside ) const
+void NewChartVerticalsConnection::drawArrow(QPainter* painter, const QPoint& transformedFrom, const QPoint& transformedTo, bool outside /*= false*/) const
 {
-    painter->drawLine(transformedFrom, transformedTo);
-    QPointF normal = (transformedTo- transformedFrom);
-    float length = sqrt(normal.x() * normal.x() + normal.y() * normal.y());
-    if (length < 0.0001f) {
-        return;
-    }
-    normal.setX(normal.x() / length);
-    normal.setY(normal.y() / length);
+	painter->drawLine(transformedFrom, transformedTo);
+	QPointF normal = (transformedTo - transformedFrom);
+	float length = sqrt(normal.x() * normal.x() + normal.y() * normal.y());
+	if (length < 0.0001f) {
+		return;
+	}
+	normal.setX(normal.x() / length);
+	normal.setY(normal.y() / length);
 
-    QPointF normalR(-normal.y(), normal.x());
-    QPointF base = outside ? (transformedTo + (7 * normal)) : (transformedTo - (7 * normal));
-    QPointF pL = base + normalR * 2;
-    QPointF pR = base - normalR * 2;
+	QPointF normalR(-normal.y(), normal.x());
+	QPointF base = outside ? (transformedTo + (7 * normal)) : (transformedTo - (7 * normal));
+	QPointF pL = base + normalR * 2;
+	QPointF pR = base - normalR * 2;
 
-    QPolygon triangle;
-    triangle.clear();
-    triangle << pL.toPoint();
-    triangle << transformedTo;
-    triangle << pR.toPoint();
+	QPolygon triangle;
+	triangle.clear();
+	triangle << pL.toPoint();
+	triangle << transformedTo;
+	triangle << pR.toPoint();
 
-    painter->drawPolygon(triangle);
+	painter->drawPolygon(triangle);
 }

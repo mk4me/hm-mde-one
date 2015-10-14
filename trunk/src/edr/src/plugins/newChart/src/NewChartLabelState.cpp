@@ -12,7 +12,9 @@ NewChartLabelState::NewChartLabelState(NewChartVisualizer* visualizer) :
 
 void NewChartLabelState::move( const QPoint& pos, const QwtPlotCurve* curve, NewChartLabel* label )
 {
-    label->setShift(pos - label->getPoint1Transformed(curve));
+	//label->setShift(pos - label->getPoint1Transformed(curve));
+	auto br = label->boundingRect();
+	label->setShift(pos - label->getPoint1Transformed(curve) - QPoint(br.width(), br.height()));
 }
 
 NewChartLabelState::LabelDataConstPtr NewChartLabelState::getLabel( const QPoint& pos, const QwtPlotCurve* curve )
@@ -83,7 +85,7 @@ void NewChartLabelState::draw( QPainter * painter)
 void NewChartLabelState::stateBegin()
 {
     canvas->setMouseTracking(true);
-    canvas->setCursor(Qt::ForbiddenCursor);
+	canvas->setCursor(Qt::ArrowCursor);
 }
 
 void NewChartLabelState::stateEnd()
@@ -91,9 +93,27 @@ void NewChartLabelState::stateEnd()
     //marker.detach();
 }
 
+void NewChartLabelState::removeLabel(LabelDataPtr data)
+{
+	if (data->dot1) {
+		data->dot1->detach();
+	}
+	if (data->dot2) {
+		data->dot2->detach();
+	}
+	if (data->label) {
+		data->label->detach();
+		data->label->getConnectionsItem()->detach();
+	}
+}
+
 void NewChartLabelState::removeSerieLabels( const INewChartSeriePrivate* serie )
 {
-    for (auto it = labels.begin(); it != labels.end(); ++it) {
+	std::for_each(labels.begin(), labels.end(), [&](LabelDataPtr& data)
+	{
+		removeLabel(data);
+	});
+    /*for (auto it = labels.begin(); it != labels.end(); ++it) {
         LabelDataPtr data = *it;
         if (data->serie == serie) {
             if (data->dot1) {
@@ -106,7 +126,7 @@ void NewChartLabelState::removeSerieLabels( const INewChartSeriePrivate* serie )
                 data->label->detach();
             }
         }
-    }
+    }*/
 }
 
 void NewChartLabelState::setVisible( const INewChartSeriePrivate* serie, bool visible )

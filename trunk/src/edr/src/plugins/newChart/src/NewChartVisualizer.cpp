@@ -123,13 +123,13 @@ QWidget* NewChartVisualizer::createWidget()
 
 
 	coreUI::CoreAction * hMarkerAction = new coreUI::CoreAction(tr("Tags"), QIcon(":/newChart/icons/vertical_tag.png"), tr("Horizontal Marker"), widget, coreUI::CoreTitleBar::Left);
-    statesMap[hMarkerAction] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Horizontal));
+	statesMap[hMarkerAction] = NewChartStatePtr(new NewChartVerticals(this, NewChartVerticalsConnection::Horizontal));
     connect(hMarkerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
 	widget->addAction(hMarkerAction);
 
 
 	coreUI::CoreAction * vMarkerAction = new coreUI::CoreAction(tr("Tags"), QIcon(":/newChart/icons/horizontal_tag.png"), tr("Vertical Marker"), widget, coreUI::CoreTitleBar::Left);
-    statesMap[vMarkerAction] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Vertical));
+	statesMap[vMarkerAction] = NewChartStatePtr(new NewChartVerticals(this, NewChartVerticalsConnection::Vertical));
     connect(vMarkerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
 	widget->addAction(vMarkerAction);
 

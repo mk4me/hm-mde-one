@@ -6,13 +6,14 @@
 
 static const double MIN_DIST = 20.0;
 
-NewChartVerticals::NewChartVerticals( NewChartVisualizer* visualizer, NewChartLabel::ConnectionStyle style ) : 
+NewChartVerticals::NewChartVerticals(NewChartVisualizer* visualizer, NewChartVerticalsConnection::ConnectionStyle style) :
     NewChartLabelState(visualizer),
     labelMarker(new NewChartLabel()),
     style(style)
 {
-    UTILS_ASSERT(style == NewChartLabel::Horizontal || style == NewChartLabel::Vertical);
+	UTILS_ASSERT(style == NewChartVerticalsConnection::Horizontal || style == NewChartVerticalsConnection::Vertical);
     labelMarker->attach(plot);
+	labelMarker->getConnectionsItem()->attach(plot);
     labelMarker->setVisible(false);
     marker.setLerpRatios(1.0f);
 }
@@ -27,6 +28,11 @@ bool NewChartVerticals::stateEventFilter( QObject *object, QEvent *event )
         QMouseEvent* mouseEvent = (QMouseEvent*)event;
         if (mouseEvent->button() == Qt::LeftButton) {
             currentLabel = getLabel(mouseEvent->pos());
+			if (currentLabel && currentLabel->label->isInsideClose(mouseEvent->pos())) {
+				removeLabel(utils::const_pointer_cast<LabelData>(currentLabel));
+				currentLabel = LabelDataConstPtr();
+				return true;
+			}
         } else {
             currentLabel = LabelDataConstPtr();
         }
@@ -61,8 +67,8 @@ bool NewChartVerticals::stateEventFilter( QObject *object, QEvent *event )
                 marker.setVisible(false);
             }
             if ( point1) {
-                QString serieName = (style == NewChartLabel::Horizontal) ? "t" : point1->first->asISerie()->getName().c_str(); 
-                double diff = (style == NewChartLabel::Horizontal) ? (cpd.get<1>().x() - point1->second.x()) : (cpd.get<1>().y() - point1->second.y());
+				QString serieName = (style == NewChartVerticalsConnection::Horizontal) ? "t" : point1->first->asISerie()->getName().c_str();
+				double diff = (style == NewChartVerticalsConnection::Horizontal) ? (cpd.get<1>().x() - point1->second.x()) : (cpd.get<1>().y() - point1->second.y());
                 labelMarker->setText(QString("%1%2: %3").arg(QChar(0x394)).arg(serieName).arg(diff));
                 labelMarker->connectDots(cpd.get<1>(), point1->second, style);
                 labelMarker->setVisible(true);
@@ -90,6 +96,7 @@ void NewChartVerticals::stateBegin()
 void NewChartVerticals::stateEnd()
 {
     labelMarker->detach();
+	labelMarker->getConnectionsItem()->detach();
     marker.detach();
 }
 
@@ -98,13 +105,14 @@ void NewChartVerticals::insertNewMarker(const QPointF& point1, const QPointF& po
     UTILS_ASSERT(currentSerie);
     NewChartDotPtr dot1(new NewChartDotFloating(point1, currentSerie));
     NewChartDotPtr dot2(new NewChartDotFloating(point2, currentSerie));
-    double delta = (style == NewChartLabel::Vertical) ? (point2.y() - point1.y()) : (point2.x() - point1.x());
-    QString serieName = (style == NewChartLabel::Horizontal) ? "t" : currentSerie->asISerie()->getName().c_str();
-    NewChartLabelPtr label(new NewChartLabel(QString("%1%2: %3").arg(QChar(0x394)).arg(serieName).arg(delta)));
+	double delta = (style == NewChartVerticalsConnection::Vertical) ? (point2.y() - point1.y()) : (point2.x() - point1.x());
+	QString serieName = (style == NewChartVerticalsConnection::Horizontal) ? "t" : currentSerie->asISerie()->getName().c_str();
+    NewChartLabelPtr label(new NewChartLabel( QString("%1%2: %3").arg(QChar(0x394)).arg(serieName).arg(delta)));
     label->setPen(QPen(color));
     dot1->attach(plot);
     dot2->attach(plot);
     label->attach(plot);
+	label->getConnectionsItem()->attach(plot);
     label->connectDots(dot2, dot1, style);
 
     LabelDataPtr data(new LabelData);
@@ -120,8 +128,8 @@ void NewChartVerticals::updateLabels()
     for (auto it = labels.begin(); it != labels.end(); ++it) {
         QPointF p1 = (*it)->dot1->getPosition();
         QPointF p2 = (*it)->dot2->getPosition();
-        double delta = (style == NewChartLabel::Vertical) ? (p2.y() - p1.y()) : (p2.x() - p1.x());
-        QString serieName = (style == NewChartLabel::Horizontal) ? "t" : (*it)->serie->asISerie()->getName().c_str();
+		double delta = (style == NewChartVerticalsConnection::Vertical) ? (p2.y() - p1.y()) : (p2.x() - p1.x());
+		QString serieName = (style == NewChartVerticalsConnection::Horizontal) ? "t" : (*it)->serie->asISerie()->getName().c_str();
         (*it)->label->setText(QString("%1%2: %3").arg(QChar(0x394)).arg(serieName).arg(delta));
     }
 }
