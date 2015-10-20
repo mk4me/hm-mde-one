@@ -60,21 +60,23 @@ NewChartLabelState::LabelDataConstPtr NewChartLabelState::getLabel( const NewCha
 NewChartLabelState::SeriePointDist NewChartLabelState::getClosestPoint(const QPoint& pos) const
 {
     double min = (std::numeric_limits<double>::max)();
-    const INewChartSeriePrivate* serie = nullptr;
+    const INewChartSeriePrivate* chosenSerie = nullptr;
     QPointF ret;
     auto series = visualizer->getSeries();
-    for (auto it = series.begin(); it != series.end(); ++it) {
+    for (auto serie : series) {
         double dist;
-        const QwtPlotCurve* c = (*it)->getCurve();
-        int pointIndex = c->closestPoint(pos, &dist);
-        if (dist < min) {
-            min = dist;
-            serie = *it;
-            ret = c->sample( pointIndex );
-        }
+		if (serie->isVisible()) {
+			const QwtPlotCurve* c = serie->getCurve();
+			int pointIndex = c->closestPoint(pos, &dist);
+			if (dist < min) {
+				min = dist;
+				chosenSerie = serie;
+				ret = c->sample( pointIndex );
+			}
+		}
     }
     
-    return boost::make_tuple(serie, ret, min);
+	return boost::make_tuple(chosenSerie, ret, min);
 }
 
 void NewChartLabelState::draw( QPainter * painter)
