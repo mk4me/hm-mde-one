@@ -2,7 +2,7 @@
 #include "IMUParser.h"
 #include "IMUDatParser.h"
 #include "IMUCFGParser.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/c3d/C3DCollections.h>
 
@@ -15,9 +15,9 @@ using namespace IMU;
 //    gyrWrapper = utils::ObjectWrapper::create<VectorChannelCollection>();
 //    //quatWrapper = utils::ObjectWrapper::create<kinematic::JointAngleChannel>();
 //
-//    core::Filesystem::Path path(source);
-//    core::Filesystem::Path dir = path.parent_path();
-//    //auto cfgFiles = core::Filesystem::listFiles(dir, false, ".cfg");
+//    utils::Filesystem::Path path(source);
+//    utils::Filesystem::Path dir = path.parent_path();
+//    //auto cfgFiles = utils::Filesystem::listFiles(dir, false, ".cfg");
 //    IMUConfigPtr config = utils::make_shared<IMUConfig>();
 //    if (cfgFiles.size() == 1) {
 //        config = IMUCFGParser::parse(cfgFiles[0].string());

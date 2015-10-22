@@ -9,7 +9,7 @@
 #ifndef HEADER_GUARD_CORE__PLUGINCOMMON_H__
 #define HEADER_GUARD_CORE__PLUGINCOMMON_H__
 
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <corelib/IApplication.h>
 #include <corelib/IPath.h>
 #include <loglib/ILog.h>
@@ -106,61 +106,61 @@ namespace plugin
 	}
 
     //! Pomocnica metoda upraszczająca odwołanie do katalogów.
-    inline const core::Filesystem::Path& getResourcesPath()
+    inline const utils::Filesystem::Path& getResourcesPath()
     {
         return getPaths()->getResourcesPath();
     }
 
     //! Pomocnica metoda upraszczająca odwołanie do katalogów.
-    inline const core::Filesystem::Path& getApplicationDataPath()
+    inline const utils::Filesystem::Path& getApplicationDataPath()
     {
         return getPaths()->getApplicationDataPath();
     }
 
 	//! Pomocnica metoda upraszczająca odwołanie do katalogów.
-    inline const core::Filesystem::Path& getUserApplicationDataPath()
+    inline const utils::Filesystem::Path& getUserApplicationDataPath()
     {
         return getPaths()->getUserApplicationDataPath();
     }
 
     //! Pomocnica metoda upraszczająca odwołanie do katalogów.
-    inline const core::Filesystem::Path& getUserDataPath()
+    inline const utils::Filesystem::Path& getUserDataPath()
     {
         return getPaths()->getUserDataPath();
     }
 
     //! \return Pomocnicza metoda do pobierania ścieżek.
-    inline core::Filesystem::Path getResourcePath(const core::Filesystem::Path& path)
+    inline utils::Filesystem::Path getResourcePath(const utils::Filesystem::Path& path)
     {
         return getResourcesPath()/path;
     }
 
     //! \return Pomocnicza metoda do pobierania ścieżek.
-    inline core::Filesystem::Path getApplicationDataPath(const core::Filesystem::Path& path)
+    inline utils::Filesystem::Path getApplicationDataPath(const utils::Filesystem::Path& path)
     {
         return getApplicationDataPath()/path;
     }
 
 	    //! \return Pomocnicza metoda do pobierania ścieżek.
-    inline core::Filesystem::Path getUserApplicationDataPath(const core::Filesystem::Path& path)
+    inline utils::Filesystem::Path getUserApplicationDataPath(const utils::Filesystem::Path& path)
     {
         return getUserApplicationDataPath()/path;
     }
 
     //! \return Pomocnicza metoda do pobierania ścieżek.
-    inline core::Filesystem::Path getUserDataPath(const core::Filesystem::Path& path)
+    inline utils::Filesystem::Path getUserDataPath(const utils::Filesystem::Path& path)
     {
         return getUserDataPath()/path;
     }
 
 	//! \return Pomocnicza metoda do pobierania ścieżek.
-	inline const core::Filesystem::Path & getPluginPath()
+	inline const utils::Filesystem::Path & getPluginPath()
 	{
 		return getPaths()->getPluginPath();
 	}
 
 	//! \return Pomocnicza metoda do pobierania ścieżek.
-	inline core::Filesystem::Path getPluginPath(const core::Filesystem::Path & path)
+	inline utils::Filesystem::Path getPluginPath(const utils::Filesystem::Path & path)
 	{
 		return getPluginPath()/path;
 	}

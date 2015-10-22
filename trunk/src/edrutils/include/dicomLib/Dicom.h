@@ -13,16 +13,16 @@
 #include <dcmtk/config/osconfig.h>
 #include <dcmtk/dcmdata/dcdatset.h>
 #include <dcmtk/dcmimgle/dcmimage.h>
-#include <utils/ObjectWrapper.h>
+#include <objectwrapperlib/ObjectWrapper.h>
 #include <QtGui/QPixmap>
-#include <plugins/dicomImporter/Export.h>
+//#include <plugins/dicomImporter/Export.h>
 #include "utils/PtrPolicyStd.h"
 #include "utils/ClonePolicies.h"
 
 namespace dicomImporter {
     DEFINE_SMART_POINTERS(DicomImage);
     DEFINE_SMART_POINTERS(DcmDataset);
-    PLUGIN_DICOM_EXPORT QPixmap convertToPixmap(DicomImagePtr image);
+    QPixmap convertToPixmap(DicomImagePtr image);
 }
 
 DEFINE_WRAPPER(DicomImage, utils::PtrPolicyStd, utils::ClonePolicyForbidden);

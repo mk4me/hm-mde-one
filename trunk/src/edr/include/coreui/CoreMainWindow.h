@@ -16,7 +16,7 @@
 #include <QtCore/QSettings>
 #include <QtWidgets/QMainWindow>
 #include <QtCore/QTimer>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <functional>
 
 class QSplashScreen;
@@ -57,7 +57,7 @@ namespace coreUI {
         //! Lista zasobów.
         std::vector<std::string> resourcesPaths;
         //! Lista skórek dla UI
-        std::vector<core::Filesystem::Path> applicationSkinsPaths;
+        std::vector<utils::Filesystem::Path> applicationSkinsPaths;
 		//! SplashScreenAplikacji
         QSplashScreen * splashScreen_;
 		//TODO
@@ -93,10 +93,10 @@ namespace coreUI {
 		bool init(core::IApplication * coreApplication);
 
 		//! \param path Ścieżka stylu
-		void setStyle(const core::Filesystem::Path& path);
+		void setStyle(const utils::Filesystem::Path& path);
 		//! \param path Ścieżka stylu
 		//! \return Czy udało się załadowac styl
-		bool trySetStyle(const core::Filesystem::Path& path);
+		bool trySetStyle(const utils::Filesystem::Path& path);
 		//! \param styleName Nazwa stylu
 		void setStyleByName(const std::string& styleName);
 		//! \param styleName Nazwa stylu
@@ -108,7 +108,7 @@ namespace coreUI {
 
 		virtual void showSplashScreenMessage(const QString & message);
 
-        const core::Filesystem::Path & getApplicationSkinsFilePath(int i);
+        const utils::Filesystem::Path & getApplicationSkinsFilePath(int i);
 
         int getApplicationSkinsFilePathCount();
 

@@ -13,7 +13,7 @@ class FileDataManager::FileTransaction : public IFileDataManager::ITransaction
 {
 private:
 
-	typedef std::map<Filesystem::Path, IFileManagerReader::Change> FileModyfications;
+	typedef std::map<utils::Filesystem::Path, IFileManagerReader::Change> FileModyfications;
 
 private:
 	IDataManager::TransactionPtr mdmTransaction;
@@ -104,7 +104,7 @@ public:
 
 	//! \param files Lista plik�w dla kt�rych zostan� utworzone parsery i z kt�rych wyci�gni�te dane
 	//! b�da dost�pne poprzez DataMangera LENIWA INICJALIZACJA
-	virtual void addFile(const Filesystem::Path & file)
+	virtual void addFile(const utils::Filesystem::Path & file)
 	{
 		verifyRollback();
 
@@ -113,7 +113,7 @@ public:
 			throw std::runtime_error("File transaction tried to add file already managed by manager");
 		}
 
-		if (!Filesystem::pathExists(file) || !Filesystem::isRegularFile(file)) {
+		if (!utils::Filesystem::pathExists(file) || !utils::Filesystem::isRegularFile(file)) {
 			rollback();
 			throw std::runtime_error("File transaction tried to add not existing or invalid file");
 		}
@@ -122,7 +122,7 @@ public:
 	}
 
 	//! \param files Lista plik�w kt�re zostan� usuni�te z aplikacji a wraz z nimi skojarzone parsery i dane
-	virtual void removeFile(const Filesystem::Path & file)
+	virtual void removeFile(const utils::Filesystem::Path & file)
 	{
 		verifyRollback();
 
@@ -134,7 +134,7 @@ public:
 		rawRemoveFile(file);
 	}
 
-	virtual void reloadFile(const Filesystem::Path & file,
+	virtual void reloadFile(const utils::Filesystem::Path & file,
 							const bool complete)
 	{
 		verifyRollback();
@@ -148,9 +148,9 @@ public:
 	}
 
 
-	virtual const bool tryAddFile(const Filesystem::Path & file)
+	virtual const bool tryAddFile(const utils::Filesystem::Path & file)
 	{
-		if (transactionRolledback == true || fdm->rawIsManaged(file) == true || !Filesystem::pathExists(file) || !Filesystem::isRegularFile(file)) {
+		if (transactionRolledback == true || fdm->rawIsManaged(file) == true || !utils::Filesystem::pathExists(file) || !utils::Filesystem::isRegularFile(file)) {
 			return false;
 		}
 
@@ -159,7 +159,7 @@ public:
 		return true;
 	}
 
-	virtual const bool tryRemoveFile(const Filesystem::Path & file)
+	virtual const bool tryRemoveFile(const utils::Filesystem::Path & file)
 	{
 		if (transactionRolledback == true || fdm->rawIsManaged(file) == false) {
 			return false;
@@ -170,7 +170,7 @@ public:
 		return true;
 	}
 
-	virtual const bool tryReloadFile(const Filesystem::Path & file,
+	virtual const bool tryReloadFile(const utils::Filesystem::Path & file,
 									 const bool complete)
 	{
 		if (transactionRolledback == true || fdm->rawIsManaged(file) == false) {
@@ -182,35 +182,35 @@ public:
 		return true;
 	}
 
-	virtual void getFiles(Filesystem::FilesSet & files) const
+	virtual void getFiles(utils::Filesystem::FilesSet & files) const
 	{
 		verifyRollback();
 
 		fdm->rawGetFiles(files);
 	}
 
-	virtual const bool isManaged(const Filesystem::Path & file) const
+	virtual const bool isManaged(const utils::Filesystem::Path & file) const
 	{
 		verifyRollback();
 
 		return fdm->rawIsManaged(file);
 	}
 
-	virtual const bool isLoadedCompleately(const Filesystem::Path & file) const
+	virtual const bool isLoadedCompleately(const utils::Filesystem::Path & file) const
 	{
 		verifyRollback();
 
 		return fdm->rawIsLoadedCompleately(file);
 	}
 
-	virtual void getObjects(const Filesystem::Path & file, ConstVariantsList & objects) const
+	virtual void getObjects(const utils::Filesystem::Path & file, ConstVariantsList & objects) const
 	{
 		verifyRollback();
 
 		fdm->rawGetObjects(file, objects);
 	}
 
-	virtual void getObjects(const Filesystem::Path & file, VariantsCollection & objects) const
+	virtual void getObjects(const utils::Filesystem::Path & file, VariantsCollection & objects) const
 	{
 		verifyRollback();
 
@@ -226,7 +226,7 @@ private:
 		}
 	}
 
-	void rawAddFile(const Filesystem::Path & file)
+	void rawAddFile(const utils::Filesystem::Path & file)
 	{
 		//dodajemy dane do dm
 		fdm->rawAddFile(file, mdmTransaction);
@@ -237,7 +237,7 @@ private:
 		modyfications.insert(FileModyfications::value_type(file, mod));
 	}
 
-	void rawRemoveFile(const Filesystem::Path & file)
+	void rawRemoveFile(const utils::Filesystem::Path & file)
 	{
 		IFileManagerReader::Change mod;
 		mod.modyfication = IFileManagerReader::REMOVE_FILE;
@@ -248,7 +248,7 @@ private:
 		modyfications.insert(FileModyfications::value_type(file, mod));
 	}
 
-	void rawReloadFile(const Filesystem::Path & file, const bool complete)
+	void rawReloadFile(const utils::Filesystem::Path & file, const bool complete)
 	{
 		//sprawdzam czy jest co robic
 		if (complete == false && fdm->rawIsLoadedCompleately(file) == true) {
@@ -288,27 +288,27 @@ public:
 
 public:
 
-	virtual void getFiles(Filesystem::FilesSet & files) const
+	virtual void getFiles(utils::Filesystem::FilesSet & files) const
 	{
 		fdm->rawGetFiles(files);
 	}
 
-	virtual const bool isManaged(const Filesystem::Path & file) const
+	virtual const bool isManaged(const utils::Filesystem::Path & file) const
 	{
 		return fdm->rawIsManaged(file);
 	}
 
-	virtual const bool isLoadedCompleately(const Filesystem::Path & file) const
+	virtual const bool isLoadedCompleately(const utils::Filesystem::Path & file) const
 	{
 		return fdm->rawIsLoadedCompleately(file);
 	}
 
-	virtual void getObjects(const Filesystem::Path & file, ConstVariantsList & objects) const
+	virtual void getObjects(const utils::Filesystem::Path & file, ConstVariantsList & objects) const
 	{
 		fdm->rawGetObjects(file, objects);
 	}
 
-	virtual void getObjects(const Filesystem::Path & file, VariantsCollection & objects) const
+	virtual void getObjects(const utils::Filesystem::Path & file, VariantsCollection & objects) const
 	{
 		fdm->rawGetObjects(file, objects);
 	}
@@ -326,7 +326,7 @@ private:
 	//! Prawdziwy wewn�trzny parser.
 	const plugin::IParserPtr parser;
 	//! Opis źródła danych
-	const Filesystem::Path path;
+	const utils::Filesystem::Path path;
 	//! Czy przeparsowano plik?
 	bool parsed;
 	//! Czy u�yto parsera do przeparsowania?
@@ -340,7 +340,7 @@ public:
 	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
 	//!     czas �ycia.
 	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
-	FParser(plugin::IParser* parser, const Filesystem::Path & path) :
+	FParser(plugin::IParser* parser, const utils::Filesystem::Path & path) :
 		parser(parser), parsed(false), used(false), path(path)
 	{
 		UTILS_ASSERT(parser);
@@ -377,7 +377,7 @@ public:
 		parsed = false;
 	}
 
-	const Filesystem::Path & getPath() const
+	const utils::Filesystem::Path & getPath() const
 	{
 		return path;
 	}
@@ -392,7 +392,7 @@ public:
 	{
 		UTILS_ASSERT(!isUsed());
 
-		if (core::Filesystem::pathExists(path) == false) {
+		if (utils::Filesystem::pathExists(path) == false) {
 			throw std::runtime_error("File not exist or not available to read");
 		}
 
@@ -433,7 +433,7 @@ public:
 class FileParser : public FParser
 {
 public:
-	FileParser(plugin::IParser* parser, const Filesystem::Path & path) : FParser(parser, path), fileParser(nullptr)
+	FileParser(plugin::IParser* parser, const utils::Filesystem::Path & path) : FParser(parser, path), fileParser(nullptr)
 	{
 
 	}
@@ -537,7 +537,7 @@ FileDataManager::~FileDataManager()
 	}
 }
 
-void FileDataManager::rawRemoveFile(const Filesystem::Path & file, const IDataManager::TransactionPtr & memTransaction)
+void FileDataManager::rawRemoveFile(const utils::Filesystem::Path & file, const IDataManager::TransactionPtr & memTransaction)
 {
 	bool ok = true;
 	VariantsList toRemove;
@@ -563,7 +563,7 @@ void FileDataManager::rawRemoveFile(const Filesystem::Path & file, const IDataMa
 	}
 }
 
-void FileDataManager::rawAddFile(const Filesystem::Path & file, const IDataManager::TransactionPtr & memTransaction)
+void FileDataManager::rawAddFile(const utils::Filesystem::Path & file, const IDataManager::TransactionPtr & memTransaction)
 {
 	IParserManagerReader::ParserPrototypes sourceParsers;
 	getParserManager()->sourceParsers(file.string(), sourceParsers);
@@ -620,7 +620,7 @@ void FileDataManager::rawAddFile(const Filesystem::Path & file, const IDataManag
 	}
 }
 
-void FileDataManager::rawReloadFile(const Filesystem::Path & file, const bool compleately, const IDataManager::TransactionPtr & memTransaction)
+void FileDataManager::rawReloadFile(const utils::Filesystem::Path & file, const bool compleately, const IDataManager::TransactionPtr & memTransaction)
 {
 	if (compleately == true) {
 
@@ -662,24 +662,24 @@ void FileDataManager::rawReloadFile(const Filesystem::Path & file, const bool co
 	}
 }
 
-const bool FileDataManager::rawIsManaged(const Filesystem::Path & file) const
+const bool FileDataManager::rawIsManaged(const utils::Filesystem::Path & file) const
 {
 	return objectsByFiles.find(file) != objectsByFiles.end();
 }
 
-const bool FileDataManager::rawIsLoadedCompleately(const Filesystem::Path & file) const
+const bool FileDataManager::rawIsLoadedCompleately(const utils::Filesystem::Path & file) const
 {
 	return missingObjects.find(file) == missingObjects.end();
 }
 
-void FileDataManager::rawGetFiles(Filesystem::FilesSet & files) const
+void FileDataManager::rawGetFiles(utils::Filesystem::FilesSet & files) const
 {
 	for (const auto & obf : objectsByFiles) {
 		files.insert(obf.first);
 	}
 }
 
-void FileDataManager::rawGetObjects(const Filesystem::Path & file, ConstVariantsList & objects) const
+void FileDataManager::rawGetObjects(const utils::Filesystem::Path & file, ConstVariantsList & objects) const
 {
 	auto it = objectsByFiles.find(file);
 	if (it != objectsByFiles.end()) {
@@ -689,7 +689,7 @@ void FileDataManager::rawGetObjects(const Filesystem::Path & file, ConstVariants
 	}
 }
 
-void FileDataManager::rawGetObjects(const Filesystem::Path & file, VariantsList & objects)
+void FileDataManager::rawGetObjects(const utils::Filesystem::Path & file, VariantsList & objects)
 {
 	auto it = objectsByFiles.find(file);
 	if (it != objectsByFiles.end()) {
@@ -703,7 +703,7 @@ void FileDataManager::rawGetObjects(const Filesystem::Path & file, VariantsList 
 	}
 }
 
-void FileDataManager::rawGetObjects(const Filesystem::Path & file, VariantsCollection & objects) const
+void FileDataManager::rawGetObjects(const utils::Filesystem::Path & file, VariantsCollection & objects) const
 {
 	auto it = objectsByFiles.find(file);
 
@@ -733,7 +733,7 @@ void FileDataManager::updateObservers(const ChangeList & changes)
 	}
 }
 
-void FileDataManager::removeFile(const Filesystem::Path & file)
+void FileDataManager::removeFile(const utils::Filesystem::Path & file)
 {
 	ScopedLock lock(sync);
 
@@ -755,7 +755,7 @@ void FileDataManager::removeFile(const Filesystem::Path & file)
 	updateObservers(changes);
 }
 
-void FileDataManager::addFile(const Filesystem::Path & file)
+void FileDataManager::addFile(const utils::Filesystem::Path & file)
 {
 	ScopedLock lock(sync);
 
@@ -767,7 +767,7 @@ void FileDataManager::addFile(const Filesystem::Path & file)
 		throw std::runtime_error("Source not accepted by any parser");
 	}
 
-	if (!Filesystem::pathExists(file) || !Filesystem::isRegularFile(file)) {
+	if (!utils::Filesystem::pathExists(file) || !utils::Filesystem::isRegularFile(file)) {
 		throw std::runtime_error("Source not exists, is not a file or is not accessible");
 	}
 
@@ -786,7 +786,7 @@ void FileDataManager::addFile(const Filesystem::Path & file)
 	updateObservers(changes);
 }
 
-void FileDataManager::reloadFile(const Filesystem::Path & file, const bool complete)
+void FileDataManager::reloadFile(const utils::Filesystem::Path & file, const bool complete)
 {
 	ScopedLock lock(sync);
 
@@ -819,7 +819,7 @@ void FileDataManager::reloadFile(const Filesystem::Path & file, const bool compl
 	updateObservers(changes);
 }
 
-const bool FileDataManager::tryAddFile(const core::Filesystem::Path & file)
+const bool FileDataManager::tryAddFile(const utils::Filesystem::Path & file)
 {
 	bool ret = true;
 	try {
@@ -832,7 +832,7 @@ const bool FileDataManager::tryAddFile(const core::Filesystem::Path & file)
 	return ret;
 }
 
-const bool FileDataManager::tryRemoveFile(const core::Filesystem::Path & file)
+const bool FileDataManager::tryRemoveFile(const utils::Filesystem::Path & file)
 {
 	bool ret = true;
 	try {
@@ -845,7 +845,7 @@ const bool FileDataManager::tryRemoveFile(const core::Filesystem::Path & file)
 	return ret;
 }
 
-const bool FileDataManager::tryReloadFile(const core::Filesystem::Path & file,
+const bool FileDataManager::tryReloadFile(const utils::Filesystem::Path & file,
 										  const bool complete)
 {
 	bool ret = true;
@@ -876,7 +876,7 @@ void FileDataManager::observe(const IDataManagerReader::ChangeList & changes)
 		return;
 	}
 
-	std::set<core::Filesystem::Path> pathsToCheck;
+	std::set<utils::Filesystem::Path> pathsToCheck;
 	for (auto it = changes.begin(); it != changes.end(); ++it) {
 		if ((*it).modyfication == IDataManagerReader::REMOVE_OBJECT &&
 			(*it).previousValue != nullptr &&
@@ -944,7 +944,7 @@ void FileDataManager::removeObserver(const ObserverPtr & fileWatcher)
 	observers.erase(it);
 }
 
-void FileDataManager::getFiles(Filesystem::FilesList & files) const
+void FileDataManager::getFiles(utils::Filesystem::FilesList & files) const
 {
 	ScopedLock lock(sync);
 	for (const auto & obf : objectsByFiles) {
@@ -952,31 +952,31 @@ void FileDataManager::getFiles(Filesystem::FilesList & files) const
 	}
 }
 
-const bool FileDataManager::isManaged(const Filesystem::Path & file) const
+const bool FileDataManager::isManaged(const utils::Filesystem::Path & file) const
 {
 	ScopedLock lock(sync);
 	return rawIsManaged(file);
 }
 
-const bool FileDataManager::isLoadedCompleately(const Filesystem::Path & file) const
+const bool FileDataManager::isLoadedCompleately(const utils::Filesystem::Path & file) const
 {
 	ScopedLock lock(sync);
 	return rawIsLoadedCompleately(file);
 }
 
-void FileDataManager::getObjects(const Filesystem::Path & file, ConstVariantsList & objects) const
+void FileDataManager::getObjects(const utils::Filesystem::Path & file, ConstVariantsList & objects) const
 {
 	ScopedLock lock(sync);
 	rawGetObjects(file, objects);
 }
 
-void FileDataManager::getObjects(const Filesystem::Path & file, VariantsCollection & objects) const
+void FileDataManager::getObjects(const utils::Filesystem::Path & file, VariantsCollection & objects) const
 {
 	ScopedLock lock(sync);
 	rawGetObjects(file, objects);
 }
 
-void core::FileDataManager::tryRemoveUnusedFile(const core::Filesystem::Path & file,
+void core::FileDataManager::tryRemoveUnusedFile(const utils::Filesystem::Path & file,
 												ChangeList & changes)
 {
 	auto it = objectsByFiles.find(file);

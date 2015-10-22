@@ -154,12 +154,12 @@ namespace IMU
 
 		hmdbCommunication::IHMDBShallowCopyContextPtr selectUploadContext() const;
 
-		void uploadSession(const core::Filesystem::Path & configuration,
-			const core::Filesystem::FilesList & recordings);
+		void uploadSession(const utils::Filesystem::Path & configuration,
+			const utils::Filesystem::FilesList & recordings);
 
-		virtual void loadRecordedData(const core::Filesystem::Path & asfFile,
-			const core::Filesystem::Path & amcFile,
-			const core::Filesystem::Path & configFile) override;
+		virtual void loadRecordedData(const utils::Filesystem::Path & asfFile,
+			const utils::Filesystem::Path & amcFile,
+			const utils::Filesystem::Path & configFile) override;
 
 	private:
 

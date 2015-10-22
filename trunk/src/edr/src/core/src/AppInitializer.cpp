@@ -66,7 +66,7 @@ public:
 
 						CORE_LOG_INFO("Unused translation files:\n" << files);
 
-						Filesystem::PathsList().swap(translations);
+						utils::Filesystem::PathsList().swap(translations);
 					}
 
 					if (!mainWindow->init(plugin::__coreApplication)) {
@@ -110,7 +110,7 @@ public:
 	}
 
 private:
-	Filesystem::PathsList translations;
+	utils::Filesystem::PathsList translations;
 	utils::shared_ptr<Application> coreApplication;
 	MainViewApplication mainViewApplication;
 	int initUIContextRes;

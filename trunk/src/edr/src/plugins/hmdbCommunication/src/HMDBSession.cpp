@@ -17,9 +17,9 @@ const WSDLServiceCreator HMDBSession::serviceCreator(
 	utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 	const std::string & user,
 	const std::string & password,
-	const core::Filesystem::Path & CAPath,
+	const utils::Filesystem::Path & CAPath,
 	const networkUtils::SSLHostVerification hostVerification,
-	const core::Filesystem::Path & schemaPath)
+	const utils::Filesystem::Path & schemaPath)
 {
 	if (CAPath.empty() == false){
 		return std::bind(&HMDBService::createSecureWSDL, executor, url, user, password, CAPath, hostVerification, schemaPath);
@@ -30,9 +30,9 @@ const WSDLServiceCreator HMDBSession::serviceCreator(
 
 const WSDLServiceCreator HMDBSession::systemServiceCreator(
 	utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
-	const core::Filesystem::Path & CAPath,
+	const utils::Filesystem::Path & CAPath,
 	const networkUtils::SSLHostVerification hostVerification,
-	const core::Filesystem::Path & schemaPath)
+	const utils::Filesystem::Path & schemaPath)
 {
 	return serviceCreator(executor, url, "hmdbServiceUser", "4accountCreation", CAPath, hostVerification);
 }
@@ -46,7 +46,7 @@ HMDBSession::HMDBSession(utils::shared_ptr<CURLFTPManager> ftpManager,
 	const std::string & medicalUrl,
 	const std::string & motionFtp,
 	const std::string & medicalFtp,
-	const core::Filesystem::Path & CAPath,
+	const utils::Filesystem::Path & CAPath,
 	const networkUtils::SSLHostVerification hostVerification)
 	: user_(user), motionUrl_(motionUrl),
 	medicalUrl_(medicalUrl), motionFtpUrl_(motionFtp),

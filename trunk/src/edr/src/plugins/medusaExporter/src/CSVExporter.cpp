@@ -33,13 +33,13 @@ dicom::ILayerItemConstPtr tryGetAnnotation(const std::vector<dicom::ILayerItemCo
     return dicom::ILayerItemConstPtr();
 }
 
-void medusaExporter::CSVExporter::exportAnnotations(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const
+void medusaExporter::CSVExporter::exportAnnotations(const utils::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const
 {
     exportMeta(path, data, config);
     exportData(path, data, config);
 }
 
-void medusaExporter::CSVExporter::exportMeta(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const
+void medusaExporter::CSVExporter::exportMeta(const utils::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const
 {
     std::string outFile = (path / "meta.csv").string();
     ofstream file;
@@ -111,7 +111,7 @@ int getGraphicsLayersCount(const std::vector<dicom::ILayerItemConstPtr>& layers)
     return counter;
 }
 
-void medusaExporter::CSVExporter::exportData(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const
+void medusaExporter::CSVExporter::exportData(const utils::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const
 {
     std::string outFile = (path / "data.csv").string();
     ofstream file;

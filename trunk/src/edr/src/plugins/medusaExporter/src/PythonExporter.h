@@ -18,7 +18,7 @@ namespace medusaExporter {
 	public:
 		virtual ~PythonExporter() {}
 
-		virtual void exportAnnotations(const core::Filesystem::Path& path, const AnnotationData& data) const;
+		virtual void exportAnnotations(const utils::Filesystem::Path& path, const AnnotationData& data) const;
 
 	};
 	DEFINE_SMART_POINTERS(PythonExporter);

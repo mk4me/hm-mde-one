@@ -2,25 +2,24 @@
 #include "DicomImporterPCH.h"
 #include "QtCore/QDateTime"
 
-#include "DicomImporter.h"
+#include "dicomLib/DicomImporter.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
-#include "DicomImporterSource.h"
-#include <corelib/Filesystem.h>
-#include <corelib/HierarchyItem.h>
-#include <corelib/HierarchyDataItem.h>
-#include "DicomImporterSourceWidget.h"
+//#include "dicomLib/DicomImporterSource.h"
+#include <utils/Filesystem.h>
+//#include <corelib/HierarchyItem.h>
+//#include <corelib/HierarchyDataItem.h>
+//#include "DicomImporterSourceWidget.h"
 #include "dcmtk/dcmdata/dcdicdir.h"
 #include "dcmtk/dcmdata/dcdirrec.h"
 #include "dcmtk/dcmdata/dcdeftag.h"
-#include <corelib/HierarchyHelper.h>
-#include <plugins/dicomImporter/Dicom.h>
+//#include <corelib/HierarchyHelper.h>
+#include <dicomLib/Dicom.h>
 //#include <plugins/dicomImporter/ILayeredImage.h>
 
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/format.hpp>
-#include "DicomParser.h"
 
 
 
@@ -38,10 +37,10 @@ void DicomImporter::handleFileRecord( DcmDirectoryRecord * fileRecord, internalD
             fileRecord->findAndGetOFString(DCM_ReferencedSOPInstanceUIDInFile, uidImagen);
             fileRecord->findAndGetOFString(DCM_InstanceNumber, instanceNumber);
 
-            core::Filesystem::Path currentPath(basePath);
-            core::Filesystem::Path suffix(tmpString.c_str());
+            utils::Filesystem::Path currentPath(basePath);
+            utils::Filesystem::Path suffix(tmpString.c_str());
             currentPath /= suffix;
-            if (core::Filesystem::pathExists(currentPath)) {
+            if (utils::Filesystem::pathExists(currentPath)) {
                 image->originFilePath = suffix.string();
             } 
         }
@@ -126,12 +125,12 @@ void DicomImporter::handlePatientRecord( DcmDirectoryRecord * patientRecord, int
 
 }
 
-dicomImporter::DicomInternalStructPtr DicomImporter::import( const core::Filesystem::Path& from )
+dicomImporter::DicomInternalStructPtr DicomImporter::import( const utils::Filesystem::Path& from )
 {
     DicomInternalStructPtr internalStruct = boost::make_shared<DicomInternalStruct>();
 
-    core::Filesystem::Path dirfile = from / "DICOMDIR";
-    if (core::Filesystem::pathExists(dirfile)) {
+    utils::Filesystem::Path dirfile = from / "DICOMDIR";
+    if (utils::Filesystem::pathExists(dirfile)) {
         DcmDicomDir dicomdir(dirfile.string().c_str());
         DcmDirectoryRecord* root = &(dicomdir.getRootRecord());
 
@@ -153,12 +152,12 @@ dicomImporter::DicomInternalStructPtr DicomImporter::import( const core::Filesys
     return internalStruct;
 }
 
-void dicomImporter::DicomImporter::convertImages( DicomInternalStructPtr inter, const core::Filesystem::Path& from, const core::Filesystem::Path& to )
+void dicomImporter::DicomImporter::convertImages( DicomInternalStructPtr inter, const utils::Filesystem::Path& from, const utils::Filesystem::Path& to )
 {
     for (auto itPatient = inter->patients.begin(); itPatient != inter->patients.end(); ++itPatient) {
         for (auto itSession = (*itPatient)->sessions.begin(); itSession != (*itPatient)->sessions.end(); ++itSession) {
             std::string sessionDir = (*itSession)->getOutputDirectory();
-            core::Filesystem::createDirectory(to / sessionDir);
+            utils::Filesystem::createDirectory(to / sessionDir);
             int trialImageNo = 1;
             for (auto itSerie = (*itSession)->series.begin(); itSerie != (*itSession)->series.end(); ++itSerie) {
                 internalData::SeriePtr serie = *itSerie;
@@ -180,31 +179,35 @@ void dicomImporter::DicomImporter::convertImages( DicomInternalStructPtr inter, 
     }
 }
 
-void dicomImporter::DicomImporter::convertImage( internalData::ImagePtr inter, const core::Filesystem::Path& from, const core::Filesystem::Path& to, const std::string& filenameBase )
+void dicomImporter::DicomImporter::convertImage( internalData::ImagePtr inter, const utils::Filesystem::Path& from, const utils::Filesystem::Path& to, const std::string& filenameBase )
 {
-    core::Filesystem::Path origin = from / inter->originFilePath;
+    utils::Filesystem::Path origin = from / inter->originFilePath;
 	
-    if (core::Filesystem::pathExists(origin)) {
-        DicomParser parser;
-        parser.parse(origin.string());
-		auto object = core::Variant::create<DicomImage>();
-        parser.getObject(*object, 0);
-        //utils::ObjectWrapperPtr wrapper = object->get();
-		DicomImagePtr image = object->get();
-		QPixmap pixmap = convertToPixmap(image);
-		if (pixmap.isNull()) {
-			image->writeBMP("temp.bmp");
-			pixmap = QPixmap("temp.bmp");
-		}
+    if (utils::Filesystem::pathExists(origin)) {
+  //      DicomParser parser;
+  //      parser.parse(origin.string());
+		//auto object = core::Variant::create<DicomImage>();
+  //      parser.getObject(*object, 0);
+  //      //utils::ObjectWrapperPtr wrapper = object->get();
+		DicomImagePtr di = utils::make_shared<DicomImage>(origin.string().c_str());//dfile, xfer, opt_compatibilityMode, opt_frame - 1, opt_frameCount);
+		if (di && di->getStatus() == EIS_Normal) {
+			di->processNextFrames();
+			auto count = di->getFrameCount();
+			QPixmap pixmap = convertToPixmap(di);
+			if (pixmap.isNull()) {
+				di->writeBMP("temp.bmp");
+				pixmap = QPixmap("temp.bmp");
+			}
 
-        core::Filesystem::Path outfile = to / (filenameBase + ".png");
+			utils::Filesystem::Path outfile = to / (filenameBase + ".png");
     
-        pixmap.save(outfile.string().c_str());
+			pixmap.save(outfile.string().c_str());
 
-        inter->imageFile = filenameBase + ".png";
-        inter->adnotationsFile = filenameBase + ".xml";
-		inter->isPowerDoppler = testPowerDoppler(pixmap);
-        refresh(filenameBase);
+			inter->imageFile = filenameBase + ".png";
+			inter->adnotationsFile = filenameBase + ".xml";
+			inter->isPowerDoppler = testPowerDoppler(pixmap);
+			refresh(filenameBase);
+		}
     }
 }
 
@@ -275,7 +278,7 @@ bool dicomImporter::DicomImporter::testPowerDoppler( const QPixmap &pixmap )
     return false;
 }
 
-dicomImporter::DicomInternalStructPtr dicomImporter::DicomImporter::importRaw(const core::Filesystem::Path& from)
+dicomImporter::DicomInternalStructPtr dicomImporter::DicomImporter::importRaw(const utils::Filesystem::Path& from)
 {
 	internalData::PatientPtr patient = boost::make_shared<internalData::Patient>();
 	QDateTime current = QDateTime::currentDateTime();
@@ -288,7 +291,7 @@ dicomImporter::DicomInternalStructPtr dicomImporter::DicomImporter::importRaw(co
 	auto serie = boost::make_shared<internalData::Serie>();
 	serie->serieDate = date;
 	serie->serieTime = time;
-	auto files = core::Filesystem::listFiles(from, true, ".dcm");
+	auto files = utils::Filesystem::listFiles(from, true, ".dcm");
 	for (auto& path : files) {
 		auto image = boost::make_shared<internalData::Image>();
 		image->originFilePath = path.filename().string();
@@ -303,9 +306,9 @@ dicomImporter::DicomInternalStructPtr dicomImporter::DicomImporter::importRaw(co
 	return internalStruct;
 }
 
-void DicomSaver::save( const core::Filesystem::Path& to, DicomInternalStructPtr inter )
+void DicomSaver::save( const utils::Filesystem::Path& to, DicomInternalStructPtr inter )
 {
-    core::Filesystem::Path filename;
+    utils::Filesystem::Path filename;
     if (inter->isSingle()) {
         std::string sessionName = inter->getSingleSessionOutputDir();
         filename = to / sessionName / (sessionName + ".xml");
@@ -323,7 +326,7 @@ void DicomSaver::save( const core::Filesystem::Path& to, DicomInternalStructPtr 
     }
 }
 
-dicomImporter::DicomInternalStructPtr dicomImporter::DicomLoader::load( const core::Filesystem::Path& from )
+dicomImporter::DicomInternalStructPtr dicomImporter::DicomLoader::load( const utils::Filesystem::Path& from )
 {
     DicomInternalStructPtr inter = boost::make_shared<DicomInternalStruct>();
     std::ifstream ifs(from.c_str());

@@ -9,7 +9,7 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__IHMDBSERVICE_H__
 
 #include <string>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <networkUtils/Types.h>
 #include <networkUtils/IWSDLService.h>
 #include <plugins/hmdbCommunication/IHMDBSession.h>
@@ -38,7 +38,7 @@ namespace hmdbCommunication
 			const std::string & password,
 			const std::string & motionDataUrl,
 			const std::string & medicalDataUrl,
-			const core::Filesystem::Path & CAPath = core::Filesystem::Path(),
+			const utils::Filesystem::Path & CAPath = utils::Filesystem::Path(),
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone) = 0;
 
 		//! \param motion Czy sesja tylko dla motion? Jeœli false to tylko medical
@@ -55,7 +55,7 @@ namespace hmdbCommunication
 			const std::string & user,
 			const std::string & password,
 			const std::string & dataUrl,			
-			const core::Filesystem::Path & CAPath = core::Filesystem::Path(),
+			const utils::Filesystem::Path & CAPath = utils::Filesystem::Path(),
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone) = 0;
 		
 		//! \param url Adres us³ugi
@@ -69,9 +69,9 @@ namespace hmdbCommunication
 			const std::string & url,
 			const std::string & user,
 			const std::string & password,
-			const core::Filesystem::Path & CAPath = core::Filesystem::Path(),
+			const utils::Filesystem::Path & CAPath = utils::Filesystem::Path(),
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone,
-			const core::Filesystem::Path & schemaPath = core::Filesystem::Path()) = 0;
+			const utils::Filesystem::Path & schemaPath = utils::Filesystem::Path()) = 0;
 
 		//! \param url Adres us³ugi systemowej
 		//! \param caPath Œcie¿ka certyfikatu uwierzytelniaj¹cego us³uge
@@ -80,9 +80,9 @@ namespace hmdbCommunication
 		//! \return Serwis WSDL obs³uguj¹cy dan¹ us³ugê systemow¹
 		virtual const networkUtils::IWSDLServicePtr createHMDBSystemService(
 			const std::string & url,
-			const core::Filesystem::Path & CAPath = core::Filesystem::Path(),
+			const utils::Filesystem::Path & CAPath = utils::Filesystem::Path(),
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone,
-			const core::Filesystem::Path & schemaPath = core::Filesystem::Path()) = 0;
+			const utils::Filesystem::Path & schemaPath = utils::Filesystem::Path()) = 0;
 
 		//! \param url Adres serwera do pingowania
 		//! \param timeout Maksymalny czas oczekiwania [ms]
@@ -90,7 +90,7 @@ namespace hmdbCommunication
 		//! \return Czy serwer odpowiedzia³
 		virtual const bool serverOnline(const std::string & url,
 			const unsigned int timeout = 250,
-			const core::Filesystem::Path & caPath = core::Filesystem::Path()) const = 0;
+			const utils::Filesystem::Path & caPath = utils::Filesystem::Path()) const = 0;
 
 		//! \param session Sesja us³ug bazy danych ruchu któr¹ chcemy obs³ugiwaæ
 		virtual void attach(IHMDBSessionPtr session) = 0;

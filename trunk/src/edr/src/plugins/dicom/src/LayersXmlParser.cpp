@@ -1,7 +1,7 @@
 #include "DicomPCH.h"
 #include "LayersXmlParser.h"
 #include "LayeredImage.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <plugins/dicom/Dicom.h>
 #include "DicomService.h"
 #include "DicomLoader.h"

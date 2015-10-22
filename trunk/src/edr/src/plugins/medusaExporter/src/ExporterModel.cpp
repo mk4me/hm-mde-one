@@ -23,7 +23,7 @@
 
 
 using namespace medusaExporter;
-typedef core::Filesystem fs;
+typedef utils::Filesystem fs;
 
 // ponizsze dwie funkcje pochodz� z QuaZip, szkoda, ze byly private
 
@@ -130,8 +130,8 @@ void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFun
 {
 	auto icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
 	if (icomm) {
-		core::Filesystem::Path dir(path.toStdString());
-		if (core::Filesystem::isDirectory(dir)) {
+		utils::Filesystem::Path dir(path.toStdString());
+		if (utils::Filesystem::isDirectory(dir)) {
 			int count = icomm->shallowContextsCount();
 			if (count == 0 || count > 1) {
 				throw loglib::runtime_error("Only one user can be logged");
@@ -164,8 +164,8 @@ void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFun
 						}
 						catch (...){
 							try{
-								if (core::Filesystem::pathExists(filePath) == true){
-									core::Filesystem::deleteFile(filePath);
+								if (utils::Filesystem::pathExists(filePath) == true){
+									utils::Filesystem::deleteFile(filePath);
 								}
 							}
 							catch (...){
@@ -203,7 +203,7 @@ void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFun
 	
 }
 
-void medusaExporter::ExporterModel::pack(const QString& dirPath, const QString& outFile, std::function<bool(const core::Filesystem::Path&)> filter, CallbackFunction fun)
+void medusaExporter::ExporterModel::pack(const QString& dirPath, const QString& outFile, std::function<bool(const utils::Filesystem::Path&)> filter, CallbackFunction fun)
 {
 	fs::Path dir(dirPath.toStdString());
 	if (fs::isDirectory(dir)) {
@@ -355,7 +355,7 @@ void medusaExporter::ExporterModel::exportData(const QString& outDir, const QStr
 		recreateAnnotationDrawings(outDir, user, *annotations, config.recreateAnnotations, fun);
 	}
 	CSVExporter exporter;
-	exporter.exportAnnotations(core::Filesystem::Path(outDir.toStdString()), *annotations, config);
+	exporter.exportAnnotations(utils::Filesystem::Path(outDir.toStdString()), *annotations, config);
 	fun(1.0f, QObject::tr("Done"));
 	//transaction->getObjects()
 }
@@ -438,7 +438,7 @@ QStringList medusaExporter::ExporterModel::getUsers(const QString& path, const E
 	return usersList;
 }
 
-core::Filesystem::PathsList medusaExporter::ExporterModel::gatherInternalSessionFiles(const QString &dirPath)
+utils::Filesystem::PathsList medusaExporter::ExporterModel::gatherInternalSessionFiles(const QString &dirPath)
 {
 	auto filter = [&](const fs::Path& path) -> bool {
 		if (path.extension() == ".xml") {

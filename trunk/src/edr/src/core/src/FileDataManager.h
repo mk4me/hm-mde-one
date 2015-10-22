@@ -68,13 +68,13 @@ namespace core {
 		};
 
 		//! S�ownik aktualnie obsługiwanych plików i skojarzonych z nimi parserów
-		typedef std::map<Filesystem::Path, ConstVariantsList> ObjectsByFiles;
+		typedef std::map<utils::Filesystem::Path, ConstVariantsList> ObjectsByFiles;
 		//! Mapowanie indeksu danych parsera do typu pod tym indeksem
 		typedef std::map<int, utils::TypeInfo> ParserTypes;
 		//! Mapowanie inicjalizatora do brakują		cych danych
 			typedef std::map<utils::shared_ptr<CompoundInitializer>, ParserTypes> ObjectsByParser;
 		//! Mapowanie plików do brakują		cych danych
-			typedef std::map<Filesystem::Path, ObjectsByParser> MissingObjects;
+			typedef std::map<utils::Filesystem::Path, ObjectsByParser> MissingObjects;
 
 		//! Polityka synchronizacji
 		typedef std::recursive_mutex SyncPolicy;
@@ -101,50 +101,50 @@ namespace core {
 		template<typename ParserT>
 		void initializeParsers(const IParserManagerReader::ParserPrototypes & parsers, const std::string & path, VariantsList & objects);
 
-		void rawRemoveFile(const Filesystem::Path & file, const IDataManager::TransactionPtr & memTransaction);
+		void rawRemoveFile(const utils::Filesystem::Path & file, const IDataManager::TransactionPtr & memTransaction);
 
-		void rawAddFile(const Filesystem::Path & file, const IDataManager::TransactionPtr & memTransaction);
+		void rawAddFile(const utils::Filesystem::Path & file, const IDataManager::TransactionPtr & memTransaction);
 
-		void rawReloadFile(const Filesystem::Path & file, const bool compleately, const IDataManager::TransactionPtr & memTransaction);
+		void rawReloadFile(const utils::Filesystem::Path & file, const bool compleately, const IDataManager::TransactionPtr & memTransaction);
 
-		const bool rawIsManaged(const Filesystem::Path & file) const;
+		const bool rawIsManaged(const utils::Filesystem::Path & file) const;
 
-		const bool rawIsLoadedCompleately(const Filesystem::Path & file) const;
+		const bool rawIsLoadedCompleately(const utils::Filesystem::Path & file) const;
 
 		void updateObservers(const ChangeList & changes);
 
-		void rawGetFiles(Filesystem::FilesSet & files) const;
+		void rawGetFiles(utils::Filesystem::FilesSet & files) const;
 
-		void rawGetObjects(const Filesystem::Path & file, ConstVariantsList & objects) const;
+		void rawGetObjects(const utils::Filesystem::Path & file, ConstVariantsList & objects) const;
 
-		void rawGetObjects(const Filesystem::Path & file, VariantsCollection & objects) const;
+		void rawGetObjects(const utils::Filesystem::Path & file, VariantsCollection & objects) const;
 
-		void rawGetObjects(const Filesystem::Path & file, VariantsList & objects);
+		void rawGetObjects(const utils::Filesystem::Path & file, VariantsList & objects);
 
 	public:
 		//IFileDataManager API
 
 		//! \param files Lista plik�w kt�re zostan� usuni�te z aplikacji a wraz z nimi skojarzone parsery i dane
-		virtual void removeFile(const Filesystem::Path & file);
+		virtual void removeFile(const utils::Filesystem::Path & file);
 
 		//! \param files Lista plik�w dla kt�rych zostan� utworzone parsery i z kt�rych wyci�gni�te dane
 		//! b�da dost�pne poprzez DataMangera LENIWA INICJALIZACJA
-		virtual void addFile(const Filesystem::Path & file);
+		virtual void addFile(const utils::Filesystem::Path & file);
 
 		//! \param file Ścieżka pliku do przeładowania
 		//! \param complete Czy plik ma zostać całkowicie przeładowany czy tylko brakują		ce dane mają			zostać doładowane
-			virtual void reloadFile(const Filesystem::Path & file,
+		virtual void reloadFile(const utils::Filesystem::Path & file,
 			const bool complete);
 
 
-		virtual const bool tryAddFile(const core::Filesystem::Path & file);
+		virtual const bool tryAddFile(const utils::Filesystem::Path & file);
 
-		virtual const bool tryRemoveFile(const core::Filesystem::Path & file);
+		virtual const bool tryRemoveFile(const utils::Filesystem::Path & file);
 
 		//! \param file Ścieżka pliku do przeładowania
 		//! \param complete Czy plik ma zostać całkowicie przeładowany czy tylko brakują		ce dane mają			zostać doładowane
 			//! \return Prawda jeśli plik pomyślnie przeładowano
-			virtual const bool tryReloadFile(const Filesystem::Path & file,
+		virtual const bool tryReloadFile(const utils::Filesystem::Path & file,
 			const bool complete);
 
 		//! \return Nowa transakcja
@@ -158,23 +158,23 @@ namespace core {
 		virtual void removeObserver(const ObserverPtr & fileWatcher);
 
 		//! \param files Zbi�r plik�w ktrymi aktualnie zarz�dza ten DataManager
-		virtual void getFiles(Filesystem::FilesList & files) const;
+		virtual void getFiles(utils::Filesystem::FilesList & files) const;
 
 		//! \param file Plik k�try weryfikujemy czy jest zarz�dzany przez DM
 		//! \return Prawda je�li plik jest zarz�dzany przez ten DM
-		virtual const bool isManaged(const Filesystem::Path & file) const;
+		virtual const bool isManaged(const utils::Filesystem::Path & file) const;
 
 		//! \param file Plik kótry weryfikujemy czy jest w pełni załadowany
 		//! \return Prawda jeśli plik jest w pełni załadowany
-		virtual const bool isLoadedCompleately(const Filesystem::Path & file) const;
+		virtual const bool isLoadedCompleately(const utils::Filesystem::Path & file) const;
 
 		//! \param files Zbior plik�w dla kt�rych chcemy pobra� list� obiekt�w
 		//! \return Mapa obiekt�w wzgl�dem plik�w z kt�rych pochodza
-		virtual void getObjects(const Filesystem::Path & file, ConstVariantsList & objects) const;
+		virtual void getObjects(const utils::Filesystem::Path & file, ConstVariantsList & objects) const;
 
 		//! \param files Zbior plik�w dla kt�rych chcemy pobra� list� obiekt�w
 		//! \return Mapa obiekt�w wzgl�dem plik�w z kt�rych pochodza
-		virtual void getObjects(const Filesystem::Path & file, VariantsCollection & objects) const;
+		virtual void getObjects(const utils::Filesystem::Path & file, VariantsCollection & objects) const;
 
 		virtual const TransactionConstPtr transaction() const;
 
@@ -192,7 +192,7 @@ namespace core {
 	private:
 		//! \param path Ścieżka pliku który weryfikujemy pod ką		tem dostępności danych,
 			//! jeśli brak to usuwamy nieużywany plik
-			void tryRemoveUnusedFile(const core::Filesystem::Path & file,
+			void tryRemoveUnusedFile(const utils::Filesystem::Path & file,
 			ChangeList & changes);
 	};
 

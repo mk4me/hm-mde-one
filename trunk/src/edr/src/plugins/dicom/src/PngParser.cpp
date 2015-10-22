@@ -1,6 +1,6 @@
 #include "DicomPCH.h"
 #include "PngParser.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include "LayeredImage.h"
 #include <plugins/dicom/Dicom.h>
 #include <boost/make_shared.hpp>

@@ -5,20 +5,18 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
-#include <corelib/Export.h>
 #include <list>
 #include <set>
 #include <string>
 #include <algorithm>
-
 #include <boost/filesystem.hpp>
 
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace core {
+namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
-class CORELIB_EXPORT Filesystem
+class Filesystem
 {
 public:
 	//! Typ opisujący element katalogu

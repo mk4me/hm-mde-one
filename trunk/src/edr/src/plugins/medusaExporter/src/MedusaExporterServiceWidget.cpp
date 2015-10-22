@@ -10,7 +10,7 @@
 #include <QtGui/QDesktopServices>
 #include <corelib/PluginCommon.h>
 #include <corelib/IFileDataManager.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include "MedusaExporterService.h"
 #include <corelib/ISourceManager.h>
 #include <plugins/hmdbCommunication/IHMDBSource.h>
@@ -19,7 +19,7 @@
 #include <tuple>
 
 using namespace medusaExporter;
-typedef core::Filesystem fs;
+typedef utils::Filesystem fs;
 
 
 

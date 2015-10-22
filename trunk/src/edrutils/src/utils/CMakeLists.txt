@@ -13,6 +13,7 @@ SET_PUBLIC_HEADERS(
 	Pool.h
 	Enum.h
 	NamedTree.h
+	Filesystem.h
 	PtrPolicyRaw.h
 	PtrPolicyBoost.h
 	PtrPolicyStd.h
@@ -49,6 +50,7 @@ SET_SOURCE_FILES(
 	NamedTree.cpp
 	Profiler.cpp
 	TypeInfo.cpp
+	Filesystem.cpp
 	CommandStack.cpp
 	dynamictreemodel.cpp
 	modeltest.cpp

@@ -12,7 +12,7 @@
 
 
 #include <utils/SmartPtr.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <corelib/IParser.h>
 
 //! Parser plików fbx, wymaga wtyczki z osg

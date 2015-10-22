@@ -1,11 +1,10 @@
-#include "CoreLibPCH.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <chrono>
 #include <thread>
 #include <boost/lexical_cast.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
-using namespace core;
+using namespace utils;
 ////////////////////////////////////////////////////////////////////////////////
 using namespace boost::filesystem;
 

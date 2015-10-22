@@ -2,8 +2,6 @@
 #define HEADER_GUARD_UTILS__CLONEPOLICIES_H__
 
 #include <exception>
-#include <osg/CopyOp>
-#include <osg/Object>
 #include <utils/Debug.h>
 //Plik zawiera podstawowe zasady kopiowania obiektów domenowych
 

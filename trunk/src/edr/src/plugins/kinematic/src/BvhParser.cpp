@@ -1,5 +1,5 @@
 #include "PCH.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <plugins/kinematic/Wrappers.h>
 //#include <kinematiclib/SkeletalModel.h>
 //#include <kinematiclib/SkeletalParsers.h>
@@ -21,7 +21,7 @@ BvhParser::~BvhParser()
 void BvhParser::parse( const std::string & source )
 {
 	//skeletalModel = utils::ObjectWrapper::create<BVHData>();
-	//core::Filesystem::Path path(source);  
+	//utils::Filesystem::Path path(source);  
  //   kinematic::SkeletalModelPtr modelPtr = utils::make_shared<kinematic::SkeletalModel>();
 	//kinematic::SkeletalDataPtr dataPtr = utils::make_shared<kinematic::SkeletalData>();
  //   kinematic::BvhParser bvh;

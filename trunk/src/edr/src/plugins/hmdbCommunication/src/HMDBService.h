@@ -33,15 +33,15 @@ namespace hmdbCommunication
 			const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 			const std::string & user,
 			const std::string & password,
-			const core::Filesystem::Path & CAPath = core::Filesystem::Path(),
+			const utils::Filesystem::Path & CAPath = utils::Filesystem::Path(),
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone,
-			const core::Filesystem::Path & schemaPath = core::Filesystem::Path());
+			const utils::Filesystem::Path & schemaPath = utils::Filesystem::Path());
 
 		static const networkUtils::IWSDLServicePtr createUnsecureWSDL(
 			const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 			const std::string & user,
 			const std::string & password,
-			const core::Filesystem::Path & schemaPath = core::Filesystem::Path());
+			const utils::Filesystem::Path & schemaPath = utils::Filesystem::Path());
 
 		//! Konstruktor domyœlny
 		HMDBService();
@@ -62,7 +62,7 @@ namespace hmdbCommunication
 			const std::string & password,
 			const std::string & motionDataUrl,
 			const std::string & medicalDataUrl,
-			const core::Filesystem::Path & CAPath,
+			const utils::Filesystem::Path & CAPath,
 			const networkUtils::SSLHostVerification hostVerification);
 
 		//! \param motion Czy sesja tylko dla motion? Jeœli false to tylko medical
@@ -77,29 +77,29 @@ namespace hmdbCommunication
 			const std::string & user,
 			const std::string & password,
 			const std::string & dataUrl,
-			const core::Filesystem::Path & CAPath,
+			const utils::Filesystem::Path & CAPath,
 			const networkUtils::SSLHostVerification hostVerification);
 
 		virtual const networkUtils::IWSDLServicePtr createHMDBService(
 			const std::string & url,
 			const std::string & user,
 			const std::string & password,
-			const core::Filesystem::Path & CAPath = core::Filesystem::Path(),
+			const utils::Filesystem::Path & CAPath = utils::Filesystem::Path(),
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone,
-			const core::Filesystem::Path & schemaPath = core::Filesystem::Path());
+			const utils::Filesystem::Path & schemaPath = utils::Filesystem::Path());
 
 		virtual const networkUtils::IWSDLServicePtr createHMDBSystemService(
 			const std::string & url,
-			const core::Filesystem::Path & CAPath = core::Filesystem::Path(),
+			const utils::Filesystem::Path & CAPath = utils::Filesystem::Path(),
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone,
-			const core::Filesystem::Path & schemaPath = core::Filesystem::Path());
+			const utils::Filesystem::Path & schemaPath = utils::Filesystem::Path());
 
 		//! \param url Adres serwera do pingowania
 		//! \param caPath Œcie¿ka ewentualnego certyfikatu SSL je¿eli wymagany
 		//! \return Czy serwer odpowiedzia³
 		virtual const bool serverOnline(const std::string & url,
 			const unsigned int timeout = 250,
-			const core::Filesystem::Path & caPath = core::Filesystem::Path()) const;
+			const utils::Filesystem::Path & caPath = utils::Filesystem::Path()) const;
 
 		//! \param session Sesja us³ug bazy danych ruchu któr¹ chcemy obs³ugiwaæ
 		virtual void attach(IHMDBSessionPtr session);

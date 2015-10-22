@@ -21,11 +21,11 @@ namespace medusaExporter {
 		virtual ~CSVExporter() {}
 
 	public:
-		virtual void exportAnnotations(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const;
+		virtual void exportAnnotations(const utils::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const;
 
     private:
-        void exportMeta(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const;
-        void exportData(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const;
+        void exportMeta(const utils::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const;
+        void exportData(const utils::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const;
 
 	};
 	DEFINE_SMART_POINTERS(CSVExporter);

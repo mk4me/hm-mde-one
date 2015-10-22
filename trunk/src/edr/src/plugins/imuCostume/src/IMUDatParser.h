@@ -13,7 +13,7 @@
 #include <cstdint> //TODO nie wiem czy to na linuxie przejdzie, jesli nie to trzeba zrobic ifdefa na stdint.h
 #include <vector>
 #include <utils/SmartPtr.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include "IMUCFGParser.h"
 
 namespace IMU {
@@ -47,9 +47,9 @@ namespace IMU {
     {
     public:
         virtual ~IMUDatParser() {}
-		static Frames parse(const core::Filesystem::Path& path, int imusCount);
-		static std::pair<Frames,int> parse(const core::Filesystem::Path& path);
-        static void save(const core::Filesystem::Path& path, const Frames& frames);
+		static Frames parse(const utils::Filesystem::Path& path, int imusCount);
+		static std::pair<Frames,int> parse(const utils::Filesystem::Path& path);
+        static void save(const utils::Filesystem::Path& path, const Frames& frames);
     };
     DEFINE_SMART_POINTERS(IMUDatParser);
 

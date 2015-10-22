@@ -28,7 +28,7 @@
 #include <QtWidgets/QProgressDialog>
 #include "DescriptionMaker.h"
 
-typedef core::Filesystem fs;
+typedef utils::Filesystem fs;
 
 dicom::LayersVectorConstPtr resolveLocalXml( const fs::Path& xmlPath, dicom::LayersVectorConstPtr layersVector = dicom::LayersVectorConstPtr() )
 {

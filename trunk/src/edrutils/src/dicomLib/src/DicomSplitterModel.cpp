@@ -1,5 +1,5 @@
 #include "DicomImporterPCH.h"
-#include "DicomSplitterModel.h"
+#include "dicomLib/DicomSplitterModel.h"
 
 using namespace dicomImporter;
 DicomSplitterModel::DicomSplitterModel(QObject *parent, std::vector<DicomInternalStructPtr>&& _data)

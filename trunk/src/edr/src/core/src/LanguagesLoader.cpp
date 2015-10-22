@@ -4,10 +4,10 @@
 #include "LanguagesManager.h"
 #include "ApplicationCommon.h"
 #include <corelib/BaseDataTypes.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <QtCore/QTranslator>
 
-void registerTranslator(const std::string & locale, const core::Filesystem::Path & path,
+void registerTranslator(const std::string & locale, const utils::Filesystem::Path & path,
 	const std::string & module, core::LanguagesManager * languagesManager)
 {
 	// probuje wyci¹gn¹æ jêzyk dla tego kodu
@@ -32,10 +32,10 @@ void registerTranslator(const std::string & locale, const core::Filesystem::Path
 
 using namespace core;
 
-void LanguagesLoader::loadCoreTranslations(Filesystem::PathsList & paths,
+void LanguagesLoader::loadCoreTranslations(utils::Filesystem::PathsList & paths,
 	LanguagesManager * languagesManager)
 {
-	Filesystem::PathsList toErase;
+	utils::Filesystem::PathsList toErase;
 
 	for (const auto & p : paths){
 		//nazwa pliku
@@ -82,10 +82,10 @@ void LanguagesLoader::loadPluginDefaultTranslation(const std::string & pluginNam
 	}
 }
 
-void LanguagesLoader::loadPluginTranslations(Filesystem::PathsList & paths,
+void LanguagesLoader::loadPluginTranslations(utils::Filesystem::PathsList & paths,
 	const std::string & pluginName, LanguagesManager * languagesManager)
 {
-	Filesystem::PathsList toErase;
+	utils::Filesystem::PathsList toErase;
 
 	for(const auto & p : paths){
 		//nazwa pliku

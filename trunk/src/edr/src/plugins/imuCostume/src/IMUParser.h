@@ -11,7 +11,7 @@
 #define HEADER_GUARD_IMU__IMUPARSER_H__
 
 #include <utils/SmartPtr.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <corelib/IParser.h>
 #include <plugins/c3d/C3DChannels.h>
 

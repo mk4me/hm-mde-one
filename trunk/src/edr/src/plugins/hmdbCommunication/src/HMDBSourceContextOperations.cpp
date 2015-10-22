@@ -1,6 +1,6 @@
 ﻿#include "CommunicationPCH.h"
 #include "HMDBSourceContextOperations.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <functional>
 #include <corelib/IPlugin.h>
 #include <hmdbserviceslib/IFileStoremanWS.h>
@@ -696,9 +696,9 @@ TmpFileTransferIO::~TmpFileTransferIO()
 IHMDBStorageOperations::OStreamPtr TmpFileTransferIO::prepareOutput()
 {
 	int i = 0;
-	while (core::Filesystem::pathExists(tmpFilePath = plugin::getPaths()->getTempFilePath()) == true && i++ < 10) {}
+	while (utils::Filesystem::pathExists(tmpFilePath = plugin::getPaths()->getTempFilePath()) == true && i++ < 10) {}
 
-	if (core::Filesystem::pathExists(tmpFilePath) == false){
+	if (utils::Filesystem::pathExists(tmpFilePath) == false){
 
 		stream.reset(new std::fstream(tmpFilePath.string(), std::ios_base::out));
 
@@ -735,8 +735,8 @@ void TmpFileTransferIO::release()
 		stream.reset();
 	}
 	if (tmpFilePath.empty() == false){
-		core::Filesystem::deleteFile(tmpFilePath);
-		tmpFilePath = core::Filesystem::Path();
+		utils::Filesystem::deleteFile(tmpFilePath);
+		tmpFilePath = utils::Filesystem::Path();
 	}
 }
 

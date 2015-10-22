@@ -13,7 +13,7 @@
 #include <string>
 #include <boost/bimap.hpp>
 //#include "qstring_serialization.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <plugins/dicom/Export.h>
 #include <boost/lexical_cast.hpp>
 
@@ -48,15 +48,15 @@ namespace annotations {
 	PLUGIN_DICOM_EXPORT AdnotationsTypePtr getDefault();
 	//! \param p �ciazka pliku do kt�rego zapisujemy  typy adnotacji
 	//! \param adnotations Zapisywane typy adnotacji
-	PLUGIN_DICOM_EXPORT void save(const core::Filesystem::Path& p, AdnotationsTypeConstPtr adnotations);
+	PLUGIN_DICOM_EXPORT void save(const utils::Filesystem::Path& p, AdnotationsTypeConstPtr adnotations);
 	//! \param p �cie�ka z kt�rej wczytujemy typy adnotacji
-	PLUGIN_DICOM_EXPORT AdnotationsTypePtr load(const core::Filesystem::Path& p);
+	PLUGIN_DICOM_EXPORT AdnotationsTypePtr load(const utils::Filesystem::Path& p);
 	//! Zwraca instancje typ�w adnotacji
 	PLUGIN_DICOM_EXPORT AdnotationsTypePtr instance();
 	//! Zapisuje aktualne typy adnotacji
 	PLUGIN_DICOM_EXPORT void autoSave();
 	//! \return �cie�ka pliku z typami adnotacji
-	PLUGIN_DICOM_EXPORT core::Filesystem::Path adnotationsFile();
+	PLUGIN_DICOM_EXPORT utils::Filesystem::Path adnotationsFile();
 	
 	//! Typ poziomu krwi
 	enum bloodLevelDescriptor {

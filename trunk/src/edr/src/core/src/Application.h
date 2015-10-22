@@ -82,7 +82,7 @@ namespace core {
 		utils::shared_ptr<InnerJobManager> innerJobManager_;
 		utils::shared_ptr<JobManager> jobManager_;
 
-		Filesystem::Path additionalPluginsPath;
+		utils::Filesystem::Path additionalPluginsPath;
 
 		QTimer visualizerUpdateTimer;
 		QTimer servicesUpdateTimer;
@@ -119,10 +119,10 @@ namespace core {
 		~Application();
 
 		int initUIContext(int & argc, char *argv[], const std::string & appName,
-			Filesystem::PathsList & coreTranslations);
+						  utils::Filesystem::PathsList & coreTranslations);
 
 		void initWithUI(coreUI::CoreMainWindow * mainWindow,
-			Filesystem::PathsList & translations);
+						utils::Filesystem::PathsList & translations);
 
 		int run();
 

@@ -1,5 +1,5 @@
 #include "PCH.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include "KinematicParser.h"
 #include <plugins/kinematic/Wrappers.h>
 #include <acclaimformatslib/AmcParser.h>
@@ -22,19 +22,19 @@ KinematicParser::~KinematicParser()
 void KinematicParser::parse( const std::string & source)
 {
 	skeletonData = utils::ObjectWrapper::create<acclaim::MotionData>();
-	core::Filesystem::Path path(source);
+	utils::Filesystem::Path path(source);
 	using namespace kinematic;
 	using acclaim::AsfParser;
 
 	acclaim::MotionDataPtr dataPtr = utils::make_shared<acclaim::MotionData>();
 
-	//if(core::Filesystem::fileExtension(path).compare(".amc") == 0) {		
+	//if(utils::Filesystem::fileExtension(path).compare(".amc") == 0) {		
 		std::ifstream amcFile(path.string());
 		acclaim::AmcParser::parse(*dataPtr, amcFile);
 				
 	//} 
 	// bvh chwilowo wylaczone
-	/*else if (core::Filesystem::fileExtension(path).compare(".bvh") == 0)  {
+	/*else if (utils::Filesystem::fileExtension(path).compare(".bvh") == 0)  {
 		BvhParser bvh;
 		bvh.parse(modelPtr, dataPtr, path.string());
 	}*/

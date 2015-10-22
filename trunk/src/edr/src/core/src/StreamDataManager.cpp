@@ -431,7 +431,7 @@ class FileStreamParser : public StParser
 private:
 	//! Prawdziwy wewn�trzny parser.
 	plugin::ISourceParser * sourceParser;
-	core::Filesystem::Path tmpFilePath;
+	utils::Filesystem::Path tmpFilePath;
 
 public:
 	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
@@ -448,7 +448,7 @@ public:
 	{
 		if (tmpFilePath.empty() == false) {
 			try {
-				core::Filesystem::deleteFile(tmpFilePath);
+				utils::Filesystem::deleteFile(tmpFilePath);
 			}
 			catch (...) {
 			}

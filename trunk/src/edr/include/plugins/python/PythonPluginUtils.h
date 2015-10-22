@@ -29,5 +29,10 @@ namespace  python {
 	};
 	DEFINE_SMART_POINTERS(PythonPluginUtils);
 }
+#ifdef _DEBUG
+	#define MDE_PYTHON_MODULE(name) BOOST_PYTHON_MODULE(name##d)
+#else
+	#define MDE_PYTHON_MODULE(name) BOOST_PYTHON_MODULE(name)
+#endif
 
 #endif // HEADER_GUARD 

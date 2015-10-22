@@ -9,7 +9,7 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__SQLCIPHERSTORAGE_H__
 
 #include <plugins/hmdbCommunication/IHMDBStorage.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <mutex>
 #include <sqlite3.h>
 
@@ -24,7 +24,7 @@ namespace hmdbCommunication
 			//! Klucz bazy
 			std::string key_;
 			//! Œcie¿ka do pliku z baz¹
-			core::Filesystem::Path path_;
+			utils::Filesystem::Path path_;
 		};
 
 		typedef threadingUtils::TransactionSharedState<SharedState> TransactionSharedState;
@@ -37,32 +37,32 @@ namespace hmdbCommunication
 		virtual ~SQLCipherStorage();
 		//! \param path Œcie¿ka do pliku z baz¹
 		//! \param key Klucz, którym zaszyfrowana jest baza
-		void open(const core::Filesystem::Path & path,
+		void open(const utils::Filesystem::Path & path,
 			const std::string & key);
 
 		//! \param path Œcie¿ka do pliku z baz¹
 		//! \param key Klucz, którym zaszyfrowana jest baza
 		//! \return Czy uda³o siê stworzyæ bazê
-		static const bool create(const core::Filesystem::Path & path,
+		static const bool create(const utils::Filesystem::Path & path,
 			const std::string & key);
 
 		//! \param path Œcie¿ka do pliku z baz¹
 		//! \param oldKey Aktualny klucz, którym zaszyfrowana jest baza
 		//! \param newKey Klucz, którym baza zostanie zaszyfrowana
 		//! \return Czy uda³o siê zmieniæ klucz
-		static const bool changeKey(const core::Filesystem::Path & path,
+		static const bool changeKey(const utils::Filesystem::Path & path,
 			const std::string & oldKey,	const std::string & newKey);
 
 		//! \param path Œcie¿ka do pliku z baz¹
 		//! \param key Klucz, którym baza zostanie zaszyfrowana
 		//! \return Czy uda³o siê ustawiæ klucz
-		static const bool setKey(const core::Filesystem::Path & path,
+		static const bool setKey(const utils::Filesystem::Path & path,
 			const std::string & key);
 
 		//! \param path Œcie¿ka do pliku z baz¹
 		//! \param key Klucz, którym zaszyfrowana jest baza
 		//! \return Czy baza ma poprawny format
-		static const bool verify(const core::Filesystem::Path & path,
+		static const bool verify(const utils::Filesystem::Path & path,
 			const std::string & key);
 
 		//! \return Nazwa storage

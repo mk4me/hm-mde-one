@@ -35,12 +35,12 @@ const std::string Plugin::shortName() const
 	return desc.shortName();
 }
 
-const Filesystem::Path& Plugin::getPath() const
+const utils::Filesystem::Path& Plugin::getPath() const
 { 
 	return path;
 }
 
-void Plugin::setPath(const Filesystem::Path& path) 
+void Plugin::setPath(const utils::Filesystem::Path& path) 
 { 
 	this->path = path; 
 }

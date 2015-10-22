@@ -22,7 +22,7 @@ class PluginLoader
 {
 public:
     //! Ścieżki wyszukiwania.
-    typedef std::list<Filesystem::Path> Paths;
+	typedef std::list<utils::Filesystem::Path> Paths;
 
 private:
 
@@ -50,7 +50,7 @@ private:
 
 public:
 	//! \param pluginsPath Ścieżka do pluginów
-    PluginLoader(const Filesystem::Path & pluginsPath);
+	PluginLoader(const utils::Filesystem::Path & pluginsPath);
 	//! Destruktor
     ~PluginLoader();
 
@@ -64,7 +64,7 @@ public:
 	void reset();
 
 	//! \param path Ścieżka gdzie szukać wtyczek
-	void addPath(const Filesystem::Path& path)
+	void addPath(const utils::Filesystem::Path& path)
 	{
 		this->paths.push_back(path);
 	}
@@ -104,7 +104,7 @@ public:
 
 	//! \param path Ścieżka do pluginu
 	//! \return Uchwyt do załadowanej biblioteki z pluginem
-	static HMODULE loadSharedLibrary(const Filesystem::Path & path);
+	static HMODULE loadSharedLibrary(const utils::Filesystem::Path & path);
 	//! \param library Uchwyt do zwalnianej biblioteki z pluginem
 	static void unloadSharedLibrary(HMODULE library);
 	//! \return Ostatni błąd
@@ -131,27 +131,27 @@ public:
 private:
 
 	static std::string pluginIdentyfier(const std::string & name,
-		const core::Filesystem::Path & path, const core::UniqueID & id);
+		const utils::Filesystem::Path & path, const core::UniqueID & id);
     //!
     //! \param path Ścieżka biblioteki z pluginem
-    bool addPlugIn(const Filesystem::Path& path);
+	bool addPlugIn(const utils::Filesystem::Path& path);
 
     //!
     //! \param library Uchwyt do zwalnianej biblioteki z pluginem
     //! \param path  Ścieżka biblioteki z pluginem
     //! \return Czy wersj apluginu jest akceptowalna
-    bool checkPluginVersion( HMODULE library, const Filesystem::Path& path );
+	bool checkPluginVersion(HMODULE library, const utils::Filesystem::Path& path);
 
     //!
 	//! \param library Uchwyt do zwalnianej biblioteki z pluginem
 	//! \param path  Ścieżka biblioteki z pluginem
     //! \return Czy dany typ budowy pluginu jest obsługiwany
-    bool checkPluginBuildType( HMODULE library, const Filesystem::Path& path );
+	bool checkPluginBuildType(HMODULE library, const utils::Filesystem::Path& path);
     //!
 	//! \param library Uchwyt do zwalnianej biblioteki z pluginem
 	//! \param path  Ścieżka biblioteki z pluginem
 	//! \return Czy wersje bibliotek są kompatybilne z corem
-    bool checkLibrariesVersions( HMODULE library, const Filesystem::Path& path );
+	bool checkLibrariesVersions(HMODULE library, const utils::Filesystem::Path& path);
     //!
 	//! \param library Uchwyt do zwalnianej biblioteki z pluginem
 	//! \param path  Ścieżka biblioteki z pluginem

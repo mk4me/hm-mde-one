@@ -439,7 +439,7 @@ void dicom::LayeredImageVisualizer::uploadSerie()
 			return;
 		}
 		
-		core::Filesystem::Path p(series[currentSerie]->getXmlOutputFilename());
+		utils::Filesystem::Path p(series[currentSerie]->getXmlOutputFilename());
 		const auto fileName = p.filename().string();
 
 		hmdbServices::ID fileID = -1;
@@ -459,7 +459,7 @@ void dicom::LayeredImageVisualizer::uploadSerie()
 		try{
 			/// TODO : pobrac dane z OW
 			hmdbCommunication::IHMDBStorageOperations::IStreamPtr stream(new std::ifstream(p.string(), std::ios::binary));
-			const auto fileSize = core::Filesystem::size(p);
+			const auto fileSize = utils::Filesystem::size(p);
 			auto remote = remoteSrcContext->shallowCopyRemoteContext()->remoteContext();
 			if (!remote) {
 				coreUI::CorePopup::showMessage(tr("Failed to upload serie"), tr("Remote context was not found"));

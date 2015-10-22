@@ -1,5 +1,5 @@
 #include "FileSource.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <corelib/IDataHierarchyManager.h>
 #include <corelib/HierarchyItem.h>
 #include <corelib/HierarchyDataItem.h>
@@ -78,7 +78,7 @@ void FileSource::getOfferedTypes( utils::TypeInfoList & offeredTypes ) const
     
 }
 
-void FileSource::addFile( const core::Filesystem::Path& path )
+void FileSource::addFile( const utils::Filesystem::Path& path )
 {
     auto transaction = fileDM->transaction();
     transaction->addFile(path);
@@ -98,15 +98,15 @@ void FileSource::addFile( const core::Filesystem::Path& path )
 void FileSource::loadAsfAmc()
 {
 	auto transaction = fileDM->transaction();
-	//core::Filesystem::Path p1 = "C:/Users/Mateusz/Desktop/test.amc";
-	//core::Filesystem::Path p2 = "C:/Users/Mateusz/Desktop/test.asf";
+	//utils::Filesystem::Path p1 = "C:/Users/Mateusz/Desktop/test.amc";
+	//utils::Filesystem::Path p2 = "C:/Users/Mateusz/Desktop/test.asf";
 
-	core::Filesystem::Path p1 = "c:/ProgramData/PJWSTK/IMU-MDE/plugins/imuCostume/recordings/20150601_101449_192.168.001.173_1234/recording_1.amc";
-	core::Filesystem::Path p2 = "c:/ProgramData/PJWSTK/IMU-MDE/plugins/imuCostume/recordings/20150601_101449_192.168.001.173_1234/skeleton.asf";
-	//core::Filesystem::Path p1 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test.amc";
-	//core::Filesystem::Path p2 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test.asf";
-	//core::Filesystem::Path p1 = "C:/Users/Wojciech/Desktop/test.amc";
-	//core::Filesystem::Path p2 = "C:/Users/Wojciech/Desktop/test.asf";
+	utils::Filesystem::Path p1 = "c:/ProgramData/PJWSTK/IMU-MDE/plugins/imuCostume/recordings/20150601_101449_192.168.001.173_1234/recording_1.amc";
+	utils::Filesystem::Path p2 = "c:/ProgramData/PJWSTK/IMU-MDE/plugins/imuCostume/recordings/20150601_101449_192.168.001.173_1234/skeleton.asf";
+	//utils::Filesystem::Path p1 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test.amc";
+	//utils::Filesystem::Path p2 = "/home/wojtek/programming/WORK/MDE/branches/kinematicRefactorForIMU/src/edrutils/tests/kinematiclib/testFiles/test.asf";
+	//utils::Filesystem::Path p1 = "C:/Users/Wojciech/Desktop/test.amc";
+	//utils::Filesystem::Path p2 = "C:/Users/Wojciech/Desktop/test.asf";
 	transaction->addFile(p1);
 	transaction->addFile(p2);
 	core::ConstVariantsList oList;

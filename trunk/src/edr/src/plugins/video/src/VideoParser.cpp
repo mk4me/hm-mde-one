@@ -96,7 +96,7 @@ void VideoParser::parse(const IStreamPtr stream, const std::string & source) {
 void VideoParser::parse(const std::string & source) {
 	utils::ObjectsVector localData;
 
-	core::Filesystem::Path path(source);
+	utils::Filesystem::Path path(source);
 	if (path.extension().string().compare(".imgsequence") == 0) {
 
 		localData.push_back(utils::ObjectWrapper::create<::VideoStream>());
@@ -131,12 +131,12 @@ void VideoParser::parse(const std::string & source) {
 			PLUGIN_LOG_INFO(directory << " " << framerate);
 
 			// ustawienie ścieżki do katalogu
-			core::Filesystem::Path dirPath = directory;
+			utils::Filesystem::Path dirPath = directory;
 			if (!dirPath.is_complete()) {
 				dirPath = path.branch_path() / directory;
 			}
 			// wylistowanie plików
-			auto files = core::Filesystem::listFiles(dirPath.string());
+			auto files = utils::Filesystem::listFiles(dirPath.string());
 			std::vector<std::string> ffiles;
 			ffiles.reserve(files.size());
 

@@ -12,7 +12,7 @@
 #include <string>
 #include "Log.h"
 #include "Path.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include "Application.h"
 #include <utils/Macros.h>
 #include <boost/uuid/uuid.hpp>
@@ -125,49 +125,49 @@ inline loglib::ILog* getPrototypeLogInterface()
 }
 
 //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
-inline const Filesystem::Path& getResourcesPath()
+inline const utils::Filesystem::Path& getResourcesPath()
 {
 	return getPaths()->getResourcesPath();
 }
 
 //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
-inline const Filesystem::Path& getApplicationDataPath()
+inline const utils::Filesystem::Path& getApplicationDataPath()
 {
 	return getPaths()->getApplicationDataPath();
 }
 
 //! Pomocnica metoda upraszczaj¹ca odwo³anie do katalogów.
-inline const Filesystem::Path& getUserDataPath()
+inline const utils::Filesystem::Path& getUserDataPath()
 {
 	return getPaths()->getUserDataPath();
 }
 
 //! \return Pomocnicza metoda do pobierania œcie¿ek.
-inline Filesystem::Path getResourcePath(const Filesystem::Path& path)
+inline utils::Filesystem::Path getResourcePath(const utils::Filesystem::Path& path)
 {
 	return getResourcesPath()/path;
 }
 
 //! \return Pomocnicza metoda do pobierania œcie¿ek.
-inline Filesystem::Path getApplicationDataPath(const Filesystem::Path& path)
+inline utils::Filesystem::Path getApplicationDataPath(const utils::Filesystem::Path& path)
 {
 	return getApplicationDataPath()/path;
 }
 
 //! \return Pomocnicza metoda do pobierania œcie¿ek.
-inline Filesystem::Path getUserDataPath(const Filesystem::Path& path)
+inline utils::Filesystem::Path getUserDataPath(const utils::Filesystem::Path& path)
 {
 	return getUserDataPath()/path;
 }
 
 //! \return Pomocnicza metoda do pobierania œcie¿ek.
-inline const Filesystem::Path & getPluginPath()
+inline const utils::Filesystem::Path & getPluginPath()
 {
 	return getPaths()->getPluginPath();
 }
 
 //! \return Pomocnicza metoda do pobierania œcie¿ek.
-inline core::Filesystem::Path getPluginPath(const core::Filesystem::Path & path)
+inline utils::Filesystem::Path getPluginPath(const utils::Filesystem::Path & path)
 {
 	return getPluginPath()/path;
 }

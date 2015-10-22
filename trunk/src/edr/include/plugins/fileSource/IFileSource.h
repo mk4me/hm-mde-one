@@ -15,7 +15,7 @@ namespace fileSource {
 	class IFileSource {
 		public:
 			virtual ~IFileSource() {}
-			virtual void addFile(const core::Filesystem::Path& path) = 0;
+			virtual void addFile(const utils::Filesystem::Path& path) = 0;
 	};
 	DEFINE_SMART_POINTERS(IFileSource);
 }

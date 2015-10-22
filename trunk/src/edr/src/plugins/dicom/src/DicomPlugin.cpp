@@ -10,7 +10,7 @@
 #include <plugins/hmdbCommunication/IHMDBSource.h>
 #include <plugins/hmdbCommunication/IHMDBSourceViewManager.h>
 #include <corelib/ISourceManager.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <corelib/IDataHierarchyManager.h>
 #include "LayersXmlParser.h"
 #include "InternalXmlParser.h"
@@ -24,7 +24,7 @@ using namespace dicom;
 
 //void szybkieSprawdzenieDuplikatow()
 //{
-//	typedef core::Filesystem fs;
+//	typedef utils::Filesystem fs;
 //
 //	std::set<fs::Path> goodImages;
 //	std::set<fs::Path> notSetImages;

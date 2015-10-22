@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_CORE__IDIRECTORIESINFO_H__
 #define HEADER_GUARD_CORE__IDIRECTORIESINFO_H__
 
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 
 namespace core {
 
@@ -22,19 +22,19 @@ public:
 	virtual ~IPath() {}
 
 	//! \return Zwraca pelna sciezke do folderu "MyDocuments\APP"
-	virtual const Filesystem::Path& getUserDataPath() const = 0;
+	virtual const utils::Filesystem::Path& getUserDataPath() const = 0;
 	//! \return Zwraca pelna sciezke do folderu "ApplicationData\APP" dla wszystkich użytkowników
-	virtual const Filesystem::Path& getApplicationDataPath() const = 0;
+	virtual const utils::Filesystem::Path& getApplicationDataPath() const = 0;
 	//! \return Zwraca pelna sciezke do folderu "ApplicationData\APP" dla aktualnego użytkownika
-	virtual const Filesystem::Path& getUserApplicationDataPath() const = 0;
+	virtual const utils::Filesystem::Path& getUserApplicationDataPath() const = 0;
 	//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
-	virtual const Filesystem::Path& getResourcesPath() const = 0;
+	virtual const utils::Filesystem::Path& getResourcesPath() const = 0;
     //! \return Zwraca pełną ścieżkę do tymczasowego folderu, który jest czyszczony podczas każdego zamykania aplikacji
-    virtual const Filesystem::Path& getTempPath() const = 0;
+    virtual const utils::Filesystem::Path& getTempPath() const = 0;
 	//! \return Losowa nazwa pliku tymczasowego
-	inline const Filesystem::Path getTempFilePath() const { return getTempPath() / Filesystem::temporaryFile(); }
+	inline const utils::Filesystem::Path getTempFilePath() const { return getTempPath() / utils::Filesystem::temporaryFile(); }
 	//! \return Zwraca pełną ścieżkę do folderu pluginu
-	virtual const Filesystem::Path& getPluginPath() const = 0;
+	virtual const utils::Filesystem::Path& getPluginPath() const = 0;
 };
 
 }

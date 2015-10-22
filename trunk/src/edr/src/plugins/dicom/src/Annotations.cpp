@@ -108,7 +108,7 @@ dicom::annotations::AdnotationsTypePtr dicom::annotations::getDefault()
     return adn;
 }
 
-dicom::annotations::AdnotationsTypePtr dicom::annotations::load( const core::Filesystem::Path& p )
+dicom::annotations::AdnotationsTypePtr dicom::annotations::load( const utils::Filesystem::Path& p )
 {
     AdnotationsTypePtr adnotations;
     std::ifstream ifs(p.c_str());
@@ -122,7 +122,7 @@ dicom::annotations::AdnotationsTypePtr dicom::annotations::load( const core::Fil
     return adnotations;
 }
 
-void dicom::annotations::save( const core::Filesystem::Path& p, AdnotationsTypeConstPtr adnotations )
+void dicom::annotations::save( const utils::Filesystem::Path& p, AdnotationsTypeConstPtr adnotations )
 {
     std::ofstream ofs(p.c_str());
     if(ofs.good()) {
@@ -152,7 +152,7 @@ void dicom::annotations::autoSave()
     save(adnotationsFile(), instance());
 }
 
-core::Filesystem::Path dicom::annotations::adnotationsFile()
+utils::Filesystem::Path dicom::annotations::adnotationsFile()
 {
     return plugin::getUserApplicationDataPath("DicomAdnotations.xml");
 }

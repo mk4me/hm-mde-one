@@ -21,10 +21,10 @@ namespace  dicom {
 	public:
 		//! \param from Œcie¿ka z której próbujemy czytaæ wewnêtrzn¹ reprezentacjê danych USG
 		//! \return Drzewo danych USG
-		static DicomInternalStructPtr load(const core::Filesystem::Path& from);
+		static DicomInternalStructPtr load(const utils::Filesystem::Path& from);
 		//! \param p Œcie¿ka z kórej próbujemy czytaæ warstwy adnotacji opusuj¹ce obraz USG
 		//! \return Warstwy adnotacji opusuj¹ce obraz USG
-		static LayersVectorPtr loadLayers(const core::Filesystem::Path &p);
+		static LayersVectorPtr loadLayers(const utils::Filesystem::Path &p);
 	};
 	DEFINE_SMART_POINTERS(DicomLoader);
 }
