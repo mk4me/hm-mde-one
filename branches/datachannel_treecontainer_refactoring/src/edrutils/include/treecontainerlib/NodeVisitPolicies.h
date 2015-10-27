@@ -17,7 +17,6 @@ namespace treeContainer
 	{
 		namespace Node
 		{
-
 			//! Polityka odwiedzania węzłów
 			struct PreOrder
 			{
@@ -32,6 +31,29 @@ namespace treeContainer
 					for (const auto & child : root->children())
 					{
 						visit(NPtr(child), visitor);
+					}
+				}
+
+				//! \tparam NPtr Typ wska�nika w�z�a
+				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				template<typename NPtr, typename CondVisitor>
+				//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
+				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
+				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
+				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
+				{
+					if (condVisitor(root) == true){
+						for (const auto & child : root->children())
+						{
+							if (visitWhile(NPtr(child), condVisitor) == false){
+								return false;
+							}
+						}
+
+						return true;
+					}
+					else {
+						return false;
 					}
 				}
 			};
@@ -51,6 +73,23 @@ namespace treeContainer
 						visit(NPtr(child), visitor);
 					}
 					visitor(root);
+				}
+
+				//! \tparam NPtr Typ wska�nika w�z�a
+				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				template<typename NPtr, typename CondVisitor>
+				//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
+				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
+				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
+				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
+				{
+					for (const auto & child : root->children())
+					{
+						if (visitWhile(NPtr(child), condVisitor) == false){
+							return false;
+						}
+					}
+					return condVisitor(root);
 				}
 			};
 
@@ -84,32 +123,7 @@ namespace treeContainer
 						++level;
 					}
 				}
-			};
 
-			//! \tparam VisitOrder Spos�b oryginalnego odwiedzania, kt�re chcemy odwr�ci�
-			template<typename VisitOrder>
-			//! Polityka odwiedzania węzłów
-			struct ReverseOrder
-			{
-				//! \tparam NPtr Typ wska�nika w�z�a
-				//! \tparam Visitor Typ odwiedzaj�cego w�z�y
-				template<typename NPtr, typename Visitor>
-				//! \param visitOrder Spos�b przegl�dania w kierunku kt�ry b�dziemy odwraca�
-				//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
-				//! \param visitor Obiekt przegl�daj�cy wez�y i poziomy
-				static void visit(NPtr root, Visitor & visitor)
-				{
-					auto lt = NodeLinearization<VisitOrder, Backward>::linearize(root);
-					for (const auto & node : lt)
-					{
-						visitor(node);
-					}
-				}
-			};
-
-			//! Polityka odwiedzania węzłów z warunkiem
-			struct LevelOrderWhile
-			{
 				//! \tparam NPtr Typ wska�nika w�z�a
 				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
 				template<typename NPtr, typename CondVisitor>
@@ -143,59 +157,26 @@ namespace treeContainer
 				}
 			};
 
-			//! Polityka odwiedzania węzłów z warunkiem
-			struct PreOrderWhile
-			{
-				//! \tparam NPtr Typ wska�nika w�z�a
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
-				template<typename NPtr, typename CondVisitor>
-				//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
-				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
-				{
-					if (condVisitor(root) == true){
-						for (const auto & child : root->children())
-						{
-							if (visitWhile(NPtr(child), condVisitor) == false){
-								return false;
-							}
-						}
-
-						return true;
-					}
-					else {
-						return false;
-					}
-				}
-			};
-
-			//! Polityka odwiedzania węzłów z warunkiem
-			struct PostOrderWhile
-			{
-				//! \tparam NPtr Typ wska�nika w�z�a
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
-				template<typename NPtr, typename CondVisitor>
-				//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
-				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
-				{
-					for (const auto & child : root->children())
-					{
-						if (visitWhile(NPtr(child), condVisitor) == false){
-							return false;
-						}
-					}
-					return condVisitor(root);
-				}
-			};
-
 			//! \tparam VisitOrder Spos�b oryginalnego odwiedzania, kt�re chcemy odwr�ci�
 			template<typename VisitOrder>
-			//! Polityka odwiedzania węzłów z warunkiem
-			struct ReverseOrderWhile
+			//! Polityka odwiedzania węzłów
+			struct ReverseOrder
 			{
+				//! \tparam NPtr Typ wska�nika w�z�a
+				//! \tparam Visitor Typ odwiedzaj�cego w�z�y
+				template<typename NPtr, typename Visitor>
+				//! \param visitOrder Spos�b przegl�dania w kierunku kt�ry b�dziemy odwraca�
+				//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
+				//! \param visitor Obiekt przegl�daj�cy wez�y i poziomy
+				static void visit(NPtr root, Visitor & visitor)
+				{
+					auto lt = NodeLinearization<VisitOrder, Backward>::linearize(root);
+					for (const auto & node : lt)
+					{
+						visitor(node);
+					}
+				}
+
 				//! \tparam NPtr Typ wska�nika w�z�a
 				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
 				template<typename NPtr, typename CondVisitor>

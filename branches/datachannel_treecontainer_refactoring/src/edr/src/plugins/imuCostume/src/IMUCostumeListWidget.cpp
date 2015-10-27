@@ -404,13 +404,12 @@ void IMUCostumeWidget::onLoadNewProfile()
 		return;
 	}
 
-	auto profiles = ds->costumesProfiles();
-
 	auto profile = utils::make_shared<IMU::CostumeProfile>(ew.costumeProfile());
 
 	res = QMessageBox::question(this, tr("Save new profile"), tr("Would You like to save new profile?"));
 
 	if (res == QMessageBox::Yes){
+		const auto profiles = ds->costumesProfiles();
 		bool ok = true;
 		QString pName;
 		while (ok == true){
@@ -855,15 +854,21 @@ void IMUCostumeWidget::saveMotionData()
 	//serializujemy najpierw do pamięci - powinno iść dużo szybciej
 	std::map<imuCostume::CostumeRawIO::CostumeAddress, std::stringstream> streams;
 
+	//PLUGIN_LOG_DEBUG("Data frame size: " << data.size());
+
 	//iteruje po ramkach
 	for (const auto & d : data)
 	{
+		//PLUGIN_LOG_DEBUG("d costumes size: " << d.size());
 		//iteruje po kostiumach w ramce
-		for (const auto & dd : d){
+		for (const auto & dd : d){			
 			auto it = recordingDetails.find(dd.first);
 			auto & output = streams[dd.first];
 
 			kinematic::SkeletonState::NonRigidCompleteStateLocal state;			
+
+			PLUGIN_LOG_DEBUG("dd skeleton data size: " << d.size());
+
 			for (const auto & sd : dd.second.skeletonData)
 			{
 				state.data().push_back(sd.localState);
@@ -871,8 +876,15 @@ void IMUCostumeWidget::saveMotionData()
 			
 			kinematic::SkeletonState::applyState(*(it->second.skeleton), state);
 			auto localRigidState = kinematic::SkeletonState::localRigidState(*(it->second.skeleton));
+
+			//PLUGIN_LOG_DEBUG("localRigidState size: " << localRigidState.data().orientations.size());
+			//PLUGIN_LOG_DEBUG("acclaim skeleton bones size: " << it->second.acclaimSkeleton.bones.size());
+			//PLUGIN_LOG_DEBUG("active mapping size: " << it->second.activeMapping.data().size());
+			//PLUGIN_LOG_DEBUG("helper motion data size: " << it->second.helperMotionData.size());
+
 			acclaim::MotionData::FrameData fd;
 			fd.bonesData = kinematic::SkeletonState::convert(it->second.acclaimSkeleton, localRigidState, it->second.activeMapping, it->second.helperMotionData);
+			//PLUGIN_LOG_DEBUG("acclaim frame data size: " << fd.bonesData.size());
 			fd.id = id;
 
 			//korekcja ujemnych zer
@@ -1040,12 +1052,13 @@ void IMUCostumeWidget::onRecord(const bool record)
 					rd.acclaimSkeleton.bones[rd.acclaimSkeleton.root].axisOrder = rd.acclaimSkeleton.axisOrder;
 					rd.acclaimSkeleton.bones[rd.acclaimSkeleton.root].dofs = acclaim::Bone::defaultRootDofs(angleType);
 					const auto localMapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*(rd.skeleton));
-
+					//PLUGIN_LOG_DEBUG("cd.profile->activeJoints size: " << cd.profile->activeJoints.size());
 					for (const auto id : cd.profile->activeJoints)
 					{
 						auto lIT = localMapping.data().left.find(id);
 						if (lIT != localMapping.data().left.end()){
 							const auto name = lIT->get_right();
+							//PLUGIN_LOG_DEBUG("found joint ID: " << id << " name " << name);
 							auto it = std::find_if(rd.acclaimSkeleton.bones.begin(), rd.acclaimSkeleton.bones.end(),
 								[&name, &localMapping](const acclaim::Skeleton::Bones::value_type & boneData)
 							{
@@ -1053,15 +1066,42 @@ void IMUCostumeWidget::onRecord(const bool record)
 							});
 
 							if (it != rd.acclaimSkeleton.bones.end()){
+								//PLUGIN_LOG_DEBUG("found bone");
 								if (it->first != rd.acclaimSkeleton.root){
+									//PLUGIN_LOG_DEBUG("setup bone");
 									it->second.dofs = acclaim::Bone::defaultRotationDofs(angleType);
+								}
+							}
+							else{
+								//PLUGIN_LOG_DEBUG("NOT found bone");
+							}
+						}
+						else{
+							//PLUGIN_LOG_DEBUG("could not find joint ID: " << id);
+						}
+					}
+
+					rd.helperMotionData = acclaim::Skeleton::helperMotionData(rd.acclaimSkeleton);
+					{
+						const auto skeletonMapping = kinematic::LinearizedSkeleton::createNonLeafMapping(*(rd.skeleton));
+						//PLUGIN_LOG_DEBUG("skeleton size: " << rd.skeleton->root()->size());
+						//PLUGIN_LOG_DEBUG("skeletonMapping size: " << skeletonMapping.data().size());
+						for (const auto & bd : rd.acclaimSkeleton.bones)
+						{
+							PLUGIN_LOG_DEBUG("bone " << bd.second.name << " active " << (bd.second.isActive() ? "true" : "false"));
+							if (bd.second.isActive() == true){
+								auto it = skeletonMapping.data().right.find(bd.second.name);
+								if (it == skeletonMapping.data().right.end())
+								{
+									//PLUGIN_LOG_DEBUG("bone " << bd.second.name << " not found in mapping");
 								}
 							}
 						}
 					}
 
-					rd.helperMotionData = acclaim::Skeleton::helperMotionData(rd.acclaimSkeleton);
 					rd.activeMapping = kinematic::SkeletonState::createAcclaimActiveMappingLocal(*(rd.skeleton), rd.acclaimSkeleton.bones);
+					//PLUGIN_LOG_DEBUG("rd.activeMapping size: " << rd.activeMapping.data().size());
+					//PLUGIN_LOG_DEBUG("rd.acclaimSkeleton.bones size: " << rd.acclaimSkeleton.bones.size());
 
 					it = recordingDetails.insert({ c.first, rd }).first;
 				}

@@ -46,6 +46,36 @@ namespace treeContainer
 						NodeVisitOrder::visit(tree.root(), visitor);
 					}
 				}
+
+				//! \tparam TreeType Typ drzewa
+				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				template<typename TreeType, typename CondVisitor>
+				//! \param tree Drzewo
+				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
+				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
+				static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
+				{
+					if (treeContainer::Tree::empty(tree) == false){
+						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
+					}
+
+					return false;
+				}
+
+				//! \tparam TreeType Typ drzewa
+				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				template<typename TreeType, typename CondVisitor>
+				//! \param tree Drzewo
+				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
+				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
+				static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
+				{
+					if (treeContainer::Tree::empty(tree) == false){
+						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
+					}
+
+					return false;
+				}
 			};
 
 			//! Polityka przechodzenia drzewa schematem PostOrder
@@ -77,6 +107,36 @@ namespace treeContainer
 					{
 						NodeVisitOrder::visit(tree.root(), visitor);
 					}
+				}
+
+				//! \tparam TreeType Typ drzewa
+				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				template<typename TreeType, typename CondVisitor>
+				//! \param tree Drzewo
+				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
+				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
+				static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
+				{
+					if (treeContainer::Tree::empty(tree) == false){
+						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
+					}
+
+					return false;
+				}
+
+				//! \tparam TreeType Typ drzewa
+				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				template<typename TreeType, typename CondVisitor>
+				//! \param tree Drzewo
+				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
+				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
+				static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
+				{
+					if (treeContainer::Tree::empty(tree) == false){
+						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
+					}
+
+					return false;
 				}
 			};
 
@@ -110,6 +170,34 @@ namespace treeContainer
 						NodeVisitOrder::visit(tree.root(), visitor);
 					}
 				}
+
+				//! \tparam TreeType Typ drzewa
+				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				template<typename TreeType, typename CondVisitor>
+				//! \param tree Drzewo
+				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
+				static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
+				{
+					if (treeContainer::Tree::empty(tree) == false){
+						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
+					}
+
+					return false;
+				}
+
+				//! \tparam TreeType Typ drzewa
+				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				template<typename TreeType, typename CondVisitor>
+				//! \param tree Drzewo
+				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
+				static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
+				{
+					if (treeContainer::Tree::empty(tree) == false){
+						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
+					}
+
+					return false;
+				}
 			};
 
 			//! \tparam NodeVisitOrderT Polityka przechodzenia drzewa którą odwracamy
@@ -142,120 +230,6 @@ namespace treeContainer
 						NodeVisitOrder::visit(tree.root(), visitor);
 					}
 				}
-			};
-
-			//! Polityka przechodzenia drzewa schematem LevelOrder z warunkiem
-			struct LevelOrderWhile
-			{
-				using NodeVisitOrder = VisitPolicies::Node::LevelOrderWhile;
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
-				template<typename TreeType, typename CondVisitor>
-				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-				static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
-					}
-
-					return false;
-				}
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
-				template<typename TreeType, typename CondVisitor>
-				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-				static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
-					}
-
-					return false;
-				}
-			};
-
-			//! Polityka przechodzenia drzewa schematem PreOrder z warunkiem
-			struct PreOrderWhile
-			{
-				using NodeVisitOrder = VisitPolicies::Node::PreOrderWhile;
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
-				template<typename TreeType, typename CondVisitor>
-				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
-				static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
-					}
-
-					return false;
-				}
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
-				template<typename TreeType, typename CondVisitor>
-				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
-				static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
-					}
-
-					return false;
-				}
-			};
-
-			//! Polityka przechodzenia drzewa schematem PostOrder z warunkiem
-			struct PostOrderWhile
-			{
-				using NodeVisitOrder = VisitPolicies::Node::PostOrderWhile;
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
-				template<typename TreeType, typename CondVisitor>
-				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
-				static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
-					}
-
-					return false;
-				}
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
-				template<typename TreeType, typename CondVisitor>
-				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
-				static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
-					}
-
-					return false;
-				}
-			};
-
-			//! \tparam NodeVisitOrderT Polityka przechodzenia drzewa którą odwracamy
-			template<typename NodeVisitOrderT>
-			//! Polityka przechodzenia drzewa schematem odwrotnym do danego z warunkiem
-			struct ReverseOrderWhile
-			{
-				using NodeVisitOrder = VisitPolicies::Node::ReverseOrderWhile < NodeVisitOrderT >;
 
 				//! \tparam TreeType Typ drzewa
 				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y

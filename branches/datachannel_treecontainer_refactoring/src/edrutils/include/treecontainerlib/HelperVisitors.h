@@ -30,9 +30,9 @@ namespace treeContainer
 
 		//! \tparam NPtr Typ wska�nika w�z�a
 		//! \tparam Args argumenty, np. dla przechodzenia wg poziomów
-		template<typename NPtr, typename... Args>
+		template<typename NPtr>
 		//! \param node odwiedzany w�ze�
-		void operator()(NPtr node, Args...)
+		void operator()(NPtr node)
 		{
 			++treeSize_;
 		}
@@ -106,11 +106,8 @@ namespace treeContainer
 		LinearizeVisitor() {}
 		//! Destruktor
 		~LinearizeVisitor() {}
-		//! \tparam NPtr Typ wska�nika w�z�a
-		//! \tparam Args argumenty, np. dla przechodzenia wg poziomów
-		template<typename... Args>
 		//! \param node odwiedzany w�ze�
-		void operator()(NPtr node, Args...)
+		void operator()(NPtr node)
 		{
 			linearizedTree_.push_back(node);
 		}
@@ -147,10 +144,8 @@ namespace treeContainer
 		LinearizeVisitor() {}
 		//! Destruktor
 		~LinearizeVisitor() {}
-		//! \tparam Args argumenty, np. dla przechodzenia wg poziomów
-		template<typename... Args>
 		//! \param node odwiedzany w�ze�
-		void operator()(NPtr node, Args...)
+		void operator()(NPtr node)
 		{
 			linearizedTree_.push_front(node);
 		}
@@ -189,9 +184,9 @@ namespace treeContainer
 		//! \tparam Args argumenty, np. dla przechodzenia wg poziomów
 		template<typename NPtr, typename... Args>
 		//! \param node odwiedzany węzeł
-		void operator() (NPtr node, Args...)
+		decltype(std::declval<Visitor>()(NPtr())) operator() (NPtr node, Args...)
 		{
-			visitor(node);
+			return visitor(node);
 		}
 
 	private:
@@ -203,25 +198,28 @@ namespace treeContainer
 	//! \tparam Visitor Typ odwiedzającego przefiltrowane węzły
 	template<typename FilterType, typename Visitor>
 	//! Klasa realizująca odwiedzanie przefiltrowanych węzłów
-	class VisitorFilter
+	class FilterVisitor
 	{
 	public:
 		//! \param filter Filtr dla węzłów
 		//! \param visitor Odwiedzający przefiltrowane węzły
-		VisitorFilter(Visitor & visitor, FilterType filter = FilterType())
+		FilterVisitor(Visitor & visitor, FilterType filter = FilterType())
 			: visitor(visitor), filter(filter){}
 		//! Destruktor
-		~VisitorFilter() {}
+		~FilterVisitor() {}
 
 		//! \tparam NPtr Typ wskaźnika węzła
 		//! \tparam Args argumenty, np. dla przechodzenia wg poziomów
 		template<typename NPtr, typename... Args>
 		//! \param node odwiedzany węzeł
-		void operator()(NPtr node, Args... args)
+		bool operator()(NPtr node, Args... args)
 		{
-			if (filter(node) == true){
+			const auto ret = filter(node);
+			if (ret == true){
 				visitor(node, args...);
-			}				
+			}
+
+			return ret;
 		}
 
 	private:
@@ -231,6 +229,7 @@ namespace treeContainer
 		Visitor & visitor;
 	};
 
+	//! Filtr na węzły nie-liście drzewa
 	struct NonLeafFilter
 	{
 		//! \tparam NPtr Typ wskaźnika węzła		
@@ -243,6 +242,7 @@ namespace treeContainer
 		}
 	};
 
+	//! Filtr na liście drzewa
 	struct LeafFilter
 	{
 		//! \tparam NPtr Typ wskaźnika węzła		
@@ -258,12 +258,12 @@ namespace treeContainer
 	//! \tparam Visitor Typ odzwiedzającego
 	template<typename Visitor>
 	//! Klasa realizująca filtracje nie-liści w drzewie, pozwala przechodzić wszystkie pozostałe węzły
-	using NonLeafVisitor = VisitorFilter < NonLeafFilter, Visitor > ;	
+	using NonLeafVisitor = FilterVisitor < NonLeafFilter, Visitor > ;	
 
 	//! \tparam Visitor Typ odzwiedzającego
 	template<typename Visitor>
 	//! Klasa realizująca filtracje nie-liści w drzewie, pozwala przechodzić wszystkie pozostałe węzły
-	using LeafVisitor = VisitorFilter < LeafFilter, Visitor > ;
+	using LeafVisitor = FilterVisitor < LeafFilter, Visitor > ;
 
 	//! \tparam Visitor Typ odzwiedzającego
 	template<typename Visitor>
@@ -278,11 +278,11 @@ namespace treeContainer
 
 		//! \tparam NPtr Typ wskaźnika węzła
 		//! \tparam Args argumenty, np. dla przechodzenia wg poziomów
-		template<typename NPtr, typename... Args>
+		template<typename NPtr>
 		//! \param node odwiedzany węzeł		
-		void operator() (NPtr node, Args...)
+		decltype(std::declval<Visitor>()(NPtr(), Node::SizeType())) operator() (NPtr node)
 		{
-			visitor(node, idx++);
+			return visitor(node, idx++);
 		}
 
 	private:
@@ -290,6 +290,41 @@ namespace treeContainer
 		Node::SizeType idx;
 		//! Odwiedzający
 		Visitor & visitor;
+	};
+
+	//! \tparam NPtr Typ węzła
+	template<typename NPtr>
+	//! Klasa pozwalająca wydajnie pobierać węzeł o zadanym indeksie
+	class IndexFilterVisitor
+	{
+	public:
+		//! \param idx Indeks węzła który szukamy
+		IndexFilterVisitor(const Node::SizeType idx) : idx(idx) {}
+		//! Destruktor
+		~IndexFilterVisitor() {}
+
+		//! \param node odwiedzany węzeł		
+		//! \param currentIDX Indeks aktualnego węzła
+		bool operator()(NPtr node, const Node::SizeType currentIDX)
+		{
+			if (currentIDX == idx){
+				node_ = node;
+				return false;
+			}
+
+			return true;
+		}
+
+		//! \return Węzeł o zadanym indeksie
+		NPtr node() const { return node_; }
+		//! Metoda resetuje znaleziony węzeł
+		void reset() { node_ = NPtr(); }
+
+	private:
+		//! Znaleziony węzeł
+		NPtr node_;
+		//! Indeks szukanego węzła
+		const Node::SizeType idx;
 	};
 
 	//! Struktura opisuje minimalny i maksymalny stopień węzłów drzewa
@@ -325,7 +360,7 @@ namespace treeContainer
 		//! \tparam Args argumenty, np. dla przechodzenia wg poziomów
 		template<typename NPtr, typename... Args>
 		//! \param node odwiedzany w�ze�
-		void operator()(NPtr node, Args... args)
+		void operator()(NPtr node)
 		{
 			const auto degree = node->degree();
 			degreeLimits_.min = std::min(degreeLimits_.min, degree);

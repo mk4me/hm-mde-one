@@ -27,6 +27,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <plugins/c3d/C3DChannels.h>
+#include <osgutils/QuatUtils.h>
 
 struct PrecalculatedJointFrame
 {
@@ -76,9 +77,9 @@ std::string bodyPlaneName(const unsigned int idx)
 {
 	switch (idx)
 	{
-	case 0:	return QObject::tr("sagittal pane").toStdString();
-	case 1:	return QObject::tr("coronal pane").toStdString();
-	case 2:	return QObject::tr("traverse pane").toStdString();	
+	case 0:	return QObject::tr("sagittal plane").toStdString();
+	case 1:	return QObject::tr("coronal plane").toStdString();
+	case 2:	return QObject::tr("traverse plane").toStdString();	
 	default: return QObject::tr("Unknown body plane").toStdString();
 	}
 }
@@ -209,7 +210,7 @@ public:
 		jointData.second.globalOrientation = joint->value().globalOrientation();
 		jointData.second.localOrientation = joint->value().localOrientation();
 		jointData.second.globalPosition = joint->value().globalPosition();
-		jointData.second.localPosition = joint->value().localPosition();
+		jointData.second.localPosition = joint->value().localPosition();		
 	}
 
 private:
@@ -443,23 +444,122 @@ core::HierarchyDataItemPtr extracImuStreamVector(core::VariantsList & domainData
 	return imuElement;
 }
 
+class GeneralDiffPolicy
+{
+public:
+	template<typename T>
+	static T diff(const T & prev, const T & current, const double dt)
+	{
+		return (current - prev) / dt;
+	}
+};
+
+template<>
+osg::Quat GeneralDiffPolicy::diff<osg::Quat>(const osg::Quat & prev, const osg::Quat & current, const double dt)
+{
+	const auto prevInverse = prev.inverse();
+	const auto quatDiff = current * prevInverse;
+	//http://gamedev.stackexchange.com/questions/30926/quaternion-dfference-time-angular-velocity-gyroscope-in-physics-library
+	auto diff = osg::QuatUtils::exp(osg::QuatUtils::log(quatDiff) / dt) * 2.0 * prevInverse;
+
+	return osg::QuatUtils::normalize(diff);
+	//return diff;
+}
+
+static std::string serialize(const osg::Quat & orient)
+{
+	std::stringstream ss;
+	ss << orient.x() << " " << orient.y() << " " << orient.z() << " " << orient.w();
+	return ss.str();
+}
+
+static std::string serialize(const osg::Vec3 & vec)
+{
+	std::stringstream ss;
+	ss << vec.x() << " " << vec.y() << " " << vec.z();
+	return ss.str();
+}
+
+template<typename ValueExtractor, typename StreamType, typename DiffPolicy = GeneralDiffPolicy>
+class DiffAdapter
+{
+public:
+
+	DiffAdapter(const ValueExtractor & ve = ValueExtractor()) : ve(ve), ret(false) {}	
+	~DiffAdapter() {}
+	
+	template<typename SrcType>
+	inline bool verify(const SrcType & src) const
+	{
+		static int level = 0;
+		if (ve.verify(src) == true){
+			level = (level + 1) % 2;
+			typename StreamType::value_type current;
+			ve.extract(src, current);
+
+			double timeDiff = current.first - prev.first;
+
+			if (timeDiff == 0){
+				return false;
+			}
+
+			if (ret == true){
+
+				timeDiff /= 1000.0;
+
+				val.second = DiffPolicy::diff(prev.second, current.second, timeDiff);
+				val.first = src.first;
+				//PLUGIN_LOG_DEBUG("Level: " << level+1 << " time diff: " << timeDiff << " prev: [" << serialize(prev.second) << "] current: [" << serialize(current.second) << "] diff: [" << serialize(val.second) << "]");
+				prev = current;
+				return true;
+			}
+			else{
+				prev = current;
+				ret = true;
+				return false;
+			}			
+		}
+
+		return false;
+	}
+	
+	template<typename SrcType>
+	inline void extract(const SrcType & src, typename StreamType::value_type & dest) const {
+		dest = val;
+	}
+
+private:
+	mutable ValueExtractor ve;
+	mutable typename StreamType::value_type prev;
+	mutable typename StreamType::value_type val;
+	mutable bool ret;
+};
+
 template<typename ValueExtractor>
 class EulerAngleAdapter
 {
 public:
-	template<typename SrcType>
-	inline static bool verify(const SrcType &) { return true; }
+
+	EulerAngleAdapter(const ValueExtractor & ve = ValueExtractor()) : ve(ve) {}
 
 	template<typename SrcType>
-	inline static void extract(const SrcType & src, IMU::Vec3Stream::value_type & dest){
+	inline bool verify(const SrcType & src) const { return ve.verify(src); }
+
+	template<typename SrcType>
+	inline void extract(const SrcType & src, IMU::Vec3Stream::value_type & dest) const{
 		IMU::QuatStream::value_type val;
-		ValueExtractor::extract(src, val);
+		ve.extract(src, val);
 		dest.first = val.first;
 		dest.second = kinematicUtils::toDegrees(kinematicUtils::convertXYZ(val.second));
 	}
+
+private:
+
+	mutable ValueExtractor ve;
 };
 
-template<typename StreamType, typename SensorDataType, typename Extractor>
+template<typename StreamType, typename SensorDataType, typename Extractor,
+	template<typename> class AngleExtracotr = EulerAngleAdapter>
 core::HierarchyDataItemPtr extracImuStreamLocalEuler(core::VariantsList & domainData,
 	utils::shared_ptr<StreamType> stream,
 	SensorDataType & sd,
@@ -468,7 +568,7 @@ core::HierarchyDataItemPtr extracImuStreamLocalEuler(core::VariantsList & domain
 	const QString & prefix = QString())
 {
 	auto orientStream = utils::shared_ptr<IMU::Vec3Stream>(new threadingUtils::StreamAdapterT<StreamType::value_type,
-		IMU::Vec3Stream::value_type, EulerAngleAdapter<Extractor>>(stream));
+		IMU::Vec3Stream::value_type, AngleExtracotr<Extractor>> (stream));
 
 	auto ow = core::Variant::wrap<IMU::Vec3Stream>(orientStream);
 	ow->setMetadata("core/name", paramName.toStdString());
@@ -502,7 +602,8 @@ core::HierarchyDataItemPtr extracImuStreamLocalEuler(core::VariantsList & domain
 	return imuElement;
 }
 
-template<typename StreamType, typename SensorDataType, typename Extractor>
+template<typename StreamType, typename SensorDataType, typename Extractor,
+	template<typename> class AngleAdapter = EulerAngleAdapter>
 core::HierarchyDataItemPtr extracImuStreamGlobalEuler(core::VariantsList & domainData,
 	utils::shared_ptr<StreamType> stream,
 	SensorDataType & sd,
@@ -511,7 +612,7 @@ core::HierarchyDataItemPtr extracImuStreamGlobalEuler(core::VariantsList & domai
 	const QString & prefix = QString())
 {
 	auto orientStream = utils::shared_ptr<IMU::Vec3Stream>(new threadingUtils::StreamAdapterT<StreamType::value_type,
-		IMU::Vec3Stream::value_type, EulerAngleAdapter<Extractor >> (stream));
+		IMU::Vec3Stream::value_type, AngleAdapter<Extractor >> (stream));
 
 	auto ow = core::Variant::wrap<IMU::Vec3Stream>(orientStream);
 	ow->setMetadata("core/name", paramName.toStdString());
@@ -1241,18 +1342,50 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 						sIT->second, QObject::tr("Local orientation"), QObject::tr("deg"), QString::fromStdString(jname + "\n")));					
 				}
 
+				//angular velocity
+				{
+					jitem->appendChild(extracImuStreamLocalEuler<JointStream, IMU::IMUCostumeDataSource::SensorData,
+						DiffAdapter<TimeMemberExtractorlocalOrientation, IMU::QuatStream>>(cData.domainData, stream,
+						//jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalOrientation>(cData.domainData, stream,
+						sIT->second, QObject::tr("Angular velocity"), QObject::tr("deg/s"), QString::fromStdString(jname + "\n")));
+				}
+
+				//angular acceleration
+				{
+					typedef DiffAdapter<TimeMemberExtractorlocalOrientation, IMU::QuatStream> DA;
+					jitem->appendChild(extracImuStreamLocalEuler<JointStream, IMU::IMUCostumeDataSource::SensorData,
+						DiffAdapter<DA, IMU::QuatStream>> (cData.domainData, stream,
+						//jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalOrientation>(cData.domainData, stream,
+						sIT->second, QObject::tr("Angular acceleration"), QObject::tr("deg/s^2"), QString::fromStdString(jname + "\n")));
+				}
+
 				//local pos
 				{
-					jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalPosition>(cData.domainData, stream,
+					jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalPosition>(cData.domainData, stream,
 					//jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalPosition>(cData.domainData, stream,
-						sIT->second, QObject::tr("Global position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), jname + "\n"));
+						sIT->second, QObject::tr("Local position").toStdString(), QString(), -1, 1, jname + "\n"));
 				}
 
 				//global pos
 				{
-					jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalPosition>(cData.domainData, stream,
+					jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalPosition>(cData.domainData, stream,
 					//jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalPosition>(cData.domainData, stream,
-						sIT->second, QObject::tr("Local position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), jname + "\n"));
+					sIT->second, QObject::tr("Global position").toStdString(), QString(), -1, 1, jname + "\n"));
+				}
+
+				//linear velocity
+				{
+					jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, DiffAdapter<TimeMemberExtractorglobalPosition, IMU::Vec3Stream>>(cData.domainData, stream,
+						//jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalPosition>(cData.domainData, stream,
+						sIT->second, QObject::tr("Linear velocity").toStdString(), QObject::tr("m/s"), -2, 2, jname + "\n"));
+				}
+
+				//linear acceleration
+				{
+					typedef DiffAdapter<TimeMemberExtractorglobalPosition, IMU::Vec3Stream> DA;
+					jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, DiffAdapter<DA, IMU::Vec3Stream>>(cData.domainData, stream,
+						//jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalPosition>(cData.domainData, stream,
+						sIT->second, QObject::tr("Linear acceleration").toStdString(), QObject::tr("m/s^2"), -10, 10, jname + "\n"));
 				}
 
 				joints.erase(it);
@@ -1287,16 +1420,46 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 					sd, QObject::tr("Local orientation"), QObject::tr("deg"), QString::fromStdString(jname + "\n")));				
 			}
 
+			//angular velocity
+			{
+				jitem->appendChild(extracImuStreamLocalEuler < JointStream, IMU::IMUCostumeDataSource::SensorData,
+					DiffAdapter < TimeMemberExtractorlocalOrientation, IMU::QuatStream >> (cData.domainData, stream,
+					//jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalOrientation>(cData.domainData, stream,
+					sd, QObject::tr("Angular velocity"), QObject::tr("deg/s"), QString::fromStdString(jname + "\n")));
+			}
+
+			//angular acceleration
+			{
+				typedef DiffAdapter<TimeMemberExtractorlocalOrientation, IMU::QuatStream> DA;
+				jitem->appendChild(extracImuStreamLocalEuler < JointStream, IMU::IMUCostumeDataSource::SensorData,
+					DiffAdapter < DA, IMU::QuatStream >> (cData.domainData, stream,
+					//jitem->appendChild(extracImuStreamQuat<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalOrientation>(cData.domainData, stream,
+					sd, QObject::tr("Angular acceleration"), QObject::tr("deg/s^2"), QString::fromStdString(jname + "\n")));
+			}
+
 			//local pos
 			{
-				jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalPosition>(cData.domainData, stream,
-					sd, QObject::tr("Global position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), jname + "\n"));
+				jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalPosition>(cData.domainData, stream,
+					sd, QObject::tr("Local position").toStdString(), QString(), -1, 1, jname + "\n"));
 			}
 
 			//global pos
 			{
-				jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorlocalPosition>(cData.domainData, stream,
-					sd, QObject::tr("Local position").toStdString(), QString(), std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), jname + "\n"));
+				jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, TimeMemberExtractorglobalPosition>(cData.domainData, stream,
+					sd, QObject::tr("Global position").toStdString(), QString(), -1, 1, jname + "\n"));
+			}
+
+			//linear velocity
+			{
+				jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, DiffAdapter<TimeMemberExtractorglobalPosition, IMU::Vec3Stream>>(cData.domainData, stream,
+					sd, QObject::tr("Linear velocity").toStdString(), QObject::tr("m/s"), -2, 2, jname + "\n"));
+			}
+
+			//linear acceleration
+			{
+				typedef DiffAdapter<TimeMemberExtractorglobalPosition, IMU::Vec3Stream> DA;
+				jitem->appendChild(extracImuStreamVector<JointStream, IMU::IMUCostumeDataSource::SensorData, DiffAdapter<DA, IMU::Vec3Stream>>(cData.domainData, stream,
+					sd, QObject::tr("Linear acceleration").toStdString(), QObject::tr("m/s^2"), -10, 10, jname + "\n"));
 			}
 		}
 
@@ -1880,7 +2043,6 @@ void IMUCostumeDataSource::loadRecordedData(const core::Filesystem::Path & asfFi
 	auto precalculatedFrames = utils::make_shared<MotionDescription>();
 	precalculatedFrames->frameTime = data->frameTime;
 	precalculatedFrames->duration = data->frameTime * (float)data->frames.size();
-
 	precalculatedFrames->frames.reserve(data->frames.size());
 
 	kinematic::Skeleton helperSkeleton(*skeleton);
@@ -1904,6 +2066,10 @@ void IMUCostumeDataSource::loadRecordedData(const core::Filesystem::Path & asfFi
 
 		precalculatedFrames->frames.push_back(sf);
 	}
+
+	PLUGIN_LOG_DEBUG("precalculatedFrames->frameTime = " << precalculatedFrames->frameTime);
+	PLUGIN_LOG_DEBUG("precalculatedFrames->duration = " << precalculatedFrames->duration);
+	PLUGIN_LOG_DEBUG("precalculatedFrames->frames.size = " << precalculatedFrames->frames.size());
 
 	auto sws = utils::make_shared<SkeletonWithStates>();
 	sws->skeleton = skeleton;
@@ -1969,6 +2135,59 @@ void IMUCostumeDataSource::loadRecordedData(const core::Filesystem::Path & asfFi
 			item->appendChild(di);
 		}
 
+		const auto cFT = precalculatedFrames->frameTime;
+		const auto sPS = 1.0 / cFT;
+	
+		utils::shared_ptr<c3dlib::VectorChannel> av;
+		//angular velocity
+		{
+			auto data = utils::make_shared<c3dlib::VectorChannel>(sPS);
+			data->setName(joint->value().name() + "\n" + QObject::tr("Angular velocity").toStdString());
+			data->setTimeBaseUnit(QObject::tr("s").toStdString());
+			data->setValueBaseUnit(QObject::tr("deg").toStdString());
+			
+			//zasilamy danymi			
+			data->addPoint(osg::Vec3());			
+			for (std::size_t idx = 1; idx < precalculatedFrames->frames.size(); ++idx)
+			{
+				auto diff = GeneralDiffPolicy::diff(kinematicUtils::convertXYZ(kinematicUtils::toRadians(precalculatedFrames->frames[idx - 1][nidx].localOrientation)),
+					kinematicUtils::convertXYZ(kinematicUtils::toRadians(precalculatedFrames->frames[idx][nidx].localOrientation)), cFT);
+				data->addPoint(kinematicUtils::toDegrees(kinematicUtils::convertXYZ(diff)));
+			}
+
+			PLUGIN_LOG_DEBUG("angular velocity.size = " << data->size());
+						
+			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
+			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Angular velocity"), "", utils::make_shared<NewVector3ItemHelper>(ow,
+				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
+			item->appendChild(di);
+			av = data;
+		}
+		
+		//angular acceleration
+		{
+			auto data = utils::make_shared<c3dlib::VectorChannel>(sPS);
+			data->setName(joint->value().name() + "\n" + QObject::tr("Angular acceleration").toStdString());
+			data->setTimeBaseUnit(QObject::tr("s^2").toStdString());
+			data->setValueBaseUnit(QObject::tr("deg").toStdString());
+
+			//zasilamy danymi			
+			data->addPoint(osg::Vec3());			
+			for (std::size_t idx = 1; idx < precalculatedFrames->frames.size(); ++idx)
+			{
+				auto diff = GeneralDiffPolicy::diff(kinematicUtils::convertXYZ(kinematicUtils::toRadians(av->value(idx-1))),
+					kinematicUtils::convertXYZ(kinematicUtils::toRadians(av->value(idx))), cFT);
+				data->addPoint(kinematicUtils::toDegrees(kinematicUtils::convertXYZ(diff)));
+			}
+
+			PLUGIN_LOG_DEBUG("angular acceleration.size = " << data->size());
+
+			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
+			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Angular acceleration"), "", utils::make_shared<NewVector3ItemHelper>(ow,
+				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
+			item->appendChild(di);
+		}
+
 		//local position
 		{
 			auto data = utils::make_shared<PrecalculatedDataAdapter<FRAME_MEMBER_EXTRACTOR_NAME(localPosition)>>(precalculatedFrames,
@@ -1985,6 +2204,55 @@ void IMUCostumeDataSource::loadRecordedData(const core::Filesystem::Path & asfFi
 				joint->value().name() + "\n" + QObject::tr("Global position").toStdString(), QObject::tr("s").toStdString(), "", nidx);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Global position"), "", utils::make_shared<NewVector3ItemHelper>(ow,
+				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
+			item->appendChild(di);
+		}
+		
+		//linear velocity
+		utils::shared_ptr<c3dlib::VectorChannel> lv;
+		{
+			auto data = utils::make_shared<c3dlib::VectorChannel>(sPS);
+			data->setName(joint->value().name() + "\n" + QObject::tr("Linear velocity").toStdString());
+			data->setTimeBaseUnit(QObject::tr("s").toStdString());
+			data->setValueBaseUnit(QObject::tr("m").toStdString());
+
+			//zasilamy danymi			
+			data->addPoint(osg::Vec3());
+			for (std::size_t idx = 1; idx < precalculatedFrames->frames.size(); ++idx)
+			{
+				auto diff = GeneralDiffPolicy::diff(precalculatedFrames->frames[idx - 1][nidx].globalPosition,
+					precalculatedFrames->frames[idx][nidx].globalPosition, cFT);
+				data->addPoint(diff);
+			}
+
+			PLUGIN_LOG_DEBUG("linear velocity.size = " << data->size());
+			
+			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
+			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Linear velocity"), "", utils::make_shared<NewVector3ItemHelper>(ow,
+				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
+			item->appendChild(di);
+			lv = data;
+		}
+		
+		//linear acceleration
+		{
+			auto data = utils::make_shared<c3dlib::VectorChannel>(sPS);
+			data->setName(joint->value().name() + "\n" + QObject::tr("Linear acceleration").toStdString());
+			data->setTimeBaseUnit(QObject::tr("s^2").toStdString());
+			data->setValueBaseUnit(QObject::tr("m").toStdString());
+
+			//zasilamy danymi			
+			data->addPoint(osg::Vec3());
+			for (std::size_t idx = 1; idx < precalculatedFrames->frames.size(); ++idx)
+			{
+				auto diff = GeneralDiffPolicy::diff(lv->value(idx - 1), lv->value(idx), cFT);
+				data->addPoint(diff);
+			}
+
+			PLUGIN_LOG_DEBUG("linear acceleration.size = " << data->size());
+
+			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
+			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Linear acceleration"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
 			item->appendChild(di);
 		}

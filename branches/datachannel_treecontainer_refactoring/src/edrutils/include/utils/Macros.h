@@ -100,6 +100,16 @@ purpose:
 #endif
 
 //------------------------------------------------------------------------------
+// Makro rzucające warningiem na konsole podczas kompilacji
+#if defined __GNUC__
+#define COMPILER_WARNING(x) _Pragma ("GCC warning \"Custom compile-time-warning: #x\"")
+#elif defined _MSC_VER
+	#define COMPILER_WARNING(x) __pragma(message("Custom compile-time-warning: #x"))
+#else
+#error Provide macro name for retriving currently processed function name for current compiler!
+#endif
+
+//------------------------------------------------------------------------------
 #if defined(_DEBUG) || defined(DEBUG)
 #define UTILS_DEBUG
 #endif

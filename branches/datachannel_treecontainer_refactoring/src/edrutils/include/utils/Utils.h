@@ -26,31 +26,134 @@
 namespace utils {
 ////////////////////////////////////////////////////////////////////////////////	
 
+	template< class T >
+	class numeric_limits
+	{
+	public:
+
+		static inline T smallestStep() { return (std::numeric_limits<T>::is_integer == true) ? T(1) : std::numeric_limits<T>::epsilon(); }
+	};
+
+	template<typename>
+	struct UnaryFunctionTraits;
+
+	template<typename Ret, typename Arg>
+	struct UnaryFunctionTraits<Ret(Arg)>
+	{
+		typedef Ret result_type;
+		typedef Arg argument_type;
+	};
+
+	template<typename Ret, typename Arg>
+	struct UnaryFunctionTraits<std::function<Ret(Arg)>>
+	{
+		typedef Ret result_type;
+		typedef Arg argument_type;
+	};
+
+	template<typename Ret, typename Arg>
+	struct UnaryFunctionTraits<Ret(*)(Arg)>
+	{
+		typedef Ret result_type;
+		typedef Arg argument_type;
+	};
+
+	template<typename Ret, typename Arg, typename Obj>
+	struct UnaryFunctionTraits<Ret(*)(Obj*, Arg)>
+	{
+		typedef Ret result_type;
+		typedef Arg argument_type;
+	};
+
+	template<typename Ret, typename Arg, typename Obj>
+	struct UnaryFunctionTraits<Ret(*)(const Obj*, Arg)>
+	{
+		typedef Ret result_type;
+		typedef Arg argument_type;
+	};
+
+	struct arithmetic_traits
+	{
+		template<typename T, typename U>
+		using larger_type = typename std::conditional<(sizeof(T) >= sizeof(U)), T, U >::type;
+
+		template<typename T>
+		struct wider_type;
+
+		template<> struct wider_type<char> { typedef short type; };
+		template<> struct wider_type<signed char> { typedef signed short type; };
+		template<> struct wider_type<unsigned char> { typedef unsigned short type; };
+		template<> struct wider_type<char16_t> { typedef char32_t type; };
+		template<> struct wider_type<char32_t> { typedef unsigned long type; };
+		template<> struct wider_type<short> { typedef long type; };
+		//template<> struct wider_type<unsigned short> { typedef unsigned long type; };
+		template<> struct wider_type<int> { typedef long type; };
+		//template<> struct wider_type<unsigned int> { typedef unsigned long type; };
+		template<> struct wider_type<long> { typedef long long type; };
+		template<> struct wider_type<unsigned long> { typedef unsigned long long type; };
+		template<> struct wider_type<long long> { typedef float type; };
+		template<> struct wider_type<unsigned long long> { typedef float type; };
+		template<> struct wider_type<float> { typedef double type; };
+		template<> struct wider_type<double> { typedef long double type; };
+		template<> struct wider_type<long double> { typedef long double type; };
+
+		template<typename T, typename U>
+		struct safe_sum_type { typedef typename wider_type<typename larger_type<T, U>::type>::type type; };
+
+		template<typename T>
+		struct safe_sum_type<T, T> { typedef typename wider_type<T>::type type; };
+
+		template<typename T, typename U>
+		using safe_subtract_type = safe_sum_type<T, U>;		
+
+		template<typename T, typename U>
+		using safe_multiply_type = safe_sum_type<T, U>;
+
+		template<typename T, typename U>
+		using safe_division_type = safe_sum_type<T, U>;
+
+		template<typename T, typename U>
+		using safe_modulo_type = safe_sum_type<T, U>;
+	};
+
+//------------------------------------------------------------------------------
+
+//! \tparam T Typ dla którego tworzymy "pusty" deleter
 template<typename T>
 struct DummyDefaultDelete
 {	// default deleter for unique_ptr
-
+	//! Konstruktor domyslny
 	DummyDefaultDelete() throw()
 	{	// default construct
 	}
 
+	//! \tparam T2 Typ z którego próbujemy konwertować na typ bazowy
 	template<class T2,
-	class = typename std::enable_if<std::is_convertible<T2 *, T *>::value,
-		void>::type>
-		DummyDefaultDelete(const DummyDefaultDelete<T2>&) throw()
+		class = typename std::enable_if<std::is_convertible<T2 *, T *>::value, void>::type>
+	//! Konstruktor kopiujący
+	DummyDefaultDelete(const DummyDefaultDelete<T2>&) throw()
 	{	// construct from another default_delete
 	}
 
-	void operator()(T *_Ptr) const throw()
+	//! Operator usuwający pusty
+	//! \param
+	void operator()(T*) const throw()
 	{						
 	}
 };
 
+//------------------------------------------------------------------------------
+
+//! \tparam T Typ dla którego tworzymy dummy wrapper
 template<typename T>
+//! \param t Wrappowany wskaźnik
+//! \return Inteligenty wskaźnik nic nie usuwający
 utils::shared_ptr<T> dummyWrap(T* t)
 {
 	return utils::shared_ptr<T>(t, DummyDefaultDelete<T>());
 }
+
+//------------------------------------------------------------------------------
 
 //! \tparam T Typ wartości zmiennoprzecinkowej 
 template<typename T>
@@ -66,8 +169,10 @@ static inline T correctNegativeZero(const T value)
 	return value;
 }
 
-//! \param T Typ clampowanej wartości
-template <class T>
+//------------------------------------------------------------------------------
+
+//! \tparam T Typ clampowanej wartości
+template <typename T>
 //! \param v Clampowana wartość
 //! \param min Minimalna wartość
 //! \param max Maksymalna wartość
@@ -79,9 +184,129 @@ static inline T clamp(const T& v, const T& min, const T& max)
 
 //------------------------------------------------------------------------------
 
+//! \tparam T Typ clampowanej wartości
+template <typename T>
+//! \param v Clampowana wartość
+//! \param min Minimalna wartość
+//! \param max Maksymalna wartość
+//! \param length Różnica między max i min
+//! \return Wartość w zadanym przedziale
+static inline T periodic_clamp_underflow(const T& v, const T& min,
+	const T& max, const T& length)
+{
+	return periodic_clamp_underflow(v, min, max, length, std::is_floating_point<T>());
+}
+
+//! \tparam T Typ clampowanej wartości
+template <typename T>
+//! \param v Clampowana wartość
+//! \param min Minimalna wartość
+//! \param max Maksymalna wartość
+//! \return Wartość w zadanym przedziale
+static inline T periodic_clamp_underflow(const T& v, const T& min,
+	const T& max)
+{
+	COMPILER_WARNING("Using unoptimized periodic_clamp_underflow function");
+	return periodic_clamp_underflow(v, min, max, max - min, std::is_floating_point<T>());
+}
+
+//! \tparam T Typ clampowanej wartości
+template <typename T>
+//! \param v Clampowana wartość
+//! \param min Minimalna wartość
+//! \param max Maksymalna wartość
+//! \param length Różnica między max i min
+//! \return Wartość w zadanym przedziale
+static inline T periodic_clamp_underflow(const T& v, const T& min, const T& max,
+	const T& length, std::true_type)
+{
+	return max + std::fmod(v - min, length);
+}
+
+//! \tparam T Typ clampowanej wartości
+template <typename T>
+//! \param v Clampowana wartość
+//! \param min Minimalna wartość
+//! \param max Maksymalna wartość
+//! \param length Różnica między max i min
+//! \return Wartość w zadanym przedziale
+static inline T periodic_clamp_underflow(const T& v, const T& min, const T& max,
+	const T& length, std::false_type)
+{
+	return max - ((min - v) % length);
+}
+
+//! \tparam T Typ clampowanej wartości
+template <typename T>
+//! \param v Clampowana wartość
+//! \param min Minimalna wartość
+//! \param max Maksymalna wartość
+//! \return Wartość w zadanym przedziale
+static inline T periodic_clamp_overflow(const T& v, const T& min,
+	const T& max)
+{
+	COMPILER_WARNING("Using unoptimized periodic_clamp_overflow function");
+	return periodic_clamp_overflow(v, min, max, max - min, std::is_floating_point<T>());
+}
+
+//! \tparam T Typ clampowanej wartości
+template <typename T>
+//! \param v Clampowana wartość
+//! \param min Minimalna wartość
+//! \param max Maksymalna wartość
+//! \param length Różnica między max i min
+//! \return Wartość w zadanym przedziale
+static inline T periodic_clamp_overflow(const T& v, const T& min, const T& max,
+	const T& length, std::true_type)
+{
+	return min + std::fmod(v - max, length);
+}
+
+//! \tparam T Typ clampowanej wartości
+template <typename T>
+//! \param v Clampowana wartość
+//! \param min Minimalna wartość
+//! \param max Maksymalna wartość
+//! \param length Różnica między max i min
+//! \return Wartość w zadanym przedziale
+static inline T periodic_clamp_overflow(const T& v, const T& min, const T& max,
+	const T& length, std::false_type)
+{
+	return min + ((v - max) % length);
+}
+
+//! \tparam T Typ clampowanej wartości
+template <typename T>
+//! \param v Clampowana wartość
+//! \param min Minimalna wartość
+//! \param max Maksymalna wartość
+//! \param length Różnica między max i min
+//! \return Wartość w zadanym przedziale
+static inline T periodic_clamp(const T& v, const T& min, const T& max,
+	const T& length)
+{
+	return (v < min) ? periodic_clamp_underflow(v, min, max, length)
+		: ((v > max) ? periodic_clamp_overflow(v, min, max, length)
+		: v);
+}
+
+//! \tparam T Typ clampowanej wartości
+template <typename T>
+//! \param v Clampowana wartość
+//! \param min Minimalna wartość
+//! \param max Maksymalna wartość
+//! \return Wartość w zadanym przedziale
+static inline T periodic_clamp(const T& v, const T& min, const T& max)
+{
+	COMPILER_WARNING("Using unoptimized periodic_clamp function");
+	return periodic_clamp(v, min, max, max - min);
+}
+
+//------------------------------------------------------------------------------
+
 //! Zeruje zadany obiekt.
 //! \tparam T Typ zerowanego obiektu
-template <class T>
+template <typename T>
 //! \param object Obiekt do wyzerowania.
 static inline void zero(T & object)
 {
@@ -89,15 +314,18 @@ static inline void zero(T & object)
 }
 
 //------------------------------------------------------------------------------
-template<class T> inline
-typename std::decay<T>::type decay_copy(T && val)
+//! \tparam T
+template<typename T>
+static inline typename std::decay<T>::type decay_copy(T && val)
 { // forward val as value of decayed type
-return (std::forward<T>(val));
+	return (std::forward<T>(val));
 }
+
+//------------------------------------------------------------------------------
 
 //! Zwalnia zadany wskaźnik oraz zeruje jego wartość.
 //! \tparam T Typ wskaźnika
-template <class T>
+template <typename T>
 //! \param ptr Wskaźnik do zwolnienia.
 static inline void deletePtr(T *& ptr)
 {
@@ -108,7 +336,7 @@ static inline void deletePtr(T *& ptr)
 //! \tparam Typ wartości dla której wyznaczamy znak
 template <typename T>
 //! \param value Wartość dla której wyciągamy znak
-//! \return 1 albo -1 w zależności od znaku
+//! \return 1, 0 albo -1 w zależności od znaku
 static inline int sign(const T x, std::false_type)
 {
 	return T(0) < x;
@@ -117,7 +345,7 @@ static inline int sign(const T x, std::false_type)
 //! \tparam Typ wartości dla której wyznaczamy znak
 template <typename T>
 //! \param value Wartość dla której wyciągamy znak
-//! \return 1 albo -1 w zależności od znaku
+//! \return 1, 0 albo -1 w zależności od znaku
 static inline int sign(const T x, std::true_type)
 {
 	return (T(0) < x) - (x < T(0));
@@ -126,9 +354,10 @@ static inline int sign(const T x, std::true_type)
 //! \tparam Typ wartości dla której wyznaczamy znak
 template <typename T>
 //! \param value Wartość dla której wyciągamy znak
-//! \return 1 albo -1 w zależności od znaku
+//! \return 1, 0 albo -1 w zależności od znaku
 static inline int sign(const T x)
 {
+	static_assert(std::is_arithmetic<T>(), "T must be arithmetic type");
 	return sign(x, std::is_signed<T>());
 }
 
@@ -310,6 +539,8 @@ struct StreamTools
 	}
 };
 
+//------------------------------------------------------------------------------
+
 class StringStreamBufferGrabber : public std::stringstream
 {
 public:
@@ -395,7 +626,7 @@ private:
 //! \param a Pierwsza kolekcja łączona
 //! \param b Druga kolekcja łączona
 //! \return Kolekcja będąca rezultatem dołączonia do kolekcji a kolekcji b
-template<class T>
+template<typename T>
 static inline T mergeUnordered(const T & a, const T & b)
 {
 	T ret(a);
@@ -409,13 +640,19 @@ static inline T mergeUnordered(const T & a, const T & b)
 //! \param a Pierwsza kolekcja łączona
 //! \param b Druga kolekcja łączona
 //! \return Kolekcja będąca rezultatem dołączonia elementó kolekcji b do elementów kolekcji kolekcji a
-template<class T>
+template<typename T>
 static inline T mergeOrdered(const T & a, const T & b)
 {
 	T ret(a);
 	ret.insert(b.begin(), b.end());
 	return ret;
 }
+
+template <int I>
+struct Int2Type
+{
+	enum { value = I };
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace util

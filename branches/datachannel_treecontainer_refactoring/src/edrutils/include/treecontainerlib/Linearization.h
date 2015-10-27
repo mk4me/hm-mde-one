@@ -64,6 +64,66 @@ struct LinearizationT
 {
 	using VisitOrder = TreeVisitOrder;
 
+	template<typename TreeType>
+	static decltype(std::declval<const TreeType>().root()) getNode(const TreeType & tree, const Node::SizeType idx)
+	{
+		using NPtr = decltype(std::declval<const TreeType>().root());
+		NPtr ret;
+
+		if (Tree::empty(tree) == false){
+			IndexFilterVisitor<NPtr> idxVisitor(idx);
+			IndexingVisitor<IndexFilterVisitor<NPtr>> iV(idxVisitor);
+			ConsumingVisitor<IndexingVisitor<IndexFilterVisitor<NPtr>>> cV(iV);
+			if (VisitOrder::visitWhile(tree, cV) == true){
+				ret = idxVisitor.node();
+			}
+		}
+
+		return ret;
+	}
+
+	template<typename TreeType>
+	static decltype(std::declval<TreeType>().root()) getNode(TreeType & tree, const Node::SizeType idx)
+	{
+		using NPtr = decltype(std::declval<const TreeType>().root());
+		NPtr ret;
+
+		if (Tree::empty(tree) == false){
+			IndexFilterVisitor<NPtr> idxVisitor(idx);
+			IndexingVisitor<IndexFilterVisitor<NPtr>> iV(idxVisitor);
+			ConsumingVisitor<IndexingVisitor<IndexFilterVisitor<NPtr>>> cV(iV);
+			if (VisitOrder::visitWhile(tree, cV) == true){
+				ret = idxVisitor.node();
+			}
+		}
+
+		return ret;
+	}
+
+	template<typename TreeType>
+	static decltype(std::declval<const TreeType>().root()->value()) getValue(const TreeType & tree, const Node::SizeType idx)
+	{
+		auto node = getNode(tree, idx);
+
+		if (node == nullptr){
+			throw std::runtime_error("Node index out of range");		
+		}
+
+		return node->value();
+	}
+
+	template<typename TreeType>
+	static decltype(std::declval<const TreeType>().root()->value()) getValue(TreeType & tree, const Node::SizeType idx)
+	{
+		auto node = getNode(tree, idx);
+
+		if (node == nullptr){
+			throw std::runtime_error("Node index out of range");
+		}
+
+		return node->value();
+	}
+
 	//! \tparam NPtr Typ wskaxnika w�z�a drzewa z kt�rego zaczynamy
 	//! \tparam Visitor Typ odwiedzaj�cego
 	template<typename TreeType, typename Visitor>

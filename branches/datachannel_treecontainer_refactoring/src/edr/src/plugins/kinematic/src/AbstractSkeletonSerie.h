@@ -37,7 +37,7 @@ struct NonDummyJointFilter
 };
 
 template<typename Visitor>
-using NonDummyJointVisitor = treeContainer::VisitorFilter < NonDummyJointFilter, Visitor >;
+using NonDummyJointVisitor = treeContainer::FilterVisitor< NonDummyJointFilter, Visitor >;
 
 //! struktura odpowiedzialna za rysowanie osi dla jointów szkieletu
 struct PointsOrientationsDrawer

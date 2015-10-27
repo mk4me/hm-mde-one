@@ -439,7 +439,7 @@ const bool verify(const Skeleton & skeleton)
 
 			return uniqueNames.insert(joint->value().name()).second;
 		};
-	return treeContainer::VisitPolicies::Node::PreOrderWhile::visitWhile(skeleton.root(), fun);
+	return treeContainer::VisitPolicies::Node::PreOrder::visitWhile(skeleton.root(), fun);
 }
 
 void createJoint(Skeleton::JointPtr parentJoint, TopologyNodeConstPtr topologyJoint)
