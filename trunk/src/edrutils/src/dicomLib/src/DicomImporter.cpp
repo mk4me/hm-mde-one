@@ -13,6 +13,8 @@
 #include "dcmtk/dcmdata/dcdicdir.h"
 #include "dcmtk/dcmdata/dcdirrec.h"
 #include "dcmtk/dcmdata/dcdeftag.h"
+#include <dcmtk/ofstd/ofbmanip.h>
+#include <dcmtk/dcmimage/diregist.h>
 //#include <corelib/HierarchyHelper.h>
 #include <dicomLib/Dicom.h>
 //#include <plugins/dicomImporter/ILayeredImage.h>
@@ -20,10 +22,88 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/format.hpp>
+#include "loglib/Exceptions.h"
 
 
 
 using namespace dicomImporter;
+QPixmap dicomImporter::convertToPixmap(DicomImagePtr image)
+{
+	QPixmap result;
+	// kod z forum : http://forum.dcmtk.org/viewtopic.php?t=120
+	// rozszerzony o obs³ugê kolorów
+	if ((image != NULL) && (image->getStatus() == EIS_Normal)) {
+		/* get image extension */
+		const int width = (int)(image->getWidth());
+		const int height = (int)(image->getHeight());
+		//const int depth = (int)(image->getDepth());
+		char header[32];
+		/* create PGM header */
+		sprintf(header, "P%i\n%i %i\n255\n", image->isMonochrome() ? 5 : 6, width, height);
+		const int offset = strlen(header);
+		const unsigned int length = image->getOutputDataSize(8) + offset;//width * height + offset;
+		/* create output buffer for DicomImage class */
+		Uint8 *buffer = new Uint8[length];
+		if (buffer != NULL) {
+			/* copy PGM header to buffer */
+			OFBitmanipTemplate<Uint8>::copyMem((const Uint8 *)header, buffer, offset);
+			if (image->getOutputData((void *)(buffer + offset), length)) {
+				result.loadFromData((const unsigned char *)buffer, length, image->isMonochrome() ? "PGM" : "PMM", Qt::AvoidDither);
+			}
+			/* delete temporary pixel buffer */
+			delete[] buffer;
+		}
+	}
+
+	return result;
+
+
+	// ponizszy kod przeksztalcil 16 bitowe monochromatyczne obrazy
+
+	//if ((image != NULL) && (image->getStatus() == EIS_Normal)) {
+	//    const int width = (int)(image->getWidth());
+	//    const int height = (int)(image->getHeight());
+	//    const int depth = (int)(image->getDepth());
+
+	//	QImage qi(width, height, QImage::Format_RGB32);
+	//	const unsigned int length = image->getOutputDataSize(16);
+	//	double maxv = 0, minv = 65535;
+	//	//image->getMinMaxValues(minv, maxv);
+	//    /* create output buffer for DicomImage class */
+	//    Uint16 *buffer = new Uint16[length];
+	//    if (buffer != NULL)
+	//    {
+	//        if (image->getOutputData((void *)(buffer), length,16))
+	//        {
+	//			for (int y = 0; y < height; ++y) {
+	//				for (int x = 0; x < width; ++x) {
+	//					Uint16 p = buffer[(y*width + x)];
+	//					if (p < minv) {
+	//						minv = p;
+	//					}
+	//					if (p > maxv) {
+	//						maxv = p;
+	//					}
+	//				}
+	//			}
+
+	//			for (int y = 0; y < height; ++y) {
+	//				for (int x = 0; x < width; ++x) {
+	//					Uint16 p = buffer[(y*width + x)];
+	//					auto val = 255.0 * (p-minv)/(maxv-minv);
+	//					qi.setPixel(x, y, qRgb(val, val, val));
+	//				}
+	//			}
+	//        }
+	//        /* delete temporary pixel buffer */
+	//        delete[] buffer;
+	//    }
+
+	//	return QPixmap::fromImage(qi);
+	//}
+	//return QPixmap();
+
+}
 
 
 void DicomImporter::handleFileRecord( DcmDirectoryRecord * fileRecord, internalData::ImagePtr image, std::string basePath )
@@ -128,13 +208,13 @@ void DicomImporter::handlePatientRecord( DcmDirectoryRecord * patientRecord, int
 dicomImporter::DicomInternalStructPtr DicomImporter::import( const utils::Filesystem::Path& from )
 {
     DicomInternalStructPtr internalStruct = boost::make_shared<DicomInternalStruct>();
-
+	
     utils::Filesystem::Path dirfile = from / "DICOMDIR";
     if (utils::Filesystem::pathExists(dirfile)) {
         DcmDicomDir dicomdir(dirfile.string().c_str());
         DcmDirectoryRecord* root = &(dicomdir.getRootRecord());
 
-        std::string basePath = from.string();
+		std::string basePath = from.string();
 
         if (root) {
             DcmDirectoryRecord *patientRecord = nullptr;
@@ -306,6 +386,20 @@ dicomImporter::DicomInternalStructPtr dicomImporter::DicomImporter::importRaw(co
 	return internalStruct;
 }
 
+utils::Filesystem::Path dicomImporter::DicomImporter::findDicomRootDir(const utils::Filesystem::Path& from)
+{
+	if (utils::Filesystem::pathExists(from / "DICOMDIR")) {
+		return from;
+	}
+
+	auto subs = utils::Filesystem::listSubdirectories(from);
+	if (subs.size() == 1) {
+		return findDicomRootDir(*subs.begin());
+	}
+
+	throw loglib::runtime_error("Directory does not contain dicom structure");
+}
+
 void DicomSaver::save( const utils::Filesystem::Path& to, DicomInternalStructPtr inter )
 {
     utils::Filesystem::Path filename;
@@ -315,7 +409,6 @@ void DicomSaver::save( const utils::Filesystem::Path& to, DicomInternalStructPtr
     } else {
         filename = to / "main.xml";
     }
-    //filename = "C:/Users/Wojciech/Desktop/dbrip/drop/2013-08-21-S0001/test.xml";
     std::ofstream ofs(filename.c_str());
     if(ofs.good()) {
         boost::archive::xml_oarchive oa(ofs);

@@ -14,6 +14,7 @@
 #include <utils/Filesystem.h>
 #include <boost/tuple/tuple.hpp>
 #include <QtGui/QPixmap>
+#include <boost/function.hpp>
 
 class DcmDirectoryRecord;
 
@@ -38,6 +39,7 @@ public:
 
 	static bool testPowerDoppler(const QPixmap &pixmap);
 	DicomInternalStructPtr importRaw(const utils::Filesystem::Path& from);
+	utils::Filesystem::Path findDicomRootDir(const utils::Filesystem::Path& from);
 
 private:
     void handlePatientRecord( DcmDirectoryRecord * patientRecord, internalData::PatientPtr patient, std::string basePath );
