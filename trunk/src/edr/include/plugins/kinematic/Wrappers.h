@@ -4,6 +4,7 @@
 #include <corelib/BaseDataTypes.h>
 #include <threadingUtils/StreamData.h>
 #include <osgutils/PtrPolicyOSG.h>
+#include <osgutils/ClonePolicyOSG.h>
 #include <utils/PtrPolicyStd.h>
 #include <utils/ClonePolicies.h>
 #include <osg/PositionAttitudeTransform>

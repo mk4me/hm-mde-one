@@ -4,6 +4,7 @@ SET_PUBLIC_HEADERS(
 	CustomPrimitivesFactory.h
 	OsgSchemeDrawer.h
 	PtrPolicyOSG.h
+	ClonePolicyOSG.h
 )
 
 SET_PRIVATE_HEADERS( PCH.h )

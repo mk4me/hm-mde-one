@@ -18,6 +18,7 @@
 //#include <plugins/dicomImporter/Export.h>
 #include "utils/PtrPolicyStd.h"
 #include "utils/ClonePolicies.h"
+#include <objectwrapperlib/ObjectWrapper.h>
 
 namespace dicomImporter {
     DEFINE_SMART_POINTERS(DicomImage);

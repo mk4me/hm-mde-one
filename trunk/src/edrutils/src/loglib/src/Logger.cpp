@@ -1,5 +1,6 @@
 #include <loglib/Logger.h>
 #include <iostream>
+#include <fstream>
 
 loglib::ILogPtr loglib::Logger::_log = utils::make_shared<loglib::CoutLogger>("utils");
 

@@ -30,18 +30,6 @@ namespace utils {
         }
     };
 
-    //! Klonowanie odbywa się za pomoca metody clone()
-    struct ClonePolicyOsgCloneMethod
-    {
-        template <typename T>
-		static T* clone(const T* s) {
-            auto copy = osg::clone(s, osg::CopyOp::DEEP_COPY_ALL);
-            T* result = dynamic_cast<T*>(copy);
-            UTILS_ASSERT(result);
-            return result;
-        }
-    };
-
     //! Powinno podawać się ta zasade, jeśli klonowanie z jakiegos powodu jest zabronione
     struct ClonePolicyForbidden
     {

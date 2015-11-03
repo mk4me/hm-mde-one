@@ -1,4 +1,4 @@
-ADD_TEST_PROJECT(vidlib "vidlib;BOOST" vidlib)
+#ADD_TEST_PROJECT(vidlib "vidlib;BOOST" vidlib)
 #ADD_TEST_PROJECT(utils "OSG;utils" utils)
 ADD_TEST_PROJECT(kinematiclib "kinematiclib;osgutils" kinematiclib)
 ADD_TEST_PROJECT(kinematicUtils "kinematicUtils" kinematicUtils)

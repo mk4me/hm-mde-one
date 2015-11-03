@@ -10,7 +10,7 @@ SET_MOC_FILES(
 )
 
 SET_SOURCE_FILES (
-	DicomWatcher.cpp
+	dicomWatcher.cpp
 	WatcherConfig.cpp
 	main.cpp
 )
