@@ -64,7 +64,7 @@ private:
 	//! \param channel2 drugi marker
 	//! \param epsilon przedział histogramu
 	//! \return typowa długość między markerami
-	static float getStickLength(c3dlib::VectorChannelConstPtr channel1, c3dlib::VectorChannelConstPtr channel2, float epsilon = 0.001f);
+	static float getStickLength(c3dlib::VectorChannelReaderInterfaceConstPtr channel1, c3dlib::VectorChannelReaderInterfaceConstPtr channel2, float epsilon = 0.001f);
 
 	const std::vector<std::vector<osg::Vec3>> createPointsPositions(const unsigned int density) const;
 
@@ -96,6 +96,8 @@ private:
 	utils::shared_ptr<osgutils::GhostSchemeDrawer> ghostDrawer;
 	//! Klasa pomocnicza przy rysowaniu trajektorii
 	TrajectoryDrawerManagerPtr trajectoriesManager;
+	//!
+	float sampleDuration;
 };
 typedef utils::shared_ptr<MarkerSerie> MarkerSeriePtr;
 typedef utils::shared_ptr<const MarkerSerie> MarkerSerieConstPtr;

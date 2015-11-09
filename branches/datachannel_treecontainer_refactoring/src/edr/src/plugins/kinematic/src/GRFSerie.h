@@ -29,7 +29,6 @@ public:
 	typedef osg::ref_ptr<osg::Geometry> GeometryPtr;
 	typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
 	typedef osg::ref_ptr<osg::ShapeDrawable> ShapeDrawablePtr;
-	typedef utils::DataChannelTimeAccessor<osg::Vec3f, float> TimeAccessor;
 
 public:
 	//! Konstruktor

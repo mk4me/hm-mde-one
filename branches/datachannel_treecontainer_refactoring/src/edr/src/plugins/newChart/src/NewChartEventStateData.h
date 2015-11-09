@@ -34,11 +34,13 @@ public:
 
 private:
     //! DataChannel z danymi dla krzywej
-	c3dlib::ScalarChannelReaderInterfaceConstPtr channel;
+	const c3dlib::ScalarChannelReaderInterfaceConstPtr channel;
     //! indeks początkowego czas dla eventu
-    int startIndex;
+    const int startIndex;
     //! indeks końcowego czas dla eventu
-    int endIndex;
+    const int endIndex;
+	//! Zakres
+	const QRectF boundingRect_;
 };
 
 #endif

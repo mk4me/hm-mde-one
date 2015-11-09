@@ -53,7 +53,7 @@ namespace loglib
 
 } // namespace core
 
-#define LOG__(logger, severity, msg) do { logger->log(severity, UTILS_FORMAT_STRING(msg), __UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
+#define LOG__(logger, severity, msg) do { logger->log(severity, UTILS_FORMAT_STRING(msg), UTILS_PORTABLE_FUNCTION_NAME, __FILE__, __LINE__); } while (0)
 
 #define LOG_DEBUG(logger, msg)				LOG__(logger, loglib::ILog::Debug, msg)
 //! Makro logujące błąd

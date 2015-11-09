@@ -1,5 +1,9 @@
 #include "NewChartPCH.h"
 #include "StatsTable.h"
+#include <datachannellib/Descriptor.h>
+#include <datachannellib/Statistics.h>
+#include <datachannellib/IBoundedArgumentsFeature.h>
+#include <datachannellib/IBoundedValuesFeature.h>
 
 StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/ ) :
     QWidget(parent, f),
@@ -23,8 +27,18 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
      ++sum;
      return sum;
  }
-   
- QTreeWidgetItem* StatsTable::addEntry(const QString& group, const QString& name, c3dlib::ScalarChannelStatsConstPtr stats, const QColor& backgroundColor)
+
+ //from
+ //to
+ //minValue
+ //maxValue
+ //minArgument
+ //maxArgument
+ //meanValue
+ //stdDev
+ //variance
+
+ QTreeWidgetItem* StatsTable::addEntry(const QString& group, const QString& name, c3dlib::ScalarChannelReaderInterfaceConstPtr channel, const QColor& backgroundColor)
  {
      if (group.isEmpty()) {
          throw loglib::runtime_error("StatsTable: Passed empty group");
@@ -32,24 +46,38 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
 
      // zapelnienie elementu statystykami
      QTreeWidgetItem* item = new QTreeWidgetItem();
-     QString timeUnit = stats->getTimeUnit().c_str();
-     QString valueUnit = stats->getValueUnit().c_str();
+	 QString timeUnit = tr("Unknown time unit");
+	 QString valueUnit = tr("Unknown time unit");
+
+	 auto df = channel->feature<datachannel::IDescriptor>();
+
+	 if (df != nullptr){
+		 timeUnit = QString::fromStdString(df->argumentUnit());
+		 valueUnit = QString::fromStdString(df->valueUnit());
+	 }
+
+	 auto stats = channel->getOrCreateFeature<datachannel::IStatisticsFeature>();
+	 auto baf = channel->getOrCreateArgumentFeature<datachannel::IBoundedArgumentsFeature>();
+	 auto bvf = channel->getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
+
      int i = -1;
      item->setText(++i, name);
-     item->setText(++i, QString("%1 - %2 (%3)").arg(stats->getDefinedFrom()).arg(stats->getDefinedTo()).arg(timeUnit));
-     item->setText(++i, QString("%1 (%2)").arg(stats->minValue()).arg(valueUnit));
-     item->setText(++i, QString("%1 (%2)").arg(stats->minArgument()).arg(timeUnit));
-     item->setText(++i, QString("%1 (%2)").arg(stats->maxValue()).arg(valueUnit));
-     item->setText(++i, QString("%1 (%2)").arg(stats->maxArgument()).arg(timeUnit));
-     item->setText(++i, QString("%1 (%2)").arg(stats->meanValue()).arg(valueUnit));
-	 item->setText(++i, QString("%1 (%2)").arg(stats->stdValue()).arg(valueUnit));
-     item->setText(++i, QString("%1 (%2^2)").arg(stats->varianceValue()).arg(valueUnit));
+	 item->setText(++i, QString("%1 - %2 (%3)").arg(baf->minArgument()).arg(baf->maxArgument()).arg(timeUnit));
+	 item->setText(++i, QString("%1 (%2)").arg(bvf->minValue()).arg(valueUnit));
+	 //TODO
+     item->setText(++i, QString("%1 (%2)").arg(0).arg(timeUnit));
+	 item->setText(++i, QString("%1 (%2)").arg(bvf->maxValue()).arg(valueUnit));
+	 //TODO
+     item->setText(++i, QString("%1 (%2)").arg(0).arg(timeUnit));
+	 item->setText(++i, QString("%1 (%2)").arg(stats->values().mean).arg(valueUnit));
+	 item->setText(++i, QString("%1 (%2)").arg(stats->values().standardDeviation).arg(valueUnit));
+	 item->setText(++i, QString("%1 (%2^2)").arg(stats->values().variance).arg(valueUnit));
 
      for (int i = 1; i < item->columnCount(); ++i) {
         item->setBackgroundColor(i, backgroundColor);
      }
     
-     stats2TreeItems.insert(std::make_pair(stats, item));
+	 stats2TreeItems.insert(std::make_pair(channel, item));
      for (int i = 0; i < table->topLevelItemCount(); ++i) {
          QTreeWidgetItem* groupItem = table->topLevelItem(i);
          if (groupItem->text(0) == group) {
@@ -134,20 +162,8 @@ QStringList StatsTable::getGroups() const
      return list;
  }
 
-StatsTable::range StatsTable::getEntries(c3dlib::ScalarChannelStatsConstPtr stats)
+StatsTable::range StatsTable::getEntries(c3dlib::ScalarChannelReaderInterfaceConstPtr channel)
 {
-    auto r = stats2TreeItems.equal_range(stats);
+	auto r = stats2TreeItems.equal_range(channel);
     return boost::make_iterator_range(r.first, r.second);
-}
-
-std::list<QTreeWidgetItem*> StatsTable::getEntriesByChannel( channelConstPtr channel )
-{
-    std::list<QTreeWidgetItem*> list;
-    for (auto it = stats2TreeItems.begin(); it != stats2TreeItems.end(); ++it) {
-        if (it->first->getChannel() == channel) {
-            list.push_back(it->second);
-        }
-    }
-
-    return list;
 }

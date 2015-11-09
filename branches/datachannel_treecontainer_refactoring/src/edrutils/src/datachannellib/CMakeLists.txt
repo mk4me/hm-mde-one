@@ -1,13 +1,23 @@
 BEGIN_PROJECT("header")
 
 SET_PUBLIC_HEADERS(
-	DataChannel.h
-	DataChannelAccessors.h
-	DataChannelTimers.h
-	DataChannelDescriptors.h
-	DataChannelCollection.h
-	DataChannelModifiers.h
-	DataChannelStats.h
+	Accessors.h
+	ArgumentTracker.h
+	Descriptor.h
+	AccessorsCollection.h	
+	Statistics.h
+	WrapperHelpers.h
+	IBoundedArgumentsFeature.h
+	IBoundedValuesFeature.h
+	IFunctionFeature.h		
+	IPeriodicFunctionFeature.h
+	IUniformArgumentsFeature.h	
+	Types.h
+	Adapters.h
+	Extrapolators.h
+	Interpolators.h	
+	Wrappers.h
+	CurrentValueExtractor.h	
 )
 
 END_PROJECT()

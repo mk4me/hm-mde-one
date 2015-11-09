@@ -24,9 +24,7 @@ public:
     //! typ zdarzenia wczytanego z pliku C3D
     typedef C3DParser::IEvent IEvent;
     //! kontekst zdarzenia (strona lewa, prawa, ... )
-    typedef C3DParser::IEvent::Context Context;
-    //! akcesor do danych zapisanych w DataChannel z markerem
-	typedef utils::DataChannelTimeAccessor<osg::Vec3f, float> TimeAccessor;
+    typedef C3DParser::IEvent::Context Context;    
 
     //! Reprezentacja wykrytego kroku na płycie pomiarowej.
     //! W tym przypadku jako krok, bierze się moment, w którym cała stopa spoczywa na płycie pomiarowej

@@ -54,10 +54,9 @@ class StatsTable : public QWidget, private Ui::StatsTable
 {
     Q_OBJECT;
 public:
-	typedef std::multimap<c3dlib::ScalarChannelStatsConstPtr, QTreeWidgetItem*> statsMultimap;
+	typedef std::multimap<c3dlib::ScalarChannelReaderInterfaceConstPtr, QTreeWidgetItem*> statsMultimap;
     typedef boost::iterator_range<statsMultimap::iterator> range;
-    typedef boost::iterator_range<statsMultimap::const_iterator> const_range;
-	typedef c3dlib::ScalarChannelStatsConstPtr::element_type::ChannelConstPtr channelConstPtr;
+    typedef boost::iterator_range<statsMultimap::const_iterator> const_range;	
 
 public:
     StatsTable(QWidget* parent = nullptr, Qt::WindowFlags f = 0);
@@ -70,7 +69,7 @@ public slots:
     //! \param stats obiekt ze statystykami
     //! \param backgroundColor kolor tła dla dodawanego elementu
     //! \return utworzony element drzwa
-	QTreeWidgetItem* addEntry(const QString& group, const QString& name, c3dlib::ScalarChannelStatsConstPtr stats, const QColor& backgroundColor = Qt::white);
+QTreeWidgetItem* addEntry(const QString& group, const QString& name, c3dlib::ScalarChannelReaderInterfaceConstPtr channel, const QColor& backgroundColor = Qt::white);
     //! próbuje pobrać wpis ze statystykami
     //! \param group nazwa grupy (np. strona lewa, prawa ...)
     //! \param name nazwa wpisu 
@@ -79,11 +78,7 @@ public slots:
     //! Pobiera wszystkie wpisy związane z konkretynymi statystykami
     //! \param stats statystyki, dla których maja być pobrane wpisy
     //! \return obiekt boost::range z wpisami
-	range getEntries(c3dlib::ScalarChannelStatsConstPtr stats);
-    //! Pobiera wszystkie wpisy związane z konkretynym kanałem
-    //! \param channel kanał dla którego maja być pobrane wpisy
-    //! \return lista z elementami drzewa
-    std::list<QTreeWidgetItem*> getEntriesByChannel(channelConstPtr channel);
+	range getEntries(c3dlib::ScalarChannelReaderInterfaceConstPtr channel);    
     //! \return wszytskie grupy wpisów (np. strona lewa, prawa ...)
     QStringList getGroups() const;
     //! dany element staje się aktywny (rozwiniety, pozostałe na jego poziome są zwijane)
@@ -102,7 +97,7 @@ private:
     //! wysokość wiersza
     int rowHeight;
     //! mapa statystyki -> wpis z drzewie ze statystykami
-	std::multimap<c3dlib::ScalarChannelStatsConstPtr, QTreeWidgetItem*> stats2TreeItems;
+	statsMultimap stats2TreeItems;
     ItemDelegate treeItemDelegate;
 };
 typedef utils::shared_ptr<StatsTable> StatsTablePtr;

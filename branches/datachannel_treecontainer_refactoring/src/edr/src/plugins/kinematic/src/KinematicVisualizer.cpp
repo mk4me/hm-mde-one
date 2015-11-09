@@ -974,7 +974,7 @@ QString KinematicVisualizer::getRootName( const core::VariantConstPtr & data, co
 QStringList KinematicVisualizer::getMarkersNames(const c3dlib::MarkerCollectionConstPtr& ms) const
 {
     QStringList names;
-    int count = ms->getNumChannels();
+    int count = ms->getNumAccessors();
     for (int i = 0; i < count; ++i) {
         names.push_back(QString::fromStdString(ms->getMarkerName(i)));
     }

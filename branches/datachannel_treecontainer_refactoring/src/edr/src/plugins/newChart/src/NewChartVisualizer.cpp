@@ -252,7 +252,7 @@ QWidget* NewChartVisualizer::createWidget()
 
 void NewChartVisualizer::getSupportedTypes(utils::TypeInfoList & supportedTypes) const
 {
-	supportedTypes.push_back(typeid(c3dlib::ScalarChannelReader));
+	supportedTypes.push_back(typeid(c3dlib::ScalarChannelReaderInterface));
 	supportedTypes.push_back(typeid(ScalarStream));
 }
 
@@ -265,7 +265,7 @@ plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie(const utils::TypeI
 		series.push_back(streamSerie);
 		ret = streamSerie;
 	}
-	else if (requestedType == typeid(c3dlib::ScalarChannelReader)) {
+	else if (requestedType == typeid(c3dlib::ScalarChannelReaderInterface)) {
 		auto chartSerie = new NewChartSerie(this);
 
 		auto name = "Serie " + boost::lexical_cast<std::string>(series.size());
@@ -275,7 +275,7 @@ plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie(const utils::TypeI
 
 		plotChanged();
 
-		auto statsEntry = statsTable->addEntry(QString("Whole chart"), QString(name.c_str()), chartSerie->getStats());
+		auto statsEntry = statsTable->addEntry(QString("Whole chart"), QString(name.c_str()), chartSerie->getReader());
 
 		chartSerie->setStatsEntry(statsEntry);
 
@@ -565,7 +565,7 @@ void NewChartVisualizer::update( double deltaTime )
 			if (isEventMode() && helper) {
 				EventsHelper::SegmentConstPtr segment = helper->getSegment(currentSerieTime, this->context);
 				if (segment != oldSegment) {
-					recreateStats(segment ? segment->stats : c3dlib::ScalarChannelStatsConstPtr());
+					recreateStats();
 					setScale(this->scaleToActive, segment ? true : false);
 					oldSegment = segment;
 				}
@@ -612,11 +612,11 @@ void NewChartVisualizer::setEvents(NewChartSerie* serie, c3dlib::EventsCollectio
     helper->getEventsItem()->setVisible(serie == tryGetCurrentSerie() && eventMode);
     int no = 0;
     for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); ++segment) {
-        statsTable->addEntry(tr("Left"), tr("%1: Left step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
+        statsTable->addEntry(tr("Left"), tr("%1: Left step %2").arg(serie->getName().c_str()).arg(++no), (*segment)->scalar, QColor(255, 200, 200));
     }
     no = 0;
     for (auto segment = helper->getRightSegments().begin(); segment != helper->getRightSegments().end(); ++segment) {
-        statsTable->addEntry(tr("Right"), tr("%1: Right step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
+		statsTable->addEntry(tr("Right"), tr("%1: Right step %2").arg(serie->getName().c_str()).arg(++no), (*segment)->scalar, QColor(200, 255, 200));
     }
 }
 
@@ -636,20 +636,22 @@ void NewChartVisualizer::onEventContext(int index)
     setScale();
 }
 
-void NewChartVisualizer::recreateStats(c3dlib::ScalarChannelStatsConstPtr stats /*= ScalarChannelStatsConstPtr()*/)
+void NewChartVisualizer::recreateStats()
 {
     statsTable->clear();
     for (auto it = series.begin(); it != series.end(); ++it) {
     	NewChartSerie* serie = dynamic_cast<NewChartSerie*>(*it);
     	if (serie) {
-    		statsTable->addEntry(tr("Whole chart"), serie->getName().c_str(), serie->getStats() );
+    		statsTable->addEntry(tr("Whole chart"), serie->getName().c_str(), serie->getReader() );
     	}
     }
-    if (stats) {
-		QString group = context == c3dlib::C3DEventsCollection::IEvent::Left ? tr("Left") : tr("Right");
-		QColor color = context == c3dlib::C3DEventsCollection::IEvent::Left ? QColor(255, 200, 200) : QColor(200, 255, 200);
-        statsTable->addEntry(group, stats->getChannel()->getName().c_str(), stats, color);
-    } else {
+
+	//TODO
+    //if (stats) {
+		//QString group = context == c3dlib::C3DEventsCollection::IEvent::Left ? tr("Left") : tr("Right");
+		//QColor color = context == c3dlib::C3DEventsCollection::IEvent::Left ? QColor(255, 200, 200) : QColor(200, 255, 200);
+        //statsTable->addEntry(group, stats->getChannel()->getName().c_str(), stats, color);
+    //} else {
         for (auto it = series.begin(); it != series.end(); ++it) {
 
         	NewChartSerie* serie = dynamic_cast<NewChartSerie*>(*it);
@@ -657,15 +659,15 @@ void NewChartVisualizer::recreateStats(c3dlib::ScalarChannelStatsConstPtr stats 
 				int no = 0;
 				EventsHelperPtr helper = serie->getEventsHelper();
 				for (auto segment = helper->getLeftSegments().begin(); segment != helper->getLeftSegments().end(); ++segment) {
-					statsTable->addEntry(tr("Left"), tr("%1: Left step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(255, 200, 200));
+					statsTable->addEntry(tr("Left"), tr("%1: Left step %2").arg(serie->getName().c_str()).arg(++no), serie->getReader(), QColor(255, 200, 200));
 				}
 				no = 0;
 				for (auto segment = helper->getRightSegments().begin(); segment != helper->getRightSegments().end(); ++segment) {
-					statsTable->addEntry(tr("Right"), tr("%1: Right step %2").arg(serie->getName().c_str()).arg(++no),(*segment)->stats, QColor(200, 255, 200));
+					statsTable->addEntry(tr("Right"), tr("%1: Right step %2").arg(serie->getName().c_str()).arg(++no), serie->getReader(), QColor(200, 255, 200));
 				}
         	}
         }
-    }
+    //}
 }
 
 void NewChartVisualizer::showStatistics( bool visible )
@@ -690,9 +692,9 @@ void NewChartVisualizer::onSerieVisible(const QVariant& info, bool visible )
                     series[i]->setVisible(visible);
                     auto chartSerie = dynamic_cast<NewChartSerie*>(series[i]);
                     if (chartSerie) {
-						auto list = statsTable->getEntriesByChannel(chartSerie->getStats()->getChannel());
+						auto list = statsTable->getEntries(chartSerie->getReader());
 						for(auto item : list) {
-							item->setHidden(!visible);
+							item.second->setHidden(!visible);
 						}
                     }
                     for (auto it = statesMap.begin(); it != statesMap.end(); ++it) {
@@ -776,19 +778,24 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
 					if (scaleToActive) {
 						percentDraw->setPercentMode(true);
 						percentDraw->setLeftRightValues(segment->begin, segment->end);
-						qwtPlot->setAxisScale(QwtPlot::yLeft, segment->stats->minValue(), segment->stats->maxValue());
+
+						auto bvf = segment->scalar->getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
+
+						qwtPlot->setAxisScale(QwtPlot::yLeft, bvf->minValue(), bvf->maxValue());
 						qwtPlot->setAxisScaleDiv(QwtPlot::xBottom, percentDraw->getScaleDiv());
 					} else {
-						float minY = segment->stats->minValue();
-						float maxY = segment->stats->maxValue();
+						auto bvf = segment->scalar->getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
+						float minY = bvf->minValue();
+						float maxY = bvf->maxValue();
 						for (auto it = series.begin(); it != series.end(); ++it) {
 							if ((*it)->isVisible()) {
 								auto h = (*it)->getEventsHelper();
 								if (h) {
 									EventsHelper::SegmentConstPtr s = h->getSegment(x, this->context);
 									if (s) {
-										minY = (std::min)(minY, s->stats->minValue());
-										maxY = (std::max)(maxY, s->stats->maxValue());
+										auto bvf = s->scalar->getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
+										minY = (std::min)(minY, bvf->minValue());
+										maxY = (std::max)(maxY, bvf->maxValue());
 									}
 								}
 							}
@@ -953,22 +960,29 @@ void NewChartVisualizer::refreshBounds()
         return;
     }
 
-    float minT = (std::numeric_limits<float>::min)();
-    float maxT = (std::numeric_limits<float>::max)();
+    float minT = (std::numeric_limits<float>::max)();
+    float maxT = (std::numeric_limits<float>::min)();
 
     //wyznaczamy parametry dla wsteg i średnich
     //minimalny czas dla wszystkich seri danych
     //maksymalny czas dla wszystkich serii danych
     //minimalna rozdzielczość dla wszystkich kanałów
 	std::vector<c3dlib::ScalarChannelReaderInterfaceConstPtr> channels;
+	std::vector<utils::shared_ptr<c3dlib::ScalarContiniousTimeAccessor>> continousChannels;
     for (auto it = series.begin(); it != series.end(); ++it) {
 		c3dlib::ScalarChannelReaderInterfaceConstPtr data;
     	auto* iserie = dynamic_cast<plugin::IVisualizer::ISerie*>(*it);
     	iserie->getData()->tryGet(data);
     	if(data) {
-    		minT = (std::max)(minT, data->argument(0));
-    		maxT = (std::min)(maxT, data->argument(data->size() - 1));
+
+			auto baf = data->getOrCreateArgumentFeature<datachannel::IBoundedArgumentsFeature>();
+			auto bvf = data->getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
+    		minT = (std::min)(minT, baf->minArgument());
+    		maxT = (std::max)(maxT, baf->maxArgument());
     		channels.push_back(data);
+			continousChannels.push_back(utils::make_shared < datachannel::DiscreteFunctionAccessorAdapter < c3dlib::ScalarChannelReaderInterface::value_type,
+				c3dlib::ScalarChannelReaderInterface::argument_type >> (*data, datachannel::LerpInterpolator(),
+				datachannel::BorderExtrapolator<c3dlib::ScalarChannelReaderInterface::value_type>(bvf->minValue(), bvf->maxValue())));
     	}
     }
 
@@ -993,24 +1007,29 @@ void NewChartVisualizer::refreshBounds()
     float timeStep = (maxT - minT) / (float)totalPoints;
     //dzielnik dla średniej
     float size = channels.size();
-    //akcesor do danych
-	utils::shared_ptr<c3dlib::ScalarContiniousTimeAccessor> accessor(new c3dlib::ScalarContiniousTimeAccessor(channels.front()));
 
     //wyliczamy próbki czasowe
     //wyliczam średnią dla wszystkich próbek
     std::vector<float> timeValues;
-    std::vector<float> avgValues;
-    int i = 0;
-    for(auto time = minT; i < totalPoints; ++i, time = minT + (float)i * timeStep){
-        float value = 0;
-        for (auto channelIT = channels.begin(); channelIT != channels.end(); ++channelIT) {
-            accessor->setChannel(*channelIT);
-            value += accessor->getValue(time);
-        }
-        
-        timeValues.push_back(time);
-        avgValues.push_back(value / size);
+    std::vector<float> avgValues(totalPoints, 0.0f);   
+	int idx = 0;
+	for (auto channel : channels) {
+		auto cch = continousChannels[idx++];
+		int i = 0;
+		for (auto time = minT; i < totalPoints; ++i, time = minT + (float)i * timeStep){            
+            avgValues[i] += cch->value(time);
+        }        
     }
+
+	int i = 0;
+	for (auto time = minT; i < totalPoints; ++i, time = minT + (float)i * timeStep){
+		timeValues.push_back(time);
+	}
+
+	for (auto & val : avgValues)
+	{
+		val /= channels.size();
+	}
 
     int outBegIdx = 0;
     int outNBElement = 0;

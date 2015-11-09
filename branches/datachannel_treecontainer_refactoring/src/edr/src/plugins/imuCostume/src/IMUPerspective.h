@@ -57,7 +57,7 @@ public:
 
 private:
 	static std::string generateChannelName(const IMU::IMUConfig&, int i);
-	static c3dlib::VectorChannelPtr createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit = std::string());
+	static c3dlib::VectorChannelReaderInterfacePtr createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit = std::string());
 	//void generateAnglesChannelBranch(kinematic::JointAnglesCollectionPtr ja, core::IHierarchyItemPtr skeletonItem);
 private:
     std::map<std::string, core::HierarchyDataItemWeakPtr> name2hierarchy;

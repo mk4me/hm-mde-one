@@ -39,6 +39,7 @@ SET_PUBLIC_HEADERS(
 	StringConversionTools.h
 	SamplesStatus.h
 	memory.h
+	function_traits.h
 )
 
 #------------------------------------------------------------------------------

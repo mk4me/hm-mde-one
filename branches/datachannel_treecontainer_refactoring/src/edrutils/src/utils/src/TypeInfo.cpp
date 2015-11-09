@@ -42,6 +42,11 @@ bool TypeInfo::operator<(const TypeInfo& obj) const
 	return before(obj);
 }
 
+bool TypeInfo::operator>(const TypeInfo& obj) const
+{
+	return !before(obj);
+}
+
 bool TypeInfo::operator==(const TypeInfo& obj) const
 {
 	return compare(obj);

@@ -34,51 +34,13 @@ namespace utils {
 		static inline T smallestStep() { return (std::numeric_limits<T>::is_integer == true) ? T(1) : std::numeric_limits<T>::epsilon(); }
 	};
 
-	template<typename>
-	struct UnaryFunctionTraits;
-
-	template<typename Ret, typename Arg>
-	struct UnaryFunctionTraits<Ret(Arg)>
-	{
-		typedef Ret result_type;
-		typedef Arg argument_type;
-	};
-
-	template<typename Ret, typename Arg>
-	struct UnaryFunctionTraits<std::function<Ret(Arg)>>
-	{
-		typedef Ret result_type;
-		typedef Arg argument_type;
-	};
-
-	template<typename Ret, typename Arg>
-	struct UnaryFunctionTraits<Ret(*)(Arg)>
-	{
-		typedef Ret result_type;
-		typedef Arg argument_type;
-	};
-
-	template<typename Ret, typename Arg, typename Obj>
-	struct UnaryFunctionTraits<Ret(*)(Obj*, Arg)>
-	{
-		typedef Ret result_type;
-		typedef Arg argument_type;
-	};
-
-	template<typename Ret, typename Arg, typename Obj>
-	struct UnaryFunctionTraits<Ret(*)(const Obj*, Arg)>
-	{
-		typedef Ret result_type;
-		typedef Arg argument_type;
-	};
-
 	struct arithmetic_traits
 	{
 		template<typename T, typename U>
-		using larger_type = typename std::conditional<(sizeof(T) >= sizeof(U)), T, U >::type;
+		using larger_type = typename std::common_type<T,U>::type;
 
 		template<typename T>
-		struct wider_type;
+		struct wider_type {};
 
 		template<> struct wider_type<char> { typedef short type; };
 		template<> struct wider_type<signed char> { typedef signed short type; };
@@ -206,7 +168,7 @@ template <typename T>
 static inline T periodic_clamp_underflow(const T& v, const T& min,
 	const T& max)
 {
-	COMPILER_WARNING("Using unoptimized periodic_clamp_underflow function");
+	UTILS_COMPILER_WARNING("Using unoptimized periodic_clamp_underflow function");
 	return periodic_clamp_underflow(v, min, max, max - min, std::is_floating_point<T>());
 }
 
@@ -245,7 +207,7 @@ template <typename T>
 static inline T periodic_clamp_overflow(const T& v, const T& min,
 	const T& max)
 {
-	COMPILER_WARNING("Using unoptimized periodic_clamp_overflow function");
+	UTILS_COMPILER_WARNING("Using unoptimized periodic_clamp_overflow function");
 	return periodic_clamp_overflow(v, min, max, max - min, std::is_floating_point<T>());
 }
 
@@ -298,7 +260,7 @@ template <typename T>
 //! \return Wartość w zadanym przedziale
 static inline T periodic_clamp(const T& v, const T& min, const T& max)
 {
-	COMPILER_WARNING("Using unoptimized periodic_clamp function");
+	UTILS_COMPILER_WARNING("Using unoptimized periodic_clamp function");
 	return periodic_clamp(v, min, max, max - min);
 }
 
@@ -357,7 +319,7 @@ template <typename T>
 //! \return 1, 0 albo -1 w zależności od znaku
 static inline int sign(const T x)
 {
-	static_assert(std::is_arithmetic<T>(), "T must be arithmetic type");
+	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic type");
 	return sign(x, std::is_signed<T>());
 }
 

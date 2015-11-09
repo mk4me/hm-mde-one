@@ -12,17 +12,16 @@
 #include <c3dlib/C3DTypes.h>
 #include <plugins/newChart/Wrappers.h>
 
-DEFINE_WRAPPER(c3dlib::VectorChannelReaderInterface, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
-DEFINE_WRAPPER_INHERITANCE(c3dlib::VectorChannel, c3dlib::VectorChannelReaderInterface);
-DEFINE_WRAPPER_INHERITANCE(c3dlib::MarkerChannel, c3dlib::VectorChannel);
-DEFINE_WRAPPER_INHERITANCE(c3dlib::ForceChannel, c3dlib::VectorChannel);
-DEFINE_WRAPPER_INHERITANCE(c3dlib::MomentChannel,c3dlib::VectorChannel);
-DEFINE_WRAPPER_INHERITANCE(c3dlib::AngleChannel, c3dlib::VectorChannel);
-DEFINE_WRAPPER_INHERITANCE(c3dlib::PowerChannel, c3dlib::VectorChannel);
-DEFINE_WRAPPER_INHERITANCE(c3dlib::ScalarChannel, c3dlib::ScalarChannelReader);
-DEFINE_WRAPPER_INHERITANCE(c3dlib::VectorToScalarAdaptor, c3dlib::ScalarChannelReader);
-DEFINE_WRAPPER_INHERITANCE(c3dlib::C3DAnalogChannel, c3dlib::ScalarChannel);
+DEFINE_WRAPPER(c3dlib::VectorChannelReaderInterface, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
+//DEFINE_WRAPPER(c3dlib::ScalarChannelReaderInterface, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
+DEFINE_WRAPPER_INHERITANCE(c3dlib::MarkerChannel, c3dlib::VectorChannelReaderInterface);
+DEFINE_WRAPPER_INHERITANCE(c3dlib::ForceChannel, c3dlib::VectorChannelReaderInterface);
+DEFINE_WRAPPER_INHERITANCE(c3dlib::MomentChannel, c3dlib::VectorChannelReaderInterface);
+DEFINE_WRAPPER_INHERITANCE(c3dlib::AngleChannel, c3dlib::VectorChannelReaderInterface);
+DEFINE_WRAPPER_INHERITANCE(c3dlib::PowerChannel, c3dlib::VectorChannelReaderInterface);
+//DEFINE_WRAPPER_INHERITANCE(c3dlib::VectorToScalarAdaptor, c3dlib::ScalarChannelReader);
+DEFINE_WRAPPER_INHERITANCE(c3dlib::C3DAnalogChannel, c3dlib::ScalarChannelReaderInterface);
 DEFINE_WRAPPER_INHERITANCE(c3dlib::EMGChannel, c3dlib::C3DAnalogChannel);
-DEFINE_WRAPPER_INHERITANCE(c3dlib::GRFChannel, c3dlib::VectorChannel);
+DEFINE_WRAPPER_INHERITANCE(c3dlib::GRFChannel, c3dlib::VectorChannelReaderInterface);
 
 #endif  // __HEADER_GUARD_CORE__C3DCHANNELS_H__

@@ -124,11 +124,23 @@ VisualizerPtr NewChartItemHelper::createVisualizer(core::IVisualizerManager* man
     } else {
         std::string title;
 		c3dlib::ScalarChannelReaderInterfaceConstPtr scalar = wrapper->get();
-        title += scalar->getName();
-        title += " [";
-        title += scalar->getValueBaseUnit();
-        title += "]";
-        chart->setTitle(QString(title.c_str()));
+
+		auto df = scalar->feature<datachannel::IDescriptor>();
+
+		if (df != nullptr){
+
+			title += df->name();
+			title += " [";
+			title += df->valueUnit();
+			title += "]";
+
+		}
+		else{
+
+		}
+
+		chart->setTitle(QString(title.c_str()));
+
     }
 
     return visualizer;
@@ -170,13 +182,21 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer(core::IVisualizerManager* m
     } else {
         std::string title;
 		c3dlib::VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
-        title += vectorChannel->getName();
-		auto units = vectorChannel->getValueBaseUnit();
-		if (units.empty() == false){
+
+		auto df = vectorChannel->feature<datachannel::IDescriptor>();
+
+		if (df != nullptr){
+
+			title += df->name();
 			title += " [";
-			title += vectorChannel->getValueBaseUnit();
+			title += df->valueUnit();
 			title += "]";
+
 		}
+		else{
+
+		}
+        
         chart->setTitle(QString(title.c_str()));
     }
     return visualizer;
@@ -186,9 +206,15 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
 {
 	c3dlib::VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
 
-    c3dlib::ScalarChannelReaderInterfacePtr x(new c3dlib::VectorToScalarAdaptor(vectorChannel, 0));
-    c3dlib::ScalarChannelReaderInterfacePtr y(new c3dlib::VectorToScalarAdaptor(vectorChannel, 1));
-    c3dlib::ScalarChannelReaderInterfacePtr z(new c3dlib::VectorToScalarAdaptor(vectorChannel, 2));
+	c3dlib::ScalarChannelReaderInterfacePtr x(new datachannel::DiscreteAccessorAdapter < c3dlib::VectorChannelReaderInterface::value_type,
+		c3dlib::VectorChannelReaderInterface::argument_type, utils::ArrayTraits::StaticElementExtractor < 0 >>
+		(*vectorChannel));
+	c3dlib::ScalarChannelReaderInterfacePtr y(new datachannel::DiscreteAccessorAdapter < c3dlib::VectorChannelReaderInterface::value_type,
+		c3dlib::VectorChannelReaderInterface::argument_type, utils::ArrayTraits::StaticElementExtractor < 1 >>
+		(*vectorChannel));
+	c3dlib::ScalarChannelReaderInterfacePtr z(new datachannel::DiscreteAccessorAdapter < c3dlib::VectorChannelReaderInterface::value_type,
+		c3dlib::VectorChannelReaderInterface::argument_type, utils::ArrayTraits::StaticElementExtractor < 2 >>
+		(*vectorChannel));
     core::VariantPtr wrapperX = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
     core::VariantPtr wrapperY = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
     core::VariantPtr wrapperZ = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();

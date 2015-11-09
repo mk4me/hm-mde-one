@@ -56,6 +56,10 @@ namespace utils {
         bool operator<(const TypeInfo& obj) const;
 
 		//! \param obj Obiekt porównywany
+		//! \return Czy nasz typ jest przed obj
+		bool operator>(const TypeInfo& obj) const;
+
+		//! \param obj Obiekt porównywany
 		//! \return Czy nasz typ równa się obj
         bool operator==(const TypeInfo& obj) const;
 

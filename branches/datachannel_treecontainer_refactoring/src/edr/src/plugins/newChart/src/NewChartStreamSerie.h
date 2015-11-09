@@ -99,8 +99,6 @@ public:
     //! ustawia aktywność krzywej
     //! \param val aktywna / nieaktywna
     void setActive(bool val);
-    //! \return statystyki dla ustawionego ScalarChannelReaderInterface
-	c3dlib::ScalarChannelStatsConstPtr getStats() const { return stats; }
     //! odlacza krzywa od wykresu
     void removeItemsFromPlot();
     //! ustawia kolejność wyświetlania
@@ -135,7 +133,6 @@ public:
     //! \param offset nowa wartość przesunięcia
     void setOffset(const QPointF& offset);
 
-
 private:
     //! wizualizator, który stworzył serie
     NewChartVisualizer* visualizer;
@@ -150,8 +147,6 @@ private:
 	utils::TypeInfo requestedType;
     //! wizualizowana krzywa
     NewChartCurve* curve;
-    //! obiekt ze statystykami
-	c3dlib::ScalarChannelStatsPtr stats;
     //! czy seria jest aktywna
     bool active;
     //! składowa okresla kolejność rysowania

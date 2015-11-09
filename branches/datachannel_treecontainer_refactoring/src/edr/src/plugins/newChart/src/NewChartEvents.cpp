@@ -92,25 +92,28 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, c3dlib::C
             if (event->getLabel() == "Foot Strike") {
                 if (currentSegment) {
                     UTILS_ASSERT(currentSegment->event1);
-                    currentSegment->end = event->getTime();
-					c3dlib::ScalarChannelReaderInterfacePtr nonConstChannel(utils::const_pointer_cast<c3dlib::ScalarChannelReaderInterface>(scalar));
-					currentSegment->stats = c3dlib::ScalarChannelStatsPtr(new c3dlib::ScalarChannelStats(nonConstChannel, currentSegment->begin, currentSegment->end));
+                    currentSegment->end = event->getTime();					
                     collection.push_back(currentSegment);
                 }
 
                 currentSegment.reset(new Segment());
                 currentSegment->event1 = event;
                 currentSegment->begin = event->getTime();
+				currentSegment->scalar = scalar;
             } else if (currentSegment && event->getLabel() == "Foot Off") {
                 currentSegment->event2 = event;
             }
         } 
     }
 
-    for (unsigned int i = 0; i < collection.size(); ++i) {
-		c3dlib::ScalarChannelReaderInterfacePtr nonConstChannel(utils::const_pointer_cast<c3dlib::ScalarChannelReaderInterface>(scalar));
+    for (unsigned int i = 0; i < collection.size(); ++i) {		
         SegmentPtr segment = collection[i];
-        QString name = QString("%1:%2").arg(scalar->getName().c_str()).arg(i);
+		auto df = segment->scalar->feature<datachannel::IDescriptor>();
+		std::string sname;
+		if (df != nullptr){
+			sname = df->name();
+		}
+        QString name = QString("%1:%2").arg(sname.empty() == false? sname.c_str() : "Unknown").arg(i);
         segment->normalizedCurve = PlotCurvePtr(new QwtPlotCurve(name));
         segment->normalizedCurve->setData(new NewChartEventStateData(scalar, segment->begin, segment->end));
         segment->normalizedCurve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
