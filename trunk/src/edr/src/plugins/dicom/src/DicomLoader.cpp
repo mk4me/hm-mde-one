@@ -1,9 +1,11 @@
 #include "DicomPCH.h"
 #include "DicomLoader.h"
+#include <fstream>
 #include <boost/archive/xml_iarchive.hpp>
 #include "DicomInternalStruct.h"
 #include "BackgroundLayer.h"
 #include "PointsLayer.h"
+
 
 namespace dicom {
 

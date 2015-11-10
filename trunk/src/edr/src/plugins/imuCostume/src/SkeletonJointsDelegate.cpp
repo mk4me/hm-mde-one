@@ -46,7 +46,7 @@ QWidget * SkeletonJointsDelegate::createEditor(QWidget * parent,
 		}
 	}
 
-	editor->addItem(defaultText(), defaultValue());
+	editor->addItem(defaultText(), static_cast<unsigned long long>(defaultValue()));
 	const QStandardItemModel* model = qobject_cast<const QStandardItemModel*>(editor->model());
 	QStandardItem* item = model->item(0);
 
@@ -58,7 +58,7 @@ QWidget * SkeletonJointsDelegate::createEditor(QWidget * parent,
 
 		for (const auto & j : locJoints)
 		{
-			editor->addItem(QString::fromStdString(j.get_right()), j.get_left());
+			editor->addItem(QString::fromStdString(j.get_right()), static_cast<unsigned long long>(j.get_left()));
 		}
 	}
 
@@ -79,7 +79,8 @@ void SkeletonJointsDelegate::setModelData(QWidget * editor,
 	QComboBox * e = qobject_cast<QComboBox*>(editor);
 	model->setData(index, e->currentText());
 	auto it = joints.right.find(e->currentText().toStdString());
-	model->setData(index, it != joints.right.end() ? it->get_left() : defaultValue(), Qt::UserRole);
+	auto dta = it != joints.right.end() ? it->get_left() : defaultValue();
+	model->setData(index, static_cast<unsigned long long>(dta), Qt::UserRole);
 }
 
 void SkeletonJointsDelegate::updateEditorGeometry(QWidget * editor,

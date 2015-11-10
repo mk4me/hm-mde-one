@@ -8,6 +8,7 @@
 #include <acclaimformatslib/AsfParser.h>
 #include <algorithm>
 #include <vector>
+#include <fstream>
 
 Q_DECLARE_METATYPE(IMU::SkeletonConstPtr);
 

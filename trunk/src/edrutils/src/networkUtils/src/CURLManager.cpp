@@ -289,7 +289,7 @@ private:
 	//! Czy mamy ju¿ koñczyæ dzia³anie managera
 	volatile bool finalized_;
 	//! Czas oczekiwania na dane [ms]
-	static const int waitTime = 500;
+	const int waitTime = 500;
 	//! Obiekt realizuj¹cy czekanie na nowe uchwyty
 	std::mutex waitSync;
 	//! Conditional variable
