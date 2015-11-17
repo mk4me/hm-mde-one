@@ -19,7 +19,7 @@ public:
 
 	AppInitializerImpl(int & argc, char *argv[], const std::string & appName) : coreApplication(new Application())
 	{
-		cleanUp_ = boost::bind(&Application::finalizeUI, coreApplication.get());
+		cleanUp_ = std::bind(&Application::finalizeUI, coreApplication.get());
 		__application = coreApplication.get();
 		plugin::__coreApplication = &mainViewApplication;
 		initUIContextRes = coreApplication->initUIContext(argc, argv, appName, translations);

@@ -1,7 +1,7 @@
 #include <plugins/dfElements/DFProcessors.h>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
-
+#include <datachannellib/IUniformArgumentsFeature.h>
 
 void VectorDiff::process()
 {
@@ -9,14 +9,24 @@ void VectorDiff::process()
     c3dlib::VectorChannelReaderInterfaceConstPtr signal2 = inPinB->getValue();
 
     if (signal1 && signal2) {
-		c3dlib::VectorChannelPtr channel(new c3dlib::VectorChannel(signal1->size() / signal1->getLength()));
-        channel->setName("Result");
-        size_type count = (std::min)(signal1->size(), signal2->size());
+		double step = 0.0;
+		auto uaf = signal1->getOrCreateArgumentFeature<datachannel::IUniformArgumentsFeature>();
+		if (uaf != nullptr){
+			step = uaf->argumentsInterval();
+		}
 
+		const size_type count = (std::min)(signal1->size(), signal2->size());
+		std::vector<c3dlib::VectorChannelReaderInterface::sample_type> data;
+		data.reserve(count);
+        
         for (size_type i = 0; i < count; ++i) {
             auto val = signal1->value(i) - signal2->value(i);
-            channel->addPoint(val);
+			data.push_back({ i * step, val });
         }
+		
+		auto channel = datachannel::wrap(std::move(data));		
+		channel->attachFeature(uaf);
+		channel->attachFeature(utils::make_shared<datachannel::Descriptor>("Result", "", "", "", ""));
         outPinA->setValue(channel);
     } else {
 
@@ -59,14 +69,25 @@ void VectorAdder::process()
     c3dlib::VectorChannelReaderInterfaceConstPtr signal2 = inPinB->getValue();
 
     if (signal1 && signal2) {
-		c3dlib::VectorChannelPtr channel(new c3dlib::VectorChannel(signal1->size() / signal1->getLength()));
-        channel->setName("Result");
-        size_type count = (std::min)(signal1->size(), signal2->size());
+		double step = 0.0;
+		auto uaf = signal1->getOrCreateArgumentFeature<datachannel::IUniformArgumentsFeature>();
+		if (uaf != nullptr){
+			step = uaf->argumentsInterval();
+		}
 
-        for (size_type i = 0; i < count; ++i) {
-            auto val = signal1->value(i) + signal2->value(i);
-            channel->addPoint(val);
-        }
+		const size_type count = (std::min)(signal1->size(), signal2->size());
+		std::vector<c3dlib::VectorChannelReaderInterface::sample_type> data;
+		data.reserve(count);
+
+		for (size_type i = 0; i < count; ++i) {
+			auto val = signal1->value(i) + signal2->value(i);
+			data.push_back({ i * step, val });
+		}
+
+		auto channel = datachannel::wrap(std::move(data));
+
+		channel->attachFeature(uaf);
+		channel->attachFeature(utils::make_shared<datachannel::Descriptor>("Result", "", "", "", ""));
         outPinA->setValue(channel);
     } else {
 
@@ -94,19 +115,35 @@ void Vector2Scalar::process()
 {
 	c3dlib::VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
     if (signal1) {
-        float samplesPS = signal1->size() / signal1->getLength();
-        c3dlib::ScalarChannelPtr channelX(new c3dlib::ScalarChannel(samplesPS)); channelX->setName("X");
-        c3dlib::ScalarChannelPtr channelY(new c3dlib::ScalarChannel(samplesPS)); channelY->setName("Y");
-        c3dlib::ScalarChannelPtr channelZ(new c3dlib::ScalarChannel(samplesPS)); channelZ->setName("Z");
 
-        size_type count = signal1->size();
+		auto uaf = signal1->getOrCreateArgumentFeature<datachannel::IUniformArgumentsFeature>();
 
-        for (size_type i = 0; i < count; ++i) {
-            auto val = signal1->value(i);
-            channelX->addPoint(val[0]);
-            channelY->addPoint(val[1]);
-            channelZ->addPoint(val[2]);
-        }
+		std::vector<c3dlib::ScalarChannelReaderInterface::sample_type> dataX, dataY, dataZ;
+		dataX.reserve(signal1->size());
+		dataY.reserve(signal1->size());
+		dataZ.reserve(signal1->size());
+
+		for (size_type i = 0; i < signal1->size(); ++i) {
+			auto val = signal1->sample(i);
+			dataX.push_back({ val.first, val.second[0] });
+			dataY.push_back({ val.first, val.second[1] });
+			dataZ.push_back({ val.first, val.second[2] });
+		}
+
+		auto channelX = datachannel::wrap(std::move(dataX));
+		auto channelY = datachannel::wrap(std::move(dataY));
+		auto channelZ = datachannel::wrap(std::move(dataZ));
+
+		channelX->attachFeature(uaf);
+		channelX->attachFeature(utils::make_shared<datachannel::Descriptor>("X", "", "", "", ""));
+
+		channelY->attachFeature(uaf);
+		channelY->attachFeature(utils::make_shared<datachannel::Descriptor>("Y", "", "", "", ""));
+
+		channelZ->attachFeature(uaf);
+		channelZ->attachFeature(utils::make_shared<datachannel::Descriptor>("Z", "", "", "", ""));
+
+
         outPinX->setValue(channelX);
         outPinY->setValue(channelY);
         outPinZ->setValue(channelZ);
@@ -138,17 +175,27 @@ void Scalar2Vector::process()
     c3dlib::ScalarChannelReaderInterfaceConstPtr signal2 = inPinY->getValue();
     c3dlib::ScalarChannelReaderInterfaceConstPtr signal3 = inPinZ->getValue();
     if (signal1 && signal2 && signal3) {
-        float samplesPS = signal1->size() / signal1->getLength();
-		c3dlib::VectorChannelPtr channel(new c3dlib::VectorChannel(samplesPS));
-        channel->setName("Result");
 
-        size_type count = (std::min)(signal1->size(), signal2->size());
-        count = (std::min)(count, signal3->size());
+		double step = 0.0;
+		auto uaf = signal1->getOrCreateArgumentFeature<datachannel::IUniformArgumentsFeature>();
+		if (uaf != nullptr){
+			step = uaf->argumentsInterval();
+		}
 
-        for (size_type i = 0; i < count; ++i) {
-            osg::Vec3 val(signal1->value(i), signal2->value(i), signal3->value(i));
-            channel->addPoint(val);
-        }
+		size_type count = (std::min)(signal1->size(), signal2->size());
+		count = (std::min<size_type>)(count, signal3->size());
+		std::vector<c3dlib::VectorChannelReaderInterface::sample_type> data;
+		data.reserve(count);
+
+		for (size_type i = 0; i < count; ++i) {
+			data.push_back({ i * step, osg::Vec3(signal1->value(i), signal2->value(i), signal3->value(i)) });
+		}
+
+		auto channel = datachannel::wrap(std::move(data));
+
+		channel->attachFeature(uaf);
+		channel->attachFeature(utils::make_shared<datachannel::Descriptor>("Result", "", "", "", ""));
+        
         outPinA->setValue(channel);
     } else {
 

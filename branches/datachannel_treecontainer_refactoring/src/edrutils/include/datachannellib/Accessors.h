@@ -285,7 +285,7 @@ namespace datachannel
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<typename ValueType, typename ArgumentType>
 	//! Typ smart pointera do akcesora danego kanału
-	using AccessorPtr = utils::shared_ptr<IAccessor<ValueType, ArgumentType>>;
+	using AccessorPtr = utils::shared_ptr<IAccessor<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>>;
 
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
@@ -307,6 +307,12 @@ namespace datachannel
 		//! \return Kanał jako ciągły
 		virtual const FunctionAccessor * asFunction() const override final { return this; };
 	};
+
+	//! \tparam ValueType Typ wartości kanału danych
+	//! \tparam ArgumentType Typ argumentu kanału danych
+	template<typename ValueType, typename ArgumentType>
+	//! Typ smart pointera do akcesora danego kanału funckyjnego
+	using FunctionAccessorPtr = utils::shared_ptr<IFunctionAccessor<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>>;
 
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
@@ -372,6 +378,12 @@ namespace datachannel
 		//! \return Kanał jako dyskretny
 		virtual const DiscreteAccessor * asDiscrete() const override final { return this; };
 	};
+
+	//! \tparam ValueType Typ wartości kanału danych
+	//! \tparam ArgumentType Typ argumentu kanału danych
+	template<typename ValueType, typename ArgumentType>
+	//! Typ smart pointera do akcesora danego kanału dyskretnego
+	using DiscreteAccessorPtr = utils::shared_ptr<IDiscreteAccessor<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>>;
 
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych

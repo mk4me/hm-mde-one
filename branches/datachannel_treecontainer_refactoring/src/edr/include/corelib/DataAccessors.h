@@ -17,7 +17,7 @@ namespace core {
 
     //! Przekierowanie z queryData dla poprawnych danych.
     template <class T, class Ptr>
-    void queryDataIsConvertible__(IDataManagerReader::IOperations* manager, std::vector<Ptr> & target, bool exact, boost::true_type)
+    void queryDataIsConvertible__(IDataManagerReader::IOperations* manager, std::vector<Ptr> & target, bool exact, std::true_type)
     {
 		const static utils::TypeInfo type = utils::TypeInfo(typeid(T));
         // pobieramy wrappery
@@ -31,7 +31,7 @@ namespace core {
 
     //! Przekierowanie z queryData dla niepoprawnych danych.
     template <class T, class Ptr>
-    void queryDataIsConvertible__(IDataManagerReader::IOperations*, std::vector<Ptr>&, bool, boost::false_type)
+	void queryDataIsConvertible__(IDataManagerReader::IOperations*, std::vector<Ptr>&, bool, std::false_type)
     {
         // rev
         //static_assert( false, "Niewłaściwy typ elementu wektora lub niezdefiniowno wrap. Sprawdz CORE_DEFINE_WRAPPER dla poszukiwanego typu." );
@@ -45,9 +45,9 @@ namespace core {
     inline void queryDataPtr(IDataManagerReader::IOperations* manager, std::vector<SmartPtr>& target, bool exact = false)
     {
         static_assert(std::is_const<typename SmartPtr::element_type>::value, "Interfejs pobierania danych operuje na stalych obiektach.");
-		static_assert(utils::ObjectWrapperTraits<typename boost::remove_const<typename SmartPtr::element_type>::type>::isDefinitionVisible ||
+		static_assert(utils::ObjectWrapperTraits<typename std::remove_const<typename SmartPtr::element_type>::type>::isDefinitionVisible ||
 			utils::ObjectWrapperTraits<typename SmartPtr::element_type>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-        queryDataIsConvertible__<typename SmartPtr::element_type, SmartPtr>(manager, target, exact, boost::true_type());
+		queryDataIsConvertible__<typename SmartPtr::element_type, SmartPtr>(manager, target, exact, std::true_type());
     }
 
     //! \param manager Data manager.
@@ -103,7 +103,7 @@ namespace core {
     inline void queryData(IDataManagerReader::IOperations* manager, std::vector<Ptr>& target, bool exact = false)
     {
 		static_assert(utils::ObjectWrapperTraits<T>::isDefinitionVisible, "Niewidoczna definicja wrappera.");
-		queryDataIsConvertible__<T, Ptr>(manager, target, exact, boost::is_convertible<Ptr, typename utils::ObjectWrapperT<T>::ConstPtr>());
+		queryDataIsConvertible__<T, Ptr>(manager, target, exact, std::is_convertible<Ptr, typename utils::ObjectWrapperT<T>::ConstPtr>());
     }
 
     //! \param manager Data manager.

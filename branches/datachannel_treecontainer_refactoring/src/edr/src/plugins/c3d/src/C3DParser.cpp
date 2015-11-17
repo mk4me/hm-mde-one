@@ -173,7 +173,7 @@ void C3DParser::getObject(core::Variant & object, const core::VariantsVector::si
 	if (idx < 4){
 		c3dlib::GRFChannelPtr ptr = data[idx]->get();
 		if (ptr) {
-			auto df = ptr->feature<datachannel::IDescriptor>();
+			auto df = ptr->feature<datachannel::IDescriptorFeature>();
 			if (df != nullptr){
 				object.setMetadata("core/name", df->name());
 			}			
@@ -182,7 +182,7 @@ void C3DParser::getObject(core::Variant & object, const core::VariantsVector::si
 	else if(idx < 20){
 		c3dlib::EMGChannelPtr ptr = data[idx]->get();
 		if (ptr) {
-			auto df = ptr->feature<datachannel::IDescriptor>();
+			auto df = ptr->feature<datachannel::IDescriptorFeature>();
 			if (df != nullptr){
 				object.setMetadata("core/name", df->name());
 			}

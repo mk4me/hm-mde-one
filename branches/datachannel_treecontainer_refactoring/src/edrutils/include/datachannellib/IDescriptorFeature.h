@@ -1,24 +1,24 @@
 /********************************************************************
     created:  2012/04/26
     created:  26:4:2012   23:59
-    filename: Descriptor.h
+    filename: IDescriptorFeature.h
     author:   Mateusz Janiak
 
     purpose:
 *********************************************************************/
-#ifndef HEADER_GUARD_DATACHANNEL__DESCRIPTOR_H__
-#define HEADER_GUARD_DATACHANNEL__DESCRIPTOR_H__
+#ifndef HEADER_GUARD_DATACHANNEL__IDESCRIPTORFEATURE_H__
+#define HEADER_GUARD_DATACHANNEL__IDESCRIPTORFEATURE_H__
 
 #include <datachannellib/Accessors.h>
 
 namespace datachannel {
 	
 	//! Interfejs do czytania opisu kanału - osi x i y oraz nazwy kanału.
-	class IDescriptor : public FeatureHelper<Description>
+	class IDescriptorFeature : public FeatureHelper<Description>
 	{
 	public:
 		//! Destruktor wirtualny
-		virtual ~IDescriptor() {}
+		virtual ~IDescriptorFeature() {}
 
 		//! \return Co reprezentuje kanał (np. "Zależność prędkości od czasu",
 		//! coś na kształt opisu/tytułu wykresu)
@@ -38,7 +38,7 @@ namespace datachannel {
 	};
 	
 	//! Implementacja interfejsu IChannelDescriptor
-	class Descriptor : public IDescriptor
+	class Descriptor : public IDescriptorFeature
 	{
 	private:
 		//! Opis kanału
@@ -83,7 +83,7 @@ namespace datachannel {
 
 		}
 
-		Descriptor(const IDescriptor & Other)
+		Descriptor(const IDescriptorFeature & Other)
 			: Descriptor(Other.name(), Other.valueUnit(),
 			Other.valueType(), Other.argumentUnit(),
 			Other.argumentType())
@@ -126,4 +126,4 @@ namespace datachannel {
 	};
 }
 
-#endif	//	HEADER_GUARD_DATACHANNEL__DESCRIPTOR_H__
+#endif	//	HEADER_GUARD_DATACHANNEL__IDESCRIPTORFEATURE_H__

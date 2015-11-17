@@ -1,6 +1,6 @@
 #include "NewChartPCH.h"
 #include "StatsTable.h"
-#include <datachannellib/Descriptor.h>
+#include <datachannellib/IDescriptorFeature.h>
 #include <datachannellib/Statistics.h>
 #include <datachannellib/IBoundedArgumentsFeature.h>
 #include <datachannellib/IBoundedValuesFeature.h>
@@ -49,7 +49,7 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
 	 QString timeUnit = tr("Unknown time unit");
 	 QString valueUnit = tr("Unknown time unit");
 
-	 auto df = channel->feature<datachannel::IDescriptor>();
+	 auto df = channel->feature<datachannel::IDescriptorFeature>();
 
 	 if (df != nullptr){
 		 timeUnit = QString::fromStdString(df->argumentUnit());

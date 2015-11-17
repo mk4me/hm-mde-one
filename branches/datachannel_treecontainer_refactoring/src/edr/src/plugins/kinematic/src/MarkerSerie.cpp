@@ -3,7 +3,7 @@
 #include "KinematicVisualizer.h"
 #include "TrajectoriesDrawer.h"
 #include "VisualizationScheme.h"
-#include <datachannellib/Descriptor.h>
+#include <datachannellib/IDescriptorFeature.h>
 #include <datachannellib/IUniformArgumentsFeature.h>
 
 MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
@@ -50,7 +50,7 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 
 		for (unsigned int i = 0; i < markersCount; ++i){
 			auto a = markersCollection->getAccessor(i);
-			auto df = a->feature<datachannel::IDescriptor>();
+			auto df = a->feature<datachannel::IDescriptorFeature>();
 			if (df != nullptr){
 				mapping.push_back(df->name());
 			}

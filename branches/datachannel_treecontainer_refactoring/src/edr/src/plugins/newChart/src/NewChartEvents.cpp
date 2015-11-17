@@ -108,7 +108,7 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, c3dlib::C
 
     for (unsigned int i = 0; i < collection.size(); ++i) {		
         SegmentPtr segment = collection[i];
-		auto df = segment->scalar->feature<datachannel::IDescriptor>();
+		auto df = segment->scalar->feature<datachannel::IDescriptorFeature>();
 		std::string sname;
 		if (df != nullptr){
 			sname = df->name();

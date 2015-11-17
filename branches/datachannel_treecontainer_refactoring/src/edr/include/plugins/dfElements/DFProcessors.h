@@ -18,7 +18,7 @@
 #include <dflib/IDFNode.h>
 #include <plugins/newVdf/INodeConfiguration.h>
 #include <datachannellib/IUniformArgumentsFeature.h>
-#include <datachannellib/Descriptor.h>
+#include <datachannellib/IDescriptorFeature.h>
 #include <datachannellib/Wrappers.h>
 
 class VectorDiff : public df::ProcessingNode, public df::IDFProcessor
@@ -75,13 +75,22 @@ public:
         InputPtr signal1 = inPinA->getValue();
 
         if (signal1) {
-            OutputPtr channel(new typename OutputPtr::element_type(signal1->size() / signal1->getLength()));
-            channel->setName("Result");
-            size_type count = signal1->size();
+			
+			auto uaf = signal1->getOrCreateArgumentFeature<datachannel::IUniformArgumentsFeature>();			
+			
+			std::vector<OutputPtr::element_type::sample_type> data;
+			data.reserve(signal1->size());
 
-            for (size_type i = 0; i < count; ++i) {
-                channel->addPoint(processSingleValue(signal1->value(i)));
-            }
+			for (size_type i = 0; i < signal1->size(); ++i) {
+				const auto sample = signal1->sample(i);
+				data.push_back({ sample.first, processSingleValue(sample.second)});
+			}
+
+			auto channel = datachannel::wrap(std::move(data));
+
+			channel->attachFeature(uaf);
+			channel->attachFeature(utils::make_shared<datachannel::Descriptor>("Result", "", "", "", ""));
+
             outPinA->setValue(channel);
         } else {
 
@@ -132,7 +141,7 @@ public:
 				out[i] = { i * interval, val };
             }			
 
-			auto df = signal1->feature<datachannel::IDescriptor>();
+			auto df = signal1->feature<datachannel::IDescriptorFeature>();
 
 			datachannel::IFeaturePtr description;
 
@@ -145,15 +154,14 @@ public:
 			else{
 				description.reset(datachannel::Descriptor::create<OutputPtr::element_type::value_type,
 					OutputPtr::element_type::argument_type>("Result",
-					df->valueType(), df->valueUnit(),
-					df->argumentType(), df->argumentUnit()));
+					df->valueUnit(), df->argumentUnit()));
 			}
 
-			auto chanel = datachannel::wrap(std::move(out));
+			auto channel = datachannel::wrap(std::move(out));
 			channel->attachFeature(uaf);
 			channel->attachFeature(description);
 
-            outPinA->setValue(chanel);
+            outPinA->setValue(channel);
         } else {
 
         }

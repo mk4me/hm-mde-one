@@ -11,7 +11,7 @@
 #define HEADER_GUARD_UTILS__ACCESSORSCOLLECTION_H__
 
 #include <datachannellib/Accessors.h>
-#include <datachannellib/Descriptor.h>
+#include <datachannellib/IDescriptorFeature.h>
 #include <vector>
 #include <algorithm>
 #include <iterator>
@@ -76,7 +76,7 @@ namespace datachannel {
 		{
 			for (auto & a : accessors)
 			{
-				auto f = a->feature<IDescriptor>();
+				auto f = a->feature<IDescriptorFeature>();
 				if (f != nullptr && f->name() == name){
 					return a;
 				}

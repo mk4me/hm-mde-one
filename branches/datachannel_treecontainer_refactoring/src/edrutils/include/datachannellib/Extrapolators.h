@@ -12,7 +12,7 @@
 
 namespace datachannel
 {
-	//! Obiekt obsuguj¹cy zapytania o wartoœci kana³u dla czasu spoza zakresu pokrytego przez kana³
+	//! Typ obsuguj¹cy zapytania o wartoœci kana³u dla czasu spoza zakresu pokrytego przez kana³
 	//! Rzuca wyj¹tkami
 	class ExceptionExtrapolator
 	{
@@ -119,7 +119,7 @@ namespace datachannel
 
 	private:
 		//! Interpolator
-		Interpolator interpolator;
+		const Interpolator interpolator;
 		//! Najmniejszy argument
 		const ArgumentType minArg;
 		//! Najwiêkszy argument
@@ -128,9 +128,10 @@ namespace datachannel
 		const ArgumentType length;
 	};
 
-	//! Obiekt obsuguj¹cy zapytania o wartoœci kana³u dla wartoœci spoza zakresu pokrytego przez kana³
-	//! Powiela skrajne próbki
+	//! \tparam ValueType Typ wartoœci
 	template<typename ValueType>
+	//! Typ obsuguj¹cy zapytania o wartoœci kana³u dla wartoœci spoza zakresu pokrytego przez kana³
+	//! Powiela skrajne próbki
 	class BorderExtrapolator
 	{
 	public:
@@ -172,6 +173,7 @@ namespace datachannel
 		const ValueType maxVal;
 	};
 
+	//! Typ realizuj¹cy liniow¹ ekstrapolacjê
 	class LinearExtrapolator
 	{
 	public:

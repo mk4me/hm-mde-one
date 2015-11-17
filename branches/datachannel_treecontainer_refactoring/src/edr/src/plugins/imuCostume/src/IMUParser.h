@@ -34,7 +34,7 @@ namespace IMU {
         //! \param path poprawna ścieżka do pliku
         virtual void parse(const std::string & source);
 
-	c3dlib::VectorChannelPtr createChannel(int hz, const IMUConfig& config, int i);
+	c3dlib::VectorChannelReaderInterfacePtr createChannel(int hz, const IMUConfig& config, int i);
 
         //! \return pusty obiekt nowego parsera
         virtual plugin::IParser* create() const;

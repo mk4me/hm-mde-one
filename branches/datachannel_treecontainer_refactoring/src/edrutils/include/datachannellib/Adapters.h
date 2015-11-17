@@ -644,6 +644,50 @@ namespace datachannel
 		//! Value extractor
 		const ValueExtractor valueExtractor;
 	};
+
+	//! \tparam ValueType Typ wartoœci kana³u
+	//! \tparam ArgumentType Typ argumentów kana³u
+	template<typename BaseValueType, typename ArgumentType, typename ValueExtractor,
+		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>()))>::type>
+		//! Wrapper dla funkcji, zmieniaj¹cy ich reprezentacjê
+	class FunctionAccessorAdapter : public IFunctionAccessor<DestValueType, ArgumentType>
+	{
+	public:
+
+		//! \param accessor Kana³ który adaptujemy
+		//! \param valueExtractor Wyci¹ga/Modyfikuje/Generuje nowe wartoœci na bazie wartoœci adaptowanego kana³u
+		FunctionAccessorAdapter(const IFunctionAccessor<BaseValueType, ArgumentType> & accessor,
+			const ValueExtractor & valueExtractor = ValueExtractor())
+			: accessor(accessor), valueExtractor(valueExtractor)
+		{
+
+		}
+
+		//! \param accessor Kana³ który adaptujemy
+		//! \param valueExtractor Wyci¹ga/Modyfikuje/Generuje nowe wartoœci na bazie wartoœci adaptowanego kana³u
+		FunctionAccessorAdapter(const IFunctionAccessor<BaseValueType, ArgumentType> & accessor,
+			ValueExtractor && valueExtractor)
+			: accessor(accessor), valueExtractor(std::move(valueExtractor))
+		{
+
+		}
+
+		//! Destruktor wirtualny
+		virtual ~FunctionAccessorAdapter() {}
+
+		//! \param argument Argument dla któego odpytujemy o wartoœæ
+		//! \return Wartoœæ dla zadanego argumentu
+		virtual value_type value(const argument_type & argument) const override { return valueExtractor.extract(accessor.value(argument)); }
+		//! \param argument Argument dla któego odpytujemy o wartoœæ
+		//! \return Próbka dla zadanego argumentu
+		virtual sample_type sample(const argument_type & argument) const { return{ argument, value(argument) }; }
+
+	private:
+		//! Accessor
+		const IFunctionAccessor<BaseValueType, ArgumentType> & accessor;
+		//! Value extractor
+		const ValueExtractor valueExtractor;
+	};
 }
 
 #endif	// __HEADER_GUARD_DATACHANNEL__ADAPTERS_H__

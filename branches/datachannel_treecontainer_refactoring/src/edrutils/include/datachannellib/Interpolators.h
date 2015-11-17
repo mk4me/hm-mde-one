@@ -25,8 +25,7 @@ namespace datachannel
 		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
 		inline static ValueType interpolate(const IDiscreteAccessor<ValueType, ArgumentType> & accessor,
 			const ArgumentType argument, const std::size_t startIdx, const std::size_t endIdx)
-		{
-			//// lerp
+		{			
 			const auto startSample = accessor.sample(startIdx);
 			const auto endSample = accessor.sample(endIdx);
 			const auto mu = (argument - startSample.first) / (endSample.first - startSample.first);

@@ -30,7 +30,7 @@
 
 typedef core::Filesystem fs;
 
-c3dlib::VectorChannelPtr IMU::IMUPerspective::createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit)
+c3dlib::VectorChannelReaderInterfacePtr IMU::IMUPerspective::createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit)
 {
 	auto c = utils::make_shared<c3dlib::VectorChannel>((float)hz);
     // + 1 , bo numeracja w plikach *.cfg zaczyna si� od 1

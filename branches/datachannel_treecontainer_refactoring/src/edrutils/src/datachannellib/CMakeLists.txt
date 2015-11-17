@@ -3,7 +3,7 @@ BEGIN_PROJECT("header")
 SET_PUBLIC_HEADERS(
 	Accessors.h
 	ArgumentTracker.h
-	Descriptor.h
+	IDescriptorFeature.h
 	AccessorsCollection.h	
 	Statistics.h
 	WrapperHelpers.h

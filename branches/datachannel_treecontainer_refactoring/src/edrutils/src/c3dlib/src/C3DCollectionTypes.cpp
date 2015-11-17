@@ -171,7 +171,7 @@ MarkerCollection::MarkerCollection(vicon::VskPtr vsk) : vsk(vsk)
 std::string MarkerCollection::getMarkerName(int markerNo) const
 {
 	auto a = this->getAccessor(markerNo);
-	auto df = a->feature<datachannel::IDescriptor>();
+	auto df = a->feature<datachannel::IDescriptorFeature>();
 	if (df != nullptr){
 		return df->name();
 	}

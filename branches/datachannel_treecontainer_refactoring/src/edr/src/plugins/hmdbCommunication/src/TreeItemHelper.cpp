@@ -125,7 +125,7 @@ VisualizerPtr NewChartItemHelper::createVisualizer(core::IVisualizerManager* man
         std::string title;
 		c3dlib::ScalarChannelReaderInterfaceConstPtr scalar = wrapper->get();
 
-		auto df = scalar->feature<datachannel::IDescriptor>();
+		auto df = scalar->feature<datachannel::IDescriptorFeature>();
 
 		if (df != nullptr){
 
@@ -183,7 +183,7 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer(core::IVisualizerManager* m
         std::string title;
 		c3dlib::VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
 
-		auto df = vectorChannel->feature<datachannel::IDescriptor>();
+		auto df = vectorChannel->feature<datachannel::IDescriptorFeature>();
 
 		if (df != nullptr){
 

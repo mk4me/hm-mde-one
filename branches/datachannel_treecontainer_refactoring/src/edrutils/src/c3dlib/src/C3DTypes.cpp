@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <utils/Debug.h>
 #include <datachannellib/IUniformArgumentsFeature.h>
-#include <datachannellib/Descriptor.h>
+#include <datachannellib/IDescriptorFeature.h>
 #include <datachannellib/IBoundedArgumentsFeature.h>
 
 using namespace c3dlib;
