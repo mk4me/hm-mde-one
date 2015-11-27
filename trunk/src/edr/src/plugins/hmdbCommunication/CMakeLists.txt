@@ -80,6 +80,7 @@ SET_PUBLIC_HEADERS (
 	IHMDBSourceViewManager.h
 	GeneralSourceViewWidget.h
 	DataViewConfigurationWidget.h
+	ContextConfigurationSettingsFile.h
 )
 
 #------------------------------------------------------------------------------
@@ -137,6 +138,7 @@ SET_SOURCE_FILES(
 	GeneralSourceViewWidget.cpp
 	DataViewConfigurationWidget.cpp
 	UpdateFilesDialog.cpp
+	ContextConfigurationSettingsFile.cpp
 )
 
 SET_MOC_FILES(

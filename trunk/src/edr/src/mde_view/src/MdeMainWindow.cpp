@@ -40,6 +40,7 @@
 #include "plugins/hmdbCommunication/SourceOptionsWidget.h"
 #include "plugins/kinematic/IKinematicVisualizer.h"
 #include "corelib/IVisualizerManager.h"
+#include "plugins/hmdbCommunication/ContextConfigurationSettingsFile.h"
 
 using namespace core;
 
@@ -143,22 +144,25 @@ bool MdeMainWindow::customViewInit(QWidget * log)
 	   vm->registerViewPrototype(hmdbView);
 
 	   {
-		   hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration ccfg;
-		   ccfg.name = tr("Default PJATK MDE data connection");
-		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
-		   ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
-
-//#ifdef _DEBUG 
-		   ccfg.motionServicesConfiguration.userConfiguration.user = "test_PJWSTK";
-		   ccfg.motionServicesConfiguration.userConfiguration.password = "PJtestP@ss";
-//#endif
-		   ccfg.motionServicesConfiguration.serviceConfiguration.url = "https://v21.pjwstk.edu.pl/HMDB";
-		   ccfg.motionServicesConfiguration.serviceConfiguration.caPath = QString::fromStdString((plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string());
-
-		   ccfg.motionDataConfiguration.serviceConfiguration.url = "ftps://v21.pjwstk.edu.pl";
-		   ccfg.motionDataConfiguration.serviceConfiguration.caPath = "";
-		   ccfg.motionDataConfiguration.userConfiguration.user = "testUser";
-		   ccfg.motionDataConfiguration.userConfiguration.password = "testUser";
+		   typedef hmdbCommunication::ContextConfigurationSettingsFile ConfFile;
+		   auto iniPath = plugin::getUserApplicationDataPath("mde_communication.ini").string();
+		   PLUGIN_LOG_INFO("Communication configuration file: " << iniPath);
+		   hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration ccfg = ConfFile::read(QString::fromStdString(iniPath));
+//		   ccfg.name = tr("Default PJATK MDE data connection");
+//		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
+//		   ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
+//
+////#ifdef _DEBUG 
+//		   ccfg.motionServicesConfiguration.userConfiguration.user = "test_PJWSTK";
+//		   ccfg.motionServicesConfiguration.userConfiguration.password = "PJtestP@ss";
+////#endif
+//		   ccfg.motionServicesConfiguration.serviceConfiguration.url = "https://v21.pjwstk.edu.pl/HMDB";
+//		   ccfg.motionServicesConfiguration.serviceConfiguration.caPath = QString::fromStdString((plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string());
+//
+//		   ccfg.motionDataConfiguration.serviceConfiguration.url = "ftps://v21.pjwstk.edu.pl";
+//		   ccfg.motionDataConfiguration.serviceConfiguration.caPath = "";
+//		   ccfg.motionDataConfiguration.userConfiguration.user = "testUser";
+//		   ccfg.motionDataConfiguration.userConfiguration.password = "testUser";
 
 		   vm->registerConfiguration(ccfg, hmdbView->name());
 	   }
