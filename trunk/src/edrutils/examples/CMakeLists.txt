@@ -1,6 +1,6 @@
 #SET_PROJECTS_GROUP("przyklady")
 
-ADD_PROJECT(osgSample "OSG")
+#ADD_PROJECT(osgSample "OSG")
 #if (CONFIG_VIDLIB_ENABLE_OSG)
 #	ADD_PROJECT(videoPlayerOSG "vidlib;OSG;loglib")
 #	ADD_PROJECT(videoPlayerStreamOSG "vidlib;OSG;sqliteUtils")
@@ -21,4 +21,4 @@ ADD_PROJECT(osgSample "OSG")
 #ADD_PROJECT(newTimelineSample "OSG;QT;utils;BOOST;timelinelib")
 #ADD_PROJECT(dflibSumator "utils;BOOST;dfmlib")
 #ADD_PROJECT(localStorageChanger "utils;sqliteUtils")
-#ADD_PROJECT(dicomWatcher "QT;QUAZIP;BOOST;utils;dicomLib")
+ADD_PROJECT(dicomWatcher "QT;QUAZIP;BOOST;utils;dicomLib")
