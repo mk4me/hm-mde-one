@@ -747,14 +747,14 @@ void Application::setDefaultPaths(utils::shared_ptr<Path> & path, const std::str
 	//HACK �eby dosta� si� do �cie�ek roaming dla usera, Qt w innych przypadkach podaje �ciezki w local
 	QString settingsPath = QFileInfo(QSettings().fileName()).absolutePath();
 	auto userAppDataPath = utils::Filesystem::Path(settingsPath.toStdString()).parent_path() / "PJATK" / appName;
+	auto genericpath = utils::Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::GenericConfigLocation).at(0).toStdString()).root_path() / "ProgramData";
 	auto appDataPath = genericpath / "PJATK" / appName;
 #else
 	auto userAppDataPath = utils::Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DataLocation).at(0).toStdString()).parent_path() / "PJATK" / appName;
 	auto appDataPath = userAppDataPath;
 #endif // WIN32
 	//TODO - czy pod linux taka konwencja jest ok? jak tam dzia�aj� takie wsp�lne foldery?
-	auto genericpath = utils::Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::GenericConfigLocation).at(0).toStdString()).root_path() / "ProgramData";
-
+	
 
 	path.reset(new Path(userPath, appDataPath, userAppDataPath, resourcesPath(), userPath / "tmp", appDataPath / "plugins"));
 }
