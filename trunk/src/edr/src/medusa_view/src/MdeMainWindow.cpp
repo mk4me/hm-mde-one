@@ -47,6 +47,7 @@
 #include "ImageTableModel.h"
 #include "LoginDialog.h"
 #include "plugins/hmdbCommunication/SourceOptionsWidget.h"
+#include "plugins/hmdbCommunication/ContextConfigurationSettingsFile.h"
 
 using namespace core;
 
@@ -566,6 +567,12 @@ hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration MdeMainWindow::c
 	ccfg.motionDataConfiguration.serviceConfiguration.caPath = "";
 	ccfg.motionDataConfiguration.userConfiguration.user = "testUser";
 	ccfg.motionDataConfiguration.userConfiguration.password = "testUser";
+
+	typedef hmdbCommunication::ContextConfigurationSettingsFile ConfFile;
+	auto iniPath = plugin::getUserApplicationDataPath("medusa_communication.ini").string();
+	PLUGIN_LOG_INFO("Communication configuration file: " << iniPath);
+	//ConfFile::write("K:/rawcommunication.ini", ConfFile::defaultConfig());
+	ccfg = ConfFile::read(QString::fromStdString(iniPath));
 	return ccfg;
 }
 

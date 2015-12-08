@@ -22,3 +22,4 @@
 #ADD_PROJECT(dflibSumator "utils;BOOST;dfmlib")
 #ADD_PROJECT(localStorageChanger "utils;sqliteUtils")
 ADD_PROJECT(dicomWatcher "QT;QUAZIP;BOOST;utils;dicomLib")
+ADD_PROJECT(hashCreator "networkUtils")

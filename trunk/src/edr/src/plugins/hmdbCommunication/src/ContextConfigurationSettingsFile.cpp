@@ -1,28 +1,32 @@
 #include <plugins/hmdbCommunication/ContextConfigurationSettingsFile.h>
 #include <Qtcore/QSettings>
 #include "corelib/PluginCommon.h"
+#include <networkUtils/EncryptionUtils.h>
 
 using namespace hmdbCommunication;
 
 
-static void getSetting(const QSettings& s, const QString& propertyName, QString& param)
+static void getSetting(const QSettings& s, const QString& propertyName, QString& param, bool shadow = false)
 {
 	param = s.value(propertyName, param).toString();
+	if (shadow && s.contains(propertyName)) {
+		param = networkUtils::EncryptionUtils::decrypt(param);
+	}
 }
 
 IHMDBSourceViewManager::ContextConfiguration ContextConfigurationSettingsFile::read(const QString& path)
 {
 	IHMDBSourceViewManager::ContextConfiguration ccfg = defaultConfig();
 	QSettings settings(path, QSettings::IniFormat);
-
+	bool shadow = settings.value("EncryptedPasswords", false).toBool();
 	getSetting(settings, "ConfigName", ccfg.name);
 
 	getSetting(settings, "StorageConfigurationPath", ccfg.storageConfiguration.path);
-	getSetting(settings, "StoragePassword", ccfg.storageConfiguration.password);
+	getSetting(settings, "StoragePassword", ccfg.storageConfiguration.password, shadow);
 
 	//#ifdef _DEBUG 
 	getSetting(settings, "MotionConfigurationUser", ccfg.motionServicesConfiguration.userConfiguration.user);
-	getSetting(settings, "MotionConfigurationPassword", ccfg.motionServicesConfiguration.userConfiguration.password);
+	getSetting(settings, "MotionConfigurationPassword", ccfg.motionServicesConfiguration.userConfiguration.password, shadow);
 	//#endif
 	getSetting(settings, "MotionConfigurationURL", ccfg.motionServicesConfiguration.serviceConfiguration.url);
 	getSetting(settings, "MotionConfigurationCertificatePath", ccfg.motionServicesConfiguration.serviceConfiguration.caPath);
@@ -30,7 +34,7 @@ IHMDBSourceViewManager::ContextConfiguration ContextConfigurationSettingsFile::r
 	getSetting(settings, "MotionDataConfigurationURL", ccfg.motionDataConfiguration.serviceConfiguration.url);
 	getSetting(settings, "MotionDataConfigurationCertificatePath", ccfg.motionDataConfiguration.serviceConfiguration.caPath);
 	getSetting(settings, "MotionDataConfigurationUser", ccfg.motionDataConfiguration.userConfiguration.user);
-	getSetting(settings, "MotionDataConfigurationPassword", ccfg.motionDataConfiguration.userConfiguration.password);
+	getSetting(settings, "MotionDataConfigurationPassword", ccfg.motionDataConfiguration.userConfiguration.password, shadow);
 	return ccfg;
 }
 
@@ -59,16 +63,18 @@ IHMDBSourceViewManager::ContextConfiguration hmdbCommunication::ContextConfigura
 	ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
 	ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
 
-	//#ifdef _DEBUG 
+	#ifdef _DEBUG 
 	ccfg.motionServicesConfiguration.userConfiguration.user = "test_PJWSTK";
 	ccfg.motionServicesConfiguration.userConfiguration.password = "PJtestP@ss";
-	//#endif
+	#endif
 	ccfg.motionServicesConfiguration.serviceConfiguration.url = "https://v21.pjwstk.edu.pl/HMDB";
 	ccfg.motionServicesConfiguration.serviceConfiguration.caPath = QString::fromStdString((plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string());
 
 	ccfg.motionDataConfiguration.serviceConfiguration.url = "ftps://v21.pjwstk.edu.pl";
 	ccfg.motionDataConfiguration.serviceConfiguration.caPath = "";
+	#ifdef _DEBUG 
 	ccfg.motionDataConfiguration.userConfiguration.user = "testUser";
 	ccfg.motionDataConfiguration.userConfiguration.password = "testUser";
+	#endif
 	return ccfg;
 }
