@@ -147,7 +147,7 @@ bool MdeMainWindow::customViewInit(QWidget * log)
 		   typedef hmdbCommunication::ContextConfigurationSettingsFile ConfFile;
 		   auto iniPath = plugin::getUserApplicationDataPath("mde_communication.ini").string();
 		   PLUGIN_LOG_INFO("Communication configuration file: " << iniPath);
-		   //ConfFile::write("K:/rawcommunication.ini", ConfFile::defaultConfig());
+		   //ConfFile::write("C:/rawcommunication.ini", ConfFile::defaultConfig());
 		   hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration ccfg = ConfFile::read(QString::fromStdString(iniPath));
 //		   ccfg.name = tr("Default PJATK MDE data connection");
 //		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
