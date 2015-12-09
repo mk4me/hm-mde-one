@@ -1032,6 +1032,8 @@ const float MultipleFilesDownloadAndStore::normalizedProgress() const
 
 void MultipleFilesDownloadAndStore::download()
 {
+	PLUGIN_LOG_DEBUG(__UTILS_PORTABLE_FUNCTION_NAME);
+	PLUGIN_LOG_DEBUG("Tread download");
 	try{
 		utils::Cleanup release(std::bind(&DownloadHelper::release, &downloadHelper));
 
@@ -1041,23 +1043,26 @@ void MultipleFilesDownloadAndStore::download()
 
 		status_ = Running;
 
+		PLUGIN_LOG_DEBUG("Downloadhelper downloading");
 		downloadHelper.download();
+		PLUGIN_LOG_DEBUG("Downloadhelper waiting");
 		downloadHelper.wait();
 
 		if (status_ == Aborted){
 			return;
 		}
-
+		PLUGIN_LOG_DEBUG("Downloadhelper filtering");
 		downloadHelper.filterDownloaded();
-
+		PLUGIN_LOG_DEBUG("Downloadhelper storing");
 		downloadHelper.store();
 
 		if (status_ == Aborted){
 			return;
 		}
-	
-		downloadFinished(downloadHelper.downloaded());
 
+		PLUGIN_LOG_DEBUG("Downloadhelper finished");
+		downloadFinished(downloadHelper.downloaded());
+		PLUGIN_LOG_DEBUG("Downloadhelper exiting");
 		if (status_ == Running){
 			status_ = Finished;
 		}

@@ -1284,15 +1284,20 @@ void HMDBShallowCopyRemoteContext::synchronize(const ShallowCopyConstPtr shallow
 
 void HMDBShallowCopyRemoteContext::synchronize(const SynchronizeOperationPtr downloadOperations)
 {
+	PLUGIN_LOG_DEBUG(__UTILS_PORTABLE_FUNCTION_NAME);
+	PLUGIN_LOG_DEBUG("Starting download");
 	downloadOperations->start();
+	PLUGIN_LOG_DEBUG("Waiting for download to finish");
 	try {
 		downloadOperations->wait();
+		PLUGIN_LOG_DEBUG("Download finished");
 	} catch (std::exception& e) {
 		PLUGIN_LOG_WARNING(e.what());
 	} catch (...) {
 		
 	}
 	
+	PLUGIN_LOG_DEBUG("Setting shallowcopy");
 	if (downloadOperations->status() == threadingUtils::IOperation::Finished){		
 		auto sc = downloadOperations->shallowCopy();
 		auto isc = downloadOperations->incrementalBranchShallowCopy();
