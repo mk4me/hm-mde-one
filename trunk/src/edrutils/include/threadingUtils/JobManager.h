@@ -18,10 +18,11 @@
 
 namespace threadingUtils
 {
-	template<typename>
+	template<typename, typename>
 	class JobManager;
 
-	//! \tparam Typ zwracany przez zadanie
+	//! \tparam T Typ zwracany przez zadanie
+	//! \tparam WorkManager Typ work managera któy bêdzie obs³ugiwa³ zadania	
 	template<typename T, typename WorkManager>
 	class JobImplementation : public IJob
 	{
@@ -207,7 +208,8 @@ namespace threadingUtils
 		utils::shared_ptr<SharedState> sharedState;
 	};
 
-	//! \tparam Typ zwracany przez zadanie
+	//! \tparam T Typ zwracany przez zadanie
+	//! \tparam WorkManager Typ work managera któy bêdzie obs³ugiwa³ zadania	
 	template<typename T, typename WorkManager>
 	class JobImplementation<T&, WorkManager> : public IJob
 	{
@@ -390,8 +392,8 @@ namespace threadingUtils
 		typename WorkManager::FutureType<T&>::type future;
 		utils::shared_ptr<SharedState> sharedState;
 	};
-
-	//! \tparam Typ zwracany przez zadanie
+	
+	//! \tparam WorkManager Typ work managera któy bêdzie obs³ugiwa³ zadania	
 	template<typename WorkManager>
 	class JobImplementation<void, WorkManager> : public IJob
 	{
@@ -576,7 +578,7 @@ namespace threadingUtils
 	};
 
 
-	//! \tparam WorkManager Manager prac w ramach którego realizujemy zadania
+	//! \tparam WorkManager Manager prac w ramach którego realizujemy zadania	
 	template<typename WorkManager>
 	class JobManager
 	{

@@ -17,17 +17,21 @@
 #include <threadingUtils/InterruptibleFuture.h>
 #include <threadingUtils/InterruptiblePolicy.h>
 #include <threadingUtils/InterruptiblePackagedTask.h>
+#include <threadingUtils/LogPolicy.h>
 
 namespace threadingUtils
 {
 	//! \tparam WorkQueue Typ kolejki zada�
 	//! \tparam InterruptibleThread Typ w�tku kt�ry mo�na uruchamia� (run) oraz przerywa� (interrupt)
-	//! \tparam CallPolicy Typ polityki wo�ania zada�
+	//! \tparam WorkExceptionHandlePolicy
+	//! \tparam InterruptHandlePolicy
+	//! \tparam LogPolicy Polityka logowania
 	//! Klasa realizuj�ca funkcjonalno�� managera prac, zarz�dzaj�cego zleconymi zadaniami i ich realizacj�
 	//! na zarz�dzanych w�tkach
-	template<class WorkQueue, class InterruptibleThread, typename WorkExceptionHandlePolicy, typename InterruptHandlePolicy>
+	template<class WorkQueue, class InterruptibleThread, typename WorkExceptionHandlePolicy,
+		typename InterruptHandlePolicy, typename LogPolicy = EmptyLogPolicy>
 	class InterruptibleWorkManager : private WorkExceptionHandlePolicy,
-		private InterruptHandlePolicy
+		private InterruptHandlePolicy, private LogPolicy
 	{
 	private:
 
@@ -108,10 +112,14 @@ namespace threadingUtils
 			{				
 				this->thread.run([](utils::shared_ptr<SharedState> sharedState){
 					LocalThreadGuard localThreadGuard;
+					sharedState->workManager->LogPolicy::log("Starting work executor");
 					ThreadLocalWorkQueueController tlwqc(sharedState->workManager->workQueue);
+					sharedState->workManager->LogPolicy::log("Work queue initialized");
 					while (sharedState->forceFinalize == false && sharedState->workManager->forceFinalize_ == false){
+						sharedState->workManager->LogPolicy::log("Running pending task");
 						sharedState->workManager->runPendingTask(std::chrono::milliseconds(100), false);
 					}
+					sharedState->workManager->LogPolicy::log("Finalizing work executor");
 				}, sharedState);
 			}
 
@@ -187,6 +195,8 @@ namespace threadingUtils
 			InterruptibleThread thread;
 		};
 
+		friend class WorkExecutor;
+
 		typedef std::map<std::thread::id, WorkExecutor> WorkExecutorsMap;
 
 		typedef typename WorkExecutorsMap::size_type size_type;
@@ -214,8 +224,8 @@ namespace threadingUtils
 
 		//! Konstruktor domy�lny
 		InterruptibleWorkManager(const WorkExceptionHandlePolicy & wehp = WorkExceptionHandlePolicy(),
-			const InterruptHandlePolicy & ihp = InterruptHandlePolicy())
-			: WorkExceptionHandlePolicy(wehp), InterruptHandlePolicy(ihp),
+			const InterruptHandlePolicy & ihp = InterruptHandlePolicy(), const LogPolicy & logPolicy = LogPolicy())
+			: WorkExceptionHandlePolicy(wehp), InterruptHandlePolicy(ihp), LogPolicy(logPolicy),
 			finalize_(false), forceFinalize_(false)//,activeCounter(0)
 		{
 
@@ -234,6 +244,7 @@ namespace threadingUtils
 		template<typename F, class ...Args>
 		FutureType<typename std::result_of<F(Args...)>::type> submit(F&& f, Args&& ...arguments)
 		{
+			LogPolicy::log("Submitting work");
 			typedef typename std::result_of<F(Args...)>::type result_type;
 
 			std::lock_guard<std::mutex> lock(taskMutex);
@@ -241,17 +252,19 @@ namespace threadingUtils
 				throw std::runtime_error("Operation not permitted");
 			}
 			
+			LogPolicy::log("Creating function");
 			std::function<result_type()> intf = std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...);
 
-			auto ss = utils::make_shared<WorkSharedState>();
-			ss->interrupt = utils::make_shared<bool>(false);
+			auto wss = utils::make_shared<WorkSharedState>();
+			wss->interrupt = utils::make_shared<bool>(false);
 			
-			auto innerFuture = submitWork(ss, intf);
-
-			InterruptibleFuture<result_type, typename InterruptibleThread::InterruptiblePolicy> ret(std::move(innerFuture), ss->interruptPrivateData.get_future(), ss->interrupt);
+			LogPolicy::log("Shared state created");
+			auto innerFuture = submitWork(wss, intf);
+			LogPolicy::log("Work submitted");
+			InterruptibleFuture<result_type, typename InterruptibleThread::InterruptiblePolicy> ret(std::move(innerFuture), wss->interruptPrivateData.get_future(), wss->interrupt);
 
 			auto s = workQueue.size();
-
+			LogPolicy::log("Waking up work executors");
 			if (isLocalThread == false || s > 1){
 
 				if (s > workExecutors.size()){
@@ -265,7 +278,7 @@ namespace threadingUtils
 					}
 				}
 			}
-
+			LogPolicy::log("Finishing work submit");
 			return ret;
 		}
 		
@@ -274,6 +287,7 @@ namespace threadingUtils
 		{
 			return workQueue.submit([sharedState, intf, this]
 			{
+				LogPolicy::log("In work");
 				if (*(sharedState->interrupt) == true){
 					throw ThreadInterruptedException();
 				}
@@ -281,13 +295,16 @@ namespace threadingUtils
 				InteruptGuard intGuard;
 				InterruptibleTaskGuard<typename InterruptibleThread::InterruptiblePolicy> taskGuard(sharedState->interruptPrivateData);
 				try{
+					LogPolicy::log("Doing work");
 					return intf();
 				}
 				catch (ThreadInterruptedException & e){
+					LogPolicy::log("Work failed");
 					this->InterruptHandlePolicy::handle(e);
 					throw;
 				}
 				catch (...){
+					LogPolicy::log("Work failed");
 					auto e = std::current_exception();
 					this->WorkExceptionHandlePolicy::handle(e);
 					std::rethrow_exception(e);
@@ -390,24 +407,30 @@ namespace threadingUtils
 		void runPendingTask(const std::chrono::duration<Rep, Per> & timeout = std::chrono::duration<Rep, Per>(std::chrono::milliseconds(100)),
 			const bool waitForOther = false)
 		{
+			LogPolicy::log("In runPendingTask");
 			Task task;
 			if (workQueue.tryGet(task) == true){
+				LogPolicy::log("Running task");
 				task.functionWrapper();
 			}
 			else if (isLocalThread == true){
 				std::unique_lock<std::mutex> lock(taskMutex);
 				if ((forceFinalize_ == true) || ((finalize_ == true) && (workQueue.empty() == true))){
+					LogPolicy::log("Finalizing our worker");
 					forceFinalize_ = true;
 					lock.unlock();
 					taskCV.notify_all();
 				}
 				else if (waitForOther == true){
+					LogPolicy::log("Waiting for other workers");
 					std::this_thread::sleep_for(timeout);
 				}else{
+					LogPolicy::log("Waiting on conditional");
 					taskCV.wait(lock);
 				}				
 			}
 			else{
+				LogPolicy::log("Sleeping");
 				std::this_thread::sleep_for(timeout);
 			}
 		}
@@ -431,8 +454,8 @@ namespace threadingUtils
 		static thread_local bool isLocalThread;
 	};
 
-	template<class WorkQueue, class InterruptibleThread, typename WorkExceptionHandlePolicy, typename InterruptHandlePolicy>
-	thread_local bool InterruptibleWorkManager<WorkQueue, InterruptibleThread, WorkExceptionHandlePolicy, InterruptHandlePolicy>::isLocalThread = false;
+	template<class WorkQueue, class InterruptibleThread, typename WorkExceptionHandlePolicy, typename InterruptHandlePolicy, typename LogPolicy>
+	thread_local bool InterruptibleWorkManager<WorkQueue, InterruptibleThread, WorkExceptionHandlePolicy, InterruptHandlePolicy, LogPolicy>::isLocalThread = false;
 }
 
 #endif	// __HEADER_GUARD_THREADINGUTILS__INTERRUPTIBLEWORKMANAGER_H__

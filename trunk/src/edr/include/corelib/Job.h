@@ -64,13 +64,13 @@ namespace core
 
 	public:
 
-		const std::string owner() const;
+		std::string owner() const;
 
-		const std::string name() const;
+		std::string name() const;
 
-		static const std::string currentOwner();
+		static std::string currentOwner();
 
-		static const std::string currentName();
+		static std::string currentName();
 
 	private:
 

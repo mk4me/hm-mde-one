@@ -281,20 +281,25 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 			--minThreads;
 		}
 
-		innerThreadPool.reset(new core::InnerThreadPool(minThreads, minThreads * 10));
+		innerThreadPool.reset(new core::InnerThreadPool(minThreads, minThreads * 10));	
 		threadPool_.reset(new core::ThreadPool(innerThreadPool.get()));
+		CORE_LOG_INFO("Thread pool created with minimum threads to maintain: " << innerThreadPool->minThreads() << " and maximum threads count: " << innerThreadPool->maxThreads());
 
 		//core::JobManager::setLog(logger_->subLog("jobManager"));
-		innerWorkManager_.reset(new core::InnerWorkManager);
-		innerJobManager_.reset(new core::InnerJobManager(innerWorkManager_.get()));
-		jobManager_.reset(new core::JobManager(innerJobManager_.get()));
-			
+		//threadingUtils::StealingMultipleWorkQueuePolicy, Thread, threadingUtils::ConsumeExceptionHandlePolicy, threadingUtils::NoInterruptHandlingPolicy, LogWrapper
+		innerWorkManager_.reset(new core::InnerWorkManager(threadingUtils::ConsumeExceptionHandlePolicy(), threadingUtils::NoInterruptHandlingPolicy(), LogWrapper(logger_->subLog("WorkManager"))));
+		
 		core::IThreadPool::Threads threads;
-		threadPool_->get(std::thread::hardware_concurrency() - 1, threads,  true, "Core", "JobManager worker thread");
+		threadPool_->get(std::thread::hardware_concurrency() - 1, threads, true, "Core", "JobManager worker thread");
 
-		for (auto && t : threads){			
+		for (auto && t : threads) {
 			innerWorkManager_->addWorkerThread(std::move(t));
 		}
+
+		innerJobManager_.reset(new core::InnerJobManager(innerWorkManager_.get()));
+		jobManager_.reset(new core::JobManager(innerJobManager_.get()));	
+
+		CORE_LOG_INFO("Job manager created with " << innerWorkManager_->workerThreadsCount() << " workers");
 	}
 
 	showSplashScreenMessage(QObject::tr("Initializing plugins loader"));

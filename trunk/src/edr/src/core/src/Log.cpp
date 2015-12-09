@@ -2,6 +2,7 @@
 #include "Log.h"
 #include "Config.h"
 #include <utils/Debug.h>
+#include <corelib/Thread.h>
 
 #ifndef CORE_DISABLE_LOGGING
 //------------------------------------------------------------------------------
@@ -9,6 +10,12 @@
 
 #include <log4cxx/logger.h>
 
+std::string extendThreadMessage(const std::string & message)
+{
+	std::stringstream ss;
+	ss << "Thread [ID: " << std::this_thread::get_id() << ", owner: " << core::Thread::currentOwner() << ", destination: " << core::Thread::currentDestination() << "] -> " << message;
+	return ss.str();
+}
 
 class LogImpl : public loglib::ILog
 {
@@ -24,23 +31,24 @@ public:
 
 	virtual void log(LogSeverity severity, const std::string& message, const std::string & funcName, const std::string & fileName, int lineNo)
 	{
+		auto localMessage = extendThreadMessage(message);
 		log4cxx::spi::LocationInfo location(fileName.c_str(), funcName.c_str(), lineNo);
 		switch(severity)
 		{
 		case Debug:
-			logger->debug(message, location);
+			logger->debug(localMessage, location);
 			break;
 
 		case Error:
-			logger->error(message, location);
+			logger->error(localMessage, location);
 			break;
 
 		case Info:
-			logger->info(message, location);
+			logger->info(localMessage, location);
 			break;
 
 		case Warning:
-			logger->warn(message, location);
+			logger->warn(localMessage, location);
 			break;
 
 		default:
@@ -51,22 +59,23 @@ public:
 
 	virtual void log(LogSeverity severity, const std::string& message)
 	{
+		auto localMessage = extendThreadMessage(message);
 		switch(severity)
 		{
 		case Debug:
-			logger->debug(message);
+			logger->debug(localMessage);
 			break;
 
 		case Error:
-			logger->error(message);
+			logger->error(localMessage);
 			break;
 
 		case Info:
-			logger->info(message);
+			logger->info(localMessage);
 			break;
 
 		case Warning:
-			logger->warn(message);
+			logger->warn(localMessage);
 			break;
 
 		default:
@@ -111,22 +120,23 @@ public:
 
 	virtual void log(LogSeverity severity, const std::string& message)
 	{
+		auto localMessage = extendThreadMessage(message);
 		switch(severity)
 		{
 		case Debug:
-			OSG_DEBUG << prefix << message << std::endl;
+			OSG_DEBUG << prefix << localMessage << std::endl;
 			break;
 
 		case Error:
-			OSG_FATAL << prefix << message << std::endl;
+			OSG_FATAL << prefix << localMessage << std::endl;
 			break;
 
 		case Info:
-			OSG_NOTICE << prefix << message << std::endl;
+			OSG_NOTICE << prefix << localMessage << std::endl;
 			break;
 
 		case Warning:
-			OSG_WARN << prefix << message << std::endl;
+			OSG_WARN << prefix << localMessage << std::endl;
 			break;
 
 		default:

@@ -50,24 +50,24 @@ void JobBase::swap(JobBase & Other) NOEXCEPT
 	std::swap(description, Other.description);
 }
 
-const std::string JobBase::owner() const
+std::string JobBase::owner() const
 {
-	return description != nullptr ? description->owner : "No explicit owner";
+	return description->owner;
 }
 
-const std::string JobBase::name() const
+std::string JobBase::name() const
 {
-	return description != nullptr ? description->name : "No explicit name";
+	return description->name;
 }
 
-const std::string JobBase::currentOwner()
+std::string JobBase::currentOwner()
 {
-	return (*tlsJD)->owner;
+	return tlsJD.get() != nullptr ? (*tlsJD)->owner : "Unknown owner";
 }
 
-const std::string JobBase::currentName()
+std::string JobBase::currentName()
 {
-	return (*tlsJD)->name;
+	return tlsJD.get() != nullptr ? (*tlsJD)->name : "Unnamed job";
 }
 
 JobBase::TLS JobBase::tlsJD;	

@@ -106,11 +106,11 @@ namespace core
 		const bool interruptible() const;
 		static void interruptionPoint();
 		static void resetInterruption();
-		const std::string owner() const;
-		const std::string destination() const;
+		std::string owner() const;
+		std::string destination() const;
 
-		static const std::string currentOwner();
-		static const std::string currentDestination();
+		static std::string currentOwner();
+		static std::string currentDestination();
 
 	private:
 		//! Obiekt logujący

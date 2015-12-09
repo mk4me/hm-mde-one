@@ -36,6 +36,7 @@ SET_PUBLIC_HEADERS(
 	CallPolicy.h
 	ThreadFactoryT.h
 	SmartPtr.h
+	LogPolicy.h
 )
 
 SET_SOURCE_FILES(
