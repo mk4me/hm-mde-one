@@ -24,9 +24,10 @@ private:
 private:
 
 	void unlockAndRemove(CURLsWaitMap::iterator it, CURLcode curlCode)
-	{		
-		it->second.set_value(curlCode);
-		currentCurls.erase(it);		
+	{
+		std::promise<CURLcode> locPromise(std::move(it->second));
+		currentCurls.erase(it);
+		locPromise.set_value(curlCode);
 	}
 
 	void innerRemove()

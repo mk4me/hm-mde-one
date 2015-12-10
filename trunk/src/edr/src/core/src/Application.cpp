@@ -287,10 +287,18 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 
 		//core::JobManager::setLog(logger_->subLog("jobManager"));
 		//threadingUtils::StealingMultipleWorkQueuePolicy, Thread, threadingUtils::ConsumeExceptionHandlePolicy, threadingUtils::NoInterruptHandlingPolicy, LogWrapper
-		innerWorkManager_.reset(new core::InnerWorkManager(threadingUtils::ConsumeExceptionHandlePolicy(), threadingUtils::NoInterruptHandlingPolicy(), LogWrapper(logger_->subLog("WorkManager"))));
+		//innerWorkManager_.reset(new core::InnerWorkManager(threadingUtils::ConsumeExceptionHandlePolicy(), threadingUtils::NoInterruptHandlingPolicy(), LogWrapper(logger_->subLog("WorkManager"))));
+		innerWorkManager_.reset(new core::InnerWorkManager);
 		
 		core::IThreadPool::Threads threads;
-		threadPool_->get(std::thread::hardware_concurrency() - 1, threads, true, "Core", "JobManager worker thread");
+
+		const auto workersCount = std::max<unsigned int>(2, minThreads - 1);
+
+		//CORE_LOG_INFO("Suggested number of threads for workers of job manager " << workersCount);
+
+		threadPool_->get(workersCount, threads, true, "Core", "JobManager worker thread");
+
+		//CORE_LOG_INFO("Obrained " << threads.size() << " for servicing job manager workers");
 
 		for (auto && t : threads) {
 			innerWorkManager_->addWorkerThread(std::move(t));

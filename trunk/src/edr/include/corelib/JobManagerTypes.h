@@ -34,7 +34,8 @@ namespace core
 		loglib::ILogPtr log_;
 	};
 
-	typedef threadingUtils::InterruptibleWorkManager<threadingUtils::StealingMultipleWorkQueuePolicy, Thread, threadingUtils::ConsumeExceptionHandlePolicy, threadingUtils::NoInterruptHandlingPolicy, LogWrapper> InnerWorkManager;
+	//typedef threadingUtils::InterruptibleWorkManager<threadingUtils::StealingMultipleWorkQueuePolicy, Thread, threadingUtils::ConsumeExceptionHandlePolicy, threadingUtils::NoInterruptHandlingPolicy, LogWrapper> InnerWorkManager;
+	typedef threadingUtils::InterruptibleWorkManager<threadingUtils::StealingMultipleWorkQueuePolicy, Thread, threadingUtils::ConsumeExceptionHandlePolicy, threadingUtils::NoInterruptHandlingPolicy> InnerWorkManager;
 	typedef threadingUtils::InterruptibleJobManager<InnerWorkManager> InnerJobManager;
 }
 

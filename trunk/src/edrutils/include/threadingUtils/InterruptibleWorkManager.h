@@ -410,8 +410,23 @@ namespace threadingUtils
 			LogPolicy::log("In runPendingTask");
 			Task task;
 			if (workQueue.tryGet(task) == true){
-				LogPolicy::log("Running task");
-				task.functionWrapper();
+				LogPolicy::log("Got task");
+				if (task.functionWrapper.valid() == true) {
+					try {
+						LogPolicy::log("Running task");
+						task.functionWrapper();
+						LogPolicy::log("Task finished");
+					}
+					catch (const std::exception & e) {
+						LogPolicy::log("Failed running task: " + std::string(e.what()));
+					}
+					catch (...) {
+						LogPolicy::log("Failed running task");
+					}
+				}
+				else {
+					LogPolicy::log("Nullptr task function");
+				}
 			}
 			else if (isLocalThread == true){
 				std::unique_lock<std::mutex> lock(taskMutex);

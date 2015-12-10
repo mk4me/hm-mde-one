@@ -55,21 +55,20 @@ namespace threadingUtils
 
 		const size_type size() const;
 
-		template<typename DataChannelFeatures>
-		std::future<typename std::result_of<DataChannelFeatures()>::type> submit(DataChannelFeatures f)
+		template<typename F>
+		std::future<typename std::result_of<F()>::type> submit(const F & f)
 		{
-			typedef typename std::result_of<DataChannelFeatures()>::type result_type;
+			typedef typename std::result_of<F()>::type result_type;
 			std::packaged_task<result_type()> innerTask(f);
-			std::future<result_type> ret(innerTask.get_future());
+			return innerSubmit(std::move(innerTask));
+		}
 
-			if (localWorkQueue() != nullptr){
-				localWorkQueue()->push(std::move(innerTask));
-			}
-			else{
-				commonQueue.push(std::move(innerTask));
-			}
-
-			return ret;
+		template<typename F>
+		std::future<typename std::result_of<F()>::type> submit(F && f)
+		{
+			typedef typename std::result_of<F()>::type result_type;
+			std::packaged_task<result_type()> innerTask(std::move(f));
+			return innerSubmit(std::move(innerTask));
 		}
 
 		const bool tryGet(Task & task);
@@ -79,6 +78,21 @@ namespace threadingUtils
 		const bool empty() const;
 
 	private:
+
+		template<typename RT>
+		std::future<RT> innerSubmit(std::packaged_task<RT()> && innerTask)
+		{
+			std::future<RT> ret(innerTask.get_future());
+			FunctionWrapper fw(std::move(innerTask));
+			if (localWorkQueue() != nullptr) {
+				localWorkQueue()->push(std::move(fw));
+			}
+			else {
+				commonQueue.push(std::move(fw));
+			}
+
+			return ret;
+		}
 
 		void rescheduleLocalQueue();
 		

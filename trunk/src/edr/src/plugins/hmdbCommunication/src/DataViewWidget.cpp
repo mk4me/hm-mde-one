@@ -1361,8 +1361,7 @@ void DataViewWidget::onSynchronizeFinished()
 
 void DataViewWidget::synchronize(hmdbCommunication::IHMDBShallowCopyRemoteContext::SynchronizeOperationPtr sOp,
 	utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger)
-{
-	PLUGIN_LOG_DEBUG(__UTILS_PORTABLE_FUNCTION_NAME);
+{	
 	shallowCopyContext_->shallowCopyRemoteContext()->synchronize(sOp);
 	completeShallowCopy_ = currentShallowCopy_ = shallowCopyContext_->shallowCopyDataContext()->shallowCopy();
 
