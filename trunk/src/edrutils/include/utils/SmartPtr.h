@@ -26,6 +26,7 @@ namespace utils {
 	using boost::static_pointer_cast;
 	using boost::const_pointer_cast;
 	using boost::make_shared;
+	using boost::make_unique;
 	using boost::allocate_shared;
 
 #elif defined UTILS_CXX0X
@@ -42,7 +43,8 @@ namespace utils {
 	using std::static_pointer_cast;
 	using std::const_pointer_cast;
 	using std::make_shared;
-	using std::allocate_shared;
+	using std::make_unique;
+	using std::allocate_shared;	
 
 #endif
 
