@@ -335,9 +335,19 @@ void C3DParser::loadAcquisition()
 	if (itPoints != this->data->aquisitionPointer->GetMetaData()->End())
 	{
 		btk::MetaDataInfo::Pointer movieDelays = (*itPoints)->ExtractChildInfo("MOVIE_DELAY", btk::MetaDataInfo::Real, 1, false);
-		if (movieDelays)
+		btk::MetaDataInfo::Pointer movieIDs = (*itPoints)->ExtractChildInfo("MOVIE_ID", btk::MetaDataInfo::Char, 2, false);
+		if (movieDelays && movieIDs)
 		{
-			movieDelaysVector = movieDelays->ToDouble();
+			auto delays = movieDelays->ToDouble();
+			auto ids = movieIDs->ToString();
+			if (delays.size() == ids.size()) {
+				for(auto& str : ids) {
+					str.erase(std::remove_if(str.begin(), str.end(), ::isspace), str.end());
+				}
+				std::transform(ids.begin(), ids.end(), delays.begin(), std::inserter(movieDelaysVector, movieDelaysVector.end()), [](const std::string& a, double b) {
+					return std::make_pair(a, b);
+				});
+			}
 		}
 	}
 
@@ -524,7 +534,7 @@ float C3DParser::getUnitScale( const std::string& unit ) const
 	throw std::runtime_error("Unknown unit");
 }
 
-const std::vector<double>& C3DParser::getMovieDelays() const
+const MovieDelays& C3DParser::getMovieDelays() const
 {
 	return movieDelaysVector;
 }

@@ -371,14 +371,14 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
             std::string channelName = c->getName();
             std::list<core::HierarchyHelperPtr> helpers;
             NewVector3ItemHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i], events));
-            helpers.push_back(channelHelper);
-            helpers.push_back(allTFromSession(channelName, motion->getUnpackedSession(), 0));
-            helpers.push_back(allTFromSession(channelName, motion->getUnpackedSession(), 1));
-            helpers.push_back(allTFromSession(channelName, motion->getUnpackedSession(), 2));
-            helpers.push_back(createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Left));
-            helpers.push_back(createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Right));
-            helpers.push_back(createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Left));
-            helpers.push_back(createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Right));
+            push_not_null(helpers, channelHelper);
+            push_not_null(helpers, allTFromSession(channelName, motion->getUnpackedSession(), 0));
+            push_not_null(helpers, allTFromSession(channelName, motion->getUnpackedSession(), 1));
+            push_not_null(helpers, allTFromSession(channelName, motion->getUnpackedSession(), 2));
+            push_not_null(helpers, createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Left));
+            push_not_null(helpers, createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Right));
+            push_not_null(helpers, createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Left));
+            push_not_null(helpers, createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Right));
             core::IHierarchyItemPtr channelItem (new core::HierarchyDataItem(wrappers[i], childIcon, QString::fromStdString(c->getName()), desc, helpers));
             collectionItem->appendChild(channelItem);
         }

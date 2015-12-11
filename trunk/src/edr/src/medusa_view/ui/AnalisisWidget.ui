@@ -20,7 +20,16 @@
    <property name="spacing">
     <number>6</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item>
@@ -42,7 +51,16 @@
 }</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="margin">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
        <number>0</number>
       </property>
       <item>
@@ -143,7 +161,16 @@ color: white;
           <property name="spacing">
            <number>1</number>
           </property>
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item>
@@ -169,7 +196,16 @@ color: black;
              <property name="spacing">
               <number>0</number>
              </property>
-             <property name="margin">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
               <number>0</number>
              </property>
              <item>
@@ -292,6 +328,26 @@ color: white;
 coreUI--CoreTitleBar QLabel#titleLabel {
  background: black;
 color: white;
+}
+
+coreUI--CoreTitleBar QToolButton#buttonFullscreen {
+    background: rgb(43, 42, 41);
+    border: 1px solid rgb(63, 62, 61);
+     border-bottom: none;
+  border-radius: 0px;
+     border-top-left-radius: 4px;
+     border-right: none;
+ margin-top: 4px;
+ max-height: 12px;
+ min-width: 17px;
+}
+
+coreUI--CoreTitleBar QToolButton#buttonFullscreen:hover {
+    background-color: rgb(135, 177, 255);
+ }
+
+coreUI--CoreTitleBar QToolButton#buttonFullscreen:pressed {
+    background-color: rgb(55, 97, 180);
 }
 
 coreUI--CoreTitleBar QToolButton#buttonFloat {

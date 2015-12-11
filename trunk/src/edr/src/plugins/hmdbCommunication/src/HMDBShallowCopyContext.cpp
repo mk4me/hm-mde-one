@@ -764,15 +764,16 @@ core::VariantPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & motionFi
 			mPtr->getObjects(movieDelaysCollection);
 			if (movieDelaysCollection.size() == 1) {
 				c3dlib::MovieDelaysConstPtr delays = (*(movieDelaysCollection.begin()))->get();
-				if (delays->size() == videoCollection.size()) {
-					int i = 0;
-					for (auto it = videoCollection.begin(); it != videoCollection.end(); ++it) {
-						core::VariantPtr wrp = utils::const_pointer_cast<core::Variant>(*it);
-						wrp->setMetadata("movieDelay", boost::lexical_cast<std::string>(delays->at(i++)));
+				for (auto it = videoCollection.begin(); it != videoCollection.end(); ++it) {
+					core::VariantPtr wrp = utils::const_pointer_cast<core::Variant>(*it);
+					std::string path;
+					if (wrp->getMetadata("core/source", path)) {
+						for (const auto& delay : *delays) {
+							if (path.find(delay.first) != std::string::npos) {
+								wrp->setMetadata("movieDelay", boost::lexical_cast<std::string>(delay.second));
+							}
+						}
 					}
-				}
-				else {
-					PLUGIN_LOG_ERROR("Unable to map movie delays");
 				}
 			}
 			else {

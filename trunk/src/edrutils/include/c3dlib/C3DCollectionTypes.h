@@ -149,8 +149,7 @@ namespace  c3dlib {
 	typedef utils::shared_ptr<MarkerCollection> MarkerCollectionPtr;
 	typedef utils::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
 
-
-	typedef std::vector<double> MovieDelays;
+	//typedef std::vector<double> MovieDelays;
 	DEFINE_SMART_POINTERS(MovieDelays);
 
 	//! makro u³atwia definicje dodatkowych kana³ów, osobne typy u³atwiaja otrzymanie konkretnych danych z DM
