@@ -407,7 +407,7 @@ core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channe
 
         for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
 			c3dlib::VectorChannelCollectionConstPtr collection = (*it)->get();
-            int count = collection->getNumChannels();
+            int count = collection ? collection->getNumChannels() : 0;
             for (int i = 0; i < count; ++i) {
 				c3dlib::VectorChannelConstPtr channel = collection->getChannel(i);
                 if (channel->getName() == channelName) {
@@ -503,7 +503,7 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
 
         for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
 			c3dlib::VectorChannelCollectionConstPtr collection = (*it)->get();
-            int count = collection->getNumChannels();
+            int count = collection ? collection->getNumChannels() : 0;
             for (int i = 0; i < count; ++i) {
 				c3dlib::VectorChannelConstPtr channel = collection->getChannel(i);
                 if (channel->getName() == channelName) {

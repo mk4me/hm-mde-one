@@ -26,7 +26,9 @@ GRFSerie::GRFSerie( KinematicVisualizer * visualizer,
 	this->requestedType = requestedType;
 	//FIX tymczasowy dla linuxa
 	grfCollection = data->get();	
-
+	if (!grfCollection) {
+		throw std::runtime_error("No grf data");
+	}
 	const c3dlib::IForcePlatformCollection& platforms = grfCollection->getPlatforms();
     if (!platforms.empty()) {
         matrixTransform->addChild(createPlatformsGroup(platforms));

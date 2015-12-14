@@ -198,7 +198,7 @@ void MarkerSerie::update()
 	pointsDrawer->update(positions);
 
 	if(connectionsDrawer != nullptr){
-		PLUGIN_LOG_DEBUG("Updating connections");
+		//PLUGIN_LOG_DEBUG("Updating connections");
 		std::set<int> toShow;
 
 		for(unsigned int i = 0; i < connectionsConfigurations.size(); ++i){
