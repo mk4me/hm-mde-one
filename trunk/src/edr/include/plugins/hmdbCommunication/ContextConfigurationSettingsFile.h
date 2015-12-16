@@ -18,7 +18,7 @@ namespace hmdbCommunication {
 		virtual ~ContextConfigurationSettingsFile() {}
 
 	public:
-		static IHMDBSourceViewManager::ContextConfiguration read(const QString& path);
+		static IHMDBSourceViewManager::ContextConfiguration read(const QString& path, const IHMDBSourceViewManager::ContextConfiguration& defaultConf = defaultConfig());
 		static void write(const QString& path, const IHMDBSourceViewManager::ContextConfiguration& ccfg);
 
 		static IHMDBSourceViewManager::ContextConfiguration defaultConfig();

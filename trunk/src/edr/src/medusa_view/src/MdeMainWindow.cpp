@@ -278,27 +278,30 @@ bool MdeMainWindow::customViewInit(QWidget * log)
    utils::shared_ptr<hmdbCommunication::IHMDBSource> icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
    plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(icomm);
 
+   if (!icomm) {
+	   PLUGIN_LOG_ERROR("Unable to find communication plugin");
+	   return false;
+   }
 
    auto hmdbView = new MEDUSAHMDBSourceView;
    auto vm = icomm->viewManager();
-   if (icomm != nullptr){
 
-	   vm->registerViewPrototype(hmdbView);
+	vm->registerViewPrototype(hmdbView);
 
-	   {
-		   auto ccfg = createHmdbConfig();
-		   vm->registerConfiguration(ccfg, hmdbView->name());
-	   }
+	auto ccfg = createHmdbConfig();
+	{
+		vm->registerConfiguration(ccfg, hmdbView->name());
+	}
 
-	   vm->registerPerspective(new MEDUSAPerspective, hmdbView->name());
-	   vm->registerContent(new hmdbCommunication::DataSourceDefaultContent, hmdbView->name());
+	vm->registerPerspective(new MEDUSAPerspective, hmdbView->name());
+	vm->registerContent(new hmdbCommunication::DataSourceDefaultContent, hmdbView->name());
 
-	   //dodajemy filtry dla adnotacji		
-	   auto as = QObject::tr("Annotation status");
-	   vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("in edition")), true, false, dicom::AnnotationStatusFilter::InEdition), hmdbView->name());
-	   vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("in verification")), true, false, dicom::AnnotationStatusFilter::InVerification), hmdbView->name());
-	   vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("verified")), true, false, dicom::AnnotationStatusFilter::Verified), hmdbView->name());
-   }
+	//dodajemy filtry dla adnotacji		
+	auto as = QObject::tr("Annotation status");
+	vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("in edition")), true, false, dicom::AnnotationStatusFilter::InEdition), hmdbView->name());
+	vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("in verification")), true, false, dicom::AnnotationStatusFilter::InVerification), hmdbView->name());
+	vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("verified")), true, false, dicom::AnnotationStatusFilter::Verified), hmdbView->name());
+   
 
    
    auto sourceManager = plugin::getSourceManager();
@@ -357,9 +360,12 @@ bool MdeMainWindow::customViewInit(QWidget * log)
    addTab(coreUI::IMdeTabPtr(new ImageTableTab(aw, QIcon(":/mde/icons/Operacje.png"), tr("TableView"))));
    emit activateTab(*tabs.begin());
 
+#ifdef DEMO_MODE
+   SourceOptionsWidget::login();
+#else
    bool done = false;
    do {
-	   LoginDialog ld(this);
+	   LoginDialog ld(this, ccfg.motionServicesConfiguration.userConfiguration.user, ccfg.motionServicesConfiguration.userConfiguration.password);
 	   if (ld.exec() == QDialog::Accepted) {
 		   auto config = sourceOptionsWidget->getConnectionProfile();
 		   config.motionServicesConfiguration.userConfiguration.user = ld.getUser();
@@ -375,6 +381,7 @@ bool MdeMainWindow::customViewInit(QWidget * log)
 	   }
    } while (!done);
    return true;
+#endif // DEMO_MODE
 }
 
 void MdeMainWindow::addTab( coreUI::IMdeTabPtr tab )
@@ -571,8 +578,7 @@ hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration MdeMainWindow::c
 	typedef hmdbCommunication::ContextConfigurationSettingsFile ConfFile;
 	auto iniPath = plugin::getUserApplicationDataPath("medusa_communication.ini").string();
 	PLUGIN_LOG_INFO("Communication configuration file: " << iniPath);
-	//ConfFile::write("K:/rawcommunication.ini", ConfFile::defaultConfig());
-	ccfg = ConfFile::read(QString::fromStdString(iniPath));
+	ccfg = ConfFile::read(QString::fromStdString(iniPath), ccfg);
 	return ccfg;
 }
 

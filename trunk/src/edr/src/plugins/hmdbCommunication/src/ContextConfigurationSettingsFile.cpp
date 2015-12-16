@@ -14,9 +14,9 @@ static void getSetting(const QSettings& s, const QString& propertyName, QString&
 	}
 }
 
-IHMDBSourceViewManager::ContextConfiguration ContextConfigurationSettingsFile::read(const QString& path)
+IHMDBSourceViewManager::ContextConfiguration ContextConfigurationSettingsFile::read(const QString& path, const IHMDBSourceViewManager::ContextConfiguration& defaultConf)
 {
-	IHMDBSourceViewManager::ContextConfiguration ccfg = defaultConfig();
+	IHMDBSourceViewManager::ContextConfiguration ccfg = defaultConf;
 	QSettings settings(path, QSettings::IniFormat);
 	bool shadow = settings.value("EncryptedPasswords", false).toBool();
 	getSetting(settings, "ConfigName", ccfg.name);
