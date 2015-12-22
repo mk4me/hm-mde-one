@@ -330,8 +330,10 @@ bool MdeMainWindow::customViewInit(QWidget * log)
    compound->addWidget(commWidget);
    compound->addWidget(aw);
    addTab(coreUI::IMdeTabPtr(new CompoundAnalysisTab(compound, aw, QIcon(":/mde/icons/Analizy.png"), tr("Analysis"))));
-   addTab(coreUI::IMdeTabPtr(new SimpleTab(log, QIcon(":/mde/icons/Operacje.png"),tr("Log"))));
 
+#ifndef DEMO_MODE
+   addTab(coreUI::IMdeTabPtr(new SimpleTab(log, QIcon(":/mde/icons/Operacje.png"),tr("Log"))));
+#endif
    // TODO : najlepiej byloby przeniesc to do kontrolera
 //   bool cc = connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
    auto serviceManager = plugin::getServiceManager();
@@ -353,11 +355,13 @@ bool MdeMainWindow::customViewInit(QWidget * log)
         }
    }
 
+#ifndef DEMO_MODE
    QToolButton* exporterButton = controller.createButton(tr("Exporter"), QIcon(":/mde/icons/Operacje.png"));
    controller.addToolbarButton(exporterButton);
    connect(exporterButton, SIGNAL(clicked()), this, SLOT(showMedusaExporterDialog()));
-
    addTab(coreUI::IMdeTabPtr(new ImageTableTab(aw, QIcon(":/mde/icons/Operacje.png"), tr("TableView"))));
+#endif
+
    emit activateTab(*tabs.begin());
 
 #ifdef DEMO_MODE

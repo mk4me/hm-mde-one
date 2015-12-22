@@ -1,13 +1,12 @@
 #include "LoginDialog.h"
 
 
-LoginDialog::LoginDialog(QWidget* parent) : QDialog(parent)
+LoginDialog::LoginDialog(QWidget* parent, const QString& user, const QString& pass) :
+	QDialog(parent)
 {
 	setupUi(this);
-	#ifdef _DEBUG 
-	loginLineEdit->setText("test-student");
-	passwordLineEdit->setText("test-Medusa");
-	#endif
+	loginLineEdit->setText(user);
+	passwordLineEdit->setText(pass);
 }
 
 QString LoginDialog::getUser()

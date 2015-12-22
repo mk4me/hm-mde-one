@@ -85,12 +85,41 @@ public:
 };
 
 
+void recursiveStyleSheet(QWidget* parent, const QString& replace)
+{
+	if (parent) {
+		QString ss = parent->styleSheet();
+		ss.replace(QRegularExpression("91\\s*,\\s*91\\s*,\\s*91"), replace);//QString("91"), QString("1"));
+		parent->setStyleSheet(ss);
+		auto children = parent->children();
+		for (auto it = children.begin(); it != children.end(); ++it) {
+			QWidget* w = qobject_cast<QWidget*>(*it);
+			recursiveStyleSheet(w, replace);
+		}
+	}
+}
+
 MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations, const std::string & appName)
 	: coreUI::CoreMainWindow(closeUpOperations), coreUI::SingleInstanceWindow(appName),
     controller(this)
 {
     ui = new Ui::HMMMain();
     ui->setupUi(this);
+#ifdef DEMO_MODE
+	{
+		auto iniPath = plugin::getUserApplicationDataPath("mde_communication.ini").string();
+		QSettings s(QString::fromStdString(iniPath), QSettings::IniFormat);
+		int r = s.value("ColorR", 91).toInt();
+		int g = s.value("ColorG", 91).toInt();
+		int b = s.value("ColorB", 91).toInt();
+
+		QString title = s.value("AppTitle", "ANALYSIS & SYNTHESIS OF HUMAN MOTION").toString();
+		ui->logo->setVisible(false);
+		ui->label->setText(title);
+		recursiveStyleSheet(this, QString("%1, %2, %3").arg(r).arg(g).arg(b));
+		ui->versionLabel->setText(QString("ver. %1").arg(Version::formatedVersion(Version(0, 9, 1)).c_str()));
+	}
+#endif
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
 
     contextPlaceholder = new QTabWidget(this);
@@ -107,6 +136,8 @@ MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations, const 
 
     contextEventFilter = ContextEventFilterPtr(new ContextEventFilter(this));
     analysisModel = AnalisisModelPtr(new AnalisisModel());
+
+	
 }
 
 MdeMainWindow::~MdeMainWindow()
@@ -147,6 +178,8 @@ bool MdeMainWindow::customViewInit(QWidget * log)
 		   typedef hmdbCommunication::ContextConfigurationSettingsFile ConfFile;
 		   auto iniPath = plugin::getUserApplicationDataPath("mde_communication.ini").string();
 		   PLUGIN_LOG_INFO("Communication configuration file: " << iniPath);
+
+
 		   //ConfFile::write("C:/rawcommunication.ini", ConfFile::defaultConfig());
 		   hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration ccfg = ConfFile::read(QString::fromStdString(iniPath));
 //		   ccfg.name = tr("Default PJATK MDE data connection");
@@ -193,6 +226,7 @@ bool MdeMainWindow::customViewInit(QWidget * log)
    addTab(analysisTab);
 
 
+#ifndef DEMO_MODE
    QIcon reportsIcon;
    reportsIcon.addPixmap(QPixmap(":/mde/icons/Raporty.png"),QIcon::Active);
    reportsIcon.addPixmap(QPixmap(":/mde/icons/RaportyH.png"),QIcon::Disabled);
@@ -201,9 +235,9 @@ bool MdeMainWindow::customViewInit(QWidget * log)
    reportsTab->setEnabled(false);
    addTab(reportsTab);
    addTab(coreUI::IMdeTabPtr(new SimpleTab(log, QIcon(":/mde/icons/Operacje.png"),tr("Log"))));
-
    // TODO : najlepiej byloby przeniesc to do kontrolera
    connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
+#endif
    auto serviceManager = plugin::getServiceManager();
    auto timeline = plugin::getServiceManager()->getService(core::UID::GenerateUniqueID("{0157346E-D1F3-4A4F-854F-37C87FA3E5F9}"));
    for (int i = 0; i < serviceManager->getNumServices(); ++i) {
