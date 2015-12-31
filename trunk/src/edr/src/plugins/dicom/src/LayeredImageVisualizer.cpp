@@ -72,6 +72,9 @@ void LayeredImageVisualizer::setStatus(const hmdbServices::xmlWsdl::AnnotationSt
 {	
 	auto remoteSrcContext = remoteShallowContext(getActiveSerie());
 
+	if (!remoteSrcContext || !remoteSrcContext->shallowCopyRemoteContext()) {
+		throw std::runtime_error("No session active");
+	}
 	try{
 
 		auto resp = remoteSrcContext->shallowCopyRemoteContext()->remoteContext()->session()->authorization()->listUsers();
@@ -445,6 +448,9 @@ void dicom::LayeredImageVisualizer::uploadSerie()
 		hmdbServices::ID fileID = -1;
 
 		auto remoteSrcContext = remoteShallowContext(getActiveSerie());
+		if (!remoteSrcContext || !remoteSrcContext->shallowCopyRemoteContext()) {
+			return;
+		}
 
 		const auto & files = remoteSrcContext->shallowCopyDataContext()->shallowCopy()->motionShallowCopy.files;
 

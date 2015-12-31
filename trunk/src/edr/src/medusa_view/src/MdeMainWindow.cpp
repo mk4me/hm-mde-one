@@ -379,6 +379,9 @@ bool MdeMainWindow::customViewInit(QWidget * log)
 		   QStringList errors;
 		   sourceOptionsWidget->verify(errors);
 		   done = errors.isEmpty();
+		   if (!done) {
+			   QMessageBox::warning(nullptr, QString("Login failed"), errors.join("\n"));
+		   }
 
 	   } else {
 		   return false;
