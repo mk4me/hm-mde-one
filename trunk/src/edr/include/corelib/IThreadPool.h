@@ -25,18 +25,18 @@ namespace core
 		//! Desturktor
 		virtual ~IThreadPool() {}
 
-		//! \return Maksymalna ilo�c w�tk�w jakie mo�na utworzy�
+		//! \return Maksymalna ilość wątków jakie można utworzyć
 		virtual const size_type maxThreads() const = 0;
-		//! \return Minimalna ilo�� w�tk�w utrzymywana przez manager
+		//! \return Minimalna ilość wątków utrzymywana przez manager
 		virtual const size_type minThreads() const = 0;
-		//! \return Ilo�� aktualnie zaj�tych w�tk�w
+		//! \return Ilość aktualnie zajętych wątków
 		virtual const size_type threadsCount() const = 0;
-		//! \return Nowy w�tek		
+		//! \return Nowy wątek		
 		virtual Thread get(const std::string & who, const std::string & destination) = 0;
 
-		//! \param groupSize Ilo�� w�tk�w w grupie
-		//! \param threads [out] Lista z nowymi w�tkami, dopisujemy zawsze na ko�cu
-		//! \return Ilo�� faktycznie dostarczonych w�tk�w
+		//! \param groupSize Ilość wątków w grupie
+		//! \param threads [out] Lista z nowymi wątkami, dopisujemy zawsze na końcu
+		//! \return Ilość faktycznie dostarczonych wątków
 		virtual const size_type get(const size_type groupSize, Threads & threads, const bool exact,
 			const std::string & who, const std::string & destination = std::string()) = 0;
 

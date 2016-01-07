@@ -129,7 +129,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 	{
 		uiApplication_.reset(new coreUI::UIApplication(argc, argv));
 		QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
-		//TODO - przejrzec w Qt jak to edytowa�
+		//TODO - przejrzec w Qt jak to edytować
 		//QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins/platforms");
 
 		//ustawienia aplikacji
@@ -148,7 +148,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 		}
 	}
 
-	//teraz inicjujemy logger zeby moc juz wszystko logowa�
+	//teraz inicjujemy logger zeby moc juz wszystko logować
 	//potem moge dolaczyc widget
 	{
 		logInitializer_.reset(new LogInitializer((paths_->getApplicationDataPath() / "resources" / "settings" / "log.ini").string()));
@@ -158,7 +158,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 		logger_ = loggerPrototype_->subLog("core");
 	}
 
-	//! DOPIERO OD TEGO MOMENTU MOG� LOGOWAC INFORMACJE!!
+	//! DOPIERO OD TEGO MOMENTU MOGĘ LOGOWAC INFORMACJE!!
 	//ExceptionLogger::setLog(logger_);
 
 	CORE_LOG_INFO("UserDataPath: " << paths_->getUserDataPath());
@@ -196,7 +196,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 
 		//ustawiamy jezyk
 		//TODO
-		// powinienem sprawdzi� w lokalnej bazie/rejestrze/jakims konfigu
+		// powinienem sprawdzić w lokalnej bazie/rejestrze/jakims konfigu
 		// czy user juz nie wybral jezyka, jesli tak to ten jezyk ustawic,
 		// a jak nie to probowac go pobrac z systemu i jak ten sie nie
 		// powiedzie to domyslnie angielski
@@ -266,14 +266,14 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	dataManager_->addObserver(fileDataManager_);
 	dataManager_->addObserver(streamDataManager_);
 
-	//Wielow�tkowo��
+	//Wielowątkowość
 	{
 		showSplashScreenMessage(QObject::tr("Initializing threading"));		
 
 		//core::ThreadPool::setLog(logger_->subLog("threadPool"));
 		auto minThreads = std::thread::hardware_concurrency();
 		if (minThreads < 2){
-			//tyle by wypada�o �eby nowe maszyny dawa�y rad� - 2xCore x2 threads per core
+			//tyle by wypadało żeby nowe maszyny dawały radę - 2xCore x2 threads per core
 			minThreads = 3;
 		}
 		else{
@@ -349,8 +349,8 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 			auto plugin = pluginLoader_->getPlugin(i);
 			auto pluginName = plugin->getPath().stem().string();
 
-			// je�eli jestesmy w debug to pluginy maj� d na ko�cu a t�umaczenia nie!!
-			// musz� si� pozby� d
+			// jeżeli jestesmy w debug to pluginy mają d na końcu a tłumaczenia nie!!
+			// muszą się pozbyć d
 #ifdef _DEBUG
 
 			if (pluginName.back() == 'd'){
@@ -689,7 +689,7 @@ bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path,
 {
 #if defined(_WINDOWS)
 	//TODO
-	//u�y� vendor info do generowania sciezki
+	//użyć vendor info do generowania sciezki
 #define KEY_PATH TEXT("Software\\PJATK\\")
 #define PATH_BUFFER_SIZE 1024
 	HKEY hKey;
@@ -757,7 +757,7 @@ void Application::setDefaultPaths(utils::shared_ptr<Path> & path, const std::str
 	//mie? na uwadze nazw? aplikacji i PJWSTK
 	auto userPath = utils::Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0).toStdString()) / "PJATK" / appName;
 #if defined(_WINDOWS)
-	//HACK �eby dosta� si� do �cie�ek roaming dla usera, Qt w innych przypadkach podaje �ciezki w local
+	//HACK żeby dostać się do ścieżek roaming dla usera, Qt w innych przypadkach podaje ściezki w local
 	QString settingsPath = QFileInfo(QSettings().fileName()).absolutePath();
 	auto userAppDataPath = utils::Filesystem::Path(settingsPath.toStdString()).parent_path() / "PJATK" / appName;
 	auto genericpath = utils::Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::GenericConfigLocation).at(0).toStdString()).root_path() / "ProgramData";
@@ -766,7 +766,7 @@ void Application::setDefaultPaths(utils::shared_ptr<Path> & path, const std::str
 	auto userAppDataPath = utils::Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DataLocation).at(0).toStdString()).parent_path() / "PJATK" / appName;
 	auto appDataPath = userAppDataPath;
 #endif // WIN32
-	//TODO - czy pod linux taka konwencja jest ok? jak tam dzia�aj� takie wsp�lne foldery?
+	//TODO - czy pod linux taka konwencja jest ok? jak tam działają takie wspólne foldery?
 	
 
 	path.reset(new Path(userPath, appDataPath, userAppDataPath, resourcesPath(), userPath / "tmp", appDataPath / "plugins"));

@@ -16,59 +16,59 @@
 
 namespace imuCostume
 {
-	//! Klasa obs�uguj�ca dane z protoko�u komunikacji
+	//! Klasa obsługująca dane z protokołu komunikacji
 	class IMUCOSTUME_EXPORT ProtocolReadBufferHelper
 	{
 	public:
 
-		//! Identyfikator wiadomo�ci
+		//! Identyfikator wiadomości
 		struct HeaderProxy
 		{
-			//! Ca�y identyfikator
+			//! Cały identyfikator
 			const uint8_t * base;
-			//! \return d�ugo�� danych
+			//! \return długość danych
 			inline const uint8_t length() const
 			{
 				const auto length = base[1] >> 4;
 				UTILS_ASSERT(length <= CANopenFrame::SizeLimits::MaxSize);
 				return length;
 			};
-			//! Identyfikator w�z�a
+			//! Identyfikator węzła
 			inline const CANopenFrame::COBID cobID() const { return CANopenFrame::COBID{ uint16_t(((uint8_t)base[1] & 0x0F) << 8) | (uint16_t)base[0] }; };
 		};
 
-		//! Klasa obs�uguj�ca interpretacj� ramki can open z bufora
+		//! Klasa obsługująca interpretację ramki can open z bufora
 		class IMUCOSTUME_EXPORT CANopenFrameProxy
 		{
 		public:
-			//! \param base Wska�nik rozpocz�cia ramki
-			//! \param buffer Bufor w kt�rym ulokowana jest ramka
+			//! \param base Wskaźnik rozpoczęcia ramki
+			//! \param buffer Bufor w którym ulokowana jest ramka
 			CANopenFrameProxy(const uint8_t * base = nullptr);
 			//! Destruktor
 			~CANopenFrameProxy();
 
-			//! \return Adres pocz�tku ramki
+			//! \return Adres początku ramki
 			const uint8_t * base() const;
-			//! \return Nag��wek ramki
+			//! \return Nagłówek ramki
 			const HeaderProxy header() const;
-			//! \return Wska�nik bloku danych ramki
+			//! \return Wskaźnik bloku danych ramki
 			const uint8_t * data() const;
-			//! \return Czy mo�na interpretowa� dane ramki
+			//! \return Czy można interpretować dane ramki
 			const bool empty() const;
 
 		private:
-			//! Wska�nik poczatku bloku ramki
+			//! Wskaźnik poczatku bloku ramki
 			const uint8_t * base_;
 		};
 
 	private:
 
-		//! \param frameBasis Wska�niki pocz�tk�w ramek CANopen w danych z kostiumu
+		//! \param frameBasis Wskaźniki początków ramek CANopen w danych z kostiumu
 		ProtocolReadBufferHelper(const std::vector<const uint8_t*> & frameBasis);
 
 	public:
 
-		//! Konstruktor kopiuj�cy
+		//! Konstruktor kopiujący
 		ProtocolReadBufferHelper();
 		//! \param Other Kopiowany obiekt
 		ProtocolReadBufferHelper(ProtocolReadBufferHelper & Other);
@@ -76,19 +76,19 @@ namespace imuCostume
 		ProtocolReadBufferHelper(ProtocolReadBufferHelper && Other);
 
 		//! \param buffer Odczytany bufor z sieci
-		//! \param length D�ugo�� danych w buforze
+		//! \param length Długość danych w buforze
 		static ProtocolReadBufferHelper create(const void * buffer, const uint16_t length);
 
-		//! \return Ilo�� ramek w buforze
+		//! \return Ilość ramek w buforze
 		const uint16_t size() const;
-		//! \return Czy s� ramki w buforze
+		//! \return Czy są ramki w buforze
 		const bool empty() const;
-		//! \param idx Indeks ramki o kt�ra pytamu
-		//! \return Obiekt interpretuj�cy nasza ramk�
+		//! \param idx Indeks ramki o która pytamu
+		//! \return Obiekt interpretujący nasza ramkę
 		CANopenFrameProxy operator[](const uint16_t idx) const;
 
-		//! \tparam Container Typ kontenera do kt�rego dopisujemy
-		//! \param container [out] Kontener do kt�rego dopisujemy
+		//! \tparam Container Typ kontenera do którego dopisujemy
+		//! \param container [out] Kontener do którego dopisujemy
 		template<class Container>
 		void appendContainer(Container & container)
 		{
@@ -97,7 +97,7 @@ namespace imuCostume
 			}
 		}
 
-		//! \tparam Container Typ kontenera kt�ry tworzymy
+		//! \tparam Container Typ kontenera który tworzymy
 		//! \return Kontener z ramkami CANopen
 		template<class Container>
 		Container createContainer()
@@ -110,7 +110,7 @@ namespace imuCostume
 		}
 
 	private:
-		//! Wektor indeks�w pocz�tk�w ramek w buforze
+		//! Wektor indeksów początków ramek w buforze
 		std::vector<const uint8_t*> frameBasis;
 	};
 }

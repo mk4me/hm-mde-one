@@ -141,7 +141,7 @@ namespace df
 		nodes_.erase(nIT);
 	}
 
-	//! Usuwa wszystkie w�z�y i po��czenia z modelu
+	//! Usuwa wszystkie węzły i połączenia z modelu
 	void ModelImpl::removeAllNodes()
 	{
 		SourceNodes().swap(sourceNodes_);
@@ -151,9 +151,9 @@ namespace df
 		Connections().swap(connections_);
 	}
 
-	//! \param src Pin �r�d�owy (wyj�ciowy)
-	//! \param src Pin docelowy (wej�ciowy)
-	//! \return Czy mo�na po�aczy� piny ze wzgl�du na obowi�zuj�ce regu�y
+	//! \param src Pin źródłowy (wyjściowy)
+	//! \param src Pin docelowy (wejściowy)
+	//! \return Czy można połączyć piny ze względu na obowiązujące reguły
 	const bool ModelImpl::canConnect(const IOutputPin * src, const IInputPin * dest) const
 	{
 		if(src->node() == nullptr || dest->node() == nullptr)
@@ -191,13 +191,13 @@ namespace df
 		connections_.push_back(connection);
 	}
 
-	//! \param connection Po��czenie do usuni�cia
+	//! \param connection Połączenie do usunięcia
 	void ModelImpl::removeConnection(Connections::iterator connIT)
 	{
 		connections_.erase(connIT);
 	}
 
-	//! Usuwa wszystkie po��czenia w modelu
+	//! Usuwa wszystkie połączenia w modelu
 	void ModelImpl::removeAllConnections()
 	{
 		Connections().swap(connections_);
@@ -223,7 +223,7 @@ namespace df
 		return nodes_[idx];
 	}
 
-	//! \return Wszystkie w�z�y modelu
+	//! \return Wszystkie węzły modelu
 	const ModelImpl::size_type ModelImpl::sourcesSize() const
 	{
 		return sourceNodes_.size();
@@ -244,7 +244,7 @@ namespace df
 		return sourceNodes_[idx];
 	}
 
-	//! \return Wszystkie w�z�y modelu
+	//! \return Wszystkie węzły modelu
 	const ModelImpl::size_type ModelImpl::sinksSize() const
 	{
 		return sinkNodes_.size();
@@ -265,7 +265,7 @@ namespace df
 		return sinkNodes_[idx];
 	}
 
-	//! \return Wszystkie w�z�y modelu
+	//! \return Wszystkie węzły modelu
 	const ModelImpl::size_type ModelImpl::processorsSize() const
 	{
 		return processingNodes_.size();
@@ -286,7 +286,7 @@ namespace df
 		return processingNodes_[idx];
 	}
 
-	//! \return Wszystkie po��czenia w modelu
+	//! \return Wszystkie połączenia w modelu
 	const ModelImpl::size_type ModelImpl::connectionsSize() const
 	{
 		return connections_.size();

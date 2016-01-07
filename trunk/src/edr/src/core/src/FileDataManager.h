@@ -67,7 +67,7 @@ namespace core {
 			const int idx;
 		};
 
-		//! S�ownik aktualnie obsługiwanych plików i skojarzonych z nimi parserów
+		//! Słownik aktualnie obsługiwanych plików i skojarzonych z nimi parserów
 		typedef std::map<utils::Filesystem::Path, ConstVariantsList> ObjectsByFiles;
 		//! Mapowanie indeksu danych parsera do typu pod tym indeksem
 		typedef std::map<int, utils::TypeInfo> ParserTypes;
@@ -124,11 +124,11 @@ namespace core {
 	public:
 		//IFileDataManager API
 
-		//! \param files Lista plik�w kt�re zostan� usuni�te z aplikacji a wraz z nimi skojarzone parsery i dane
+		//! \param files Lista plików które zostaną usunięte z aplikacji a wraz z nimi skojarzone parsery i dane
 		virtual void removeFile(const utils::Filesystem::Path & file);
 
-		//! \param files Lista plik�w dla kt�rych zostan� utworzone parsery i z kt�rych wyci�gni�te dane
-		//! b�da dost�pne poprzez DataMangera LENIWA INICJALIZACJA
+		//! \param files Lista plików dla których zostaną utworzone parsery i z których wyciągnięte dane
+		//! będa dostępne poprzez DataMangera LENIWA INICJALIZACJA
 		virtual void addFile(const utils::Filesystem::Path & file);
 
 		//! \param file Ścieżka pliku do przeładowania
@@ -157,23 +157,23 @@ namespace core {
 		virtual void addObserver(const ObserverPtr & fileWatcher);
 		virtual void removeObserver(const ObserverPtr & fileWatcher);
 
-		//! \param files Zbi�r plik�w ktrymi aktualnie zarz�dza ten DataManager
+		//! \param files Zbiór plików ktrymi aktualnie zarządza ten DataManager
 		virtual void getFiles(utils::Filesystem::FilesList & files) const;
 
-		//! \param file Plik k�try weryfikujemy czy jest zarz�dzany przez DM
-		//! \return Prawda je�li plik jest zarz�dzany przez ten DM
+		//! \param file Plik kótry weryfikujemy czy jest zarządzany przez DM
+		//! \return Prawda jeżli plik jest zarządzany przez ten DM
 		virtual const bool isManaged(const utils::Filesystem::Path & file) const;
 
 		//! \param file Plik kótry weryfikujemy czy jest w pełni załadowany
 		//! \return Prawda jeśli plik jest w pełni załadowany
 		virtual const bool isLoadedCompleately(const utils::Filesystem::Path & file) const;
 
-		//! \param files Zbior plik�w dla kt�rych chcemy pobra� list� obiekt�w
-		//! \return Mapa obiekt�w wzgl�dem plik�w z kt�rych pochodza
+		//! \param files Zbior plików dla których chcemy pobrać listę obiektów
+		//! \return Mapa obiektów względem plików z których pochodza
 		virtual void getObjects(const utils::Filesystem::Path & file, ConstVariantsList & objects) const;
 
-		//! \param files Zbior plik�w dla kt�rych chcemy pobra� list� obiekt�w
-		//! \return Mapa obiekt�w wzgl�dem plik�w z kt�rych pochodza
+		//! \param files Zbior plików dla których chcemy pobrać listę obiektów
+		//! \return Mapa obiektów względem plików z których pochodza
 		virtual void getObjects(const utils::Filesystem::Path & file, VariantsCollection & objects) const;
 
 		virtual const TransactionConstPtr transaction() const;
@@ -203,7 +203,7 @@ namespace core {
 		auto pm = getParserManager();
 		auto hm = getRegisteredDataTypesManager();
 
-		//je�li pliku nie ma dodaj go, stw�rz parsery i rozszerz dost�pne dane wraz z ich opisem
+		//jeżli pliku nie ma dodaj go, stwórz parsery i rozszerz dostępne dane wraz z ich opisem
 		for (auto parserIT = parsers.begin(); parserIT != parsers.end(); ++parserIT) {
 			// tworzymy współdzielone dane dla inicjalizatorów
 			CompoundInitializer::CompoundDataPtr cid(new CompoundInitializer::CompoundData);
@@ -211,7 +211,7 @@ namespace core {
 
 			auto parserTypesMap = pm->parserTypes((*parserIT)->ID(), path);
 
-			//zarejestrowanie obiekt�w i ich zwi�zku z parserem i typami danych
+			//zarejestrowanie obiektów i ich związku z parserem i typami danych
 			for (auto objectIT = parserTypesMap.begin(); objectIT != parserTypesMap.end(); ++objectIT) {
 				//towrzymy taki obiekt
 				auto ow = hm->createWrapper(objectIT->second);

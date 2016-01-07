@@ -65,10 +65,10 @@ DEFINE_SMART_POINTERS(QuaternionStream);
 //! Dane szkieletu
 struct SkeletonDataStream
 {
-	unsigned int jointsCount;				//! Ilosc joint�w w modelu
-	PointsCloudStreamPtr jointsStream;		//! Strumie� dla pozycji joint�w
-	QuaternionStreamPtr quatStream;			//! Strumie� globalnych kwaternion�w joint�w
-	osgutils::SegmentsDescriptors connections;	//! Schemat po��cze�
+	unsigned int jointsCount;				//! Ilosc jointów w modelu
+	PointsCloudStreamPtr jointsStream;		//! Strumień dla pozycji jointów
+	QuaternionStreamPtr quatStream;			//! Strumień globalnych kwaternionów jointów
+	osgutils::SegmentsDescriptors connections;	//! Schemat połączeń
 	std::map<std::string, int> segmentNames; 
 };
 

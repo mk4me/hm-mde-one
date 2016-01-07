@@ -57,8 +57,8 @@ public:
 	//! \return Nazwa widoku
 	virtual const QString name() const { return QObject::tr("MEDUSA view"); }
 
-	//! \param shallowCopyContext Kontekst p�ytkiej kopii bazy danych jakim zasilamy widok
-	//! \return Widok obs�uguj�cy kontekst
+	//! \param shallowCopyContext Kontekst płytkiej kopii bazy danych jakim zasilamy widok
+	//! \return Widok obsługujący kontekst
 	virtual QWidget * createView(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext, hmdbCommunication::IHMDBSourceViewManager * viewManager) {
 
 		auto ret = new GeneralSourceViewWidget(shallowCopyContext);
@@ -114,7 +114,7 @@ public:
 		ret->setVisible(false);
 		return ret;
 	}
-	//! \return Czy dany widok wymaga po��czenia z us�ugami webowymi
+	//! \return Czy dany widok wymaga połączenia z usłgami webowymi
 	virtual const bool requiresRemoteContext() const { return true; }
 };
 
@@ -150,7 +150,7 @@ public:
 
 		auto subjectsITEnd = shallowCopy.motionShallowCopy.performers.end();
 		for (auto subjectIT = shallowCopy.motionShallowCopy.performers.begin(); subjectIT != subjectsITEnd; ++subjectIT){
-			//je�li pusty pacjent to go pomijamy
+			//jeżli pusty pacjent to go pomijamy
 			if (subjectIT->second->performerConfs.empty() == true){
 				continue;
 			}

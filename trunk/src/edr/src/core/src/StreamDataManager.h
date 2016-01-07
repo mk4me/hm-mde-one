@@ -75,7 +75,7 @@ namespace core {
 			const int idx;
 		};
 
-		//! S�ownik aktualnie obsługiwanych plików i skojarzonych z nimi parserów
+		//! Słownik aktualnie obsługiwanych plików i skojarzonych z nimi parserów
 		typedef boost::bimap<std::string, StreamGrabberPtr> Streams;
 		//! Mapowanie indeksu danych parsera do typu pod tym indeksem
 		typedef std::map<int, utils::TypeInfo> ParserTypes;
@@ -196,7 +196,7 @@ namespace core {
 		auto pm = getParserManager();
 		auto hm = getRegisteredDataTypesManager();
 
-		//je�li pliku nie ma dodaj go, stw�rz parsery i rozszerz dost�pne dane wraz z ich opisem
+		//jeżli pliku nie ma dodaj go, stwórz parsery i rozszerz dostępne dane wraz z ich opisem
 		for (auto parserIT = parsers.begin(); parserIT != parsers.end(); ++parserIT) {
 			// tworzymy współdzielone dane dla inicjalizatorów
 			CompoundInitializer::CompoundDataPtr cid = utils::make_shared<CompoundInitializer::CompoundData>();
@@ -205,7 +205,7 @@ namespace core {
 			auto id = (*parserIT)->ID();
 			auto parserTypesMap = pm->parserTypes(id, stream->name());
 
-			//zarejestrowanie obiekt�w i ich zwi�zku z parserem i typami danych
+			//zarejestrowanie obiektów i ich związku z parserem i typami danych
 			for (auto objectIT = parserTypesMap.begin(); objectIT != parserTypesMap.end(); ++objectIT) {
 				//towrzymy taki obiekt
 				auto ow = hm->createWrapper(objectIT->second);

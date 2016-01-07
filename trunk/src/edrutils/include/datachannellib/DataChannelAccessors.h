@@ -13,7 +13,7 @@
 #include <utils/SmartPtr.h>
 
 namespace utils {
-	//! Klasa zapewniajaca dost�p do danych w sposob ciagly (sposob realizacji "wrazenia" ciaglasci zalezny od implementacji)
+	//! Klasa zapewniajaca dostęp do danych w sposob ciagly (sposob realizacji "wrazenia" ciaglasci zalezny od implementacji)
 	template<class PointType, class TimeType>
 	class IDataChannelTimeAccessor
 	{

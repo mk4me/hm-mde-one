@@ -49,8 +49,8 @@ class MDEHMDBSourceView : public hmdbCommunication::IHMDBSourceViewManager::IHMD
 public:
 	//! \return Nazwa widoku
 	virtual const QString name() const { return QObject::tr("MDE view"); }
-	//! \param shallowCopyContext Kontekst p�ytkiej kopii bazy danych jakim zasilamy widok
-	//! \return Widok obs�uguj�cy kontekst
+	//! \param shallowCopyContext Kontekst płytkiej kopii bazy danych jakim zasilamy widok
+	//! \return Widok obsługujący kontekst
 	virtual QWidget * createView(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext, hmdbCommunication::IHMDBSourceViewManager * viewManager) {
 
 		auto ret = new MDEPerspectiveWidget(shallowCopyContext);
@@ -80,7 +80,7 @@ public:
 
 		return ret;
 	}
-	//! \return Czy dany widok wymaga po��czenia z us�ugami webowymi
+	//! \return Czy dany widok wymaga połączenia z usługami webowymi
 	virtual const bool requiresRemoteContext() const { return true; }
 };
 

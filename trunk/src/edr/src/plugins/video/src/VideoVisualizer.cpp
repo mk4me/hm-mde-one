@@ -348,7 +348,7 @@ QWidget* VideoVisualizer::createWidget()
     widget->setUpdateCallback( new WidgetUpdater(this) );
     // ratio keeper
     ratioKeeper = new AspectRatioKeeper(widget, 1);
-    workspace->addWidget(ratioKeeper);
+    //workspace->addWidget(ratioKeeper);
 	widget->setMinimumSize(50, 50);
 
 	//ratioKeeper->setTarget(widget);

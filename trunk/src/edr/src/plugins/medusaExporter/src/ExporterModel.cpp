@@ -25,7 +25,7 @@
 using namespace medusaExporter;
 typedef utils::Filesystem fs;
 
-// ponizsze dwie funkcje pochodz� z QuaZip, szkoda, ze byly private
+// ponizsze dwie funkcje pochodzą z QuaZip, szkoda, ze byly private
 
 bool copyData(QIODevice &inFile, QIODevice &outFile)
 {

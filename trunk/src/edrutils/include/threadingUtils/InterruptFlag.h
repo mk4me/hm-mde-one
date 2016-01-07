@@ -17,22 +17,22 @@
 
 namespace threadingUtils
 {
-	//! Klasa pomocnicza przy realizacji funkcjonalno�ci bezpiecznie przerywalnych w�tk�w
+	//! Klasa pomocnicza przy realizacji funkcjonalności bezpiecznie przerywalnych wątków
 	class THREADINGUTILS_EXPORT InterruptFlag
 	{
 	private:
-		//! Flaga czy w�tek faktycznie by� przerwany
+		//! Flaga czy wątek faktycznie był przerwany
 		std::atomic<bool> flag;
-		//! Zmienna warunkowa pozwalaj�ca przerywa� oczekiwanie
+		//! Zmienna warunkowa pozwalająca przerywać oczekiwanie
 		std::condition_variable * threadCond;
-		//! Zmienna warunkowa pozwalaj�ca przerywa� oczekiwanie w�asnych struktur synchronizacyjnych
+		//! Zmienna warunkowa pozwalająca przerywać oczekiwanie własnych struktur synchronizacyjnych
 		std::condition_variable_any * threadCondAny;
-		//! Obiekt synchronizuj�cy
+		//! Obiekt synchronizujący
 		std::mutex setClearMutex;
 
 	public:
 
-		//! Struktura pomocnicza przy zwalnianiu zmiennej warunkowej w przypadku wyj�tku przerwania
+		//! Struktura pomocnicza przy zwalnianiu zmiennej warunkowej w przypadku wyjątku przerwania
 		struct ClearConditionVariableOnDestruct
 		{
 			//! Destruktor
@@ -42,22 +42,22 @@ namespace threadingUtils
 			}
 		};
 
-		//! \tparam Lockable Typ obiektu synchronizuj�cego
-		//! Klasa wpiera funkcjonalno�c przerywania oczekiwania na customowych obiektach synchronizuj�cych
+		//! \tparam Lockable Typ obiektu synchronizującego
+		//! Klasa wpiera funkcjonalnośc przerywania oczekiwania na customowych obiektach synchronizujących
 		template<typename Lockable>
 		class CustomLock
 		{
 		private:
-			//! Flaga synchronizuj�ca
+			//! Flaga synchronizująca
 			InterruptFlag * self;
-			//! Obiekt synchronizuj�cy
+			//! Obiekt synchronizujący
 			Lockable & lk;
 
 		public:
 			//! RAII
-			//! \param self Flaga synchronizuj�ca
+			//! \param self Flaga synchronizująca
 			//! \param cond Zmienna warunkowa
-			//! \param lk Obiekt synchronizuj�cy
+			//! \param lk Obiekt synchronizujący
 			CustomLock(InterruptFlag * self_,
 				std::condition_variable_any & cond,
 				Lockable & lk) :
@@ -67,21 +67,21 @@ namespace threadingUtils
 				self->threadCondAny = &cond;
 			}
 
-			//! Zwalnia obiekt synchronizuj�cy
+			//! Zwalnia obiekt synchronizujący
 			void unlock()
 			{
 				lk.unlock();
 				self->setClearMutex.unlock();
 			}
 
-			//! Blokuje obiekt synchronizuj�cy
+			//! Blokuje obiekt synchronizujący
 			void lock()
 			{
 				std::lock(self->setClearMutex, lk);
 			}
 
 			//! Destruktor
-			//! Przywraca stan zasob�w flagi
+			//! Przywraca stan zasobów flagi
 			~CustomLock()
 			{
 				self->threadCondAny = nullptr;
@@ -94,33 +94,33 @@ namespace threadingUtils
 
 	public:
 
-		//! Konstruktor domy�lny
+		//! Konstruktor domyślny
 		InterruptFlag();
 		//! Destruktor
 		~InterruptFlag();
 
-		//! Ustawia flag� przerwania
+		//! Ustawia flagę przerwania
 		void set();
 
-		//! Resetuje flag� przerwania
+		//! Resetuje flagę przerwania
 		void reset();
 
 		//! \return Czy flaga przerwania jest ustawiona
 		const bool isSet() const;
 
-		//! \return Czy flaga aktualnego w�tku jest ustawiona
+		//! \return Czy flaga aktualnego wątku jest ustawiona
 		static const bool threadIsSet();
 
-		//! Resetuje flage przerwania aktualnego w�tku
+		//! Resetuje flage przerwania aktualnego wątku
 		static void threadReset();
 
-		//! \return Wskaźnik flagi przerwania aktualnego w�tku
+		//! \return Wskaźnik flagi przerwania aktualnego wątku
 		static InterruptFlag *& threadInterruptFlag();
 
 		//! \param cv Zmienna warunkowa
 		void setConditionVariable(std::condition_variable & cv);
 
-		//! Zeruje zmienn� warunkow�
+		//! Zeruje zmienną warunkową
 		void clearConditionVariable();
 	};
 }

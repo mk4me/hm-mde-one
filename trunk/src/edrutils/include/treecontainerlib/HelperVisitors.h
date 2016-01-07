@@ -28,10 +28,10 @@ namespace treeContainer
 		//! Destruktor
 		~SizeVisitor() {}
 
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaźnika węzła
 		//! \tparam Args argumenty, np. dla przechodzenia wg poziomów
 		template<typename NPtr, typename... Args>
-		//! \param node odwiedzany w�ze�
+		//! \param node odwiedzany węzeł
 		void operator()(NPtr node, Args...)
 		{
 			++treeSize_;
@@ -64,10 +64,10 @@ namespace treeContainer
 		//! Destruktor
 		~FindMaxLevelVisitor() {}
 
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtr>
-		//! \param node Odwiedzany w�ze�
-		//! \param level Aktualnie odwiedzany poziom (wzgledem w�z�a z kt�rego startowali�my)
+		//! \param node Odwiedzany węzeł
+		//! \param level Aktualnie odwiedzany poziom (wzgledem węzła z którego startowaliśmy)
 		void operator()(NPtr, const Node::SizeType level)
 		{
 			maxLevel_ = std::max(maxLevel_, level);
@@ -90,7 +90,7 @@ namespace treeContainer
 		Node::SizeType maxLevel_;
 	};
 
-	//! \tparam NPtr Typ wska�nika w�z�a
+	//! \tparam NPtr Typ wskaźnika węzła
 	template<typename NPtr, int VisitOrder>
 	//! Klasa linearyzująca drzewo
 	class LinearizeVisitor
@@ -106,10 +106,10 @@ namespace treeContainer
 		LinearizeVisitor() {}
 		//! Destruktor
 		~LinearizeVisitor() {}
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaźnika węzła
 		//! \tparam Args argumenty, np. dla przechodzenia wg poziomów
 		template<typename... Args>
-		//! \param node odwiedzany w�ze�
+		//! \param node odwiedzany węzeł
 		void operator()(NPtr node, Args...)
 		{
 			linearizedTree_.push_back(node);
@@ -133,7 +133,7 @@ namespace treeContainer
 		Nodes linearizedTree_;
 	};
 
-	//! \tparam NPtr Typ wska�nika w�z�a
+	//! \tparam NPtr Typ wskaźnika węzła
 	template<typename NPtr>
 	//! Klasa linearyzująca drzewo
 	class LinearizeVisitor < NPtr, Backward >
@@ -149,7 +149,7 @@ namespace treeContainer
 		~LinearizeVisitor() {}
 		//! \tparam Args argumenty, np. dla przechodzenia wg poziomów
 		template<typename... Args>
-		//! \param node odwiedzany w�ze�
+		//! \param node odwiedzany węzeł
 		void operator()(NPtr node, Args...)
 		{
 			linearizedTree_.push_front(node);
@@ -321,10 +321,10 @@ namespace treeContainer
 		//! Destruktor
 		~DegreeLimitsVisitor() {}
 
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaźnika węzła
 		//! \tparam Args argumenty, np. dla przechodzenia wg poziomów
 		template<typename NPtr, typename... Args>
-		//! \param node odwiedzany w�ze�
+		//! \param node odwiedzany węzeł
 		void operator()(NPtr node, Args... args)
 		{
 			const auto degree = node->degree();

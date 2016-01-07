@@ -164,11 +164,11 @@ struct ArrayTraits
 		}
 	};
 
-	//! Klasa pozwalaj�ca wypakowywa� dane z wektor�w
+	//! Klasa pozwalająca wypakowywać dane z wektorów
 	class ElementExtractor
 	{
 	public:
-		//! \param idx Index obiketu kt�ry chcemy wypakowywa� z wektora
+		//! \param idx Index obiketu który chcemy wypakowywać z wektora
 		ElementExtractor(const std::size_t idx) : idx(idx) {}
 		//! \param Other Inny kopiowany extractor
 		ElementExtractor(const ElementExtractor & Other) : idx(Other.idx) {}
@@ -195,7 +195,7 @@ struct ArrayTraits
 		}
 
 	private:
-		//! Indeks spod kt�rego wybieramy dane z wektora
+		//! Indeks spod którego wybieramy dane z wektora
 		const std::size_t idx;
 	};
 

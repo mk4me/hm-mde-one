@@ -39,6 +39,7 @@ class PercentScaleDraw;
 class NewChartLegendItem;
 
 //! Wizualizator wykresów, oparty o QWT
+//! \version 0.9.1
 class NewChartVisualizer : public QObject, public INewChartVisualizer
 {
     friend class NewChartSerie;

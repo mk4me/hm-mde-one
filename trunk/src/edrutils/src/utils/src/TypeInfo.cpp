@@ -3,7 +3,7 @@
 
 static inline const bool areTypesEqual(const std::type_info& t1, const std::type_info& t2)
 {
-	//TODO - czy to konieczne, czy da si� to robi� bezpiecznie bez typeindex?
+	//TODO - czy to konieczne, czy da się to robić bezpiecznie bez typeindex?
 	return std::type_index(t1) == std::type_index(t2);
 }
 

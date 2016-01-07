@@ -13,6 +13,7 @@
 #include <plugins/c3d/C3DChannels.h>
 
 //! Klasa dostarcza danych do wizualizacji kawałka krzywej związanego z eventem
+//! \version 0.9.1
 class NewChartEventStateData : public QwtSeriesData<QPointF>
 {
 public:

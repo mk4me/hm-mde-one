@@ -22,16 +22,16 @@ public:
 
 public:
 
-	//! \return Weze� �r�d�owy
+	//! \return Węzeł źródłowy
 	STMROutputPin * source();
 
-	//! \return Weze� docelowy
+	//! \return Węzeł docelowy
 	STMRInputPin * destination();
 
-	//! \return Weze� �r�d�owy
+	//! \return Węzeł źródłowy
 	const STMROutputPin * source() const;
 
-	//! \return Weze� docelowy
+	//! \return Węzeł docelowy
 	const STMRInputPin * destination() const;
 
 	df::IConnection * innerConnection();

@@ -18,14 +18,14 @@
 #include <utils/Utils.h>
 namespace threadingUtils
 {
-	//! \tparam Thread Typ w�tku jaki wrapujemy do postaci runnable
-	//! \tparam CallPolicy Spos�b wo�ania metod przez w�tek
+	//! \tparam Thread Typ wątku jaki wrapujemy do postaci runnable
+	//! \tparam CallPolicy Sposób wołania metod przez wątek
 	template<typename Thread, typename ExceptionHandlePolicy = RethrowExceptionHandlePolicy>
 	class RunnableThread : private ExceptionHandlePolicy
 	{
 	public:
 
-		//! Konstruktor domy�lny
+		//! Konstruktor domyślny
 		RunnableThread(Thread && innerThread, const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy())
 			: ExceptionHandlePolicy(ehp), thread(std::move(innerThread)), launched(false) {}
 
@@ -33,14 +33,14 @@ namespace threadingUtils
 		RunnableThread(const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(), Args&&... arguments)
 			: ExceptionHandlePolicy(ehp), thread(std::forward<Args>(arguments)...), launched(false) {}
 
-		//! \param Other W�tek kt�rego zasoby przejmujemy
+		//! \param Other wątek którego zasoby przejmujemy
 		RunnableThread(RunnableThread&& Other)
 			: ExceptionHandlePolicy(std::move(Other)), launched(std::move(Other.launched)), thread(std::move(Other.thread)) {}
 		RunnableThread(const RunnableThread&) = delete;
 		//! Destruktor
 		~RunnableThread() {}
 		
-		//! \param Other W�tek kt�rego zasoby przejmujemy
+		//! \param Other wątek którego zasoby przejmujemy
 		RunnableThread& operator=(RunnableThread&& Other)
 		{
 			ExceptionHandlePolicy::operator=(std::move(Other));

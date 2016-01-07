@@ -19,6 +19,7 @@ class QPushButton;
 class QwtPlotItem;
 
 //! Klasa zarządzająca legendą New Charta
+//! \version 0.9.1
 class NewChartLegend : public QwtLegend
 {
     Q_OBJECT;

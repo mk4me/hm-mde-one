@@ -29,7 +29,7 @@ public:
 	{
 	}
 
-	//! Metoda uruchamiaj�ca aplikacje, pobiera jako parametr wzorca widok kt�ry b�dzie uruchomiony, widok powinien dziedziczy� po CoreMainWindow
+	//! Metoda uruchamiająca aplikacje, pobiera jako parametr wzorca widok który będzie uruchomiony, widok powinien dziedziczyć po CoreMainWindow
 	int start(CoreMainWindow * mainWindow)
 	{
 		int result = 0;
@@ -73,11 +73,11 @@ public:
 						return 1;
 					}
 
-					//ustawiamy tutaj �eby nadpisa� ewentualne zmiany z widok�w
+					//ustawiamy tutaj żeby nadpisać ewentualne zmiany z widoków
 					qApp->setOrganizationName("PJATK");
 
 					try{
-						//faktycznie blokowane wywo�anie
+						//faktycznie blokowane wywołanie
 						//uruchamia kontekst Qt
 						result = coreApplication->run();
 					}

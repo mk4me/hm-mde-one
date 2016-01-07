@@ -19,27 +19,27 @@ namespace treeContainer
 		template<typename T>
 		using Type = Node::Nodes < T > ;
 
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtr>
-		//! \param startNode Weze� z kt�rego ma wystartowa� �cie�ka
-		//! \param endNode Weze� do kt�rego doj�� �cie�ka
-		//! \return D�ugo�� �cie�ki pomi�dzy w�z�ami
+		//! \param startNode Węzeł z którego ma wystartować ścieżka
+		//! \param endNode Węzeł do którego ma dojść ścieżka
+		//! \return Długość ścieżki pomiędzy węzłami
 		static Node::SizeType distance(NPtr startNode, NPtr endNode)
 		{
 			return findPath(startNode, endNode).size() - 1;
 		}
 
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtr>
-		//! \param path [out] �cie�ka kt�r� odwracamy
+		//! \param path [out] ścieżka którą odwracamy
 		static void reversePath(Type<NPtr> & path)
 		{
 			std::reverse(path.begin(), path.end());
 		}
 
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtr>
-		//! \param node W�ze� z kt�rego chcemy pobra� �cie�k� do roota
+		//! \param node węzeł z którego chcemy pobrać ścieżkę do roota
 		static Type<NPtr> upPath(NPtr startNode)
 		{
 			Type<NPtr> ret;
@@ -54,11 +54,11 @@ namespace treeContainer
 			return ret;
 		}
 
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtr>
-		//! \param startNode W�ze� z kt�rego ma si� rozpocz�� �cie�ka
-		//! \param endNode W�ze� w kt�rym ma si� ko�czy� �cie�ka
-		//! \return �cie�ka pomi�dzy w�z�ami - kolejne w�z�y
+		//! \param startNode węzeł z którego ma się rozpocząć ścieżka
+		//! \param endNode węzeł w którym ma się kończyć ścieżka
+		//! \return ścieżka pomiędzy węzłami - kolejne węzły
 		static Type<NPtr> findPath(NPtr startNode, NPtr endNode)
 		{
 			Type<NPtr> ret;
@@ -98,7 +98,7 @@ namespace treeContainer
 					auto retIT = std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), intersectResult.begin());
 
 					if (retIT != intersectResult.end()){
-						//mamy punkt przeciecia - drogi si� schodz�
+						//mamy punkt przeciecia - drogi się schodzą
 						//szukam najblizszego punktu przeciecia
 						std::set<NPtr> intersectionSet(intersectResult.begin(), retIT);
 						NPtr intersectionPoint;

@@ -201,9 +201,9 @@ private:
 	osgWidget::Color normalColor;
 	//! Kolor przy najechaniu.
 	osgWidget::Color hoverColor;
-	//! Kolor podczas klikni�cia.
+	//! Kolor podczas kliknięcia.
 	osgWidget::Color pushedColor;
-	//! Kolor podczas klikni�cia.
+	//! Kolor podczas kliknięcia.
 	osgWidget::Color toggleColor;
 public:
 	DefaultStylePolicy()
@@ -271,7 +271,7 @@ public:
 
 protected:
 
-	//! Metoda do implementacji przez klas� pochodn�. Powinna wywo�ywa� metod� applyStyle.
+	//! Metoda do implementacji przez klasę pochodną. Powinna wywoływać metodę applyStyle.
 	virtual void onStyleChanged() = 0;
 	//!
 	//! \param widget
@@ -311,9 +311,9 @@ private:
 	osgWidget::Color normalColor;
 	//! Kolor przy najechaniu.
 	osgWidget::Color hoverColor;
-	//! Kolor podczas klikni�cia.
+	//! Kolor podczas kliknięcia.
 	osgWidget::Color pushedColor;
-	//! Kolor podczas klikni�cia.
+	//! Kolor podczas kliknięcia.
 	osgWidget::Color toggleColor;
 public:
 	LabelStylePolicy()
@@ -382,7 +382,7 @@ public:
 
 protected:
 
-	//! Metoda do implementacji przez klas� pochodn�. Powinna wywo�ywa� metod� applyStyle.
+	//! Metoda do implementacji przez klasę pochodną. Powinna wywoływać metodę applyStyle.
 	virtual void onStyleChanged() = 0;
 	//!
 	//! \param widget
@@ -488,7 +488,7 @@ public:
 
 protected:
 
-	//! Metoda do implementacji przez klas� pochodn�. Powinna wywo�ywa� metod� applyStyle.
+	//! Metoda do implementacji przez klasę pochodną. Powinna wywoływać metodę applyStyle.
 	virtual void onStyleChanged() = 0;
 	//!
 	//! \param widget

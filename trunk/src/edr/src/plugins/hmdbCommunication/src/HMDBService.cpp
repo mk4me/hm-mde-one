@@ -69,7 +69,7 @@ public:
 
 	virtual CURLcode execute(CURL * curl)
 	{
-		//HMDBService::curlEnableLog(curl);
+		HMDBService::curlEnableLog(curl);
 		curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_SSLv3);
 		auto f = manager->addRequest(utils::dummyWrap(curl));
 		return f.get();
@@ -253,14 +253,14 @@ void HMDBService::attach(IHMDBSessionPtr session)
 {
 	std::lock_guard<std::recursive_mutex> lock(sync_);
 	//! TODO
-	//! podpi�� pod widget
+	//! podpiąć pod widget
 }
 
 void HMDBService::detach(IHMDBSessionPtr session)
 {
 	std::lock_guard<std::recursive_mutex> lock(sync_);
 	//! TODO
-	//! od��czy� widgeta
+	//! odłączyć widgeta
 }
 
 void HMDBService::init(core::ISourceManager * sourceManager,

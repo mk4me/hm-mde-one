@@ -15,6 +15,7 @@
 
 //! Klasa wizualizuje eventy na wykresie. Są one reprezentowane jako szerokie pasy.
 //! Czerwone dla eventów lewych i zielone dla prawych
+//! \version 0.9.1
 class EventsPlotItem : public QwtPlotItem
 {
 public:

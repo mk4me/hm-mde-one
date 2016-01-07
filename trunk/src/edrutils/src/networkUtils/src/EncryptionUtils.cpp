@@ -77,13 +77,7 @@ QByteArray networkUtils::EncryptionUtils::fromBase64(const QString& buffer)
 {
 	return QByteArray::fromBase64(buffer.toUtf8());
 }
-template<class T, size_t N, class V>
-	std::array<T, N> to_array(const V& v)
-	{
-		assert(v.size() == N);
-		
-		
-	}
+
 networkUtils::EncryptionUtils::EncryptionKey networkUtils::EncryptionUtils::convertEncryptionKey(const QString& key)
 {
 	if (key.size() != EncryptionKeyLength) {

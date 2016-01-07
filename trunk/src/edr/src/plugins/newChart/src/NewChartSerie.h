@@ -24,6 +24,7 @@ class NewChartVisualizer;
 class QTreeWidgetItem;
 
 //! Podstawowa seria danych wizualizatora 2D
+//! \version 0.9.1
 class NewChartSerie : public INewChartSeriePrivate, public EventSerieBase
 {
     friend class NewChartVisualizer;

@@ -17,6 +17,7 @@
 class KinematicVisualizer;
 
 //! Seria danych wizualizatora 3D dostarczająca węzeł osg
+//! \version 0.9.1
 class OsgSerie : public QObject, public KinematicSerie
 {    
 public:

@@ -58,7 +58,7 @@ Variant::Variant(const Variant & ow, const CloneOp co)
 Variant::Variant(const utils::ObjectWrapperPtr & wrapper)
 : wrapper_(wrapper), initialized_(false), initializing_(false)
 {
-	UTILS_ASSERT((wrapper_ != nullptr), "Wrapper dla danych nie mo�e by� pusty");
+	UTILS_ASSERT((wrapper_ != nullptr), "Wrapper dla danych nie może być pusty");
 }
 
 void Variant::set(const utils::ObjectWrapperPtr & wrapper)
@@ -258,17 +258,17 @@ void Variant::swap(Variant & ow)
 
 const bool Variant::isEqual(const Variant & obj) const
 {
-	//czy zgadza si� meta - wska�niki
+	//czy zgadza się meta - wskaźniki
 	return ((metadata_ == obj.metadata_) ||
-		//czy zgadza si� meta - zawarto��
+		//czy zgadza się meta - zawartość
 		((metadata_ != nullptr) && (obj.metadata_ != nullptr) && (*metadata_ == *(obj.metadata_)))) &&
-		//czy zgadzaj� si� dane - wska�niki
+		//czy zgadzają się dane - wskaźniki
 		(((wrapper_ != nullptr) && (wrapper_ == obj.wrapper_)) ||
-		// czy zgadzaj� si� dane - zawarto��
+		// czy zgadzają się dane - zawartość
 		(wrapper_->isEqual(*(obj.wrapper_)) == true) ||
-		//czy maj� ten sam inicjalizator je�li brak danych - po wska�niki
+		//czy mają ten sam inicjalizator jeżli brak danych - po wskaźniki
 		(((wrapper_->getRawPtr() == nullptr) || (obj.wrapper_->getRawPtr() == nullptr)) && (((initializer_ != nullptr) && (initializer_ == obj.initializer_)) ||
-		//czy ten sam inicjalizator je�li chodzi o efekt dzia�ania
+		//czy ten sam inicjalizator jeżli chodzi o efekt działania
 		((initializer_ != nullptr) && (obj.initializer_ != nullptr) && initializer_->isEqual(*(obj.initializer_))))));
 }
 

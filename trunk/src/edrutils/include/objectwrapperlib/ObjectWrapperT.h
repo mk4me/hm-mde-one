@@ -15,15 +15,15 @@
 
 namespace utils
 {
-	//! Pomocniczy typ bazowy, zarz�dzaj�cy obiektem za pomoc� parametru
-	//! PtrPolicy. Tego typu nigdy nie u�ywa si� wprost.
+	//! Pomocniczy typ bazowy, zarządzający obiektem za pomocą parametru
+	//! PtrPolicy. Tego typu nigdy nie używa się wprost.
 	template <typename T>
 	class __ObjectWrapperT : public ObjectWrapper
 	{
 	public:
 		//! Typ wrapowanych danych
 		typedef T Type;
-		//! Pe�ny typ aktualnego wrappera
+		//! Pełny typ aktualnego wrappera
 		typedef __ObjectWrapperT<Type> ImplType;
 
 	private:
@@ -47,8 +47,8 @@ namespace utils
 
 	private:
 
-		//! \param dest ObjectWrapper do kt�rego chcemy kopiowa� dane
-		//! \return Wska�nik na ObjectWrapper mojego typu lub rzuca wyj�tkiem
+		//! \param dest ObjectWrapper do którego chcemy kopiować dane
+		//! \return Wskaźnik na ObjectWrapper mojego typu lub rzuca wyjątkiem
 		static ImplType * __getMe(ObjectWrapper & dest)
 		{
 			auto cloned = dynamic_cast<ImplType*>(&dest);
@@ -60,7 +60,7 @@ namespace utils
 			return cloned;
 		}
 
-		//! \param cloned Wska�nik na ObjectWrapper mojego typu
+		//! \param cloned Wskaźnik na ObjectWrapper mojego typu
 		//! \param co Typ klonowania
 		void __cloneImpl(ImplType * cloned, const ObjectWrapper::CloneOp co) const
 		{
@@ -180,12 +180,12 @@ namespace utils
 		}	
 	};
 
-	//! Deklaracja typu. Trzeba go specjalizowa� za pomoc� makr. Ta wersja b�dzie
-	//! rzuca� statyczn� asercj�.
+	//! Deklaracja typu. Trzeba go specjalizować za pomocą makr. Ta wersja będzie
+	//! rzucać statyczną asercję.
 	template <typename T>
 	class ObjectWrapperT : public ObjectWrapper
 	{
-		static_assert(sizeof(T) == 0, "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapper�w");	
+		static_assert(sizeof(T) == 0, "Nalezy uzywac makr DEFINE_WRAPPER lub DEFINE_WRAPPER_INHERITANCE dla definiowania nowych wrapperów");	
 	};
 }
 

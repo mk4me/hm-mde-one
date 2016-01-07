@@ -39,7 +39,8 @@ namespace coreUI {
 	class CoreLabeledWidget;
 }
 
-/*! Klasa dostarcza scenę 3d i zarządza obiektami na niej */
+//! Klasa dostarcza scenę 3d i zarządza obiektami na niej
+//! \version 0.9.1
 class KinematicVisualizer :  private QObject, public plugin::IVisualizer, public kinematic::IKinematicVisualizer
 {
 	// wszystkie możliwe serie przeniesione do osobnego pliku

@@ -13,20 +13,20 @@
 
 namespace treeContainer
 {
-	//! \tparam ValueType Typ rpzechowywanej warto�ci
+	//! \tparam ValueType Typ rpzechowywanej wartości
 	template<typename ValueType>
 	class NodeT
 	{
 	public:
-		//! Typ przechowywanych w w�z�ach warto�ci
+		//! Typ przechowywanych w węzłach wartości
 		typedef ValueType value_type;
-		//! Typ naszego w�z�a
+		//! Typ naszego węzła
 		typedef NodeT<value_type> node_type;
 		//! Wskazniki do naszego wezla
 		DEFINE_SMART_POINTERS_EXT(node_type, Node);
 		//! Dzieci wezla
 		typedef Node::Nodes<NodePtr> Children;
-		//! Typ ilo�ci
+		//! Typ ilości
 		typedef Node::SizeType size_type;
 
 	private:
@@ -38,14 +38,14 @@ namespace treeContainer
 			value_(std::move(other.value_))
 		{}
 
-		//! \param value Warto�c przechowywana w w�le (kopiowanie)
+		//! \param value Wartośc przechowywana w węźle (kopiowanie)
 		NodeT(const value_type & value) : value_(value) {}
-		//! \param value Warto�c przechowywana w w�le (move semantics)
+		//! \param value Wartośc przechowywana w węźle (move semantics)
 		NodeT(value_type && value) : value_(std::move(value)) {}
 
-		//! \param value Warto�c przechowywana w w�le (kopiowanie)
+		//! \param value Wartośc przechowywana w węźle (kopiowanie)
 		NodeT(NodePtr parent, const value_type & value) : parent_(parent), value_(value) {}
-		//! \param value Warto�c przechowywana w w�le (move semantics)
+		//! \param value Wartośc przechowywana w węźle (move semantics)
 		NodeT(NodePtr parent, value_type && value) : parent_(parent), value_(std::move(value)) {}
 
 	public:
@@ -66,21 +66,21 @@ namespace treeContainer
 			return ret;
 		}
 
-		//! \param value Warto�� z jak� tworzymy w�ze�
-		//! \return Nowy w�ze� z zadan� warto�ci�
+		//! \param value Wartość z jaką tworzymy węzeł
+		//! \return Nowy węzeł z zadaną wartością
 		static NodePtr create(const value_type & value = value_type())
 		{
 			return NodePtr(new node_type(value));
 		}
 
-		//! \param value Warto�� z jak� tworzymy w�ze�
-		//! \return Nowy w�ze� z zadan� warto�ci�
+		//! \param value Wartość z jaką tworzymy węzeł
+		//! \return Nowy węzeł z zadaną wartością
 		static NodePtr create(value_type && value)
 		{
 			return NodePtr(new node_type(std::move(value)));
 		}
 
-		//! \param parentNode W�ze� do kt�rego dodajemy warto�� dziecka
+		//! \param parentNode węzeł do którego dodajemy wartość dziecka
 		//! \param node Węzeł
 		//! \return Czy udało się dodać węzeł
 		static void add(NodePtr parentNode, NodePtr node)
@@ -97,9 +97,9 @@ namespace treeContainer
 			node->parent_ = parentNode;
 		}
 
-		//! \param parentNode W�ze� do kt�rego dodajemy warto�� dziecka
-		//! \param value Warto�c dodawanego w�z�a
-		//! \return W�ze� dziecko z zadan� warto�ci�
+		//! \param parentNode węzeł do którego dodajemy wartość dziecka
+		//! \param value Wartośc dodawanego węzła
+		//! \return węzeł dziecko z zadaną wartością
 		static NodePtr add(NodePtr parentNode, const value_type & value)
 		{
 			NodePtr ret(new NodeT(parentNode, value));
@@ -107,9 +107,9 @@ namespace treeContainer
 			return ret;
 		}
 
-		//! \param parentNode W�ze� do kt�rego dodajemy warto�� dziecka
-		//! \param value Warto�c dodawanego w�z�a
-		//! \return W�ze� dziecko z zadan� warto�ci�
+		//! \param parentNode węzeł do którego dodajemy wartość dziecka
+		//! \param value Wartośc dodawanego węzła
+		//! \return węzeł dziecko z zadaną wartością
 		static NodePtr add(NodePtr parentNode, value_type && value)
 		{
 			NodePtr ret(new NodeT(parentNode, std::move(value)));
@@ -117,9 +117,9 @@ namespace treeContainer
 			return ret;
 		}
 
-		//! \param parentNode W�ze� do kt�rego dodajemy warto�� dziecka
-		//! \param value Warto�c dodawanego w�z�a
-		//! \return W�ze� dziecko z zadan� warto�ci�
+		//! \param parentNode węzeł do którego dodajemy wartość dziecka
+		//! \param value Wartośc dodawanego węzła
+		//! \return węzeł dziecko z zadaną wartością
 		static void swap(NodePtr nodeToReplace, NodePtr node)
 		{
 			if ((nodeToReplace == node) ||
@@ -183,7 +183,7 @@ namespace treeContainer
 			return ret;
 		}
 
-		//! \return Ca�e rodze�stwo - razem z moim w�z�em
+		//! \return Całe rodzeństwo - razem z moim węzłem
 		Children allSiblings() const
 		{
 			auto p = parent();
@@ -194,39 +194,39 @@ namespace treeContainer
 			return Children();
 		}
 
-		//! \param node Weze� kt�ry sprawdzamy czy jest naszym przodkiem
-		//! \return Prawda je�li w�ze� jest naszym przodkiem (znajdziemy go id�c w g�re po parentach)
+		//! \param node Węzeł który sprawdzamy czy jest naszym przodkiem
+		//! \return Prawda jeżeli węzeł jest naszym przodkiem (znajdziemy go idąc w góre po parentach)
 		bool isAncestor(NodeConstPtr node) const
 		{
 			return Node::isAncestor(this, node);
 		}
 
-		//! \param node Weze� kt�ry sprawdzamy czy jest naszym potomkiem
-		//! \return Prawda je�li w�ze� jest naszym potomkiem (nasz w�ze� znajdziemy go id�c w g�re po parentach tego w�z�a)
+		//! \param node Węzeł który sprawdzamy czy jest naszym potomkiem
+		//! \return Prawda jeżeli węzeł jest naszym potomkiem (nasz węzeł znajdziemy go idąc w góre po parentach tego węzła)
 		bool isDescendant(NodeConstPtr node) const
 		{
 			return Node::isDescendant(this, node);
 		}
 
-		//! \return Czy w�ze� jest li�ciem - nie ma dzieci
+		//! \return Czy węzeł jest liściem - nie ma dzieci
 		bool isLeaf() const
 		{
 			return children_.empty();
 		}
 
-		//! \return Czy w�ze� jest rootem - nie ma parenta
+		//! \return Czy węzeł jest rootem - nie ma parenta
 		bool isRoot() const
 		{
 			return parent() == nullptr;
 		}
 
-		//! \return Stopie� w�z�a - Ilo�� po��cze� jakie tworzy
+		//! \return Stopień węzła - Ilość połączeń jakie tworzy
 		size_type degree() const
 		{
 			return children_.size();
 		}
 
-		//! \return Wysoko�c w�z�a - odleg�o�� do roota
+		//! \return Wysokośc węzła - odległość do roota
 		size_type depth() const
 		{
 			size_type l = 0;
@@ -237,7 +237,7 @@ namespace treeContainer
 			return l;
 		}
 
-		//! \return G��boko�� w�z�a - poziom najdalej oddalonego dziecka
+		//! \return Głębokość węzła - poziom najdalej oddalonego dziecka
 		size_type height() const
 		{
 			size_type l = 0;
@@ -287,7 +287,7 @@ namespace treeContainer
 
 		//! Rodzic
 		NodeWeakPtr parent_;
-		//! Warto��
+		//! Wartość
 		value_type value_;
 		//! Dzieci
 		Children children_;

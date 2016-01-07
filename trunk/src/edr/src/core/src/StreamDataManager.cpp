@@ -78,7 +78,7 @@ public:
 			{
 													 VariantsList toRemove;
 													 sdm->rawGetObjects(it->first, toRemove);
-													 //usu� obiekty z MemoryDM w transakcji
+													 //usuń obiekty z MemoryDM w transakcji
 													 for (auto IT = toRemove.begin(); IT != toRemove.end(); ++IT) {
 														 //TODO
 														 //przywrócić poprzedni jeśli był
@@ -106,8 +106,8 @@ public:
 		lock.reset();
 	}
 
-	//! \param files Lista plik�w dla kt�rych zostan� utworzone parsery i z kt�rych wyci�gni�te dane
-	//! b�da dost�pne poprzez DataMangera LENIWA INICJALIZACJA
+	//! \param files Lista plików dla których zostaną utworzone parsery i z których wyciągnięte dane
+	//! będa dostępne poprzez DataMangera LENIWA INICJALIZACJA
 	virtual void addStream(const StreamGrabberPtr stream)
 	{
 		verifyRollback();
@@ -125,7 +125,7 @@ public:
 		rawAddStream(stream);
 	}
 
-	//! \param files Lista plik�w kt�re zostan� usuni�te z aplikacji a wraz z nimi skojarzone parsery i dane
+	//! \param files Lista plików które zostaną usunięte z aplikacji a wraz z nimi skojarzone parsery i dane
 	virtual void removeStream(const std::string & stream)
 	{
 		verifyRollback();
@@ -271,17 +271,17 @@ private:
 };
 
 namespace core {
-//! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
+//! Wewnętrzna reprezentacja parsera używana przez DataManagera.
 class StParser
 {
 private:
-	//! Prawdziwy wewn�trzny parser.
+	//! Prawdziwy wewnętrzny parser.
 	const plugin::IParserPtr parser;
 	//! Opis źródła danych
 	const IStreamDataManager::StreamGrabberPtr sg;
 	//! Czy przeparsowano plik?
 	bool parsed;
-	//! Czy u�yto parsera do przeparsowania?
+	//! Czy użyto parsera do przeparsowania?
 	bool used;
 
 private:
@@ -290,8 +290,8 @@ private:
 
 public:
 	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
-	//!     czas �ycia.
-	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
+	//!     czas życia.
+	//! \param resource Czy parser jest związany z zasobami stałymi?
 	StParser(plugin::IParser * parser, const IStreamDataManager::StreamGrabberPtr sg) :
 		parser(parser), parsed(false), used(false), sg(sg)
 	{
@@ -299,7 +299,7 @@ public:
 		UTILS_ASSERT(sg != nullptr);
 	}
 
-	//! Destruktor drukuj�cy wiadomo�� o wy�adowaniu pliku.
+	//! Destruktor drukujący wiadomość o wyładowaniu pliku.
 	virtual ~StParser()
 	{
 		if (isParsed()) {
@@ -311,12 +311,12 @@ public:
 		}
 	}
 
-	//! \return Czy u�yto tego parsera?
+	//! \return Czy użyto tego parsera?
 	inline const bool isUsed() const
 	{
 		return used;
 	}
-	//! \return Czy uda�o si� przeparsowa� plik?
+	//! \return Czy udało się przeparsować plik?
 	inline const bool isParsed() const
 	{
 		return parsed;
@@ -355,8 +355,8 @@ public:
 		CORE_LOG_NAMED_DEBUG("parser", "Stream parsed OK: " << sg->name());
 	}
 
-	//! Nie rzuca wyj�tkami.
-	//! \return Czy uda�o si� przeparsowa�?
+	//! Nie rzuca wyjątkami.
+	//! \return Czy udało się przeparsować?
 	const bool tryParse()
 	{
 		bool ret = false;
@@ -381,24 +381,24 @@ public:
 };
 }
 
-//! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
+//! Wewnętrzna reprezentacja parsera używana przez DataManagera.
 class StreamParser : public core::StParser
 {
 private:
-	//! Prawdziwy wewn�trzny parser.
+	//! Prawdziwy wewnętrzny parser.
 	plugin::IStreamParser * streamParser;
 
 public:
 	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
-	//!     czas �ycia.
-	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
+	//!     czas życia.
+	//! \param resource Czy parser jest związany z zasobami stałymi?
 	StreamParser(plugin::IParser * parser, const IStreamDataManager::StreamGrabberPtr sg)
 		: StParser(parser, sg), streamParser(nullptr)
 	{
 
 	}
 
-	//! Destruktor drukuj�cy wiadomo�� o wy�adowaniu pliku.
+	//! Destruktor drukujący wiadomość o wyładowaniu pliku.
 	virtual ~StreamParser()
 	{
 
@@ -425,25 +425,25 @@ private:
 	}
 };
 
-//! Wewn�trzna reprezentacja parsera u�ywana przez DataManagera.
+//! Wewnętrzna reprezentacja parsera używana przez DataManagera.
 class FileStreamParser : public StParser
 {
 private:
-	//! Prawdziwy wewn�trzny parser.
+	//! Prawdziwy wewnętrzny parser.
 	plugin::ISourceParser * sourceParser;
 	utils::Filesystem::Path tmpFilePath;
 
 public:
 	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
-	//!     czas �ycia.
-	//! \param resource Czy parser jest zwi�zany z zasobami sta�ymi?
+	//!     czas życia.
+	//! \param resource Czy parser jest związany z zasobami stałymi?
 	FileStreamParser(plugin::IParser * parser, const IStreamDataManager::StreamGrabberPtr sg)
 		: StParser(parser, sg), sourceParser(nullptr)
 	{
 
 	}
 
-	//! Destruktor drukuj�cy wiadomo�� o wy�adowaniu pliku.
+	//! Destruktor drukujący wiadomość o wyładowaniu pliku.
 	virtual ~FileStreamParser()
 	{
 		if (tmpFilePath.empty() == false) {
@@ -539,7 +539,7 @@ void StreamDataManager::rawRemoveStream(const std::string & stream, const IDataM
 	VariantsList toRemove;
 	//pobieramy obiekty do usuniecia z DM
 	rawGetObjects(stream, toRemove);
-	//usu� obiekty z MemoryDM w transakcji
+	//usuń obiekty z MemoryDM w transakcji
 	for (auto it = toRemove.begin(); it != toRemove.end(); ++it) {
 		//TODO
 		//przywrócić poprzedni jeśli był
@@ -549,7 +549,7 @@ void StreamDataManager::rawRemoveStream(const std::string & stream, const IDataM
 		}
 	}
 
-	//usu� plik	
+	//usuń plik	
 	objectsByStreams.erase(stream);
 	streams_.left.erase(stream);
 	if (ok == true) {
@@ -567,7 +567,7 @@ void StreamDataManager::rawAddStream(const StreamGrabberPtr stream, const IDataM
 	IParserManagerReader::ParserPrototypes streamParsers;
 	getParserManager()->streamParsers(streamName, streamParsers);
 
-	//Z listy z własnym I/O usuwam te kt�re s� na li�cie z mozliwosciami strumienia - nie musze wypakowywac danych do pliku
+	//Z listy z własnym I/O usuwam te które są na liście z mozliwosciami strumienia - nie musze wypakowywac danych do pliku
 	std::set<plugin::IParserConstPtr> sourceParsersSet;
 	std::set<plugin::IParserConstPtr> streamParsersSet;
 
@@ -580,11 +580,11 @@ void StreamDataManager::rawAddStream(const StreamGrabberPtr stream, const IDataM
 	sourcesLeft.erase(lastIT, sourcesLeft.end());
 	//obiekty wyciągnięte z parserów
 	VariantsList objects;
-	//preferuje uzycie parser�w z w�asn� obs�ug� I/O - wierze �e zrobi� to maksymalnie wydajnie wg w�asnych zasad
+	//preferuje uzycie parserów z własną obsługą I/O - wierze że zrobią to maksymalnie wydajnie wg własnych zasad
 	if (streamParsers.empty() == false) {
 		initializeParsers<StreamParser>(streamParsers, stream, objects);
 	}
-	//teraz uzywam parser�w strumieniowych - sam dostarcz� im strumieni
+	//teraz uzywam parserów strumieniowych - sam dostarczam im strumieni
 	if (sourceParsers.empty() == false) {
 		initializeParsers<FileStreamParser>(sourcesLeft, stream, objects);
 	}
@@ -611,7 +611,7 @@ void StreamDataManager::rawAddStream(const StreamGrabberPtr stream, const IDataM
 			objectsAdded.push_back(*it);
 		}
 
-		// jak wszystko ok to zapami�tuje
+		// jak wszystko ok to zapamiętuje
 		objectsByStreams.insert(ObjectsByStreams::value_type(streamName, objectsAdded));
 
 		streams_.insert(Streams::value_type(streamName, stream));
@@ -680,8 +680,8 @@ void StreamDataManager::updateObservers(const ChangeList & changes)
 		}
 		catch (...) {
 			//TODO
-			//rozwin�� obserwator�w aby si� jako� identyfikowali!! ewentualnie robi� to przez w�asn� implementacj� dostarczan� konretnym obiektom
-			//(osobne interfejsy reader�w dla ka�dego elemnentu �adowanego do aplikacji - service, source, datasink, itp)
+			//rozwinąć obserwatorów aby się jakoś identyfikowali!! ewentualnie robić to przez własną implementację dostarczaną konretnym obiektom
+			//(osobne interfejsy readerów dla każdego elemnentu ładowanego do aplikacji - service, source, datasink, itp)
 			CORE_LOG_WARNING("Error while updating stream data manager observer");
 		}
 	}
@@ -697,7 +697,7 @@ void StreamDataManager::removeStream(const std::string & stream)
 
 	{
 		utils::Push _skipUpdate(skipUpdate, true);
-		//usu� plik
+		//usuń plik
 		rawRemoveStream(stream, getDataManager()->transaction());
 	}
 	//notyfikuj

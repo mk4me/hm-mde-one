@@ -24,14 +24,14 @@ const utils::TypeInfo & VariantsCollection::getTypeInfo() const
 	return typeInfo;
 }
 
-//! \return Czy dane musza by� dok��dnie tego samego typu dla kt�rego utworzono kolekcj� czy mog� te� by� pochodne od niego
+//! \return Czy dane musza być dokładnie tego samego typu dla którego utworzono kolekcję czy mogą też być pochodne od niego
 const bool VariantsCollection::exactTypes() const
 {
 	return exact;
 }
 
-//! \param exact Czy dane maj� by� dok�adnie tego typu dla kt�rego utworzono kolekcj�
-//! \param clear Czy czy�ci� dane niezgodne z typem kolekcji - pochodne mu
+//! \param exact Czy dane mają być dokładnie tego typu dla którego utworzono kolekcję
+//! \param clear Czy czyścić dane niezgodne z typem kolekcji - pochodne mu
 void VariantsCollection::setExactTypes(bool exact)
 {
 	this->exact = exact;
@@ -133,10 +133,10 @@ VariantsCollection::const_reference VariantsCollection::back() const
 
 VariantsCollection::iterator VariantsCollection::insert(iterator position, const VariantConstPtr& val)
 {
-	// sprawdzenie poprawno�ci typu
+	// sprawdzenie poprawności typu
 	if (exact == true){
 		if(val->data()->getTypeInfo() != getTypeInfo()) {
-			// bad_cast nie pobiera parametr�w
+			// bad_cast nie pobiera parametrów
 			//throw std::bad_cast("Type of object not equal to type of collection");
 			throw std::bad_cast();
 		}
@@ -192,7 +192,7 @@ void VariantsCollection::reverse()
 
 void VariantsCollection::removeDerivedTypes()
 {
-	//iteruj po kolekcji i usun te typy kt�re nie s� dok�adnie typu kolekcji
+	//iteruj po kolekcji i usun te typy które nie są dokładnie typu kolekcji
 	auto cIT = begin();
 	while( cIT != end() ) {
 		if((*cIT)->data()->getTypeInfo() != typeInfo){

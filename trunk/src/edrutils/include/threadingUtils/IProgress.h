@@ -28,7 +28,7 @@ namespace threadingUtils {
 	public:
 		//! Destruktor wirtualny
 		virtual ~IPercentageProgress() {}
-		//! \return Post�p realizacji przetwarzania od 0% do 100%
+		//! \return Postęp realizacji przetwarzania od 0% do 100%
 		virtual const float percentageProgress() const = 0;
 	};
 

@@ -16,23 +16,23 @@ namespace core
 	class ThreadPool : public IThreadPool
 	{
 	public:
-		//! Domy�lny konstruktor
+		//! Domyślny konstruktor
 		ThreadPool(InnerThreadPool * tp);
 		//! Desturktor
 		~ThreadPool();
 
-		//! \return Maksymalna ilo�c w�tk�w jakie mo�na utworzy�
+		//! \return Maksymalna ilość wątków jakie można utworzyć
 		const size_type maxThreads() const override;
-		//! \return Minimalna ilo�� w�tk�w utrzymywana przez manager
+		//! \return Minimalna ilość wątków utrzymywana przez manager
 		const size_type minThreads() const override;
-		//! \return Ilo�� aktualnie zaj�tych w�tk�w
+		//! \return Ilość aktualnie zajętych wątków
 		const size_type threadsCount() const override;
-		//! \return Nowy w�tek		
+		//! \return Nowy wątek		
 		Thread get(const std::string & who, const std::string & destination) override;
 
-		//! \param groupSize Ilo�� w�tk�w w grupie
-		//! \param threads [out] Lista z nowymi w�tkami, dopisujemy zawsze na ko�cu
-		//! \return Ilo�� faktycznie dostarczonych w�tk�w
+		//! \param groupSize Ilość wątków w grupie
+		//! \param threads [out] Lista z nowymi wątkami, dopisujemy zawsze na końcu
+		//! \return Ilość faktycznie dostarczonych wątków
 		const size_type get(const size_type groupSize, Threads & threads, const bool exact,
 			const std::string & who, const std::string & destination = std::string()) override;
 
@@ -45,7 +45,7 @@ namespace core
 			const std::string & who, const std::string & destination);
 
 	private:
-		//! Wewn�trzny tp
+		//! Wewnętrzny tp
 		InnerThreadPool * tp;	
 		loglib::ILogPtr logger;
 	};	

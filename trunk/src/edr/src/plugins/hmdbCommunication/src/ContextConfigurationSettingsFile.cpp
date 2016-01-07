@@ -6,6 +6,11 @@
 using namespace hmdbCommunication;
 
 
+//! Metoda próbuje uaktualniæ podan¹ wartoœæ parametru
+//! \param s Ustawienia, z których podejmowana jest próba aktualizacji parametru
+//! \param propertyName Nazwa parametru do aktualizacji
+//! \param param Aktualizowany parametr, zmiena we/wy
+//! \param shadow Czy parametr jest szyfrowany
 static void getSetting(const QSettings& s, const QString& propertyName, QString& param, bool shadow = false)
 {
 	param = s.value(propertyName, param).toString();

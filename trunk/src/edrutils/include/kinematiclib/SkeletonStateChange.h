@@ -12,6 +12,7 @@
 
 namespace kinematic
 {
+	//! \version 0.9.1
 	struct SkeletonStateChange
 	{
 	public:
@@ -19,26 +20,26 @@ namespace kinematic
 		using CompleteRotations = std::vector < osg::Quat > ;
 		//! Częsciowe rotacje szkieletu
 		using PartialRotations = std::map < LinearizedSkeleton::NodeIDX, osg::Quat > ;
-		//! Struktura opisuj�ca prosta zmian� w szkielecie - translacja roota i lokalne rotacje staw�w
+		//! Struktura opisująca prosta zmianę w szkielecie - translacja roota i lokalne rotacje stawów
 		//! pozycje rotacji w wektorze wg mapowania
 		struct RigidCompleteStateChange
 		{
 			//! Translacja roota
 			osg::Vec3 translation;
-			//! Lokalne rotacje wszystkich staw�w
+			//! Lokalne rotacje wszystkich stawów
 			CompleteRotations rotations;
 		};
 
 		using RigidCompleteStateChangeLocal = LocalData < RigidCompleteStateChange > ;
 		using RigidCompleteStateChangeGlobal = GlobalData < RigidCompleteStateChange >;
 
-		//! Struktura opisuj�ca prosta zmian� w szkielecie - translacja roota i lokalne rotacje staw�w
+		//! Struktura opisująca prosta zmianę w szkielecie - translacja roota i lokalne rotacje stawów
 		//! rotacje wg mapowania
 		struct RigidPartialStateChange
 		{
 			//! Translacja roota
 			osg::Vec3 translation;
-			//! Lokalne rotacje wybranych staw�w
+			//! Lokalne rotacje wybranych stawów
 			PartialRotations rotations;
 		};
 
@@ -54,14 +55,14 @@ namespace kinematic
 			osg::Quat rotation;
 		};
 
-		//! Typ opisuj�cy pe�n� zmian� stanu szkieletu
+		//! Typ opisujący pełną zmianę stanu szkieletu
 		//! pozycja zmian wg mapowania
 		using NonRigidCompleteStateChange = std::vector<NonRigidJointStateChange>;
 
 		using NonRigidCompleteStateChangeLocal = LocalData < NonRigidCompleteStateChange >;
 		using NonRigidCompleteStateChangeGlobal = GlobalData < NonRigidCompleteStateChange >;
 
-		//! Typ opisuj�cy pe�n� zmian� stanu szkieletu
+		//! Typ opisujący pełną zmianą stanu szkieletu
 		//! zmiany wg mapowania
 		using NonRigidPartialStateChange = std::map<LinearizedSkeleton::NodeIDX, NonRigidJointStateChange>;
 

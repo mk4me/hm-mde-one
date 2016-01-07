@@ -113,3 +113,16 @@ loglib::ILogPtr loglib::MultiLogger::subLog(const std::string & name) const
 	}
 	return utils::make_shared<MultiLogger>(std::move(loggers), name);
 }
+
+void loglib::NullLogger::log(LogSeverity severity, const std::string& message)
+{
+}
+
+loglib::ILogPtr loglib::NullLogger::subLog(const std::string & name) const
+{
+	return utils::make_shared<NullLogger>();
+}
+
+void loglib::NullLogger::log(LogSeverity severity, const std::string& message, const std::string & funcName, const std::string & fileName, int lineNo)
+{
+}

@@ -20,15 +20,16 @@ namespace loglib
 	DEFINE_SMART_POINTERS(ILog);
 
     //! Interfejs do logowania informacji w aplikacji (w konsoli aplikacji)
+	//! \version 0.9.1
 	class ILog
 	{
 	public:
 		//! Poziom ważności wiadomości.
 		enum LogSeverity {
-			Error,   //Błąd
-			Warning, //Ostrzeżenie
-			Info,    //Informacja
-			Debug    //Testowanie
+			Error,   ///< Błąd
+			Warning, ///< Ostrzeżenie
+			Info,    ///< Informacja
+			Debug    ///< Testowanie
 		};
 
 	public:

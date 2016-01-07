@@ -26,19 +26,19 @@ class AnalisisModel : public QObject, public core::IDataHierarchyManagerReader::
 {
     Q_OBJECT
 public:
-    //! s�u�y do przechowywania informacji o utworzonych wizualizatorach i ich seriach, u�ywane w mapie itemHelper -> itemDesc
+    //! służy do przechowywania informacji o utworzonych wizualizatorach i ich seriach, używane w mapie itemHelper -> itemDesc
     struct DataItemDescription 
     {
         DataItemDescription() {}
 
 		virtual ~DataItemDescription() {}
 
-        //! Konstruktor wype�nia wszystkie pola struktury 
+        //! Konstruktor wypełnia wszystkie pola struktury 
         //! \param visualizer 
         //! \param series 
         //! \param widget 
         DataItemDescription(coreUI::CoreVisualizerWidget* widget, QDockWidget * dockWidget);
-        //! widget, w kt�ry reprezentuje wizualizator
+        //! widget, w który reprezentuje wizualizator
         coreUI::CoreVisualizerWidget* visualizerWidget;
 
         QDockWidget * visualizerDockWidget;
@@ -47,12 +47,12 @@ public:
     };
     DEFINE_SMART_POINTERS(DataItemDescription)
 
-		//! s�u�y do przechowywania informacji o utworzonych wizualizatorach i ich seriach, u�ywane w mapie itemHelper -> itemDesc
+		//! służy do przechowywania informacji o utworzonych wizualizatorach i ich seriach, używane w mapie itemHelper -> itemDesc
 	struct TimeDataItemDescription : public DataItemDescription
 	{
 		TimeDataItemDescription() {}
 
-		//! Konstruktor wype�nia wszystkie pola struktury 
+		//! Konstruktor wypełnia wszystkie pola struktury 
 		//! \param visualizer 
 		//! \param series 
 		//! \param widget 
@@ -96,7 +96,7 @@ private:
     core::IHierarchyItemPtr dataManagerTreeItem; 
     core::IFilterProvider::FilterBundles filters;
     std::vector<core::IHierarchyItemConstPtr> itms;
-    //! struktura z informacjami o stworzonych wizualizatorach, ich seriach oraz z kt�rego elementu powsta�y
+    //! struktura z informacjami o stworzonych wizualizatorach, ich seriach oraz z którego elementu powstały
     std::multimap<core::HierarchyHelperWeakPtr, DataItemDescriptionPtr> items2Descriptions;
     std::map<core::HierarchyHelperWeakPtr, core::IHierarchyDataItemConstWeakPtr> helper2hierarchyItem;
 

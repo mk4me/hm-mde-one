@@ -17,11 +17,11 @@
 #include <osg/Quat>
 #include <osg/Matrix>
 #include <list>
-//#include <osgutils/OsgSchemeDrawer.h>
 
 namespace kinematic
 {
 	//! Klasa przedstawiająca stan szkieletu - pozycje i orientacje poszczególnych stawów
+	//! \version 0.9.1
 	struct SkeletonState
 	{
 	public:

@@ -18,14 +18,20 @@
 
 namespace  loglib {
 	
+	//! Struktura przechowuje aktualny, globalny logger
 	struct LOGLIB_EXPORT Logger
 	{
 	public:
 		//! Ustawienie loga
+		//! \param log Ustawiany globalny log, nie mo¿e byæ pusty
 		static void setLog(ILogPtr log) {
+			if (!log) {
+				throw std::invalid_argument("Null log was passed");
+			}
 			_log = log;
 		}
 
+		//! \return Zwraca aktualny, globalny log
 		static ILogPtr getLog()
 		{
 			return _log;
@@ -35,6 +41,7 @@ namespace  loglib {
 		static ILogPtr _log;
 	};
 
+	//! Log wypisuje komunikaty na standardowe wyjœcie
 	class LOGLIB_EXPORT CoutLogger : public ILog
 	{
 	public:
@@ -48,7 +55,16 @@ namespace  loglib {
 		std::string prefix;
 	};
 
+	//! Pusty log, komunikaty nie trafiaj¹ nigdzie
+	class LOGLIB_EXPORT NullLogger : public ILog
+	{
+	public:
+		virtual void log(LogSeverity severity, const std::string& message);
+		virtual void log(LogSeverity severity, const std::string& message, const std::string & funcName, const std::string & fileName, int lineNo);
+		virtual ILogPtr subLog(const std::string & name) const;
+	};
 
+	//! Log zapisuje komunikaty do pliku
 	class LOGLIB_EXPORT FileLogger : public ILog
 	{
 	public:
@@ -67,6 +83,7 @@ namespace  loglib {
 		static utils::Filesystem::Path path;
 	};
 
+	//! Z³o¿enie kilku logów
 	class LOGLIB_EXPORT MultiLogger : public ILog
 	{
 	public:
@@ -81,6 +98,7 @@ namespace  loglib {
 	};
 }
 
+//! Makro loguj¹ce pomocnicze informacje	
 #define UTILS_LOG_DEBUG(msg)	   LOG_DEBUG(loglib::Logger::getLog(), msg)	
 //! Makro loguj¹ce b³¹d					   
 #define UTILS_LOG_ERROR(msg)	   LOG_ERROR(loglib::Logger::getLog(), msg)	

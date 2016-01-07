@@ -52,8 +52,8 @@ bool HMDBSource::lateInit()
 void HMDBSource::finalize()
 {
 	//TODO
-	//zamkn�� wszystkie widgety z kontekstami,
-	//posprz�ta� po nich - usuwamy
+	//zamknąć wszystkie widgety z kontekstami,
+	//posprzątać po nich - usuwamy
 }
 
 void HMDBSource::update(double deltaTime)

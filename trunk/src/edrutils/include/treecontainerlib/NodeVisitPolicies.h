@@ -21,11 +21,11 @@ namespace treeContainer
 			//! Polityka odwiedzania węzłów
 			struct PreOrder
 			{
-				//! \tparam NPtr Typ wska�nika w�z�a
-				//! \tparam Visitor Typ odwiedzaj�cego w�z�y
+				//! \tparam NPtr Typ wskaźnika węzła
+				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename NPtr, typename Visitor>
-				//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
-				//! \param visitor Obiekt przegl�daj�cy wez�y
+				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param visitor Obiekt przeglądający wezły
 				static void visit(NPtr root, Visitor & visitor)
 				{
 					visitor(root);
@@ -39,11 +39,11 @@ namespace treeContainer
 			//! Polityka odwiedzania węzłów
 			struct PostOrder
 			{
-				//! \tparam NPtr Typ wska�nika w�z�a
-				//! \tparam Visitor Typ odwiedzaj�cego w�z�y
+				//! \tparam NPtr Typ wskaźnika węzła
+				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename NPtr, typename Visitor>
-				//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
-				//! \param visitor Obiekt przegl�daj�cy wez�y
+				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param visitor Obiekt przeglądający wezły
 				static void visit(NPtr root, Visitor & visitor)
 				{
 					for (const auto & child : root->children())
@@ -57,11 +57,11 @@ namespace treeContainer
 			//! Polityka odwiedzania węzłów
 			struct LevelOrder
 			{
-				//! \tparam NPtr Typ wska�nika w�z�a
-				//! \tparam Visitor Typ odwiedzaj�cego w�z�y
+				//! \tparam NPtr Typ wskaźnika węzła
+				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename NPtr, typename Visitor>
-				//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
-				//! \param visitor Obiekt przegl�daj�cy wez�y i poziomy
+				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param visitor Obiekt przeglądający wezły i poziomy
 				static void visit(NPtr root, Visitor & visitor)
 				{
 					treeContainer::Node::Nodes<NPtr> nodes;
@@ -69,7 +69,7 @@ namespace treeContainer
 					treeContainer::Node::SizeType level = 0;
 					while (nodes.empty() == false)
 					{
-						//pobieramy dla nast�pnego poziomu dzieci
+						//pobieramy dla następnego poziomu dzieci
 						treeContainer::Node::Nodes<NPtr> nextLevelNodes;
 						for (const auto & node : nodes)
 						{
@@ -86,17 +86,17 @@ namespace treeContainer
 				}
 			};
 
-			//! \tparam VisitOrder Spos�b oryginalnego odwiedzania, kt�re chcemy odwr�ci�
+			//! \tparam VisitOrder Sposób oryginalnego odwiedzania, które chcemy odwrócić
 			template<typename VisitOrder>
 			//! Polityka odwiedzania węzłów
 			struct ReverseOrder
 			{
-				//! \tparam NPtr Typ wska�nika w�z�a
-				//! \tparam Visitor Typ odwiedzaj�cego w�z�y
+				//! \tparam NPtr Typ wskaźnika węzła
+				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename NPtr, typename Visitor>
-				//! \param visitOrder Spos�b przegl�dania w kierunku kt�ry b�dziemy odwraca�
-				//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
-				//! \param visitor Obiekt przegl�daj�cy wez�y i poziomy
+				//! \param visitOrder Sposób przeglądania w kierunku który będziemy odwracać
+				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param visitor Obiekt przeglądający wezły i poziomy
 				static void visit(NPtr root, Visitor & visitor)
 				{
 					auto lt = NodeLinearization<VisitOrder, Backward>::linearize(root);
@@ -110,11 +110,11 @@ namespace treeContainer
 			//! Polityka odwiedzania węzłów z warunkiem
 			struct LevelOrderWhile
 			{
-				//! \tparam NPtr Typ wska�nika w�z�a
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				//! \tparam NPtr Typ wskaźnika węzła
+				//! \tparam CondVisitor Typ odwiedzającego węzły
 				template<typename NPtr, typename CondVisitor>
-				//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
+				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param condVisitor Obiekt przeglądający wezły i poziomy z warunkiem
 				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
 				{
 					treeContainer::Node::Nodes<NPtr> nodes;
@@ -122,7 +122,7 @@ namespace treeContainer
 					treeContainer::Node::SizeType level = 0;
 					while (nodes.empty() == false)
 					{
-						//pobieramy dla nast�pnego poziomu dzieci
+						//pobieramy dla następnego poziomu dzieci
 						treeContainer::Node::Nodes<NPtr> nextLevelNodes;
 						for (const auto & node : nodes)
 						{
@@ -146,12 +146,12 @@ namespace treeContainer
 			//! Polityka odwiedzania węzłów z warunkiem
 			struct PreOrderWhile
 			{
-				//! \tparam NPtr Typ wska�nika w�z�a
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				//! \tparam NPtr Typ wskaźnika węzła
+				//! \tparam CondVisitor Typ odwiedzającego węzły
 				template<typename NPtr, typename CondVisitor>
-				//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
+				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param condVisitor Obiekt przeglądający wezły i poziomy z warunkiem
+				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
 				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
 				{
 					if (condVisitor(root) == true){
@@ -173,12 +173,12 @@ namespace treeContainer
 			//! Polityka odwiedzania węzłów z warunkiem
 			struct PostOrderWhile
 			{
-				//! \tparam NPtr Typ wska�nika w�z�a
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				//! \tparam NPtr Typ wskaźnika węzła
+				//! \tparam CondVisitor Typ odwiedzającego węzły
 				template<typename NPtr, typename CondVisitor>
-				//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
+				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param condVisitor Obiekt przeglądający wezły i poziomy z warunkiem
+				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
 				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
 				{
 					for (const auto & child : root->children())
@@ -191,17 +191,17 @@ namespace treeContainer
 				}
 			};
 
-			//! \tparam VisitOrder Spos�b oryginalnego odwiedzania, kt�re chcemy odwr�ci�
+			//! \tparam VisitOrder Sposób oryginalnego odwiedzania, które chcemy odwrócić
 			template<typename VisitOrder>
 			//! Polityka odwiedzania węzłów z warunkiem
 			struct ReverseOrderWhile
 			{
-				//! \tparam NPtr Typ wska�nika w�z�a
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				//! \tparam NPtr Typ wskaźnika węzła
+				//! \tparam CondVisitor Typ odwiedzającego węzły
 				template<typename NPtr, typename CondVisitor>
-				//! \param visitOrder Spos�b przegl�dania w kierunku kt�ry b�dziemy odwraca�
-				//! \param node W�ze� w kt�rym zaczynamy przegl�danie drzewa
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
+				//! \param visitOrder Sposób przeglądania w kierunku który będziemy odwracać
+				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param condVisitor Obiekt przeglądający wezły i poziomy z warunkiem
 				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
 				{
 					auto lt = NodeLinearization<VisitOrder, Backward>::linearize(root);
