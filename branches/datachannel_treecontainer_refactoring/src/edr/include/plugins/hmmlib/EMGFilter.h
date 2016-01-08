@@ -16,57 +16,66 @@
 #include <plugins/newChart/INewChartSerie.h>
 #include <plugins/hmmlib/Export.h>
 #include <loglib/Exceptions.h>
+#include <datachannellib/IBoundedValuesFeature.h>
+#include <datachannellib/Adapters.h>
 
 using namespace core;
 
-class RMSModifier
+class RMSValueExtractor
+{
+
+};
+
+template<typename ValueType>
+class RMSValueExtractorT
 {
 public:
 
-	//void change()
- //   {
- //       //uzupełnij brakujące próbki
- //       if(myChannel.size() < observedChannel.size()){
- //           for(auto idx = myChannel.size(); idx < observedChannel.size(); ++idx){
- //               modifierInterface.addPoint(observedChannel.argument(idx), observedChannel.value(idx));
- //           }
- //       }
- //       //aktualizacja próbek
+	RMSValueExtractorT(const std::size_t meanR) : meanR(meanR) {}
+	RMSValueExtractorT(const RMSValueExtractorT & Other) : meanR(Other.meanR) {}
+	RMSValueExtractorT(RMSValueExtractorT && Other) : meanR(Other.meanR) {}
+	~RMSValueExtractorT() {}
 
- //       sizeT meanR = 250;
- //       sizeT count = myChannel.size() - meanR;
- //       // brzeg lewy...
- //       for (sizeT l_idx = 0; l_idx < meanR; ++l_idx) {
- //           pointT sum = 0;
- //           for (sizeT i = 0; i < l_idx + meanR; ++i) {
- //               sum += observedChannel.value(i) * observedChannel.value(i);
- //           }
- //           sum /= (l_idx + meanR);
- //           sum = sqrt(sum);
- //           modifierInterface.setIndexData(l_idx, sum);
- //       }
- //       // właściwa interpolacja
- //       for(sizeT idx = meanR; idx < count; ++idx) {
- //           pointT sum = 0;
- //           for (sizeT i = idx - meanR; i < idx + meanR + 1; ++i) {
- //               sum += observedChannel.value(i) * observedChannel.value(i);
- //           }
- //           sum /= (meanR + meanR + 1);
- //           sum = sqrt(sum);
- //           modifierInterface.setIndexData(idx, sum);
- //       }
- //       // brzeg prawy...
- //       for (sizeT r_idx = count; r_idx < observedChannel.size(); ++r_idx) {
- //           pointT sum = 0;
- //           for (sizeT i = r_idx; i < observedChannel.size(); ++i) {
- //               sum += observedChannel.value(i) * observedChannel.value(i);
- //           }
- //           //sum /= (r_idx - count + meanR);
- //           sum /= observedChannel.size() - r_idx;
- //           sum = sqrt(sum);
- //           modifierInterface.setIndexData(r_idx, sum);
- //       }
- //   }
+	ValueType extract(const ValueType & value, const std::size_t idx)
+	{
+		sizeT count = myChannel.size() - meanR;
+		// brzeg lewy...
+		for (sizeT l_idx = 0; l_idx < meanR; ++l_idx) {
+			pointT sum = 0;
+			for (sizeT i = 0; i < l_idx + meanR; ++i) {
+				sum += observedChannel.value(i) * observedChannel.value(i);
+			}
+			sum /= (l_idx + meanR);
+			sum = sqrt(sum);
+			modifierInterface.setIndexData(l_idx, sum);
+		}
+		// właściwa interpolacja
+		for (sizeT idx = meanR; idx < count; ++idx) {
+			pointT sum = 0;
+			for (sizeT i = idx - meanR; i < idx + meanR + 1; ++i) {
+				sum += observedChannel.value(i) * observedChannel.value(i);
+			}
+			sum /= (meanR + meanR + 1);
+			sum = sqrt(sum);
+			modifierInterface.setIndexData(idx, sum);
+		}
+		// brzeg prawy...
+		for (sizeT r_idx = count; r_idx < observedChannel.size(); ++r_idx) {
+			pointT sum = 0;
+			for (sizeT i = r_idx; i < observedChannel.size(); ++i) {
+				sum += observedChannel.value(i) * observedChannel.value(i);
+			}
+			//sum /= (r_idx - count + meanR);
+			sum /= observedChannel.size() - r_idx;
+			sum = sqrt(sum);
+			modifierInterface.setIndexData(r_idx, sum);
+		}
+	}
+    
+
+private:
+
+	const std::size_t meanR;
 };
 
 class ScalarChannelIntegrator
@@ -132,70 +141,79 @@ public:
  //   }
 };
 
-//template <class PointType, class TimeType>
-//class AbsMeanChannel : public ChannelNoCopyModifier<PointType, TimeType>
-//{
-//public:
-//    typedef ChannelNoCopyModifier<PointType, TimeType> BaseClass;
-//    typedef typename BaseClass::_MyChannelPtr _MyChannelPtr;
-//    typedef typename BaseClass::_MyChannelConstPtr _MyChannelConstPtr;
-//    typedef typename BaseClass::_MyModifierType _MyModifierType;
-//    typedef typename BaseClass::time_type time_type;
-//    typedef typename BaseClass::point_type point_type;
-//    typedef typename BaseClass::size_type size_type;
-//    typedef typename BaseClass::point_type_const_reference point_type_const_reference;
-//
-//    AbsMeanChannel(const _MyChannelPtr & channel) :
-//    BaseClass(channel)
-//    {
-//    }
-//
-//    virtual point_type_const_reference modify( point_type_const_reference point ) const
-//    {
-//        tempPoint = point - mean;
-//        tempPoint = tempPoint > 0 ? tempPoint : -tempPoint;
-//
-//        return tempPoint;
-//    }
-//
-//    virtual void initialize()
-//    {
-//        point_type min = this->channel->value(0);
-//        point_type max = min;
-//
-//        size_type count = this->channel->size();
-//        for(size_type idx = 0; idx < count; ++idx){
-//            point_type val = this->channel->value(idx);
-//            if (val > max) {
-//                max = val;
-//            } else if (val < min) {
-//                min = val;
-//            }
-//        }
-//
-//        point_type min4 = min / 4;
-//        point_type max4 = max / 4;
-//
-//        point_type sum = 0;
-//        //średnia
-//        for(size_type idx = 0; idx < count; ++idx) {
-//            point_type val = this->channel->value(idx);
-//            if (val > max4) {
-//                val = max4;
-//            } else if (val < min4) {
-//                val = min4;
-//            }
-//            sum += val;
-//        }
-//
-//        mean = sum / static_cast<point_type>(count);
-//    }
-//
-//private:
-//    mutable point_type tempPoint;
-//    point_type mean;
-//
-//};
+template<class ValueType, class ArgumentType>
+class AbsMeanValueExtractorT;
+
+class AbsMeanValueExtractor
+{
+public:
+
+	template<typename DiscreteAccessor>
+	inline static AbsMeanValueExtractorT<typename DiscreteAccessor::value_type, typename DiscreteAccessor::argument_type> create(const DiscreteAccessor & accessor)
+	{
+		return AbsMeanValueExtractorT<typename DiscreteAccessor::value_type, typename DiscreteAccessor::argument_type>(accessor);
+	}
+};
+
+template<class ValueType, class ArgumentType>
+class AbsMeanValueExtractorT
+{
+public:
+	using accessor_type = datachannel::IDiscreteAccessor<ValueType, ArgumentType>;
+	using value_type = accessor_type::value_type;
+	using size_type = accessor_type::size_type;
+
+	AbsMeanValueExtractorT(const accessor_type & accessor)
+		: mean(initialize(accessor))
+    {
+
+    }
+
+	AbsMeanValueExtractorT(const AbsMeanValueExtractorT & Other) : mean(Other.mean)
+	{
+
+	}
+
+	AbsMeanValueExtractorT(AbsMeanValueExtractorT && Other) : mean(Other.mean)
+	{
+
+	}
+
+	~AbsMeanValueExtractorT() {}	
+
+	inline value_type extract(const value_type & value, ...) const
+    {
+        return std::abs(value - mean);
+    }
+
+private:
+
+	inline static value_type initialize(const accessor_type & accessor)
+    {
+		auto bvf = accessor.getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
+		const value_type min4 = bvf->minValue() / 4;
+		const value_type max4 = bvf->maxValue() / 4;
+
+		value_type sum = 0;
+        //średnia
+        for(size_type idx = 0; idx < count; ++idx) {
+			auto val = accessor.value(idx);
+            if (val > max4) {
+                val = max4;
+            } else if (val < min4) {
+                val = min4;
+            }
+            sum += val;
+        }
+
+        return (sum / static_cast<value_type>(count));
+    }
+
+private:
+
+    const point_type mean;
+
+};
 
 
 #endif

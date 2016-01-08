@@ -597,7 +597,7 @@ namespace datachannel
 	//! \tparam ValueType Typ wartoœci kana³u
 	//! \tparam ArgumentType Typ argumentów kana³u
 	template<typename BaseValueType, typename ArgumentType, typename ValueExtractor,
-		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>()))>::type>
+		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), 0))>::type>
 	//! Wrapper dla dyskretnych akcesorów, zmieniaj¹cy ich reprezentacjê
 	class DiscreteAccessorAdapter : public IIndependentDiscreteAccessor<DestValueType, ArgumentType>
 	{
@@ -630,7 +630,7 @@ namespace datachannel
 
 		//! \param idx Indeks próbki
 		//! \return Wartoœæ dla danego indeksu
-		virtual value_type value(const size_type idx) const override { return valueExtractor.extract(accessor.value(idx)); }
+		virtual value_type value(const size_type idx) const override { return valueExtractor.extract(accessor.value(idx), idx); }
 
 		//! \return Iloœæ próbek w kanale
 		virtual size_type size() const override { return accessor.size(); }
@@ -648,7 +648,7 @@ namespace datachannel
 	//! \tparam ValueType Typ wartoœci kana³u
 	//! \tparam ArgumentType Typ argumentów kana³u
 	template<typename BaseValueType, typename ArgumentType, typename ValueExtractor,
-		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>()))>::type>
+		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), std::declval<ArgumentType>()))>::type>
 		//! Wrapper dla funkcji, zmieniaj¹cy ich reprezentacjê
 	class FunctionAccessorAdapter : public IFunctionAccessor<DestValueType, ArgumentType>
 	{
@@ -677,7 +677,7 @@ namespace datachannel
 
 		//! \param argument Argument dla któego odpytujemy o wartoœæ
 		//! \return Wartoœæ dla zadanego argumentu
-		virtual value_type value(const argument_type & argument) const override { return valueExtractor.extract(accessor.value(argument)); }
+		virtual value_type value(const argument_type & argument) const override { return valueExtractor.extract(accessor.value(argument), argument); }
 		//! \param argument Argument dla któego odpytujemy o wartoœæ
 		//! \return Próbka dla zadanego argumentu
 		virtual sample_type sample(const argument_type & argument) const { return{ argument, value(argument) }; }

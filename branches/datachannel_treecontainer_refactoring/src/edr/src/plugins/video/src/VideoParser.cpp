@@ -11,6 +11,7 @@
 #include <osg/ImageSequence>
 #include <osgDB/ReadFile>
 #include <loglib/Exceptions.h>
+#include <corelib/Filesystem.h>
 
 using namespace vidlib;
 
@@ -175,7 +176,7 @@ void VideoParser::parse(const std::string & source) {
 		//TODO
 
 		VideoChannelPtr channel(new VideoChannel(realStream));
-		channel->setName(path.filename().string());
+		//channel->setName(path.filename().string());
 		localData[0]->set(channel);
 	}
 
@@ -188,6 +189,7 @@ void VideoParser::getObject(core::Variant& object,
 	UTILS_ASSERT((idx == 0), "Parser index out of range");
 	object.set(data[idx]);
 	object.setMetadata("core/source", path);
+	object.setMetadata("core/name", core::Filesystem::Path(path).filename().string());
 }
 
 void VideoParser::reset() {
