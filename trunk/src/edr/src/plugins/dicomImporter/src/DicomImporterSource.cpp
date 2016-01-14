@@ -1,6 +1,6 @@
-#include "DicomImporterPCH.h"
+//#include "DicomImporterPCH.h"
 #include "DicomImporterSource.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <corelib/HierarchyItem.h>
 #include <corelib/HierarchyDataItem.h>
 #include "DicomImporterSourceWidget.h"
@@ -11,10 +11,10 @@
 //#include <plugins/dicom/ILayeredImage.h>
 #include "corelib/IVisualizerManager.h"
 //#include "LayeredImageVisualizer.h"
-#include "DicomImporter.h"
+#include "dicomlib/DicomImporter.h"
 #include <boost/archive/xml_iarchive.hpp>
 #include "DicomVisualizer.h"
-#include <plugins/dicomImporter/Dicom.h>
+#include <dicomlib/Dicom.h>
 //#include "BackgroundLayer.h"
 
 using namespace dicomImporter;
@@ -137,7 +137,7 @@ void DicomImporterSource::getOfferedTypes( utils::TypeInfoList & offeredTypes ) 
     
 }
 
-//void DicomImporterSource::addFile( const core::Filesystem::Path& path )
+//void DicomImporterSource::addFile( const utils::Filesystem::Path& path )
 //{
 //    auto root = transactionPart<core::WrappedItemHelper>(path);
 //    auto hierarchyTransaction = memoryDM->hierarchyTransaction();
@@ -167,10 +167,10 @@ void DicomImporterSource::getOfferedTypes( utils::TypeInfoList & offeredTypes ) 
 //    }
 //}
 //
-//void DicomImporterSource::loadDirFile( const core::Filesystem::Path& dirPath )
+//void DicomImporterSource::loadDirFile( const utils::Filesystem::Path& dirPath )
 //{
-//    core::Filesystem::Path dirfile = dirPath / "DICOMDIR";
-//    if (core::Filesystem::pathExists(dirfile)) {
+//    utils::Filesystem::Path dirfile = dirPath / "DICOMDIR";
+//    if (utils::Filesystem::pathExists(dirfile)) {
 //        /*DcmDicomDir* dir = new DcmDicomDir(dirfile.string().c_str());
 //        DcmDirectoryRecord *rec = &(dir->getRootRecord());
 //
@@ -213,10 +213,10 @@ void DicomImporterSource::getOfferedTypes( utils::TypeInfoList & offeredTypes ) 
 //            fileRecord->findAndGetOFString(DCM_ReferencedSOPInstanceUIDInFile, uidImagen);
 //            fileRecord->findAndGetOFString(DCM_InstanceNumber, instanceNumber);
 //
-//            core::Filesystem::Path currentPath(basePath);
-//            core::Filesystem::Path suffix(tmpString.c_str());
+//            utils::Filesystem::Path currentPath(basePath);
+//            utils::Filesystem::Path suffix(tmpString.c_str());
 //            currentPath /= suffix;
-//            if (core::Filesystem::pathExists(currentPath)) {
+//            if (utils::Filesystem::pathExists(currentPath)) {
 //                //utils::ObjectWrapperPtr wrapper;
 //                ////HierarchyDataItemPtr dataItem = utils::make_shared<HierarchyDataItem>(wrapper, QString());                
 //                //core::HierarchyItemPtr dataItem = utils::make_shared<core::HierarchyItem>(QString("image"), QString());                
@@ -315,7 +315,7 @@ void DicomImporterSource::getOfferedTypes( utils::TypeInfoList & offeredTypes ) 
 //}
 //
 //template <class Helper>
-//core::IHierarchyItemPtr DicomImporterSource::transactionPart( const core::Filesystem::Path &path )
+//core::IHierarchyItemPtr DicomImporterSource::transactionPart( const utils::Filesystem::Path &path )
 //{
 //    auto transaction = fileDM->transaction();
 //    transaction->addFile(path);
@@ -350,7 +350,7 @@ void DicomImporterSource::getOfferedTypes( utils::TypeInfoList & offeredTypes ) 
 //    return root;
 //}
 
-void dicomImporter::DicomImporterSource::import( const core::Filesystem::Path& from, const core::Filesystem::Path& to )
+void dicomImporter::DicomImporterSource::import( const utils::Filesystem::Path& from, const utils::Filesystem::Path& to )
 {
     DicomImporter importer;
     auto inter = importer.import(from);
@@ -363,7 +363,7 @@ void dicomImporter::DicomImporterSource::import( const core::Filesystem::Path& f
     }
 }
 
-//void dicomImporter::DicomImporterSource::openInternalDataMainFile( core::Filesystem::Path path )
+//void dicomImporter::DicomImporterSource::openInternalDataMainFile( utils::Filesystem::Path path )
 //{
 //    DicomLoader loader;
 //    auto inter = loader.load(path);

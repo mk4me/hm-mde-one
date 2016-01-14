@@ -11,7 +11,7 @@
 #define HEADER_GUARD_DICOMIMPORTER__DICOMIMPORTERSOURCE_H__
 
 #include <corelib/ISource.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <corelib/IHierarchyItem.h>
 #include <corelib/HierarchyHelper.h>
 
@@ -65,11 +65,11 @@ public:
     virtual QWidget* getSettingsWidget();
 
     virtual void getOfferedTypes( utils::TypeInfoList & offeredTypes ) const;
-    //void addFile( const core::Filesystem::Path& path );
+    //void addFile( const utils::Filesystem::Path& path );
 
-    //void loadDirFile(const core::Filesystem::Path& dirPath );
-    void import( const core::Filesystem::Path& from, const core::Filesystem::Path& to );
-    void openInternalDataMainFile( core::Filesystem::Path path );
+    //void loadDirFile(const utils::Filesystem::Path& dirPath );
+    void import( const utils::Filesystem::Path& from, const utils::Filesystem::Path& to );
+    void openInternalDataMainFile( utils::Filesystem::Path path );
 //
 //private:
 //    void handlePatientRecord( DcmDirectoryRecord * patientRecord, core::IHierarchyItemPtr root, std::string basePath );
@@ -77,7 +77,7 @@ public:
 //    void handleSeriesRecord( DcmDirectoryRecord * seriesRecord, core::IHierarchyItemPtr root, std::string basePath );
 //    void handleFileRecord( DcmDirectoryRecord * fileRecord, core::IHierarchyItemPtr root, std::string basePath, std::vector<LayerHelperPtr>& helpers );
 //    template <class Helper>
-//    core::IHierarchyItemPtr transactionPart( const core::Filesystem::Path &path );
+//    core::IHierarchyItemPtr transactionPart( const utils::Filesystem::Path &path );
 private:
     core::IDataManager* memoryDM;
     core::IFileDataManager* fileDM;

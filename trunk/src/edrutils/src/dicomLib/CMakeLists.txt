@@ -24,4 +24,8 @@ SET_PRECOMPILED_HEADER(
 	DicomImporterPCH.cpp
 )
 
+SET_MOC_FILES(
+	DicomSplitterModel.h
+)
+
 END_PROJECT()

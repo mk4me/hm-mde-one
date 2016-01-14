@@ -1,7 +1,7 @@
-#include "DicomImporterPCH.h"
+//#include "DicomImporterPCH.h"
 #include "DicomParser.h"
-#include <corelib/Filesystem.h>
-#include <plugins/dicomImporter/Dicom.h>
+#include <utils/Filesystem.h>
+#include <dicomlib/Dicom.h>
 #include <dcmtk/config/osconfig.h>
 #include <dcmtk/dcmdata/dcdatset.h>
 #include <dcmtk/dcmdata/dctk.h>
@@ -48,7 +48,7 @@ DicomParser::~DicomParser()
 
 void DicomParser::parse( const std::string & source  )
 {
-	/*core::Filesystem::Path path(source);
+	/*utils::Filesystem::Path path(source);
     const char *opt_ifname = path.string().c_str();
     E_FileReadMode opt_readMode = ERM_autoDetect;
     E_TransferSyntax opt_ixfer = EXS_Unknown;
@@ -65,7 +65,7 @@ void DicomParser::parse( const std::string & source  )
     }*/
 
     
-   // core::Filesystem::Path path(source);
+   // utils::Filesystem::Path path(source);
    // auto str = path.string();
    // const char *opt_ifname = str.c_str();
    // E_FileReadMode opt_readMode = ERM_autoDetect;

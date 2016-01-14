@@ -1,4 +1,4 @@
-#include "DicomImporterPCH.h"
+//#include "DicomImporterPCH.h"
 #include "DicomImporterSourceWidget.h"
 #include "ui_DicomSource.h"
 #include <QtWidgets/QWidget>
@@ -11,15 +11,15 @@
 #include <corelib/PluginCommon.h>
 #include <loglib/ILog.h>
 #include <corelib/IFileDataManager.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <QtWidgets/QFileDialog>
 #include "DicomImporterSource.h"
 #include <QtCore/QDir>
 #include <QtWidgets/QProgressDialog>
-#include "DicomImporter.h"
+#include "dicomlib/DicomImporter.h"
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
-#include "DicomSplitterModel.h"
+#include "dicomlib/DicomSplitterModel.h"
 
 using namespace dicomImporter;
 
@@ -67,8 +67,8 @@ void dicomImporter::DicomImporterSourceWidget::onImport()
 
     QDir dir;
     if ( dir.exists(importFrom) && dir.exists(exportTo) ) {
-        core::Filesystem::Path from = importFrom.toStdString();
-        core::Filesystem::Path to = exportTo.toStdString();
+        utils::Filesystem::Path from = importFrom.toStdString();
+        utils::Filesystem::Path to = exportTo.toStdString();
         //dicomSource->import(from, to);
         
         DicomImporter importer(ui->startIndex->value());
@@ -119,8 +119,8 @@ void dicomImporter::DicomImporterSourceWidget::onImportSingle()
 
 	QDir dir;
 	if (dir.exists(importFrom) && dir.exists(exportTo)) {
-		core::Filesystem::Path from = importFrom.toStdString();
-		core::Filesystem::Path to = exportTo.toStdString();
+		utils::Filesystem::Path from = importFrom.toStdString();
+		utils::Filesystem::Path to = exportTo.toStdString();
 		//dicomSource->import(from, to);
 
 		DicomImporter importer(ui->startIndex->value());
@@ -150,8 +150,8 @@ void dicomImporter::DicomImporterSourceWidget::onSave()
 	QString exportTo = ui->exportToEdit->text();
 	QDir dir;
 	if (dir.exists(importFrom) && dir.exists(exportTo)) {
-		core::Filesystem::Path from = importFrom.toStdString();
-		core::Filesystem::Path to = exportTo.toStdString();
+		utils::Filesystem::Path from = importFrom.toStdString();
+		utils::Filesystem::Path to = exportTo.toStdString();
 		const auto& splits = splitterModel->getSplits();
 		for (auto it = splits.begin(); it != splits.end(); ++it) {
 			importer.convertImages(*it, from, to);
