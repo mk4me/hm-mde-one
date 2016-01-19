@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 {
 	QApplication app(argc, argv);
 	QCoreApplication::setApplicationName("Dicom Watcher");
-	QCoreApplication::setApplicationVersion("0.1");
+	QCoreApplication::setApplicationVersion("0.11");
 
 	QCommandLineParser parser;
 	parser.setApplicationDescription("Dicom Watcher");

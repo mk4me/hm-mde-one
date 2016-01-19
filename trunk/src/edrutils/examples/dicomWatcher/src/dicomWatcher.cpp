@@ -19,7 +19,7 @@ runOnce(runOnce)
 
 void DicomWatcher::import(const utils::Filesystem::Path& from, const utils::Filesystem::Path& to)
 {
-	dicomImporter::DicomImporter importer;
+	dicomImporter::DicomImporter importer(1, !singleOutputFolder);
 	importer.setCallBack([&](const std::string& s) {
 		UTILS_LOG_INFO("processing: " << s);
 	});
@@ -48,14 +48,14 @@ void DicomWatcher::dirChanged(const QString & path)
 		// gdy ustawiona jest flaga run_once, to powinny zostac przetworzone wszystkie pliki
 		// zostalo zrobione naiwne zalozenie, ze rozpakowywanie i konwertowanie dicoma bedzie trwalo dluzej niz jego kopiowanie
 		bool processed = true;
-		while (runOnce && processed) {
+		while (processed) {
 			processed = false;
 			// wszystkie pliki *.zip z foleru, bez przeszukiwania podfolderów
 			auto files = utils::Filesystem::listFiles(path.toStdString(), false, ".zip");
 			for (auto& f : files) {
 				// jeœli plik nie by³ wczeœniej przetwarzany...
 				if (!config.wasProcessed(f)) {
-					processed = true;
+					processed = runOnce;
 					UTILS_LOG_INFO("extracting: " << f.string());
 					utils::Filesystem::Path out1(outputDir / f.stem() / "raw");
 					utils::Filesystem::Path out2 = singleOutputFolder ? (outputDir / "converted") : (outputDir / f.stem() / "converted");
