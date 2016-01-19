@@ -25,7 +25,7 @@ public:
     typedef boost::function<void (const std::string&)> refresher;
 
 public:
-    DicomImporter(int studyFristId = 1);
+	DicomImporter(int studyFristId = 1, bool createSessionDir = false);
 
 	virtual ~DicomImporter() {}
     DicomInternalStructPtr import( const utils::Filesystem::Path& from );
@@ -53,6 +53,7 @@ private:
 private:
     int studyCurrentIndex;
     refresher refresh;
+	bool createSessionDir;
 };
 DEFINE_SMART_POINTERS(DicomImporter);
 
@@ -60,7 +61,7 @@ class DicomSaver
 {
 public:
     virtual ~DicomSaver() {}
-    void save( const utils::Filesystem::Path& to, DicomInternalStructPtr inter );
+    void save( const utils::Filesystem::Path& to, DicomInternalStructPtr inter, bool createSessionFolder = true );
 };
 DEFINE_SMART_POINTERS(DicomSaver);
 

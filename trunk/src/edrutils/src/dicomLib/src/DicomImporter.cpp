@@ -118,10 +118,16 @@ void DicomImporter::handleFileRecord( DcmDirectoryRecord * fileRecord, internalD
             fileRecord->findAndGetOFString(DCM_InstanceNumber, instanceNumber);
 
             utils::Filesystem::Path currentPath(basePath);
-            utils::Filesystem::Path suffix(tmpString.c_str());
-            currentPath /= suffix;
+            
+			std::string suffix(tmpString.c_str()), toFind("\\"), toReplace("/");
+			for (std::string::size_type i = 0; (i = suffix.find(toFind, i)) != std::string::npos;) {
+				suffix.replace(i, toFind.length(), toReplace);
+				i += toReplace.length();
+			}
+
+			currentPath /= suffix;
             if (utils::Filesystem::pathExists(currentPath)) {
-                image->originFilePath = suffix.string();
+                image->originFilePath = suffix;
             } 
         }
     }
@@ -237,7 +243,11 @@ void dicomImporter::DicomImporter::convertImages( DicomInternalStructPtr inter, 
     for (auto itPatient = inter->patients.begin(); itPatient != inter->patients.end(); ++itPatient) {
         for (auto itSession = (*itPatient)->sessions.begin(); itSession != (*itPatient)->sessions.end(); ++itSession) {
             std::string sessionDir = (*itSession)->getOutputDirectory();
-            utils::Filesystem::createDirectory(to / sessionDir);
+			if (createSessionDir) {
+				utils::Filesystem::createDirectory(to / sessionDir);
+			} else {
+				utils::Filesystem::createDirectory(to);
+			}
             int trialImageNo = 1;
             for (auto itSerie = (*itSession)->series.begin(); itSerie != (*itSession)->series.end(); ++itSerie) {
                 internalData::SeriePtr serie = *itSerie;
@@ -247,7 +257,7 @@ void dicomImporter::DicomImporter::convertImages( DicomInternalStructPtr inter, 
                     if (inter->isSingle()) {
                         boost::format fmt("%s-%s-%s-S%04d-T%04d");
                         fmt % dt.get<0>() % dt.get<1>() % dt.get<2>() % (*itSession)->studyNumber % trialImageNo++;
-                        convertImage((*itSerie)->images[i], from, to/sessionDir, fmt.str());
+                        convertImage((*itSerie)->images[i], from, createSessionDir ? to/sessionDir : to, fmt.str());
                     } else {
                         boost::format fmt("%s/%s-%s-%s-S%04d-T%04d");
                         fmt % sessionDir % dt.get<0>() % dt.get<1>() % dt.get<2>() % (*itSession)->studyNumber % trialImageNo++;
@@ -318,8 +328,9 @@ std::vector<DicomInternalStructPtr> dicomImporter::DicomImporter::split( DicomIn
 
 static void dummy(const std::string&) {}
 
-dicomImporter::DicomImporter::DicomImporter( int studyFristId /*= 1*/ ) : 
-    studyCurrentIndex(studyFristId)
+dicomImporter::DicomImporter::DicomImporter( int studyFristId /*= 1*/ , bool createSessionDir) :
+    studyCurrentIndex(studyFristId),
+	createSessionDir(createSessionDir)
 {
     refresh = dummy;
 }
@@ -400,12 +411,12 @@ utils::Filesystem::Path dicomImporter::DicomImporter::findDicomRootDir(const uti
 	throw loglib::runtime_error("Directory does not contain dicom structure");
 }
 
-void DicomSaver::save( const utils::Filesystem::Path& to, DicomInternalStructPtr inter )
+void DicomSaver::save( const utils::Filesystem::Path& to, DicomInternalStructPtr inter, bool createSessionFolder )
 {
     utils::Filesystem::Path filename;
     if (inter->isSingle()) {
         std::string sessionName = inter->getSingleSessionOutputDir();
-        filename = to / sessionName / (sessionName + ".xml");
+        filename = createSessionFolder ?  to / sessionName / (sessionName + ".xml") : to / (sessionName + ".xml");
     } else {
         filename = to / "main.xml";
     }

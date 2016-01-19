@@ -13,9 +13,12 @@
 // sk³adnia :
 // dicomWatcher [opcje] inputFolder outputFolder 
 // opcje :
-// -s --status-file  -œcie¿ka do pliku z informacjami o przetworzonych plikach
-// -v --verbose		 -komunikaty bêd¹ wyswietlane w konsoli
-// -l --log-file	 -œcie¿ka do pliku z logiem
+// -s --status-file			-œcie¿ka do pliku z informacjami o przetworzonych plikach
+// -v --version				-informacja o wersji
+// -l --log-file			-œcie¿ka do pliku z logiem
+// -p --print-on-console	-informacje bêd¹ logowane na konsolê
+// -r --run_once			-aplikacja tylko raz czeka na dane wejœciowe, po ich przetworzeniu koñczy dzia³anie
+// -f --single_folder		-dane wyjœciowe trafi¹ do pojedynczego foldera
 int main(int argc, char** argv)
 {
 	QApplication app(argc, argv);
@@ -37,6 +40,14 @@ int main(int argc, char** argv)
 	QCommandLineOption verboseOption(QStringList() << "p" << "print-on-console",
 									 QCoreApplication::translate("main", "Prints informations on standard output"));
 	parser.addOption(verboseOption);
+
+	QCommandLineOption runOnceOption(QStringList() << "r" << "run-once",
+		QCoreApplication::translate("main", "Prints informations on standard output"));
+	parser.addOption(runOnceOption);
+
+	QCommandLineOption singleFolderOption(QStringList() << "f" << "single-folder",
+		QCoreApplication::translate("main", "Single, output folder."));
+	parser.addOption(singleFolderOption);
 
 	QCommandLineOption logOption(QStringList() << "l" << "log-file",
 									QCoreApplication::translate("main", "Log <file>."),
@@ -86,7 +97,8 @@ int main(int argc, char** argv)
 	QFileSystemWatcher fileWatcher;
 	bool test = fileWatcher.addPath(QString::fromStdString(sourceDir.string()));
 
-	DicomWatcher dicomWatcher(destDir, configFile);
+	
+	DicomWatcher dicomWatcher(destDir, configFile, parser.isSet(singleFolderOption), parser.isSet(runOnceOption));
 	UTILS_LOG_INFO("Dicom watcher started");
 	test = QObject::connect(&fileWatcher, SIGNAL(directoryChanged(const QString &)), &dicomWatcher, SLOT(dirChanged(const QString &)));
 
