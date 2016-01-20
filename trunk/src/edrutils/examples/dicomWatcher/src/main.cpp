@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 {
 	QApplication app(argc, argv);
 	QCoreApplication::setApplicationName("Dicom Watcher");
-	QCoreApplication::setApplicationVersion("0.12");
+	QCoreApplication::setApplicationVersion("0.13");
 
 	QCommandLineParser parser;
 	parser.setApplicationDescription("Dicom Watcher");
@@ -95,10 +95,17 @@ int main(int argc, char** argv)
 	loglib::Logger::setLog(multiLog);
 	
 	QFileSystemWatcher fileWatcher;
-	bool test = fileWatcher.addPath(QString::fromStdString(sourceDir.string()));
+	QString observedPath = QString::fromStdString(sourceDir.string());
+	bool test = fileWatcher.addPath(observedPath);
 
-	
-	DicomWatcher dicomWatcher(destDir, configFile, parser.isSet(singleFolderOption), parser.isSet(runOnceOption));
+	bool runOneSet = parser.isSet(runOnceOption);
+	DicomWatcher dicomWatcher(destDir, configFile, parser.isSet(singleFolderOption), runOneSet);
+	if (runOneSet) {
+		auto files = dicomWatcher.listFilesToProcess(observedPath.toStdString());
+		if (!files.empty()) {
+			dicomWatcher.dirChanged(observedPath);
+		}
+	}
 	UTILS_LOG_INFO("Dicom watcher started");
 	test = QObject::connect(&fileWatcher, SIGNAL(directoryChanged(const QString &)), &dicomWatcher, SLOT(dirChanged(const QString &)));
 

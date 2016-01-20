@@ -33,6 +33,11 @@ class DicomWatcher : public QObject
 		//! \param path œcie¿ka do folderu, który uleg³ zmianie
 		void dirChanged(const QString & path);
 
+	public:
+		//! \param path obserwowana œcie¿ka
+		//! \return zwraca wektor plików zip, które jeszcze nie by³y wczeœniej przetwarzane
+		std::vector<utils::Filesystem::Path> listFilesToProcess(const std::string& path);
+
 	private:
 		//! metoda zakoñczy dzia³anie aplikacji, jeœli ustawiony jest parametr runOnce
 		void exitIfRequested(int errorCode = 0);
