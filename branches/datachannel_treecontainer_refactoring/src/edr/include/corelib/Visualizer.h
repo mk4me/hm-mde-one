@@ -178,6 +178,10 @@ namespace core {
 		//! w przeciwnym wypadku seria nie zostanie stworozna i dostaniemy nullptr, podobna reakcja będzie miała miejsce
 		//! gdy osiągneliśmy już maksymalną ilość seri jaką wspiera wizualizator i chcemy utworzyć nową
 		Serie * createSerie(const utils::TypeInfo & requestedType, const VariantConstPtr & data);
+		//! \param data Dane na bazie których ma powstać seria, muszą być wspierane przez wizualizator,
+		//! w przeciwnym wypadku seria nie zostanie stworozna i dostaniemy nullptr, podobna reakcja będzie miała miejsce
+		//! gdy osiągneliśmy już maksymalną ilość seri jaką wspiera wizualizator i chcemy utworzyć nową
+		Serie * createSerie(const VariantConstPtr & data);
 		//! \param serie Seria na bazie której ma powstać nowa seria, musi pochodzić od tego wizualizatora,
 		//! w przeciwnym wypadku seria nie zostanie stworzozna i dostaniemy nullptr, podobna reakcja będzie miała miejsce
 		//! gdy osiągneliśmy już maksymalną ilość seri jaką wspiera wizualizator i chcemy utworzyć nową

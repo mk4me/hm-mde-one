@@ -22,32 +22,32 @@ namespace df{
 	class INode;
 
 
-	//! Klasa realizuj�ca wielow�tkowe, potokowe przetwarzanie danych. Ka�dy w�ze� modelu jest wrapowany przez
-	//! dedykowan� klas� wraz z obs�uguj�cycm j� w�tkiem. Przetwarzanie odbywa si� od �r�de� do sink�w lub procesor�w
-	//! z niepodpi�tymi wyjsciami. Tylko �t�d�� s� synchronizowane - czekaj� a� wszystkie razem sko�cz� produkowa� dane
-	//! do modelu, aby sprawdzi� czy s� w stanie wszystkie dostarczy� nowych danych. Je�li tak ponownie moga produkowac dane,
-	//! w przeciwnym wypadku czekamy na przetworzenie danych ju� znajduj�cych si� w modelu.
+	//! Klasa realizująca wielowątkowe, potokowe przetwarzanie danych. Każdy węzeł modelu jest wrapowany przez
+	//! dedykowaną klasę wraz z obsługującycm ją wątkiem. Przetwarzanie odbywa się od źródeł do sinków lub procesorów
+	//! z niepodpiętymi wyjsciami. Tylko źródła są synchronizowane - czekają aż wszystkie razem skończć produkować dane
+	//! do modelu, aby sprawdzić czy są w stanie wszystkie dostarczyć nowych danych. jeżeli tak ponownie moga produkowac dane,
+	//! w przeciwnym wypadku czekamy na przetworzenie danych już znajdujących się w modelu.
 	class STDFModelRunner 
 	{
 	public:
-		//! Domy�lny konstruktor
+		//! Domyślny konstruktor
 		STDFModelRunner();
 		//! Destruktor
 		~STDFModelRunner();
 
-		//! Metoda startuj�ca model, nieblokuj�ca -> nale�y uzy� join by czeka� na koniec modelu
-		//! \param model Model k�ry b�dziemy przetwarza�
-		//! \param logger Obiekt loguj�cy stan przetwarzania
-		//! \param tFactory Fabryka w�tk�w - gdy pusta u�ywamy domyslnej wynikaj�cej z implementacji
+		//! Metoda startująca model, nieblokująca -> należy użyć join by czekać na koniec modelu
+		//! \param model Model który będziemy przetwarzać
+		//! \param logger Obiekt logujący stan przetwarzania
+		//! \param tFactory Fabryka wątków - gdy pusta używamy domyslnej wynikającej z implementacji
 		void start(IModelReader * model, IDFLogger * logger);
 
 		//! Natychmiastowe przerwania przetwarzania
-		//! Metoda blokuj�ca - czeka na zako�czenie wszystkich w�tk�w
+		//! Metoda blokująca - czeka na zakończenie wszystkich wątków
 		void stop();
 
 
-		//! \param reader Model kt�ry potencjalnie ma by� uruchomiony
-		//! \return Czy model mo�na uruchomi� za pomoca tego runnera
+		//! \param reader Model który potencjalnie ma być uruchomiony
+		//! \return Czy model można uruchomić za pomoca tego runnera
 		static const bool verifyModel(const IModelReader * reader);
 
 	private:

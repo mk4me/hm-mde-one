@@ -11,7 +11,7 @@
 #define HEADER_GUARD_UTILS__ACCESSORSCOLLECTION_H__
 
 #include <datachannellib/Accessors.h>
-#include <datachannellib/IDescriptorFeature.h>
+#include <datachannellib/DescriptorFeature.h>
 #include <vector>
 #include <algorithm>
 #include <iterator>
@@ -19,14 +19,14 @@
 #include <utils/Debug.h>
 #include <boost/tuple/tuple.hpp>
 ////////////////////////////////////////////////////////////////////////////////
-namespace datachannel {
+namespace dataaccessor {
 	////////////////////////////////////////////////////////////////////////////////
 
 	//! Klasa agreguje klasy DataChannel, wszystkie dodawane kanały powinny mieć tyle samo wpisow
 	template <typename AccessorType>
 	class AccessorsCollection
 	{
-		static_assert(std::is_base_of<IDiscreteAccessor<typename AccessorType::value_type, typename AccessorType::argument_type>, AccessorType>::value,	"AccessorType must be derrived from IDiscreteAccessor");
+		static_assert(std::is_base_of<IDiscreteAccessorT<typename AccessorType::value_type, typename AccessorType::argument_type>, AccessorType>::value,	"AccessorType must be derrived from IDiscreteAccessor");
 
 	public:
 		using value_type = typename AccessorType::value_type;

@@ -54,8 +54,7 @@ protected:
         //! seria zwiazana z etykietą
         const INewChartSeriePrivate* serie;
     };
-    typedef utils::shared_ptr<LabelData> LabelDataPtr;
-    typedef utils::shared_ptr<const LabelData> LabelDataConstPtr;
+    DEFINE_SMART_POINTERS(LabelData);
 
 	typedef boost::tuple<const INewChartSeriePrivate*, QPointF, double> SeriePointDist;
 
@@ -65,6 +64,8 @@ protected:
     //! \param curve krzywa pod która jest podpięta etykieta
     //! \param label przesuwana etykieta
     void move(const QPoint& pos, const QwtPlotCurve* curve, NewChartLabel* label);
+	//! usuwa etykietę z wykresu 
+	void removeLabel(LabelDataPtr data);
     //! próbuje pobrać dane etykiety
     //! \param pos pozycja na wykresie (współrzędne ekranowe)
     //! \return dane etykiety lub pusty wskaźnik
@@ -88,8 +89,7 @@ protected:
     std::vector<LabelDataPtr> labels;
 
 };
-typedef utils::shared_ptr<NewChartLabelState> NewChartLabelStatePtr;
-typedef utils::shared_ptr<const NewChartLabelState> NewChartLabelStateConstPtr;
+DEFINE_SMART_POINTERS(NewChartLabelState);
 
 
 #endif

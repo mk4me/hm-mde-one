@@ -28,7 +28,7 @@
 #include <boost/lexical_cast.hpp>
 #include <plugins/c3d/C3DChannels.h>
 
-typedef core::Filesystem fs;
+typedef utils::Filesystem fs;
 
 c3dlib::VectorChannelReaderInterfacePtr IMU::IMUPerspective::createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit)
 {

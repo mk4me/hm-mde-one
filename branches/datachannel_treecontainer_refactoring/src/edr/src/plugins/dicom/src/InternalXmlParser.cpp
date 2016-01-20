@@ -1,6 +1,6 @@
 #include "DicomPCH.h"
 #include "InternalXmlParser.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include "LayeredImage.h"
 #include <plugins/dicom/Dicom.h>
 #include "DicomService.h"

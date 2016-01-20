@@ -25,11 +25,9 @@ namespace utils {
          const std::type_info* typeinfo;
 
     public:
-
         //! Konstruktor
 		//! \param ti Informacja o typie
 		TypeInfo(const std::type_info & ti = typeid(void));
-
         //! \param type Kopiowany obiekt
         TypeInfo(const TypeInfo& type);
 
@@ -45,8 +43,8 @@ namespace utils {
 			return TypeInfo(typeid(T));
 		}
 
-        //! Jawny operator rzutowania na type_info.
-        TypeInfo& operator =(const TypeInfo & other);
+        //! \param other Przypisywana informacja o typie
+        TypeInfo& operator =(const TypeInfo & other);		
 
         //! Jawny operator rzutowania na type_info.
         operator const std::type_info&() const;
@@ -79,7 +77,7 @@ namespace utils {
         const char* name() const;
 
         //! \return Skrót informacji o typie
-        std::size_t hash_code() const;
+        std::size_t hash_code() const;		
     };
 
 	//! Struktura reprezentująca typ obiektu z informacją o jego rozmiarze
@@ -132,7 +130,7 @@ namespace utils {
 		//! Destruktor wirtualny
 		virtual ~ExtendedTypeInfo();
 
-		//! Jawny operator rzutowania na type_info.
+		//! \param other Kopiowana infroamcja o typie
 		ExtendedTypeInfo& operator =(const ExtendedTypeInfo & other);
 
 		//! \param obj Obiekt porównywany

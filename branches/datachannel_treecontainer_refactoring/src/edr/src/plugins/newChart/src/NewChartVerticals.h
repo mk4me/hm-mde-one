@@ -23,7 +23,7 @@ public:
     //! Konstruktor
     //! \param visualizer wizualizator, na którym stan będzie operował
     //! \param style styl połączeń między wskazywanymi przez etykietę punktami
-    NewChartVerticals(NewChartVisualizer* visualizer, NewChartLabel::ConnectionStyle style);
+	NewChartVerticals(NewChartVisualizer* visualizer, NewChartVerticalsConnection::ConnectionStyle style);
     virtual ~NewChartVerticals() {}
 
 public:
@@ -52,7 +52,7 @@ private:
     //! wybrany, pierwszy punkt
 	utils::shared_ptr<std::pair<const INewChartSeriePrivate*, QPointF>> point1;
     //! styl połączenia (pionowe, poziome, proste)
-    NewChartLabel::ConnectionStyle style;
+	NewChartVerticalsConnection::ConnectionStyle style;
     //! marker obrazujący pierwszy wskazywany punkt 
     NewChartMarker marker;
 };

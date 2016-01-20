@@ -18,7 +18,7 @@
 
 namespace coreUI {
     
-//! Prosta maszyna stan�w do obs�ugi UI
+//! Prosta maszyna stanów do obsługi UI
 class COREUI_EXPORT AbstractStateMachine : public QObject
 {
     Q_OBJECT;

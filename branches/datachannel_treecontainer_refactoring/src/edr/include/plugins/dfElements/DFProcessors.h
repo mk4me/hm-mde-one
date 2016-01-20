@@ -17,8 +17,8 @@
 #include <dflib/Node.h>
 #include <dflib/IDFNode.h>
 #include <plugins/newVdf/INodeConfiguration.h>
-#include <datachannellib/IUniformArgumentsFeature.h>
-#include <datachannellib/IDescriptorFeature.h>
+#include <datachannellib/UniformArgumentsFeature.h>
+#include <datachannellib/DescriptorFeature.h>
 #include <datachannellib/Wrappers.h>
 
 class VectorDiff : public df::ProcessingNode, public df::IDFProcessor
@@ -76,7 +76,7 @@ public:
 
         if (signal1) {
 			
-			auto uaf = signal1->getOrCreateArgumentFeature<datachannel::IUniformArgumentsFeature>();			
+			auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();			
 			
 			std::vector<OutputPtr::element_type::sample_type> data;
 			data.reserve(signal1->size());
@@ -86,10 +86,10 @@ public:
 				data.push_back({ sample.first, processSingleValue(sample.second)});
 			}
 
-			auto channel = datachannel::wrap(std::move(data));
+			auto channel = dataaccessor::wrap(std::move(data));
 
 			channel->attachFeature(uaf);
-			channel->attachFeature(utils::make_shared<datachannel::Descriptor>("Result", "", "", "", ""));
+			channel->attachFeature(utils::make_shared<dataaccessor::DescriptorFeature>("Result", "", "", "", ""));
 
             outPinA->setValue(channel);
         } else {
@@ -132,7 +132,7 @@ public:
 			const size_type count = (std::min)(signal1->size(), signal2->size());
 			std::vector<OutputPtr::element_type::sample_type> out(count);
 
-			auto uaf = signal1->getOrCreateArgumentFeature<datachannel::IUniformArgumentsFeature>();
+			auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
 
 			const auto interval = uaf->argumentsInterval();            
 
@@ -141,23 +141,23 @@ public:
 				out[i] = { i * interval, val };
             }			
 
-			auto df = signal1->feature<datachannel::IDescriptorFeature>();
+			auto df = signal1->feature<dataaccessor::IDescriptorFeature>();
 
-			datachannel::IFeaturePtr description;
+			dataaccessor::IFeaturePtr description;
 
 			if (df != nullptr){
 
-				description = utils::make_shared<datachannel::Descriptor>("Result",
+				description = utils::make_shared<dataaccessor::DescriptorFeature>("Result",
 					df->valueType(), df->valueUnit(),
 					df->argumentType(), df->argumentUnit());
 			}
 			else{
-				description.reset(datachannel::Descriptor::create<OutputPtr::element_type::value_type,
+				description.reset(dataaccessor::DescriptorFeature::create<OutputPtr::element_type::value_type,
 					OutputPtr::element_type::argument_type>("Result",
 					df->valueUnit(), df->argumentUnit()));
 			}
 
-			auto channel = datachannel::wrap(std::move(out));
+			auto channel = dataaccessor::wrap(std::move(out));
 			channel->attachFeature(uaf);
 			channel->attachFeature(description);
 

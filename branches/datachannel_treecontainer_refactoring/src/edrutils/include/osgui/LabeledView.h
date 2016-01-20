@@ -14,7 +14,6 @@
 #include <osg/ref_ptr>
 #include <osgui/Borderized.h>
 #include <osgui/Buttonized.h>
-//#include <osgWidget/>
 #include <osgui/macroHacks.h>
 
 ////////////////////////////////////////////////////////////////////////////////

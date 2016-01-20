@@ -8,12 +8,12 @@
 #ifndef __HEADER_GUARD_DATACHANNEL__WRAPPERHELPERS_H__
 #define __HEADER_GUARD_DATACHANNEL__WRAPPERHELPERS_H__
 
-#include <datachannellib/IFunctionFeature.h>
+#include <datachannellib/FunctionFeature.h>
 #include <iterator>
 #include <type_traits>
 #include <utils/function_traits.h>
 
-namespace datachannel
+namespace dataaccessor
 {
 	//! \tparam C Typ kontenera, który weryfikujemy
 	template<typename C>
@@ -21,11 +21,11 @@ namespace datachannel
 	struct empty_member_check
 	{
 		//! Weryfikacja operatora [] w wersji const
-		template<typename U> static typename std::enable_if<std::is_same<bool, decltype(std::declval<const U>().empty())>::value>::type * check(const U *);		
+		template<typename U, typename = std::enable_if<std::is_same<bool, decltype(std::declval<const U>().empty())>::value>::type> static std::true_type check(const U &);
 		//! Fallback
-		template<typename U> static int check(...);
+		static std::false_type check(...);
 		//! Informacja o operatorze
-		using type = typename std::is_pointer<decltype(check<C>((const C*)0))>::type;
+		using type = decltype(check(std::declval<const C>()));
 
 		static const bool valid = type();
 	};
@@ -36,11 +36,11 @@ namespace datachannel
 	struct size_member_check
 	{
 		//! Weryfikacja operatora [] w wersji const
-		template<typename U> static typename std::enable_if<std::is_integral<decltype(std::declval<const U>().size())>::value>::type * check(const U *);
+		template<typename U, typename = std::enable_if<std::is_integral<decltype(std::declval<const U>().size())>::value>::type> static std::true_type check(const U &);
 		//! Fallback
-		template<typename U> static int check(...);
+		static std::false_type check(...);
 		//! Informacja o operatorze
-		using type = typename std::is_pointer<decltype(check<C>((const C*)0))>::type;
+		using type = decltype(check(std::declval<const C>()));
 
 		static const bool valid = type();
 	};
@@ -122,13 +122,13 @@ namespace datachannel
 	struct array_check
 	{
 		//! Weryfikacja operatora [] w wersji const
-		template<typename U> static typename std::enable_if<(sizeof(decltype(std::declval<const U>()[0]))>=0)>::type * check(const U *);
-		//! Weryfikacja operatora []
-		template<typename U> static typename std::enable_if<(sizeof(decltype(std::declval<U>()[0]))>=0)>::type * check(U *);
+		template<typename U, typename = decltype(std::declval<const U>()[0])> static std::true_type check(const U &);
 		//! Fallback
-		template<typename U> static int check(...);
+		static std::false_type check(...);
+
+		using type = typename std::conditional<std::is_same<decltype(check(std::declval<const A>())), std::true_type>::value, std::true_type, std::false_type>::type;
 		//! Informacja o operatorze
-		static const bool valid = std::is_pointer<decltype(check<A>((A*)0))>::value || std::is_pointer<decltype(check<A>((const A*)0))>::value;
+		static const bool valid = type();
 	};
 
 	//! \tparam A Typ tablicy ajki weryfikujemy
@@ -169,7 +169,7 @@ namespace datachannel
 		//! \return Element kontenera o podanym indeksie
 		static inline auto value_impl(const C & c, const std::size_t idx, std::false_type) -> decltype(*(c.begin()))
 		{
-			static_assert(sizeof(std::iterator_traits<decltype(c.begin())>::value_type) >= 0, "Object begin member should provide valid iterator with full trait specialisation");
+			static_assert(sizeof(std::iterator_traits<decltype(c.begin())>::value_type) >= 0, "Object begin member should provide valid iterator with full trait specialization");
 			auto it = c.begin();
 			std::advance(it, idx);
 			return *it;
@@ -262,7 +262,7 @@ namespace datachannel
 		template<typename C>
 		struct Sample
 		{
-			typedef typename IAccessor<typename std::decay<decltype(std::declval<SValueExtractor>().value(std::declval<CValue<C>>()))>::type,
+			typedef typename IAccessorT<typename std::decay<decltype(std::declval<SValueExtractor>().value(std::declval<CValue<C>>()))>::type,
 				typename std::decay<decltype(std::declval<SArgumentExtractor>().value(std::declval<CValue<C>>()))>::type>::sample_type type;
 		};
 		//! Typ próbki akcesora - wynika z wartoœci zwracanych przez ekstraktory wartoœci i argumentów dla próbek kontenera
@@ -328,7 +328,7 @@ namespace datachannel
 	template<typename Container,
 		typename SampleExtractor>
 	//! Implementacja dyskrentego akseora dla kontenerów danych
-	class ContainerDiscreteAccessor : public IOptimizedDiscreteAccessor<
+	class ContainerDiscreteAccessor : public IOptimizedDiscreteAccessorT<
 		typename std::decay<decltype(std::declval<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0))>().second)>::type,
 		typename std::decay<decltype(std::declval<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0))>().first)>::type>,
 		private SampleExtractor
@@ -376,136 +376,20 @@ namespace datachannel
 		const bool empty_;
 	};
 
-	//TODO - dodaæ obs³ugê go³ych wskaŸników? Czy ma to sens? Co z nimi robiæ?
-	// kopiowaæ obiekty pod nimi? Trzymaæ tylko wskaŸniki?
-	//! \tparam Container Typ kontenera
-	template<typename Container>
-	//! Klasa realizuje przechowywanie faktycznych danych czy to w formie kontenera czy smart wskaxnika do niego
-	class ContainerCarrier
-	{
-	private:
-		//! Klasa bazowa gwarantuj¹ca dostêp do kontenera
-		class ContainerCarrierBase
-		{
-		public:
-			//! Destruktor wirtualny
-			virtual ~ContainerCarrierBase() {}
-			//! \return Kontener
-			virtual const Container & container() const = 0;
-		};
-
-		//! Forward declaration
-		template<typename T>
-		class ContainerCarrierImpl;
-
-		//! Specjalizacja dla prostego przechowywania przez wartoœæ
-		template<>
-		class ContainerCarrierImpl<Container> : public ContainerCarrierBase
-		{
-		public:
-			ContainerCarrierImpl(const Container & container) : container_(container) {}
-			ContainerCarrierImpl(Container && container) : container_(std::move(container)) {}
-
-			virtual ~ContainerCarrierImpl() {}
-
-			//! \return Kontener
-			virtual const Container & container() const override final { return container_; }
-
-		private:
-			const Container container_;
-		};
-
-		//! Specjalizacja dla prostego przechowywania przez wartoœæ
-		template<typename T, std::size_t N>
-		class ContainerCarrierImpl<T[N]> : public ContainerCarrierBase
-		{
-		public:
-
-			using LC = T[N];
-
-		private:
-
-			ContainerCarrierImpl(const LC & container, std::true_type)
-				: container_(new LC)
-			{
-				std::memcpy(const_cast<T*>(container_.get()), &container, sizeof(container));
-			}
-
-			ContainerCarrierImpl(const LC & container, std::false_type)
-				: container_(new LC)
-			{
-				static_assert(std::is_default_constructible<T>::value && std::is_copy_assignable<T>::value, "Type T must be default constructible and trivially assignable");
-				auto T* a = const_cast<T*>(container_.get());
-				for (auto & val : container)
-				{
-					*a = val;
-					++a;
-				}
-			}
-
-		public:
-			ContainerCarrierImpl(const T(&container)[N]) : ContainerCarrierImpl(container, std::is_pod<T>::value) {}
-
-			virtual ~ContainerCarrierImpl() {}
-
-			//! \return Kontener
-			virtual const LC & container() const override final { return container_.get(); }
-
-		private:
-			const utils::unique_ptr<const LC> container_;
-		};
-
-		//! Wersja dla smart pointerów
-		template<template<typename> class SmartPtr>
-		class ContainerCarrierImpl<SmartPtr<const Container>> : public ContainerCarrierBase
-		{
-		private:
-			//! Sprawdzenie czy nie pusty wskaŸnik do kontenera
-			inline void verify() const { if (container_ == nullptr) throw std::invalid_argument("Uninitialized container"); }
-
-		public:
-			ContainerCarrierImpl(const SmartPtr<const Container> & container) : container_(container) { verify(); }
-			ContainerCarrierImpl(SmartPtr<const Container> && container) : container_(std::move(container)) { verify(); }
-
-			virtual ~ContainerCarrierImpl() {}
-
-			//! \return Kontener
-			virtual const Container & container() const override final { return *container_; }
-
-		private:
-			const SmartPtr<const Container> container_;
-		};
-
-	public:
-
-		template<typename T>
-		ContainerCarrier(const T & container) : containerCarier_(new ContainerCarrierImpl<T>(container)) {}
-
-		template<typename T>
-		ContainerCarrier(T && container) : containerCarier_(new ContainerCarrierImpl<T>(std::move(container))) {}
-
-		~ContainerCarrier() {}
-
-		inline const Container & container() const { return containerCarier_->container(); }
-
-	private:
-		const utils::shared_ptr<const ContainerCarrierBase> containerCarier_;
-	};	
-
 	//! \tparam Container Typ kontenera
 	//! \tparam SampleExtractor Typ ekstraktora próbek akcesora	
 	template<typename Container,
 		typename SampleExtractor>
 		//! Implementacja dyskrentego wrappera danych
-	class ContainerDiscreteData : private ContainerCarrier<Container>,
+	class ContainerDiscreteData : private utils::ValueCarrier<Container>,
 		public ContainerDiscreteAccessor<Container, SampleExtractor>
 	{
 	public:
 		template<typename T>
 		ContainerDiscreteData(const T & container, const std::size_t size,
 			const SampleExtractor & sampleExtractor = SampleExtractor())
-			: ContainerCarrier<Container>(container),
-			ContainerDiscreteAccessor<Container, SampleExtractor>(ContainerCarrier<Container>::container(),
+			: utils::ValueCarrier<Container>(container),
+			ContainerDiscreteAccessor<Container, SampleExtractor>(utils::ValueCarrier<Container>::ref(),
 			size, sampleExtractor)
 		{
 
@@ -514,8 +398,8 @@ namespace datachannel
 		template<typename T>
 		ContainerDiscreteData(const T & container, const std::size_t size,
 			SampleExtractor && sampleExtractor)
-			: ContainerCarrier<Container>(container),
-			ContainerDiscreteAccessor<Container, SampleExtractor>(ContainerCarrier<Container>::container(),
+			: utils::ValueCarrier<Container>(container),
+			ContainerDiscreteAccessor<Container, SampleExtractor>(utils::ValueCarrier<Container>::ref(),
 			size, std::move(sampleExtractor))
 		{
 
@@ -524,8 +408,8 @@ namespace datachannel
 		template<typename T>
 		ContainerDiscreteData(T && container, const std::size_t size,
 			const SampleExtractor & sampleExtractor = SampleExtractor())
-			: ContainerCarrier<Container>(std::move(container)),
-			ContainerDiscreteAccessor<Container, SampleExtractor>(ContainerCarrier<Container>::container(),
+			: utils::ValueCarrier<Container>(std::move(container)),
+			ContainerDiscreteAccessor<Container, SampleExtractor>(utils::ValueCarrier<Container>::ref(),
 			size, sampleExtractor)
 		{
 
@@ -534,8 +418,8 @@ namespace datachannel
 		template<typename T>
 		ContainerDiscreteData(T && container, const std::size_t size,
 			SampleExtractor && sampleExtractor)
-			: ContainerCarrier<Container>(std::move(container)),
-			ContainerDiscreteAccessor<Container, SampleExtractor>(ContainerCarrier<Container>::container(),
+			: utils::ValueCarrier<Container>(std::move(container)),
+			ContainerDiscreteAccessor<Container, SampleExtractor>(utils::ValueCarrier<Container>::ref(),
 			size, std::move(sampleExtractor))
 		{
 
@@ -552,7 +436,7 @@ namespace datachannel
 	template<typename ValuesContainer, typename ArgumentsContainer,
 		typename ValueExtractor, typename ArgumentExtractor>
 	//! Implementacja realizuje dostêp do kana³u dyskretnego w oparciu o niezale¿ne kontenery wartosci i próbek
-	class IndependentContainersDiscreteAccessor : public IIndependentDiscreteAccessor<
+	class IndependentContainersDiscreteAccessor : public IIndependentDiscreteAccessorT<
 		typename std::decay<decltype(std::declval<ValueExtractor>().value(std::declval<ValuesContainer>(), 0))>::type,
 		typename std::decay<decltype(std::declval<ArgumentExtractor>().value(std::declval<ArgumentsContainer>(), 0))>::type>,
 		private ValueExtractor, private ArgumentExtractor
@@ -639,10 +523,10 @@ namespace datachannel
 	//! po tej klasie przy takich samych typach kontenerów wartoœci i argumentów
 	//! za spraw¹ taga mamy 2 niezale¿ne typy
 	template<typename Container, typename>
-	class TaggedContainerCarrier : public ContainerCarrier<Container>
+	class TaggedContainerCarrier : public utils::ValueCarrier<Container>
 	{
 	public:
-		using ContainerCarrier::ContainerCarrier;
+		using utils::ValueCarrier::ValueCarrier;
 
 		virtual ~TaggedContainerCarrier() {}
 	};
@@ -674,8 +558,8 @@ namespace datachannel
 			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(values),
 			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(arguments),
 			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::container(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::container(), vsize, asize,
+			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
+			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), vsize, asize,
 			valueExtractor, argumentExtractor)
 		{
 
@@ -688,8 +572,8 @@ namespace datachannel
 			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(values),
 			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(arguments),
 			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::container(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::container(), size,
+			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
+			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), size,
 			valueExtractor, argumentExtractor)
 		{
 
@@ -703,8 +587,8 @@ namespace datachannel
 			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(values),
 			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(arguments),
 			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::container(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::container(), vsize, asize,
+			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
+			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), vsize, asize,
 			valueExtractor, argumentExtractor)
 		{
 
@@ -717,8 +601,8 @@ namespace datachannel
 			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(values),
 			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(arguments),
 			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::container(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::container(), vsize, asize,
+			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
+			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), vsize, asize,
 			valueExtractor, argumentExtractor)
 		{
 
@@ -734,8 +618,8 @@ namespace datachannel
 			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(std::move(values)),
 			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(std::move(arguments)),
 			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::container(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::container(), vsize, asize,
+			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
+			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), vsize, asize,
 			valueExtractor, argumentExtractor)
 		{
 
@@ -748,8 +632,8 @@ namespace datachannel
 			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(std::move(values)),
 			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(std::move(arguments)),
 			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::container(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::container(), size,
+			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
+			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), size,
 			valueExtractor, argumentExtractor)
 		{
 
@@ -763,8 +647,8 @@ namespace datachannel
 			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(std::move(values)),
 			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(std::move(arguments)),
 			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::container(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::container(), vsize, asize,
+			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
+			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), vsize, asize,
 			valueExtractor, argumentExtractor)
 		{
 
@@ -777,8 +661,8 @@ namespace datachannel
 			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(std::move(values)),
 			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(std::move(arguments)),
 			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::container(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::container(), vsize, asize,
+			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
+			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), vsize, asize,
 			valueExtractor, argumentExtractor)
 		{
 
@@ -789,7 +673,7 @@ namespace datachannel
 	};
 
 	template<typename ArgumentsGenerator, typename ValueType>
-	class ConstDiscreteData : public IIndependentDiscreteAccessor<typename std::decay<ValueType>::type, typename std::decay<decltype(std::declval<ArgumentsGenerator>().argument(0))>::type>,
+	class ConstDiscreteData : public IIndependentDiscreteAccessorT<typename std::decay<ValueType>::type, typename std::decay<decltype(std::declval<ArgumentsGenerator>().argument(0))>::type>,
 		private ArgumentsGenerator
 	{
 	public:		
@@ -839,7 +723,7 @@ namespace datachannel
 	};
 
 	template<typename ValueType, typename ArgumentType>
-	class ConstFunctionData : public IGeneratedFunctionAccessor<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>
+	class ConstFunctionData : public IGeneratedFunctionAccessorT<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>
 	{
 	public:
 
@@ -871,7 +755,7 @@ namespace datachannel
 	class FunctionAccessor;
 
 	template<typename ValueType, typename ArgumentType>
-	class FunctionAccessorBase : public IGeneratedFunctionAccessor<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>
+	class FunctionAccessorBase : public IGeneratedFunctionAccessorT<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>
 	{
 	public:
 
@@ -922,6 +806,7 @@ namespace datachannel
 
 	//! \tparam Ret Typ wartoœci zwracanej z funckji
 	//! \tparam Arg Typ wartoœci argumentu funkcji
+	//! \tparam Object Typ obiektu który dostarcza danych
 	template<typename Ret, typename Arg, typename Object>
 	//! Implementacja wrappera dla funkcji ci¹g³ej
 	class FunctionAccessor<Ret(Object::*)(Arg)const> : public FunctionAccessorBase<Ret, Arg>
@@ -942,6 +827,43 @@ namespace datachannel
 	private:
 		//! Obiekt
 		const Object * const obj;
+		//! Metoda
+		Ret(Object::* const func)(Arg)const;
+	};
+
+	//! Forward declatration dla danych w obiektach, gdzie kopiujemy obiekt lub przenosimy go
+	template<typename>
+	class DataFunctionAccessor;
+
+	//! \tparam Ret Typ wartoœci zwracanej z funckji
+	//! \tparam Arg Typ wartoœci argumentu funkcji
+	//! \tparam Object Typ obiektu który dostarcza danych
+	template<typename Ret, typename Arg, typename Object>
+	//! Implementacja wrappera dla funkcji ci¹g³ej
+	class DataFunctionAccessor<Ret(Object::*)(Arg)const> : public FunctionAccessorBase<Ret, Arg>
+	{
+	public:
+		//! \param obj Obiekt na którym wo³amy funkcjê
+		DataFunctionAccessor(const Object & obj, Ret(Object::*const func)(Arg)const,
+			const bool even = false, const bool odd = false,
+			const MonotonyType monotony = NonMonotonic)
+			: FunctionAccessorBase(even, odd, monotony), obj(obj), func(func) {}
+
+		//! \param obj Obiekt na którym wo³amy funkcjê
+		DataFunctionAccessor(Object && obj, Ret(Object::*const func)(Arg)const,
+			const bool even = false, const bool odd = false,
+			const MonotonyType monotony = NonMonotonic)
+			: FunctionAccessorBase(even, odd, monotony), obj(std::move(obj)), func(func) {}
+
+		//! Destruktor
+		virtual ~DataFunctionAccessor() {}
+		//! \param argument Argument dla któego odpytujemy o wartoœæ
+		//! \return Wartoœæ dla zadanego argumentu
+		virtual value_type value(const argument_type & argument) const override { return ((&obj)->*func)(argument); }
+
+	private:
+		//! Obiekt
+		const Object obj;
 		//! Metoda
 		Ret(Object::* const func)(Arg)const;
 	};

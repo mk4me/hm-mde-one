@@ -11,7 +11,7 @@
 #include <cmath>
 #include <datachannellib/Accessors.h>
 
-namespace datachannel
+namespace dataaccessor
 {
 	//! Manipulator danych bazuj¹cy na operatorach typu. Interpoluje liniowo.
 	struct LerpInterpolator
@@ -23,7 +23,7 @@ namespace datachannel
 		//! \param argument próbka dla czasu poni¿ej lub identycznego
 		//! \param startIdx próbka dla czasu powyzej lub identycznego
 		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
-		inline static ValueType interpolate(const IDiscreteAccessor<ValueType, ArgumentType> & accessor,
+		inline static ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentType argument, const std::size_t startIdx, const std::size_t endIdx)
 		{			
 			const auto startSample = accessor.sample(startIdx);
@@ -44,7 +44,7 @@ namespace datachannel
 		//! \param argument próbka dla czasu poni¿ej lub identycznego
 		//! \param startIdx próbka dla czasu powyzej lub identycznego
 		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
-		inline static ValueType interpolate(const IDiscreteAccessor<ValueType, ArgumentType> & accessor,
+		inline static ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentType argument, const std::size_t startIdx, const std::size_t endIdx)
 		{
 			static const auto PI = std::atan(1.0)*4.0;
@@ -67,7 +67,7 @@ namespace datachannel
 		//! \param argument próbka dla czasu poni¿ej lub identycznego
 		//! \param startIdx próbka dla czasu powyzej lub identycznego
 		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
-		inline static ValueType interpolate(const IDiscreteAccessor<ValueType, ArgumentType> & accessor,
+		inline static ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentType argument, const std::size_t startIdx, const std::size_t endIdx)
 		{
 			const bool startOK = (startIdx > 0);
@@ -128,7 +128,7 @@ namespace datachannel
 		//! \param argument próbka dla czasu poni¿ej lub identycznego
 		//! \param startIdx próbka dla czasu powyzej lub identycznego
 		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
-		inline static ValueType interpolate(const IDiscreteAccessor<ValueType, ArgumentType> & accessor,
+		inline static ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentType argument, const std::size_t startIdx, const std::size_t endIdx)
 		{
 			const bool startOK = (startIdx > 0);
@@ -197,7 +197,7 @@ namespace datachannel
 		//! \param argument próbka dla czasu poni¿ej lub identycznego
 		//! \param startIdx próbka dla czasu powyzej lub identycznego
 		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
-		inline ValueType interpolate(const IDiscreteAccessor<ValueType, ArgumentType> & accessor,
+		inline ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentType argument, const std::size_t startIdx, const std::size_t endIdx) const
 		{
 			const bool startOK = (startIdx > 0);

@@ -1,13 +1,15 @@
 #include "DicomPCH.h"
 #include "DicomLoader.h"
+#include <fstream>
 #include <boost/archive/xml_iarchive.hpp>
 #include "DicomInternalStruct.h"
 #include "BackgroundLayer.h"
 #include "PointsLayer.h"
 
+
 namespace dicom {
 
-LayersVectorPtr DicomLoader::loadLayers(const core::Filesystem::Path &p)
+LayersVectorPtr DicomLoader::loadLayers(const utils::Filesystem::Path &p)
 {
 	std::ifstream ifs(p.string());
 	boost::archive::xml_iarchive xmlIn(ifs);
@@ -28,7 +30,7 @@ LayersVectorPtr DicomLoader::loadLayers(const core::Filesystem::Path &p)
 	return layers;
 }
 
-DicomInternalStructPtr DicomLoader::load(const core::Filesystem::Path& from)
+DicomInternalStructPtr DicomLoader::load(const utils::Filesystem::Path& from)
 {
 	DicomInternalStructPtr inter = boost::make_shared<DicomInternalStruct>();
 	std::ifstream ifs(from.c_str());

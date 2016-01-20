@@ -8,7 +8,7 @@ SET_PUBLIC_HEADERS(
 	AbstractSerie.h
 	BaseDataTypes.h
 	DataAccessors.h
-	Filesystem.h	
+	#Filesystem.h	
 	#Exceptions.h
 	Visualizer.h
 	VariantsCollection.h
@@ -61,7 +61,7 @@ SET_PUBLIC_HEADERS(
 SET_SOURCE_FILES(
 	AbstractFilterCommand.cpp
 	AbstractSerie.cpp
-	Filesystem.cpp
+	#Filesystem.cpp
 	Visualizer.cpp
 	FilterBundle.cpp
 	CoreLibPCH.cpp

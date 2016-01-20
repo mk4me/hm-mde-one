@@ -3,11 +3,12 @@
 #include <QtGui/QStandardItemModel>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <kinematiclib/LinearizedSkeleton.h>
 #include <acclaimformatslib/AsfParser.h>
 #include <algorithm>
 #include <vector>
+#include <fstream>
 
 Q_DECLARE_METATYPE(IMU::SkeletonConstPtr);
 
@@ -71,8 +72,8 @@ void ModelConfigurationWizardPage::onLoadModel()
 {
 	auto file = QFileDialog::getOpenFileName(this, tr("Open model file"), QString(), tr("Acclaim skeleton file file (*.asf)"));
 
-	core::Filesystem::Path p(file.toStdString());
-	if (core::Filesystem::isRegularFile(p)) {
+	utils::Filesystem::Path p(file.toStdString());
+	if (utils::Filesystem::isRegularFile(p)) {
 		try{
 			std::ifstream file(p.string());
 			auto as = acclaim::AsfParser::parse(file, true);

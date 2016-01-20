@@ -20,6 +20,7 @@ class QPainter;
 class QwtPlotCanvas;
 
 //! Klasa bazowa dla stanów wizualizatora
+//! \version 0.9.1
 class NewChartState : public QObject
 {
     Q_OBJECT

@@ -13,6 +13,7 @@
 #include <plugins/c3d/C3DChannels.h>
 
 //! reprezentuje punkt na wykresie
+//! \version 0.9.1
 class NewChartDot : public QwtPlotItem
 {
 public:

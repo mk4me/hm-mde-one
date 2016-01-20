@@ -12,11 +12,12 @@ namespace kinematic
 	/// \brief  Klasa przechowuje zunifokowaną hierarchie stawów,
 	//! w tej konwencji każda kość musi kończyć się stawem bez dzieci,
 	//! tzw. end effector
+	//! \version 0.9.1
 	class Skeleton
 	{
 	public:
 
-		//! Klasa reprezentuj�ca staw
+		//! Klasa reprezentująca staw
 		class JointData
 		{
 		private:
@@ -29,14 +30,14 @@ namespace kinematic
 
 			//! \param other Kopiowane dane innego węzła			
 			JointData(const JointData & other);
-			//! \param name Nazwa w�z�a odpowiadaj�ca szkieletowi
+			//! \param name Nazwa węzła odpowiadająca szkieletowi
 			//! \param translation Pozycja|Translacja lokalna stawu
 			//! \param rotation Orientacja|Rotacja lokalna stawu			
 			JointData(const std::string & name,
 				const osg::Vec3d & translation = osg::Vec3d(0,0,0),
 				const osg::Quat & rotation = osg::Quat(0,0,0,1));
 
-			//! \param name Nazwa w�z�a odpowiadaj�ca szkieletowi
+			//! \param name Nazwa węzła odpowiadająca szkieletowi
 			//! \param translation Pozycja|Translacja lokalna stawu
 			//! \param rotation Orientacja|Rotacja lokalna stawu			
 			JointData(JointData & parent, const std::string & name,
@@ -103,7 +104,7 @@ namespace kinematic
 
 		//! Typ jointa stanu
 		typedef treeContainer::NodeT<JointData> Joint;
-		//! Typ wska�nik�w do joint�w
+		//! Typ wskaźników do jointów
 		DEFINE_SMART_POINTERS(Joint);
 
 		//! Mapa nazw jointów do ich kolejności rotacji

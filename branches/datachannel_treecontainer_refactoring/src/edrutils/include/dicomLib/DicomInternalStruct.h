@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_DICOMIMPORTER__DICOMINTERNALSTRUCT_H__
 #define HEADER_GUARD_DICOMIMPORTER__DICOMINTERNALSTRUCT_H__
 
-#include <plugins/dicomImporter/IDicomInternalStruct.h>
+#include <dicomLib/IDicomInternalStruct.h>
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/split_member.hpp>

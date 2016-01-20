@@ -29,7 +29,7 @@ dicom::AnnotationStatusManager::AnnotationStatusManager()
 
 hmdbCommunication::IHMDBSession * dicom::AnnotationStatusManager::getSession(hmdbCommunication::IHMDBShallowCopyContext* srcContext)
 {
-	if (srcContext) {
+	if (srcContext && srcContext->shallowCopyRemoteContext()) {
 		auto session = srcContext->shallowCopyRemoteContext()->remoteContext()->session().get();
 		return session;
 	}
@@ -126,7 +126,9 @@ void dicom::AnnotationStatusManager::refreshData()
 		data->user2Id = getUsers(session);
 		data->trial2Id = getTrials(context);
 		data->annotations = getAnnotations(session);
-
+	}
+	else {
+		throw std::runtime_error("Communication session does not exist");
 	}
 }
 

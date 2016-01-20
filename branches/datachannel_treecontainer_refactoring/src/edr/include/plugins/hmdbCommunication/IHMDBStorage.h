@@ -13,7 +13,7 @@
 #include <threadingUtils/IProgress.h>
 #include <threadingUtils/ITTransaction.h>
 #include <threadingUtils/SmartPtr.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <networkUtils/CURLFTPHelper.h>
 
 namespace hmdbCommunication
@@ -77,7 +77,7 @@ namespace hmdbCommunication
 		virtual const bool canStore(const unsigned long long size) const = 0;
 		//! \param path Œcie¿ka
 		//! \return Czy dana œcie¿ka dzieli przestrzeñ dyskow¹ z naszym storage
-		virtual const bool shareDiskSpace(const core::Filesystem::Path & path) const { return false; }
+		virtual const bool shareDiskSpace(const utils::Filesystem::Path & path) const { return false; }
 	};
 
 	class IHMDBStorage : public threadingUtils::ITTransaction<IHMDBStorageOperations, threadingUtils::shared_ptr>

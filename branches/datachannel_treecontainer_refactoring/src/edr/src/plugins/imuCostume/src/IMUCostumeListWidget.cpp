@@ -6,7 +6,7 @@
 #include <coreui/CoreCursorChanger.h>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QFileDialog>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include "corelib/IVisualizerManager.h"
 #include "corelib/PluginCommon.h"
 #include <objectwrapperlib/ObjectWrapper.h>
@@ -102,9 +102,9 @@ IMUCostumeWidget::IMUCostumeWidget(IMU::IMUCostumeDataSource * ds,
 	connect(&statusRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshStatus()));
 	connect(&recordTimer, SIGNAL(timeout()), this, SLOT(watchRecordedData()));
 
-	if (core::Filesystem::pathExists(recordingOutputDirectory) == false){
+	if (utils::Filesystem::pathExists(recordingOutputDirectory) == false){
 		try{
-			core::Filesystem::createDirectory(recordingOutputDirectory);
+			utils::Filesystem::createDirectory(recordingOutputDirectory);
 		}
 		catch (...){
 			PLUGIN_LOG_DEBUG("Failed to create recordings output directory: " << recordingOutputDirectory);
@@ -683,8 +683,8 @@ void IMUCostumeWidget::onLoadDatFile()
     //ds->testMethod();
     //return;
     QString file = QFileDialog::getOpenFileName(this, tr("Open Image"), QString(), tr("Imu file (*.dat)"));
-    core::Filesystem::Path p(file.toStdString());
-    if (core::Filesystem::isRegularFile(p)) {
+    utils::Filesystem::Path p(file.toStdString());
+    if (utils::Filesystem::isRegularFile(p)) {
         //ds->loadDatFile(p);
     }
     
@@ -1107,18 +1107,18 @@ void IMUCostumeWidget::onRecord(const bool record)
 				}
 
 				//sprawdź czy katalog istnieje - jak nie to utwórz
-				if (core::Filesystem::pathExists(it->second.path) == false){
-					core::Filesystem::createDirectory(it->second.path);
+				if (utils::Filesystem::pathExists(it->second.path) == false){
+					utils::Filesystem::createDirectory(it->second.path);
 				}
 
-				auto files = core::Filesystem::listFiles(it->second.path);
+				auto files = utils::Filesystem::listFiles(it->second.path);
 
 				//sprawdź czy konfiguracja istnieje - jak nie to utwórz
 				{
 					bool cfgExists = false;
 					
 					if (files.empty() == false){
-						cfgExists = (files.end() != std::find_if(files.begin(), files.end(), [](const core::Filesystem::Path & path)
+						cfgExists = (files.end() != std::find_if(files.begin(), files.end(), [](const utils::Filesystem::Path & path)
 						{
 							return path.extension().string() == ".ccfg";
 						}));
@@ -1138,7 +1138,7 @@ void IMUCostumeWidget::onRecord(const bool record)
 					bool skeletonExists = false;
 
 					if (files.empty() == false){
-						skeletonExists = (files.end() != std::find_if(files.begin(), files.end(), [](const core::Filesystem::Path & path)
+						skeletonExists = (files.end() != std::find_if(files.begin(), files.end(), [](const utils::Filesystem::Path & path)
 						{
 							return path.extension().string() == ".asf";
 						}));
@@ -1238,12 +1238,12 @@ void IMUCostumeWidget::onOpen()
 		coreUI::CoreCursorChanger cursorChanger;
 		//TODO
 		//weryfikacja czy mamy asf amc
-		auto path = core::Filesystem::Path(dir.toStdString());
-		auto files = core::Filesystem::listFiles(path);
+		auto path = utils::Filesystem::Path(dir.toStdString());
+		auto files = utils::Filesystem::listFiles(path);
 
-		core::Filesystem::Path asfFile;
-		core::Filesystem::PathsList amcFiles;
-		core::Filesystem::Path cfgFile;
+		utils::Filesystem::Path asfFile;
+		utils::Filesystem::PathsList amcFiles;
+		utils::Filesystem::Path cfgFile;
 
 		for (const auto & file : files)
 		{

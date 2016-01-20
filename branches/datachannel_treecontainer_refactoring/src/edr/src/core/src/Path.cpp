@@ -3,12 +3,12 @@
 
 using namespace core;
 
-Path::Path(const Filesystem::Path & userDataPath,
-	const Filesystem::Path & applicationDataPath,
-	const Filesystem::Path & userApplicationDataPath,
-	const Filesystem::Path & resourcesPath,
-	const Filesystem::Path & tempPath,
-	const Filesystem::Path & pluginPath)
+Path::Path(const utils::Filesystem::Path & userDataPath,
+	const utils::Filesystem::Path & applicationDataPath,
+	const utils::Filesystem::Path & userApplicationDataPath,
+	const utils::Filesystem::Path & resourcesPath,
+	const utils::Filesystem::Path & tempPath,
+	const utils::Filesystem::Path & pluginPath)
 	: translationsPath_(resourcesPath / "lang"),
 	  userDataPath_(userDataPath),
 	  applicationDataPath_(applicationDataPath),
@@ -31,38 +31,38 @@ Path::~Path()
 
 }
 
-const Filesystem::Path& Path::getUserDataPath() const
+const utils::Filesystem::Path& Path::getUserDataPath() const
 {
 	return userDataPath_;
 }
 
-const Filesystem::Path& Path::getApplicationDataPath() const
+const utils::Filesystem::Path& Path::getApplicationDataPath() const
 {
 	return applicationDataPath_;
 }
 
 
-const Filesystem::Path& Path::getUserApplicationDataPath() const
+const utils::Filesystem::Path& Path::getUserApplicationDataPath() const
 {
 	return userApplicationDataPath_;
 }
 
-const Filesystem::Path& Path::getResourcesPath() const
+const utils::Filesystem::Path& Path::getResourcesPath() const
 {
 	return resourcesPath_;
 }
 
-const Filesystem::Path& Path::getTempPath() const
+const utils::Filesystem::Path& Path::getTempPath() const
 {
 	return tempPath_;
 }
 
-const Filesystem::Path& Path::getPluginPath() const
+const utils::Filesystem::Path& Path::getPluginPath() const
 {
 	return pluginPath_;
 }
 
-const Filesystem::Path& Path::getTranslationsPath() const
+const utils::Filesystem::Path& Path::getTranslationsPath() const
 {
 	return translationsPath_;
 }

@@ -1,7 +1,7 @@
 #include "PCH.h"
 #include "DataSource.h"
 #include <boost/lexical_cast.hpp>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <QtCore/QCoreApplication>
 #include <corelib/PluginCommon.h>
 #include <corelib/ISourceManager.h>
@@ -258,11 +258,11 @@ public:
 
 		visualizer->getOrCreateWidget();
 
-		auto serieX = visualizer->createSerie(xwrapper->data()->getTypeInfo(), xwrapper);
+		auto serieX = visualizer->createSerie(xwrapper);
 		//serieX->serie()->setName(xAxisName.isEmpty() == false ? xAxisName.toStdString() : "X_" + suffix);
-		auto serieY = visualizer->createSerie(ywrapper->data()->getTypeInfo(), ywrapper);
+		auto serieY = visualizer->createSerie(ywrapper);
 		//serieY->serie()->setName(yAxisName.isEmpty() == false ? yAxisName.toStdString() : "Y_" + suffix);
-		auto serieZ = visualizer->createSerie(zwrapper->data()->getTypeInfo(), zwrapper);
+		auto serieZ = visualizer->createSerie(zwrapper);
 		//serieZ->serie()->setName(zAxisName.isEmpty() == false ? zAxisName.toStdString() : "Z_" + suffix);
 
 		INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->innerSerie());
@@ -349,13 +349,13 @@ public:
 
 		visualizer->getOrCreateWidget();
 
-		auto serieX = visualizer->createSerie(xwrapper->data()->getTypeInfo(), xwrapper);
+		auto serieX = visualizer->createSerie(xwrapper);
 		serieX->innerSerie()->setName("X_" + suffix);
-		auto serieY = visualizer->createSerie(ywrapper->data()->getTypeInfo(), ywrapper);
+		auto serieY = visualizer->createSerie(ywrapper);
 		serieY->innerSerie()->setName("Y_" + suffix);
-		auto serieZ = visualizer->createSerie(zwrapper->data()->getTypeInfo(), zwrapper);
+		auto serieZ = visualizer->createSerie(zwrapper);
 		serieZ->innerSerie()->setName("Z_" + suffix);
-		auto serieW = visualizer->createSerie(wwrapper->data()->getTypeInfo(), wwrapper);
+		auto serieW = visualizer->createSerie(wwrapper);
 		serieZ->innerSerie()->setName("W_" + suffix);
 
 		INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->innerSerie());
@@ -826,7 +826,7 @@ bool IMUCostumeDataSource::lateInit()
 	try{
 		auto p = plugin::getApplicationDataPath() / "profiles.pro";
 
-		if (core::Filesystem::pathExists(p) == true){
+		if (utils::Filesystem::pathExists(p) == true){
 			std::ifstream f(p.string());
 
 			//próbujemy czytać profile
@@ -2005,15 +2005,15 @@ void IMUCostumeDataSource::unpackSensorsStream(IMU::SensorsStreamPtr stream,
 	}
 }
 
-void IMUCostumeDataSource::uploadSession(const core::Filesystem::Path & configuration,
-	const core::Filesystem::FilesList & recordings)
+void IMUCostumeDataSource::uploadSession(const utils::Filesystem::Path & configuration,
+	const utils::Filesystem::FilesList & recordings)
 {
 
 }
 
-void IMUCostumeDataSource::loadRecordedData(const core::Filesystem::Path & asfFile,
-	const core::Filesystem::Path & amcFile,
-	const core::Filesystem::Path & configFile)
+void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfFile,
+	const utils::Filesystem::Path & amcFile,
+	const utils::Filesystem::Path & configFile)
 {
 	auto transaction = fileDM->transaction();	
 	transaction->addFile(amcFile);
@@ -2081,7 +2081,7 @@ void IMUCostumeDataSource::loadRecordedData(const core::Filesystem::Path & asfFi
 	//próbujemy dodac opis na bazie cfg
 	QString desc;
 
-	if (configFile.empty() == false && core::Filesystem::pathExists(configFile) == true){
+	if (configFile.empty() == false && utils::Filesystem::pathExists(configFile) == true){
 		//deserialize ccfg file and generate description
 		QFile f(configFile.string().c_str());
 		if (f.open(QFile::ReadOnly | QFile::Text) == true){

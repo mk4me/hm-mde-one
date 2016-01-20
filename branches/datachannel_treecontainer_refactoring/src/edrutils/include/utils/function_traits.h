@@ -24,11 +24,12 @@ namespace std
 	struct functor_check
 	{
 		//! Specjalizacja jeœli mo¿na pobraæ adres operatora ()
-		template<typename U> static typename std::enable_if < (sizeof(decltype(&U::operator())) > 0)>::type * check(U *);
+		template<typename U, typename = decltype(&U::operator())>
+		static std::true_type check(const U&);
 		//! Specjalizacja ogólna, przyjmuje dowolne argumenty
-		template<typename U> static int check(...);
+		static std::false_type check(...);
 		//! Informacja czy funktor jest poprawny
-		static const bool valid = std::is_pointer<decltype(check<F>((F*)0))>::value;
+		static const bool valid = std::is_same<decltype(check(std::declval<F>())), std::true_type>::value;
 	};
 
 	//! \tparam F Typ funktora

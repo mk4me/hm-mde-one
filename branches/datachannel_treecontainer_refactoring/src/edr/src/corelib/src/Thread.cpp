@@ -19,8 +19,8 @@ Thread::DescriptionLocalGuard::~DescriptionLocalGuard()
 	if (td != nullptr){
 		auto unpackTD = *td;
 		if (unpackTD != nullptr){
-			unpackTD->owner = "No explicit owner";
-			unpackTD->destination = "No explicit destination";
+			unpackTD->owner = "Unknown owner";
+			unpackTD->destination = "Unknown destination";
 		}
 	}
 }
@@ -101,24 +101,24 @@ void Thread::resetInterruption()
 	InnerThreadPool::Thread::resetInterruption();
 }
 
-const std::string Thread::owner() const
+std::string Thread::owner() const
 {
-	return description != nullptr ? description->owner : "No explicit owner";
+	return description->owner;
 }
 
-const std::string Thread::destination() const
+std::string Thread::destination() const
 {
-	return description != nullptr ? description->destination : "No explicit destination";
+	return description->destination;
 }
 
-const std::string Thread::currentOwner()
+std::string Thread::currentOwner()
 {
-	return (*tlsTD)->owner;
+	return tlsTD.get() != nullptr ? (*tlsTD)->owner : "Unknown owner";	
 }
 
-const std::string Thread::currentDestination()
+std::string Thread::currentDestination()
 {
-	return (*tlsTD)->destination;
+	return tlsTD.get() != nullptr ? (*tlsTD)->destination : "Unknown destination";	
 }
 
 Thread::TLS Thread::tlsTD;

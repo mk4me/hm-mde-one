@@ -10,7 +10,7 @@
 
 #include <datachannellib/Interpolators.h>
 
-namespace datachannel
+namespace dataaccessor
 {
 	//! Typ obsuguj¹cy zapytania o wartoœci kana³u dla czasu spoza zakresu pokrytego przez kana³
 	//! Rzuca wyj¹tkami
@@ -100,7 +100,7 @@ namespace datachannel
 		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
 		//! \param accessor Kana³ dla którego pytaliœmy o argument
 		//! \return Wartoœæ dla argumentu spoza kana³u		
-		inline ValueType argumentUnderflow(const ArgumentType & argument, const IDiscreteAccessor<ValueType, ArgumentType> & accessor) const
+		inline ValueType argumentUnderflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor) const
 		{
 			const auto arg = utils::periodic_clamp_underflow(argument, minArg, maxArg, length);				
 			return interpolator.interpolate(arg, accessor);
@@ -111,7 +111,7 @@ namespace datachannel
 		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
 		//! \param accessor Kana³ dla którego pytaliœmy o argument
 		//! \return Wartoœæ dla argumentu spoza kana³u	
-		inline ValueType argumentOverflow(const ArgumentType & argument, const IDiscreteAccessor<ValueType, ArgumentType> & accessor) const
+		inline ValueType argumentOverflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor) const
 		{
 			const auto arg = utils::periodic_clamp_overflow(argument, minArg, maxArg, length);
 			return interpolator.interpolate(arg, accessor);
@@ -184,7 +184,7 @@ namespace datachannel
 		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
 		//! \param accessor Kana³ dla którego pytaliœmy o argument
 		//! \return Wartoœæ dla argumentu spoza kana³u		
-		static inline ValueType argumentUnderflow(const ArgumentType & argument, const IDiscreteAccessor<ValueType, ArgumentType> & accessor)
+		static inline ValueType argumentUnderflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			return LerpInterpolator::interpolate(accessor, argument, 0, 1);
 		}
@@ -195,7 +195,7 @@ namespace datachannel
 		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
 		//! \param accessor Kana³ dla którego pytaliœmy o argument
 		//! \return Wartoœæ dla argumentu spoza kana³u	
-		static inline ValueType argumentOverflow(const ArgumentType & argument, const IDiscreteAccessor<ValueType, ArgumentType> & accessor)
+		static inline ValueType argumentOverflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			const auto s = accessor.size() - 2;
 			return LerpInterpolator::interpolate(accessor, argument, s, s + 1);

@@ -18,7 +18,7 @@
 #include <corelib/Variant.h>
 #include <plugins/imuCostume/IIMUDataSource.h>
 #include "CostumeParser.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 
 namespace Ui {
 	class IMUCostumeListWidget;
@@ -46,7 +46,7 @@ private:
 
 	struct RecordingDetails
 	{
-		core::Filesystem::Path path;
+		utils::Filesystem::Path path;
 		uint8_t counter;
 		utils::shared_ptr<std::ofstream> motionOutput;
 		kinematic::SkeletonPtr skeleton;
@@ -122,7 +122,7 @@ private:
 	IMU::IMUCostumeDataSource * ds;
 	Ui::IMUCostumeListWidget * ui;
 	std::size_t recordIndex;
-	core::Filesystem::Path recordingOutputDirectory;
+	utils::Filesystem::Path recordingOutputDirectory;
 	std::map<imuCostume::CostumeRawIO::CostumeAddress, RecordingDetails> recordingDetails;
 	IMU::CostumeParser::CostumesMappings costumesMapping;
 };

@@ -1,20 +1,20 @@
 /********************************************************************
     created:  2012/04/26
     created:  26:4:2012   23:59
-    filename: IDescriptorFeature.h
+    filename: DescriptorFeature.h
     author:   Mateusz Janiak
 
     purpose:
 *********************************************************************/
-#ifndef HEADER_GUARD_DATACHANNEL__IDESCRIPTORFEATURE_H__
-#define HEADER_GUARD_DATACHANNEL__IDESCRIPTORFEATURE_H__
+#ifndef HEADER_GUARD_DATACHANNEL__DESCRIPTORFEATURE_H__
+#define HEADER_GUARD_DATACHANNEL__DESCRIPTORFEATURE_H__
 
 #include <datachannellib/Accessors.h>
 
-namespace datachannel {
+namespace dataaccessor {
 	
 	//! Interfejs do czytania opisu kanału - osi x i y oraz nazwy kanału.
-	class IDescriptorFeature : public FeatureHelper<Description>
+	class IDescriptorFeature : public FeatureHelperT<Description>
 	{
 	public:
 		//! Destruktor wirtualny
@@ -38,7 +38,7 @@ namespace datachannel {
 	};
 	
 	//! Implementacja interfejsu IChannelDescriptor
-	class Descriptor : public IDescriptorFeature
+	class DescriptorFeature : public IDescriptorFeature
 	{
 	private:
 		//! Opis kanału
@@ -54,7 +54,7 @@ namespace datachannel {
 
 	public:		
 
-		Descriptor(const std::string & name,
+		DescriptorFeature(const std::string & name,
 			const std::string & valueType,
 			const std::string & valueUnit,
 			const std::string & argumentType,
@@ -66,14 +66,14 @@ namespace datachannel {
 
 		}		
 
-		Descriptor(const Descriptor & Other)
-			: Descriptor(Other.name_, Other.valueUnit_,
+		DescriptorFeature(const DescriptorFeature & Other)
+			: DescriptorFeature(Other.name_, Other.valueUnit_,
 			Other.argumentUnit_, Other.valueType_, Other.argumentType_)
 		{
 
 		}		
 
-		Descriptor(Descriptor && Other)
+		DescriptorFeature(DescriptorFeature && Other)
 			: name_(std::move(Other.name_)),
 			valueUnit_(std::move(Other.valueUnit_)),
 			argumentUnit_(std::move(Other.argumentUnit_)),
@@ -83,8 +83,8 @@ namespace datachannel {
 
 		}
 
-		Descriptor(const IDescriptorFeature & Other)
-			: Descriptor(Other.name(), Other.valueUnit(),
+		DescriptorFeature(const IDescriptorFeature & Other)
+			: DescriptorFeature(Other.name(), Other.valueUnit(),
 			Other.valueType(), Other.argumentUnit(),
 			Other.argumentType())
 		{
@@ -97,17 +97,17 @@ namespace datachannel {
 		//! \param valueUnit Jendostka wartości
 		//! \param argumentUnit Jednostka argumentu
 		//! \return Obiekt deskryptora kanału danych
-		static inline Descriptor * create(const std::string & name,
+		static inline DescriptorFeature * create(const std::string & name,
 			const std::string & valueUnit,
 			const std::string & argumentUnit,
 			ValueType * dummyValue = nullptr,
 			ArgumentType * dummyArgument = nullptr) {
-			return new Descriptor(name, typeid(ValueType).name(), valueUnit,
+			return new DescriptorFeature(name, typeid(ValueType).name(), valueUnit,
 				typeid(ArgumentType).name(), argumentUnit);
 		}
 
 		//! Destruktor
-		virtual ~Descriptor() {}
+		virtual ~DescriptorFeature() {}
 
 		//! \return
 		virtual std::string name() const override { return name_; }
@@ -126,4 +126,4 @@ namespace datachannel {
 	};
 }
 
-#endif	//	HEADER_GUARD_DATACHANNEL__IDESCRIPTORFEATURE_H__
+#endif	//	HEADER_GUARD_DATACHANNEL__DESCRIPTORFEATURE_H__

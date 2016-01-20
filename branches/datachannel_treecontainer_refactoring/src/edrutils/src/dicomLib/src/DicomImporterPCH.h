@@ -23,7 +23,6 @@
 #include <utils/Debug.h>
 #include <utils/SmartPtr.h>
 
-#include <corelib/IPlugin.h>
 #include <loglib/Exceptions.h>
 
 #endif

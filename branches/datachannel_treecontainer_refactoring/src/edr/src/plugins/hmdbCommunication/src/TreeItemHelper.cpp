@@ -8,6 +8,7 @@
 #include <plugins/hmmlib/EMGFilter.h>
 #include <loglib/Exceptions.h>
 #include <boost/lexical_cast.hpp>
+#include <datachannellib/Wrappers.h>
 
 using namespace core;
 
@@ -125,7 +126,7 @@ VisualizerPtr NewChartItemHelper::createVisualizer(core::IVisualizerManager* man
         std::string title;
 		c3dlib::ScalarChannelReaderInterfaceConstPtr scalar = wrapper->get();
 
-		auto df = scalar->feature<datachannel::IDescriptorFeature>();
+		auto df = scalar->feature<dataaccessor::IDescriptorFeature>();
 
 		if (df != nullptr){
 
@@ -149,7 +150,7 @@ VisualizerPtr NewChartItemHelper::createVisualizer(core::IVisualizerManager* man
 
 void NewChartItemHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<Visualizer::Serie*>& series )
 {
-    auto serie = visualizer->createSerie(wrapper->data()->getTypeInfo(), wrapper);
+    auto serie = visualizer->createSerie(wrapper);
 	serie->innerSerie()->setName(path.toStdString());
     series.push_back(serie);
 }
@@ -183,7 +184,7 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer(core::IVisualizerManager* m
         std::string title;
 		c3dlib::VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
 
-		auto df = vectorChannel->feature<datachannel::IDescriptorFeature>();
+		auto df = vectorChannel->feature<dataaccessor::IDescriptorFeature>();
 
 		if (df != nullptr){
 
@@ -206,21 +207,13 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
 {
 	c3dlib::VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
 
-	c3dlib::ScalarChannelReaderInterfacePtr x(new datachannel::DiscreteAccessorAdapter < c3dlib::VectorChannelReaderInterface::value_type,
-		c3dlib::VectorChannelReaderInterface::argument_type, utils::ArrayTraits::StaticElementExtractor < 0 >>
-		(*vectorChannel));
-	c3dlib::ScalarChannelReaderInterfacePtr y(new datachannel::DiscreteAccessorAdapter < c3dlib::VectorChannelReaderInterface::value_type,
-		c3dlib::VectorChannelReaderInterface::argument_type, utils::ArrayTraits::StaticElementExtractor < 1 >>
-		(*vectorChannel));
-	c3dlib::ScalarChannelReaderInterfacePtr z(new datachannel::DiscreteAccessorAdapter < c3dlib::VectorChannelReaderInterface::value_type,
-		c3dlib::VectorChannelReaderInterface::argument_type, utils::ArrayTraits::StaticElementExtractor < 2 >>
-		(*vectorChannel));
-    core::VariantPtr wrapperX = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
-    core::VariantPtr wrapperY = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
-    core::VariantPtr wrapperZ = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
-    wrapperX->set(x);
-    wrapperY->set(y);
-    wrapperZ->set(z);
+	c3dlib::ScalarChannelReaderInterfacePtr x(dataaccessor::StaticVector<0>::wrap(vectorChannel));
+	c3dlib::ScalarChannelReaderInterfacePtr y(dataaccessor::StaticVector<1>::wrap(vectorChannel));
+	c3dlib::ScalarChannelReaderInterfacePtr z(dataaccessor::StaticVector<2>::wrap(vectorChannel));
+
+    core::VariantPtr wrapperX = core::Variant::wrap(x);
+    core::VariantPtr wrapperY = core::Variant::wrap(y);
+    core::VariantPtr wrapperZ = core::Variant::wrap(z);    
 
     static int number = 0;
     // hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
@@ -235,11 +228,11 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
 	wrapperZ->setMetadata("core/source", p + "/Z_" + suffix);
     visualizer->getOrCreateWidget();
 
-	auto serieX = visualizer->createSerie(wrapperX->data()->getTypeInfo(), wrapperX);
+	auto serieX = visualizer->createSerie(wrapperX);
 	serieX->innerSerie()->setName(xAxisName.isEmpty() == false ? xAxisName.toStdString() : ("X_" + suffix));
-	auto serieY = visualizer->createSerie(wrapperY->data()->getTypeInfo(), wrapperY);
+	auto serieY = visualizer->createSerie(wrapperY);
 	serieY->innerSerie()->setName(yAxisName.isEmpty() == false ? yAxisName.toStdString() : ("Y_" + suffix));
-	auto serieZ = visualizer->createSerie(wrapperZ->data()->getTypeInfo(), wrapperZ);
+	auto serieZ = visualizer->createSerie(wrapperZ);
 	serieZ->innerSerie()->setName(zAxisName.isEmpty() == false ? zAxisName.toStdString() : ("Z_" + suffix));
 
 	INewChartSerie* chartSerieX = dynamic_cast<INewChartSerie*>(serieX->innerSerie());
@@ -288,7 +281,7 @@ void NewMultiserieHelper::createSeries( const VisualizerPtr & visualizer, const 
         auto wrapper = wrappers[i].wrapper;
 		std::string source;
 		wrapper->getMetadata("core/source", source);
-		auto serieX = visualizer->createSerie(wrapper->data()->getTypeInfo(), wrapper);
+		auto serieX = visualizer->createSerie(wrapper);
 		serieX->innerSerie()->setName(source);
         if (wrappers[i].events) {
 			EventSerieBase * eventSerie = dynamic_cast<EventSerieBase*>(serieX->innerSerie());
@@ -356,10 +349,9 @@ EMGFilterHelper::EMGFilterHelper(const core::VariantConstPtr& wrapper, const c3d
 
 void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series )
 {
-	c3dlib::ScalarChannelReaderInterfacePtr channel = wrapper->clone()->get();
+	c3dlib::ScalarChannelReaderInterfaceConstPtr channel = wrapper->get();
 
-    utils::shared_ptr<AbsMeanChannel<float, float>> absTest( new AbsMeanChannel<float, float>(channel));
-    absTest->initialize();
+    auto absTest(AbsMeanValueChannel::wrap(channel));    
 
     //utils::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, ScalarChannelIntegrator()));
 	utils::shared_ptr<c3dlib::ScalarModifier> integratorChannel(new c3dlib::ScalarModifier(absTest, RMSModifier()));

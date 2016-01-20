@@ -32,7 +32,7 @@ namespace loglib {
 		}
 	private:
 
-		//! klasa dodaje logowanie do standardowych wyj�tk�w z stl-a
+		//! klasa dodaje logowanie do standardowych wyjątków z stl-a
 		template <typename BaseException, bool>
 		class WrapperImpl : public BaseException
 		{
@@ -52,7 +52,7 @@ namespace loglib {
 			}
 		};
 
-		//! klasa dodaje logowanie do standardowych wyj�tk�w z stl-a
+		//! klasa dodaje logowanie do standardowych wyjątków z stl-a
 		template <typename BaseException>
 		class WrapperImpl<BaseException, true>
 		{
@@ -79,7 +79,7 @@ namespace loglib {
 
 	public:
 
-		//! klasa dodaje logowanie do standardowych wyj�tk�w z stl-a
+		//! klasa dodaje logowanie do standardowych wyjątków z stl-a
 		template <typename BaseException>
 		class Wrapper : public WrapperImpl < BaseException, std::is_pod<BaseException>::value >
 		{
@@ -116,7 +116,7 @@ namespace loglib {
 		}
 	};	
 
-	// rozszerzone wyj�tki z stl-a, u�ycie: throw core::runtime_error("whatever...");
+	// rozszerzone wyjątki z stl-a, użycie: throw core::runtime_error("whatever...");
 	
 	typedef Exception::Wrapper<std::bad_cast> bad_cast;
 	typedef Exception::Wrapper<std::bad_alloc> bad_alloc;

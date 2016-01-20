@@ -11,7 +11,7 @@
 #define HEADER_GUARD_FILESOURCE__FILESOURCE_H__
 
 #include <corelib/ISource.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <plugins/newChart/Wrappers.h>
 #include <plugins/fileSource/IFileSource.h>
 
@@ -41,7 +41,7 @@ public:
     virtual QWidget* getSettingsWidget();
 
     virtual void getOfferedTypes( utils::TypeInfoList & offeredTypes ) const;
-    void addFile( const core::Filesystem::Path& path );
+    void addFile( const utils::Filesystem::Path& path );
 
 	void loadAsfAmc();
 

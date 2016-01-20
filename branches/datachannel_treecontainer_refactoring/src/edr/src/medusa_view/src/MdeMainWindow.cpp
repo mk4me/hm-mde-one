@@ -47,6 +47,7 @@
 #include "ImageTableModel.h"
 #include "LoginDialog.h"
 #include "plugins/hmdbCommunication/SourceOptionsWidget.h"
+#include "plugins/hmdbCommunication/ContextConfigurationSettingsFile.h"
 
 using namespace core;
 
@@ -56,8 +57,8 @@ public:
 	//! \return Nazwa widoku
 	virtual const QString name() const { return QObject::tr("MEDUSA view"); }
 
-	//! \param shallowCopyContext Kontekst p�ytkiej kopii bazy danych jakim zasilamy widok
-	//! \return Widok obs�uguj�cy kontekst
+	//! \param shallowCopyContext Kontekst płytkiej kopii bazy danych jakim zasilamy widok
+	//! \return Widok obsługujący kontekst
 	virtual QWidget * createView(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext, hmdbCommunication::IHMDBSourceViewManager * viewManager) {
 
 		auto ret = new GeneralSourceViewWidget(shallowCopyContext);
@@ -113,7 +114,7 @@ public:
 		ret->setVisible(false);
 		return ret;
 	}
-	//! \return Czy dany widok wymaga po��czenia z us�ugami webowymi
+	//! \return Czy dany widok wymaga połączenia z usłgami webowymi
 	virtual const bool requiresRemoteContext() const { return true; }
 };
 
@@ -149,7 +150,7 @@ public:
 
 		auto subjectsITEnd = shallowCopy.motionShallowCopy.performers.end();
 		for (auto subjectIT = shallowCopy.motionShallowCopy.performers.begin(); subjectIT != subjectsITEnd; ++subjectIT){
-			//je�li pusty pacjent to go pomijamy
+			//jeżli pusty pacjent to go pomijamy
 			if (subjectIT->second->performerConfs.empty() == true){
 				continue;
 			}
@@ -277,27 +278,30 @@ bool MdeMainWindow::customViewInit(QWidget * log)
    utils::shared_ptr<hmdbCommunication::IHMDBSource> icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
    plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(icomm);
 
+   if (!icomm) {
+	   PLUGIN_LOG_ERROR("Unable to find communication plugin");
+	   return false;
+   }
 
    auto hmdbView = new MEDUSAHMDBSourceView;
    auto vm = icomm->viewManager();
-   if (icomm != nullptr){
 
-	   vm->registerViewPrototype(hmdbView);
+	vm->registerViewPrototype(hmdbView);
 
-	   {
-		   auto ccfg = createHmdbConfig();
-		   vm->registerConfiguration(ccfg, hmdbView->name());
-	   }
+	auto ccfg = createHmdbConfig();
+	{
+		vm->registerConfiguration(ccfg, hmdbView->name());
+	}
 
-	   vm->registerPerspective(new MEDUSAPerspective, hmdbView->name());
-	   vm->registerContent(new hmdbCommunication::DataSourceDefaultContent, hmdbView->name());
+	vm->registerPerspective(new MEDUSAPerspective, hmdbView->name());
+	vm->registerContent(new hmdbCommunication::DataSourceDefaultContent, hmdbView->name());
 
-	   //dodajemy filtry dla adnotacji		
-	   auto as = QObject::tr("Annotation status");
-	   vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("in edition")), true, false, dicom::AnnotationStatusFilter::InEdition), hmdbView->name());
-	   vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("in verification")), true, false, dicom::AnnotationStatusFilter::InVerification), hmdbView->name());
-	   vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("verified")), true, false, dicom::AnnotationStatusFilter::Verified), hmdbView->name());
-   }
+	//dodajemy filtry dla adnotacji		
+	auto as = QObject::tr("Annotation status");
+	vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("in edition")), true, false, dicom::AnnotationStatusFilter::InEdition), hmdbView->name());
+	vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("in verification")), true, false, dicom::AnnotationStatusFilter::InVerification), hmdbView->name());
+	vm->registerFilter(new dicom::AnnotationStatusFilter((as + ": " + QObject::tr("verified")), true, false, dicom::AnnotationStatusFilter::Verified), hmdbView->name());
+   
 
    
    auto sourceManager = plugin::getSourceManager();
@@ -326,8 +330,10 @@ bool MdeMainWindow::customViewInit(QWidget * log)
    compound->addWidget(commWidget);
    compound->addWidget(aw);
    addTab(coreUI::IMdeTabPtr(new CompoundAnalysisTab(compound, aw, QIcon(":/mde/icons/Analizy.png"), tr("Analysis"))));
-   addTab(coreUI::IMdeTabPtr(new SimpleTab(log, QIcon(":/mde/icons/Operacje.png"),tr("Log"))));
 
+#ifndef DEMO_MODE
+   addTab(coreUI::IMdeTabPtr(new SimpleTab(log, QIcon(":/mde/icons/Operacje.png"),tr("Log"))));
+#endif
    // TODO : najlepiej byloby przeniesc to do kontrolera
 //   bool cc = connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
    auto serviceManager = plugin::getServiceManager();
@@ -349,16 +355,21 @@ bool MdeMainWindow::customViewInit(QWidget * log)
         }
    }
 
+#ifndef DEMO_MODE
    QToolButton* exporterButton = controller.createButton(tr("Exporter"), QIcon(":/mde/icons/Operacje.png"));
    controller.addToolbarButton(exporterButton);
    connect(exporterButton, SIGNAL(clicked()), this, SLOT(showMedusaExporterDialog()));
-
    addTab(coreUI::IMdeTabPtr(new ImageTableTab(aw, QIcon(":/mde/icons/Operacje.png"), tr("TableView"))));
+#endif
+
    emit activateTab(*tabs.begin());
 
+#ifdef DEMO_MODE
+   SourceOptionsWidget::login();
+#else
    bool done = false;
    do {
-	   LoginDialog ld(this);
+	   LoginDialog ld(this, ccfg.motionServicesConfiguration.userConfiguration.user, ccfg.motionServicesConfiguration.userConfiguration.password);
 	   if (ld.exec() == QDialog::Accepted) {
 		   auto config = sourceOptionsWidget->getConnectionProfile();
 		   config.motionServicesConfiguration.userConfiguration.user = ld.getUser();
@@ -368,12 +379,16 @@ bool MdeMainWindow::customViewInit(QWidget * log)
 		   QStringList errors;
 		   sourceOptionsWidget->verify(errors);
 		   done = errors.isEmpty();
+		   if (!done) {
+			   QMessageBox::warning(nullptr, QString("Login failed"), errors.join("\n"));
+		   }
 
 	   } else {
 		   return false;
 	   }
    } while (!done);
    return true;
+#endif // DEMO_MODE
 }
 
 void MdeMainWindow::addTab( coreUI::IMdeTabPtr tab )
@@ -566,6 +581,11 @@ hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration MdeMainWindow::c
 	ccfg.motionDataConfiguration.serviceConfiguration.caPath = "";
 	ccfg.motionDataConfiguration.userConfiguration.user = "testUser";
 	ccfg.motionDataConfiguration.userConfiguration.password = "testUser";
+
+	typedef hmdbCommunication::ContextConfigurationSettingsFile ConfFile;
+	auto iniPath = plugin::getUserApplicationDataPath("medusa_communication.ini").string();
+	PLUGIN_LOG_INFO("Communication configuration file: " << iniPath);
+	ccfg = ConfFile::read(QString::fromStdString(iniPath), ccfg);
 	return ccfg;
 }
 

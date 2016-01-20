@@ -1,6 +1,6 @@
 #include "PCH.h"
 #include <vidlib/FFmpegError.h>
-#include <utils/Utils.h>
+#include <utils/array_traits.h>
 
 #if defined(_WINDOWS)
 // blok definicji dla ffmpeg'a

@@ -80,6 +80,7 @@ SET_PUBLIC_HEADERS (
 	IHMDBSourceViewManager.h
 	GeneralSourceViewWidget.h
 	DataViewConfigurationWidget.h
+	ContextConfigurationSettingsFile.h
 )
 
 #------------------------------------------------------------------------------
@@ -137,6 +138,7 @@ SET_SOURCE_FILES(
 	GeneralSourceViewWidget.cpp
 	DataViewConfigurationWidget.cpp
 	UpdateFilesDialog.cpp
+	ContextConfigurationSettingsFile.cpp
 )
 
 SET_MOC_FILES(
@@ -180,5 +182,9 @@ SET_RC_FILES (
 SET_PRECOMPILED_HEADER( CommunicationPCH.h CommunicationPCH.cpp)
 
 GENERATE_PROJECT_TRANSLATIONS()
+
+if(CONFIG_DEMO_MODE)
+	add_definitions(-DDEMO_MODE)
+endif()
 
 END_PROJECT()

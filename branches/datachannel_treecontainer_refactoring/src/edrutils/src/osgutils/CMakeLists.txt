@@ -4,6 +4,7 @@ SET_PUBLIC_HEADERS(
 	CustomPrimitivesFactory.h
 	OsgSchemeDrawer.h
 	PtrPolicyOSG.h
+	ClonePolicyOSG.h
 	Vec8d.h	
 	DualQuat.h
 	DualQuatUtils.h

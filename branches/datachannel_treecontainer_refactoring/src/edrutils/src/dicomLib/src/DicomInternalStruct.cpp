@@ -1,6 +1,5 @@
 #include "DicomImporterPCH.h"
-#include "DicomInternalStruct.h"
-#include "DicomParser.h"
+#include "dicomLib/DicomInternalStruct.h"
 #include <boost/format.hpp>
 #include <boost/make_shared.hpp>
 

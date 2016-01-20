@@ -21,7 +21,9 @@ namespace threadingUtils
 	private:
 
 		//! Obiekt bazowy do wywo³añ funktorów
-		struct ImplBase {
+		class ImplBase
+		{
+		public:
 			//! Metoda wirtualna wo³aj¹ca funktor
 			virtual void call() = 0;
 			//! Destruktor wirtualny
@@ -30,10 +32,12 @@ namespace threadingUtils
 
 		//! \tparam F Typ funktora który chcemy wrapowaæ
 		template<typename F>
-		struct ImplType : public ImplBase
+		class ImplType : public ImplBase
 		{
+		private:
 			//! Funktor
 			F f;
+		public:
 			//! \param f Funktor do wykonania
 			ImplType(F&& f) : f(std::move(f)) {}
 			//! Metoda wirtualna wo³aj¹ca funktor

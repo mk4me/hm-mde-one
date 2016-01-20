@@ -5,7 +5,7 @@
 #include <vector>
 #include <boost/tuple/tuple.hpp>
 #include <c3dlib/C3DParser.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/c3d/C3DCollections.h>
 #include "C3DParser.h"
@@ -48,7 +48,7 @@ void C3DParser::initObjects(utils::ObjectsVector & objects)
 
 void C3DParser::parse( const std::string & source  )
 {
-	core::Filesystem::Path path(source);
+	utils::Filesystem::Path path(source);
 	c3dlib::C3DParser parser;
 
     std::vector<std::string> files;
@@ -97,8 +97,8 @@ void C3DParser::parse( const std::string & source  )
 	localData[23]->set(delays);	
 
     // wczytanie plików *vsk, które dostarczaja opis do markerów
-    core::Filesystem::Path dir = path.parent_path();
-    auto vskFiles = core::Filesystem::listFiles(dir, false, ".vsk");
+    utils::Filesystem::Path dir = path.parent_path();
+    auto vskFiles = utils::Filesystem::listFiles(dir, false, ".vsk");
     vicon::VskPtr vsk;
     if (vskFiles.size() == 1) {
         vsk = utils::make_shared<vicon::Vsk>();
@@ -173,7 +173,7 @@ void C3DParser::getObject(core::Variant & object, const core::VariantsVector::si
 	if (idx < 4){
 		c3dlib::GRFChannelPtr ptr = data[idx]->get();
 		if (ptr) {
-			auto df = ptr->feature<datachannel::IDescriptorFeature>();
+			auto df = ptr->feature<dataaccessor::IDescriptorFeature>();
 			if (df != nullptr){
 				object.setMetadata("core/name", df->name());
 			}			
@@ -182,7 +182,7 @@ void C3DParser::getObject(core::Variant & object, const core::VariantsVector::si
 	else if(idx < 20){
 		c3dlib::EMGChannelPtr ptr = data[idx]->get();
 		if (ptr) {
-			auto df = ptr->feature<datachannel::IDescriptorFeature>();
+			auto df = ptr->feature<dataaccessor::IDescriptorFeature>();
 			if (df != nullptr){
 				object.setMetadata("core/name", df->name());
 			}

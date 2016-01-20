@@ -3,8 +3,8 @@
 #include "KinematicVisualizer.h"
 #include "TrajectoriesDrawer.h"
 #include "VisualizationScheme.h"
-#include <datachannellib/IDescriptorFeature.h>
-#include <datachannellib/IUniformArgumentsFeature.h>
+#include <datachannellib/DescriptorFeature.h>
+#include <datachannellib/UniformArgumentsFeature.h>
 
 MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 	const utils::TypeInfo & requestedType,
@@ -18,7 +18,7 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 	sampleDuration(0)
 {
 	markersCollection = data->get();
-	auto uaf = markersCollection->getAccessor(0)->getOrCreateArgumentFeature<datachannel::IUniformArgumentsFeature>();
+	auto uaf = markersCollection->getAccessor(0)->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
 
 	if (uaf != nullptr){
 		sampleDuration = uaf->argumentsInterval();
@@ -50,7 +50,7 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 
 		for (unsigned int i = 0; i < markersCount; ++i){
 			auto a = markersCollection->getAccessor(i);
-			auto df = a->feature<datachannel::IDescriptorFeature>();
+			auto df = a->feature<dataaccessor::IDescriptorFeature>();
 			if (df != nullptr){
 				mapping.push_back(df->name());
 			}
@@ -148,7 +148,7 @@ const std::vector<std::vector<osg::Vec3>> MarkerSerie::createPointsPositions(con
 	std::vector<std::vector<osg::Vec3>> ret;
 
 	auto a = markersCollection->getAccessor(0);
-	auto baf = a->getOrCreateArgumentFeature<datachannel::IBoundedArgumentsFeature>();
+	auto baf = a->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();
 
 	const auto step = (baf->maxArgument() - baf->minArgument()) / (double)density;
 
@@ -213,7 +213,7 @@ void MarkerSerie::update()
 	pointsDrawer->update(positions);
 
 	if(connectionsDrawer != nullptr){
-		PLUGIN_LOG_DEBUG("Updating connections");
+		//PLUGIN_LOG_DEBUG("Updating connections");
 		std::set<int> toShow;
 
 		for(unsigned int i = 0; i < connectionsConfigurations.size(); ++i){

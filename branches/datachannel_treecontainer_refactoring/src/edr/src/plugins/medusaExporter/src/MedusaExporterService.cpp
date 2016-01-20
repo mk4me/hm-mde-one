@@ -1,7 +1,7 @@
 #include "MedusaExporterPCH.h"
 #include "MedusaExporterService.h"
 #include "MedusaExporterServiceWidget.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <corelib/IServiceManager.h>
 #include <corelib/PluginCommon.h>
 #include <corelib/IDataManager.h>

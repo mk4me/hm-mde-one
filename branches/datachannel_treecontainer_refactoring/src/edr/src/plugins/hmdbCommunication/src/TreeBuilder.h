@@ -30,6 +30,14 @@ private:
 
 };
 
+template <typename Collection>
+void push_not_null(Collection& vec, const typename Collection::value_type& t)
+{
+	if (t) {
+		vec.push_back(t);
+	}
+}
+
 class TreeBuilder
 {
 public:  

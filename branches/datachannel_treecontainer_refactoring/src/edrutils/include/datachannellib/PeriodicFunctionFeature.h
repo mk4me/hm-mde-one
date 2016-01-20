@@ -1,21 +1,21 @@
 /********************************************************************
 	created:  2015/07/28	15:05:18
-	filename: IPeriodicFunctionFeature.h
+	filename: PeriodicFunctionFeature.h
 	author:	  Mateusz Janiak
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__IPERIODICFUNCTIONFEATURE_H__
-#define __HEADER_GUARD_DATACHANNEL__IPERIODICFUNCTIONFEATURE_H__
+#ifndef __HEADER_GUARD_DATACHANNEL__PERIODICFUNCTIONFEATURE_H__
+#define __HEADER_GUARD_DATACHANNEL__PERIODICFUNCTIONFEATURE_H__
 
 #include <datachannellib/Accessors.h>
 
-namespace datachannel
+namespace dataaccessor
 {
 	//! \rparam ArgumentType Typ argumentu kana³u
 	template<class ArgumentType>
 	//! Interfejs kana³u z ograniczonymi wartoœciami
-	class IPeriodicFunctionFeature : public FeatureHelper<Periodic, IArgumentFeature<ArgumentType>>
+	class IPeriodicFunctionFeature : public FeatureHelperT<Periodic, IArgumentFeatureT<ArgumentType>>
 	{
 	public:
 		//! Destruktor wirtualny
@@ -27,7 +27,7 @@ namespace datachannel
 		template<typename ValueType>
 		inline static IPeriodicFunctionFeature * create(
 			const IDiscreteAccessor<ValueType, ArgumentType> * discrete,
-			const IFunctionAccessor<ValueType, ArgumentType> * function)
+			const IFunctionAccessorT<ValueType, ArgumentType> * function)
 		{
 			return nullptr;
 		}
@@ -52,4 +52,4 @@ namespace datachannel
 
 }
 
-#endif	// __HEADER_GUARD_DATACHANNEL__IPERIODICFUNCTIONFEATURE_H__
+#endif	// __HEADER_GUARD_DATACHANNEL__PERIODICFUNCTIONFEATURE_H__

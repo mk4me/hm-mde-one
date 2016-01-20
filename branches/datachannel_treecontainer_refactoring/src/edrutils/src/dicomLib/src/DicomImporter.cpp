@@ -2,29 +2,108 @@
 #include "DicomImporterPCH.h"
 #include "QtCore/QDateTime"
 
-#include "DicomImporter.h"
+#include "dicomLib/DicomImporter.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
-#include "DicomImporterSource.h"
-#include <corelib/Filesystem.h>
-#include <corelib/HierarchyItem.h>
-#include <corelib/HierarchyDataItem.h>
-#include "DicomImporterSourceWidget.h"
+//#include "dicomLib/DicomImporterSource.h"
+#include <utils/Filesystem.h>
+//#include <corelib/HierarchyItem.h>
+//#include <corelib/HierarchyDataItem.h>
+//#include "DicomImporterSourceWidget.h"
 #include "dcmtk/dcmdata/dcdicdir.h"
 #include "dcmtk/dcmdata/dcdirrec.h"
 #include "dcmtk/dcmdata/dcdeftag.h"
-#include <corelib/HierarchyHelper.h>
-#include <plugins/dicomImporter/Dicom.h>
+#include <dcmtk/ofstd/ofbmanip.h>
+#include <dcmtk/dcmimage/diregist.h>
+//#include <corelib/HierarchyHelper.h>
+#include <dicomLib/Dicom.h>
 //#include <plugins/dicomImporter/ILayeredImage.h>
 
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/format.hpp>
-#include "DicomParser.h"
+#include "loglib/Exceptions.h"
 
 
 
 using namespace dicomImporter;
+QPixmap dicomImporter::convertToPixmap(DicomImagePtr image)
+{
+	QPixmap result;
+	// kod z forum : http://forum.dcmtk.org/viewtopic.php?t=120
+	// rozszerzony o obs³ugê kolorów
+	if ((image != NULL) && (image->getStatus() == EIS_Normal)) {
+		/* get image extension */
+		const int width = (int)(image->getWidth());
+		const int height = (int)(image->getHeight());
+		//const int depth = (int)(image->getDepth());
+		char header[32];
+		/* create PGM header */
+		sprintf(header, "P%i\n%i %i\n255\n", image->isMonochrome() ? 5 : 6, width, height);
+		const int offset = strlen(header);
+		const unsigned int length = image->getOutputDataSize(8) + offset;//width * height + offset;
+		/* create output buffer for DicomImage class */
+		Uint8 *buffer = new Uint8[length];
+		if (buffer != NULL) {
+			/* copy PGM header to buffer */
+			OFBitmanipTemplate<Uint8>::copyMem((const Uint8 *)header, buffer, offset);
+			if (image->getOutputData((void *)(buffer + offset), length)) {
+				result.loadFromData((const unsigned char *)buffer, length, image->isMonochrome() ? "PGM" : "PMM", Qt::AvoidDither);
+			}
+			/* delete temporary pixel buffer */
+			delete[] buffer;
+		}
+	}
+
+	return result;
+
+
+	// ponizszy kod przeksztalcil 16 bitowe monochromatyczne obrazy
+
+	//if ((image != NULL) && (image->getStatus() == EIS_Normal)) {
+	//    const int width = (int)(image->getWidth());
+	//    const int height = (int)(image->getHeight());
+	//    const int depth = (int)(image->getDepth());
+
+	//	QImage qi(width, height, QImage::Format_RGB32);
+	//	const unsigned int length = image->getOutputDataSize(16);
+	//	double maxv = 0, minv = 65535;
+	//	//image->getMinMaxValues(minv, maxv);
+	//    /* create output buffer for DicomImage class */
+	//    Uint16 *buffer = new Uint16[length];
+	//    if (buffer != NULL)
+	//    {
+	//        if (image->getOutputData((void *)(buffer), length,16))
+	//        {
+	//			for (int y = 0; y < height; ++y) {
+	//				for (int x = 0; x < width; ++x) {
+	//					Uint16 p = buffer[(y*width + x)];
+	//					if (p < minv) {
+	//						minv = p;
+	//					}
+	//					if (p > maxv) {
+	//						maxv = p;
+	//					}
+	//				}
+	//			}
+
+	//			for (int y = 0; y < height; ++y) {
+	//				for (int x = 0; x < width; ++x) {
+	//					Uint16 p = buffer[(y*width + x)];
+	//					auto val = 255.0 * (p-minv)/(maxv-minv);
+	//					qi.setPixel(x, y, qRgb(val, val, val));
+	//				}
+	//			}
+	//        }
+	//        /* delete temporary pixel buffer */
+	//        delete[] buffer;
+	//    }
+
+	//	return QPixmap::fromImage(qi);
+	//}
+	//return QPixmap();
+
+}
 
 
 void DicomImporter::handleFileRecord( DcmDirectoryRecord * fileRecord, internalData::ImagePtr image, std::string basePath )
@@ -38,10 +117,10 @@ void DicomImporter::handleFileRecord( DcmDirectoryRecord * fileRecord, internalD
             fileRecord->findAndGetOFString(DCM_ReferencedSOPInstanceUIDInFile, uidImagen);
             fileRecord->findAndGetOFString(DCM_InstanceNumber, instanceNumber);
 
-            core::Filesystem::Path currentPath(basePath);
-            core::Filesystem::Path suffix(tmpString.c_str());
+            utils::Filesystem::Path currentPath(basePath);
+            utils::Filesystem::Path suffix(tmpString.c_str());
             currentPath /= suffix;
-            if (core::Filesystem::pathExists(currentPath)) {
+            if (utils::Filesystem::pathExists(currentPath)) {
                 image->originFilePath = suffix.string();
             } 
         }
@@ -126,16 +205,16 @@ void DicomImporter::handlePatientRecord( DcmDirectoryRecord * patientRecord, int
 
 }
 
-dicomImporter::DicomInternalStructPtr DicomImporter::import( const core::Filesystem::Path& from )
+dicomImporter::DicomInternalStructPtr DicomImporter::import( const utils::Filesystem::Path& from )
 {
     DicomInternalStructPtr internalStruct = boost::make_shared<DicomInternalStruct>();
-
-    core::Filesystem::Path dirfile = from / "DICOMDIR";
-    if (core::Filesystem::pathExists(dirfile)) {
+	
+    utils::Filesystem::Path dirfile = from / "DICOMDIR";
+    if (utils::Filesystem::pathExists(dirfile)) {
         DcmDicomDir dicomdir(dirfile.string().c_str());
         DcmDirectoryRecord* root = &(dicomdir.getRootRecord());
 
-        std::string basePath = from.string();
+		std::string basePath = from.string();
 
         if (root) {
             DcmDirectoryRecord *patientRecord = nullptr;
@@ -153,12 +232,12 @@ dicomImporter::DicomInternalStructPtr DicomImporter::import( const core::Filesys
     return internalStruct;
 }
 
-void dicomImporter::DicomImporter::convertImages( DicomInternalStructPtr inter, const core::Filesystem::Path& from, const core::Filesystem::Path& to )
+void dicomImporter::DicomImporter::convertImages( DicomInternalStructPtr inter, const utils::Filesystem::Path& from, const utils::Filesystem::Path& to )
 {
     for (auto itPatient = inter->patients.begin(); itPatient != inter->patients.end(); ++itPatient) {
         for (auto itSession = (*itPatient)->sessions.begin(); itSession != (*itPatient)->sessions.end(); ++itSession) {
             std::string sessionDir = (*itSession)->getOutputDirectory();
-            core::Filesystem::createDirectory(to / sessionDir);
+            utils::Filesystem::createDirectory(to / sessionDir);
             int trialImageNo = 1;
             for (auto itSerie = (*itSession)->series.begin(); itSerie != (*itSession)->series.end(); ++itSerie) {
                 internalData::SeriePtr serie = *itSerie;
@@ -180,31 +259,35 @@ void dicomImporter::DicomImporter::convertImages( DicomInternalStructPtr inter, 
     }
 }
 
-void dicomImporter::DicomImporter::convertImage( internalData::ImagePtr inter, const core::Filesystem::Path& from, const core::Filesystem::Path& to, const std::string& filenameBase )
+void dicomImporter::DicomImporter::convertImage( internalData::ImagePtr inter, const utils::Filesystem::Path& from, const utils::Filesystem::Path& to, const std::string& filenameBase )
 {
-    core::Filesystem::Path origin = from / inter->originFilePath;
+    utils::Filesystem::Path origin = from / inter->originFilePath;
 	
-    if (core::Filesystem::pathExists(origin)) {
-        DicomParser parser;
-        parser.parse(origin.string());
-		auto object = core::Variant::create<DicomImage>();
-        parser.getObject(*object, 0);
-        //utils::ObjectWrapperPtr wrapper = object->get();
-		DicomImagePtr image = object->get();
-		QPixmap pixmap = convertToPixmap(image);
-		if (pixmap.isNull()) {
-			image->writeBMP("temp.bmp");
-			pixmap = QPixmap("temp.bmp");
-		}
+    if (utils::Filesystem::pathExists(origin)) {
+  //      DicomParser parser;
+  //      parser.parse(origin.string());
+		//auto object = core::Variant::create<DicomImage>();
+  //      parser.getObject(*object, 0);
+  //      //utils::ObjectWrapperPtr wrapper = object->get();
+		DicomImagePtr di = utils::make_shared<DicomImage>(origin.string().c_str());//dfile, xfer, opt_compatibilityMode, opt_frame - 1, opt_frameCount);
+		if (di && di->getStatus() == EIS_Normal) {
+			di->processNextFrames();
+			auto count = di->getFrameCount();
+			QPixmap pixmap = convertToPixmap(di);
+			if (pixmap.isNull()) {
+				di->writeBMP("temp.bmp");
+				pixmap = QPixmap("temp.bmp");
+			}
 
-        core::Filesystem::Path outfile = to / (filenameBase + ".png");
+			utils::Filesystem::Path outfile = to / (filenameBase + ".png");
     
-        pixmap.save(outfile.string().c_str());
+			pixmap.save(outfile.string().c_str());
 
-        inter->imageFile = filenameBase + ".png";
-        inter->adnotationsFile = filenameBase + ".xml";
-		inter->isPowerDoppler = testPowerDoppler(pixmap);
-        refresh(filenameBase);
+			inter->imageFile = filenameBase + ".png";
+			inter->adnotationsFile = filenameBase + ".xml";
+			inter->isPowerDoppler = testPowerDoppler(pixmap);
+			refresh(filenameBase);
+		}
     }
 }
 
@@ -275,7 +358,7 @@ bool dicomImporter::DicomImporter::testPowerDoppler( const QPixmap &pixmap )
     return false;
 }
 
-dicomImporter::DicomInternalStructPtr dicomImporter::DicomImporter::importRaw(const core::Filesystem::Path& from)
+dicomImporter::DicomInternalStructPtr dicomImporter::DicomImporter::importRaw(const utils::Filesystem::Path& from)
 {
 	internalData::PatientPtr patient = boost::make_shared<internalData::Patient>();
 	QDateTime current = QDateTime::currentDateTime();
@@ -288,7 +371,7 @@ dicomImporter::DicomInternalStructPtr dicomImporter::DicomImporter::importRaw(co
 	auto serie = boost::make_shared<internalData::Serie>();
 	serie->serieDate = date;
 	serie->serieTime = time;
-	auto files = core::Filesystem::listFiles(from, true, ".dcm");
+	auto files = utils::Filesystem::listFiles(from, true, ".dcm");
 	for (auto& path : files) {
 		auto image = boost::make_shared<internalData::Image>();
 		image->originFilePath = path.filename().string();
@@ -303,16 +386,29 @@ dicomImporter::DicomInternalStructPtr dicomImporter::DicomImporter::importRaw(co
 	return internalStruct;
 }
 
-void DicomSaver::save( const core::Filesystem::Path& to, DicomInternalStructPtr inter )
+utils::Filesystem::Path dicomImporter::DicomImporter::findDicomRootDir(const utils::Filesystem::Path& from)
 {
-    core::Filesystem::Path filename;
+	if (utils::Filesystem::pathExists(from / "DICOMDIR")) {
+		return from;
+	}
+
+	auto subs = utils::Filesystem::listSubdirectories(from);
+	if (subs.size() == 1) {
+		return findDicomRootDir(*subs.begin());
+	}
+
+	throw loglib::runtime_error("Directory does not contain dicom structure");
+}
+
+void DicomSaver::save( const utils::Filesystem::Path& to, DicomInternalStructPtr inter )
+{
+    utils::Filesystem::Path filename;
     if (inter->isSingle()) {
         std::string sessionName = inter->getSingleSessionOutputDir();
         filename = to / sessionName / (sessionName + ".xml");
     } else {
         filename = to / "main.xml";
     }
-    //filename = "C:/Users/Wojciech/Desktop/dbrip/drop/2013-08-21-S0001/test.xml";
     std::ofstream ofs(filename.c_str());
     if(ofs.good()) {
         boost::archive::xml_oarchive oa(ofs);
@@ -323,7 +419,7 @@ void DicomSaver::save( const core::Filesystem::Path& to, DicomInternalStructPtr 
     }
 }
 
-dicomImporter::DicomInternalStructPtr dicomImporter::DicomLoader::load( const core::Filesystem::Path& from )
+dicomImporter::DicomInternalStructPtr dicomImporter::DicomLoader::load( const utils::Filesystem::Path& from )
 {
     DicomInternalStructPtr inter = boost::make_shared<DicomInternalStruct>();
     std::ifstream ifs(from.c_str());

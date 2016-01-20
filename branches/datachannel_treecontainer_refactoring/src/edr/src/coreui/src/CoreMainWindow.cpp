@@ -12,15 +12,15 @@
 
 PLUGIN_DEFINE_CORE_APPLICATION_ACCESSOR
 
-//WA�NE!!
-//tak inicjalizujemy resourcy wkompilowane w biblioteki statyczne linkowane do aplikacji - w naszym przypadku to Core jest tak� bibliotek� i jego resourcy musza by� jawnie inicjalizowane
-//Nazwa resourc�w musi by� unikalna poniewa� Qt "miesza" nazwy metod z nazwamy plik�w resourc�w kt�re chcemy inicjalizowa� tworz�c unikalne statyczne funkcje na potrzeby inicjalizacji
-//link: http://developer.qt.nokia.com/doc/qt-4.8/resources.html - sam d� stronki
+//WAŻNE!!
+//tak inicjalizujemy resourcy wkompilowane w biblioteki statyczne linkowane do aplikacji - w naszym przypadku to Core jest taką biblioteką i jego resourcy musza być jawnie inicjalizowane
+//Nazwa resourców musi być unikalna ponieważ Qt "miesza" nazwy metod z nazwamy plików resourców które chcemy inicjalizować tworząc unikalne statyczne funkcje na potrzeby inicjalizacji
+//link: http://developer.qt.nokia.com/doc/qt-4.8/resources.html - sam do stronki
 inline void initCoreResources() { Q_INIT_RESOURCE(CoreIcons); }
 
 using namespace coreUI;
 
-void CoreMainWindow::setStyle( const core::Filesystem::Path& path )
+void CoreMainWindow::setStyle( const utils::Filesystem::Path& path )
 {
     QFile file(QString::fromUtf8(path.string().c_str()));
     if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -34,7 +34,7 @@ void CoreMainWindow::setStyle( const core::Filesystem::Path& path )
 }
 
 
-bool CoreMainWindow::trySetStyle( const core::Filesystem::Path& path )
+bool CoreMainWindow::trySetStyle( const utils::Filesystem::Path& path )
 {
     try {
         setStyle(path);
@@ -50,7 +50,7 @@ void CoreMainWindow::setStyleByName( const std::string& styleName )
 {
     int count = getApplicationSkinsFilePathCount();
     for (int i = 0; i < count; ++i) {
-        const core::Filesystem::Path& path = getApplicationSkinsFilePath(i);
+        const utils::Filesystem::Path& path = getApplicationSkinsFilePath(i);
         if (path.stem() == styleName) {
             setStyle(path);
             return;
@@ -112,7 +112,7 @@ bool CoreMainWindow::init(core::IApplication * coreApplication)
 	plugin::__coreApplication = coreApplication;
 
 	//szukaj styli qt
-	auto temp = core::Filesystem::listFiles(plugin::getResourcesPath() / "app_skins", true, ".qss");
+	auto temp = utils::Filesystem::listFiles(plugin::getResourcesPath() / "app_skins", true, ".qss");
 	applicationSkinsPaths.insert(applicationSkinsPaths.end(), temp.begin(), temp.end());
 
     readSettings(QSettings(), true);
@@ -128,7 +128,7 @@ CoreMainWindow::~CoreMainWindow()
 	onClose();
 }
 
-const core::Filesystem::Path & CoreMainWindow::getApplicationSkinsFilePath(int i)
+const utils::Filesystem::Path & CoreMainWindow::getApplicationSkinsFilePath(int i)
 {
 	return applicationSkinsPaths[i];
 }

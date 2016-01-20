@@ -10,7 +10,7 @@
 #include "Vector3DDelegate.h"
 #include "OrientationDelegate.h"
 #include "OrientationEstimationAlgorithmDelegate.h"
-#include <coreUI/CoreVectorInputDelegate.h>
+#include <coreui/CoreVectorInputDelegate.h>
 #include <kinematiclib/LinearizedSkeleton.h>
 #include "ModelConfigurationWizardPage.h"
 
@@ -81,7 +81,7 @@ SensorsConfigurationWizardPage::SensorsConfigurationWizardPage(
 		//JOINT column
 		{
 			ui->sensorsConfigurationTableWidget->setItem(row, JointIDX, new QTableWidgetItem(SkeletonJointsDelegate::defaultText()));
-			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, JointIDX), SkeletonJointsDelegate::defaultValue(), Qt::UserRole);
+			ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, JointIDX), static_cast<unsigned long long>(SkeletonJointsDelegate::defaultValue()), Qt::UserRole);
 		}
 
 		//ALGORITHM column
@@ -156,7 +156,7 @@ SensorsConfigurationWizardPage::SensorsConfigurationWizardPage(
 					ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, JointIDX), -1, Qt::UserRole);
 				}else{
 					ui->sensorsConfigurationTableWidget->setItem(row, JointIDX, new QTableWidgetItem(jointName));
-					ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, JointIDX), it->second.jointIdx, Qt::UserRole);
+					ui->sensorsConfigurationTableWidget->model()->setData(ui->sensorsConfigurationTableWidget->model()->index(row, JointIDX), static_cast<unsigned long long>(it->second.jointIdx), Qt::UserRole);
 				}
 			}
 
@@ -229,7 +229,7 @@ void SensorsConfigurationWizardPage::initializePage()
 		auto jointName = model->data(index, Qt::DisplayRole).toString().toStdString();
 		if (joints.right.find(jointName) == joints.right.end()){
 			model->setData(index, SkeletonJointsDelegate::defaultText());
-			model->setData(index, SkeletonJointsDelegate::defaultValue(), Qt::UserRole);
+			model->setData(index, static_cast<unsigned long long>(SkeletonJointsDelegate::defaultValue()), Qt::UserRole);
 		}
 	}
 }
@@ -479,7 +479,7 @@ void SensorsConfigurationWizardPage::onOneToOneMappingChanged(int state)
 				ui->sensorsConfigurationTableWidget->blockSignals(true);
 				model->setData(model->index(i, JointIDX), SkeletonJointsDelegate::defaultText());
 				ui->sensorsConfigurationTableWidget->blockSignals(false);
-				model->setData(model->index(i, JointIDX), SkeletonJointsDelegate::defaultValue(), Qt::UserRole);
+				model->setData(model->index(i, JointIDX), static_cast<unsigned long long>(SkeletonJointsDelegate::defaultValue()), Qt::UserRole);
 			}
 			else{
 				//jointa nie by�o - zapami�tujemy

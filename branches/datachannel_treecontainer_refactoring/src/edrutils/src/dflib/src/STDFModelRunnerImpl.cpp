@@ -125,7 +125,7 @@ const bool df::STDFModelRunner::STDFModelRunnerImpl::ProcessingNodeRunner::dataf
 	return true;
 }
 
-//! \return Czy �r�d�a maj� jeszcze dane
+//! \return Czy źródła mają jeszcze dane
 const bool df::STDFModelRunner::STDFModelRunnerImpl::sourcesHaveMore() const
 {
 	bool ret = true;
@@ -166,7 +166,7 @@ bool df::STDFModelRunner::STDFModelRunnerImpl::sourceFinished()
 			//sourcesFinishWait.notify_all();
 		}
 		else{
-			//�r�d�a sko�czy�y przetwarza� - czekamy na innych �eby zako�czy� dataflow
+			//źródła skończyły przetwarzać - czekamy na innych żeby zakończyć dataflow
 			sourcesEmpty_ = true;
 			if (dataToProcess == 0){
 				//stopDataflow();

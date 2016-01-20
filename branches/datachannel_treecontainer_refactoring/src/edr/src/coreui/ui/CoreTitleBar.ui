@@ -278,6 +278,11 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="CoreIcons.qrc">
+     <normaloff>:/coreUI/icons/fullscreen.png</normaloff>
+     <normalon>:/coreUI/icons/fullscreen2.png</normalon>:/coreUI/icons/fullscreen.png</iconset>
+   </property>
    <property name="text">
     <string>Full screen/Window</string>
    </property>

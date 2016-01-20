@@ -13,17 +13,19 @@
 #include <threadingUtils/Future.h>
 #include <threadingUtils/Macros.h>
 #include <threadingUtils/FunctionWrapper.h>
+#include <threadingUtils/LogPolicy.h>
 
 namespace threadingUtils {
 
 	//! \tparam WorkQueue Typ kolejki zadañ
 	//! \tparam RunnableThread Typ w¹tku który mo¿na uruchamiaæ (run)
+	//! \tparam WorkExceptionHandlePolicy
+	//! \tparam LogPolicy
 	//! Klasa realizuj¹ca funkcjonalnoœæ managera prac, zarz¹dzaj¹cego zleconymi zadaniami i ich realizacj¹
 	//! na zarz¹dzanych w¹tkach
-	template<class WorkQueue, class RunnableThread, typename WorkExceptionHandlePolicy = ConsumeExceptionHandlePolicy>
-	class WorkManager : private WorkExceptionHandlePolicy
+	template<class WorkQueue, class RunnableThread, typename WorkExceptionHandlePolicy = ConsumeExceptionHandlePolicy, typename LogPolicy = EmptyLogPolicy>
+	class WorkManager : private WorkExceptionHandlePolicy, private LogPolicy
 	{
-
 	private:
 
 		//! RAII pomocnicze przy rozró¿nianiu w¹tków workerów od innych zlecaj¹cych zadania
@@ -136,6 +138,8 @@ namespace threadingUtils {
 			RunnableThread thread;
 		};
 
+		friend class WorkExector;
+
 		typedef std::map<std::thread::id, WorkExecutor> WorkExecutorsMap;
 
 		typedef WorkExecutorsMap::size_type size_type;
@@ -151,15 +155,17 @@ namespace threadingUtils {
 	public:
 
 		//! Konstruktor domyœlny
-		WorkManager(const WorkExceptionHandlePolicy & wehp = WorkExceptionHandlePolicy())
-			: WorkExceptionHandlePolicy(wehp)
+		WorkManager(const WorkExceptionHandlePolicy & wehp = WorkExceptionHandlePolicy(), const LogPolicy & logPolicy = LogPolicy())
+			: WorkExceptionHandlePolicy(wehp), LogPolicy(logPolicy)
 		{
 
 		}
 		//! Destruktor
 		~WorkManager()
 		{
+			LogPolicy::log("Work manager destructor: joining");
 			join(true);
+			LogPolicy::log("Work manager destructor: finished");
 		}
 
 		//! \tparam F Typ funkcji jak¹ chcemy wykonaæ
@@ -170,6 +176,7 @@ namespace threadingUtils {
 		template<typename F, class ...Args>
 		typename FutureType<typename std::result_of<F(Args)>::type>::type submit(F&& f, Args&& arguments...)
 		{
+			LogPolicy::log("Work manager: submiting work");
 			typedef typename std::result_of<F(Args)>::type result_type;
 
 			std::lock_guard<std::mutex> lock(taskMutex);
@@ -178,8 +185,9 @@ namespace threadingUtils {
 			}
 
 			std::function<result_type()> ff = std::bind(std::_Decay_copy(std::forward<F>(f)), std::_Decay_copy(std::forward<Args>(arguments))...);
-
-			auto ret = workQueue.submit([=]()->result_type {
+			LogPolicy::log("Work queue: submiting task");
+			auto ret = workQueue.submit([=, this]()->result_type {
+				this->LogPolicy::log("Work manager task running");
 				try{
 					return ff();
 				}
@@ -191,7 +199,7 @@ namespace threadingUtils {
 			});
 
 			auto s = workQueue.size();
-
+			LogPolicy::log("Work manager waking work executors");
 			if (isLocalThread == false || s > 1){
 
 				if (s > workExecutors.size()){
@@ -205,7 +213,7 @@ namespace threadingUtils {
 					}
 				}
 			}
-
+			LogPolicy::log("Work manager submit finished");
 			return ret;
 		}
 
@@ -303,25 +311,31 @@ namespace threadingUtils {
 		void runPendingTask(const std::chrono::duration<Rep, Per> & timeout = std::chrono::duration<Rep, Per>(std::chrono::milliseconds(100)),
 			const bool waitForOther = false)
 		{
+			LogPolicy::log("Work manager in runPendingTask");
 			Task task;
 			if (workQueue.tryGet(task) == true){
+				LogPolicy::log("Work manager running task");
 				task.functionWrapper();
 			}
 			else if (isLocalThread == true){
 				std::unique_lock<std::mutex> lock(taskMutex);
 				if ((forceFinalize_ == true) || ((finalize_ == true) && (workQueue.empty() == true))){
+					LogPolicy::log("Work manager finalizing work executor");
 					forceFinalize_ = true;
 					lock.unlock();
 					taskCV.notify_all();
 				}
 				else if (waitForOther == true){
+					LogPolicy::log("Work manager waiting for others");
 					std::this_thread::sleep_for(timeout);
 				}
 				else{
+					LogPolicy::log("Work manager waiting on CV");
 					taskCV.wait(lock);
 				}
 			}
 			else{
+				LogPolicy::log("Work manager external waiting");
 				std::this_thread::sleep_for(timeout);
 			}
 		}
@@ -345,8 +359,8 @@ namespace threadingUtils {
 		static thread_local bool isLocalThread;
 	};
 
-	template<class WorkQueue, class InterruptibleThread, typename WorkExceptionHandlePolicy, typename InterruptHandlePolicy>
-	thread_local bool InterruptibleWorkManager<WorkQueue, InterruptibleThread, WorkExceptionHandlePolicy, InterruptHandlePolicy>::isLocalThread = false;
+	template<class WorkQueue, class InterruptibleThread, typename WorkExceptionHandlePolicy, typename InterruptHandlePolicy, typename LogPolicy>
+	thread_local bool InterruptibleWorkManager<WorkQueue, InterruptibleThread, WorkExceptionHandlePolicy, InterruptHandlePolicy, LogPolicy>::isLocalThread = false;
 }
 
 #endif	// __HEADER_GUARD_THREADINGUTILS__WORKMANAGER_H__

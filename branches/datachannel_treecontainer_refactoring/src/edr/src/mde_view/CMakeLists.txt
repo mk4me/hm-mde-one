@@ -85,4 +85,7 @@ GENERATE_PROJECT_TRANSLATIONS()
 # u¿ywamy tylko i wy³¹cznie BOOST_FOREACH!!
 add_definitions(-DQT_NO_KEYWORDS -Dsignals=Q_SIGNALS -Dslots=Q_SLOTS -Demit=Q_EMIT)
 
+if(CONFIG_DEMO_MODE)
+	add_definitions(-DDEMO_MODE)
+endif()
 END_PROJECT()

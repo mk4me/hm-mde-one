@@ -3,7 +3,7 @@
 #include <condition_variable>
 #include <map>
 #include <set>
-#include <utils/Utils.h>
+#include <utils/DummyWrap.h>
 #include <utils/Debug.h>
 #include <utils/SmartPtr.h>
 #include <curl/multi.h>
@@ -24,9 +24,10 @@ private:
 private:
 
 	void unlockAndRemove(CURLsWaitMap::iterator it, CURLcode curlCode)
-	{		
-		it->second.set_value(curlCode);
-		currentCurls.erase(it);		
+	{
+		std::promise<CURLcode> locPromise(std::move(it->second));
+		currentCurls.erase(it);
+		locPromise.set_value(curlCode);
 	}
 
 	void innerRemove()
@@ -289,7 +290,7 @@ private:
 	//! Czy mamy ju¿ koñczyæ dzia³anie managera
 	volatile bool finalized_;
 	//! Czas oczekiwania na dane [ms]
-	static const int waitTime = 500;
+	const int waitTime = 500;
 	//! Obiekt realizuj¹cy czekanie na nowe uchwyty
 	std::mutex waitSync;
 	//! Conditional variable

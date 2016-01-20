@@ -18,6 +18,7 @@
 namespace kinematic
 {
 	//! Schemat mapowania kości
+	//! \version 0.9.1
 	struct SkeletonMappingScheme
 	{
 		//! Typ pojedynczego schematu mapowania jointow

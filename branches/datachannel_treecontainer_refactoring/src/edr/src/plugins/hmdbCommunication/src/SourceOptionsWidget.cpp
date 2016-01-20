@@ -32,8 +32,8 @@ const bool verifyFileExistance(const QString & filePath)
 	bool ret = true;
 
 	if (filePath.isEmpty() == false){
-		auto p = core::Filesystem::Path(filePath.toStdString());
-		if (core::Filesystem::pathExists(p) == false || core::Filesystem::isRegularFile(p) == false){
+		auto p = utils::Filesystem::Path(filePath.toStdString());
+		if (utils::Filesystem::pathExists(p) == false || utils::Filesystem::isRegularFile(p) == false){
 			ret = false;
 		}
 	}
@@ -71,9 +71,9 @@ SourceOptionsWidget::SourceOptionsWidget(QWidget * parent, Qt::WindowFlags f)
 #ifdef DEMO_MODE
 	ui->onlineModeCheckBox->setCheckState(Qt::Unchecked);
 	ui->onlineModeCheckBox->setEnabled(false);
-	ui->loginLineEdit->setText("motion_admin");
+	//ui->loginLineEdit->setText("motion_admin");
 	ui->loginLineEdit->setEnabled(false);
-	ui->passwordLineEdit->setText("HMDBP@ss");
+	//ui->passwordLineEdit->setText("HMDBP@ss");
 	ui->passwordLineEdit->setEnabled(false);
 	this->setVisible(false);
 	this->instance = this;
@@ -706,7 +706,7 @@ const bool SourceOptionsWidget::verify(QStringList & messages)
 	}
 
 	bool storageCreated = false;
-	core::Filesystem::Path storagePath(ui->storagePathLineEdit->text().toStdString());
+	utils::Filesystem::Path storagePath(ui->storagePathLineEdit->text().toStdString());
 	if (storagePath.empty() == true){
 		messages.push_back(tr("Storage file was not not chosen."));
 	}
@@ -717,7 +717,7 @@ const bool SourceOptionsWidget::verify(QStringList & messages)
 		|| storagePath.has_extension() == false){
 		messages.push_back(tr("Storage file path is not a file path. Both: file name and extension are required."));
 	}
-	else if (core::Filesystem::pathExists(storagePath) == false){
+	else if (utils::Filesystem::pathExists(storagePath) == false){
 
 		auto ret = QMessageBox::question(this, tr("Storage not exists"), tr("Given storage does not exist. Would You like to create storage with the given parameters?"));
 
@@ -725,17 +725,17 @@ const bool SourceOptionsWidget::verify(QStringList & messages)
 
 			auto parentDir = storagePath.parent_path();
 
-			if (core::Filesystem::pathExists(parentDir) == false){
+			if (utils::Filesystem::pathExists(parentDir) == false){
 
 				try{
-					core::Filesystem::createDirectory(parentDir);
+					utils::Filesystem::createDirectory(parentDir);
 				}
 				catch (...){
 
 				}
 			}
 
-			if (core::Filesystem::pathExists(parentDir) == false){
+			if (utils::Filesystem::pathExists(parentDir) == false){
 				messages.push_back(tr("Failed to create storage in the given directory - do You have required permissions?"));
 			}
 			else if (hmdbCommunication::SQLCipherStorage::create(storagePath, ui->storagePasswordLineEdit->text().toStdString()) == true){
@@ -752,7 +752,7 @@ const bool SourceOptionsWidget::verify(QStringList & messages)
 		}
 	}
 
-	if (storageCreated == false && core::Filesystem::pathExists(storagePath) == true) {
+	if (storageCreated == false && utils::Filesystem::pathExists(storagePath) == true) {
 		std::unique_ptr<hmdbCommunication::SQLCipherStorage> storage(new hmdbCommunication::SQLCipherStorage);
 
 		storage->open(ui->storagePathLineEdit->text().toStdString(),

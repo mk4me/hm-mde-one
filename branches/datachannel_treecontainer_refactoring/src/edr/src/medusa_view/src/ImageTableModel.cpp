@@ -253,7 +253,7 @@ std::pair<QString, QString> getImgAndUserName(const core::Variant* v)
 	auto unknown = QObject::tr("Unknown");
 	std::string sourceFile;
 	if (v->getMetadata("core/source", sourceFile)) {
-		core::Filesystem::Path stem = core::Filesystem::Path(sourceFile).stem();
+		utils::Filesystem::Path stem = utils::Filesystem::Path(sourceFile).stem();
 		auto img = QString::fromStdString(stem.stem().string());
 		auto nameStr = stem.extension().string();
 		nameStr.erase(0, 1);

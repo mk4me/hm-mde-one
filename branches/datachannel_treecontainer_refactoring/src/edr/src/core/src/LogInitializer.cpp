@@ -214,7 +214,7 @@ typedef log4cxx::helpers::ObjectPtrT<LogWidgetAppender> LogWidgetAppenderPtr;
 
 //------------------------------------------------------------------------------
 
-LogInitializer::LogInitializer( const core::Filesystem::Path & configPath )
+LogInitializer::LogInitializer( const utils::Filesystem::Path & configPath )
 {
     LogWidgetAppender::registerClass();
     // załadowanie parametów logowania
@@ -355,7 +355,7 @@ public:
 };
 
 
-LogInitializer::LogInitializer( const core::Filesystem::Path & configPath )
+LogInitializer::LogInitializer( const utils::Filesystem::Path & configPath )
 {
     qInstallMsgHandler(QtMessageHandler);
     osg::setNotifyHandler( new OsgNotifyHandlerLogWidget(osg::getNotifyHandler()) );
@@ -404,7 +404,7 @@ public:
 };
 
 
-LogInitializer::LogInitializer( const core::Filesystem::Path & configPath )
+LogInitializer::LogInitializer( const utils::Filesystem::Path & configPath )
 {
 	qInstallMsgHandler(QtMessageHandler);
 	osg::setNotifyHandler( new OsgNotifyHandlerLogWidget() );

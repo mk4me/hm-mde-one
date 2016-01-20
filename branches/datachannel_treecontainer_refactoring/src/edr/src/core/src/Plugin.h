@@ -10,7 +10,7 @@
 #define HEADER_GUARD_CORE__PLUGIN_H__
 
 #include <corelib/IPlugin.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <corelib/IIdentifiable.h>
 
 namespace core {
@@ -66,7 +66,7 @@ private:
     //! ID pluginu.
     UniqueID id;
     //! Œcie¿ka do pluginu.
-    Filesystem::Path path;
+	utils::Filesystem::Path path;
 	//! Opis pluginu
 	plugin::Description desc;
 	//! Dostawca pluginu
@@ -91,7 +91,7 @@ public:
 	//! \return Krótka nazwa pluginu.
 	const std::string shortName() const;
     //! \return
-    const Filesystem::Path& getPath() const;
+	const utils::Filesystem::Path& getPath() const;
 
 	//! \return Wersja pluginu
 	const core::Version * version() const;
@@ -99,7 +99,7 @@ public:
 	const plugin::VendorDescription * vendor() const;
 
     //! \param path
-    void setPath(const Filesystem::Path& path);
+	void setPath(const utils::Filesystem::Path& path);
 
 	//! \param name Nazwa pluginu
 	virtual void setName(const std::string & name) override;

@@ -20,21 +20,21 @@ public:
 	virtual ~PluginPath();
 
 	//! \return Zwraca pelna sciezke do folderu "MyDocuments\APP"
-	virtual const Filesystem::Path& getUserDataPath() const;
+	virtual const utils::Filesystem::Path& getUserDataPath() const;
 	//! \return Zwraca pelna sciezke do folderu "ApplicationData\APP"
-	virtual const Filesystem::Path& getApplicationDataPath() const;
+	virtual const utils::Filesystem::Path& getApplicationDataPath() const;
 	//! \return Zwraca pelna sciezke do folderu "ApplicationData\APP"
-	virtual const Filesystem::Path& getUserApplicationDataPath() const;
+	virtual const utils::Filesystem::Path& getUserApplicationDataPath() const;
 	//! \return Zwraca pelna sciezke do folderu z zasobami aplikacji
-	virtual const Filesystem::Path& getResourcesPath() const;
+	virtual const utils::Filesystem::Path& getResourcesPath() const;
 	//! \return Zwraca pe³n¹ œcie¿kê do tymczasowego folderu, który jest czyszczony podczas ka¿dego zamykania aplikacji
-	virtual const Filesystem::Path& getTempPath() const;
+	virtual const utils::Filesystem::Path& getTempPath() const;
 	//! \return Zwraca pe³n¹ œcie¿kê do folderu pluginu
-	virtual const Filesystem::Path& getPluginPath() const;
+	virtual const utils::Filesystem::Path& getPluginPath() const;
 
 private:
-	const Filesystem::Path pluginPath;
-	const Filesystem::Path pluginTmpPath;
+	const utils::Filesystem::Path pluginPath;
+	const utils::Filesystem::Path pluginTmpPath;
 };
 
 }

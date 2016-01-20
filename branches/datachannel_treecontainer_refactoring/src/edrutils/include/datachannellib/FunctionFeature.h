@@ -1,19 +1,19 @@
 /********************************************************************
 created:  2015/07/28	15:04:12
-filename: IFunctionFeature.h
+filename: FunctionFeature.h
 author:	  Mateusz Janiak
 
 purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__IFUNCTIONFEATURE_H__
-#define __HEADER_GUARD_DATACHANNEL__IFUNCTIONFEATURE_H__
+#ifndef __HEADER_GUARD_DATACHANNEL__FUNCTIONFEATURE_H__
+#define __HEADER_GUARD_DATACHANNEL__FUNCTIONFEATURE_H__
 
 #include <datachannellib/Accessors.h>
 #include <set>
 #include <utils/Utils.h>
 #include <type_traits>
 
-namespace datachannel
+namespace dataaccessor
 {
 
 	class FunctionFeature;
@@ -21,7 +21,7 @@ namespace datachannel
 	//! Interfejs opisuj¹cy cechy kana³y reprezentuj¹cego funkcjê - jeden argument jedna wartoœæ,
 	//! jak kana³ nie ma tego interfejsu to traktujemy go jako relacje i mo¿liwa jest tylko wersja dyskretna
 	//! - musi j¹ implementowaæ, inaczej FAIL
-	class IFunctionFeature : public FeatureHelper<Function>
+	class IFunctionFeature : public FeatureHelperT<Function>
 	{
 	public:
 		//! Destruktor wirtualny
@@ -35,8 +35,8 @@ namespace datachannel
 
 		template<typename ValueType, typename ArgumentType>
 		inline static FunctionFeature * create(
-			const IDiscreteAccessor<ValueType, ArgumentType> * discrete,
-			const IFunctionAccessor<ValueType, ArgumentType> * function)
+			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
+			const IFunctionAccessorT<ValueType, ArgumentType> * function)
 		{
 			FunctionFeature * ret = nullptr;
 			if (discrete != nullptr && discrete->empty() == false){
@@ -47,10 +47,10 @@ namespace datachannel
 		}
 
 		template<typename ValueType, typename ArgumentType>
-		static inline FunctionFeature * create(const IDiscreteAccessor<ValueType, ArgumentType> & accessor,
+		static inline FunctionFeature * create(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			std::true_type)
 		{
-			using Discrete = IDiscreteAccessor<ValueType, ArgumentType>;
+			using Discrete = IDiscreteAccessorT<ValueType, ArgumentType>;
 			FunctionFeature * ret = nullptr;
 			bool even = false;
 			bool odd = false;
@@ -126,10 +126,10 @@ namespace datachannel
 		}
 
 		template<typename ValueType, typename ArgumentType>
-		static inline FunctionFeature * create(const IDiscreteAccessor<ValueType, ArgumentType> & accessor,
+		static inline FunctionFeature * create(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			std::false_type)
 		{
-			using Discrete = IDiscreteAccessor<ValueType, ArgumentType>;
+			using Discrete = IDiscreteAccessorT<ValueType, ArgumentType>;
 			FunctionFeature * ret = nullptr;
 			bool even = false;
 			bool odd = false;
@@ -192,4 +192,4 @@ namespace datachannel
 	};
 }
 
-#endif	// __HEADER_GUARD_DATACHANNEL__IFUNCTIONFEATURE_H__
+#endif	// __HEADER_GUARD_DATACHANNEL__FUNCTIONFEATURE_H__

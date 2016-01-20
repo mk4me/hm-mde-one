@@ -1,7 +1,7 @@
 #include "NewChartPCH.h"
 #include "NewChartEventStateData.h"
-#include <datachannellib/IBoundedArgumentsFeature.h>
-#include <datachannellib/IBoundedValuesFeature.h>
+#include <datachannellib/BoundedArgumentsFeature.h>
+#include <datachannellib/BoundedValuesFeature.h>
 
 QRectF channelBoundingRect(c3dlib::ScalarChannelReaderInterfaceConstPtr channel)
 {
@@ -11,11 +11,11 @@ QRectF channelBoundingRect(c3dlib::ScalarChannelReaderInterfaceConstPtr channel)
 
 	QRectF ret(0, 1000, 20, 2000);
 
-	auto baf = channel->getOrCreateArgumentFeature<datachannel::IBoundedArgumentsFeature>();	
+	auto baf = channel->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();	
 	ret.setLeft(baf->minArgument());
 	ret.setRight(baf->maxArgument());
 	
-	auto bvf = channel->getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();	
+	auto bvf = channel->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();	
 	ret.setBottom(bvf->minValue());
 	ret.setTop(bvf->maxValue());	
 
@@ -23,8 +23,8 @@ QRectF channelBoundingRect(c3dlib::ScalarChannelReaderInterfaceConstPtr channel)
 }
 
 NewChartEventStateData::NewChartEventStateData(c3dlib::ScalarChannelReaderInterfaceConstPtr channel, float startTime, float endTime) :
-	channel(channel), startIndex(datachannel::NearestArgumentsFinder::range(*channel, startTime).first),
-	endIndex(datachannel::NearestArgumentsFinder::range(*channel, startTime).second),
+	channel(channel), startIndex(dataaccessor::NearestArgumentsFinder::range(*channel, startTime).first),
+	endIndex(dataaccessor::NearestArgumentsFinder::range(*channel, startTime).second),
 	boundingRect_(channelBoundingRect(channel))
 {	
 	

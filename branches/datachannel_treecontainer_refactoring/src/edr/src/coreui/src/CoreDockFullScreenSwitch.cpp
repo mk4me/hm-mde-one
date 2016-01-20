@@ -42,6 +42,7 @@ void CoreDockFullScreenSwitch::onTopLevelChanged(bool floating)
 	}
 }
 
+
 bool CoreDockFullScreenSwitch::eventFilter(QObject * watched, QEvent * event)
 {
 	if (update == true && event->type() == QEvent::WindowStateChange){

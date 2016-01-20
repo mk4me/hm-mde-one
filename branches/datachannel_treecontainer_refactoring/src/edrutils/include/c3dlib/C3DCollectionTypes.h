@@ -89,12 +89,12 @@ namespace  c3dlib {
 	typedef utils::shared_ptr<const C3DEventsCollection> EventsCollectionConstPtr;
 
 	//! Kolekcja obiektów EMG, obs³ugiwana w standardowy sposób
-	typedef datachannel::AccessorsCollection<EMGChannel> EMGCollection;
+	typedef dataaccessor::AccessorsCollection<EMGChannel> EMGCollection;
 	typedef utils::shared_ptr<EMGCollection> EMGCollectionPtr;
 	typedef utils::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
 
 	//! Kolekcja kana³ów opartych o trójwymiarowy wektor
-	typedef datachannel::AccessorsCollection<VectorChannelReaderInterface> VectorChannelCollection;
+	typedef dataaccessor::AccessorsCollection<VectorChannelReaderInterface> VectorChannelCollection;
 	typedef utils::shared_ptr<VectorChannelCollection > VectorChannelCollectionPtr;
 	typedef utils::shared_ptr<const VectorChannelCollection > VectorChannelCollectionConstPtr;
 
@@ -106,7 +106,7 @@ namespace  c3dlib {
 	C3DLIB_EXPORT std::vector<FloatPairPtr> getTimeSegments(EventsCollectionConstPtr events, C3DEventsCollection::Context context);
 
 	//! Kolekcja dostarcza równie¿ informacji o p³ytach GFR oraz u³atwia pobranie konkretnego kana³u
-	class C3DLIB_EXPORT GRFCollection : public datachannel::AccessorsCollection<GRFChannel>
+	class C3DLIB_EXPORT GRFCollection : public dataaccessor::AccessorsCollection<GRFChannel>
 	{
 	public:
 		//! \return wszystkie wczytane p³yty pomiarowe zwi¹zane z danymi GRF
@@ -126,7 +126,7 @@ namespace  c3dlib {
 	typedef utils::shared_ptr<const GRFCollection> GRFCollectionConstPtr;
 
 	//! Kontener wszystkich markerów modelu, u³atwia obs³ugê danych, dodaje wsparcie o pliki VSK
-	class C3DLIB_EXPORT MarkerCollection : public datachannel::AccessorsCollection<MarkerChannel>
+	class C3DLIB_EXPORT MarkerCollection : public dataaccessor::AccessorsCollection<MarkerChannel>
 	{
 	public:
 		//! Konstruktor
@@ -149,8 +149,7 @@ namespace  c3dlib {
 	typedef utils::shared_ptr<MarkerCollection> MarkerCollectionPtr;
 	typedef utils::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
 
-
-	typedef std::vector<double> MovieDelays;
+	//typedef std::vector<double> MovieDelays;
 	DEFINE_SMART_POINTERS(MovieDelays);
 
 	//! makro u³atwia definicje dodatkowych kana³ów, osobne typy u³atwiaja otrzymanie konkretnych danych z DM

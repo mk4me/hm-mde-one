@@ -16,7 +16,7 @@ class LoginDialog : public QDialog, private Ui::LoginDialog
 {
 	Q_OBJECT;
 public:
-	LoginDialog(QWidget* parent);
+	LoginDialog(QWidget* parent, const QString& user = QString(), const QString& pass = QString());
 	virtual ~LoginDialog() {}
 
 public:

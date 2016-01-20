@@ -39,7 +39,7 @@ namespace treeContainer
 		//! Typ rozmiaru
 		using SizeType = Nodes<Node>::size_type;
 
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtrA, typename NPtrB>
 		//! \param me Węzeł dla którego sprawdzamy przodka
 		//! \param ancestor Weryfikowany węzeł przodek
@@ -56,7 +56,7 @@ namespace treeContainer
 			return p.get() == ancestor;
 		}
 
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtrA, typename NPtrB>
 		//! \param me Węzeł dla którego sprawdzamy przodka
 		//! \param ancestor Weryfikowany węzeł przodek
@@ -73,7 +73,7 @@ namespace treeContainer
 			return p == ancestor;
 		}
 
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtrA, typename NPtrB>
 		//! \param me Węzeł dla którego sprawdzamy potomka
 		//! \param ancestor Weryfikowany węzeł potomek
@@ -160,7 +160,7 @@ namespace treeContainer
 			return ret;
 		}
 
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtr>
 		//! \param node Węzeł dla którego liczymy dzieci
 		static SizeType childrenCount(NPtr node)

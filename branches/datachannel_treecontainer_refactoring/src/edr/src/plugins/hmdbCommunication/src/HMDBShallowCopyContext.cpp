@@ -315,14 +315,14 @@ const core::ConstVariantsList HMDBShallowCopyLocalContext::data(const DataType t
 
 	for (auto it = items.begin(); it != items.end(); ++it){
 		auto dIT = data_.find(type);
-		// czy mam tak� grup� obiekt�w
+		// czy mam taką grupę obiektów
 		if (dIT != data_.end()){
-			//czy chc� dane wszystkich obiekt�w tego typu?
+			//czy chcę dane wszystkich obiektów tego typu?
 			if (it->second.find(-1) != it->second.end()){
-				// dla wszystkich indeks�w
+				// dla wszystkich indeksów
 				auto IT = dIT->second.begin();
 				while(IT != dIT->second.end()){
-					//filtrowanie danych kt�re zosta�y wy�adowane
+					//filtrowanie danych które zostały wyładowane
 					filterAndInsertData(IT->second, ret, localContext_);
 					if (IT->second.empty() == true){
 						IT = dIT->second.erase(IT);
@@ -452,7 +452,7 @@ private:
 
 void HMDBShallowCopyLocalContext::addPatientObject(const hmdbServices::MedicalShallowCopy::Patient * patient, PluginSubject::SubjectID subjectID)
 {
-	//generuj� list� schorze�
+	//generuję listę schorzeń
 	std::vector<hmdbCommunication::Disorder> disorders;
 	for (auto it = patient->disorders.begin(); it != patient->disorders.end(); ++it)	{
 		hmdbCommunication::Disorder dis;
@@ -467,13 +467,13 @@ void HMDBShallowCopyLocalContext::addPatientObject(const hmdbServices::MedicalSh
 	PatientPtr pPtr(new Patient(subjectID, patient->name, patient->surname, patient->birthDate.toString(),
 		Patient::decodeGender(patient->gender), utils::shared_ptr<const QPixmap>(), disorders));
 
-	//dodaj� do DM
+	//dodaję do DM
 	auto pOW = core::Variant::create<hmdbCommunication::IPatient>();
 	pOW->set(pPtr);
 
 	localContext_->transaction()->load(pOW);
 
-	//zapami�tuje
+	//zapamiętuje
 	data_[PatientType][subjectID].push_back(pOW);
 }
 
@@ -561,7 +561,7 @@ core::VariantPtr HMDBShallowCopyLocalContext::getSubject(const hmdbServices::ID 
 	if (subOW == nullptr){
 
 		PluginSubject::SubjectPtr subPtr;
-		//tworz� subjecta
+		//tworzę subjecta
 		subOW = subjectService->createSubject();
 
 		//FIX dla linux RtR
@@ -583,10 +583,10 @@ core::VariantPtr HMDBShallowCopyLocalContext::getSubject(const hmdbServices::ID 
 
 		subOW->setMetadata("label", label.str());
 
-		//dodaj� do DM
+		//dodaję do DM
 		localContext_->transaction()->load(subOW);
 
-		//zapami�tuj� mapowanie
+		//zapamiętuję mapowanie
 		data_[SubjectType][id].push_back(subOW);
 	}
 
@@ -616,8 +616,8 @@ core::VariantPtr HMDBShallowCopyLocalContext::getSession(const std::pair<Indexes
 
 		auto s = sIT->second;
 
-		//tworz� sesj�
-		//generuj� zbi�r ow dla sesji
+		//tworzę sesję
+		//generuję zbiór ow dla sesji
 		core::ConstVariantsList sessionObjects;
 		for (auto fIT = sessionFiles.first.begin(); fIT != sessionFiles.first.end(); ++fIT){
 			//pobieram obiekty
@@ -661,12 +661,12 @@ core::VariantPtr HMDBShallowCopyLocalContext::getSession(const std::pair<Indexes
 			}
 		}
 
-		//dodaj� do DM
+		//dodaję do DM
 		auto t = localContext_->transaction();
 		t->load(antroOW);
 		t->load(sOW);
 
-		//zapami�tuj� mapowanie
+		//zapamiętuję mapowanie
 		data_[SessionType][id].push_back(sOW);
 		data_[SessionType][id].push_back(antroOW);
 		subPtr->addSession(sOW);
@@ -679,7 +679,7 @@ const core::VariantPtr createJointsAngles(const core::ConstVariantsList objects,
 {
 	core::VariantPtr ret;
 
-	//sprawdzamy joint angles - je�li nie ma budujemy i dodajemy do DM
+	//sprawdzamy joint angles - jeżli nie ma budujemy i dodajemy do DM
 	core::VariantConstPtr dataWrapper;
 	core::VariantConstPtr modelWrapper;
 	for (auto it = objects.begin(); it != objects.end(); ++it) {
@@ -730,8 +730,8 @@ core::VariantPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & motionFi
 
 		auto m = mIT->second;
 
-		//tworz� sesj�
-		//generuj� zbi�r ow dla motiona
+		//tworzę sesję
+		//generuję zbiór ow dla motiona
 		core::ConstVariantsList motionObjects;
 		for (auto fIT = motionFiles.begin(); fIT != motionFiles.end(); ++fIT){
 
@@ -764,15 +764,16 @@ core::VariantPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & motionFi
 			mPtr->getObjects(movieDelaysCollection);
 			if (movieDelaysCollection.size() == 1) {
 				c3dlib::MovieDelaysConstPtr delays = (*(movieDelaysCollection.begin()))->get();
-				if (delays->size() == videoCollection.size()) {
-					int i = 0;
-					for (auto it = videoCollection.begin(); it != videoCollection.end(); ++it) {
-						core::VariantPtr wrp = utils::const_pointer_cast<core::Variant>(*it);
-						wrp->setMetadata("movieDelay", boost::lexical_cast<std::string>(delays->at(i++)));
+				for (auto it = videoCollection.begin(); it != videoCollection.end(); ++it) {
+					core::VariantPtr wrp = utils::const_pointer_cast<core::Variant>(*it);
+					std::string path;
+					if (wrp->getMetadata("core/source", path)) {
+						for (const auto& delay : *delays) {
+							if (path.find(delay.first) != std::string::npos) {
+								wrp->setMetadata("movieDelay", boost::lexical_cast<std::string>(delay.second));
+							}
+						}
 					}
-				}
-				else {
-					PLUGIN_LOG_ERROR("Unable to map movie delays");
 				}
 			}
 			else {
@@ -791,7 +792,7 @@ core::VariantPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & motionFi
 		auto t = localContext_->transaction();
 		t->load(mOW);
 
-		//zapami�tuj� mapowanie
+		//zapamiętuję mapowanie
 		data_[MotionType][id].push_back(mOW);
 
 		if (jointsWrapper != nullptr){
@@ -821,14 +822,14 @@ const HMDBShallowCopyLocalContext::SubjectFiles HMDBShallowCopyLocalContext::gro
 			}
 			else{
 				//TODO
-				//INFO o nieobs�ugiwanym pliku
+				//INFO o nieobsługiwanym pliku
 			}
 		}
 		else{
 			auto fileIT = shallowCopy->motionShallowCopy.files.find(it->first);
 			if (fileIT == shallowCopy->motionShallowCopy.files.end()){
 				//TODO
-				//INFO o nieobs�ugiwanym pliku
+				//INFO o nieobsługiwanym pliku
 				continue;
 			}
 
@@ -854,8 +855,8 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 
 	auto shallowCopy = shallowCopyContext_->shallowCopy();
 
-	//buduje map� hierarchii subject -> session -> motion -> files
-	//na bazie tej mapy b�d� realizowa� hierarchi� pluginu subject
+	//buduje mapę hierarchii subject -> session -> motion -> files
+	//na bazie tej mapy będę realizować hierarchię pluginu subject
 
 	SubjectFiles subjectHierarchy = groupDataInHierarchy(loadedFilesData, shallowCopy);
 	Indexes loadedFiles;
@@ -868,13 +869,13 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 	auto transaction = localContext_->transaction();
 	//auto hierarchyTransaction = mdm->hierarchyTransaction();
 	for (auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
-		//tworz� subject je�li to konieczne!!
+		//tworzę subject jeżli to konieczne!!
 
 		core::VariantPtr subOW = getSubject(subjectIT->first, subjectService, shallowCopy);
 		PluginSubject::SubjectPtr subPtr;
 		subOW->tryGet(subPtr);
 
-		//mam subjecta, mog� i�� dalej do sesji
+		//mam subjecta, mogę iść dalej do sesji
 		for (auto sessionIT = subjectIT->second.begin(); sessionIT != subjectIT->second.end(); ++sessionIT){
 			
 			core::VariantPtr sOW = getSession(sessionIT->second,
@@ -883,7 +884,7 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 			PluginSubject::SessionPtr sPtr;
 			sOW->tryGet(sPtr);
 
-			//mam sesj� - mog� i�� dalej z motionami!!
+			//mam sesję - mogę iść dalej z motionami!!
 			for (auto motionIT = sessionIT->second.second.begin(); motionIT != sessionIT->second.second.end(); ++motionIT){
 				core::VariantPtr mOW = getMotion(motionIT->second,
 					loadedFilesData, sPtr, sOW, motionIT->first,
@@ -1045,7 +1046,7 @@ const bool HMDBShallowCopyLocalContext::unload(const DataType type,
 				else{
 					auto locFiles2roots = files2roots;
 
-					//szukam po rootach czy ich przeci�cie z aktualn� grup� istnieje
+					//szukam po rootach czy ich przecięcie z aktualną grupą istnieje
 					for (auto IT = locFiles2roots.begin(); IT != locFiles2roots.end(); ++IT){
 						std::vector<int> inter(std::min(unloadFiles.size(), IT->first.size()));
 						auto retIT = std::set_intersection(unloadFiles.begin(), unloadFiles.end(), IT->first.begin(), IT->first.end(), inter.begin());
@@ -1084,27 +1085,27 @@ void HMDBShallowCopyLocalContext::unloadSubjectHierarchy(const IndexedData & unl
 {
 	auto shallowCopy = shallowCopyContext_->shallowCopy();
 
-	//buduje map� hierarchii subject -> session -> motion -> files
-	//na bazie tej mapy b�d� realizowa� hierarchi� pluginu subject
+	//buduje mapę hierarchii subject -> session -> motion -> files
+	//na bazie tej mapy będą realizować hierarchię pluginu subject
 
 	SubjectFiles subjectHierarchy = groupDataInHierarchy(unloadedFiles, shallowCopy);
 
 	auto transaction = localContext_->transaction();
 	for (auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
-		//tworz� subject je�li to konieczne!!
+		//tworzę subject jeśli to konieczne!!
 
 		core::VariantPtr subOW = findObjectByType(SubjectType, subjectIT->first, typeid(PluginSubject::ISubject));
 		PluginSubject::SubjectPtr subPtr;
 		subOW->tryGet(subPtr);
 
-		//mam subjecta, mog� i�� dalej do sesji
+		//mam subjecta, mogę iść dalej do sesji
 		for (auto sessionIT = subjectIT->second.begin(); sessionIT != subjectIT->second.end(); ++sessionIT){
 
 			core::VariantPtr sOW = findObjectByType(SessionType, sessionIT->first, typeid(PluginSubject::ISession));
 			PluginSubject::SessionPtr sPtr;
 			sOW->tryGet(sPtr);
 
-			//mam sesj� - mog� i�� dalej z motionami!!
+			//mam sesję - mogę iść dalej z motionami!!
 			for (auto motionIT = sessionIT->second.second.begin(); motionIT != sessionIT->second.second.end(); ++motionIT){
 				core::VariantPtr mOW = findObjectByType(MotionType, motionIT->first, typeid(PluginSubject::IMotion));
 				PluginSubject::MotionPtr mPtr;
@@ -1283,16 +1284,16 @@ void HMDBShallowCopyRemoteContext::synchronize(const ShallowCopyConstPtr shallow
 }
 
 void HMDBShallowCopyRemoteContext::synchronize(const SynchronizeOperationPtr downloadOperations)
-{
+{	
 	downloadOperations->start();
 	try {
-		downloadOperations->wait();
+		downloadOperations->wait();		
 	} catch (std::exception& e) {
 		PLUGIN_LOG_WARNING(e.what());
 	} catch (...) {
 		
 	}
-	
+		
 	if (downloadOperations->status() == threadingUtils::IOperation::Finished){		
 		auto sc = downloadOperations->shallowCopy();
 		auto isc = downloadOperations->incrementalBranchShallowCopy();

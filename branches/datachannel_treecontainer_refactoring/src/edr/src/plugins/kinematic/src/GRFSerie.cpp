@@ -2,8 +2,8 @@
 #include "GRFSerie.h"
 #include "KinematicVisualizer.h"
 #include <corelib/PluginCommon.h>
-#include <datachannellib/IBoundedArgumentsFeature.h>
-#include <datachannellib/IBoundedValuesFeature.h>
+#include <datachannellib/BoundedArgumentsFeature.h>
+#include <datachannellib/BoundedValuesFeature.h>
 #include <datachannellib/Adapters.h>
 
 //using namespace core;
@@ -29,7 +29,9 @@ GRFSerie::GRFSerie( KinematicVisualizer * visualizer,
 	this->requestedType = requestedType;
 	//FIX tymczasowy dla linuxa
 	grfCollection = data->get();	
-
+	if (!grfCollection) {
+		throw std::runtime_error("No grf data");
+	}
 	const c3dlib::IForcePlatformCollection& platforms = grfCollection->getPlatforms();
     if (!platforms.empty()) {
         matrixTransform->addChild(createPlatformsGroup(platforms));
@@ -136,7 +138,7 @@ GRFSerie::GeodePtr GRFSerie::createStep(c3dlib::IForcePlatform::IStepConstPtr st
     int numSegments = 300;
     auto f1 = platform->getForceChannel();
 
-	auto baf = f1->getOrCreateArgumentFeature<datachannel::IBoundedArgumentsFeature>();	
+	auto baf = f1->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();	
 	const auto length = baf->maxArgument() - baf->minArgument();
 	float delta = (length / static_cast<float>(numSegments));
     GeodePtr geode = new osg::Geode();
@@ -155,13 +157,13 @@ GRFSerie::GeodePtr GRFSerie::createStep(c3dlib::IForcePlatform::IStepConstPtr st
     osg::Vec3 lastV1;
     osg::Vec3 lastOrigin1;
 
-	//auto bvf = f1->getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
+	//auto bvf = f1->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
 
-	datachannel::DiscreteFunctionAccessorAdapter < c3dlib::GRFChannel::value_type,
-		c3dlib::GRFChannel::argument_type, datachannel::LerpInterpolator,
-		datachannel::BorderExtrapolator < c3dlib::GRFChannel::value_type >> timeAccessor(*f1,
-		datachannel::LerpInterpolator(),
-		datachannel::BorderExtrapolator<c3dlib::GRFChannel::value_type>(f1->value(0), f1->value(f1->size() - 1)));
+	dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::GRFChannel::value_type,
+		c3dlib::GRFChannel::argument_type, dataaccessor::LerpInterpolator,
+		dataaccessor::BorderExtrapolator < c3dlib::GRFChannel::value_type >> timeAccessor(*f1,
+		dataaccessor::LerpInterpolator(),
+		dataaccessor::BorderExtrapolator<c3dlib::GRFChannel::value_type>(f1->value(0), f1->value(f1->size() - 1)));
 
     for (int i = 0; i < numSegments; ++i) {
 		v = timeAccessor.value(f);        
@@ -525,13 +527,13 @@ void GRFSerie::update()
 	for (auto it = platforms.cbegin(); it != platforms.cend(); ++it) {
 		auto f1 = (*it)->getForceChannel();
 
-		//auto bvf = f1->getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
+		//auto bvf = f1->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
 
-		datachannel::DiscreteFunctionAccessorAdapter < c3dlib::ForceChannel::value_type,
-			c3dlib::ForceChannel::argument_type, datachannel::LerpInterpolator,
-			datachannel::BorderExtrapolator < c3dlib::ForceChannel::value_type >> timeAccessor(*f1,
-			datachannel::LerpInterpolator(),
-			datachannel::BorderExtrapolator<c3dlib::ForceChannel::value_type>(f1->value(0), f1->value(f1->size() - 1)));
+		dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::ForceChannel::value_type,
+			c3dlib::ForceChannel::argument_type, dataaccessor::LerpInterpolator,
+			dataaccessor::BorderExtrapolator < c3dlib::ForceChannel::value_type >> timeAccessor(*f1,
+			dataaccessor::LerpInterpolator(),
+			dataaccessor::BorderExtrapolator<c3dlib::ForceChannel::value_type>(f1->value(0), f1->value(f1->size() - 1)));
 
 		auto v1 = timeAccessor.value(time);		
 

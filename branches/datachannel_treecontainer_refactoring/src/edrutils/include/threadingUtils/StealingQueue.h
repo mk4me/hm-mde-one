@@ -46,11 +46,18 @@ namespace threadingUtils
 		StealingQueue& operator=(const StealingQueue& other) = delete;
 
 		//! \param data Dane wrzucane do kolejki
-		void push(T data)
+		void push(T && data)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			queue.push_front(std::move(data));
 		}		
+
+		//! \param data Dane wrzucane do kolejki
+		void push(const T & data)
+		{
+			std::lock_guard<std::mutex> lock(mutex);
+			queue.push_front(data);
+		}
 
 		//! \return Czy kolejka jest pusta
 		const bool empty() const

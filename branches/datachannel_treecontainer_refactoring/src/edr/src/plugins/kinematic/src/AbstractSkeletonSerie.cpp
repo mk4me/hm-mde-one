@@ -33,7 +33,7 @@ void AbstractSkeletonSerie::init(double ratio, int pointsCount,
 
 	NonDummyJointFilter ndjf;	
 
-	//inicjalizacja po�acze� na bazie indeks�w joint�w
+	//inicjalizacja połaczeń na bazie indeksów jointów
 	kinematic::LinearizedSkeleton::Visitor::globalIndexedVisit(*skeleton,
 		[this, &mapping, &ndjf]
 		(kinematic::Skeleton::JointPtr joint, const kinematic::LinearizedSkeleton::NodeIDX idx)

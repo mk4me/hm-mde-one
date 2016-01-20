@@ -1,9 +1,9 @@
 #include "NewChartPCH.h"
 #include "StatsTable.h"
-#include <datachannellib/IDescriptorFeature.h>
+#include <datachannellib/DescriptorFeature.h>
 #include <datachannellib/Statistics.h>
-#include <datachannellib/IBoundedArgumentsFeature.h>
-#include <datachannellib/IBoundedValuesFeature.h>
+#include <datachannellib/BoundedArgumentsFeature.h>
+#include <datachannellib/BoundedValuesFeature.h>
 
 StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/ ) :
     QWidget(parent, f),
@@ -49,16 +49,16 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
 	 QString timeUnit = tr("Unknown time unit");
 	 QString valueUnit = tr("Unknown time unit");
 
-	 auto df = channel->feature<datachannel::IDescriptorFeature>();
+	 auto df = channel->feature<dataaccessor::IDescriptorFeature>();
 
 	 if (df != nullptr){
 		 timeUnit = QString::fromStdString(df->argumentUnit());
 		 valueUnit = QString::fromStdString(df->valueUnit());
 	 }
 
-	 auto stats = channel->getOrCreateFeature<datachannel::IStatisticsFeature>();
-	 auto baf = channel->getOrCreateArgumentFeature<datachannel::IBoundedArgumentsFeature>();
-	 auto bvf = channel->getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
+	 auto stats = channel->getOrCreateFeature<dataaccessor::IStatisticsFeature>();
+	 auto baf = channel->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();
+	 auto bvf = channel->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
 
      int i = -1;
      item->setText(++i, name);

@@ -49,10 +49,10 @@ namespace medusaExporter {
 		void recreateAnnotationDrawings(const QString& outDir, const QString& userName, const AnnotationData& data, const RecreateAnnotationsConfig& config, CallbackFunction fun);
 
 	private:
-		void pack(const QString& dirPath, const QString& outFile, std::function<bool(const core::Filesystem::Path&)> filter, CallbackFunction fun);
+		void pack(const QString& dirPath, const QString& outFile, std::function<bool(const utils::Filesystem::Path&)> filter, CallbackFunction fun);
 		std::map<std::string, bool> gatherPowerDopplers(const QString& dirPath, CallbackFunction fun);
 		void gatherPowerDopplers(dicom::IDicomInternalStructConstPtr inter, std::map<std::string, bool>& dopplers);
-		core::Filesystem::PathsList gatherInternalSessionFiles(const QString &dirPath);
+		utils::Filesystem::PathsList gatherInternalSessionFiles(const QString &dirPath);
 		bool possibleToAdd(dicom::annotations::annotationsIdx annotation, const RecreateAnnotationsConfig& config);
 	private:
 		std::vector<IExporterConstPtr> exporters;

@@ -45,7 +45,7 @@
 #include <corelib/IService.h>
 #include <corelib/PluginCommon.h>
 #include <corelib/IDataManagerReader.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 
 #include <corelib/IPlugin.h>
 

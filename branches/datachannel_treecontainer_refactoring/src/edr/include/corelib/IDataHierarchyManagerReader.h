@@ -25,7 +25,7 @@ namespace core
 			UPDATE_ITEM	//! Aktualizujemy obiekt w DM
 		};
 
-		//! Obiekt opisuj�cy zmian� w DM
+		//! Obiekt opisujący zmianę w DM
 		struct Change
 		{
 			IHierarchyItemConstPtr item;
@@ -36,10 +36,10 @@ namespace core
 		//! Agregat zmian w DM
 		typedef std::list<Change> ChangeList;
 		typedef IChangesObserver<ChangeList> IObserver;
-		//! Wska�nik na obiek obserwuj�cy zmiany
+		//! Wskaźnik na obiek obserwujący zmiany
 		typedef utils::shared_ptr<IObserver> ObserverPtr;
 
-		//! Operacje zwi�zane z zarz�dzaniem hierarchicznymi danymi
+		//! Operacje związane z zarządzaniem hierarchicznymi danymi
 		class IOperations
 		{
 		public:
@@ -50,7 +50,7 @@ namespace core
 			virtual ConstIterator hierarchyEnd() const = 0;
 		};
 
-		//! Typ transakcji dodaj�cej dane w postaci hierarchicznej
+		//! Typ transakcji dodającej dane w postaci hierarchicznej
 		typedef utils::shared_ptr<IOperations> TransactionPtr;
 
 	public:
@@ -59,10 +59,10 @@ namespace core
 		virtual TransactionPtr transaction() const = 0;
 
 		//! Dodaje obserwatora DM
-		//! \param objectWatcher Obiekt obserwuj�cy DM
+		//! \param objectWatcher Obiekt obserwujący DM
 		virtual void addObserver(const ObserverPtr & hierarchyWatcher) = 0;
 		//! Usuwa obserwatora DM
-		//! \param objectWatcher Obiekt obserwuj�cy DM
+		//! \param objectWatcher Obiekt obserwujący DM
 		virtual void removeObserver(const ObserverPtr & hierarchyWatcher) = 0;
 	};
 }

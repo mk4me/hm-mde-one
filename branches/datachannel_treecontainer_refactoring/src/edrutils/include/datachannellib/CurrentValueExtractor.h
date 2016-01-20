@@ -10,7 +10,7 @@
 
 #include <datachannellib/ArgumentTracker.h>
 
-namespace datachannel
+namespace dataaccessor
 {
 	//! \tparam ValueType Typ wyci¹ganej wartoœci z kana³u
 	template<typename ValueType>
@@ -39,7 +39,7 @@ namespace datachannel
 		//! \param tracker Obiekt z aktualnym argumentem
 		//! \param dataChannel Kana³ z którego wyci¹gamy aktualna wartoœæ
 		CurrentValueExtractor(ArgumentTrackerReaderPtr tracker,
-			const IFunctionAccessor<ValueType, ArgumentType> & dataChannel)
+			const IFunctionAccessorT<ValueType, ArgumentType> & dataChannel)
 			: tracker(tracker), dataChannel(dataChannel)
 		{
 			if (tracker == nullptr){
@@ -60,7 +60,7 @@ namespace datachannel
 		//! Obiekt z aktualnym argumentem
 		ArgumentTrackerReaderPtr tracker;
 		//! Kana³ danych
-		const IFunctionAccessor<ValueType, ArgumentType> & dataChannel;
+		const IFunctionAccessorT<ValueType, ArgumentType> & dataChannel;
 	};
 }
 

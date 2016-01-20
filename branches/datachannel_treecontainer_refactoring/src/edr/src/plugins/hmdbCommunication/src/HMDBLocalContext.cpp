@@ -244,7 +244,7 @@ if (file->fileName == zipName){
 					inFile.close();
 
 					if (ok == false || inFile.getZipError() != UNZ_OK) {
-						core::Filesystem::deleteFile(vskDestPath);
+						utils::Filesystem::deleteFile(vskDestPath);
 					}
 				}
 			}

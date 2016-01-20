@@ -37,7 +37,7 @@ namespace medusaExporter {
 	{
 	public:
 		virtual ~IExporter() {}
-		virtual void exportAnnotations(const core::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const = 0;
+		virtual void exportAnnotations(const utils::Filesystem::Path& path, const AnnotationData& data, const ExportConfig& config) const = 0;
 	};
 	DEFINE_SMART_POINTERS(IExporter);
 }

@@ -53,7 +53,7 @@ public:
 			}
 		}
 
-		//cofanie pozosta�ych zmian od ko�ca
+		//cofanie pozostałych zmian od końca
 		for(auto it = modyfications.rbegin(); it != modyfications.rend(); ++it){
 			switch((*it).modyfication){
 
@@ -70,7 +70,7 @@ public:
 		lock.reset();
 	}
 
-	//! \data Dane wchodz�ce pod kontrol� DM
+	//! \data Dane wchodzące pod kontrolę DM
 	virtual void addData(const VariantPtr & data)
 	{
 		if(transactionRollbacked == true){
@@ -101,7 +101,7 @@ public:
 	}
 
 	//! \param data Aktualizowane dane
-	//! \param newData Nowa warto�� danych
+	//! \param newData Nowa wartość danych
 	virtual void updateData(const VariantConstPtr & data, const VariantConstPtr & newData)
 	{
 		if(transactionRollbacked == true){
@@ -536,8 +536,8 @@ void DataManager::updateObservers(const ChangeList & changes )
 			(*it)->observe(changes);
 		}catch(...){
 			//TODO
-			//rozwin�� obserwator�w aby si� jako� identyfikowali!! ewentualnie robi� to przez w�asn� implementacj� dostarczan� konretnym obiektom
-			//(osobne interfejsy reader�w dla ka�dego elemnentu �adowanego do aplikacji - service, source, datasink, itp)
+			//rozwinąć obserwatorów aby się jakoś identyfikowali!! ewentualnie robić to przez własną implementację dostarczaną konretnym obiektom
+			//(osobne interfejsy readerów dla każdego elemnentu ładowanego do aplikacji - service, source, datasink, itp)
 			CORE_LOG_WARNING("Error while updating memory data manager observer");
 		}
 	}

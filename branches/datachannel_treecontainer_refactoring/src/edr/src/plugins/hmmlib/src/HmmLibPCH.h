@@ -75,7 +75,7 @@ UTILS_POP_WARNINGS
 #include <corelib/BaseDataTypes.h>
 #include <corelib/VariantsCollection.h>
 #include <utils/Export.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <corelib/IApplication.h>
 #include <corelib/PluginCommon.h>
 #include <corelib/IPath.h>

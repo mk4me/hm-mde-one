@@ -23,31 +23,31 @@
 namespace  c3dlib {
 
 	//! interfejs do odczytu czasu timera
-	typedef datachannel::IArgumentTrackerReader<float> TimerReader;
+	typedef dataaccessor::IArgumentTrackerReader<float> TimerReader;
 	//! wskaźnik do interfejsu do odczytu czasu timera
 	typedef utils::shared_ptr<TimerReader> TimerReaderPtr;
 	//! niemodyfikowalny wskaźnik do interfejsu do odczytu czasu timera
 	typedef utils::shared_ptr<const TimerReader> TimerReaderConstPtr;
 
 	//! akcesor umożliwiajacy dostanie się do danych w sposób ciągły
-	typedef datachannel::IFunctionAccessor<float, float> ScalarContiniousTimeAccessor;	
+	typedef dataaccessor::IFunctionAccessorT<float, float> ScalarContiniousTimeAccessor;	
 	
 	//! interfejs umożliwiający odczyt kanału
-	typedef datachannel::IDiscreteAccessor<float, float> ScalarChannelReaderInterface;
+	typedef dataaccessor::IDiscreteAccessorT<float, float> ScalarChannelReaderInterface;
 	//! wkaźnik na interfejs umożliwiający odczyt kanału
 	typedef utils::shared_ptr<ScalarChannelReaderInterface> ScalarChannelReaderInterfacePtr;
 	//! wkaźnik na niemodyfikowalny interfejs umożliwiający odczyt kanału
 	typedef utils::shared_ptr<const ScalarChannelReaderInterface> ScalarChannelReaderInterfaceConstPtr;
 	
 	//! interfejs umożliwiający odczyt kanału
-	typedef datachannel::IDiscreteAccessor<osg::Vec3, float> VectorChannelReaderInterface;
+	typedef dataaccessor::IDiscreteAccessorT<osg::Vec3, float> VectorChannelReaderInterface;
 	//! wkaźnik na interfejs umożliwiający odczyt kanału
 	typedef utils::shared_ptr<VectorChannelReaderInterface> VectorChannelReaderInterfacePtr;
 	//! wkaźnik na niemodyfikowalny interfejs umożliwiający odczyt kanału
 	typedef utils::shared_ptr<const VectorChannelReaderInterface> VectorChannelReaderInterfaceConstPtr;
 
 	template<typename SignalType, int Type = 0, typename ValueType = decltype(std::declval<SignalType>()->getValue(0))>
-	class C3DChannelWrapper : public datachannel::IIndependentDiscreteAccessor<ValueType, float>
+	class C3DChannelWrapper : public dataaccessor::IIndependentDiscreteAccessorT<ValueType, float>
 	{
 	public:
 
@@ -64,9 +64,9 @@ namespace  c3dlib {
 				throw std::runtime_error("No points signal");
 			}
 
-			attachFeature(utils::make_shared<datachannel::UniformArgumentsFeature<argument_type>>(argumentsGenerator.step()));
-			attachFeature(datachannel::IFeaturePtr(datachannel::Descriptor::create<value_type, argument_type >(signal->getLabel(), signal->getUnit(), "s")));
-			attachFeature(utils::make_shared<datachannel::BoundedArgumentsFeature<argument_type>>(argumentsGenerator.start(), argumentsGenerator.end()));
+			attachFeature(utils::make_shared<dataaccessor::UniformArgumentsFeature<argument_type>>(argumentsGenerator.step()));
+			attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<value_type, argument_type >(signal->getLabel(), signal->getUnit(), "s")));
+			attachFeature(utils::make_shared<dataaccessor::BoundedArgumentsFeature<argument_type>>(argumentsGenerator.start(), argumentsGenerator.end()));
 		}
 
 		virtual ~C3DChannelWrapper() {}
@@ -85,7 +85,7 @@ namespace  c3dlib {
 
 	private:
 		SignalType signal;
-		datachannel::UniformArgumentsGenerator<argument_type> argumentsGenerator;
+		dataaccessor::UniformArgumentsGenerator<argument_type> argumentsGenerator;
 	};
 
 	using C3DAnalogChannel = C3DChannelWrapper<C3DParser::IAnalogConstPtr, 0, float>;
@@ -108,7 +108,7 @@ namespace  c3dlib {
 	typedef utils::shared_ptr<const EMGChannel> EMGChannelConstPtr;
 
 	//! kanał GRF
-	class C3DLIB_EXPORT GRFChannel : public datachannel::IIndependentDiscreteAccessor<osg::Vec3, float>
+	class C3DLIB_EXPORT GRFChannel : public dataaccessor::IIndependentDiscreteAccessorT<osg::Vec3, float>
 	{
 	public:
 		//! rodzaj kanału GRF
@@ -158,7 +158,7 @@ namespace  c3dlib {
 		c3dlib::C3DParser::IAnalogConstPtr ysignal;
 		c3dlib::C3DParser::IAnalogConstPtr zsignal;
 		//! Generator argumentów
-		datachannel::UniformArgumentsGenerator<argument_type> argumentsGenerator;
+		dataaccessor::UniformArgumentsGenerator<argument_type> argumentsGenerator;
 	};
 	typedef utils::shared_ptr<GRFChannel> GRFChannelPtr;
 	typedef utils::shared_ptr<const GRFChannel> GRFChannelConstPtr;

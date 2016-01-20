@@ -150,7 +150,7 @@ private:
 	void increaseDataToProcess();
 	void decreaseDataToProcess();
 
-	//! \return Czy �r�d�a maj� jeszcze dane
+	//! \return Czy źródła mają jeszcze dane
 	const bool sourcesHaveMore() const;
 
 	bool sourceFinished();
@@ -159,16 +159,16 @@ private:
 
 	void finishDataflow();
 	
-	//! Ko�czymy przep�yw danych - czy�cimy wszystko
+	//! kończymy przepływ danych - czyścimy wszystko
 	const bool dataflowFinished() const;
 
-	//! \param reader Obiekt pozwalajacy czyta� struktur� naszego modelu
-	//! \return Czy model mo�na przetwarza�
+	//! \param reader Obiekt pozwalajacy czytać strukturę naszego modelu
+	//! \return Czy model można przetwarzać
 	static const bool verifyModel(df::IModelReader * reader, MRModelInterfaceVerifier::ModelVerificationData & interfaceVerifier);
 
 
-	//! Metoda mapuje elementy modelu do obiekt�w wrappuj�cych, kt�re obs�uguj� logik� przep�ywu danych
-	//! \param reader Obiekt pozwalajacy czyta� struktur� naszego modelu
+	//! Metoda mapuje elementy modelu do obiektów wrappujących, które obsługują logikę przepływu danych
+	//! \param reader Obiekt pozwalajacy czytać strukturę naszego modelu
 	void wrapModelElements(df::IModelReader * model, const MRModelInterfaceVerifier::ModelVerificationData & modelElements);
 
 private:
@@ -204,8 +204,8 @@ public:
 
 	STDFModelRunnerImpl();
 
-	//! \param reader Obiekt pozwalajacy czyta� struktur� naszego modelu
-	//! \return Czy model mo�na przetwarza�
+	//! \param reader Obiekt pozwalajacy czytać strukturę naszego modelu
+	//! \return Czy model można przetwarzać
 	static const bool verifyModel(const df::IModelReader * reader);
 
 	void start(df::IModelReader * model, df::IDFLogger * logger);

@@ -30,9 +30,9 @@
 
 namespace coreUI
 {
-	//! Klasa pomocnicza przy obs�udze wprowadzania warto�ci liczbowych
-	//! \tparam ValueType Typ liczb jakie chcemy wczytywa�
-	//! \tparam EditorType Typ widgeta obs�uguj�cego edycj� liczb danego typu
+	//! Klasa pomocnicza przy obsłudze wprowadzania wartości liczbowych
+	//! \tparam ValueType Typ liczb jakie chcemy wczytywać
+	//! \tparam EditorType Typ widgeta obsługującego edycję liczb danego typu
 	template<typename ValueType, class EditorType>
 	class SingleNumbersEditorWidgetHelper
 	{
@@ -53,14 +53,14 @@ namespace coreUI
 			return ret;
 		}
 		
-		//! \return Nazwa sygna�u generowanego przez widget kiedy zmienia si� jego warto��
+		//! \return Nazwa sygnału generowanego przez widget kiedy zmienia się jego wartość
 		static QString changeSignal()
 		{
 			return "valueChanged(const QString&)";
 		}
 
-		//! \param editor Widget edytora z kt�rego wyci�gamy warto��
-		//! \return Warto�� z edytora
+		//! \param editor Widget edytora z którego wyciągamy wartość
+		//! \return Wartość z edytora
 		static const ValueType value(QWidget * editor)
 		{
 			auto e = static_cast<EditorType*>(editor);
@@ -69,7 +69,7 @@ namespace coreUI
 		}
 
 		//! \param editor Widget edytora
-		//! \param value Warto�� ustawiana w edytorze
+		//! \param value Wartość ustawiana w edytorze
 		static void setValue(QWidget * editor, const ValueType value)
 		{
 			auto e = static_cast<EditorType*>(editor);
@@ -77,7 +77,7 @@ namespace coreUI
 		}
 
 		//! \param editor Widget edytora
-		//! \param value Warto�� ustawiana w edytorze
+		//! \param value Wartość ustawiana w edytorze
 		static void setDecimals(QWidget * editor, const int value)
 		{
 			auto e = static_cast<EditorType*>(editor);
@@ -85,15 +85,15 @@ namespace coreUI
 		}
 
 		//! \param editor Widget edytora
-		//! \param step Krok o jaki zmienia si� warto�� w edytorze
+		//! \param step Krok o jaki zmienia się wartość w edytorze
 		static void setStep(QWidget * editor, const ValueType step)
 		{
 			auto e = static_cast<EditorType*>(editor);
 			e->setSingleStep(step);
 		}
 		//! \param editor Widget edytora
-		//! \param minVal Warto�� minimalna w edytorze
-		//! \param maxVal Warto�� maksymalna w edytorze
+		//! \param minVal Wartość minimalna w edytorze
+		//! \param maxVal Wartość maksymalna w edytorze
 		static void setLimits(QWidget * editor, const ValueType minVal,
 			const ValueType maxVal)
 		{
@@ -102,26 +102,26 @@ namespace coreUI
 		}
 	};
 
-	//! Klasa pomocnicza przy edycji warunk�w - prawda fa�sz
+	//! Klasa pomocnicza przy edycji warunków - prawda fałsz
 	class COREUI_EXPORT ConditionEditorWidgetHelper
 	{
 	public:
 
 		//! \param parent Rodzic edytora
-		//! \return Widget obs�uguj�cy warunki
+		//! \return Widget obsługujący warunki
 		static QCheckBox * createEditor(QWidget * parent = nullptr)
 		{			
 			return new QCheckBox(parent);
 		}
 
-		//! \return Nazwa sygna�y na zmian� stanu warunku
+		//! \return Nazwa sygnału na zmianę stanu warunku
 		static QString changeSignal()
 		{
 			return "stateChanged(int)";
 		}
 
-		//! \param editor Widget edytora z kt�rego wyci�gamy warto��
-		//! \return Warto�� z edytora
+		//! \param editor Widget edytora z którego wyciągamy wartość
+		//! \return Wartość z edytora
 		static const bool value(QWidget * editor)
 		{
 			auto e = static_cast<QCheckBox*>(editor);
@@ -129,7 +129,7 @@ namespace coreUI
 		}
 
 		//! \param editor Widget edytora
-		//! \param value Warto�� ustawiana w edytorze
+		//! \param value Wartość ustawiana w edytorze
 		static void setValue(QWidget * editor, const bool value)
 		{
 			auto e = static_cast<QCheckBox*>(editor);
@@ -137,9 +137,9 @@ namespace coreUI
 		}
 	};
 
-	//! Klasa pomocnicza przy edycji tekst�w
+	//! Klasa pomocnicza przy edycji tekstów
 	//! \tparam ValueType Typ tekstu (wg traitu utils::is_text)
-	//! \tparam EditorType Typ widgeta obs�uguj�cego edycj� tekstu
+	//! \tparam EditorType Typ widgeta obsługującego edycję tekstu
 	template<typename ValueType, class EditorType = QLineEdit>
 	class TextEditorWidgetHelper
 	{
@@ -152,14 +152,14 @@ namespace coreUI
 			return new EditorType(parent);
 		}
 
-		//! \return Nazwa sygna�y na zmian� stanu warunku
+		//! \return Nazwa sygnały na zmianę stanu warunku
 		static QString changeSignal()
 		{
 			return "textChanged(const QString&)";
 		}
 
-		//! \param editor Widget edytora z kt�rego wyci�gamy warto��
-		//! \return Warto�� z edytora
+		//! \param editor Widget edytora z którego wyciągamy wartość
+		//! \return Wartość z edytora
 		static const ValueType value(QWidget * editor)
 		{
 			auto e = static_cast<EditorType*>(editor);
@@ -167,7 +167,7 @@ namespace coreUI
 		}
 
 		//! \param editor Widget edytora
-		//! \param value Warto�� ustawiana w edytorze
+		//! \param value Wartość ustawiana w edytorze
 		static void setValue(QWidget * editor, const ValueType & value)
 		{
 			auto e = static_cast<EditorType*>(editor);
@@ -175,7 +175,7 @@ namespace coreUI
 		}
 	};
 
-	//! Klasa pomocnicza przy edycji tekst�w - specjalizacja dla edytora obs�uguj�cego style i HTML
+	//! Klasa pomocnicza przy edycji tekstów - specjalizacja dla edytora obsługującego style i HTML
 	//! \tparam ValueType Typ tekstu (wg traitu utils::is_text)	
 	template<typename ValueType>
 	class TextEditorWidgetHelper<ValueType, QTextEdit>
@@ -189,14 +189,14 @@ namespace coreUI
 			return new QTextEdit(parent);
 		}
 
-		//! \return Nazwa sygna�y na zmian� stanu warunku
+		//! \return Nazwa sygnały na zmianę stanu warunku
 		static QString changeSignal()
 		{
 			return "textChanged()";
 		}
 
-		//! \param editor Widget edytora z kt�rego wyci�gamy warto��
-		//! \return Warto�� z edytora
+		//! \param editor Widget edytora z którego wyciągamy wartość
+		//! \return Wartość z edytora
 		static const ValueType value(QWidget * editor)
 		{
 			QTextEdit* e = static_cast<QTextEdit*>(editor);
@@ -204,7 +204,7 @@ namespace coreUI
 		}
 
 		//! \param editor Widget edytora
-		//! \param value Warto�� ustawiana w edytorze
+		//! \param value Wartość ustawiana w edytorze
 		static void setValue(QWidget * editor, const ValueType & value)
 		{
 			auto e = static_cast<QTextEdit*>(editor);
@@ -212,8 +212,8 @@ namespace coreUI
 		}
 	};
 
-	//! Klasa pomocnicza dostarczaj�ca domyslnych polityk edycji dla zadanych typ�w prostych
-	//! \tparam ValueType Typ warto�ci prostej tworz�cej wektor
+	//! Klasa pomocnicza dostarczająca domyslnych polityk edycji dla zadanych typów prostych
+	//! \tparam ValueType Typ wartości prostej tworzącej wektor
 	template<typename ValueType>
 	struct DefaultEditorHelper
 	{
@@ -226,7 +226,7 @@ namespace coreUI
 		typedef SingleNumbersEditorWidgetHelper<ValueType, typename std::conditional<std::is_integral<ValueType>::value, QSpinBox, QDoubleSpinBox>::type> type;
 	};
 
-	//! Klasa pomocnicza dostarczaj�ca domyslnych polityk edycji dla zadanych typ�w prostych
+	//! Klasa pomocnicza dostarczająca domyslnych polityk edycji dla zadanych typów prostych
 	//! Specjalizacja dla bool
 	template<>
 	struct DefaultEditorHelper<bool>
@@ -234,7 +234,7 @@ namespace coreUI
 		typedef ConditionEditorWidgetHelper type;
 	};
 
-	//! Klasa pomocnicza dostarczaj�ca domyslnych polityk edycji dla zadanych typ�w prostych
+	//! Klasa pomocnicza dostarczająca domyslnych polityk edycji dla zadanych typów prostych
 	//! Specjalizacja dla QString
 	template<>
 	struct DefaultEditorHelper < QString >
@@ -242,7 +242,7 @@ namespace coreUI
 		typedef TextEditorWidgetHelper<QString, QLineEdit> type;
 	};
 
-	//! Klasa pomocnicza dostarczaj�ca domyslnych polityk edycji dla zadanych typ�w prostych
+	//! Klasa pomocnicza dostarczająca domyslnych polityk edycji dla zadanych typów prostych
 	//! Specjalizacja dla std::string
 	template<>
 	struct DefaultEditorHelper < std::string >
@@ -250,7 +250,7 @@ namespace coreUI
 		typedef TextEditorWidgetHelper<std::string, QLineEdit> type;
 	};
 
-	//! Klasa bazowa delegata obs�uguj�cego edycje wektor�w
+	//! Klasa bazowa delegata obsługującego edycje wektorów
 	class COREUI_EXPORT CoreVectorInputDelegate : public QStyledItemDelegate
 	{
 		Q_OBJECT
@@ -265,11 +265,11 @@ namespace coreUI
 		virtual ~CoreVectorInputDelegate();
 
 	protected slots:
-		//! Akcja na zako�czenie edycji w edytorze wektora
+		//! Akcja na zakończenie edycji w edytorze wektora
 		void commitAndCloseEditor();
 	};
 
-	//! Klasa bazowa widgeta edytuj�cego wektor
+	//! Klasa bazowa widgeta edytującego wektor
 	class COREUI_EXPORT CoreVectorEditor : public QWidget
 	{
 		Q_OBJECT
@@ -408,31 +408,31 @@ namespace coreUI
 
 	signals:
 
-		//! \param idx Indeks warto�ci wektora kt�ra uleg�a zmianie
+		//! \param idx Indeks wartości wektora która uległa zmianie
 		void valueChanged(const unsigned int idx);
-		//! Zako�czenie edycji w wektorze
+		//! Zakończenie edycji w wektorze
 		void editingFinished();
 
 	protected slots:
 
-		//! Akcja na zmian� warto�ci w wektorze
+		//! Akcja na zmianę wartości w wektorze
 		void onValueChanged();
 
 	private:
 
-		//! Metoda wywo�uwana przed emisj� sygna�u valueChanged
-		//! \param idx Indeks wartosci wektora kt�a uleg�a zmianie
+		//! Metoda wywoływana przed emisją sygnału valueChanged
+		//! \param idx Indeks wartosci wektora która uległa zmianie
 		virtual void customActionsOnValueChange(const unsigned int idx) {}
 
 		//! \param w Widget edytora
-		//! \return Indeks warto�ci obs�ugiwanej przez ten edytor
+		//! \return Indeks wartości obsługiwanej przez ten edytor
 		virtual unsigned int indexOfValueEditor(QWidget * w) const = 0;
 	};
 
-	//! Klasa realizuj�ca widget edytora dla konkretnego wektora
-	//! \tparam ValueType Typ warto�ci wektora
+	//! Klasa realizująca widget edytora dla konkretnego wektora
+	//! \tparam ValueType Typ wartości wektora
 	//! \tparam SizeType Rozmiar wektora
-	//! \tparam	ValueEditorHelper Polityka pomocna przy zarz�dzaniu edytorem poszczeg�lnych warto�ci
+	//! \tparam	ValueEditorHelper Polityka pomocna przy zarządzaniu edytorem poszczególnych wartości
 	template<typename ValueType, unsigned int SizeType,
 	typename ValueEditorHelper = typename DefaultEditorHelper<ValueType>::type>
 	class CoreVectorEditorImpl : public CoreVectorEditor
@@ -441,12 +441,12 @@ namespace coreUI
 
 	public:
 
-		//! Typ warto�ci wektora
+		//! Typ wartości wektora
 		typedef std::array<ValueType, SizeType> VectorType;
 
 	public:
 
-		//! \param parent Widget rodzic naszego edytora wektor�w
+		//! \param parent Widget rodzic naszego edytora wektorów
 		CoreVectorEditorImpl(QWidget * parent = nullptr) : CoreVectorEditor(parent),
 			nameLabel(nullptr), vectorArea(nullptr), finalizeButton(nullptr)
 		{
@@ -503,13 +503,13 @@ namespace coreUI
 			nameLabel->setText(name);
 		}
 
-		//! \param visible Czy nazwa wektora ma by� widoczna
+		//! \param visible Czy nazwa wektora ma być widoczna
 		void setNameVisible(const bool visible)
 		{
 			nameLabel->setVisible(visible);
 		}
 
-		//! \param idx Indeks warto�ci w wektorze
+		//! \param idx Indeks wartości w wektorze
 		//! \return Nazwa wartosci w wektorze pod zadanym indeksem
 		QString name(const unsigned int idx) const
 		{
@@ -522,7 +522,7 @@ namespace coreUI
 			return it->get_right()->label()->text();
 		}
 
-		//! \param idx Indeks warto�ci w wektorze
+		//! \param idx Indeks wartości w wektorze
 		//! \param name Nazwa wartosci w wektorze pod zadanym indeksem
 		void setName(const unsigned int idx, const QString & name)
 		{
@@ -533,8 +533,8 @@ namespace coreUI
 			widgetsMapping.left[idx]->label()->setText(name);
 		}
 
-		//! \param idx Indeks warto�ci w wektorze
-		//! \param visible Czy nazwa elementu wektora ma by� widoczna
+		//! \param idx Indeks wartości w wektorze
+		//! \param visible Czy nazwa elementu wektora ma być widoczna
 		void setNameVisible(const unsigned int idx, const bool visible)
 		{
 			if (idx >= SizeType){
@@ -544,7 +544,7 @@ namespace coreUI
 			widgetsMapping.left[idx]->label()->setVisible(visible);			
 		}
 
-		//! \return Warto�� ca�ego wektora
+		//! \return Wartość całego wektora
 		VectorType value() const
 		{
 			VectorType ret;
@@ -557,7 +557,7 @@ namespace coreUI
 			return ret;
 		}
 
-		//! \param value Warto�� ca�ego wektora
+		//! \param value Wartość całego wektora
 		void setValue(const VectorType & value)
 		{
 			for (unsigned int i = 0; i < SizeType; ++i)
@@ -566,8 +566,8 @@ namespace coreUI
 			}
 		}
 
-		//! \param idx Indeks warto�ci w wektorze
-		//! \return Warto�� elementu wektora o zadanym indeksie
+		//! \param idx Indeks wartości w wektorze
+		//! \return Wartość elementu wektora o zadanym indeksie
 		ValueType value(const unsigned int idx) const
 		{
 			if (idx >= SizeType){
@@ -578,8 +578,8 @@ namespace coreUI
 			return ValueEditorHelper::value(it->get_right()->labeledWidget());
 		}
 
-		//! \param idx Indeks warto�ci w wektorze
-		//! \param value Warto�� elementu wektora o zadanym indeksie
+		//! \param idx Indeks wartości w wektorze
+		//! \param value Wartość elementu wektora o zadanym indeksie
 		void setValue(const unsigned int idx, const ValueType & value)
 		{
 			if (idx >= SizeType){
@@ -590,9 +590,9 @@ namespace coreUI
 			ValueEditorHelper::setValue(it->get_right()->labeledWidget(), value);
 		}
 
-		//! \param idx Indeks warto�ci w wektorze
-		//! \param minVal Warto�� minimalna elementu wektora o zadanym indeksie
-		//! \param maxVal Warto�� maksymalna elementu wektora o zadanym indeksie
+		//! \param idx Indeks wartości w wektorze
+		//! \param minVal Wartość minimalna elementu wektora o zadanym indeksie
+		//! \param maxVal Wartość maksymalna elementu wektora o zadanym indeksie
 		void setDecimals(const unsigned int idx, const int value)
 		{
 			if (idx >= SizeType){
@@ -604,7 +604,7 @@ namespace coreUI
 		}
 
 		//! \param editor Widget edytora
-		//! \param value Warto�� ustawiana w edytorze
+		//! \param value Wartość ustawiana w edytorze
 		void setDecimals(const int value)
 		{
 			for (const auto & val : widgetsMapping)
@@ -613,9 +613,9 @@ namespace coreUI
 			}
 		}
 
-		//! \param idx Indeks warto�ci w wektorze
-		//! \param minVal Warto�� minimalna elementu wektora o zadanym indeksie
-		//! \param maxVal Warto�� maksymalna elementu wektora o zadanym indeksie
+		//! \param idx Indeks wartości w wektorze
+		//! \param minVal Wartość minimalna elementu wektora o zadanym indeksie
+		//! \param maxVal Wartość maksymalna elementu wektora o zadanym indeksie
 		void setLimits(const unsigned int idx, const ValueType & minVal,
 			const ValueType & maxVal)
 		{
@@ -627,8 +627,8 @@ namespace coreUI
 			ValueEditorHelper::setLimits(it->get_right()->labeledWidget(), minVal, maxVal);
 		}
 
-		//! \param idx Indeks warto�ci w wektorze
-		//! \param step Krok o jaki zmienia si� warto�� wektora o zadanym indeksie		
+		//! \param idx Indeks wartości w wektorze
+		//! \param step Krok o jaki zmienia się wartość wektora o zadanym indeksie		
 		void setStep(const unsigned int idx, const ValueType & step)
 		{
 			if (idx >= SizeType){
@@ -639,8 +639,8 @@ namespace coreUI
 			ValueEditorHelper::setStep(it->get_right()->labeledWidget(), step);
 		}
 
-		//! \param minVal Warto�� minimalna element�w wektora
-		//! \param maxVal Warto�� maksymalna element�w wektora
+		//! \param minVal Wartość minimalna elementów wektora
+		//! \param maxVal Wartość maksymalna elementów wektora
 		void setLimits(const ValueType & minVal,
 			const ValueType & maxVal)
 		{
@@ -650,7 +650,7 @@ namespace coreUI
 			}			
 		}
 
-		//! \param step Krok o jaki zmieniaj� si� warto�ci wektora
+		//! \param step Krok o jaki zmieniają się wartości wektora
 		void setStep(const ValueType & step)
 		{
 			for (const auto & val : widgetsMapping)
@@ -684,17 +684,17 @@ namespace coreUI
 		QLabel * nameLabel;
 		//! Widget z elementami wektora
 		QWidget * vectorArea;
-		//! Przycisk ko�cz�cy edycj�
+		//! Przycisk kończący edycję
 		QPushButton * finalizeButton;
-		//! Mapowanie element�w wektora do widget�w obs�uguj�cych ich edytory lokalne
+		//! Mapowanie elementów wektora do widgetów obsługujących ich edytory lokalne
 		boost::bimap<int, CoreLabeledWidget*> widgetsMapping;
 	};
 
-	//! Implementacja delegata ob�uguj�cego konkretny typ wektora
-	//! \tparam ValueType Typ warto�ci element�w wektora
+	//! Implementacja delegata obługującego konkretny typ wektora
+	//! \tparam ValueType Typ wartości elementów wektora
 	//! \tparam SizeType Rozmiar wektora
-	//! \tparam ValueEditorWidgetHelper Klasa pomocnicza przy tworzeniu edytor�w element�w wektora
-	//! \tparam ValueToString Obiekt konwertuj�cy warto�ci wektora do stringa (wg utils::is_text)
+	//! \tparam ValueEditorWidgetHelper Klasa pomocnicza przy tworzeniu edytorów elementów wektora
+	//! \tparam ValueToString Obiekt konwertujący wartości wektora do stringa (wg utils::is_text)
 	template<typename ValueType, unsigned int SizeType,
 		typename ValueEditorWidgetHelper = typename DefaultEditorHelper<ValueType>::type>
 	class CoreVectorInputDelegateImpl : public CoreVectorInputDelegate
@@ -706,7 +706,7 @@ namespace coreUI
 
 	public:
 
-		//! \param displayPattern Wz�r wektora wy�wietlany po zako�czeniu edycji, zasilany warto�ciami wektora
+		//! \param displayPattern Wzór wektora wyświetlany po zakończeniu edycji, zasilany wartościami wektora
 		CoreVectorInputDelegateImpl(const QString & displayPattern,			
 			QObject * parent = nullptr) : CoreVectorInputDelegate(parent),
 			displayPattern_(displayPattern)
@@ -720,15 +720,15 @@ namespace coreUI
 
 		}
 
-		//! \return Wz�r wektora wy�wietlany po zako�czeniu edycji
+		//! \return Wzór wektora wyświetlany po zakończeniu edycji
 		const QString & displayPattern() const
 		{
 			return displayPattern_;
 		}
 
-		//! \param displayPattern Wz�r wektora wy�wietlany po zako�czeniu edycji
+		//! \param displayPattern Wzór wektora wyświetlany po zakończeniu edycji
 		//! \param value Wektor wartosci
-		//! \return Sformatowany wektor gotowy do wy�wietlenia po edycji
+		//! \return Sformatowany wektor gotowy do wyświetlenia po edycji
 		static QString valueToDisplay(const QString & displayPattern, const typename VectorEditorWidget::VectorType & value)
 		{
 			return CoreVectorEditor::vectorToString(value, displayPattern);
@@ -781,7 +781,7 @@ namespace coreUI
 		}
 
 	private:
-		//! Wz�r wektora wy�wietlany po zako�czeniu edycji
+		//! Wzór wektora wyświetlany po zakończeniu edycji
 		const QString displayPattern_;
 	};
 }

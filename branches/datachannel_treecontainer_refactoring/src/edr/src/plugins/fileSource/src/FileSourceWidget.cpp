@@ -10,7 +10,7 @@
 #include <corelib/PluginCommon.h>
 #include <loglib/ILog.h>
 #include <corelib/IFileDataManager.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <QtWidgets/QFileDialog>
 #include "FileSource.h"
 
@@ -40,7 +40,7 @@ void FileSourceWidget::onLoadFiles()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open file"));
     for (auto it = fileNames.begin(); it != fileNames.end(); ++it) {
-        core::Filesystem::Path path = it->toStdString();
+        utils::Filesystem::Path path = it->toStdString();
         fileSource->addFile(path);
     }    
 }

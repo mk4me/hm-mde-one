@@ -1,23 +1,23 @@
 /********************************************************************
 	created:  2015/07/28	15:02:06
-	filename: IUniformArgumentsFeature.h
+	filename: UniformArgumentsFeature.h
 	author:	  Mateusz Janiak
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__IUNIFORMARGUMENTSFEATURE_H__
-#define __HEADER_GUARD_DATACHANNEL__IUNIFORMARGUMENTSFEATURE_H__
+#ifndef __HEADER_GUARD_DATACHANNEL__UNIFORMARGUMENTSFEATURE_H__
+#define __HEADER_GUARD_DATACHANNEL__UNIFORMARGUMENTSFEATURE_H__
 
 #include <limits>
 #include <type_traits>
 #include <datachannellib/Accessors.h>
 
-namespace datachannel
+namespace dataaccessor
 {
 	//! \tparam ArgumentType Typ argumentu kana³u
 	template<typename ArgumentType>
 	//! Interfejs kana³u dyskretnego o równo oddalonych argumentach
-	class IUniformArgumentsFeature : public FeatureHelper<UniformaArguments, IArgumentFeature<ArgumentType>>
+	class IUniformArgumentsFeature : public FeatureHelperT<UniformArguments, IArgumentFeatureT<ArgumentType>>
 	{
 	public:
 		//! Destruktor wirtualny
@@ -28,8 +28,8 @@ namespace datachannel
 
 		template<typename ValueType>
 		static inline IUniformArgumentsFeature * create(
-			const IDiscreteAccessor<ValueType, ArgumentType> * discrete,
-			const IFunctionAccessor<ValueType, ArgumentType> * function)
+			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
+			const IFunctionAccessorT<ValueType, ArgumentType> * function)
 		{
 			IUniformArgumentsFeature * ret = nullptr;
 
@@ -79,4 +79,4 @@ namespace datachannel
 	};
 }
 
-#endif	// __HEADER_GUARD_DATACHANNEL__IUNIFORMARGUMENTSFEATURE_H__
+#endif	// __HEADER_GUARD_DATACHANNEL__UNIFORMARGUMENTSFEATURE_H__

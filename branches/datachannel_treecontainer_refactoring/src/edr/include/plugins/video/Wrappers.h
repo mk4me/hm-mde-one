@@ -16,8 +16,8 @@
 #include <vidlib/osg/OsgAdapter.h>
 #include <vidlib/FFmpegVideoStream.h>
 #include <datachannellib/Accessors.h>
-#include <datachannellib/IBoundedArgumentsFeature.h>
-#include <datachannellib/IUniformArgumentsFeature.h>
+#include <datachannellib/BoundedArgumentsFeature.h>
+#include <datachannellib/UniformArgumentsFeature.h>
 #include <datachannellib/AccessorsCollection.h>
 
 
@@ -25,7 +25,7 @@ typedef osg::ref_ptr<vidlib::VideoImage> VideoImageOsgPtr;
 typedef vidlib::OsgStream VideoStream;
 typedef osg::ref_ptr<VideoStream> VideoStreamPtr;
 typedef osg::ref_ptr<const VideoStream> VideoStreamConstPtr;
-typedef datachannel::IIndependentDiscreteAccessor<VideoImageOsgPtr, float> VideoChannelReaderInterface;
+typedef dataaccessor::IIndependentDiscreteAccessorT<VideoImageOsgPtr, float> VideoChannelReaderInterface;
 
 class VideoChannel : public VideoChannelReaderInterface
 {
@@ -42,8 +42,8 @@ private:
 public:
 	VideoChannel(VideoStreamPtr video) : videoStream(video), samplesPerSecond(static_cast<float>(videoStream->getFramerate()))
 	{
-		attachFeature(datachannel::IFeaturePtr(new datachannel::BoundedArgumentsFeature<float>(0.0, video->getDuration())));
-		attachFeature(datachannel::IFeaturePtr(new datachannel::UniformArgumentsFeature<float>(1.0f / samplesPerSecond)));        
+		attachFeature(dataaccessor::IFeaturePtr(new dataaccessor::BoundedArgumentsFeature<float>(0.0, video->getDuration())));
+		attachFeature(dataaccessor::IFeaturePtr(new dataaccessor::UniformArgumentsFeature<float>(1.0f / samplesPerSecond)));        
     }
 
 	virtual ~VideoChannel()
@@ -101,7 +101,7 @@ typedef utils::shared_ptr<const VideoChannel> VideoChannelConstPtr;
 
 //utils::DataChannelTimeAccessor<VideoChannel::point_type, VideoChannel::time_type, utils::DiscreteInterpolator, utils::BorderExtrapolator>
 
-class VideoCollection : public datachannel::AccessorsCollection<VideoChannel>
+class VideoCollection : public dataaccessor::AccessorsCollection<VideoChannel>
 {
 
 };

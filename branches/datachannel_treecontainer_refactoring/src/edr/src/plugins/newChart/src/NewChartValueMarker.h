@@ -26,7 +26,9 @@ public:
 public:
     //! Filtrowanie eventów Qt (głównie myszka) zarządzanie etykietami
     virtual bool stateEventFilter(QObject *, QEvent *);
-    //! rozpoczyna stan, zmienia kursor, podpina pod wykres dodatkowy wskaźnik (ułatwiający dodawanie nowych etykiet)
+
+
+	//! rozpoczyna stan, zmienia kursor, podpina pod wykres dodatkowy wskaźnik (ułatwiający dodawanie nowych etykiet)
     virtual void stateBegin();
     //! kończy stan, usuwa dodatkowy wskaźnik z wykresu
     virtual void stateEnd();

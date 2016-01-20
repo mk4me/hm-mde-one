@@ -24,7 +24,7 @@
 namespace core {
 ////////////////////////////////////////////////////////////////////////////////
 
-PluginLoader::PluginLoader(const Filesystem::Path & pluginsPath)
+PluginLoader::PluginLoader(const utils::Filesystem::Path & pluginsPath)
 {
     paths.push_back(pluginsPath);
 }
@@ -35,7 +35,7 @@ PluginLoader::~PluginLoader()
 }
 
 std::string PluginLoader::pluginIdentyfier(const std::string & name,
-	const core::Filesystem::Path & path, const core::UniqueID & id)
+	const utils::Filesystem::Path & path, const core::UniqueID & id)
 {
 	std::stringstream ss;
 	ss << name << " (ID: " << id << ") from " << path.string();
@@ -117,7 +117,7 @@ void PluginLoader::load()
 
 	for(auto pathIT = paths.begin(); pathIT != paths.end(); ++pathIT) {
 
-		auto localFiles = core::Filesystem::listFiles(*pathIT, true);
+		auto localFiles = utils::Filesystem::listFiles(*pathIT, true);
 
 		for (auto fileIT = localFiles.begin(); fileIT != localFiles.end(); ++fileIT){
 
@@ -135,9 +135,9 @@ void PluginLoader::load()
 
 	for(auto pathIT = paths.begin(); pathIT != paths.end(); ++pathIT) {
 
-		jobsList.push_back(jm->create("core", "Plugin loader", [this, jm](core::Filesystem::Path path){
+		jobsList.push_back(jm->create("core", "Plugin loader", [this, jm](utils::Filesystem::Path path){
 
-			auto localFiles = core::Filesystem::listFiles(path, true);
+			auto localFiles = utils::Filesystem::listFiles(path, true);
 			std::list<core::Job<bool>> jobsList;
 
 			for (auto fileIT = localFiles.begin(); fileIT != localFiles.end(); ++fileIT){
@@ -167,7 +167,7 @@ void PluginLoader::load()
 	}*/
 }
 
-HMODULE PluginLoader::loadSharedLibrary(const Filesystem::Path & path)
+HMODULE PluginLoader::loadSharedLibrary(const utils::Filesystem::Path & path)
 {
 #if defined(_WINDOWS)
 	return ::LoadLibrary( path.string().c_str() );
@@ -220,7 +220,7 @@ const std::string PluginLoader::lastLoadSharedLibraryError()
 #endif
 }
 
-bool PluginLoader::addPlugIn( const Filesystem::Path& path )
+bool PluginLoader::addPlugIn( const utils::Filesystem::Path& path )
 {
     HMODULE library = loadSharedLibrary(path.string());
     if ( library != 0) {
@@ -326,7 +326,7 @@ bool PluginLoader::onAddPlugin(PluginPtr plugin, HMODULE library, Plugin::Initia
     return !pluginIDFound;
 }
 
-bool PluginLoader::checkLibrariesVersions( HMODULE library, const Filesystem::Path& path )
+bool PluginLoader::checkLibrariesVersions( HMODULE library, const utils::Filesystem::Path& path )
 {
     // pobranie wersji bibliotek
     auto libsVerProc = loadProcedure<Plugin::GetLibrariesVersionFunction>(library, STRINGIZE(CORE_GET_LIBRARIES_VERSIONS_FUNCTION_NAME));
@@ -361,7 +361,7 @@ bool PluginLoader::checkLibrariesVersions( HMODULE library, const Filesystem::Pa
     }
 }
 
-bool PluginLoader::checkPluginVersion( HMODULE library, const Filesystem::Path& path )
+bool PluginLoader::checkPluginVersion( HMODULE library, const utils::Filesystem::Path& path )
 {
 	auto versionProc = loadProcedure<Plugin::GetAPIVersionFunction>(library, STRINGIZE(CORE_GET_PLUGIN_API_VERSION_FUNCTION_NAME));
 	if ( versionProc ) {
@@ -383,7 +383,7 @@ bool PluginLoader::checkPluginVersion( HMODULE library, const Filesystem::Path& 
 	}
 }
 
-bool PluginLoader::checkPluginBuildType( HMODULE library, const Filesystem::Path& path )
+bool PluginLoader::checkPluginBuildType( HMODULE library, const utils::Filesystem::Path& path )
 {
     auto buildTypeProc = loadProcedure<Plugin::GetBuildTypeFunction>(library, STRINGIZE(CORE_GET_PLUGIN_BUILD_TYPE_FUNCTION_NAME));
     if ( buildTypeProc ) {

@@ -1,5 +1,5 @@
 #include "PCH.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <plugins/kinematic/Wrappers.h>
 #include <acclaimformatslib/AsfParser.h>
 #include <plugins/c3d/C3DChannels.h>
@@ -19,7 +19,7 @@ AsfParser::~AsfParser()
 void AsfParser::parse( const std::string & source )
 {
 	skeletalModel = utils::ObjectWrapper::create<acclaim::Skeleton>();
-	core::Filesystem::Path path(source);
+	utils::Filesystem::Path path(source);
 	std::ifstream file(path.string());	 
 	 auto skeleton = acclaim::AsfParser::parse(file, true);
 	acclaim::SkeletonPtr modelPtr = utils::make_shared<acclaim::Skeleton>(std::move(skeleton));

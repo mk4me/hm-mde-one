@@ -1,9 +1,9 @@
 #include <c3dlib/C3DTypes.h>
 #include <stdexcept>
 #include <utils/Debug.h>
-#include <datachannellib/IUniformArgumentsFeature.h>
-#include <datachannellib/IDescriptorFeature.h>
-#include <datachannellib/IBoundedArgumentsFeature.h>
+#include <datachannellib/UniformArgumentsFeature.h>
+#include <datachannellib/DescriptorFeature.h>
+#include <datachannellib/BoundedArgumentsFeature.h>
 
 using namespace c3dlib;
 
@@ -57,9 +57,9 @@ argumentsGenerator(1.0 / data.getPointFrequency(), 0.0, data.getNumPointFrames()
 		name.erase(it);
 	}
 
-	attachFeature(utils::make_shared<datachannel::UniformArgumentsFeature<argument_type>>(argumentsGenerator.step()));
-	attachFeature(datachannel::IFeaturePtr(datachannel::Descriptor::create<value_type, argument_type >(name, xsignal->getUnit(), "s")));
-	attachFeature(utils::make_shared<datachannel::BoundedArgumentsFeature<argument_type>>(argumentsGenerator.start(), argumentsGenerator.end()));
+	attachFeature(utils::make_shared<dataaccessor::UniformArgumentsFeature<argument_type>>(argumentsGenerator.step()));
+	attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<value_type, argument_type >(name, xsignal->getUnit(), "s")));
+	attachFeature(utils::make_shared<dataaccessor::BoundedArgumentsFeature<argument_type>>(argumentsGenerator.start(), argumentsGenerator.end()));
 
 	if (dataStartSet) {
 		dataStart = (startIndex / static_cast<float>(numSamples)) * argumentsGenerator.end();

@@ -1,7 +1,7 @@
 #include <plugins/dfElements/DFProcessors.h>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
-#include <datachannellib/IUniformArgumentsFeature.h>
+#include <datachannellib/UniformArgumentsFeature.h>
 
 void VectorDiff::process()
 {
@@ -10,7 +10,7 @@ void VectorDiff::process()
 
     if (signal1 && signal2) {
 		double step = 0.0;
-		auto uaf = signal1->getOrCreateArgumentFeature<datachannel::IUniformArgumentsFeature>();
+		auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
 		if (uaf != nullptr){
 			step = uaf->argumentsInterval();
 		}
@@ -24,9 +24,9 @@ void VectorDiff::process()
 			data.push_back({ i * step, val });
         }
 		
-		auto channel = datachannel::wrap(std::move(data));		
+		auto channel = dataaccessor::wrap(std::move(data));		
 		channel->attachFeature(uaf);
-		channel->attachFeature(utils::make_shared<datachannel::Descriptor>("Result", "", "", "", ""));
+		channel->attachFeature(utils::make_shared<dataaccessor::DescriptorFeature>("Result", "", "", "", ""));
         outPinA->setValue(channel);
     } else {
 
@@ -70,7 +70,7 @@ void VectorAdder::process()
 
     if (signal1 && signal2) {
 		double step = 0.0;
-		auto uaf = signal1->getOrCreateArgumentFeature<datachannel::IUniformArgumentsFeature>();
+		auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
 		if (uaf != nullptr){
 			step = uaf->argumentsInterval();
 		}
@@ -84,10 +84,10 @@ void VectorAdder::process()
 			data.push_back({ i * step, val });
 		}
 
-		auto channel = datachannel::wrap(std::move(data));
+		auto channel = dataaccessor::wrap(std::move(data));
 
 		channel->attachFeature(uaf);
-		channel->attachFeature(utils::make_shared<datachannel::Descriptor>("Result", "", "", "", ""));
+		channel->attachFeature(utils::make_shared<dataaccessor::DescriptorFeature>("Result", "", "", "", ""));
         outPinA->setValue(channel);
     } else {
 
@@ -116,7 +116,7 @@ void Vector2Scalar::process()
 	c3dlib::VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
     if (signal1) {
 
-		auto uaf = signal1->getOrCreateArgumentFeature<datachannel::IUniformArgumentsFeature>();
+		auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
 
 		std::vector<c3dlib::ScalarChannelReaderInterface::sample_type> dataX, dataY, dataZ;
 		dataX.reserve(signal1->size());
@@ -130,18 +130,18 @@ void Vector2Scalar::process()
 			dataZ.push_back({ val.first, val.second[2] });
 		}
 
-		auto channelX = datachannel::wrap(std::move(dataX));
-		auto channelY = datachannel::wrap(std::move(dataY));
-		auto channelZ = datachannel::wrap(std::move(dataZ));
+		auto channelX = dataaccessor::wrap(std::move(dataX));
+		auto channelY = dataaccessor::wrap(std::move(dataY));
+		auto channelZ = dataaccessor::wrap(std::move(dataZ));
 
 		channelX->attachFeature(uaf);
-		channelX->attachFeature(utils::make_shared<datachannel::Descriptor>("X", "", "", "", ""));
+		channelX->attachFeature(utils::make_shared<dataaccessor::DescriptorFeature>("X", "", "", "", ""));
 
 		channelY->attachFeature(uaf);
-		channelY->attachFeature(utils::make_shared<datachannel::Descriptor>("Y", "", "", "", ""));
+		channelY->attachFeature(utils::make_shared<dataaccessor::DescriptorFeature>("Y", "", "", "", ""));
 
 		channelZ->attachFeature(uaf);
-		channelZ->attachFeature(utils::make_shared<datachannel::Descriptor>("Z", "", "", "", ""));
+		channelZ->attachFeature(utils::make_shared<dataaccessor::DescriptorFeature>("Z", "", "", "", ""));
 
 
         outPinX->setValue(channelX);
@@ -177,7 +177,7 @@ void Scalar2Vector::process()
     if (signal1 && signal2 && signal3) {
 
 		double step = 0.0;
-		auto uaf = signal1->getOrCreateArgumentFeature<datachannel::IUniformArgumentsFeature>();
+		auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
 		if (uaf != nullptr){
 			step = uaf->argumentsInterval();
 		}
@@ -191,10 +191,10 @@ void Scalar2Vector::process()
 			data.push_back({ i * step, osg::Vec3(signal1->value(i), signal2->value(i), signal3->value(i)) });
 		}
 
-		auto channel = datachannel::wrap(std::move(data));
+		auto channel = dataaccessor::wrap(std::move(data));
 
 		channel->attachFeature(uaf);
-		channel->attachFeature(utils::make_shared<datachannel::Descriptor>("Result", "", "", "", ""));
+		channel->attachFeature(utils::make_shared<dataaccessor::DescriptorFeature>("Result", "", "", "", ""));
         
         outPinA->setValue(channel);
     } else {

@@ -119,7 +119,7 @@ void LayeredSerie::setupData( const core::VariantConstPtr & data )
 
 		std::string xmlName;        
         if (data->getMetadata("DICOM_XML", xmlName) == true) {
-            core::Filesystem::Path xml = xmlName;
+            utils::Filesystem::Path xml = xmlName;
             setName(xml.stem().string());
         }
         this->data = data;

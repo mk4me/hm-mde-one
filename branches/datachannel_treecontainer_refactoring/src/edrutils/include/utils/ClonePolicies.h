@@ -2,8 +2,6 @@
 #define HEADER_GUARD_UTILS__CLONEPOLICIES_H__
 
 #include <exception>
-#include <osg/CopyOp>
-#include <osg/Object>
 #include <utils/Debug.h>
 //Plik zawiera podstawowe zasady kopiowania obiektów domenowych
 
@@ -26,18 +24,6 @@ namespace utils {
         template <typename T>
 		static T* clone(const T* s) {
             auto copy = s->clone();
-            T* result = dynamic_cast<T*>(copy);
-            UTILS_ASSERT(result);
-            return result;
-        }
-    };
-
-    //! Klonowanie odbywa się za pomoca metody clone()
-    struct ClonePolicyOsgCloneMethod
-    {
-        template <typename T>
-		static T* clone(const T* s) {
-            auto copy = osg::clone(s, osg::CopyOp::DEEP_COPY_ALL);
             T* result = dynamic_cast<T*>(copy);
             UTILS_ASSERT(result);
             return result;

@@ -15,6 +15,7 @@
 #include <QtWidgets/QDoubleSpinBox>
 
 //! Klasa tworzy widget z dwoma potomkami : QLabel i QDoubleSpinBox
+//! \version 0.9.1
 class LabeledSpinbox
 {
 public:

@@ -18,17 +18,17 @@
 
 namespace core
 {
-	//! Klasa w�tku oferowanego z puli
+	//! Klasa wątku oferowanego z puli
 	class CORELIB_EXPORT Thread
 	{
 	private:
 
-		//! Struktura opisuj�ca w�tek
+		//! Struktura opisująca wątek
 		struct Description
 		{
-			//! Kto zarz�dza w�tkiem
+			//! Kto zarządza wątkiem
 			std::string owner;
-			//! Co jest realizowane w w�tku
+			//! Co jest realizowane w wątku
 			std::string destination;
 		};
 
@@ -51,7 +51,7 @@ namespace core
 
 	public:
 
-		//! \param threadPool Pula w�tk�w do kt�rej nale�a� pierwotnie w�tek
+		//! \param threadPool Pula wątków do której należał pierwotnie wątek
 		template<typename T>
 		Thread(const T & logger, InnerThreadPool::Thread && innerThread, const std::string & owner,
 			const std::string & destination) : logger(logger), innerThread(std::move(innerThread)),
@@ -61,10 +61,10 @@ namespace core
 			description->destination = destination;
 		}
 
-		//! Domy�lny konstruktor
+		//! Domyślny konstruktor
 		Thread();
 
-		//! \param Other W�tek kt�rego zasoby przejmujemy
+		//! \param Other wątek którego zasoby przejmujemy
 		Thread(Thread && Other);
 
 		//! Destruktor
@@ -106,20 +106,20 @@ namespace core
 		const bool interruptible() const;
 		static void interruptionPoint();
 		static void resetInterruption();
-		const std::string owner() const;
-		const std::string destination() const;
+		std::string owner() const;
+		std::string destination() const;
 
-		static const std::string currentOwner();
-		static const std::string currentDestination();
+		static std::string currentOwner();
+		static std::string currentDestination();
 
 	private:
 		//! Obiekt logujący
 		std::function<void(std::string)> logger;
-		//! Wewn�trzny w�tek wielokrotnego uruchamiania
+		//! Wewnętrzny wątek wielokrotnego uruchamiania
 		InnerThreadPool::Thread innerThread;
-		//! Opis w�tku
+		//! Opis wątku
 		utils::shared_ptr<Description> description;
-		//! Opis w�tku
+		//! Opis wątku
 		static TLS tlsTD;
 	};
 }

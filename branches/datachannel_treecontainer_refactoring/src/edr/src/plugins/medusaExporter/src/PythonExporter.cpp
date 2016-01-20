@@ -3,7 +3,7 @@
 
 using namespace medusaExporter;
 
-void PythonExporter::exportAnnotations(const core::Filesystem::Path& path, const AnnotationData& data) const
+void PythonExporter::exportAnnotations(const utils::Filesystem::Path& path, const AnnotationData& data) const
 {
 	throw std::logic_error("The method or operation is not implemented.");
 }

@@ -1,6 +1,7 @@
 #include <hmdbserviceslib/MetadataParser.h>
 #include <hmdbserviceslib/Entity.h>
 #include <utils/Debug.h>
+#include <utils/StreamTools.h>
 #include "XMLHelper.h"
 
 namespace hmdbServices

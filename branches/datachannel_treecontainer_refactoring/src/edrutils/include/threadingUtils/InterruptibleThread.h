@@ -18,9 +18,9 @@
 
 namespace threadingUtils
 {
-	//! \tparam RunnableThread Polityka w�tku z metod� uruchamiania zada� run
-	//! \tparam InterruptHandlingPolicy Polityka obs�ugi przerwania w w�tku
-	//! \tparam InteruptiblePolicy Polityka realizuj�ca przerywanie w�tku
+	//! \tparam RunnableThread Polityka wątku z metodą uruchamiania zadań run
+	//! \tparam InterruptHandlingPolicy Polityka obsługi przerwania w wątku
+	//! \tparam InteruptiblePolicy Polityka realizująca przerywanie wątku
 	template<typename RunnableThread, typename ExceptionHandlePolicy = ConsumeExceptionHandlePolicy, typename InterruptHandlingPolicy = NoInterruptHandlingPolicy, typename InterruptiblePolicyT = NoInterruptiblePolicy>
 	class InterrubtibleThread : private ExceptionHandlePolicy, private InterruptHandlingPolicy
 	{

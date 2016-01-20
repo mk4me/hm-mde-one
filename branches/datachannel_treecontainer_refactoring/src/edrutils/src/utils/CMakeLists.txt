@@ -8,11 +8,18 @@ endif()
 CONFIG_OPTION(UTILS_ENABLE_PRIVATE_TESTS "Enable private class members testing?" OFF)
 
 SET_PUBLIC_HEADERS(
+	array_traits.h
+	Clamping.h
+	DummyWrap.h
+	pointer_traits.h
+	StreamTools.h
+	ValueCarrier.h
 	Align.h
 	ClonePolicies.h
 	Pool.h
 	Enum.h
 	NamedTree.h
+	Filesystem.h
 	PtrPolicyRaw.h
 	PtrPolicyBoost.h
 	PtrPolicyStd.h
@@ -50,6 +57,7 @@ SET_SOURCE_FILES(
 	NamedTree.cpp
 	Profiler.cpp
 	TypeInfo.cpp
+	Filesystem.cpp
 	CommandStack.cpp
 	dynamictreemodel.cpp
 	modeltest.cpp

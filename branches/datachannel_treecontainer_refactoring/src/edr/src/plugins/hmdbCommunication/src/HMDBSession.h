@@ -9,7 +9,7 @@
 #define __HEADER_GUARD_HMDBCOMMUNICATION__HMDBSESSION_H__
 
 #include <plugins/hmdbCommunication/IHMDBSession.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <networkUtils/Types.h>
 #include <networkUtils/CURLManager.h>
 #include <utils/SmartPtr.h>
@@ -46,15 +46,15 @@ namespace hmdbCommunication
 			const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 			const std::string & user,
 			const std::string & password,
-			const core::Filesystem::Path & CAPath = core::Filesystem::Path(),
+			const utils::Filesystem::Path & CAPath = utils::Filesystem::Path(),
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone,
-			const core::Filesystem::Path & schemaPath = core::Filesystem::Path());
+			const utils::Filesystem::Path & schemaPath = utils::Filesystem::Path());
 
 		static const WSDLServiceCreator systemServiceCreator(
 			const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
-			const core::Filesystem::Path & CAPath = core::Filesystem::Path(),
+			const utils::Filesystem::Path & CAPath = utils::Filesystem::Path(),
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone,
-			const core::Filesystem::Path & schemaPath = core::Filesystem::Path());
+			const utils::Filesystem::Path & schemaPath = utils::Filesystem::Path());
 
 	public:
 		//! \param ftpManager obs³uguj¹cy po³¹czenia ftp CURLa
@@ -77,7 +77,7 @@ namespace hmdbCommunication
 			const std::string & medicalUrl,
 			const std::string & motionFtp,
 			const std::string & medicalFtp,
-			const core::Filesystem::Path & CAPath = core::Filesystem::Path(),
+			const utils::Filesystem::Path & CAPath = utils::Filesystem::Path(),
 			const networkUtils::SSLHostVerification hostVerification = networkUtils::HVNone);
 
 		//! Destruktor wirtualny

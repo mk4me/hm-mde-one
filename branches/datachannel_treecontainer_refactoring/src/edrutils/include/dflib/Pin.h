@@ -10,7 +10,7 @@ namespace df {
 
 	class IConnection;
 
-	//! Wzorzes klasy realizujacej przechowywanie po�acze� w pinie
+	//! Wzorzec klasy realizujacej przechowywanie połączeń w pinie
 	template<class Node, class Connection>
 	class PinImpl
 	{
@@ -92,7 +92,7 @@ namespace df {
 		Connections connections_;
 	};
 
-	//! Wzorzec klasy realizuj�cej przechowywanie po��cze� w pinie i jego dodatkowy opis zale�no�ci
+	//! Wzorzec klasy realizującej przechowywanie połączeń w pinie i jego dodatkowy opis zależności
 	template<class Node, class Connection, class Pin>
 	class ExtPinImpl : public PinImpl<Node, Connection>
 	{
@@ -180,7 +180,7 @@ namespace df {
 		Dependencies dependency_;
 	};
 
-//! Implementacja pina wej�ciowego
+//! Implementacja pina wejściowego
 class InputPin : public IInputPin
 {
 public:
@@ -214,7 +214,7 @@ protected:
 	PinImpl<ISinkNode, IConnection> pinImpl;
 };
 
-//! Implementacja pina wyj�ciowego
+//! Implementacja pina wyjściowego
 class OutputPin : public IOutputPin
 {
 public:
@@ -244,7 +244,7 @@ protected:
 	PinImpl<ISourceNode, IConnection> pinImpl;
 };
 
-//! Implementacja rozszerzonego pina wej�ciowego
+//! Implementacja rozszerzonego pina wejściowego
 class ExtInputPin : public IExtendedInputPin
 {
 public:
@@ -294,7 +294,7 @@ private:
 	ExtPinImpl<ISinkNode, IConnection, IOutputPin> pinImpl;
 };
 
-//! Implementacja rozszerzonego pina wyj�ciowego
+//! Implementacja rozszerzonego pina wyjściowego
 class ExtOutputPin : public IExtendedOutputPin
 {
 public:

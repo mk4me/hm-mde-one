@@ -1,17 +1,19 @@
 BEGIN_PROJECT("header")
 
 SET_PUBLIC_HEADERS(
+	Features.h
+	AccessorType.h
 	Accessors.h
 	ArgumentTracker.h
-	IDescriptorFeature.h
+	DescriptorFeature.h
 	AccessorsCollection.h	
 	Statistics.h
 	WrapperHelpers.h
-	IBoundedArgumentsFeature.h
-	IBoundedValuesFeature.h
-	IFunctionFeature.h		
-	IPeriodicFunctionFeature.h
-	IUniformArgumentsFeature.h	
+	BoundedArgumentsFeature.h
+	BoundedValuesFeature.h
+	FunctionFeature.h		
+	PeriodicFunctionFeature.h
+	UniformArgumentsFeature.h	
 	Types.h
 	Adapters.h
 	Extrapolators.h

@@ -24,7 +24,7 @@ purpose:
 #include <boost/accumulators/statistics_fwd.hpp>
 #include <type_traits>
 #include <datachannellib/Accessors.h>
-#include <datachannellib/IFunctionFeature.h>
+#include <datachannellib/FunctionFeature.h>
 
 // Implementacje dodatkowych akumulatorow
 namespace boost {
@@ -154,11 +154,11 @@ namespace boost {
 } // namespace boost::accumulators
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace datachannel {
+namespace dataaccessor {
 	////////////////////////////////////////////////////////////////////////////////
 
 	template<typename ValueType, typename ArgumentType>
-	class IStatisticsFeature : public FeatureHelper<Statistics, IChannelFeature<ValueType, ArgumentType>>
+	class IStatisticsFeature : public FeatureHelperT<Statistics, IAccessorFeatureT<ValueType, ArgumentType>>
 	{
 	public:
 
@@ -185,8 +185,8 @@ namespace datachannel {
 		virtual Arguments arguments() const = 0;
 		
 		static IStatisticsFeature<ValueType, ArgumentType> * create(
-			const IDiscreteAccessor<ValueType, ArgumentType> * discrete,
-			const IFunctionAccessor<ValueType, ArgumentType> * function)
+			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
+			const IFunctionAccessorT<ValueType, ArgumentType> * function)
 		{
 			IStatisticsFeature<ValueType, ArgumentType> * ret = nullptr;
 			if (discrete != nullptr && discrete->empty() == false){
@@ -236,9 +236,9 @@ namespace datachannel {
 
 		template<typename ValueType, typename ArgumentType>
 		static typename IStatisticsFeature<ValueType, ArgumentType>::Values
-			values(const IDiscreteAccessor<ValueType, ArgumentType> & accessor,
-			const typename IDiscreteAccessor<ValueType, ArgumentType>::size_type to,
-			const typename IDiscreteAccessor<ValueType, ArgumentType>::size_type from = 0)
+			values(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
+			const IDiscreteAccessor::size_type to,
+			const IDiscreteAccessor::size_type from = 0)
 		{
 			using namespace boost::accumulators;			
 			typedef boost::accumulators::accumulator_set<ValueType, features< tag::mean, tag::variance >> Stats;
@@ -268,16 +268,16 @@ namespace datachannel {
 
 		template<typename ValueType, typename ArgumentType>
 		static typename IStatisticsFeature<ValueType, ArgumentType>::Values
-			values(const IDiscreteAccessor<ValueType, ArgumentType> & accessor)
+			values(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			return values(accessor, accessor.size());
 		}
 
 		template<typename ValueType, typename ArgumentType>
 		static typename IStatisticsFeature<ValueType, ArgumentType>::Arguments
-			arguments(const IDiscreteAccessor<ValueType, ArgumentType> & accessor,		
-			const typename IDiscreteAccessor<ValueType, ArgumentType>::size_type to,
-			const typename IDiscreteAccessor<ValueType, ArgumentType>::size_type from = 0)
+			arguments(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,		
+			const IDiscreteAccessor::size_type to,
+			const IDiscreteAccessor::size_type from = 0)
 		{
 			using namespace boost::accumulators;		
 
@@ -300,16 +300,16 @@ namespace datachannel {
 
 		template<typename ValueType, typename ArgumentType>
 		static typename IStatisticsFeature<ValueType, ArgumentType>::Arguments
-			arguments(const IDiscreteAccessor<ValueType, ArgumentType> & accessor)
+			arguments(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			return arguments(accessor, accessor.size());
 		}
 
 		template<typename ValueType, typename ArgumentType>
 		static CompleteResult<ValueType, ArgumentType>
-			samples(const IDiscreteAccessor<ValueType, ArgumentType> & accessor,
-			const typename IDiscreteAccessor<ValueType, ArgumentType>::size_type to,
-			const typename IDiscreteAccessor<ValueType, ArgumentType>::size_type from = 0)
+			samples(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
+			const IDiscreteAccessor::size_type to,
+			const IDiscreteAccessor::size_type from = 0)
 		{
 			using namespace boost::accumulators;
 			typedef boost::accumulators::accumulator_set<ArgumentType, features< tag::mean, tag::variance >> ArgStats;
@@ -352,7 +352,7 @@ namespace datachannel {
 
 		template<typename ValueType, typename ArgumentType>
 		static CompleteResult<ValueType, ArgumentType>
-			samples(const IDiscreteAccessor<ValueType, ArgumentType> & accessor)
+			samples(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			return samples(accessor, accessor.size());
 		}

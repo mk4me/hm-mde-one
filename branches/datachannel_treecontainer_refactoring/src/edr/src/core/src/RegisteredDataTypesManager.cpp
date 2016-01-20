@@ -119,7 +119,7 @@ namespace core {
 	for(auto it = baseTypes.begin(); it != baseTypes.end(); ++it){
 		auto thIT = typesHierarchy.find(*it);
 		if(thIT == typesHierarchy.end()){
-			//rejestrujemy typ pochodny przed typem bazowym - nieco niebezpieczne bo nie wiadomo czy typ bazowy b�dzie potem zarejestrowany
+			//rejestrujemy typ pochodny przed typem bazowym - nieco niebezpieczne bo nie wiadomo czy typ bazowy będzie potem zarejestrowany
 			TypeHierarchy thBase;
 			thBase.derrivedTypes.insert(typeInfo);
 			typesHierarchy.insert(TypesHierarchy::value_type(*it, thBase));

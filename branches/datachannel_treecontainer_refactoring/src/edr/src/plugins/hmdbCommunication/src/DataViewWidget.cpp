@@ -1361,7 +1361,7 @@ void DataViewWidget::onSynchronizeFinished()
 
 void DataViewWidget::synchronize(hmdbCommunication::IHMDBShallowCopyRemoteContext::SynchronizeOperationPtr sOp,
 	utils::shared_ptr<coreUI::CoreCursorChanger> cursorChanger)
-{
+{	
 	shallowCopyContext_->shallowCopyRemoteContext()->synchronize(sOp);
 	completeShallowCopy_ = currentShallowCopy_ = shallowCopyContext_->shallowCopyDataContext()->shallowCopy();
 
@@ -1521,7 +1521,7 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 			size <<= 1;
 		}
 		
-		const auto aSpace = core::Filesystem::availableSpace(plugin::getPaths()->getTempPath());
+		const auto aSpace = utils::Filesystem::availableSpace(plugin::getPaths()->getTempPath());
 
 		if (size > aSpace){
 			QMessageBox::warning(this, tr("Download disk space requirements"), tr("Requested download requires %1 to store the data while only %2 is available. Please ensure there is enough space on the disk for download and try again.").arg(formatFileSize(size)).arg(formatFileSize(aSpace)));

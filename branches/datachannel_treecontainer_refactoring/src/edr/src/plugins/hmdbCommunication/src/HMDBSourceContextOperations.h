@@ -12,7 +12,7 @@
 #include <plugins/hmdbCommunication/IHMDBShallowCopyContext.h>
 #include <plugins/hmdbCommunication/IHMDBFtp.h>
 #include "ShallowCopyUtils.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <corelib/IJobManager.h>
 #include <hmdbserviceslib/IncrementalBranchShallowCopy.h>
 
@@ -381,7 +381,7 @@ namespace hmdbCommunication
 		//! Strumień do zapisu danych
 		utils::shared_ptr<std::fstream> stream;
 		//! Ściezka pliku
-		core::Filesystem::Path tmpFilePath;
+		utils::Filesystem::Path tmpFilePath;
 	};
 
 	class MemoryTransferIO : public ITransferIO		

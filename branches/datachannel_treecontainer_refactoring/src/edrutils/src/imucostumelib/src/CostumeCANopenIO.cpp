@@ -12,11 +12,11 @@ const bool CostumeCANopenIO::send(const uint8_t seqNumber, const void * data,
 	const auto totalLength = sizeof(Header) + length;
 	utils::unique_ptr<uint8_t[]> dataToTransmit(new uint8_t[totalLength]);
 
-	// nag��wek ramki - wymusza wys�anie reszty na CAN
+	// nagłówek ramki - wymusza wysłanie reszty na CAN
 	dataToTransmit[0] = 0x02;
-	// m�j unikalny identyfikator - dostan� go w potwierdzeniu
+	// mój unikalny identyfikator - dostanę go w potwierdzeniu
 	dataToTransmit[1] = seqNumber;
-	//przepisuje ramk� CANopen
+	//przepisuje ramkę CANopen
 	std::memcpy(dataToTransmit.get() + sizeof(Header), data, length);
 
 	return costume.send(dataToTransmit.get(), totalLength, timeout);	

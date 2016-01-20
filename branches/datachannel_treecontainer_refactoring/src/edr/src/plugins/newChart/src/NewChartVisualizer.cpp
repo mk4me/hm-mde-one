@@ -123,13 +123,13 @@ QWidget* NewChartVisualizer::createWidget()
 
 
 	coreUI::CoreAction * hMarkerAction = new coreUI::CoreAction(tr("Tags"), QIcon(":/newChart/icons/vertical_tag.png"), tr("Horizontal Marker"), widget, coreUI::CoreTitleBar::Left);
-    statesMap[hMarkerAction] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Horizontal));
+	statesMap[hMarkerAction] = NewChartStatePtr(new NewChartVerticals(this, NewChartVerticalsConnection::Horizontal));
     connect(hMarkerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
 	widget->addAction(hMarkerAction);
 
 
 	coreUI::CoreAction * vMarkerAction = new coreUI::CoreAction(tr("Tags"), QIcon(":/newChart/icons/horizontal_tag.png"), tr("Vertical Marker"), widget, coreUI::CoreTitleBar::Left);
-    statesMap[vMarkerAction] =  NewChartStatePtr(new NewChartVerticals(this, NewChartLabel::Vertical));
+	statesMap[vMarkerAction] = NewChartStatePtr(new NewChartVerticals(this, NewChartVerticalsConnection::Vertical));
     connect(vMarkerAction, SIGNAL(triggered()), this, SLOT(onStateAction()));
 	widget->addAction(vMarkerAction);
 
@@ -779,12 +779,12 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
 						percentDraw->setPercentMode(true);
 						percentDraw->setLeftRightValues(segment->begin, segment->end);
 
-						auto bvf = segment->scalar->getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
+						auto bvf = segment->scalar->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
 
 						qwtPlot->setAxisScale(QwtPlot::yLeft, bvf->minValue(), bvf->maxValue());
 						qwtPlot->setAxisScaleDiv(QwtPlot::xBottom, percentDraw->getScaleDiv());
 					} else {
-						auto bvf = segment->scalar->getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
+						auto bvf = segment->scalar->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
 						float minY = bvf->minValue();
 						float maxY = bvf->maxValue();
 						for (auto it = series.begin(); it != series.end(); ++it) {
@@ -793,7 +793,7 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
 								if (h) {
 									EventsHelper::SegmentConstPtr s = h->getSegment(x, this->context);
 									if (s) {
-										auto bvf = s->scalar->getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
+										auto bvf = s->scalar->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
 										minY = (std::min)(minY, bvf->minValue());
 										maxY = (std::max)(maxY, bvf->maxValue());
 									}
@@ -975,14 +975,14 @@ void NewChartVisualizer::refreshBounds()
     	iserie->getData()->tryGet(data);
     	if(data) {
 
-			auto baf = data->getOrCreateArgumentFeature<datachannel::IBoundedArgumentsFeature>();
-			auto bvf = data->getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
+			auto baf = data->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();
+			auto bvf = data->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
     		minT = (std::min)(minT, baf->minArgument());
     		maxT = (std::max)(maxT, baf->maxArgument());
     		channels.push_back(data);
-			continousChannels.push_back(utils::make_shared < datachannel::DiscreteFunctionAccessorAdapter < c3dlib::ScalarChannelReaderInterface::value_type,
-				c3dlib::ScalarChannelReaderInterface::argument_type >> (*data, datachannel::LerpInterpolator(),
-				datachannel::BorderExtrapolator<c3dlib::ScalarChannelReaderInterface::value_type>(bvf->minValue(), bvf->maxValue())));
+			continousChannels.push_back(utils::make_shared < dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::ScalarChannelReaderInterface::value_type,
+				c3dlib::ScalarChannelReaderInterface::argument_type >> (*data, dataaccessor::LerpInterpolator(),
+				dataaccessor::BorderExtrapolator<c3dlib::ScalarChannelReaderInterface::value_type>(bvf->minValue(), bvf->maxValue())));
     	}
     }
 

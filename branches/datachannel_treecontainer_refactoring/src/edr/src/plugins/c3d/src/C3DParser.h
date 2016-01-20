@@ -11,7 +11,7 @@
 #define HEADER_GUARD_PLUGINC3D__C3DPARSER_H__
 
 #include <utils/SmartPtr.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <corelib/IParser.h>
 #include <c3dlib/C3DParser.h>
 

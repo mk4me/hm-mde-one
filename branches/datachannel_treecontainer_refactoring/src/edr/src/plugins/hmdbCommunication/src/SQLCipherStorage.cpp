@@ -12,6 +12,7 @@
 #include <sqliteUtils/SQLiteBLOBStreamBufferT.h>
 #include <loglib/Exceptions.h>
 #include <threadingUtils/Macros.h>
+#include <utils/StreamTools.h>
 
 using namespace hmdbCommunication;
 
@@ -87,10 +88,10 @@ public:
 
 	virtual const bool canStore(const unsigned long long size) const override
 	{
-		return core::Filesystem::availableSpace(sharedState().path_) >= size;
+		return utils::Filesystem::availableSpace(sharedState().path_) >= size;
 	}
 
-	virtual const bool shareDiskSpace(const core::Filesystem::Path & path) const override
+	virtual const bool shareDiskSpace(const utils::Filesystem::Path & path) const override
 	{
 		return sharedState().path_.root_path() == path.root_path();
 	}
@@ -496,10 +497,10 @@ SQLCipherStorage::~SQLCipherStorage()
 
 }
 
-void SQLCipherStorage::open(const core::Filesystem::Path & path,
+void SQLCipherStorage::open(const utils::Filesystem::Path & path,
 	const std::string & key)
 {	
-	if (sharedState != nullptr || core::Filesystem::pathExists(path) == false){
+	if (sharedState != nullptr || utils::Filesystem::pathExists(path) == false){
 		return;
 	}
 	
@@ -513,10 +514,10 @@ void SQLCipherStorage::open(const core::Filesystem::Path & path,
 	}
 }
 
-const bool SQLCipherStorage::create(const core::Filesystem::Path & path,
+const bool SQLCipherStorage::create(const utils::Filesystem::Path & path,
 	const std::string & key)
 {
-	if (core::Filesystem::pathExists(path) == true){
+	if (utils::Filesystem::pathExists(path) == true){
 		return false;
 	}	
 
@@ -536,10 +537,10 @@ const bool SQLCipherStorage::create(const core::Filesystem::Path & path,
 	return false;
 }
 
-const bool SQLCipherStorage::changeKey(const core::Filesystem::Path & path,
+const bool SQLCipherStorage::changeKey(const utils::Filesystem::Path & path,
 	const std::string & oldKey, const std::string & newKey)
 {
-	if (core::Filesystem::pathExists(path) == false || oldKey == newKey){
+	if (utils::Filesystem::pathExists(path) == false || oldKey == newKey){
 		return false;
 	}	
 
@@ -558,10 +559,10 @@ const bool SQLCipherStorage::changeKey(const core::Filesystem::Path & path,
 	return ret;
 }
 
-const bool SQLCipherStorage::setKey(const core::Filesystem::Path & path,
+const bool SQLCipherStorage::setKey(const utils::Filesystem::Path & path,
 	const std::string & key)
 {
-	if (core::Filesystem::pathExists(path) == false){
+	if (utils::Filesystem::pathExists(path) == false){
 		return false;
 	}
 
@@ -579,7 +580,7 @@ const bool SQLCipherStorage::setKey(const core::Filesystem::Path & path,
 	return ret;
 }
 
-const bool SQLCipherStorage::verify(const core::Filesystem::Path & path,
+const bool SQLCipherStorage::verify(const utils::Filesystem::Path & path,
 	const std::string & key)
 {	
 	sqliteUtils::UniqueWrapperT<sqlite3> db(sqliteUtils::SQLiteDB::open(path.string(), key, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE));

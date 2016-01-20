@@ -23,15 +23,15 @@ namespace treeContainer
 	{
 	public:
 
-		//! Konstruktor domyslny
+		//! Konstruktor domyślny
 		SizeVisitor() : treeSize_(0) {}
 		//! Destruktor
 		~SizeVisitor() {}
 
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaźnika węzła
 		//! \tparam Args argumenty, np. dla przechodzenia wg poziomów
 		template<typename NPtr>
-		//! \param node odwiedzany w�ze�
+		//! \param node odwiedzany węzeł
 		void operator()(NPtr node)
 		{
 			++treeSize_;
@@ -59,21 +59,21 @@ namespace treeContainer
 	class FindMaxLevelVisitor
 	{
 	public:
-		//! Konstruktor domyslny
+		//! Konstruktor domyślny
 		FindMaxLevelVisitor() : maxLevel_(0) {}
 		//! Destruktor
 		~FindMaxLevelVisitor() {}
 
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaśnika węzła
 		template<typename NPtr>
-		//! \param node Odwiedzany w�ze�
-		//! \param level Aktualnie odwiedzany poziom (wzgledem w�z�a z kt�rego startowali�my)
+		//! \param node Odwiedzany węzeł
+		//! \param level Aktualnie odwiedzany poziom (wzgledem węzła z którego startowaliśmy)
 		void operator()(NPtr, const Node::SizeType level)
 		{
 			maxLevel_ = std::max(maxLevel_, level);
 		}
 
-		//! \return Najgłebszy poziom drzewa
+		//! \return Najgłębszy poziom drzewa
 		Node::SizeType maxLevel() const
 		{
 			return maxLevel_;
@@ -90,7 +90,7 @@ namespace treeContainer
 		Node::SizeType maxLevel_;
 	};
 
-	//! \tparam NPtr Typ wska�nika w�z�a
+	//! \tparam NPtr Typ wskaźnika węzła
 	template<typename NPtr, int VisitOrder>
 	//! Klasa linearyzująca drzewo
 	class LinearizeVisitor
@@ -99,14 +99,15 @@ namespace treeContainer
 
 	public:
 
+		//! Kolekcja węzłów
 		using Nodes = Node::Nodes < NPtr > ;
 
 	public:
-		//! Konstruktor domyslny
+		//! Konstruktor domyślny
 		LinearizeVisitor() {}
 		//! Destruktor
 		~LinearizeVisitor() {}
-		//! \param node odwiedzany w�ze�
+		//! \param node odwiedzany węzeł
 		void operator()(NPtr node)
 		{
 			linearizedTree_.push_back(node);
@@ -130,21 +131,21 @@ namespace treeContainer
 		Nodes linearizedTree_;
 	};
 
-	//! \tparam NPtr Typ wska�nika w�z�a
+	//! \tparam NPtr Typ wskaźnika węzła
 	template<typename NPtr>
 	//! Klasa linearyzująca drzewo
 	class LinearizeVisitor < NPtr, Backward >
 	{
 	public:
-
+		//! Kolekcja węzłów
 		using Nodes = Node::Nodes < NPtr > ;
 
 	public:
-		//! Konstruktor domyslny
+		//! Konstruktor domyślny
 		LinearizeVisitor() {}
 		//! Destruktor
 		~LinearizeVisitor() {}
-		//! \param node odwiedzany w�ze�
+		//! \param node odwiedzany węzeł
 		void operator()(NPtr node)
 		{
 			linearizedTree_.push_front(node);
@@ -351,15 +352,15 @@ namespace treeContainer
 	class DegreeLimitsVisitor
 	{
 	public:
-		//! Konstruktor domyslny
+		//! Konstruktor domyślny
 		DegreeLimitsVisitor() {}
 		//! Destruktor
 		~DegreeLimitsVisitor() {}
 
-		//! \tparam NPtr Typ wska�nika w�z�a
+		//! \tparam NPtr Typ wskaźnika węzła
 		//! \tparam Args argumenty, np. dla przechodzenia wg poziomów
 		template<typename NPtr, typename... Args>
-		//! \param node odwiedzany w�ze�
+		//! \param node odwiedzany węzeł
 		void operator()(NPtr node)
 		{
 			const auto degree = node->degree();

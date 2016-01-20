@@ -1,22 +1,22 @@
 /********************************************************************
 	created:  2015/07/28	15:04:47
-	filename: IBoundedArgumentsFeature.h
+	filename: BoundedArgumentsFeature.h
 	author:	  Mateusz Janiak
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__IBOUNDEDARGUMENTSFEATURE_H__
-#define __HEADER_GUARD_DATACHANNEL__IBOUNDEDARGUMENTSFEATURE_H__
+#ifndef __HEADER_GUARD_DATACHANNEL__BOUNDEDARGUMENTSFEATURE_H__
+#define __HEADER_GUARD_DATACHANNEL__BOUNDEDARGUMENTSFEATURE_H__
 
 #include <datachannellib/Accessors.h>
-#include <datachannellib/IFunctionFeature.h>
+#include <datachannellib/FunctionFeature.h>
 
-namespace datachannel
+namespace dataaccessor
 {
 	//! \tparam ArgumentType Typ argumentu kana³u danych
 	template<typename ArgumentType>
 	//! Interfesj opisuj¹cy zakres argumentów
-	class IBoundedArgumentsFeature : public FeatureHelper<ArgumentBounded, IArgumentFeature<ArgumentType>>
+	class IBoundedArgumentsFeature : public FeatureHelperT<ArgumentBounded, IArgumentFeatureT<ArgumentType>>
 	{
 	public:
 		//! Destruktor wirtualny
@@ -28,8 +28,8 @@ namespace datachannel
 
 		template<typename ValueType>
 		static IBoundedArgumentsFeature<ArgumentType> * create(
-			const IDiscreteAccessor<ValueType, ArgumentType> * discrete,
-			const IFunctionAccessor<ValueType, ArgumentType> * function)
+			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
+			const IFunctionAccessorT<ValueType, ArgumentType> * function)
 		{
 			IBoundedArgumentsFeature<ArgumentType> * ret = nullptr;
 			if (discrete != nullptr && discrete->empty() == false){
@@ -88,4 +88,4 @@ namespace datachannel
 	};
 }
 
-#endif	// __HEADER_GUARD_DATACHANNEL__IBOUNDEDARGUMENTSFEATURE_H__
+#endif	// __HEADER_GUARD_DATACHANNEL__BOUNDEDARGUMENTSFEATURE_H__

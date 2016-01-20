@@ -22,10 +22,10 @@ namespace treeContainer
 				using NodeVisitOrder = VisitPolicies::Node::PreOrder;
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzaj�cego w�z�y
+				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename TreeType, typename Visitor>
 				//! \param tree Drzewo
-				//! \param visitor Obiekt przegl�daj�cy wez�y
+				//! \param visitor Obiekt przeglądający węzły
 				static void visit(TreeType & tree, Visitor & visitor)
 				{
 					if (empty(tree) == false)
@@ -35,10 +35,10 @@ namespace treeContainer
 				}
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzaj�cego w�z�y
+				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename TreeType, typename Visitor>
 				//! \param tree Drzewo
-				//! \param visitor Obiekt przegl�daj�cy wez�y
+				//! \param visitor Obiekt przeglądający węzły
 				static void visit(const TreeType & tree, Visitor & visitor)
 				{
 					if (empty(tree) == false)
@@ -48,11 +48,11 @@ namespace treeContainer
 				}
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				//! \tparam CondVisitor Typ odwiedzającego węzły
 				template<typename TreeType, typename CondVisitor>
 				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
+				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
+				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
 				static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
 				{
 					if (treeContainer::Tree::empty(tree) == false){
@@ -63,11 +63,11 @@ namespace treeContainer
 				}
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				//! \tparam CondVisitor Typ odwiedzającego węzły
 				template<typename TreeType, typename CondVisitor>
 				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
+				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
+				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
 				static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
 				{
 					if (treeContainer::Tree::empty(tree) == false){
@@ -84,10 +84,10 @@ namespace treeContainer
 				using NodeVisitOrder = VisitPolicies::Node::PostOrder;
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzaj�cego w�z�y
+				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename TreeType, typename Visitor>
 				//! \param tree Drzewo
-				//! \param visitor Obiekt przegl�daj�cy wez�y
+				//! \param visitor Obiekt przeglądający węzły
 				static void visit(TreeType & tree, Visitor & visitor)
 				{
 					if (empty(tree) == false)
@@ -97,10 +97,10 @@ namespace treeContainer
 				}
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzaj�cego w�z�y
+				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename TreeType, typename Visitor>
 				//! \param tree Drzewo
-				//! \param visitor Obiekt przegl�daj�cy wez�y
+				//! \param visitor Obiekt przeglądający węzły
 				static void visit(const TreeType & tree, Visitor & visitor)
 				{
 					if (empty(tree) == false)
@@ -110,11 +110,11 @@ namespace treeContainer
 				}
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				//! \tparam CondVisitor Typ odwiedzającego węzły
 				template<typename TreeType, typename CondVisitor>
 				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
+				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
+				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
 				static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
 				{
 					if (treeContainer::Tree::empty(tree) == false){
@@ -125,11 +125,11 @@ namespace treeContainer
 				}
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				//! \tparam CondVisitor Typ odwiedzającego węzły
 				template<typename TreeType, typename CondVisitor>
 				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
-				//! \return Czy nast�pi�a przerwa przy przechodzeniu drzewa
+				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
+				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
 				static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
 				{
 					if (treeContainer::Tree::empty(tree) == false){
@@ -146,10 +146,10 @@ namespace treeContainer
 				using NodeVisitOrder = VisitPolicies::Node::LevelOrder;
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzaj�cego w�z�y
+				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename TreeType, typename Visitor>
 				//! \param tree Drzewo
-				//! \param visitor Obiekt przegl�daj�cy wez�y
+				//! \param visitor Obiekt przeglądający węzły
 				static void visit(TreeType & tree, Visitor & visitor)
 				{
 					if (treeContainer::Tree::empty(tree) == false)
@@ -159,10 +159,10 @@ namespace treeContainer
 				}
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzaj�cego w�z�y
+				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename TreeType, typename Visitor>
 				//! \param tree Drzewo
-				//! \param visitor Obiekt przegl�daj�cy wez�y
+				//! \param visitor Obiekt przeglądający węzły
 				static void visit(const TreeType & tree, Visitor & visitor)
 				{
 					if (treeContainer::Tree::empty(tree) == false)
@@ -172,10 +172,10 @@ namespace treeContainer
 				}
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				//! \tparam CondVisitor Typ odwiedzającego węzły
 				template<typename TreeType, typename CondVisitor>
 				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
+				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
 				static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
 				{
 					if (treeContainer::Tree::empty(tree) == false){
@@ -186,10 +186,10 @@ namespace treeContainer
 				}
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				//! \tparam CondVisitor Typ odwiedzającego węzły
 				template<typename TreeType, typename CondVisitor>
 				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
+				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
 				static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
 				{
 					if (treeContainer::Tree::empty(tree) == false){
@@ -208,10 +208,10 @@ namespace treeContainer
 				using NodeVisitOrder = VisitPolicies::Node::ReverseOrder < NodeVisitOrderT >;
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzaj�cego w�z�y
+				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename TreeType, typename Visitor>
 				//! \param tree Drzewo
-				//! \param visitor Obiekt przegl�daj�cy wez�y i poziomy
+				//! \param visitor Obiekt przeglądający węzły i poziomy
 				static void visit(TreeType & tree, Visitor & visitor)
 				{
 					if (treeContainer::Tree::empty(tree) == false){
@@ -220,10 +220,10 @@ namespace treeContainer
 				}
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzaj�cego w�z�y
+				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename TreeType, typename Visitor>
 				//! \param tree Drzewo
-				//! \param visitor Obiekt przegl�daj�cy wez�y i poziomy
+				//! \param visitor Obiekt przeglądający węzły i poziomy
 				static void visit(const TreeType & tree, Visitor & visitor)
 				{
 					if (treeContainer::Tree::empty(tree) == false){
@@ -232,10 +232,10 @@ namespace treeContainer
 				}
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				//! \tparam CondVisitor Typ odwiedzającego węzły
 				template<typename TreeType, typename CondVisitor>
 				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
+				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
 				static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
 				{
 					if (treeContainer::Tree::empty(tree) == false){
@@ -246,10 +246,10 @@ namespace treeContainer
 				}
 
 				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzaj�cego w�z�y
+				//! \tparam CondVisitor Typ odwiedzającego węzły
 				template<typename TreeType, typename CondVisitor>
 				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przegl�daj�cy wez�y i poziomy z warunkiem
+				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
 				static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
 				{
 					if (treeContainer::Tree::empty(tree) == false){

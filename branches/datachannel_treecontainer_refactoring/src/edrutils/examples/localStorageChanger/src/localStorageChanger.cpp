@@ -45,7 +45,7 @@ const bool checkStructure(sqlite3 * db, int maxSqliteExecTries, int sqliteExecWa
 	static const std::string sqlCheckTable = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='files_table' ORDER BY name;";
 
 	bool ret = false;
-	sqliteUtils::SQLitePreparedStatement::Wrapper query(sqliteUtils::SQLitePreparedStatement::prepare(db, sqlCheckTable), sqliteUtils::SQLitePreparedStatement::Finalizer(maxSqliteExecTries, sqliteExecWaitMS));
+	sqliteUtils::UniqueWrapperT<sqlite3_stmt> query(sqliteUtils::SQLitePreparedStatement::prepare(db, sqlCheckTable));
 
 	if (query != nullptr && sqliteUtils::SQLitePreparedStatement::step(query) == SQLITE_ROW){
 		const auto count = sqlite3_column_int(query, 0);
@@ -57,7 +57,7 @@ const bool checkStructure(sqlite3 * db, int maxSqliteExecTries, int sqliteExecWa
 	return ret;
 }
 
-sqliteUtils::SQLiteDB::Wrapper openStorage(const std::string& path, const std::string& key)
+sqliteUtils::UniqueWrapperT<sqlite3> openStorage(const std::string& path, const std::string& key)
 {
 	//std::string path("/home/wojtek/.local/share/PJWSTK/MDE/db/localStorage.db");
 	//std::string path("C:/Users/Wojciech/AppData/Roaming/PJWSTK/MDE/db/localStorage.db");
@@ -65,8 +65,8 @@ sqliteUtils::SQLiteDB::Wrapper openStorage(const std::string& path, const std::s
 
 	
 	auto sqlite = sqliteUtils::SQLiteDB::open(path, key, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE);
-	auto close = sqliteUtils::SQLiteDB::Close(maxSqliteExecTries, sqliteExecWaitMS);
-	sqliteUtils::SQLiteDB::Wrapper db(sqlite, close);
+	//auto close = sqliteUtils::SQLiteDB::Close(maxSqliteExecTries, sqliteExecWaitMS);
+	sqliteUtils::UniqueWrapperT<sqlite3> db(sqlite);
 	if (db != nullptr) {
 		if (checkStructure(db, maxSqliteExecTries, sqliteExecWaitMS)) {
 			return std::move(db);
@@ -145,7 +145,7 @@ void do_Stuff()
 }
 
 
-void extractFile(const sqliteUtils::SQLiteDB::Wrapper& db, const std::string& filename, const std::string & outFile,
+void extractFile(const sqliteUtils::UniqueWrapperT<sqlite3> & db, const std::string& filename, const std::string & outFile,
 					const std::string& dbPath, const std::string& dbKey, const std::vector<std::string>& availible)
 {
 	auto it = std::find(availible.begin(), availible.end(), filename);
@@ -155,14 +155,13 @@ void extractFile(const sqliteUtils::SQLiteDB::Wrapper& db, const std::string& fi
 
 	//pobieramy dane z bazy
 	const std::string fileQuery((boost::format("SELECT _rowid_ FROM files_table WHERE file_name = '%1%';") % filename).str());
-	sqliteUtils::SQLitePreparedStatement::Wrapper query(sqliteUtils::SQLitePreparedStatement::prepare(db, fileQuery), sqliteUtils::SQLitePreparedStatement::Finalizer(maxSqliteExecTries, sqliteExecWaitMS));
+	sqliteUtils::UniqueWrapperT<sqlite3_stmt> query(sqliteUtils::SQLitePreparedStatement::prepare(db, fileQuery));
 
 	if (query != nullptr && sqliteUtils::SQLitePreparedStatement::step(query) == SQLITE_ROW){
 		const auto rowID = sqlite3_column_int64(query, 0);
-		sqliteUtils::SQLiteBLOB::Wrapper blob(sqliteUtils::SQLiteBLOB::open(db, "files_table", "file", rowID, 0), sqliteUtils::SQLiteBLOB::Close(maxSqliteExecTries, sqliteExecWaitMS));
-		std::auto_ptr<sqliteUtils::SQLiteBLOBStreamBufferT<>> buf(new sqliteUtils::SQLiteBLOBStreamBufferT<>(dbPath, "files_table", "file", rowID, sqlite3_blob_bytes(blob), "main", dbKey));
+		std::unique_ptr<sqliteUtils::SQLiteBLOBStreamBufferT<char>> buf(new sqliteUtils::SQLiteBLOBStreamBufferT<char>(utils::make_unique<sqliteUtils::FixedBufferPolicyT<char>>(), db, "files_table", "file", rowID, "main"));
 		typedef utils::shared_ptr<std::iostream> IOStreamPtr;
-		auto stream = IOStreamPtr(new StreamWrapper<std::iostream, sqliteUtils::SQLiteBLOBStreamBufferT<>>(buf.release()));
+		auto stream = IOStreamPtr(new StreamWrapper<std::iostream, sqliteUtils::SQLiteBLOBStreamBufferT<char>>(buf.release()));
 		std::ofstream fle(outFile, std::ifstream::out | std::ifstream::binary);
 		fle << stream->rdbuf();
 		fle.close();
@@ -172,7 +171,7 @@ void extractFile(const sqliteUtils::SQLiteDB::Wrapper& db, const std::string& fi
 }
 
 
-std::vector<std::string> listFiles(const sqliteUtils::SQLiteDB::Wrapper& db)
+std::vector<std::string> listFiles(const sqliteUtils::UniqueWrapperT<sqlite3>& db)
 {
 	std::vector<std::string> files;
 		
@@ -192,7 +191,7 @@ std::vector<std::string> listFiles(const sqliteUtils::SQLiteDB::Wrapper& db)
 	return files;
 }
 
-void updateFile(const sqliteUtils::SQLiteDB::Wrapper& db, const std::string& fileInBase, const std::string& pathToFile, const std::string& path, const std::string& key, std::vector<std::string> available)
+void updateFile(const sqliteUtils::UniqueWrapperT<sqlite3>& db, const std::string& fileInBase, const std::string& pathToFile, const std::string& path, const std::string& key, std::vector<std::string> available)
 {
 	auto it = std::find(available.begin(), available.end(), fileInBase);
 	if (it == available.end()) {
@@ -200,7 +199,7 @@ void updateFile(const sqliteUtils::SQLiteDB::Wrapper& db, const std::string& fil
 	}
 
 	const std::string fileQuery((boost::format("SELECT _rowid_ FROM files_table WHERE file_name = '%1%';") % fileInBase).str());
-	sqliteUtils::SQLitePreparedStatement::Wrapper query(sqliteUtils::SQLitePreparedStatement::prepare(db, fileQuery), sqliteUtils::SQLitePreparedStatement::Finalizer(maxSqliteExecTries, sqliteExecWaitMS));
+	sqliteUtils::UniqueWrapperT<sqlite3_stmt> query(sqliteUtils::SQLitePreparedStatement::prepare(db, fileQuery));
 
 	if (query != nullptr && sqliteUtils::SQLitePreparedStatement::step(query) == SQLITE_ROW){
 		const auto rowID = sqlite3_column_int64(query, 0);
@@ -222,7 +221,7 @@ void updateFile(const sqliteUtils::SQLiteDB::Wrapper& db, const std::string& fil
 		{
 			std::string query = (boost::format("UPDATE files_table SET file = ? WHERE file_name = '%1%';") % fileInBase).str();
 
-			sqliteUtils::SQLitePreparedStatement::Wrapper store(sqliteUtils::SQLitePreparedStatement::prepare(db, query), sqliteUtils::SQLitePreparedStatement::Finalizer(maxSqliteExecTries, sqliteExecWaitMS));
+			sqliteUtils::UniqueWrapperT<sqlite3_stmt> store(sqliteUtils::SQLitePreparedStatement::prepare(db, query));
 
 			if (store == nullptr) {
 				throw std::runtime_error("Unable to prepare statement : " + query);
@@ -232,7 +231,7 @@ void updateFile(const sqliteUtils::SQLiteDB::Wrapper& db, const std::string& fil
 		}
 
 		{
-			sqliteUtils::SQLiteBLOB::Wrapper blob(sqliteUtils::SQLiteBLOB::open(db, "files_table", "file", rowID, 1), sqliteUtils::SQLiteBLOB::Close(maxSqliteExecTries, sqliteExecWaitMS));
+			sqliteUtils::UniqueWrapperT<sqlite3_blob> blob(sqliteUtils::SQLiteBLOB::open(db, "files_table", "file", rowID, 1));
 			sqlite3_blob_write(blob, buffer.data(), size, 0);//(sqlite3_blob *, const void *z, int n, int iOffset);
 			//sqlite3_blob_close(blob);
 		}

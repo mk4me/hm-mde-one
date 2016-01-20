@@ -142,7 +142,7 @@ void AnalisisModel::update(core::Visualizer::Serie * serie, core::Visualizer::Se
             seriesToPaths.erase(it);
 
             //TODO
-            //usun�� wpisy dla pozosta�ych serii bo kanal usuwamy tylko raz
+            //usunąć wpisy dla pozostałych serii bo kanal usuwamy tylko raz
 
             auto tIT = seriesToPaths.begin();
             while(tIT != seriesToPaths.end()){

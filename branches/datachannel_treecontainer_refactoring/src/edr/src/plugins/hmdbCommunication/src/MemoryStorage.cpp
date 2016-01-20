@@ -2,7 +2,7 @@
 #include "MemoryStorage.h"
 #include <streambuf>
 #include <sstream>
-#include <utils/Utils.h>
+#include <utils/StreamTools.h>
 
 using namespace hmdbCommunication;
 

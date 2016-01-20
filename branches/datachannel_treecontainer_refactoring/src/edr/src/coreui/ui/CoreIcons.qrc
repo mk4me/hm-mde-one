@@ -10,6 +10,8 @@
     <file alias="clear_console.png">../resources/embedded/icons/clear_console_16x16.png</file>
     <file alias="dane.wejsciowe.png">../resources/embedded/icons/dane.wejsciowe.png</file>
     <file alias="dokowanie.png">../resources/embedded/icons/dokowanie.png</file>
+    <file alias="fullscreen.png">../resources/embedded/icons/fullscreen.png</file>
+    <file alias="fullscreen2.png">../resources/embedded/icons/fullscreen2.png</file>
     <file alias="horizontal.png">../resources/embedded/icons/horizontal.png</file>
     <file alias="oddokowywanie.png">../resources/embedded/icons/oddokowywanie.png</file>
     <file alias="open.png">../resources/embedded/icons/open.png</file>

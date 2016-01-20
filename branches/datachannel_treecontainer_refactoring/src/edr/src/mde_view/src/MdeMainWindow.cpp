@@ -40,6 +40,7 @@
 #include "plugins/hmdbCommunication/SourceOptionsWidget.h"
 #include "plugins/kinematic/IKinematicVisualizer.h"
 #include "corelib/IVisualizerManager.h"
+#include "plugins/hmdbCommunication/ContextConfigurationSettingsFile.h"
 
 using namespace core;
 
@@ -48,8 +49,8 @@ class MDEHMDBSourceView : public hmdbCommunication::IHMDBSourceViewManager::IHMD
 public:
 	//! \return Nazwa widoku
 	virtual const QString name() const { return QObject::tr("MDE view"); }
-	//! \param shallowCopyContext Kontekst p�ytkiej kopii bazy danych jakim zasilamy widok
-	//! \return Widok obs�uguj�cy kontekst
+	//! \param shallowCopyContext Kontekst płytkiej kopii bazy danych jakim zasilamy widok
+	//! \return Widok obsługujący kontekst
 	virtual QWidget * createView(hmdbCommunication::IHMDBShallowCopyContextPtr shallowCopyContext, hmdbCommunication::IHMDBSourceViewManager * viewManager) {
 
 		auto ret = new MDEPerspectiveWidget(shallowCopyContext);
@@ -79,10 +80,24 @@ public:
 
 		return ret;
 	}
-	//! \return Czy dany widok wymaga po��czenia z us�ugami webowymi
+	//! \return Czy dany widok wymaga połączenia z usługami webowymi
 	virtual const bool requiresRemoteContext() const { return true; }
 };
 
+
+void recursiveStyleSheet(QWidget* parent, const QString& replace)
+{
+	if (parent) {
+		QString ss = parent->styleSheet();
+		ss.replace(QRegularExpression("91\\s*,\\s*91\\s*,\\s*91"), replace);//QString("91"), QString("1"));
+		parent->setStyleSheet(ss);
+		auto children = parent->children();
+		for (auto it = children.begin(); it != children.end(); ++it) {
+			QWidget* w = qobject_cast<QWidget*>(*it);
+			recursiveStyleSheet(w, replace);
+		}
+	}
+}
 
 MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations, const std::string & appName)
 	: coreUI::CoreMainWindow(closeUpOperations), coreUI::SingleInstanceWindow(appName),
@@ -90,6 +105,21 @@ MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations, const 
 {
     ui = new Ui::HMMMain();
     ui->setupUi(this);
+#ifdef DEMO_MODE
+	{
+		auto iniPath = plugin::getUserApplicationDataPath("mde_communication.ini").string();
+		QSettings s(QString::fromStdString(iniPath), QSettings::IniFormat);
+		int r = s.value("ColorR", 91).toInt();
+		int g = s.value("ColorG", 91).toInt();
+		int b = s.value("ColorB", 91).toInt();
+
+		QString title = s.value("AppTitle", "ANALYSIS & SYNTHESIS OF HUMAN MOTION").toString();
+		ui->logo->setVisible(false);
+		ui->label->setText(title);
+		recursiveStyleSheet(this, QString("%1, %2, %3").arg(r).arg(g).arg(b));
+		ui->versionLabel->setText(QString("ver. %1").arg(Version::formatedVersion(Version(0, 9, 1)).c_str()));
+	}
+#endif
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
 
     contextPlaceholder = new QTabWidget(this);
@@ -106,6 +136,8 @@ MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations, const 
 
     contextEventFilter = ContextEventFilterPtr(new ContextEventFilter(this));
     analysisModel = AnalisisModelPtr(new AnalisisModel());
+
+	
 }
 
 MdeMainWindow::~MdeMainWindow()
@@ -143,22 +175,28 @@ bool MdeMainWindow::customViewInit(QWidget * log)
 	   vm->registerViewPrototype(hmdbView);
 
 	   {
-		   hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration ccfg;
-		   ccfg.name = tr("Default PJATK MDE data connection");
-		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
-		   ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
+		   typedef hmdbCommunication::ContextConfigurationSettingsFile ConfFile;
+		   auto iniPath = plugin::getUserApplicationDataPath("mde_communication.ini").string();
+		   PLUGIN_LOG_INFO("Communication configuration file: " << iniPath);
 
-//#ifdef _DEBUG 
-		   ccfg.motionServicesConfiguration.userConfiguration.user = "test_PJWSTK";
-		   ccfg.motionServicesConfiguration.userConfiguration.password = "PJtestP@ss";
-//#endif
-		   ccfg.motionServicesConfiguration.serviceConfiguration.url = "https://v21.pjwstk.edu.pl/HMDB";
-		   ccfg.motionServicesConfiguration.serviceConfiguration.caPath = QString::fromStdString((plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string());
 
-		   ccfg.motionDataConfiguration.serviceConfiguration.url = "ftps://v21.pjwstk.edu.pl";
-		   ccfg.motionDataConfiguration.serviceConfiguration.caPath = "";
-		   ccfg.motionDataConfiguration.userConfiguration.user = "testUser";
-		   ccfg.motionDataConfiguration.userConfiguration.password = "testUser";
+		   //ConfFile::write("C:/rawcommunication.ini", ConfFile::defaultConfig());
+		   hmdbCommunication::IHMDBSourceViewManager::ContextConfiguration ccfg = ConfFile::read(QString::fromStdString(iniPath));
+//		   ccfg.name = tr("Default PJATK MDE data connection");
+//		   ccfg.storageConfiguration.path = QString::fromStdString((plugin::getPaths()->getUserApplicationDataPath() / "db" / "localStorage.db").string());
+//		   ccfg.storageConfiguration.password = "P,j.W/s<T>k2:0\"1;2";
+//
+////#ifdef _DEBUG 
+//		   ccfg.motionServicesConfiguration.userConfiguration.user = "test_PJWSTK";
+//		   ccfg.motionServicesConfiguration.userConfiguration.password = "PJtestP@ss";
+////#endif
+//		   ccfg.motionServicesConfiguration.serviceConfiguration.url = "https://v21.pjwstk.edu.pl/HMDB";
+//		   ccfg.motionServicesConfiguration.serviceConfiguration.caPath = QString::fromStdString((plugin::getPaths()->getResourcesPath() / "v21.pjwstk.edu.pl.crt").string());
+//
+//		   ccfg.motionDataConfiguration.serviceConfiguration.url = "ftps://v21.pjwstk.edu.pl";
+//		   ccfg.motionDataConfiguration.serviceConfiguration.caPath = "";
+//		   ccfg.motionDataConfiguration.userConfiguration.user = "testUser";
+//		   ccfg.motionDataConfiguration.userConfiguration.password = "testUser";
 
 		   vm->registerConfiguration(ccfg, hmdbView->name());
 	   }
@@ -188,6 +226,7 @@ bool MdeMainWindow::customViewInit(QWidget * log)
    addTab(analysisTab);
 
 
+#ifndef DEMO_MODE
    QIcon reportsIcon;
    reportsIcon.addPixmap(QPixmap(":/mde/icons/Raporty.png"),QIcon::Active);
    reportsIcon.addPixmap(QPixmap(":/mde/icons/RaportyH.png"),QIcon::Disabled);
@@ -196,9 +235,9 @@ bool MdeMainWindow::customViewInit(QWidget * log)
    reportsTab->setEnabled(false);
    addTab(reportsTab);
    addTab(coreUI::IMdeTabPtr(new SimpleTab(log, QIcon(":/mde/icons/Operacje.png"),tr("Log"))));
-
    // TODO : najlepiej byloby przeniesc to do kontrolera
    connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
+#endif
    auto serviceManager = plugin::getServiceManager();
    auto timeline = plugin::getServiceManager()->getService(core::UID::GenerateUniqueID("{0157346E-D1F3-4A4F-854F-37C87FA3E5F9}"));
    for (int i = 0; i < serviceManager->getNumServices(); ++i) {

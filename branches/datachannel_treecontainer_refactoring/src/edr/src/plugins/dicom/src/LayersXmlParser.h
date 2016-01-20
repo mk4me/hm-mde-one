@@ -11,7 +11,7 @@
 #define HEADER_GUARD_DICOM__LAYERSXMLPARSER_H__
 
 #include <utils/SmartPtr.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <corelib/IParser.h>
 
 namespace dicom {

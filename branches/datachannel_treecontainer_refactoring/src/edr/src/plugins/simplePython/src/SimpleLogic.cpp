@@ -111,7 +111,7 @@ struct SimpleWorld : private python::PythonPluginUtils
 		int number;
     };
 
-BOOST_PYTHON_MODULE(plugin_simplePythond)
+MDE_PYTHON_MODULE(plugin_simplePython)
 {
     class_<SimpleWorld>("SimpleWorld")
 		.def("greet", &SimpleWorld::greet)

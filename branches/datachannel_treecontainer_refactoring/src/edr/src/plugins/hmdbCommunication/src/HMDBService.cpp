@@ -6,6 +6,7 @@
 #include <wsdlparser/WsdlExtension.h>
 #include <corelib/PluginCommon.h>
 #include <boost/algorithm/hex.hpp>
+#include <utils/DummyWrap.h>
 
 using namespace hmdbCommunication;
 
@@ -69,7 +70,7 @@ public:
 
 	virtual CURLcode execute(CURL * curl)
 	{
-		//HMDBService::curlEnableLog(curl);
+		HMDBService::curlEnableLog(curl);
 		curl_easy_setopt(curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_SSLv3);
 		auto f = manager->addRequest(utils::dummyWrap(curl));
 		return f.get();
@@ -108,7 +109,7 @@ const IHMDBSessionPtr HMDBService::createSession(const std::string & motionServi
 	const std::string & password,
 	const std::string & motionDataUrl,
 	const std::string & medicalDataUrl,
-	const core::Filesystem::Path & CAPath,
+	const utils::Filesystem::Path & CAPath,
 	const networkUtils::SSLHostVerification hostVerification)
 {
 	return IHMDBSessionPtr(new HMDBSession(dataManager, servicesManager, serviceCurlExecutor,
@@ -121,7 +122,7 @@ const IHMDBSessionPtr HMDBService::createSession(const bool motion,
 	const std::string & user,
 	const std::string & password,
 	const std::string & dataUrl,
-	const core::Filesystem::Path & CAPath,
+	const utils::Filesystem::Path & CAPath,
 	const networkUtils::SSLHostVerification hostVerification)
 {
 	IHMDBSessionPtr ret;
@@ -144,9 +145,9 @@ const networkUtils::IWSDLServicePtr HMDBService::createSecureWSDL(
 	const utils::shared_ptr<XmlUtils::CURLExecutor> executor, const std::string & url,
 	const std::string & user,
 	const std::string & password,
-	const core::Filesystem::Path & CAPath,
+	const utils::Filesystem::Path & CAPath,
 	const networkUtils::SSLHostVerification hostVerification,
-	const core::Filesystem::Path & schemaPath)
+	const utils::Filesystem::Path & schemaPath)
 {
 	auto invoker = new WsdlPull::CustomSSLWsdlInvoker(url, CAPath.string(),
 		static_cast<WsdlPull::CustomSSLWsdlInvoker::HostVerification>(hostVerification),
@@ -163,7 +164,7 @@ const networkUtils::IWSDLServicePtr HMDBService::createUnsecureWSDL(
 	const std::string & url,
 	const std::string & user,
 	const std::string & password,
-	const core::Filesystem::Path & schemaPath)
+	const utils::Filesystem::Path & schemaPath)
 {
 	auto invoker = new WsdlPull::WsdlInvoker(url, schemaPath.string(), executor.get());
 	invoker->setAuth(user, password);
@@ -175,9 +176,9 @@ const networkUtils::IWSDLServicePtr HMDBService::createHMDBService(
 	const std::string & url,
 	const std::string & user,
 	const std::string & password,
-	const core::Filesystem::Path & CAPath,
+	const utils::Filesystem::Path & CAPath,
 	const networkUtils::SSLHostVerification hostVerification,
-	const core::Filesystem::Path & schemaPath)
+	const utils::Filesystem::Path & schemaPath)
 {
 	if (CAPath.empty() == true){
 		return createSecureWSDL(serviceCurlExecutor, url, user, password, CAPath, hostVerification, schemaPath);
@@ -189,9 +190,9 @@ const networkUtils::IWSDLServicePtr HMDBService::createHMDBService(
 
 const networkUtils::IWSDLServicePtr HMDBService::createHMDBSystemService(
 	const std::string & url,
-	const core::Filesystem::Path & CAPath,
+	const utils::Filesystem::Path & CAPath,
 	const networkUtils::SSLHostVerification hostVerification,
-	const core::Filesystem::Path & schemaPath)
+	const utils::Filesystem::Path & schemaPath)
 {
 	return createHMDBService(url, "hmdbServiceUser", "4accountCreation", CAPath, hostVerification, schemaPath);
 }
@@ -203,7 +204,7 @@ static size_t DummyWriteCallback(void *contents, size_t size, size_t nmemb, void
 
 const bool HMDBService::serverOnline(const std::string & url,
 	const unsigned int timeout,
-	const core::Filesystem::Path & caPath) const
+	const utils::Filesystem::Path & caPath) const
 {
 	CURL * curl = curl_easy_init();
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
@@ -253,14 +254,14 @@ void HMDBService::attach(IHMDBSessionPtr session)
 {
 	std::lock_guard<std::recursive_mutex> lock(sync_);
 	//! TODO
-	//! podpi�� pod widget
+	//! podpiąć pod widget
 }
 
 void HMDBService::detach(IHMDBSessionPtr session)
 {
 	std::lock_guard<std::recursive_mutex> lock(sync_);
 	//! TODO
-	//! od��czy� widgeta
+	//! odłączyć widgeta
 }
 
 void HMDBService::init(core::ISourceManager * sourceManager,

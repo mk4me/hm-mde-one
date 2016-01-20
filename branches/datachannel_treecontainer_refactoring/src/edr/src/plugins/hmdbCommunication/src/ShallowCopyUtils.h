@@ -13,7 +13,7 @@
 #include <plugins/hmdbCommunication/ShallowCopy.h>
 #include <plugins/hmdbCommunication/IHMDBRemoteContext.h>
 #include <plugins/hmdbCommunication/IHMDBLocalContext.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 
 namespace hmdbCommunication
 {

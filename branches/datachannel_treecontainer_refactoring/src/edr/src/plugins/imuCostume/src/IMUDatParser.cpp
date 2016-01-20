@@ -9,7 +9,7 @@
 #define CHUNK_SIZE 1024
 #define FRAME_SIZE 32
 
-IMU::Frames IMU::IMUDatParser::parse(const core::Filesystem::Path& path, int imusCount)
+IMU::Frames IMU::IMUDatParser::parse(const utils::Filesystem::Path& path, int imusCount)
 {
     //array<char, CHUNK_SIZE> chunk;
     std::array<uint16_t, CHUNK_SIZE> chunk;
@@ -46,7 +46,7 @@ IMU::Frames IMU::IMUDatParser::parse(const core::Filesystem::Path& path, int imu
     return frames;
 }
 
-std::pair<IMU::Frames, int> IMU::IMUDatParser::parse(const core::Filesystem::Path& path)
+std::pair<IMU::Frames, int> IMU::IMUDatParser::parse(const utils::Filesystem::Path& path)
 {
 	std::array<uint16_t, CHUNK_SIZE> chunk;
 	Frames frames;
@@ -76,7 +76,7 @@ std::pair<IMU::Frames, int> IMU::IMUDatParser::parse(const core::Filesystem::Pat
 	throw loglib::runtime_error("Unable to load file");
 }
 
-void IMU::IMUDatParser::save(const core::Filesystem::Path& path, const Frames& frames)
+void IMU::IMUDatParser::save(const utils::Filesystem::Path& path, const Frames& frames)
 {
     using namespace std;
     std::array<uint16_t, CHUNK_SIZE / sizeof(uint16_t)> chunk = { 0 };

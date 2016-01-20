@@ -20,6 +20,7 @@ class KinematicVisualizer;
 class TrajectoryDrawerManager;
 
 //! Seria danych wizualizatora 3D wizualizująca markery z pliku C3D
+//! \version 0.9.1
 class MarkerSerie : public QObject, public KinematicTimeSerie, public IGhostSerie
 {
 	Q_OBJECT;

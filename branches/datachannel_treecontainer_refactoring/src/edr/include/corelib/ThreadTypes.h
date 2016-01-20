@@ -15,12 +15,12 @@
 
 namespace core
 {
-	//! Przerywalny w�tek z funkcj� runnable
+	//! Przerywalny wątek z funkcję runnable
 	typedef threadingUtils::RunnableThread<std::thread, threadingUtils::ConsumeExceptionHandlePolicy> InnerRunnableThread;
 
 	typedef threadingUtils::InterruptibleMultipleRunThread<InnerRunnableThread, threadingUtils::ConsumeExceptionHandlePolicy, threadingUtils::NoInterruptHandlingPolicy, threadingUtils::InterrupltiblePolicy> InnerInterruptibleMultipleRunThread;
 
-	//! Wewn�trza realizacja puli w�tk�w
+	//! Wewnętrza realizacja puli wątków
 	typedef threadingUtils::InterruptibleThreadPool<threadingUtils::ThreadFactoryT<InnerInterruptibleMultipleRunThread>> InnerThreadPool;
 }
 

@@ -4,8 +4,8 @@
 #include "NewChartVisualizer.h"
 #include "NewChartSeriesData.h"
 #include <QtWidgets/QTreeWidgetItem>
-#include <datachannellib/IBoundedArgumentsFeature.h>
-#include <datachannellib/IBoundedValuesFeature.h>
+#include <datachannellib/BoundedArgumentsFeature.h>
+#include <datachannellib/BoundedValuesFeature.h>
 #include <datachannellib/Adapters.h>
 
 
@@ -28,9 +28,9 @@ void NewChartSerie::setData(const utils::TypeInfo & requestedType,
 	}
 	curve = new NewChartCurve(name.c_str());
 	data->tryGet(reader);
-	continousReder = utils::make_shared < datachannel::DiscreteFunctionAccessorAdapter < c3dlib::ScalarChannelReaderInterface::value_type,
-		c3dlib::ScalarChannelReaderInterface::argument_type >> (*reader, datachannel::LerpInterpolator(),
-		datachannel::BorderExtrapolator<c3dlib::ScalarChannelReaderInterface::value_type>(reader->value(0), reader->value(reader->size() - 1)));
+	continousReder = utils::make_shared < dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::ScalarChannelReaderInterface::value_type,
+		c3dlib::ScalarChannelReaderInterface::argument_type >> (*reader, dataaccessor::LerpInterpolator(),
+		dataaccessor::BorderExtrapolator<c3dlib::ScalarChannelReaderInterface::value_type>(reader->value(0), reader->value(reader->size() - 1)));
 	curve->setSamples(new NewChartSeriesData(reader));
 	int r = rand() % 256;
 	int g = rand() % 256;
@@ -166,8 +166,8 @@ void NewChartSerie::setYScale(double val) {
 
 Scales NewChartSerie::getScales() const {
 
-	auto baf = reader->getOrCreateArgumentFeature<datachannel::IBoundedArgumentsFeature>();
-	auto bvf = reader->getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
+	auto baf = reader->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();
+	auto bvf = reader->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
 
 	return Scales(baf->minArgument(), baf->maxArgument(), bvf->minValue(),
 		bvf->maxValue());
@@ -188,7 +188,7 @@ double NewChartSerie::getCurrentValue() const {
 }
 
 double NewChartSerie::getLength() const {
-	auto baf = reader->getOrCreateArgumentFeature<datachannel::IBoundedArgumentsFeature>();
+	auto baf = reader->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();
 	return baf->maxArgument() - baf->minArgument();
 }
 

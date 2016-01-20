@@ -34,8 +34,10 @@ namespace core
 			auto innerJob = jm->create(
 				[=]() -> result_type
 			{
+				logError("Job " + name + " owned by " + owner + " started");
 				JobBase::JobGuard guard(description);
 				try{
+					logError("Job " + name + " owned by " + owner + " executing");
 					return (result_type)ff();
 				}
 				catch (std::exception & e){
@@ -54,6 +56,7 @@ namespace core
 		template<typename JobType>
 		void waitForOtherJob(JobType & job)
 		{
+			logError("Job " << job-> << " owned by " << owner << " waiting for other job");
 			jm->waitForOtherJob(job);
 		}
 

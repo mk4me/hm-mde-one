@@ -16,66 +16,61 @@
 #include <plugins/newChart/INewChartSerie.h>
 #include <plugins/hmmlib/Export.h>
 #include <loglib/Exceptions.h>
-#include <datachannellib/IBoundedValuesFeature.h>
+#include <datachannellib/BoundedValuesFeature.h>
 #include <datachannellib/Adapters.h>
 
 using namespace core;
 
-class RMSValueExtractor
+
+struct RMSChannel
 {
+	template<typename ValueType, typename ArgumentType>
+	using Accessor = dataaccessor::IDiscreteAccessorT<ValueType, ArgumentType>;
 
-};
-
-template<typename ValueType>
-class RMSValueExtractorT
-{
-public:
-
-	RMSValueExtractorT(const std::size_t meanR) : meanR(meanR) {}
-	RMSValueExtractorT(const RMSValueExtractorT & Other) : meanR(Other.meanR) {}
-	RMSValueExtractorT(RMSValueExtractorT && Other) : meanR(Other.meanR) {}
-	~RMSValueExtractorT() {}
-
-	ValueType extract(const ValueType & value, const std::size_t idx)
+	template<typename ValueType, typename ArgumentType>
+	static auto	create(const Accessor<ValueType, ArgumentType> & accessor, const std::size_t meanR)
+		-> decltype(dataaccessor::wrap(std::declval<std::vector<typename Accessor<ValueType, ArgumentType>::sample_type>>()))
 	{
-		sizeT count = myChannel.size() - meanR;
+		using AccessorT = Accessor<ValueType, ArgumentType>;
+		std::vector<typename AccessorT::sample_type> values;
+
+		auto count = accessor.size() - meanR;
 		// brzeg lewy...
-		for (sizeT l_idx = 0; l_idx < meanR; ++l_idx) {
-			pointT sum = 0;
-			for (sizeT i = 0; i < l_idx + meanR; ++i) {
-				sum += observedChannel.value(i) * observedChannel.value(i);
+		for (std::size_t l_idx = 0; l_idx < meanR; ++l_idx) {
+			ValueType sum = 0;
+			for (std::size_t i = 0; i < l_idx + meanR; ++i) {
+				sum += std::pow(accessor.value(i), 2.0);
 			}
 			sum /= (l_idx + meanR);
-			sum = sqrt(sum);
-			modifierInterface.setIndexData(l_idx, sum);
+			sum = std::sqrt(sum);
+			values.push_back({accessor.argument(l_idx), sum});
 		}
+
+		const auto d = meanR + meanR + 1;
+
 		// właściwa interpolacja
-		for (sizeT idx = meanR; idx < count; ++idx) {
-			pointT sum = 0;
-			for (sizeT i = idx - meanR; i < idx + meanR + 1; ++i) {
-				sum += observedChannel.value(i) * observedChannel.value(i);
+		for (std::size_t idx = meanR; idx < count; ++idx) {
+			ValueType sum = 0;
+			for (std::size_t i = idx - meanR; i < idx + meanR + 1; ++i) {
+				sum += std::pow(accessor.value(i), 2.0);
 			}
-			sum /= (meanR + meanR + 1);
-			sum = sqrt(sum);
-			modifierInterface.setIndexData(idx, sum);
+			sum /= d;
+			sum = std::sqrt(sum);
+			values.push_back({ accessor.argument(idx), sum });
 		}
 		// brzeg prawy...
-		for (sizeT r_idx = count; r_idx < observedChannel.size(); ++r_idx) {
-			pointT sum = 0;
-			for (sizeT i = r_idx; i < observedChannel.size(); ++i) {
-				sum += observedChannel.value(i) * observedChannel.value(i);
+		for (std::size_t r_idx = count; r_idx < accessor.size(); ++r_idx) {
+			ValueType sum = 0;
+			for (std::size_t i = r_idx; i < accessor.size(); ++i) {
+				sum += std::pow(accessor.value(i), 2.0);
 			}
-			//sum /= (r_idx - count + meanR);
-			sum /= observedChannel.size() - r_idx;
-			sum = sqrt(sum);
-			modifierInterface.setIndexData(r_idx, sum);
+			sum /= accessor.size() - r_idx;
+			sum = std::sqrt(sum);
+			values.push_back({ accessor.argument(idx), sum });
 		}
+
+		return dataaccessor::wrap(std::move(values));
 	}
-    
-
-private:
-
-	const std::size_t meanR;
 };
 
 class ScalarChannelIntegrator
@@ -141,79 +136,98 @@ public:
  //   }
 };
 
-template<class ValueType, class ArgumentType>
-class AbsMeanValueExtractorT;
-
-class AbsMeanValueExtractor
-{
-public:
-
-	template<typename DiscreteAccessor>
-	inline static AbsMeanValueExtractorT<typename DiscreteAccessor::value_type, typename DiscreteAccessor::argument_type> create(const DiscreteAccessor & accessor)
-	{
-		return AbsMeanValueExtractorT<typename DiscreteAccessor::value_type, typename DiscreteAccessor::argument_type>(accessor);
-	}
-};
-
-template<class ValueType, class ArgumentType>
+template<class ValueType>
 class AbsMeanValueExtractorT
 {
 public:
-	using accessor_type = datachannel::IDiscreteAccessor<ValueType, ArgumentType>;
-	using value_type = accessor_type::value_type;
-	using size_type = accessor_type::size_type;
 
-	AbsMeanValueExtractorT(const accessor_type & accessor)
-		: mean(initialize(accessor))
+	AbsMeanValueExtractorT(const ValueType & mean)
+		: mean_(mean)
     {
 
     }
 
-	AbsMeanValueExtractorT(const AbsMeanValueExtractorT & Other) : mean(Other.mean)
+	AbsMeanValueExtractorT(ValueType && mean)
+		: mean_(std::move(mean))
 	{
 
 	}
 
-	AbsMeanValueExtractorT(AbsMeanValueExtractorT && Other) : mean(Other.mean)
+	AbsMeanValueExtractorT(const AbsMeanValueExtractorT & Other) : mean_(Other.mean_)
 	{
 
+	}
+
+	AbsMeanValueExtractorT(AbsMeanValueExtractorT && Other) : mean_(std::move(Other.mean_))
+	{
+		Other.mean_ = ValueType();
 	}
 
 	~AbsMeanValueExtractorT() {}	
 
-	inline value_type extract(const value_type & value, ...) const
+	inline ValueType extract(const ValueType & value, ...) const
     {
-        return std::abs(value - mean);
+        return std::abs(value - mean_);
     }
 
 private:
 
-	inline static value_type initialize(const accessor_type & accessor)
-    {
-		auto bvf = accessor.getOrCreateValueFeature<datachannel::IBoundedValuesFeature>();
-		const value_type min4 = bvf->minValue() / 4;
-		const value_type max4 = bvf->maxValue() / 4;
-
-		value_type sum = 0;
-        //średnia
-        for(size_type idx = 0; idx < count; ++idx) {
-			auto val = accessor.value(idx);
-            if (val > max4) {
-                val = max4;
-            } else if (val < min4) {
-                val = min4;
-            }
-            sum += val;
-        }
-
-        return (sum / static_cast<value_type>(count));
-    }
-
-private:
-
-    const point_type mean;
+	const ValueType mean_;
 
 };
 
+struct AbsMeanValueChannel
+{
+	template<typename ValueType>
+	inline static ValueType mean(const dataaccessor::IDiscreteValueAccessorT<ValueType> & accessor)
+	{
+		auto bvf = accessor.getOrCreateFeature<dataaccessor::BoundedValuesFeature>();
+		const ValueType min4 = bvf->minValue() / 4;
+		const ValueType max4 = bvf->maxValue() / 4;
+
+		ValueType sum = 0;
+		//średnia
+		for (std::size_t idx = 0; idx < count; ++idx) {
+			auto val = accessor.value(idx);
+			if (val > max4) {
+				val = max4;
+			}
+			else if (val < min4) {
+				val = min4;
+			}
+			sum += val;
+		}
+
+		return sum / static_cast<ValueType>(count);
+	}
+
+	template<typename AccessorType>
+	static inline dataaccessor::DiscreteAccessorPtr<typename AccessorType::value_type, typename AccessorType::argument_type> wrap(const typename AccessorType::value_type & mean, utils::shared_ptr<const AccessorType> accessor)
+	{
+		return dataaccessor::DiscreteAccessorPtr<typename AccessorType::value_type, typename AccessorType::argument_type>(new dataaccessor::DiscreteAccessorAdapter<typename AccessorType::value_type, typename AccessorType::argument_type, AbsMeanValueExtractorT<typename AccessorType::value_type>>(accessor,
+			AbsMeanValueExtractorT<typename AccessorType::value_type>(mean)));
+	}
+
+	template<typename AccessorType>
+	static inline dataaccessor::DiscreteAccessorPtr<typename AccessorType::value_type, typename AccessorType::argument_type> wrap(utils::shared_ptr<const AccessorType> accessor)
+	{
+		return dataaccessor::DiscreteAccessorPtr<typename AccessorType::value_type, typename AccessorType::argument_type>(new dataaccessor::DiscreteAccessorAdapter<typename AccessorType::value_type, typename AccessorType::argument_type, AbsMeanValueExtractorT<typename AccessorType::value_type>>(accessor,
+			AbsMeanValueExtractorT<typename AccessorType::value_type>(AbsMeanValueChannel::mean(*accessor))));
+	}
+
+	template<typename ValueType, typename ArgumentType>
+	static dataaccessor::DiscreteAccessorPtr<ValueType, ArgumentType> lightWrap(dataaccessor::IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
+	{
+		return dataaccessor::DiscreteAccessorPtr<ValueType, ArgumentType>(new dataaccessor::DiscreteAccessorAdapter<ValueType, ArgumentType, AbsMeanValueExtractorT<ValueType>>(accessor,
+			AbsMeanValueExtractorT<ValueType>(AbsMeanValueChannel::mean(accessor))));
+	}
+
+	template<typename ValueType, typename ArgumentType>
+	static dataaccessor::DiscreteAccessorPtr<ValueType, ArgumentType> lightWrap(const ValueType & mean, dataaccessor::IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
+	{
+		return dataaccessor::DiscreteAccessorPtr<ValueType, ArgumentType>(new dataaccessor::DiscreteAccessorAdapter<ValueType, ArgumentType, AbsMeanValueExtractorT<ValueType>>(accessor,
+			AbsMeanValueExtractorT<ValueType>(mean)));
+	}
+};
 
 #endif

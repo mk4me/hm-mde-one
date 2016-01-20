@@ -3,6 +3,7 @@
 #include <plugins/hmdbCommunication/IDataSourcePerspective.h>
 #include <plugins/hmdbCommunication/IDataSourceContent.h>
 #include <plugins/hmdbCommunication/ShallowCopyFilter.h>
+#include <QtCore/QSettings>
 
 using namespace hmdbCommunication;
 
@@ -399,3 +400,4 @@ const HMDBSourceViewManager::ViewDescription * HMDBSourceViewManager::find(const
 
 	return ret;
 }
+

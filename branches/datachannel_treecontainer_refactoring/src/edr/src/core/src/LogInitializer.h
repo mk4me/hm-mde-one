@@ -11,7 +11,7 @@
 
 #include <cstddef>
 #include <loglib/ILog.h>
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 
 namespace coreUI {
 
@@ -26,7 +26,7 @@ class LogInitializer
 {
 public:
     //! \param configPath Ścieżka do pliku konfiguracyjnego.
-    LogInitializer(const Filesystem::Path & configFile);
+	LogInitializer(const utils::Filesystem::Path & configFile);
     //!
     ~LogInitializer();
 

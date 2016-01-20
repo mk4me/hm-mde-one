@@ -79,7 +79,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 		return (_Traits::eof()); // read only mode or no open blob, or EOF or faile dto create buffer
 	}
 
-	//czy cos by�o pisane do bufora?
+	//czy cos było pisane do bufora?
 	if (_Mysb::pptr() != nullptr){
 		// musze zrzucic bufor do strumienia
 		//zapamietuje poprzedni rozmiar aby ewentualnie rozmiar bufora dopasowac
@@ -92,15 +92,15 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 			return (_Traits::eof());	// zapis sie nie powiodlo, fail
 		}
 
-		//czy zmieni� si� rozmiar?
+		//czy zmienił się rozmiar?
 		if (oldBlobSize < blobSize){
 			//mam nowego bloba, moge uaktualnic rozmiar bufora do zapisu
 			buffer->updateSize(toStreamPos(blobSize));
 		}
-		//rozmiar sie nie zmieni�
+		//rozmiar sie nie zmienił
 		//sprawdzam gdzie teraz w strumieniu jestem
 		else if (blobWriteBase < blobSize){
-			//ca�y czas pisz� wewn�trz bloba, moge od�wiezy� zawarto�� bufor ze strumienia
+			//cały czas piszę wewnątrz bloba, moge odświezyć zawartość bufor ze strumienia
 			auto s = refillBuffer(blobWriteBase, buffer->begin());
 
 			//czy cos pobralem albo jakis blad?
@@ -109,7 +109,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 			}
 		}
 
-		// je�eli cos czyta�em wcze�niej to musz� zapami�ta� i wyzerowa� je�li to nie ten sam obszar
+		// jeżeli cos czytałem wcześniej to muszę zapamiętać i wyzerować jeżeli to nie ten sam obszar
 		if (_Mysb::gptr() != nullptr){
 			blobReadBase += toBlobPos(std::distance(_Mysb::eback(), _Mysb::gptr()));
 			_Mysb::setg(buffer->begin(), nullptr, buffer->end());
@@ -120,7 +120,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 		//ustawiam nowy bufor i jego stan
 		_Mysb::setp(buffer->begin(), buffer->end());
 	}
-	//nie pisa�em do bufora zapisu
+	//nie pisałem do bufora zapisu
 	else{
 
 		if (putBackWrite == true){
@@ -133,7 +133,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 				return (_Traits::eof());	// zapis sie nie powiodlo, fail
 			}
 
-			//czy zmieni� si� rozmiar?
+			//czy zmienił się rozmiar?
 			if (oldBlobSize < blobSize){
 				auto ss = streamBufferSize();
 				//mam nowego bloba, moge uaktualnic rozmiar bufora do zapisu
@@ -145,11 +145,11 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 		}
 
 		if (_Mysb::gptr() != nullptr){
-			//czyta�em co� z bufora a chc� bufor do zapisu
-			//sprawdzam czy obszary odczytu/zapisu si� nie zaz�biaj�
+			//czytałem coś z bufora a chcę bufor do zapisu
+			//sprawdzam czy obszary odczytu/zapisu się nie zazębiają
 			if (blobWriteBase < blobReadBase || blobWriteBase >= blobReadMaxIDX()){
 
-				//prze�adowuje bufor nowymi danymi, b�d� po nich pisa�
+				//przeładowuje bufor nowymi danymi, będzie po nich pisać
 				auto s = refillBuffer(blobWriteBase, buffer->begin());
 
 				//czy cos pobralem albo jakis blad?
@@ -157,7 +157,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 					return (_Traits::eof()); // nic nie pobralem wiec pewnie koniec
 				}
 
-				//niestety, obszary s� roz��czne, musz� zapami�tac stan bufora do odczytu i zresetowa� jego obszar
+				//niestety, obszary są rozłączne, muszę zapamiętac stan bufora do odczytu i zresetować jego obszar
 				blobReadBase += toBlobPos(std::distance(_Mysb::eback(), _Mysb::gptr()));
 				_Mysb::setg(buffer->begin(), nullptr, buffer->end());
 
@@ -165,7 +165,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 				_Mysb::setp(buffer->begin(), buffer->end());
 			}
 			else{
-				//obszary pokrywaj� si� - wystarczy poprzestawia� wska�niki
+				//obszary pokrywają się - wystarczy poprzestawiać wskaźniki
 				auto diff = blobWriteBase - blobReadBase;
 				blobWriteBase = blobReadBase;
 				//poprawiam obszar do zapisu
@@ -173,7 +173,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 			}
 		}
 		else{
-			//nie by�o zapisu i odczytu albo oba obszary nieaktyne po seek
+			//nie było zapisu i odczytu albo oba obszary nieaktyne po seek
 
 			if (blobSize > 0 && blobWriteBase != blobSize){
 				//uzupelniam bufor
@@ -192,7 +192,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 	//zapisujemy
 	*_Mysb::pptr() = _Traits::to_char_type(_Meta);
 	 _Mysb::pbump(1);
-	//aktualizuje koniec strumienia dla poprawnego odczytu ca�ego strumienia podczas zapisu
+	//aktualizuje koniec strumienia dla poprawnego odczytu całego strumienia podczas zapisu
 	updateBlobStreamEnd();
 
 	return (_Meta);
@@ -209,7 +209,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 	auto oldSeekhigh = blobSeekhigh;
 	updateBlobStreamEnd();
 
-	//czy konieczne jest prze�adowanie bufora?
+	//czy konieczne jest przeładowanie bufora?
 	bool refill = true;
 
 	//sprawdzam czy byly zapisy
@@ -235,7 +235,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 			_Mysb::setp(buffer->begin(), buffer->end());
 		}
 		else{
-			//zaz�biaj� si� obszary, wystarczy wska�niki poprawi�
+			//zazębiają się obszary, wystarczy wskaźniki poprawić
 			refill = false;
 			//maks rozmiar do odczytu
 			const auto size = ((blobWriteBase + blobBufferSize()) <= blobSeekhigh) ? blobBufferSize() : blobSeekhigh - blobGlobalWriteIDX();
@@ -255,7 +255,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 			return (_Traits::eof());	// zapis sie nie powiodlo, fail
 		}
 
-		//czy zmieni� si� rozmiar?
+		//czy zmienił się rozmiar?
 		if (oldBlobSize < blobSize){
 			//mam nowego bloba, moge uaktualnic rozmiar bufora do zapisu
 			buffer->updateSize(toStreamPos(blobSize));
@@ -368,14 +368,14 @@ template<typename _Elem, typename _Traits>
 typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::pos_type SQLiteBLOBStreamBufferT<_Elem, _Traits>::seekpos(pos_type _Ptr,
 	std::ios_base::openmode _Mode)
 {
-	// aktualizuje seek high - ci�gle mog�y by� zapisy
+	// aktualizuje seek high - ciągle mogły być zapisy
 	auto oldSeekhigh = blobSeekhigh;
 	updateBlobStreamEnd();
 	// pozycja bezwgledna
 	std::streamoff _StreamPos = (std::streamoff)_Ptr;
 	std::streamoff _BlobPos = toBlobPos(_StreamPos);
 
-	//! sprawdzam czy pozycja jest prawid�owa, czy wybrano jakis bufor
+	//! sprawdzam czy pozycja jest prawidłowa, czy wybrano jakis bufor
 	if (_BlobPos == _BADOFF || _BlobPos < 0 || _BlobPos > blobSeekhigh ||
 		!(_Mode & std::ios_base::in || _Mode & std::ios_base::out)){
 		return _BADOFF;
@@ -579,7 +579,7 @@ const bool SQLiteBLOBStreamBufferT<_Elem, _Traits>::flushBuffer(const _Elem * ba
 			return false;
 		}
 
-		//TODO - dodac polityke update oparta na kopiowaniu do plikow przy du�ych blobach
+		//TODO - dodac polityke update oparta na kopiowaniu do plikow przy dużych blobach
 		//bufor tymczasowy na nowy blob
 		std::string tmpBuffer;
 

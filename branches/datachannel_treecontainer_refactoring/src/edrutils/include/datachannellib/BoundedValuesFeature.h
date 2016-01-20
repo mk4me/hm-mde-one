@@ -1,21 +1,21 @@
 /********************************************************************
 	created:  2015/07/28	15:05:37
-	filename: IBoundedValuesFeature.h
+	filename: BoundedValuesFeature.h
 	author:	  Mateusz Janiak
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__IBOUNDEDVALUESFEATURE_H__
-#define __HEADER_GUARD_DATACHANNEL__IBOUNDEDVALUESFEATURE_H__
+#ifndef __HEADER_GUARD_DATACHANNEL__BOUNDEDVALUESFEATURE_H__
+#define __HEADER_GUARD_DATACHANNEL__BOUNDEDVALUESFEATURE_H__
 
 #include <datachannellib/Accessors.h>
 
-namespace datachannel
+namespace dataaccessor
 {
 	//! \rparam ValueType Typ wartoœci kana³u
 	template<class ValueType>
 	//! Interfejs kana³u z ograniczonymi wartoœciami
-	class IBoundedValuesFeature : public FeatureHelper<ValueBounded, IValueFeature<ValueType>>
+	class IBoundedValuesFeature : public FeatureHelperT<ValueBounded, IValueFeatureT<ValueType>>
 	{
 	public:
 		//! Destruktor wirtualny
@@ -30,8 +30,8 @@ namespace datachannel
 		//! Sprawdzamy czy wszystkie argumenty znajduj¹ siê w zadanym przedziale
 		template<typename ArgumentType>
 		static inline IBoundedValuesFeature * create(
-			const IDiscreteAccessor<ValueType, ArgumentType> * discrete,
-			const IFunctionAccessor<ValueType, ArgumentType> * function)
+			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
+			const IFunctionAccessorT<ValueType, ArgumentType> * function)
 		{
 			IBoundedValuesFeature * ret = nullptr;
 			if (discrete != nullptr && discrete->empty() == false){
@@ -79,4 +79,4 @@ namespace datachannel
 	};
 }
 
-#endif	// __HEADER_GUARD_DATACHANNEL__IBOUNDEDVALUESFEATURE_H__
+#endif	// __HEADER_GUARD_DATACHANNEL__BOUNDEDVALUESFEATURE_H__

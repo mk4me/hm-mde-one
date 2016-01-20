@@ -8,7 +8,7 @@
 #ifndef __HEADER_GUARD_DATACHANNEL__TYPES_H__
 #define __HEADER_GUARD_DATACHANNEL__TYPES_H__
 
-namespace datachannel
+namespace dataaccessor
 {
 	//! Typ cech kana³u
 	enum FeatureType
@@ -18,7 +18,7 @@ namespace datachannel
 		Function,			//! Opis kana³u reprezentuj¹cego funkcjê: parzystoœæ, nieparzystoœæ, sta³oœæ, monotonicznoœæ, ci¹g³oœæ
 		ArgumentBounded,	//! Opis zakresu argumentów
 		ValueBounded,		//! Opis zakresu wartoœci
-		UniformaArguments,	//! Opis argumentów równooodalonych
+		UniformArguments,	//! Opis argumentów równooodalonych
 		Periodic,			//! Opis okresu
 		CustomBase = 100	//! Indeks dla w³asnych cech
 	};

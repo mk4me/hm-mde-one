@@ -34,7 +34,7 @@ void c3dlib::C3DWriter::write(const std::string& path)
 
 	for (int i = 0; i < scalars.size(); ++i) {	
 		auto scalar = scalars[i];
-		auto df = scalar->feature<datachannel::IDescriptorFeature>();
+		auto df = scalar->feature<dataaccessor::IDescriptorFeature>();
 		std::string name = df != nullptr && df->name().empty() == false ? df->name() : "Unnamed scalar " + std::to_string(i);
 		btk::Analog::Pointer analog = btk::Analog::New(name);
 		int count = scalar->size();
@@ -47,7 +47,7 @@ void c3dlib::C3DWriter::write(const std::string& path)
 
 	for (int i = 0; i < vectors.size(); ++i) {
 		auto vector = vectors[i];
-		auto df = vector->feature<datachannel::IDescriptorFeature>();
+		auto df = vector->feature<dataaccessor::IDescriptorFeature>();
 		std::string name = df != nullptr && df->name().empty() == false ? df->name() : "Unnamed vector " + std::to_string(i);
 		btk::Point::Pointer point = btk::Point::New(name);
 		int count = vector->size();

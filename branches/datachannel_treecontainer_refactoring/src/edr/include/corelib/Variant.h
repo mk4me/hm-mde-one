@@ -1,15 +1,17 @@
 /********************************************************************
 	created:  2014/05/05	16:28:08
-	filename: ObjectWrapper.h
+	filename: Variant.h
 	author:	  Mateusz Janiak
 
 	purpose:
 	*********************************************************************/
-#ifndef __HEADER_GUARD_CORE__OBJECTWRAPPER_H__
-#define __HEADER_GUARD_CORE__OBJECTWRAPPER_H__
+#ifndef __HEADER_GUARD_CORE__VARIANT_H__
+#define __HEADER_GUARD_CORE__VARIANT_H__
 
 #include <corelib/Export.h>
 #include <utils/SmartPtr.h>
+//#include <utils/Utils.h>
+#include <utils/pointer_traits.h>
 #include <objectwrapperlib/ObjectWrapper.h>
 #include <mutex>
 #include <list>
@@ -126,20 +128,23 @@ namespace core
 		//! \tparam T Typ obiektu dla ktorego chcemy utworzych OW
 		//! \param value Wartość z jaką chcemy utowrzyć OW
 		//! \return Wrapper obiektu.
-		template <class T>
-		static VariantPtr wrap(typename utils::ObjectWrapperTraits<T>::Ptr value)
+		template < class T, typename std::enable_if<std::is_pointer<T>::value ||
+			(std::is_class<T>::value && utils::supports_pointer_operator<T>::value)>::type * = 0>
+		static inline VariantPtr wrap(const T & value)
 		{
-			return VariantPtr(new Variant(utils::ObjectWrapper::wrap<T>(value)));
+			using itype = typename std::conditional<std::is_pointer<T>::value, T, decltype(std::declval<T>().operator->())>::type;
+			using type = typename utils::remove_toplevel<typename std::remove_pointer<itype>::type>::type;
+			return VariantPtr(new Variant(utils::ObjectWrapper::wrap<type>(value)));
 		}
 
 		//! \tparam T Typ obiektu dla ktorego chcemy utworzych OW
 		//! \param value Wartość z jaką chcemy utowrzyć OW
 		//! \return Wrapper obiektu.
-		template <class T, class U>
-		static VariantPtr wrap(typename utils::ObjectWrapperTraits<T>::PtrPolicy::template Ptr<U>::Type value)
-		{
-			return VariantPtr(new Variant(utils::ObjectWrapper::wrap<T>(typename utils::ObjectWrapperTraits<T>::Ptr(value))));
-		}
+		//template <class T, class U>
+		//static VariantPtr wrap(const typename utils::ObjectWrapperTraits<T>::PtrPolicy::template Ptr<U>::Type & value)
+		//{
+//			return VariantPtr(new Variant(utils::ObjectWrapper::wrap<T>(typename utils::ObjectWrapperTraits<T>::Ptr(value))));
+		//}
 
 		//! \tparam Ptr
 		//! \param object
@@ -268,4 +273,4 @@ bool operator==(const core::Variant & a, const core::Variant & b);
 //! Operator różnoci realizowany w oparciu o operator porównania
 bool operator!=(const core::Variant & a, const core::Variant & b);
 
-#endif	// __HEADER_GUARD_CORE__OBJECTWRAPPER_H__
+#endif	// __HEADER_GUARD_CORE__VARIANT_H__

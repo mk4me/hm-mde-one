@@ -15,6 +15,7 @@
 #include <corelib/PluginCommon.h>
 #include <objectwrapperlib/ObjectWrapper.h>
 #include <boost/lexical_cast.hpp>
+#include <datachannellib/Wrappers.h>
 
 using namespace PluginSubject;
 core::IHierarchyItemPtr TreeBuilder::createTree(const QString& rootItemName, const core::ConstVariantsList& sessions)
@@ -371,21 +372,19 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
             std::string channelName = c->getName();
             std::list<core::HierarchyHelperPtr> helpers;
             NewVector3ItemHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i], events));
-            helpers.push_back(channelHelper);
-            helpers.push_back(allTFromSession(channelName, motion->getUnpackedSession(), 0));
-            helpers.push_back(allTFromSession(channelName, motion->getUnpackedSession(), 1));
-            helpers.push_back(allTFromSession(channelName, motion->getUnpackedSession(), 2));
-            helpers.push_back(createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Left));
-            helpers.push_back(createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Right));
-            helpers.push_back(createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Left));
-            helpers.push_back(createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Right));
+            push_not_null(helpers, channelHelper);
+            push_not_null(helpers, allTFromSession(channelName, motion->getUnpackedSession(), 0));
+            push_not_null(helpers, allTFromSession(channelName, motion->getUnpackedSession(), 1));
+            push_not_null(helpers, allTFromSession(channelName, motion->getUnpackedSession(), 2));
+            push_not_null(helpers, createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Left));
+            push_not_null(helpers, createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Right));
+            push_not_null(helpers, createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Left));
+            push_not_null(helpers, createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Right));
             core::IHierarchyItemPtr channelItem (new core::HierarchyDataItem(wrappers[i], childIcon, QString::fromStdString(c->getName()), desc, helpers));
             collectionItem->appendChild(channelItem);
         }
     }
 }
-
-
 
 core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channelName, PluginSubject::SessionConstPtr s, int channelNo )
 {
@@ -396,7 +395,7 @@ core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channe
     for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
         PluginSubject::MotionConstPtr m = (*itMotion)->get();
         core::ConstVariantsList wrappers;
-		m->getObjects(wrappers, typeid(utils::DataChannelCollection<c3dlib::VectorChannel >), false);
+		m->getObjects(wrappers, typeid(c3dlib::VectorChannelCollection), false);
 
 		c3dlib::EventsCollectionConstPtr events;
 		if (m->hasObject(typeid(c3dlib::C3DEventsCollection), false)) {
@@ -407,11 +406,13 @@ core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channe
 
         for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
 			c3dlib::VectorChannelCollectionConstPtr collection = (*it)->get();
-            int count = collection->getNumChannels();
+            int count = collection ? collection->getNumAccessors() : 0;
             for (int i = 0; i < count; ++i) {
-				c3dlib::VectorChannelConstPtr channel = collection->getChannel(i);
-                if (channel->getName() == channelName) {
-					c3dlib::ScalarChannelReaderInterfacePtr reader(new c3dlib::VectorToScalarAdaptor(channel, channelNo));
+				c3dlib::VectorChannelReaderInterfaceConstPtr channel = collection->getAccessor(i);
+				auto df = channel->feature<dataaccessor::IDescriptorFeature>();
+                if (df != nullptr && df->name() == channelName) {
+					//c3dlib::ScalarChannelReaderInterfacePtr reader(dataaccessor::Vector::wrap(channel, channelNo));
+					c3dlib::ScalarChannelReaderInterfacePtr reader(dataaccessor::Vector::wrap(channel, channelNo));
 					core::VariantPtr wrapper = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
                     wrapper->set(reader);
                     int no = toVisualize.size();
@@ -446,12 +447,12 @@ core::HierarchyHelperPtr TreeBuilder::createNormalized( core::VariantConstPtr wr
         segments = getTimeSegments(events, context);
     }
     std::map<core::VariantConstPtr, QColor> colorMap;
-	c3dlib::VectorChannelConstPtr channel = wrapper->get();
+	c3dlib::VectorChannelReaderInterfaceConstPtr channel = wrapper->get();
     for (int j = 0; j != segments.size(); ++j) {
 		c3dlib::FloatPairPtr segment = segments[j];
         for (int channelNo = 0; channelNo <= 2; ++channelNo) {
-			c3dlib::ScalarChannelReaderInterfacePtr reader(new c3dlib::VectorToScalarAdaptor(channel, channelNo));
-			c3dlib::ScalarChannelReaderInterfacePtr normalized(new c3dlib::ScalarWithTimeSegment(reader, segment->first, segment->second));
+			c3dlib::ScalarChannelReaderInterfacePtr reader(dataaccessor::Vector::wrap(channel, channelNo));
+			c3dlib::ScalarChannelReaderInterfacePtr normalized(dataaccessor::wrap(reader, 0, 100));// new c3dlib::ScalarWithTimeSegment(reader, segment->first, segment->second));
 			core::VariantPtr newWrapper = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
             newWrapper->set(normalized);
             int no = toVisualize.size();
@@ -503,7 +504,7 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
 
         for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
 			c3dlib::VectorChannelCollectionConstPtr collection = (*it)->get();
-            int count = collection->getNumChannels();
+            int count = collection ? collection->getNumChannels() : 0;
             for (int i = 0; i < count; ++i) {
 				c3dlib::VectorChannelConstPtr channel = collection->getChannel(i);
                 if (channel->getName() == channelName) {

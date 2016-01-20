@@ -11,8 +11,10 @@
 #define HEADER_GUARD_DICOMIMPORTER__DICOMIMPORTER_H__
 
 #include "DicomInternalStruct.h"
-#include <corelib/Filesystem.h>
+#include <utils/Filesystem.h>
 #include <boost/tuple/tuple.hpp>
+#include <QtGui/QPixmap>
+#include <boost/function.hpp>
 
 class DcmDirectoryRecord;
 
@@ -26,8 +28,8 @@ public:
     DicomImporter(int studyFristId = 1);
 
 	virtual ~DicomImporter() {}
-    DicomInternalStructPtr import( const core::Filesystem::Path& from );
-    void convertImages(DicomInternalStructPtr inter, const core::Filesystem::Path& from, const core::Filesystem::Path& to );
+    DicomInternalStructPtr import( const utils::Filesystem::Path& from );
+    void convertImages(DicomInternalStructPtr inter, const utils::Filesystem::Path& from, const utils::Filesystem::Path& to );
     std::vector<DicomInternalStructPtr> split(DicomInternalStructPtr);
 
     int getStudyCurrentIndex() const { return studyCurrentIndex; }
@@ -36,14 +38,15 @@ public:
     void setCallBack(refresher r);
 
 	static bool testPowerDoppler(const QPixmap &pixmap);
-	DicomInternalStructPtr importRaw(const core::Filesystem::Path& from);
+	DicomInternalStructPtr importRaw(const utils::Filesystem::Path& from);
+	utils::Filesystem::Path findDicomRootDir(const utils::Filesystem::Path& from);
 
 private:
     void handlePatientRecord( DcmDirectoryRecord * patientRecord, internalData::PatientPtr patient, std::string basePath );
     void handleStudyRecord( DcmDirectoryRecord * studyRecord, internalData::StudyPtr study,  std::string basePath );
     void handleSeriesRecord( DcmDirectoryRecord * seriesRecord, internalData::SeriePtr serie, std::string basePath );
     void handleFileRecord( DcmDirectoryRecord * fileRecord, internalData::ImagePtr image, std::string basePath );
-    void convertImage( internalData::ImagePtr inter, const core::Filesystem::Path& from, const core::Filesystem::Path& to, const std::string& filenameBase );
+    void convertImage( internalData::ImagePtr inter, const utils::Filesystem::Path& from, const utils::Filesystem::Path& to, const std::string& filenameBase );
 
 
     std::string getSessionDir() const;
@@ -57,7 +60,7 @@ class DicomSaver
 {
 public:
     virtual ~DicomSaver() {}
-    void save( const core::Filesystem::Path& to, DicomInternalStructPtr inter );
+    void save( const utils::Filesystem::Path& to, DicomInternalStructPtr inter );
 };
 DEFINE_SMART_POINTERS(DicomSaver);
 
@@ -65,7 +68,7 @@ class DicomLoader
 {
 public:
     virtual ~DicomLoader() {}
-    DicomInternalStructPtr load( const core::Filesystem::Path& from);
+    DicomInternalStructPtr load( const utils::Filesystem::Path& from);
 };
 DEFINE_SMART_POINTERS(DicomLoader);
 }

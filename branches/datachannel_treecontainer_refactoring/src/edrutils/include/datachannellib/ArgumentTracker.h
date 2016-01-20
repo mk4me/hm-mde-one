@@ -12,7 +12,7 @@
 #include <utils/SmartPtr.h>
 #include <atomic>
 
-namespace datachannel {
+namespace dataaccessor {
 	//! Interfejs do odczytu czasu timera
 	template<typename ArgumentType>
 	class IArgumentTrackerReader

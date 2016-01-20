@@ -191,7 +191,7 @@ public:
 		node->setPosition(position);
 	}
 
-	//! \param translation Lokalne przesuni�cie
+	//! \param translation Lokalne przesunięcie
 	//! \param rotation Lokalna rotacja
 	void localUpdate(const osg::Vec3d & translation, const osg::Quat & rotation)
 	{
@@ -484,7 +484,7 @@ bool createJoint(Skeleton::JointPtr parentJoint, const acclaim::Skeleton & skele
 	auto joint = Skeleton::Joint::add(parentJoint, Skeleton::JointData(parentJoint->value(), currentBone.name, parentPos));
 	auto range = skeleton.hierarchy.left.equal_range(currentBone.id);	
 	const auto nextPos = currentBone.direction * currentBone.length;
-	//taka jest konwencja ASF - podajemy przesuniecie rodzica, dla wyja�nienia spojrze� na tworzenie li�ci hierarchi
+	//taka jest konwencja ASF - podajemy przesuniecie rodzica, dla wyjaśnienia spojrzeć na tworzenie liści hierarchi
 	for (auto it = range.first; (it != range.second) && (ret == true); ++it){
 		ret = createJoint(joint, skeleton, nextPos, skeleton.bones.find(it->second)->second, names);
 	}

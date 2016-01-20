@@ -101,7 +101,7 @@ void Application::showSplashScreenMessage(const QString & message)
 }
 
 int Application::initUIContext(int & argc, char *argv[], const std::string & appName,
-	Filesystem::PathsList & coreTranslations)
+							   utils::Filesystem::PathsList & coreTranslations)
 {
 	//obs?uga argument?w i opisu uzycia aplikacji z konsoli
 	osg::ArgumentParser arguments(&argc, argv);
@@ -129,7 +129,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 	{
 		uiApplication_.reset(new coreUI::UIApplication(argc, argv));
 		QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
-		//TODO - przejrzec w Qt jak to edytowa�
+		//TODO - przejrzec w Qt jak to edytować
 		//QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins/platforms");
 
 		//ustawienia aplikacji
@@ -148,7 +148,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 		}
 	}
 
-	//teraz inicjujemy logger zeby moc juz wszystko logowa�
+	//teraz inicjujemy logger zeby moc juz wszystko logować
 	//potem moge dolaczyc widget
 	{
 		logInitializer_.reset(new LogInitializer((paths_->getApplicationDataPath() / "resources" / "settings" / "log.ini").string()));
@@ -158,7 +158,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 		logger_ = loggerPrototype_->subLog("core");
 	}
 
-	//! DOPIERO OD TEGO MOMENTU MOG� LOGOWAC INFORMACJE!!
+	//! DOPIERO OD TEGO MOMENTU MOGĘ LOGOWAC INFORMACJE!!
 	//ExceptionLogger::setLog(logger_);
 
 	CORE_LOG_INFO("UserDataPath: " << paths_->getUserDataPath());
@@ -180,7 +180,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 		languagesManager_.reset(new LanguagesManager);
 
 		//pliki tlumaczen dostarczone z instalacja
-		coreTranslations = core::Filesystem::listFiles(paths_->getTranslationsPath(), true, ".qm");
+		coreTranslations = utils::Filesystem::listFiles(paths_->getTranslationsPath(), true, ".qm");
 
 		// ladujemy tlumaczenia dla core, qt i widoku
 		LanguagesLoader::loadCoreTranslations(coreTranslations, languagesManager_.get());
@@ -196,7 +196,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 
 		//ustawiamy jezyk
 		//TODO
-		// powinienem sprawdzi� w lokalnej bazie/rejestrze/jakims konfigu
+		// powinienem sprawdzić w lokalnej bazie/rejestrze/jakims konfigu
 		// czy user juz nie wybral jezyka, jesli tak to ten jezyk ustawic,
 		// a jak nie to probowac go pobrac z systemu i jak ten sie nie
 		// powiedzie to domyslnie angielski
@@ -235,7 +235,7 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 }
 
 void Application::initWithUI(CoreMainWindow * mainWindow,
-	Filesystem::PathsList & translations)
+							 utils::Filesystem::PathsList & translations)
 {
 	this->mainWindow = mainWindow;
 	mainWindow->splashScreen();
@@ -244,7 +244,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 
 	//probujemy tmp katalog zapewni?
 	try{
-		Filesystem::createDirectory(paths_->getTempPath());
+		utils::Filesystem::createDirectory(paths_->getTempPath());
 	}
 	catch (...){
 		CORE_LOG_ERROR("Could not create temporary directory: " << paths_->getTempPath());
@@ -266,14 +266,14 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 	dataManager_->addObserver(fileDataManager_);
 	dataManager_->addObserver(streamDataManager_);
 
-	//Wielow�tkowo��
+	//Wielowątkowość
 	{
 		showSplashScreenMessage(QObject::tr("Initializing threading"));		
 
 		//core::ThreadPool::setLog(logger_->subLog("threadPool"));
 		auto minThreads = std::thread::hardware_concurrency();
 		if (minThreads < 2){
-			//tyle by wypada�o �eby nowe maszyny dawa�y rad� - 2xCore x2 threads per core
+			//tyle by wypadało żeby nowe maszyny dawały radę - 2xCore x2 threads per core
 			minThreads = 3;
 		}
 		else{
@@ -281,26 +281,39 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 			--minThreads;
 		}
 
-		innerThreadPool.reset(new core::InnerThreadPool(minThreads, minThreads * 10));
+		innerThreadPool.reset(new core::InnerThreadPool(minThreads, minThreads * 10));	
 		threadPool_.reset(new core::ThreadPool(innerThreadPool.get()));
+		CORE_LOG_INFO("Thread pool created with minimum threads to maintain: " << innerThreadPool->minThreads() << " and maximum threads count: " << innerThreadPool->maxThreads());
 
 		//core::JobManager::setLog(logger_->subLog("jobManager"));
+		//threadingUtils::StealingMultipleWorkQueuePolicy, Thread, threadingUtils::ConsumeExceptionHandlePolicy, threadingUtils::NoInterruptHandlingPolicy, LogWrapper
+		//innerWorkManager_.reset(new core::InnerWorkManager(threadingUtils::ConsumeExceptionHandlePolicy(), threadingUtils::NoInterruptHandlingPolicy(), LogWrapper(logger_->subLog("WorkManager"))));
 		innerWorkManager_.reset(new core::InnerWorkManager);
-		innerJobManager_.reset(new core::InnerJobManager(innerWorkManager_.get()));
-		jobManager_.reset(new core::JobManager(innerJobManager_.get()));
-			
+		
 		core::IThreadPool::Threads threads;
-		threadPool_->get(std::thread::hardware_concurrency() - 1, threads,  true, "Core", "JobManager worker thread");
 
-		for (auto && t : threads){			
+		const auto workersCount = std::max<unsigned int>(2, minThreads - 1);
+
+		//CORE_LOG_INFO("Suggested number of threads for workers of job manager " << workersCount);
+
+		threadPool_->get(workersCount, threads, true, "Core", "JobManager worker thread");
+
+		//CORE_LOG_INFO("Obrained " << threads.size() << " for servicing job manager workers");
+
+		for (auto && t : threads) {
 			innerWorkManager_->addWorkerThread(std::move(t));
 		}
+
+		innerJobManager_.reset(new core::InnerJobManager(innerWorkManager_.get()));
+		jobManager_.reset(new core::JobManager(innerJobManager_.get()));	
+
+		CORE_LOG_INFO("Job manager created with " << innerWorkManager_->workerThreadsCount() << " workers");
 	}
 
 	showSplashScreenMessage(QObject::tr("Initializing plugins loader"));
 
 	//inicjalizacja obiektu ?aduj?cego pluginy
-	pluginLoader_.reset(new PluginLoader(Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path()));
+	pluginLoader_.reset(new PluginLoader(utils::Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path()));
 
 #if defined(_WINDOWS)
 	if (additionalPluginsPath.empty() == true) {
@@ -309,11 +322,11 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 #endif
 
 	//obsluga dodatkowej sciezki z pluginami zewnetrznymi
-	if (additionalPluginsPath.empty() == false && Filesystem::pathExists(additionalPluginsPath) == true)
+	if (additionalPluginsPath.empty() == false && utils::Filesystem::pathExists(additionalPluginsPath) == true)
 	{
-		Filesystem::Iterator endIT;
-		std::for_each(Filesystem::Iterator(additionalPluginsPath), endIT, [=](const Filesystem::Path & p) {
-			if (Filesystem::isDirectory(p)) {
+		utils::Filesystem::Iterator endIT;
+		std::for_each(utils::Filesystem::Iterator(additionalPluginsPath), endIT, [=](const utils::Filesystem::Path & p) {
+			if (utils::Filesystem::isDirectory(p)) {
 				pluginLoader_->addPath(p);
 				CORE_LOG_INFO("Plugin path added: " << p);
 			}
@@ -329,15 +342,15 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 		//ladujemy pluginy
 		pluginLoader_->load();
 
-		auto pluginTranslations = core::Filesystem::listFiles(paths_->getPluginPath(), true, ".qm");
+		auto pluginTranslations = utils::Filesystem::listFiles(paths_->getPluginPath(), true, ".qm");
 		translations.insert(translations.end(), pluginTranslations.begin(), pluginTranslations.end());
 
 		for (int i = 0; i < pluginLoader_->getNumPlugins(); ++i){
 			auto plugin = pluginLoader_->getPlugin(i);
 			auto pluginName = plugin->getPath().stem().string();
 
-			// je�eli jestesmy w debug to pluginy maj� d na ko�cu a t�umaczenia nie!!
-			// musz� si� pozby� d
+			// jeżeli jestesmy w debug to pluginy mają d na końcu a tłumaczenia nie!!
+			// muszą się pozbyć d
 #ifdef _DEBUG
 
 			if (pluginName.back() == 'd'){
@@ -576,7 +589,7 @@ Application::~Application()
 		pluginLoader_.reset();
 
 		CORE_LOG_INFO("Cleaning tmp files");
-		Filesystem::deleteDirectory(getPaths()->getTempPath());
+		utils::Filesystem::deleteDirectory(getPaths()->getTempPath());
 
 		CORE_LOG_INFO("Releasing application description");
 		applicationDescription_.reset();
@@ -666,9 +679,9 @@ JobManager* Application::jobManager()
 	return jobManager_.get();
 }
 
-const Filesystem::Path resourcesPath()
+const utils::Filesystem::Path resourcesPath()
 {
-	return Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path() / "resources";
+	return utils::Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path() / "resources";
 }
 
 bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path,
@@ -676,7 +689,7 @@ bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path,
 {
 #if defined(_WINDOWS)
 	//TODO
-	//u�y� vendor info do generowania sciezki
+	//użyć vendor info do generowania sciezki
 #define KEY_PATH TEXT("Software\\PJATK\\")
 #define PATH_BUFFER_SIZE 1024
 	HKEY hKey;
@@ -691,36 +704,36 @@ bool Application::trySetPathsFromRegistry(utils::shared_ptr<Path> & path,
 		return false;
 	}
 
-	Filesystem::Path applicationDataPath;
+	utils::Filesystem::Path applicationDataPath;
 
 	LPTSTR lpValueName = "ApplicationDataPath";
 	dwSize = sizeof(buffer);
 	if (RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
-		applicationDataPath = Filesystem::Path(buffer);
+		applicationDataPath = utils::Filesystem::Path(buffer);
 	}
 	else {
 		RegCloseKey(hKey);
 		return false;
 	}
 
-	Filesystem::Path userApplicationDataPath;
+	utils::Filesystem::Path userApplicationDataPath;
 
 	lpValueName = "UserApplicationDataPath";
 	dwSize = sizeof(buffer);
 	if (RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
-		userApplicationDataPath = Filesystem::Path(buffer);
+		userApplicationDataPath = utils::Filesystem::Path(buffer);
 	}
 	else {
 		RegCloseKey(hKey);
 		return false;
 	}
 
-	Filesystem::Path userDataPath;
+	utils::Filesystem::Path userDataPath;
 
 	lpValueName = "UserDataPath";
 	dwSize = sizeof(buffer);
 	if (RegQueryValueEx(hKey, lpValueName, 0, &dwType, (LPBYTE)buffer, &dwSize) == ERROR_SUCCESS) {
-		userDataPath = Filesystem::Path(buffer);
+		userDataPath = utils::Filesystem::Path(buffer);
 	}
 	else{
 		RegCloseKey(hKey);
@@ -742,18 +755,19 @@ void Application::setDefaultPaths(utils::shared_ptr<Path> & path, const std::str
 	//TODO
 	//ciagnac to info z vendor info?
 	//mie? na uwadze nazw? aplikacji i PJWSTK
-	auto userPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0).toStdString()) / "PJATK" / appName;
+	auto userPath = utils::Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0).toStdString()) / "PJATK" / appName;
 #if defined(_WINDOWS)
-	//HACK �eby dosta� si� do �cie�ek roaming dla usera, Qt w innych przypadkach podaje �ciezki w local
+	//HACK żeby dostać się do ścieżek roaming dla usera, Qt w innych przypadkach podaje ściezki w local
 	QString settingsPath = QFileInfo(QSettings().fileName()).absolutePath();
-	auto userAppDataPath = Filesystem::Path(settingsPath.toStdString()).parent_path() / "PJATK" / appName;
-
-#else
-	auto userAppDataPath = Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DataLocation).at(0).toStdString()).parent_path() / "PJATK" / appName;
-#endif // WIN32
-	//TODO - czy pod linux taka konwencja jest ok? jak tam dzia�aj� takie wsp�lne foldery?
-	auto genericpath = core::Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::GenericConfigLocation).at(0).toStdString()).root_path() / "ProgramData";
+	auto userAppDataPath = utils::Filesystem::Path(settingsPath.toStdString()).parent_path() / "PJATK" / appName;
+	auto genericpath = utils::Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::GenericConfigLocation).at(0).toStdString()).root_path() / "ProgramData";
 	auto appDataPath = genericpath / "PJATK" / appName;
+#else
+	auto userAppDataPath = utils::Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DataLocation).at(0).toStdString()).parent_path() / "PJATK" / appName;
+	auto appDataPath = userAppDataPath;
+#endif // WIN32
+	//TODO - czy pod linux taka konwencja jest ok? jak tam działają takie wspólne foldery?
+	
 
 	path.reset(new Path(userPath, appDataPath, userAppDataPath, resourcesPath(), userPath / "tmp", appDataPath / "plugins"));
 }
