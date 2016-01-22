@@ -10,6 +10,9 @@
 #include "loglib/ILog.h"
 #include "loglib/Logger.h"
 
+#include <QtCore/QThread>
+#include <QtCore/QFile>
+
 // sk³adnia :
 // dicomWatcher [opcje] inputFolder outputFolder 
 // opcje :
@@ -23,7 +26,7 @@ int main(int argc, char** argv)
 {
 	QApplication app(argc, argv);
 	QCoreApplication::setApplicationName("Dicom Watcher");
-	QCoreApplication::setApplicationVersion("0.13");
+	QCoreApplication::setApplicationVersion("0.14");
 
 	QCommandLineParser parser;
 	parser.setApplicationDescription("Dicom Watcher");
@@ -53,13 +56,17 @@ int main(int argc, char** argv)
 									QCoreApplication::translate("main", "Log <file>."),
 									QCoreApplication::translate("main", "file"));
 	parser.addOption(logOption);
+	
+	//QCommandLineOption xOption(QStringList() << "x" << "ximulateIN",
+	//	QCoreApplication::translate("main", "Log <file>."));
+	//parser.addOption(xOption);
 
 	parser.process(app);
 
 
 	utils::Filesystem::Path sourceDir("input");
 	utils::Filesystem::Path destDir("output");
-
+	
 	const QStringList args = parser.positionalArguments();
 	if (args.size() < 2) {
 		parser.showHelp(1);
@@ -68,6 +75,29 @@ int main(int argc, char** argv)
 		destDir = args.at(1).toStdString();
 	}
 
+	
+
+	/*if (parser.isSet(xOption)) {
+		QFile outF(QString::fromStdString(destDir.string()));
+		QFile inF(QString::fromStdString(sourceDir.string()));
+		outF.open(QIODevice::WriteOnly);
+		inF.open(QIODevice::ReadOnly);
+		const int part = 10000;
+		char buff[part];
+		int rea = -1;
+		int size = 0;
+		do {
+			rea = inF.read(buff, part);
+			outF.write(buff, rea);
+			size += rea;
+			std::cout << "processing : " << size << std::endl;
+			QThread::msleep(10);
+		} while (rea > 0);
+		outF.close();
+		inF.close();
+		return 0;
+	}
+*/
 
 	utils::Filesystem::Path configFile("status.dw");
 	if (parser.isSet(configOption)) {

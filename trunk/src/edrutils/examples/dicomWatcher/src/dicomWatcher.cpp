@@ -7,6 +7,7 @@
 #include "loglib/Logger.h"
 #include <QtWidgets/QApplication>
 #include <QtCore/QThread>
+#include <QtCore/QFileInfo>
 
 DicomWatcher::DicomWatcher(const utils::Filesystem::Path& outputDir, const utils::Filesystem::Path& configPath, bool singleOutputFolder, bool runOnce) :
 config(configPath),
@@ -41,6 +42,54 @@ void DicomWatcher::import(const utils::Filesystem::Path& from, const utils::File
 	}
 }
 
+class SyncFileInfo 
+{
+public:
+	SyncFileInfo(const QString& filePath) :
+		path(filePath) {}
+	qint64 size() const {
+		QFileInfo fi(path);
+		return fi.size();
+	}
+private:
+	QString path;
+};
+
+void DicomWatcher::waitTillReadyThanExtract(const utils::Filesystem::Path &file, const utils::Filesystem::Path &out)
+{
+	int timeout = 1000;
+	QThread::msleep(10);
+	SyncFileInfo fileInfo(QString::fromStdString(file.string()));
+	int prevSize = fileInfo.size();
+
+	// jeœli do pliku nie da siê zapisaæ, to mo¿e oznaczaæ, ¿e jest on dopiero tworzony
+	while (true) { //(!fileInfo.isWriteable()) {
+		//std::cout << "not writeable" << std::endl;
+		QThread::msleep(100);
+		int size = fileInfo.size();
+		//std::cout << "prev - " << prevSize << ", size - " << size << std::endl;
+		if (size == prevSize) {
+			QThread::msleep(timeout);
+			// mo¿e siê jednak okazaæ, ¿e po prostu nie mamy prawa do zapisu na takim pliku
+			// wtedy tak czy siak bêdziemy go próbowaæ rozpakowaæ
+			if (prevSize == fileInfo.size()) {
+				break;
+			}
+		} else {
+			prevSize = size;
+		}
+	}
+	for (int i = 0; ; ++i) {
+		if (i == 5) {
+			throw std::runtime_error("A problem occurred while extracting the archive");
+		}
+		QStringList sl = JlCompress::extractDir(QString::fromStdString(file.string()), QString::fromStdString(out.string()));
+		if (!sl.empty()) {
+			break;
+		}
+		QThread::msleep(100);
+	}
+}
 
 void DicomWatcher::dirChanged(const QString & path)
 {
@@ -59,16 +108,8 @@ void DicomWatcher::dirChanged(const QString & path)
 				utils::Filesystem::Path out1(outputDir / f.stem() / "raw");
 				utils::Filesystem::Path out2 = singleOutputFolder ? (outputDir / "converted") : (outputDir / f.stem() / "converted");
 				//! wypakowanie archiwum, jeœli nie ma folderu, to zostanie utworzony
-				for (int i = 0; ; ++i) {
-					if (i == 10) {
-						throw std::runtime_error("A problem occurred while extracting the archive");
-					}
-					QStringList sl = JlCompress::extractDir(QString::fromStdString(f.string()), QString::fromStdString(out1.string()));
-					if (!sl.empty()) {
-						break;
-					}
-					QThread::msleep(100);
-				}
+				waitTillReadyThanExtract(f, out1);
+
 				UTILS_LOG_INFO("processing: " << f.string());
 				//! przetworzenie rozpakowanego dicoma (folder out1) na obrazy png, wynik trafia do folderu out2
 				import(out1, out2 );

@@ -1,4 +1,4 @@
-Dicom watcher, wersja 0.12, 20.01.2016
+Dicom watcher, wersja 0.14, 22.01.2016
 
 1.
 Program obserwuje podany folder. Jeśli trafi tam spakowany plik zawierający strukturę DICOM, to zostanie on rozpakowany, skonwertowany i umieszczony w folderze wynikowym.
@@ -23,3 +23,7 @@ Przykład użycia:
 Linux wymaga podania ścieżki do pliku ze słownikiem dicom. Można to osiągnąć wpisując w konsoli lub skrypcie:
 	export DCMDICTPATH=/sciezka_do/dicom.dic
 	
+	
+zmiany:
+-v 0.14
+Dodano oczekiwanie aż zakończy się tworzenie pliku, dopiero potem zip będzie rozpakowany.
