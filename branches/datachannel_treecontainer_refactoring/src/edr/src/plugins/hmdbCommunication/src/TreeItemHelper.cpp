@@ -207,6 +207,25 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
 {
 	c3dlib::VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
 
+	using T = c3dlib::VectorChannelReaderInterfaceConstPtr;
+
+	auto t = utils::supports_pointer_operator<T>::value;
+
+	//chyba ok
+
+	//ok
+	auto r0 = std::is_class<T>::value;
+
+	auto r1 = dataaccessor::has_data_description<typename utils::pointed_type<T>::type>::value;
+
+	auto r2 = dataaccessor::is_valid_discrete_accessor<typename utils::pointed_type<T>::type>::value;
+
+	auto r23 = std::is_convertible<T, dataaccessor::ExtractedDiscreteConstPtr<typename utils::pointed_type<T>::type>>::value;
+
+	auto r3 = dataaccessor::is_valid_discrete_accessor_ptr<T>::value;
+
+	//decltype(typename std::enable_if<dataaccessor::is_valid_discrete_accessor_ptr<c3dlib::VectorChannelReaderInterfaceConstPtr>::value>::type) ret;
+
 	c3dlib::ScalarChannelReaderInterfacePtr x(dataaccessor::StaticVector<0>::wrap(vectorChannel));
 	c3dlib::ScalarChannelReaderInterfacePtr y(dataaccessor::StaticVector<1>::wrap(vectorChannel));
 	c3dlib::ScalarChannelReaderInterfacePtr z(dataaccessor::StaticVector<2>::wrap(vectorChannel));

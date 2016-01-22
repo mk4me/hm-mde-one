@@ -19,7 +19,8 @@ SET_PUBLIC_HEADERS(
 	Extrapolators.h
 	Interpolators.h	
 	Wrappers.h
-	CurrentValueExtractor.h	
+	CurrentValueExtractor.h
+	Traits.h
 )
 
 END_PROJECT()

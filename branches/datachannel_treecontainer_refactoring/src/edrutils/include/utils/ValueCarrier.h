@@ -20,22 +20,25 @@ namespace utils
 	class ValueCarrier
 	{
 		//! \tparam U Typ przechowywany
-		template<typename U, typename = void>
-		struct ValueType
+		template<typename U, bool>
+		struct ValueTypeImpl
 		{
 			using type = U;
 		};
 
 		//! \tparam SmartPtr Inteligentny wskaŸnik z którego wy³uskujemy przechoywany typ
 		template<typename SmartPtr>
-		struct ValueType<SmartPtr, typename std::enable_if<is_like_smart_pointer<SmartPtr>::value, int>::type>
+		struct ValueTypeImpl<SmartPtr, true>
 		{
 			using type = typename std::decay<typename pointed_type<SmartPtr>::type>::type;
 		};
 
+		template<typename T>
+		struct ValueType : public ValueTypeImpl<T, is_like_smart_pointer<T>::value> {};
+
 	public:
 		//! Typ referencji jakiej dostarczamy
-		using ref_type = const typename std::add_reference<T>::type;
+		using ref_type = typename std::add_reference<typename std::add_const<T>::type>::type;
 
 	private:
 
@@ -169,7 +172,7 @@ namespace utils
 	private:
 		//! Owrapowane dane
 		const utils::shared_ptr<const ValueCarrierBase> valueCarier_;
-	};
+	};	
 }
 
 #endif  // __HEADER_GUARD_UTILS__VALUECARRIER_H__

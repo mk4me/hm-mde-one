@@ -10,6 +10,7 @@ purpose:
 
 #include <datachannellib/Accessors.h>
 #include <datachannellib/WrapperHelpers.h>
+#include <datachannellib/Traits.h>
 #include <utils/Debug.h>
 
 namespace dataaccessor
@@ -224,11 +225,11 @@ namespace dataaccessor
 	struct Vector
 	{
 		//! Dyskretny
-		template<typename AccessorType, typename std::enable_if<std::is_base_of<IDiscreteAccessorT<typename AccessorType::value_type, typename AccessorType::argument_type>, AccessorType>::value>::type * = 0>
-		static inline DiscreteAccessorPtr<decltype(std::declval<VectorElementExtractor>().extract(std::declval<typename AccessorType::value_type>(), 0)), typename AccessorType::argument_type>
-			wrap(const utils::shared_ptr<const AccessorType> & accessor, const std::size_t Idx)
+		template<typename AccessorType, typename std::enable_if<is_valid_discrete_accessor_ptr<AccessorType>::value>::type * = 0>
+		static inline DiscreteAccessorPtr<decltype(std::declval<VectorElementExtractor>().extract(std::declval<typename AccessorPointerDesc<AccessorType>::value_type>(), 0)), typename AccessorPointerDesc<AccessorType>::argument_type>
+			wrap(const AccessorType & accessor, const std::size_t Idx)
 		{
-			return DiscreteAccessorPtr<decltype(std::declval<VectorElementExtractor>().extract(std::declval<typename AccessorType::value_type>(), 0)), typename AccessorType::argument_type>(new SafeDiscreteAccessorAdapter<typename AccessorType::value_type, typename AccessorType::argument_type, VectorElementExtractor>(accessor, VectorElementExtractor(idx)));
+			return DiscreteAccessorPtr<decltype(std::declval<VectorElementExtractor>().extract(std::declval<typename AccessorPointerDesc<AccessorType>::value_type>(), 0)), typename AccessorPointerDesc<AccessorType>::argument_type>(new SafeDiscreteAccessorAdapter<typename AccessorPointerDesc<AccessorType>::value_type, typename AccessorPointerDesc<AccessorType>::argument_type, VectorElementExtractor>(accessor, VectorElementExtractor(idx)));
 		}
 
 		template<typename ValueType, typename ArgumentType>
@@ -240,11 +241,11 @@ namespace dataaccessor
 
 
 		//! Ci¹g³y
-		template<typename AccessorType, typename std::enable_if<std::is_base_of<IFunctionAccessorT<typename AccessorType::value_type, typename AccessorType::argument_type>, AccessorType>::value>::type * = 0>
-		static inline FunctionAccessorPtr<decltype(std::declval<VectorElementExtractor>().extract(std::declval<typename AccessorType::value_type>(), std::declval<typename AccessorType::argument_type>())), typename AccessorType::argument_type>
-			wrap(const utils::shared_ptr<const AccessorType> & accessor, const std::size_t Idx)
+		template<typename AccessorType, typename std::enable_if<is_valid_function_accessor_ptr<AccessorType>::value>::type * = 0>
+		static inline FunctionAccessorPtr<decltype(std::declval<VectorElementExtractor>().extract(std::declval<typename AccessorPointerDesc<AccessorType>::value_type>(), std::declval<typename AccessorPointerDesc<AccessorType>::argument_type>())), typename AccessorPointerDesc<AccessorType>::argument_type>
+			wrap(const AccessorType & accessor, const std::size_t Idx)
 		{
-			return FunctionAccessorPtr<decltype(std::declval<VectorElementExtractor>().extract(std::declval<typename AccessorType::value_type>(), std::declval<typename AccessorType::argument_type>())), typename AccessorType::argument_type>(new SafeFunctionAccessorAdapter<typename AccessorType::value_type, typename AccessorType::argument_type, VectorElementExtractor>(accessor, VectorElementExtractor(idx)));
+			return FunctionAccessorPtr<decltype(std::declval<VectorElementExtractor>().extract(std::declval<typename AccessorPointerDesc<AccessorType>::value_type>(), std::declval<typename AccessorPointerDesc<AccessorType>::argument_type>())), typename AccessorPointerDesc<AccessorType>::argument_type>(new SafeFunctionAccessorAdapter<typename AccessorPointerDesc<AccessorType>::value_type, typename AccessorPointerDesc<AccessorType>::argument_type, VectorElementExtractor>(accessor, VectorElementExtractor(idx)));
 		}
 
 		template<typename ValueType, typename ArgumentType>
@@ -260,11 +261,11 @@ namespace dataaccessor
 	struct StaticVector
 	{
 		//! Dyskretny
-		template<typename AccessorType, typename std::enable_if<std::is_base_of<IDiscreteAccessorT<typename AccessorType::value_type, typename AccessorType::argument_type>, AccessorType>::value>::type * = 0 >
-		static inline DiscreteAccessorPtr<decltype(StaticVectorElementExtractor<Idx>::extract(std::declval<typename AccessorType::value_type>(), 0)), typename AccessorType::argument_type>
-			wrap(const utils::shared_ptr<const AccessorType> & accessor)
+		template<typename AccessorType, typename std::enable_if<is_valid_discrete_accessor_ptr<AccessorType>::value>::type * = 0>
+		static inline DiscreteAccessorPtr<decltype(StaticVectorElementExtractor<Idx>::extract(std::declval<typename AccessorPointerDesc<AccessorType>::value_type>(), 0)), typename AccessorPointerDesc<AccessorType>::argument_type>
+			wrap(const AccessorType & accessor)
 		{
-			return DiscreteAccessorPtr<decltype(StaticVectorElementExtractor<Idx>::extract(std::declval<typename AccessorType::value_type>(), 0)), typename AccessorType::argument_type>(new SafeDiscreteAccessorAdapter<typename AccessorType::value_type, typename AccessorType::argument_type, StaticVectorElementExtractor<Idx>>(accessor));
+			return DiscreteAccessorPtr<decltype(StaticVectorElementExtractor<Idx>::extract(std::declval<typename AccessorPointerDesc<AccessorType>::value_type>(), 0)), typename AccessorPointerDesc<AccessorType>::argument_type>(new SafeDiscreteAccessorAdapter<typename AccessorPointerDesc<AccessorType>::value_type, typename AccessorPointerDesc<AccessorType>::argument_type, StaticVectorElementExtractor<Idx>>(accessor));
 		}
 
 		template<typename ValueType, typename ArgumentType>
@@ -275,12 +276,13 @@ namespace dataaccessor
 		}
 
 		//! Ci¹g³y
-		template<typename AccessorType, typename std::enable_if<std::is_base_of<IFunctionAccessorT<typename AccessorType::value_type, typename AccessorType::argument_type>, AccessorType>::value>::type * = 0 >
-		static inline FunctionAccessorPtr<decltype(StaticVectorElementExtractor<Idx>::extract(std::declval<typename AccessorType::value_type>(), std::declval<typename AccessorType::argument_type>())), typename AccessorType::argument_type>
-			wrap(const utils::shared_ptr<const AccessorType> & accessor)
+
+		template<typename AccessorType, typename std::enable_if<is_valid_function_accessor_ptr<AccessorType>::value>::type * = 0>
+		static inline FunctionAccessorPtr<decltype(StaticVectorElementExtractor<Idx>::extract(std::declval<typename AccessorPointerDesc<AccessorType>::value_type>(), std::declval<typename AccessorPointerDesc<AccessorType>::argument_type>())), typename AccessorPointerDesc<AccessorType>::argument_type>
+			wrap(const AccessorType & accessor)
 		{
-			return FunctionAccessorPtr<decltype(StaticVectorElementExtractor<Idx>::extract(std::declval<typename AccessorType::value_type>(), std::declval<typename AccessorType::argument_type>())), typename AccessorType::argument_type>(new SafeFunctionAccessorAdapter<typename AccessorType::value_type, typename AccessorType::argument_type, StaticVectorElementExtractor<Idx>>(accessor));
-		}
+			return FunctionAccessorPtr<decltype(StaticVectorElementExtractor<Idx>::extract(std::declval<typename AccessorPointerDesc<AccessorType>::value_type>(), std::declval<typename AccessorPointerDesc<AccessorType>::argument_type>())), typename AccessorPointerDesc<AccessorType>::argument_type>(new SafeFunctionAccessorAdapter<typename AccessorPointerDesc<AccessorType>::value_type, typename AccessorPointerDesc<AccessorType>::argument_type, StaticVectorElementExtractor<Idx>>(accessor));
+		}		
 
 		template<typename ValueType, typename ArgumentType>
 		static inline FunctionAccessorPtr<decltype(StaticVectorElementExtractor<Idx>::extract(std::declval<ValueType>(), std::declval<ArgumentType>())), ArgumentType>

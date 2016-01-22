@@ -272,6 +272,12 @@ struct Int2Type
 	enum { value = I };
 };
 
+//! \tparam T Wartość logiczna do weryfikacji
+//! \tparam U Wartość logiczna do weryfikacji
+template<bool T, bool U>
+//! Typ pomocniczy realizujący statycznie funkcję logiczną xor
+struct xor_check : public std::integral_constant<bool, T != U> {};
+
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace util
 ////////////////////////////////////////////////////////////////////////////////

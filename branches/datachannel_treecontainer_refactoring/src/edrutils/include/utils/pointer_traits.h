@@ -10,25 +10,35 @@
 
 #include <type_traits>
 #include <utils/Utils.h>
+#include <utils/SmartPtr.h>
 
 namespace utils
 {
 	//! \tparam T Sprawdzany typ pod k¹tem operatora ->
-	template<typename T, typename = decltype(&T::operator->)>
-	//! \param dummy
-	//! \return Prawda jeœli poprawnie dopasowany
-	static std::true_type  supports_pointer_operator_test(const T&);
-	//! \return Fa³sz jeœli poprawnie dopasowany
-	static std::false_type supports_pointer_operator_test(...);
+	template <typename T>
+	//! Klasa pomocnicza przy wykrywaniu klas o charakterze smart pointerów
+	struct supports_pointer_operator_impl
+	{
+		//! \tparam U Badany typ
+		template<typename U>
+		//! \return Typ wy³uskiwany przez operator ->
+		static auto test(U* p) -> decltype(p->operator->()); // checks function existence
+		//! \tparam U Badany typ
+		template<typename U>
+		//! \return Fa³sz
+		static auto test(...) -> std::false_type;
+		//! Informacja czy typ ma charakter smart pointera
+		using type = typename std::is_pointer<decltype(test<T>(0))>::type; // checks return type is some kind of floating point
+	};
 	//! \tparam T Sprawdzany typ pod k¹tem operatora ->
-	template<typename T>
-	//! Struktura bêd¹ca pochodn¹ prawdy jeœli typ wspiera operator->
-	struct supports_pointer_operator : public decltype(supports_pointer_operator_test(std::declval<T>())) {};
+	template <typename T>
+	//! Klasa z informacj¹ o podobieñstwie do smart pointera
+	struct supports_pointer_operator : public supports_pointer_operator_impl<T>::type {};
 
 	//! \tparam T Typ badany pod k¹tem bycia podobnym do smart poitnerów ró¿nej maœci
 	template<typename T>
 	//! Struktura nios¹ca informacjê czy badany tym ma znamiona smart pointera
-	struct is_like_smart_pointer : public std::conditional<std::is_class<T>::value && supports_pointer_operator<T>::value, std::true_type, std::false_type>::type {};
+	struct is_like_smart_pointer : public std::integral_constant<bool, std::is_class<T>::value && supports_pointer_operator<T>::value> {};
 
 	//! \tparam T Badany typ
 	//! \tparam Specjalizacja dla zwyk³ych wksaŸników
@@ -36,7 +46,7 @@ namespace utils
 	struct pointed_type_helper
 	{
 		//! Typ wskazywany przez wskaŸnik
-		using type = typename std::conditional<std::is_pointer<T>::value, typename std::remove_pointer<T>::type, decltype(std::declval<const T>().operator->())>::type;
+		using type = typename typename std::remove_pointer<typename std::conditional<std::is_pointer<T>::value, T, decltype(std::declval<const T>().operator->())>::type>::type;
 	};	
 
 	//! \tparam T Badany typ wskaŸnika

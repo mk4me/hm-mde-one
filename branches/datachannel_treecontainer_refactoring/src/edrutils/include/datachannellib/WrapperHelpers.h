@@ -18,32 +18,37 @@ namespace dataaccessor
 	//! \tparam C Typ kontenera, który weryfikujemy
 	template<typename C>
 	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
-	struct empty_member_check
+	struct empty_member_check_impl
 	{
 		//! Weryfikacja operatora [] w wersji const
-		template<typename U, typename = std::enable_if<std::is_same<bool, decltype(std::declval<const U>().empty())>::value>::type> static std::true_type check(const U &);
+		template<typename U> static auto check(const U * u) -> decltype(u->empty());
 		//! Fallback
-		static std::false_type check(...);
+		template<typename U> static auto check(...) -> std::false_type;
 		//! Informacja o operatorze
-		using type = decltype(check(std::declval<const C>()));
+		using type = typename std::is_same<bool, decltype(check(0))>::type;		
+	};
+	//! \tparam C Typ kontenera, który weryfikujemy
+	template<typename C>
+	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
+	struct empty_member_check : public empty_member_check_impl<C>::type {};
 
-		static const bool valid = type();
+	//! \tparam C Typ kontenera, który weryfikujemy
+	template<typename C>
+	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
+	struct size_member_check_impl
+	{
+		//! Weryfikacja operatora [] w wersji const
+		template<typename U> static auto check(const U * u) -> decltype(u->size());
+		//! Fallback
+		template<typename U> static auto check(...) -> std::false_type;
+		//! Informacja o operatorze
+		using type = typename std::is_integral<decltype(check(0))>::type;
 	};
 
 	//! \tparam C Typ kontenera, który weryfikujemy
 	template<typename C>
 	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
-	struct size_member_check
-	{
-		//! Weryfikacja operatora [] w wersji const
-		template<typename U, typename = std::enable_if<std::is_integral<decltype(std::declval<const U>().size())>::value>::type> static std::true_type check(const U &);
-		//! Fallback
-		static std::false_type check(...);
-		//! Informacja o operatorze
-		using type = decltype(check(std::declval<const C>()));
-
-		static const bool valid = type();
-	};
+	struct size_member_check : public size_member_check_impl<C>::type {};
 
 	//! Extractor pustoœci kontenera
 	struct ContainersEmptinessExtractor
@@ -119,26 +124,29 @@ namespace dataaccessor
 	//! \tparam A Typ tablicowy, który weryfikujemy
 	template<typename A>
 	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
-	struct array_check
+	struct array_check_impl
 	{
 		//! Weryfikacja operatora [] w wersji const
-		template<typename U, typename = decltype(std::declval<const U>()[0])> static std::true_type check(const U &);
+		template<typename U> static auto check(const U * u) -> decltype(u->operator[](0));
 		//! Fallback
-		static std::false_type check(...);
+		template<typename U> static void check(...);
 
-		using type = typename std::conditional<std::is_same<decltype(check(std::declval<const A>())), std::true_type>::value, std::true_type, std::false_type>::type;
-		//! Informacja o operatorze
-		static const bool valid = type();
+		using type = typename std::integral_constant<bool, !std::is_void<decltype(check<A>(0))>::value>::type;	
 	};
+
+	//! \tparam A Typ tablicowy, który weryfikujemy
+	template<typename A>
+	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
+	struct array_check : public array_check_impl<A>::type {};
 
 	//! \tparam A Typ tablicy ajki weryfikujemy
 	template<typename A>
 	//! W³aœciwy trait przepuszczaj¹cy typy z mo¿liwoœci¹ indeksowania operatorem []
-	struct is_array : public std::conditional<(std::is_array<A>::value || array_check<A>::valid), std::true_type, std::false_type>::type {};
+	struct is_array : public std::integral_constant<bool, std::is_array<A>::value || array_check<A>::value> {};
 
 	//! Taka czêœciowa specjalizacja pozwala nam unikn¹æ odwo³añ do function_traits dla typów nie reprezentuj¹cych funkcje/funktory
 	template<typename Func, bool = std::is_functor<Func>::value>
-	struct is_one_argument_functor : public std::conditional<(std::function_traits<Func>::arity == 1), std::true_type, std::false_type>::type {};
+	struct is_one_argument_functor : public std::integral_constant<bool, std::function_traits<Func>::arity == 1> {};
 
 	template<typename Func>
 	struct is_one_argument_functor<Func, false> : public std::false_type{};
@@ -526,13 +534,17 @@ namespace dataaccessor
 	class TaggedContainerCarrier : public utils::ValueCarrier<Container>
 	{
 	public:
+		//! Wci¹gamy konstruktory
 		using utils::ValueCarrier::ValueCarrier;
-
+		//! Destruktor wirtualny
 		virtual ~TaggedContainerCarrier() {}
 	};
 
+	//! Typy tagów
 	struct Tag {
+		//! Wartoœci
 		class ValueContainer;
+		//! Argumenty
 		class ArgumentContainer;
 	};
 
@@ -718,7 +730,8 @@ namespace dataaccessor
 		//! \return Iloœæ próbek w kanale
 		virtual size_type size() const override { return ArgumentsGenerator::size(); }
 
-	private:		
+	private:
+		//! Wartoœæ
 		const ValueType value_;		
 	};
 
@@ -726,12 +739,12 @@ namespace dataaccessor
 	class ConstFunctionData : public IGeneratedFunctionAccessorT<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>
 	{
 	public:
-
+		//! \param value Wartoœæ kana³u
 		ConstFunctionData(const ValueType & value) : value_(value)
 		{
 
 		}
-
+		//! \param value Wartoœæ kana³u
 		ConstFunctionData(ValueType && value) : value_(std::move(value))
 		{
 
@@ -745,7 +758,7 @@ namespace dataaccessor
 		virtual value_type value(const argument_type & argument) const override { return value_; }
 
 	private:
-
+		//! Wartoœæ
 		const value_type value_;
 	};
 
