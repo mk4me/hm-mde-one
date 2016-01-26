@@ -3,6 +3,22 @@
 #include <QtWidgets/QLabel>
 #include <datachannellib/UniformArgumentsFeature.h>
 
+////! \tparam Container Typ kontenera
+////! \tparam SampleExtractor Typ wyci¹gaj¹cy próbki z kontenera
+//template<class Container, typename SampleExtractor = dataaccessor::DefaultContainerSampleExtractor>
+////! \param data Dane do opakowania
+////! \param se Obiekt wyci¹gaj¹cy próbki z danych
+////! \return Interfejs do danych wraz z danymi
+//static inline dataaccessor::DiscreteAccessorPtr<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0).second),
+//	decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0).first)>
+//	wrap(Container && data, const SampleExtractor & se = SampleExtractor())
+//{
+//	const auto size = dataaccessor::ContainersSizeExtractor::size(data);
+//	return dataaccessor::DiscreteAccessorPtr<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0).second),
+//		decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0).first)>(
+//			new dataaccessor::ContainerDiscreteData<Container, SampleExtractor>(std::move(data), size, se));
+//}
+
 void VectorDiff::process()
 {
     c3dlib::VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
@@ -25,6 +41,7 @@ void VectorDiff::process()
         }
 		
 		auto channel = dataaccessor::wrap(std::move(data));		
+		//auto channel = wrap(std::move(data));
 		channel->attachFeature(uaf);
 		channel->attachFeature(utils::make_shared<dataaccessor::DescriptorFeature>("Result", "", "", "", ""));
         outPinA->setValue(channel);

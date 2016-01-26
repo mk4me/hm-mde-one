@@ -71,7 +71,7 @@ void FFmpegError::setMessage( const char* msg, size_t length )
     if ( id != UnknownID ) {
         // tłumaczymy błąd
         char buffer[512];
-        static const size_t maxLength = utils::ArrayTraits::size(buffer) - 1;
+        static const size_t maxLength = utils::size(buffer) - 1;
         buffer[maxLength] = '\0';
         // najpierw kopiujemy starą wiadomość
         if ( msg ) {

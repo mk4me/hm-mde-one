@@ -22,29 +22,29 @@ ObjectWrapper::ObjectWrapper()
 
 }
 
-/*ObjectWrapper::ObjectWrapper(const ObjectWrapper & wrapper)
+ObjectWrapper::ObjectWrapper(ObjectWrapper &&)
 {
 
-}*/
+}
 
-const bool ObjectWrapper::__tryUnpackData(void * object, const TypeInfo & ptrType)
+bool ObjectWrapper::__tryUnpackData(void * object, const TypeInfo & ptrType)
 {
 	return __tryGetData(object, ptrType);
 }
 
 
-const bool ObjectWrapper::__tryUnpackData(void * object, const TypeInfo & ptrType) const
+bool ObjectWrapper::__tryUnpackData(void * object, const TypeInfo & ptrType) const
 {
 	return __tryGetData(object, ptrType);
 }
 
-const bool ObjectWrapper::__tryUnpackBaseData(void * object, const TypeInfo & ptrType)
+bool ObjectWrapper::__tryUnpackBaseData(void * object, const TypeInfo & ptrType)
 {
 	return __tryGetBaseData(object, ptrType);
 }
 
 
-const bool ObjectWrapper::__tryUnpackBaseData(void * object, const TypeInfo & ptrType) const
+bool ObjectWrapper::__tryUnpackBaseData(void * object, const TypeInfo & ptrType) const
 {
 	return __tryGetBaseData(object, ptrType);
 }
@@ -64,7 +64,7 @@ ObjectWrapper::~ObjectWrapper()
 
 }
 
-const bool ObjectWrapper::isSupported(const TypeInfo& type) const
+bool ObjectWrapper::isSupported(const TypeInfo& type) const
 {
 	return type == getTypeInfo();
 }
@@ -74,7 +74,7 @@ void ObjectWrapper::clone(ObjectWrapper & dest, const CloneOp co) const
 	__clone(dest, co);
 }
 
-const bool ObjectWrapper::tryClone(ObjectWrapper & dest, const CloneOp co) const
+bool ObjectWrapper::tryClone(ObjectWrapper & dest, const CloneOp co) const
 {
 	bool ret = true;
 	try{
@@ -87,7 +87,7 @@ const bool ObjectWrapper::tryClone(ObjectWrapper & dest, const CloneOp co) const
 	return ret;
 }
 
-const ObjectWrapperPtr ObjectWrapper::clone(const CloneOp co) const
+ObjectWrapperPtr ObjectWrapper::clone(const CloneOp co) const
 {	
 	auto ret = create();
 	clone(*ret, co);
@@ -104,25 +104,24 @@ void ObjectWrapper::swap(ObjectWrapper & ow)
 	__swap(ow);	
 }
 
-const bool ObjectWrapper::isEqual(const ObjectWrapper & obj) const
+bool ObjectWrapper::isEqual(const ObjectWrapper & obj) const
 {
 	bool ret = false;
 	// najpierw sprawdzamy czy liczniki referencji siê zgadzaj¹
-	if (getReferenceCount() != obj.getReferenceCount()){
-
-	}
-	// teraz czy jak conajmniej jeden z nich ró¿ny od zera to czy raw pointers siê zgadzaj¹
-	else if ((getRawPtr() != nullptr) && (obj.getRawPtr() != nullptr)){
-		ret = (getRawPtr() == obj.getRawPtr());
-	}
-	//czy ma sens probowaæ ich dalej porównywaæ - czy maj¹ jakieœ typy wspólne
-	else{
-
-		if (isSupported(obj.getTypeInfo()) == true){
-			ret = __isEqual(obj);
+	if (getReferenceCount() == obj.getReferenceCount()) {
+		// teraz czy jak conajmniej jeden z nich ró¿ny od zera to czy raw pointers siê zgadzaj¹
+		if ((getRawPtr() != nullptr) && (obj.getRawPtr() != nullptr)) {
+			ret = (getRawPtr() == obj.getRawPtr());
 		}
-		else if (obj.isSupported(getTypeInfo()) == true){
-			ret = obj.__isEqual(*this);
+		//czy ma sens probowaæ ich dalej porównywaæ - czy maj¹ jakieœ typy wspólne
+		else {
+
+			if (isSupported(obj.getTypeInfo()) == true) {
+				ret = __isEqual(obj);
+			}
+			else if (obj.isSupported(getTypeInfo()) == true) {
+				ret = obj.__isEqual(*this);
+			}
 		}
 	}
 

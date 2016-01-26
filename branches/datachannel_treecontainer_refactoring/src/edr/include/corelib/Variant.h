@@ -35,7 +35,7 @@ namespace core
 		virtual IVariantInitializer * clone() const = 0;
 		//! \param initializer Inicjalizator z ktorym się porównujemy
 		//! \return Czy inicjalizatory dadzš takie same dane (częc wspólna)
-		virtual const bool isEqual(const IVariantInitializer & initializer) const { return false; }
+		virtual bool isEqual(const IVariantInitializer & initializer) const { return false; }
 	};
 
 	typedef utils::shared_ptr<IVariantInitializer> VariantInitializerPtr;
@@ -79,7 +79,7 @@ namespace core
 			//! Destruktor niepolimorficzny!!
 			~data_t();
 			//! Operator wycišgajšcy dane w formie stałej
-			const utils::ObjectWrapperConstPtr operator->() const;
+			utils::ObjectWrapperConstPtr operator->() const;
 		};
 
 		friend struct data_t;
@@ -126,29 +126,29 @@ namespace core
 		}
 
 		//! \tparam T Typ obiektu dla ktorego chcemy utworzych OW
-		//! \param value Wartość z jaką chcemy utowrzyć OW
-		//! \return Wrapper obiektu.
-		template < class T, typename std::enable_if<std::is_pointer<T>::value ||
-			(std::is_class<T>::value && utils::supports_pointer_operator<T>::value)>::type * = 0>
-		static inline VariantPtr wrap(const T & value)
-		{
-			using itype = typename std::conditional<std::is_pointer<T>::value, T, decltype(std::declval<T>().operator->())>::type;
-			using type = typename utils::remove_toplevel<typename std::remove_pointer<itype>::type>::type;
-			return VariantPtr(new Variant(utils::ObjectWrapper::wrap<type>(value)));
+		//! \tparam dummy Weryfikacja warunków metody
+		template < typename T, typename std::enable_if<utils::ObjectWrapperTraits<T>::isDefinitionVisible>::type * = 0>
+			//! \param value Wartość z jaką chcemy utowrzyć OW
+			//! \return Wrapper obiektu.
+			static inline VariantPtr wrap(const typename utils::ObjectWrapperTraits<T>::Ptr value)
+		{			
+			return VariantPtr(new Variant(utils::ObjectWrapper::wrap<T>(value)));
 		}
 
 		//! \tparam T Typ obiektu dla ktorego chcemy utworzych OW
-		//! \param value Wartość z jaką chcemy utowrzyć OW
-		//! \return Wrapper obiektu.
-		//template <class T, class U>
-		//static VariantPtr wrap(const typename utils::ObjectWrapperTraits<T>::PtrPolicy::template Ptr<U>::Type & value)
-		//{
-//			return VariantPtr(new Variant(utils::ObjectWrapper::wrap<T>(typename utils::ObjectWrapperTraits<T>::Ptr(value))));
-		//}
+		//! \tparam dummy Weryfikacja warunków metody
+		template < typename T, typename std::enable_if<std::is_pointer<T>::value ||
+			utils::is_like_smart_pointer<T>::value>::type * = 0>
+			//! \param value Wartość z jaką chcemy utowrzyć OW
+			//! \return Wrapper obiektu.
+			static inline VariantPtr wrap(const T & value)
+		{
+			return wrap<typename utils::pointed_type<T>::type>(value);
+		}
 
 		//! \tparam Ptr
 		//! \param object
-		template <class Ptr>
+		template <typename Ptr>
 		void set(const Ptr& object)
 		{
 			ScopedLock lock(sync_);
@@ -167,8 +167,8 @@ namespace core
 		//! \param object Rezultat.
 		//! \param exact Czy ma być tylko i wyłšcznie ten typ czy też może być rzutowanie w dół?
 		//! \return Sukces/porażka.
-		template <class Ptr>
-		const bool tryGet(Ptr& object, bool exact = false)
+		template <typename Ptr>
+		bool tryGet(Ptr& object, bool exact = false)
 		{
 			innerInitialize();
 			return wrapper_->tryGet(object, exact);
@@ -179,8 +179,8 @@ namespace core
 		//! \param object Rezultat.
 		//! \param exact Czy ma być tylko i wyłšcznie ten typ czy też może być rzutowanie w dół?
 		//! \return Sukces/porażka.
-		template <class Ptr>
-		const bool tryGet(Ptr& object, bool exact = false) const
+		template <typename Ptr>
+		bool tryGet(Ptr& object, bool exact = false) const
 		{
 			innerInitialize();
 			return utils::ObjectWrapperConstPtr(wrapper_)->tryGet(object, exact);
@@ -207,11 +207,11 @@ namespace core
 		VariantPtr create() const;
 		//! \param key Klucz metadanych który sprawdzamy czy istnieje
 		//! \return Czy dany klucz istnieje
-		const bool existMetadata(const std::string & key) const;
+		bool existMetadata(const std::string & key) const;
 		//! \param key Klucz metadanych który sprawdzamy czy istnieje
 		//! \param val [out] Wartoć dla zadanego klucza, w przypadku braku klucza zmienna nie zostanie nadpisana
 		//! \return Czy udalo sie pobrac wartosc klucza
-		const bool getMetadata(const std::string & key, std::string & val) const;
+		bool getMetadata(const std::string & key, std::string & val) const;
 		//! \param key Klucz metadanych
 		//! \param val Wartoć dla zadanego klucza
 		void setMetadata(const std::string & key, const std::string & val);
@@ -225,11 +225,11 @@ namespace core
 		//! \param initializer Obiekt leniwie inicjujšcy wartoć OW
 		void setInitializer(const VariantInitializerPtr & initializer);
 		//! \return Obiekt leniwie inicjujšcy wartoć OW
-		const VariantInitializerPtr initializer();
+		VariantInitializerPtr initializer();
 		//! \return Obiekt leniwie inicjujšcy wartoć OW
-		const VariantInitializerConstPtr initializer() const;
+		VariantInitializerConstPtr initializer() const;
 		//! \return Czy obiekt był inicjalizowany
-		const bool initialized() const;
+		bool initialized() const;
 		//! Metoda próbuje inicjalizować dane
 		void tryInitialize();
 		//! Metoda ponownie inicjuje dane
@@ -240,7 +240,7 @@ namespace core
 		const data_t initializedData() const;
 		//! \param co Typ klonowania
 		//! \return Kopia naszego obiektu
-		const VariantPtr clone(const CloneOp co = utils::ObjectWrapper::DeepClone) const;
+		VariantPtr clone(const CloneOp co = utils::ObjectWrapper::DeepClone) const;
 		//! \param dest [out] Obiekt docelowy
 		//! \param co Typ klonowania
 		void clone(Variant & dest, const CloneOp co = utils::ObjectWrapper::DeepClone) const;
@@ -249,7 +249,7 @@ namespace core
 		void swap(Variant & ow);
 		//! \param obj Obiekt z którym się porównujemy
 		//! \return Czy obiekty sš takie same - trzymajš te same dane
-		const bool isEqual(const Variant & obj) const;
+		bool isEqual(const Variant & obj) const;
 		//! \param srcWrapper Zrodlowy OW z ktorego kopiujemy dane
 		void copyData(const Variant & srcWrapper);
 

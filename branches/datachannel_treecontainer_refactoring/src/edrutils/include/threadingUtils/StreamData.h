@@ -162,10 +162,10 @@ namespace threadingUtils {
 		void adjustBufferSize()
 		{
 			const auto s = bufferData.size();
-			if ((maxSize > 0) && (s > maxSize)){
+			if ((maxSize > 0) && (s > maxSize)) {
 				auto it = bufferData.begin();
 				std::advance(it, s - maxSize);
-				bufferData.erase(bufferData.begin(), it);				
+				bufferData.erase(bufferData.begin(), it);
 			}
 		}
 
@@ -219,7 +219,7 @@ namespace threadingUtils {
 		//! \param bufferPtr Nowy bufor danych aktualizowany danymi strumienia
 		void attach(StreamBufferPtr bufferPtr)
 		{
-			if (bufferPtr == nullptr){
+			if (bufferPtr == nullptr) {
 				throw std::runtime_error("Uninitialized buffer pointer");
 			}
 
@@ -248,7 +248,7 @@ namespace threadingUtils {
 		{
 			UTILS_ASSERT(streamBufferList.empty() == true, "Stream data with no buffers");
 
-			for (auto & buff : streamBufferList){
+			for (auto & buff : streamBufferList) {
 				buff->pushData(data);
 			}
 		}
@@ -337,7 +337,7 @@ namespace threadingUtils {
 		//! Strumien docelowy
 		BaseUpdatebleStream * destStream;
 	};
-	
+
 	class StreamModifierHelper
 	{
 	public:
@@ -345,7 +345,7 @@ namespace threadingUtils {
 		StreamModifierHelper(StreamBasePtr baseStream, BaseUpdatebleStream * destStream)
 			: baseStream_(baseStream), sourceStreamObserver(new BaseStreamUpdater(destStream))
 		{
-			if (baseStream_ == nullptr){
+			if (baseStream_ == nullptr) {
 				throw std::invalid_argument("Uninitialized base stream");
 			}
 
@@ -395,7 +395,7 @@ namespace threadingUtils {
 		StreamFilterT(IStreamPtr<T> baseStream,
 			Filter && filter, const T & startValue = T())
 			: baseStream(baseStream), modifierHelper(baseStream, this),
-			filter_(std::move(filter)),	currentData_(startValue)
+			filter_(std::move(filter)), currentData_(startValue)
 		{
 
 		}
@@ -405,7 +405,7 @@ namespace threadingUtils {
 		StreamFilterT(IStreamPtr<T> baseStream,
 			Filter && filter, T && startValue)
 			: baseStream(baseStream), modifierHelper(baseStream, this),
-			filter_(std::move(filter)),	currentData_(std::move(startValue))
+			filter_(std::move(filter)), currentData_(std::move(startValue))
 		{
 
 		}
@@ -433,9 +433,9 @@ namespace threadingUtils {
 			T bd;
 			baseStream->data(bd);
 
-			if (filter(bd) == true){
+			if (filter(bd) == true) {
 				currentData_ = bd;
-				if (this->buffersAttached() == true){
+				if (this->buffersAttached() == true) {
 					pushBuffersData(currentData_);
 				}
 
@@ -514,7 +514,7 @@ namespace threadingUtils {
 		virtual void data(typename IStreamT<T>::ref_type d) const override
 		{
 			std::lock_guard<std::recursive_mutex> lock(this->synch_);
-			if (processReuired == true){
+			if (processReuired == true) {
 				processor_(currentData_);
 				processReuired = false;
 			}
@@ -533,7 +533,7 @@ namespace threadingUtils {
 
 			processReuired = !this->buffersAttached();
 
-			if (processReuired == false){
+			if (processReuired == false) {
 				processor_(currentData_);
 				pushBuffersData(currentData_);
 			}
@@ -549,7 +549,7 @@ namespace threadingUtils {
 		//! Czy należy przetworzyć dane czy zostały już przetworzone
 		volatile mutable bool processReuired;
 		//!
-		IStreamPtr<T> baseStream;		
+		IStreamPtr<T> baseStream;
 		//!
 		StreamModifierHelper modifierHelper;
 	};
@@ -614,7 +614,7 @@ namespace threadingUtils {
 		virtual void data(typename IStreamT<Dest>::ref_type d) const override
 		{
 			std::lock_guard<std::recursive_mutex> lock(this->synch_);
-			if (unpackRequired_ == true){
+			if (unpackRequired_ == true) {
 				extractor_.extract(baseData_, currentData_);
 				unpackRequired_ = false;
 			}
@@ -632,13 +632,13 @@ namespace threadingUtils {
 			Base bd;
 			baseStream->data(bd);
 
-			if (extractor_.verify(bd) == true){
+			if (extractor_.verify(bd) == true) {
 				unpackRequired_ = !this->buffersAttached();
-				if (unpackRequired_ == false){
+				if (unpackRequired_ == false) {
 					extractor_.extract(bd, currentData_);
 					pushBuffersData(currentData_);
 				}
-				else{
+				else {
 					baseData_ = bd;
 				}
 
@@ -664,13 +664,13 @@ namespace threadingUtils {
 
 //! Makro definiujące nazwę extractora pola
 //! \param memberName Nazwa wypakowywanego pola
-#define MEMBER_EXTRACTOR_NAME(memberName) \
-	MemberExtractor##memberName
+#define STREAM_MEMBER_EXTRACTOR_NAME(memberName) \
+	StreamMemberExtractor##memberName
 
 //! Makro definiujące klasę wypakowującą zadane pole
 //! \param memberName Nazwa wypakowywanego pola
-#define MEMBER_EXTRACTOR(memberName) \
-class MEMBER_EXTRACTOR_NAME(memberName){\
+#define STREAM_MEMBER_EXTRACTOR(memberName) \
+class STREAM_MEMBER_EXTRACTOR_NAME(memberName){\
 public:\
 	template<typename SrcType>\
 	inline static bool verify(const SrcType &) { return true; }\
@@ -683,20 +683,20 @@ public:\
 //! Makro definiujące nazwę adaptera dla zadanej klasy bazowej i pola
 //! \param baseType Typ bazowy z którego wyciągamy pole
 //! \param memberName Nazwa wypakowywanego pola
-#define MEMBER_ADAPTER_NAME(baseType, memberName) \
-	MemberAdapter##baseType##memberName
+#define STREAM_MEMBER_ADAPTER_NAME(baseType, memberName) \
+	StreamMemberAdapter##baseType##memberName
 
 //! Makro definiujące adapter dla wyciąganego pola
 //! \param baseType Typ bazowy z którego wyciągamy pole
 //! \param destType Typ docelowy jeśli chcemy wymusić dostępną konwersję
 //! \param memberName Nazwa wypakowywanego pola
-#define MEMBER_ADAPTER_EXT(baseType, destType, memberName) \
-typedef StreamAdapterT<baseType, destType, MEMBER_EXTRACTOR_NAME(memberName)> MEMBER_ADAPTER_NAME(baseType,memberName);
+#define STREAM_MEMBER_ADAPTER_EXT(baseType, destType, memberName) \
+typedef StreamAdapterT<baseType, destType, STREAM_MEMBER_EXTRACTOR_NAME(memberName)> STREAM_MEMBER_ADAPTER_NAME(baseType,memberName);
 
 //! Makro definiujące adapter dla wyciąganego pola
 //! \param baseType Typ bazowy z którego wyciągamy pole
 //! \param memberName Nazwa wypakowywanego pola
-#define MEMBER_ADAPTER(baseType, memberName) \
-	MEMBER_ADAPTER_EXT(baseType, decltype(std::declval<baseType>().memberName), memberName);
+#define STREAM_MEMBER_ADAPTER(baseType, memberName) \
+	STREAM_MEMBER_ADAPTER_EXT(baseType, decltype(std::declval<baseType>().memberName), memberName);
 
 #endif	//	HEADER_GUARD_THREADINGUTILS__STREAMDATABASE_H__

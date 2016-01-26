@@ -45,6 +45,12 @@ namespace utils
 			ObjectWrapperTraits<Type>::PtrPolicy::initPtr(wrapped_);
 		}
 
+		//! Domyslny konstruktor
+		__ObjectWrapperT(__ObjectWrapperT && Other) : wrapped_(std::move(Other.wrapped_))
+		{
+
+		}
+
 	private:
 
 		//! \param dest ObjectWrapper do którego chcemy kopiować dane
@@ -73,32 +79,32 @@ namespace utils
 			}
 		}
 
-		virtual void __setData(const void * object)
+		virtual void __setData(const void * object) override
 		{
 			ObjectWrapperTraits<Type>::PtrPolicy::setPtr(wrapped_, *(static_cast<const typename ObjectWrapperTraits<Type>::Ptr *>(object)));
 		}
 
-		virtual const bool __tryGetData(void * object, const TypeInfo & ptrType)
+		virtual bool __tryGetData(void * object, const TypeInfo & ptrType) override
 		{
 			return ObjectWrapperTraits<Type>::tryGetData(object, ptrType, wrapped_);
 		}
 
-		virtual const bool __tryGetData(void * object, const TypeInfo & ptrType) const
+		virtual bool __tryGetData(void * object, const TypeInfo & ptrType) const override
 		{
 			return ObjectWrapperTraits<Type>::tryGetConstData(object, ptrType, wrapped_);
 		}
 
-		virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType)
+		virtual bool __tryGetBaseData(void * object, const TypeInfo & ptrType) override
 		{
 			return ObjectWrapperTraits<Type>::tryGetBaseData(object, ptrType, wrapped_);
 		}
 
-		virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType) const
+		virtual bool __tryGetBaseData(void * object, const TypeInfo & ptrType) const override
 		{
 			return ObjectWrapperTraits<Type>::tryGetConstBaseData(object, ptrType, wrapped_);
 		}
 
-		virtual const bool __isEqual(const ObjectWrapper & obj) const
+		virtual bool __isEqual(const ObjectWrapper & obj) const override
 		{
 			typename ObjectWrapperTraits<Type>::ConstPtr w;
 			bool res = obj.tryGet(w);
@@ -106,28 +112,29 @@ namespace utils
 			return (res == true) && (wrapped_ == w);
 		}
 
-		virtual void __clone(ObjectWrapper & dest, const ObjectWrapper::CloneOp co) const {
+		virtual void __clone(ObjectWrapper & dest, const ObjectWrapper::CloneOp co) const  override
+		{
 			auto me = __getMe(dest);
 			__cloneImpl(me, co);
 		}
 
-		virtual const void* __getRawPtr() const
+		virtual const void* __getRawPtr() const override
 		{
 			return ObjectWrapperTraits<Type>::PtrPolicy::getConstRawPtr(wrapped_);
 		}
 
-		virtual void* __getRawPtr()
+		virtual void* __getRawPtr() override
 		{
 			return ObjectWrapperTraits<Type>::PtrPolicy::getRawPtr(wrapped_);
 		}
 
-		virtual void __swap(ObjectWrapper & ow)
+		virtual void __swap(ObjectWrapper & ow) override
 		{
 			auto me = __getMe(ow);
 			ObjectWrapperTraits<Type>::PtrPolicy::swapPtr(wrapped_, me->wrapped_);
 		}
 
-		virtual void __reset()
+		virtual void __reset() override
 		{
 			ObjectWrapperTraits<Type>::PtrPolicy::setPtr(wrapped_, static_cast<T*>(nullptr));
 		}
@@ -138,44 +145,45 @@ namespace utils
 		{
 		} 
 
-		virtual const int getReferenceCount() const
+		virtual int getReferenceCount() const override
 		{
 			return ObjectWrapperTraits<Type>::PtrPolicy::referenceCount(wrapped_);
 		}
 
-		virtual const bool isPtrSupported(const TypeInfo & ptrInfo) const
+		virtual bool isPtrSupported(const TypeInfo & ptrInfo) const override
 		{
 			return ObjectWrapperTraits<Type>::ptrTypeSupported(ptrInfo);
 		}
 
-		virtual const ObjectWrapper::TypeInfoPair getPtrTypeInfo() const
+		virtual ObjectWrapper::TypeInfoPair getPtrTypeInfo() const override
 		{
 			return ObjectWrapperTraits<Type>::ptrTypeInfo();
 		}
 
 		//! \return Nazwa typu.
-		virtual const std::string getClassName() const
+		virtual std::string getClassName() const override
 		{
 			return ObjectWrapperT<Type>::className();
 		}
 
 		//! \return Informacje o typie.
-		virtual const TypeInfo getTypeInfo() const
+		virtual TypeInfo getTypeInfo() const override
 		{
 			return ObjectWrapperTraits<Type>::typeInfo();
 		}
 
-		virtual void getSupportedTypes(Types& supported) const
+		virtual void getSupportedTypes(Types& supported) const override
 		{
 			ObjectWrapperTraits<Type>::supportedTypes(supported);
 		}
 
-		virtual const bool isSupported(const TypeInfo& type) const
+		virtual bool isSupported(const TypeInfo& type) const override
 		{
 			return ObjectWrapperTraits<Type>::typeSupported(type);
 		}
 
-		virtual const ObjectWrapperPtr create() const {
+		virtual ObjectWrapperPtr create() const  override 
+		{
 			return ObjectWrapper::create<T>();
 		}	
 	};
@@ -196,7 +204,7 @@ private:\
 	ObjectWrapperT(ObjectWrapperTraits<typeT>::Ptr data) : __ObjectWrapperT<typeT>(data) {}\
 public:\
 	virtual ~ObjectWrapperT() {}\
-	static const std::string className(){\
+	static std::string className(){\
 		return #typeT;\
 	}\
 	static ObjectWrapperPtr create(ObjectWrapperTraits<typeT>::Ptr data = ObjectWrapperTraits<typeT>::Ptr()){\

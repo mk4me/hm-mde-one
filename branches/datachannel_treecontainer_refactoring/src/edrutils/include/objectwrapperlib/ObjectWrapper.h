@@ -14,6 +14,7 @@
 #include <list>
 #include <algorithm>
 #include <utils/SmartPtr.h>
+#include <utils/pointer_traits.h>
 #include <objectwrapperlib/ObjectWrapperTraits.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -62,7 +63,7 @@ namespace utils {
 			bool exact;
 
 			template <class Ptr>
-			operator const Ptr()
+			operator Ptr()
 			{
 				Ptr result;
 				if (wrapper->tryGet(result, exact)) {
@@ -75,7 +76,7 @@ namespace utils {
 			}
 
 			template <class Ptr>
-			operator const Ptr() const
+			operator Ptr() const
 			{
 				Ptr result;
 				if (constWrapper->tryGet(result, exact)) {
@@ -92,7 +93,7 @@ namespace utils {
 
 		//! \tparam Ptr Typ wskaznika o który pytamy
 		template <class Ptr>
-		operator const Ptr()
+		operator Ptr()
 		{
 			Ptr result;
 			tryGet(result, false);
@@ -101,7 +102,7 @@ namespace utils {
 
 		//! \tparam Ptr Typ wskaznika o który pytamy
 		template <class Ptr>
-		operator const Ptr() const
+		operator Ptr() const
 		{
 			Ptr result;
 			tryGet(result, false);
@@ -112,7 +113,7 @@ namespace utils {
 		//! \param dummy Parametr nie powinien być nigdy uzywany
 		//! \return Wrapper obiektu.
 		template <class T>
-		static const ObjectWrapperPtr create(T* dummy = nullptr)
+		static ObjectWrapperPtr create(T* dummy = nullptr)
 		{
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
 			return ObjectWrapperT<T>::create();
@@ -122,7 +123,7 @@ namespace utils {
 		//! \param value Wartość z jaką chcemy utowrzyć OW
 		//! \return Wrapper obiektu.
 		template <class T>
-		static const ObjectWrapperPtr wrap(typename ObjectWrapperTraits<T>::Ptr value)
+		static ObjectWrapperPtr wrap(typename ObjectWrapperTraits<T>::Ptr value)
 		{			
 			return ObjectWrapperT<T>::wrap(value);
 		}
@@ -130,7 +131,7 @@ namespace utils {
 		//! \tparam T Typ obiektu ktorego nazwe OW chcemy pobrac
 		//! \return Nazwa dla zadanego typu.
 		template <class T>
-		static const std::string getClassName(T* dummy = nullptr)
+		static std::string getClassName(T* dummy = nullptr)
 		{
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
 			return ObjectWrapperT<T>::className();
@@ -142,9 +143,19 @@ namespace utils {
 		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
 		//! \return Sukces/porażka.
 		template <class Ptr>
-		const bool tryGet(Ptr& object, bool exact = false)
+		bool tryGet(Ptr& object, bool exact = false)
 		{
-			return __tryGetRawPtr(object, exact);
+			TypeInfo ptrInfo(typeid(Ptr));
+			auto p = getPtrTypeInfo();
+			if (ptrInfo == p.first || ptrInfo == p.second) {
+				return __tryUnpackData(&object, ptrInfo);
+			}
+			else if (exact == false && isPtrSupported(ptrInfo) == true) {
+				return __tryUnpackBaseData(&object, ptrInfo);
+			}
+			else {
+				return false;
+			}
 		}
 
 		//! Próba pobrania obiektu z wrappera.
@@ -153,9 +164,20 @@ namespace utils {
 		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
 		//! \return Sukces/porażka.
 		template <class Ptr>
-		const bool tryGet(Ptr& object, bool exact = false) const
+		bool tryGet(Ptr& object, bool exact = false) const
 		{
-			return __tryGetRawPtr(object, exact, std::is_pointer<Ptr>());
+			static_assert((std::is_const<typename utils::pointed_type<Ptr>::type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");
+
+			TypeInfo ptrInfo(typeid(Ptr));
+			if (ptrInfo == getPtrTypeInfo().second) {
+				return __tryUnpackData(&object, ptrInfo);
+			}
+			else if (exact == false && isPtrSupported(ptrInfo) == true) {
+				return __tryUnpackBaseData(&object, ptrInfo);
+			}
+			else {
+				return false;
+			}
 		}
 
 		//! Pobiera obiekt z wrappera. W razie błędu rzuca bad_castem.
@@ -166,7 +188,7 @@ namespace utils {
 		//! \param dummy Pozostawić pusty.
 		//! \return Wrappowany obiekt. Gdy wrapper jest innego typu niż parametr szablonu rzucany jest wyjątek.
 		template <typename T>
-		const typename ObjectWrapperT<T>::Ptr get(T* dummy = nullptr)
+		typename ObjectWrapperT<T>::Ptr get(T* dummy = nullptr)
 		{
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
 			return static_cast<typename ObjectWrapperT<T>::Ptr>(get());
@@ -176,7 +198,7 @@ namespace utils {
 		//! \param dummy Pozostawić pusty.
 		//! \return Wrappowany obiekt. Gdy wrapper jest innego typu niż parametr szablonu rzucany jest wyjątek.
 		template <typename T>
-		const typename ObjectWrapperT<T>::ConstPtr get(T* dummy = nullptr) const
+		typename ObjectWrapperT<T>::ConstPtr get(T* dummy = nullptr) const
 		{
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc używany");
 			typename ObjectWrapperT<T>::ConstPtr ret = get();
@@ -203,53 +225,58 @@ namespace utils {
 		//! \param object Obiekt.
 		//! \return Sukces/porażka.
 		template <class Ptr>
-		const bool trySet(const Ptr& object)
+		bool trySet(const Ptr& object)
 		{
-			return __trySetRawPtr(object, std::is_pointer<Ptr>());
+			static_assert((!std::is_const<typename utils::pointed_type<Ptr>::type>::value), "Nalezy zapisywac dane bez modyfikatora const");
+			if (getPtrTypeInfo().first == typeid(Ptr)) {
+				__setData(&object);
+				return true;
+			}
+			return false;
 		}
 
 		//! Pusty polimorficzny destruktor.
 		virtual ~ObjectWrapper();
 		//! \return Ilość referencji do naszych danych
-		virtual const int getReferenceCount() const = 0;
+		virtual int getReferenceCount() const = 0;
 		//! \return Nazwa typu.
-		virtual const std::string getClassName() const = 0;
+		virtual std::string getClassName() const = 0;
 		//! \return Informacje o typie.
-		virtual const TypeInfo getTypeInfo() const = 0;
+		virtual TypeInfo getTypeInfo() const = 0;
 		//! \param type
 		//! \return Czy obiekt wspiera określony typ?
-		virtual const bool isSupported(const TypeInfo& type) const;
+		virtual bool isSupported(const TypeInfo& type) const;
 		//! \param supported Lista wspieranych rozszerzeń.
 		virtual void getSupportedTypes(Types& supported) const = 0;
 		//! \param co Typ klonowania
 		//! \return Klon bieżącego obiektu. Wewnętrzny wskaźnik również jest kopiowany.
-		const ObjectWrapperPtr clone(const CloneOp co = DeepClone) const;
+		ObjectWrapperPtr clone(const CloneOp co = DeepClone) const;
 		//! \param dest [out] Obiekt docelowy
 		//! \param co Typ klonowania
-		virtual void clone(ObjectWrapper & dest, const CloneOp co = DeepClone) const;
+		void clone(ObjectWrapper & dest, const CloneOp co = DeepClone) const;
 		//! \param dest [out] Obiekt docelowy
 		//! \param co Typ klonowania
 		//! \return Czy udało się sklonować obiekt
-		const bool tryClone(ObjectWrapper & dest, const CloneOp co = DeepClone) const;
+		bool tryClone(ObjectWrapper & dest, const CloneOp co = DeepClone) const;
 		//! \return Pusty OW dla danego typu
-		virtual const ObjectWrapperPtr create() const = 0;
+		virtual ObjectWrapperPtr create() const = 0;
 		//! \return Surowa wartość wskaźnika danych przechowywanych w OW
 		const void* getRawPtr() const;
 		//! \return Surowa wartość wskaźnika danych przechowywanych w OW
 		void* getRawPtr();
 		//! \return Informacje o typie odpowiednio normalnego i stałego wskaźnika.
-		virtual const TypeInfoPair getPtrTypeInfo() const = 0;
+		virtual TypeInfoPair getPtrTypeInfo() const = 0;
 		//! \param ptrInfo Informacja o wskaźniku
 		//! \return Prawda jeśli wskaźnik można pobrać z danego OW
-		virtual const bool isPtrSupported(const TypeInfo & ptrInfo) const = 0;
+		virtual bool isPtrSupported(const TypeInfo & ptrInfo) const = 0;
 		//! Zeruje obiekt
-		virtual void reset();
+		void reset();
 		//! Zamienia zawartosc OW jesli to możliwe
 		//! \param ow Obiekt z którym zamienimy przechowywane wartości
-		virtual void swap(ObjectWrapper & ow);
+		void swap(ObjectWrapper & ow);
 		//! \param obj Obiekt z którym się porównujemy
 		//! \return Czy obiekty są takie same - trzymają te same dane
-		virtual const bool isEqual(const ObjectWrapper & obj) const;
+		bool isEqual(const ObjectWrapper & obj) const;
 
 	protected:
 
@@ -260,114 +287,22 @@ namespace utils {
 		//! \param wrapper Obiekt ktory kopiujemy
 		//ObjectWrapper(const ObjectWrapper & wrapper);
 
+		ObjectWrapper(ObjectWrapper &&);
+
 	private:
-		//! Ustawia obiekt wrappera.
-		//! \tparam Ptr Typ wskaznika ktory chcemy przypisac do OW
-		//! \param object Obiekt.
-		//! \return Sukces/porażka.
-		template <class Ptr>
-		const bool __trySetRawPtr(const Ptr& object, std::true_type)
-		{
-			static_assert((!std::is_const<typename std::remove_pointer<Ptr>::type>::value), "Nalezy zapisywac dane bez modyfikatora const");
-			if (getPtrTypeInfo().first == typeid(Ptr)){
-				__setData(&object);
-				return true;
-			}
-			return false;
-		}
-
-		//! Ustawia obiekt wrappera.
-		//! \tparam Ptr Typ wskaznika ktory chcemy przypisac do OW
-		//! \param object Obiekt.
-		//! \return Sukces/porażka.
-		template <class Ptr>
-		const bool __trySetRawPtr(const Ptr& object, std::false_type)
-		{
-			static_assert((!std::is_const<typename Ptr::element_type>::value), "Nalezy zapisywac dane bez modyfikatora const");
-			if (getPtrTypeInfo().first == typeid(Ptr)){
-				__setData(&object);
-				return true;
-			}
-			return false;
-		}
-
-		//! Próba pobrania obiektu z wrappera.
-		//! \tparam Ptr Typ wskaznika ktory chcemy pobrać z OW
-		//! \param object Rezultat.
-		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
-		//! \return Sukces/porażka.
-		template <class Ptr>
-		const bool __tryGetRawPtr(Ptr& object, bool exact)
-		{
-			TypeInfo ptrInfo(typeid(Ptr));
-			auto p = getPtrTypeInfo();
-			if (ptrInfo == p.first || ptrInfo == p.second) {
-				return __tryUnpackData(&object, ptrInfo);
-			}
-			else if (exact == false && isPtrSupported(ptrInfo) == true){
-				return __tryUnpackBaseData(&object, ptrInfo);
-			}
-			else {
-				return false;
-			}
-		}
-
-		//! Próba pobrania obiektu z wrappera.
-		//! \tparam Ptr Typ wskaznika ktory chcemy pobrać z OW
-		//! \param object Rezultat.
-		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
-		//! \return Sukces/porażka.
-		template <class Ptr>
-		const bool __tryGetRawPtr(Ptr& object, bool exact, std::true_type) const
-		{
-			static_assert((std::is_const<typename std::remove_pointer<Ptr>::type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");
-
-			TypeInfo ptrInfo(typeid(Ptr));
-			if (ptrInfo == getPtrTypeInfo().second) {
-				return __tryUnpackData(&object, ptrInfo);
-			}
-			else if (exact == false && isPtrSupported(ptrInfo) == true){
-				return __tryUnpackBaseData(&object, ptrInfo);
-			}
-			else {
-				return false;
-			}
-		}
-
-		//! Próba pobrania obiektu z wrappera.
-		//! \tparam Ptr Typ wskaznika ktory chcemy pobrać z OW
-		//! \param object Rezultat.
-		//! \param exact Czy ma być tylko i wyłącznie ten typ czy też może być rzutowanie w dół?
-		//! \return Sukces/porażka.
-		template <class Ptr>
-		const bool __tryGetRawPtr(Ptr& object, bool exact, std::false_type) const
-		{
-			static_assert((std::is_const<typename Ptr::element_type>::value), "Ta metoda mozna pobierac tylko obiekty typu const");
-
-			TypeInfo ptrInfo(typeid(Ptr));
-			if (ptrInfo == getPtrTypeInfo().second) {
-				return __tryUnpackData(&object, ptrInfo);
-			}
-			else if (exact == false && isPtrSupported(ptrInfo) == true){
-				return __tryUnpackBaseData(&object, ptrInfo);
-			}
-			else {
-				return false;
-			}
-		}
 
 		//! \param object Wskaźnik z którego rozpakowujemy dane
 		//! \param ptrType Typ wskaźnika do któego chcemy przypisać dane
-		virtual const bool __tryUnpackData(void * object, const TypeInfo & ptrType);
+		virtual bool __tryUnpackData(void * object, const TypeInfo & ptrType);
 		//! \param object Wskaźnik z którego rozpakowujemy dane
 		//! \param ptrType Typ wskaźnika do któego chcemy przypisać dane
-		virtual const bool __tryUnpackData(void * object, const TypeInfo & ptrType) const;
+		virtual bool __tryUnpackData(void * object, const TypeInfo & ptrType) const;
 		//! \param object Wskaźnik z którego rozpakowujemy dane
 		//! \param ptrType Typ wskaźnika do któego chcemy przypisać dane
-		virtual const bool __tryUnpackBaseData(void * object, const TypeInfo & ptrType);
+		virtual bool __tryUnpackBaseData(void * object, const TypeInfo & ptrType);
 		//! \param object Wskaźnik z którego rozpakowujemy dane
 		//! \param ptrType Typ wskaźnika do któego chcemy przypisać dane
-		virtual const bool __tryUnpackBaseData(void * object, const TypeInfo & ptrType) const;
+		virtual bool __tryUnpackBaseData(void * object, const TypeInfo & ptrType) const;
 		//! \return Surowy wskaźnik do przechowywanego obiektu
 		virtual const void* __getRawPtr() const = 0;
 		//! \return Surowy wskaźnik do przechowywanego obiektu
@@ -382,16 +317,16 @@ namespace utils {
 		//! \return Czy udało się ustawić mądry wskaźnik?
 		virtual void __setData(const void * object) = 0;
 		//! \return Czy udało się pobrać mądry wskaźnik?
-		virtual const bool __tryGetData(void * object, const TypeInfo & ptrType) = 0;
+		virtual bool __tryGetData(void * object, const TypeInfo & ptrType) = 0;
 		//! \return Czy udało się pobrać mądry wskaźnik?
-		virtual const bool __tryGetData(void * object, const TypeInfo & ptrType) const = 0;
+		virtual bool __tryGetData(void * object, const TypeInfo & ptrType) const = 0;
 		//! \return Czy udało się pobrać mądry wskaźnik?
-		virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType) = 0;
+		virtual bool __tryGetBaseData(void * object, const TypeInfo & ptrType) = 0;
 		//! \return Czy udało się pobrać mądry wskaźnik?
-		virtual const bool __tryGetBaseData(void * object, const TypeInfo & ptrType) const = 0;
+		virtual bool __tryGetBaseData(void * object, const TypeInfo & ptrType) const = 0;
 		//! \param obj Obiekt z którym się porównujemy
 		//! \return Czy obiekty są takie same - trzymają te same dane
-		virtual const bool __isEqual(const ObjectWrapper & obj) const = 0;
+		virtual bool __isEqual(const ObjectWrapper & obj) const = 0;
 	};
 	////////////////////////////////////////////////////////////////////////////////
 } // namespace utils

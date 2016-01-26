@@ -42,14 +42,14 @@ namespace utils {
 		};
 
 		template<class PtrIn>
-		static const bool tryGetData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
+		static bool tryGetData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
 		{
 			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
 			return false;
 		}
 
 		template<class PtrIn>
-		static const bool tryGetConstData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
+		static bool tryGetConstData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
 		{		
 			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
 			return false;
@@ -61,13 +61,13 @@ namespace utils {
 			return ObjectWrapper::TypeInfoPair();
 		}*/
 
-		static const bool ptrTypeSupported(const TypeInfo & ptrInfo)
+		static bool ptrTypeSupported(const TypeInfo & ptrInfo)
 		{
 			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
 			return false;
 		}
 		
-		static const bool typeSupported(const TypeInfo & type)
+		static bool typeSupported(const TypeInfo & type)
 		{
 			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
 			return false;
@@ -78,21 +78,21 @@ namespace utils {
 			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
 		}*/
 		
-		static const TypeInfo typeInfo()
+		static TypeInfo typeInfo()
 		{
 			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
 			return TypeInfo();
 		}
 
 		template<class PtrIn>
-		static const bool tryGetBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
+		static bool tryGetBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
 		{
 			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
 			return false;
 		}
 
 		template<class PtrIn>
-		static const bool tryGetConstBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
+		static bool tryGetConstBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped)
 		{
 			static_assert(sizeof(T) == 0, "Nie zdefiniowano wrappera albo nie zaincludowano odpowiedniego nagłówka. Poszukaj wystapienia DEFINE_WRAPPER.");
 			return false;
@@ -106,7 +106,7 @@ namespace utils {
 
 #define __DEFINE_WRAPPER_META_HELPER \
 	template<class PtrIn>\
-	static const bool tryGetData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped){\
+	static bool tryGetData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped){\
 		auto p = ptrTypeInfo();\
 		if (ptrType == p.first) { *(static_cast<Ptr*>(object)) = wrapped; }\
 		else if (ptrType == p.second) {	*(static_cast<ConstPtr*>(object)) = wrapped; }\
@@ -117,7 +117,7 @@ namespace utils {
 		return true;\
 	}\
 	template<class PtrIn>\
-	static const bool tryGetConstData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped){\
+	static bool tryGetConstData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped){\
 		if (ptrType == ptrTypeInfo().second){ *(static_cast<ConstPtr*>(object)) = wrapped; }\
 		else{\
 			UTILS_ASSERT((false), "Unexpected behavior unpacking const wrapper data");\
@@ -139,30 +139,30 @@ namespace utils {
 	typedef PtrPolicy::Ptr<typeT>::Type Ptr;\
 	typedef PtrPolicy::Ptr<const typeT>::Type ConstPtr;\
 	typedef clonePolicyT ClonePolicy;\
-	static const ObjectWrapper::TypeInfoPair ptrTypeInfo(){\
+	static ObjectWrapper::TypeInfoPair ptrTypeInfo(){\
 		return ObjectWrapper::TypeInfoPair(typeid(Ptr), typeid(ConstPtr));\
 	}\
-	static const bool ptrTypeSupported(const TypeInfo & ptrInfo){\
+	static bool ptrTypeSupported(const TypeInfo & ptrInfo){\
 		const auto p = ptrTypeInfo();\
 		return ptrInfo == p.first || ptrInfo == p.second;\
 	}\
-	static const bool typeSupported(const TypeInfo & type){\
+	static bool typeSupported(const TypeInfo & type){\
 		return type == typeInfo();\
 	}\
 	static void supportedTypes(ObjectWrapper::Types & types){\
 		types.push_back(typeInfo());\
 	}\
-	static const TypeInfo typeInfo(){\
+	static TypeInfo typeInfo(){\
 		return typeid(typeT);\
 	}\
 	__DEFINE_WRAPPER_META_HELPER \
 	template<class PtrIn>\
-	static const bool tryGetBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped){\
+	static bool tryGetBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped){\
 		UTILS_ASSERT((false), "Nie mozna pobierac typu bazowego dla tego ObjectWrappera - on jest baza");\
 		return false;\
 	}\
 	template<class PtrIn>\
-	static const bool tryGetConstBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped){\
+	static bool tryGetConstBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped){\
 		UTILS_ASSERT((false), "Nie mozna pobierac typu bazowego dla tego ObjectWrappera - on jest baza");\
 		return false;\
 	}\
@@ -178,17 +178,17 @@ namespace utils {
 	typedef PtrPolicy::Ptr<typeT>::Type Ptr;\
 	typedef PtrPolicy::Ptr<const typeT>::Type ConstPtr;\
 	typedef ObjectWrapperTraits<baseTypeT>::ClonePolicy ClonePolicy;\
-	static const ObjectWrapper::TypeInfoPair ptrTypeInfo(){\
+	static ObjectWrapper::TypeInfoPair ptrTypeInfo(){\
 		return ObjectWrapper::TypeInfoPair(typeid(Ptr), typeid(ConstPtr));\
 	}\
-	static const bool ptrTypeSupported(const TypeInfo & ptrInfo){\
+	static bool ptrTypeSupported(const TypeInfo & ptrInfo){\
 		const auto p = ptrTypeInfo();\
 		return ptrInfo == p.first || ptrInfo == p.second || ObjectWrapperTraits<baseTypeT>::ptrTypeSupported(ptrInfo);\
 	}\
 	static void supportedTypes(ObjectWrapper::Types & types){\
 		types.push_back(typeInfo()); ObjectWrapperTraits<baseTypeT>::supportedTypes(types);\
 	}\
-	static const bool typeSupported(const TypeInfo & type){\
+	static bool typeSupported(const TypeInfo & type){\
 		return type == typeInfo() || ObjectWrapperTraits<baseTypeT>::typeSupported(type);\
 	}\
 	static const TypeInfo typeInfo(){\
@@ -196,7 +196,7 @@ namespace utils {
 	}\
 	__DEFINE_WRAPPER_META_HELPER \
 	template<class PtrIn>\
-	static const bool tryGetBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped){\
+	static bool tryGetBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped){\
 		if (ObjectWrapperTraits<baseTypeT>::ptrTypeInfo().first == ptrType ||\
 				ObjectWrapperTraits<typeT>::ptrTypeInfo().second == ptrType){\
 			return ObjectWrapperTraits<baseTypeT>::tryGetData(object, ptrType, wrapped);\
@@ -204,7 +204,7 @@ namespace utils {
 		return ObjectWrapperTraits<baseTypeT>::tryGetBaseData(object, ptrType, wrapped);\
 	}\
 	template<class PtrIn>\
-	static const bool tryGetConstBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped){\
+	static bool tryGetConstBaseData(void * object, const TypeInfo & ptrType, const PtrIn & wrapped){\
 		if (ObjectWrapperTraits<baseTypeT>::ptrTypeInfo().second == ptrType){\
 			return ObjectWrapperTraits<baseTypeT>::tryGetConstData(object, ptrType, wrapped);\
 						}\

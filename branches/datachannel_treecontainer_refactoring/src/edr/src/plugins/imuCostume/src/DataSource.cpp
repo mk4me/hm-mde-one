@@ -28,6 +28,7 @@
 #include <QtCore/QTextStream>
 #include <plugins/c3d/C3DChannels.h>
 #include <osgutils/QuatUtils.h>
+#include <utils/Utils.h>
 
 struct PrecalculatedJointFrame
 {
@@ -37,19 +38,10 @@ struct PrecalculatedJointFrame
 	osg::Vec3d globalOrientation;
 };
 
-#define FRAME_MEMBER_EXTRACTOR_NAME(memberName) FrameMemberExtractor##memberName
-
-#define FRAME_MEMBER_EXTRACTOR(memberName) \
-struct FRAME_MEMBER_EXTRACTOR_NAME(memberName){\
-inline static const osg::Vec3d & extract(const PrecalculatedJointFrame & frame) {\
-	return frame.memberName;\
-	}\
-};
-
-FRAME_MEMBER_EXTRACTOR(localPosition);
-FRAME_MEMBER_EXTRACTOR(globalPosition);
-FRAME_MEMBER_EXTRACTOR(localOrientation);
-FRAME_MEMBER_EXTRACTOR(globalOrientation);
+MEMBER_EXTRACTOR(localPosition);
+MEMBER_EXTRACTOR(globalPosition);
+MEMBER_EXTRACTOR(localOrientation);
+MEMBER_EXTRACTOR(globalOrientation);
 
 using PrecalculatedSkeletonFrame = std::vector < PrecalculatedJointFrame > ;
 using PrecalculatedSkeletonFrames = std::vector < PrecalculatedSkeletonFrame >;
@@ -83,116 +75,6 @@ std::string bodyPlaneName(const unsigned int idx)
 	default: return QObject::tr("Unknown body plane").toStdString();
 	}
 }
-
-//TODO
-//ten mechanizm woła o pomstę do nieba!! Data Channel do refaktoryzacji!!
-template<typename Extractor>
-class PrecalculatedDataAdapter : public c3dlib::VectorChannelReaderInterface
-{
-public:
-
-	PrecalculatedDataAdapter(utils::shared_ptr<MotionDescription> motionDescription,
-		const std::string & name, const std::string & timeUnit,
-		const std::string & valueUnit, const kinematic::LinearizedSkeleton::NodeIDX jointIdx)
-		: motionDescription(motionDescription), name(name), timeUnit(timeUnit),
-		valueUnit(valueUnit), jointIdx(jointIdx)
-	{
-
-	}
-
-	virtual ~PrecalculatedDataAdapter() {}
-
-	//! \return Sklonowany kanał kanału
-	virtual PrecalculatedDataAdapter* clone() const
-	{
-		return nullptr;
-	}
-
-	//! \return Nazwa kanału
-	virtual const std::string& getName() const
-	{
-		return name;
-	}
-
-	//! \return Czas trwania kanału
-	virtual time_type getLength() const
-	{
-		return motionDescription->duration;
-	}
-
-	//! \param idx Indeks próbki
-	//! \return Wartość czasu dla danego indeksu
-	virtual time_type argument(size_type idx) const
-	{
-		return motionDescription->frameTime * idx;
-	}
-
-	//! \param idx Indeks próbki
-	//! \return Wartość próbki dla danego indeksu
-	virtual point_type_const_reference value(size_type idx) const
-	{
-		const auto & v = Extractor::extract(motionDescription->frames[idx][jointIdx]);
-
-		value_.x() = v.x();
-		value_.y() = v.y();
-		value_.z() = v.z();
-
-		return value_;
-	}
-
-	//! \return Ilość próbek w kanale
-	virtual size_type size() const
-	{
-		return motionDescription->frames.size();
-	}
-
-	//! \return Czy kanał nie zawiera danych
-	virtual bool empty() const
-	{
-		return motionDescription->frames.empty();
-	}
-
-	//! \return Czas trwania kanału
-	virtual float getSamplesPerSecond() const
-	{
-		return 1.0 / getSampleDuration();
-	}
-
-	//! \return Czas trwania jednej próbki
-	virtual float getSampleDuration() const
-	{
-		return motionDescription->frameTime;
-	}
-
-	virtual const std::string& getTimeBaseUnit() const
-	{
-		return timeUnit;
-	}
-
-	virtual float getTimeScaleFactor() const
-	{
-		return 1.0;
-	}
-
-	//! \return
-	virtual const std::string& getValueBaseUnit() const
-	{
-		return valueUnit;
-	}
-
-	virtual float getValueScaleFactor() const
-	{
-		return 1.0;
-	}
-
-private:
-	const std::string name;
-	const std::string timeUnit;
-	const std::string valueUnit;
-	mutable osg::Vec3 value_;
-	const kinematic::LinearizedSkeleton::NodeIDX jointIdx;
-	utils::shared_ptr<MotionDescription> motionDescription;
-};
 
 class JointStreamExtractor
 {
@@ -1122,6 +1004,10 @@ core::HierarchyItemPtr IMUCostumeDataSource::fillRawCostumeData(CostumeData & cD
 	//const auto & sc = cData.sensorsConfiguration;
 	auto ow = core::Variant::create<RawDataStream>();
 	ow->setMetadata("core/name", QObject::tr("Raw Data").toStdString());
+
+	static_assert((!std::is_const<typename utils::pointed_type<decltype(cData.rawDataStream)>::type>::value), "Nalezy zapisywac dane bez modyfikatora const");
+
+
 	ow->set(cData.rawDataStream);
 	cData.domainData.push_back(ow);
 
@@ -2011,6 +1897,62 @@ void IMUCostumeDataSource::uploadSession(const utils::Filesystem::Path & configu
 
 }
 
+
+//TODO
+//do wygeneralizowania
+template<typename Extractor>
+class PrecalculatedDataAdapter : public c3dlib::VectorChannelReaderInterface
+{
+public:
+
+	PrecalculatedDataAdapter(utils::shared_ptr<MotionDescription> motionDescription,
+		const kinematic::LinearizedSkeleton::NodeIDX jointIdx)
+		: motionDescription(motionDescription), jointIdx(jointIdx)
+	{
+
+	}
+
+	virtual ~PrecalculatedDataAdapter() {}
+
+	//! \param idx Indeks próbki
+	//! \return Wartość czasu dla danego indeksu
+	virtual argument_type argument(const size_type idx) const override
+	{
+		return motionDescription->frameTime * idx;
+	}
+
+	//! \param idx Indeks próbki
+	//! \return Wartość próbki dla danego indeksu
+	virtual value_type value(const size_type idx) const override
+	{
+		return Extractor::extract(motionDescription->frames[idx][jointIdx]);
+	}
+
+	//! \param idx Indeks próbki
+	//! \return Próbka dla danego indeksu
+	virtual sample_type sample(const size_type idx) const override
+	{
+		return sample_type(argument(idx), value(idx));
+	}
+
+	//! \return Ilość próbek w kanale
+	virtual size_type size() const override
+	{
+		return motionDescription->frames.size();
+	}
+
+	//! \return Czy kanał nie zawiera danych
+	virtual bool empty() const override
+	{
+		return motionDescription->frames.empty();
+	}
+
+private:
+	const kinematic::LinearizedSkeleton::NodeIDX jointIdx;
+	utils::shared_ptr<MotionDescription> motionDescription;
+};
+
+
 void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfFile,
 	const utils::Filesystem::Path & amcFile,
 	const utils::Filesystem::Path & configFile)
@@ -2116,8 +2058,10 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 
 		//local orientatrion
 		{
-			auto data = utils::make_shared<PrecalculatedDataAdapter<FRAME_MEMBER_EXTRACTOR_NAME(localOrientation)>>(precalculatedFrames,
-				joint->value().name() + "\n" + QObject::tr("Local orientation").toStdString(), QObject::tr("s").toStdString(), QObject::tr("deg").toStdString(), nidx);
+			auto data = utils::make_shared<PrecalculatedDataAdapter<MEMBER_EXTRACTOR_NAME(localOrientation)>>(precalculatedFrames, nidx);
+
+
+			//	joint->value().name() + "\n" + QObject::tr("Local orientation").toStdString(), QObject::tr("s").toStdString(), QObject::tr("deg").toStdString(), nidx);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Local orientation"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), QString::fromStdString(bodyPlaneName(0)), QString::fromStdString(bodyPlaneName(1)), QString::fromStdString(bodyPlaneName(2))));
@@ -2127,8 +2071,9 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 
 		//global orientation
 		{			
-			auto data = utils::make_shared<PrecalculatedDataAdapter<FRAME_MEMBER_EXTRACTOR_NAME(globalOrientation)>>(precalculatedFrames,
-				joint->value().name() + "\n" + QObject::tr("Global orientation").toStdString(), QObject::tr("s").toStdString(), QObject::tr("deg").toStdString(), nidx);
+			auto data = utils::make_shared<PrecalculatedDataAdapter<MEMBER_EXTRACTOR_NAME(globalOrientation)>>(precalculatedFrames, nidx);
+			
+			//joint->value().name() + "\n" + QObject::tr("Global orientation").toStdString(), QObject::tr("s").toStdString(), QObject::tr("deg").toStdString(), nidx);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Global orientation"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
@@ -2138,24 +2083,25 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 		const auto cFT = precalculatedFrames->frameTime;
 		const auto sPS = 1.0 / cFT;
 	
-		utils::shared_ptr<c3dlib::VectorChannel> av;
+		utils::shared_ptr<c3dlib::VectorChannelReaderInterface> av;
 		//angular velocity
 		{
-			auto data = utils::make_shared<c3dlib::VectorChannel>(sPS);
-			data->setName(joint->value().name() + "\n" + QObject::tr("Angular velocity").toStdString());
-			data->setTimeBaseUnit(QObject::tr("s").toStdString());
-			data->setValueBaseUnit(QObject::tr("deg").toStdString());
+			//auto data = utils::make_shared<c3dlib::VectorChannel>(sPS);
+			std::vector<c3dlib::VectorChannelReaderInterface::value_type> data;
+			//data->setName(joint->value().name() + "\n" + QObject::tr("Angular velocity").toStdString());
+			//data->setTimeBaseUnit(QObject::tr("s").toStdString());
+			//data->setValueBaseUnit(QObject::tr("deg").toStdString());
 			
 			//zasilamy danymi			
-			data->addPoint(osg::Vec3());			
+			data.push_back(c3dlib::VectorChannelReaderInterface::value_type());
 			for (std::size_t idx = 1; idx < precalculatedFrames->frames.size(); ++idx)
 			{
 				auto diff = GeneralDiffPolicy::diff(kinematicUtils::convertXYZ(kinematicUtils::toRadians(precalculatedFrames->frames[idx - 1][nidx].localOrientation)),
 					kinematicUtils::convertXYZ(kinematicUtils::toRadians(precalculatedFrames->frames[idx][nidx].localOrientation)), cFT);
-				data->addPoint(kinematicUtils::toDegrees(kinematicUtils::convertXYZ(diff)));
+				data.push_back(kinematicUtils::toDegrees(kinematicUtils::convertXYZ(diff)));
 			}
 
-			PLUGIN_LOG_DEBUG("angular velocity.size = " << data->size());
+			PLUGIN_LOG_DEBUG("angular velocity.size = " << data.size());
 						
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Angular velocity"), "", utils::make_shared<NewVector3ItemHelper>(ow,
@@ -2190,8 +2136,8 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 
 		//local position
 		{
-			auto data = utils::make_shared<PrecalculatedDataAdapter<FRAME_MEMBER_EXTRACTOR_NAME(localPosition)>>(precalculatedFrames,
-				joint->value().name() + "\n" + QObject::tr("Local position").toStdString(), QObject::tr("s").toStdString(), "", nidx);
+			auto data = utils::make_shared<PrecalculatedDataAdapter<MEMBER_EXTRACTOR_NAME(localPosition)>>(precalculatedFrames, nidx);
+				//joint->value().name() + "\n" + QObject::tr("Local position").toStdString(), QObject::tr("s").toStdString(), "", nidx);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Local position"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
@@ -2200,8 +2146,8 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 
 		//global position
 		{
-			auto data = utils::make_shared<PrecalculatedDataAdapter<FRAME_MEMBER_EXTRACTOR_NAME(globalPosition)>>(precalculatedFrames,
-				joint->value().name() + "\n" + QObject::tr("Global position").toStdString(), QObject::tr("s").toStdString(), "", nidx);
+			auto data = utils::make_shared<PrecalculatedDataAdapter<MEMBER_EXTRACTOR_NAME(globalPosition)>>(precalculatedFrames, nidx);
+				//joint->value().name() + "\n" + QObject::tr("Global position").toStdString(), QObject::tr("s").toStdString(), "", nidx);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Global position"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));

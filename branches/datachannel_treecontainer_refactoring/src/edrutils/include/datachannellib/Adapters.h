@@ -8,10 +8,8 @@
 #ifndef __HEADER_GUARD_DATACHANNEL__ADAPTER_H__
 #define __HEADER_GUARD_DATACHANNEL__ADAPTER_H__
 
-#include <limits>
-#include <functional>
-#include <utils/ValueCarrier.h>
 #include <datachannellib/Accessors.h>
+#include <datachannellib/SafeAccessorWrapper.h>
 #include <datachannellib/UniformArgumentsFeature.h>
 #include <datachannellib/BoundedArgumentsFeature.h>
 #include <datachannellib/BoundedValuesFeature.h>
@@ -26,52 +24,23 @@ namespace dataaccessor
 	//! Klasa realizuj¹ca generator argumentów
 	class UniformArgumentsGenerator
 	{
-	private:
-
-		using Func = const ArgumentType&(*)(const ArgumentType &, const ArgumentType &);
-
-		static inline std::size_t init(const ArgumentType step,
-			const ArgumentType start, const ArgumentType end)
-		{
-			if ((step == ArgumentType(0)) || (start == end) ||
-				((start < end) && (step < ArgumentType(0))) ||
-				((start > end) && (step > ArgumentType(0)))) {
-				throw std::runtime_error("Wrong generator setup");
-			}
-
-			auto s = std::abs((end - start) / step);
-
-			if (s == 0) {
-				throw std::runtime_error("Empty generator");
-			}
-
-			std::size_t size = s;
-
-			if (size < s * step) {
-				size += ArgumentType(1);
-			}
-
-			return size;
-		}
-
 	public:
 		//! \param step Krok z jakim generujemy argumenty
 		//! \param start Wartoœc argumentu od którego zaczynamy
-		//! \param ned Wartoœc argumentu na której koñczymy!!
+		//! \param end Wartoœc argumentu na której koñczymy!!
 		UniformArgumentsGenerator(const ArgumentType step,
-			const ArgumentType start = ArgumentType(0),
-			const ArgumentType end = std::numeric_limits<ArgumentType>::max())
-			: start_(start), end_(end), step_(step),
-			size_(init(step, start, end)),
-			limit((step > ArgumentType(0)) ? static_cast<Func>(std::min<ArgumentType>) : static_cast<Func>(std::max<ArgumentType>))
+			const std::size_t size,
+			const ArgumentType start = ArgumentType(0))
+			: start_(start), step_(step),
+			size_(size)
 		{
 			
 		}
 
 		//! \param Other Kopiowany generator
 		UniformArgumentsGenerator(const UniformArgumentsGenerator & Other)
-			: start_(Other.start_), end_(Other.end_), size_(Other.size_),
-			step_(Other.step_), feature(Other.feature), limit(Other.limit)
+			: start_(Other.start_), size_(Other.size_),
+			step_(Other.step_), feature(Other.feature)
 		{
 
 		}
@@ -80,21 +49,21 @@ namespace dataaccessor
 		template<typename T>
 		//! \param Other Kopiowany generator
 		UniformArgumentsGenerator(const UniformArgumentsGenerator<T> & Other)
-			: start_(Other.start_), end_(Other.end_), size_(Other.size_),
-			step_(Other.step_), feature(Other.feature), limit(Other.limit)
+			: start_(Other.start_), size_(Other.size_),
+			step_(Other.step_)
 		{
-
+			if (Other.feature != nullptr) {
+				feature = utils::make_shared<UniformArgumentsFeature<ArgumentType>>(Other.feature->argumentsInterval());
+			}
 		}
 
 		//! \param Przenoszony generator
 		UniformArgumentsGenerator(UniformArgumentsGenerator && Other)
-			: start_(Other.start_), end_(Other.end_), size_(Other.size_),
-			step_(Other.step_), feature(std::move(Other.feature)),
-			limit(Other.limit)
+			: start_(Other.start_), size_(Other.size_),
+			step_(Other.step_), feature(std::move(Other.feature))
 		{
-			Other.start_ = Other.end_ = Other.step_ = ArgumentType();
+			Other.start_ = Other.step_ = ArgumentType();
 			Other.size_ = 0;
-			Other.limit = nullptr;
 		}
 
 		//! Destruktor
@@ -107,7 +76,7 @@ namespace dataaccessor
 				throw std::range_error("Generator range exceeded");
 			}
 
-			return limit(start_ + idx * step_, end_);
+			return start_ + idx * step_;
 		}
 
 		//! \return Iloœc próbek do wygenerowania
@@ -119,7 +88,7 @@ namespace dataaccessor
 		//! \return Iloœc próbek do wygenerowania
 		inline ArgumentType end() const
 		{
-			return end_;
+			return start_ + size_ * step_;
 		}
 
 		//! \return Iloœc próbek do wygenerowania
@@ -144,7 +113,7 @@ namespace dataaccessor
 					feature = utils::make_shared<UniformArgumentsFeature<ArgumentType>>(step_);
 				}
 
-				accessor->attachFeature(feature);
+				accessor->attachFeature(utils::make_shared<UniformArgumentsFeature<ArgumentType>>(step_););
 			}
 		}
 
@@ -153,14 +122,10 @@ namespace dataaccessor
 		utils::shared_ptr<UniformArgumentsFeature<ArgumentType>> feature;
 		//! Wartoœæ pocz¹tkowa argumentu
 		const ArgumentType start_;
-		//! Wartoœæ koñcowa argumentu
-		const ArgumentType end_;
 		//! Krok argumentów
 		const ArgumentType step_;		
 		//! Iloœæ próbek
 		const std::size_t size_;
-		//! Funkcja gwarantuj¹ca nieprzekraczalnoœæ zakresów start-end
-		const ArgumentType& (*limit)(const ArgumentType &, const ArgumentType &);
 	};
 	
 	//! Klasa pomocnicza przy znajdowaniu argumentów otaczaj¹cych dany argument w dyskretnym kanale
@@ -237,35 +202,14 @@ namespace dataaccessor
 		}
 	};
 
-	template<typename Accessor, typename Impl>
-	class SafeAccessorAdapter : public Impl, private utils::ValueCarrier<Accessor>
-	{
-	public:
-		template<typename U, class... Args>
-		SafeAccessorAdapter(const U & accessor,	Args&&... arguments)
-			: utils::ValueCarrier<Accessor>(accessor),
-			Impl(utils::ValueCarrier<Accessor>::ref(), std::move(arguments)...)
-		{
-		}
-
-		template<typename U, class... Args>
-		SafeAccessorAdapter(const U & accessor, Args... arguments)
-			: utils::ValueCarrier<Accessor>(accessor),
-			Impl(utils::ValueCarrier<Accessor>::ref(), std::forward<Args>(arguments)...)
-		{
-		}		
-
-		//! Destruktor wirtualny
-		virtual ~SafeAccessorAdapter() {}
-	};
-
 	//! \tparam ValueType Typ wartoœci kana³u
 	//! \tparam ArgumentType Typ argumentów kana³u
 	//! \tparam ArgumentsGenerator Generator argumentów dla kolejnych indeksów
 	template<typename ValueType, typename ArgumentType,
 		typename ArgumentsGenerator = UniformArgumentsGenerator<ArgumentType>>
 	//! Klasa realizuje dyskretny dostêp do ci¹g³ego kana³u danych opisuj¹cego funkcjê
-	class FunctionDiscreteAccessorAdapter : public IOptimizedDiscreteAccessorT<ValueType, ArgumentType>
+	class FunctionDiscreteAccessorAdapter : public IOptimizedDiscreteAccessorT<ValueType, ArgumentType>,
+		private ArgumentsGenerator
 	{
 	public:
 
@@ -273,7 +217,7 @@ namespace dataaccessor
 		//! \param argumentsGenerator Generator argumentów
 		FunctionDiscreteAccessorAdapter(const IFunctionAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentsGenerator & argumentsGenerator = ArgumentsGenerator())
-			: accessor(accessor), argumentsGenerator(argumentsGenerator)
+			: ArgumentsGenerator(argumentsGenerator), accessor(accessor)
 		{
 
 		}
@@ -282,7 +226,7 @@ namespace dataaccessor
 		//! \param argumentsGenerator Generator argumentów
 		FunctionDiscreteAccessorAdapter(const IFunctionAccessorT<ValueType, ArgumentType> & accessor,
 			ArgumentsGenerator && argumentsGenerator)
-			: accessor(accessor), argumentsGenerator(std::move(argumentsGenerator))
+			: ArgumentsGenerator(std::move(argumentsGenerator)), accessor(accessor)
 		{
 
 		}
@@ -294,17 +238,15 @@ namespace dataaccessor
 		//! \return Próbka dla danego indeksu
 		virtual sample_type sample(const size_type idx) const override
 		{			
-			return accessor.sample(argumentsGenerator.argument(idx));
+			return accessor.sample(ArgumentsGenerator::argument(idx));
 		}
 
 		//! \return Iloœæ próbek w kanale
-		virtual size_type size() const override { return argumentsGenerator.size(); }
+		virtual size_type size() const override { return ArgumentsGenerator::size(); }
 
 	private:
 		//! Kana³ ci¹g³y
 		const IFunctionAccessorT<ValueType, ArgumentType> & accessor;
-		//! Generator argumentów
-		ArgumentsGenerator argumentsGenerator;
 	};
 
 	//! \tparam ValueType Typ wartoœci kana³u
@@ -313,10 +255,11 @@ namespace dataaccessor
 	template<typename ValueType, typename ArgumentType,
 		typename ArgumentsGenerator = UniformArgumentsGenerator < ArgumentType >>
 		//! Klasa realizuje dyskretny dostêp do ci¹g³ego kana³u danych opisuj¹cego funkcjê
-		using SafeFunctionDiscreteAccessorAdapter = SafeAccessorAdapter < IFunctionAccessorT<ValueType, ArgumentType>,
+		using SafeFunctionDiscreteAccessorAdapter = SafeAccessorWrapper < IFunctionAccessorT<ValueType, ArgumentType>,
 		FunctionDiscreteAccessorAdapter < ValueType, ArgumentType, ArgumentsGenerator >> ;
 
-	//! \tparam ChannelType Typ kana³u do zmiany reprezentacji dostêpu do danych
+	//! \tparam ValueType Typ wartoœci kana³u
+	//! \tparam ArgumentType Typ argumentów kana³u
 	//! \tparam Interpolator Obiekt realizuj¹cy interpolacjê pomiêdzy próbkami kana³u
 	//! \tparam Extrapolator Obiekt realizuj¹cy politykê zapytañ o argumenty spoza zakresu kana³u
 	template<typename ValueType, typename ArgumentType,
@@ -409,11 +352,12 @@ namespace dataaccessor
 		typename Interpolator = LerpInterpolator,
 		typename Extrapolator = BorderExtrapolator < ValueType >>
 		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
-		using SafeDiscreteFunctionAccessorAdapter = SafeAccessorAdapter < IDiscreteAccessorT<ValueType, ArgumentType>,
+		using SafeDiscreteFunctionAccessorAdapter = SafeAccessorWrapper < IDiscreteAccessorT<ValueType, ArgumentType>,
 		DiscreteFunctionAccessorAdapter < ValueType, ArgumentType, Interpolator, Extrapolator >> ;
 
 	//! \tparam ValueType Typ wartoœci kana³u
 	//! \tparam ArgumentType Typ argumentów kana³u
+	//! \tparam Extrapolator Obiekt realizuj¹cy politykê zapytañ o argumenty spoza zakresu kana³u
 	template<typename ValueType, typename ArgumentType,
 		typename Extrapolator = ExceptionExtrapolator>
 	//! Wrapper dla dyskretnych akcesorów, zawê¿aj¹cy ich zakres
@@ -545,11 +489,12 @@ namespace dataaccessor
 	template<typename ValueType, typename ArgumentType,
 		typename Extrapolator = ExceptionExtrapolator>
 		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
-		using SafeDiscreteSubAccessorAdapter = SafeAccessorAdapter < IDiscreteAccessorT<ValueType, ArgumentType>,
+		using SafeDiscreteSubAccessorAdapter = SafeAccessorWrapper < IDiscreteAccessorT<ValueType, ArgumentType>,
 		DiscreteSubAccessorAdapter < ValueType, ArgumentType, Extrapolator >> ;
 
 	//! \tparam ValueType Typ wartoœci kana³u
 	//! \tparam ArgumentType Typ argumentów kana³u
+	//! \tparam Extrapolator Obiekt realizuj¹cy politykê zapytañ o argumenty spoza zakresu kana³u
 	template<typename ValueType, typename ArgumentType,
 	typename Extrapolator = ExceptionExtrapolator>
 	//! Wrapper dla ci¹g³ych akcesorów, zawê¿aj¹cy ich zakres
@@ -649,13 +594,13 @@ namespace dataaccessor
 		const ArgumentType end;
 	};
 
-	//! \tparam ChannelType Typ kana³u do zmiany reprezentacji dostêpu do danych
-	//! \tparam Interpolator Obiekt realizuj¹cy interpolacjê pomiêdzy próbkami kana³u
+	//! \tparam ValueType Typ wartoœci
+	//! \tparam ArgumentType Typ argumentów	
 	//! \tparam Extrapolator Obiekt realizuj¹cy politykê zapytañ o argumenty spoza zakresu kana³u
 	template<typename ValueType, typename ArgumentType,
 		typename Extrapolator = ExceptionExtrapolator>
 		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
-		using SafeFunctionSubAccessorAdapter = SafeAccessorAdapter < IFunctionAccessorT<ValueType, ArgumentType>,
+		using SafeFunctionSubAccessorAdapter = SafeAccessorWrapper < IFunctionAccessorT<ValueType, ArgumentType>,
 		FunctionSubAccessorAdapter < ValueType, ArgumentType, Extrapolator >> ;
 
 	//! Struktura pomocnicza realizuj¹ca przeŸroczystoœæ argumentów
@@ -751,7 +696,7 @@ namespace dataaccessor
 		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), 0))>::type,
 		typename DestArgumentType = std::decay<decltype(std::declval<ArgumentExtractor>().extract(std::declval<BaseArgumentType>(), 0))>::type>
 		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
-		using SafeDiscreteAccessorAdapter = SafeAccessorAdapter < IDiscreteAccessorT<DestValueType, DestArgumentType>,
+		using SafeDiscreteAccessorAdapter = SafeAccessorWrapper < IDiscreteAccessorT<DestValueType, DestArgumentType>,
 		DiscreteAccessorAdapter < BaseValueType, BaseArgumentType, ValueExtractor, ArgumentExtractor, DestValueType, DestArgumentType >> ;
 
 	//! \tparam ValueType Typ wartoœci kana³u
@@ -800,7 +745,7 @@ namespace dataaccessor
 		typename ValueExtractor,
 		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), 0))>::type>
 		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
-		using SafeFunctionAccessorAdapter = SafeAccessorAdapter < IFunctionAccessorT<BaseValueType, BaseArgumentType>,
+		using SafeFunctionAccessorAdapter = SafeAccessorWrapper < IFunctionAccessorT<BaseValueType, BaseArgumentType>,
 		FunctionAccessorAdapter < BaseValueType, BaseArgumentType, ValueExtractor, DestValueType>> ;
 
 	//! \tparam Idx Indeks jaki chcemy wyci¹gn¹æ
@@ -811,6 +756,7 @@ namespace dataaccessor
 		//! \tparam T Typ wektora którego elementy wyci¹gamy
 		template<typename T>
 		//! \param value Rozpakowywana wartoœæ wektora
+		//! \param ... Na potrzeby innych klas
 		//! \return Element wektora
 		static inline auto extract(const T & value, ...) -> decltype(value[Idx])
 		{
@@ -836,7 +782,7 @@ namespace dataaccessor
 			return value[idx];
 		}
 
-	private:
+	protected:
 		//! Wyci¹gany indeks
 		const std::size_t idx;
 	};

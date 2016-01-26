@@ -9,6 +9,7 @@ CONFIG_OPTION(UTILS_ENABLE_PRIVATE_TESTS "Enable private class members testing?"
 
 SET_PUBLIC_HEADERS(
 	array_traits.h
+	container_traits.h
 	Clamping.h
 	DummyWrap.h
 	pointer_traits.h

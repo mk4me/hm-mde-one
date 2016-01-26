@@ -43,6 +43,7 @@ namespace utils
 	//! \tparam T Badany typ
 	//! \tparam Specjalizacja dla zwyk≥ych wksaünikÛw
 	template<typename T, typename std::enable_if<std::is_pointer<T>::value || is_like_smart_pointer<T>::value>::type * = 0>
+	//! Klasa pomocnicza przy wyciπganiu typÛw wskazywanych przez wskaxniki  i inteligÍtne wskaüniki
 	struct pointed_type_helper
 	{
 		//! Typ wskazywany przez wskaünik
@@ -51,7 +52,17 @@ namespace utils
 
 	//! \tparam T Badany typ wskaünika
 	template<typename T>
+	//! Klasa pomocnicza przy wyciπganiu ca≥ych typÛw wksazywanych przez wskaüniki
 	struct pointed_type
+	{
+		//! Typ wskazywany przez wskaünik lub wrapowany pod wskaünikiem
+		using type = typename pointed_type_helper<T>::type;
+	};
+
+	//! \tparam T Badany typ wskaünika
+	template<typename T>
+	//! Klasa pomocnicza przy wyciπganiu "czystych" typÛw wksazywanych przez wskaüniki
+	struct clean_pointed_type
 	{
 		//! Typ wskazywany przez wskaünik lub wrapowany pod wskaünikiem
 		using type = typename remove_toplevel<typename pointed_type_helper<T>::type>::type;

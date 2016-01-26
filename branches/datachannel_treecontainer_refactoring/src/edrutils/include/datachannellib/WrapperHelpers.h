@@ -8,156 +8,21 @@
 #ifndef __HEADER_GUARD_DATACHANNEL__WRAPPERHELPERS_H__
 #define __HEADER_GUARD_DATACHANNEL__WRAPPERHELPERS_H__
 
+#include <datachannellib/SafeAccessorWrapper.h>
 #include <datachannellib/FunctionFeature.h>
 #include <iterator>
-#include <type_traits>
 #include <utils/function_traits.h>
+#include <utils/container_traits.h>
 
 namespace dataaccessor
 {
-	//! \tparam C Typ kontenera, który weryfikujemy
-	template<typename C>
-	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
-	struct empty_member_check_impl
-	{
-		//! Weryfikacja operatora [] w wersji const
-		template<typename U> static auto check(const U * u) -> decltype(u->empty());
-		//! Fallback
-		template<typename U> static auto check(...) -> std::false_type;
-		//! Informacja o operatorze
-		using type = typename std::is_same<bool, decltype(check(0))>::type;		
-	};
-	//! \tparam C Typ kontenera, który weryfikujemy
-	template<typename C>
-	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
-	struct empty_member_check : public empty_member_check_impl<C>::type {};
-
-	//! \tparam C Typ kontenera, który weryfikujemy
-	template<typename C>
-	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
-	struct size_member_check_impl
-	{
-		//! Weryfikacja operatora [] w wersji const
-		template<typename U> static auto check(const U * u) -> decltype(u->size());
-		//! Fallback
-		template<typename U> static auto check(...) -> std::false_type;
-		//! Informacja o operatorze
-		using type = typename std::is_integral<decltype(check(0))>::type;
-	};
-
-	//! \tparam C Typ kontenera, który weryfikujemy
-	template<typename C>
-	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
-	struct size_member_check : public size_member_check_impl<C>::type {};
-
-	//! Extractor pustoœci kontenera
-	struct ContainersEmptinessExtractor
-	{
-	private:
-
-		//! \tparam C Typ kontenera
-		template<typename C>
-		//! \param C kontener który testujemy pod katem pustoœci
-		//! \return Czy kontener jest pusty
-		static inline bool empty_impl(const C & c, std::true_type)
-		{
-			return c.empty();
-		}
-
-		//! \tparam C Typ kontenera
-		template<typename C>
-		//! \param C kontener który testujemy pod katem pustoœci
-		//! \return Czy kontener jest pusty
-		static inline bool empty_impl(const C & c, std::false_type)
-		{
-			return c.size() == 0;
-		}
-
-	public:
-		//! \tparam C Typ kontenera
-		template<typename C, typename std::enable_if<std::is_class<C>::value>::type * = 0>
-		//! \param C kontener który testujemy pod katem pustoœci
-		//! \return Czy kontener jest pusty
-		static inline bool empty(const C & c)
-		{
-			static_assert(empty_member_check<C>::valid || size_member_check<C>::valid, "Object must have at least valid empty or size function members");
-			return empty_impl(c, empty_member_check<C>::type());
-		}
-
-		//! \tparam T Typ elementu tablicy
-		//! \tparam N Rozmiar tablicy
-		template<typename T, std::size_t N>
-		//! \param dummy
-		//! \return Czy kontener jest pusty
-		static inline bool empty(const T(&)[N])
-		{
-			//TODO
-			//czy tutaj zawsze false nie moze leciec?
-			return N == 0;
-		}
-	};
-
-	//! Extractor rozmiaru kontenera
-	struct ContainersSizeExtractor
-	{
-		//! \tparam C Typ kontenera
-		template<typename C>
-		//! \param C Kontener dla którego pobieramy iloœæ elementów
-		//! \return Rozmiar kontenera
-		static inline auto size(const C & c) -> decltype(c.size())
-		{
-			static_assert(std::is_integral<decltype(std::declval<C>().size())>::value, "Value return by size must be integral type");
-			return c.size();
-		}
-
-		//! \tparam T Typ elementu tablicy
-		//! \tparam N Rozmiar tablicy
-		template<typename T, std::size_t N>
-		//! \param dummy
-		//! \return Rozmiar kontenera
-		static inline std::size_t size(const T(&)[N])
-		{
-			return N;
-		}
-	};
-
-	//! \tparam A Typ tablicowy, który weryfikujemy
-	template<typename A>
-	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
-	struct array_check_impl
-	{
-		//! Weryfikacja operatora [] w wersji const
-		template<typename U> static auto check(const U * u) -> decltype(u->operator[](0));
-		//! Fallback
-		template<typename U> static void check(...);
-
-		using type = typename std::integral_constant<bool, !std::is_void<decltype(check<A>(0))>::value>::type;	
-	};
-
-	//! \tparam A Typ tablicowy, który weryfikujemy
-	template<typename A>
-	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
-	struct array_check : public array_check_impl<A>::type {};
-
-	//! \tparam A Typ tablicy ajki weryfikujemy
-	template<typename A>
-	//! W³aœciwy trait przepuszczaj¹cy typy z mo¿liwoœci¹ indeksowania operatorem []
-	struct is_array : public std::integral_constant<bool, std::is_array<A>::value || array_check<A>::value> {};
-
-	//! Taka czêœciowa specjalizacja pozwala nam unikn¹æ odwo³añ do function_traits dla typów nie reprezentuj¹cych funkcje/funktory
-	template<typename Func, bool = std::is_functor<Func>::value>
-	struct is_one_argument_functor : public std::integral_constant<bool, std::function_traits<Func>::arity == 1> {};
-
-	template<typename Func>
-	struct is_one_argument_functor<Func, false> : public std::false_type{};
-
 	//! Taka czêsciowa specjalizacja dzia³a jak enable_if, daj¹c nam potrzebne typy,
 	//! lub brak ich definicji - SFINAE i eliminacja niepasuj¹cych sygnatur wrpaerów
-	template<typename Func, bool = is_one_argument_functor<Func>::value>
+	template<typename Func, bool = std::is_one_argument_functor<Func>::value>
 	struct FuncRet
 	{
 		using R = typename std::function_traits<Func>::return_type;
-		using Arg = typename std::function_traits<Func>:: template argument<0>::type;		
+		using Arg = typename std::function_traits<Func>:: template argument<0>::type;
 		using type = FunctionAccessorPtr<R, Arg>;
 	};
 
@@ -167,33 +32,6 @@ namespace dataaccessor
 	//! Extractor wartoœci kontenera
 	struct ContainerValueExtractor
 	{
-	private:		
-
-		//! \tparam C Typ kontenera
-		template<typename C>
-		//! \param C Kontener dla którego pobieramy element
-		//! \param idx Indeks elementu który chcemy pobraæ z kontenera
-		//! \param dummy Przeci¹¿enie dla kontenerów bez operatora [] - realizacja po interatorach
-		//! \return Element kontenera o podanym indeksie
-		static inline auto value_impl(const C & c, const std::size_t idx, std::false_type) -> decltype(*(c.begin()))
-		{
-			static_assert(sizeof(std::iterator_traits<decltype(c.begin())>::value_type) >= 0, "Object begin member should provide valid iterator with full trait specialization");
-			auto it = c.begin();
-			std::advance(it, idx);
-			return *it;
-		}
-
-		//! \tparam C Typ kontenera
-		template<typename C>
-		//! \param C Kontener dla którego pobieramy element
-		//! \param idx Indeks elementu który chcemy pobraæ z kontenera
-		//! \param dummy Przeci¹¿enie dla kontenerów/typów z operatorem []
-		//! \return Element kontenera o podanym indeksie
-		static inline auto value_impl(const C & c, const std::size_t idx, std::true_type) -> decltype((c[idx]))
-		{			
-			return c[idx];
-		}
-
 	public:
 
 		//! \tparam C Typ kontenera
@@ -201,10 +39,10 @@ namespace dataaccessor
 		//! \param C Kontener dla któego pobieramy element
 		//! \param idx Indeks elementu który chcemy pobraæ z kontenera
 		//! \return Element kontenera o podanym indeksie
-		static inline auto value(const C & c, const std::size_t idx) -> decltype((value_impl(c, idx, is_array<C>::type())))
+		static inline auto value(const C & c, const std::size_t idx) -> decltype(utils::ContainerElementExtractor::extract(c, idx))
 		{
-			return value_impl(c, idx, is_array<C>::type());
-		}	
+			return utils::ContainerElementExtractor::extract(c, idx);
+		}
 	};
 
 	//! Struktura pomocnicza przy wyci¹ganiu argumentu z pary
@@ -243,7 +81,7 @@ namespace dataaccessor
 		//! \param container Kontener z którego pobieramy próbkê
 		//! \param idx Numer próbki któr¹ chcemy pobraæ
 		//! \return Próbka o zadanym indeksie
-		static inline auto sample(const C & container, const std::size_t idx) -> decltype((ContainerValueExtractor::value(container, idx)))
+		static inline auto sample(const C & container, const std::size_t idx) -> decltype(ContainerValueExtractor::value(container, idx))
 		{			
 			return ContainerValueExtractor::value(container, idx);
 		}
@@ -264,7 +102,7 @@ namespace dataaccessor
 		//! \tparam C Typ kontenera
 		template<typename C>
 		//! Typ wartoœci w kontenerze - z nich wyci¹gamy argumenty i wartoœci
-		using CValue = decltype((std::declval<CValueExtractor>().value(std::declval<C>(), 0)));
+		using CValue = decltype(std::declval<CValueExtractor>().value(std::declval<C>(), 0));
 
 		//! \tparam C Typ kontenera
 		template<typename C>
@@ -273,9 +111,6 @@ namespace dataaccessor
 			typedef typename IAccessorT<typename std::decay<decltype(std::declval<SValueExtractor>().value(std::declval<CValue<C>>()))>::type,
 				typename std::decay<decltype(std::declval<SArgumentExtractor>().value(std::declval<CValue<C>>()))>::type>::sample_type type;
 		};
-		//! Typ próbki akcesora - wynika z wartoœci zwracanych przez ekstraktory wartoœci i argumentów dla próbek kontenera
-		//using Sample = typename IAccessor<typename std::decay<decltype(std::declval<SValueExtractor>().value(std::declval<CValue<C>>()))>::type,
-		//	typename std::decay<decltype(std::declval<SArgumentExtractor>().value(std::declval<CValue<C>>()))>::type>::sample_type;
 
 	public:
 
@@ -316,7 +151,7 @@ namespace dataaccessor
 		}
 
 		//! Destruktor
-		~ContainerSampleExtractor() {}
+		virtual ~ContainerSampleExtractor() {}
 
 		//! \tparam C Typ kontenera
 		template<typename C>
@@ -325,7 +160,7 @@ namespace dataaccessor
 		//! \return Próbka accessora któr¹ wypakowaliœmy z kontenera
 		inline typename Sample<C>::type sample(const C & container, const std::size_t idx) const
 		{
-			using RCVal = decltype((CValueExtractor::value(container, idx)));
+			using RCVal = decltype(CValueExtractor::value(container, idx));
 			RCVal cval = CValueExtractor::value(container, idx);
 			return typename Sample<C>::type(SArgumentExtractor::value(cval), SValueExtractor::value(cval));
 		}	
@@ -378,6 +213,81 @@ namespace dataaccessor
 	private:
 		//! Kontener z danymi
 		const Container & container;		
+		//! Rozmiar kontenrea
+		const std::size_t size_;
+		//! Czy kontener jest pusty
+		const bool empty_;
+	};
+
+	//! \tparam Container Typ kontenera
+	//! \tparam SampleExtractor Typ ekstraktora próbek akcesora	
+	template<typename Container,
+		typename ArgumentsGenerator,
+		typename ValueExtractor = ContainerValueExtractor>
+		//! Implementacja dyskrentego akseora dla kontenerów danych
+	class ContainerDiscreteGeneratedAccessor : public IIndependentDiscreteAccessorT<
+		typename std::decay<decltype(std::declval<ValueExtractor>().value(std::declval<Container>(), 0))>::type,
+		typename std::decay<decltype(std::declval<ArgumentsGenerator>().argument(0))>::type>,
+		private ArgumentsGenerator, private ValueExtractor
+	{
+	public:
+
+		ContainerDiscreteGeneratedAccessor(const Container & container, const std::size_t size,
+			const ArgumentsGenerator & argumentsGenerator = ArgumentsGenerator(),
+			const ValueExtractor & valuesExtractor = ValueExtractor())
+			: ArgumentsGenerator(argumentsGenerator), ValueExtractor(valuesExtractor),
+				container(container), size_(size), empty_(size == 0)
+		{
+
+		}
+
+		ContainerDiscreteGeneratedAccessor(const Container & container, const std::size_t size,
+			ArgumentsGenerator && argumentsGenerator,
+			const ValueExtractor & valuesExtractor = ValueExtractor())
+			: ArgumentsGenerator(std::move(argumentsGenerator)), ValueExtractor(valuesExtractor),
+			container(container), size_(size), empty_(size == 0)
+		{
+
+		}
+
+		ContainerDiscreteGeneratedAccessor(const Container & container, const std::size_t size,
+			const ArgumentsGenerator & argumentsGenerator,
+			ValueExtractor && valuesExtractor)
+			: ArgumentsGenerator(argumentsGenerator), ValueExtractor(std::move(valuesExtractor)),
+			container(container), size_(size), empty_(size == 0)
+		{
+
+		}
+
+		ContainerDiscreteGeneratedAccessor(const Container & container, const std::size_t size,
+			ArgumentsGenerator && argumentsGenerator,
+			ValueExtractor && valuesExtractor)
+			: ArgumentsGenerator(std::move(argumentsGenerator)), ValueExtractor(std::move(valuesExtractor)),
+			container(container), size_(size), empty_(size == 0)
+		{
+
+		}
+
+		//! Destruktor wirtualny
+		virtual ~ContainerDiscreteGeneratedAccessor() {}
+
+		//! \param idx Indeks próbki
+		//! \return Argument dla danego indeksu
+		virtual argument_type argument(const size_type idx) const override { return ArgumentsGenerator::argument(idx); }
+
+		//! \param idx Indeks próbki
+		//! \return Wartoœæ dla danego indeksu
+		virtual value_type value(const size_type idx) const override { return ValueExtractor::value(container, idx); }
+
+		//! \return Iloœæ próbek w kanale
+		virtual size_type size() const override { return size_; }
+
+		//! \return Czy kana³ nie zawiera danych
+		virtual bool empty() const override { return empty_; }
+
+	private:
+		//! Kontener z danymi
+		const Container & container;
 		//! Rozmiar kontenrea
 		const std::size_t size_;
 		//! Czy kontener jest pusty

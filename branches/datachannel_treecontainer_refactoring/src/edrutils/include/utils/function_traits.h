@@ -390,6 +390,13 @@ namespace std
 		(std::is_pointer<F>::value && std::is_function<typename std::remove_pointer<F>::type>::value) ||
 			std::is_member_function_pointer<F>::value || std::is_functor<F>::value, "Function traits only applicable to functions/functors/function pointers");
 	};
+
+	//! Taka czêœciowa specjalizacja pozwala nam unikn¹æ odwo³añ do function_traits dla typów nie reprezentuj¹cych funkcje/funktory
+	template<typename Func, bool = std::is_functor<Func>::value>
+	struct is_one_argument_functor : public std::integral_constant<bool, std::function_traits<Func>::arity == 1> {};
+
+	template<typename Func>
+	struct is_one_argument_functor<Func, false> : public std::false_type {};
 }
 
 #endif	// __HEADER_GUARD_UTILS__FUNCTION_TRAITS_H__

@@ -31,24 +31,24 @@ namespace dataaccessor
 		//! \tparam U Typ badany pod k¹tem opisu argumentów
 		template<typename U>
 		//! \return Prawda jeœli uda siê dopasowaæ
-		static auto test_argument(typename U::argument_type* p) -> std::true_type;
+		static auto test_argument_type(typename U::argument_type* p) -> std::true_type;
 		//! \tparam U Typ badany pod k¹tem opisu argumentów
 		template<typename U>
 		//! \return Fa³sz jeœli uda siê dopasowaæ
-		static auto test_argument(...)->std::false_type;
+		static auto test_argument_type(...)->std::false_type;
 		
 		//! \tparam U Typ badany pod k¹tem opisu wartoœci
 		template<typename U>
 		//! \return Prawda jeœli uda siê dopasowaæ
-		static auto test_value(typename U::value_type* p)->std::true_type;
+		static auto test_value_type(typename U::value_type* p)->std::true_type;
 		//! \tparam U Typ badany pod k¹tem opisu wartoœci
 		template<typename U>
 		//! \return Fa³sz jeœli uda siê dopasowaæ
-		static auto test_value(...)->std::false_type;
+		static auto test_value_type(...)->std::false_type;
 
 		//! Typ opisuj¹cy dostêpnoœæ informacji o typach wartoœci i argumentów
-		using type = std::integral_constant<bool, std::is_same<decltype(test_argument<T>(0)), std::true_type>::value &&
-			std::is_same<decltype(test_value<T>(0)), std::true_type>::value>;
+		using type = std::integral_constant<bool, std::is_same<decltype(test_argument_type<T>(0)), std::true_type>::value &&
+			std::is_same<decltype(test_value_type<T>(0)), std::true_type>::value>;
 	};
 
 	//! \tparam T Typ badany pod k¹tem opisu typów wartoœci i argumentów
@@ -112,7 +112,7 @@ namespace dataaccessor
 	//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
 	template<typename T>
 	//! Czêœciowa specjalizacja - weryfikacja warunków	
-	struct is_valid_discrete_accessor_ptr_impl<T, true> : public std::is_convertible<T, ExtractedDiscreteConstPtr<typename utils::pointed_type<T>::type>>::type {};
+	struct is_valid_discrete_accessor_ptr_impl<T, true> : public std::is_convertible<T, ExtractedDiscreteConstPtr<typename utils::clean_pointed_type<T>::type>>::type {};
 
 	//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
 	template<typename T>
@@ -128,7 +128,7 @@ namespace dataaccessor
 	//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
 	template<typename T>
 	//! Czêœciowa specjalizacja - weryfikacja warunków	
-	struct is_valid_function_accessor_ptr_impl<T, true> : public std::is_convertible<T, ExtractedFunctionConstPtr<typename utils::pointed_type<T>::type>>::type {};
+	struct is_valid_function_accessor_ptr_impl<T, true> : public std::is_convertible<T, ExtractedFunctionConstPtr<typename utils::clean_pointed_type<T>::type>>::type {};
 
 	//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
 	template<typename T>
@@ -140,11 +140,14 @@ namespace dataaccessor
 	template<typename T>
 	//! Czeœciowa specjalizacja - fa³sz
 	struct is_valid_accessor_ptr : public utils::xor_check<is_valid_function_accessor_ptr<T>::value, is_valid_discrete_accessor_ptr<T>::value>::type {};	
-
-	template<typename T, typename std::enable_if<is_valid_accessor_ptr<T>::value>::type * = 0>
+	//! \tparam T Typ wskaxnika do akcesora
+	//! \tparam dummy Weryfikacja wks¹Ÿnika
+	template<typename T, typename std::enable_if<is_valid_accessor_ptr<T>::value ||
+		(std::is_pointer<T>::value && is_valid_accessor<typename utils::clean_pointed_type<T>::type>::value)>::type * = 0>
+	//! Klasa pomocnicza do wyci¹gania informacji o akcesorze ze wskaŸników
 	struct AccessorPointerDesc
 	{
-		using accessor = typename utils::pointed_type<T>::type;
+		using accessor = typename utils::clean_pointed_type<T>::type;
 		using value_type = typename accessor::value_type;
 		using argument_type = typename accessor::argument_type;
 	};

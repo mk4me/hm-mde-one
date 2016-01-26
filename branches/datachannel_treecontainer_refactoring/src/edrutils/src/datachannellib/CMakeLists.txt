@@ -21,6 +21,7 @@ SET_PUBLIC_HEADERS(
 	Wrappers.h
 	CurrentValueExtractor.h
 	Traits.h
+	SafeAccessorWrapper.h
 )
 
 END_PROJECT()

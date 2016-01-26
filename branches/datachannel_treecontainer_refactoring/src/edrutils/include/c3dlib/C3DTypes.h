@@ -46,7 +46,7 @@ namespace  c3dlib {
 	//! wkaźnik na niemodyfikowalny interfejs umożliwiający odczyt kanału
 	typedef utils::shared_ptr<const VectorChannelReaderInterface> VectorChannelReaderInterfaceConstPtr;
 
-	template<typename SignalType, int Type = 0, typename ValueType = decltype(std::declval<SignalType>()->getValue(0))>
+	template<typename SignalType, int Type = 0, typename ValueType = utils::remove_toplevel<decltype(std::declval<SignalType>()->getValue(0))>::type>
 	class C3DChannelWrapper : public dataaccessor::IIndependentDiscreteAccessorT<ValueType, float>
 	{
 	public:

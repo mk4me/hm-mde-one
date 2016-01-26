@@ -77,7 +77,7 @@ namespace utils
 		//! \return Strumieñ zapisany w stringu
 		inline static std::string read(std::istream & stream, T(&fixedArray)[Size])
 		{
-			return read(stream, (void*)fixedArray, ArrayTraits::size(fixedArray));
+			return read(stream, (void*)fixedArray, utils::size(fixedArray));
 		}
 	};
 

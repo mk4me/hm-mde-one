@@ -82,7 +82,6 @@ namespace dataaccessor
 		}
 
 		//! \param feature Cecha dopinana do akcesora
-		//! \param override Czy chcemy nadpisać dodaną już cechę
 		//! \return Czy udało się dopiąć cechę czy nie - false kiedy cecha o danym typie już jest podpięta
 		bool attachFeature(IFeaturePtr feature) const
 		{
@@ -120,6 +119,7 @@ namespace dataaccessor
 
 	//! \tparam ValueType Typ wartości akcesora dla których przechowujemy własności
 	template<typename ValueType>
+	//! Interfejs akcesora cech dla wartości
 	class IValueAccessorT : public virtual IAccessor
 	{
 	public:
@@ -147,6 +147,7 @@ namespace dataaccessor
 
 	//! \tparam ArgumentType Typ argumentów akcesora dla których przechowujemy własności
 	template<typename ArgumentType>
+	//! Intefejs akcesora dla cech argumentów
 	class IArgumentAccessorT : public virtual IAccessor
 	{
 	public:
@@ -175,6 +176,7 @@ namespace dataaccessor
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<typename ValueType, typename ArgumentType>
+	//! Interfejs akcesora cech wartości i argumentów
 	class IAccessorT : public virtual IAccessor,
 		public IValueAccessorT<ValueType>,
 		public IArgumentAccessorT<ArgumentType>
@@ -262,18 +264,18 @@ namespace dataaccessor
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<typename ValueType, typename ArgumentType>
-	//! Typ smart pointera do akcesora danego kanału
+	//! Typ smart pointera do akcesora cech
 	using AccessorPtr = utils::shared_ptr<IAccessorT<typename utils::remove_toplevel<ValueType>::type, typename utils::remove_toplevel<ArgumentType>::type>>;
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<typename ValueType, typename ArgumentType>
-	//! Typ smart pointera do akcesora danego kanału
+	//! Typ smart pointera do akcesora cech
 	using AccessorConstPtr = utils::shared_ptr<const IAccessorT<typename utils::remove_toplevel<ValueType>::type, typename utils::remove_toplevel<ArgumentType>::type>>;
 
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<typename ValueType, typename ArgumentType>
-	//! Interfejs opisujący dostęp do danych kanału w formie ciągłej
+	//! Interfejs opisujący dostęp do danych akcesora w formie funkcji
 	class IFunctionAccessorT : public IAccessorT<ValueType, ArgumentType>
 	{
 	public:
@@ -294,19 +296,19 @@ namespace dataaccessor
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<typename ValueType, typename ArgumentType>
-	//! Typ smart pointera do akcesora danego kanału funckyjnego
-	using FunctionAccessorPtr = utils::shared_ptr<IFunctionAccessorT<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>>;
+	//! Typ smart pointera do danych akcesora w formie funkcji
+	using FunctionAccessorPtr = utils::shared_ptr<IFunctionAccessorT<typename utils::remove_toplevel<ValueType>::type, typename utils::remove_toplevel<ArgumentType>::type>>;
 
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<typename ValueType, typename ArgumentType>
-	//! Typ smart pointera do akcesora danego kanału funckyjnego
-	using FunctionAccessorConstPtr = utils::shared_ptr<const IFunctionAccessorT<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>>;
+	//! Typ smart pointera do danych akcesora w formie funkcji
+	using FunctionAccessorConstPtr = utils::shared_ptr<const IFunctionAccessorT<typename utils::remove_toplevel<ValueType>::type, typename utils::remove_toplevel<ArgumentType>::type>>;
 
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<typename ValueType, typename ArgumentType>
-	//! Interfejs opisujący dostęp do danych kanału w formie ciągłej
+	//! Typ smart pointera do danych akcesora w formie funkcji
 	class IGeneratedFunctionAccessorT : public IFunctionAccessorT<ValueType, ArgumentType>
 	{
 	public:
@@ -320,7 +322,7 @@ namespace dataaccessor
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<typename ValueType, typename ArgumentType>
-	//! Interfejs opisujący dostęp do danych kanału w formie ciągłej
+	//! Typ smart pointera do danych akcesora w formie funkcji
 	class IOptimizedFunctionAccessorT : public IFunctionAccessorT<ValueType, ArgumentType>
 	{
 	public:
@@ -352,7 +354,7 @@ namespace dataaccessor
 
 	//! \tparam ValueType Typ wartości kanału danych	
 	template<typename ValueType>
-	//! Interfejs opisujący dyskretny dostęp do wartości kanału
+	//! Interfejs opisujący dyskretny dostęp do wartości akcesora
 	class IDiscreteValueAccessorT : public virtual IDiscreteAccessor,
 		public IValueAccessorT<ValueType>
 	{
@@ -384,7 +386,7 @@ namespace dataaccessor
 
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<typename ArgumentType>
-	//! Interfejs opisujący dyskretny dostęp do argumentów kanału
+	//! Interfejs opisujący dyskretny dostęp do argumentów akcesora
 	class IDiscreteArgumentAccessorT : public virtual IDiscreteAccessor,
 		public IArgumentAccessorT<ArgumentType>
 	{
@@ -417,7 +419,7 @@ namespace dataaccessor
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<class ValueType, class ArgumentType>
-	//! Interfejs opisujący dyskretny dostęp do danych kanału
+	//! Interfejs opisujący dyskretny akcesor danych
 	class IDiscreteAccessorT : public virtual IDiscreteAccessor,
 		public IAccessorT<ValueType, ArgumentType>,
 		public IDiscreteValueAccessorT<ValueType>,
@@ -437,21 +439,21 @@ namespace dataaccessor
 		virtual const DiscreteAccessor * asDiscrete() const override final { return this; };
 	};
 
-	//! \tparam ValueType Typ wartości kanału danych
-	//! \tparam ArgumentType Typ argumentu kanału danych
+	//! \tparam ValueType Typ wartości akcesora
+	//! \tparam ArgumentType Typ argumentu akcesora
 	template<typename ValueType, typename ArgumentType>
-	//! Typ smart pointera do akcesora danego kanału dyskretnego
+	//! Typ smart pointera do akcesora z danymi dyskretnymi
 	using DiscreteAccessorPtr = utils::shared_ptr<IDiscreteAccessorT<typename utils::remove_toplevel<ValueType>::type, typename utils::remove_toplevel<ArgumentType>::type>>;
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<typename ValueType, typename ArgumentType>
-	//! Typ smart pointera do akcesora danego kanału dyskretnego
+	//! Typ smart pointera do akcesora z danymi dyskretnymi
 	using DiscreteAccessorConstPtr = utils::shared_ptr<const IDiscreteAccessorT<typename utils::remove_toplevel<ValueType>::type, typename utils::remove_toplevel<ArgumentType>::type>>;
 
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<class ValueType, class ArgumentType>
-	//! Interfejs opisujący dyskretny dostęp do danych kanału
+	//! Interfejs opisujący dyskretny akcesor danych
 	class IIndependentDiscreteAccessorT : public IDiscreteAccessorT<ValueType, ArgumentType>
 	{
 	public:
@@ -466,7 +468,7 @@ namespace dataaccessor
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<class ValueType, class ArgumentType>
-	//! Interfejs opisujący dyskretny dostęp do danych kanału
+	//! Interfejs opisujący dyskretny akcesor danych
 	class IOptimizedDiscreteAccessorT : public IDiscreteAccessorT<ValueType, ArgumentType>
 	{
 	public:

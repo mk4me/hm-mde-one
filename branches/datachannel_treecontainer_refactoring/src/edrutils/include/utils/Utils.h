@@ -278,6 +278,15 @@ template<bool T, bool U>
 //! Typ pomocniczy realizujący statycznie funkcję logiczną xor
 struct xor_check : public std::integral_constant<bool, T != U> {};
 
+//! Makro z nazwą extractora danego pola
+#define MEMBER_EXTRACTOR_NAME(memberName) MemberExtractor##memberName
+
+//! Makro definujące dany extractor generyczny
+#define MEMBER_EXTRACTOR(memberName) \
+struct MEMBER_EXTRACTOR_NAME(memberName){\
+template<typename T> inline static auto extract(const T & value) -> decltype((value.memberName)) { return value.memberName; }\
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace util
 ////////////////////////////////////////////////////////////////////////////////

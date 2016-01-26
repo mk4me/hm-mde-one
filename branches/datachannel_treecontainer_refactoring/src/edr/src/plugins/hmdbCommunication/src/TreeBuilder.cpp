@@ -504,9 +504,9 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
 
         for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
 			c3dlib::VectorChannelCollectionConstPtr collection = (*it)->get();
-            int count = collection ? collection->getNumChannels() : 0;
+            int count = collection ? collection->getNumAccessors() : 0;
             for (int i = 0; i < count; ++i) {
-				c3dlib::VectorChannelConstPtr channel = collection->getChannel(i);
+				c3dlib::VectorChannelConstPtr channel = collection->getAccessor(i);
                 if (channel->getName() == channelName) {
 
                     int r = rand() % 200;
