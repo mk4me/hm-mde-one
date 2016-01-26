@@ -889,7 +889,7 @@ const bool IMUCostumeDataSource::refreshCostumes()
 	while (it != toRemove.end()){
 		auto cIT = costumesData.find(*it);
 		if (cIT != costumesData.end()){
-			//TODO - unload jak by� za�adowany
+			//TODO - unload jak był załadowany
 			
 			//if (cIT->second.domainData.empty() == false){
 			//	it = toRemove.erase(it);
@@ -921,7 +921,7 @@ const bool IMUCostumeDataSource::refreshCostumes()
 		}
 		catch (...){
 			//TODO
-			//info o nieudanej probie za�adowania kostiumu
+			//info o nieudanej probie załadowania kostiumu
 		}
 	}
 
@@ -1117,7 +1117,7 @@ void IMUCostumeDataSource::loadCalibratedCostume(const CostumeID & id,
 	auto root = utils::make_shared<core::HierarchyItem>(QObject::tr("Costume %1:%2 data").arg(QString::fromStdString(it->first.ip)).arg(it->first.port), "", QIcon());
 	//core::HierarchyItemPtr root = utils::make_shared<core::HierarchyItem>(QObject::tr("Unpacked Data"), QObject::tr("Unpacked IMU sensors data"), QIcon());
 
-	//adapter na pe�ne dane z kostiumu nap�dzaj�ce strumie� z estymacj�
+	//adapter na pełne dane z kostiumu napędzające strumień z estymacją
 	cData.completeImuStream.reset(new ExtractedCostumeStreamAdapter(cData.costumeStream, CostumeIMUExtractor(cData.sensorsConfiguration)));
 
 	auto ow = core::Variant::create<IMU::SensorsStream>();

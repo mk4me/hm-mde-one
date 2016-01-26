@@ -111,7 +111,7 @@ using namespace IMU;
 //    };
 //
 //    auto c = utils::make_shared<VectorChannel>(hz);
-//    // + 1 , bo numeracja w plikach *.cfg zaczyna si� od 1
+//    // + 1 , bo numeracja w plikach *.cfg zaczyna się od 1
 //    c->setName(name(config, i + 1));
 //
 //    return c;

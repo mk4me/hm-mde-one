@@ -64,7 +64,7 @@ namespace core
 		//! Domyślny konstruktor
 		Thread();
 
-		//! \param Other wątek którego zasoby przejmujemy
+		//! \param Other Wątek którego zasoby przejmujemy
 		Thread(Thread && Other);
 
 		//! Destruktor

@@ -114,7 +114,7 @@ public:
 		ret->setVisible(false);
 		return ret;
 	}
-	//! \return Czy dany widok wymaga połączenia z usłgami webowymi
+	//! \return Czy dany widok wymaga połączenia z usługami webowymi
 	virtual const bool requiresRemoteContext() const { return true; }
 };
 
@@ -150,7 +150,7 @@ public:
 
 		auto subjectsITEnd = shallowCopy.motionShallowCopy.performers.end();
 		for (auto subjectIT = shallowCopy.motionShallowCopy.performers.begin(); subjectIT != subjectsITEnd; ++subjectIT){
-			//jeżli pusty pacjent to go pomijamy
+			//jeżeli pusty pacjent to go pomijamy
 			if (subjectIT->second->performerConfs.empty() == true){
 				continue;
 			}

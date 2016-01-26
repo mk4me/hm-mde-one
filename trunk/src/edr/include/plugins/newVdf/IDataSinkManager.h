@@ -20,7 +20,7 @@ namespace vdf{
     class IDataSinkManager : public utils::Observable<IDataSinkManager>
     {
     public:
-        //! Lista �r�de� danych.
+        //! Lista źródeł danych.
         typedef std::vector<vdf::IDataSinkPtr> IDataSinks;
         //! 
         typedef boost::iterator_range<IDataSinks::const_iterator> DataSinksConstRange;

@@ -103,7 +103,7 @@ void Application::showSplashScreenMessage(const QString & message)
 int Application::initUIContext(int & argc, char *argv[], const std::string & appName,
 							   utils::Filesystem::PathsList & coreTranslations)
 {
-	//obs?uga argument?w i opisu uzycia aplikacji z konsoli
+	//obsługa argumentów i opisu uzycia aplikacji z konsoli
 	osg::ArgumentParser arguments(&argc, argv);
 	//arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
 	arguments.getApplicationUsage()->setApplicationName(appName);
@@ -112,20 +112,20 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 	arguments.getApplicationUsage()->addCommandLineOption("-h or --help", "Display this information");
 	arguments.getApplicationUsage()->addCommandLineOption("--plugins <path>", "Additional plugins directory");
 
-	// czy wy?wietlamy pomoc?
+	// czy wyświetlamy pomoc?
 	if (arguments.read("-h") || arguments.read("--help"))
 	{
 		arguments.getApplicationUsage()->write(std::cout);
 		return 1;
 	}
 
-	// pdczytujemy czy jest podana dodatkowa ?cie?ka dla plugin?w
+	// pdczytujemy czy jest podana dodatkowa ścieżka dla pluginów
 	std::string path;
 	arguments.read("--plugins", path);
 	if (path.empty() == false){
 		additionalPluginsPath = path;
 	}
-	// inicjalizacja UI, wszystkich potrzebnych zasob?w
+	// inicjalizacja UI, wszystkich potrzebnych zasobów
 	{
 		uiApplication_.reset(new coreUI::UIApplication(argc, argv));
 		QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
@@ -136,13 +136,13 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 		QSettings::setDefaultFormat(QSettings::IniFormat);
 	}
 
-	//inicjalizacja ?cie?ek aplikacji, katalog?w tymczasowych itp, u?ywane do ?adowania t?umacze?
+	//inicjalizacja ścieżek aplikacji, katalogów tymczasowych itp, używane do ładowania tłumaczeń
 	{
 		if (trySetPathsFromRegistry(paths_, appName) == false){
 			setDefaultPaths(paths_, appName);
 		}
 
-		//sprawdzamy czy uda?o si? wygenerowac poprawne sciezki alikacji
+		//sprawdzamy czy udało się wygenerowac poprawne sciezki alikacji
 		if (paths_ == nullptr){
 			throw loglib::runtime_error("Could not initialize application path interface");
 		}
@@ -169,9 +169,9 @@ int Application::initUIContext(int & argc, char *argv[], const std::string & app
 	CORE_LOG_INFO("PluginPath: " << paths_->getPluginPath());
 	CORE_LOG_INFO("TranslationsPath: " << paths_->getTranslationsPath());
 
-	//t?umaczenia aplikacji - musze to robi? tutaj aby wszystkie nowo utworzone widgety ju? widzia?y t?umaczenia
-	//alternatywnie mog? to robi? p?niej pod warunkiem ?e wszystkie widgety sa ?wiadome t?umacze? - obs?uguj? event
-	// zmiany j?zyka!! Dla plik?w Ui ju? jest metoda retranslateUi
+	//tłumaczenia aplikacji - musze to robić tutaj aby wszystkie nowo utworzone widgety już widziały tłumaczenia
+	//alternatywnie mogę to robić póniej pod warunkiem że wszystkie widgety sa świadome tłumaczeń - obsługują event
+	// zmiany języka!! Dla plików Ui już jest metoda retranslateUi
 	{
 		//inicjalizujemy klase pomocnicza przy obsludze tlumaczen i jezykow
 		LanguagesHelper::init();
@@ -242,7 +242,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 
 	showSplashScreenMessage(QObject::tr("Initializing directories"));
 
-	//probujemy tmp katalog zapewni?
+	//probujemy tmp katalog zapewnić
 	try{
 		utils::Filesystem::createDirectory(paths_->getTempPath());
 	}
@@ -312,7 +312,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 
 	showSplashScreenMessage(QObject::tr("Initializing plugins loader"));
 
-	//inicjalizacja obiektu ?aduj?cego pluginy
+	//inicjalizacja obiektu ładującego pluginy
 	pluginLoader_.reset(new PluginLoader(utils::Filesystem::Path(QCoreApplication::applicationFilePath().toStdString()).parent_path()));
 
 #if defined(_WINDOWS)
@@ -350,7 +350,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 			auto pluginName = plugin->getPath().stem().string();
 
 			// jeżeli jestesmy w debug to pluginy mają d na końcu a tłumaczenia nie!!
-			// muszą się pozbyć d
+			// muszę się pozbyć d
 #ifdef _DEBUG
 
 			if (pluginName.back() == 'd'){
@@ -383,7 +383,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 		}
 	}
 
-	// inicjalizacja us?ug
+	// inicjalizacja usług
 	std::set<plugin::IServicePtr> skipServices;
 	for (int i = 0; i < serviceManager_->getNumServices(); ++i) {
 		try{
@@ -412,7 +412,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 		}
 	}
 
-	// inicjalizacja us?ug
+	// inicjalizacja usług
 	for (int i = 0; i < serviceManager_->getNumServices(); ++i) {
 
 		if (skipServices.find(serviceManager_->getService(i)) != skipServices.end()){
@@ -444,7 +444,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 
 	showSplashScreenMessage(QObject::tr("Initializing sources"));
 
-	// inicjalizacja ?r?de?
+	// inicjalizacja źródeł
 	std::set<plugin::ISourcePtr> skipSources;
 	for (int i = 0; i < sourceManager_->getNumSources(); ++i) {
 		try{
@@ -472,7 +472,7 @@ void Application::initWithUI(CoreMainWindow * mainWindow,
 		}
 	}
 
-	// inicjalizacja ?r?de?
+	// inicjalizacja źródeł
 	for (int i = 0; i < sourceManager_->getNumSources(); ++i) {
 
 		if (skipSources.find(sourceManager_->getSource(i)) != skipSources.end()){
@@ -754,7 +754,7 @@ void Application::setDefaultPaths(utils::shared_ptr<Path> & path, const std::str
 {
 	//TODO
 	//ciagnac to info z vendor info?
-	//mie? na uwadze nazw? aplikacji i PJWSTK
+	//mieć na uwadze nazwę aplikacji i PJWSTK
 	auto userPath = utils::Filesystem::Path(QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0).toStdString()) / "PJATK" / appName;
 #if defined(_WINDOWS)
 	//HACK żeby dostać się do ścieżek roaming dla usera, Qt w innych przypadkach podaje ściezki w local

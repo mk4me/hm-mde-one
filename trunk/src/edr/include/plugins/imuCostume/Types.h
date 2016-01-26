@@ -18,35 +18,35 @@
 
 namespace IMU
 {
-	//! Mapa identyfikator�w sensor�w do nazw joint�w z kt�rymi s� skojarzone, jeden sensor, jeden joint, ale joint moze miec wi�cej sensor�w!!
+	//! Mapa identyfikatorów sensorów do nazw jointów z którymi są skojarzone, jeden sensor, jeden joint, ale joint moze miec więcej sensorów!!
 	typedef boost::bimap<boost::bimaps::set_of<imuCostume::Costume::SensorID>, boost::bimaps::multiset_of<std::string>> SensorsMapping;
 
-	//! Struktura opisuj�ca orientacje sensora
+	//! Struktura opisująca orientacje sensora
 	struct SensorData
 	{
 		//! Orientacja
 		osg::Quat orientation;
 		//! Akcelerometr
 		osg::Vec3d accelerometer;
-		//! �yroskop
+		//! Żyroskop
 		osg::Vec3d gyroscope;
 		//! Magnetometr
 		osg::Vec3d magnetometer;
 	};
 
-	//! Agregacja danych z sensor�w
+	//! Agregacja danych z sensorów
 	typedef std::map<imuCostume::Costume::SensorID, SensorData> SensorsData;
 
-	//! Struktura opisuj�ca dane strumienia z danymi czujnik�w
+	//! Struktura opisująca dane strumienia z danymi czujników
 	struct SensorsStreamData
 	{
 		//! Stempel czasu danych
 		imuCostume::CostumeCANopenIO::Timestamp timestamp;
-		//! Dane sensor�w
+		//! Dane sensorów
 		SensorsData sensorsData;
 	};
 
-	//! Struktura opisuj�ca joint
+	//! Struktura opisująca joint
 	struct JointData
 	{
 		//! Orientacja lokalna
@@ -59,17 +59,17 @@ namespace IMU
 		osg::Vec3d globalPosition;
 	};
 
-	//! Klasa usuwaj�ca czas z danych
+	//! Klasa usuwająca czas z danych
 	class TimeRemoverExtractor
 	{
 	public:
-		//! \tparam Src Typ �r�d�owy
+		//! \tparam Src Typ źródłowy
 		template<typename Src>
 		inline static bool verify(const Src & timeData)
 		{
 			return true;
 		}
-		//! \tparam Src Typ �r�d�owy
+		//! \tparam Src Typ źródłowy
 		template<typename Src, typename Dest = typename Src::second_type>
 		inline static void extract(const Src & timeData, Dest & data)
 		{

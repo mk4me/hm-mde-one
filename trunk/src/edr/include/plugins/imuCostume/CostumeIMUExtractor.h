@@ -15,7 +15,7 @@
 
 namespace IMU
 {
-	//! Klasa realizuj�ca filtracj� kompletnych danych IMU (pe�ne dane dla wszystkich czujnik�w IMU)
+	//! Klasa realizująca filtrację kompletnych danych IMU (pełne dane dla wszystkich czujników IMU)
 	class IMU_EXPORT CostumeCompleteDataFilter
 	{
 	public:
@@ -23,22 +23,22 @@ namespace IMU
 		CostumeCompleteDataFilter(CostumeCompleteDataFilter && Other);
 		//! \param Other Obiekt kopiowany
 		CostumeCompleteDataFilter(const CostumeCompleteDataFilter & Other);
-		//! \param sensorsIDs Identyfikatory sensor�w IMU
+		//! \param sensorsIDs Identyfikatory sensorów IMU
 		CostumeCompleteDataFilter(const imuCostume::Costume::SensorIDsSet & sensorsIDs);
-		//! \param sensorsConfiguration Konfiguracja sensor�w
+		//! \param sensorsConfiguration Konfiguracja sensorów
 		CostumeCompleteDataFilter(const imuCostume::Costume::SensorsConfiguration & sensorsConfiguration);
 		//! Desturktor
 		~CostumeCompleteDataFilter();
 		//! \param dataToFilter Dane do filtracji
-		//! \return Prawda je�li dane s� kompletne
+		//! \return Prawda jeżeli dane są kompletne
 		bool operator()(const IMU::CostumeStream::value_type & dataToFilter) const;
 
 	private:
-		//! Zbi�r identyfikator�w sensor�w IMU
+		//! Zbiór identyfikatorów sensorów IMU
 		imuCostume::Costume::SensorIDsSet sensorsIDs;
 	};
 
-	//! Klasa realizuj�ca konwersj� ze strumienia danych czujnik�w do kompletnych danych IMU
+	//! Klasa realizująca konwersję ze strumienia danych czujników do kompletnych danych IMU
 	class IMU_EXPORT CostumeIMUExtractor
 	{
 	private:
@@ -54,30 +54,30 @@ namespace IMU
 		CostumeIMUExtractor(CostumeIMUExtractor && Other);
 		//! \param Other Obiekt kopiowany
 		CostumeIMUExtractor(const CostumeIMUExtractor & Other);
-		//! \param sensorsIDs Identyfikatory czujnik�w IMU
+		//! \param sensorsIDs Identyfikatory czujników IMU
 		CostumeIMUExtractor(const imuCostume::Costume::SensorIDsSet & sensorsIDs);
-		//! \param sensorsConfiguration Konfiguracja sensor�w
+		//! \param sensorsConfiguration Konfiguracja sensorów
 		CostumeIMUExtractor(const imuCostume::Costume::SensorsConfiguration & sensorsConfiguration);
 		//! Destruktor
 		~CostumeIMUExtractor();
-		//! \param dataToVerify Dane do veryfikacji pd k�tem mo�liwo�ci konwersji
-		//! \return Prawda je�li dane mo�na konwertowa�
+		//! \param dataToVerify Dane do veryfikacji pd kątem możliwości konwersji
+		//! \return Prawda jeżeli dane można konwertować
 		bool verify(const IMU::CostumeStream::value_type & dataToVerify) const;
 		//! \param convertedData [out] Dane po konwersji
 		void extract(const IMU::CostumeStream::value_type & dataToConvert, IMU::SensorsStreamData & convertedData) const;
 
 	private:
-		//! Obiekt realizuj�cy weryfikacj�
+		//! Obiekt realizujący weryfikację
 		CostumeCompleteDataFilter completeDataFilter;
-		//aktualne dane do wysy�k dalej w przetwarzanie
+		//aktualne dane do wysyłki dalej w przetwarzanie
 		mutable std::map<imuCostume::Costume::SensorID, SensorDataWithStatus> currentData;
 	};
 
-	//! Klasa procesora strumienia estymuj�ca orientacje czujnik�w na bazie pomiar�w
+	//! Klasa procesora strumienia estymująca orientacje czujników na bazie pomiarów
 	class IMU_EXPORT OrientationEstimator
 	{
 	public:
-		//! \param orientationAlgorithms Algorytmy wstymuj�c� orientacje czujnik�w
+		//! \param orientationAlgorithms Algorytmy estymujące orientacje czujników
 		OrientationEstimator(IMU::CostumeProfilePtr profile);
 		//! Destruktor
 		~OrientationEstimator();
@@ -85,17 +85,17 @@ namespace IMU
 		void operator()(IMU::SensorsStreamData & data) const;		
 
 	private:
-		//! Profil z algorytmami kt�re estymuj� orientacje czujnik�w
+		//! Profil z algorytmami które estymują orientacje czujników
 		IMU::CostumeProfilePtr profile;
 		//! Mapa z ostatnimi czasami aktualizacji poszczególnych sensorów
 		mutable std::map<imuCostume::Costume::SensorID, uint32_t> lastUpdateTime;
 	};
 
-	//! Klasa pozwalaj�ca wypakowywa� dane z wektor�w
+	//! Klasa pozwalająca wypakowywać dane z wektorów
 	class IMU_EXPORT ArrayExtractor
 	{
 	public:
-		//! \param idx Index obiketu kt�ry chcemy wypakowywa� z wektora
+		//! \param idx Index obiketu który chcemy wypakowywać z wektora
 		ArrayExtractor(const std::size_t idx);
 		//! \param Other Inny kopiowany extractor
 		ArrayExtractor(const ArrayExtractor & Other);
@@ -104,17 +104,17 @@ namespace IMU
 
 		//! \tparam AT Wektor do weryfikacji
 		template<typename AT>
-		//! \param a Wektor z kt�rego chcemy wypakowa� dane
-		//! \return Czy z wektora da si� wypakowa� dane o zadanym indeksie
+		//! \param a Wektor z którego chcemy wypakować dane
+		//! \return Czy z wektora da się wypakować dane o zadanym indeksie
 		bool verify(const AT & a) const
 		{
 			return true;
 		}
 
 		//! \tparam AT Wektor do weryfikacji
-		//! \tparam Ret Typ kt�ry chcemy wypakowa� z wektora
+		//! \tparam Ret Typ który chcemy wypakować z wektora
 		template<typename AT, typename Ret>
-		//! \param Wektor z kt�rego wypakowujemy dane
+		//! \param Wektor z którego wypakowujemy dane
 		//! \param ret [out] Obiekt docelowy dla wypakowanych danych
 		void extract(const AT & a, Ret & ret) const
 		{
@@ -122,15 +122,15 @@ namespace IMU
 		}
 
 	private:
-		//! Indeks spod kt�rego wybieramy dane z wektora
+		//! Indeks spod którego wybieramy dane z wektora
 		const std::size_t idx;
 	};
 
-	//! Klasa pozwalaj�ca wypakowywa� dane z wektor�w
+	//! Klasa pozwalająca wypakowywać dane z wektorów
 	class IMU_EXPORT CompoundArrayExtractor
 	{
 	public:
-		//! \param idx Index obiketu kt�ry chcemy wypakowywa� z wektora
+		//! \param idx Index obiketu który chcemy wypakowywać z wektora
 		CompoundArrayExtractor(const std::size_t idx);
 		//! \param Other Inny kopiowany extractor
 		CompoundArrayExtractor(const CompoundArrayExtractor & Other);
@@ -139,17 +139,17 @@ namespace IMU
 
 		//! \tparam AT Wektor do weryfikacji
 		template<typename AT>
-		//! \param a Wektor z kt�rego chcemy wypakowa� dane
-		//! \return Czy z wektora da si� wypakowa� dane o zadanym indeksie
+		//! \param a Wektor z którego chcemy wypakować dane
+		//! \return Czy z wektora da się wypakować dane o zadanym indeksie
 		bool verify(const AT & a) const
 		{
 			return true;
 		}
 
 		//! \tparam AT Wektor do weryfikacji
-		//! \tparam Ret Typ kt�ry chcemy wypakowa� z wektora
+		//! \tparam Ret Typ który chcemy wypakować z wektora
 		template<typename AT, typename Ret>
-		//! \param Wektor z kt�rego wypakowujemy dane
+		//! \param Wektor z którego wypakowujemy dane
 		//! \param ret [out] Obiekt docelowy dla wypakowanych danych
 		void extract(const AT & a, Ret & ret) const
 		{
@@ -158,7 +158,7 @@ namespace IMU
 		}
 
 	private:
-		//! Indeks spod kt�rego wybieramy dane z wektora
+		//! Indeks spod którego wybieramy dane z wektora
 		const std::size_t idx;
 	};
 

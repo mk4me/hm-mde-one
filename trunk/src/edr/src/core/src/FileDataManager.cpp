@@ -73,10 +73,10 @@ public:
 			{
 												 VariantsList toRemove;
 												 fdm->rawGetObjects(it->first, toRemove);
-												 //usuï¿½ obiekty z MemoryDM w transakcji
+												 //usuñ obiekty z MemoryDM w transakcji
 												 for (auto IT = toRemove.begin(); IT != toRemove.end(); ++IT) {
 													 //TODO
-													 //przywrÃ³ciÄ‡ poprzedni jeÅ›li byÅ‚
+													 //przywróciæ poprzedni jeœli by³
 													 (*IT)->setInitializer(VariantInitializerPtr());
 												 }
 												 fdm->objectsByFiles.erase(it->first);
@@ -86,7 +86,7 @@ public:
 			case IFileManagerReader::REMOVE_FILE:
 			{
 													//TODO
-													//przywrÃ³ciÄ‡ LazyInitializer!!
+													//przywróciæ LazyInitializer!!
 													auto insRes = fdm->objectsByFiles.insert(FileDataManager::ObjectsByFiles::value_type(it->first, it->second.previousData));
 
 													if (insRes.second == false) {
@@ -102,8 +102,8 @@ public:
 		lock.reset();
 	}
 
-	//! \param files Lista plikï¿½w dla ktï¿½rych zostanï¿½ utworzone parsery i z ktï¿½rych wyciï¿½gniï¿½te dane
-	//! bï¿½da dostï¿½pne poprzez DataMangera LENIWA INICJALIZACJA
+	//! \param files Lista plików dla których zostan¹ utworzone parsery i z których wyci¹gniête dane
+	//! bêda dostêpne poprzez DataMangera LENIWA INICJALIZACJA
 	virtual void addFile(const utils::Filesystem::Path & file)
 	{
 		verifyRollback();
@@ -121,7 +121,7 @@ public:
 		rawAddFile(file);
 	}
 
-	//! \param files Lista plikï¿½w ktï¿½re zostanï¿½ usuniï¿½te z aplikacji a wraz z nimi skojarzone parsery i dane
+	//! \param files Lista plików które zostan¹ usuniête z aplikacji a wraz z nimi skojarzone parsery i dane
 	virtual void removeFile(const utils::Filesystem::Path & file)
 	{
 		verifyRollback();
@@ -263,7 +263,7 @@ private:
 			*it = (*it)->clone();
 		}
 
-		//przeÅ‚adowuje dane
+		//prze³adowuje dane
 		fdm->rawReloadFile(file, complete, mdmTransaction);
 		//pobieram dane po zmianach
 		fdm->rawGetObjects(file, mod.currentData);
@@ -319,27 +319,27 @@ private:
 };
 
 namespace core {
-//! Wewnï¿½trzna reprezentacja parsera uï¿½ywana przez DataManagera.
+//! Wewnêtrzna reprezentacja parsera u¿ywana przez DataManagera.
 class FParser
 {
 private:
-	//! Prawdziwy wewnï¿½trzny parser.
+	//! Prawdziwy wewnêtrzny parser.
 	const plugin::IParserPtr parser;
-	//! Opis ÅºrÃ³dÅ‚a danych
+	//! Opis Ÿród³a danych
 	const utils::Filesystem::Path path;
 	//! Czy przeparsowano plik?
 	bool parsed;
-	//! Czy uï¿½yto parsera do przeparsowania?
+	//! Czy u¿yto parsera do przeparsowania?
 	bool used;
 
 private:
-	//! Moï¿½e rzucaï¿½ wyjï¿½tkami!
+	//! Mo¿e rzucaæ wyj¹tkami!
 	virtual void _parseFile() = 0;
 
 public:
 	//! \param parser Faktyczny parser. To ten obiekt kontroluje jego
-	//!     czas ï¿½ycia.
-	//! \param resource Czy parser jest zwiï¿½zany z zasobami staï¿½ymi?
+	//!     czas ¿ycia.
+	//! \param resource Czy parser jest zwi¹zany z zasobami sta³ymi?
 	FParser(plugin::IParser* parser, const utils::Filesystem::Path & path) :
 		parser(parser), parsed(false), used(false), path(path)
 	{
@@ -347,7 +347,7 @@ public:
 		UTILS_ASSERT(!path.empty());
 	}
 
-	//! Destruktor drukujï¿½cy wiadomoï¿½ï¿½ o wyï¿½adowaniu pliku.
+	//! Destruktor drukuj¹cy wiadomoœæ o wy³adowaniu pliku.
 	virtual ~FParser()
 	{
 		if (isParsed()) {
@@ -359,12 +359,12 @@ public:
 		}
 	}
 
-	//! \return Czy uï¿½yto tego parsera?
+	//! \return Czy u¿yto tego parsera?
 	inline const bool isUsed() const
 	{
 		return used;
 	}
-	//! \return Czy udaï¿½o siï¿½ przeparsowaï¿½ plik?
+	//! \return Czy uda³o siê przeparsowaæ plik?
 	inline const bool isParsed() const
 	{
 		return parsed;
@@ -403,8 +403,8 @@ public:
 		CORE_LOG_NAMED_DEBUG("parser", "File parsed OK: " << path);
 	}
 
-	//! Nie rzuca wyjï¿½tkami.
-	//! \return Czy udaï¿½o siï¿½ przeparsowaï¿½?
+	//! Nie rzuca wyj¹tkami.
+	//! \return Czy uda³o siê przeparsowaæ?
 	const bool tryParse()
 	{
 		bool ret = false;
@@ -429,7 +429,7 @@ public:
 };
 }
 
-//! Wewnï¿½trzna reprezentacja parsera uï¿½ywana przez DataManagera.
+//! Wewnêtrzna reprezentacja parsera u¿ywana przez DataManagera.
 class FileParser : public FParser
 {
 public:
@@ -458,7 +458,7 @@ private:
 	}
 
 private:
-	//! Interfejs parsera plikÃ³w
+	//! Interfejs parsera plików
 	plugin::ISourceParser * fileParser;
 };
 
@@ -497,7 +497,7 @@ private:
 	}
 
 private:
-	//! Interfejs parsera plikÃ³w ze strumieni
+	//! Interfejs parsera plików ze strumieni
 	plugin::IStreamParser * streamFileParser;
 };
 
@@ -543,17 +543,17 @@ void FileDataManager::rawRemoveFile(const utils::Filesystem::Path & file, const 
 	VariantsList toRemove;
 	//pobieramy obiekty do usuniecia z DM
 	rawGetObjects(file, toRemove);
-	//usuï¿½ obiekty z MemoryDM w transakcji
+	//usuñ obiekty z MemoryDM w transakcji
 	for (auto it = toRemove.begin(); it != toRemove.end(); ++it) {
 		//TODO
-		//przywrÃ³ciÄ‡ poprzedni jeÅ›li byÅ‚
+		//przywróciæ poprzedni jeœli by³
 		(*it)->setInitializer(VariantInitializerPtr());
 		if (memTransaction->tryRemoveData(*it) == false) {
 			ok = false;
 		}
 	}
 
-	//usuï¿½ plik	
+	//usuñ plik	
 	objectsByFiles.erase(file);
 	missingObjects.erase(file);
 	if (ok == true) {
@@ -570,7 +570,7 @@ void FileDataManager::rawAddFile(const utils::Filesystem::Path & file, const IDa
 	IParserManagerReader::ParserPrototypes streamParsers;
 	getParserManager()->streamParsers(file.string(), streamParsers);
 
-	//Z listy strumieniowych usuwam te ktï¿½re sï¿½ na liï¿½cie z wï¿½asnym I/O - wierze ï¿½e zrobia to lepiej
+	//Z listy strumieniowych usuwam te które s¹ na liœcie z w³asnym I/O - wierze ¿e zrobia to lepiej
 	std::set<plugin::IParserConstPtr> sourceParsersSet;
 	std::set<plugin::IParserConstPtr> streamParsersSet;
 
@@ -581,13 +581,13 @@ void FileDataManager::rawAddFile(const utils::Filesystem::Path & file, const IDa
 	auto lastIT = std::set_difference(sourceParsersSet.begin(), sourceParsersSet.end(), streamParsersSet.begin(), streamParsersSet.end(), sourcesLeft.begin());
 
 	sourcesLeft.erase(lastIT, sourcesLeft.end());
-	//obiekty wyciÄ…	gniÄ™te z parserÃ³w
+	//obiekty wyci¹gniête z parserów
 		VariantsList objects;
-	//preferuje uzycie parserï¿½w z wï¿½asnï¿½ obsï¿½ugï¿½ I/O - wierze ï¿½e zrobiï¿½ to maksymalnie wydajnie wg wï¿½asnych zasad
+	//preferuje uzycie parserów z w³asn¹ obs³ug¹ I/O - wierzê ¿e zrobi¹ to maksymalnie wydajnie wg w³asnych zasad
 	if (streamParsers.empty() == false) {
 		initializeParsers<StreameFileParser>(streamParsers, file.string(), objects);
 	}
-	//teraz uzywam parserï¿½w strumieniowych - sam dostarczï¿½ im strumieni
+	//teraz uzywam parserów strumieniowych - sam dostarczê im strumieni
 	if (sourceParsers.empty() == false) {
 		initializeParsers<FileParser>(sourcesLeft, file.string(), objects);
 	}
@@ -614,7 +614,7 @@ void FileDataManager::rawAddFile(const utils::Filesystem::Path & file, const IDa
 			objectsAdded.push_back(*it);
 		}
 
-		// jak wszystko ok to zapamiï¿½tuje
+		// jak wszystko ok to zapamiêtuje
 		objectsByFiles.insert({ file, std::move(objectsAdded) });
 		CORE_LOG_INFO("File: " << file << " successfully loaded to manager. Extracted data : " << objects.size() << "| data loaded to memory data manager : " << objectsAdded.size());
 	}
@@ -726,8 +726,8 @@ void FileDataManager::updateObservers(const ChangeList & changes)
 		}
 		catch (...) {
 			//TODO
-			//rozwinï¿½ï¿½ obserwatorï¿½w aby siï¿½ jakoï¿½ identyfikowali!! ewentualnie robiï¿½ to przez wï¿½asnï¿½ implementacjï¿½ dostarczanï¿½ konretnym obiektom
-			//(osobne interfejsy readerï¿½w dla kaï¿½dego elemnentu ï¿½adowanego do aplikacji - service, source, datasink, itp)
+			//rozwin¹æ obserwatorów aby siê jakoœ identyfikowali!! ewentualnie robiæ to przez w³asn¹ implementacjê dostarczan¹ konretnym obiektom
+			//(osobne interfejsy readerów dla ka¿dego elemnentu ³adowanego do aplikacji - service, source, datasink, itp)
 			CORE_LOG_WARNING("Error while updating file data manager observer");
 		}
 	}
@@ -980,7 +980,7 @@ void core::FileDataManager::tryRemoveUnusedFile(const utils::Filesystem::Path & 
 												ChangeList & changes)
 {
 	auto it = objectsByFiles.find(file);
-	//sprawdzam czy nie moge juz usun±æ‡ pliku i notyfikowÄ‡ o zmianie
+	//sprawdzam czy nie moge juz usun¹æ pliku i notyfikowæ o zmianie
 	if (it != objectsByFiles.end() && it->second.empty() == true) {
 		CORE_LOG_INFO("Removing unused file " << file << " because of lack of delivered objects to memory data manager.");
 		Change change;

@@ -266,9 +266,9 @@ const bool Variant::isEqual(const Variant & obj) const
 		(((wrapper_ != nullptr) && (wrapper_ == obj.wrapper_)) ||
 		// czy zgadzają się dane - zawartość
 		(wrapper_->isEqual(*(obj.wrapper_)) == true) ||
-		//czy mają ten sam inicjalizator jeżli brak danych - po wskaźniki
+		//czy mają ten sam inicjalizator jeżeli brak danych - po wskaźniki
 		(((wrapper_->getRawPtr() == nullptr) || (obj.wrapper_->getRawPtr() == nullptr)) && (((initializer_ != nullptr) && (initializer_ == obj.initializer_)) ||
-		//czy ten sam inicjalizator jeżli chodzi o efekt działania
+		//czy ten sam inicjalizator jeżeli chodzi o efekt działania
 		((initializer_ != nullptr) && (obj.initializer_ != nullptr) && initializer_->isEqual(*(obj.initializer_))))));
 }
 

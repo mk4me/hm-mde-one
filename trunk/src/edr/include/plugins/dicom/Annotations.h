@@ -46,7 +46,7 @@ namespace annotations {
 
 	//! Tworzy domyślne mapowanie indeksów
 	PLUGIN_DICOM_EXPORT AdnotationsTypePtr getDefault();
-	//! \param p ściazka pliku do którego zapisujemy  typy adnotacji
+	//! \param p ścieżka pliku do którego zapisujemy  typy adnotacji
 	//! \param adnotations Zapisywane typy adnotacji
 	PLUGIN_DICOM_EXPORT void save(const utils::Filesystem::Path& p, AdnotationsTypeConstPtr adnotations);
 	//! \param p ścieżka z której wczytujemy typy adnotacji
@@ -137,7 +137,7 @@ namespace annotations {
 	//! Zwracaj instancję poziomów krwi
 	PLUGIN_DICOM_EXPORT JointTypePtr instanceJointTypes();
 
-	//! Typ jakońci obrazu
+	//! Typ jakości obrazu
 	enum imageTypeDescriptor {
 		incorrect = 0,
 		different = 1,

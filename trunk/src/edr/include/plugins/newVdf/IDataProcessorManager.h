@@ -19,7 +19,7 @@ namespace vdf{
     class IDataProcessorManager :  public utils::Observable<IDataProcessorManager>
     {
     public:
-        //! Lista element�w przetwarzaj�cych.
+        //! Lista elementów przetwarzających.
         typedef std::vector<vdf::IDataProcessorPtr> IDataProcessors;
         //! 
         typedef boost::iterator_range<IDataProcessors::const_iterator> IDataProcessorsConstRange;

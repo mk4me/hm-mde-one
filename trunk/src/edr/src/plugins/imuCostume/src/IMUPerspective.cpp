@@ -33,7 +33,7 @@ typedef utils::Filesystem fs;
 c3dlib::VectorChannelPtr IMU::IMUPerspective::createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit)
 {
 	auto c = utils::make_shared<c3dlib::VectorChannel>((float)hz);
-    // + 1 , bo numeracja w plikach *.cfg zaczyna si� od 1
+    // + 1 , bo numeracja w plikach *.cfg zaczyna się od 1
     c->setName(generateChannelName(config, i + 1));
 	c->setValueBaseUnit(unit);
 
@@ -103,7 +103,7 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 				kinematic::SkeletonConstPtr sm = sml.front()->get();
 
 				//kinematic::JointAnglesCollectionPtr ja = utils::make_shared<kinematic::JointAnglesCollection>();
-				//TODO - uzype�ni� szkielet + dane
+				//TODO - uzypełnić szkielet + dane
 				//ja->setSkeletal(sm, *sd);
 				//auto jaWrapper = utils::ObjectWrapper::create<kinematic::JointAnglesCollection>();
 				//ja->setLengthRatio(0.1);

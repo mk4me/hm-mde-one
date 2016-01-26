@@ -196,7 +196,7 @@ namespace core {
 		auto pm = getParserManager();
 		auto hm = getRegisteredDataTypesManager();
 
-		//jeżli pliku nie ma dodaj go, stwórz parsery i rozszerz dostępne dane wraz z ich opisem
+		//jeżeli pliku nie ma dodaj go, stwórz parsery i rozszerz dostępne dane wraz z ich opisem
 		for (auto parserIT = parsers.begin(); parserIT != parsers.end(); ++parserIT) {
 			// tworzymy współdzielone dane dla inicjalizatorów
 			CompoundInitializer::CompoundDataPtr cid = utils::make_shared<CompoundInitializer::CompoundData>();
