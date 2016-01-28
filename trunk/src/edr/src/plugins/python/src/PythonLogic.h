@@ -32,7 +32,7 @@ namespace python {
 	class PythonLogic
 	{
 	public:
-		PythonLogic(MdeBridgeConstPtr bridge);
+		PythonLogic(MdeBridgeConstPtr bridge, const std::string& pythonPath);
 		virtual ~PythonLogic();
 		typedef boost::python::object object;
 

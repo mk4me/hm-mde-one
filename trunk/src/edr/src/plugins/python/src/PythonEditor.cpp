@@ -23,7 +23,8 @@ QTextEdit* PythonEditor::createPythonEditor()
 	PythonEditor* editor = new PythonEditor;
 	editor->setFont(font);
 
-	//QSyntaxHighlighter* highlighter = new PythonHighlighter(editor->document());
+	QSyntaxHighlighter* highlighter = new PythonHighlighter(editor->document());
+	highlighter->setParent(editor);
 	//editor->setMinimumSize(600, 600);
 	editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	editor->setStyleSheet("border: 1px solid red");

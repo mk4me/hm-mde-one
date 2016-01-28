@@ -33,7 +33,7 @@ END_PROJECTS_GROUP()
 
 BEGIN_PROJECTS_GROUP("python plugins")
 ADD_PROJECT(plugin_python "dflib;plugin_hmdbCommunication;plugin_c3d;coreui;plugin_newVdf;BOOST;PYTHON;QT;corelib" "plugins/python")
-ADD_PROJECT(plugin_simplePython "BOOST;PYTHON;plugin_python" "plugins/simplePython")
+ADD_PROJECT(plugin_mdePython "BOOST;PYTHON;plugin_python" "plugins/mdePython")
 ADD_PROJECT(plugin_communicationPython "BOOST;PYTHON;plugin_python;plugin_hmdbCommunication" "plugins/communicationPython")
 END_PROJECTS_GROUP()
 

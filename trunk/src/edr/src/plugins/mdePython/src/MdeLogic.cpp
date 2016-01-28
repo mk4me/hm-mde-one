@@ -1,4 +1,4 @@
-#include "SimpleLogic.h"
+#include "MdeLogic.h"
 #include <boost/python.hpp>
 #include "corelib/ISourceManager.h"
 #include "corelib/PluginCommon.h"
@@ -111,7 +111,7 @@ struct SimpleWorld : private python::PythonPluginUtils
 		int number;
     };
 
-MDE_PYTHON_MODULE(plugin_simplePython)
+MDE_PYTHON_MODULE(plugin_mdePython)
 {
     class_<SimpleWorld>("SimpleWorld")
 		.def("greet", &SimpleWorld::greet)

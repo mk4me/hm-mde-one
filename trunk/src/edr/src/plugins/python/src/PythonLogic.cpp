@@ -4,15 +4,27 @@
 #include <boost/python.hpp>
 #include <osg/Vec3>
 #include "MdeBridge.h"
+#include "loglib/Exceptions.h"
+#include "plugins/python/PythonPluginUtils.h"
 
 
 using namespace boost::python;
 
 python::PythonStdIoRedirect::ContainerType python::PythonStdIoRedirect::m_outputs;
 
-python::PythonLogic::PythonLogic(MdeBridgeConstPtr bridge) : 
+python::PythonLogic::PythonLogic(MdeBridgeConstPtr bridge, const std::string& pythonPath) : 
 	bridge(bridge)
 {
+	if (!pythonPath.empty()) {
+		Py_SetPythonHome(const_cast<char*>(pythonPath.c_str()));
+	}
+	char* home = Py_GetPythonHome();
+	if (home == nullptr) {
+		throw loglib::runtime_error("No python directory specified");
+	}
+	PLUGIN_LOG_INFO("Python home: " << Py_GetPythonHome());
+	
+	PLUGIN_LOG_INFO("Initializing python");
     Py_Initialize();
 
     mainModule = import("__main__");
@@ -31,6 +43,7 @@ python::PythonLogic::PythonLogic(MdeBridgeConstPtr bridge) :
 		.def("listLoadedVectors", &python::MdeBridge::listLoadedVectors);
 
 	mainNamespace["mde"] = ptr(bridge.get());
+	PLUGIN_LOG_INFO("Python started");
 }
 
 python::PythonLogic::~PythonLogic()
@@ -54,7 +67,7 @@ struct World
 		int number;
     };
 
-BOOST_PYTHON_MODULE(plugin_python)
+MDE_PYTHON_MODULE(plugin_python)
 {
     class_<World>("World")
         .def("greet", &World::greet)

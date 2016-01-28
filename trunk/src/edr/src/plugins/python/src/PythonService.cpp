@@ -6,6 +6,8 @@
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QLabel>
+#include <QtCore/QCoreApplication>
+#include "QtCore/QCommandLineParser"
 #include <QtGui/QFont>
 #include "PythonConsole.h"
 #include "QtWidgets/QAction"
@@ -40,12 +42,42 @@ void PythonService::init(core::ISourceManager * sourceManager,
 {
 	bridge = utils::make_shared<MdeBridge>();
 	bridge->setManagers(sourceManager, visualizerManager, memoryDataManager, streamDataManager, fileDataManager, hierarchyDataManager);
-	logic = utils::make_shared<PythonLogic>(bridge);
+	
+	auto args = QCoreApplication::arguments();
+	QCommandLineParser parser;
+	QCommandLineOption homeOption(QStringList() << "python-home",
+		QCoreApplication::translate("main", "Python home directory"),
+		QCoreApplication::translate("main", "path"));
+	parser.addOption(homeOption);
+	QCommandLineOption script(QStringList() << "python-script",
+		QCoreApplication::translate("main", "Python script to run"),
+		QCoreApplication::translate("main", "path"));
+	parser.addOption(script);
+	if (!parser.parse(args)) {
+		PLUGIN_LOG_INFO(parser.errorText().toStdString());
+	}
+
+	for (auto& s : args) {
+		PLUGIN_LOG_INFO(s.toStdString());
+	}
+
+	std::string path;
+	if (parser.isSet(homeOption)) {
+		path = parser.value(homeOption).toStdString();
+	}
+
+	if (parser.isSet(script)) {
+		this->startingScriptPath = parser.value(script).toStdString();
+	}
+	logic = utils::make_shared<PythonLogic>(bridge, path);
 	hierarchyManager = hierarchyDataManager;
 }
 
 QWidget* PythonService::getWidget( )
 {
+	if (!logic) {
+		return nullptr;
+	}
 	if (editor == nullptr){
 		console = new python::PythonConsole(logic);
 
@@ -57,8 +89,21 @@ QWidget* PythonService::getWidget( )
 		actions.push_back(run);
 
 		editor->addActions(actions);
-		QString text("print \"Hello world\"\nresult = 5 * 4");
-		editor->setPlainText(text);
+		
+		if (!startingScriptPath.empty()) {
+			std::ifstream inFile(startingScriptPath);
+			if (inFile.is_open()) {
+				std::stringstream strStream;
+				strStream << inFile.rdbuf();
+				QString text = QString::fromStdString(strStream.str());
+				inFile.close();
+				editor->setPlainText(text);
+				runScript();
+			}
+		}
+		else {
+			editor->setPlainText("print \"Hello world\"\nresult = 5 * 4");
+		}
 	}
 
     return editor;

@@ -64,6 +64,7 @@ namespace python {
 		python::PythonConsole* console;
 		MdeBridgePtr bridge;
 		core::IDataHierarchyManager* hierarchyManager;
+		std::string startingScriptPath;
 	};
 }
 #endif //   HEADER_GUARD_SUBJECT__SUBJECTSERVICE_H__

@@ -1,12 +1,12 @@
 BEGIN_PYTHON_PROJECT()
 
 SET_PRIVATE_HEADERS(
-	SimpleLogic.h
+	MdeLogic.h
 )
 
 SET_SOURCE_FILES (
 	PythonPlugin.cpp
-	SimpleLogic.cpp
+	MdeLogic.cpp
 )
 
 

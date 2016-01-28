@@ -20,6 +20,7 @@ void python::MdeBridge::setManagers(core::ISourceManager * sourceManager, core::
 	this->memoryDataManager = memoryDataManager;
 	this->streamDataManager = streamDataManager;
 	this->fileDataManager = fileDataManager;
+	this->hierarchyDataManager = hierarchyDataManager;
 }
 
 python::PythonDataChannel python::MdeBridge::getVectorChannel(const std::string& sessionDesc, const std::string& dataDesc)
