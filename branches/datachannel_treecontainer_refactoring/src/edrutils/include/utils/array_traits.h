@@ -234,13 +234,24 @@ namespace utils
 		}
 	};
 
+	//! \tparam T Typ rpzechowywany w tablicy
+	//! \tparam Size Rozmiar tablicy
+	template <class T, std::size_t Size>
 	//! Zwraca rozmiar tablicy w bajtach
 	//! \param fixedArray Tablica
 	//! \return Rozmiar tablicy
-	template <class T, std::size_t Size>
 	static inline std::size_t memory_size(const T(&array)[Size])
 	{
 		return sizeof(array);
+	}
+
+	//! Zwraca rozmiar tablicy w bajtach
+	//! \param fixedArray Tablica
+	//! \return Rozmiar tablicy
+	template <class T>
+	static inline std::size_t memory_size(const T & array)
+	{
+		return sizeof(array) + ((sizeof(array) >= (size(array) * sizeof(array_type<T>::type))) ? 0 : (size(array) * sizeof(array_type<T>::type)));
 	}
 }
 

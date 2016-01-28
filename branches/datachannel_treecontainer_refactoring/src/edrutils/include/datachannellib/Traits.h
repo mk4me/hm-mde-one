@@ -23,38 +23,41 @@ namespace dataaccessor
 	//! Typ funkcyjnego wskaŸnika na bazie akcesora
 	using ExtractedFunctionConstPtr = FunctionAccessorConstPtr<typename T::value_type, typename T::argument_type>;
 
-	//! \tparam T Typ badany pod k¹tem opisu typów wartoœci i argumentów
-	template <typename T>
-	//! Klasa pomocnicza przy detekcji kompletnego opisu akcesora (typy wartoœci i argumentów)
-	struct has_data_description_impl
+	namespace impl
 	{
-		//! \tparam U Typ badany pod k¹tem opisu argumentów
-		template<typename U>
-		//! \return Prawda jeœli uda siê dopasowaæ
-		static auto test_argument_type(typename U::argument_type* p) -> std::true_type;
-		//! \tparam U Typ badany pod k¹tem opisu argumentów
-		template<typename U>
-		//! \return Fa³sz jeœli uda siê dopasowaæ
-		static auto test_argument_type(...)->std::false_type;
-		
-		//! \tparam U Typ badany pod k¹tem opisu wartoœci
-		template<typename U>
-		//! \return Prawda jeœli uda siê dopasowaæ
-		static auto test_value_type(typename U::value_type* p)->std::true_type;
-		//! \tparam U Typ badany pod k¹tem opisu wartoœci
-		template<typename U>
-		//! \return Fa³sz jeœli uda siê dopasowaæ
-		static auto test_value_type(...)->std::false_type;
+		//! \tparam T Typ badany pod k¹tem opisu typów wartoœci i argumentów
+		template <typename T>
+		//! Klasa pomocnicza przy detekcji kompletnego opisu akcesora (typy wartoœci i argumentów)
+		struct has_data_description
+		{
+			//! \tparam U Typ badany pod k¹tem opisu argumentów
+			template<typename U>
+			//! \return Prawda jeœli uda siê dopasowaæ
+			static auto test_argument_type(typename U::argument_type* p)->std::true_type;
+			//! \tparam U Typ badany pod k¹tem opisu argumentów
+			template<typename U>
+			//! \return Fa³sz jeœli uda siê dopasowaæ
+			static auto test_argument_type(...)->std::false_type;
 
-		//! Typ opisuj¹cy dostêpnoœæ informacji o typach wartoœci i argumentów
-		using type = std::integral_constant<bool, std::is_same<decltype(test_argument_type<T>(0)), std::true_type>::value &&
-			std::is_same<decltype(test_value_type<T>(0)), std::true_type>::value>;
-	};
+			//! \tparam U Typ badany pod k¹tem opisu wartoœci
+			template<typename U>
+			//! \return Prawda jeœli uda siê dopasowaæ
+			static auto test_value_type(typename U::value_type* p)->std::true_type;
+			//! \tparam U Typ badany pod k¹tem opisu wartoœci
+			template<typename U>
+			//! \return Fa³sz jeœli uda siê dopasowaæ
+			static auto test_value_type(...)->std::false_type;
+
+			//! Typ opisuj¹cy dostêpnoœæ informacji o typach wartoœci i argumentów
+			using type = std::integral_constant<bool, std::is_same<decltype(test_argument_type<T>(0)), std::true_type>::value &&
+				std::is_same<decltype(test_value_type<T>(0)), std::true_type>::value>;
+		};
+	}
 
 	//! \tparam T Typ badany pod k¹tem opisu typów wartoœci i argumentów
 	template<typename T>
 	//! Klasa z informacj¹ o kompletnym opisie akcesora
-	struct has_data_description : public has_data_description_impl<T>::type {};	
+	struct has_data_description : public impl::has_data_description<T>::type {};	
 
 	//! \tparam T Typ z którego wnioskujemy dyskretny akcesor
 	template<typename T>
@@ -66,74 +69,94 @@ namespace dataaccessor
 	//! Typ ci¹g³ego akcesora na bazie innego typu
 	using ExtractedFunctionAccessor = IFunctionAccessorT<typename T::value_type, typename T::argument_type>;
 
-	//! \tparam T Badany typ pod k¹tem dyskretnego akcesora
-	//! \tparam dummy
-	template <typename T, bool>
-	//! Domyœlna implementacja - fa³sz
-	struct is_valid_discrete_accessor_impl : public std::false_type {};
+	namespace impl
+	{
+		//! \tparam T Badany typ pod k¹tem dyskretnego akcesora
+		//! \tparam dummy
+		template <typename T, bool>
+		//! Domyœlna implementacja - fa³sz
+		struct is_valid_discrete_accessor : public std::false_type {};
 
-	//! \tparam T Badany typ pod k¹tem dyskretnego akcesora
-	template <typename T>
-	//! Implementacja kiedy typ ma opis odpowiadaj¹cy akcesorowi - prawda kiedy spe³nione s¹ pozosta³e warunki
-	struct is_valid_discrete_accessor_impl<T, true> : public std::integral_constant<bool, std::is_base_of<ExtractedDiscreteAccessor<T>, T>::value && !std::is_base_of<ExtractedFunctionAccessor<T>, T>::value> {};
+		//! \tparam T Badany typ pod k¹tem dyskretnego akcesora
+		template <typename T>
+		//! Implementacja kiedy typ ma opis odpowiadaj¹cy akcesorowi - prawda kiedy spe³nione s¹ pozosta³e warunki
+		struct is_valid_discrete_accessor<T, true> : public std::integral_constant<bool, std::is_base_of<ExtractedDiscreteAccessor<T>, T>::value && !std::is_base_of<ExtractedFunctionAccessor<T>, T>::value> {};
+	}
 
 	//! \tparam T Badany typ pod k¹tem dyskretnego akcesora
 	template<typename T>
 	//! Klasa z informacj¹ czy badany tym ma charakter dyskretnego akcesora
-	struct is_valid_discrete_accessor : public is_valid_discrete_accessor_impl<T, has_data_description<T>::value>::type {};
+	struct is_valid_discrete_accessor : public impl::is_valid_discrete_accessor<T, has_data_description<T>::value>::type {};
 
-	//! \tparam T Badany typ pod k¹tem funkcyjnego akcesora
-	//! \tparam dummy
-	template <typename T, bool>
-	//! Domyœlna implementacja - fa³sz
-	struct is_valid_function_accessor_impl : public std::false_type {};
+	namespace impl
+	{
+		//! \tparam T Badany typ pod k¹tem funkcyjnego akcesora
+		//! \tparam dummy
+		template <typename T, bool>
+		//! Domyœlna implementacja - fa³sz
+		struct is_valid_function_accessor : public std::false_type {};
 
-	//! \tparam T Badany typ pod k¹tem funkcyjnego akcesora
-	template <typename T>
-	//! Implementacja kiedy typ ma opis odpowiadaj¹cy akcesorowi - prawda kiedy spe³nione s¹ pozosta³e warunki
-	struct is_valid_function_accessor_impl<T, true> : public std::integral_constant<bool, !std::is_base_of<ExtractedDiscreteAccessor<T>, T>::value && std::is_base_of<ExtractedFunctionAccessor<T>, T>::value> {};
+		//! \tparam T Badany typ pod k¹tem funkcyjnego akcesora
+		template <typename T>
+		//! Implementacja kiedy typ ma opis odpowiadaj¹cy akcesorowi - prawda kiedy spe³nione s¹ pozosta³e warunki
+		struct is_valid_function_accessor<T, true> : public std::integral_constant<bool, !std::is_base_of<ExtractedDiscreteAccessor<T>, T>::value && std::is_base_of<ExtractedFunctionAccessor<T>, T>::value> {};
+	}
 
 	//! \tparam T Badany typ pod k¹tem funkcyjnego akcesora
 	template<typename T>
 	//! Klasa z informacj¹ czy badany tym ma charakter funkcyjnego akcesora
-	struct is_valid_function_accessor : public is_valid_function_accessor_impl<T, has_data_description<T>::value>::type {};	
+	struct is_valid_function_accessor : public impl::is_valid_function_accessor<T, has_data_description<T>::value>::type {};	
 
 	//! \tparam T Typ sprawdzany pod k¹tem poprawnoœci akcesora
 	template<typename T>
 	//! Typ z informacj¹ o poprawnoœci akcesora (jeden z interfejsów)
 	struct is_valid_accessor : public utils::xor_check<is_valid_function_accessor<T>::value, is_valid_discrete_accessor<T>::value>::type {};
 
-	//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
-	//! \tparam dummy
-	template<typename T, bool>
-	//! Czeœciowa specjalizacja - fa³sz
-	struct is_valid_discrete_accessor_ptr_impl : public std::false_type {};
+	//! \tparam T Typ implementuj¹cy jeden z interfejsów akcesorów (dyskretny/funkcja)
+	//! \tparam dummy Weryfikacja ¿e mamy do czynienia z poprawnym akcesorem
+	template<typename T, typename std::enable_if<is_valid_accessor<T>::value>::type * = 0>
+	struct accessor_interface
+	{
+		using type = typename std::conditional<is_valid_discrete_accessor<T>::value, typename ExtractedDiscreteAccessor<T>::type, typename ExtractedFunctionAccessor<T>::type>::type;
+	};
 
-	//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
-	template<typename T>
-	//! Czêœciowa specjalizacja - weryfikacja warunków	
-	struct is_valid_discrete_accessor_ptr_impl<T, true> : public std::is_convertible<T, ExtractedDiscreteConstPtr<typename utils::clean_pointed_type<T>::type>>::type {};
+	namespace impl
+	{
+		//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
+		//! \tparam dummy
+		template<typename T, bool>
+		//! Czeœciowa specjalizacja - fa³sz
+		struct is_valid_discrete_accessor_ptr : public std::false_type {};
 
-	//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
-	template<typename T>
-	//! Czêœciowa specjalizacja - weryfikacja warunków
-	struct is_valid_discrete_accessor_ptr : public is_valid_discrete_accessor_ptr_impl<T, utils::is_like_smart_pointer<T>::value> {};
-
-	//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
-	//! \tparam dummy
-	template<typename T, bool>
-	//! Czeœciowa specjalizacja - fa³sz
-	struct is_valid_function_accessor_ptr_impl : public std::false_type {};
-
-	//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
-	template<typename T>
-	//! Czêœciowa specjalizacja - weryfikacja warunków	
-	struct is_valid_function_accessor_ptr_impl<T, true> : public std::is_convertible<T, ExtractedFunctionConstPtr<typename utils::clean_pointed_type<T>::type>>::type {};
+		//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
+		template<typename T>
+		//! Czêœciowa specjalizacja - weryfikacja warunków	
+		struct is_valid_discrete_accessor_ptr<T, true> : public std::is_convertible<T, ExtractedDiscreteConstPtr<typename utils::clean_pointed_type<T>::type>>::type {};
+	}
 
 	//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
 	template<typename T>
 	//! Czêœciowa specjalizacja - weryfikacja warunków
-	struct is_valid_function_accessor_ptr : public is_valid_function_accessor_ptr_impl<T, utils::is_like_smart_pointer<T>::value> {};
+	struct is_valid_discrete_accessor_ptr : public impl::is_valid_discrete_accessor_ptr<T, utils::is_like_smart_pointer<T>::value> {};
+
+	namespace impl
+	{
+		//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
+		//! \tparam dummy
+		template<typename T, bool>
+		//! Czeœciowa specjalizacja - fa³sz
+		struct is_valid_function_accessor_ptr : public std::false_type {};
+
+		//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
+		template<typename T>
+		//! Czêœciowa specjalizacja - weryfikacja warunków	
+		struct is_valid_function_accessor_ptr<T, true> : public std::is_convertible<T, ExtractedFunctionConstPtr<typename utils::clean_pointed_type<T>::type>>::type {};
+	}
+
+	//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
+	template<typename T>
+	//! Czêœciowa specjalizacja - weryfikacja warunków
+	struct is_valid_function_accessor_ptr : public impl::is_valid_function_accessor_ptr<T, utils::is_like_smart_pointer<T>::value> {};
 
 	//! \tparam T Typ weryfikowany pod k¹tem poprawnoœci wskaŸnika do akcesora
 	//! \tparam dummy

@@ -1,9 +1,9 @@
 /********************************************************************
-	created:  2015/07/27	09:45:53
-	filename: WrapperHelpers.h
-	author:	  Mateusz Janiak
+created:  2015/07/27	09:45:53
+filename: WrapperHelpers.h
+author:	  Mateusz Janiak
 
-	purpose:
+purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD_DATACHANNEL__WRAPPERHELPERS_H__
 #define __HEADER_GUARD_DATACHANNEL__WRAPPERHELPERS_H__
@@ -72,7 +72,7 @@ namespace dataaccessor
 			return sample.second;
 		}
 	};
-	
+
 	//! Domyœlny extraktor próbek z kontenerów
 	struct DefaultContainerSampleExtractor
 	{
@@ -82,7 +82,7 @@ namespace dataaccessor
 		//! \param idx Numer próbki któr¹ chcemy pobraæ
 		//! \return Próbka o zadanym indeksie
 		static inline auto sample(const C & container, const std::size_t idx) -> decltype(ContainerValueExtractor::value(container, idx))
-		{			
+		{
 			return ContainerValueExtractor::value(container, idx);
 		}
 	};
@@ -93,7 +93,7 @@ namespace dataaccessor
 	template<typename SValueExtractor,
 		typename SArgumentExtractor,
 		typename CValueExtractor = ContainerValueExtractor>
-	//! Klasa pomocnicza przy wypakowywaniu próbek z kontenerów
+		//! Klasa pomocnicza przy wypakowywaniu próbek z kontenerów
 	class ContainerSampleExtractor : private CValueExtractor,
 		private SValueExtractor, private SArgumentExtractor
 	{
@@ -130,22 +130,15 @@ namespace dataaccessor
 
 		}
 
-		ContainerSampleExtractor(const SValueExtractor & svalueExtractor,
-			const SArgumentExtractor & sargumentExtractor,
-			const CValueExtractor & cvalueExtractor = CValueExtractor())
-			: CValueExtractor(cvalueExtractor),
-			SValueExtractor(svalueExtractor),
-			SArgumentExtractor(sargumentExtractor)
-		{
-
-		}
-
-		ContainerSampleExtractor(SValueExtractor && svalueExtractor,
-			SArgumentExtractor && sargumentExtractor,
-			CValueExtractor && cvalueExtractor)
-			: CValueExtractor(std::move(cvalueExtractor)),
-			SValueExtractor(std::move(svalueExtractor)),
-			SArgumentExtractor(std::move(sargumentExtractor))
+		template<typename SVT = SValueExtractor,
+			typename SAT = SArgumentExtractor,
+			typename CVT = CValueExtractor>
+			ContainerSampleExtractor(SVT && svalueExtractor,
+				SAT && sargumentExtractor,
+				CVT && cvalueExtractor = CValueExtractor())
+			: CValueExtractor(std::forward<CVT>(cvalueExtractor)),
+			SValueExtractor(std::forward<SAT>(svalueExtractor)),
+			SArgumentExtractor(std::forward<SVT>(sargumentExtractor))
 		{
 
 		}
@@ -163,14 +156,14 @@ namespace dataaccessor
 			using RCVal = decltype(CValueExtractor::value(container, idx));
 			RCVal cval = CValueExtractor::value(container, idx);
 			return typename Sample<C>::type(SArgumentExtractor::value(cval), SValueExtractor::value(cval));
-		}	
+		}
 	};
 
 	//! \tparam Container Typ kontenera
 	//! \tparam SampleExtractor Typ ekstraktora próbek akcesora	
 	template<typename Container,
-		typename SampleExtractor>
-	//! Implementacja dyskrentego akseora dla kontenerów danych
+		typename SampleExtractor = DefaultContainerSampleExtractor>
+		//! Implementacja dyskrentego akseora dla kontenerów danych
 	class ContainerDiscreteAccessor : public IOptimizedDiscreteAccessorT<
 		typename std::decay<decltype(std::declval<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0))>().second)>::type,
 		typename std::decay<decltype(std::declval<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0))>().first)>::type>,
@@ -178,29 +171,22 @@ namespace dataaccessor
 	{
 	public:
 
+		template<typename ST = SampleExtractor>
 		ContainerDiscreteAccessor(const Container & container, const std::size_t size,
-			const SampleExtractor & sampleExtractor = SampleExtractor())
-			: SampleExtractor(sampleExtractor), container(container),
+			ST && sampleExtractor = ST())
+			: SampleExtractor(std::forward<ST>(sampleExtractor)), container(container),
 			size_(size), empty_(size == 0)
 		{
 
-		}		
-
-		ContainerDiscreteAccessor(const Container & container, const std::size_t size,
-			SampleExtractor && sampleExtractor)
-			: SampleExtractor(std::move(sampleExtractor)), container(container),
-			size_(size), empty_(size == 0)
-		{
-
-		}		
+		}
 
 		//! Destruktor wirtualny
-		virtual ~ContainerDiscreteAccessor() {}		
+		virtual ~ContainerDiscreteAccessor() {}
 
 		//! \param idx Indeks próbki
 		//! \return Wartoœæ dla danego indeksu
 		virtual sample_type sample(const size_type idx) const override
-		{			
+		{
 			return SampleExtractor::sample(container, idx);
 		}
 
@@ -212,12 +198,16 @@ namespace dataaccessor
 
 	private:
 		//! Kontener z danymi
-		const Container & container;		
+		const Container & container;
 		//! Rozmiar kontenrea
 		const std::size_t size_;
 		//! Czy kontener jest pusty
 		const bool empty_;
 	};
+
+	template<typename Container,
+		typename SampleExtractor = DefaultContainerSampleExtractor>
+		using ContainerDiscreteData = SafeAccessorWrapper<ContainerDiscreteAccessor<Container, SampleExtractor>, Container>;
 
 	//! \tparam Container Typ kontenera
 	//! \tparam SampleExtractor Typ ekstraktora próbek akcesora	
@@ -231,38 +221,13 @@ namespace dataaccessor
 		private ArgumentsGenerator, private ValueExtractor
 	{
 	public:
-
-		ContainerDiscreteGeneratedAccessor(const Container & container, const std::size_t size,
-			const ArgumentsGenerator & argumentsGenerator = ArgumentsGenerator(),
-			const ValueExtractor & valuesExtractor = ValueExtractor())
-			: ArgumentsGenerator(argumentsGenerator), ValueExtractor(valuesExtractor),
-				container(container), size_(size), empty_(size == 0)
-		{
-
-		}
-
-		ContainerDiscreteGeneratedAccessor(const Container & container, const std::size_t size,
-			ArgumentsGenerator && argumentsGenerator,
-			const ValueExtractor & valuesExtractor = ValueExtractor())
-			: ArgumentsGenerator(std::move(argumentsGenerator)), ValueExtractor(valuesExtractor),
-			container(container), size_(size), empty_(size == 0)
-		{
-
-		}
-
-		ContainerDiscreteGeneratedAccessor(const Container & container, const std::size_t size,
-			const ArgumentsGenerator & argumentsGenerator,
-			ValueExtractor && valuesExtractor)
-			: ArgumentsGenerator(argumentsGenerator), ValueExtractor(std::move(valuesExtractor)),
-			container(container), size_(size), empty_(size == 0)
-		{
-
-		}
-
-		ContainerDiscreteGeneratedAccessor(const Container & container, const std::size_t size,
-			ArgumentsGenerator && argumentsGenerator,
-			ValueExtractor && valuesExtractor)
-			: ArgumentsGenerator(std::move(argumentsGenerator)), ValueExtractor(std::move(valuesExtractor)),
+		template<typename AT = ArgumentsGenerator,
+			typename VT = ValueExtractor>
+			ContainerDiscreteGeneratedAccessor(const Container & container, const std::size_t size,
+				AT && argumentsGenerator = AT(),
+				VT && valuesExtractor = VT())
+			: ArgumentsGenerator(std::forward<AT>(argumentsGenerator)),
+			ValueExtractor(std::forward<VT>(valuesExtractor)),
 			container(container), size_(size), empty_(size == 0)
 		{
 
@@ -297,55 +262,9 @@ namespace dataaccessor
 	//! \tparam Container Typ kontenera
 	//! \tparam SampleExtractor Typ ekstraktora próbek akcesora	
 	template<typename Container,
-		typename SampleExtractor>
-		//! Implementacja dyskrentego wrappera danych
-	class ContainerDiscreteData : private utils::ValueCarrier<Container>,
-		public ContainerDiscreteAccessor<Container, SampleExtractor>
-	{
-	public:
-		template<typename T>
-		ContainerDiscreteData(const T & container, const std::size_t size,
-			const SampleExtractor & sampleExtractor = SampleExtractor())
-			: utils::ValueCarrier<Container>(container),
-			ContainerDiscreteAccessor<Container, SampleExtractor>(utils::ValueCarrier<Container>::ref(),
-			size, sampleExtractor)
-		{
-
-		}
-
-		template<typename T>
-		ContainerDiscreteData(const T & container, const std::size_t size,
-			SampleExtractor && sampleExtractor)
-			: utils::ValueCarrier<Container>(container),
-			ContainerDiscreteAccessor<Container, SampleExtractor>(utils::ValueCarrier<Container>::ref(),
-			size, std::move(sampleExtractor))
-		{
-
-		}		
-
-		template<typename T>
-		ContainerDiscreteData(T && container, const std::size_t size,
-			const SampleExtractor & sampleExtractor = SampleExtractor())
-			: utils::ValueCarrier<Container>(std::move(container)),
-			ContainerDiscreteAccessor<Container, SampleExtractor>(utils::ValueCarrier<Container>::ref(),
-			size, sampleExtractor)
-		{
-
-		}
-
-		template<typename T>
-		ContainerDiscreteData(T && container, const std::size_t size,
-			SampleExtractor && sampleExtractor)
-			: utils::ValueCarrier<Container>(std::move(container)),
-			ContainerDiscreteAccessor<Container, SampleExtractor>(utils::ValueCarrier<Container>::ref(),
-			size, std::move(sampleExtractor))
-		{
-
-		}
-
-		//! Destruktor wirtualny
-		virtual ~ContainerDiscreteData() {}
-	};
+		typename ArgumentsGenerator,
+		typename ValueExtractor = ContainerValueExtractor>
+		using ContainerDiscreteGeneratedData = SafeAccessorWrapper<ContainerDiscreteGeneratedAccessor<Container, ArgumentsGenerator, ValueExtractor>, Container>;
 
 	//! \tparam ValuesContainer Typ kontenera z wartoœciami
 	//! \tparam ArgumentsContainer Typ kontenera z argumentami
@@ -353,58 +272,24 @@ namespace dataaccessor
 	//! \tparam ArgumentExtractor Typ obiektu wypakowuj¹cego argumenty z kontenera argumentów
 	template<typename ValuesContainer, typename ArgumentsContainer,
 		typename ValueExtractor, typename ArgumentExtractor>
-	//! Implementacja realizuje dostêp do kana³u dyskretnego w oparciu o niezale¿ne kontenery wartosci i próbek
+		//! Implementacja realizuje dostêp do kana³u dyskretnego w oparciu o niezale¿ne kontenery wartosci i próbek
 	class IndependentContainersDiscreteAccessor : public IIndependentDiscreteAccessorT<
 		typename std::decay<decltype(std::declval<ValueExtractor>().value(std::declval<ValuesContainer>(), 0))>::type,
 		typename std::decay<decltype(std::declval<ArgumentExtractor>().value(std::declval<ArgumentsContainer>(), 0))>::type>,
-		private ValueExtractor, private ArgumentExtractor
+		private ArgumentExtractor, private ValueExtractor
 	{
 	public:
 
-		IndependentContainersDiscreteAccessor(const ValuesContainer & values,
-			const ArgumentsContainer & arguments, const std::size_t vsize,
-			const std::size_t asize,
-			const ValueExtractor & valueExtractor = ValueExtractor(),
-			const ArgumentExtractor & argumentExtractor = ArgumentExtractor())
-			: ValueExtractor(valueExtractor), ArgumentExtractor(argumentExtractor),
+		template<typename VT = ValueExtractor,
+			typename AT = ArgumentExtractor>
+			IndependentContainersDiscreteAccessor(const ValuesContainer & values,
+				const ArgumentsContainer & arguments, const std::size_t vsize,
+				const std::size_t asize, VT && valueExtractor = VT(),
+				AT && argumentExtractor = AT())
+			: ArgumentsGenerator(std::forward<AT>(argumentsGenerator)),
+			ValueExtractor(std::forward<ValueExtractor>(valuesExtractor)),
 			values(values), arguments(arguments), size_(std::min(vsize, asize)),
 			empty_(size_ == 0)
-		{
-
-		}
-
-		IndependentContainersDiscreteAccessor(const ValuesContainer & values,
-			const ArgumentsContainer & arguments, const std::size_t size,
-			const ValueExtractor & valueExtractor = ValueExtractor(),
-			const ArgumentExtractor & argumentExtractor = ArgumentExtractor())
-			: ValueExtractor(valueExtractor), ArgumentExtractor(argumentExtractor),
-			values(values), arguments(arguments), size_(size),
-			empty_(size == 0)
-		{
-
-		}
-
-		IndependentContainersDiscreteAccessor(const ValuesContainer & values,
-			const ArgumentsContainer & arguments, const std::size_t vsize,
-			const std::size_t asize,
-			ValueExtractor && valueExtractor,
-			ArgumentExtractor && argumentExtractor)
-			: ValueExtractor(std::move(valueExtractor)),
-			ArgumentExtractor(std::move(argumentExtractor)),
-			values(values), arguments(arguments), size_(std::min(vsize, asize)),
-			empty_(size_ == 0)
-		{
-
-		}
-
-		IndependentContainersDiscreteAccessor(const ValuesContainer & values,
-			const ArgumentsContainer & arguments, const std::size_t size,
-			ValueExtractor && valueExtractor,
-			ArgumentExtractor && argumentExtractor)
-			: ValueExtractor(std::move(valueExtractor)),
-			ArgumentExtractor(std::move(argumentExtractor)),
-			values(values), arguments(arguments), size_(size),
-			empty_(size == 0)
 		{
 
 		}
@@ -430,11 +315,11 @@ namespace dataaccessor
 		//! Kontener z wartoœciami
 		const ValuesContainer & values;
 		//! Kontener z argumentami
-		const ArgumentsContainer & arguments;		
+		const ArgumentsContainer & arguments;
 		//! Rozmiar danych
 		const std::size_t size_;
 		//! Czy pusty akcesor
-		const bool empty_;		
+		const bool empty_;
 	};
 
 	//! Klasa realizuj¹ca zadanie wrappera dla kontenera - tag pozwala na dziedziczenie
@@ -472,120 +357,20 @@ namespace dataaccessor
 	{
 	public:
 
-		IndependentContainersDiscreteData(const ValuesContainer & values,
-			const ArgumentsContainer & arguments, const std::size_t vsize,
-			const std::size_t asize,
-			const ValueExtractor & valueExtractor = ValueExtractor(),
-			const ArgumentExtractor & argumentExtractor = ArgumentExtractor())
-			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(values),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(arguments),
+		template<typename VCT = utils::ValueCarrier<ValuesContainer>,
+			typename ACT = utils::ValueCarrier<ArgumentsContainer>,
+			typename VT = ValueExtractor,
+			typename AT = ArgumentExtractor>
+			IndependentContainersDiscreteData(VCT && values,
+				ACT && arguments, const std::size_t vsize,
+				const std::size_t asize, VT && valueExtractor = VT(),
+				AT && argumentExtractor = AT())
+			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(std::forward<VCT>(values)),
+			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(std::forward<ACT>(arguments)),
 			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
 			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), vsize, asize,
-			valueExtractor, argumentExtractor)
-		{
-
-		}
-
-		IndependentContainersDiscreteData(const ValuesContainer & values,
-			const ArgumentsContainer & arguments, const std::size_t size,
-			const ValueExtractor & valueExtractor = ValueExtractor(),
-			const ArgumentExtractor & argumentExtractor = ArgumentExtractor())
-			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(values),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(arguments),
-			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), size,
-			valueExtractor, argumentExtractor)
-		{
-
-		}
-
-		IndependentContainersDiscreteData(const ValuesContainer & values,
-			const ArgumentsContainer & arguments, const std::size_t vsize,
-			const std::size_t asize,
-			ValueExtractor && valueExtractor,
-			ArgumentExtractor && argumentExtractor)
-			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(values),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(arguments),
-			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), vsize, asize,
-			valueExtractor, argumentExtractor)
-		{
-
-		}
-
-		IndependentContainersDiscreteData(const ValuesContainer & values,
-			const ArgumentsContainer & arguments, const std::size_t size,
-			ValueExtractor && valueExtractor,
-			ArgumentExtractor && argumentExtractor)
-			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(values),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(arguments),
-			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), vsize, asize,
-			valueExtractor, argumentExtractor)
-		{
-
-		}
-
-		//-----------------------------------------------------------------
-
-		IndependentContainersDiscreteData(ValuesContainer && values,
-			ArgumentsContainer && arguments, const std::size_t vsize,
-			const std::size_t asize,
-			const ValueExtractor & valueExtractor = ValueExtractor(),
-			const ArgumentExtractor & argumentExtractor = ArgumentExtractor())
-			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(std::move(values)),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(std::move(arguments)),
-			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), vsize, asize,
-			valueExtractor, argumentExtractor)
-		{
-
-		}
-
-		IndependentContainersDiscreteData(ValuesContainer && values,
-			ArgumentsContainer && arguments, const std::size_t size,
-			const ValueExtractor & valueExtractor = ValueExtractor(),
-			const ArgumentExtractor & argumentExtractor = ArgumentExtractor())
-			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(std::move(values)),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(std::move(arguments)),
-			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), size,
-			valueExtractor, argumentExtractor)
-		{
-
-		}
-
-		IndependentContainersDiscreteData(ValuesContainer && values,
-			ArgumentsContainer && arguments, const std::size_t vsize,
-			const std::size_t asize,
-			ValueExtractor && valueExtractor,
-			ArgumentExtractor && argumentExtractor)
-			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(std::move(values)),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(std::move(arguments)),
-			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), vsize, asize,
-			valueExtractor, argumentExtractor)
-		{
-
-		}
-
-		IndependentContainersDiscreteData(ValuesContainer && values,
-			ArgumentsContainer && arguments, const std::size_t size,
-			ValueExtractor && valueExtractor,
-			ArgumentExtractor && argumentExtractor)
-			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(std::move(values)),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(std::move(arguments)),
-			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
-			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
-			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), vsize, asize,
-			valueExtractor, argumentExtractor)
+				TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), vsize, asize,
+				std::forward<VT>(valueExtractor), std::forward<AT>(argumentExtractor))
 		{
 
 		}
@@ -598,30 +383,13 @@ namespace dataaccessor
 	class ConstDiscreteData : public IIndependentDiscreteAccessorT<typename std::decay<ValueType>::type, typename std::decay<decltype(std::declval<ArgumentsGenerator>().argument(0))>::type>,
 		private ArgumentsGenerator
 	{
-	public:		
+	public:
 
-		ConstDiscreteData(const ArgumentsGenerator & argumentsGenerator,
-			const ValueType & value) : ArgumentsGenerator(argumentsGenerator), value(value)
-		{
-
-		}
-
-		ConstDiscreteData(ArgumentsGenerator && argumentsGenerator,
-			const ValueType & value) : ArgumentsGenerator(std::move(argumentsGenerator)),
-			value(value)
-		{
-
-		}
-
-		ConstDiscreteData(const ArgumentsGenerator & argumentsGenerator,
-			ValueType && value) : ArgumentsGenerator(argumentsGenerator), value(std::move(value))
-		{
-
-		}
-
-		ConstDiscreteData(ArgumentsGenerator && argumentsGenerator,
-			ValueType && value) : ArgumentsGenerator(std::move(argumentsGenerator)),
-			value(std::move(value))
+		template<typename AT = ArgumentsGenerator,
+			typename VT = ValueType>
+			ConstDiscreteData(AT && argumentsGenerator, VT && value) :
+			ArgumentsGenerator(std::forward<AT>(argumentsGenerator)),
+			value(std::forward<VT>(value))
 		{
 
 		}
@@ -642,27 +410,23 @@ namespace dataaccessor
 
 	private:
 		//! Wartoœæ
-		const ValueType value_;		
+		const ValueType value_;
 	};
 
 	template<typename ValueType, typename ArgumentType>
 	class ConstFunctionData : public IGeneratedFunctionAccessorT<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>
 	{
 	public:
+		template<typename VT = ValueType>
 		//! \param value Wartoœæ kana³u
-		ConstFunctionData(const ValueType & value) : value_(value)
-		{
-
-		}
-		//! \param value Wartoœæ kana³u
-		ConstFunctionData(ValueType && value) : value_(std::move(value))
+		ConstFunctionData(VT && value) : value_(std::forward<VT>(value))
 		{
 
 		}
 
 		//! Destruktor wirtualny
 		virtual ~ConstFunctionData() {}
-		
+
 		//! \param idx Indeks próbki
 		//! \return Argument dla danego indeksu
 		virtual value_type value(const argument_type & argument) const override { return value_; }
@@ -706,15 +470,8 @@ namespace dataaccessor
 		template<typename Func>
 		//! \param func Funktor generuj¹cy wartoœci funkcji
 		FunctionAccessor(Func && func, const bool even = false,
-			const bool odd = false,	const MonotonyType monotony = NonMonotonic)
+			const bool odd = false, const MonotonyType monotony = NonMonotonic)
 			: FunctionAccessorBase(even, odd, monotony), f_(std::forward<Func>(func)) {}
-
-		//! \tparam Func Typ funktora
-		template<typename Func>
-		//! \param func Funktor generuj¹cy wartoœci funkcji
-		FunctionAccessor(const Func & func, const bool even = false,
-			const bool odd = false,	const MonotonyType monotony = NonMonotonic)
-			: FunctionAccessorBase(even, odd, monotony), f_(func) {}
 
 		//! Destruktor
 		virtual ~FunctionAccessor() {}
@@ -736,7 +493,7 @@ namespace dataaccessor
 	{
 	public:
 		//! \param obj Obiekt na którym wo³amy funkcjê
-		FunctionAccessor(const Object * const obj, Ret(Object::*const func)(Arg)const,
+		FunctionAccessor(const Object & obj, Ret(Object::*const func)(Arg)const,
 			const bool even = false, const bool odd = false,
 			const MonotonyType monotony = NonMonotonic)
 			: FunctionAccessorBase(even, odd, monotony), obj(obj), func(func) {}
@@ -745,51 +502,21 @@ namespace dataaccessor
 		virtual ~FunctionAccessor() {}
 		//! \param argument Argument dla któego odpytujemy o wartoœæ
 		//! \return Wartoœæ dla zadanego argumentu
-		virtual value_type value(const argument_type & argument) const override { return (obj->*func)(argument); }
+		virtual value_type value(const argument_type & argument) const override { return (obj.*func)(argument); }
 
 	private:
 		//! Obiekt
-		const Object * const obj;
+		const Object & obj;
 		//! Metoda
 		Ret(Object::* const func)(Arg)const;
 	};
-
-	//! Forward declatration dla danych w obiektach, gdzie kopiujemy obiekt lub przenosimy go
-	template<typename>
-	class DataFunctionAccessor;
 
 	//! \tparam Ret Typ wartoœci zwracanej z funckji
 	//! \tparam Arg Typ wartoœci argumentu funkcji
 	//! \tparam Object Typ obiektu który dostarcza danych
 	template<typename Ret, typename Arg, typename Object>
 	//! Implementacja wrappera dla funkcji ci¹g³ej
-	class DataFunctionAccessor<Ret(Object::*)(Arg)const> : public FunctionAccessorBase<Ret, Arg>
-	{
-	public:
-		//! \param obj Obiekt na którym wo³amy funkcjê
-		DataFunctionAccessor(const Object & obj, Ret(Object::*const func)(Arg)const,
-			const bool even = false, const bool odd = false,
-			const MonotonyType monotony = NonMonotonic)
-			: FunctionAccessorBase(even, odd, monotony), obj(obj), func(func) {}
-
-		//! \param obj Obiekt na którym wo³amy funkcjê
-		DataFunctionAccessor(Object && obj, Ret(Object::*const func)(Arg)const,
-			const bool even = false, const bool odd = false,
-			const MonotonyType monotony = NonMonotonic)
-			: FunctionAccessorBase(even, odd, monotony), obj(std::move(obj)), func(func) {}
-
-		//! Destruktor
-		virtual ~DataFunctionAccessor() {}
-		//! \param argument Argument dla któego odpytujemy o wartoœæ
-		//! \return Wartoœæ dla zadanego argumentu
-		virtual value_type value(const argument_type & argument) const override { return ((&obj)->*func)(argument); }
-
-	private:
-		//! Obiekt
-		const Object obj;
-		//! Metoda
-		Ret(Object::* const func)(Arg)const;
-	};
+	using DataFunctionAccessor = SafeAccessorWrapper<FunctionAccessor<Ret(Object::*)(Arg)const>, Object>;
 }
 
 #endif	// __HEADER_GUARD_DATACHANNEL__WRAPPERHELPERS_H__

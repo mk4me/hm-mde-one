@@ -12,32 +12,21 @@
 
 namespace dataaccessor
 {
-	//! \tparam Accessor Typ akcesora który bêdziemy przechowywaæ bezpiecznie
 	//! \tparam Impl Implementacja która bazuje na damnym akcesorze
-	template<typename Accessor, typename Impl>
+	//! \tparam Accessor Typ akcesora który bêdziemy przechowywaæ bezpiecznie
+	template<typename Impl, typename T = typename Impl::accessor_type>
 	//! Klasa pomocnicza realizuj¹ca bezpieczny wrapper - trzyma dane na których chcemy operaowaæ
-	class SafeAccessorWrapper : public Impl, private utils::ValueCarrier<Accessor>
+	class SafeAccessorWrapper : public Impl, private utils::ValueCarrier<T>
 	{
 	public:
 		//! \tparam U Typ akcesora
 		//! \tparam Args Typy argumentów przekazywane do akcesora
 		template<typename U, class... Args>
-		//! \param accessor Akcesor którego wrapujemy
+		//! \param value Wartoœæ
 		//! \param arguments Argumenty przenoszone do implementacji wrappera
-		SafeAccessorWrapper(const U & accessor, Args&&... arguments)
-			: utils::ValueCarrier<Accessor>(accessor),
-			Impl(utils::ValueCarrier<Accessor>::ref(), std::move(arguments)...)
-		{
-		}
-
-		//! \tparam U Typ akcesora
-		//! \tparam Args Typy argumentów przekazywane do akcesora
-		template<typename U, class... Args>
-		//! \param accessor Akcesor którego wrapujemy
-		//! \param arguments Argumenty kopiowane do implementacji wrappera
-		SafeAccessorWrapper(const U & accessor, Args... arguments)
-			: utils::ValueCarrier<Accessor>(accessor),
-			Impl(utils::ValueCarrier<Accessor>::ref(), std::forward<Args>(arguments)...)
+		SafeAccessorWrapper(U && value, Args&&... arguments)
+			: utils::ValueCarrier<T>(std::forward<U>(value)),
+			Impl(utils::ValueCarrier<T>::ref(), std::forward<Args>(arguments)...)
 		{
 		}
 

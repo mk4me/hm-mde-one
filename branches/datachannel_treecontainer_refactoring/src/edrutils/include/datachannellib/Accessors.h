@@ -279,6 +279,10 @@ namespace dataaccessor
 	class IFunctionAccessorT : public IAccessorT<ValueType, ArgumentType>
 	{
 	public:
+		//! Typ mojego akcesora
+		using accessor_type = IFunctionAccessorT<ValueType, ArgumentType>;
+
+	public:
 		//! Destruktor wirtualny
 		virtual ~IFunctionAccessorT() {}
 		//! \param argument Argument dla któego odpytujemy o wartość
@@ -425,6 +429,12 @@ namespace dataaccessor
 		public IDiscreteValueAccessorT<ValueType>,
 		public IDiscreteArgumentAccessorT<ArgumentType>				
 	{
+	public:
+
+	public:
+		//! Typ mojego akcesora
+		using accessor_type = IDiscreteAccessorT<ValueType, ArgumentType>;
+
 	public:
 		//! Wirtualny destruktor
 		virtual ~IDiscreteAccessorT() {};

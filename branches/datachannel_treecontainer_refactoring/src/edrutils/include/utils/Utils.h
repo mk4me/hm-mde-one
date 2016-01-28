@@ -34,6 +34,14 @@ namespace utils {
 		using type = typename std::remove_cv<typename std::remove_reference<T>::type>::type;
 	};
 
+	//! \tparam T Typ który "czyścimy"
+	template<typename T>
+	//! Klasa pomocnicza przy "oczyszczaniu" typów
+	struct add_const_reference
+	{
+		using type = typename std::add_reference<typename std::add_const<T>::type>::type;
+	};
+
 	//! \tparam T Typ dla którego próbujemy ustalić najmniejszy możliwy krok
 	template< class T >
 	//! Klasa pomocnicza przy określaniu najmniejszego kroku dla danego typu
@@ -278,14 +286,7 @@ template<bool T, bool U>
 //! Typ pomocniczy realizujący statycznie funkcję logiczną xor
 struct xor_check : public std::integral_constant<bool, T != U> {};
 
-//! Makro z nazwą extractora danego pola
-#define MEMBER_EXTRACTOR_NAME(memberName) MemberExtractor##memberName
-
-//! Makro definujące dany extractor generyczny
-#define MEMBER_EXTRACTOR(memberName) \
-struct MEMBER_EXTRACTOR_NAME(memberName){\
-template<typename T> inline static auto extract(const T & value) -> decltype((value.memberName)) { return value.memberName; }\
-};
+#define ENABLE_IF(...) typename std::enable_if<(__VA_ARGS__)>::type * = 0
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace util

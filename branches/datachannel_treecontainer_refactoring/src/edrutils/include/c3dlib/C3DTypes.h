@@ -57,8 +57,7 @@ namespace  c3dlib {
 
 		C3DChannelWrapper(const SignalType& signal, const argument_type step, const std::size_t size)
 			: signal(signal),
-			argumentsGenerator(step, 0.0,
-			step * size) {
+			argumentsGenerator(step, size) {
 
 			if (signal == nullptr) {
 				throw std::runtime_error("No points signal");

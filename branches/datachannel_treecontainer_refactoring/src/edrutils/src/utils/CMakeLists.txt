@@ -8,6 +8,7 @@ endif()
 CONFIG_OPTION(UTILS_ENABLE_PRIVATE_TESTS "Enable private class members testing?" OFF)
 
 SET_PUBLIC_HEADERS(
+	MemberExtractor.h
 	array_traits.h
 	container_traits.h
 	Clamping.h

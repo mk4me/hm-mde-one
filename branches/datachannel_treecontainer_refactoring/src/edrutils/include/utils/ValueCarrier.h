@@ -8,7 +8,7 @@
 #ifndef __HEADER_GUARD_UTILS__VALUECARRIER_H__
 #define __HEADER_GUARD_UTILS__VALUECARRIER_H__
 
-#include <utils/pointer_traits.h>
+#include <utils/MemberExtractor.h>
 
 namespace utils
 {
@@ -19,32 +19,18 @@ namespace utils
 	//! Klasa realizuje bezpieczne przechowywanie danych
 	class ValueCarrier
 	{
-		//! \tparam U Typ przechowywany
-		template<typename U, bool>
-		struct ValueTypeImpl
-		{
-			using type = U;
-		};
-
-		//! \tparam SmartPtr Inteligentny wskaŸnik z którego wy³uskujemy przechoywany typ
-		template<typename SmartPtr>
-		struct ValueTypeImpl<SmartPtr, true>
-		{
-			using type = typename std::decay<typename pointed_type<SmartPtr>::type>::type;
-		};
-
-		template<typename T>
-		struct ValueType : public ValueTypeImpl<T, is_like_smart_pointer<T>::value> {};
+		//! \tparam U Typ dla którego chcemy dostaæ ekstraktor
+		template<typename U>
+		//! Typ domyœlnego ekstraktora
+		using DefaultExtractor = typename std::conditional<is_like_smart_pointer<U>::value, PointerExtractor, TransparentExtractor>::type;
 
 	public:
 		//! Typ referencji jakiej dostarczamy
-		using ref_type = typename std::add_reference<typename std::add_const<T>::type>::type;
+		using type = T;
+		//! Typ referencji jakiej dostarczamy
+		using const_ref_type = typename utils::add_const_reference<type>::type;
 
 	private:
-
-		//! Forward declaration
-		template<typename U, typename = void>
-		class ValueCarrierImpl;
 
 		//! Klasa bazowa gwarantuj¹ca dostêp do danych
 		class ValueCarrierBase
@@ -53,34 +39,34 @@ namespace utils
 			//! Destruktor wirtualny
 			virtual ~ValueCarrierBase() {}
 			//! \return Referencja do przechowywanej wartoœci
-			virtual ref_type ref() const = 0;
+			virtual const_ref_type ref() const = 0;
 		};
 
-		template<>
+		template<typename U, typename E>
 		//! Specjalizacja dla prostego przechowywania przez wartoœæ
-		class ValueCarrierImpl<T, void> : public ValueCarrierBase
+		class ValueCarrierImpl : public ValueCarrierBase, private E
 		{
 		public:
+			//! Perfect forwarding penalty
+			template<typename UU = U, typename EE = E>
 			//! \param value Kopiowana wartoœæ do przechowania
-			ValueCarrierImpl(const T & value) : value_(value) {}
-			//! \param value Przenoszona wartoœæ do przechowania
-			ValueCarrierImpl(T && value) : value_(std::move(value)) {}
+			//! \param e Extractor
+			ValueCarrierImpl(UU && value, EE && e = EE()) : E(std::forward<EE>(e)), value_(std::forward<<UU>(value)) {}
 			//! Destruktor wirtualny
 			virtual ~ValueCarrierImpl() {}
 			//! \return Referencja do przechowywanej wartoœci
-			virtual ref_type ref() const override final { return value_; }
+			virtual const_ref_type ref() const override final { return E::extract(value_); }
 
 		private:
 			//! Przechowywana wartoœæ
-			const T value_;
+			const U value_;
 		};
-
 
 		//! \tparam U Typ przechowywany w tablicy
 		//! \tparam N Rozmiar tablicy
 		template<typename U, std::size_t N>
 		//! Specjalizacja dla prostego przechowywania przez wartoœæ dla tablic
-		class ValueCarrierImpl<U[N], void> : public ValueCarrierBase
+		class ValueCarrierImpl<U[N], TransparentExtractor> : public ValueCarrierBase
 		{
 		public:
 			//! Typ tablicy
@@ -117,57 +103,38 @@ namespace utils
 		public:
 
 			//! \param value Kopiowana tablica
-			ValueCarrierImpl(const LC & value) : value_(init(value, std::is_pod<U>::value)) {}
+			ValueCarrierImpl(const LC & value, TransparentExtractor && e) : value_(init(value, std::is_pod<U>::value)) {}
 			//! Destruktor wirtualny
 			virtual ~ValueCarrierImpl() {}
 			//! \return Referencja do przechowywanej wartoœci
-			virtual ref_type ref() const override final { return *(value_.get()); }
+			virtual const_ref_type ref() const override final { return *(value_.get()); }
 
 		private:
 			//! Przechowywana tablica (przydzielana dynamicznie)
 			const utils::unique_ptr<const LC> value_;
 		};
 
-		//! \tparam SmartPtr Typ inteligentnego wskaŸnika
-		template<typename SmartPtr>
-		//! Wersja dla smart pointerów
-		class ValueCarrierImpl<typename ValueType<SmartPtr>::type,
-			//! TODO
-			SmartPtr/*typename std::enable_if<supports_pointer_operator<SmartPtr>::value>::type*/>
-			: public ValueCarrierBase
-		{
-		private:
-			//! Sprawdzenie czy nie pusty wskaŸnik do kontenera
-			inline void verify() const { if (ptr_.operator->() == nullptr) throw std::invalid_argument("Uninitialized container"); }
-
-		public:
-			//! \param ptr Kopiowany wskaŸnik
-			ValueCarrierImpl(const SmartPtr & ptr) : ptr_(ptr) { verify(); }
-			//! \param ptr Przenoszony wskaŸnik
-			ValueCarrierImpl(SmartPtr && ptr) : ptr_(std::move(ptr)) { verify(); }
-			//! Destruktor wirtualny
-			virtual ~ValueCarrierImpl() {}
-			//! \return Referencja do przechowywanej wartoœci
-			virtual ref_type ref() const override final { return *(ptr_.operator->()); }
-
-		private:
-			//! WskaŸnik z danymi
-			const SmartPtr ptr_;
-		};
-
 	public:
+
+		//TODO
+		//compile time warning dla kombinacji kopiowanie/move + member!!
+		//bez sensu trzymaæ jeszcze coœ z otoczk¹, skoro ca³a reszta nas nie interesuje
+
 		//! \tparam U Typ noœnika danych docelowych
-		template<typename U>
+		//! \tparam dummy Warunki mo¿liwoœci konwersji
+		template<typename U, typename E = DefaultExtractor<U>, typename std::enable_if<!std::is_pointer<U>::value && std::is_convertible<decltype(std::declval<const E>().extract(std::declval<const U>())), const_ref_type>::value>::type * = 0 >
 		//! \param value Kopiowany noœnik danych
-		ValueCarrier(const U & value) : valueCarier_(new ValueCarrierImpl<U>(value)) {}
-		//! \tparam U Typ noœnika danych docelowych
-		template<typename U>
-		//! \param value przenoszony noœnik danych
-		ValueCarrier(U && value) : valueCarier_(new ValueCarrierImpl<U>(std::move(value))) {}
+		ValueCarrier(U && value, E && e = E()) : valueCarier_(new ValueCarrierImpl<U, E>(std::forward<U>(value), std::forward<E>(e))) {}
+		//! Konstruktor kopiuj¹cy
+		//! \param Other Kopiowany noœnik
+		ValueCarrier(const ValueCarrier & Other) : valueCarier_(Other.valueCarier_) {}
+		//! Konstruktor przenosz¹cy
+		//! \param Other Kopiowany noœnik
+		ValueCarrier(ValueCarrier && Other) : valueCarier_(std::move(Other.valueCarier_)) {}
 		//! Destruktor
 		~ValueCarrier() {}
 		//! \return Referencja do przechowywanej wartoœci
-		inline ref_type ref() const { return valueCarier_->ref(); }
+		inline const_ref_type ref() const { return valueCarier_->ref(); }
 
 	private:
 		//! Owrapowane dane
