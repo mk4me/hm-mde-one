@@ -114,7 +114,7 @@ namespace dataaccessor
 
 	//! \tparam T Typ implementuj¹cy jeden z interfejsów akcesorów (dyskretny/funkcja)
 	//! \tparam dummy Weryfikacja ¿e mamy do czynienia z poprawnym akcesorem
-	template<typename T, typename std::enable_if<is_valid_accessor<T>::value>::type * = 0>
+	template<typename T, ENABLE_IF(is_valid_accessor<T>::value)>
 	struct accessor_interface
 	{
 		using type = typename std::conditional<is_valid_discrete_accessor<T>::value, typename ExtractedDiscreteAccessor<T>::type, typename ExtractedFunctionAccessor<T>::type>::type;
@@ -165,8 +165,8 @@ namespace dataaccessor
 	struct is_valid_accessor_ptr : public utils::xor_check<is_valid_function_accessor_ptr<T>::value, is_valid_discrete_accessor_ptr<T>::value>::type {};	
 	//! \tparam T Typ wskaxnika do akcesora
 	//! \tparam dummy Weryfikacja wks¹Ÿnika
-	template<typename T, typename std::enable_if<is_valid_accessor_ptr<T>::value ||
-		(std::is_pointer<T>::value && is_valid_accessor<typename utils::clean_pointed_type<T>::type>::value)>::type * = 0>
+	template<typename T, ENABLE_IF(is_valid_accessor_ptr<T>::value ||
+		(std::is_pointer<T>::value && is_valid_accessor<typename utils::clean_pointed_type<T>::type>::value))>
 	//! Klasa pomocnicza do wyci¹gania informacji o akcesorze ze wskaŸników
 	struct AccessorPointerDesc
 	{

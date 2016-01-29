@@ -1,9 +1,9 @@
 /********************************************************************
-	created:  2016/01/26
-	filename: container_traits.h
-	author:	  Mateusz Janiak
-	
-	purpose:  
+created:  2016/01/26
+filename: container_traits.h
+author:	  Mateusz Janiak
+
+purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD_UTILS__CONTAINER_TRAITS_H__
 #define __HEADER_GUARD_UTILS__CONTAINER_TRAITS_H__
@@ -25,7 +25,7 @@ namespace utils
 			//! Fallback
 			template<typename U> static auto check(...)->std::false_type;
 			//! Informacja o operatorze
-			using type = typename std::is_same<bool, decltype(check(0))>::type;
+			using type = typename std::is_same<bool, decltype(check<C>(0))>::type;
 		};
 
 		//! \tparam C Typ kontenera, który weryfikujemy
@@ -38,7 +38,7 @@ namespace utils
 			//! Fallback
 			template<typename U> static auto check(...)->std::false_type;
 			//! Informacja o operatorze
-			using type = typename std::is_integral<decltype(check(0))>::type;
+			using type = typename std::is_integral<decltype(check<C>(0))>::type;
 		};
 
 		//! \tparam C Typ kontenera, który weryfikujemy
@@ -55,7 +55,7 @@ namespace utils
 			//! Fallback
 			template<typename U> static auto check_end(...)->std::false_type;
 			//! Weryfikacja operatora [] w wersji const
-			template<typename U> static auto check_iterator_traits(typename std::iterator_traits<U>::pointer u) -> std::true_type;
+			template<typename U> static auto check_iterator_traits(typename std::iterator_traits<U>::pointer u)->std::true_type;
 			//! Fallback
 			template<typename U> static auto check_iterator_traits(...)->std::false_type;
 			//! Informacja o operatorze
@@ -80,7 +80,7 @@ namespace utils
 	struct iterator_based_container_check : public impl::iterator_based_container_check<C>::type {};
 
 	//! \tparam T Typ tablicy
-	template <typename T, typename std::enable_if<!is_general_array<T>::value && iterator_based_container_check<T>::value>::type * = 0>
+	template <typename T, ENABLE_IF(!is_general_array<T>::value && iterator_based_container_check<T>::value)>
 	//! \param array Tablica
 	//! \return Wypakowany element
 	static inline auto extract(const T & array, const std::size_t idx) -> decltype(*(array.begin()))
@@ -96,12 +96,12 @@ namespace utils
 	using StaticContainerElementExtractor = StaticArrayElementExtractor<Element>;
 
 	//! Klasa pozwalaj¹ca wypakowywaæ dane z wektorów
-	using ContainerElementExtractor = ArrayElementExtractor;
+	using ContainerElementExtractor = ElementExtractor;
 
 	//! Zwraca d³ugoœæ tablicy
 	//! \param fixedArray Tablica
 	//! \return D³ugoœæ tablicy
-	template <class T, typename std::enable_if<size_member_check<T>::value>::type * = 0>
+	template <class T, ENABLE_IF(size_member_check<T>::value)>
 	static inline std::size_t size(const T & array)
 	{
 		return array.size();
@@ -110,7 +110,7 @@ namespace utils
 	//! Zwraca d³ugoœæ tablicy
 	//! \param fixedArray Tablica
 	//! \return D³ugoœæ tablicy
-	template <class T, typename std::enable_if<!size_member_check<T>::value && iterator_based_container_check<T>::value>::type * = 0>
+	template <class T, ENABLE_IF(!size_member_check<T>::value && iterator_based_container_check<T>::value)>
 	static inline std::size_t size(const T & array)
 	{
 		return std::distance(array.begin(), array.end());
@@ -121,7 +121,7 @@ namespace utils
 	//! Zwraca d³ugoœæ tablicy
 	//! \param fixedArray Tablica
 	//! \return D³ugoœæ tablicy
-	template <class T, typename std::enable_if<empty_member_check<T>::value>::type * = 0>
+	template <class T, ENABLE_IF(empty_member_check<T>::value)>
 	static inline bool empty(const T & array)
 	{
 		return array.empty();

@@ -1,9 +1,9 @@
 /********************************************************************
-	created:  2016/01/20
-	filename: array_traits.h
-	author:	  Mateusz Janiak
-	
-	purpose:  
+created:  2016/01/20
+filename: array_traits.h
+author:	  Mateusz Janiak
+
+purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD_UTILS__ARRAY_TRAITS_H__
 #define __HEADER_GUARD_UTILS__ARRAY_TRAITS_H__
@@ -61,7 +61,7 @@ namespace utils
 
 	//! \tparam T Typ tablico-podobny dla któego wyci¹gamy typ zwracany przez operator[]
 	//! \tparam dummy
-	template<typename T, typename std::enable_if<is_general_array<T>::value>::type * = 0>
+	template<typename T, ENABLE_IF(is_general_array<T>::value)>
 	//! Klasa pomocnicza przy wyci¹ganiu typu zwracanego przez operator[]
 	struct array_type : public impl::array_type_helper<T> {};
 
@@ -109,7 +109,7 @@ namespace utils
 	//! \tparam T Typ tablicy
 	//! \tparam Dim Numer wymiaru tablicy dla któego chcemy pobraæ typ
 	//! \tparam dummy Warunek czy typ faktycznie ma charakter tablicy
-	template<typename T, std::size_t Dim, typename std::enable_if<is_general_array<T>::value>::type * = 0>
+	template<typename T, std::size_t Dim, ENABLE_IF(is_general_array<T>::value)>
 	struct array_dimension_type
 	{
 		static_assert(Dim > 0 && Dim <= array_dimensions<T>::dimensions, "Index zagnie¿d¿enia musi byæ w przedziale <1 - iloœæ wymiarów tablicy>");
@@ -125,14 +125,27 @@ namespace utils
 	struct array_final_dimension_type : public array_dimension_type<T, array_dimensions<T>::dimensions> {};
 
 	//! \tparam T Typ tablicy
-	template <typename T, typename std::enable_if<is_general_array<T>::value>::type * = 0>
+	template <typename T, ENABLE_IF(is_general_array<T>::value)>
 	//! \param array Tablica
 	//! \param ... Na potrzeby innych klas
 	//! \return Wypakowany element
 	static inline auto extract(const T & array, const std::size_t idx) -> decltype(array[idx])
 	{
 		return array[idx];
-	}	
+	}
+
+	struct ElementExtractor
+	{
+		//! \tparam T Typ tablicy
+		template <typename T>
+		//! \param array Tablica
+		//! \param idx Indeks elementu który chcemy wyci¹gn¹c
+		//! \return Wypakowany element
+		static inline auto extract(const T & array, const std::size_t idx) -> decltype(utils::extract(array, idx))
+		{
+			return utils::extract(array, idx);
+		}
+	};
 
 	//! Wypakowuje z tablicy zadanyc element
 	//! \tparam Element Indeks elementu w tablicy	
@@ -146,10 +159,10 @@ namespace utils
 		//! \param array Tablica
 		//! \param ... Na potrzeby innych klas
 		//! \return Wypakowany element
-		static inline auto extract(const T & array, ...) -> decltype(extract(array, Element))
+		static inline auto extract(const T & array, ...) -> decltype(ElementExtractor::extract(array, Element))
 		{
-			return extract(array, Element);
-		}		
+			return ElementExtractor::extract(array, Element);
+		}
 	};
 
 	//! Klasa pozwalaj¹ca wypakowywaæ dane z wektorów
@@ -165,21 +178,11 @@ namespace utils
 
 		//! \tparam T Typ tablicy
 		template <typename T>
-		//! \param array Tablica
-		//! \param idx Indeks elementu który chcemy wyci¹gn¹c
-		//! \return Wypakowany element
-		static inline auto extract(const T & array, const std::size_t idx) -> decltype(::extract(array, idx))
-		{
-			return ::extract(array, idx);
-		}
-
-		//! \tparam T Typ tablicy
-		template <typename T>
 		//! \param array Tablica		
 		//! \return Wypakowany element
-		inline auto extract(const T & array) -> decltype(extract(array, idx))
+		inline auto extract(const T & array, ...) -> decltype(ElementExtractor::extract(array, idx))
 		{
-			return extract(array, idx);
+			return ElementExtractor::extract(array, idx);
 		}
 
 	private:
@@ -202,7 +205,7 @@ namespace utils
 		template<typename T>
 		static inline std::size_t size(const T & array)
 		{
-			return ::size(array);
+			return utils::size(array);
 		}
 	};
 
@@ -230,7 +233,7 @@ namespace utils
 		template<typename T>
 		static inline std::size_t empty(const T & array)
 		{
-			return ::empty(array);
+			return utils::empty(array);
 		}
 	};
 

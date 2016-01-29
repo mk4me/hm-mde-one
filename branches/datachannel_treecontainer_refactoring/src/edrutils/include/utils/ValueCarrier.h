@@ -1,9 +1,9 @@
 /********************************************************************
-	created:  2016/01/20
-	filename: ValueCarrier.h
-	author:	  Mateusz Janiak
-	
-	purpose:  
+created:  2016/01/20
+filename: ValueCarrier.h
+author:	  Mateusz Janiak
+
+purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD_UTILS__VALUECARRIER_H__
 #define __HEADER_GUARD_UTILS__VALUECARRIER_H__
@@ -12,6 +12,11 @@
 
 namespace utils
 {
+	//! \tparam U Typ dla którego chcemy dostaæ ekstraktor
+	template<typename U>
+	//! Typ domyœlnego ekstraktora
+	using ValueCarrierDefaultExtractor = typename std::conditional<is_like_smart_pointer<U>::value, PointerExtractor, TransparentExtractor>::type;
+
 	//TODO - dodaæ obs³ugê go³ych wskaŸników? Czy ma to sens? Co z nimi robiæ?
 	// kopiowaæ obiekty pod nimi? Trzymaæ tylko wskaŸniki?
 	//! \tparam T Docelowy typ przechowywanych danych
@@ -19,11 +24,6 @@ namespace utils
 	//! Klasa realizuje bezpieczne przechowywanie danych
 	class ValueCarrier
 	{
-		//! \tparam U Typ dla którego chcemy dostaæ ekstraktor
-		template<typename U>
-		//! Typ domyœlnego ekstraktora
-		using DefaultExtractor = typename std::conditional<is_like_smart_pointer<U>::value, PointerExtractor, TransparentExtractor>::type;
-
 	public:
 		//! Typ referencji jakiej dostarczamy
 		using type = T;
@@ -48,10 +48,10 @@ namespace utils
 		{
 		public:
 			//! Perfect forwarding penalty
-			template<typename UU = U, typename EE = E>
+			template<typename UU, typename EE = E>
 			//! \param value Kopiowana wartoœæ do przechowania
 			//! \param e Extractor
-			ValueCarrierImpl(UU && value, EE && e = EE()) : E(std::forward<EE>(e)), value_(std::forward<<UU>(value)) {}
+			ValueCarrierImpl(UU && value, EE && e = EE()) : E(std::forward<EE>(e)), value_(std::forward<UU>(value)) {}
 			//! Destruktor wirtualny
 			virtual ~ValueCarrierImpl() {}
 			//! \return Referencja do przechowywanej wartoœci
@@ -122,7 +122,7 @@ namespace utils
 
 		//! \tparam U Typ noœnika danych docelowych
 		//! \tparam dummy Warunki mo¿liwoœci konwersji
-		template<typename U, typename E = DefaultExtractor<U>, typename std::enable_if<!std::is_pointer<U>::value && std::is_convertible<decltype(std::declval<const E>().extract(std::declval<const U>())), const_ref_type>::value>::type * = 0 >
+		template<typename U, typename E = ValueCarrierDefaultExtractor<U>>//, ENABLE_IF(!std::is_pointer<U>::value && (std::is_same<typename remove_toplevel<decltype(std::declval<const E>().extract(std::declval<const U>()))>::type, type>::value || std::is_base_of<type, typename remove_toplevel<decltype(std::declval<const E>().extract(std::declval<const U>()))>::type>::value))>
 		//! \param value Kopiowany noœnik danych
 		ValueCarrier(U && value, E && e = E()) : valueCarier_(new ValueCarrierImpl<U, E>(std::forward<U>(value), std::forward<E>(e))) {}
 		//! Konstruktor kopiuj¹cy
@@ -139,7 +139,7 @@ namespace utils
 	private:
 		//! Owrapowane dane
 		const utils::shared_ptr<const ValueCarrierBase> valueCarier_;
-	};	
+	};
 }
 
 #endif  // __HEADER_GUARD_UTILS__VALUECARRIER_H__

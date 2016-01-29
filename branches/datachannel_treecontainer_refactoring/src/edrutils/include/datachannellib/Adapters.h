@@ -16,6 +16,7 @@
 #include <datachannellib/FunctionFeature.h>
 #include <datachannellib/Interpolators.h>
 #include <datachannellib/Extrapolators.h>
+#include <utils/MemberExtractor.h>
 
 namespace dataaccessor
 {
@@ -48,7 +49,7 @@ namespace dataaccessor
 		}
 
 		//! \tparam T
-		template<typename T, typename std::enable_if<std::is_convertible<T, ArgumentType>::value>::type * = nullptr>
+		template<typename T, ENABLE_IF(std::is_convertible<T, ArgumentType>::value)>
 		//! \param Other Kopiowany generator
 		UniformArgumentsGenerator(const UniformArgumentsGenerator<T> & Other)
 			: start_(Other.start_), size_(Other.size_),
@@ -579,7 +580,7 @@ namespace dataaccessor
 	//! \tparam ValueType Typ wartoœci kana³u
 	//! \tparam ArgumentType Typ argumentów kana³u
 	template<typename BaseValueType, typename BaseArgumentType,
-		typename ValueExtractor, typename ArgumentExtractor = utils::TransparentValueExtractor,
+		typename ValueExtractor, typename ArgumentExtractor = utils::TransparentExtractor,
 		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), 0))>::type,
 		typename DestArgumentType = std::decay<decltype(std::declval<ArgumentExtractor>().extract(std::declval<BaseArgumentType>(), 0))>::type>
 	//! Wrapper dla dyskretnych akcesorów, zmieniaj¹cy ich reprezentacjê
@@ -630,7 +631,8 @@ namespace dataaccessor
 		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), 0))>::type,
 		typename DestArgumentType = std::decay<decltype(std::declval<ArgumentExtractor>().extract(std::declval<BaseArgumentType>(), 0))>::type>
 		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
-		using SafeDiscreteAccessorAdapter = SafeAccessorWrapper < DiscreteAccessorAdapter < BaseValueType, BaseArgumentType, ValueExtractor, ArgumentExtractor, DestValueType, DestArgumentType >>;
+		using SafeDiscreteAccessorAdapter = SafeAccessorWrapper < DiscreteAccessorAdapter < BaseValueType, BaseArgumentType, ValueExtractor, ArgumentExtractor, DestValueType, DestArgumentType >,
+			IDiscreteAccessorT<BaseValueType, BaseArgumentType>>;
 
 	//! \tparam ValueType Typ wartoœci kana³u
 	//! \tparam ArgumentType Typ argumentów kana³u

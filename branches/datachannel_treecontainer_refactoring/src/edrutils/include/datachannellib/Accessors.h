@@ -67,7 +67,7 @@ namespace dataaccessor
 		//! \tparam FeatureT Typ cechy o jaką pytamy
 		//! \tparam dummy
 		template<typename FeatureT,
-			typename std::enable_if<std::is_base_of<IFeature, FeatureT>::value>::type * = 0>
+			ENABLE_IF(std::is_base_of<IFeature, FeatureT>::value)>
 		//! \param dummy
 		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
 		inline utils::shared_ptr<FeatureT> feature(FeatureT * dummy = nullptr) const
@@ -104,7 +104,7 @@ namespace dataaccessor
 		//! \tparam FeatureT Cecha jaką chcemy usunąć
 		//! \tparam dummy
 		template<typename FeatureT,
-			typename std::enable_if<std::is_base_of<IFeature, FeatureT>::value>::type * = 0>
+			ENABLE_IF(std::is_base_of<IFeature, FeatureT>::value)>
 		//! \param dummy
 		//! \return Czy cecha została usunięta (była obecna)
 		inline bool removeFeature(FeatureT * dummy = nullptr) { return removeFeature(FeatureT::ID); }
@@ -139,7 +139,7 @@ namespace dataaccessor
 		//! \tparam ValueFeatureT Typ cechy wartości o jaką pytamy
 		//! \tparam dummy
 		template<template<typename> class ValueFeatureT,
-			typename std::enable_if<std::is_base_of<ValueFeature, ValueFeatureT<value_type>>::value>::type * = 0>
+			ENABLE_IF(std::is_base_of<ValueFeature, ValueFeatureT<value_type>>::value)>
 		//! \param dummy
 		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
 		inline utils::shared_ptr<ValueFeatureT<value_type>> feature(ValueFeatureT<value_type> * dummy = nullptr) const { return IAccessor::feature<ValueFeatureT<value_type>>(); }	
@@ -167,7 +167,7 @@ namespace dataaccessor
 		//! \tparam ArgumentFeatureT Typ cechy argumentów o jaką pytamy
 		//! \tparam dummy
 		template<template<typename> class ArgumentFeatureT,
-			typename std::enable_if<std::is_base_of<ArgumentFeature, ArgumentFeatureT<argument_type>>::value>::type * = 0>
+			ENABLE_IF(std::is_base_of<ArgumentFeature, ArgumentFeatureT<argument_type>>::value)>
 		//! \param dummy
 		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
 		inline utils::shared_ptr<ArgumentFeatureT<argument_type>> feature(ArgumentFeatureT<argument_type> * dummy = nullptr) const { return IAccessor::feature<ArgumentFeatureT<argument_type>>(); }	
@@ -214,7 +214,7 @@ namespace dataaccessor
 		//! \tparam FeatureT Typ cechy o jaką pytamy
 		//! \tparam dummy
 		template<typename FeatureT,
-			typename std::enable_if < std::is_base_of<IFeature, FeatureT>::value>::type * = 0 >
+			ENABLE_IF(std::is_base_of<IFeature, FeatureT>::value)>
 		//! \param dummy
 		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
 		inline utils::shared_ptr<FeatureT> getOrCreateFeature(FeatureT * dummy = nullptr) const
@@ -233,7 +233,7 @@ namespace dataaccessor
 		//! \tparam ValueFeatureT Typ cechy wartości o jaką pytamy
 		//! \tparam dummy
 		template<template<typename> class ValueFeatureT,
-			typename std::enable_if<std::is_base_of<ValueFeature, ValueFeatureT<value_type>>::value>::type * = 0>
+			ENABLE_IF(std::is_base_of<ValueFeature, ValueFeatureT<value_type>>::value)>
 		//! \param dummy
 		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
 		inline utils::shared_ptr<ValueFeatureT<value_type>> getOrCreateFeature(ValueFeatureT<value_type> * dummy = nullptr) const { return this->getOrCreateFeature<ValueFeatureT<value_type>>(); }
@@ -241,21 +241,21 @@ namespace dataaccessor
 		//! \tparam ArgumentFeatureT Typ cechy argumentów o jaką pytamy
 		//! \tparam dummy
 		template<template<typename> class ArgumentFeatureT,
-			typename std::enable_if<std::is_base_of<ArgumentFeature, ArgumentFeatureT<argument_type>>::value>::type * = 0>
+			ENABLE_IF(std::is_base_of<ArgumentFeature, ArgumentFeatureT<argument_type>>::value)>
 		//! \param dummy
 		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
 		inline utils::shared_ptr<ArgumentFeatureT<argument_type>> getOrCreateFeature(ArgumentFeatureT<argument_type> * dummy = nullptr) const { return this->getOrCreateFeature < ArgumentFeatureT<argument_type>>(); }
 
 		//! \tparam AccessorFeatureT Typ cechy o jaką pytamy
 		template<template<typename, typename> class AccessorFeatureT,
-			typename std::enable_if<std::is_base_of<AccessorFeature, AccessorFeatureT<value_type, argument_type>>::value>::type * = 0>
+			ENABLE_IF(std::is_base_of<AccessorFeature, AccessorFeatureT<value_type, argument_type>>::value)>
 		//! \param dummy
 		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
 		inline utils::shared_ptr<AccessorFeatureT<value_type, argument_type>> feature(AccessorFeatureT<value_type, argument_type> * dummy = nullptr) const { return this->feature<AccessorFeatureT<value_type, argument_type>(); }
 
 		//! \tparam AccessorFeatureT Typ cechy danych o jaką pytamy
 		template<template<typename, typename> class AccessorFeatureT,
-			typename std::enable_if<std::is_base_of<AccessorFeature, AccessorFeatureT<value_type, argument_type>>::value>::type * = 0>
+			ENABLE_IF(std::is_base_of<AccessorFeature, AccessorFeatureT<value_type, argument_type>>::value)>
 		//! \param dummy
 		//! \return Cecha o zadanym typie lub nullptr jeśli istnieje cecha o danym id ale to nie ta o jaką pytamy
 		inline utils::shared_ptr<AccessorFeatureT<value_type, argument_type>> getOrCreateFeature(AccessorFeatureT<value_type, argument_type> * dummy = nullptr) const { return this->getOrCreateFeature<AccessorFeatureT<value_type, argument_type>>(); }		
@@ -372,7 +372,7 @@ namespace dataaccessor
 		//! \tparam FeatureT Typ cechy o jaką pytamy
 		//! \tparam dummy
 		template<template<typename> class ValueFeatureT,
-			typename std::enable_if < std::is_base_of<ValueFeature, ValueFeatureT<ValueType>>::value>::type * = 0 >
+			ENABLE_IF(std::is_base_of<ValueFeature, ValueFeatureT<ValueType>>::value)>
 		//! \param dummy
 		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
 		inline utils::shared_ptr<ValueFeatureT<ValueType>> getOrCreateFeature(ValueFeatureT<ValueType> * dummy = nullptr) const
@@ -404,7 +404,7 @@ namespace dataaccessor
 		//! \tparam FeatureT Typ cechy o jaką pytamy
 		//! \tparam dummy
 		template<template<typename> class ArgumentFeatureT,
-			typename std::enable_if < std::is_base_of<ArgumentFeature, ArgumentFeatureT<ArgumentType>>::value>::type * = 0 >
+			ENABLE_IF(std::is_base_of<ArgumentFeature, ArgumentFeatureT<ArgumentType>>::value)>
 		//! \param dummy
 		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
 		inline utils::shared_ptr<ArgumentFeatureT<ArgumentType>> getOrCreateFeature(ArgumentFeatureT<ArgumentType> * dummy = nullptr) const

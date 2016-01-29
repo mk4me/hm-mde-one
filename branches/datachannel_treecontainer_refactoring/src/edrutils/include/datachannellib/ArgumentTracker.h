@@ -9,6 +9,7 @@
 #ifndef HEADER_GUARD_DATACHANNEL__DATACHANNELTIMERS_H__
 #define HEADER_GUARD_DATACHANNEL__DATACHANNELTIMERS_H__
 
+#include <utils/Utils.h>
 #include <utils/SmartPtr.h>
 #include <atomic>
 
@@ -55,13 +56,13 @@ namespace dataaccessor {
 		//! Konstruktor
 		//! \param tracker Tracker z którego kopiujemy aktualną wartość
 		template<class U,
-		typename std::enable_if<std::is_convertible<U, ArgumentType>::value>::type>
+			ENABLE_IF(std::is_convertible<U, ArgumentType>::value)>
 		ArgumentTracker(const IArgumentTrackerReader<U> & tracker) : currentArgument_(tracker.currentArgument()) {}
 
 		//! Konstruktor
 		//! \tparam U Typ innego argumentu który kopiujemy
 		template<class U,
-			typename std::enable_if<std::is_convertible<U, ArgumentType>::value>::type>
+			ENABLE_IF(std::is_convertible<U, ArgumentType>::value)>
 		//! \param argument Aktualna wartośc argumentu
 		ArgumentTracker(const U & argument) : currentArgument_(argument) {}
 

@@ -3,6 +3,7 @@
 #include <QtWidgets/QLabel>
 #include <datachannellib/UniformArgumentsFeature.h>
 
+//! ---------------------- W³asny ekstraktor ca³ych próbek -------------
 ////! \tparam Container Typ kontenera
 ////! \tparam SampleExtractor Typ wyci¹gaj¹cy próbki z kontenera
 //template<class Container, typename SampleExtractor = dataaccessor::DefaultContainerSampleExtractor>
@@ -11,12 +12,12 @@
 ////! \return Interfejs do danych wraz z danymi
 //static inline dataaccessor::DiscreteAccessorPtr<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0).second),
 //	decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0).first)>
-//	wrap(Container && data, const SampleExtractor & se = SampleExtractor())
+//	wrap(Container && data, SampleExtractor && se = SampleExtractor())
 //{
-//	const auto size = dataaccessor::ContainersSizeExtractor::size(data);
+//	const auto size = utils::ContainerSizeExtractor::size(data);
 //	return dataaccessor::DiscreteAccessorPtr<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0).second),
 //		decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0).first)>(
-//			new dataaccessor::ContainerDiscreteData<Container, SampleExtractor>(std::move(data), size, se));
+//			new dataaccessor::ContainerDiscreteData<Container, SampleExtractor>(std::forward<Container>(data), size, std::forward<SampleExtractor>(se)));
 //}
 
 void VectorDiff::process()
@@ -39,7 +40,7 @@ void VectorDiff::process()
             auto val = signal1->value(i) - signal2->value(i);
 			data.push_back({ i * step, val });
         }
-		
+
 		auto channel = dataaccessor::wrap(std::move(data));		
 		//auto channel = wrap(std::move(data));
 		channel->attachFeature(uaf);

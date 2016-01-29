@@ -51,7 +51,7 @@ namespace utils
 	{
 		//! \tparam T Badany typ
 		//! \tparam Specjalizacja dla zwyk³ych wksaŸników
-		template<typename T, typename std::enable_if<is_general_pointer<T>::value>::type * = 0>
+		template<typename T, ENABLE_IF(is_general_pointer<T>::value)>
 		//! Klasa pomocnicza przy wyci¹ganiu typów wskazywanych przez wskaxniki  i inteligêtne wskaŸniki
 		struct pointed_type_helper
 		{
@@ -122,7 +122,7 @@ namespace utils
 	//! \tparam T Typ tablicy
 	//! \tparam Dim Numer wymiaru tablicy dla któego chcemy pobraæ typ
 	//! \tparam dummy Warunek czy typ faktycznie ma charakter tablicy
-	template<typename T, std::size_t Level, typename std::enable_if<is_general_pointer<T>::value>::type * = 0>
+	template<typename T, std::size_t Level, ENABLE_IF(is_general_pointer<T>::value)>
 	struct pointer_level_type
 	{
 		static_assert(Level > 0 && Level <= pointer_levels<T>::levels, "Index zagnie¿d¿enia musi byæ w przedziale <1 - iloœæ wymiarów tablicy>");

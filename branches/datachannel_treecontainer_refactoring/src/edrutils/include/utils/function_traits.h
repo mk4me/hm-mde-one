@@ -67,13 +67,13 @@ namespace std
 		bool C = false, bool V = false, bool L = false, bool R = false,
 		//weryfikujemy
 		//czy wszystko false
-		typename std::enable_if<((M == false) && (M == S) && (M == C) && (M == L) && (M == R)) ||
+		ENABLE_IF(((M == false) && (M == S) && (M == C) && (M == L) && (M == R)) ||
 		//czy member
 		((M == true) &&
 			// czy static
 			(((S == true) && (C == false) && (V == false) && (L == false) && (R == false)) ||
 				// czy non-static
-				((S == false) && ((!L || !R) == true))))>::type * = 0>
+				((S == false) && ((!L || !R) == true)))))>
 	struct member_function_description
 	{
 		//! Czy funkcja jest skladowa klasy
@@ -136,7 +136,7 @@ namespace std
 
 	//! \tparam F Typ funktora
 	//! \tparam dummy
-	template<class F, typename std::enable_if<is_functor<F>::value>::type * = 0>
+	template<class F, ENABLE_IF(is_functor<F>::value)>
 	//! Klasa realizuj¹ca dekompozycjê sygnatury funktora
 	struct functor_traits_helper
 	{

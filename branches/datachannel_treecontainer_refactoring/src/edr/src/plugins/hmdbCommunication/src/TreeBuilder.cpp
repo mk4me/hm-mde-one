@@ -386,6 +386,14 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
     }
 }
 
+//! Dyskretny
+template<typename AccessorType, ENABLE_IF(dataaccessor::is_valid_discrete_accessor_ptr<AccessorType>::value)>
+static inline dataaccessor::DiscreteAccessorPtr<decltype(std::declval<utils::ArrayElementExtractor>().extract(std::declval<typename dataaccessor::AccessorPointerDesc<AccessorType>::value_type>(), 0)), typename dataaccessor::AccessorPointerDesc<AccessorType>::argument_type>
+wrap(const AccessorType & accessor, const std::size_t Idx)
+{
+	return dataaccessor::DiscreteAccessorPtr<decltype(std::declval<utils::ArrayElementExtractor>().extract(std::declval<typename dataaccessor::AccessorPointerDesc<AccessorType>::value_type>(), 0)), typename dataaccessor::AccessorPointerDesc<AccessorType>::argument_type>(new dataaccessor::SafeDiscreteAccessorAdapter<typename dataaccessor::AccessorPointerDesc<AccessorType>::value_type, typename dataaccessor::AccessorPointerDesc<AccessorType>::argument_type, utils::ArrayElementExtractor>(accessor, utils::ArrayElementExtractor(idx)));
+}
+
 core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channelName, PluginSubject::SessionConstPtr s, int channelNo )
 {
     NewMultiserieHelper::ChartWithDescriptionCollection toVisualize;
@@ -412,7 +420,7 @@ core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channe
 				auto df = channel->feature<dataaccessor::IDescriptorFeature>();
                 if (df != nullptr && df->name() == channelName) {
 					//c3dlib::ScalarChannelReaderInterfacePtr reader(dataaccessor::Vector::wrap(channel, channelNo));
-					c3dlib::ScalarChannelReaderInterfacePtr reader(dataaccessor::Vector::wrap(channel, channelNo));
+					c3dlib::ScalarChannelReaderInterfacePtr reader(dataaccessor::Vector::wrap(channel, channelNo));					
 					core::VariantPtr wrapper = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
                     wrapper->set(reader);
                     int no = toVisualize.size();

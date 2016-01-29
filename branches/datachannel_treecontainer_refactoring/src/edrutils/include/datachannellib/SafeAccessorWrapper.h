@@ -1,9 +1,9 @@
 /********************************************************************
-	created:  2016/01/26
-	filename: SafeAccessorWrapper.h
-	author:	  Mateusz Janiak
-	
-	purpose:  
+created:  2016/01/26
+filename: SafeAccessorWrapper.h
+author:	  Mateusz Janiak
+
+purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD_DATAACCESSOR__SAFEACCESSORWRAPPER_H__
 #define __HEADER_GUARD_DATAACCESSOR__SAFEACCESSORWRAPPER_H__

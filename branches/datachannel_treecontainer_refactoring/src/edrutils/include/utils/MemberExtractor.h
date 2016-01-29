@@ -1,9 +1,9 @@
 /********************************************************************
-	created:  2016/01/29
-	filename: MemberExtractor.h
-	author:	  Mateusz Janiak
-	
-	purpose:  
+created:  2016/01/29
+filename: MemberExtractor.h
+author:	  Mateusz Janiak
+
+purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD_UTILS__MEMBEREXTRACTOR_H__
 #define __HEADER_GUARD_UTILS__MEMBEREXTRACTOR_H__
@@ -48,7 +48,7 @@ template<typename T, ENABLE_IF(utils::is_general_pointer<T>::value)> inline stat
 		//! \param value Wartoœæ
 		//! \param dummy Na potrzeby innych klas
 		//! \return Wartoœæ
-		static inline const T & extract(const T & value, ...) { return value };
+		static inline const T & extract(const T & value, ...) { return value; };
 	};
 
 	struct PointerExtractor : public ExtractorBase<false>
@@ -58,10 +58,7 @@ template<typename T, ENABLE_IF(utils::is_general_pointer<T>::value)> inline stat
 		//! \param value Wartoœæ
 		//! \param dummy Na potrzeby innych klas
 		//! \return Wartoœæ
-		static inline auto extract(const T & value, ...) -> decltype(*value)
-		{
-			return *value;
-		};
+		static inline auto extract(const T & value, ...) -> decltype(*value) { return *value; };
 	};
 }
 

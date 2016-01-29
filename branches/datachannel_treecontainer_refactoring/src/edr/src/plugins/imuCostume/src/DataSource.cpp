@@ -29,6 +29,7 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <osgutils/QuatUtils.h>
 #include <utils/Utils.h>
+#include <datachannellib/Wrappers.h>
 
 struct PrecalculatedJointFrame
 {
@@ -1898,6 +1899,7 @@ void IMUCostumeDataSource::uploadSession(const utils::Filesystem::Path & configu
 }
 
 
+
 //TODO
 //do wygeneralizowania
 template<typename Extractor>
@@ -1951,7 +1953,6 @@ private:
 	const kinematic::LinearizedSkeleton::NodeIDX jointIdx;
 	utils::shared_ptr<MotionDescription> motionDescription;
 };
-
 
 void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfFile,
 	const utils::Filesystem::Path & amcFile,
@@ -2083,6 +2084,8 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 		const auto cFT = precalculatedFrames->frameTime;
 		const auto sPS = 1.0 / cFT;
 	
+		dataaccessor::UniformArgumentsGenerator<float> uag(sPS, precalculatedFrames->frames.size());
+
 		utils::shared_ptr<c3dlib::VectorChannelReaderInterface> av;
 		//angular velocity
 		{
@@ -2102,33 +2105,36 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 			}
 
 			PLUGIN_LOG_DEBUG("angular velocity.size = " << data.size());
-						
-			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
+			
+			av = dataaccessor::wrap(std::move(data), uag);
+
+			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(av);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Angular velocity"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
-			item->appendChild(di);
-			av = data;
+			item->appendChild(di);			
 		}
 		
 		//angular acceleration
 		{
-			auto data = utils::make_shared<c3dlib::VectorChannel>(sPS);
-			data->setName(joint->value().name() + "\n" + QObject::tr("Angular acceleration").toStdString());
-			data->setTimeBaseUnit(QObject::tr("s^2").toStdString());
-			data->setValueBaseUnit(QObject::tr("deg").toStdString());
+			std::vector<c3dlib::VectorChannelReaderInterface::value_type> data;
+			data.reserve(precalculatedFrames->frames.size());
+			//auto data = utils::make_shared<c3dlib::VectorChannel>(sPS);
+			//data->setName(joint->value().name() + "\n" + QObject::tr("Angular acceleration").toStdString());
+			//data->setTimeBaseUnit(QObject::tr("s^2").toStdString());
+			//data->setValueBaseUnit(QObject::tr("deg").toStdString());
 
 			//zasilamy danymi			
-			data->addPoint(osg::Vec3());			
+			data.push_back(osg::Vec3());			
 			for (std::size_t idx = 1; idx < precalculatedFrames->frames.size(); ++idx)
 			{
 				auto diff = GeneralDiffPolicy::diff(kinematicUtils::convertXYZ(kinematicUtils::toRadians(av->value(idx-1))),
 					kinematicUtils::convertXYZ(kinematicUtils::toRadians(av->value(idx))), cFT);
-				data->addPoint(kinematicUtils::toDegrees(kinematicUtils::convertXYZ(diff)));
+				data.push_back(kinematicUtils::toDegrees(kinematicUtils::convertXYZ(diff)));
 			}
 
-			PLUGIN_LOG_DEBUG("angular acceleration.size = " << data->size());
+			PLUGIN_LOG_DEBUG("angular acceleration.size = " << data.size());
 
-			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
+			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(dataaccessor::wrap(std::move(data), uag));
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Angular acceleration"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
 			item->appendChild(di);
@@ -2155,49 +2161,50 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 		}
 		
 		//linear velocity
-		utils::shared_ptr<c3dlib::VectorChannel> lv;
+		utils::shared_ptr<c3dlib::VectorChannelReaderInterface> lv;
 		{
-			auto data = utils::make_shared<c3dlib::VectorChannel>(sPS);
-			data->setName(joint->value().name() + "\n" + QObject::tr("Linear velocity").toStdString());
-			data->setTimeBaseUnit(QObject::tr("s").toStdString());
-			data->setValueBaseUnit(QObject::tr("m").toStdString());
+			std::vector<c3dlib::VectorChannelReaderInterface::value_type> data;
+			data.reserve(precalculatedFrames->frames.size());
+			//data->setName(joint->value().name() + "\n" + QObject::tr("Linear velocity").toStdString());
+			//data->setTimeBaseUnit(QObject::tr("s").toStdString());
+			//data->setValueBaseUnit(QObject::tr("m").toStdString());
 
 			//zasilamy danymi			
-			data->addPoint(osg::Vec3());
+			data.push_back(osg::Vec3());
 			for (std::size_t idx = 1; idx < precalculatedFrames->frames.size(); ++idx)
 			{
 				auto diff = GeneralDiffPolicy::diff(precalculatedFrames->frames[idx - 1][nidx].globalPosition,
 					precalculatedFrames->frames[idx][nidx].globalPosition, cFT);
-				data->addPoint(diff);
+				data.push_back(diff);
 			}
 
-			PLUGIN_LOG_DEBUG("linear velocity.size = " << data->size());
-			
-			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
+			PLUGIN_LOG_DEBUG("linear velocity.size = " << data.size());
+			lv = dataaccessor::wrap(std::move(data), uag);
+			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(lv);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Linear velocity"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
-			item->appendChild(di);
-			lv = data;
+			item->appendChild(di);			
 		}
 		
 		//linear acceleration
 		{
-			auto data = utils::make_shared<c3dlib::VectorChannel>(sPS);
-			data->setName(joint->value().name() + "\n" + QObject::tr("Linear acceleration").toStdString());
-			data->setTimeBaseUnit(QObject::tr("s^2").toStdString());
-			data->setValueBaseUnit(QObject::tr("m").toStdString());
+			std::vector<c3dlib::VectorChannelReaderInterface::value_type> data;
+			data.reserve(precalculatedFrames->frames.size());
+			//data->setName(joint->value().name() + "\n" + QObject::tr("Linear acceleration").toStdString());
+			//data->setTimeBaseUnit(QObject::tr("s^2").toStdString());
+			//data->setValueBaseUnit(QObject::tr("m").toStdString());
 
 			//zasilamy danymi			
-			data->addPoint(osg::Vec3());
+			data.push_back(osg::Vec3());
 			for (std::size_t idx = 1; idx < precalculatedFrames->frames.size(); ++idx)
 			{
 				auto diff = GeneralDiffPolicy::diff(lv->value(idx - 1), lv->value(idx), cFT);
-				data->addPoint(diff);
+				data.push_back(diff);
 			}
 
-			PLUGIN_LOG_DEBUG("linear acceleration.size = " << data->size());
+			PLUGIN_LOG_DEBUG("linear acceleration.size = " << data.size());
 
-			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
+			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(dataaccessor::wrap(std::move(data), uag));
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Linear acceleration"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
 			item->appendChild(di);
