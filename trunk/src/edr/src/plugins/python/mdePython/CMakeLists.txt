@@ -1,12 +1,16 @@
 BEGIN_PYTHON_PROJECT()
 
 SET_PRIVATE_HEADERS(
-	MdeLogic.h
+	MdeBridge.h
+	PythonDataChannel.h
+	PythonProcessingBlock.h
 )
 
 SET_SOURCE_FILES (
 	PythonPlugin.cpp
-	MdeLogic.cpp
+	MdeBridge.cpp
+	PythonDataChannel.cpp
+	PythonProcessingBlock.cpp
 )
 
 

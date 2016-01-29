@@ -3,7 +3,7 @@
 #include "corelib/ISourceManager.h"
 #include "corelib/PluginCommon.h"
 #include "corelib/IServiceManager.h"
-#include "plugins/python/PythonPluginUtils.h"
+#include "plugins/python/python/PythonPluginUtils.h"
 #include "corelib/IDataManager.h"
 #include <QtWidgets/QWidget>
 #include "plugins/hmdbCommunication/IHMDBSource.h"

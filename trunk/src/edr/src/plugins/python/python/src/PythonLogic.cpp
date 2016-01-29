@@ -3,17 +3,15 @@
 #include <QtWidgets/QMessageBox>
 #include <boost/python.hpp>
 #include <osg/Vec3>
-#include "MdeBridge.h"
 #include "loglib/Exceptions.h"
-#include "plugins/python/PythonPluginUtils.h"
+#include "plugins/python/python/PythonPluginUtils.h"
 
 
 using namespace boost::python;
 
 python::PythonStdIoRedirect::ContainerType python::PythonStdIoRedirect::m_outputs;
 
-python::PythonLogic::PythonLogic(MdeBridgeConstPtr bridge, const std::string& pythonPath) : 
-	bridge(bridge)
+python::PythonLogic::PythonLogic(const std::string& pythonPath)
 {
 	if (!pythonPath.empty()) {
 		Py_SetPythonHome(const_cast<char*>(pythonPath.c_str()));
@@ -36,13 +34,9 @@ python::PythonLogic::PythonLogic(MdeBridgeConstPtr bridge, const std::string& py
 	
 	
 
-	boost::python::class_<python::MdeBridge>("MdeBridge")
-		.def("createVectorChannel", &python::MdeBridge::createVectorChannel)
-		.def("getVectorChannel", &python::MdeBridge::getVectorChannel)
-		.def("addVectorChannel", &python::MdeBridge::addVectorChannel)
-		.def("listLoadedVectors", &python::MdeBridge::listLoadedVectors);
+	
 
-	mainNamespace["mde"] = ptr(bridge.get());
+	//mainNamespace["mde"] = ptr(bridge.get());
 	PLUGIN_LOG_INFO("Python started");
 }
 
@@ -67,47 +61,47 @@ struct World
 		int number;
     };
 
-MDE_PYTHON_MODULE(plugin_python)
-{
-    class_<World>("World")
-        .def("greet", &World::greet)
-        .def("set", &World::set)
-		.def("setN", &World::setN)
-		.def("getN", &World::getN)
-        ;
-
-	using namespace python;
-	typedef osg::Vec3::value_type vval;
-	typedef float (osg::Vec3::*get_const)() const;
-	typedef void (osg::Vec3::*set3)(vval x, vval y, vval z);
-
-	class_<osg::Vec3>("Vec3", init<vval, vval, vval>())
-		.def("x", get_const(&osg::Vec3::x))
-		.def("y", get_const(&osg::Vec3::y))
-		.def("z", get_const(&osg::Vec3::z))
-		.def("set", set3(&osg::Vec3::set))
-		;
-
-	class_<StringPair>("StringPair")
-		.def_readwrite("first", &StringPair::first)
-		.def_readwrite("second", &StringPair::second);
-
-	class_<DataList>("DataList")
-		.def(vector_indexing_suite<DataList>());
-
-	class_<PythonDataChannel>("PythonDataChannel")
-		.def("getData", &PythonDataChannel::getData)
-		.def("getFrequency", &PythonDataChannel::getFrequency)
-		.def("getName", &PythonDataChannel::getName)
-		.def("setData", &PythonDataChannel::setData)
-		.def("setFrequency", &PythonDataChannel::setFrequency)
-		.def("setName", &PythonDataChannel::setName)
-		;
-
-
-	class_<std::vector<osg::Vec3>>("v3vector")
-		.def(vector_indexing_suite<std::vector<osg::Vec3>>());
-}
+//MDE_PYTHON_MODULE(plugin_python)
+//{
+//    class_<World>("World")
+//        .def("greet", &World::greet)
+//        .def("set", &World::set)
+//		.def("setN", &World::setN)
+//		.def("getN", &World::getN)
+//        ;
+//
+//	using namespace python;
+//	typedef osg::Vec3::value_type vval;
+//	typedef float (osg::Vec3::*get_const)() const;
+//	typedef void (osg::Vec3::*set3)(vval x, vval y, vval z);
+//
+//	class_<osg::Vec3>("Vec3", init<vval, vval, vval>())
+//		.def("x", get_const(&osg::Vec3::x))
+//		.def("y", get_const(&osg::Vec3::y))
+//		.def("z", get_const(&osg::Vec3::z))
+//		.def("set", set3(&osg::Vec3::set))
+//		;
+//
+//	class_<StringPair>("StringPair")
+//		.def_readwrite("first", &StringPair::first)
+//		.def_readwrite("second", &StringPair::second);
+//
+//	class_<DataList>("DataList")
+//		.def(vector_indexing_suite<DataList>());
+//
+//	class_<PythonDataChannel>("PythonDataChannel")
+//		.def("getData", &PythonDataChannel::getData)
+//		.def("getFrequency", &PythonDataChannel::getFrequency)
+//		.def("getName", &PythonDataChannel::getName)
+//		.def("setData", &PythonDataChannel::setData)
+//		.def("setFrequency", &PythonDataChannel::setFrequency)
+//		.def("setName", &PythonDataChannel::setName)
+//		;
+//
+//
+//	class_<std::vector<osg::Vec3>>("v3vector")
+//		.def(vector_indexing_suite<std::vector<osg::Vec3>>());
+//}
 
 std::string python::PythonLogic::run(const std::string& script)
 {

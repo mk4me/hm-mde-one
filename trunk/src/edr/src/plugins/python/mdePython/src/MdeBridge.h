@@ -16,27 +16,38 @@
 #include <corelib/IDataManager.h>
 #include <corelib/IStreamDataManager.h>
 #include <corelib/IFileDataManager.h>
+#include "plugins/python/python/PythonPluginUtils.h"
+#include "corelib/HierarchyHelper.h"
 
 namespace python {
 
 	typedef std::pair<std::string, std::string> StringPair;
 	typedef std::vector<StringPair> DataList;
 
+
+	struct Helper
+	{
+		Helper() {}
+		Helper(core::HierarchyHelperConstWeakPtr helper, core::IVisualizerManager* vm) : helper(helper), manager(vm) {}
+		std::string name() { return "nazwa"; }
+		void createVisualizer();
+
+		bool operator==(const Helper& h)
+		{
+			return this->helper.lock() == h.helper.lock();
+		}
+
+		core::IVisualizerManager* manager;
+		core::HierarchyHelperConstWeakPtr helper;
+	};
+
 	//! Klasa ³¹czy MDE z Pythonem. Zapewnia wymianê danych miêdzy tymi œrodowiskami
-	class MdeBridge {
+	class MdeBridge:  public PythonPluginUtils
+	{
 	public:
 		virtual ~MdeBridge() {}
 		
 	public:
-		//! Metoda inicjalizuj¹ca, dostarcza potrzebnych managerów, powinna zostaæ wywo³ana przed pozosta³ymi metodami
-		//! \param sourceManager
-		//! \param visualizerManager
-		//! \param memoryDataManager
-		//! \param streamDataManager
-		//! \param fileDataManager
-		void setManagers(core::ISourceManager * sourceManager, core::IVisualizerManager * visualizerManager,
-						 core::IDataManager * memoryDataManager, core::IStreamDataManager * streamDataManager, core::IFileDataManager * fileDataManager,
-						 core::IDataHierarchyManager * hierarchyDataManager);
 		//! 
 		//! \param sessionDesc
 		//! \param dataDesc
@@ -52,13 +63,10 @@ namespace python {
 
 		PythonDataChannel createVectorChannel();
 
-	private:
-		core::ISourceManager * sourceManager;
-		core::IVisualizerManager * visualizerManager;
-		core::IDataManager * memoryDataManager;
-		core::IStreamDataManager * streamDataManager;
-		core::IFileDataManager * fileDataManager;
-		core::IDataHierarchyManager * hierarchyDataManager;
+		std::vector<Helper> getHelpers();
+
+		void addFile(const std::string& file);
+
 	};
 	DEFINE_SMART_POINTERS(MdeBridge);
 }

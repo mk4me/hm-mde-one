@@ -14,7 +14,6 @@
 #include <map>
 #include <utils/SmartPtr.h>
 #include <boost/circular_buffer.hpp>
-#include "MdeBridge.h"
 
 namespace python {
 	//! Klasa dziêki której realizowane jest przekierowanie wyjœcia z pythona.
@@ -32,7 +31,7 @@ namespace python {
 	class PythonLogic
 	{
 	public:
-		PythonLogic(MdeBridgeConstPtr bridge, const std::string& pythonPath);
+		PythonLogic(const std::string& pythonPath);
 		virtual ~PythonLogic();
 		typedef boost::python::object object;
 
@@ -47,7 +46,6 @@ namespace python {
 		boost::python::object mainNamespace;
 
 		PythonStdIoRedirect python_stdio_redirector;
-		MdeBridgeConstPtr bridge;
 	};
 	typedef utils::shared_ptr<PythonLogic> PythonLogicPtr;
 	typedef utils::shared_ptr<const PythonLogic> PythonLogicConstPtr;

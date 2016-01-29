@@ -11,7 +11,7 @@
 #include <QtGui/QFont>
 #include "PythonConsole.h"
 #include "QtWidgets/QAction"
-#include "PythonEditor.h"
+#include "plugins/python/python/PythonEditor.h"
 
 #define signals Q_SIGNALS
 #define slots Q_SLOTS
@@ -40,9 +40,6 @@ void PythonService::init(core::ISourceManager * sourceManager,
 						 core::IFileDataManager * fileDataManager,
 						 core::IDataHierarchyManager * hierarchyDataManager)
 {
-	bridge = utils::make_shared<MdeBridge>();
-	bridge->setManagers(sourceManager, visualizerManager, memoryDataManager, streamDataManager, fileDataManager, hierarchyDataManager);
-	
 	auto args = QCoreApplication::arguments();
 	QCommandLineParser parser;
 	QCommandLineOption homeOption(QStringList() << "python-home",
@@ -57,9 +54,6 @@ void PythonService::init(core::ISourceManager * sourceManager,
 		PLUGIN_LOG_INFO(parser.errorText().toStdString());
 	}
 
-	for (auto& s : args) {
-		PLUGIN_LOG_INFO(s.toStdString());
-	}
 
 	std::string path;
 	if (parser.isSet(homeOption)) {
@@ -69,7 +63,7 @@ void PythonService::init(core::ISourceManager * sourceManager,
 	if (parser.isSet(script)) {
 		this->startingScriptPath = parser.value(script).toStdString();
 	}
-	logic = utils::make_shared<PythonLogic>(bridge, path);
+	logic = utils::make_shared<PythonLogic>(path);
 	hierarchyManager = hierarchyDataManager;
 }
 

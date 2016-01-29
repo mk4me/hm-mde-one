@@ -1,4 +1,3 @@
-#include "PythonPCH.h"
 #include "PythonDataChannel.h"
 
 namespace py = boost::python;

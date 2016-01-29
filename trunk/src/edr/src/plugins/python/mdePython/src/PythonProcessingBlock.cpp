@@ -1,9 +1,8 @@
-#include "PythonPCH.h"
 #include "PythonProcessingBlock.h"
 #include "PythonDataChannel.h"
-#include "PythonService.h"
 #include "boost/python/import.hpp"
-#include "PythonEditor.h"
+#include <plugins/python/python/PythonEditor.h>
+#include "boost/python/exec.hpp"
 
 namespace py = boost::python;
 
