@@ -25,11 +25,13 @@ namespace dataaccessor
 		//! \param data Dane do opakowania
 		//! \param se Obiekt wyci¹gaj¹cy próbki z danych
 		//! \return Lekki interfejs do danych
-		static inline Ptr lightWrap(ValuesContainer && data, ArgumentsGenerator && ag,
+		static inline Ptr lightWrap(const ValuesContainer & data, ArgumentsGenerator && ag,
 			ValuesExtractor && ve = ValuesExtractor())
 	{
-		return Ptr(new ContainerDiscreteGeneratedAccessor<ValuesContainer, ArgumentsGenerator, ValuesExtractor>(data,
-			utils::ContainerSizeExtractor::size(data), std::forward<ArgumentsGenerator>(ag), std::forward<ValuesExtractor>(ve)));
+		return Ptr(new ContainerDiscreteGeneratedAccessor<typename utils::remove_toplevel<ValuesContainer>::type,
+			typename utils::remove_toplevel<ArgumentsGenerator>::type,
+			typename utils::remove_toplevel<ValuesExtractor>::type>(data, utils::ContainerSizeExtractor::size(data),
+				std::forward<ArgumentsGenerator>(ag), std::forward<ValuesExtractor>(ve)));
 	}
 
 	//! ---------------------------- Generowane argumenty + dane ------------------------------------------
@@ -48,8 +50,9 @@ namespace dataaccessor
 	{
 		utils::ValueCarrier<Container> cvc(std::forward<Value>(value), std::forward<ContainerExtractor>(ce));
 		const auto & c = cvc.ref();
-		return Ptr(new ContainerDiscreteGeneratedData<Container, ArgumentsGenerator, ValuesExtractor>(std::move(cvc),
-			utils::ContainerSizeExtractor::size(c), std::forward<ArgumentsGenerator>(ag), std::forward<ValuesExtractor>(ve)));
+		return Ptr(new ContainerDiscreteGeneratedData<Container, typename utils::remove_toplevel<ArgumentsGenerator>::type,
+			typename utils::remove_toplevel<ValuesExtractor>::type>(std::move(cvc),
+				utils::ContainerSizeExtractor::size(c), std::forward<ArgumentsGenerator>(ag), std::forward<ValuesExtractor>(ve)));
 	}
 
 	//! ---------------------- W³asny ekstraktor ca³ych próbek -------------
@@ -63,7 +66,7 @@ namespace dataaccessor
 		//! \return Lekki interfejs do danych
 		static inline Ptr lightWrap(const Container & data, SampleExtractor && se = SampleExtractor())
 	{
-		return Ptr(new ContainerDiscreteAccessor<Container, SampleExtractor>(data, utils::ContainerSizeExtractor::size(data), std::forward<SampleExtractor>(se)));
+		return Ptr(new ContainerDiscreteAccessor<Container, typename utils::remove_toplevel<SampleExtractor>::type>(data, utils::ContainerSizeExtractor::size(data), std::forward<SampleExtractor>(se)));
 	}
 
 	//! ---------------------- W³asne ekstraktory wartoœci i argumentów
@@ -78,7 +81,7 @@ namespace dataaccessor
 		//! \param ae Obiekt wyci¹gaj¹cy argumenty z danych
 		//! \return Lekki interfejs do danych
 		static inline Ptr lightWrap(const Container & data, ValueExtractor && ve,
-			ArgumentExtractor && ae)
+			ArgumentExtractor && ae, void * = 0)
 	{
 		using CSE = ContainerSampleExtractor<ValueExtractor, ArgumentExtractor>;
 		return lightWrap<Container, CSE>(data, CSE(std::forward<ValueExtractor>(ve),
@@ -100,7 +103,7 @@ namespace dataaccessor
 	{
 		utils::ValueCarrier<Container> cvc(std::forward<Value>(value), std::forward<ContainerExtractor>(ce));
 		const auto & c = cvc.ref();
-		return Ptr(new ContainerDiscreteData<Container, SampleExtractor>(std::move(cvc), utils::ContainerSizeExtractor::size(c), std::forward<SampleExtractor>(se)));
+		return Ptr(new ContainerDiscreteData<Container, typename utils::remove_toplevel<SampleExtractor>::type>(std::move(cvc), utils::ContainerSizeExtractor::size(c), std::forward<SampleExtractor>(se)));
 	}
 
 	//! ---------------------- W³asne ekstraktory wartoœci i argumentów
@@ -136,7 +139,7 @@ namespace dataaccessor
 		//! \return Interfejs do danych wraz z danymi
 		static inline Ptr wrap(Value && value, ValueExtractor && ve,
 			ArgumentExtractor && ae, ContainerExtractor && ce = ContainerExtractor(),
-			ENABLE_IF(is_valid_discrete_accessor_ptr<Ptr>::value))
+			void * = 0)
 	{
 		using CSE = ContainerSampleExtractor<ValueExtractor, ArgumentExtractor>;
 		return wrap<Container, CSE>(utils::ValueCarrier<Container>(std::forward<Value>(value), std::forward<ContainerExtractor>(ce)),
@@ -152,32 +155,36 @@ namespace dataaccessor
 	struct Vector
 	{
 		//! Dyskretny
-		template<typename AccessorType, ENABLE_IF(is_valid_discrete_accessor_ptr<AccessorType>::value),
-			typename Ptr = DiscreteAccessorPtr<decltype(std::declval<utils::ArrayElementExtractor>().extract(std::declval<typename AccessorPointerDesc<AccessorType>::value_type>(), 0)), typename AccessorPointerDesc<AccessorType>::argument_type >>
-			static inline Ptr wrap(const AccessorType & accessor, const std::size_t Idx)
+		template<typename AccessorType,
+			typename RAT = typename utils::remove_toplevel<AccessorType>::type,
+			ENABLE_IF(is_valid_discrete_accessor_ptr<RAT>::value),
+			typename Ptr = DiscreteAccessorPtr<decltype(std::declval<utils::ArrayElementExtractor>().extract(std::declval<typename AccessorPointerDesc<RAT>::value_type>(), 0)), typename AccessorPointerDesc<RAT>::argument_type >>
+			static inline Ptr wrap(AccessorType && accessor, const std::size_t idx)
 		{
-			return Ptr(new SafeDiscreteAccessorAdapter<typename AccessorPointerDesc<AccessorType>::value_type, typename AccessorPointerDesc<AccessorType>::argument_type, utils::ArrayElementExtractor>(accessor, utils::ArrayElementExtractor(idx)));
+			return Ptr(new SafeDiscreteAccessorAdapter<typename AccessorPointerDesc<RAT>::value_type, typename AccessorPointerDesc<RAT>::argument_type, utils::ArrayElementExtractor>(std::forward<AccessorType>(accessor), utils::ArrayElementExtractor(idx)));
 		}
 
 		template<typename ValueType, typename ArgumentType,
 			typename Ptr = DiscreteAccessorPtr<decltype(std::declval<utils::ArrayElementExtractor>().extract(std::declval<ValueType>(), 0)), ArgumentType >>
-			static inline Ptr lightWrap(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor, const std::size_t Idx)
+			static inline Ptr lightWrap(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor, const std::size_t idx)
 		{
 			return Ptr(new DiscreteAccessorAdapter<ValueType, ArgumentType, utils::ArrayElementExtractor>(accessor, utils::ArrayElementExtractor(idx)));
 		}
 
 
 		//! Ci¹g³y
-		template<typename AccessorType, ENABLE_IF(is_valid_function_accessor_ptr<AccessorType>::value),
-			typename Ptr = FunctionAccessorPtr<decltype(std::declval<utils::ArrayElementExtractor>().extract(std::declval<typename AccessorPointerDesc<AccessorType>::value_type>(), std::declval<typename AccessorPointerDesc<AccessorType>::argument_type>())), typename AccessorPointerDesc<AccessorType>::argument_type >>
-			static inline Ptr wrap(const AccessorType & accessor, const std::size_t Idx)
+		template<typename AccessorType,
+			typename RAT = typename utils::remove_toplevel<AccessorType>::type,
+			ENABLE_IF(is_valid_function_accessor_ptr<RAT>::value),
+			typename Ptr = FunctionAccessorPtr<decltype(std::declval<utils::ArrayElementExtractor>().extract(std::declval<typename AccessorPointerDesc<RAT>::value_type>(), std::declval<typename AccessorPointerDesc<RAT>::argument_type>())), typename AccessorPointerDesc<RAT>::argument_type >>
+			static inline Ptr wrap(AccessorType && accessor, const std::size_t idx)
 		{
-			return Ptr(new SafeFunctionAccessorAdapter<typename AccessorPointerDesc<AccessorType>::value_type, typename AccessorPointerDesc<AccessorType>::argument_type, utils::ArrayElementExtractor>(accessor, utils::ArrayElementExtractor(idx)));
+			return Ptr(new SafeFunctionAccessorAdapter<typename AccessorPointerDesc<RAT>::value_type, typename AccessorPointerDesc<RAT>::argument_type, utils::ArrayElementExtractor>(std::forward<AccessorType>(accessor), utils::ArrayElementExtractor(idx)));
 		}
 
 		template<typename ValueType, typename ArgumentType,
 			typename Ptr = FunctionAccessorPtr<decltype(std::declval<utils::ArrayElementExtractor>().extract(std::declval<ValueType>(), std::declval<ArgumentType>())), ArgumentType >>
-			static inline Ptr lightWrap(const IFunctionAccessorT<ValueType, ArgumentType> & accessor, const std::size_t Idx)
+			static inline Ptr lightWrap(const IFunctionAccessorT<ValueType, ArgumentType> & accessor, const std::size_t idx)
 		{
 			return Ptr(new FunctionAccessorAdapter<ValueType, ArgumentType, utils::ArrayElementExtractor>(accessor, utils::ArrayElementExtractor(idx)));
 		}
@@ -188,11 +195,13 @@ namespace dataaccessor
 	struct StaticVector
 	{
 		//! Dyskretny
-		template<typename AccessorType, ENABLE_IF(is_valid_discrete_accessor_ptr<AccessorType>::value),
-			typename Ptr = DiscreteAccessorPtr<decltype(utils::StaticArrayElementExtractor<Idx>::extract(std::declval<typename AccessorPointerDesc<AccessorType>::value_type>(), 0)), typename AccessorPointerDesc<AccessorType>::argument_type >>
-			static inline Ptr wrap(const AccessorType & accessor)
+		template<typename AccessorType,
+			typename RAT = typename utils::remove_toplevel<AccessorType>::type,
+			ENABLE_IF(is_valid_discrete_accessor_ptr<RAT>::value),
+			typename Ptr = DiscreteAccessorPtr<decltype(utils::StaticArrayElementExtractor<Idx>::extract(std::declval<typename AccessorPointerDesc<RAT>::value_type>(), 0)), typename AccessorPointerDesc<RAT>::argument_type >>
+			static inline Ptr wrap(AccessorType && accessor)
 		{
-			return Ptr(new SafeDiscreteAccessorAdapter<typename AccessorPointerDesc<AccessorType>::value_type, typename AccessorPointerDesc<AccessorType>::argument_type, utils::StaticArrayElementExtractor<Idx>>(accessor));
+			return Ptr(new SafeDiscreteAccessorAdapter<typename AccessorPointerDesc<RAT>::value_type, typename AccessorPointerDesc<RAT>::argument_type, utils::StaticArrayElementExtractor<Idx>>(std::forward<AccessorType>(accessor)));
 		}
 
 		template<typename ValueType, typename ArgumentType,
@@ -204,11 +213,13 @@ namespace dataaccessor
 
 		//! Ci¹g³y
 
-		template<typename AccessorType, ENABLE_IF(is_valid_function_accessor_ptr<AccessorType>::value),
-			typename Ptr = FunctionAccessorPtr<decltype(utils::StaticArrayElementExtractor<Idx>::extract(std::declval<typename AccessorPointerDesc<AccessorType>::value_type>(), std::declval<typename AccessorPointerDesc<AccessorType>::argument_type>())), typename AccessorPointerDesc<AccessorType>::argument_type >>
-			static inline Ptr wrap(const AccessorType & accessor)
+		template<typename AccessorType,
+			typename RAT = typename utils::remove_toplevel<AccessorType>::type,
+			ENABLE_IF(is_valid_function_accessor_ptr<RAT>::value),
+			typename Ptr = FunctionAccessorPtr<decltype(utils::StaticArrayElementExtractor<Idx>::extract(std::declval<typename AccessorPointerDesc<RAT>::value_type>(), std::declval<typename AccessorPointerDesc<RAT>::argument_type>())), typename AccessorPointerDesc<RAT>::argument_type >>
+			static inline Ptr wrap(AccessorType && accessor)
 		{
-			return Ptr(new SafeFunctionAccessorAdapter<typename AccessorPointerDesc<AccessorType>::value_type, typename AccessorPointerDesc<AccessorType>::argument_type, utils::StaticArrayElementExtractor<Idx>>(accessor));
+			return Ptr(new SafeFunctionAccessorAdapter<typename AccessorPointerDesc<RAT>::value_type, typename AccessorPointerDesc<RAT>::argument_type, utils::StaticArrayElementExtractor<Idx>>(std::forward<AccessorType>(accessor)));
 		}
 
 		template<typename ValueType, typename ArgumentType,
@@ -271,34 +282,34 @@ namespace dataaccessor
 
 	template<typename ValueType, typename ArgumentType,
 		typename Ptr = DiscreteAccessorPtr < ValueType, ArgumentType >>
-		static inline Ptr lightWrap(const IDiscreteAccessorT<ValueType, ArgumentType> & channel,
+		static inline Ptr lightWrap(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const std::size_t start, const std::size_t size)
 	{
-		return Ptr(new DiscreteSubAccessorAdapter<ValueType, ArgumentType>(channel, start, size));
+		return Ptr(new DiscreteSubAccessorAdapter<ValueType, ArgumentType>(accessor, start, size));
 	}
 
 	template<typename ValueType, typename ArgumentType,
 		typename Ptr = FunctionAccessorPtr < ValueType, ArgumentType >>
-		static inline Ptr lightWrap(const IFunctionAccessorT<ValueType, ArgumentType> & channel,
+		static inline Ptr lightWrap(const IFunctionAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentType start, const ArgumentType end)
 	{
-		return Ptr(new FunctionSubAccessorAdapter<ValueType, ArgumentType>(channel, start, end));
+		return Ptr(new FunctionSubAccessorAdapter<ValueType, ArgumentType>(accessor, start, end));
 	}
 
 	template<typename AccessorType, ENABLE_IF(std::is_base_of<IDiscreteAccessorT<typename AccessorType::value_type, typename AccessorType::argument_type>, AccessorType>::value),
 		typename Ptr = DiscreteAccessorPtr<typename AccessorType::value_type, typename AccessorType::argument_type >>
-		static inline Ptr wrap(const utils::shared_ptr<AccessorType> & channel,
+		static inline Ptr wrap(const utils::shared_ptr<AccessorType> & accessor,
 			const std::size_t start, const std::size_t size)
 	{
-		return Ptr(new SafeDiscreteSubAccessorAdapter<typename AccessorType::value_type, typename AccessorType::argument_type>(channel, start, size));
+		return Ptr(new SafeDiscreteSubAccessorAdapter<typename AccessorType::value_type, typename AccessorType::argument_type>(accessor, start, size));
 	}
 
 	template<typename AccessorType, ENABLE_IF(std::is_base_of<IFunctionAccessorT<typename AccessorType::value_type, typename AccessorType::argument_type>, AccessorType>::value),
 		typename Ptr = FunctionAccessorPtr<typename AccessorType::value_type, typename AccessorType::argument_type >>
-		static inline Ptr wrap(const utils::shared_ptr<AccessorType> & channel,
+		static inline Ptr wrap(const utils::shared_ptr<AccessorType> & accessor,
 			const typename AccessorType::argument_type & start, const typename AccessorType::argument_type & end)
 	{
-		return Ptr(new SafeFunctionSubAccessorAdapter<typename AccessorType::value_type, typename AccessorType::argument_type>(channel, start, end));
+		return Ptr(new SafeFunctionSubAccessorAdapter<typename AccessorType::value_type, typename AccessorType::argument_type>(accessor, start, end));
 	}
 }
 

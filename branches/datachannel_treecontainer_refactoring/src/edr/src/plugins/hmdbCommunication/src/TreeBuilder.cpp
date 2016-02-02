@@ -346,9 +346,9 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
     QString desc = createDescription(motion);
     if (collection) {
         std::vector<core::VariantConstPtr> wrappers;
-        for (int i = 0; i < collection->getNumChannels(); ++i) {
-            core::VariantPtr wrapper = core::Variant::create<Channel>();
-            wrapper->set(utils::const_pointer_cast<Channel>(utils::dynamic_pointer_cast<const Channel>(collection->getChannel(i))));
+        for (int i = 0; i < collection->getNumAccessors(); ++i) {
+            auto wrapper = core::Variant::create<Channel>();
+            wrapper->set(utils::const_pointer_cast<Channel>(utils::dynamic_pointer_cast<const Channel>(collection->getAccessor(i))));
 
             static int number = 0;
             std::string();
@@ -368,8 +368,8 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
 		c3dlib::EventsCollectionConstPtr events = getEvents(motion);
         
         for (int i = 0; i < count; ++i) {
-			c3dlib::VectorChannelConstPtr c = wrappers[i]->get();
-            std::string channelName = c->getName();
+			c3dlib::VectorChannelReaderInterfaceConstPtr c = wrappers[i]->get();
+            std::string channelName = c->getOrCreateFeature<dataaccessor::IDescriptorFeature>()->name();
             std::list<core::HierarchyHelperPtr> helpers;
             NewVector3ItemHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i], events));
             push_not_null(helpers, channelHelper);
@@ -380,19 +380,20 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
             push_not_null(helpers, createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Right));
             push_not_null(helpers, createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Left));
             push_not_null(helpers, createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Right));
-            core::IHierarchyItemPtr channelItem (new core::HierarchyDataItem(wrappers[i], childIcon, QString::fromStdString(c->getName()), desc, helpers));
+            core::IHierarchyItemPtr channelItem (new core::HierarchyDataItem(wrappers[i], childIcon, QString::fromStdString(c->getOrCreateFeature<dataaccessor::IDescriptorFeature>()->name()), desc, helpers));
             collectionItem->appendChild(channelItem);
         }
     }
 }
 
-//! Dyskretny
-template<typename AccessorType, ENABLE_IF(dataaccessor::is_valid_discrete_accessor_ptr<AccessorType>::value)>
-static inline dataaccessor::DiscreteAccessorPtr<decltype(std::declval<utils::ArrayElementExtractor>().extract(std::declval<typename dataaccessor::AccessorPointerDesc<AccessorType>::value_type>(), 0)), typename dataaccessor::AccessorPointerDesc<AccessorType>::argument_type>
-wrap(const AccessorType & accessor, const std::size_t Idx)
-{
-	return dataaccessor::DiscreteAccessorPtr<decltype(std::declval<utils::ArrayElementExtractor>().extract(std::declval<typename dataaccessor::AccessorPointerDesc<AccessorType>::value_type>(), 0)), typename dataaccessor::AccessorPointerDesc<AccessorType>::argument_type>(new dataaccessor::SafeDiscreteAccessorAdapter<typename dataaccessor::AccessorPointerDesc<AccessorType>::value_type, typename dataaccessor::AccessorPointerDesc<AccessorType>::argument_type, utils::ArrayElementExtractor>(accessor, utils::ArrayElementExtractor(idx)));
-}
+//template<typename AccessorType,
+//	typename RAT = typename utils::remove_toplevel<AccessorType>::type,
+//	ENABLE_IF(dataaccessor::is_valid_discrete_accessor_ptr<RAT>::value),
+//	typename Ptr = dataaccessor::DiscreteAccessorPtr<decltype(std::declval<utils::ArrayElementExtractor>().extract(std::declval<typename dataaccessor::AccessorPointerDesc<RAT>::value_type>(), 0)), typename dataaccessor::AccessorPointerDesc<RAT>::argument_type >>
+//	static inline Ptr wrap(AccessorType && accessor, const std::size_t Idx)
+//{
+//	return Ptr(new SafeDiscreteAccessorAdapter<typename AccessorPointerDesc<RAT>::value_type, typename AccessorPointerDesc<RAT>::argument_type, utils::ArrayElementExtractor>(std::forward<AccessorType>(accessor), utils::ArrayElementExtractor(idx)));
+//}
 
 core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channelName, PluginSubject::SessionConstPtr s, int channelNo )
 {
@@ -420,7 +421,7 @@ core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channe
 				auto df = channel->feature<dataaccessor::IDescriptorFeature>();
                 if (df != nullptr && df->name() == channelName) {
 					//c3dlib::ScalarChannelReaderInterfacePtr reader(dataaccessor::Vector::wrap(channel, channelNo));
-					c3dlib::ScalarChannelReaderInterfacePtr reader(dataaccessor::Vector::wrap(channel, channelNo));					
+					c3dlib::ScalarChannelReaderInterfacePtr reader(dataaccessor::Vector::wrap(channel, channelNo));
 					core::VariantPtr wrapper = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
                     wrapper->set(reader);
                     int no = toVisualize.size();
@@ -499,7 +500,7 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
     for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
         PluginSubject::MotionConstPtr m = (*itMotion)->get();
         core::ConstVariantsList wrappers;
-		m->getObjects(wrappers, typeid(utils::DataChannelCollection<c3dlib::VectorChannel>), false);
+		m->getObjects(wrappers, typeid(dataaccessor::AccessorsCollection<c3dlib::VectorChannelReaderInterface>), false);
 
 		c3dlib::EventsCollectionConstPtr events;
 		std::vector<c3dlib::FloatPairPtr> segments;
@@ -514,8 +515,8 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
 			c3dlib::VectorChannelCollectionConstPtr collection = (*it)->get();
             int count = collection ? collection->getNumAccessors() : 0;
             for (int i = 0; i < count; ++i) {
-				c3dlib::VectorChannelConstPtr channel = collection->getAccessor(i);
-                if (channel->getName() == channelName) {
+				auto channel = collection->getAccessor(i);
+                if (channel->feature<dataaccessor::IDescriptorFeature>()->name() == channelName) {
 
                     int r = rand() % 200;
                     int g = rand() % 200;
@@ -527,10 +528,24 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
 						c3dlib::FloatPairPtr segment = segments[j];
 
                         for (int channelNo = 0; channelNo <= 2; ++channelNo) {
-							c3dlib::ScalarChannelReaderInterfacePtr reader(new c3dlib::VectorToScalarAdaptor(channel, channelNo));
-							c3dlib::ScalarChannelReaderInterfacePtr normalized(new c3dlib::ScalarWithTimeSegment(reader, segment->first, segment->second));
-							core::VariantPtr wrapper = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
-                            wrapper->set(normalized);
+							auto reader = dataaccessor::Vector::wrap(channel, channelNo);
+							//todo - indeksy próbek z segmentu czasu
+
+							std::size_t start_idx = 0;
+							std::size_t end_idx = 0;
+
+							auto uaf = channel->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
+
+							if (uaf == nullptr) {
+								start_idx = dataaccessor::NearestArgumentsFinder::range(*reader, segment->first).first;
+								end_idx = dataaccessor::NearestArgumentsFinder::range(*reader, segment->second).second;
+							}
+							else {
+								start_idx = dataaccessor::NearestArgumentsFinder::range(*reader, segment->first, uaf->argumentsInterval()).first;
+								end_idx = dataaccessor::NearestArgumentsFinder::range(*reader, segment->second, uaf->argumentsInterval()).second;
+							}
+
+							auto wrapper = core::Variant::wrap<c3dlib::ScalarChannelReaderInterface>(dataaccessor::wrap(reader, start_idx, end_idx));
                             colorMap[wrapper] = channelNo == 0 ? colorX : (channelNo == 1 ? colorY : colorZ);
                             int no = toVisualize.size();
                             std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");

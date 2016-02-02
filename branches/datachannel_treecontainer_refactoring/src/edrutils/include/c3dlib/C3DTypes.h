@@ -14,6 +14,7 @@
 #include <datachannellib/ArgumentTracker.h>
 #include <datachannellib/Adapters.h>
 #include <datachannellib/AccessorsCollection.h>
+#include <datachannellib/AccessorsCollection.h>
 #include <utils/SmartPtr.h>
 #include <utils/PtrPolicyStd.h>
 #include <utils/ClonePolicies.h>

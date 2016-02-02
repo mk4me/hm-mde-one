@@ -9,10 +9,12 @@
 #ifndef HEADER_GUARD_DATACHANNEL__DESCRIPTORFEATURE_H__
 #define HEADER_GUARD_DATACHANNEL__DESCRIPTORFEATURE_H__
 
-#include <datachannellib/Accessors.h>
+#include <datachannellib/Features.h>
 
 namespace dataaccessor {
 	
+	class DescriptorFeature;
+
 	//! Interfejs do czytania opisu kanału - osi x i y oraz nazwy kanału.
 	class IDescriptorFeature : public FeatureHelperT<Description>
 	{
@@ -35,6 +37,14 @@ namespace dataaccessor {
 
 		//! \return Nazwa jednostki dla wartości
 		virtual std::string valueUnit() const = 0;
+
+		template<typename ValueType, typename ArgumentType>
+		inline static DescriptorFeature * create(
+			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
+			const IFunctionAccessorT<ValueType, ArgumentType> * function)
+		{
+			return DescriptorFeature::create<ValueType, ArgumentType>("", "", "");
+		}
 	};
 	
 	//! Implementacja interfejsu IChannelDescriptor

@@ -36,13 +36,13 @@ namespace dataaccessor
 	protected:
 
 		//! Domyśłny konstruktor
-		IAccessor() {}	
+		IAccessor() {}
 		//! Konstruktor kopiujący
 		//! \param other Kopiowany obiekt
 		IAccessor(const IAccessor & other) : features(other.features) {}
 		//! Konstruktor przenoszący
 		//! \param other Przenoszony obiekt
-		IAccessor(IAccessor && other) : features(std::move(other.features)) {}	
+		IAccessor(IAccessor && other) : features(std::move(other.features)) {}
 
 	public:
 		//! Desturktor wirtualny
@@ -68,9 +68,9 @@ namespace dataaccessor
 		//! \tparam dummy
 		template<typename FeatureT,
 			ENABLE_IF(std::is_base_of<IFeature, FeatureT>::value)>
-		//! \param dummy
-		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-		inline utils::shared_ptr<FeatureT> feature(FeatureT * dummy = nullptr) const
+			//! \param dummy
+			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
+			inline utils::shared_ptr<FeatureT> feature(FeatureT * dummy = nullptr) const
 		{
 			auto f = this->feature(FeatureT::ID);
 			if (f != nullptr) {
@@ -105,9 +105,9 @@ namespace dataaccessor
 		//! \tparam dummy
 		template<typename FeatureT,
 			ENABLE_IF(std::is_base_of<IFeature, FeatureT>::value)>
-		//! \param dummy
-		//! \return Czy cecha została usunięta (była obecna)
-		inline bool removeFeature(FeatureT * dummy = nullptr) { return removeFeature(FeatureT::ID); }
+			//! \param dummy
+			//! \return Czy cecha została usunięta (była obecna)
+			inline bool removeFeature(FeatureT * dummy = nullptr) { return removeFeature(FeatureT::ID); }
 
 		//! \return Typ akcesora
 		virtual AccessorType type() const = 0;
@@ -130,6 +130,8 @@ namespace dataaccessor
 
 	public:
 
+		using IAccessor::feature;
+
 		//! Destruktor wirtualny
 		virtual ~IValueAccessorT() {}
 
@@ -140,9 +142,9 @@ namespace dataaccessor
 		//! \tparam dummy
 		template<template<typename> class ValueFeatureT,
 			ENABLE_IF(std::is_base_of<ValueFeature, ValueFeatureT<value_type>>::value)>
-		//! \param dummy
-		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-		inline utils::shared_ptr<ValueFeatureT<value_type>> feature(ValueFeatureT<value_type> * dummy = nullptr) const { return IAccessor::feature<ValueFeatureT<value_type>>(); }	
+			//! \param dummy
+			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
+			inline utils::shared_ptr<ValueFeatureT<value_type>> feature(ValueFeatureT<value_type> * dummy = nullptr) const { return this->IAccessor::feature<ValueFeatureT<value_type>>(); }
 	};
 
 	//! \tparam ArgumentType Typ argumentów akcesora dla których przechowujemy własności
@@ -158,6 +160,8 @@ namespace dataaccessor
 
 	public:
 
+		using IAccessor::feature;
+
 		//! Destruktor wirtualny
 		virtual ~IArgumentAccessorT() {}
 
@@ -168,9 +172,9 @@ namespace dataaccessor
 		//! \tparam dummy
 		template<template<typename> class ArgumentFeatureT,
 			ENABLE_IF(std::is_base_of<ArgumentFeature, ArgumentFeatureT<argument_type>>::value)>
-		//! \param dummy
-		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-		inline utils::shared_ptr<ArgumentFeatureT<argument_type>> feature(ArgumentFeatureT<argument_type> * dummy = nullptr) const { return IAccessor::feature<ArgumentFeatureT<argument_type>>(); }	
+			//! \param dummy
+			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
+			inline utils::shared_ptr<ArgumentFeatureT<argument_type>> feature(ArgumentFeatureT<argument_type> * dummy = nullptr) const { return this->IAccessor::feature<ArgumentFeatureT<argument_type>>(); }
 	};
 
 	//! \tparam ValueType Typ wartości kanału danych
@@ -181,7 +185,7 @@ namespace dataaccessor
 		public IValueAccessorT<ValueType>,
 		public IArgumentAccessorT<ArgumentType>
 	{
-	public:		
+	public:
 		//! Próbka: argument + wartość
 		using sample_type = std::pair<argument_type, value_type>;
 		//! Typ akcesorta dyskretnego
@@ -189,7 +193,7 @@ namespace dataaccessor
 		//! Typ akcesora dyskretnego
 		using FunctionAccessor = IFunctionAccessorT<value_type, argument_type>;
 		//! Typ cechy akcesora
-		using AccessorFeature = IAccessorFeatureT<value_type, argument_type>;	
+		using AccessorFeature = IAccessorFeatureT<value_type, argument_type>;
 
 	public:
 		//! Destruktor wirtualny
@@ -210,21 +214,21 @@ namespace dataaccessor
 		using IAccessor::feature;
 		using IValueAccessorT<ValueType>::feature;
 		using IArgumentAccessorT<ArgumentType>::feature;
-		
+
 		//! \tparam FeatureT Typ cechy o jaką pytamy
 		//! \tparam dummy
 		template<typename FeatureT,
 			ENABLE_IF(std::is_base_of<IFeature, FeatureT>::value)>
-		//! \param dummy
-		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-		inline utils::shared_ptr<FeatureT> getOrCreateFeature(FeatureT * dummy = nullptr) const
+			//! \param dummy
+			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
+			inline utils::shared_ptr<FeatureT> getOrCreateFeature(FeatureT * dummy = nullptr) const
 		{
-			utils::shared_ptr<FeatureT> ret = IAccessor::feature<FeatureT>();
+			utils::shared_ptr<FeatureT> ret = this->IAccessor::feature<FeatureT>();
 
 			if (ret == nullptr) {
 				UTILS_ASSERT((asDiscrete() != nullptr) || (asDiscrete() != nullptr));
 				ret.reset(FeatureT::create(asDiscrete(), asFunction()));
-				IAccessor::attachFeature(ret);
+				this->IAccessor::attachFeature(ret);
 			}
 
 			return ret;
@@ -234,31 +238,31 @@ namespace dataaccessor
 		//! \tparam dummy
 		template<template<typename> class ValueFeatureT,
 			ENABLE_IF(std::is_base_of<ValueFeature, ValueFeatureT<value_type>>::value)>
-		//! \param dummy
-		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-		inline utils::shared_ptr<ValueFeatureT<value_type>> getOrCreateFeature(ValueFeatureT<value_type> * dummy = nullptr) const { return this->getOrCreateFeature<ValueFeatureT<value_type>>(); }
+			//! \param dummy
+			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
+			inline utils::shared_ptr<ValueFeatureT<value_type>> getOrCreateFeature(ValueFeatureT<value_type> * dummy = nullptr) const { return this->getOrCreateFeature<ValueFeatureT<value_type>>(); }
 
 		//! \tparam ArgumentFeatureT Typ cechy argumentów o jaką pytamy
 		//! \tparam dummy
 		template<template<typename> class ArgumentFeatureT,
 			ENABLE_IF(std::is_base_of<ArgumentFeature, ArgumentFeatureT<argument_type>>::value)>
-		//! \param dummy
-		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-		inline utils::shared_ptr<ArgumentFeatureT<argument_type>> getOrCreateFeature(ArgumentFeatureT<argument_type> * dummy = nullptr) const { return this->getOrCreateFeature < ArgumentFeatureT<argument_type>>(); }
+			//! \param dummy
+			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
+			inline utils::shared_ptr<ArgumentFeatureT<argument_type>> getOrCreateFeature(ArgumentFeatureT<argument_type> * dummy = nullptr) const { return this->getOrCreateFeature < ArgumentFeatureT<argument_type>>(); }
 
 		//! \tparam AccessorFeatureT Typ cechy o jaką pytamy
 		template<template<typename, typename> class AccessorFeatureT,
 			ENABLE_IF(std::is_base_of<AccessorFeature, AccessorFeatureT<value_type, argument_type>>::value)>
-		//! \param dummy
-		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-		inline utils::shared_ptr<AccessorFeatureT<value_type, argument_type>> feature(AccessorFeatureT<value_type, argument_type> * dummy = nullptr) const { return this->feature<AccessorFeatureT<value_type, argument_type>(); }
+			//! \param dummy
+			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
+			inline utils::shared_ptr<AccessorFeatureT<value_type, argument_type>> feature(AccessorFeatureT<value_type, argument_type> * dummy = nullptr) const { return this->feature < AccessorFeatureT<value_type, argument_type>(); }
 
 		//! \tparam AccessorFeatureT Typ cechy danych o jaką pytamy
 		template<template<typename, typename> class AccessorFeatureT,
 			ENABLE_IF(std::is_base_of<AccessorFeature, AccessorFeatureT<value_type, argument_type>>::value)>
-		//! \param dummy
-		//! \return Cecha o zadanym typie lub nullptr jeśli istnieje cecha o danym id ale to nie ta o jaką pytamy
-		inline utils::shared_ptr<AccessorFeatureT<value_type, argument_type>> getOrCreateFeature(AccessorFeatureT<value_type, argument_type> * dummy = nullptr) const { return this->getOrCreateFeature<AccessorFeatureT<value_type, argument_type>>(); }		
+			//! \param dummy
+			//! \return Cecha o zadanym typie lub nullptr jeśli istnieje cecha o danym id ale to nie ta o jaką pytamy
+			inline utils::shared_ptr<AccessorFeatureT<value_type, argument_type>> getOrCreateFeature(AccessorFeatureT<value_type, argument_type> * dummy = nullptr) const { return this->getOrCreateFeature<AccessorFeatureT<value_type, argument_type>>(); }
 	};
 
 	//! \tparam ValueType Typ wartości kanału danych
@@ -339,7 +343,7 @@ namespace dataaccessor
 
 	//! Baza kanałów dyskretnych
 	class IDiscreteAccessor : public virtual IAccessor
-	{	
+	{
 	public:
 		//! Typ ilości elementów w kanale
 		using size_type = std::size_t;
@@ -373,15 +377,15 @@ namespace dataaccessor
 		//! \tparam dummy
 		template<template<typename> class ValueFeatureT,
 			ENABLE_IF(std::is_base_of<ValueFeature, ValueFeatureT<ValueType>>::value)>
-		//! \param dummy
-		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-		inline utils::shared_ptr<ValueFeatureT<ValueType>> getOrCreateFeature(ValueFeatureT<ValueType> * dummy = nullptr) const
+			//! \param dummy
+			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
+			inline utils::shared_ptr<ValueFeatureT<ValueType>> getOrCreateFeature(ValueFeatureT<ValueType> * dummy = nullptr) const
 		{
-			utils::shared_ptr<ValueFeatureT<ValueType>> ret = IAccessor::feature<ValueFeatureT<ValueType>>();
+			utils::shared_ptr<ValueFeatureT<ValueType>> ret = this->IAccessor::feature<ValueFeatureT<ValueType>>();
 
-			if (ret == nullptr) {				
+			if (ret == nullptr) {
 				ret.reset(ValueFeatureT<ValueType>::create(*this));
-				IAccessor::attachFeature(ret);
+				this->IAccessor::attachFeature(ret);
 			}
 
 			return ret;
@@ -405,15 +409,15 @@ namespace dataaccessor
 		//! \tparam dummy
 		template<template<typename> class ArgumentFeatureT,
 			ENABLE_IF(std::is_base_of<ArgumentFeature, ArgumentFeatureT<ArgumentType>>::value)>
-		//! \param dummy
-		//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-		inline utils::shared_ptr<ArgumentFeatureT<ArgumentType>> getOrCreateFeature(ArgumentFeatureT<ArgumentType> * dummy = nullptr) const
+			//! \param dummy
+			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
+			inline utils::shared_ptr<ArgumentFeatureT<ArgumentType>> getOrCreateFeature(ArgumentFeatureT<ArgumentType> * dummy = nullptr) const
 		{
-			utils::shared_ptr<ArgumentFeatureT<ArgumentType>> ret = IAccessor::feature<ArgumentFeatureT<ArgumentType>>();
+			utils::shared_ptr<ArgumentFeatureT<ArgumentType>> ret = this->IAccessor::feature<ArgumentFeatureT<ArgumentType>>();
 
 			if (ret == nullptr) {
 				ret.reset(ArgumentFeatureT<ArgumentType>::create(*this));
-				IAccessor::attachFeature(ret);
+				this->IAccessor::attachFeature(ret);
 			}
 
 			return ret;
@@ -427,7 +431,7 @@ namespace dataaccessor
 	class IDiscreteAccessorT : public virtual IDiscreteAccessor,
 		public IAccessorT<ValueType, ArgumentType>,
 		public IDiscreteValueAccessorT<ValueType>,
-		public IDiscreteArgumentAccessorT<ArgumentType>				
+		public IDiscreteArgumentAccessorT<ArgumentType>
 	{
 	public:
 

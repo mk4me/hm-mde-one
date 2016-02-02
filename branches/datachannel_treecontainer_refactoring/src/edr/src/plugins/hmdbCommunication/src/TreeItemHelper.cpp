@@ -370,13 +370,13 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
 {
 	c3dlib::ScalarChannelReaderInterfaceConstPtr channel = wrapper->get();
 
-    auto absTest(AbsMeanValueChannel::wrap(channel));    
+    auto absTest = AbsMeanValueChannel::wrap(channel);
 
     //utils::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, ScalarChannelIntegrator()));
-	utils::shared_ptr<c3dlib::ScalarModifier> integratorChannel(new c3dlib::ScalarModifier(absTest, RMSModifier()));
+	//utils::shared_ptr<c3dlib::ScalarModifier> integratorChannel(new c3dlib::ScalarModifier(absTest, RMSModifier()));
 
-	core::VariantPtr wrapperX = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
-	wrapperX->set(utils::dynamic_pointer_cast<c3dlib::ScalarChannelReaderInterface>(integratorChannel));
+	auto wrapperX = core::Variant::wrap<c3dlib::ScalarChannelReaderInterface>(RMSChannel::create(*absTest));
+	//wrapperX->set(utils::dynamic_pointer_cast<c3dlib::ScalarChannelReaderInterface>(integratorChannel));
     wrapperX->copyMetadata(*wrapper);
     visualizer->getOrCreateWidget();
 

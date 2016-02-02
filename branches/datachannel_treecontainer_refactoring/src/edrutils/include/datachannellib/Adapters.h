@@ -1,9 +1,9 @@
 /********************************************************************
-	created:  2015/07/28	15:50:12
-	filename: Adapter.h
-	author:	  Mateusz Janiak
+created:  2015/07/28	15:50:12
+filename: Adapter.h
+author:	  Mateusz Janiak
 
-	purpose:
+purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD_DATACHANNEL__ADAPTER_H__
 #define __HEADER_GUARD_DATACHANNEL__ADAPTER_H__
@@ -37,7 +37,7 @@ namespace dataaccessor
 			: start_(std::forward<AT>(start)), step_(std::forward<AT>(step)),
 			size_(size)
 		{
-			
+
 		}
 
 		//! \param Other Kopiowany generator
@@ -75,7 +75,7 @@ namespace dataaccessor
 		//! \param idx Index dla którego generujemy argument
 		inline ArgumentType argument(const std::size_t idx) const
 		{
-			if (idx >= size_){
+			if (idx >= size_) {
 				throw std::range_error("Generator range exceeded");
 			}
 
@@ -111,12 +111,12 @@ namespace dataaccessor
 		//! \param accessor Akcesor który zasilamy t¹ cech¹
 		inline void init(IAccessorT<ValueType, ArgumentType> * accessor)
 		{
-			if (accessor != nullptr){
-				if (feature == nullptr){
+			if (accessor != nullptr) {
+				if (feature == nullptr) {
 					feature = utils::make_shared<UniformArgumentsFeature<ArgumentType>>(step_);
 				}
 
-				accessor->attachFeature(utils::make_shared<UniformArgumentsFeature<ArgumentType>>(step_););
+				accessor->attachFeature(utils::make_shared<UniformArgumentsFeature<ArgumentType>>(step_));
 			}
 		}
 
@@ -126,11 +126,11 @@ namespace dataaccessor
 		//! Wartoœæ pocz¹tkowa argumentu
 		const ArgumentType start_;
 		//! Krok argumentów
-		const ArgumentType step_;		
+		const ArgumentType step_;
 		//! Iloœæ próbek
 		const std::size_t size_;
 	};
-	
+
 	//! Klasa pomocnicza przy znajdowaniu argumentów otaczaj¹cych dany argument w dyskretnym kanale
 	class NearestArgumentsFinder
 	{
@@ -150,29 +150,29 @@ namespace dataaccessor
 		//! kiedy próbka poza zakresem kana³u dowolny zakres indeksów z ró¿nic¹ wieksz¹ niæ 1
 		//! Ta implementacja dzia³a w czasie O(log(N)) - podzia³ binarny bo dane sa u³o¿one chronologicznie					
 		static inline Range range(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
-			const ArgumentType argument)
+			const ArgumentType & argument)
 		{
 			UTILS_COMPILER_WARNING("Unoptimized search function");
 			std::size_t minIdx = 0;
 			std::size_t maxIdx = accessor.size() - 1;
 
-			while ((maxIdx - minIdx) > 1){
+			while ((maxIdx - minIdx) > 1) {
 				const auto midIdx = (maxIdx + minIdx) >> 1;
 				const auto midArgument = accessor.argument(midIdx);
 
-				if (midArgument < argument){
+				if (midArgument < argument) {
 					minIdx = midIdx + 1;
 				}
-				else if (midArgument > argument){
+				else if (midArgument > argument) {
 					maxIdx = midIdx - 1;
 				}
-				else{
+				else {
 					maxIdx = minIdx = midIdx;
 					break;
 				}
 			}
 
-			if ((minIdx == maxIdx) && (argument > accessor.argument(maxIdx) || argument < accessor.argument(minIdx))){
+			if ((minIdx == maxIdx) && (argument > accessor.argument(maxIdx) || argument < accessor.argument(minIdx))) {
 				minIdx = 1;
 				maxIdx = 0;
 			}
@@ -189,15 +189,15 @@ namespace dataaccessor
 		//! kiedy próbka znajduje siê w kanale zakres o dwóch identycznych indeksach (ró¿nica 0),
 		//! kiedy próbka poza zakresem kana³u dowolny zakres indeksów z ró¿nic¹ wieksz¹ niæ 1
 		static inline Range range(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
-			const ArgumentType argument, const ArgumentType interval)
+			const ArgumentType & argument, const ArgumentType & interval)
 		{
 			const std::size_t idx = (argument - accessor.argument(0)) / interval;
 			const auto idxArgument = accessor.argument(idx);
-			if (idxArgument == argument){
+			if (idxArgument == argument) {
 				return Range(idx, idx);
 			}
 
-			if (argument > accessor.argument(idx + 1) || argument < accessor.argument(idx)){
+			if (argument > accessor.argument(idx + 1) || argument < accessor.argument(idx)) {
 				return Range(1, 0);
 			}
 
@@ -209,8 +209,8 @@ namespace dataaccessor
 	//! \tparam ArgumentType Typ argumentów kana³u
 	//! \tparam ArgumentsGenerator Generator argumentów dla kolejnych indeksów
 	template<typename ValueType, typename ArgumentType,
-		typename ArgumentsGenerator = UniformArgumentsGenerator<ArgumentType>>
-	//! Klasa realizuje dyskretny dostêp do ci¹g³ego kana³u danych opisuj¹cego funkcjê
+		typename ArgumentsGenerator = UniformArgumentsGenerator<ArgumentType >>
+		//! Klasa realizuje dyskretny dostêp do ci¹g³ego kana³u danych opisuj¹cego funkcjê
 	class FunctionDiscreteAccessorAdapter : public IOptimizedDiscreteAccessorT<ValueType, ArgumentType>,
 		private ArgumentsGenerator
 	{
@@ -223,20 +223,20 @@ namespace dataaccessor
 			: ArgumentsGenerator(std::forward<AG>(argumentsGenerator)), accessor(accessor)
 		{
 
-		}		
+		}
 
 		//! Destruktor wirtualny
-		virtual ~FunctionDiscreteAccessorAdapter() {}		
+		virtual ~FunctionDiscreteAccessorAdapter() {}
 
 		//! \param idx Indeks próbki
 		//! \return Próbka dla danego indeksu
 		virtual sample_type sample(const size_type idx) const override
-		{			
-			return accessor.sample(ArgumentsGenerator::argument(idx));
+		{
+			return accessor.sample(this->ArgumentsGenerator::argument(idx));
 		}
 
 		//! \return Iloœæ próbek w kanale
-		virtual size_type size() const override { return ArgumentsGenerator::size(); }
+		virtual size_type size() const override { return this->ArgumentsGenerator::size(); }
 
 	private:
 		//! Kana³ ci¹g³y
@@ -250,7 +250,7 @@ namespace dataaccessor
 		typename ArgumentsGenerator = UniformArgumentsGenerator < ArgumentType >>
 		//! Klasa realizuje dyskretny dostêp do ci¹g³ego kana³u danych opisuj¹cego funkcjê
 		using SafeFunctionDiscreteAccessorAdapter = SafeAccessorWrapper<FunctionDiscreteAccessorAdapter < ValueType, ArgumentType, ArgumentsGenerator >,
-		IFunctionAccessorT<ValueType, ArgumentType>>;
+		IFunctionAccessorT<ValueType, ArgumentType >> ;
 
 	//! \tparam ValueType Typ wartoœci kana³u
 	//! \tparam ArgumentType Typ argumentów kana³u
@@ -258,8 +258,8 @@ namespace dataaccessor
 	//! \tparam Extrapolator Obiekt realizuj¹cy politykê zapytañ o argumenty spoza zakresu kana³u
 	template<typename ValueType, typename ArgumentType,
 		typename Interpolator = LerpInterpolator,
-		typename Extrapolator = BorderExtrapolator<ValueType>>
-	//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
+		typename Extrapolator = BorderExtrapolator<ValueType >>
+		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
 	class DiscreteFunctionAccessorAdapter : public IGeneratedFunctionAccessorT<ValueType, ArgumentType>,
 		private Interpolator, private Extrapolator
 	{
@@ -273,18 +273,18 @@ namespace dataaccessor
 			IT && interpolator = IT(), ET && extrapolator = ET())
 			: Interpolator(std::forward<IT>(interpolator)), Extrapolator(std::forward<ET>(extrapolator)), accessor(accessor),
 			range(static_cast<NearestArgumentsFinder::Range(*)(const IDiscreteAccessorT<ValueType, ArgumentType>&,
-			const ArgumentType)>(&NearestArgumentsFinder::range<ValueType, ArgumentType>))
+				const ArgumentType&)>(&NearestArgumentsFinder::range<ValueType, ArgumentType>))
 		{
-			if (accessor.getOrCreateFeature<IFunctionFeature>() == nullptr){
+			if (accessor.getOrCreateFeature<IFunctionFeature>() == nullptr) {
 				throw std::runtime_error("Non function data");
 			}
 
 			feature = accessor.getOrCreateFeature<IBoundedArgumentsFeature>();
 
 			auto uaf = accessor.getOrCreateFeature<IUniformArgumentsFeature>();
-			if (uaf != nullptr){
+			if (uaf != nullptr) {
 				range = std::bind(static_cast<NearestArgumentsFinder::Range(*)(const IDiscreteAccessorT<ValueType, ArgumentType>&,
-					const ArgumentType, const ArgumentType)>(&NearestArgumentsFinder::range<ValueType, ArgumentType>),
+					const ArgumentType&, const ArgumentType&)>(&NearestArgumentsFinder::range<ValueType, ArgumentType>),
 					std::placeholders::_1, std::placeholders::_2, uaf->argumentsInterval());
 			}
 		}
@@ -296,42 +296,42 @@ namespace dataaccessor
 		//! \return Wartoœæ dla zadanego argumentu
 		ValueType value(const ArgumentType & argument) const override
 		{
-			if (feature != nullptr){
+			if (feature != nullptr) {
 
-				if (argument < feature->minArgument()){
-					return Extrapolator::argumentUnderflow(argument, accessor);
+				if (argument < feature->minArgument()) {
+					return this->Extrapolator::argumentUnderflow(argument, accessor);
 				}
-				else if (argument > feature->maxArgument()){
-					return Extrapolator::argumentOverflow(argument, accessor);
+				else if (argument > feature->maxArgument()) {
+					return this->Extrapolator::argumentOverflow(argument, accessor);
 				}
-				else{
+				else {
 					const auto r = range(accessor, argument);
-					if (r.first == r.second){
+					if (r.first == r.second) {
 						return accessor.value(r.first);
 					}
-					else{
-						return Interpolator::interpolate(accessor, argument, r.first, r.second);
+					else {
+						return this->Interpolator::interpolate(accessor, argument, r.first, r.second);
 					}
 				}
 			}
-			else if (accessor.empty() == false){
+			else if (accessor.empty() == false) {
 				const auto arg = accessor.argument(0);
-				if (argument < arg){
-					return Extrapolator::argumentUnderflow(argument, accessor);
+				if (argument < arg) {
+					return this->Extrapolator::argumentUnderflow(argument, accessor);
 				}
-				else if (argument > arg){
-					return Extrapolator::argumentOverflow(argument, accessor);
+				else if (argument > arg) {
+					return this->Extrapolator::argumentOverflow(argument, accessor);
 				}
-				else{
+				else {
 					return accessor.value(0);
 				}
 			}
-			else{
+			else {
 				throw std::range_error("Empty accessor");
 			}
 
 			return ValueType();
-		}		
+		}
 
 	private:
 		utils::shared_ptr<IBoundedArgumentsFeature<ArgumentType>> feature;
@@ -349,14 +349,14 @@ namespace dataaccessor
 		typename Extrapolator = BorderExtrapolator < ValueType >>
 		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
 		using SafeDiscreteFunctionAccessorAdapter = SafeAccessorWrapper < DiscreteFunctionAccessorAdapter < ValueType, ArgumentType, Interpolator, Extrapolator >,
-		IDiscreteAccessorT<ValueType, ArgumentType>>;
+		IDiscreteAccessorT<ValueType, ArgumentType >> ;
 
 	//! \tparam ValueType Typ wartoœci kana³u
 	//! \tparam ArgumentType Typ argumentów kana³u
 	//! \tparam Extrapolator Obiekt realizuj¹cy politykê zapytañ o argumenty spoza zakresu kana³u
 	template<typename ValueType, typename ArgumentType,
 		typename Extrapolator = ExceptionExtrapolator>
-	//! Wrapper dla dyskretnych akcesorów, zawê¿aj¹cy ich zakres
+		//! Wrapper dla dyskretnych akcesorów, zawê¿aj¹cy ich zakres
 	class DiscreteSubAccessorAdapter : public IDiscreteAccessorT<ValueType, ArgumentType>,
 		private Extrapolator
 	{
@@ -364,25 +364,25 @@ namespace dataaccessor
 
 		void init()
 		{
-			if (start + size > accessor.size()){
+			if (start_ + size_ > accessor.size()) {
 				throw std::runtime_error("Invalid discrete subaccessor configuration");
 			}
 
 			auto ff = accessor.getOrCreateFeature<IFunctionFeature>();
-			if (ff != nullptr){
+			if (ff != nullptr) {
 
 				//TODO
 				//zweryfikowaæ czy mogê to potraktowaæ dok³adnie tak samo czy musze sprawdziæ iloœc próbek
 				//i parzystoœæ czy nieparzystoœæ ze wzglêdu na to aktualizowaæ
 				attachFeature(ff);
 
-				if (ff->monotony() != NonMonotonic){
-					auto minSample = accessor.sample(start);
-					auto maxSample = accessor.sample(start + size_);
+				if (ff->monotony() != NonMonotonic) {
+					auto minSample = accessor.sample(start_);
+					auto maxSample = accessor.sample(start_ + size_);
 					auto resArg = std::minmax(minSample.first, maxSample.first);
 					auto resVal = std::minmax(minSample.second, maxSample.second);
-					attachFeature(IFeaturePtr(new BoundedArgumentsFeature(resArg.first, resArg.second)));
-					attachFeature(IFeaturePtr(new BoundedValuesFeature(resVal.first, resVal.second)));
+					attachFeature(IFeaturePtr(new BoundedArgumentsFeature<ArgumentType>(resArg.first, resArg.second)));
+					attachFeature(IFeaturePtr(new BoundedValuesFeature<ValueType>(resVal.first, resVal.second)));
 				}
 			}
 		}
@@ -396,9 +396,9 @@ namespace dataaccessor
 		//! \param extrapolator
 		DiscreteSubAccessorAdapter(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const std::size_t start, const std::size_t size,
-			ET && extrapolator = ET())	:
+			ET && extrapolator = ET()) :
 			Extrapolator(std::forward<ET>(extrapolator)), accessor(accessor),
-			start(start), size_(size)
+			start_(start), size_(size)
 		{
 			init();
 		}
@@ -411,7 +411,7 @@ namespace dataaccessor
 		virtual argument_type argument(const size_type idx) const override
 		{
 			const auto ridx = realIdx(idx);
-			if (ridx >= accessor.size()){
+			if (ridx >= accessor.size()) {
 				throw std::out_of_range("Argument out of range");
 			}
 
@@ -423,16 +423,16 @@ namespace dataaccessor
 		virtual value_type value(const size_type idx) const override
 		{
 			const auto ridx = realIdx(idx);
-			if (ridx >= accessor.size()){
+			if (ridx >= accessor.size()) {
 				throw std::out_of_range("Argument out of range");
 			}
 
-			if (idx >= size_){
-				return Extrapolator::argumentOverflow(accessor.argument(ridx), accessor);
+			if (idx >= size_) {
+				return this->Extrapolator::argumentOverflow(accessor.argument(ridx), accessor);
 			}
-			else{
+			else {
 				return accessor.value(ridx);
-			}		
+			}
 		}
 
 		//! \param idx Indeks próbki
@@ -440,13 +440,13 @@ namespace dataaccessor
 		virtual sample_type sample(const size_type idx) const override
 		{
 			const auto ridx = realIdx(idx);
-			if (idx < size_){
+			if (idx < size_) {
 				return accessor.sample(ridx);
 			}
-			else if (ridx < accessor.size()){
-				return{ accessor.argument(ridx), ((idx < size_) ? accessor.value(ridx) : Extrapolator::argumentOverflow(accessor.argument(ridx), accessor)) };
+			else if (ridx < accessor.size()) {
+				return{ accessor.argument(ridx), ((idx < size_) ? accessor.value(ridx) : this->Extrapolator::argumentOverflow(accessor.argument(ridx), accessor)) };
 			}
-			else{
+			else {
 				throw std::out_of_range("Argument out of range");
 			}
 		}
@@ -458,15 +458,15 @@ namespace dataaccessor
 
 		//! \param idx Indeks o jaki pytamy w tym kanale
 		//! \return Mapowanie naszego indeksu na indeks wrapowanego kana³u
-		inline std::size_t realIdx(const std::size_t idx) const { return start + idx; }
+		inline std::size_t realIdx(const std::size_t idx) const { return start_ + idx; }
 
 	private:
 		//! Wrapowany kana³
 		const IDiscreteAccessorT<ValueType, ArgumentType> & accessor;
 		//! Indeks startowy
-		const std::size_t start;
+		const std::size_t start_;
 		//! Iloœæ próbek
-		const std::size_t size_;		
+		const std::size_t size_;
 	};
 
 	//! \tparam ChannelType Typ kana³u do zmiany reprezentacji dostêpu do danych
@@ -475,14 +475,14 @@ namespace dataaccessor
 	template<typename ValueType, typename ArgumentType,
 		typename Extrapolator = ExceptionExtrapolator>
 		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
-		using SafeDiscreteSubAccessorAdapter = SafeAccessorWrapper <DiscreteSubAccessorAdapter < ValueType, ArgumentType, Extrapolator >> ;
+		using SafeDiscreteSubAccessorAdapter = SafeAccessorWrapper <DiscreteSubAccessorAdapter < ValueType, ArgumentType, Extrapolator >>;
 
 	//! \tparam ValueType Typ wartoœci kana³u
 	//! \tparam ArgumentType Typ argumentów kana³u
 	//! \tparam Extrapolator Obiekt realizuj¹cy politykê zapytañ o argumenty spoza zakresu kana³u
 	template<typename ValueType, typename ArgumentType,
-	typename Extrapolator = ExceptionExtrapolator>
-	//! Wrapper dla ci¹g³ych akcesorów, zawê¿aj¹cy ich zakres
+		typename Extrapolator = ExceptionExtrapolator>
+		//! Wrapper dla ci¹g³ych akcesorów, zawê¿aj¹cy ich zakres
 	class FunctionSubAccessorAdapter : public IFunctionAccessorT<ValueType, ArgumentType>,
 		private Extrapolator
 	{
@@ -490,7 +490,7 @@ namespace dataaccessor
 
 		void init()
 		{
-			if (start > end){
+			if (start > end) {
 				throw std::invalid_argument("Invalid arguments for function subaccessor range");
 			}
 
@@ -499,15 +499,15 @@ namespace dataaccessor
 			//zweryfikowaæ czy mogê to potraktowaæ dok³adnie tak samo czy musze sprawdziæ iloœc próbek
 			//i parzystoœæ czy nieparzystoœæ ze wzglêdu na to aktualizowaæ
 			attachFeature(ff);
-			if (ff->monotony() != NonMonotonic){
+			if (ff->monotony() != NonMonotonic) {
 				auto minSample = accessor.sample(start);
 				auto maxSample = accessor.sample(end);
 				auto resArg = std::minmax(minSample.first, maxSample.first);
 				auto resVal = std::minmax(minSample.second, maxSample.second);
-				attachFeature(IFeaturePtr(new BoundedArgumentsFeature(resArg.first, resArg.second)));
-				attachFeature(IFeaturePtr(new BoundedValuesFeature(resVal.first, resVal.second)));
+				attachFeature(IFeaturePtr(new BoundedArgumentsFeature<ArgumentType>(resArg.first, resArg.second)));
+				attachFeature(IFeaturePtr(new BoundedValuesFeature<ValueType>(resVal.first, resVal.second)));
 			}
-			else{
+			else {
 				//TODO
 				//jesli dodano valueboud lub argument bound to dodajemy po aktualizacji
 			}
@@ -526,7 +526,7 @@ namespace dataaccessor
 			: Extrapolator(std::forward<ET>(extrapolator)), accessor(accessor), start(start), end(end)
 		{
 			init();
-		}		
+		}
 
 		//! Destruktor wirtualny
 		virtual ~FunctionSubAccessorAdapter() {}
@@ -535,27 +535,27 @@ namespace dataaccessor
 		//! \return Wartoœæ dla zadanego argumentu
 		virtual value_type value(const argument_type & argument) const override
 		{
-			if (argument < start){
-				return Extrapolator::argumentUnderflow(argument, accessor);
+			if (argument < start) {
+				return this->Extrapolator::argumentUnderflow(argument, accessor);
 			}
-			else if (argument > end){
-				return Extrapolator::argumentOverflow(argument, accessor);
+			else if (argument > end) {
+				return this->Extrapolator::argumentOverflow(argument, accessor);
 			}
-			else{
+			else {
 				return accessor.value(argument);
-			}		
+			}
 		}
 		//! \param argument Argument dla któego odpytujemy o wartoœæ
 		//! \return Próbka dla zadanego argumentu
 		virtual sample_type sample(const argument_type & argument) const override
 		{
-			if (argument < start){
-				return { argument, Extrapolator::argumentUnderflow(argument, accessor) };
+			if (argument < start) {
+				return{ argument, this->Extrapolator::argumentUnderflow(argument, accessor) };
 			}
-			else if (argument > end){
-				return{ argument, Extrapolator::argumentOverflow(argument, accessor) };
+			else if (argument > end) {
+				return{ argument, this->Extrapolator::argumentOverflow(argument, accessor) };
 			}
-			else{
+			else {
 				return accessor.sample(argument);
 			}
 		}
@@ -583,7 +583,7 @@ namespace dataaccessor
 		typename ValueExtractor, typename ArgumentExtractor = utils::TransparentExtractor,
 		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), 0))>::type,
 		typename DestArgumentType = std::decay<decltype(std::declval<ArgumentExtractor>().extract(std::declval<BaseArgumentType>(), 0))>::type>
-	//! Wrapper dla dyskretnych akcesorów, zmieniaj¹cy ich reprezentacjê
+		//! Wrapper dla dyskretnych akcesorów, zmieniaj¹cy ich reprezentacjê
 	class DiscreteAccessorAdapter : public IIndependentDiscreteAccessorT<DestValueType, DestArgumentType>,
 		private ValueExtractor, private ArgumentExtractor
 	{
@@ -600,18 +600,18 @@ namespace dataaccessor
 			accessor(accessor)
 		{
 
-		}		
+		}
 
 		//! Destruktor wirtualny
 		virtual ~DiscreteAccessorAdapter() {}
 
 		//! \param idx Indeks próbki
 		//! \return Argument dla danego indeksu
-		virtual argument_type argument(const size_type idx) const override { return ArgumentExtractor::extract(accessor.argument(idx), idx); }
+		virtual argument_type argument(const size_type idx) const override { return this->ArgumentExtractor::extract(accessor.argument(idx), idx); }
 
 		//! \param idx Indeks próbki
 		//! \return Wartoœæ dla danego indeksu
-		virtual value_type value(const size_type idx) const override { return ValueExtractor::extract(accessor.value(idx), idx); }
+		virtual value_type value(const size_type idx) const override { return this->ValueExtractor::extract(accessor.value(idx), idx); }
 
 		//! \return Iloœæ próbek w kanale
 		virtual size_type size() const override { return accessor.size(); }
@@ -621,7 +621,7 @@ namespace dataaccessor
 
 	private:
 		//! Accessor
-		const IDiscreteAccessorT<BaseValueType, BaseArgumentType> & accessor;		
+		const IDiscreteAccessorT<BaseValueType, BaseArgumentType> & accessor;
 	};
 
 	//! \tparam ValueType Typ wartoœci kana³u
@@ -632,11 +632,11 @@ namespace dataaccessor
 		typename DestArgumentType = std::decay<decltype(std::declval<ArgumentExtractor>().extract(std::declval<BaseArgumentType>(), 0))>::type>
 		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
 		using SafeDiscreteAccessorAdapter = SafeAccessorWrapper < DiscreteAccessorAdapter < BaseValueType, BaseArgumentType, ValueExtractor, ArgumentExtractor, DestValueType, DestArgumentType >,
-			IDiscreteAccessorT<BaseValueType, BaseArgumentType>>;
+		IDiscreteAccessorT<BaseValueType, BaseArgumentType >> ;
 
 	//! \tparam ValueType Typ wartoœci kana³u
 	//! \tparam ArgumentType Typ argumentów kana³u
-	template<typename BaseValueType, typename BaseArgumentType,	typename ValueExtractor,
+	template<typename BaseValueType, typename BaseArgumentType, typename ValueExtractor,
 		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), std::declval<BaseArgumentType>()))>::type>
 		//! Wrapper dla funkcji, zmieniaj¹cy ich reprezentacjê
 	class FunctionAccessorAdapter : public IGeneratedFunctionAccessorT<DestValueType, BaseArgumentType>,
@@ -659,11 +659,11 @@ namespace dataaccessor
 
 		//! \param argument Argument dla któego odpytujemy o wartoœæ
 		//! \return Wartoœæ dla zadanego argumentu
-		virtual value_type value(const argument_type & argument) const override { return ValueExtractor::extract(accessor.value(argument), argument); }		
+		virtual value_type value(const argument_type & argument) const override { return this->ValueExtractor::extract(accessor.value(argument), argument); }
 
 	private:
 		//! Accessor
-		const IFunctionAccessorT<BaseValueType, BaseArgumentType> & accessor;		
+		const IFunctionAccessorT<BaseValueType, BaseArgumentType> & accessor;
 	};
 
 	//! \tparam ValueType Typ wartoœci kana³u
@@ -672,7 +672,7 @@ namespace dataaccessor
 		typename ValueExtractor,
 		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), 0))>::type>
 		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
-		using SafeFunctionAccessorAdapter = SafeAccessorWrapper < FunctionAccessorAdapter < BaseValueType, BaseArgumentType, ValueExtractor, DestValueType>> ;	
+		using SafeFunctionAccessorAdapter = SafeAccessorWrapper < FunctionAccessorAdapter < BaseValueType, BaseArgumentType, ValueExtractor, DestValueType>>;
 }
 
 #endif	// __HEADER_GUARD_DATACHANNEL__ADAPTER_H__

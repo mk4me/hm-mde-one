@@ -55,7 +55,7 @@ namespace utils
 			//! Destruktor wirtualny
 			virtual ~ValueCarrierImpl() {}
 			//! \return Referencja do przechowywanej wartoœci
-			virtual const_ref_type ref() const override final { return E::extract(value_); }
+			virtual const_ref_type ref() const override final { return this->E::extract(value_); }
 
 		private:
 			//! Przechowywana wartoœæ
@@ -122,8 +122,8 @@ namespace utils
 
 		//! \tparam U Typ noœnika danych docelowych
 		//! \tparam dummy Warunki mo¿liwoœci konwersji
-		template<typename U, typename E = ValueCarrierDefaultExtractor<U>>//, ENABLE_IF(!std::is_pointer<U>::value && (std::is_same<typename remove_toplevel<decltype(std::declval<const E>().extract(std::declval<const U>()))>::type, type>::value || std::is_base_of<type, typename remove_toplevel<decltype(std::declval<const E>().extract(std::declval<const U>()))>::type>::value))>
-		//! \param value Kopiowany noœnik danych
+		template<typename U, typename E = ValueCarrierDefaultExtractor<typename utils::remove_toplevel<U>::type>>//, ENABLE_IF(!std::is_pointer<U>::value && (std::is_same<typename remove_toplevel<decltype(std::declval<const E>().extract(std::declval<const U>()))>::type, type>::value || std::is_base_of<type, typename remove_toplevel<decltype(std::declval<const E>().extract(std::declval<const U>()))>::type>::value))>
+																												 //! \param value Kopiowany noœnik danych
 		ValueCarrier(U && value, E && e = E()) : valueCarier_(new ValueCarrierImpl<U, E>(std::forward<U>(value), std::forward<E>(e))) {}
 		//! Konstruktor kopiuj¹cy
 		//! \param Other Kopiowany noœnik

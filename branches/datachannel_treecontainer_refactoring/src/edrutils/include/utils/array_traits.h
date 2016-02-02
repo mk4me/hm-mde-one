@@ -180,7 +180,7 @@ namespace utils
 		template <typename T>
 		//! \param array Tablica		
 		//! \return Wypakowany element
-		inline auto extract(const T & array, ...) -> decltype(ElementExtractor::extract(array, idx))
+		inline auto extract(const T & array, ...) const -> decltype(ElementExtractor::extract(array, idx))
 		{
 			return ElementExtractor::extract(array, idx);
 		}

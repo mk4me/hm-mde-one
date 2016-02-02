@@ -65,8 +65,9 @@ namespace dataaccessor
 	class UniformArgumentsFeature : public IUniformArgumentsFeature<ArgumentType>
 	{
 	public:
-		UniformArgumentsFeature(const ArgumentType & interval)
-			: interval(interval)
+		template<typename T>
+		UniformArgumentsFeature(T && interval)
+			: interval(std::forward<T>(interval))
 		{}
 
 		virtual ~UniformArgumentsFeature() {}

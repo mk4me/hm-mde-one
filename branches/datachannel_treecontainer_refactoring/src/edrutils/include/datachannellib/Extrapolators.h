@@ -22,7 +22,7 @@ namespace dataaccessor
 		template<typename ValueType, typename ArgumentType>
 		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
 		//! \return Wartoœæ dla argumentu spoza kana³u
-		inline static ValueType argumentUnderflow(const ArgumentType & argument, ...)
+		inline static ValueType argumentUnderflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			throw std::runtime_error("Argument below allowed/available value");
 			return ValueType();
@@ -33,7 +33,7 @@ namespace dataaccessor
 		template<typename ValueType, typename ArgumentType>
 		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
 		//! \return Wartoœæ dla argumentu spoza kana³u
-		inline static ValueType argumentOverflow(const ArgumentType & argument, ...)
+		inline static ValueType argumentOverflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			throw std::runtime_error("Argument over allowed/available value");
 			return ValueType();

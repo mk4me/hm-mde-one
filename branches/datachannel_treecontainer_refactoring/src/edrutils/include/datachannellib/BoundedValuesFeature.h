@@ -1,14 +1,15 @@
 /********************************************************************
-	created:  2015/07/28	15:05:37
-	filename: BoundedValuesFeature.h
-	author:	  Mateusz Janiak
+created:  2015/07/28	15:05:37
+filename: BoundedValuesFeature.h
+author:	  Mateusz Janiak
 
-	purpose:
+purpose:
 *********************************************************************/
 #ifndef __HEADER_GUARD_DATACHANNEL__BOUNDEDVALUESFEATURE_H__
 #define __HEADER_GUARD_DATACHANNEL__BOUNDEDVALUESFEATURE_H__
 
 #include <datachannellib/Accessors.h>
+#include <datachannellib/FunctionFeature.h>
 
 namespace dataaccessor
 {
@@ -28,28 +29,52 @@ namespace dataaccessor
 		virtual ValueType maxValue() const = 0;
 
 		//! Sprawdzamy czy wszystkie argumenty znajduj¹ siê w zadanym przedziale
+		static inline IBoundedValuesFeature * create(const IDiscreteValueAccessorT<ValueType> & accessor)
+		{
+			IBoundedValuesFeature * ret = nullptr;
+			if (accessor.empty() == false) {
+
+				auto feature = utils::dynamic_pointer_cast<IFunctionFeature>(accessor.feature(IFunctionFeature::ID));
+
+				auto min = accessor.value(0);
+				auto max = min;
+
+				if (feature != nullptr && feature->monotony() != NonMonotonic) {
+					max = accessor.value(accessor.size() - 1);
+					auto r = std::minmax(min, max);
+					min = r.first;
+					max = r.second;
+				}
+				else {
+
+					for (decltype(accessor.size()) idx = 1; idx < accessor.size(); ++idx)
+					{
+						const auto v = accessor.value(idx);
+						if (v < min) {
+							min = v;
+						}
+						else if (v > max) {
+							max = v;
+						}
+					}
+				}
+
+				ret = new BoundedValuesFeature<ValueType>(min, max);
+			}
+
+			return ret;
+		}
+
+		//! Sprawdzamy czy wszystkie argumenty znajduj¹ siê w zadanym przedziale
 		template<typename ArgumentType>
 		static inline IBoundedValuesFeature * create(
 			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
 			const IFunctionAccessorT<ValueType, ArgumentType> * function)
 		{
 			IBoundedValuesFeature * ret = nullptr;
-			if (discrete != nullptr && discrete->empty() == false){
-				auto min = discrete->value(0);
-				auto max = min;
-
-				for (decltype(discrete->size()) idx = 1; idx < discrete->size(); ++idx)
-				{
-					const auto v = discrete->value(idx);
-					if (v < min){
-						min = v;
-					}
-					else if (v > max){
-						max = v;
-					}
-				}
-
-				ret = new BoundedValuesFeature<ArgumentType>(min, max);
+			if (discrete != nullptr) {
+				discrete->getOrCreateFeature<IFunctionFeature>();
+				ret = create(*discrete);
 			}
 
 			return ret;
@@ -60,8 +85,9 @@ namespace dataaccessor
 	class BoundedValuesFeature : public IBoundedValuesFeature<ValueType>
 	{
 	public:
-		BoundedValuesFeature(const ValueType & min, const ValueType & max)
-			: min_(min), max_(max)
+		template<typename T, typename U>
+		BoundedValuesFeature(T && min, U && max)
+			: min_(std::forward<T>(min)), max_(std::forward<U>(max))
 		{}
 
 		virtual ~BoundedValuesFeature() {}

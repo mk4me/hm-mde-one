@@ -37,8 +37,9 @@ namespace dataaccessor
 	class PeriodicFunctionFeature : public IPeriodicFunctionFeature<ArgumentType>
 	{
 	public:
-
-		PeriodicFunctionFeature(const ArgumentType & period) : period_(period) {}
+		template<typename T>
+		PeriodicFunctionFeature(T && period)
+			: period_(std::forward<T>(period)) {}
 
 		virtual ~PeriodicFunctionFeature() {};
 

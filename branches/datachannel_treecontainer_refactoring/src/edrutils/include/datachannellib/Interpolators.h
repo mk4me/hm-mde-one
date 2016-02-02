@@ -24,7 +24,7 @@ namespace dataaccessor
 		//! \param startIdx próbka dla czasu powyzej lub identycznego
 		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
 		inline static ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
-			const ArgumentType argument, const std::size_t startIdx, const std::size_t endIdx)
+			const ArgumentType & argument, const std::size_t startIdx, const std::size_t endIdx)
 		{			
 			const auto startSample = accessor.sample(startIdx);
 			const auto endSample = accessor.sample(endIdx);
@@ -45,7 +45,7 @@ namespace dataaccessor
 		//! \param startIdx próbka dla czasu powyzej lub identycznego
 		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
 		inline static ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
-			const ArgumentType argument, const std::size_t startIdx, const std::size_t endIdx)
+			const ArgumentType & argument, const std::size_t startIdx, const std::size_t endIdx)
 		{
 			static const auto PI = std::atan(1.0)*4.0;
 
@@ -68,7 +68,7 @@ namespace dataaccessor
 		//! \param startIdx próbka dla czasu powyzej lub identycznego
 		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
 		inline static ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
-			const ArgumentType argument, const std::size_t startIdx, const std::size_t endIdx)
+			const ArgumentType & argument, const std::size_t startIdx, const std::size_t endIdx)
 		{
 			const bool startOK = (startIdx > 0);
 			const bool endOK = (endIdx < (accessor.size() - 1));
@@ -129,7 +129,7 @@ namespace dataaccessor
 		//! \param startIdx próbka dla czasu powyzej lub identycznego
 		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
 		inline static ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
-			const ArgumentType argument, const std::size_t startIdx, const std::size_t endIdx)
+			const ArgumentType & argument, const std::size_t startIdx, const std::size_t endIdx)
 		{
 			const bool startOK = (startIdx > 0);
 			const bool endOK = (endIdx < (accessor.size() - 1));
@@ -198,7 +198,7 @@ namespace dataaccessor
 		//! \param startIdx próbka dla czasu powyzej lub identycznego
 		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
 		inline ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
-			const ArgumentType argument, const std::size_t startIdx, const std::size_t endIdx) const
+			const ArgumentType & argument, const std::size_t startIdx, const std::size_t endIdx) const
 		{
 			const bool startOK = (startIdx > 0);
 			const bool endOK = (endIdx < (accessor.size() - 1));
