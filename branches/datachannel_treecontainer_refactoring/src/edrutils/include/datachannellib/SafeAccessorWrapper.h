@@ -16,7 +16,7 @@ namespace dataaccessor
 	//! \tparam Accessor Typ akcesora który bêdziemy przechowywaæ bezpiecznie
 	template<typename Impl, typename T = typename Impl::accessor_type>
 	//! Klasa pomocnicza realizuj¹ca bezpieczny wrapper - trzyma dane na których chcemy operaowaæ
-	class SafeAccessorWrapper : public Impl, private utils::ValueCarrier<T>
+	class SafeAccessorWrapper : private utils::ValueCarrier<T>, public Impl
 	{
 	public:
 		//! \tparam U Typ akcesora
