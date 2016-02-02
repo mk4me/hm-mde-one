@@ -16,6 +16,7 @@
 #include <set>
 #include <osg/Vec3>
 #include <c3dlib/Export.h>
+#include <utils/SmartPtr.h>
 
 namespace c3dlib {
 
@@ -33,8 +34,7 @@ struct C3DLIB_EXPORT ForcePlatformStruct
     //! lista indeksów kanałów analogowych podpiętych do płyty (np. F1 i M1 to kanały 1-6)
     std::set<std::string> channelLabels;
 };
-typedef ForcePlatformStruct* ForcePlatformStructPtr;
-typedef const ForcePlatformStruct* ForcePlatformStructConstPtr;
+DEFINE_SMART_POINTERS(ForcePlatformStruct);
 typedef const std::vector<ForcePlatformStructConstPtr>& ForcePlatformStructConstCollection;
 typedef std::vector<ForcePlatformStructPtr> ForcePlatformStructCollection;
 
@@ -54,8 +54,7 @@ public:
 		//! \return Opis danych akwizycji
 		virtual const std::string& getDescription() const = 0;
 	};
-    typedef IAquisitionEntry* IAqusitionEntryPtr;
-    typedef const IAquisitionEntry* IAqusitionEntryConstPtr;
+	DEFINE_SMART_POINTERS(IAquisitionEntry);
 
 	//! Interfejs dostarcza potrzebnych danych nt. punktu c3d
     class IPoint : public IAquisitionEntry
@@ -71,8 +70,7 @@ public:
         //! \return wartość próbki
 		virtual osg::Vec3 getValue(int index) const = 0;
     };
-	typedef IPoint* IPointPtr;
-	typedef const IPoint* IPointConstPtr;
+	DEFINE_SMART_POINTERS(IPoint)
 
 	//! Dostarcza danych dla kanału analogowego
     class IAnalog : public IAquisitionEntry
@@ -86,8 +84,7 @@ public:
 		//! pobiera wartość próbki
 		virtual double getValue(int index) const = 0;
 	};
-	typedef IAnalog* IAnalogPtr;
-	typedef const IAnalog* IAnalogConstPtr;
+	DEFINE_SMART_POINTERS(IAnalog);
     
 	//! dostarcza danych o zdarzeniu zapisanym w c3d (np. dotknięcie stopą podłogi)
     class IEvent : public IAquisitionEntry
@@ -114,8 +111,7 @@ public:
 		//! zwraca kopię obiektu, kopia musi być później zwolniona !
 		virtual IEvent* clone() const = 0;
     };
-	typedef IEvent* IEventPtr;
-	typedef const IEvent* IEventConstPtr;
+	DEFINE_SMART_POINTERS(IEvent);
 
 public:
     C3DParser();
