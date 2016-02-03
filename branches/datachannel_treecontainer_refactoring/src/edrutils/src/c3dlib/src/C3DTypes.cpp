@@ -17,7 +17,7 @@ type(fromChannelNo(channelNo)), dataStart(-1.0f), dataEnd(-1.0f),
 xsignal(data.getAnalog(3 * channelNo + 0)),
 ysignal(data.getAnalog(3 * channelNo + 1)),
 zsignal(data.getAnalog(3 * channelNo + 2)),
-argumentsGenerator(1.0 / data.getPointFrequency(), data.getNumPointFrames() / data.getPointFrequency())
+argumentsGenerator(1.0 / data.getAnalogFrequency(), data.getNumAnalogFrames())
 {
 	if (xsignal == nullptr || ysignal == nullptr || zsignal == nullptr) {
 		throw std::runtime_error("Incomplete signal");
