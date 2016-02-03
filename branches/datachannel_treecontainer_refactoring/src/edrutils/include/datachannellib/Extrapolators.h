@@ -52,24 +52,11 @@ namespace dataaccessor
 		//! \param minArg Minimalny argument
 		//! \param maxArg Maksymalny argument
 		//! \param Interpolator Interpolator u¿ywany do interpolacji wewn¹trz kana³u
+		template<typename I = Interpolator>
 		PeriodicExtrapolator(const ArgumentType & minArg, const ArgumentType & maxArg,
-			const Interpolator & interpolator = Interpolator())
-			: interpolator(interpolator), minArg(minArg), maxArg(maxArg),
+			I && interpolator = I())
+			: interpolator(std::forward<I>(interpolator)), minArg(minArg), maxArg(maxArg),
 			length(maxArg - minArg)
-		{
-			if (minArg >= maxArg){
-				throw std::runtime_error("Invalid periodic extrapolator configuration");
-			}
-		}
-
-		//! Konstruktor
-		//! \param minArg Minimalny argument
-		//! \param maxArg Maksymalny argument
-		//! \param Interpolator Interpolator u¿ywany do interpolacji wewn¹trz kana³u
-		PeriodicExtrapolator(const ArgumentType & minArg, const ArgumentType & maxArg,
-			Interpolator && interpolator)
-			: interpolator(std::move(interpolator)), minArg(minArg),
-			maxArg(maxArg), length(maxArg - minArg)
 		{
 			if (minArg >= maxArg){
 				throw std::runtime_error("Invalid periodic extrapolator configuration");
@@ -135,24 +122,15 @@ namespace dataaccessor
 	class BorderExtrapolator
 	{
 	public:
-
-		//! \param minVal Wartoœ minimalna
-		//! \param maxVal Wartoœ maksymalna
-		BorderExtrapolator(const ValueType & minVal, const ValueType & maxVal)
-			: minVal(minVal), maxVal(maxVal) {}
-
-		//! Destruktor
-		~BorderExtrapolator() {}
-
 		//! \tparam ValueType Typ wartoœci
 		//! \tparam ArgumentType Typ argumentu
 		template<typename ArgumentType>
 		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
 		//! \param accessor Kana³ dla którego pytaliœmy o argument
 		//! \return Wartoœæ dla argumentu spoza kana³u		
-		inline ValueType argumentUnderflow(const ArgumentType & argument, ...) const
+		static inline ValueType argumentUnderflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
-			return minVal;
+			return accessor.value(0);
 		}
 
 		//! \tparam ValueType Typ wartoœci
@@ -161,16 +139,10 @@ namespace dataaccessor
 		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
 		//! \param accessor Kana³ dla którego pytaliœmy o argument
 		//! \return Wartoœæ dla argumentu spoza kana³u	
-		inline ValueType argumentOverflow(const ArgumentType & argument, ...) const
+		static inline ValueType argumentOverflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
-			return maxVal;
-		}
-
-	private:
-		//! Wartoœæ minimalna
-		const ValueType minVal;
-		//! Wartoœæ maksymalna
-		const ValueType maxVal;
+			return accessor.value(accessor.size() - 1);
+		}	
 	};
 
 	//! Typ realizuj¹cy liniow¹ ekstrapolacjê

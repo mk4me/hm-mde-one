@@ -11,6 +11,8 @@
 #define HEADER_GUARD_UTILS__ACCESSORSCOLLECTION_H__
 
 #include <datachannellib/Accessors.h>
+#include <datachannellib/Adapters.h>
+#include <datachannellib/Traits.h>
 #include <datachannellib/DescriptorFeature.h>
 #include <vector>
 #include <algorithm>
@@ -23,23 +25,30 @@ namespace dataaccessor {
 	////////////////////////////////////////////////////////////////////////////////
 
 	//! Klasa agreguje klasy DataChannel, wszystkie dodawane kanały powinny mieć tyle samo wpisow
-	template <typename AccessorType>
+	template <typename AccessorType, ENABLE_IF(is_valid_discrete_accessor<AccessorType>::value)>
 	class AccessorsCollection
 	{
-		static_assert(std::is_base_of<IDiscreteAccessorT<typename AccessorType::value_type, typename AccessorType::argument_type>, AccessorType>::value,	"AccessorType must be derrived from IDiscreteAccessor");
-
 	public:
 		using value_type = typename AccessorType::value_type;
 		using argument_type = typename AccessorType::argument_type;
 		using Accessor = AccessorType;
+		using FAccessor = IFunctionAccessorT<value_type, argument_type>;
 		using AccessorPtr = utils::shared_ptr<Accessor>;
 		using AccessorConstPtr = utils::shared_ptr<const Accessor>;
+		using FAccessorPtr = utils::shared_ptr<FAccessor>;
+		using FAccessorConstPtr = utils::shared_ptr<const FAccessor>;
+
+		template<typename Interpolator, typename Extrapolator>
+		using FAdapter = DiscreteFunctionAccessorAdapter<value_type, argument_type, Interpolator, Extrapolator>;
+
 		typedef std::vector<AccessorPtr> Collection;
+		typedef std::vector<FAccessorPtr> FCollection;
 		typedef typename Collection::iterator iterator;
 		typedef typename Collection::const_iterator const_iterator;
 		typedef boost::tuple<value_type, argument_type, std::size_t> ValueArgumentIndex;
 	protected:
 		Collection accessors;
+		FCollection faccessors;
 		//! numer konfiguracji
 		int configurationID;
 
@@ -54,10 +63,15 @@ namespace dataaccessor {
 		virtual ~AccessorsCollection() {}
 
 	public:
-		void addAccessor(const AccessorPtr & ptr)
+		template<typename Interpolator = LerpInterpolator,
+			typename Extrapolator = BorderExtrapolator<value_type>>
+		void addAccessor(const AccessorPtr & ptr, Interpolator && i = Interpolator(),
+			Extrapolator && e = Extrapolator())
 		{
 			UTILS_ASSERT(accessors.size() == 0 || ptr->size() == accessors[0]->size());
 			accessors.push_back(ptr);
+			faccessors.push_back(FAccessorPtr(new FAdapter<Interpolator, Extrapolator>(*ptr,
+				std::forward<Interpolator>(i), std::forward<Extrapolator>(e))));
 		}
 
 		const AccessorPtr & getAccessor(int index)
@@ -111,8 +125,14 @@ namespace dataaccessor {
 		//! \return wartości wszystkich kanałów dla konkretnego czasu
 		std::vector<value_type> getValues(const argument_type & argument) const
 		{
-			//TODO
-			return std::vector<value_type>();
+			std::vector<value_type> ret;
+			ret.reserve(getNumAccessors());
+			for (auto & fa : faccessors)
+			{
+				ret.push_back(fa->value(argument));
+			}
+
+			return ret;
 		}
 
 		int getConfigurationID() const
@@ -130,8 +150,7 @@ namespace dataaccessor {
 		//! \return wartość kanału
 		value_type getValue(int index, const argument_type & argument) const
 		{
-			//TODO
-			return value_type();
+			return faccessors[index]->value(argument);
 		}
 
 		//! \return krotka z maksymalną wartością, jej czasem i indeksem kanału w calej dziedzinie dla wszystkich kanałów

@@ -14,6 +14,7 @@ purpose:
 #include <utils/TypeInfo.h>
 #include <utils/SmartPtr.h>
 #include <utils/Utils.h>
+#include <utils/Debug.h>
 #include <map>
 
 namespace dataaccessor
@@ -226,7 +227,7 @@ namespace dataaccessor
 			utils::shared_ptr<FeatureT> ret = this->IAccessor::feature<FeatureT>();
 
 			if (ret == nullptr) {
-				UTILS_ASSERT((asDiscrete() != nullptr) || (asDiscrete() != nullptr));
+				UTILS_ASSERT((asDiscrete() != nullptr) || (asFunction() != nullptr));
 				ret.reset(FeatureT::create(asDiscrete(), asFunction()));
 				this->IAccessor::attachFeature(ret);
 			}

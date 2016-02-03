@@ -160,10 +160,7 @@ GRFSerie::GeodePtr GRFSerie::createStep(c3dlib::IForcePlatform::IStepConstPtr st
 	//auto bvf = f1->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
 
 	dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::GRFChannel::value_type,
-		c3dlib::GRFChannel::argument_type, dataaccessor::LerpInterpolator,
-		dataaccessor::BorderExtrapolator < c3dlib::GRFChannel::value_type >> timeAccessor(*f1,
-		dataaccessor::LerpInterpolator(),
-		dataaccessor::BorderExtrapolator<c3dlib::GRFChannel::value_type>(f1->value(0), f1->value(f1->size() - 1)));
+		c3dlib::GRFChannel::argument_type> timeAccessor(*f1);
 
     for (int i = 0; i < numSegments; ++i) {
 		v = timeAccessor.value(f);        
@@ -530,10 +527,7 @@ void GRFSerie::update()
 		//auto bvf = f1->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
 
 		dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::ForceChannel::value_type,
-			c3dlib::ForceChannel::argument_type, dataaccessor::LerpInterpolator,
-			dataaccessor::BorderExtrapolator < c3dlib::ForceChannel::value_type >> timeAccessor(*f1,
-			dataaccessor::LerpInterpolator(),
-			dataaccessor::BorderExtrapolator<c3dlib::ForceChannel::value_type>(f1->value(0), f1->value(f1->size() - 1)));
+			c3dlib::ForceChannel::argument_type> timeAccessor(*f1);
 
 		auto v1 = timeAccessor.value(time);		
 

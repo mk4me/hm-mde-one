@@ -29,8 +29,7 @@ void NewChartSerie::setData(const utils::TypeInfo & requestedType,
 	curve = new NewChartCurve(name.c_str());
 	data->tryGet(reader);
 	continousReder = utils::make_shared < dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::ScalarChannelReaderInterface::value_type,
-		c3dlib::ScalarChannelReaderInterface::argument_type >> (*reader, dataaccessor::LerpInterpolator(),
-		dataaccessor::BorderExtrapolator<c3dlib::ScalarChannelReaderInterface::value_type>(reader->value(0), reader->value(reader->size() - 1)));
+		c3dlib::ScalarChannelReaderInterface::argument_type >> (*reader);
 	curve->setSamples(new NewChartSeriesData(reader));
 	int r = rand() % 256;
 	int g = rand() % 256;
