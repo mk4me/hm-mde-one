@@ -35,7 +35,7 @@ vc.setFrequency(100)
 vc.setName("Test1")
 # utworzenie wpisu w drzewie analiz
 mde.addVectorChannel(vc)
-sw = SimpleWorld()
-helpers = sw.getHelpers()
+helpers = mde.getHelpers()
 for h in helpers:
     h.createVisualizer()
+#mde.close(1)

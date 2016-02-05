@@ -67,6 +67,8 @@ namespace python {
 
 		void addFile(const std::string& file);
 
+		void close(int errorCode = 0);
+
 	};
 	DEFINE_SMART_POINTERS(MdeBridge);
 }

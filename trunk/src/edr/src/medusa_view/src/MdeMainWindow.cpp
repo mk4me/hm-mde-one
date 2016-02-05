@@ -387,8 +387,8 @@ bool MdeMainWindow::customViewInit(QWidget * log)
 		   return false;
 	   }
    } while (!done);
-   return true;
 #endif // DEMO_MODE
+   return true;
 }
 
 void MdeMainWindow::addTab( coreUI::IMdeTabPtr tab )

@@ -13,6 +13,8 @@
 #include "plugins/fileSource/IFileSource.h"
 #include "boost/python/class.hpp"
 #include "boost/python/suite/indexing/vector_indexing_suite.hpp"
+#include "coreui/CoreDockWidgetManager.h"
+#include "QtWidgets/QApplication"
 
 namespace py = boost::python;
 
@@ -98,6 +100,12 @@ void python::MdeBridge::addFile(const std::string& file)
 	}
 }
 
+void python::MdeBridge::close(int errorCode /*= 0*/)
+{
+	QApplication::exit(errorCode);
+	exit(errorCode);
+}
+
 static void gather(const core::IHierarchyItemConstPtr& item, std::vector<python::Helper>& ret, core::IVisualizerManager* manager)
 {
 	core::IHierarchyDataItemConstPtr dataItem = utils::dynamic_pointer_cast<const core::IHierarchyDataItem>(item);
@@ -130,24 +138,6 @@ std::vector<python::Helper> python::MdeBridge::getHelpers()
 }
 
 
-struct SimpleWorld : private python::PythonPluginUtils
-{
-
-
-	void set(std::string msg) { this->msg = msg; }
-	std::string greet() { return msg; }
-	std::string msg;
-
-	void setN(int n) {
-		number = n;
-	}
-	int getN()
-	{
-		return number;
-	}
-	int number;
-};
-
 
 MDE_PYTHON_MODULE(plugin_mdePython)
 {
@@ -166,6 +156,7 @@ MDE_PYTHON_MODULE(plugin_mdePython)
 		.def("addVectorChannel", &python::MdeBridge::addVectorChannel)
 		.def("listLoadedVectors", &python::MdeBridge::listLoadedVectors)
 		.def("addFile", &python::MdeBridge::addFile)
+		.def("close", &python::MdeBridge::close)
 		.def("getHelpers", &python::MdeBridge::getHelpers);
 
 
@@ -217,7 +208,21 @@ void python::Helper::createVisualizer()
 		std::vector<core::Visualizer::Serie*> series;
 		h->getSeries(visualizer, "test/t", series);
 		dockVisWidget->setMinimumSize((std::max)(280, dockVisWidget->minimumWidth()), (std::max)(280, dockVisWidget->minimumHeight()));
-		dockVisWidget->show();
+
+		coreUI::CoreDockWidgetManager* manager = nullptr; 
+		QWidgetList wlist = QApplication::topLevelWidgets();
+		for (auto& w : wlist) {
+			manager = w->findChild<coreUI::CoreDockWidgetManager*>();
+			if (manager) {
+				break;
+			}
+		}
+
+		if (manager) {
+			manager->autoAddDockWidget(dockVisWidget, QString("Test"));
+		} else {
+			dockVisWidget->show();
+		}
 	}
 	else {
 		throw std::runtime_error("Helper no longer exists");
