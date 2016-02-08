@@ -50,6 +50,39 @@ color: white*/
            <string>Data Export</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Destination folder:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0" colspan="3">
+            <widget class="QPushButton" name="extractButton">
+             <property name="text">
+              <string>Export data</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+             <property name="flat">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <widget class="QLineEdit" name="extractToLineEdit"/>
+           </item>
+           <item row="1" column="2">
+            <widget class="QToolButton" name="extractToButton">
+             <property name="text">
+              <string>...</string>
+             </property>
+            </widget>
+           </item>
            <item row="3" column="1" colspan="2">
             <widget class="QGroupBox" name="compressOptionBox">
              <property name="enabled">
@@ -123,38 +156,15 @@ color: white*/
              </layout>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_3">
+           <item row="4" column="0">
+            <widget class="QCheckBox" name="copyLocalBox">
              <property name="text">
-              <string>Destination folder:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0" colspan="3">
-            <widget class="QPushButton" name="extractButton">
-             <property name="text">
-              <string>Export data</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
+              <string>Copy local annotations</string>
              </property>
              <property name="checked">
-              <bool>false</bool>
-             </property>
-             <property name="flat">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
             </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QToolButton" name="extractToButton">
-             <property name="text">
-              <string>...</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QLineEdit" name="extractToLineEdit"/>
            </item>
           </layout>
          </widget>

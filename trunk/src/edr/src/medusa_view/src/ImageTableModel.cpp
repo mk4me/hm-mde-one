@@ -216,8 +216,14 @@ hmdbCommunication::IHMDBShallowCopyContext* getShallowCopyContext()
 hmdbCommunication::IHMDBSession * getSession(hmdbCommunication::IHMDBShallowCopyContext* srcContext)
 {
 	if (srcContext) {
-		auto session = srcContext->shallowCopyRemoteContext()->remoteContext()->session().get();
-		return session;
+		auto remoteContext = srcContext->shallowCopyRemoteContext();
+		if (remoteContext) {
+			auto rc = remoteContext->remoteContext();
+			if (rc) {
+				auto session = rc->session() ? rc->session().get() : nullptr;
+				return session;
+			}
+		}
 	}
 	return nullptr;
 }

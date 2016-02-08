@@ -107,7 +107,17 @@ void PythonService::runScript()
 {
     int input = 10;
     logic->getDict()["input"] = input;
-    QString out = QString::fromStdString(logic->run(editor->toPlainText().toStdString()));
+	const std::string prescript =
+		"def mdeimport(plugin, star = 0) :										 \n"
+		"	importCommand = 'import {0}' if star == 0 else 'from {0} import *'	 \n"
+		"	try :																 \n"
+		"		exec(importCommand.format(plugin), globals())					 \n"
+		"	except ImportError :												 \n"
+		"		try :															 \n"
+		"			exec(importCommand.format(plugin + 'd'), globals())			 \n"
+		"		except ImportError :											 \n"
+		"			print 'Unable to load : ', plugin;							 \n";
+    QString out = QString::fromStdString(logic->run(prescript + editor->toPlainText().toStdString()));
 	//output->setText(out);
 	if (out.isEmpty()) {
 		out = QString("Done running script (there was no output)\n");

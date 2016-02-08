@@ -1,25 +1,26 @@
 #skrypt tworzy dane wektorowe kompatybilne z aplikacją i wrzuca je do drzewa analiz
 
-import imp
-
-    
-try:
-	imp.find_module('plugin_mdePython')
-	from plugin_mdePython import *
-except ImportError:
-	from plugin_mdePythond import *
-	
-
+# wczytujemy pluginy (drugi parametr oznacza, ze z obiektow mozna korzystac bez koniecznosci 
+# stosowania namespace'a pluginu (np. v3vector zamiast plugin_mdePython.v3vector)
+mdeimport('plugin_mdePython', 1)
+mdeimport('plugin_communicationPython', 1)
 from math import sin
+
+# tworzymy obiekt dzieki ktoremu mozna korzystac z pluginu communication
+comm = CommunicationPython()
+# wczytujemy konfiguracje 
+config = comm.loadConfig('C:\Users\Wojciech\AppData\Roaming\PJATK\MDE\mde_v21_test.ini')
+# logujemy sie 
+comm.login(config)
 
 #tworzymy tablicę wektorów
 v = v3vector()
 
-'''wypełniamy wektor danymi
-  2000 próbek
-  x - funkcja liniowa
-  y - funkcja kwadratowa
-  z - funkcja trygonometryczna'''
+# wypełniamy wektor danymi
+#  2000 próbek
+#  x - funkcja liniowa
+#  y - funkcja kwadratowa
+#  z - funkcja trygonometryczna
 for x in range(1,2000):
 	a = Vec3(x*0.001, x*x*0.000001, 3*sin(x/200.0))
 	v.append(a)
@@ -35,7 +36,10 @@ vc.setFrequency(100)
 vc.setName("Test1")
 # utworzenie wpisu w drzewie analiz
 mde.addVectorChannel(vc)
+
+#wczytujemy dostepne helpery (mozliwe warianty wizualizacji danych)
 helpers = mde.getHelpers()
+# dla kazdego tworzymy wizualizator
 for h in helpers:
     h.createVisualizer()
 #mde.close(1)

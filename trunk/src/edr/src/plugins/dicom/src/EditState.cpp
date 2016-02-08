@@ -51,8 +51,8 @@ bool dicom::EditState::mousePressEvent( QGraphicsSceneMouseEvent* e )
 
         menu->exec(e->screenPos());
     } else if (e->button() == Qt::LeftButton) {
-        auto items = machine->getGraphicsScene()->items(e->scenePos());
-		auto item = items.isEmpty() ? nullptr : items.first();
+		auto item = extractItem(e);
+
         if (layer->hasPoint(item)) {
             possibleMove = true;
             positionsToCheck.clear();

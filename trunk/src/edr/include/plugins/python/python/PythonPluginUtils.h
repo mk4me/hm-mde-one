@@ -16,6 +16,9 @@
 namespace core {
 	class IServiceManager;
 	class ISourceManager;
+	class IVisualizerManager;
+	class IDataManagerReader;
+	class IDataHierarchyManager;
 }
 
 namespace  python {

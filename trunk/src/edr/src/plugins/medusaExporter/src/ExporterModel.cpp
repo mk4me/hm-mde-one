@@ -120,13 +120,13 @@ void medusaExporter::ExporterModel::addExporter(const IExporterConstPtr& exporte
 //}
 
 
-void medusaExporter::ExporterModel::extractData(const QString& path)
+void medusaExporter::ExporterModel::extractData(const QString& path, bool copyLocalAnnotations)
 {
 	auto dummy = [&](float f, const QString& s) {};
-	extractData(path, dummy);
+	extractData(path, copyLocalAnnotations, dummy);
 }
 
-void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFunction fun)
+void medusaExporter::ExporterModel::extractData(const QString& path, bool copyLocalAnnotations, CallbackFunction fun)
 {
 	auto icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
 	if (icomm) {
@@ -173,6 +173,20 @@ void medusaExporter::ExporterModel::extractData(const QString& path, CallbackFun
 							}
 							throw loglib::runtime_error("Error while file extraction");
 						}
+					}
+				}
+			}
+
+			if (copyLocalAnnotations) {
+				fun(0.99, QObject::tr("Copying local annotations"));
+				fs::Path tmpDir = plugin::getUserDataPath() / "MEDUSA" / "tmp";
+				auto localFiles = fs::listFiles(tmpDir, false, ".xml");
+				for (auto& f : localFiles) {
+					try {
+						boost::filesystem::copy_file(f, dir / f.filename(), boost::filesystem::copy_option::overwrite_if_exists);
+					}
+					catch (boost::filesystem::filesystem_error& fe) {
+						PLUGIN_LOG_ERROR(fe.what());
 					}
 				}
 			}

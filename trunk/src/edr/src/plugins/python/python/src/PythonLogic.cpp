@@ -9,6 +9,79 @@
 
 using namespace boost::python;
 
+
+//////////////////////////////////////////////////////////////////////////
+// zaczerpniete z : https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
+
+struct QString_to_python_str
+{
+	static PyObject* convert(QString const& s)
+	{
+		return boost::python::incref(
+			boost::python::object(
+			s.toLatin1().constData()).ptr());
+	}
+};
+
+struct QString_from_python_str
+{
+	QString_from_python_str()
+	{
+		boost::python::converter::registry::push_back(
+			&convertible,
+			&construct,
+			boost::python::type_id<QString>());
+	}
+
+	// Determine if obj_ptr can be converted in a QString
+	static void* convertible(PyObject* obj_ptr)
+	{
+		if (!PyString_Check(obj_ptr)) return 0;
+		return obj_ptr;
+	}
+
+	// Convert obj_ptr into a QString
+	static void construct(
+		PyObject* obj_ptr,
+		boost::python::converter::rvalue_from_python_stage1_data* data)
+	{
+		// Extract the character data from the python string
+		const char* value = PyString_AsString(obj_ptr);
+
+		// Verify that obj_ptr is a string (should be ensured by convertible())
+		assert(value);
+
+		// Grab pointer to memory into which to construct the new QString
+		void* storage = (
+			(boost::python::converter::rvalue_from_python_storage<QString>*)
+			data)->storage.bytes;
+
+		// in-place construct the new QString using the character data
+		// extraced from the python object
+		new (storage)QString(value);
+
+		// Stash the memory chunk pointer for later use by boost.python
+		data->convertible = storage;
+	}
+};
+
+void initializeConverters()
+{
+	using namespace boost::python;
+
+	// register the to-python converter
+	to_python_converter <
+		QString,
+		QString_to_python_str > ();
+
+	// register the from-python converter
+	QString_from_python_str();
+}
+
+// zaczerpniete z : https://misspent.wordpress.com/2009/09/27/how-to-write-boost-python-converters/
+//////////////////////////////////////////////////////////////////////////
+
+
 python::PythonStdIoRedirect::ContainerType python::PythonStdIoRedirect::m_outputs;
 
 python::PythonLogic::PythonLogic(const std::string& pythonPath)
@@ -32,7 +105,7 @@ python::PythonLogic::PythonLogic(const std::string& pythonPath)
 	boost::python::import("sys").attr("stderr") = python_stdio_redirector;
 	boost::python::import("sys").attr("stdout") = python_stdio_redirector;
 	
-	
+	initializeConverters();
 
 	
 
@@ -45,97 +118,23 @@ python::PythonLogic::~PythonLogic()
     Py_Finalize();
 }
 
-struct World
-    {
-        void set(std::string msg) { this->msg = msg; }
-        std::string greet() { return msg; }
-        std::string msg;
 
-		void setN(int n) {
-			number = n;
-		}
-		int getN()
-		{
-			return number;
-		}
-		int number;
-    };
 
-//MDE_PYTHON_MODULE(plugin_python)
-//{
-//    class_<World>("World")
-//        .def("greet", &World::greet)
-//        .def("set", &World::set)
-//		.def("setN", &World::setN)
-//		.def("getN", &World::getN)
-//        ;
-//
-//	using namespace python;
-//	typedef osg::Vec3::value_type vval;
-//	typedef float (osg::Vec3::*get_const)() const;
-//	typedef void (osg::Vec3::*set3)(vval x, vval y, vval z);
-//
-//	class_<osg::Vec3>("Vec3", init<vval, vval, vval>())
-//		.def("x", get_const(&osg::Vec3::x))
-//		.def("y", get_const(&osg::Vec3::y))
-//		.def("z", get_const(&osg::Vec3::z))
-//		.def("set", set3(&osg::Vec3::set))
-//		;
-//
-//	class_<StringPair>("StringPair")
-//		.def_readwrite("first", &StringPair::first)
-//		.def_readwrite("second", &StringPair::second);
-//
-//	class_<DataList>("DataList")
-//		.def(vector_indexing_suite<DataList>());
-//
-//	class_<PythonDataChannel>("PythonDataChannel")
-//		.def("getData", &PythonDataChannel::getData)
-//		.def("getFrequency", &PythonDataChannel::getFrequency)
-//		.def("getName", &PythonDataChannel::getName)
-//		.def("setData", &PythonDataChannel::setData)
-//		.def("setFrequency", &PythonDataChannel::setFrequency)
-//		.def("setName", &PythonDataChannel::setName)
-//		;
-//
-//
-//	class_<std::vector<osg::Vec3>>("v3vector")
-//		.def(vector_indexing_suite<std::vector<osg::Vec3>>());
-//}
 
 std::string python::PythonLogic::run(const std::string& script)
 {
 	str code(script.c_str());
     try {
-		//object cpp_module((handle<>(PyImport_ImportModule("WorldMod"))));
-		//mainNamespace["WorldMod"] = cpp_module;
-		//
-		//int testInt = 100;
-		//mainNamespace["input1"] = testInt;
-		//PyRun_SimpleString("import cStringIO");
-		//PyRun_SimpleString("import sys");
 		//PyRun_SimpleString("sys.stderr = cStringIO.StringIO()");
 		
         exec(code, mainNamespace);
-       /* try {
-            float result = extract<float>(mainNamespace["result"]);
-            QMessageBox::information(nullptr, "Result", QString("Result : %1").arg(result));
-        } catch (...) {
-
-        }*/
-        
+       
 	}
 	catch (std::exception& e) {
 		
 	}
 	catch (boost::python::error_already_set) {
 		PyErr_Print();
-		//boost::python::object sys(
-		//	boost::python::handle<>(PyImport_ImportModule("sys"))
-		//	);
-		//boost::python::object err = sys.attr("stderr");
-		//std::string err_text = boost::python::extract<std::string>(err.attr("getvalue")());
-		//QMessageBox::critical(nullptr, "Error", QString::fromStdString(err_text));
 	} catch (...) {
         PyErr_Print();
         //PyErr_Clear();

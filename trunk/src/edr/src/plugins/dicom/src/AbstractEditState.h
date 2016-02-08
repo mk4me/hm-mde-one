@@ -96,6 +96,8 @@ namespace dicom {
 
 class LayeredStateMachine;
 
+//! Stan po którym dziedzicz¹ stany edycyjne - PointsState i EditState.
+//! Agreguje ich czêœci wspólne, obs³ugê myszki, menu
 class AbstractEditState : public QObject, public coreUI::AbstractState
 {
     Q_OBJECT
@@ -109,6 +111,9 @@ public:
     virtual bool focusOutEvent(QFocusEvent * event);
 	virtual void begin(coreUI::AbstractStateConstPtr lastState);
 	virtual void end();
+protected:
+	QGraphicsItem* extractItem(QGraphicsSceneMouseEvent* e);
+
 protected:
     std::vector<std::pair<QGraphicsItem*, QPointF>> positionsToCheck;
     PointsLayerPtr layer;
