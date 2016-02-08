@@ -9,7 +9,7 @@ purpose:
 #define __HEADER_GUARD_DATACHANNEL__BOUNDEDVALUESFEATURE_H__
 
 #include <datachannellib/Accessors.h>
-#include <datachannellib/FunctionFeature.h>
+#include <datachannellib/FunctionDescriptionFeature.h>
 
 namespace dataaccessor
 {
@@ -34,7 +34,7 @@ namespace dataaccessor
 			IBoundedValuesFeature * ret = nullptr;
 			if (accessor.empty() == false) {
 
-				auto feature = utils::dynamic_pointer_cast<IFunctionFeature>(accessor.feature(IFunctionFeature::ID));
+				auto feature = utils::dynamic_pointer_cast<IFunctionDescriptionFeature>(accessor.feature(IFunctionDescriptionFeature::ID));
 
 				auto min = accessor.value(0);
 				auto max = min;

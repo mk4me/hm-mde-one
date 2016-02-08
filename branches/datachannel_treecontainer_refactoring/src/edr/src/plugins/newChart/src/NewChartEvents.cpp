@@ -86,6 +86,17 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, c3dlib::C
     QObject::tr("Foot Strike");
     QObject::tr("Foot Off"   );
     SegmentPtr currentSegment;
+	auto uaf = scalar->feature<dataaccessor::IUniformArgumentsFeature>();
+	std::function<dataaccessor::NearestArgumentsFinder::Range(const dataaccessor::IDiscreteAccessorT<c3dlib::ScalarChannelReaderInterface::value_type, c3dlib::ScalarChannelReaderInterface::argument_type> &, const c3dlib::ScalarChannelReaderInterface::argument_type &)> range = static_cast<dataaccessor::NearestArgumentsFinder::Range(*)(const dataaccessor::IDiscreteAccessorT<c3dlib::ScalarChannelReaderInterface::value_type, c3dlib::ScalarChannelReaderInterface::argument_type>&,
+		const c3dlib::ScalarChannelReaderInterface::argument_type&)>(&dataaccessor::NearestArgumentsFinder::range<c3dlib::ScalarChannelReaderInterface::value_type, c3dlib::ScalarChannelReaderInterface::argument_type>);
+
+	if (uaf != nullptr) {
+
+		range = std::bind(static_cast<dataaccessor::NearestArgumentsFinder::Range(*)(const dataaccessor::IDiscreteAccessorT<c3dlib::ScalarChannelReaderInterface::value_type, c3dlib::ScalarChannelReaderInterface::argument_type>&,
+			const c3dlib::ScalarChannelReaderInterface::argument_type&, const c3dlib::ScalarChannelReaderInterface::argument_type&)>(&dataaccessor::NearestArgumentsFinder::range<c3dlib::ScalarChannelReaderInterface::value_type, c3dlib::ScalarChannelReaderInterface::argument_type>),
+			std::placeholders::_1, std::placeholders::_2, uaf->argumentsInterval());
+	}
+
     for( auto it = events->cbegin(); it != events->cend(); ++it) {
         EventConstPtr event = *it;
         if (event->getContext() == context) {
@@ -93,6 +104,7 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, c3dlib::C
                 if (currentSegment) {
                     UTILS_ASSERT(currentSegment->event1);
                     currentSegment->end = event->getTime();					
+					range(*scalar, currentSegment->end).second;
                     collection.push_back(currentSegment);
                 }
 
@@ -100,6 +112,7 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, c3dlib::C
                 currentSegment->event1 = event;
                 currentSegment->begin = event->getTime();
 				currentSegment->scalar = scalar;
+				currentSegment->beginIdx = range(*scalar, currentSegment->begin).first;
             } else if (currentSegment && event->getLabel() == "Foot Off") {
                 currentSegment->event2 = event;
             }

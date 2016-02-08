@@ -14,6 +14,7 @@ purpose:
 #include <datachannellib/BoundedArgumentsFeature.h>
 #include <datachannellib/BoundedValuesFeature.h>
 #include <datachannellib/FunctionFeature.h>
+#include <datachannellib/FunctionDescriptionFeature.h>
 #include <datachannellib/Interpolators.h>
 #include <datachannellib/Extrapolators.h>
 #include <utils/MemberExtractor.h>
@@ -132,13 +133,10 @@ namespace dataaccessor
 	};
 
 	//! Klasa pomocnicza przy znajdowaniu argumentów otaczaj¹cych dany argument w dyskretnym kanale
-	class NearestArgumentsFinder
+	struct NearestArgumentsFinder
 	{
-	public:
 		//! Typ zakresu indeksów
 		using Range = std::pair<std::size_t, std::size_t>;
-
-	public:
 
 		//! \tparam ArgumentType Typ argumentu o który pytamy
 		//! \tparam ValueType Typ wartoœci
@@ -156,25 +154,28 @@ namespace dataaccessor
 			std::size_t minIdx = 0;
 			std::size_t maxIdx = accessor.size() - 1;
 
-			while ((maxIdx - minIdx) > 1) {
-				const auto midIdx = (maxIdx + minIdx) >> 1;
-				const auto midArgument = accessor.argument(midIdx);
-
-				if (midArgument < argument) {
-					minIdx = midIdx + 1;
-				}
-				else if (midArgument > argument) {
-					maxIdx = midIdx - 1;
-				}
-				else {
-					maxIdx = minIdx = midIdx;
-					break;
-				}
-			}
-
-			if ((minIdx == maxIdx) && (argument > accessor.argument(maxIdx) || argument < accessor.argument(minIdx))) {
-				minIdx = 1;
+			if (argument == accessor.argument(0)) {
 				maxIdx = 0;
+			}
+			else if (argument == accessor.argument(maxIdx)) {
+				minIdx = maxIdx;
+			}
+			else {
+				while (maxIdx > minIdx) {
+					const auto midIdx = (maxIdx + minIdx) >> 1;
+					const auto midArgument = accessor.argument(midIdx);
+
+					if (midArgument < argument) {
+						minIdx = midIdx + 1;
+					}
+					else if (midArgument > argument) {
+						maxIdx = midIdx - 1;
+					}
+					else {
+						maxIdx = minIdx = midIdx;
+						break;
+					}
+				}
 			}
 
 			return Range(minIdx, maxIdx);
@@ -192,13 +193,8 @@ namespace dataaccessor
 			const ArgumentType & argument, const ArgumentType & interval)
 		{
 			const std::size_t idx = (argument - accessor.argument(0)) / interval;
-			const auto idxArgument = accessor.argument(idx);
-			if (idxArgument == argument) {
+			if (accessor.argument(idx) == argument) {
 				return Range(idx, idx);
-			}
-
-			if (argument > accessor.argument(idx + 1) || argument < accessor.argument(idx)) {
-				return Range(1, 0);
 			}
 
 			return Range(idx, idx + 1);
@@ -209,7 +205,7 @@ namespace dataaccessor
 	//! \tparam ArgumentType Typ argumentów kana³u
 	//! \tparam ArgumentsGenerator Generator argumentów dla kolejnych indeksów
 	template<typename ValueType, typename ArgumentType,
-		typename ArgumentsGenerator = UniformArgumentsGenerator<ArgumentType >>
+		typename ArgumentsGenerator = UniformArgumentsGenerator < ArgumentType >>
 		//! Klasa realizuje dyskretny dostêp do ci¹g³ego kana³u danych opisuj¹cego funkcjê
 	class FunctionDiscreteAccessorAdapter : public IOptimizedDiscreteAccessorT<ValueType, ArgumentType>,
 		private ArgumentsGenerator
@@ -222,7 +218,9 @@ namespace dataaccessor
 			AG && argumentsGenerator = AG())
 			: ArgumentsGenerator(std::forward<AG>(argumentsGenerator)), accessor(accessor)
 		{
-
+			attachFeature(accessor.getOrCreateFeature<IFunctionFeature>());
+			//TODO
+			//na bazie argumentsGenerator dodaæ boundedarguments feature
 		}
 
 		//! Destruktor wirtualny
@@ -249,8 +247,8 @@ namespace dataaccessor
 	template<typename ValueType, typename ArgumentType,
 		typename ArgumentsGenerator = UniformArgumentsGenerator < ArgumentType >>
 		//! Klasa realizuje dyskretny dostêp do ci¹g³ego kana³u danych opisuj¹cego funkcjê
-		using SafeFunctionDiscreteAccessorAdapter = SafeAccessorWrapper<FunctionDiscreteAccessorAdapter < ValueType, ArgumentType, ArgumentsGenerator >,
-		IFunctionAccessorT<ValueType, ArgumentType >> ;
+		using SafeFunctionDiscreteAccessorAdapter = SafeAccessorWrapper < FunctionDiscreteAccessorAdapter < ValueType, ArgumentType, ArgumentsGenerator >,
+		IFunctionAccessorT < ValueType, ArgumentType >> ;
 
 	//! \tparam ValueType Typ wartoœci kana³u
 	//! \tparam ArgumentType Typ argumentów kana³u
@@ -258,7 +256,7 @@ namespace dataaccessor
 	//! \tparam Extrapolator Obiekt realizuj¹cy politykê zapytañ o argumenty spoza zakresu kana³u
 	template<typename ValueType, typename ArgumentType,
 		typename Interpolator = LerpInterpolator,
-		typename Extrapolator = BorderExtrapolator<ValueType >>
+		typename Extrapolator = BorderExtrapolator < ValueType >>
 		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
 	class DiscreteFunctionAccessorAdapter : public IGeneratedFunctionAccessorT<ValueType, ArgumentType>,
 		private Interpolator, private Extrapolator
@@ -275,9 +273,12 @@ namespace dataaccessor
 			range(static_cast<NearestArgumentsFinder::Range(*)(const IDiscreteAccessorT<ValueType, ArgumentType>&,
 				const ArgumentType&)>(&NearestArgumentsFinder::range<ValueType, ArgumentType>))
 		{
-			if (accessor.getOrCreateFeature<IFunctionFeature>() == nullptr) {
+			auto ff = accessor.getOrCreateFeature<IFunctionFeature>();
+			if (ff->isFunction() == false) {
 				throw std::runtime_error("Non function data");
 			}
+
+			attachFeature(ff);
 
 			feature = accessor.getOrCreateFeature<IBoundedArgumentsFeature>();
 
@@ -368,15 +369,16 @@ namespace dataaccessor
 				throw std::runtime_error("Invalid discrete subaccessor configuration");
 			}
 
-			auto ff = accessor.getOrCreateFeature<IFunctionFeature>();
-			if (ff != nullptr) {
+			attachFeature(accessor.getOrCreateFeature<IUniformArgumentsFeature>());
 
-				//TODO
-				//zweryfikowaæ czy mogê to potraktowaæ dok³adnie tak samo czy musze sprawdziæ iloœc próbek
-				//i parzystoœæ czy nieparzystoœæ ze wzglêdu na to aktualizowaæ
+			auto ff = accessor.getOrCreateFeature<IFunctionFeature>();
+			if (ff->isFunction() == true) {
+
 				attachFeature(ff);
 
-				if (ff->monotony() != NonMonotonic) {
+				auto fdf = accessor.feature<IFunctionDescriptionFeature>();
+
+				if (fdf != nullptr && fdf->monotony() != NonMonotonic) {
 					auto minSample = accessor.sample(start_);
 					auto maxSample = accessor.sample(start_ + size_);
 					auto resArg = std::minmax(minSample.first, maxSample.first);
@@ -494,12 +496,11 @@ namespace dataaccessor
 				throw std::invalid_argument("Invalid arguments for function subaccessor range");
 			}
 
-			auto ff = accessor.getOrCreateFeature<IFunctionFeature>();
-			//TODO
-			//zweryfikowaæ czy mogê to potraktowaæ dok³adnie tak samo czy musze sprawdziæ iloœc próbek
-			//i parzystoœæ czy nieparzystoœæ ze wzglêdu na to aktualizowaæ
-			attachFeature(ff);
-			if (ff->monotony() != NonMonotonic) {
+			attachFeature(accessor.getOrCreateFeature<IFunctionFeature>());
+
+			auto fdf = accessor.feature<IFunctionDescriptionFeature>();
+
+			if (fdf != nullptr && fdf->monotony() != NonMonotonic) {
 				auto minSample = accessor.sample(start);
 				auto maxSample = accessor.sample(end);
 				auto resArg = std::minmax(minSample.first, maxSample.first);
@@ -632,7 +633,7 @@ namespace dataaccessor
 		typename DestArgumentType = std::decay<decltype(std::declval<ArgumentExtractor>().extract(std::declval<BaseArgumentType>(), 0))>::type>
 		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
 		using SafeDiscreteAccessorAdapter = SafeAccessorWrapper < DiscreteAccessorAdapter < BaseValueType, BaseArgumentType, ValueExtractor, ArgumentExtractor, DestValueType, DestArgumentType >,
-		IDiscreteAccessorT<BaseValueType, BaseArgumentType >> ;
+		IDiscreteAccessorT < BaseValueType, BaseArgumentType >> ;
 
 	//! \tparam ValueType Typ wartoœci kana³u
 	//! \tparam ArgumentType Typ argumentów kana³u
@@ -651,7 +652,7 @@ namespace dataaccessor
 			VT && valueExtractor = VT())
 			: ValueExtractor(std::forward<VT>(valueExtractor)), accessor(accessor)
 		{
-
+			attachFeature(accessor.getOrCreateFeature<IFunctionFeature>());
 		}
 
 		//! Destruktor wirtualny

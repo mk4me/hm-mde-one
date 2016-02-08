@@ -119,7 +119,7 @@ template <typename T>
 //! \return 1, 0 albo -1 w zależności od znaku
 static inline int sign(const T x, std::false_type)
 {
-	return T(0) < x;
+	return (T(0) < x) == true ? 1 : 0;
 }
 
 //! \tparam Typ wartości dla której wyznaczamy znak
@@ -128,7 +128,7 @@ template <typename T>
 //! \return 1, 0 albo -1 w zależności od znaku
 static inline int sign(const T x, std::true_type)
 {
-	return (T(0) < x) - (x < T(0));
+	return ((T(0) < x) == true ? 1 : 0) - ((x < T(0)) == true ? 1 : 0);
 }
 
 //! \tparam Typ wartości dla której wyznaczamy znak

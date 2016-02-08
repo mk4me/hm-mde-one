@@ -22,9 +22,9 @@ QRectF channelBoundingRect(c3dlib::ScalarChannelReaderInterfaceConstPtr channel)
 	return ret;
 }
 
-NewChartEventStateData::NewChartEventStateData(c3dlib::ScalarChannelReaderInterfaceConstPtr channel, float startTime, float endTime) :
-	channel(channel), startIndex(dataaccessor::NearestArgumentsFinder::range(*channel, startTime).first),
-	endIndex(dataaccessor::NearestArgumentsFinder::range(*channel, startTime).second),
+NewChartEventStateData::NewChartEventStateData(c3dlib::ScalarChannelReaderInterfaceConstPtr channel, std::size_t startTimeIdx, std::size_t endTimeIdx) :
+	channel(channel), startIndex(startTimeIdx),
+	endIndex(endTimeIdx),
 	boundingRect_(channelBoundingRect(channel))
 {	
 	

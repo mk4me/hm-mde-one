@@ -207,28 +207,23 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
 {
 	c3dlib::VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
 
-	using T = c3dlib::VectorChannelReaderInterfaceConstPtr;
+	auto ff = dataaccessor::FunctionFeature::feature(true);
+	auto uaf = vectorChannel->feature<dataaccessor::IUniformArgumentsFeature>();
+	auto baf = vectorChannel->feature<dataaccessor::IBoundedArgumentsFeature>();
 
-	auto t = utils::supports_pointer_operator<T>::value;
+	auto x = dataaccessor::StaticVector<0>::wrap(vectorChannel);
+	auto y = dataaccessor::StaticVector<1>::wrap(vectorChannel);
+	auto z = dataaccessor::StaticVector<2>::wrap(vectorChannel);
 
-	//chyba ok
-
-	//ok
-	auto r0 = std::is_class<T>::value;
-
-	auto r1 = dataaccessor::has_data_description<typename utils::pointed_type<T>::type>::value;
-
-	auto r2 = dataaccessor::is_valid_discrete_accessor<typename utils::pointed_type<T>::type>::value;
-
-	auto r23 = std::is_convertible<T, dataaccessor::ExtractedDiscreteConstPtr<typename utils::pointed_type<T>::type>>::value;
-
-	auto r3 = dataaccessor::is_valid_discrete_accessor_ptr<T>::value;
-
-	//decltype(typename std::enable_if<dataaccessor::is_valid_discrete_accessor_ptr<c3dlib::VectorChannelReaderInterfaceConstPtr>::value>::type) ret;
-
-	c3dlib::ScalarChannelReaderInterfacePtr x(dataaccessor::StaticVector<0>::wrap(vectorChannel));
-	c3dlib::ScalarChannelReaderInterfacePtr y(dataaccessor::StaticVector<1>::wrap(vectorChannel));
-	c3dlib::ScalarChannelReaderInterfacePtr z(dataaccessor::StaticVector<2>::wrap(vectorChannel));
+	x->attachFeature(ff);
+	x->attachFeature(uaf);
+	x->attachFeature(baf);
+	y->attachFeature(ff);
+	y->attachFeature(uaf);
+	y->attachFeature(baf);
+	z->attachFeature(ff);
+	z->attachFeature(uaf);
+	z->attachFeature(baf);
 
     core::VariantPtr wrapperX = core::Variant::wrap(x);
     core::VariantPtr wrapperY = core::Variant::wrap(y);
@@ -370,13 +365,25 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
 {
 	c3dlib::ScalarChannelReaderInterfaceConstPtr channel = wrapper->get();
 
+	auto ff = dataaccessor::FunctionFeature::feature(true);
+
     auto absTest = AbsMeanValueChannel::wrap(channel);
+	auto uaf = channel->feature<dataaccessor::IUniformArgumentsFeature>();
+	auto baf = channel->feature<dataaccessor::IBoundedArgumentsFeature>();
+	absTest->attachFeature(ff);
+	absTest->attachFeature(uaf);
+	absTest->attachFeature(baf);
+
 
     //utils::shared_ptr<ScalarModifier> integratorChannel(new ScalarModifier(absTest, ScalarChannelIntegrator()));
 	//utils::shared_ptr<c3dlib::ScalarModifier> integratorChannel(new c3dlib::ScalarModifier(absTest, RMSModifier()));
 
-	auto wrapperX = core::Variant::wrap<c3dlib::ScalarChannelReaderInterface>(RMSChannel::create(*absTest));
-	//wrapperX->set(utils::dynamic_pointer_cast<c3dlib::ScalarChannelReaderInterface>(integratorChannel));
+	auto rmsChannel = RMSChannel::create(*absTest);
+	rmsChannel->attachFeature(ff);
+	rmsChannel->attachFeature(uaf);
+	rmsChannel->attachFeature(baf);
+	auto wrapperX = core::Variant::wrap<c3dlib::ScalarChannelReaderInterface>(rmsChannel);
+	
     wrapperX->copyMetadata(*wrapper);
     visualizer->getOrCreateWidget();
 

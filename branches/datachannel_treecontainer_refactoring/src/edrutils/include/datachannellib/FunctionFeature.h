@@ -12,10 +12,16 @@ purpose:
 #include <set>
 #include <utils/Utils.h>
 #include <type_traits>
+#include <utils/Export.h>
+
+#if defined (datachannellib_EXPORTS)
+#define DATACHANNELLIB_EXPORT UTILS_DECL_EXPORT
+#else
+#define DATACHANNELLIB_EXPORT UTILS_DECL_IMPORT
+#endif
 
 namespace dataaccessor
 {
-
 	class FunctionFeature;
 
 	//! Interfejs opisuj¹cy cechy kana³y reprezentuj¹cego funkcjê - jeden argument jedna wartoœæ,
@@ -27,169 +33,90 @@ namespace dataaccessor
 		//! Destruktor wirtualny
 		virtual ~IFunctionFeature() {}
 		//! \return Czy funkcja jest parzysta
-		virtual bool even() const { return false; }
-		//! \return Czy funkcja jest nieparzysta
-		virtual bool odd() const { return false; }
-		//! \return Czy funkcja jest monotoniczna
-		virtual MonotonyType monotony() const { return NonMonotonic; }
+		virtual bool isFunction() const = 0;
 
 		template<typename ValueType, typename ArgumentType>
-		inline static FunctionFeature * create(
+		inline static utils::shared_ptr<IFunctionFeature> create(
 			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
 			const IFunctionAccessorT<ValueType, ArgumentType> * function)
 		{
-			FunctionFeature * ret = nullptr;
-			if (discrete != nullptr && discrete->empty() == false){
-				ret = create(*discrete, std::is_arithmetic<ValueType>());
+			if (discrete != nullptr) {
+				return create(*discrete);
 			}
-
-			return ret;
+			return FunctionFeature::feature(true);
 		}
 
-		template<typename ValueType, typename ArgumentType>
-		static inline FunctionFeature * create(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
-			std::true_type)
+		template<typename ArgumentType>
+		inline static utils::shared_ptr<IFunctionFeature> create(
+			const IDiscreteArgumentAccessorT<ArgumentType> & accessor)
 		{
-			using Discrete = IDiscreteAccessorT<ValueType, ArgumentType>;
-			FunctionFeature * ret = nullptr;
-			bool even = false;
-			bool odd = false;
-			MonotonyType monotonic = Constant;
+			bool isFun = true;
 
-			if (accessor.size() == 1){
-				const auto s = accessor.sample(0);
-				even = (s.first == Discrete::argument_type());
-				odd = (s.second == -s.second);
-				ret = new FunctionFeature(even, odd, monotonic);
+			if (accessor.empty() == true) {
+				isFun = false;
 			}
-			else{
-				auto sA = accessor.sample(0);
-				auto sB = accessor.sample(1);
-				if (sA.first != sB.first){
-
-					auto monotony = utils::sign(sB.second - sA.second);
-
-					std::set<Discrete::argument_type> arguments;
-					arguments.insert(sA.first);
-					arguments.insert(sB.first);
-					const auto signum = utils::sign(sB.first - sA.first);
-					auto locSignum = signum;
-					for (decltype(accessor.size()) idx = 2; idx < (accessor.size() - 1); ++idx)
-					{
-						sA = sB;
-						sB = accessor.sample(idx);
-						locSignum = utils::sign(sB.first - sA.first);
-						if (locSignum != signum){
-							break;
-						}
-
-						if (arguments.find(sB.first) == arguments.end()){
-							arguments.insert(signum > 0 ? arguments.end() : arguments.begin(), sB.first);
-						}
-						else{
-							--locSignum;
-							break;
-						}
-
-						if (monotonic != NonMonotonic) {
-							auto locMonotony = utils::sign(sB.second - sA.second);
-							auto diff = std::abs(locMonotony - monotony);
-							if (diff > 1){
-								monotonic = NonMonotonic;
-							}
-							else if (diff == 1 && !((monotonic == NonDecreasing) || (monotonic == NonGrowing))){
-								if (monotonic == Decreasing){
-									monotonic = NonGrowing;
-								}
-								else if (monotonic == Growing){
-									monotonic = NonDecreasing;
-								}
-								else if (monotonic == Constant){
-									if (locMonotony > 0){
-										monotonic = Growing;
-									}
-									else{
-										monotonic = Decreasing;
-									}
-								}
-							}
-						}
-					}
-
-					if (locSignum == signum){
-						ret = new FunctionFeature(even, odd, monotonic);
-					}
-				}
-			}
-
-			return ret;
-		}
-
-		template<typename ValueType, typename ArgumentType>
-		static inline FunctionFeature * create(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
-			std::false_type)
-		{
-			using Discrete = IDiscreteAccessorT<ValueType, ArgumentType>;
-			FunctionFeature * ret = nullptr;
-			bool even = false;
-			bool odd = false;
-			const MonotonyType monotonic = NonMonotonic;
-
-			if (accessor.size() == 1){
-				const auto s = accessor.sample(0);
-				even = (s.first == Discrete::argument_type());
-				odd = (s.second == -s.second);
-				ret = new FunctionFeature(even, odd, monotonic);
-			}
-			else{
+			else if ((accessor.size() > 1) && (accessor.getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>() == nullptr)) {
 				auto sA = accessor.argument(0);
 				auto sB = accessor.argument(1);
-				bool ok = true;
-				if (sA != sB){
-					std::set<Discrete::argument_type> arguments;
+				if (sA != sB) {
+					std::set<ArgumentType> arguments;
 					arguments.insert(sA);
 					arguments.insert(sB);
-					for (decltype(accessor.size()) idx = 2; idx < (accessor.size() - 1); ++idx)
+					const auto signum = utils::sign(sB - sA);
+					auto locSignum = signum;
+					for (decltype(accessor.size()) idx = 2; idx < accessor.size(); ++idx)
 					{
 						sA = sB;
 						sB = accessor.argument(idx);
-
-						if ((ok = arguments.insert(sB).second) == false){
+						locSignum = utils::sign(sB - sA);
+						if (locSignum != signum) {
+							isFun = false;
 							break;
 						}
-					}
 
-					if (ok == true){
-						ret = new FunctionFeature(even, odd, monotonic);
-					}
+						if (arguments.find(sB) == arguments.end()) {
+							arguments.insert(signum > 0 ? arguments.end() : arguments.begin(), sB);
+						}
+						else {
+							isFun = false;
+							break;
+						}						
+					}					
 				}
 			}
 
-			return ret;
+			return FunctionFeature::feature(isFun);
 		}
 	};
 
-	class FunctionFeature : public IFunctionFeature
+	//! \tparam IsFun Informacja czy dane przedstawiaj¹ funkcjê czy nie
+	template<bool IsFunc>
+	class FunctionFeatureT : public IFunctionFeature
 	{
 	public:
-		FunctionFeature(const bool even, const bool odd,
-			const MonotonyType monotonic)
-			: even_(even), odd_(odd), monotonic_(monotonic)
-		{}
+		//! konstruktor domyœlny
+		FunctionFeatureT() {}
 
-		virtual ~FunctionFeature() {}
+		virtual ~FunctionFeatureT() {}
 		//! \return Czy funkcja jest parzysta
-		virtual bool even() const override final { return even_; }
-		//! \return Czy funkcja jest nieparzysta
-		virtual bool odd() const override final { return odd_; }
-		//! \return Czy funkcja jest monotoniczna
-		virtual MonotonyType monotony() const override final { return monotonic_; }
-
-	private:
-		const bool even_;
-		const bool odd_;
-		const MonotonyType monotonic_;
+		virtual bool isFunction() const override final { return IsFunc; }	
 	};
+	
+
+	class DATACHANNELLIB_EXPORT FunctionFeature
+	{
+	private:
+		static const utils::shared_ptr<IFunctionFeature> functionFeature;
+		static const utils::shared_ptr<IFunctionFeature> nonFunctionFeature;
+
+	public:
+
+		static inline const utils::shared_ptr<IFunctionFeature> & feature(const bool isFunc)
+		{
+			return (isFunc == true) ? functionFeature : nonFunctionFeature;
+		}
+	};
+	
 }
 
 #endif	// __HEADER_GUARD_DATACHANNEL__FUNCTIONFEATURE_H__

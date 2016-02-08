@@ -21,7 +21,7 @@ public:
     //! \param channel DataChannel z danymi dla krzywej
     //! \param startTime początkowy czas dla eventu
     //! \param endTime końcowy czas dla eventu
-	NewChartEventStateData(c3dlib::ScalarChannelReaderInterfaceConstPtr channel, float startTime, float endTime);
+	NewChartEventStateData(c3dlib::ScalarChannelReaderInterfaceConstPtr channel, std::size_t startTimeIdx, std::size_t endTimeIdx);
 
 public:
     //! \return liczba próbek przedziału

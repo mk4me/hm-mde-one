@@ -57,9 +57,9 @@ argumentsGenerator(1.0 / data.getAnalogFrequency(), data.getNumAnalogFrames())
 		name.erase(it);
 	}
 
-	attachFeature(utils::make_shared<dataaccessor::UniformArgumentsFeature<argument_type>>(argumentsGenerator.step()));
+	//attachFeature(utils::make_shared<dataaccessor::UniformArgumentsFeature<argument_type>>(argumentsGenerator.step()));
 	attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<value_type, argument_type >(name, xsignal->getUnit(), "s")));
-	attachFeature(utils::make_shared<dataaccessor::BoundedArgumentsFeature<argument_type>>(argumentsGenerator.start(), argumentsGenerator.end()));
+	//attachFeature(utils::make_shared<dataaccessor::BoundedArgumentsFeature<argument_type>>(argumentsGenerator.start(), argumentsGenerator.end()));
 
 	if (dataStartSet) {
 		dataStart = (startIndex / static_cast<float>(numSamples)) * argumentsGenerator.end();

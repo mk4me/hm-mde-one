@@ -64,6 +64,10 @@ public:
         timeType begin;
         //! koniec czasu, w którym event się kończy
         timeType end;
+		//! początek czasu, w którym zaczyna się event, indeks próbki (najbliższej lub dokładnej)
+		std::size_t beginIdx;
+		//! koniec czasu, w którym event się kończy, indeks próbki (najbliższej lub dokładnej)
+		std::size_t endIdx;
         //! dane ze statystykami (znormalizowanego odcinka)
 		c3dlib::ScalarChannelReaderInterfaceConstPtr scalar;
         //! znormalizowana krzywa

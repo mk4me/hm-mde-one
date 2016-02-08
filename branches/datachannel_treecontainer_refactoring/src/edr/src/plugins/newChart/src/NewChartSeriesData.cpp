@@ -18,7 +18,8 @@ size_t NewChartSeriesData::size() const
 
 QPointF NewChartSeriesData::sample( size_t i ) const
 {
-    return QPointF(channel->argument(i) * scaleX, channel->value(i) * scaleY) + offset;
+	const auto sample = channel->sample(i);
+    return QPointF(sample.first * scaleX, sample.second * scaleY) + offset;
 }
 
 QRectF NewChartSeriesData::boundingRect() const

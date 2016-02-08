@@ -178,6 +178,27 @@ namespace dataaccessor
 			inline utils::shared_ptr<ArgumentFeatureT<argument_type>> feature(ArgumentFeatureT<argument_type> * dummy = nullptr) const { return this->IAccessor::feature<ArgumentFeatureT<argument_type>>(); }
 	};
 
+	namespace impl
+	{
+		template<typename T, typename U>
+		static inline void set(T & smartPtr, U * ptr, std::true_type)
+		{
+			smartPtr.reset(ptr);
+		}
+
+		template<typename T, typename U>
+		static inline void set(T & smartPtr, const U & ptr, std::false_type)
+		{
+			smartPtr = ptr;
+		}
+
+		template<typename T, typename U>
+		static inline void set(T & smartPtr, const U & ptr)
+		{
+			set(smartPtr, ptr, std::is_pointer<U>());
+		}
+	}
+
 	//! \tparam ValueType Typ wartości kanału danych
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<typename ValueType, typename ArgumentType>
@@ -228,7 +249,7 @@ namespace dataaccessor
 
 			if (ret == nullptr) {
 				UTILS_ASSERT((asDiscrete() != nullptr) || (asFunction() != nullptr));
-				ret.reset(FeatureT::create(asDiscrete(), asFunction()));
+				impl::set(ret, FeatureT::create(asDiscrete(), asFunction()));				
 				this->IAccessor::attachFeature(ret);
 			}
 
@@ -385,7 +406,7 @@ namespace dataaccessor
 			utils::shared_ptr<ValueFeatureT<ValueType>> ret = this->IAccessor::feature<ValueFeatureT<ValueType>>();
 
 			if (ret == nullptr) {
-				ret.reset(ValueFeatureT<ValueType>::create(*this));
+				impl::set(ret, ValueFeatureT<ValueType>::create(*this));
 				this->IAccessor::attachFeature(ret);
 			}
 
@@ -416,8 +437,8 @@ namespace dataaccessor
 		{
 			utils::shared_ptr<ArgumentFeatureT<ArgumentType>> ret = this->IAccessor::feature<ArgumentFeatureT<ArgumentType>>();
 
-			if (ret == nullptr) {
-				ret.reset(ArgumentFeatureT<ArgumentType>::create(*this));
+			if (ret == nullptr) {				
+				impl::set(ret, ArgumentFeatureT<ArgumentType>::create(*this));
 				this->IAccessor::attachFeature(ret);
 			}
 

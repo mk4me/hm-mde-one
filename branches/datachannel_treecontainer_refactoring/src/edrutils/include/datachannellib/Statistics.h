@@ -245,7 +245,7 @@ namespace dataaccessor {
 
 			typename IStatisticsFeature<ValueType, ArgumentType>::Values result;
 
-			auto ff = accessor.getOrCreateFeature<IFunctionFeature>();
+			auto ff = accessor.feature<IFunctionDescriptionFeature>();
 
 			if (ff != nullptr && ff->monotony() == Constant){
 				result.mean = accessor.value(0);
@@ -317,9 +317,9 @@ namespace dataaccessor {
 
 			ArgStats argSts;
 
-			auto ff = accessor.getOrCreateFeature<IFunctionFeature>();
+			auto fdf = accessor.feature<IFunctionDescriptionFeature>();
 
-			if (ff != nullptr && ff->monotony() == Constant){
+			if (fdf != nullptr && fdf->monotony() == Constant){
 				result.values.mean = accessor.value(0);
 				result.values.variance = result.values.standardDeviation = ValueType(0);
 

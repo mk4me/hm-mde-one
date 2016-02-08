@@ -283,33 +283,33 @@ namespace dataaccessor
 	template<typename ValueType, typename ArgumentType,
 		typename Ptr = DiscreteAccessorPtr < ValueType, ArgumentType >>
 		static inline Ptr lightWrap(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
-			const std::size_t start, const std::size_t size)
+			const std::size_t size, const std::size_t start = 0)
 	{
-		return Ptr(new DiscreteSubAccessorAdapter<ValueType, ArgumentType>(accessor, start, size));
+		return Ptr(new DiscreteSubAccessorAdapter<ValueType, ArgumentType>(accessor, size, start));
 	}
 
 	template<typename ValueType, typename ArgumentType,
 		typename Ptr = FunctionAccessorPtr < ValueType, ArgumentType >>
 		static inline Ptr lightWrap(const IFunctionAccessorT<ValueType, ArgumentType> & accessor,
-			const ArgumentType start, const ArgumentType end)
+			const ArgumentType & end, const ArgumentType & start = ArgumentType())
 	{
-		return Ptr(new FunctionSubAccessorAdapter<ValueType, ArgumentType>(accessor, start, end));
+		return Ptr(new FunctionSubAccessorAdapter<ValueType, ArgumentType>(accessor, end, start));
 	}
 
 	template<typename AccessorType, ENABLE_IF(std::is_base_of<IDiscreteAccessorT<typename AccessorType::value_type, typename AccessorType::argument_type>, AccessorType>::value),
 		typename Ptr = DiscreteAccessorPtr<typename AccessorType::value_type, typename AccessorType::argument_type >>
 		static inline Ptr wrap(const utils::shared_ptr<AccessorType> & accessor,
-			const std::size_t start, const std::size_t size)
+			const std::size_t size, const std::size_t start = 0)
 	{
-		return Ptr(new SafeDiscreteSubAccessorAdapter<typename AccessorType::value_type, typename AccessorType::argument_type>(accessor, start, size));
+		return Ptr(new SafeDiscreteSubAccessorAdapter<typename AccessorType::value_type, typename AccessorType::argument_type>(accessor, size, start));
 	}
 
 	template<typename AccessorType, ENABLE_IF(std::is_base_of<IFunctionAccessorT<typename AccessorType::value_type, typename AccessorType::argument_type>, AccessorType>::value),
 		typename Ptr = FunctionAccessorPtr<typename AccessorType::value_type, typename AccessorType::argument_type >>
 		static inline Ptr wrap(const utils::shared_ptr<AccessorType> & accessor,
-			const typename AccessorType::argument_type & start, const typename AccessorType::argument_type & end)
+			const typename AccessorType::argument_type & end, const typename AccessorType::argument_type & start = typename AccessorType::argument_type())
 	{
-		return Ptr(new SafeFunctionSubAccessorAdapter<typename AccessorType::value_type, typename AccessorType::argument_type>(accessor, start, end));
+		return Ptr(new SafeFunctionSubAccessorAdapter<typename AccessorType::value_type, typename AccessorType::argument_type>(accessor, end, start));
 	}
 }
 

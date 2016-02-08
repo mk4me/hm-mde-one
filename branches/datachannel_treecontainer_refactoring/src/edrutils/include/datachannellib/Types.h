@@ -15,7 +15,8 @@ namespace dataaccessor
 	{
 		Description = 0,	//! Opis zawartoœci kana³u, argumentów, wartoœci i ich jednostek
 		Statistics,			//! Statystyki kana³u
-		Function,			//! Opis kana³u reprezentuj¹cego funkcjê: parzystoœæ, nieparzystoœæ, sta³oœæ, monotonicznoœæ, ci¹g³oœæ
+		Function,			//! Opis czy dane reprezentuj¹ funkcjê
+		FunctionDescription,//! Opis funkcji - parzystoœæ, nieparzystoœæ,  monotonicznoœæ, ...
 		ArgumentBounded,	//! Opis zakresu argumentów
 		ValueBounded,		//! Opis zakresu wartoœci
 		UniformArguments,	//! Opis argumentów równooodalonych

@@ -2050,17 +2050,19 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 
 	kinematic::LinearizedSkeleton::NodeIDX nidx = 0;
 
+	auto ff = dataaccessor::FunctionFeature::feature(true);
+
 	//adaptery dla jointów lokalnych, wyliczyć globale orientacje i pozycje
 	//wygenerować hierarchię	
 
-	kinematic::LinearizedSkeleton::Visitor::visit(*skeleton, [&nidx, &ditem, &precalculatedFrames](kinematic::Skeleton::JointPtr joint)
+	kinematic::LinearizedSkeleton::Visitor::visit(*skeleton, [&ff, &nidx, &ditem, &precalculatedFrames](kinematic::Skeleton::JointPtr joint)
 	{
 		auto item = utils::make_shared<core::HierarchyItem>(QString::fromStdString(joint->value().name()), "", QIcon());
 
 		//local orientatrion
 		{
 			auto data = utils::make_shared<PrecalculatedDataAdapter<MEMBER_EXTRACTOR_NAME(localOrientation)>>(precalculatedFrames, nidx);
-
+			data->attachFeature(ff);
 
 			//	joint->value().name() + "\n" + QObject::tr("Local orientation").toStdString(), QObject::tr("s").toStdString(), QObject::tr("deg").toStdString(), nidx);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
@@ -2073,6 +2075,7 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 		//global orientation
 		{			
 			auto data = utils::make_shared<PrecalculatedDataAdapter<MEMBER_EXTRACTOR_NAME(globalOrientation)>>(precalculatedFrames, nidx);
+			data->attachFeature(ff);
 			
 			//joint->value().name() + "\n" + QObject::tr("Global orientation").toStdString(), QObject::tr("s").toStdString(), QObject::tr("deg").toStdString(), nidx);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
@@ -2091,6 +2094,7 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 		{
 			//auto data = utils::make_shared<c3dlib::VectorChannel>(sPS);
 			std::vector<c3dlib::VectorChannelReaderInterface::value_type> data;
+			data.reserve(precalculatedFrames->frames.size());
 			//data->setName(joint->value().name() + "\n" + QObject::tr("Angular velocity").toStdString());
 			//data->setTimeBaseUnit(QObject::tr("s").toStdString());
 			//data->setValueBaseUnit(QObject::tr("deg").toStdString());
@@ -2107,6 +2111,7 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 			PLUGIN_LOG_DEBUG("angular velocity.size = " << data.size());
 			
 			av = dataaccessor::wrap(std::move(data), uag);
+			av->attachFeature(ff);
 
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(av);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Angular velocity"), "", utils::make_shared<NewVector3ItemHelper>(ow,
@@ -2134,7 +2139,10 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 
 			PLUGIN_LOG_DEBUG("angular acceleration.size = " << data.size());
 
-			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(dataaccessor::wrap(std::move(data), uag));
+			auto av = dataaccessor::wrap(std::move(data), uag);
+			av->attachFeature(ff);
+
+			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(av);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Angular acceleration"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
 			item->appendChild(di);
@@ -2143,6 +2151,7 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 		//local position
 		{
 			auto data = utils::make_shared<PrecalculatedDataAdapter<MEMBER_EXTRACTOR_NAME(localPosition)>>(precalculatedFrames, nidx);
+			data->attachFeature(ff);
 				//joint->value().name() + "\n" + QObject::tr("Local position").toStdString(), QObject::tr("s").toStdString(), "", nidx);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Local position"), "", utils::make_shared<NewVector3ItemHelper>(ow,
@@ -2153,6 +2162,7 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 		//global position
 		{
 			auto data = utils::make_shared<PrecalculatedDataAdapter<MEMBER_EXTRACTOR_NAME(globalPosition)>>(precalculatedFrames, nidx);
+			data->attachFeature(ff);
 				//joint->value().name() + "\n" + QObject::tr("Global position").toStdString(), QObject::tr("s").toStdString(), "", nidx);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Global position"), "", utils::make_shared<NewVector3ItemHelper>(ow,
@@ -2180,6 +2190,7 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 
 			PLUGIN_LOG_DEBUG("linear velocity.size = " << data.size());
 			lv = dataaccessor::wrap(std::move(data), uag);
+			lv->attachFeature(ff);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(lv);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Linear velocity"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
@@ -2204,7 +2215,10 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 
 			PLUGIN_LOG_DEBUG("linear acceleration.size = " << data.size());
 
-			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(dataaccessor::wrap(std::move(data), uag));
+			auto av = dataaccessor::wrap(std::move(data), uag);
+			av->attachFeature(ff);
+
+			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(av);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Linear acceleration"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
 			item->appendChild(di);

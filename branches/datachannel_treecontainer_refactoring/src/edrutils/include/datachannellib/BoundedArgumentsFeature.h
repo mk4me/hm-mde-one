@@ -32,7 +32,7 @@ namespace dataaccessor
 			IBoundedArgumentsFeature<ArgumentType> * ret = nullptr;
 			if (accessor.empty() == false) {
 
-				auto feature = accessor.featureExists(IFunctionFeature::ID);
+				auto feature = accessor.featureExists(dataaccessor::Function);
 
 				auto min = accessor.argument(0);
 				auto max = min;

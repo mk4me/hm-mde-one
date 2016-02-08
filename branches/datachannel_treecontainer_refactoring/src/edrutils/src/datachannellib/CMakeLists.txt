@@ -1,4 +1,4 @@
-BEGIN_PROJECT("header")
+BEGIN_PROJECT("dynamic")
 
 SET_PUBLIC_HEADERS(
 	Features.h
@@ -12,6 +12,7 @@ SET_PUBLIC_HEADERS(
 	BoundedArgumentsFeature.h
 	BoundedValuesFeature.h
 	FunctionFeature.h		
+	FunctionDescriptionFeature.h		
 	PeriodicFunctionFeature.h
 	UniformArgumentsFeature.h	
 	Types.h
@@ -22,6 +23,10 @@ SET_PUBLIC_HEADERS(
 	CurrentValueExtractor.h
 	Traits.h
 	SafeAccessorWrapper.h
+)
+
+SET_SOURCE_FILES(
+	FunctionFeature.cpp
 )
 
 END_PROJECT()

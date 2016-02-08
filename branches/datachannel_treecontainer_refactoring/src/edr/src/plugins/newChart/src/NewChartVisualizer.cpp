@@ -980,8 +980,10 @@ void NewChartVisualizer::refreshBounds()
     		minT = (std::min)(minT, baf->minArgument());
     		maxT = (std::max)(maxT, baf->maxArgument());
     		channels.push_back(data);
-			continousChannels.push_back(utils::make_shared < dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::ScalarChannelReaderInterface::value_type,
-				c3dlib::ScalarChannelReaderInterface::argument_type >> (*data));
+			auto cdata = utils::make_shared < dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::ScalarChannelReaderInterface::value_type,
+				c3dlib::ScalarChannelReaderInterface::argument_type >> (*data);			
+
+			continousChannels.push_back(cdata);
     	}
     }
 

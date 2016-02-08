@@ -32,19 +32,29 @@ namespace dataaccessor
 			const IFunctionAccessorT<ValueType, ArgumentType> * function)
 		{
 			IUniformArgumentsFeature * ret = nullptr;
+			if (discrete != nullptr) {
+				ret = create(*discrete);
+			}
 
-			if (discrete != nullptr && discrete->empty() == false && discrete->size() > 1){
+			return ret;
+		}
+		
+		static inline IUniformArgumentsFeature * create(const IDiscreteArgumentAccessorT<ArgumentType> & accessor)
+		{
+			IUniformArgumentsFeature * ret = nullptr;
 
-				auto argA = discrete->argument(0);
-				auto argB = discrete->argument(1);
+			if (accessor.size() > 1){
+
+				auto argA = accessor.argument(0);
+				auto argB = accessor.argument(1);
 
 				ArgumentType interval = (argB - argA);
 				bool ok = true;
 
-				for (decltype(discrete->size()) idx = 2; idx < discrete->size(); ++idx)
+				for (decltype(accessor.size()) idx = 2; idx < accessor.size(); ++idx)
 				{
 					argA = argB;
-					argB = discrete->argument(idx);
+					argB = accessor.argument(idx);
 
 					if (interval != (argB - argA)){
 						ok = false;
@@ -53,7 +63,7 @@ namespace dataaccessor
 				}
 				
 				if (ok == true){
-					ret = new UniformArgumentsFeature<ArgumentType>(std::abs(interval));
+					ret = new UniformArgumentsFeature<ArgumentType>(interval);
 				}
 			}
 
