@@ -5,13 +5,13 @@
 	
 	purpose:  
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__FEATURES_H__
-#define __HEADER_GUARD_DATACHANNEL__FEATURES_H__
+#ifndef __HEADER_GUARD_DATAACCESSOR__FEATURES_H__
+#define __HEADER_GUARD_DATAACCESSOR__FEATURES_H__
 
 #include <type_traits>
 #include <utils/TypeInfo.h>
 #include <utils/SmartPtr.h>
-#include <datachannellib/AccessorType.h>
+#include <dataaccessorlib/AccessorType.h>
 
 namespace dataaccessor
 {
@@ -87,4 +87,4 @@ namespace dataaccessor
 	DEFINE_SMART_POINTERS(IFeature);
 }
 
-#endif  // __HEADER_GUARD_DATACHANNEL__FEATURES_H__
+#endif  // __HEADER_GUARD_DATAACCESSOR__FEATURES_H__

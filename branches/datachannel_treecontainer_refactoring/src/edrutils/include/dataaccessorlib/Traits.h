@@ -8,7 +8,7 @@
 #ifndef __HEADER_GUARD_DATAACCESSOR__TRAITS_H__
 #define __HEADER_GUARD_DATAACCESSOR__TRAITS_H__
 
-#include <datachannellib/Accessors.h>
+#include <dataaccessorlib/Accessors.h>
 #include <utils/pointer_traits.h>
 
 namespace dataaccessor

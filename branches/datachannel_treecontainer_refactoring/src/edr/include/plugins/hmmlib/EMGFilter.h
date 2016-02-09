@@ -16,8 +16,8 @@
 #include <plugins/newChart/INewChartSerie.h>
 #include <plugins/hmmlib/Export.h>
 #include <loglib/Exceptions.h>
-#include <datachannellib/BoundedValuesFeature.h>
-#include <datachannellib/Adapters.h>
+#include <dataaccessorlib/BoundedValuesFeature.h>
+#include <dataaccessorlib/Adapters.h>
 
 using namespace core;
 

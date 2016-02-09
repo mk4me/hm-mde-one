@@ -15,10 +15,10 @@
 #include <vidlib/osg/VideoImageStream.h>
 #include <vidlib/osg/OsgAdapter.h>
 #include <vidlib/FFmpegVideoStream.h>
-#include <datachannellib/Accessors.h>
-#include <datachannellib/BoundedArgumentsFeature.h>
-#include <datachannellib/UniformArgumentsFeature.h>
-#include <datachannellib/AccessorsCollection.h>
+#include <dataaccessorlib/Accessors.h>
+#include <dataaccessorlib/BoundedArgumentsFeature.h>
+#include <dataaccessorlib/UniformArgumentsFeature.h>
+#include <dataaccessorlib/AccessorsCollection.h>
 
 
 typedef osg::ref_ptr<vidlib::VideoImage> VideoImageOsgPtr;

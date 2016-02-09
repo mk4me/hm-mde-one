@@ -5,10 +5,10 @@
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__PERIODICFUNCTIONFEATURE_H__
-#define __HEADER_GUARD_DATACHANNEL__PERIODICFUNCTIONFEATURE_H__
+#ifndef __HEADER_GUARD_DATAACCESSOR__PERIODICFUNCTIONFEATURE_H__
+#define __HEADER_GUARD_DATAACCESSOR__PERIODICFUNCTIONFEATURE_H__
 
-#include <datachannellib/Accessors.h>
+#include <dataaccessorlib/Accessors.h>
 
 namespace dataaccessor
 {
@@ -53,4 +53,4 @@ namespace dataaccessor
 
 }
 
-#endif	// __HEADER_GUARD_DATACHANNEL__PERIODICFUNCTIONFEATURE_H__
+#endif	// __HEADER_GUARD_DATAACCESSOR__PERIODICFUNCTIONFEATURE_H__

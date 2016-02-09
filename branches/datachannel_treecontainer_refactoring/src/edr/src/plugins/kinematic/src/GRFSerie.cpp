@@ -2,9 +2,9 @@
 #include "GRFSerie.h"
 #include "KinematicVisualizer.h"
 #include <corelib/PluginCommon.h>
-#include <datachannellib/BoundedArgumentsFeature.h>
-#include <datachannellib/BoundedValuesFeature.h>
-#include <datachannellib/Adapters.h>
+#include <dataaccessorlib/BoundedArgumentsFeature.h>
+#include <dataaccessorlib/BoundedValuesFeature.h>
+#include <dataaccessorlib/Adapters.h>
 
 //using namespace core;
 //using namespace osg;

@@ -5,18 +5,18 @@ author:	  Mateusz Janiak
 
 purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__ADAPTER_H__
-#define __HEADER_GUARD_DATACHANNEL__ADAPTER_H__
+#ifndef __HEADER_GUARD_DATAACCESSOR__ADAPTER_H__
+#define __HEADER_GUARD_DATAACCESSOR__ADAPTER_H__
 
-#include <datachannellib/Accessors.h>
-#include <datachannellib/SafeAccessorWrapper.h>
-#include <datachannellib/UniformArgumentsFeature.h>
-#include <datachannellib/BoundedArgumentsFeature.h>
-#include <datachannellib/BoundedValuesFeature.h>
-#include <datachannellib/FunctionFeature.h>
-#include <datachannellib/FunctionDescriptionFeature.h>
-#include <datachannellib/Interpolators.h>
-#include <datachannellib/Extrapolators.h>
+#include <dataaccessorlib/Accessors.h>
+#include <dataaccessorlib/SafeAccessorWrapper.h>
+#include <dataaccessorlib/UniformArgumentsFeature.h>
+#include <dataaccessorlib/BoundedArgumentsFeature.h>
+#include <dataaccessorlib/BoundedValuesFeature.h>
+#include <dataaccessorlib/FunctionFeature.h>
+#include <dataaccessorlib/FunctionDescriptionFeature.h>
+#include <dataaccessorlib/Interpolators.h>
+#include <dataaccessorlib/Extrapolators.h>
 #include <utils/MemberExtractor.h>
 
 namespace dataaccessor
@@ -675,4 +675,4 @@ namespace dataaccessor
 		using SafeFunctionAccessorAdapter = SafeAccessorWrapper < FunctionAccessorAdapter < BaseValueType, BaseArgumentType, ValueExtractor, DestValueType>>;
 }
 
-#endif	// __HEADER_GUARD_DATACHANNEL__ADAPTER_H__
+#endif	// __HEADER_GUARD_DATAACCESSOR__ADAPTER_H__

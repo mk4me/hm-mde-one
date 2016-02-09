@@ -5,10 +5,10 @@
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__EXTRAPOLATORS_H__
-#define __HEADER_GUARD_DATACHANNEL__EXTRAPOLATORS_H__
+#ifndef __HEADER_GUARD_DATAACCESSOR__EXTRAPOLATORS_H__
+#define __HEADER_GUARD_DATAACCESSOR__EXTRAPOLATORS_H__
 
-#include <datachannellib/Interpolators.h>
+#include <dataaccessorlib/Interpolators.h>
 
 namespace dataaccessor
 {
@@ -175,4 +175,4 @@ namespace dataaccessor
 	};
 }
 
-#endif	// __HEADER_GUARD_DATACHANNEL__EXTRAPOLATORS_H__
+#endif	// __HEADER_GUARD_DATAACCESSOR__EXTRAPOLATORS_H__

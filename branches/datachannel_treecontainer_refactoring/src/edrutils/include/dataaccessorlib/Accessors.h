@@ -6,11 +6,11 @@ author:   Mateusz Janiak
 
 purpose:
 *********************************************************************/
-#ifndef HEADER_GUARD_DATACHANNEL__ACCESSORS_H__
-#define HEADER_GUARD_DATACHANNEL__ACCESSORS_H__
+#ifndef HEADER_GUARD_DATAACCESSOR__ACCESSORS_H__
+#define HEADER_GUARD_DATAACCESSOR__ACCESSORS_H__
 
-#include <datachannellib/Types.h>
-#include <datachannellib/Features.h>
+#include <dataaccessorlib/Types.h>
+#include <dataaccessorlib/Features.h>
 #include <utils/TypeInfo.h>
 #include <utils/SmartPtr.h>
 #include <utils/Utils.h>
@@ -521,4 +521,4 @@ namespace dataaccessor
 	};
 }
 
-#endif	//	HEADER_GUARD_DATACHANNEL__ACCESSORS_H__
+#endif	//	HEADER_GUARD_DATAACCESSOR__ACCESSORS_H__

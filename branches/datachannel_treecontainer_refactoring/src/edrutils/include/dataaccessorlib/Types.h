@@ -5,8 +5,8 @@
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__TYPES_H__
-#define __HEADER_GUARD_DATACHANNEL__TYPES_H__
+#ifndef __HEADER_GUARD_DATAACCESSOR__TYPES_H__
+#define __HEADER_GUARD_DATAACCESSOR__TYPES_H__
 
 namespace dataaccessor
 {
@@ -36,4 +36,4 @@ namespace dataaccessor
 	};
 }
 
-#endif	// __HEADER_GUARD_DATACHANNEL__TYPES_H__
+#endif	// __HEADER_GUARD_DATAACCESSOR__TYPES_H__

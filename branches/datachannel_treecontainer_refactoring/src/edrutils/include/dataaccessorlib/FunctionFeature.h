@@ -5,19 +5,19 @@ author:	  Mateusz Janiak
 
 purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__FUNCTIONFEATURE_H__
-#define __HEADER_GUARD_DATACHANNEL__FUNCTIONFEATURE_H__
+#ifndef __HEADER_GUARD_DATAACCESSOR__FUNCTIONFEATURE_H__
+#define __HEADER_GUARD_DATAACCESSOR__FUNCTIONFEATURE_H__
 
-#include <datachannellib/Accessors.h>
+#include <dataaccessorlib/Accessors.h>
 #include <set>
 #include <utils/Utils.h>
 #include <type_traits>
 #include <utils/Export.h>
 
-#if defined (datachannellib_EXPORTS)
-#define DATACHANNELLIB_EXPORT UTILS_DECL_EXPORT
+#if defined (dataaccessorlib_EXPORTS)
+#define DATAACCESSORLIB_EXPORT UTILS_DECL_EXPORT
 #else
-#define DATACHANNELLIB_EXPORT UTILS_DECL_IMPORT
+#define DATAACCESSORLIB_EXPORT UTILS_DECL_IMPORT
 #endif
 
 namespace dataaccessor
@@ -103,7 +103,7 @@ namespace dataaccessor
 	};
 	
 
-	class DATACHANNELLIB_EXPORT FunctionFeature
+	class DATAACCESSORLIB_EXPORT FunctionFeature
 	{
 	private:
 		static const utils::shared_ptr<IFunctionFeature> functionFeature;
@@ -119,4 +119,4 @@ namespace dataaccessor
 	
 }
 
-#endif	// __HEADER_GUARD_DATACHANNEL__FUNCTIONFEATURE_H__
+#endif	// __HEADER_GUARD_DATAACCESSOR__FUNCTIONFEATURE_H__

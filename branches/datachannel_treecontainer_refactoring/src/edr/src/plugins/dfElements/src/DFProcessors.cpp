@@ -1,7 +1,7 @@
 #include <plugins/dfElements/DFProcessors.h>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
-#include <datachannellib/UniformArgumentsFeature.h>
+#include <dataaccessorlib/UniformArgumentsFeature.h>
 
 void VectorDiff::process()
 {

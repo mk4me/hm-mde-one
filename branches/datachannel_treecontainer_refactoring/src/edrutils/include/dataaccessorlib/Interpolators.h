@@ -5,11 +5,11 @@
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__INTERPOLATORS_H__
-#define __HEADER_GUARD_DATACHANNEL__INTERPOLATORS_H__
+#ifndef __HEADER_GUARD_DATAACCESSOR__INTERPOLATORS_H__
+#define __HEADER_GUARD_DATAACCESSOR__INTERPOLATORS_H__
 
 #include <cmath>
-#include <datachannellib/Accessors.h>
+#include <dataaccessorlib/Accessors.h>
 
 namespace dataaccessor
 {
@@ -254,4 +254,4 @@ namespace dataaccessor
 	};
 }
 
-#endif	// __HEADER_GUARD_DATACHANNEL__INTERPOLATORS_H__
+#endif	// __HEADER_GUARD_DATAACCESSOR__INTERPOLATORS_H__

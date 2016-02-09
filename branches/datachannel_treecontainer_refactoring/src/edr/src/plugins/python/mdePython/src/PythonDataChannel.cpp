@@ -1,5 +1,5 @@
 #include "PythonDataChannel.h"
-#include <datachannellib/Wrappers.h>
+#include <dataaccessorlib/Wrappers.h>
 
 namespace py = boost::python;
 

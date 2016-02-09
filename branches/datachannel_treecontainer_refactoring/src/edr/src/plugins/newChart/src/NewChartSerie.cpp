@@ -4,9 +4,9 @@
 #include "NewChartVisualizer.h"
 #include "NewChartSeriesData.h"
 #include <QtWidgets/QTreeWidgetItem>
-#include <datachannellib/BoundedArgumentsFeature.h>
-#include <datachannellib/BoundedValuesFeature.h>
-#include <datachannellib/Adapters.h>
+#include <dataaccessorlib/BoundedArgumentsFeature.h>
+#include <dataaccessorlib/BoundedValuesFeature.h>
+#include <dataaccessorlib/Adapters.h>
 
 
 const int ACTIVE_WIDTH = 2;

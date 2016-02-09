@@ -8,7 +8,7 @@
 #ifndef __HEADER_GUARD_DATAACCESSOR__FUNCTIONDESCRIPTIONFEATURE_H__
 #define __HEADER_GUARD_DATAACCESSOR__FUNCTIONDESCRIPTIONFEATURE_H__
 
-#include <datachannellib/Accessors.h>
+#include <dataaccessorlib/Accessors.h>
 #include <set>
 #include <utils/Utils.h>
 #include <type_traits>

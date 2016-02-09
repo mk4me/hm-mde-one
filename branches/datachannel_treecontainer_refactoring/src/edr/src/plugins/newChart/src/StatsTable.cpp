@@ -1,9 +1,9 @@
 #include "NewChartPCH.h"
 #include "StatsTable.h"
-#include <datachannellib/DescriptorFeature.h>
-#include <datachannellib/Statistics.h>
-#include <datachannellib/BoundedArgumentsFeature.h>
-#include <datachannellib/BoundedValuesFeature.h>
+#include <dataaccessorlib/DescriptorFeature.h>
+#include <dataaccessorlib/Statistics.h>
+#include <dataaccessorlib/BoundedArgumentsFeature.h>
+#include <dataaccessorlib/BoundedValuesFeature.h>
 
 StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/ ) :
     QWidget(parent, f),

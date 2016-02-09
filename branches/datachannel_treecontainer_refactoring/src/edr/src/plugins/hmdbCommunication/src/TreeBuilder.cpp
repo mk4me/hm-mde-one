@@ -15,7 +15,7 @@
 #include <corelib/PluginCommon.h>
 #include <objectwrapperlib/ObjectWrapper.h>
 #include <boost/lexical_cast.hpp>
-#include <datachannellib/Wrappers.h>
+#include <dataaccessorlib/Wrappers.h>
 
 using namespace PluginSubject;
 core::IHierarchyItemPtr TreeBuilder::createTree(const QString& rootItemName, const core::ConstVariantsList& sessions)

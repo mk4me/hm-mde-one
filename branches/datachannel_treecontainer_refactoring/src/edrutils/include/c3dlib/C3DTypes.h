@@ -11,10 +11,10 @@
 #define HEADER_GUARD_C3DLIB__C3DTypes_H__
 
 #include <osg/Vec3>
-#include <datachannellib/ArgumentTracker.h>
-#include <datachannellib/Adapters.h>
-#include <datachannellib/AccessorsCollection.h>
-#include <datachannellib/AccessorsCollection.h>
+#include <dataaccessorlib/ArgumentTracker.h>
+#include <dataaccessorlib/Adapters.h>
+#include <dataaccessorlib/AccessorsCollection.h>
+#include <dataaccessorlib/AccessorsCollection.h>
 #include <utils/SmartPtr.h>
 #include <utils/PtrPolicyStd.h>
 #include <utils/ClonePolicies.h>

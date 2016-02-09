@@ -27,9 +27,9 @@
 #include <iomanip>
 #include <boost/lexical_cast.hpp>
 #include <plugins/c3d/C3DChannels.h>
-#include <datachannellib/Wrappers.h>
-#include <datachannellib/UniformArgumentsFeature.h>
-#include <datachannellib/DescriptorFeature.h>
+#include <dataaccessorlib/Wrappers.h>
+#include <dataaccessorlib/UniformArgumentsFeature.h>
+#include <dataaccessorlib/DescriptorFeature.h>
 
 typedef utils::Filesystem fs;
 

@@ -8,7 +8,7 @@
 #include <plugins/hmmlib/EMGFilter.h>
 #include <loglib/Exceptions.h>
 #include <boost/lexical_cast.hpp>
-#include <datachannellib/Wrappers.h>
+#include <dataaccessorlib/Wrappers.h>
 
 using namespace core;
 

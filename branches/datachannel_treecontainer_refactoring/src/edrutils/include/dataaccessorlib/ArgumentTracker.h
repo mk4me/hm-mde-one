@@ -1,13 +1,13 @@
 /********************************************************************
 	created:  2012/04/26
 	created:  26:4:2012   23:56
-	filename: DataChannelTimers.h
+	filename: ArgumentTracker.h
 	author:   Mateusz Janiak
 
 	purpose:
 	*********************************************************************/
-#ifndef HEADER_GUARD_DATACHANNEL__DATACHANNELTIMERS_H__
-#define HEADER_GUARD_DATACHANNEL__DATACHANNELTIMERS_H__
+#ifndef HEADER_GUARD_DATAACCESSOR__ARGUMENTTRACKER_H__
+#define HEADER_GUARD_DATAACCESSOR__ARGUMENTTRACKER_H__
 
 #include <utils/Utils.h>
 #include <utils/SmartPtr.h>
@@ -87,4 +87,4 @@ namespace dataaccessor {
 	};
 }
 
-#endif	//	HEADER_GUARD_DATACHANNEL__DATACHANNELTIMERS_H__
+#endif	//	HEADER_GUARD_DATAACCESSOR__ARGUMENTTRACKER_H__

@@ -10,10 +10,10 @@
 #ifndef HEADER_GUARD_UTILS__ACCESSORSCOLLECTION_H__
 #define HEADER_GUARD_UTILS__ACCESSORSCOLLECTION_H__
 
-#include <datachannellib/Accessors.h>
-#include <datachannellib/Adapters.h>
-#include <datachannellib/Traits.h>
-#include <datachannellib/DescriptorFeature.h>
+#include <dataaccessorlib/Accessors.h>
+#include <dataaccessorlib/Adapters.h>
+#include <dataaccessorlib/Traits.h>
+#include <dataaccessorlib/DescriptorFeature.h>
 #include <vector>
 #include <algorithm>
 #include <iterator>
@@ -24,7 +24,7 @@
 namespace dataaccessor {
 	////////////////////////////////////////////////////////////////////////////////
 
-	//! Klasa agreguje klasy DataChannel, wszystkie dodawane kanały powinny mieć tyle samo wpisow
+	//! Klasa agreguje obiekty specyficznych akcesorów dyskretnych (funkcje), wszystkie dodawane akcesory powinny mieć tyle samo próbek
 	template <typename AccessorType, ENABLE_IF(is_valid_discrete_accessor<AccessorType>::value)>
 	class AccessorsCollection
 	{

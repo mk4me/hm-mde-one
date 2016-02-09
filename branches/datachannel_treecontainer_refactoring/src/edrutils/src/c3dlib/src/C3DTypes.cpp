@@ -1,9 +1,9 @@
 #include <c3dlib/C3DTypes.h>
 #include <stdexcept>
 #include <utils/Debug.h>
-#include <datachannellib/UniformArgumentsFeature.h>
-#include <datachannellib/DescriptorFeature.h>
-#include <datachannellib/BoundedArgumentsFeature.h>
+#include <dataaccessorlib/UniformArgumentsFeature.h>
+#include <dataaccessorlib/DescriptorFeature.h>
+#include <dataaccessorlib/BoundedArgumentsFeature.h>
 
 using namespace c3dlib;
 

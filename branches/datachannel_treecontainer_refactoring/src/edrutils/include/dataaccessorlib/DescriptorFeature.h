@@ -6,10 +6,10 @@
 
     purpose:
 *********************************************************************/
-#ifndef HEADER_GUARD_DATACHANNEL__DESCRIPTORFEATURE_H__
-#define HEADER_GUARD_DATACHANNEL__DESCRIPTORFEATURE_H__
+#ifndef HEADER_GUARD_DATAACCESSOR__DESCRIPTORFEATURE_H__
+#define HEADER_GUARD_DATAACCESSOR__DESCRIPTORFEATURE_H__
 
-#include <datachannellib/Features.h>
+#include <dataaccessorlib/Features.h>
 
 namespace dataaccessor {
 	
@@ -136,4 +136,4 @@ namespace dataaccessor {
 	};
 }
 
-#endif	//	HEADER_GUARD_DATACHANNEL__DESCRIPTORFEATURE_H__
+#endif	//	HEADER_GUARD_DATAACCESSOR__DESCRIPTORFEATURE_H__

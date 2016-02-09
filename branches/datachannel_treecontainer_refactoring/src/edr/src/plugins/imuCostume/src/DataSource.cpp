@@ -29,7 +29,7 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <osgutils/QuatUtils.h>
 #include <utils/Utils.h>
-#include <datachannellib/Wrappers.h>
+#include <dataaccessorlib/Wrappers.h>
 
 struct PrecalculatedJointFrame
 {

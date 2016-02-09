@@ -3,7 +3,7 @@
 #include "boost/python/import.hpp"
 #include <plugins/python/python/PythonEditor.h>
 #include "boost/python/exec.hpp"
-#include <datachannellib/Wrappers.h>
+#include <dataaccessorlib/Wrappers.h>
 
 namespace py = boost::python;
 

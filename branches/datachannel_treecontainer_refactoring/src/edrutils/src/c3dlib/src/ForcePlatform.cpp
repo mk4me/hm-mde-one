@@ -2,7 +2,7 @@
 #include <list>
 #include <c3dlib/IForcePlatform.h>
 #include <c3dlib/C3DTypes.h>
-#include <datachannellib/Adapters.h>
+#include <dataaccessorlib/Adapters.h>
 
 namespace c3dlib {
 

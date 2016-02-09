@@ -5,11 +5,11 @@ author:	  Mateusz Janiak
 
 purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__WRAPPERHELPERS_H__
-#define __HEADER_GUARD_DATACHANNEL__WRAPPERHELPERS_H__
+#ifndef __HEADER_GUARD_DATAACCESSOR__WRAPPERHELPERS_H__
+#define __HEADER_GUARD_DATAACCESSOR__WRAPPERHELPERS_H__
 
-#include <datachannellib/SafeAccessorWrapper.h>
-#include <datachannellib/FunctionFeature.h>
+#include <dataaccessorlib/SafeAccessorWrapper.h>
+#include <dataaccessorlib/FunctionFeature.h>
 #include <iterator>
 #include <utils/function_traits.h>
 #include <utils/container_traits.h>
@@ -519,4 +519,4 @@ namespace dataaccessor
 	using DataFunctionAccessor = SafeAccessorWrapper<FunctionAccessor<Ret(Object::*)(Arg)const>, Object>;
 }
 
-#endif	// __HEADER_GUARD_DATACHANNEL__WRAPPERHELPERS_H__
+#endif	// __HEADER_GUARD_DATAACCESSOR__WRAPPERHELPERS_H__

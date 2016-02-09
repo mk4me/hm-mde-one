@@ -5,12 +5,12 @@ author:	  Mateusz Janiak
 
 purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__WRAPPERS_H__
-#define __HEADER_GUARD_DATACHANNEL__WRAPPERS_H__
+#ifndef __HEADER_GUARD_DATAACCESSOR__WRAPPERS_H__
+#define __HEADER_GUARD_DATAACCESSOR__WRAPPERS_H__
 
-#include <datachannellib/Accessors.h>
-#include <datachannellib/WrapperHelpers.h>
-#include <datachannellib/Traits.h>
+#include <dataaccessorlib/Accessors.h>
+#include <dataaccessorlib/WrapperHelpers.h>
+#include <dataaccessorlib/Traits.h>
 #include <utils/Debug.h>
 
 namespace dataaccessor
@@ -313,4 +313,4 @@ namespace dataaccessor
 	}
 }
 
-#endif	// __HEADER_GUARD_DATACHANNEL__WRAPPERS_H__
+#endif	// __HEADER_GUARD_DATAACCESSOR__WRAPPERS_H__

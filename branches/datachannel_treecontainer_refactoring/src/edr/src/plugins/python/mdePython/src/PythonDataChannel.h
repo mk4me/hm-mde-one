@@ -7,8 +7,8 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_PYTHON__PythonDataChannel_H__
-#define HEADER_GUARD_PYTHON__PythonDataChannel_H__
+#ifndef HEADER_GUARD_PYTHON__PYTHONDATACHANNEL_H__
+#define HEADER_GUARD_PYTHON__PYTHONDATACHANNEL_H__
 
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <plugins/c3d/C3DChannels.h>
@@ -40,9 +40,5 @@ namespace python {
 	};
 	DEFINE_SMART_POINTERS(PythonDataChannel);
 }
-
-
-
-
 
 #endif // HEADER_GUARD 

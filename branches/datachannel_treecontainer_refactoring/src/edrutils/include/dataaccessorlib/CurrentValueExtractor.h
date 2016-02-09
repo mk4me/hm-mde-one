@@ -5,10 +5,10 @@
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_DATACHANNEL__CURRENTVALUEEXTRACTOR_H__
-#define __HEADER_GUARD_DATACHANNEL__CURRENTVALUEEXTRACTOR_H__
+#ifndef __HEADER_GUARD_DATAACCESSOR__CURRENTVALUEEXTRACTOR_H__
+#define __HEADER_GUARD_DATAACCESSOR__CURRENTVALUEEXTRACTOR_H__
 
-#include <datachannellib/ArgumentTracker.h>
+#include <dataaccessorlib/ArgumentTracker.h>
 
 namespace dataaccessor
 {
@@ -37,10 +37,10 @@ namespace dataaccessor
 	public:
 
 		//! \param tracker Obiekt z aktualnym argumentem
-		//! \param dataChannel Kana³ z którego wyci¹gamy aktualna wartoœæ
+		//! \param accessor Akcesor z którego wyci¹gamy aktualna wartoœæ
 		CurrentValueExtractor(ArgumentTrackerReaderPtr tracker,
-			const IFunctionAccessorT<ValueType, ArgumentType> & dataChannel)
-			: tracker(tracker), dataChannel(dataChannel)
+			const IFunctionAccessorT<ValueType, ArgumentType> & accessor)
+			: tracker(tracker), accessor(accessor)
 		{
 			if (tracker == nullptr){
 				throw std::invalid_argument("Wrong tracker for CurrentValueExtractor");
@@ -53,15 +53,15 @@ namespace dataaccessor
 		//! \return Aktualna wartoœæ kana³u
 		virtual ValueType currentValue() const override
 		{
-			return dataChannel.value(tracker->currentArgument());
+			return accessor.value(tracker->currentArgument());
 		}
 
 	private:
 		//! Obiekt z aktualnym argumentem
 		ArgumentTrackerReaderPtr tracker;
 		//! Kana³ danych
-		const IFunctionAccessorT<ValueType, ArgumentType> & dataChannel;
+		const IFunctionAccessorT<ValueType, ArgumentType> & accessor;
 	};
 }
 
-#endif	// __HEADER_GUARD_DATACHANNEL__CURRENTVALUEEXTRACTOR_H__
+#endif	// __HEADER_GUARD_DATAACCESSOR__CURRENTVALUEEXTRACTOR_H__

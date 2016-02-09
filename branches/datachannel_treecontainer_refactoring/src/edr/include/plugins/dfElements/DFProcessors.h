@@ -17,9 +17,9 @@
 #include <dflib/Node.h>
 #include <dflib/IDFNode.h>
 #include <plugins/newVdf/INodeConfiguration.h>
-#include <datachannellib/UniformArgumentsFeature.h>
-#include <datachannellib/DescriptorFeature.h>
-#include <datachannellib/Wrappers.h>
+#include <dataaccessorlib/UniformArgumentsFeature.h>
+#include <dataaccessorlib/DescriptorFeature.h>
+#include <dataaccessorlib/Wrappers.h>
 
 class VectorDiff : public df::ProcessingNode, public df::IDFProcessor
 {

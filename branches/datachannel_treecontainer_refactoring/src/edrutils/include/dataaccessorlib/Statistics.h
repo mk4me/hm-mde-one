@@ -7,8 +7,8 @@ author:		Wojciech Kniec
 purpose:
 *********************************************************************/
 
-#ifndef HEADER_GUARD_DATACHANNEL__STATISTICS_H__
-#define HEADER_GUARD_DATACHANNEL__STATISTICS_H__
+#ifndef HEADER_GUARD_DATAACCESSOR__STATISTICS_H__
+#define HEADER_GUARD_DATAACCESSOR__STATISTICS_H__
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
@@ -23,8 +23,8 @@ purpose:
 #include <boost/accumulators/framework/depends_on.hpp>
 #include <boost/accumulators/statistics_fwd.hpp>
 #include <type_traits>
-#include <datachannellib/Accessors.h>
-#include <datachannellib/FunctionFeature.h>
+#include <dataaccessorlib/Accessors.h>
+#include <dataaccessorlib/FunctionFeature.h>
 
 // Implementacje dodatkowych akumulatorow
 namespace boost {

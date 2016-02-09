@@ -12,7 +12,7 @@
 
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/c3d/C3DCollections.h>
-#include <datachannellib/Statistics.h>
+#include <dataaccessorlib/Statistics.h>
 
 //! Klasa wizualizuje eventy na wykresie. Są one reprezentowane jako szerokie pasy.
 //! Czerwone dla eventów lewych i zielone dla prawych

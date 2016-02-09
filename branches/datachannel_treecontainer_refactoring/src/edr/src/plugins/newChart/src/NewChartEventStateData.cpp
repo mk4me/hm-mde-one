@@ -1,7 +1,7 @@
 #include "NewChartPCH.h"
 #include "NewChartEventStateData.h"
-#include <datachannellib/BoundedArgumentsFeature.h>
-#include <datachannellib/BoundedValuesFeature.h>
+#include <dataaccessorlib/BoundedArgumentsFeature.h>
+#include <dataaccessorlib/BoundedValuesFeature.h>
 
 QRectF channelBoundingRect(c3dlib::ScalarChannelReaderInterfaceConstPtr channel)
 {

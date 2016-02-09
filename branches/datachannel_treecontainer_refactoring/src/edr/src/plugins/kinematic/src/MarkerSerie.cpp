@@ -3,8 +3,8 @@
 #include "KinematicVisualizer.h"
 #include "TrajectoriesDrawer.h"
 #include "VisualizationScheme.h"
-#include <datachannellib/DescriptorFeature.h>
-#include <datachannellib/UniformArgumentsFeature.h>
+#include <dataaccessorlib/DescriptorFeature.h>
+#include <dataaccessorlib/UniformArgumentsFeature.h>
 
 MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 	const utils::TypeInfo & requestedType,
