@@ -24,13 +24,13 @@ const utils::TypeInfo & VariantsCollection::getTypeInfo() const
 	return typeInfo;
 }
 
-//! \return Czy dane musza być dokładnie tego samego typu dla którego utworzono kolekcję czy mogą też być pochodne od niego
+//! \return Czy dane musza być dokłdanie tego samego typu dla którego utworzono kolekcję czy mogą też być pochodne od niego
 const bool VariantsCollection::exactTypes() const
 {
 	return exact;
 }
 
-//! \param exact Czy dane mają być dokładnie tego typu dla którego utworzono kolekcję
+//! \param exact Czy dane musza być dokładnie tego samego typu dla którego utworzono kolekcję
 //! \param clear Czy czyścić dane niezgodne z typem kolekcji - pochodne mu
 void VariantsCollection::setExactTypes(bool exact)
 {

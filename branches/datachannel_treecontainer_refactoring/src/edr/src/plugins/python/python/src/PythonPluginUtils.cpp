@@ -2,7 +2,7 @@
 #include "corelib/PluginCommon.h"
 #include "corelib/IServiceManager.h"
 #include "corelib/ISourceManager.h"
-#include "plugins/python/PythonPluginUtils.h"
+#include "plugins/python/python/PythonPluginUtils.h"
 #include "PythonService.h"
 
 core::IServiceManager* python::PythonPluginUtils::getServiceManager()
@@ -25,5 +25,10 @@ core::IDataHierarchyManager* python::PythonPluginUtils::getHierarchyManager()
 core::IVisualizerManager* python::PythonPluginUtils::getVisualizerManager()
 {
 	return plugin::getVisualizerManager();
+}
+
+core::IDataManagerReader* python::PythonPluginUtils::getDataManagerReader()
+{
+	return plugin::getDataManagerReader();
 }
 

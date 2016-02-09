@@ -15,7 +15,7 @@
 
 namespace core
 {
-	//! Przerywalny wątek z funkcję runnable
+	//! Przerywalny wątek z funkcją runnable
 	typedef threadingUtils::RunnableThread<std::thread, threadingUtils::ConsumeExceptionHandlePolicy> InnerRunnableThread;
 
 	typedef threadingUtils::InterruptibleMultipleRunThread<InnerRunnableThread, threadingUtils::ConsumeExceptionHandlePolicy, threadingUtils::NoInterruptHandlingPolicy, threadingUtils::InterrupltiblePolicy> InnerInterruptibleMultipleRunThread;

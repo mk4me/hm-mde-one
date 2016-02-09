@@ -679,7 +679,7 @@ const core::VariantPtr createJointsAngles(const core::ConstVariantsList objects,
 {
 	core::VariantPtr ret;
 
-	//sprawdzamy joint angles - jeżli nie ma budujemy i dodajemy do DM
+	//sprawdzamy joint angles - jeżeli nie ma budujemy i dodajemy do DM
 	core::VariantConstPtr dataWrapper;
 	core::VariantConstPtr modelWrapper;
 	for (auto it = objects.begin(); it != objects.end(); ++it) {
@@ -869,7 +869,7 @@ void HMDBShallowCopyLocalContext::loadSubjectHierarchy(const IndexedData & loade
 	auto transaction = localContext_->transaction();
 	//auto hierarchyTransaction = mdm->hierarchyTransaction();
 	for (auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
-		//tworzę subject jeżli to konieczne!!
+		//tworzę subject jeżeli to konieczne!!
 
 		core::VariantPtr subOW = getSubject(subjectIT->first, subjectService, shallowCopy);
 		PluginSubject::SubjectPtr subPtr;
@@ -1086,13 +1086,13 @@ void HMDBShallowCopyLocalContext::unloadSubjectHierarchy(const IndexedData & unl
 	auto shallowCopy = shallowCopyContext_->shallowCopy();
 
 	//buduje mapę hierarchii subject -> session -> motion -> files
-	//na bazie tej mapy będą realizować hierarchię pluginu subject
+	//na bazie tej mapy będę realizować hierarchię pluginu subject
 
 	SubjectFiles subjectHierarchy = groupDataInHierarchy(unloadedFiles, shallowCopy);
 
 	auto transaction = localContext_->transaction();
 	for (auto subjectIT = subjectHierarchy.begin(); subjectIT != subjectHierarchy.end(); ++subjectIT){
-		//tworzę subject jeśli to konieczne!!
+		//tworzę subject jeżeli to konieczne!!
 
 		core::VariantPtr subOW = findObjectByType(SubjectType, subjectIT->first, typeid(PluginSubject::ISubject));
 		PluginSubject::SubjectPtr subPtr;

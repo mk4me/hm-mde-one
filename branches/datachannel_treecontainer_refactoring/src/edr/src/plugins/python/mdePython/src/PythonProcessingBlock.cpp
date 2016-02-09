@@ -1,9 +1,8 @@
-#include "PythonPCH.h"
 #include "PythonProcessingBlock.h"
 #include "PythonDataChannel.h"
-#include "PythonService.h"
 #include "boost/python/import.hpp"
-#include "PythonEditor.h"
+#include <plugins/python/python/PythonEditor.h>
+#include "boost/python/exec.hpp"
 #include <datachannellib/Wrappers.h>
 
 namespace py = boost::python;
@@ -80,7 +79,7 @@ void python::PythonProcessingBlock::process()
 
 		auto adf = signal1->feature<dataaccessor::IDescriptorFeature>();
 		utils::shared_ptr<dataaccessor::IDescriptorFeature> df;
-		if (adf != nullptr) {			
+		if (adf != nullptr) {
 			df = utils::make_shared<dataaccessor::DescriptorFeature>(adf->name() + " - Result", adf->valueType(),
 				adf->valueUnit(), adf->argumentType(), adf->argumentUnit());
 
@@ -89,7 +88,7 @@ void python::PythonProcessingBlock::process()
 			df.reset(dataaccessor::DescriptorFeature::create<c3dlib::VectorChannelReaderInterface::value_type,
 				c3dlib::VectorChannelReaderInterface::argument_type>("Result", "", ""));
 		}
-		
+
 		for (int i = 0; i < count; ++i) {
 			data.push_back(osg::Vec3(vecX[i], vecY[i], vecZ[i]));
 		}

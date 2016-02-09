@@ -114,7 +114,7 @@ public:
 		ret->setVisible(false);
 		return ret;
 	}
-	//! \return Czy dany widok wymaga połączenia z usłgami webowymi
+	//! \return Czy dany widok wymaga połączenia z usługami webowymi
 	virtual const bool requiresRemoteContext() const { return true; }
 };
 
@@ -150,7 +150,7 @@ public:
 
 		auto subjectsITEnd = shallowCopy.motionShallowCopy.performers.end();
 		for (auto subjectIT = shallowCopy.motionShallowCopy.performers.begin(); subjectIT != subjectsITEnd; ++subjectIT){
-			//jeżli pusty pacjent to go pomijamy
+			//jeżeli pusty pacjent to go pomijamy
 			if (subjectIT->second->performerConfs.empty() == true){
 				continue;
 			}
@@ -355,12 +355,12 @@ bool MdeMainWindow::customViewInit(QWidget * log)
         }
    }
 
-#ifndef DEMO_MODE
+//#ifndef DEMO_MODE
    QToolButton* exporterButton = controller.createButton(tr("Exporter"), QIcon(":/mde/icons/Operacje.png"));
    controller.addToolbarButton(exporterButton);
    connect(exporterButton, SIGNAL(clicked()), this, SLOT(showMedusaExporterDialog()));
    addTab(coreUI::IMdeTabPtr(new ImageTableTab(aw, QIcon(":/mde/icons/Operacje.png"), tr("TableView"))));
-#endif
+//#endif
 
    emit activateTab(*tabs.begin());
 
@@ -387,8 +387,8 @@ bool MdeMainWindow::customViewInit(QWidget * log)
 		   return false;
 	   }
    } while (!done);
-   return true;
 #endif // DEMO_MODE
+   return true;
 }
 
 void MdeMainWindow::addTab( coreUI::IMdeTabPtr tab )

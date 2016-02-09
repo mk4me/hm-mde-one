@@ -107,7 +107,7 @@ public:
 	}
 
 	//! \param files Lista plików dla których zostaną utworzone parsery i z których wyciągnięte dane
-	//! będa dostępne poprzez DataMangera LENIWA INICJALIZACJA
+	//! będą dostępne poprzez DataMangera LENIWA INICJALIZACJA
 	virtual void addStream(const StreamGrabberPtr stream)
 	{
 		verifyRollback();
@@ -584,7 +584,7 @@ void StreamDataManager::rawAddStream(const StreamGrabberPtr stream, const IDataM
 	if (streamParsers.empty() == false) {
 		initializeParsers<StreamParser>(streamParsers, stream, objects);
 	}
-	//teraz uzywam parserów strumieniowych - sam dostarczam im strumieni
+	//teraz uzywam parserów strumieniowych - sam dostarczę im strumieni
 	if (sourceParsers.empty() == false) {
 		initializeParsers<FileStreamParser>(sourcesLeft, stream, objects);
 	}

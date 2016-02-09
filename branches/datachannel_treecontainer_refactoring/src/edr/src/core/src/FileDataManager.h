@@ -128,11 +128,11 @@ namespace core {
 		virtual void removeFile(const utils::Filesystem::Path & file);
 
 		//! \param files Lista plików dla których zostaną utworzone parsery i z których wyciągnięte dane
-		//! będa dostępne poprzez DataMangera LENIWA INICJALIZACJA
+		//! będą dostępne poprzez DataMangera LENIWA INICJALIZACJA
 		virtual void addFile(const utils::Filesystem::Path & file);
 
 		//! \param file Ścieżka pliku do przeładowania
-		//! \param complete Czy plik ma zostać całkowicie przeładowany czy tylko brakują		ce dane mają			zostać doładowane
+		//! \param complete Czy plik ma zostać całkowicie przeładowany czy tylko brakujące dane mają zostać doładowane
 		virtual void reloadFile(const utils::Filesystem::Path & file,
 			const bool complete);
 
@@ -142,7 +142,7 @@ namespace core {
 		virtual const bool tryRemoveFile(const utils::Filesystem::Path & file);
 
 		//! \param file Ścieżka pliku do przeładowania
-		//! \param complete Czy plik ma zostać całkowicie przeładowany czy tylko brakują		ce dane mają			zostać doładowane
+		//! \param complete Czy plik ma zostać całkowicie przeładowany czy tylko brakujące dane mają zostać doładowane
 			//! \return Prawda jeśli plik pomyślnie przeładowano
 		virtual const bool tryReloadFile(const utils::Filesystem::Path & file,
 			const bool complete);
@@ -160,8 +160,8 @@ namespace core {
 		//! \param files Zbiór plików ktrymi aktualnie zarządza ten DataManager
 		virtual void getFiles(utils::Filesystem::FilesList & files) const;
 
-		//! \param file Plik kótry weryfikujemy czy jest zarządzany przez DM
-		//! \return Prawda jeżli plik jest zarządzany przez ten DM
+		//! \param file Plik który weryfikujemy czy jest zarządzany przez DM
+		//! \return Prawda jeżeli plik jest zarządzany przez ten DM
 		virtual const bool isManaged(const utils::Filesystem::Path & file) const;
 
 		//! \param file Plik kótry weryfikujemy czy jest w pełni załadowany
@@ -203,7 +203,7 @@ namespace core {
 		auto pm = getParserManager();
 		auto hm = getRegisteredDataTypesManager();
 
-		//jeżli pliku nie ma dodaj go, stwórz parsery i rozszerz dostępne dane wraz z ich opisem
+		//jeżeli pliku nie ma dodaj go, stwórz parsery i rozszerz dostępne dane wraz z ich opisem
 		for (auto parserIT = parsers.begin(); parserIT != parsers.end(); ++parserIT) {
 			// tworzymy współdzielone dane dla inicjalizatorów
 			CompoundInitializer::CompoundDataPtr cid(new CompoundInitializer::CompoundData);

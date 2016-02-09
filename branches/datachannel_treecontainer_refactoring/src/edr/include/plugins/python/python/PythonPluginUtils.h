@@ -10,11 +10,15 @@
 #ifndef HEADER_GUARD_PYTHON__PythonPluginUtils_H__
 #define HEADER_GUARD_PYTHON__PythonPluginUtils_H__
 
-#include <plugins/python/Export.h>
+#include <plugins/python/python/Export.h>
+#include <boost/python/module.hpp>
 
 namespace core {
 	class IServiceManager;
 	class ISourceManager;
+	class IVisualizerManager;
+	class IDataManagerReader;
+	class IDataHierarchyManager;
 }
 
 namespace  python {
@@ -26,6 +30,7 @@ namespace  python {
 			core::ISourceManager* getSourceManager();
 			core::IDataHierarchyManager* getHierarchyManager();
 			core::IVisualizerManager* getVisualizerManager();
+			core::IDataManagerReader* getDataManagerReader();
 	};
 	DEFINE_SMART_POINTERS(PythonPluginUtils);
 }

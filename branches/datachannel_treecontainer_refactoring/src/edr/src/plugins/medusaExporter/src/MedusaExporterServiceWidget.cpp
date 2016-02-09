@@ -166,7 +166,7 @@ void medusaExporter::MedusaExporterServiceWidget::onExtract()
                
         
         //exporterModel->extractData(innerDataDir.absolutePath(), callbackFunction);
-		auto extractOp = std::bind(static_cast<void(ExporterModel::*)(const QString&, ExporterModel::CallbackFunction)>(&ExporterModel::extractData), exporterModel.get(), innerDataDir.absolutePath(), std::placeholders::_1);
+		auto extractOp = std::bind(static_cast<void(ExporterModel::*)(const QString&, bool, ExporterModel::CallbackFunction)>(&ExporterModel::extractData), exporterModel.get(), innerDataDir.absolutePath(), ui->copyLocalBox->isChecked(), std::placeholders::_1);
         t->addOperation(extractOp, 0.2, tr("Exporting"));
         QString fileName = dirPath + "/" + innerDir.dirName() + "/";
         if (ui->metaCheck->isChecked() && ui->imagesCheck->isChecked() && ui->togetherRadio->isChecked()) {

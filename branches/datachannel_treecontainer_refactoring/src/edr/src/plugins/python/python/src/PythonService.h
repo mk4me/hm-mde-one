@@ -14,7 +14,6 @@
 #include <corelib/IService.h>
 #include "PythonLogic.h"
 #include "PythonConsole.h"
-#include "MdeBridge.h"
 
 class QTextEdit;
 
@@ -62,8 +61,8 @@ namespace python {
 		PythonLogicPtr logic;
 		QTextEdit* editor;
 		python::PythonConsole* console;
-		MdeBridgePtr bridge;
 		core::IDataHierarchyManager* hierarchyManager;
+		std::string startingScriptPath;
 	};
 }
 #endif //   HEADER_GUARD_SUBJECT__SUBJECTSERVICE_H__

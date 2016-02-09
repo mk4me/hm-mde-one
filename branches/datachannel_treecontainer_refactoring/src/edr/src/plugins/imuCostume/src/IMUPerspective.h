@@ -21,7 +21,7 @@
 
 namespace IMU {
 
-////! Klasa pomocnicza przy tworzeniu wizualizator�w
+////! Klasa pomocnicza przy tworzeniu wizualizatorów
 //class DicomHelper : public core::WrappedItemHelper
 //{
 //public:
@@ -36,7 +36,7 @@ namespace IMU {
 //};
 //DEFINE_SMART_POINTERS(DicomHelper);
 
-//! Klasa realizuj�ca perspektywe danych
+//! Klasa realizująca perspektywe danych
 class IMUPerspective : public hmdbCommunication::IHierarchyPerspective
 {
 public:

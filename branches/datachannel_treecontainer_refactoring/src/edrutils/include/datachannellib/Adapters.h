@@ -66,8 +66,7 @@ namespace dataaccessor
 			: start_(Other.start_), size_(Other.size_),
 			step_(Other.step_), feature(std::move(Other.feature))
 		{
-			Other.start_ = Other.step_ = ArgumentType();
-			Other.size_ = 0;
+
 		}
 
 		//! Destruktor

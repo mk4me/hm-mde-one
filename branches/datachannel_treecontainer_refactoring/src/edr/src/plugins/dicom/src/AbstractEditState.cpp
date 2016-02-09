@@ -238,3 +238,17 @@ void dicom::AbstractEditState::end()
 	machine->getGraphicsScene()->removeItem(&line[1]);
 }
 
+QGraphicsItem* dicom::AbstractEditState::extractItem(QGraphicsSceneMouseEvent* e)
+{
+	auto items = machine->getGraphicsScene()->items(e->scenePos());
+
+	for (auto& i : items) {
+		if (i != &line[0] && i != &line[1]) {
+			return i;
+		}
+	}
+
+
+	return nullptr;
+}
+

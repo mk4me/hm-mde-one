@@ -19,7 +19,7 @@ namespace vdf {
     class IDataSourceManager : public utils::Observable<IDataSourceManager>
     {
     public:
-        //! Lista �r�de� danych.
+        //! Lista źródeł danych.
         typedef std::vector<vdf::IDataSourcePtr> IDataSources;
         //! 
         typedef boost::iterator_range<IDataSources::const_iterator> IDataSourcesConstRange;

@@ -36,8 +36,8 @@ namespace medusaExporter {
 		void addExporter(const IExporterConstPtr& exporter);
 		void packImages(const QString& dirPath, const QString& outFile);
 		void packImages(const QString& dirPath, const QString& outFile, CallbackFunction fun);
-		void extractData(const QString& path);
-		void extractData(const QString& path, CallbackFunction fun);
+		void extractData(const QString& path, bool copyLocalAnnotations);
+		void extractData(const QString& path, bool copyLocalAnnotations, CallbackFunction fun);
 		void packMeta(const QString& dirPath, const QString& outFile);
 		void packMeta(const QString& dirPath, const QString& outFile, CallbackFunction fun);
         void packBoth(const QString& dirPath, const QString& outFile);

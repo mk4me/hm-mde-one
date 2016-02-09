@@ -13,7 +13,7 @@
 #include <QtWidgets/QWidget>
 #include <corelib/IFileDataManager.h>
 #include "utils/SmartPtr.h"
-#include "DicomSplitterModel.h"
+#include "dicomlib/DicomSplitterModel.h"
 
 class QPushButton;
 class QLayout;

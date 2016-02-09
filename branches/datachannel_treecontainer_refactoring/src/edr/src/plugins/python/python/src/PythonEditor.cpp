@@ -1,5 +1,5 @@
 #include "PythonPCH.h"
-#include "PythonEditor.h"
+#include "plugins/python/python/PythonEditor.h"
 #include "QtWidgets/QFileDialog"
 #include "PythonHighlighter.h"
 #include <QtWidgets/QAction>
@@ -13,7 +13,7 @@
 
 using namespace python;
 
-QTextEdit* PythonEditor::createPythonEditor()
+QTextEdit* python::PythonEditor::createPythonEditor()
 {
 	QFont font;
 	font.setFamily("Courier");
@@ -23,7 +23,8 @@ QTextEdit* PythonEditor::createPythonEditor()
 	PythonEditor* editor = new PythonEditor;
 	editor->setFont(font);
 
-	//QSyntaxHighlighter* highlighter = new PythonHighlighter(editor->document());
+	QSyntaxHighlighter* highlighter = new PythonHighlighter(editor->document());
+	highlighter->setParent(editor);
 	//editor->setMinimumSize(600, 600);
 	editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	editor->setStyleSheet("border: 1px solid red");

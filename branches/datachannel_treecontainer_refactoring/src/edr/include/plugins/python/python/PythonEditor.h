@@ -11,9 +11,10 @@
 #define HEADER_GUARD_PYTHON__PythonEditor_H__
 
 #include <QtWidgets/QTextEdit>
+#include <plugins/python/python/Export.h>
 
 namespace python {
-	class PythonEditor : public QTextEdit 
+	class PLUGIN_PYTHON_EXPORT PythonEditor : public QTextEdit
 	{
 		Q_OBJECT;
 	public:

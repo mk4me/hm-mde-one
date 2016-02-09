@@ -10,7 +10,9 @@
 
 QString networkUtils::EncryptionUtils::encrypt(const QString& txt)
 {
-	return encrypt(txt, DEFAULT_KEY_1, DEFAULT_KEY_2);
+	EncryptionKey key1 = DEFAULT_KEY_1;
+	EncryptionKey key2 = DEFAULT_KEY_2;
+	return encrypt(txt, key1, key2);
 }
 
 QByteArray crypt(const QByteArray& txt, const networkUtils::EncryptionUtils::EncryptionKey& key1, networkUtils::EncryptionUtils::EncryptionKey key2, bool encrypt)
@@ -56,7 +58,9 @@ QString networkUtils::EncryptionUtils::encrypt(const QString& txt, const Encrypt
 
 QString networkUtils::EncryptionUtils::decrypt(const QString& txt)
 {
-	return decrypt(txt, DEFAULT_KEY_1, DEFAULT_KEY_2);
+	EncryptionKey key1 = DEFAULT_KEY_1;
+	EncryptionKey key2 = DEFAULT_KEY_2;
+	return decrypt(txt, key1, key2);
 }
 
 QString networkUtils::EncryptionUtils::decrypt(const QString& txt, const EncryptionKey& key1, const EncryptionKey& key2)

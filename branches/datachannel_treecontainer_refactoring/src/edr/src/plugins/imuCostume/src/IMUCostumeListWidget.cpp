@@ -578,7 +578,7 @@ void IMUCostumeWidget::innerInitializeAndLoad(IMU::CostumeProfilePtr profile,
 
 	PLUGIN_LOG_DEBUG("canOpenStream created");
 
-	//ilo?? pr?bek na rozgrzewk? algorytm?w estymacji orientacji czujnik?w
+	//ilość próbek na rozgrzewkę algorytmów estymacji orientacji czujników
 	unsigned int initializeFramesCount = 50;
 
 	for (const auto & sa : profile->sensorsDescriptions)
@@ -592,8 +592,8 @@ void IMUCostumeWidget::innerInitializeAndLoad(IMU::CostumeProfilePtr profile,
 
 	PLUGIN_LOG_DEBUG("costumeStream created");
 
-	//mamy wszystko, jeste?my po konfiguracji wszystkiego
-	//mo?na dalej konfigurowa? kostium - inicjalizowa? filtry, kalibrowa? i ?adowa? ca?o?? do DataManager
+	//mamy wszystko, jesteśmy po konfiguracji wszystkiego
+	//można dalej konfigurować kostium - inicjalizować filtry, kalibrować i ładować całość do DataManager
 	auto extractorAdapter = utils::make_shared<ExtractedCostumeStreamAdapter>(costumeStream, IMU::CostumeIMUExtractor(cd.sensorsConfiguration));
 
 	PLUGIN_LOG_DEBUG("extractorAdapter created");
@@ -605,7 +605,7 @@ void IMUCostumeWidget::innerInitializeAndLoad(IMU::CostumeProfilePtr profile,
 	}
 
 	{
-		// inicjalizacja algorytm?w estymacji orientacji czujnik?w + kalibracja
+		// inicjalizacja algorytmów estymacji orientacji czujników + kalibracja
 		CostumeSkeletonMotionHelper csmh(extractorAdapter,
 			profile, initializeFramesCount + calibSteps,
 			initializeFramesCount, this);
@@ -643,7 +643,7 @@ void IMUCostumeWidget::innerInitializeAndLoad(IMU::CostumeProfilePtr profile,
 	try{
 		//inicjalizacja algorytmu estymacji szkieletu
 		profile->motionEstimationAlgorithm->initialize(profile->skeleton, sa);
-		//?adowanie
+		//ładowanie
 		ds->loadCalibratedCostume(id, profile);
 		ui->recordPushButton->setEnabled(true);
 		PLUGIN_LOG_DEBUG("Costume loaded");
@@ -1184,7 +1184,7 @@ void IMUCostumeWidget::onRecord(const bool record)
 				//}
 				//else{
 
-				//	//TODO - info �e si� nie uda�o jednak pliku stworzy� do zapisu
+				//	//TODO - info że się nie udało jednak pliku stworzyć do zapisu
 				//	ui->recordPushButton->blockSignals(true);
 				//	ui->recordPushButton->setChecked(!record);
 				//	ui->recordPushButton->blockSignals(false);
@@ -1204,7 +1204,7 @@ void IMUCostumeWidget::onRecord(const bool record)
 		recordTimer.stop();
 		ds->stopRecording(recordOutput);
 
-		//ko�czymy zapis danych
+		//kończymy zapis danych
 
 		saveMotionData();
 

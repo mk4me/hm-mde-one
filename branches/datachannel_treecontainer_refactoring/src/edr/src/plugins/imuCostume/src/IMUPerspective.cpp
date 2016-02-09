@@ -94,7 +94,7 @@ core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::Subj
 				kinematic::SkeletonConstPtr sm = sml.front()->get();
 
 				//kinematic::JointAnglesCollectionPtr ja = utils::make_shared<kinematic::JointAnglesCollection>();
-				//TODO - uzype�ni� szkielet + dane
+				//TODO - uzypełnić szkielet + dane
 				//ja->setSkeletal(sm, *sd);
 				//auto jaWrapper = utils::ObjectWrapper::create<kinematic::JointAnglesCollection>();
 				//ja->setLengthRatio(0.1);

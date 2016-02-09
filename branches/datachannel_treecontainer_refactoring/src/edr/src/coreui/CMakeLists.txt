@@ -99,7 +99,6 @@ SET_SOURCE_FILES(
 	ReportsThumbnailContext.cpp
 	ReportsTab.cpp
 	CoreDockFullScreenSwitch.cpp
-	
 	findreplacedialog.cpp
 	finddialog.cpp
 	findform.cpp

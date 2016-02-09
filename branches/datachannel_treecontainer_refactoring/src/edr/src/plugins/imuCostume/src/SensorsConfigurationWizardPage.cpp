@@ -475,14 +475,14 @@ void SensorsConfigurationWizardPage::onOneToOneMappingChanged(int state)
 		for (unsigned int i = 0; i < model->rowCount(); ++i){
 			auto jointName = model->data(model->index(i, JointIDX)).toString().toStdString();
 			if (jointsNames.find(jointName) != jointsNames.end()){
-				//ju� mamy taki joint
+				//już mamy taki joint
 				ui->sensorsConfigurationTableWidget->blockSignals(true);
 				model->setData(model->index(i, JointIDX), SkeletonJointsDelegate::defaultText());
 				ui->sensorsConfigurationTableWidget->blockSignals(false);
 				model->setData(model->index(i, JointIDX), static_cast<unsigned long long>(SkeletonJointsDelegate::defaultValue()), Qt::UserRole);
 			}
 			else{
-				//jointa nie by�o - zapami�tujemy
+				//jointa nie było - zapamiętujemy
 				jointsNames.insert(jointName);
 			}
 		}

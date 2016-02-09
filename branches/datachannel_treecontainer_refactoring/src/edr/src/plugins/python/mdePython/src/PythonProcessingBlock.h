@@ -19,6 +19,7 @@
 #include <dflib/IDFNode.h>
 #include <plugins/newVdf/INodeConfiguration.h>
 #include <QtWidgets/QTextEdit>
+#include "boost/python/object_core.hpp"
 
 namespace python {
 

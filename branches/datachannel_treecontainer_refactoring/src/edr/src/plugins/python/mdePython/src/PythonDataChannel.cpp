@@ -1,4 +1,3 @@
-#include "PythonPCH.h"
 #include "PythonDataChannel.h"
 #include <datachannellib/Wrappers.h>
 
@@ -29,7 +28,7 @@ python::PythonDataChannel python::PythonDataChannel::convert(c3dlib::VectorChann
 	if (adf != nullptr) {
 		c.name = adf->name();
 	}
-	
+
 	auto uaf = channel->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
 	if (uaf != nullptr) {
 		c.frequency = 1.0 / uaf->argumentsInterval();
@@ -38,7 +37,7 @@ python::PythonDataChannel python::PythonDataChannel::convert(c3dlib::VectorChann
 }
 
 c3dlib::VectorChannelReaderInterfacePtr python::PythonDataChannel::convert(const PythonDataChannel& obj)
-{	
+{
 	auto name = obj.getName();
 
 	if (name.empty() == true) {
@@ -50,9 +49,9 @@ c3dlib::VectorChannelReaderInterfacePtr python::PythonDataChannel::convert(const
 	auto uaf = utils::make_shared<dataaccessor::UniformArgumentsFeature<c3dlib::VectorChannelReaderInterface::argument_type>>(1.0 / obj.getFrequency());
 	auto baf = utils::make_shared<dataaccessor::BoundedArgumentsFeature<c3dlib::VectorChannelReaderInterface::argument_type>>(0.0, (size - 1) / obj.getFrequency());
 	auto ff = dataaccessor::FunctionFeature::feature(true);
-	
+
 	utils::shared_ptr<dataaccessor::IDescriptorFeature> df(dataaccessor::DescriptorFeature::create<c3dlib::VectorChannelReaderInterface::value_type,
-		c3dlib::VectorChannelReaderInterface::argument_type>(name, "", ""));	
+		c3dlib::VectorChannelReaderInterface::argument_type>(name, "", ""));
 
 	auto channel = dataaccessor::wrap(std::move(wdata), dataaccessor::UniformArgumentsGenerator<c3dlib::VectorChannelReaderInterface::argument_type>(uaf->argumentsInterval(), size));
 	channel->attachFeature(uaf);

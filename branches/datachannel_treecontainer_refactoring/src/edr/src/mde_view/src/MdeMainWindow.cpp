@@ -99,6 +99,8 @@ void recursiveStyleSheet(QWidget* parent, const QString& replace)
 	}
 }
 
+
+
 MdeMainWindow::MdeMainWindow(const CloseUpOperations & closeUpOperations, const std::string & appName)
 	: coreUI::CoreMainWindow(closeUpOperations), coreUI::SingleInstanceWindow(appName),
     controller(this)

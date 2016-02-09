@@ -181,7 +181,7 @@ void SceneModel::run()
 	}
 	else{
 //		//TODO
-//		//obsï¿½uga bï¿½ï¿½dï¿½w
+//		//obs³uga b³êdów
 		UTILS_ASSERT(false);
 	}
 }

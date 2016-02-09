@@ -1,6 +1,6 @@
-#include "DicomImporterPCH.h"
+//#include "DicomImporterPCH.h"
 #include <corelib/IPlugin.h>
-#include <plugins/dicomImporter/Dicom.h>
+#include <dicomlib/Dicom.h>
 #include "DicomParser.h"
 #include "DicomImporterSource.h"
 

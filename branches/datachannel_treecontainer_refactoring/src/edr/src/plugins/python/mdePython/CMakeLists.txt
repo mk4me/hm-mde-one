@@ -1,12 +1,16 @@
 BEGIN_PYTHON_PROJECT()
 
 SET_PRIVATE_HEADERS(
-	SimpleLogic.h
+	MdeBridge.h
+	PythonDataChannel.h
+	PythonProcessingBlock.h
 )
 
 SET_SOURCE_FILES (
 	PythonPlugin.cpp
-	SimpleLogic.cpp
+	MdeBridge.cpp
+	PythonDataChannel.cpp
+	PythonProcessingBlock.cpp
 )
 
 
