@@ -7,11 +7,9 @@
 
 CORE_PLUGIN_BEGIN("c3d", core::UID::GenerateUniqueID("{15AC5928-AAE3-4AB3-BFDB-447D4171A4E5}"))
 	CORE_PLUGIN_ADD_PARSER(C3DParser);
-    CORE_PLUGIN_ADD_OBJECT_WRAPPER(c3dlib::ScalarChannelReaderInterface);
-	CORE_PLUGIN_ADD_OBJECT_WRAPPER(c3dlib::ScalarChannel);
+    CORE_PLUGIN_ADD_OBJECT_WRAPPER(c3dlib::ScalarChannelReaderInterface);	
     CORE_PLUGIN_ADD_OBJECT_WRAPPER(c3dlib::VectorChannelReaderInterface);
-	CORE_PLUGIN_ADD_OBJECT_WRAPPER(c3dlib::VectorChannelCollection);
-    CORE_PLUGIN_ADD_OBJECT_WRAPPER(c3dlib::VectorChannel);
+	CORE_PLUGIN_ADD_OBJECT_WRAPPER(c3dlib::VectorChannelCollection);    
 	CORE_PLUGIN_ADD_OBJECT_WRAPPER(c3dlib::C3DAnalogChannel);
 	CORE_PLUGIN_ADD_OBJECT_WRAPPER(c3dlib::EMGChannel);
 	CORE_PLUGIN_ADD_OBJECT_WRAPPER(c3dlib::GRFChannel);

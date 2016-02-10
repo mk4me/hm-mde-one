@@ -2,6 +2,9 @@
 #include "GRFSerie.h"
 #include "KinematicVisualizer.h"
 #include <corelib/PluginCommon.h>
+#include <dataaccessorlib/BoundedArgumentsFeature.h>
+#include <dataaccessorlib/BoundedValuesFeature.h>
+#include <dataaccessorlib/Adapters.h>
 
 //using namespace core;
 //using namespace osg;
@@ -134,7 +137,10 @@ GRFSerie::GeodePtr GRFSerie::createStep(c3dlib::IForcePlatform::IStepConstPtr st
 
     int numSegments = 300;
     auto f1 = platform->getForceChannel();
-    float delta = (f1->getLength() / static_cast<float>(numSegments));
+
+	auto baf = f1->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();	
+	const auto length = baf->maxArgument() - baf->minArgument();
+	float delta = (length / static_cast<float>(numSegments));
     GeodePtr geode = new osg::Geode();
     osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array;
 	osg::Vec3 v;
@@ -147,11 +153,17 @@ GRFSerie::GeodePtr GRFSerie::createStep(c3dlib::IForcePlatform::IStepConstPtr st
     maxLength = 0.0f;
 
     float f = 0.0f;
-    float lengthBuffer = f1->getLength();
+	float lengthBuffer = length;
     osg::Vec3 lastV1;
     osg::Vec3 lastOrigin1;
+
+	//auto bvf = f1->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
+
+	dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::GRFChannel::value_type,
+		c3dlib::GRFChannel::argument_type> timeAccessor(*f1);
+
     for (int i = 0; i < numSegments; ++i) {
-        v.set(TimeAccessor::getValue(f, *f1));
+		v = timeAccessor.value(f);        
         float length = v.length();
 
         float ratio1 = (f - startTime1) / (endTime1 - startTime1);
@@ -511,7 +523,13 @@ void GRFSerie::update()
 	const auto& platforms = grfCollection->getPlatforms();
 	for (auto it = platforms.cbegin(); it != platforms.cend(); ++it) {
 		auto f1 = (*it)->getForceChannel();
-		osg::Vec3 v1(TimeAccessor::getValue(time, *f1));
+
+		//auto bvf = f1->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
+
+		dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::ForceChannel::value_type,
+			c3dlib::ForceChannel::argument_type> timeAccessor(*f1);
+
+		auto v1 = timeAccessor.value(time);		
 
 		float ratio1 = v1.length() / maxLength;
 

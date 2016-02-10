@@ -131,7 +131,7 @@ private:
 	  void setEvents(NewChartSerie* serie, c3dlib::EventsCollectionConstPtr val);
       //! Tworzy drzewo ze statystykami
       //! \param stats statystyki, dla których utworzone zostanie drzewo
-	  void recreateStats(c3dlib::ScalarChannelStatsConstPtr stats = c3dlib::ScalarChannelStatsConstPtr());
+	  void recreateStats();
       //! odświeża widzialne serie, przypisanie współrzędnej Z (przykrywanie)
       void refreshSerieLayers();
       //! odświeża spinboxy zawierające przesunięcie i skale aktywnej serii

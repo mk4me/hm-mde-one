@@ -1,5 +1,5 @@
 #include <utils/SmartPtr.h>
-
+#include <utils/StreamTools.h>
 #include <c3dlib/C3DParser.h>
 #include <sstream>
 #include <btkEvent.h>
@@ -54,8 +54,7 @@ public:
 	//! \return wartość konkretnej próbki
 	virtual double getValue(int index) const		  { return analog->GetValues()[index]; }
 };
-typedef Analog* AnalogPtr;
-typedef const Analog* AnalogConstPtr;
+DEFINE_SMART_POINTERS(Analog);
 
 // pojedynczy punkt c3d
 class Point : public C3DParser::IPoint
@@ -114,8 +113,7 @@ public:
 		return osg::Vec3(value[index ], value[index + numOfFrames], value[index + 2 * numOfFrames]) * scale;
 	}
 };
-typedef Point* PointPtr;
-typedef const Point* PointConstPtr;
+DEFINE_SMART_POINTERS(Point);
 
 //! dostarcza danych o zdarzeniu zapisanym w c3d (np. dotknięcie stopą podłogi)
 class Event : public C3DParser::IEvent
@@ -185,8 +183,7 @@ public:
     //! ustawia wkaźnik na obiekt btk zawierający informacje o zdarzeniu
 	void setEventPtr(btk::Event::ConstPointer val) { eventPtr = val; }
 };
-typedef Event* EventPtr;
-typedef const Event* EventConstPtr;
+DEFINE_SMART_POINTERS(Event)
 
 //! Pola tej klasy agreguja te dane wykorzystywane wewnatrz klasy C3DParser,
 //! które nie moga być widoczne w nagłówku
@@ -229,21 +226,6 @@ C3DParser::C3DParser() :
 C3DParser::~C3DParser()
 {
     delete data;
-    for (auto it = points.begin(); it != points.end(); ++it) {
-        delete(*it);
-    }
-    //! kolekcja kanałów analogowych
-    for (auto it = analogs.begin(); it != analogs.end(); ++it) {
-        delete(*it);
-    }
-
-    for (auto it =  events.begin(); it != events.end(); ++it) {
-        delete(*it);
-    }
-    //! płyty GRF
-    for (auto it = forcePlatforms.begin(); it != forcePlatforms.end(); ++it) {
-        delete(*it);
-    }
 }
 
 
@@ -396,7 +378,7 @@ void C3DParser::loadAcquisition()
     btk::PointCollection::Pointer points = this->data->virtualMarkersSeparator->GetOutput(0);
     for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it)
     {
-        PointPtr p = new Point();
+        PointPtr p = utils::make_shared<Point>();
 		p->setPoint(*it);
 		p->setNumberOfFrames(this->getNumPointFrames());
 		p->setType(Point::Marker);
@@ -408,7 +390,7 @@ void C3DParser::loadAcquisition()
 
     points = this->data->virtualMarkersSeparator->GetOutput(2);
     for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it) {
-        PointPtr p = new Point();
+        PointPtr p = utils::make_shared<Point>();
 		p->setPoint(*it);
 		p->setNumberOfFrames(this->getNumPointFrames());
 		p->setType(Point::VirtualMarker);
@@ -419,7 +401,7 @@ void C3DParser::loadAcquisition()
     // Virtual markers used to define frames
     points = this->data->virtualMarkersSeparator->GetOutput(1);
     for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it) {
-        PointPtr p = new Point();
+        PointPtr p = utils::make_shared<Point>();
 		p->setPoint(*it);
 		p->setNumberOfFrames(this->getNumPointFrames());
         p->setUnit(data->aquisitionPointer->GetPointUnit((*it)->GetType()));
@@ -430,7 +412,7 @@ void C3DParser::loadAcquisition()
     points = this->data->virtualMarkersSeparator->GetOutput(3);
 
     for (btk::PointCollection::ConstIterator it = points->Begin() ; it != points->End() ; ++it) {
-        PointPtr p = new Point();
+        PointPtr p = utils::make_shared<Point>();
 		p->setPoint(*it);
 		p->setNumberOfFrames(this->getNumPointFrames());
 		switch((*it)->GetType()) {
@@ -446,7 +428,7 @@ void C3DParser::loadAcquisition()
 
 
     for (btk::Acquisition::AnalogIterator it = this->data->aquisitionPointer->BeginAnalog() ; it != this->data->aquisitionPointer->EndAnalog() ; ++it) {
-        AnalogPtr a = new Analog();
+        AnalogPtr a = utils::make_shared<Analog>();
 		a->setAnalog(*it);
 		this->analogs.push_back(a);
     }
@@ -455,7 +437,7 @@ void C3DParser::loadAcquisition()
     double offset = this->data->firstFrame / pointFrq;
     // Event
     for (btk::Acquisition::EventIterator it = this->data->aquisitionPointer->BeginEvent() ; it != this->data->aquisitionPointer->EndEvent() ; ++it) {
-        EventPtr e = new Event();
+        EventPtr e = utils::make_shared<Event>();
         e->setEventPtr(*it);
         e->setOffset(offset);
         this->events.push_back(e);

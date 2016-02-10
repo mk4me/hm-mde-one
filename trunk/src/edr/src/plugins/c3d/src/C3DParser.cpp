@@ -60,23 +60,37 @@ void C3DParser::parse( const std::string & source  )
 
 	initObjects(localData);
 
+	auto ff = dataaccessor::FunctionFeature::feature(true);
+
     // wczytanie danych analogowych
 	c3dlib::GRFCollectionPtr grfs(new c3dlib::GRFCollection());
 	c3dlib::EMGCollectionPtr e(new c3dlib::EMGCollection());
     if (parser.getNumAnalogs() == 28)
     {
-        for (int i = 0; i < 4; ++i) {
-			c3dlib::GRFChannelPtr ptr(new c3dlib::GRFChannel(parser, i));
+		//uniform + bounded args + function		
+		auto uf = utils::make_shared<dataaccessor::UniformArgumentsFeature<c3dlib::GRFChannel::argument_type>>(1.0 / parser.getAnalogFrequency());
+		auto abf = utils::make_shared<dataaccessor::BoundedArgumentsFeature<c3dlib::GRFChannel::argument_type>>(0.0, (parser.getNumAnalogFrames() - 1) / parser.getAnalogFrequency());				
+        for (int i = 0; i < 4; ++i) {		
+
+			c3dlib::GRFChannelPtr ptr(new c3dlib::GRFChannel(parser, i));		
+
+			ptr->attachFeature(uf);
+			ptr->attachFeature(abf);
+			ptr->attachFeature(ff);
+
             localData[i]->set(ptr);			
-            grfs->addChannel(ptr);
+            grfs->addAccessor(ptr);
         }
 
 		localData[20]->set(grfs);        
-
+		//uniform + bounded args
         for (int i = 12; i < 28; ++i) {
 			c3dlib::EMGChannelPtr ptr(new c3dlib::EMGChannel(parser, i));
+			ptr->attachFeature(uf);
+			ptr->attachFeature(abf);
+
             localData[4+i-12]->set(ptr);			
-            e->addChannel(ptr);
+			e->addAccessor(ptr);
         }
         
 		localData[21]->set(e);        
@@ -116,28 +130,58 @@ void C3DParser::parse( const std::string & source  )
 	localData[27]->set(moments);
 	localData[28]->set(powers);	
 
-	int markersCount = parser.getNumPoints();
+	const int markersCount = parser.getNumPoints();
+	//uniform + bounded args + function		
+	auto uf = utils::make_shared<dataaccessor::UniformArgumentsFeature<c3dlib::GRFChannel::argument_type>>(1.0 / parser.getPointFrequency());
+	auto abf = utils::make_shared<dataaccessor::BoundedArgumentsFeature<c3dlib::GRFChannel::argument_type>>(0.0, (parser.getNumPointFrames() - 1) / parser.getPointFrequency());
+
 	for (int i = 0; i < markersCount; ++i) {
+
 		switch (parser.getPoint(i)->getType()) {
 			case c3dlib::C3DParser::IPoint::Angle: {
 				c3dlib::AngleChannelPtr ptr(new c3dlib::AngleChannel(parser, i));
-                angles->addChannel(ptr);
+
+				ptr->attachFeature(uf);
+				ptr->attachFeature(abf);
+				ptr->attachFeature(ff);
+
+				angles->addAccessor(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Marker: {
 				c3dlib::MarkerChannelPtr ptr(new c3dlib::MarkerChannel(parser, i));
-                markers->addChannel(ptr);
+
+				ptr->attachFeature(uf);
+				ptr->attachFeature(abf);
+				ptr->attachFeature(ff);
+
+				markers->addAccessor(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Force: {
 				c3dlib::ForceChannelPtr ptr(new c3dlib::ForceChannel(parser, i));
-                forces->addChannel(ptr);
+
+				ptr->attachFeature(uf);
+				ptr->attachFeature(abf);
+				ptr->attachFeature(ff);
+
+				forces->addAccessor(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Moment: {
 				c3dlib::MomentChannelPtr ptr(new c3dlib::MomentChannel(parser, i));
-                moments->addChannel(ptr);
+
+				ptr->attachFeature(uf);
+				ptr->attachFeature(abf);
+				ptr->attachFeature(ff);
+
+				moments->addAccessor(ptr);
             } break;
             case c3dlib::C3DParser::IPoint::Power: {
 				c3dlib::PowerChannelPtr ptr(new c3dlib::PowerChannel(parser, i));
-                powers->addChannel(ptr);
+
+				ptr->attachFeature(uf);
+				ptr->attachFeature(abf);
+				ptr->attachFeature(ff);
+
+				powers->addAccessor(ptr);
             } break;
 		}
 	}
@@ -173,13 +217,19 @@ void C3DParser::getObject(core::Variant & object, const core::VariantsVector::si
 	if (idx < 4){
 		c3dlib::GRFChannelPtr ptr = data[idx]->get();
 		if (ptr) {
-			object.setMetadata("core/name", ptr->getName());
+			auto df = ptr->feature<dataaccessor::IDescriptorFeature>();
+			if (df != nullptr){
+				object.setMetadata("core/name", df->name());
+			}			
 		}
 	}
 	else if(idx < 20){
 		c3dlib::EMGChannelPtr ptr = data[idx]->get();
 		if (ptr) {
-			object.setMetadata("core/name", ptr->getName());
+			auto df = ptr->feature<dataaccessor::IDescriptorFeature>();
+			if (df != nullptr){
+				object.setMetadata("core/name", df->name());
+			}
 		}
 	}
 	else if (idx < 22){

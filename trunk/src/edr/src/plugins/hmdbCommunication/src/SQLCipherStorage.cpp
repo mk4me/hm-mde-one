@@ -12,6 +12,7 @@
 #include <sqliteUtils/SQLiteBLOBStreamBufferT.h>
 #include <loglib/Exceptions.h>
 #include <threadingUtils/Macros.h>
+#include <utils/StreamTools.h>
 
 using namespace hmdbCommunication;
 

@@ -20,11 +20,7 @@ namespace utils {
 ////////////////////////////////////////////////////////////////////////////////
 
 	template<typename T>
-	struct is_text
-	{
-		typedef typename std::conditional < std::is_same<T, std::string>::value || std::is_same<T, QString>::value, std::true_type, std::false_type >::type type;
-		static const bool value = std::is_same<type, std::true_type>::value;
-	};
+	struct is_text : public std::integral_constant<bool, std::is_same<T, std::string>::value || std::is_same<T, QString>::value> {};
 
 	struct Convert
 	{

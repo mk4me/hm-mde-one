@@ -4,6 +4,10 @@
 #include "NewChartVisualizer.h"
 #include "NewChartSeriesData.h"
 #include <QtWidgets/QTreeWidgetItem>
+#include <dataaccessorlib/BoundedArgumentsFeature.h>
+#include <dataaccessorlib/BoundedValuesFeature.h>
+#include <dataaccessorlib/Adapters.h>
+
 
 const int ACTIVE_WIDTH = 2;
 const int NON_ACTIVE_WIDTH = 1;
@@ -24,10 +28,8 @@ void NewChartSerie::setData(const utils::TypeInfo & requestedType,
 	}
 	curve = new NewChartCurve(name.c_str());
 	data->tryGet(reader);
-	c3dlib::ScalarChannelReaderInterfacePtr nonConstChannel;
-	nonConstChannel = utils::const_pointer_cast
-			< c3dlib::ScalarChannelReaderInterface > (reader);
-	stats.reset(new c3dlib::ScalarChannelStats(nonConstChannel));
+	continousReder = utils::make_shared < dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::ScalarChannelReaderInterface::value_type,
+		c3dlib::ScalarChannelReaderInterface::argument_type >> (*reader);
 	curve->setSamples(new NewChartSeriesData(reader));
 	int r = rand() % 256;
 	int g = rand() % 256;
@@ -162,8 +164,12 @@ void NewChartSerie::setYScale(double val) {
 }
 
 Scales NewChartSerie::getScales() const {
-	return Scales(0.0f, reader->getLength(), getStats()->minValue(),
-			getStats()->maxValue());
+
+	auto baf = reader->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();
+	auto bvf = reader->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
+
+	return Scales(baf->minArgument(), baf->maxArgument(), bvf->minValue(),
+		bvf->maxValue());
 }
 
 void NewChartSerie::setColorsForEvents(EventsHelper::SegmentsRange range,
@@ -176,20 +182,21 @@ void NewChartSerie::setColorsForEvents(EventsHelper::SegmentsRange range,
 }
 
 double NewChartSerie::getCurrentValue() const {
-	return static_cast<double>(c3dlib::ScalarContiniousTimeAccessor::getValue(
-			time, *reader));
+
+	return continousReder->value(time);	
 }
 
 double NewChartSerie::getLength() const {
-	return reader->getLength();
+	auto baf = reader->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();
+	return baf->maxArgument() - baf->minArgument();
 }
 
 double NewChartSerie::getBegin() const {
-	return 0.0;
+	return reader->argument(0);
 }
 
 double NewChartSerie::getEnd() const {
-	return getLength();
+	return reader->argument(reader->size() - 1);
 }
 
 void NewChartSerie::setColor(int r, int g, int b, int a /*= 255*/) {

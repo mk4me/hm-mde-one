@@ -12,7 +12,6 @@
 
 #include <list>
 #include <corelib/IVisualizer.h>
-#include <datachannellib/DataChannel.h>
 #include <c3dlib/IForcePlatform.h>
 #include <osg/Geode>
 #include "KinematicVisualizer.h"
@@ -29,7 +28,6 @@ public:
 	typedef osg::ref_ptr<osg::Geometry> GeometryPtr;
 	typedef osg::ref_ptr<osg::PositionAttitudeTransform> TransformPtr;
 	typedef osg::ref_ptr<osg::ShapeDrawable> ShapeDrawablePtr;
-	typedef utils::DataChannelTimeAccessor<osg::Vec3f, float> TimeAccessor;
 
 public:
 	//! Konstruktor

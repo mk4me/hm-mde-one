@@ -32,9 +32,11 @@ void c3dlib::C3DWriter::write(const std::string& path)
 	acq->Init(vectors.size(), maxP == 0 ? maxA / 10 : maxP, scalars.size(), 10); // 10 points, 200 frames, 20 analog channels with a number of frames 10 times greater
 	
 
-	for (int i = 0; i < scalars.size(); ++i) {
+	for (int i = 0; i < scalars.size(); ++i) {	
 		auto scalar = scalars[i];
-		btk::Analog::Pointer analog = btk::Analog::New(scalar->getName());
+		auto df = scalar->feature<dataaccessor::IDescriptorFeature>();
+		std::string name = df != nullptr && df->name().empty() == false ? df->name() : "Unnamed scalar " + std::to_string(i);
+		btk::Analog::Pointer analog = btk::Analog::New(name);
 		int count = scalar->size();
 		analog->SetFrameNumber(count);
 		for (int j = 0; j < count; ++j) {
@@ -45,7 +47,9 @@ void c3dlib::C3DWriter::write(const std::string& path)
 
 	for (int i = 0; i < vectors.size(); ++i) {
 		auto vector = vectors[i];
-		btk::Point::Pointer point = btk::Point::New(vector->getName());
+		auto df = vector->feature<dataaccessor::IDescriptorFeature>();
+		std::string name = df != nullptr && df->name().empty() == false ? df->name() : "Unnamed vector " + std::to_string(i);
+		btk::Point::Pointer point = btk::Point::New(name);
 		int count = vector->size();
 		point->SetFrameNumber(count);
 		for (int j = 0; j < count; ++j) {

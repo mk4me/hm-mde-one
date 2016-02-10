@@ -21,7 +21,7 @@ public:
     //! \param channel DataChannel z danymi dla krzywej
     //! \param startTime początkowy czas dla eventu
     //! \param endTime końcowy czas dla eventu
-	NewChartEventStateData(c3dlib::ScalarChannelReaderInterfaceConstPtr channel, float startTime, float endTime);
+	NewChartEventStateData(c3dlib::ScalarChannelReaderInterfaceConstPtr channel, std::size_t startTimeIdx, std::size_t endTimeIdx);
 
 public:
     //! \return liczba próbek przedziału
@@ -35,11 +35,13 @@ public:
 
 private:
     //! DataChannel z danymi dla krzywej
-	c3dlib::ScalarChannelReaderInterfaceConstPtr channel;
+	const c3dlib::ScalarChannelReaderInterfaceConstPtr channel;
     //! indeks początkowego czas dla eventu
-    int startIndex;
+    const int startIndex;
     //! indeks końcowego czas dla eventu
-    int endIndex;
+    const int endIndex;
+	//! Zakres
+	const QRectF boundingRect_;
 };
 
 #endif

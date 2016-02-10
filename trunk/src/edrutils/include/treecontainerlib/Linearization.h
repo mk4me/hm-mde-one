@@ -20,7 +20,7 @@ struct Linearization
 	using NodeIDX = Node::SizeType;
 
 	template<typename T>
-	//! Typ bimapy indeksów węzłów do zadanej wartosci
+	//! Typ bimapy indeksów węzłów do zadanej wartości
 	using Mapping = boost::bimap < NodeIDX, T >;
 
 	template<typename T>
@@ -29,7 +29,7 @@ struct Linearization
 
 	template<typename T>
 	//! \param order Porządek
-	//! \return Mapowanie wynikajace z porzadku
+	//! \return Mapowanie wynikające z porządku
 	static Mapping<T> convert(const Order<T> & order)
 	{
 		Mapping<T> ret;
@@ -47,7 +47,7 @@ struct NodeLinearization
 	//! \tparam NPtr Typ wskaźnika węzła
 	//! \tparam Visitor Typ odwiedzającego węzły
 	template<typename NPtr>
-	//! \param node Węzeł od którego zaczynamy linearyzacje struktury
+	//! \param node Węzeł od którego zaczynamy linearyzację struktury
 	//! \param lp Polityka linearyzowania drzewa
 	//! \return Ścieżka zlinearyzowanego drzewa
 	static Node::Nodes<NPtr> linearize(NPtr node)
@@ -63,10 +63,70 @@ struct LinearizationT
 {
 	using VisitOrder = TreeVisitOrder;
 
-	//! \tparam NPtr Typ wskaxnika węzła drzewa z którego zaczynamy
+	template<typename TreeType>
+	static decltype(std::declval<const TreeType>().root()) getNode(const TreeType & tree, const Node::SizeType idx)
+	{
+		using NPtr = decltype(std::declval<const TreeType>().root());
+		NPtr ret;
+
+		if (Tree::empty(tree) == false){
+			IndexFilterVisitor<NPtr> idxVisitor(idx);
+			IndexingVisitor<IndexFilterVisitor<NPtr>> iV(idxVisitor);
+			ConsumingVisitor<IndexingVisitor<IndexFilterVisitor<NPtr>>> cV(iV);
+			if (VisitOrder::visitWhile(tree, cV) == true){
+				ret = idxVisitor.node();
+			}
+		}
+
+		return ret;
+	}
+
+	template<typename TreeType>
+	static decltype(std::declval<TreeType>().root()) getNode(TreeType & tree, const Node::SizeType idx)
+	{
+		using NPtr = decltype(std::declval<const TreeType>().root());
+		NPtr ret;
+
+		if (Tree::empty(tree) == false){
+			IndexFilterVisitor<NPtr> idxVisitor(idx);
+			IndexingVisitor<IndexFilterVisitor<NPtr>> iV(idxVisitor);
+			ConsumingVisitor<IndexingVisitor<IndexFilterVisitor<NPtr>>> cV(iV);
+			if (VisitOrder::visitWhile(tree, cV) == true){
+				ret = idxVisitor.node();
+			}
+		}
+
+		return ret;
+	}
+
+	template<typename TreeType>
+	static decltype(std::declval<const TreeType>().root()->value()) getValue(const TreeType & tree, const Node::SizeType idx)
+	{
+		auto node = getNode(tree, idx);
+
+		if (node == nullptr){
+			throw std::runtime_error("Node index out of range");		
+		}
+
+		return node->value();
+	}
+
+	template<typename TreeType>
+	static decltype(std::declval<const TreeType>().root()->value()) getValue(TreeType & tree, const Node::SizeType idx)
+	{
+		auto node = getNode(tree, idx);
+
+		if (node == nullptr){
+			throw std::runtime_error("Node index out of range");
+		}
+
+		return node->value();
+	}
+
+	//! \tparam NPtr Typ wskaźnika węzła drzewa z którego zaczynamy
 	//! \tparam Visitor Typ odwiedzającego
 	template<typename TreeType, typename Visitor>
-	//! \param node węzeł od którego zaczynamy odwiedzanie struktury
+	//! \param node Węzeł od którego zaczynamy odwiedzanie struktury
 	//! \param Visitor Obiekt odwiedzający węzły
 	static void visit(const TreeType & tree, Visitor visitor)
 	{
@@ -74,10 +134,10 @@ struct LinearizationT
 		VisitOrder::visit(tree, cv);
 	}
 
-	//! \tparam NPtr Typ wskaxnika węzła drzewa z którego zaczynamy
+	//! \tparam NPtr Typ wskaźnika węzła drzewa z którego zaczynamy
 	//! \tparam Visitor Typ odwiedzającego
 	template<typename TreeType, typename Visitor>
-	//! \param node węzeł od którego zaczynamy odwiedzanie struktury
+	//! \param node Węzeł od którego zaczynamy odwiedzanie struktury
 	//! \param Visitor Obiekt odwiedzający węzły
 	static void visit(TreeType & tree, Visitor visitor)
 	{
@@ -85,30 +145,30 @@ struct LinearizationT
 		VisitOrder::visit(tree, cv);
 	}
 
-	//! \tparam NPtr Typ wskaxnika węzła drzewa z którego zaczynamy
+	//! \tparam NPtr Typ wskaźnika węzła drzewa z którego zaczynamy
 	//! \tparam Visitor Typ odwiedzającego
 	template<typename TreeType, typename Visitor>
-	//! \param node węzeł od którego zaczynamy odwiedzanie struktury
+	//! \param node Węzeł od którego zaczynamy odwiedzanie struktury
 	//! \param Visitor Obiekt odwiedzający węzły
 	static void globalIndexedVisit(const TreeType & tree, Visitor visitor)
 	{
 		visit(tree, IndexingVisitor<Visitor>(visitor));
 	}
 
-	//! \tparam NPtr Typ wskaxnika węzła drzewa z którego zaczynamy
+	//! \tparam NPtr Typ wskaźnika węzła drzewa z którego zaczynamy
 	//! \tparam Visitor Typ odwiedzającego
 	template<typename TreeType, typename Visitor>
-	//! \param node węzeł od którego zaczynamy odwiedzanie struktury
+	//! \param node Węzeł od którego zaczynamy odwiedzanie struktury
 	//! \param Visitor Obiekt odwiedzający węzły
 	static void globalIndexedVisit(TreeType & tree, Visitor visitor)
 	{
 		visit(tree, IndexingVisitor<Visitor>(visitor));
 	}
 
-	//! \tparam NPtr Typ wskaxnika węzła drzewa z którego zaczynamy
+	//! \tparam NPtr Typ wskaźnika węzła drzewa z którego zaczynamy
 	//! \tparam Visitor Typ odwiedzającego
 	template<typename TreeType, typename Visitor>
-	//! \param node węzeł od którego zaczynamy odwiedzanie struktury
+	//! \param node Węzeł od którego zaczynamy odwiedzanie struktury
 	//! \param Visitor Obiekt odwiedzający węzły nie liście
 	static void visitNonLeaf(const TreeType & tree, Visitor visitor)
 	{
@@ -116,20 +176,20 @@ struct LinearizationT
 		visit(tree, nlv);
 	}
 
-	//! \tparam NPtr Typ wskaxnika węzła drzewa z którego zaczynamy
+	//! \tparam NPtr Typ wskaźnika węzła drzewa z którego zaczynamy
 	//! \tparam Visitor Typ odwiedzającego
 	template<typename TreeType, typename Visitor>
-	//! \param node węzeł od którego zaczynamy odwiedzanie struktury
+	//! \param node Węzeł od którego zaczynamy odwiedzanie struktury
 	//! \param Visitor Obiekt odwiedzający węzły nie liście
 	static void visitNonLeaf(TreeType & tree, Visitor visitor)
 	{
 		visit(tree, NonLeafVisitor<Visitor>(visitor));
 	}
 
-	//! \tparam NPtr Typ wskaxnika węzła drzewa z którego zaczynamy
+	//! \tparam NPtr Typ wskaźnika węzła drzewa z którego zaczynamy
 	//! \tparam Visitor Typ odwiedzającego
 	template<typename TreeType, typename Visitor>
-	//! \param node węzeł od którego zaczynamy odwiedzanie struktury
+	//! \param node Węzeł od którego zaczynamy odwiedzanie struktury
 	//! \param Visitor Obiekt odwiedzający węzły nie liście
 	static void localIndexedVisitNonLeaf(const TreeType & tree,
 			Visitor visitor)
@@ -138,10 +198,10 @@ struct LinearizationT
 			IndexingVisitor<Visitor>(visitor)));
 	}	
 
-	//! \tparam NPtr Typ wskaxnika węzła drzewa z którego zaczynamy
+	//! \tparam NPtr Typ wskaźnika węzła drzewa z którego zaczynamy
 	//! \tparam Visitor Typ odwiedzającego
 	template<typename TreeType, typename Visitor>
-	//! \param node węzeł od którego zaczynamy odwiedzanie struktury
+	//! \param node Węzeł od którego zaczynamy odwiedzanie struktury
 	//! \param Visitor Obiekt odwiedzający węzły nie liście
 	static void localIndexedVisitNonLeaf(TreeType & tree, Visitor visitor)
 	{
@@ -150,10 +210,10 @@ struct LinearizationT
 		visit(tree, nlv);
 	}
 
-	//! \tparam NPtr Typ wskaxnika węzła drzewa z którego zaczynamy
+	//! \tparam NPtr Typ wskaźnika węzła drzewa z którego zaczynamy
 	//! \tparam Visitor Typ odwiedzającego
 	template<typename TreeType, typename Visitor>
-	//! \param node węzeł od którego zaczynamy odwiedzanie struktury
+	//! \param node Węzeł od którego zaczynamy odwiedzanie struktury
 	//! \param Visitor Obiekt odwiedzający węzły nie liście
 	static void globalIndexedVisitNonLeaf(const TreeType & tree,
 			Visitor visitor)
@@ -162,10 +222,10 @@ struct LinearizationT
 			NonLeafVisitor<Visitor>(visitor)));
 	}
 
-	//! \tparam NPtr Typ wskaxnika węzła drzewa z którego zaczynamy
+	//! \tparam NPtr Typ wskaźnika węzła drzewa z którego zaczynamy
 	//! \tparam Visitor Typ odwiedzającego
 	template<typename TreeType, typename Visitor>
-	//! \param node węzeł od którego zaczynamy odwiedzanie struktury
+	//! \param node Węzeł od którego zaczynamy odwiedzanie struktury
 	//! \param Visitor Obiekt odwiedzający węzły nie liście
 	static void globalIndexedVisitNonLeaf(TreeType & tree, Visitor visitor)
 	{
@@ -276,7 +336,7 @@ struct LinearizationT
 
 	//! \tparam TreeType Typ drzewa
 	template<typename TreeType>
-	//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (mających dzieci)
+	//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (maj�cych dzieci)
 	//! \return Mapowanie aktywnych jointów szkieletu
 	static Linearization::Order<decltype(std::declval<TreeType>().root())>
 		createNonLeafOrder(const TreeType & tree)
@@ -291,7 +351,7 @@ struct LinearizationT
 
 	//! \tparam TreeType Typ drzewa
 	template<typename TreeType, typename KeyExtractor>
-	//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (mających dzieci)
+	//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (maj�cych dzieci)
 	//! \return Mapowanie aktywnych jointów szkieletu
 	static Linearization::Order<decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))>
 		createNonLeafOrderKey(const TreeType & tree, KeyExtractor keyExtractor)
@@ -309,7 +369,7 @@ struct LinearizationT
 
 	//! \tparam TreeType Typ drzewa
 	template<typename TreeType>
-	//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (mających dzieci)
+	//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (maj�cych dzieci)
 	//! \return Mapowanie aktywnych jointów szkieletu
 	static Linearization::Order<decltype(std::declval<TreeType>().root())>
 		createNonLeafOrder(TreeType & tree)
@@ -324,7 +384,7 @@ struct LinearizationT
 
 	//! \tparam TreeType Typ drzewa
 	template<typename TreeType>
-	//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (mających dzieci)
+	//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (maj�cych dzieci)
 	//! \return Mapowanie aktywnych jointów szkieletu
 	static Linearization::Order<decltype(std::declval<TreeType>().root())>
 		createNonLeafMapping(const TreeType & tree)
@@ -342,7 +402,7 @@ struct LinearizationT
 
 	//! \tparam TreeType Typ drzewa
 	template<typename TreeType, typename KeyExtractor>
-	//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (mających dzieci)
+	//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (maj�cych dzieci)
 	//! \return Mapowanie aktywnych jointów szkieletu
 	static Linearization::Mapping<decltype(std::declval<KeyExtractor>()(std::declval<const TreeType>().root()->value()))>
 		createNonLeafMappingKey(const TreeType & tree, KeyExtractor keyExtractor)
@@ -360,7 +420,7 @@ struct LinearizationT
 
 	//! \tparam TreeType Typ drzewa
 	template<typename TreeType>
-	//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (mających dzieci)
+	//! \param skeleton Szkielet dla którego generujemy mapowanie aktywnych jointów (maj�cych dzieci)
 	//! \return Mapowanie aktywnych jointów szkieletu
 	static Linearization::Mapping<decltype(std::declval<TreeType>().root())>
 		createNonLeafMapping(TreeType & tree)

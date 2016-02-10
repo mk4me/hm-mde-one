@@ -6,6 +6,7 @@
 #include <wsdlparser/WsdlExtension.h>
 #include <corelib/PluginCommon.h>
 #include <boost/algorithm/hex.hpp>
+#include <utils/DummyWrap.h>
 
 using namespace hmdbCommunication;
 

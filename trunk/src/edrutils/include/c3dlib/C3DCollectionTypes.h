@@ -89,12 +89,12 @@ namespace  c3dlib {
 	typedef utils::shared_ptr<const C3DEventsCollection> EventsCollectionConstPtr;
 
 	//! Kolekcja obiektów EMG, obs³ugiwana w standardowy sposób
-	typedef utils::DataChannelCollection<EMGChannel> EMGCollection;
+	typedef dataaccessor::AccessorsCollection<EMGChannel> EMGCollection;
 	typedef utils::shared_ptr<EMGCollection> EMGCollectionPtr;
 	typedef utils::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
 
 	//! Kolekcja kana³ów opartych o trójwymiarowy wektor
-	typedef utils::DataChannelCollection<VectorChannel> VectorChannelCollection;
+	typedef dataaccessor::AccessorsCollection<VectorChannelReaderInterface> VectorChannelCollection;
 	typedef utils::shared_ptr<VectorChannelCollection > VectorChannelCollectionPtr;
 	typedef utils::shared_ptr<const VectorChannelCollection > VectorChannelCollectionConstPtr;
 
@@ -106,7 +106,7 @@ namespace  c3dlib {
 	C3DLIB_EXPORT std::vector<FloatPairPtr> getTimeSegments(EventsCollectionConstPtr events, C3DEventsCollection::Context context);
 
 	//! Kolekcja dostarcza równie¿ informacji o p³ytach GFR oraz u³atwia pobranie konkretnego kana³u
-	class C3DLIB_EXPORT GRFCollection : public VectorChannelCollection
+	class C3DLIB_EXPORT GRFCollection : public dataaccessor::AccessorsCollection<GRFChannel>
 	{
 	public:
 		//! \return wszystkie wczytane p³yty pomiarowe zwi¹zane z danymi GRF
@@ -126,7 +126,7 @@ namespace  c3dlib {
 	typedef utils::shared_ptr<const GRFCollection> GRFCollectionConstPtr;
 
 	//! Kontener wszystkich markerów modelu, u³atwia obs³ugê danych, dodaje wsparcie o pliki VSK
-	class C3DLIB_EXPORT MarkerCollection : public VectorChannelCollection
+	class C3DLIB_EXPORT MarkerCollection : public dataaccessor::AccessorsCollection<MarkerChannel>
 	{
 	public:
 		//! Konstruktor
@@ -134,11 +134,11 @@ namespace  c3dlib {
 		MarkerCollection(vicon::VskPtr vsk = vicon::VskPtr());
 		//! Zwraca nazwê markera na podstawie indeksu
 		//! \param markerNo poprawny indeks, w przeciwnym razie poleci asercja
-		virtual const std::string& getMarkerName(int markerNo) const;
+		virtual std::string getMarkerName(int markerNo) const;
 		//! próbuje pobraæ kana³ na podstawie nazwy
 		//! \param name nazwa kana³u, wielkoœæ liter ma znaczenie
 		//! \return kana³ lub null jeœli takiego nie ma
-		VectorChannelConstPtr tryGetChannelByName(const std::string& name);
+		MarkerChannelConstPtr tryGetChannelByName(const std::string& name);
 		//! \return parser vsk zwi¹zany z kolekcj¹
 		vicon::VskConstPtr getVsk() const;
 

@@ -92,11 +92,24 @@ purpose:
 //TODO
 //użyć BOOST_CURRENT_FUNCTION (boost/current_function.hpp)
 #if defined __GNUC__
-	#define __UTILS_PORTABLE_FUNCTION_NAME __func__
+	#define UTILS_PORTABLE_FUNCTION_NAME __func__
 #elif defined _MSC_VER
-	#define __UTILS_PORTABLE_FUNCTION_NAME __FUNCTION__
+	#define UTILS_PORTABLE_FUNCTION_NAME __FUNCTION__
 #else
 	#error Provide macro name for retriving currently processed function name for current compiler!
+#endif
+
+//------------------------------------------------------------------------------
+// Makro rzucające warningiem na konsole podczas kompilacji
+
+#define UTILS_COMPILER_WARNING_GENERATOR(desc) "Custom compile-time-warning: " #desc " in " UTILS_PORTABLE_FUNCTION_NAME " -> " __FILE__ ":" STRINGIZE(__LINE__)
+
+#if defined __GNUC__
+#define UTILS_COMPILER_WARNING(desc) _Pragma ("\"UTILS_COMPILER_WARNING_GENERATOR(desc)\"")
+#elif defined _MSC_VER
+#define UTILS_COMPILER_WARNING(desc) __pragma(message(UTILS_COMPILER_WARNING_GENERATOR(desc)))
+#else
+#error Provide macro name for retriving currently processed function name for current compiler!
 #endif
 
 //------------------------------------------------------------------------------

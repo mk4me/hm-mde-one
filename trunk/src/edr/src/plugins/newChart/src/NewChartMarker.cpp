@@ -1,6 +1,6 @@
 #include "NewChartPCH.h"
 #include "NewChartMarker.h"
-#include <utils/Utils.h>
+#include <utils/Clamping.h>
 #include <QtGui/QPainter>
 #include "NewChartSerie.h"
 

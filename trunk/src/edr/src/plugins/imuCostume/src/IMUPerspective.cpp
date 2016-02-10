@@ -27,20 +27,11 @@
 #include <iomanip>
 #include <boost/lexical_cast.hpp>
 #include <plugins/c3d/C3DChannels.h>
+#include <dataaccessorlib/Wrappers.h>
+#include <dataaccessorlib/UniformArgumentsFeature.h>
+#include <dataaccessorlib/DescriptorFeature.h>
 
 typedef utils::Filesystem fs;
-
-c3dlib::VectorChannelPtr IMU::IMUPerspective::createChannel(int hz, const IMU::IMUConfig& config, int i, const std::string& unit)
-{
-	auto c = utils::make_shared<c3dlib::VectorChannel>((float)hz);
-    // + 1 , bo numeracja w plikach *.cfg zaczyna się od 1
-    c->setName(generateChannelName(config, i + 1));
-	c->setValueBaseUnit(unit);
-
-    return c;
-}
-
-
 
 core::IHierarchyItemPtr IMU::IMUPerspective::getPerspective( PluginSubject::SubjectPtr subject )
 {
@@ -155,9 +146,9 @@ void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &oList, core::
 
 void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &framesV, IMU::IMUConfigConstPtr config, const std::string& sourceName, core::HierarchyItemPtr sessionItem, core::IDataManager * memoryDataManager)
 {
-	auto accWrapper = utils::ObjectWrapper::create<c3dlib::VectorChannelCollection>();
-	auto magWrapper = utils::ObjectWrapper::create<c3dlib::VectorChannelCollection>();
-	auto gyrWrapper = utils::ObjectWrapper::create<c3dlib::VectorChannelCollection>();
+	//auto accWrapper = utils::ObjectWrapper::create<c3dlib::VectorChannelCollection>();
+	//auto magWrapper = utils::ObjectWrapper::create<c3dlib::VectorChannelCollection>();
+	//auto gyrWrapper = utils::ObjectWrapper::create<c3dlib::VectorChannelCollection>();
 
 	auto accelerations = utils::make_shared<c3dlib::VectorChannelCollection>();
 	auto magnetometers = utils::make_shared<c3dlib::VectorChannelCollection>();
@@ -171,14 +162,15 @@ void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &framesV, IMU:
 		auto c = utils::const_pointer_cast<IMU::IMUConfig>(config);
 		c->imusCount = frms->at(0).size();
 	}
-	for (int i = 0; i < config->imusCount; ++i) {
-		accelerations->addChannel(createChannel(hz, *config, i, "m/s^2"));
-		magnetometers->addChannel(createChannel(hz, *config, i));
-		gyroscopes->addChannel(createChannel(hz, *config, i, "rad/s"));
-	}
+	/*for (int i = 0; i < config->imusCount; ++i) {
+		accelerations->addAccessor(createChannel(hz, *config, i, "m/s^2"));
+		magnetometers->addAccessor(createChannel(hz, *config, i));
+		gyroscopes->addAccessor(createChannel(hz, *config, i, "rad/s"));
+	}*/
 
-	for (auto itFrame = frms->begin(); itFrame != frms->end(); ++itFrame) {
-		const IMU::Frame& f = *itFrame;
+	dataaccessor::UniformArgumentsGenerator<float> uag(1.0 / hz, 1);
+
+	for (auto f : *frms) {		
 		
 		int count = config->imusCount;
 		// na wypadek, gdyby jakies z ostatnich czujnikow byly uszkodzone
@@ -186,29 +178,43 @@ void IMU::IMUPerspective::createIMUBranch(core::ConstVariantsList &framesV, IMU:
 			count = f.size();
 		}
 		for (int i = 0; i < count; ++i) {
-			// TODO te parametry (1024, 2048) trzeba gdzies przeniesc (do ramki?)
-			accelerations->getChannel(i)->addPoint(osg::Vec3(f[i].raw.acc_x, f[i].raw.acc_y, f[i].raw.acc_z) * (1 / 1024.0f));
-			magnetometers->getChannel(i)->addPoint(osg::Vec3(f[i].raw.mag_x, f[i].raw.mag_y, f[i].raw.mag_z) * (1 / 2048.0f));
-			gyroscopes->getChannel(i)->addPoint(osg::Vec3(f[i].raw.rate_x, f[i].raw.rate_y, f[i].raw.rate_z) * (1 / 2048.0f));
+
+			std::vector<osg::Vec3> data;
+			data.push_back(osg::Vec3(f[i].raw.acc_x, f[i].raw.acc_y, f[i].raw.acc_z) * (1 / 1024.0f));
+			auto a = dataaccessor::wrap(std::move(data), uag);
+			a->attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<osg::Vec3, float>(generateChannelName(*config, i + 1), "m/s^2", "s")));
+			uag.init(a.get());
+			accelerations->addAccessor(a);
+
+			data.push_back(osg::Vec3(f[i].raw.mag_x, f[i].raw.mag_y, f[i].raw.mag_z) * (1 / 2048.0f));
+			a = dataaccessor::wrap(std::move(data), uag);
+			a->attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<osg::Vec3, float>(generateChannelName(*config, i + 1), "", "s")));
+			uag.init(a.get());
+			magnetometers->addAccessor(a);
+
+			data.push_back(osg::Vec3(f[i].raw.rate_x, f[i].raw.rate_y, f[i].raw.rate_z) * (1 / 2048.0f));
+			a = dataaccessor::wrap(std::move(data), uag);
+			a->attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<osg::Vec3, float>(generateChannelName(*config, i + 1), "rad/s", "s")));
+			uag.init(a.get());
+			gyroscopes->addAccessor(a);
 		}
 	}
-	accWrapper->set(accelerations);
-	magWrapper->set(magnetometers);
-	gyrWrapper->set(gyroscopes);
+	auto accWrapper = core::Variant::wrap(accelerations);
+	auto magWrapper = core::Variant::wrap(magnetometers);
+	auto gyrWrapper = core::Variant::wrap(gyroscopes);
 
 	{
 		core::VariantsList objects;
 
 		auto _lambda = [&](c3dlib::VectorChannelCollectionPtr collection, const std::string& groupName)
 		{
-			int count = collection->getNumChannels();
+			int count = collection->getNumAccessors();
 			for (int i = 0; i < count; ++i) {
-				c3dlib::VectorChannelPtr channel = collection->getChannel(i);
+				auto channel = collection->getAccessor(i);
 
-				core::VariantPtr wrapper = core::Variant::create<c3dlib::VectorChannel>();
-				wrapper->setMetadata("core/name", channel->getName());
+				auto wrapper = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(channel);
+				wrapper->setMetadata("core/name", channel->feature<dataaccessor::DescriptorFeature>()->name());
 				wrapper->setMetadata("core/source", sourceName + std::string("/") + groupName);
-				wrapper->set(channel);
 				objects.push_back(wrapper);
 			}
 		};
@@ -254,15 +260,14 @@ core::IHierarchyItemPtr IMU::IMUPerspective::createImuCollectionItem(int i, c3dl
 		default: name = QObject::tr("Item"); break;
 	}
 	auto collectionItem = utils::make_shared<core::HierarchyItem>(name, QString());
-	for (int j = 0; j < collection->getNumChannels(); ++j) {
-		core::VariantPtr wrapper = core::Variant::create<c3dlib::VectorChannel>();
-		c3dlib::VectorChannelConstPtr c = collection->getChannel(j);
-		wrapper->set(utils::const_pointer_cast<c3dlib::VectorChannel>(c));
+	for (int j = 0; j < collection->getNumAccessors(); ++j) {
+		auto c = collection->getAccessor(j);
+		auto wrapper = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(utils::const_pointer_cast<c3dlib::VectorChannelReaderInterface>(c));
 		static int number = 0;
 		wrapper->setMetadata("name", "Serie_" + boost::lexical_cast<std::string>(number++));
 		wrapper->setMetadata("source", "TreeBuilder");
 		NewVector3ItemHelperPtr channelHelper = utils::make_shared<NewVector3ItemHelper>(wrapper);
-		core::IHierarchyItemPtr channelItem = utils::make_shared<core::HierarchyDataItem>(wrapper, QIcon(), QString::fromStdString(c->getName()), QString(), channelHelper);
+		core::IHierarchyItemPtr channelItem = utils::make_shared<core::HierarchyDataItem>(wrapper, QIcon(), QString::fromStdString(c->feature<dataaccessor::DescriptorFeature>()->name()), QString(), channelHelper);
 		collectionItem->appendChild(channelItem);
 	}
 
@@ -289,9 +294,8 @@ std::string IMU::IMUPerspective::generateChannelName(const IMU::IMUConfig& conf,
 
 core::IHierarchyItemPtr IMU::IMUPerspective::createChannelItem(c3dlib::VectorChannelCollectionPtr collection, int i, const QString& name)
 {
-	core::VariantPtr wrapper = core::Variant::create<c3dlib::VectorChannel>();
-	c3dlib::VectorChannelConstPtr c = collection->getChannel(i);
-	wrapper->set(utils::const_pointer_cast<c3dlib::VectorChannel>(c));
+	auto c = collection->getAccessor(i);
+	auto wrapper = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(utils::const_pointer_cast<c3dlib::VectorChannelReaderInterface>(c));	
 	static int number = 0;
 	wrapper->setMetadata("name", "Serie_" + boost::lexical_cast<std::string>(number++));
 	wrapper->setMetadata("source", "TreeBuilder");

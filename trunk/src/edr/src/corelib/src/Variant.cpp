@@ -15,7 +15,7 @@ Variant::data_t::~data_t()
 	variant->sync_.unlock();
 }
 
-const utils::ObjectWrapperConstPtr Variant::data_t::operator->() const
+utils::ObjectWrapperConstPtr Variant::data_t::operator->() const
 {
 	return variant->wrapper_;
 }
@@ -100,7 +100,7 @@ Variant::~Variant()
 {
 }
 
-const bool Variant::getMetadata(const std::string & key, std::string & val) const
+bool Variant::getMetadata(const std::string & key, std::string & val) const
 {
 	ScopedLock lock(sync_);
 
@@ -117,7 +117,7 @@ const bool Variant::getMetadata(const std::string & key, std::string & val) cons
 	return true;
 }
 
-const bool Variant::existMetadata(const std::string & key) const
+bool Variant::existMetadata(const std::string & key) const
 {
 	ScopedLock lock(sync_);
 	return metadata_ != nullptr && metadata_->find(key) != metadata_->end();
@@ -184,13 +184,13 @@ void Variant::setInitializer(const VariantInitializerPtr & initializer)
 	}
 }
 
-const VariantInitializerPtr Variant::initializer()
+VariantInitializerPtr Variant::initializer()
 {
 	ScopedLock lock(sync_);
 	return initializer_;
 }
 
-const VariantInitializerConstPtr Variant::initializer() const
+VariantInitializerConstPtr Variant::initializer() const
 {
 	ScopedLock lock(sync_);
 	return initializer_;
@@ -206,13 +206,13 @@ void Variant::innerInitialize() const
 	}
 }
 
-const bool Variant::initialized() const
+bool Variant::initialized() const
 {
 	ScopedLock lock(sync_);
 	return initialized_ || (wrapper_->getRawPtr() != nullptr);
 }
 
-const VariantPtr Variant::clone(const CloneOp co) const
+VariantPtr Variant::clone(const CloneOp co) const
 {
 	auto ret = create();
 	clone(*ret, co);
@@ -256,7 +256,7 @@ void Variant::swap(Variant & ow)
 	std::swap(metadata_, ow.metadata_);
 }
 
-const bool Variant::isEqual(const Variant & obj) const
+bool Variant::isEqual(const Variant & obj) const
 {
 	//czy zgadza się meta - wskaźniki
 	return ((metadata_ == obj.metadata_) ||

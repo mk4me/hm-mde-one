@@ -90,8 +90,14 @@ void Application::updateServices()
 
 Application::Application() : vendor_("Polsko-Japońska Akademia Technik Komputerowych, Oddział zamiejscowy w Bytomiu",
 	"PJATK Bytom", "Uczelnia prywatna", "marek.kulbacki@gmail.com"),
+	mainThreadID_(std::this_thread::get_id()),
 	visualizerTimeDelta(TimeDelta), servicesTimeDelta(TimeDelta), mainWindow(nullptr), uiInit(false)
 {
+}
+
+std::thread::id Application::mainThreadID() const
+{
+	return mainThreadID_;
 }
 
 void Application::showSplashScreenMessage(const QString & message)

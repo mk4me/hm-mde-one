@@ -3,6 +3,8 @@
 #include "KinematicVisualizer.h"
 #include "TrajectoriesDrawer.h"
 #include "VisualizationScheme.h"
+#include <dataaccessorlib/DescriptorFeature.h>
+#include <dataaccessorlib/UniformArgumentsFeature.h>
 
 MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 	const utils::TypeInfo & requestedType,
@@ -12,11 +14,17 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 	name("Markers"),
 	pointsDrawer(new osgutils::PointsDrawer(3)),
 	ghostDrawer(new osgutils::GhostSchemeDrawer(3, 10)),
-	trajectoriesManager(new TrajectoryDrawerManager)
+	trajectoriesManager(new TrajectoryDrawerManager),
+	sampleDuration(0)
 {
 	markersCollection = data->get();
+	auto uaf = markersCollection->getAccessor(0)->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
 
-	int markersCount = markersCollection->getNumChannels();
+	if (uaf != nullptr){
+		sampleDuration = uaf->argumentsInterval();
+	}
+
+	const int markersCount = markersCollection->getNumAccessors();
 	auto vsk = markersCollection->getVsk();
 	if(vsk == nullptr){
 		try {		
@@ -27,7 +35,7 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 		}
 	}
 
-	pointsDrawer->init(markersCollection->getNumChannels());
+	pointsDrawer->init(markersCount);
 	pointsDrawer->setColor(osg::Vec4(0,0,1,1));
 	pointsDrawer->setSize(0.02);
 
@@ -38,10 +46,14 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 
 		//mapujemy markery i po³¹czenia dla drawera
 		std::vector<std::string> mapping;
-		mapping.reserve(markersCollection->getNumChannels());
+		mapping.reserve(markersCount);
 
-		for(unsigned int i = 0; i < markersCollection->getNumChannels(); ++i){
-			mapping.push_back(markersCollection->getChannel(i)->getName());
+		for (unsigned int i = 0; i < markersCount; ++i){
+			auto a = markersCollection->getAccessor(i);
+			auto df = a->feature<dataaccessor::IDescriptorFeature>();
+			if (df != nullptr){
+				mapping.push_back(df->name());
+			}
 		}
 
 		const auto& sticks = vsk->sticks;
@@ -60,8 +72,8 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 				osgutils::SegmentDescriptor cd;
 				cd.range.first = std::distance(mapping.begin(), it1);
 				cd.range.second = std::distance(mapping.begin(), it2);				
-				cd.length = getStickLength(markersCollection->getChannel(cd.range.first),
-					markersCollection->getChannel(cd.range.second));
+				cd.length = getStickLength(markersCollection->getAccessor(cd.range.first),
+					markersCollection->getAccessor(cd.range.second));
 				connectionsColors.push_back(it->color);
 				connectionsConfigurations.push_back(cd);
 			}
@@ -135,7 +147,10 @@ const std::vector<std::vector<osg::Vec3>> MarkerSerie::createPointsPositions(con
 {
 	std::vector<std::vector<osg::Vec3>> ret;
 
-	const auto step = markersCollection->getChannel(0)->getLength() / (double)density;	
+	auto a = markersCollection->getAccessor(0);
+	auto baf = a->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();
+
+	const auto step = (baf->maxArgument() - baf->minArgument()) / (double)density;
 
 	for(unsigned int i = 0; i < density; ++i){
 		ret.push_back(markersCollection->getValues(step * (double)i));
@@ -144,7 +159,7 @@ const std::vector<std::vector<osg::Vec3>> MarkerSerie::createPointsPositions(con
 	return ret;
 }
 
-float MarkerSerie::getStickLength(c3dlib::VectorChannelConstPtr channel1, c3dlib::VectorChannelConstPtr channel2, float epsilon)
+float MarkerSerie::getStickLength(c3dlib::VectorChannelReaderInterfaceConstPtr channel1, c3dlib::VectorChannelReaderInterfaceConstPtr channel2, float epsilon)
 {
 	std::map<float, int> histogram;
 	const auto s = std::min(channel1->size(), channel2->size());
@@ -184,7 +199,7 @@ float MarkerSerie::getStickLength(c3dlib::VectorChannelConstPtr channel1, c3dlib
 void MarkerSerie::setLocalTime( double time )
 {
 	if( (lastUpdateTime == std::numeric_limits<double>::min()) ||
-		(std::abs(time - lastUpdateTime) >= markersCollection->getChannel(0)->getSampleDuration())){
+		(std::abs(time - lastUpdateTime) >= sampleDuration)){
 			lastUpdateTime = time;
 			requestUpdate();
 	}

@@ -22,7 +22,7 @@ namespace treeContainer
 		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtr>
 		//! \param startNode Węzeł z którego ma wystartować ścieżka
-		//! \param endNode Węzeł do którego ma dojść ścieżka
+		//! \param endNode Węzeł do którego dojdę ścieżką
 		//! \return Długość ścieżki pomiędzy węzłami
 		static Node::SizeType distance(NPtr startNode, NPtr endNode)
 		{
@@ -39,7 +39,7 @@ namespace treeContainer
 
 		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtr>
-		//! \param node węzeł z którego chcemy pobrać ścieżkę do roota
+		//! \param node Węzeł z którego chcemy pobrać ścieżkę do roota
 		static Type<NPtr> upPath(NPtr startNode)
 		{
 			Type<NPtr> ret;
@@ -56,8 +56,8 @@ namespace treeContainer
 
 		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtr>
-		//! \param startNode węzeł z którego ma się rozpocząć ścieżka
-		//! \param endNode węzeł w którym ma się kończyć ścieżka
+		//! \param startNode Węzeł z którego ma się rozpocząć ścieżka
+		//! \param endNode Węzeł w którym ma się kończyć ścieżka
 		//! \return ścieżka pomiędzy węzłami - kolejne węzły
 		static Type<NPtr> findPath(NPtr startNode, NPtr endNode)
 		{
@@ -98,8 +98,8 @@ namespace treeContainer
 					auto retIT = std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), intersectResult.begin());
 
 					if (retIT != intersectResult.end()){
-						//mamy punkt przeciecia - drogi się schodzą
-						//szukam najblizszego punktu przeciecia
+						//mamy punkt przecięcia - drogi się schodzą
+						//szukam najbliższego punktu przecięcia
 						std::set<NPtr> intersectionSet(intersectResult.begin(), retIT);
 						NPtr intersectionPoint;
 

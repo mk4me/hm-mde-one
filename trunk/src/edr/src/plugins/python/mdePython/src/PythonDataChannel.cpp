@@ -1,4 +1,5 @@
 #include "PythonDataChannel.h"
+#include <dataaccessorlib/Wrappers.h>
 
 namespace py = boost::python;
 
@@ -13,7 +14,7 @@ python::PythonDataChannel::~PythonDataChannel()
 
 }
 
-python::PythonDataChannel python::PythonDataChannel::convert(c3dlib::VectorChannelConstPtr channel)
+python::PythonDataChannel python::PythonDataChannel::convert(c3dlib::VectorChannelReaderInterfaceConstPtr channel)
 {
 	UTILS_ASSERT(channel);
 	PythonDataChannel c;
@@ -22,21 +23,41 @@ python::PythonDataChannel python::PythonDataChannel::convert(c3dlib::VectorChann
 	for (auto i = 0; i < count; ++i) {
 		c.data.push_back(channel->value(i));
 	}
-	c.name = channel->getName();
-	c.frequency = channel->getSamplesPerSecond();
+
+	auto adf = channel->feature<dataaccessor::IDescriptorFeature>();
+	if (adf != nullptr) {
+		c.name = adf->name();
+	}
+
+	auto uaf = channel->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
+	if (uaf != nullptr) {
+		c.frequency = 1.0 / uaf->argumentsInterval();
+	}
 	return c;
 }
 
-c3dlib::VectorChannelPtr python::PythonDataChannel::convert(const PythonDataChannel& obj)
+c3dlib::VectorChannelReaderInterfacePtr python::PythonDataChannel::convert(const PythonDataChannel& obj)
 {
-	c3dlib::VectorChannelPtr channel = utils::make_shared<c3dlib::VectorChannel>(obj.getFrequency());
 	auto name = obj.getName();
-	channel->setName(name.empty() ? "Result" : name);
-	auto data = obj.getData();
-	int count = data.size();
-	for (int i = 0; i < count; ++i) {
-		channel->addPoint(data[i]);
+
+	if (name.empty() == true) {
+		name = "Result";
 	}
+
+	auto wdata = obj.getData();
+	const auto size = wdata.size();
+	auto uaf = utils::make_shared<dataaccessor::UniformArgumentsFeature<c3dlib::VectorChannelReaderInterface::argument_type>>(1.0 / obj.getFrequency());
+	auto baf = utils::make_shared<dataaccessor::BoundedArgumentsFeature<c3dlib::VectorChannelReaderInterface::argument_type>>(0.0, (size - 1) / obj.getFrequency());
+	auto ff = dataaccessor::FunctionFeature::feature(true);
+
+	utils::shared_ptr<dataaccessor::IDescriptorFeature> df(dataaccessor::DescriptorFeature::create<c3dlib::VectorChannelReaderInterface::value_type,
+		c3dlib::VectorChannelReaderInterface::argument_type>(name, "", ""));
+
+	auto channel = dataaccessor::wrap(std::move(wdata), dataaccessor::UniformArgumentsGenerator<c3dlib::VectorChannelReaderInterface::argument_type>(uaf->argumentsInterval(), size));
+	channel->attachFeature(uaf);
+	channel->attachFeature(baf);
+	channel->attachFeature(ff);
+	channel->attachFeature(df);
 	return channel;
 }
 

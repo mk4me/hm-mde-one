@@ -666,6 +666,11 @@ Visualizer::Serie * Visualizer::createSerie(const utils::TypeInfo & requestedTyp
 	return visualizerImpl->createSerie(requestedType, data);
 }
 
+Visualizer::Serie * Visualizer::createSerie(const VariantConstPtr & data)
+{
+	return visualizerImpl->createSerie(data->data()->getTypeInfo(), data);
+}
+
 Visualizer::Serie * Visualizer::createSerie(Serie * serie)
 {
 	return visualizerImpl->createSerie(serie);

@@ -80,21 +80,6 @@ public:
 	//! ustawia przesunięcie
 	//! \param offset nowa wartość przesunięcia
 	virtual void setOffset(const QPointF& offset) = 0;
-
-public:/*
-    //! \return czas ustawiony przez timeline
-    double getTime() const;
-    //! \return aktualna wartość (dla aktualnego czasu)
-    double getCurrentValue() const;
-    //! ustawia nazwę krzywej
-    //! \param name nowa nazwa krzywej
-    virtual void setName(const std::string & name);
-    //! \return nazwa krzywej
-    virtual const std::string getName() const;
-
-
-    
-*/
 };
 
 #endif

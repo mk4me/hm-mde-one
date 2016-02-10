@@ -12,6 +12,7 @@
 
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/c3d/C3DCollections.h>
+#include <dataaccessorlib/Statistics.h>
 
 //! Klasa wizualizuje eventy na wykresie. Są one reprezentowane jako szerokie pasy.
 //! Czerwone dla eventów lewych i zielone dla prawych
@@ -63,8 +64,12 @@ public:
         timeType begin;
         //! koniec czasu, w którym event się kończy
         timeType end;
+		//! początek czasu, w którym zaczyna się event, indeks próbki (najbliższej lub dokładnej)
+		std::size_t beginIdx;
+		//! koniec czasu, w którym event się kończy, indeks próbki (najbliższej lub dokładnej)
+		std::size_t endIdx;
         //! dane ze statystykami (znormalizowanego odcinka)
-		c3dlib::ScalarChannelStatsPtr stats;
+		c3dlib::ScalarChannelReaderInterfaceConstPtr scalar;
         //! znormalizowana krzywa
         PlotCurvePtr normalizedCurve;
     };

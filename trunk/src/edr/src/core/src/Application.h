@@ -56,6 +56,7 @@ namespace core {
 		friend class UIApplication;
 
 	private:
+		std::thread::id mainThreadID_;
 		plugin::VendorDescription vendor_;
 		ExtendedVersion version_;
 		utils::shared_ptr<Path> paths_;
@@ -125,14 +126,13 @@ namespace core {
 						utils::Filesystem::PathsList & translations);
 
 		int run();
-
+		std::thread::id mainThreadID() const;
 		ApplicationDescription * description();
 		LanguagesManager * languageManager();
 		DataManager* dataManager();
 		StreamDataManager* streamDataManager();
 		FileDataManager* fileDataManager();
 		loglib::ILog* logger();
-		loglib::ILog* exceptionLogger();
 		loglib::ILog* loggerPrototype();
 		Path* paths();
 		DataHierarchyManager* dataHierarchyManager();

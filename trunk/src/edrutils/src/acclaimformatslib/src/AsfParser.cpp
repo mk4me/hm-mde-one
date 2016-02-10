@@ -1,7 +1,7 @@
 #include <acclaimformatslib/AsfParser.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
-#include <utils/Utils.h>
+#include <utils/StreamTools.h>
 #include <queue>
 
 #define PARSER_VERSION "0.13"

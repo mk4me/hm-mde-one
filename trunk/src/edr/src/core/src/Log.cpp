@@ -3,6 +3,7 @@
 #include "Config.h"
 #include <utils/Debug.h>
 #include <corelib/Thread.h>
+#include "ApplicationCommon.h"
 
 #ifndef CORE_DISABLE_LOGGING
 //------------------------------------------------------------------------------
@@ -13,7 +14,16 @@
 std::string extendThreadMessage(const std::string & message)
 {
 	std::stringstream ss;
-	ss << "Thread [ID: " << std::this_thread::get_id() << ", owner: " << core::Thread::currentOwner() << ", destination: " << core::Thread::currentDestination() << "] -> " << message;
+
+	auto tID = std::this_thread::get_id();
+
+	if (tID == core::getApplication()->mainThreadID()) {
+		ss << "Thread [ID: " << tID << ", Main] -> " << message;
+	}
+	else {
+		ss << "Thread [ID: " << tID << ", owner: " << core::Thread::currentOwner() << ", destination: " << core::Thread::currentDestination() << "] -> " << message;
+	}
+
 	return ss.str();
 }
 

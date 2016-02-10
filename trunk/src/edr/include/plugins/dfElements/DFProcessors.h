@@ -17,6 +17,9 @@
 #include <dflib/Node.h>
 #include <dflib/IDFNode.h>
 #include <plugins/newVdf/INodeConfiguration.h>
+#include <dataaccessorlib/UniformArgumentsFeature.h>
+#include <dataaccessorlib/DescriptorFeature.h>
+#include <dataaccessorlib/Wrappers.h>
 
 class VectorDiff : public df::ProcessingNode, public df::IDFProcessor
 {
@@ -64,21 +67,30 @@ public:
 
 public:
     virtual void reset() {}
-    typedef typename OutputPtr::element_type::point_type SimpleOutT;
-    typedef typename InputPtr::element_type::point_type SimpleInT;
+    typedef typename OutputPtr::element_type::value_type SimpleOutT;
+	typedef typename InputPtr::element_type::value_type SimpleInT;
     virtual SimpleOutT processSingleValue(const SimpleInT& val) = 0;
     virtual void process()
     {
         InputPtr signal1 = inPinA->getValue();
 
         if (signal1) {
-            OutputPtr channel(new typename OutputPtr::element_type(signal1->size() / signal1->getLength()));
-            channel->setName("Result");
-            size_type count = signal1->size();
+			
+			auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();			
+			
+			std::vector<OutputPtr::element_type::sample_type> data;
+			data.reserve(signal1->size());
 
-            for (size_type i = 0; i < count; ++i) {
-                channel->addPoint(processSingleValue(signal1->value(i)));
-            }
+			for (size_type i = 0; i < signal1->size(); ++i) {
+				const auto sample = signal1->sample(i);
+				data.push_back({ sample.first, processSingleValue(sample.second)});
+			}
+
+			auto channel = dataaccessor::wrap(std::move(data));
+
+			channel->attachFeature(uaf);
+			channel->attachFeature(utils::make_shared<dataaccessor::DescriptorFeature>("Result", "", "", "", ""));
+
             outPinA->setValue(channel);
         } else {
 
@@ -108,8 +120,8 @@ public:
 
 public:
     virtual void reset() {}
-    typedef typename OutputPtr::element_type::point_type SimpleOutT;
-    typedef typename InputPtr::element_type::point_type SimpleInT;
+    typedef typename OutputPtr::element_type::value_type SimpleOutT;
+	typedef typename InputPtr::element_type::value_type SimpleInT;
     virtual SimpleOutT processSingleValue(const SimpleInT& v1, const SimpleInT& v2) = 0;
     virtual void process()
     {
@@ -117,14 +129,38 @@ public:
         InputPtr signal2 = inPinB->getValue();
 
         if (signal1 && signal2) {
-            OutputPtr channel(new typename OutputPtr::element_type(signal1->size() / signal1->getLength()));
-            channel->setName("Result");
-            size_type count = (std::min)(signal1->size(), signal2->size());
+			const size_type count = (std::min)(signal1->size(), signal2->size());
+			std::vector<OutputPtr::element_type::sample_type> out(count);
+
+			auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
+
+			const auto interval = uaf->argumentsInterval();            
 
             for (size_type i = 0; i < count; ++i) {
-                auto val = processSingleValue(signal1->value(i), signal2->value(i));
-                channel->addPoint(val);
-            }
+                const auto val = processSingleValue(signal1->value(i), signal2->value(i));
+				out[i] = { i * interval, val };
+            }			
+
+			auto df = signal1->feature<dataaccessor::IDescriptorFeature>();
+
+			dataaccessor::IFeaturePtr description;
+
+			if (df != nullptr){
+
+				description = utils::make_shared<dataaccessor::DescriptorFeature>("Result",
+					df->valueType(), df->valueUnit(),
+					df->argumentType(), df->argumentUnit());
+			}
+			else{
+				description.reset(dataaccessor::DescriptorFeature::create<OutputPtr::element_type::value_type,
+					OutputPtr::element_type::argument_type>("Result",
+					df->valueUnit(), df->argumentUnit()));
+			}
+
+			auto channel = dataaccessor::wrap(std::move(out));
+			channel->attachFeature(uaf);
+			channel->attachFeature(description);
+
             outPinA->setValue(channel);
         } else {
 
@@ -138,10 +174,10 @@ private:
    std::string name;
 };
 
-typedef UniversalChannelProcessor<ScalarInputPin, ScalarOutputPin, c3dlib::ScalarChannelReaderInterfaceConstPtr, c3dlib::ScalarChannelPtr> UniversalScalar;
-typedef UniversalChannel2Processor<ScalarInputPin, ScalarOutputPin, c3dlib::ScalarChannelReaderInterfaceConstPtr, c3dlib::ScalarChannelPtr> Universal2Scalar;
-typedef UniversalChannelProcessor<VectorInputPin, VectorOutputPin, c3dlib::VectorChannelReaderInterfaceConstPtr, c3dlib::VectorChannelPtr> UniversalVector;
-typedef UniversalChannel2Processor<VectorInputPin, VectorOutputPin, c3dlib::VectorChannelReaderInterfaceConstPtr, c3dlib::VectorChannelPtr> Universal2Vector;
+typedef UniversalChannelProcessor<ScalarInputPin, ScalarOutputPin, c3dlib::ScalarChannelReaderInterfaceConstPtr, c3dlib::ScalarChannelReaderInterfaceConstPtr> UniversalScalar;
+typedef UniversalChannel2Processor<ScalarInputPin, ScalarOutputPin, c3dlib::ScalarChannelReaderInterfaceConstPtr, c3dlib::ScalarChannelReaderInterfaceConstPtr> Universal2Scalar;
+typedef UniversalChannelProcessor<VectorInputPin, VectorOutputPin, c3dlib::VectorChannelReaderInterfaceConstPtr, c3dlib::VectorChannelReaderInterfaceConstPtr> UniversalVector;
+typedef UniversalChannel2Processor<VectorInputPin, VectorOutputPin, c3dlib::VectorChannelReaderInterfaceConstPtr, c3dlib::VectorChannelReaderInterfaceConstPtr> Universal2Vector;
 
 class ScalarDiff : public Universal2Scalar
 {

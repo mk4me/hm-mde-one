@@ -1,6 +1,7 @@
 #include "NewChartPCH.h"
 #include "NewChartLabel.h"
 #include "NewChartDotFixed.h"
+#include <utils/Clamping.h>
 
 // nieladna kopia z NewChartMarker
 const int LABEL_WIDTH = 200;

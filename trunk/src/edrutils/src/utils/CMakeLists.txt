@@ -8,6 +8,14 @@ endif()
 CONFIG_OPTION(UTILS_ENABLE_PRIVATE_TESTS "Enable private class members testing?" OFF)
 
 SET_PUBLIC_HEADERS(
+	MemberExtractor.h
+	array_traits.h
+	container_traits.h
+	Clamping.h
+	DummyWrap.h
+	pointer_traits.h
+	StreamTools.h
+	ValueCarrier.h
 	Align.h
 	ClonePolicies.h
 	Pool.h
@@ -40,6 +48,7 @@ SET_PUBLIC_HEADERS(
 	StringConversionTools.h
 	SamplesStatus.h
 	memory.h
+	function_traits.h
 )
 
 #------------------------------------------------------------------------------

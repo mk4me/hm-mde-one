@@ -105,64 +105,27 @@ CostumeProfile IMUCostumeProfileEditionWizard::costumeProfile() const
 {
 	CostumeProfile ret;
 
-	ret.name = "New profile";
-
-	/*auto calibData = ui->calibrationAlgorithmComboBox->currentData();
-	auto motionData = ui->motionEstimationAglorithmComboBox->currentData();
-	auto skeletonData = ui->modelComboBox->currentData();
-
-	if (calibData.isValid() == true && calibData.canConvert<IMUCostumeCalibrationAlgorithmConstPtr>() == true){
-		auto calibAlgorithm = calibData.value<IMUCostumeCalibrationAlgorithmConstPtr>();
-		if (calibAlgorithm != nullptr){
-			ret.calibrationAlgorithm.reset(calibAlgorithm->create());
-		}
-	}
-
-	if (motionData.isValid() == true && motionData.canConvert<IMUCostumeMotionEstimationAlgorithmConstPtr>() == true){
-		auto motionAlgorithm = motionData.value<IMUCostumeMotionEstimationAlgorithmConstPtr>();
-		if (motionAlgorithm != nullptr){
-			ret.motionEstimationAlgorithm.reset(motionAlgorithm->create());
-		}
-	}
-
-	if (skeletonData.isValid() == true && skeletonData.canConvert<SkeletonConstPtr>() == true){
-		auto skeleton = skeletonData.value<SkeletonConstPtr>();
-		if (skeleton != nullptr){
-			ret.skeleton.reset(new Skeleton(*skeleton));
-		}
-	}
-
-	IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions sds;
-
-	auto scm = ui->sensorsConfigurationTableWidget->model();
-	for (unsigned int i = 0; i < scm->rowCount(); ++i)
-	{
-		if (ui->sensorsConfigurationTableWidget->item(i, UseIDX)->checkState() == Qt::Checked){
-
-			auto sensorID = scm->data(scm->index(i, SensorIDX)).toUInt();
-
-			CostumeProfile::SensorDescription sd;
-			sd.jointIdx = scm->data(scm->index(i, JointIDX), Qt::UserRole).toInt();
-			sd.jointName = scm->data(scm->index(i, JointIDX)).toString().toStdString();
-			sd.offset = scm->data(scm->index(i, OffsetIDX), Qt::UserRole).value<osg::Vec3d>();
-			sd.preMulRotation = scm->data(scm->index(i, PreMulRotationIDX), Qt::UserRole).value<osg::Quat>();
-			sd.postMulRotation = scm->data(scm->index(i, PostMulRotationIDX), Qt::UserRole).value<osg::Quat>();
-
-			auto algo = scm->data(scm->index(i, AlgorithmIDX), Qt::UserRole).value<IIMUOrientationEstimationAlgorithmConstPtr>();
-
-			sd.orientationEstimationAlgorithm.reset(algo->create());		
-
-			ret.sensorsDescriptions.insert({ sensorID, sd });
-			sds.insert({ sensorID, sd });
-		}
-	}*/
+	ret.name = "New profile";	
 
 	ret.skeleton.reset(new IMU::Skeleton(*dynamic_cast<ModelConfigurationWizardPage*>(page(0))->skeleton()));
 	ret.sensorsDescriptions = dynamic_cast<SensorsConfigurationWizardPage*>(page(2))->sensorsDescriptions();
 	ret.calibrationAlgorithm.reset(dynamic_cast<MotionEstimationConfigurationWizardPage*>(page(3))->calibrationAlgorithm()->create());
 	ret.motionEstimationAlgorithm.reset(dynamic_cast<MotionEstimationConfigurationWizardPage*>(page(3))->motionEstimationAlgorithm()->create());
 
-	//ret.activeJoints = ret.motionEstimationAlgorithm->activeJoints(ret.skeleton, ret.sensorsDescriptions);
+	IMU::IMUCostumeCalibrationAlgorithm::SensorsDescriptions sd;
+
+	for (const auto & s : ret.sensorsDescriptions)
+	{
+		IMU::IMUCostumeCalibrationAlgorithm::SensorDescription lsd;
+
+		lsd.adjustment = s.second.adjustment;
+		lsd.jointIdx = s.second.jointIdx;
+		lsd.jointName = s.second.jointName;
+
+		sd.insert(sd.end(),{ s.first, lsd });
+	}
+
+	ret.activeJoints = ret.motionEstimationAlgorithm->activeJoints(ret.skeleton, sd);
 
 	return ret;
 }

@@ -53,7 +53,7 @@ namespace dicom {
 		//! \return pusty obiekt wizualizatora
 		virtual IVisualizer* create() const;
 		//! Tworzy obiekt typu NewChartSerie
-		//! \param data ObjectWrapper z interfejsem do odczytu DataChannela
+		//! \param data Variant z interfejsem do odczytu akcesora
 		//! \param name nazwa tworzonej serii danych
 		//! \return utworzona seria
 		plugin::IVisualizer::ISerie *createSerie(const utils::TypeInfo & requestedType, const core::VariantConstPtr& data);

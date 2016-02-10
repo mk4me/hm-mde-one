@@ -58,7 +58,7 @@ namespace core {
 			virtual void initialize(Variant * object);
 
 			virtual IVariantInitializer * clone() const;
-			virtual const bool isEqual(const IVariantInitializer &) const;
+			virtual bool isEqual(const IVariantInitializer &) const;
 
 			const plugin::IParserPtr parser() const;
 

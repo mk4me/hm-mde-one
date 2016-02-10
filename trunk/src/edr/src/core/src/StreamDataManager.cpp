@@ -509,7 +509,7 @@ public:
 		parser->reset();
 	}
 	virtual IVariantInitializer * clone() const { return new SimpleInitializer(parser, idx); }
-	virtual const bool isEqual(const IVariantInitializer &) const { return false; }
+	virtual bool isEqual(const IVariantInitializer &) const { return false; }
 
 private:
 	utils::shared_ptr<StParser> parser;
@@ -983,7 +983,7 @@ const plugin::IParserPtr core::StreamDataManager::CompoundInitializer::parser() 
 	return ret;
 }
 
-const bool core::StreamDataManager::CompoundInitializer::isEqual(const IVariantInitializer &) const
+bool core::StreamDataManager::CompoundInitializer::isEqual(const IVariantInitializer &) const
 {
 	return false;
 }

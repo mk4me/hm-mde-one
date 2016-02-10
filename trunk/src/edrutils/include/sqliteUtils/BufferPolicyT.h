@@ -10,7 +10,7 @@
 
 #include <array>
 #include <vector>
-#include <utils/Utils.h>
+#include <utils/Clamping.h>
 #include <utils/SmartPtr.h>
 
 namespace sqliteUtils

@@ -22,7 +22,7 @@ DEFINE_WRAPPER_INHERITANCE(c3dlib::ForceCollection,  c3dlib::VectorChannelCollec
 DEFINE_WRAPPER_INHERITANCE(c3dlib::AngleCollection,  c3dlib::VectorChannelCollection);
 DEFINE_WRAPPER_INHERITANCE(c3dlib::PowerCollection,  c3dlib::VectorChannelCollection);
 DEFINE_WRAPPER_INHERITANCE(c3dlib::MomentCollection, c3dlib::VectorChannelCollection);
-DEFINE_WRAPPER_INHERITANCE(c3dlib::MarkerCollection, c3dlib::VectorChannelCollection);
-DEFINE_WRAPPER_INHERITANCE(c3dlib::GRFCollection,    c3dlib::VectorChannelCollection);
+DEFINE_WRAPPER(c3dlib::MarkerCollection, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
+DEFINE_WRAPPER(c3dlib::GRFCollection, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
 
 #endif

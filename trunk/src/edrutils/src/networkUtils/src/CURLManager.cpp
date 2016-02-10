@@ -3,7 +3,7 @@
 #include <condition_variable>
 #include <map>
 #include <set>
-#include <utils/Utils.h>
+#include <utils/DummyWrap.h>
 #include <utils/Debug.h>
 #include <utils/SmartPtr.h>
 #include <curl/multi.h>

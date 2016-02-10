@@ -3,6 +3,7 @@
 #include "boost/python/import.hpp"
 #include <plugins/python/python/PythonEditor.h>
 #include "boost/python/exec.hpp"
+#include <dataaccessorlib/Wrappers.h>
 
 namespace py = boost::python;
 
@@ -69,12 +70,36 @@ void python::PythonProcessingBlock::process()
 			throw std::runtime_error("Wrong output list size");
 		}
 
-		c3dlib::VectorChannelPtr channel(new c3dlib::VectorChannel(signal1->size() / signal1->getLength()));
-		channel->setName("Result");
-		for (int i = 0; i < count; ++i) {
-			channel->addPoint(osg::Vec3(vecX[i], vecY[i], vecZ[i]));
+		auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
+		auto baf = signal1->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();
+		auto ff = signal1->getOrCreateFeature<dataaccessor::IFunctionFeature>();
+
+		std::vector<c3dlib::VectorChannelReaderInterface::value_type> data;
+		data.reserve(count);
+
+		auto adf = signal1->feature<dataaccessor::IDescriptorFeature>();
+		utils::shared_ptr<dataaccessor::IDescriptorFeature> df;
+		if (adf != nullptr) {
+			df = utils::make_shared<dataaccessor::DescriptorFeature>(adf->name() + " - Result", adf->valueType(),
+				adf->valueUnit(), adf->argumentType(), adf->argumentUnit());
+
 		}
-		outPinA->setValue(channel);
+		else {
+			df.reset(dataaccessor::DescriptorFeature::create<c3dlib::VectorChannelReaderInterface::value_type,
+				c3dlib::VectorChannelReaderInterface::argument_type>("Result", "", ""));
+		}
+
+		for (int i = 0; i < count; ++i) {
+			data.push_back(osg::Vec3(vecX[i], vecY[i], vecZ[i]));
+		}
+
+		auto rc = dataaccessor::wrap(std::move(data), dataaccessor::UniformArgumentsGenerator<c3dlib::VectorChannelReaderInterface::argument_type>(uaf->argumentsInterval(), signal1->size()));
+		rc->attachFeature(uaf);
+		rc->attachFeature(baf);
+		rc->attachFeature(ff);
+		rc->attachFeature(df);
+
+		outPinA->setValue(rc);
 	}
 	else {
 

@@ -43,7 +43,7 @@ CORE_PLUGIN_BEGIN("DFElements", core::UID::GenerateUniqueID("{678727A0-ED31-43CA
 			"{B82BF44A-A32C-4454-BE59-9114BECD17D9}",
 			QIcon(":/dfElements/icons/power.png"));
 		VDF_ADD_DATA_SOURCE(
-			vdf::UniversalSource<c3dlib::ScalarChannelReader>,
+			vdf::UniversalSource<c3dlib::ScalarChannelReaderInterface>,
 			"Scalar source",
 			"{8E69F5D7-2314-4831-BE40-7081109A1997}",
 			QIcon(":/newVdf/icons/source.png"));

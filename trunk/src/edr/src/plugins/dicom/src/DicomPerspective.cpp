@@ -243,7 +243,7 @@ void dicom::DicomHelper::createSeries( const core::VisualizerPtr & visualizer, c
 	wrp->setMetadata("DICOM_XML_PATTERN", xmlFilename);
     wrp->setMetadata("TRIAL_NAME", trialName);
     //core::VariantPtr wrp = wrapper->clone();
-    auto serie = visualizer->createSerie(wrp->data()->getTypeInfo(), wrp);
+    auto serie = visualizer->createSerie(wrp);
     auto layeredSerie = dynamic_cast<LayeredSerie*>(serie->innerSerie());
     UTILS_ASSERT(layeredSerie);
     layeredSerie->setName(path.toStdString());

@@ -1,5 +1,5 @@
 #include <networkUtils/CURLFTPHelper.h>
-#include <utils/Utils.h>
+#include <utils/StreamTools.h>
 
 using namespace networkUtils;
 

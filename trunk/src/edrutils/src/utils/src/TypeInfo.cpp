@@ -42,6 +42,11 @@ bool TypeInfo::operator<(const TypeInfo& obj) const
 	return before(obj);
 }
 
+bool TypeInfo::operator>(const TypeInfo& obj) const
+{
+	return !before(obj);
+}
+
 bool TypeInfo::operator==(const TypeInfo& obj) const
 {
 	return compare(obj);
@@ -71,7 +76,6 @@ std::size_t TypeInfo::hash_code() const
 {
 	return (*typeinfo).hash_code();
 }
-
 
 ExtendedTypeInfo::ExtendedTypeInfo()
 	: TypeInfo(), size_(0)

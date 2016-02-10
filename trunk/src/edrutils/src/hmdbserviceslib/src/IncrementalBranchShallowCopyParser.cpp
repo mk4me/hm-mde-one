@@ -4,7 +4,7 @@
 #include <hmdbserviceslib/DateTimeUtils.h>
 #include <hmdbserviceslib/Entity.h>
 #include <hmdbserviceslib/ShallowCopy.h>
-#include <utils/Utils.h>
+#include <utils/StreamTools.h>
 
 namespace hmdbServices
 {

@@ -25,9 +25,9 @@ python::PythonDataChannel python::MdeBridge::getVectorChannel(const std::string&
 {
 	auto transaction = getDataManagerReader()->transaction();
 	core::ConstVariantsList objects;
-	transaction->getObjects(objects, typeid(c3dlib::VectorChannel), false);
+	transaction->getObjects(objects, typeid(c3dlib::VectorChannelReaderInterface), false);
 
-	c3dlib::VectorChannelConstPtr channel;
+	c3dlib::VectorChannelReaderInterfaceConstPtr channel;
 	for (auto& var : objects) {
 		std::string source; var->getMetadata("core/source", source);
 		std::string name; var->getMetadata("core/name", name);
@@ -52,13 +52,18 @@ void python::MdeBridge::addVectorChannel(const PythonDataChannel& channel)
 	} else if (channel.getData().empty()) {
 		throw std::runtime_error("Channel was not initialized with data");
 	}
-	c3dlib::VectorChannelPtr c = PythonDataChannel::convert(channel);
+	auto c = PythonDataChannel::convert(channel);
 
-	utils::ObjectWrapperPtr wrp = utils::ObjectWrapper::create<c3dlib::VectorChannel>();
-	wrp->set(c);
-	core::VariantPtr wrapper = core::Variant::create(wrp);
+	auto wrapper = core::Variant::wrap(c);
 	core::HierarchyHelperPtr helper = core::HierarchyHelperPtr(new NewVector3ItemHelper(wrapper));
-	std::string name = c->getName();
+	std::string name;
+
+	auto adf = c->feature<dataaccessor::IDescriptorFeature>();
+
+	if (adf != nullptr) {
+		name = adf->name();
+	}
+
 	if (name.empty()) {
 		name = wrapper->data()->getClassName();
 	}
@@ -72,7 +77,7 @@ python::DataList python::MdeBridge::listLoadedVectors()
 	python::DataList dataList;
 	auto transaction = getDataManagerReader()->transaction();
 	core::ConstVariantsList objects;
-	transaction->getObjects(objects, typeid(c3dlib::VectorChannel), false);
+	transaction->getObjects(objects, typeid(c3dlib::VectorChannelReaderInterface), false);
 	std::string source;
 	std::string name;
 	for (auto& var : objects) {

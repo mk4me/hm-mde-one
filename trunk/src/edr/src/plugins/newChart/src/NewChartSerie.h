@@ -98,8 +98,6 @@ public:
     //! ustawia aktywność krzywej
     //! \param val aktywna / nieaktywna
     void setActive(bool val);
-    //! \return statystyki dla ustawionego ScalarChannelReaderInterface
-	c3dlib::ScalarChannelStatsConstPtr getStats() const { return stats; } //return pointHelper->getStats(); }
     //! \return ustawiony ScalarChannelReaderInterface
 	c3dlib::ScalarChannelReaderInterfaceConstPtr getReader() const { return reader; }
     //! odlacza krzywa od wykresu
@@ -155,10 +153,10 @@ private:
 	utils::TypeInfo requestedType;
     //! wizualizowana krzywa
     NewChartCurve* curve;
-    //! obiekt ze statystykami
-	c3dlib::ScalarChannelStatsPtr stats;
     //! obiekt z danymi
 	c3dlib::ScalarChannelReaderInterfaceConstPtr reader;
+	//!
+	utils::shared_ptr<c3dlib::ScalarChannelReaderInterface::FunctionAccessor> continousReder;
     //! obiekt zajmujący się logika eventów
     EventsHelperPtr eventsHelper;
     //! czy seria jest aktywna

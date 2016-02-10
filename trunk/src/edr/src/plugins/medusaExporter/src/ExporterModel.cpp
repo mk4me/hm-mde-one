@@ -18,7 +18,7 @@
 #include <corelib/ISourceManager.h>
 #include "CSVExporter.h"
 #include <iosfwd>
-#include "utils/Utils.h"
+#include <utils/StreamTools.h>
 #include "plugins/dicom/Annotations.h"
 
 

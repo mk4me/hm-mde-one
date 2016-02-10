@@ -26,7 +26,7 @@ namespace treeContainer
 		DEFINE_SMART_POINTERS_EXT(node_type, Node);
 		//! Dzieci wezla
 		typedef Node::Nodes<NodePtr> Children;
-		//! Typ ilości
+		//! Typ ilo�ci
 		typedef Node::SizeType size_type;
 
 	private:
@@ -38,14 +38,14 @@ namespace treeContainer
 			value_(std::move(other.value_))
 		{}
 
-		//! \param value Wartośc przechowywana w węźle (kopiowanie)
+		//! \param value Wartość przechowywana w węźle (kopiowanie)
 		NodeT(const value_type & value) : value_(value) {}
-		//! \param value Wartośc przechowywana w węźle (move semantics)
+		//! \param value Wartość przechowywana w węźle (move semantics)
 		NodeT(value_type && value) : value_(std::move(value)) {}
 
-		//! \param value Wartośc przechowywana w węźle (kopiowanie)
+		//! \param value Wartość przechowywana w węźle (kopiowanie)
 		NodeT(NodePtr parent, const value_type & value) : parent_(parent), value_(value) {}
-		//! \param value Wartośc przechowywana w węźle (move semantics)
+		//! \param value Wartość przechowywana w węźle (move semantics)
 		NodeT(NodePtr parent, value_type && value) : parent_(parent), value_(std::move(value)) {}
 
 	public:
@@ -66,21 +66,21 @@ namespace treeContainer
 			return ret;
 		}
 
-		//! \param value Wartość z jaką tworzymy węzeł
-		//! \return Nowy węzeł z zadaną wartością
+		//! \param value Wartość z jaką tworzymy Węzeł
+		//! \return Nowy Węzeł z zadaną wartością
 		static NodePtr create(const value_type & value = value_type())
 		{
 			return NodePtr(new node_type(value));
 		}
 
-		//! \param value Wartość z jaką tworzymy węzeł
-		//! \return Nowy węzeł z zadaną wartością
+		//! \param value Wartość z jaką tworzymy Węzeł
+		//! \return Nowy Węzeł z zadaną wartością
 		static NodePtr create(value_type && value)
 		{
 			return NodePtr(new node_type(std::move(value)));
 		}
 
-		//! \param parentNode węzeł do którego dodajemy wartość dziecka
+		//! \param parentNode Węzeł do którego dodajemy wartość dziecka
 		//! \param node Węzeł
 		//! \return Czy udało się dodać węzeł
 		static void add(NodePtr parentNode, NodePtr node)
@@ -97,9 +97,9 @@ namespace treeContainer
 			node->parent_ = parentNode;
 		}
 
-		//! \param parentNode węzeł do którego dodajemy wartość dziecka
-		//! \param value Wartośc dodawanego węzła
-		//! \return węzeł dziecko z zadaną wartością
+		//! \param parentNode Węzeł do którego dodajemy wartość dziecka
+		//! \param value Wartość dodawanego węzła
+		//! \return Węzeł dziecko z zadaną wartością
 		static NodePtr add(NodePtr parentNode, const value_type & value)
 		{
 			NodePtr ret(new NodeT(parentNode, value));
@@ -107,9 +107,9 @@ namespace treeContainer
 			return ret;
 		}
 
-		//! \param parentNode węzeł do którego dodajemy wartość dziecka
-		//! \param value Wartośc dodawanego węzła
-		//! \return węzeł dziecko z zadaną wartością
+		//! \param parentNode Węzeł do którego dodajemy wartość dziecka
+		//! \param value Wartość dodawanego węzła
+		//! \return Węzeł dziecko z zadaną wartością
 		static NodePtr add(NodePtr parentNode, value_type && value)
 		{
 			NodePtr ret(new NodeT(parentNode, std::move(value)));
@@ -117,9 +117,9 @@ namespace treeContainer
 			return ret;
 		}
 
-		//! \param parentNode węzeł do którego dodajemy wartość dziecka
-		//! \param value Wartośc dodawanego węzła
-		//! \return węzeł dziecko z zadaną wartością
+		//! \param parentNode Węzeł do którego dodajemy wartość dziecka
+		//! \param value Wartość dodawanego węzła
+		//! \return Węzeł dziecko z zadaną wartością
 		static void swap(NodePtr nodeToReplace, NodePtr node)
 		{
 			if ((nodeToReplace == node) ||
@@ -195,14 +195,14 @@ namespace treeContainer
 		}
 
 		//! \param node Węzeł który sprawdzamy czy jest naszym przodkiem
-		//! \return Prawda jeżeli węzeł jest naszym przodkiem (znajdziemy go idąc w góre po parentach)
+		//! \return Prawda jeśli węzeł jest naszym przodkiem (znajdziemy go id�c w g�re po parentach)
 		bool isAncestor(NodeConstPtr node) const
 		{
 			return Node::isAncestor(this, node);
 		}
 
 		//! \param node Węzeł który sprawdzamy czy jest naszym potomkiem
-		//! \return Prawda jeżeli węzeł jest naszym potomkiem (nasz węzeł znajdziemy go idąc w góre po parentach tego węzła)
+		//! \return Prawda jeśli węzeł jest naszym potomkiem (nasz Węzeł znajdziemy go id�c w g�re po parentach tego węzła)
 		bool isDescendant(NodeConstPtr node) const
 		{
 			return Node::isDescendant(this, node);
@@ -226,7 +226,7 @@ namespace treeContainer
 			return children_.size();
 		}
 
-		//! \return Wysokośc węzła - odległość do roota
+		//! \return Wysokość węzła - odległość do roota
 		size_type depth() const
 		{
 			size_type l = 0;

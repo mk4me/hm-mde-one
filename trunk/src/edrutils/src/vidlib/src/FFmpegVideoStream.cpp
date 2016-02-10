@@ -2,7 +2,7 @@
 #include "VidLibPrivate.h"
 #include <vidlib/FFmpegError.h>
 #include <vidlib/FFmpegVideoStream.h>
-#include <utils/Utils.h>
+#include <utils/StreamTools.h>
 //!
 #define AVIO_FFMPE_ENABLE_DUMP_INFO
 

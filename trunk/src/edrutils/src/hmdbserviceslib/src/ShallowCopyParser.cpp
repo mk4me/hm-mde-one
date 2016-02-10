@@ -3,7 +3,7 @@
 #include "XMLHelper.h"
 #include <hmdbserviceslib/DateTimeUtils.h>
 #include <hmdbserviceslib/Entity.h>
-#include <utils/Utils.h>
+#include <utils/StreamTools.h>
 
 namespace hmdbServices
 {

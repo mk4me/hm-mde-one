@@ -29,7 +29,7 @@ void WrappedItemHelper::createSeries( const VisualizerPtr & visualizer, const QS
     UTILS_ASSERT(wrapper, "Item should be initialized");
 	//wrapper->getRawPtr();
 	
-	auto serie = visualizer->createSerie(wrapper->data()->getTypeInfo(), wrapper);
+	auto serie = visualizer->createSerie(wrapper);
 	serie->innerSerie()->setName(path.toStdString());
     series.push_back(serie);
 }

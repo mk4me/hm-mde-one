@@ -15,15 +15,17 @@
 #include <vidlib/osg/VideoImageStream.h>
 #include <vidlib/osg/OsgAdapter.h>
 #include <vidlib/FFmpegVideoStream.h>
-#include <datachannellib/DataChannel.h>
-#include <datachannellib/DataChannelCollection.h>
+#include <dataaccessorlib/Accessors.h>
+#include <dataaccessorlib/BoundedArgumentsFeature.h>
+#include <dataaccessorlib/UniformArgumentsFeature.h>
+#include <dataaccessorlib/AccessorsCollection.h>
 
 
 typedef osg::ref_ptr<vidlib::VideoImage> VideoImageOsgPtr;
 typedef vidlib::OsgStream VideoStream;
 typedef osg::ref_ptr<VideoStream> VideoStreamPtr;
 typedef osg::ref_ptr<const VideoStream> VideoStreamConstPtr;
-typedef utils::IRawUniformDataChannelReader<VideoImageOsgPtr, float> VideoChannelReaderInterface;
+typedef dataaccessor::IIndependentDiscreteAccessorT<VideoImageOsgPtr, float> VideoChannelReaderInterface;
 
 class VideoChannel : public VideoChannelReaderInterface
 {
@@ -38,10 +40,10 @@ private:
     std::string name;
 
 public:
-	VideoChannel(VideoStreamPtr video, const std::string & name = std::string()) :
-	videoStream(video), samplesPerSecond(static_cast<float>(videoStream->getFramerate())), name(name)
+	VideoChannel(VideoStreamPtr video) : videoStream(video), samplesPerSecond(static_cast<float>(videoStream->getFramerate()))
 	{
-        invSamplesPerSecond = 1.0f / samplesPerSecond;
+		attachFeature(dataaccessor::IFeaturePtr(new dataaccessor::BoundedArgumentsFeature<float>(0.0, video->getDuration())));
+		attachFeature(dataaccessor::IFeaturePtr(new dataaccessor::UniformArgumentsFeature<float>(1.0f / samplesPerSecond)));        
     }
 
 	virtual ~VideoChannel()
@@ -49,66 +51,30 @@ public:
 
 	}
 
-	virtual VideoChannel* clone() const
+	argument_type getLength() const
 	{
-		//VideoStreamPtr v(new VideoStream(videoStream->clone()));
-		VideoStreamPtr v(videoStream->clone());
-		return new VideoChannel(v,name);
-	}
-
-    virtual const std::string & getName() const
-    {
-        return name;
-    }
-
-    virtual void setName(const std::string & name)
-    {
-        this->name = name;
-    }
-
-    virtual float getSamplesPerSecond() const
-    {
-        return samplesPerSecond;
-    }
-
-    virtual float getSampleDuration() const
-    {
-        return invSamplesPerSecond;
-    }
-
-	virtual time_type getLength() const
-	{
-		return static_cast<time_type>(videoStream->getDuration());
+		return videoStream->getDuration();
 	}
 	//! \return Liczba punktów pomiarowych.
-	virtual size_type size() const
+	virtual size_type size() const override
 	{
 		return videoStream->getFrameCount();
-	}
-
-    //! \return Czy kanał nie zawiera danych
-    virtual bool empty() const
-    {
-        return videoStream->getFrameCount() == 0;
-    }
+	}    
 
     //! \param idx Indeks próbki
     //! \return Wartość czasu dla danego indeksu
-    virtual time_type argument(size_type idx) const
+    virtual argument_type argument(const size_type idx) const override
     {
         UTILS_ASSERT((idx >= 0),"Błędny indeks dla kanały - musi być większy lub równy 0");
-        return static_cast<time_type>(videoStream->getFrameDuration() * idx);
+        return videoStream->getFrameDuration() * idx;
     }
 
     //! \param idx Indeks próbki
     //! \return Wartość próbki dla danego indeksu
-    virtual point_type_const_reference value(size_type idx) const
+    virtual value_type value(const size_type idx) const override
     {
-        static VideoImageOsgPtr ret;
-
         videoStream->setTime(idx * videoStream->getFrameDuration());
-
-        return ret = videoStream->getImage(vidlib::PixelFormatARGB);
+        return videoStream->getImage(vidlib::PixelFormatARGB);
     }
 
 	VideoStreamPtr getVideoStream() {
@@ -124,15 +90,10 @@ public:
 protected:
 	//! \param time
 	//! \return Zinterpolowana wartość dla zadanego czasu.
-	virtual point_type innerGetValue(time_type time) const
+	virtual value_type innerGetValue(argument_type time) const
 	{
 		videoStream->setTime(time);
 		return videoStream->getImage(vidlib::PixelFormatARGB);
-	}
-
-	virtual void innerAddPoint(time_type time, point_type_const_reference point) 
-	{
-		UTILS_ASSERT(false);
 	}
 };
 typedef utils::shared_ptr<VideoChannel> VideoChannelPtr;
@@ -140,15 +101,16 @@ typedef utils::shared_ptr<const VideoChannel> VideoChannelConstPtr;
 
 //utils::DataChannelTimeAccessor<VideoChannel::point_type, VideoChannel::time_type, utils::DiscreteInterpolator, utils::BorderExtrapolator>
 
-class VideoCollection : public utils::DataChannelCollection<VideoChannel>
+class VideoCollection : public dataaccessor::AccessorsCollection<VideoChannel>
 {
 
 };
+
 typedef utils::shared_ptr<VideoCollection> VideoCollectionPtr;
 typedef utils::shared_ptr<const VideoCollection> VideoCollectionConstPtr;
 
-DEFINE_WRAPPER(VideoChannel, utils::PtrPolicyStd, utils::ClonePolicyVirtualCloneMethod);
-DEFINE_WRAPPER(vidlib::Picture, utils::PtrPolicyStd, utils::ClonePolicyNotImplemented);
+DEFINE_WRAPPER(VideoChannel, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
+DEFINE_WRAPPER(vidlib::Picture, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
 DEFINE_WRAPPER(VideoStream, utils::PtrPolicyOSG, utils::ClonePolicyVirtualCloneMethod);
 
 #endif  // __HEADER_GUARD_VIDEO__WRAPPERS_H__

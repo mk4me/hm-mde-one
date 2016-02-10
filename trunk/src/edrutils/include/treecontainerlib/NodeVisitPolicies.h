@@ -17,21 +17,43 @@ namespace treeContainer
 	{
 		namespace Node
 		{
-
 			//! Polityka odwiedzania węzłów
 			struct PreOrder
 			{
 				//! \tparam NPtr Typ wskaźnika węzła
 				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename NPtr, typename Visitor>
-				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
-				//! \param visitor Obiekt przeglądający wezły
+				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param visitor Obiekt przeglądający węzły
 				static void visit(NPtr root, Visitor & visitor)
 				{
 					visitor(root);
 					for (const auto & child : root->children())
 					{
 						visit(NPtr(child), visitor);
+					}
+				}
+
+				//! \tparam NPtr Typ wskaźnika węzła
+				//! \tparam CondVisitor Typ odwiedzającego węzły
+				template<typename NPtr, typename CondVisitor>
+				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
+				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
+				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
+				{
+					if (condVisitor(root) == true){
+						for (const auto & child : root->children())
+						{
+							if (visitWhile(NPtr(child), condVisitor) == false){
+								return false;
+							}
+						}
+
+						return true;
+					}
+					else {
+						return false;
 					}
 				}
 			};
@@ -42,8 +64,8 @@ namespace treeContainer
 				//! \tparam NPtr Typ wskaźnika węzła
 				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename NPtr, typename Visitor>
-				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
-				//! \param visitor Obiekt przeglądający wezły
+				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param visitor Obiekt przeglądający węzły
 				static void visit(NPtr root, Visitor & visitor)
 				{
 					for (const auto & child : root->children())
@@ -51,6 +73,23 @@ namespace treeContainer
 						visit(NPtr(child), visitor);
 					}
 					visitor(root);
+				}
+
+				//! \tparam NPtr Typ wskaźnika węzła
+				//! \tparam CondVisitor Typ odwiedzającego węzły
+				template<typename NPtr, typename CondVisitor>
+				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
+				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
+				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
+				{
+					for (const auto & child : root->children())
+					{
+						if (visitWhile(NPtr(child), condVisitor) == false){
+							return false;
+						}
+					}
+					return condVisitor(root);
 				}
 			};
 
@@ -60,8 +99,8 @@ namespace treeContainer
 				//! \tparam NPtr Typ wskaźnika węzła
 				//! \tparam Visitor Typ odwiedzającego węzły
 				template<typename NPtr, typename Visitor>
-				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
-				//! \param visitor Obiekt przeglądający wezły i poziomy
+				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param visitor Obiekt przeglądający węzły i poziomy
 				static void visit(NPtr root, Visitor & visitor)
 				{
 					treeContainer::Node::Nodes<NPtr> nodes;
@@ -69,7 +108,7 @@ namespace treeContainer
 					treeContainer::Node::SizeType level = 0;
 					while (nodes.empty() == false)
 					{
-						//pobieramy dla następnego poziomu dzieci
+						//pobieramy dla nast�pnego poziomu dzieci
 						treeContainer::Node::Nodes<NPtr> nextLevelNodes;
 						for (const auto & node : nodes)
 						{
@@ -84,37 +123,12 @@ namespace treeContainer
 						++level;
 					}
 				}
-			};
 
-			//! \tparam VisitOrder Sposób oryginalnego odwiedzania, które chcemy odwrócić
-			template<typename VisitOrder>
-			//! Polityka odwiedzania węzłów
-			struct ReverseOrder
-			{
-				//! \tparam NPtr Typ wskaźnika węzła
-				//! \tparam Visitor Typ odwiedzającego węzły
-				template<typename NPtr, typename Visitor>
-				//! \param visitOrder Sposób przeglądania w kierunku który będziemy odwracać
-				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
-				//! \param visitor Obiekt przeglądający wezły i poziomy
-				static void visit(NPtr root, Visitor & visitor)
-				{
-					auto lt = NodeLinearization<VisitOrder, Backward>::linearize(root);
-					for (const auto & node : lt)
-					{
-						visitor(node);
-					}
-				}
-			};
-
-			//! Polityka odwiedzania węzłów z warunkiem
-			struct LevelOrderWhile
-			{
 				//! \tparam NPtr Typ wskaźnika węzła
 				//! \tparam CondVisitor Typ odwiedzającego węzły
 				template<typename NPtr, typename CondVisitor>
-				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
-				//! \param condVisitor Obiekt przeglądający wezły i poziomy z warunkiem
+				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
 				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
 				{
 					treeContainer::Node::Nodes<NPtr> nodes;
@@ -122,7 +136,7 @@ namespace treeContainer
 					treeContainer::Node::SizeType level = 0;
 					while (nodes.empty() == false)
 					{
-						//pobieramy dla następnego poziomu dzieci
+						//pobieramy dla nast�pnego poziomu dzieci
 						treeContainer::Node::Nodes<NPtr> nextLevelNodes;
 						for (const auto & node : nodes)
 						{
@@ -143,65 +157,32 @@ namespace treeContainer
 				}
 			};
 
-			//! Polityka odwiedzania węzłów z warunkiem
-			struct PreOrderWhile
-			{
-				//! \tparam NPtr Typ wskaźnika węzła
-				//! \tparam CondVisitor Typ odwiedzającego węzły
-				template<typename NPtr, typename CondVisitor>
-				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
-				//! \param condVisitor Obiekt przeglądający wezły i poziomy z warunkiem
-				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
-				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
-				{
-					if (condVisitor(root) == true){
-						for (const auto & child : root->children())
-						{
-							if (visitWhile(NPtr(child), condVisitor) == false){
-								return false;
-							}
-						}
-
-						return true;
-					}
-					else {
-						return false;
-					}
-				}
-			};
-
-			//! Polityka odwiedzania węzłów z warunkiem
-			struct PostOrderWhile
-			{
-				//! \tparam NPtr Typ wskaźnika węzła
-				//! \tparam CondVisitor Typ odwiedzającego węzły
-				template<typename NPtr, typename CondVisitor>
-				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
-				//! \param condVisitor Obiekt przeglądający wezły i poziomy z warunkiem
-				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
-				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
-				{
-					for (const auto & child : root->children())
-					{
-						if (visitWhile(NPtr(child), condVisitor) == false){
-							return false;
-						}
-					}
-					return condVisitor(root);
-				}
-			};
-
 			//! \tparam VisitOrder Sposób oryginalnego odwiedzania, które chcemy odwrócić
 			template<typename VisitOrder>
-			//! Polityka odwiedzania węzłów z warunkiem
-			struct ReverseOrderWhile
+			//! Polityka odwiedzania węzłów
+			struct ReverseOrder
 			{
+				//! \tparam NPtr Typ wskaźnika węzła
+				//! \tparam Visitor Typ odwiedzającego węzły
+				template<typename NPtr, typename Visitor>
+				//! \param visitOrder Sposób przegl�dania w kierunku który będziemy odwracać
+				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param visitor Obiekt przeglądający węzły i poziomy
+				static void visit(NPtr root, Visitor & visitor)
+				{
+					auto lt = NodeLinearization<VisitOrder, Backward>::linearize(root);
+					for (const auto & node : lt)
+					{
+						visitor(node);
+					}
+				}
+
 				//! \tparam NPtr Typ wskaźnika węzła
 				//! \tparam CondVisitor Typ odwiedzającego węzły
 				template<typename NPtr, typename CondVisitor>
-				//! \param visitOrder Sposób przeglądania w kierunku który będziemy odwracać
-				//! \param node węzeł w którym zaczynamy przeglądanie drzewa
-				//! \param condVisitor Obiekt przeglądający wezły i poziomy z warunkiem
+				//! \param visitOrder Sposób przegl�dania w kierunku który będziemy odwracać
+				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
+				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
 				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
 				{
 					auto lt = NodeLinearization<VisitOrder, Backward>::linearize(root);

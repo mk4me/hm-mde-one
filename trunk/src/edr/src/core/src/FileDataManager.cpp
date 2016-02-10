@@ -513,7 +513,7 @@ public:
 		parser_->reset();
 	}
 	virtual IVariantInitializer * clone() const { return new SimpleInitializer(parser_, idx); }
-	virtual const bool isEqual(const IVariantInitializer &) const { return false; }
+	virtual bool isEqual(const IVariantInitializer &) const { return false; }
 
 private:
 	utils::shared_ptr<FParser> parser_;
@@ -1029,7 +1029,7 @@ core::FileDataManager::CompoundInitializer::CompoundDataPtr core::FileDataManage
 		return ret;
 	}
 
-	const bool core::FileDataManager::CompoundInitializer::isEqual(const IVariantInitializer &) const
+	bool core::FileDataManager::CompoundInitializer::isEqual(const IVariantInitializer &) const
 	{
 		return false;
 	}

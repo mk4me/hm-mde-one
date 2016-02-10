@@ -21,7 +21,7 @@ namespace treeContainer
 		template<typename TreeType>
 		//! \param tree Drzewo
 		//! \return Czy drzewo jest puste
-		static bool empty(const TreeType & tree)
+		inline static bool empty(const TreeType & tree)
 		{
 			return tree.root() == nullptr;
 		}
@@ -30,7 +30,7 @@ namespace treeContainer
 		template<typename TreeType>
 		//! \param tree Drzewo
 		//! \return Ilość węzłów drzewa
-		static SizeType size(const TreeType & tree)
+		inline static SizeType size(const TreeType & tree)
 		{
 			if (empty(tree) == true){
 				return 0;
@@ -43,7 +43,7 @@ namespace treeContainer
 		template<typename TreeType>
 		//! \param tree Drzewo
 		//! \return Limity stopni węzłów
-		static DegreeLimits degreeLimits(const TreeType & tree)
+		inline static DegreeLimits degreeLimits(const TreeType & tree)
 		{
 			DegreeLimitsVisitor v;
 			
@@ -56,7 +56,7 @@ namespace treeContainer
 		template<typename TreeType>
 		//! \param tree Drzewo
 		//! \return Wysokość drzewa
-		static SizeType height(const TreeType & tree)
+		inline static SizeType height(const TreeType & tree)
 		{
 			if (empty(tree) == true){
 				return -1;
@@ -69,7 +69,7 @@ namespace treeContainer
 		template<typename TreeType>
 		//! \param tree Drzewo
 		//! \return Poziom drzewa
-		static SizeType level(const TreeType & tree)
+		inline static SizeType level(const TreeType & tree)
 		{
 			return height(tree) + 1;
 		}
@@ -80,7 +80,7 @@ namespace treeContainer
 		//! \param treeA Drzewo A
 		//! \param treeB Drzewo B
 		//! \return Czy struktury drzew są identyczne
-		static bool compareStructure(const TreeTypeA & treeA, const TreeTypeB & treeB)
+		inline static bool compareStructure(const TreeTypeA & treeA, const TreeTypeB & treeB)
 		{
 			if ((void*)&treeA == (void*)&treeB){
 				return true;
@@ -103,7 +103,7 @@ namespace treeContainer
 		//! \param treeA Drzewo A
 		//! \param treeB Drzewo B
 		//! \return Czy struktury i wartości drzew są identyczne
-		static bool compare(const TreeType & treeA, const TreeType & treeB, Comp comp = Comp())
+		inline static bool compare(const TreeType & treeA, const TreeType & treeB, Comp comp = Comp())
 		{
 			if (&treeA == &treeB){
 				return true;

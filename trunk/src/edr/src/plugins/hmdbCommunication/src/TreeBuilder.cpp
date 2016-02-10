@@ -15,6 +15,7 @@
 #include <corelib/PluginCommon.h>
 #include <objectwrapperlib/ObjectWrapper.h>
 #include <boost/lexical_cast.hpp>
+#include <dataaccessorlib/Wrappers.h>
 
 using namespace PluginSubject;
 core::IHierarchyItemPtr TreeBuilder::createTree(const QString& rootItemName, const core::ConstVariantsList& sessions)
@@ -345,9 +346,9 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
     QString desc = createDescription(motion);
     if (collection) {
         std::vector<core::VariantConstPtr> wrappers;
-        for (int i = 0; i < collection->getNumChannels(); ++i) {
-            core::VariantPtr wrapper = core::Variant::create<Channel>();
-            wrapper->set(utils::const_pointer_cast<Channel>(utils::dynamic_pointer_cast<const Channel>(collection->getChannel(i))));
+        for (int i = 0; i < collection->getNumAccessors(); ++i) {
+            auto wrapper = core::Variant::create<Channel>();
+            wrapper->set(utils::const_pointer_cast<Channel>(utils::dynamic_pointer_cast<const Channel>(collection->getAccessor(i))));
 
             static int number = 0;
             std::string();
@@ -367,8 +368,8 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
 		c3dlib::EventsCollectionConstPtr events = getEvents(motion);
         
         for (int i = 0; i < count; ++i) {
-			c3dlib::VectorChannelConstPtr c = wrappers[i]->get();
-            std::string channelName = c->getName();
+			c3dlib::VectorChannelReaderInterfaceConstPtr c = wrappers[i]->get();
+            std::string channelName = c->getOrCreateFeature<dataaccessor::IDescriptorFeature>()->name();
             std::list<core::HierarchyHelperPtr> helpers;
             NewVector3ItemHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i], events));
             push_not_null(helpers, channelHelper);
@@ -379,13 +380,11 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
             push_not_null(helpers, createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Right));
             push_not_null(helpers, createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Left));
             push_not_null(helpers, createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Right));
-            core::IHierarchyItemPtr channelItem (new core::HierarchyDataItem(wrappers[i], childIcon, QString::fromStdString(c->getName()), desc, helpers));
+            core::IHierarchyItemPtr channelItem (new core::HierarchyDataItem(wrappers[i], childIcon, QString::fromStdString(c->getOrCreateFeature<dataaccessor::IDescriptorFeature>()->name()), desc, helpers));
             collectionItem->appendChild(channelItem);
         }
     }
 }
-
-
 
 core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channelName, PluginSubject::SessionConstPtr s, int channelNo )
 {
@@ -396,7 +395,7 @@ core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channe
     for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
         PluginSubject::MotionConstPtr m = (*itMotion)->get();
         core::ConstVariantsList wrappers;
-		m->getObjects(wrappers, typeid(utils::DataChannelCollection<c3dlib::VectorChannel >), false);
+		m->getObjects(wrappers, typeid(c3dlib::VectorChannelCollection), false);
 
 		c3dlib::EventsCollectionConstPtr events;
 		if (m->hasObject(typeid(c3dlib::C3DEventsCollection), false)) {
@@ -407,13 +406,32 @@ core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channe
 
         for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
 			c3dlib::VectorChannelCollectionConstPtr collection = (*it)->get();
-            int count = collection ? collection->getNumChannels() : 0;
+            int count = collection ? collection->getNumAccessors() : 0;
             for (int i = 0; i < count; ++i) {
-				c3dlib::VectorChannelConstPtr channel = collection->getChannel(i);
-                if (channel->getName() == channelName) {
-					c3dlib::ScalarChannelReaderInterfacePtr reader(new c3dlib::VectorToScalarAdaptor(channel, channelNo));
-					core::VariantPtr wrapper = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
-                    wrapper->set(reader);
+				c3dlib::VectorChannelReaderInterfaceConstPtr channel = collection->getAccessor(i);
+				auto df = channel->feature<dataaccessor::IDescriptorFeature>();
+                if (df != nullptr && df->name() == channelName) {
+					c3dlib::ScalarChannelReaderInterfacePtr reader(dataaccessor::Vector::wrap(channel, channelNo));
+					
+					auto uaf = channel->feature<dataaccessor::IUniformArgumentsFeature>();
+					auto abf = channel->feature<dataaccessor::IBoundedArgumentsFeature>();
+					auto vbf = channel->feature<dataaccessor::IBoundedValuesFeature>();
+
+					if (abf != nullptr) {
+						reader->attachFeature(abf);
+					}
+
+					if (vbf != nullptr) {
+						auto lb = utils::ElementExtractor::extract(vbf->minValue(), channelNo);
+						auto ub = utils::ElementExtractor::extract(vbf->maxValue(), channelNo);
+						reader->attachFeature(utils::make_shared<dataaccessor::BoundedValuesFeature<decltype(reader->value(0))>>(lb, ub));
+					}
+
+					if (uaf != nullptr) {
+						reader->attachFeature(uaf);
+					}
+
+					auto wrapper = core::Variant::wrap(reader);
                     int no = toVisualize.size();
                     std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
                     wrapper->setMetadata("core/name", prefix + boost::lexical_cast<std::string>(no));
@@ -446,14 +464,44 @@ core::HierarchyHelperPtr TreeBuilder::createNormalized( core::VariantConstPtr wr
         segments = getTimeSegments(events, context);
     }
     std::map<core::VariantConstPtr, QColor> colorMap;
-	c3dlib::VectorChannelConstPtr channel = wrapper->get();
+	c3dlib::VectorChannelReaderInterfaceConstPtr channel = wrapper->get();
+
     for (int j = 0; j != segments.size(); ++j) {
 		c3dlib::FloatPairPtr segment = segments[j];
         for (int channelNo = 0; channelNo <= 2; ++channelNo) {
-			c3dlib::ScalarChannelReaderInterfacePtr reader(new c3dlib::VectorToScalarAdaptor(channel, channelNo));
-			c3dlib::ScalarChannelReaderInterfacePtr normalized(new c3dlib::ScalarWithTimeSegment(reader, segment->first, segment->second));
-			core::VariantPtr newWrapper = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
-            newWrapper->set(normalized);
+			auto reader = dataaccessor::Vector::wrap(channel, channelNo);
+			
+			auto uaf = channel->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
+			auto abf = channel->feature<dataaccessor::IBoundedArgumentsFeature>();
+			auto vbf = channel->feature<dataaccessor::IBoundedValuesFeature>();
+
+			if (abf != nullptr) {
+				reader->attachFeature(abf);
+			}
+
+			if (vbf != nullptr) {
+				auto lb = utils::ElementExtractor::extract(vbf->minValue(), channelNo);
+				auto ub = utils::ElementExtractor::extract(vbf->maxValue(), channelNo);
+				reader->attachFeature(utils::make_shared<dataaccessor::BoundedValuesFeature<decltype(reader->value(0))>>(lb, ub));
+			}
+
+			std::size_t start_idx = 0;
+			std::size_t end_idx = 0;
+
+			if (uaf == nullptr) {
+				start_idx = dataaccessor::NearestArgumentsFinder::range(*reader, segment->first).first;
+				end_idx = dataaccessor::NearestArgumentsFinder::range(*reader, segment->second).second;
+			}
+			else {
+				reader->attachFeature(uaf);
+				start_idx = dataaccessor::NearestArgumentsFinder::range(*reader, segment->first, uaf->argumentsInterval()).first;
+				end_idx = dataaccessor::NearestArgumentsFinder::range(*reader, segment->second, uaf->argumentsInterval()).second;
+
+			}
+
+			auto normalized = dataaccessor::wrap(reader, end_idx - start_idx, start_idx);
+
+			auto newWrapper = core::Variant::wrap<c3dlib::ScalarChannelReaderInterface>(normalized);
             int no = toVisualize.size();
             std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");
             colorMap[newWrapper] = channelNo == 0 ? QColor(255, 0, 0) : (channelNo == 1 ? QColor(0, 255, 0) : QColor(0, 0, 255));
@@ -490,7 +538,7 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
     for (auto itMotion = motions.begin(); itMotion != motions.end(); ++itMotion) {
         PluginSubject::MotionConstPtr m = (*itMotion)->get();
         core::ConstVariantsList wrappers;
-		m->getObjects(wrappers, typeid(utils::DataChannelCollection<c3dlib::VectorChannel>), false);
+		m->getObjects(wrappers, typeid(dataaccessor::AccessorsCollection<c3dlib::VectorChannelReaderInterface>), false);
 
 		c3dlib::EventsCollectionConstPtr events;
 		std::vector<c3dlib::FloatPairPtr> segments;
@@ -503,10 +551,10 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
 
         for (auto it = wrappers.begin(); it != wrappers.end(); ++it) {
 			c3dlib::VectorChannelCollectionConstPtr collection = (*it)->get();
-            int count = collection ? collection->getNumChannels() : 0;
+            int count = collection ? collection->getNumAccessors() : 0;
             for (int i = 0; i < count; ++i) {
-				c3dlib::VectorChannelConstPtr channel = collection->getChannel(i);
-                if (channel->getName() == channelName) {
+				auto channel = collection->getAccessor(i);
+                if (channel->feature<dataaccessor::IDescriptorFeature>()->name() == channelName) {
 
                     int r = rand() % 200;
                     int g = rand() % 200;
@@ -518,10 +566,40 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
 						c3dlib::FloatPairPtr segment = segments[j];
 
                         for (int channelNo = 0; channelNo <= 2; ++channelNo) {
-							c3dlib::ScalarChannelReaderInterfacePtr reader(new c3dlib::VectorToScalarAdaptor(channel, channelNo));
-							c3dlib::ScalarChannelReaderInterfacePtr normalized(new c3dlib::ScalarWithTimeSegment(reader, segment->first, segment->second));
-							core::VariantPtr wrapper = core::Variant::create<c3dlib::ScalarChannelReaderInterface>();
-                            wrapper->set(normalized);
+							auto reader = dataaccessor::Vector::wrap(channel, channelNo);
+
+							auto uaf = channel->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
+							auto abf = channel->feature<dataaccessor::IBoundedArgumentsFeature>();
+							auto vbf = channel->feature<dataaccessor::IBoundedValuesFeature>();							
+
+							if (abf != nullptr) {
+								reader->attachFeature(abf);
+							}
+
+							if (vbf != nullptr) {
+								auto lb = utils::ElementExtractor::extract(vbf->minValue(), channelNo);
+								auto ub = utils::ElementExtractor::extract(vbf->maxValue(), channelNo);
+								reader->attachFeature(utils::make_shared<dataaccessor::BoundedValuesFeature<decltype(reader->value(0))>>(lb, ub));
+							}
+
+							std::size_t start_idx = 0;
+							std::size_t end_idx = 0;
+
+							if (uaf == nullptr) {
+								start_idx = dataaccessor::NearestArgumentsFinder::range(*reader, segment->first).first;
+								end_idx = dataaccessor::NearestArgumentsFinder::range(*reader, segment->second).second;
+							}
+							else {
+								reader->attachFeature(uaf);
+								start_idx = dataaccessor::NearestArgumentsFinder::range(*reader, segment->first, uaf->argumentsInterval()).first;
+								end_idx = dataaccessor::NearestArgumentsFinder::range(*reader, segment->second, uaf->argumentsInterval()).second;
+								
+							}
+
+							//TODO
+							//na bazie info z reader zasilić wrapowany akcesor
+
+							auto wrapper = core::Variant::wrap<c3dlib::ScalarChannelReaderInterface>(dataaccessor::wrap(reader, end_idx - start_idx, start_idx));
                             colorMap[wrapper] = channelNo == 0 ? colorX : (channelNo == 1 ? colorY : colorZ);
                             int no = toVisualize.size();
                             std::string prefix = channelNo == 0 ? "X_" : (channelNo == 1 ? "Y_" : "Z_");

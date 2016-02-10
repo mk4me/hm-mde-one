@@ -1,6 +1,6 @@
 #include <imucostumelib/CostumeRawIO.h>
 #include <boost/asio.hpp>
-#include <utils/Utils.h>
+#include <utils/Clamping.h>
 
 using namespace imuCostume;
 

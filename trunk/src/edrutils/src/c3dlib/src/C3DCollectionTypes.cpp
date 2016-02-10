@@ -154,36 +154,40 @@ void GRFCollection::setPlatforms(const IForcePlatformCollection& val)
 
 GRFChannelConstPtr GRFCollection::getGRFChannel(GRFChannel::Type type) const
 {
-	for (auto it = channels.begin(); it != channels.end(); ++it) {
-		GRFChannelConstPtr channel = utils::dynamic_pointer_cast<const GRFChannel>(*it);
-		if (channel->getType() == type) {
-			return channel;
+	for (const auto & a : accessors) {		
+		if (a->getType() == type) {
+			return a;
 		}
 	}
 
 	throw std::runtime_error("Wrong GRF channel type");
 }
 
-MarkerCollection::MarkerCollection(vicon::VskPtr vsk) :
-VectorChannelCollection(), vsk(vsk)
+MarkerCollection::MarkerCollection(vicon::VskPtr vsk) : vsk(vsk)
 {
 
 }
 
-const std::string& MarkerCollection::getMarkerName(int markerNo) const
+std::string MarkerCollection::getMarkerName(int markerNo) const
 {
-	return this->getChannel(markerNo)->getName();
+	auto a = this->getAccessor(markerNo);
+	auto df = a->feature<dataaccessor::IDescriptorFeature>();
+	if (df != nullptr){
+		return df->name();
+	}
+
+	return std::string();
 }
 
-VectorChannelConstPtr MarkerCollection::tryGetChannelByName(const std::string& name)
+MarkerChannelConstPtr MarkerCollection::tryGetChannelByName(const std::string& name)
 {
-	for (int i = this->getNumChannels() - 1; i >= 0; --i) {
+	for (int i = this->getNumAccessors() - 1; i >= 0; --i) {
 		if (getMarkerName(i) == name) {
-			return this->getChannel(i);
+			return this->getAccessor(i);
 		}
 	}
 
-	return VectorChannelConstPtr();
+	return MarkerChannelConstPtr();
 }
 
 vicon::VskConstPtr MarkerCollection::getVsk() const
