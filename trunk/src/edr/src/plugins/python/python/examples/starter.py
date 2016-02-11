@@ -10,20 +10,20 @@ from math import sin
 # tworzymy obiekt dzieki ktoremu mozna korzystac z pluginu communication
 comm = CommunicationPython()
 
-
-config = comm.loadConfig('C:\Users\Wojciech\AppData\Roaming\PJATK\MDE\mde_v21_test.ini')
-
 # jesli nie ma kontekstu to oznacza, ze nikt sie nie zalogowal do tej pory
 if comm.shallowContextsCount() is 0:
 	# wczytujemy konfiguracje 
-	config = comm.loadConfig('C:\Users\Wojciech\AppData\Roaming\PJATK\MDE\mde_v21_test.ini')
+	config = comm.loadConfig('C:\Users\Wojtek\AppData\Roaming\PJATK\MDE\mde_communication.ini')
 	# logujemy sie 
 	comm.login(config)
 
+# dla pierwszego zalogowanego uzytkownika ladujemy dostepne triale
 context = comm.getContext(0)
 for s in context.listTrialsToLoad():
 	print s
 	context.loadTrial(s)
+	
+	
 #tworzymy tablicę wektorów
 v = v3vector()
 
