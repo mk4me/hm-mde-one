@@ -29,7 +29,7 @@ namespace python {
 	{
 		Helper() {}
 		Helper(core::HierarchyHelperConstWeakPtr helper, core::IVisualizerManager* vm) : helper(helper), manager(vm) {}
-		std::string name() { return "nazwa"; }
+		std::string name();
 		void createVisualizer();
 
 		bool operator==(const Helper& h)
@@ -68,6 +68,8 @@ namespace python {
 		void addFile(const std::string& file);
 
 		void close(int errorCode = 0);
+
+		void log(const std::string& txt);
 
 	};
 	DEFINE_SMART_POINTERS(MdeBridge);

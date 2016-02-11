@@ -32,3 +32,8 @@ core::IDataManagerReader* python::PythonPluginUtils::getDataManagerReader()
 	return plugin::getDataManagerReader();
 }
 
+void python::PythonPluginUtils::pluginLog(const std::string& s)
+{
+	PLUGIN_LOG_DEBUG(s);
+}
+

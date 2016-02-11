@@ -12,6 +12,7 @@
 
 #include <plugins/python/python/Export.h>
 #include <boost/python/module.hpp>
+#include <string>
 
 namespace core {
 	class IServiceManager;
@@ -31,6 +32,7 @@ namespace  python {
 			core::IDataHierarchyManager* getHierarchyManager();
 			core::IVisualizerManager* getVisualizerManager();
 			core::IDataManagerReader* getDataManagerReader();
+			void pluginLog(const std::string&);
 	};
 	DEFINE_SMART_POINTERS(PythonPluginUtils);
 }

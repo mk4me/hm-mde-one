@@ -16,6 +16,7 @@
 #include <boost/circular_buffer.hpp>
 
 namespace python {
+
 	//! Klasa dziêki której realizowane jest przekierowanie wyjœcia z pythona.
 	//! kod z http://onegazhang.wordpress.com/2008/09/30/redirect-python-stdoutstderr-via-boost-python/
 	class PythonStdIoRedirect {

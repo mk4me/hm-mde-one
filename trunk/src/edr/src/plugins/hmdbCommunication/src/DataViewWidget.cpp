@@ -1241,7 +1241,7 @@ void DataViewWidget::onLoad()
 				
 				for (auto it = items.begin(); it != items.end(); ++it){
 					for (auto iIT = it->second.begin(); iIT != it->second.end(); ++iIT){
-						if (shallowCopyContext_->shallowCopyLocalContext()->load(it->first, *iIT) == true){
+						if (shallowCopyContext_->shallowCopyLocalContext()->load(it->first, *iIT) == true) {
 							dataStatusRefreshRequired = true;
 						}
 					}

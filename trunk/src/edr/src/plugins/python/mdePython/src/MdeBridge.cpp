@@ -15,6 +15,7 @@
 #include "boost/python/suite/indexing/vector_indexing_suite.hpp"
 #include "coreui/CoreDockWidgetManager.h"
 #include "QtWidgets/QApplication"
+#include "corelib/PluginCommon.h"
 
 namespace py = boost::python;
 
@@ -111,6 +112,11 @@ void python::MdeBridge::close(int errorCode /*= 0*/)
 	exit(errorCode);
 }
 
+void python::MdeBridge::log(const std::string& txt)
+{
+	pluginLog(txt);
+}
+
 static void gather(const core::IHierarchyItemConstPtr& item, std::vector<python::Helper>& ret, core::IVisualizerManager* manager)
 {
 	core::IHierarchyDataItemConstPtr dataItem = utils::dynamic_pointer_cast<const core::IHierarchyDataItem>(item);
@@ -143,59 +149,20 @@ std::vector<python::Helper> python::MdeBridge::getHelpers()
 }
 
 
-
-MDE_PYTHON_MODULE(plugin_mdePython)
+std::string python::Helper::name()
 {
-	py::class_<python::Helper>("Helper")
-		.def("name", &python::Helper::name)
-		.def("createVisualizer", &python::Helper::createVisualizer)
-		;
+	auto h = utils::const_pointer_cast<core::HierarchyHelper>(helper.lock());
+	auto item = h->getParent().lock();
+	std::string res = item->getName().toStdString();
+	while (item = item->getParent()) {
+		res = item->getName().toStdString() + "/" + res;
+	}
 
-
-	py::class_<std::vector<python::Helper>>("helpers_vector")
-		.def(py::vector_indexing_suite<std::vector<python::Helper>>());
-
-	py::class_<python::MdeBridge>("MdeBridge")
-		.def("createVectorChannel", &python::MdeBridge::createVectorChannel)
-		.def("getVectorChannel", &python::MdeBridge::getVectorChannel)
-		.def("addVectorChannel", &python::MdeBridge::addVectorChannel)
-		.def("listLoadedVectors", &python::MdeBridge::listLoadedVectors)
-		.def("addFile", &python::MdeBridge::addFile)
-		.def("close", &python::MdeBridge::close)
-		.def("getHelpers", &python::MdeBridge::getHelpers);
-
-
-	using namespace python;
-	typedef osg::Vec3::value_type vval;
-	typedef float (osg::Vec3::*get_const)() const;
-	typedef void (osg::Vec3::*set3)(vval x, vval y, vval z);
-
-	py::class_<osg::Vec3>("Vec3", py::init<vval, vval, vval>())
-		.def("x", get_const(&osg::Vec3::x))
-		.def("y", get_const(&osg::Vec3::y))
-		.def("z", get_const(&osg::Vec3::z))
-		.def("set", set3(&osg::Vec3::set))
-		;
-
-	py::class_<python::StringPair>("StringPair")
-		.def_readwrite("first", &python::StringPair::first)
-		.def_readwrite("second", &python::StringPair::second);
-
-	py::class_<python::DataList>("DataList")
-		.def(py::vector_indexing_suite<python::DataList>());
-
-	py::class_<python::PythonDataChannel>("PythonDataChannel")
-		.def("getData", &python::PythonDataChannel::getData)
-		.def("getFrequency", &python::PythonDataChannel::getFrequency)
-		.def("getName", &python::PythonDataChannel::getName)
-		.def("setData", &python::PythonDataChannel::setData)
-		.def("setFrequency", &python::PythonDataChannel::setFrequency)
-		.def("setName", &python::PythonDataChannel::setName)
-		;
-
-
-	py::class_<std::vector<osg::Vec3>>("v3vector")
-		.def(py::vector_indexing_suite<std::vector<osg::Vec3>>());
+	auto desc = h->getText();
+	if (desc != "Create Visualizer") {
+		res += "/" + h->getText().toStdString();
+	}
+	return res;
 }
 
 void python::Helper::createVisualizer()
