@@ -21,7 +21,7 @@ namespace hmdbServices
 		//! \param document Strumień z dokumentem do parsowania
 		//! \param shallowCopy [out] Struktura płytkiej kopii danych ruchu do wypełnienia
 		//! \return Czy dokument poprawnie sparsowany
-		static const bool parseFile(std::istream * document, MotionShallowCopy::ShallowCopy & shallowCopy);
+		static bool parseFile(std::istream & document, MotionShallowCopy::ShallowCopy & shallowCopy);
 	};
 
 	//! Parser płytkiej kopi danych medycznych
@@ -31,7 +31,7 @@ namespace hmdbServices
 		//! \param document Strumień z dokumentem do parsowania
 		//! \param shallowCopy [out] Struktura płytkiej kopii danych medycznych do wypełnienia
 		//! \return Czy dokument poprawnie sparsowany
-		static const bool parseFile(std::istream * document, MedicalShallowCopy::ShallowCopy & shallowCopy);
+		static bool parseFile(std::istream & document, MedicalShallowCopy::ShallowCopy & shallowCopy);
 	};
 }
 

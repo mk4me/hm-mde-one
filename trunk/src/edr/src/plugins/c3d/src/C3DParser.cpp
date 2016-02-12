@@ -115,8 +115,10 @@ void C3DParser::parse( const std::string & source  )
     auto vskFiles = utils::Filesystem::listFiles(dir, false, ".vsk");
     vicon::VskPtr vsk;
     if (vskFiles.size() == 1) {
-        vsk = utils::make_shared<vicon::Vsk>();
-        vicon::VskParser::parse(vskFiles.front().string(), *vsk);
+		std::ifstream ifs(vskFiles.front().string());
+		if (ifs.is_open() == true) {
+			vsk = utils::make_shared<vicon::Vsk>(vicon::VskParser::parse(ifs));
+		}
     }
 	c3dlib::MarkerCollectionPtr markers(new c3dlib::MarkerCollection(vsk));
 	c3dlib::ForceCollectionPtr forces(new c3dlib::ForceCollection);

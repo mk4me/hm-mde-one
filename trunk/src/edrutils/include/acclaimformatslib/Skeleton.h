@@ -36,6 +36,10 @@ namespace acclaim
 			std::map<std::string, double> defaultValues;
 			//! Konstruktor domyślny
 			Units();
+
+			Units(const Units & Other);
+			Units(Units && Other);
+
 			//! Destruktor
 			~Units();
 
@@ -47,6 +51,10 @@ namespace acclaim
 
 		//! Konstruktor domyślny
 		Skeleton();
+
+		Skeleton(const Skeleton & Other);
+		Skeleton(Skeleton && Other);
+
 		//! Destruktor
 		~Skeleton();
 

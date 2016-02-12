@@ -17,7 +17,7 @@ namespace utils
 	{
 		//! \param stream Strumieñ którego rozmiar pobieramy
 		//! \return Rozmiar strumienia
-		inline static const std::streamsize size(std::istream & stream)
+		inline static std::streamsize size(std::istream & stream)
 		{
 			const auto pos = stream.tellg();
 			stream.seekg(0, std::ios::beg);
@@ -35,7 +35,7 @@ namespace utils
 		//! \param out Bufor do któego czytamy strumieñ
 		//! \param bytesCount Iloœæ bajtów do przeczytania ze strumienia
 		//! \return Faktyczna iloœc bajtów przeczytana ze strumienia
-		inline static const std::streamsize forceReadSome(std::istream & stream,
+		inline static std::streamsize forceReadSome(std::istream & stream,
 			char * out, const std::streamsize bytesCount)
 		{
 			const auto state = stream.rdstate();

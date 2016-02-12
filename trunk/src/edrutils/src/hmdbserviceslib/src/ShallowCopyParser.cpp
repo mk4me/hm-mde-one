@@ -44,9 +44,9 @@ namespace hmdbServices
 		}
 	}
 
-	const bool MotionShallowCopyParser::parseFile(std::istream * document, MotionShallowCopy::ShallowCopy & shallowCopy)
+	bool MotionShallowCopyParser::parseFile(std::istream & document, MotionShallowCopy::ShallowCopy & shallowCopy)
 	{
-		auto s = utils::StreamTools::read(*document);
+		auto s = utils::StreamTools::read(document);
 
 		tinyxml2::XMLDocument xmlDocument;
 
@@ -265,9 +265,9 @@ namespace hmdbServices
 		return true;
 	}
 
-	const bool MedicalShallowCopyParser::parseFile(std::istream * document, MedicalShallowCopy::ShallowCopy & shallowCopy)
+	bool MedicalShallowCopyParser::parseFile(std::istream & document, MedicalShallowCopy::ShallowCopy & shallowCopy)
 	{
-		auto s = utils::StreamTools::read(*document);
+		auto s = utils::StreamTools::read(document);
 
 		tinyxml2::XMLDocument xmlDocument;
 

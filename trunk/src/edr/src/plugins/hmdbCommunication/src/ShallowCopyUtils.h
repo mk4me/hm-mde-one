@@ -59,24 +59,24 @@ namespace hmdbCommunication
 		//! \param userHash Skrót użytkownika którego kopię sprawdzamy
 		//! \param storage Skład z którego wyciągamy płytką kopię
 		//! \return Płytka kopia bazy danych
-		static const ShallowCopyPtr extractShallowCopy(const std::string & userHash,
+		static ShallowCopyPtr extractShallowCopy(const std::string & userHash,
 			const IHMDBStorage::TransactionConstPtr storage);
 
 		//! \param shallowCopy Płytka kopia bazy danych
 		//! \return Czy płytka kopia bazy danych jest spójna i poprawna
-		static const bool checkShallowCopyIntegrity(const ShallowCopy & shallowCopy);
+		static bool checkShallowCopyIntegrity(const ShallowCopy & shallowCopy);
 
 		//! \param shallowCopy Płytka kopia bazy danych
 		//! \param time Czas względem którego weryfikujemy wpłytką kopię
 		//! \return Czy płytka kopia bazy danych wymaga odświeżenia (ściągnięcia nowych plików
-		static const bool shallowCopyRequiresRefresh(const ShallowCopy & shallowCopy,
+		static bool shallowCopyRequiresRefresh(const ShallowCopy & shallowCopy,
 			const hmdbServices::DateTime & time);
 
 		//! \param dataType Typ danych dla któego chcemy wyciągnąc pliki
 		//! \param shallowCopy Płytka kopia na bazie której wyciągamy pliki
 		//! \param recursive Czy interesują nas wszystkie pliki czy specyficzne
 		//! \return Zbiór plików
-		static const StorageFileNames files(const DataType dataType,
+		static StorageFileNames files(const DataType dataType,
 			const ShallowCopy & shallowCopy, const bool recursive = true);
 
 		//! \param dataType Typ danych dla któego chcemy wyciągnąc pliki
@@ -84,25 +84,25 @@ namespace hmdbCommunication
 		//! \param shallowCopy Płytka kopia na bazie której wyciągamy pliki
 		//! \param recursive Czy interesują nas wszystkie pliki czy specyficzne
 		//! \return Zbiór plików
-		static const StorageFileNames files(const DataType dataType,
+		static StorageFileNames files(const DataType dataType,
 			const hmdbServices::ID id, const ShallowCopy & shallowCopy,
 			const bool recursive = true);
 
 		//! \param shallowCopy Płytka kopia na bazie której wyciągamy pliki
 		//! \return Zbiór plików
-		static const StorageFileNames files(const ShallowCopy & shallowCopy);
+		static StorageFileNames files(const ShallowCopy & shallowCopy);
 
 		//! \param dataType Typ danych dla któego chcemy wyciągnąc pliki
 		//! \param shallowCopy Płytka kopia na bazie której wyciągamy pliki		
 		//! \return Zbiór plików
-		static const StorageFileNames extraFiles(const DataType dataType,
+		static StorageFileNames extraFiles(const DataType dataType,
 			const ShallowCopy & shallowCopy);
 
 		//! \param dataType Typ danych dla któego chcemy wyciągnąc pliki
 		//! \param id Identyfikator danych
 		//! \param shallowCopy Płytka kopia na bazie której wyciągamy pliki		
 		//! \return Zbiór plików
-		static const StorageFileNames extraFiles(const DataType dataType,
+		static StorageFileNames extraFiles(const DataType dataType,
 			const hmdbServices::ID id, const ShallowCopy & shallowCopy);
 
 		//! \param userHash Skrót użytkownika którego kopię sprawdzamy
@@ -110,7 +110,7 @@ namespace hmdbCommunication
 		//! \param shallowType Typ płytkiej kopii o która pytamy
 		//! \param storage Skład w którym szukamy
 		//! \return Czy płytka kopia bazy danych jest dostepna w storage
-		static const bool shallowCopyInStorage(const std::string & userHash,
+		static bool shallowCopyInStorage(const std::string & userHash,
 			const IHMDBRemoteContext::DataReference dataReference,
 			const ShallowCopyType shallowType,
 			const IHMDBStorage::TransactionConstPtr storage);
@@ -134,7 +134,7 @@ namespace hmdbCommunication
 		//! \param shallowType Typ płytkiej kopii bazy danych		
 		//! \param storage Skład w którym zapisujemy
 		//! \return Strumien do czytania danych lub nullptr jeśli nie ma
-		static const IHMDBStorageOperations::IStreamPtr shallowCopyStream(const std::string & userHash,
+		static IHMDBStorageOperations::IStreamPtr shallowCopyStream(const std::string & userHash,
 			const IHMDBRemoteContext::DataReference dataReference,
 			const ShallowCopyType shallowType, const IHMDBStorage::TransactionConstPtr storage);
 
@@ -142,30 +142,30 @@ namespace hmdbCommunication
 		//! \param dataReference Referencja danych
 		//! \param shallowType Typ płytkiej kopii bazy danych				
 		//! \return Nazwa pliku płytkiej kopii bazy danych
-		static const std::string shallowCopyName(const std::string & userHash,
+		static std::string shallowCopyName(const std::string & userHash,
 			const IHMDBRemoteContext::DataReference dataReference,
 			const ShallowCopyType shallowType);
 
 		//! \param storage Skład w którym szukamy
 		//! \return Nazwy plików płytkiej kopii bazy danych
-		static const std::list<std::string> allShallowCopiesNames(IHMDBStorage::TransactionConstPtr storage);
+		static std::list<std::string> allShallowCopiesNames(IHMDBStorage::TransactionConstPtr storage);
 
-		static const std::list<std::string> filterShallowCopiesNames(const std::list<std::string> & src,
+		static std::list<std::string> filterShallowCopiesNames(const std::list<std::string> & src,
 			const IHMDBRemoteContext::DataReference dataReference,
 			const ShallowCopyType shallowType);
 
 		//! \param userHash Skrót użytkownika
-		static const std::list<std::string> removeUserShallowCopiesNames(const std::list<std::string> & src,
+		static std::list<std::string> removeUserShallowCopiesNames(const std::list<std::string> & src,
 			const std::string & userHash);
 
 		//! \param user Nazwa użytkownika
 		//! \param password Hasło użytkownika
 		//! \return Skrót użytkownika, unikalny dla pary user-password
-		static const std::string userHash(const std::string & user, const std::string & password);
+		static std::string userHash(const std::string & user, const std::string & password);
 
 		//! \param storage Miejsce składowania danych
 		//! \return Lista plików płytkiej kopii bazy danych
-		static const StorageUserFiles groupedShallowCopiesNames(IHMDBStorage::TransactionConstPtr storage);
+		static StorageUserFiles groupedShallowCopiesNames(IHMDBStorage::TransactionConstPtr storage);
 	};
 
 }

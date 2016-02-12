@@ -50,7 +50,7 @@ public:
 	{
 	public:
 		virtual ~IOperation() {}
-		virtual const QString name() const = 0;
+		virtual QString name() const = 0;
 	};
 
 	DEFINE_SMART_POINTERS(IOperation);
@@ -123,15 +123,15 @@ private:
 
 	void refreshCurrentContent(bool perspectiveFirst);	
 
-	const hmdbCommunication::DataStatus refrshItemContent(QTreeWidgetItem * item,
+	hmdbCommunication::DataStatus refrshItemContent(QTreeWidgetItem * item,
 		const bool perspectiveFirst);
 
-	const hmdbCommunication::DataStatus refreshDataStatus(QTreeWidgetItem * item,
+	hmdbCommunication::DataStatus refreshDataStatus(QTreeWidgetItem * item,
 		const bool perspectiveFirst);
 	void refreshDataStatus(const bool perspectiveFirst);	
-	const bool tryRebuildDataStatus();
+	bool tryRebuildDataStatus();
 
-	const QIcon statusIcon(const hmdbCommunication::DataStatus dataStatus);
+	QIcon statusIcon(const hmdbCommunication::DataStatus dataStatus);
 
 	void onSynchronize();
 	
@@ -147,7 +147,7 @@ private:
 	void setupDownload(const hmdbCommunication::StorageFileNames & files);
 
 	
-	const hmdbCommunication::StorageFileNames filterModifiedTrialFiles(hmdbCommunication::IncrementalBranchShallowCopyConstPtr incShallowCopy);
+	hmdbCommunication::StorageFileNames filterModifiedTrialFiles(hmdbCommunication::IncrementalBranchShallowCopyConstPtr incShallowCopy);
 	bool isTrialLocal(const hmdbServices::IncrementalBranchShallowCopy::Trial& trial,
 		hmdbCommunication::IHMDBStatusManager::TransactionConstPtr transaction);
 

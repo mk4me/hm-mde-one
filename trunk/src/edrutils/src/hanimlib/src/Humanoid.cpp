@@ -12,6 +12,22 @@ Humanoid::Humanoid()
 
 }
 
+Humanoid::Humanoid(const Humanoid & Other)
+	: bboxCenter(Other.bboxCenter),
+	bboxSize(Other.bboxSize), center(Other.center),
+	rotation(Other.rotation), scale(Other.scale),
+	scaleOrientation(Other.scaleOrientation),
+	translation(Other.translation),
+	info(Other.info), joints(Other.joints),
+	segments(Other.segments), sites(Other.sites),
+	skeleton(Other.skeleton), skin(Other.skin),
+	skinCoord(Other.skinCoord), skinNormal(Other.skinNormal),
+	version(Other.version),
+	viewpoints(Other.viewpoints)
+{
+
+}
+
 Humanoid::Humanoid(Humanoid && Other)
 	: bboxCenter(Other.bboxCenter),
 	bboxSize(Other.bboxSize), center(Other.center),
@@ -70,7 +86,7 @@ void createJointAndSegment(std::string jointName, std::string segmentName,
 	parentSegment = segment;
 }
 
-Humanoid Humanoid::defaultHumanHumanoid()
+Humanoid createDefaultHumanoid()
 {
 	Humanoid ret;
 	ret.version = "200x";
@@ -191,6 +207,12 @@ Humanoid Humanoid::defaultHumanHumanoid()
 	createJointAndSegment("r_pinky2", "r_pinky_middle", joint, segment, ret);
 	createJointAndSegment("r_pinky3", "r_pinky_distal", joint, segment, ret);
 
+	return ret;
+}
+
+const Humanoid & Humanoid::defaultHumanHumanoid()
+{
+	static const Humanoid ret = createDefaultHumanoid();
 	return ret;
 }
 

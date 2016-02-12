@@ -103,12 +103,12 @@ namespace kinematic
 		};
 
 		//! Typ jointa stanu
-		typedef treeContainer::NodeT<JointData> Joint;
+		using Joint = treeContainer::NodeT<JointData>;
 		//! Typ wskaźników do jointów
 		DEFINE_SMART_POINTERS(Joint);
 
 		//! Mapa nazw jointów do ich kolejności rotacji
-		typedef std::map<std::string, kinematicUtils::AxisOrder::Type> JointsAxis;	
+		using JointsAxis = std::map<std::string, kinematicUtils::AxisOrder::Type>;
 
 	public:
 

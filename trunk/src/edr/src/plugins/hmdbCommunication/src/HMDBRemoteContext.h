@@ -22,26 +22,26 @@ namespace hmdbCommunication
 		virtual ~HMDBRemoteContext();
 
 		//! \return Sesja us³ug hmdb
-		virtual const IHMDBSessionPtr session();
+		virtual IHMDBSessionPtr session();
 		//! \return Sesja us³ug hmdb
-		virtual const IHMDBSessionConstPtr session() const;
+		virtual IHMDBSessionConstPtr session() const;
 
 		//---------- Operacje kontekstu -----------------
 
 		//! \return Operacja opisuj¹ca odœwie¿enia p³ytkiej kopii bazy danych
-		virtual const std::list<DownloadOperationPtr> prepareSynchronization(const hmdbServices::DateTime & since);
+		virtual std::list<DownloadOperationPtr> prepareSynchronization(const hmdbServices::DateTime & since);
 
 		//! \param fileIDs Identyfikatory plików do œci¹gniêcia
 		//! \param ep Polityka wykonania
 		//! \return Transfer danych
-		virtual const DownloadOperationPtr prepareFileDownload(const FileDescriptor & fileID);
+		virtual DownloadOperationPtr prepareFileDownload(const FileDescriptor & fileID);
 
 		//! \param fileName Nazwa pliku w bazie
 		//! \param path Œcie¿ka po stronie bazy, gdzie zostanie zpaisany plik
 		//! \param source Strumieñ z zawartoœci¹ pliku
 		//! \param dataReference Której bazy dotyczy upload
 		//! \return Transfer
-		virtual const IHMDBFtp::TransferPtr prepareFileUpload(const std::string & fileName,
+		virtual IHMDBFtp::TransferPtr prepareFileUpload(const std::string & fileName,
 			const std::string & path, IHMDBStorageOperations::IStreamPtr source,
 			const DataReference dataReference,
 			const hmdbServices::FileSize fileSize);

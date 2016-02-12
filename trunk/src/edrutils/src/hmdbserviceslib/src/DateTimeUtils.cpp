@@ -5,9 +5,9 @@
 
 namespace hmdbServices
 {
-	const DateTime toTime(const std::string & time)
+	DateTime toTime(const std::string & time)
 	{
-		typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+		using tokenizer = boost::tokenizer<boost::char_separator<char> >;
 		static boost::char_separator<char> sep("-T:.");
 
 		DateTime ret;
@@ -34,7 +34,7 @@ namespace hmdbServices
 		return ret;
 	}
 
-	const std::string toString(const struct tm & time)
+	std::string toString(const struct tm & time)
 	{
 		char buffer[26];
 
@@ -43,7 +43,7 @@ namespace hmdbServices
 		return std::string(buffer, sizeof(buffer));
 	}
 
-	const std::string toString(const DateTime & time)
+	std::string toString(const DateTime & time)
 	{
 		std::stringstream ss;
 

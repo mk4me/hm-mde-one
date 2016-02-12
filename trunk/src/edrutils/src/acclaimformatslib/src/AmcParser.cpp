@@ -44,7 +44,7 @@ void AmcParser::serialize(const MotionData & data,
     }
 }
 
-void AmcParser::parse(MotionData & data, std::istream & stream)
+MotionData::FramesData AmcParser::parse(std::istream & stream)
 {
     std::string::size_type loc;    
     std::string line;
@@ -52,7 +52,7 @@ void AmcParser::parse(MotionData & data, std::istream & stream)
     // HACK: z braku dokładnej dokumentacji nie wiem jakie moga wystapic nagłówki pliku *.amc
     // wszystkie do tej pory spotkane pliki konczyly nagłówek linijka :DEGREES,
 	// rozwiązanie stosowane jest w innych parserach
-    while (getline(stream, line)) {
+    while (std::getline(stream, line)) {
         loc = line.find(":DEGREES");
         if (loc != std::string::npos) {
             break;
@@ -64,13 +64,12 @@ void AmcParser::parse(MotionData & data, std::istream & stream)
 		}
     }
 
-	std::vector<MotionData::FrameData> frames;
-	MotionData::FrameData* frame = nullptr;
-	MotionData locData;
+	MotionData::FramesData frames;
+	MotionData::FrameData* frame = nullptr;	
 
-    while (getline(stream, line)) {
+    while (std::getline(stream, line)) {
         std::istringstream iss(line);
-        int frameNo = -1;
+        unsigned int frameNo = 0;
         if (iss >> frameNo) {
 			frames.push_back(MotionData::FrameData());
 			frame = &frames.back();
@@ -79,7 +78,7 @@ void AmcParser::parse(MotionData & data, std::istream & stream)
             iss.clear();
 			MotionData::BoneData boneData;
 			iss >> boneData.name;
-			if (!boneData.name.empty()) {
+			if (boneData.name.empty() == false) {
 				boneData.channelValues.clear();
 
 				double val = 0.0;
@@ -92,9 +91,5 @@ void AmcParser::parse(MotionData & data, std::istream & stream)
         }
     }
 
-    if (frames.empty() == true) {
-		throw std::runtime_error("No frames in stream");
-    }
-
-	data.frames = frames;
+	return frames;
 }

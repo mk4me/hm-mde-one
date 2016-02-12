@@ -26,7 +26,7 @@ namespace sqliteUtils
 			Close(const unsigned int retriesCount = 0,
 				const unsigned int stepWaitTime = 150);
 
-			const bool operator()(sqlite3_blob * blob);
+			bool operator()(sqlite3_blob * blob);
 
 		private:
 			const unsigned int retriesCount;
@@ -48,7 +48,7 @@ namespace sqliteUtils
 		//! \param retriesCount Iloœæ pró zamkniêcia
 		//! \param stepWaitTime Czas dla innych watków na dzia³anie [ms]
 		//! \return Czy uda³o siê zamkn¹æ bloba
-		static const bool close(sqlite3_blob * blob);
+		static bool close(sqlite3_blob * blob);
 	};
 }
 

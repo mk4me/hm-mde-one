@@ -47,7 +47,7 @@ namespace imuCostume
 			//! Nag³ówek
 			Header header;
 			//! Sekcja danych
-			std::array<uint8_t, CostumeRawIO::MaxDataSize - 2> data;
+			std::array<uint8_t, CostumeRawIO::MaxDataSize - sizeof(Header)> data;
 		};
 
 		//! Unia realizuj¹ca ró¿ne reprezentacje ramki
@@ -60,7 +60,7 @@ namespace imuCostume
 		};
 
 		//! Typ identyfikatora czasu ramki
-		typedef uint32_t Timestamp;
+		using Timestamp = uint32_t;
 
 		//! Struktura opisuj¹ca wypakowane dane z protoko³u
 		struct IMUCOSTUME_EXPORT Data
@@ -79,14 +79,14 @@ namespace imuCostume
 		//! \param timeout Timeout dla wysy³ania danych
 		//! \param costume Kostium dla którego wysy³amy dane na CANopen
 		//! \return Czy transmisja siê powiod³a (tylko transfer danych do kostiumu a nie na CANopen)
-		static const bool send(const uint8_t seqNumber, const void * data,
+		static bool send(const uint8_t seqNumber, const void * data,
 			const uint16_t length, const uint16_t timeout, CostumeRawIO & costume);
 
 		//! \param seqNumber Numer zawarty w komunikacie, powinien byæ równie¿ zawarty w odpowiadaj¹cej wiadomoœci zwrotnej
 		//! \param data Dane do wys³ania - ramka powinna byæ poprawn¹ zgodnie ze specyfikacj¹ protoko³u komunikacyjnego
 		//! \param length Rozmiar ramki CANopen [B]
 		//! \return Czy odebrany komunikat jest potwierdzeniem odbioru
-		static const bool verifyReceiveConfirmation(const uint8_t seqNumber,
+		static bool verifyReceiveConfirmation(const uint8_t seqNumber,
 			const void * data, const uint16_t length);
 
 		//! \param data Dane wyci¹gniête z naszego prtoko³u

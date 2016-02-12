@@ -3,7 +3,7 @@
 
 using namespace hmdbServices;
 
-const bool XMLHelper::extractAttributes(const tinyxml2::XMLElement * root, xmlWsdl::Attributes & attributes)
+bool XMLHelper::extractAttributes(const tinyxml2::XMLElement * root, xmlWsdl::Attributes & attributes)
 {
 	auto element = root->FirstChildElement("Attributes");
 	if (element != nullptr){
@@ -43,7 +43,7 @@ const bool XMLHelper::extractAttributes(const tinyxml2::XMLElement * root, xmlWs
 	return ret;
 }
 
-const bool XMLHelper::extractEnumValues(const tinyxml2::XMLElement * root, xmlWsdl::EnumValueList & enumValues)
+bool XMLHelper::extractEnumValues(const tinyxml2::XMLElement * root, xmlWsdl::EnumValueList & enumValues)
 {
 	auto element = root->FirstChildElement("EnumValueList");
 	if (element != nullptr){
@@ -232,7 +232,7 @@ void XMLHelper::extractShallowCopyFile(const tinyxml2::XMLElement * element, Mot
 
 
 template<>
-const bool hmdbServices::XMLHelper::extractAttributeValue(const tinyxml2::XMLElement * root, const std::string & attribute, std::string & value)
+bool hmdbServices::XMLHelper::extractAttributeValue(const tinyxml2::XMLElement * root, const std::string & attribute, std::string & value)
 {
 	auto attrib = root->FindAttribute(attribute.c_str());
 
@@ -245,7 +245,7 @@ const bool hmdbServices::XMLHelper::extractAttributeValue(const tinyxml2::XMLEle
 }
 
 template<>
-const bool hmdbServices::XMLHelper::extractTagValue(const tinyxml2::XMLElement * root, const std::string & tag, std::string & value)
+bool hmdbServices::XMLHelper::extractTagValue(const tinyxml2::XMLElement * root, const std::string & tag, std::string & value)
 {
 	auto element = root->FirstChildElement(tag.c_str());
 

@@ -466,62 +466,62 @@ int SQLiteBLOBStreamBufferT<_Elem, _Traits>::sync()
 }
 
 template<typename _Elem, typename _Traits>
-const int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobBufferSize() const
+int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobBufferSize() const
 {
 	return toBlobPos(streamBufferSize());
 }
 
 template<typename _Elem, typename _Traits>
-const int SQLiteBLOBStreamBufferT<_Elem, _Traits>::streamBufferSize() const
+int SQLiteBLOBStreamBufferT<_Elem, _Traits>::streamBufferSize() const
 {
 	return std::distance(buffer->begin(), buffer->end());
 }
 
 template<typename _Elem, typename _Traits>
-const int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobMaxIDX(const int idx) const
+int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobMaxIDX(const int idx) const
 {
 	return std::min(idx + blobBufferSize(), blobSeekhigh);
 }
 
 template<typename _Elem, typename _Traits>
-const int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobReadMaxIDX() const
+int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobReadMaxIDX() const
 {
 	return blobMaxIDX(blobReadBase);
 }
 
 template<typename _Elem, typename _Traits>
-const int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobWriteMaxIDX() const
+int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobWriteMaxIDX() const
 {
 	return blobMaxIDX(blobWriteBase);
 }
 
 template<typename _Elem, typename _Traits>
-const int SQLiteBLOBStreamBufferT<_Elem, _Traits>::toStreamPos(int pos)
+int SQLiteBLOBStreamBufferT<_Elem, _Traits>::toStreamPos(int pos)
 {
 	return pos / sizeof(_Elem);
 }
 
 template<typename _Elem, typename _Traits>
-const int SQLiteBLOBStreamBufferT<_Elem, _Traits>::toBlobPos(int pos)
+int SQLiteBLOBStreamBufferT<_Elem, _Traits>::toBlobPos(int pos)
 {
 	return pos * sizeof(_Elem);
 }
 
 template<typename _Elem, typename _Traits>
-const int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobGlobalIDX(const int blobBase, const _Elem * bufferBase,
+int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobGlobalIDX(const int blobBase, const _Elem * bufferBase,
 	const _Elem * bufferPos)
 {
 	return blobBase + (int)((bufferPos == nullptr) ? 0 : toBlobPos(std::distance(bufferBase, bufferPos)));
 }
 
 template<typename _Elem, typename _Traits>
-const int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobGlobalWriteIDX() const
+int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobGlobalWriteIDX() const
 {
 	return blobGlobalIDX(blobWriteBase, _Mysb::pbase(), _Mysb::pptr());
 }
 
 template<typename _Elem, typename _Traits>
-const int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobGlobalReadIDX() const
+int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobGlobalReadIDX() const
 {
 	return blobGlobalIDX(blobReadBase, _Mysb::eback(), _Mysb::gptr());
 }
@@ -533,7 +533,7 @@ void SQLiteBLOBStreamBufferT<_Elem, _Traits>::updateBlobStreamEnd()
 }
 
 template<typename _Elem, typename _Traits>
-const int SQLiteBLOBStreamBufferT<_Elem, _Traits>::refillBuffer(const int blobIDX, _Elem * bufferBase)
+int SQLiteBLOBStreamBufferT<_Elem, _Traits>::refillBuffer(const int blobIDX, _Elem * bufferBase)
 {
 	const int toRead = std::min(toBlobPos(std::distance(bufferBase, buffer->end())), blobSize - blobIDX);
 	using namespace sqliteUtils;
@@ -553,7 +553,7 @@ const int SQLiteBLOBStreamBufferT<_Elem, _Traits>::refillBuffer(const int blobID
 }
 
 template<typename _Elem, typename _Traits>
-const bool SQLiteBLOBStreamBufferT<_Elem, _Traits>::flushBuffer(const _Elem * base, const int count,
+bool SQLiteBLOBStreamBufferT<_Elem, _Traits>::flushBuffer(const _Elem * base, const int count,
 	const int blobIDX)
 {
 	const unsigned int buffSize = toBlobPos(count);
@@ -632,14 +632,14 @@ const bool SQLiteBLOBStreamBufferT<_Elem, _Traits>::flushBuffer(const _Elem * ba
 }
 
 template<typename _Elem, typename _Traits>
-const std::string SQLiteBLOBStreamBufferT<_Elem, _Traits>::updateTableName(const std::string & dbName,
+std::string SQLiteBLOBStreamBufferT<_Elem, _Traits>::updateTableName(const std::string & dbName,
 	const std::string & table)
 {
 	return (dbName.empty() == true) ? table : dbName + '.' + table;
 }
 
 template<typename _Elem, typename _Traits>
-const typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::_Strstate SQLiteBLOBStreamBufferT<_Elem, _Traits>::_Getstate(std::ios_base::openmode _Mode)
+typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::_Strstate SQLiteBLOBStreamBufferT<_Elem, _Traits>::_Getstate(std::ios_base::openmode _Mode)
 {
 	_Strstate _State = (_Strstate)0;
 	if (!(_Mode & std::ios_base::in))

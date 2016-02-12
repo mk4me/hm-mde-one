@@ -11,6 +11,11 @@ namespace vicon
 {
 	//! Dane wczytane z pliku vsk
 	struct Vsk {
+
+		Vsk() {}
+		Vsk(const Vsk & Other) : sticks(Other.sticks), markers(Other.markers) {}
+		Vsk(Vsk && Other) : sticks(std::move(Other.sticks)), markers(std::move(Other.markers)) {}
+
 		std::vector<Stick> sticks;
 		std::vector<Marker> markers;
 	};
@@ -22,7 +27,7 @@ namespace vicon
 	public:
 		/// \brief  Parsuje podany plik.
 		/// \param  filename  Nazwa pliku do parsowania.
-		static void parse(const std::string& filename, Vsk& vsk);
+		static Vsk parse(std::istream& in);
 	};
 }
 

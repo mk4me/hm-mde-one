@@ -15,11 +15,11 @@ class CURLManager::CURLManagerImpl
 {
 private:
 	//! ScopedLock
-	typedef std::lock_guard<std::mutex> ScopedLock;
+	using ScopedLock = std::lock_guard<std::mutex>;
 	//! Zbiór uchwytów
-	typedef std::set<CURLPtr> CURLsSet;
+	using CURLsSet = std::set<CURLPtr>;
 	//! Mapa uchwytów i obiektów na których czekamy
-	typedef std::map<CURLPtr, std::promise<CURLcode>> CURLsWaitMap;
+	using CURLsWaitMap = std::map<CURLPtr, std::promise<CURLcode>>;
 
 private:
 
@@ -184,8 +184,8 @@ public:
 
 				finalized_ = true;
 
-				for (auto it = currentCurls.begin(); it != currentCurls.end(); ++it){
-					toRemoveCurlsSet.insert(it->first);
+				for (auto & c : currentCurls){
+					toRemoveCurlsSet.insert(c.first);
 				}
 
 				innerRemove();

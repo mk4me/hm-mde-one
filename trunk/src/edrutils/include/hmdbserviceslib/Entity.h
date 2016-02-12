@@ -36,10 +36,10 @@ namespace hmdbServices
 
 			//! \param entity Tekstowa reprezentacja encji
 			//! \return Wyliczeniowa reprezentacja encji
-			static const Type convert(const std::string & entity);
+			static Type convert(const std::string & entity);
 			//! \param entity Wyliczeniowa reprezentacja encji
 			//! \return Tekstowa reprezentacja encji
-			static const std::string convert(const Type & entity);
+			static std::string convert(const Type & entity);
 		};
 
 		//! Wyliczenie dla płci
@@ -56,10 +56,10 @@ namespace hmdbServices
 
 			//! \param entity Tekstowa reprezentacja płci
 			//! \return Wyliczeniowa reprezentacja płci
-			static const Type convert(const std::string & gender);
+			static Type convert(const std::string & gender);
 			//! \param entity Wyliczeniowa reprezentacja płci
 			//! \return Tekstowa reprezentacja płci
-			static const std::string convert(const Type & gender);
+			static std::string convert(const Type & gender);
 		};
 
 		//! Typy atrybutów
@@ -81,10 +81,10 @@ namespace hmdbServices
 
 			//! \param entity Tekstowa reprezentacja typu atrybutu
 			//! \return Wyliczeniowa reprezentacja typu atrybutu
-			static const Type convert(const std::string & attributeType);
+			static Type convert(const std::string & attributeType);
 			//! \param entity Wyliczeniowa reprezentacja typu atrybutu
 			//! \return Tekstowa reprezentacja typu atrybutu
-			static const std::string convert(const Type & attributeType);
+			static std::string convert(const Type & attributeType);
 		};
 
 		//! Typ logiczny
@@ -101,10 +101,10 @@ namespace hmdbServices
 
 			//! \param booleanType Tekstowa reprezentacja typu logicznego
 			//! \return Wyliczeniowa reprezentacja typu logicznego
-			static const Type convert(const std::string & booleanType);
+			static Type convert(const std::string & booleanType);
 			//! \param booleanType Wyliczeniowa reprezentacja typu logicznego
 			//! \return Tekstowa reprezentacja typu logicznego
-			static const std::string convert(const Type & booleanType);
+			static std::string convert(const Type & booleanType);
 		};
 
 		//! Typ statusu adnotacji dla danych USG
@@ -122,10 +122,10 @@ namespace hmdbServices
 
 			//! \param statusType Tekstowa reprezentacja typu stanu adnotacji
 			//! \return Wyliczeniowa reprezentacja typu stanu adnotacji
-			static const Type convert(const std::string & statusType);
+			static Type convert(const std::string & statusType);
 			//! \param statusType Wyliczeniowa reprezentacja typu stanu adnotacji
 			//! \return Tekstowa reprezentacja typu stanu adnotacji
-			static const std::string convert(const Type & statusType);
+			static std::string convert(const Type & statusType);
 		};
 
 		//! Opis adnotacji dla danych USG
@@ -139,10 +139,10 @@ namespace hmdbServices
 		};
 
 		//! Lista adnotacji
-		typedef std::list<Annotation> AnnotationsList;
+		using AnnotationsList = std::list<Annotation>;
 		//! \param xmlResponse Odpowiedź webserwisów
 		//! \return Lista adnotacji użytkownika
-		HMDBSERVICES_EXPORT const AnnotationsList parseAnnotations(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT AnnotationsList parseAnnotations(const std::string & xmlResponse);
 
 		//! Dane grupy użytkowników
 		struct HMDBSERVICES_EXPORT UserGroup
@@ -152,11 +152,11 @@ namespace hmdbServices
 		};
 
 		//! Lista grup użytkowników
-		typedef std::list<UserGroup> UserGroupsList;
+		using UserGroupsList = std::list<UserGroup>;
 
 		//! \param xmlResponse Odpowiedź webserwisów
 		//! \return Lista grup użytkowników
-		HMDBSERVICES_EXPORT const UserGroupsList parseUserGroups(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT UserGroupsList parseUserGroups(const std::string & xmlResponse);
 
 		//! Szczegóły użytkownika
 		struct HMDBSERVICES_EXPORT UserDetails
@@ -168,11 +168,11 @@ namespace hmdbServices
 		};
 
 		//! Lista użytkowników
-		typedef std::list<UserDetails> UsersList;
+		using UsersList = std::list<UserDetails> ;
 
 		//! \param xmlResponse Odpowiedź webserwisów
 		//! \return Lista użytkowników w bazie
-		HMDBSERVICES_EXPORT const UsersList parseUsersList(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT UsersList parseUsersList(const std::string & xmlResponse);
 
 		//! Użytkownik
 		struct HMDBSERVICES_EXPORT User : public UserDetails
@@ -182,7 +182,7 @@ namespace hmdbServices
 
 		//! \param xmlResponse Odpowiedź webserwisów
 		//! \return Dane użytkownika
-		HMDBSERVICES_EXPORT const User parseUser(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT User parseUser(const std::string & xmlResponse);
 
 		//! Prawa dostępu do sesji
 		struct HMDBSERVICES_EXPORT SessionPrivilege
@@ -192,7 +192,7 @@ namespace hmdbServices
 		};
 
 		//! Lista praw dostępu użytkowników do sesji
-		typedef std::list<SessionPrivilege> SessionPrivilegeList;
+		using SessionPrivilegeList = std::list<SessionPrivilege>;
 
 		//! Aktor
 		struct HMDBSERVICES_EXPORT PerformerData
@@ -212,7 +212,7 @@ namespace hmdbServices
 		};
 
 		//! Typ listy atrybutów
-		typedef std::list<Attribute> Attributes;
+		using Attributes = std::list<Attribute>;
 
 		//! Opis grupy atrybutów
 		struct HMDBSERVICES_EXPORT AttributeGroupDefinition
@@ -222,11 +222,11 @@ namespace hmdbServices
 		};
 
 		//! Typ listy grup atrybutów
-		typedef std::list<AttributeGroupDefinition> AttributeGroupDefinitionList;
+		using AttributeGroupDefinitionList = std::list<AttributeGroupDefinition>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista definicji atrybutów
-		HMDBSERVICES_EXPORT const AttributeGroupDefinitionList parseAttributeGroupDefinitions(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT AttributeGroupDefinitionList parseAttributeGroupDefinitions(const std::string & xmlResponse);
 
 		//! Dane aktora
 		struct HMDBSERVICES_EXPORT PerformerDetails
@@ -237,11 +237,11 @@ namespace hmdbServices
 		};
 
 		//! Typ listy aktorów
-		typedef std::list<PerformerDetails> PerformerList;
+		using PerformerList = std::list<PerformerDetails>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista aktorów
-		HMDBSERVICES_EXPORT const PerformerList parsePerfomers(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT PerformerList parsePerfomers(const std::string & xmlResponse);
 
 		//! Dane aktora z atrybutami
 		struct HMDBSERVICES_EXPORT PerformerDetailsWithAttributes
@@ -252,14 +252,14 @@ namespace hmdbServices
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Opis aktora z atrybutami
-		HMDBSERVICES_EXPORT const PerformerDetailsWithAttributes parsePerformer(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT PerformerDetailsWithAttributes parsePerformer(const std::string & xmlResponse);
 
 		//! Typ listy ze szczegółami aktorów i ich atrybutami
-		typedef std::list<PerformerDetailsWithAttributes> PerformerWithAttributesList;
+		using PerformerWithAttributesList = std::list<PerformerDetailsWithAttributes>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista aktorów z atrybutami
-		HMDBSERVICES_EXPORT const PerformerWithAttributesList parsePerfomersWithAttributes(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT PerformerWithAttributesList parsePerfomersWithAttributes(const std::string & xmlResponse);
 
 		//! Dane sesji
 		struct HMDBSERVICES_EXPORT SessionDetails
@@ -274,11 +274,11 @@ namespace hmdbServices
 		};
 
 		//! Typ listy z sesjami
-		typedef std::list<SessionDetails> SessionList;
+		using SessionList = std::list<SessionDetails>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista sesji
-		HMDBSERVICES_EXPORT const SessionList parseSessions(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT SessionList parseSessions(const std::string & xmlResponse);
 
 		//! Dane sesji z atrybutami
 		struct HMDBSERVICES_EXPORT SessionDetailsWithAttributes
@@ -289,14 +289,14 @@ namespace hmdbServices
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Opis sesji z atrybutami
-		HMDBSERVICES_EXPORT const SessionDetailsWithAttributes parseSession(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT SessionDetailsWithAttributes parseSession(const std::string & xmlResponse);
 
 		//! Typ listy sesji
-		typedef std::list<SessionDetailsWithAttributes> SessionWithAttributesList;
+		using SessionWithAttributesList = std::list<SessionDetailsWithAttributes>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista sesji z atrybutami
-		HMDBSERVICES_EXPORT const SessionWithAttributesList parseSessionsWithAttributes(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT SessionWithAttributesList parseSessionsWithAttributes(const std::string & xmlResponse);
 
 		//! Dane grupy sesji
 		struct HMDBSERVICES_EXPORT SessionGroupDefinition
@@ -306,11 +306,11 @@ namespace hmdbServices
 		};
 
 		//! Typ listy grup sesji
-		typedef std::list<SessionGroupDefinition> SessionGroupDefinitionList;
+		using SessionGroupDefinitionList = std::list<SessionGroupDefinition>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista grup sesji
-		HMDBSERVICES_EXPORT const SessionGroupDefinitionList parseSessionGroups(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT SessionGroupDefinitionList parseSessionGroups(const std::string & xmlResponse);
 
 		//! Opis typów ruchów
 		struct HMDBSERVICES_EXPORT MotionKindDefinition
@@ -320,11 +320,11 @@ namespace hmdbServices
 		};
 
 		//! Typ listy typów ruchów
-		typedef std::list<MotionKindDefinition> MotionKindDefinitionList;
+		using MotionKindDefinitionList = std::list<MotionKindDefinition>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista definicji typów ruchów
-		HMDBSERVICES_EXPORT const MotionKindDefinitionList parseMotionKinds(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT MotionKindDefinitionList parseMotionKinds(const std::string & xmlResponse);
 
 		//! Dane próby pomiarowej
 		struct HMDBSERVICES_EXPORT TrialDetails
@@ -335,11 +335,11 @@ namespace hmdbServices
 		};
 
 		//! Typ listy triali
-		typedef std::list<TrialDetails> TrialList;
+		using TrialList = std::list<TrialDetails>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista prób pomiarowych
-		HMDBSERVICES_EXPORT const TrialList parseTrials(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT TrialList parseTrials(const std::string & xmlResponse);
 
 		//! Dane próby pomiarowej
 		struct HMDBSERVICES_EXPORT TrialDetailsWithAttributes
@@ -350,14 +350,14 @@ namespace hmdbServices
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Opis próby pomiarowej z atrybutami
-		HMDBSERVICES_EXPORT const TrialDetailsWithAttributes parseTrial(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT TrialDetailsWithAttributes parseTrial(const std::string & xmlResponse);
 
 		//! Typ listy triali z atrybutami
-		typedef std::list<TrialDetailsWithAttributes> TrialsWithAttributesList;
+		using TrialsWithAttributesList = std::list<TrialDetailsWithAttributes>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista prób pomiarowych z atrybutami
-		HMDBSERVICES_EXPORT const TrialsWithAttributesList parseTrialsWithAttributes(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT TrialsWithAttributesList parseTrialsWithAttributes(const std::string & xmlResponse);
 
 		//! Dane konfiguracji pomiarowej
 		struct HMDBSERVICES_EXPORT MeasurementConfDetails
@@ -377,14 +377,14 @@ namespace hmdbServices
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Opis konfiguracji pomiarowej z atrybutami
-		HMDBSERVICES_EXPORT const MeasurementConfDetailsWithAttributes parseMeasurementConf(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT MeasurementConfDetailsWithAttributes parseMeasurementConf(const std::string & xmlResponse);
 
 		//! Typ listy z konfiguracjami pomiarowymi
-		typedef std::list<MeasurementConfDetailsWithAttributes> MeasurementConfWithAttributesList;
+		using MeasurementConfWithAttributesList = std::list<MeasurementConfDetailsWithAttributes>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista konfiguracji pomiarowych z atrybutami
-		HMDBSERVICES_EXPORT const MeasurementConfWithAttributesList parseMeasurementsConfWithAttributes(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT MeasurementConfWithAttributesList parseMeasurementsConfWithAttributes(const std::string & xmlResponse);
 
 		//! Dane konfiguracji aktora
 		struct HMDBSERVICES_EXPORT PerformerConfDetails
@@ -403,14 +403,14 @@ namespace hmdbServices
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Opis konfiguracji aktora z atrybutami
-		HMDBSERVICES_EXPORT const PerformerConfDetailsWithAttributes parsePerfomerConf(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT PerformerConfDetailsWithAttributes parsePerfomerConf(const std::string & xmlResponse);
 
 		//! Typ listy konfiguracji aktorów
-		typedef std::list<PerformerConfDetailsWithAttributes> PerformerConfWithAttributesList;
+		using PerformerConfWithAttributesList = std::list<PerformerConfDetailsWithAttributes>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista konfiguracji aktorów z atrybutami
-		HMDBSERVICES_EXPORT const PerformerConfWithAttributesList parsePerformersConfWithAttributes(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT PerformerConfWithAttributesList parsePerformersConfWithAttributes(const std::string & xmlResponse);
 
 		//! Dane pliku
 		struct HMDBSERVICES_EXPORT FileData
@@ -430,11 +430,11 @@ namespace hmdbServices
 		};
 
 		//! Typ listy plików
-		typedef std::list<FileDetails> FileList;
+		using FileList = std::list<FileDetails>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista plików
-		HMDBSERVICES_EXPORT const FileList parseFiles(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT FileList parseFiles(const std::string & xmlResponse);
 
 		//! Opis pliku z atrybutami
 		struct HMDBSERVICES_EXPORT FileDetailsWithAttribute
@@ -444,21 +444,21 @@ namespace hmdbServices
 		};
 
 		//! Typ listy plików z atrybutami
-		typedef std::list<FileDetailsWithAttribute> FileWithAttributeList;
+		using FileWithAttributeList = std::list<FileDetailsWithAttribute>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista plików z atrybutami
-		HMDBSERVICES_EXPORT const FileWithAttributeList parseFilesWithAttributes(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT FileWithAttributeList parseFilesWithAttributes(const std::string & xmlResponse);
 
 		//! Typ wartości enum
-		typedef std::string EnumValue;
+		using EnumValue = std::string;
 
 		//! Typ listy wartości enum
-		typedef std::list<EnumValue> EnumValueList;
+		using EnumValueList = std::list<EnumValue>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista wartości wyliczeń
-		HMDBSERVICES_EXPORT const EnumValueList parseEnumValues(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT EnumValueList parseEnumValues(const std::string & xmlResponse);
 
 		//! Dane atrybutu
 		struct HMDBSERVICES_EXPORT AttributeDefinition
@@ -472,11 +472,11 @@ namespace hmdbServices
 		};
 
 		//! Typ listy definicji atrybutów
-		typedef std::list<AttributeDefinition> AttributeDefinitionList;
+		using AttributeDefinitionList = std::list<AttributeDefinition>;
 
 		//! \param xmlResponse Odpowiedź na zapytanie
 		//! \return Lista plików z atrybutami
-		HMDBSERVICES_EXPORT const AttributeDefinitionList parseAttributesDefinitions(const std::string & xmlResponse);
+		HMDBSERVICES_EXPORT AttributeDefinitionList parseAttributesDefinitions(const std::string & xmlResponse);
 	}
 }
 

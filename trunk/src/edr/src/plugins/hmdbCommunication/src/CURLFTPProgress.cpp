@@ -20,7 +20,7 @@ void CURLFTPProgress::abort()
 	aborted_ = true;
 }
 
-const bool CURLFTPProgress::aborted() const
+bool CURLFTPProgress::aborted() const
 {
 	return aborted_;
 }
@@ -31,17 +31,17 @@ void CURLFTPProgress::setProgress(const float progress)
 	progress_ = progress;
 }
 
-const float CURLFTPProgress::progress() const
+float CURLFTPProgress::progress() const
 {
 	return progress_;
 }
 
-void CURLFTPProgress::setProcessedData(const unsigned long long processedData)
+void CURLFTPProgress::setProcessedData(const std::size_t processedData)
 {
 	processedData_ = processedData;
 }
 
-const unsigned long long CURLFTPProgress::processedData() const
+std::size_t CURLFTPProgress::processedData() const
 {
 	return processedData_;
 }

@@ -343,7 +343,7 @@ SkeletonState::BoneRotationConverter createBoneOrienationExtractor(
 	auto indicies = orientationIndicies(bone);
 	kinematicUtils::EulerConverter angleConverter = kinematicUtils::eulerConverter(rotOrder);
 
-	return [c, cInv, indicies, angleConverter, radiansResolver](const acclaim::MotionData::ChannelValues & channelValues)
+	return [&](const acclaim::MotionData::ChannelValues & channelValues)
 	{
 		return cInv * angleConverter(radiansResolver(osg::Vec3d(channelValues[indicies[0]], channelValues[indicies[1]], channelValues[indicies[2]]))) * c;
 	};	
@@ -835,7 +835,7 @@ SkeletonState::ConvertHelper SkeletonState::prepareConvertHelper(const acclaim::
 {
 	auto indicies = positionIndicies(skeleton.bones.begin()->second);
 
-	return{ prepareRotationConvertersMap(skeleton), [indicies](const acclaim::MotionData::ChannelValues & channelValues)
+	return{ prepareRotationConvertersMap(skeleton), [&indicies](const acclaim::MotionData::ChannelValues & channelValues)
 	{
 		return osg::Vec3d(channelValues[indicies[0]], channelValues[indicies[1]], channelValues[indicies[2]]);
 	} };

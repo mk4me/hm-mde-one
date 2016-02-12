@@ -41,7 +41,7 @@ namespace networkUtils
 		WSDLServiceException(const char * exception, const ExceptionType type = Unknown) throw() : std::runtime_error(exception), type_(type) {}
 
 		//! \return Typ wyjątku
-		inline const ExceptionType type() const { return type_; }
+		inline ExceptionType type() const { return type_; }
 
 	private:
 		//! Typ wyjątku
@@ -63,7 +63,7 @@ namespace networkUtils
 		//! W przeciwnym wypadku należy samemu parsować odpowiedź
 		virtual void invoke(const bool process = false) = 0;
 		//! \return Pełna odpowiedź serwisu webowego w formacie html/xml
-		virtual const std::string xmlResponse() const = 0;
+		virtual std::string xmlResponse() const = 0;
 		//! \param name Nazwa wartości którą chcemy pobrać
 		//! \return Wskaźnik do wartości, nullptr jeśli nie ma takiej wartości, wskaxnik pozostaje pod kontrolą implementacji IWSDLService
 		virtual const void * getValue(const std::string & name) const = 0;
@@ -87,7 +87,7 @@ namespace networkUtils
 		//! \param param Nazwa parametru dla którego pobieramy wartość jeśli wykonywaliśmy zapytanie z parsowanie
 		//! \param value [out] Wartośc dla zadanego parametru
 		template<class T>
-		const bool getValue(const std::string & name, T & value) const
+		bool getValue(const std::string & name, T & value) const
 		{
 			const void * ret = getValue(name);
 			if (ret != nullptr){

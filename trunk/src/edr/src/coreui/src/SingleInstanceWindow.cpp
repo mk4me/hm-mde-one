@@ -16,22 +16,17 @@ public:
 
 	~SingleInstanceWindowImpl()
 	{
-		if(sm->isAttached() == true){
-			sm->detach();
-		}
+		
 	}
 
 	const bool isSingle() const
 	{
-		if(sm->attach(QSharedMemory::ReadOnly)){
+		if(sm->attach(QSharedMemory::ReadOnly) == true){
 			sm->detach();
 			return false;
 		}
 
-		if(sm->create(1))
-			return true;
-
-		return false;
+		return sm->create(1, QSharedMemory::ReadOnly);
 	}
 
 private:

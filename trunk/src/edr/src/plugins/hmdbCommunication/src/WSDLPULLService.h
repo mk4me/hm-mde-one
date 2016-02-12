@@ -104,7 +104,7 @@ namespace hmdbCommunication
 			}
 		}
 
-		const std::string xmlResponse() const
+		std::string xmlResponse() const
 		{
 			//musze przetworzyæ odpowiedŸ - chcê w niej mieæ tylko to co istotne bez zbêdnych nag³ówków SOAP i bezpieczeñstwa
 			auto const & resp = invoker_->getXMLResponse();

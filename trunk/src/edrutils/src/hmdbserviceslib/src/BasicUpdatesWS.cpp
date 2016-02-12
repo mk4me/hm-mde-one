@@ -12,7 +12,7 @@ namespace hmdbServices
 	{
 	}
 
-	const int MotionBasicUpdatesWS::createPerformer(const std::string & name,
+	int MotionBasicUpdatesWS::createPerformer(const std::string & name,
 		const std::string & surname)
 	{
 		wsdlService->setOperation("CreatePerformer");
@@ -26,7 +26,7 @@ namespace hmdbServices
 		return ret;
 	}
 
-	const int MotionBasicUpdatesWS::createSession(const int labID, const std::string & motionKindName,
+	int MotionBasicUpdatesWS::createSession(const int labID, const std::string & motionKindName,
 		const std::string & sessionDate, const std::string & sessionDescription,
 		const std::set<int> & sessionGroupIDs)
 	{
@@ -49,7 +49,7 @@ namespace hmdbServices
 		return ret;
 	}
 
-	const int MotionBasicUpdatesWS::createTrial(const int sessionID, const std::string & trialDescription)
+	int MotionBasicUpdatesWS::createTrial(const int sessionID, const std::string & trialDescription)
 	{
 		wsdlService->setOperation("CreateTrial");
 		wsdlService->setValue("sessionID", sessionID);
@@ -62,7 +62,7 @@ namespace hmdbServices
 		return ret;
 	}
 
-	const int MotionBasicUpdatesWS::createMeasurementConfiguration(const std::string & mcName,
+	int MotionBasicUpdatesWS::createMeasurementConfiguration(const std::string & mcName,
 		const std::string & mcKind, const std::string & mcDescription)
 	{
 		wsdlService->setOperation("CreateMeasurementConfiguration");
@@ -77,7 +77,7 @@ namespace hmdbServices
 		return ret;
 	}
 
-	const int MotionBasicUpdatesWS::assignSessionToGroup(const int sessionID, const int sessionsGroupID)
+	int MotionBasicUpdatesWS::assignSessionToGroup(const int sessionID, const int sessionsGroupID)
 	{
 		wsdlService->setOperation("AssignSessionToGroup");
 		wsdlService->setValue("sessionID", sessionID);
@@ -90,7 +90,7 @@ namespace hmdbServices
 		return ret;
 	}
 
-	const int MotionBasicUpdatesWS::assignPerformerToSession(const int performerID, const int sessionID)
+	int MotionBasicUpdatesWS::assignPerformerToSession(const int performerID, const int sessionID)
 	{
 		wsdlService->setOperation("AssignPerformerToSession");
 		wsdlService->setValue("performerID", performerID);
@@ -103,7 +103,7 @@ namespace hmdbServices
 		return ret;
 	}
 
-	const bool MotionBasicUpdatesWS::assignPerformerToMeasurement(const int performerID, const int measurementID)
+	bool MotionBasicUpdatesWS::assignPerformerToMeasurement(const int performerID, const int measurementID)
 	{
 		wsdlService->setOperation("AssignPerformerToMeasurement");
 		wsdlService->setValue("performerID", performerID);

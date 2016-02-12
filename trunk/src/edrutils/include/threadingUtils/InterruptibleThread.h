@@ -39,18 +39,19 @@ namespace threadingUtils
 	public:
 
 		//! Konstruktor
-		InterrubtibleThread(RunnableThread && innerThread,
+		InterrubtibleThread(RunnableThread && innerThread = RunnableThread(),
 			const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(),
 			const InterruptHandlingPolicy & ihp = InterruptHandlingPolicy())
 			: ExceptionHandlePolicy(ehp), InterruptHandlingPolicy(ihp),
 			thread(std::move(innerThread)) {}
 
 		//! Konstruktor
-		template<class... Args>
+		/*template<class... Args>
 		InterrubtibleThread(const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(),
 			const InterruptHandlingPolicy & ihp = InterruptHandlingPolicy(),
 			Args &&... arguments)
-			: ExceptionHandlePolicy(ehp), InterruptHandlingPolicy(ihp), thread(std::forward(arguments)...) {}
+			: ExceptionHandlePolicy(ehp), InterruptHandlingPolicy(ihp), thread(std::forward<Args>(arguments)...) {}
+			*/
 
 		//! \param Other Przenoszony wątek
 		InterrubtibleThread(InterrubtibleThread&& Other)
@@ -111,7 +112,7 @@ namespace threadingUtils
 			std::swap(thread, Other.thread);
 		}
 		//! \return Czy można dołączyć do wątku
-		const bool joinable() const { return thread.joinable(); }
+		bool joinable() const { return thread.joinable(); }
 		//! Dołancza się do wątku, czeka na jego zakończenie
 		void join() { thread.join(); }
 		//! Zwalnia wątek - żyje samodzielnie, nie mamy już nad nim kontroli z poziomu tej klasy
@@ -123,7 +124,7 @@ namespace threadingUtils
 		//! Przerwania wątku
 		void interrupt() { sharedState->interruptible.interrupt(); }
 		//! \return Czy wątek jest przerywalny
-		const bool interruptible() const { return sharedState->interruptible.interruptible(); }
+		bool interruptible() const { return sharedState->interruptible.interruptible(); }
 		//! Sprawdzenie przerwania wątku
 		static void interruptionPoint() { InterruptiblePolicy::interruptionPoint(); }
 		//! Reset przerwania wątku
@@ -158,16 +159,17 @@ namespace threadingUtils
 
 	public:
 
-		InterruptibleMultipleRunThread(RunnableThread && innerThread,
+		InterruptibleMultipleRunThread(RunnableThread && innerThread = RunnableThread(),
 			const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(),
 			const InterruptHandlingPolicy & ihp = InterruptHandlingPolicy())
 			: ExceptionHandlePolicy(ehp), InterruptHandlingPolicy(ihp),
 			thread(std::move(innerThread)) {}
 
-		template<class... Args>
+		/*template<class... Args>
 		InterruptibleMultipleRunThread(const ExceptionHandlePolicy & ehp = ExceptionHandlePolicy(),
 			const InterruptHandlingPolicy & ihp = InterruptHandlingPolicy(), Args&&... arguments)
 			: ExceptionHandlePolicy(ehp), InterruptHandlingPolicy(ihp), thread(std::forward(arguments)...) {}
+			*/
 
 		InterruptibleMultipleRunThread(InterruptibleMultipleRunThread&& Other)
 			: ExceptionHandlePolicy(std::move(Other)), InterruptHandlingPolicy(std::move(Other)),
@@ -273,7 +275,7 @@ namespace threadingUtils
 			std::swap(thread, Other.thread);
 		}
 
-		const bool joinable() const  {
+		bool joinable() const  {
 
 			if (sharedState != nullptr && sharedState->finalize == true){
 				throw std::logic_error("Operation not permitted");
@@ -297,7 +299,7 @@ namespace threadingUtils
 		std::thread::id get_id() const { return thread.get_id(); }
 		std::thread::native_handle_type native_handle() { return thread.native_handle(); }
 		void interrupt() { sharedState->interruptible.interrupt(); }
-		const bool interruptible() const { return sharedState != nullptr && sharedState->interruptible.interruptible(); }
+		bool interruptible() const { return sharedState != nullptr && sharedState->interruptible.interruptible(); }
 		static void interruptionPoint() { InterruptiblePolicy::interruptionPoint(); }
 		static void resetInterruption() { InterruptiblePolicy::resetInterruption(); }
 

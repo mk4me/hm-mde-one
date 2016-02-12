@@ -54,7 +54,7 @@ struct MeasureDuration
 	//! \tparam Args Typ(y) arugmentu(ów) funkcji
 	//! \return Czas wykonania
 	template<typename F, typename ...Args>
-	inline static typename TimeT::rep execute(F f, Args&&... args)
+	inline static typename TimeT::rep execute(F & f, Args&&... args)
 	{
 		const auto start = ClockT::now();
 		

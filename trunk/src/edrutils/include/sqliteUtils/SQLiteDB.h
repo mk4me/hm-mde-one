@@ -28,7 +28,7 @@ namespace sqliteUtils
 				const unsigned int retriesCount = 0,
 				const unsigned int stepWaitTime = 150);
 
-			const bool operator()(sqlite3 * db);
+			bool operator()(sqlite3 * db);
 
 		private:
 			const unsigned int maxStatements;
@@ -38,7 +38,7 @@ namespace sqliteUtils
 
 		//! \param db Weryfikowana baza danych
 		//! \return Prawda jeœli uda³o siê zweryfikowaæ poprawnoœæ uchwytu bazy danych
-		static const bool verify(sqlite3 * db);
+		static bool verify(sqlite3 * db);
 		//! \param path Œcie¿ka do pliku z baz¹ danych
 		//! \param key Klucz którym zaszyfrowana jest baza danych
 		//! \param flags Flagi z jakimi otwieramy baze danych
@@ -54,13 +54,13 @@ namespace sqliteUtils
 		//! Daje czas innym w¹tkom na dzia³anie
 		//! \param db Uchwyt bazy danych do zamkniêcia
 		//! \return Czy uda³o siê zmkan¹æ bazê
-		static const bool close(sqlite3 * db);
+		static bool close(sqlite3 * db);
 		//! \param db Uchwyt bazy danych do zamkniêcia
 		//! \param maxStatements Maksymalna iloœæ zapytañ do bazy
 		//! \param retriesCount Iloœæ dopuszczalnych prób zamykania oczekuj¹cych zapytañ
 		//! \param stepWaitTime Czas dla innych w¹tków do dzia³ania [ms]
 		//! \return Czy uda³o siê zamkn¹æ wczystkie zapytania na bazie danych
-		static const bool finalizeStatements(sqlite3 * db, const unsigned int maxStatements,
+		static bool finalizeStatements(sqlite3 * db, const unsigned int maxStatements,
 			const unsigned int retriesCount = 0, const unsigned int stepWaitTime = 0);
 		//! Metoda wywo³uj¹ca zapytanie na bazie danych w œrodowisku wielow¹tkowym
 		//! \param db Uchwyt bazy danych
@@ -68,7 +68,7 @@ namespace sqliteUtils
 		//! \param retriesCount Iloœæ dopuszczalnych prób wykonannia zapytañ
 		//! \param stepWaitTime Czas dla innych w¹tków do dzia³ania [ms]
 		//! \return Kod wykonania zapytania
-		static const int exec(sqlite3 * db, const std::string & query,
+		static int exec(sqlite3 * db, const std::string & query,
 			const unsigned int retriesCount = 0, const unsigned int stepWaitTime = 0);
 	};
 }

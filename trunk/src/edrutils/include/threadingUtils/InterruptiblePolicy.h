@@ -63,7 +63,7 @@ namespace threadingUtils
 
 		void interrupt() {}
 		static void interrupt(void*& privateData) {}
-		const bool interuptible() const { return false; }
+		bool interuptible() const { return false; }
 
 		static void interruptionPoint() {}
 		static void resetInterruption() {}
@@ -203,11 +203,11 @@ namespace threadingUtils
 
 		void initializeThread() { InterruptFlag::threadInterruptFlag() = &flag; interuptible_ = utils::make_shared<bool>(true); }
 		void deinitializeThread() { interuptible_.reset(); InterruptFlag::threadInterruptFlag() = nullptr; }
-		const bool interruptible() const { return interuptible_ != nullptr && *interuptible_ == true; }
+		bool interruptible() const { return interuptible_ != nullptr && *interuptible_ == true; }
 
 		static void initializeContext(void*& privateData) { privateData = InterruptFlag::threadInterruptFlag(); }
 		static void deinitializeContext(void*& privateData) { privateData = nullptr; }
-		static const bool interruptible(void*& privateData)
+		static bool interruptible(void*& privateData)
 		{
 			bool ret = true;
 			if (privateData != nullptr){

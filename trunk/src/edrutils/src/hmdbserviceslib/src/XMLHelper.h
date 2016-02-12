@@ -19,7 +19,7 @@ namespace hmdbServices
 	namespace XMLHelper
 	{
 		template<class T>
-		const bool extractTagValue(const tinyxml2::XMLElement * root, const std::string & tag, T & value)
+		bool extractTagValue(const tinyxml2::XMLElement * root, const std::string & tag, T & value)
 		{
 			auto element = root->FirstChildElement(tag.c_str());
 
@@ -37,7 +37,7 @@ namespace hmdbServices
 		}
 
 		template<class T>
-		const bool extractAttributeValue(const tinyxml2::XMLElement * root, const std::string & attribute, T & value)
+		bool extractAttributeValue(const tinyxml2::XMLElement * root, const std::string & attribute, T & value)
 		{
 			auto attrib = root->FindAttribute(attribute.c_str());
 			if (attrib != nullptr){
@@ -54,13 +54,13 @@ namespace hmdbServices
 		}
 
 		template<>
-		const bool extractTagValue<std::string>(const tinyxml2::XMLElement * root, const std::string & tag, std::string & value);
+		bool extractTagValue<std::string>(const tinyxml2::XMLElement * root, const std::string & tag, std::string & value);
 
 		template<>
-		const bool extractAttributeValue<std::string>(const tinyxml2::XMLElement * root, const std::string & attribute, std::string & value);
+		bool extractAttributeValue<std::string>(const tinyxml2::XMLElement * root, const std::string & attribute, std::string & value);
 
 		template<typename T>
-		const bool extractAndConvertAttributeValue(const tinyxml2::XMLElement * root, const std::string & attribute, typename T::Type & value)
+		bool extractAndConvertAttributeValue(const tinyxml2::XMLElement * root, const std::string & attribute, typename T::Type & value)
 		{
 			bool ret = false;
 
@@ -74,7 +74,7 @@ namespace hmdbServices
 		}
 
 		template<typename T>
-		const bool extractAndConvertTagValue(const tinyxml2::XMLElement * root, const std::string & tag, typename T::Type & value)
+		bool extractAndConvertTagValue(const tinyxml2::XMLElement * root, const std::string & tag, typename T::Type & value)
 		{
 			bool ret = false;
 
@@ -87,9 +87,9 @@ namespace hmdbServices
 			return ret;
 		}
 
-		const bool extractAttributes(const tinyxml2::XMLElement * root, xmlWsdl::Attributes & attributes);
+		bool extractAttributes(const tinyxml2::XMLElement * root, xmlWsdl::Attributes & attributes);
 
-		const bool extractEnumValues(const tinyxml2::XMLElement * root, xmlWsdl::EnumValueList & enumValues);
+		bool extractEnumValues(const tinyxml2::XMLElement * root, xmlWsdl::EnumValueList & enumValues);
 
 		void extractAnnotation(const tinyxml2::XMLElement * element, xmlWsdl::Annotation & annotation);
 

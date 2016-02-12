@@ -31,6 +31,7 @@ namespace hAnim
 	protected:
 		Object(const Type type);
 		Object(const Object & Other);
+		Object(Object && Other);
 	public:
 		//! Destruktor wirtualny
 		virtual ~Object();

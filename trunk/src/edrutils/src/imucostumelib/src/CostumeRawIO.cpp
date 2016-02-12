@@ -33,12 +33,12 @@ public:
 		return ip_;
 	}
 
-	const unsigned int port() const
+	unsigned int port() const
 	{
 		return port_;
 	}
 
-	const bool receive(CostumeRawIO::Buffer & buffer, uint16_t & length, const uint16_t timeout)
+	bool receive(CostumeRawIO::Buffer & buffer, uint16_t & length, const uint16_t timeout)
 	{
 		std::size_t l = 0;
 		CostumeRawIO::Buffer locBuffer = { 0 };
@@ -91,7 +91,7 @@ public:
 		return transferOK;
 	}
 
-	const bool send(const void * data, const uint16_t length, const uint16_t timeout)
+	bool send(const void * data, const uint16_t length, const uint16_t timeout)
 	{
 		std::size_t l = 0;
 
@@ -146,7 +146,7 @@ public:
 		return ret;
 	}
 
-	const uint32_t samplingDelay() const
+	uint32_t samplingDelay() const
 	{
 		return samplingDelay_;
 	}
@@ -311,17 +311,17 @@ const std::string & CostumeRawIO::ip() const
 	return impl->ip();
 }
 
-const unsigned int CostumeRawIO::port() const
+unsigned int CostumeRawIO::port() const
 {
 	return impl->port();
 }
 
-const bool CostumeRawIO::receive(Buffer & buffer, uint16_t & length, const uint16_t timeout)
+bool CostumeRawIO::receive(Buffer & buffer, uint16_t & length, const uint16_t timeout)
 {
 	return impl->receive(buffer, length, timeout);
 }
 
-const bool CostumeRawIO::send(const void * data, const uint16_t length, const uint16_t timeout)
+bool CostumeRawIO::send(const void * data, const uint16_t length, const uint16_t timeout)
 {
 	return impl->send(data, length, timeout);
 }
@@ -336,7 +336,7 @@ std::list<CostumeRawIO::CostumeAddress> CostumeRawIO::listAvailableCostumes()
 	return CostumeRawIOImpl::listAvailableCostumes();
 }
 
-const uint32_t CostumeRawIO::samplingDelay() const
+uint32_t CostumeRawIO::samplingDelay() const
 {
 	return impl->samplingDelay();
 }

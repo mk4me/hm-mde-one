@@ -14,9 +14,9 @@ namespace biovision
 {
 	struct MotionData
 	{
-		typedef std::vector<double> ChannelData;
-		typedef std::vector<ChannelData> FrameJointData;
-		typedef std::vector<FrameJointData> Frames;
+		using ChannelData = std::vector<double>;
+		using FrameJointData = std::vector<ChannelData>;
+		using Frames = std::vector<FrameJointData>;
 
 		//! Czas pojedynczej ramki
 		float frameTime;

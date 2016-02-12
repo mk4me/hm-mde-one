@@ -16,7 +16,7 @@ using namespace kinematic;
 osg::Vec3d correctNegativeZero(const osg::Vec3 & value)
 {
 	auto ret(value);
-	for (unsigned int i = 0; i < 3; ++i)
+	for (unsigned char i = 0; i < 3; ++i)
 	{
 		ret[i] = utils::correctNegativeZero(ret[i]);
 	}
@@ -424,7 +424,7 @@ Skeleton & Skeleton::operator=(const Skeleton & Other)
 	return *this;
 }
 
-const bool verify(const Skeleton & skeleton)
+bool verify(const Skeleton & skeleton)
 {
 	if (skeleton.root() == nullptr){
 		return true;

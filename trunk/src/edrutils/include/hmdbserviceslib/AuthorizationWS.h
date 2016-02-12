@@ -28,10 +28,10 @@ namespace hmdbServices
 		virtual ~AuthorizationWS();
 
 		//! \return Zarejestrowani użytkownicy
-		virtual const std::string listUsers() const;
+		virtual std::string listUsers() const;
 
 		//! \return Opis mojego użytkownika (wynika z konfiguracji połączenia!)
-		virtual const std::string getMyUserData() const;
+		virtual std::string getMyUserData() const;
 
 		//! \param login Login użytkownika
 		//! \param email Adres email
@@ -55,7 +55,7 @@ namespace hmdbServices
 
 		//! \param sessionID Identyikator sesji dla którego pobieram listę praw dostępu
 		//! \return Lista praw dostępu do zadanej sesji
-		virtual const std::string listSessionPrivileges(const int sessionID) const;
+		virtual std::string listSessionPrivileges(const int sessionID) const;
 
 		//! \param grantedUserLogin Login użytkownika którego prawa modyfikujemy
 		//! \param sessionID Identyfikator sesji której dostępność modyfikujemy
@@ -73,9 +73,9 @@ namespace hmdbServices
 			const bool isWritable);
 
 		//! \return Zwraca prawdę jeżeli użytkownik tej usługi występuje w bazie danych
-		virtual const bool checkMyLogin() const;
+		virtual bool checkMyLogin() const;
 		//! \return Zwraca listę grup do których przynależy mój użytkownik
-		virtual const std::string listMyUserGroupsAssigned() const;
+		virtual std::string listMyUserGroupsAssigned() const;
 
 	private:
 		//! Serwis obsługujący tą usługę

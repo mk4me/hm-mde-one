@@ -49,22 +49,22 @@ namespace hmdbServices
 		this->day = day;
 	}
 
-	const int Date::getYear() const
+	int Date::getYear() const
 	{
 		return year;
 	}
 
-	const unsigned char Date::getMonth() const
+	unsigned char Date::getMonth() const
 	{
 		return month;
 	}
 
-	const unsigned char Date::getDay() const
+	unsigned char Date::getDay() const
 	{
 		return day;
 	}
 
-	const std::string Date::toString() const
+	std::string Date::toString() const
 	{
 		std::stringstream sstream;
 
@@ -79,7 +79,7 @@ namespace hmdbServices
 		return sstream.str();
 	}
 
-	const Date Date::today()
+	Date Date::today()
 	{
 		Date ret;
 
@@ -181,7 +181,7 @@ namespace hmdbServices
 	{
 	}
 
-	const Time Time::now()
+	Time Time::now()
 	{
 		Time ret;
 
@@ -218,22 +218,22 @@ namespace hmdbServices
 		this->seconds = seconds;
 	}
 
-	const unsigned char Time::getHour() const
+	unsigned char Time::getHour() const
 	{
 		return hour;
 	}
 
-	const unsigned char Time::getMinutes() const
+	unsigned char Time::getMinutes() const
 	{
 		return minutes;
 	}
 
-	const unsigned char Time::getSeconds() const
+	unsigned char Time::getSeconds() const
 	{
 		return seconds;
 	}
 
-	const std::string Time::toString() const
+	std::string Time::toString() const
 	{
 		std::stringstream sstream;
 
@@ -335,7 +335,7 @@ namespace hmdbServices
 	{
 	}
 
-	const DateTime DateTime::now()
+	DateTime DateTime::now()
 	{
 		time_t date_now;
 		tm* t;
@@ -346,7 +346,7 @@ namespace hmdbServices
 		return DateTime(t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
 	}
 
-	const std::string DateTime::toString() const
+	std::string DateTime::toString() const
 	{
 		std::string ret(Date::toString());
 		ret += " " + Time::toString();

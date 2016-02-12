@@ -8,7 +8,7 @@
 
 using namespace imuCostume;
 
-const CANopenFrame CANopenSensor::formatNMTFrame(const uint8_t messageID, const uint8_t nodeID)
+CANopenFrame CANopenSensor::formatNMTFrame(const uint8_t messageID, const uint8_t nodeID)
 {
 	CANopenFrame ret = { 0 };
 	ret.structure.data[0] = messageID;
@@ -17,7 +17,7 @@ const CANopenFrame CANopenSensor::formatNMTFrame(const uint8_t messageID, const 
 	return ret;
 }
 
-const CANopenSensor::ODataSize CANopenSensor::dataSize(const std::size_t size)
+CANopenSensor::ODataSize CANopenSensor::dataSize(const std::size_t size)
 {
 	if (size & 0x3){
 		throw std::runtime_error("Invalid data size");
@@ -36,7 +36,7 @@ const CANopenSensor::ODataSize CANopenSensor::dataSize(const std::size_t size)
 	}
 }
 
-const std::size_t CANopenSensor::dataBytes(const ODataSize size)
+std::size_t CANopenSensor::dataBytes(const ODataSize size)
 {
 	std::size_t ret = 0;
 	switch (size)
@@ -55,7 +55,7 @@ const std::size_t CANopenSensor::dataBytes(const ODataSize size)
 	return ret;
 }
 
-const CANopenFrame CANopenSensor::formatExpeditedSDOWriteFrame(const uint8_t nodeID, const uint16_t dictID, const uint8_t dictSubID, const uint32_t value, const ODataSize dataSize)
+CANopenFrame CANopenSensor::formatExpeditedSDOWriteFrame(const uint8_t nodeID, const uint16_t dictID, const uint8_t dictSubID, const uint32_t value, const ODataSize dataSize)
 {
 	uint32_t v = utils::EndianSwap(value);
 
@@ -71,7 +71,7 @@ const CANopenFrame CANopenSensor::formatExpeditedSDOWriteFrame(const uint8_t nod
 	return ret;
 }
 
-const CANopenFrame CANopenSensor::formatExpeditedSDOReadFrame(const uint8_t nodeID, const uint16_t dictID, const uint8_t dictSubID)
+CANopenFrame CANopenSensor::formatExpeditedSDOReadFrame(const uint8_t nodeID, const uint16_t dictID, const uint8_t dictSubID)
 {
 	CANopenFrame ret = { 0 };
 	ret.buffer[0] = nodeID;

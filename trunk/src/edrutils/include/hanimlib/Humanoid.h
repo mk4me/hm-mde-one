@@ -27,12 +27,14 @@ namespace hAnim
 		//! Konstruktor domyślny
 		Humanoid();
 		//! \param Other Przejmowany humanoid
+		Humanoid(const Humanoid & Other);
+		//! \param Other Przejmowany humanoid
 		Humanoid(Humanoid && Other);
 		//! Desturktor
 		~Humanoid() {}
 
 		//! \return Domyślny humanoid H-Anim
-		static Humanoid defaultHumanHumanoid();
+		static const Humanoid & defaultHumanHumanoid();
 		//! \return Domyslna hierarchia H-Anim
 		static const Hierarchy & defaultHumanHierarchy();
 

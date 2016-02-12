@@ -15,6 +15,14 @@ Displacer::Displacer(const Displacer & other)
 
 }
 
+Displacer::Displacer(Displacer && other) :
+	Object(std::move(other)), coordIndex(std::move(coordIndex)),
+	displacements(std::move(other.displacements)), weight(other.weight)
+	
+{
+
+}
+
 Displacer::~Displacer()
 {
 

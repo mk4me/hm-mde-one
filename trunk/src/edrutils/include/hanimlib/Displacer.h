@@ -17,6 +17,7 @@ namespace hAnim
 	{
 		Displacer();
 		Displacer(const Displacer & other);
+		Displacer(Displacer && other);
 		virtual ~Displacer();
 
 		std::vector<int> coordIndex;

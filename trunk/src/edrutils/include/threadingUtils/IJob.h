@@ -36,9 +36,9 @@ namespace threadingUtils
 		//! Metoda anuluj¹ca zadanie
 		virtual void cancel() = 0;
 		//! \return Czy zadanie mo¿na jeszcze anulowaæ
-		virtual const bool cancellable() const = 0;
+		virtual bool cancellable() const = 0;
 		//! \return Aktualny status zadania
-		virtual const Status status() const = 0;
+		virtual Status status() const = 0;
 	};
 }
 

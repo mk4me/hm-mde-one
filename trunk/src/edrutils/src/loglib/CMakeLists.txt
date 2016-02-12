@@ -7,7 +7,6 @@ SET_PUBLIC_HEADERS(
 )
 
 SET_SOURCE_FILES (
-	Logger.cpp
-	Exceptions.cpp
+	Logger.cpp	
 )
 END_PROJECT()

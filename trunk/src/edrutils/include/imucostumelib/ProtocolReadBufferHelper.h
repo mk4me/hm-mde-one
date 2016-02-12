@@ -27,14 +27,14 @@ namespace imuCostume
 			//! Cały identyfikator
 			const uint8_t * base;
 			//! \return długość danych
-			inline const uint8_t length() const
+			inline uint8_t length() const
 			{
 				const auto length = base[1] >> 4;
 				UTILS_ASSERT(length <= CANopenFrame::SizeLimits::MaxSize);
 				return length;
 			};
 			//! Identyfikator węzła
-			inline const CANopenFrame::COBID cobID() const { return CANopenFrame::COBID{ uint16_t(((uint8_t)base[1] & 0x0F) << 8) | (uint16_t)base[0] }; };
+			inline CANopenFrame::COBID cobID() const { return CANopenFrame::COBID{ uint16_t(((uint8_t)base[1] & 0x0F) << 8) | (uint16_t)base[0] }; };
 		};
 
 		//! Klasa obsługująca interpretację ramki can open z bufora
@@ -50,11 +50,11 @@ namespace imuCostume
 			//! \return Adres początku ramki
 			const uint8_t * base() const;
 			//! \return Nagłówek ramki
-			const HeaderProxy header() const;
+			HeaderProxy header() const;
 			//! \return Wskaźnik bloku danych ramki
 			const uint8_t * data() const;
 			//! \return Czy można interpretować dane ramki
-			const bool empty() const;
+			bool empty() const;
 
 		private:
 			//! Wskaźnik poczatku bloku ramki
@@ -80,9 +80,9 @@ namespace imuCostume
 		static ProtocolReadBufferHelper create(const void * buffer, const uint16_t length);
 
 		//! \return Ilość ramek w buforze
-		const uint16_t size() const;
+		uint16_t size() const;
 		//! \return Czy są ramki w buforze
-		const bool empty() const;
+		bool empty() const;
 		//! \param idx Indeks ramki o która pytamu
 		//! \return Obiekt interpretujący nasza ramkę
 		CANopenFrameProxy operator[](const uint16_t idx) const;
@@ -92,7 +92,7 @@ namespace imuCostume
 		template<class Container>
 		void appendContainer(Container & container)
 		{
-			for (auto b : frameBasis){
+			for (const auto & b : frameBasis){
 				container.push_back(CANopenFrame(b));
 			}
 		}
@@ -103,7 +103,7 @@ namespace imuCostume
 		Container createContainer()
 		{
 			Container container;
-			for (auto b : frameBasis){
+			for (const auto & b : frameBasis){
 				container.push_back(CANopenFrame(b));
 			}
 			return container;

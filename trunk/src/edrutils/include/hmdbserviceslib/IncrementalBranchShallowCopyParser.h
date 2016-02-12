@@ -22,7 +22,7 @@ namespace hmdbServices {
 		//! \param document Strumieñ z danymi do parsowania
 		//! \param shallowCopy [out] Struktura przyrostowej p³ytkiej kopii danych ruchu do wype³nienia
 		//! \return Czy uda³o siê sparsowaæ strumieñ
-		static const bool parseFile(std::istream * document, IncrementalBranchShallowCopy& shallowCopy);
+		static bool parseFile(std::istream & document, IncrementalBranchShallowCopy& shallowCopy);
 	};
 }
 #endif

@@ -50,7 +50,7 @@ namespace threadingUtils
 		JobImplementation(WorkManager * workManager, F&& f, Args&& arguments...) : workManager(workManager),
 			sharedState(utils::make_shared<SharedState>()), detached_(false)
 		{
-			sharedState->functionWrapper = std::bind(std::_Decay_copy(std::forward<F>(f)), std::_Decay_copy(std::forward<Args>(arguments))...);
+			sharedState->functionWrapper = std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...);
 			sharedState->status_ = Initialized;
 		}
 
@@ -237,7 +237,7 @@ namespace threadingUtils
 		JobImplementation(WorkManager * workManager, F&& f, Args&& arguments...) : workManager(workManager),
 			sharedState(utils::make_shared<SharedState>()), detached_(false)
 		{
-			sharedState->functionWrapper = std::bind(std::_Decay_copy(std::forward<F>(f)), std::_Decay_copy(std::forward<Args>(arguments))...);
+			sharedState->functionWrapper = std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...);
 			sharedState->status_ = Initialized;
 		}
 
@@ -421,7 +421,7 @@ namespace threadingUtils
 		JobImplementation(WorkManager * workManager, F&& f, Args&& arguments...) : workManager(workManager),
 			sharedState(utils::make_shared<SharedState>()), detached_(false)
 		{
-			sharedState->functionWrapper = std::bind(std::_Decay_copy(std::forward<F>(f)), std::_Decay_copy(std::forward<Args>(arguments))...);
+			sharedState->functionWrapper = std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...);
 			sharedState->status_ = Initialized;
 		}
 
@@ -528,7 +528,7 @@ namespace threadingUtils
 			}
 		}
 
-		virtual const bool cancellable() const override
+		virtual bool cancellable() const override
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedState->satusMutex);
 			if (sharedState == nullptr || sharedState->status_ == Cancelled || sharedState->status_ == Finished || sharedState->status_ == Failed || sharedState->status_ == Running){
@@ -547,20 +547,20 @@ namespace threadingUtils
 		}
 
 		template<class Rep, class Per>
-		const std::future_status wait_for(
+		std::future_status wait_for(
 			const std::chrono::duration<Rep, Per>& relTime) const
 		{	// wait for duration
 			return future.wait_for(relTime);
 		}
 
 		template<class _Clock, class _Dur>
-		const std::future_status wait_until(
+		std::future_status wait_until(
 			const std::chrono::time_point<_Clock, _Dur>& absTime) const
 		{	// wait until time point
 			return future.wait_until(absTime);
 		}
 
-		virtual const Status status() const override
+		virtual Status status() const override
 		{
 			return (sharedState == nullptr) ? Initialized : sharedState->status_;
 		}
@@ -596,7 +596,7 @@ namespace threadingUtils
 		template<typename F, class ...Args>
 		Job<typename std::result_of<F(Args...)>::type> create(F&& f, Args&& ...arguments)
 		{
-			return Job<typename std::result_of<F(Args...)>::type>(workManager, std::move(f), std::move(arguments)...);
+			return Job<typename std::result_of<F(Args...)>::type>(workManager, std::forward<F>(f), std::forward<Args>(arguments)...);
 		}
 
 		//! \tparam T Typ wyniku future

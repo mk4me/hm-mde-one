@@ -199,7 +199,7 @@ namespace threadingUtils
 			std::swap(thread, Other.thread);
 		}
 
-		const bool joinable() const 
+		bool joinable() const 
 		{
 			if (sharedState != nullptr && sharedState->finalize == true){
 				throw std::logic_error("Operation not permitted");

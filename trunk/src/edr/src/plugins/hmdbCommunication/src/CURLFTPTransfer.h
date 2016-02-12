@@ -38,19 +38,19 @@ namespace hmdbCommunication
 		//! Destruktor wirtualny
 		virtual ~CURLFTPTransfer();
 		//! \return Plik, którego dotyczy transfer - lokalny lub zdalny
-		virtual const std::string file() const;
+		virtual std::string file() const;
 		//! Domyœlna implementacja postêpu
-		virtual const float normalizedProgress() const;
+		virtual float normalizedProgress() const;
 		//! \return Czas [s] jaki up³yn¹³ od rozpoczêcia zadania
-		virtual const float elapsed() const;
+		virtual float elapsed() const;
 		//! \return Szacowany czas [s] jaki zosta³ do zakoñczenia zadania
-		virtual const float remaining() const;
+		virtual float remaining() const;
 		//! \return Iloœæ danych ju¿ przetworzona [bytes]
-		virtual const unsigned long long processed() const;
+		virtual std::size_t processed() const;
 		//! \return Iloœæ danych do przetworzenia
-		virtual const unsigned long long size() const;
+		virtual std::size_t size() const;
 		//! \return Œrednia prêdkoœæ pobierania bytes/second
-		virtual const float averageSpeed() const;
+		virtual float averageSpeed() const;
 		//! Metoda rozpoczyna operacjê
 		virtual void start();
 		//! Metoda przerywa operacjê
@@ -58,11 +58,11 @@ namespace hmdbCommunication
 		//! Metoda czeka do zakoñczenia operacji
 		virtual void wait();
 		//! \return Stan operacji
-		virtual const Status status() const;
+		virtual Status status() const;
 		//! \return Opis b³êdu
-		virtual const std::string error() const;
+		virtual std::string error() const;
 		//! \return Typ transferu
-		virtual const Direction direction() const;
+		virtual Direction direction() const;
 
 	private:
 		//! Plik kórego dotyczy transfer

@@ -23,7 +23,7 @@ namespace hmdbServices {
 		wsdlService->invoke();
 	}
 
-	const bool SingleAccountFactoryWS::activateUserAccount(const std::string & login,
+	bool SingleAccountFactoryWS::activateUserAccount(const std::string & login,
 		const std::string & activationCode)
 	{
 		wsdlService->setOperation("ActivateUserAccount");
@@ -37,7 +37,7 @@ namespace hmdbServices {
 		return ret;
 	}
 
-	const bool SingleAccountFactoryWS::resetPassword(const std::string & email)
+	bool SingleAccountFactoryWS::resetPassword(const std::string & email)
 	{
 		wsdlService->setOperation("ResetPassword");
 		wsdlService->setValue("email", email);
@@ -75,7 +75,7 @@ namespace hmdbServices {
 		wsdlService->invoke();
 	}
 
-	const bool MultiAccountFactoryWS::activateUserAccount(const std::string & login,
+	bool MultiAccountFactoryWS::activateUserAccount(const std::string & login,
 		const std::string & activationCode, const bool propagateToHMDB)
 	{
 		wsdlService->setOperation("ActivateUserAccount");
@@ -90,7 +90,7 @@ namespace hmdbServices {
 		return ret;
 	}
 
-	const bool MultiAccountFactoryWS::resetPassword(const std::string & email,
+	bool MultiAccountFactoryWS::resetPassword(const std::string & email,
 		const bool propagateToHMDB)
 	{
 		wsdlService->setOperation("ResetPassword");

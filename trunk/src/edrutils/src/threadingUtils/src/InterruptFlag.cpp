@@ -31,12 +31,12 @@ void InterruptFlag::reset()
 	flag.store(false, std::memory_order_relaxed);
 }
 
-const bool InterruptFlag::isSet() const
+bool InterruptFlag::isSet() const
 {
 	return flag.load(std::memory_order_relaxed);
 }
 
-const bool InterruptFlag::threadIsSet()
+bool InterruptFlag::threadIsSet()
 {
 	return threadInterruptFlag()->isSet();
 }

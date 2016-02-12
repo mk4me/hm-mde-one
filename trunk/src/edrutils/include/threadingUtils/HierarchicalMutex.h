@@ -21,7 +21,7 @@ namespace threadingUtils
 	{
 	public:
 		//! Typ opisuj¹cy poziom blokady
-		typedef unsigned long HierarchyLevelType;
+		using HierarchyLevelType = std::size_t;
 
 	private:
 		//! Wewnêtrzny mutex
@@ -72,7 +72,7 @@ namespace threadingUtils
 		}
 		//! Próba lokowania mutexa
 		//! \return Prawda jeœli uda³o siê zrobiæ lock na mutexie
-		const bool try_lock()
+		bool try_lock()
 		{
 			checkForHierarchyViolation();
 			if (!mutex.try_lock())

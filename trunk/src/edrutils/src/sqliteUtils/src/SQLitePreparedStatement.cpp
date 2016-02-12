@@ -10,7 +10,7 @@ SQLitePreparedStatement::Finalizer::Finalizer(const unsigned int retriesCount,
 
 }
 
-const bool SQLitePreparedStatement::Finalizer::operator()(sqlite3_stmt * statment)
+bool SQLitePreparedStatement::Finalizer::operator()(sqlite3_stmt * statment)
 {
 	unsigned int tries = 0;
 	bool retry = false;
@@ -39,12 +39,12 @@ sqlite3_stmt * SQLitePreparedStatement::prepare(sqlite3 * db, const std::string 
 	return ret;
 }
 
-const bool SQLitePreparedStatement::finalize(sqlite3_stmt * statement)
+bool SQLitePreparedStatement::finalize(sqlite3_stmt * statement)
 {
 	return sqlite3_finalize(statement) == SQLITE_OK;
 }
 
-const int SQLitePreparedStatement::step(sqlite3_stmt * statement)
+int SQLitePreparedStatement::step(sqlite3_stmt * statement)
 {
 	return sqlite3_step(statement);
 }

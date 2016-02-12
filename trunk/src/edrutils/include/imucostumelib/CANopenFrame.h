@@ -32,8 +32,8 @@ namespace imuCostume
 	public:
 
 		//! Typ opisuj¹cy sekcjê danych protoko³u komunikacyjnego
-		typedef std::array<uint8_t, SizeLimits::MaxSize> Buffer;
-		typedef std::array<uint8_t, SizeLimits::MaxDataSize> Data;
+		using Buffer = std::array<uint8_t, SizeLimits::MaxSize>;
+		using Data = std::array<uint8_t, SizeLimits::MaxDataSize>;
 
 		//! Identyfikator wiadomoœci
 		union COBID
@@ -43,9 +43,9 @@ namespace imuCostume
 			//! Identyfikator rozdzielony na poszczególne bajty
 			std::array<uint8_t, SizeLimits::COBIDSize> buffer;
 			//! Identyfikator funkcji
-			inline const uint8_t functionID() const { return (buffer[1] >> 7) & 0x0F; };
+			inline uint8_t functionID() const { return (buffer[1] >> 7) & 0x0F; };
 			//! Identyfikator wêz³a
-			inline const uint8_t nodeID() const { return buffer[0] & 0x7F; };
+			inline uint8_t nodeID() const { return buffer[0] & 0x7F; };
 		};
 
 		//! Struktura opisuj¹ca ramkê CANopen z podzia³em na COB-ID i dane

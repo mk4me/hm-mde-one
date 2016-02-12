@@ -56,7 +56,7 @@ namespace sqliteUtils
 		//! Typ mojego stanu
 		typedef typename _Traits::state_type _Myst;
 
-		const pos_type _BADOFF = (-1); //za cppreference, -1 jest uzywane do okreslania wadliwych offsetow;
+		static const pos_type _BADOFF; = (-1); //za cppreference, -1 jest uzywane do okreslania wadliwych offsetow;
 
 
 	public:
@@ -96,39 +96,39 @@ namespace sqliteUtils
 	private:
 
 		//! \return Rozmiar bufora
-		const int streamBufferSize() const;
+		int streamBufferSize() const;
 		//! \return Rozmiar bufora
-		const int blobBufferSize() const;
+		int blobBufferSize() const;
 
 		//! \param idx Globalny index
 		//! \return Maksymalny index bufora uwzglêdniaj¹cy zakres strumienia i rozmiar bufora
-		const int blobMaxIDX(const int idx) const;
+		int blobMaxIDX(const int idx) const;
 
 		//! \return Maksymalny index globalny bufora do odczytu
-		const int blobReadMaxIDX() const;
+		int blobReadMaxIDX() const;
 
 		//! \return Maksymalny index globalny bufora do zapisu
-		const int blobWriteMaxIDX() const;
+		int blobWriteMaxIDX() const;
 
 		//! \param blobBase Globalna baza
 		//! \param bufferBase Baza lokalna bufora
 		//! \param bufferPos Lokalna pozycja bufora
 		//! \return Globalna pozycja strumienia
-		static const int blobGlobalIDX(const int blobBase, const _Elem * bufferBase,
+		static int blobGlobalIDX(const int blobBase, const _Elem * bufferBase,
 			const _Elem * bufferPos);
 
 		//! \return Globalna pozycja dla zapisu
-		const int blobGlobalWriteIDX() const;
+		int blobGlobalWriteIDX() const;
 
 		//! \return Globalna pozycja dla odczytu
-		const int blobGlobalReadIDX() const;
+		int blobGlobalReadIDX() const;
 
 		//! \param pos Pozycja we wspolrzednych bloba [B]
 		//! \return Pozycja we wspolrzednych strumienia
-		static const int toStreamPos(int pos);
+		static int toStreamPos(int pos);
 		//! \param pos Pozycja we wspolrzednych strumienia [_Elem]
 		//! \return Pozycja we wspolrzednych bloba
-		static const int toBlobPos(int pos);
+		static int toBlobPos(int pos);
 
 		//! Aktualizuje globalny indeks ostatniego elementu strumienia
 		void updateBlobStreamEnd();
@@ -140,23 +140,23 @@ namespace sqliteUtils
 		//! \param blobIDX Wskaznik w obrebie bloba od ktorego zaczynam czytac
 		//! \param blobSize Rozmiar bloba
 		//! \return Ilosc znakow odczytanych z bloba
-		const int refillBuffer(const int blobIDX, _Elem * bufferBase);
+		int refillBuffer(const int blobIDX, _Elem * bufferBase);
 
 		//! Metoda wypycha lokalne zmiany do bloba - synchronizuje
 		//! \return Czy udalo sie dane zapisac do bloba
-		const bool flushBuffer(const _Elem * base, const int count,
+		bool flushBuffer(const _Elem * base, const int count,
 			const int blobIDX);
 
 		//! Metoda generuje nazwe tabeli dla zapytaia aktualizujacego bloba
 		//! \param dbName Nazwa bazy danych
 		//! \param table Nazwa tabeli
 		//! \return Nazwa tabeli dla zapytania update
-		static const std::string updateTableName(const std::string & dbName,
+		static std::string updateTableName(const std::string & dbName,
 			const std::string & table);
 
 		//! \param _Mode tryb otwarcia strumienia
 		//! \return Wewnêtrzny tryb otwarcia strumienia
-		static const _Strstate _Getstate(std::ios_base::openmode _Mode);
+		static _Strstate _Getstate(std::ios_base::openmode _Mode);
 
 	private:
 
@@ -191,6 +191,8 @@ namespace sqliteUtils
 		_Strstate Mystate;	// Stan strumienia
 		int blobSeekhigh;		// Faktyczny rozmiar strumienia - uwzglêdnia rozmiar bloba i stan zape³nienia bufora
 	};
+	template<typename _Elem, typename _Traits>	
+	const typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::pos_type SQLiteBLOBStreamBufferT<_Elem, _Traits>::_BADOFF = typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::pos_type(-1); //za cppreference, -1 jest uzywane do okreslania wadliwych offsetow
 
 	#include <sqliteUtils/SQLiteBLOBStreamBufferTImpl.h>
 }

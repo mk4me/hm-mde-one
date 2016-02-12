@@ -153,16 +153,16 @@ namespace imuCostume
 		//! \param messageID Identyfikator wiadomoœci NMT
 		//! \param nodeID Identyfikator wêz³a (0 - broadcast)
 		//! \return Sformatowana ramka CANopen
-		static const CANopenFrame formatNMTFrame(const uint8_t messageID,
+		static CANopenFrame formatNMTFrame(const uint8_t messageID,
 			const uint8_t nodeID = 0);
 
 		//! \param size Rozmiar danych do wysy³ki SDO w trybie krótkim		
 		//! \return Odpowiadaj¹ca wartoœc wyliczenia opisuj¹ca parametr d³ugoœci danych
-		static const ODataSize dataSize(const std::size_t size);
+		static ODataSize dataSize(const std::size_t size);
 
 		//! \param size Typ wyliczenia wielkœci danych do wysy³ki
 		//! \return Faktyczna iloœæ [B] do wysy³ki
-		static const std::size_t dataBytes(const ODataSize size);
+		static std::size_t dataBytes(const ODataSize size);
 
 		//! \tparam T Typ który chcemy zapisaæ SDO w trybie krótkim
 		template<typename T>
@@ -171,7 +171,7 @@ namespace imuCostume
 		//! \param dictSubID Pod-identyfikator obiektu danych
 		//! \param value Wartoœæ któr¹ wysy³amy
 		//! \return Sformatowana ramka danych
-		static const CANopenFrame formatExpeditedSDOWriteFrame(const uint8_t nodeID,
+		static CANopenFrame formatExpeditedSDOWriteFrame(const uint8_t nodeID,
 			const uint16_t dictID, const uint8_t dictSubID, const T value)
 		{
 			static_assert(std::is_pod<T>::value, "Data is not POD");
@@ -194,7 +194,7 @@ namespace imuCostume
 		//! \param value Wartoœæ któr¹ wysy³amy
 		//! \param dataSize Faktyczny rozmiar do wysy³ki (mo¿na obc¹æ do wê¿szego lub rozszerzyæ)
 		//! \return Sformatowana ramka danych
-		static const CANopenFrame formatExpeditedSDOWriteFrame(const uint8_t nodeID,
+		static CANopenFrame formatExpeditedSDOWriteFrame(const uint8_t nodeID,
 			const uint16_t dictID, const uint8_t dictSubID, const uint32_t value,
 			const ODataSize dataSize);
 
@@ -202,7 +202,7 @@ namespace imuCostume
 		//! \param dictID Identyfikator obiektu danych
 		//! \param dictSubID Pod-identyfikator obiektu danych
 		//! \return Sformatowana ramka z komend¹ do odczytu
-		static const CANopenFrame formatExpeditedSDOReadFrame(const uint8_t nodeID,
+		static CANopenFrame formatExpeditedSDOReadFrame(const uint8_t nodeID,
 			const uint16_t dictID, const uint8_t dictSubID);
 	};
 }

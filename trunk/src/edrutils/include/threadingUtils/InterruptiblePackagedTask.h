@@ -66,7 +66,7 @@ namespace threadingUtils
 
 		template<class Fty>
 		explicit InterruptiblePackagedTask(Fty&& Fnarg)
-			: packagedTask(std::move(Fnarg)), interrupt(utils::make_shared<bool>(false))
+			: packagedTask(std::forward<Fty>(Fnarg)), interrupt(utils::make_shared<bool>(false))
 		{	// construct from rvalue function object
 		}
 
@@ -87,7 +87,7 @@ namespace threadingUtils
 
 		template<class Fty,	class Alloc>
 		explicit InterruptiblePackagedTask(std::allocator_arg_t, const Alloc& Al,
-			Fty&& Fnarg) : packagedTask(Al, Fnarg), interrupt(utils::make_shared<bool>(false))
+			Fty&& Fnarg) : packagedTask(Al, std::forward<Fty>(Fnarg)), interrupt(utils::make_shared<bool>(false))
 		{	// construct from rvalue function object and allocator
 		}
 
@@ -107,7 +107,7 @@ namespace threadingUtils
 			return packagedTask();
 		}
 
-		const bool valid() const
+		bool valid() const
 		{	// return status
 			return packagedTask.valid();
 		}
@@ -126,12 +126,12 @@ namespace threadingUtils
 				throw ThreadInterruptedException();
 			}
 
-			packagedTask(std::move(arguments)...);
+			packagedTask(std::forward<Args>(arguments)...);
 		}
 
 		void make_ready_at_thread_exit(Args... arguments)
 		{	// call the function object and block until thread exit
-			packagedTask.make_ready_at_thread_exit(std::move(arguments)...);
+			packagedTask.make_ready_at_thread_exit(std::forward<Args>(arguments)...);
 		}
 
 		void reset()

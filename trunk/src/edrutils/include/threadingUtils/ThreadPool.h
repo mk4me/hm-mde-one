@@ -95,11 +95,11 @@ namespace threadingUtils {
 			template<typename F, class ...Args>
 			void run(F&& f, Args&& ...arguments)
 			{
-				futureWrapper = std::move(thread.run(std::move(f), std::move(arguments)...));
+				futureWrapper = std::move(thread.run(std::forward<F>(f), std::forward<Args>(arguments)...));
 			}
 
 			void swap(Thread& Other) { std::swap(threadPool, Other.threadPool); std::swap(thread, Other.thread); std::swap(futureWrapper, Other.futureWrapper); }
-			const bool joinable() const { return futureWrapper.valid() && thread.joinable(); }
+			bool joinable() const { return futureWrapper.valid() && thread.joinable(); }
 			void join() { futureWrapper.wait(); }
 			void detach() { threadPool->secureDetach(); threadPool = nullptr; futureWrapper.reset(); thread.detach(); }
 			std::thread::id get_id() const { return thread.get_id(); }
@@ -195,11 +195,11 @@ namespace threadingUtils {
 			}
 		}
 		//! \return Maksymalna ilośc wątków jakie można utworzyć
-		const size_type maxThreads() const { return maxThreads_; }
+		size_type maxThreads() const { return maxThreads_; }
 		//! \return Minimalna ilość wątków utrzymywana przez manager
-		const size_type minThreads() const { return minThreads_; }
+		size_type minThreads() const { return minThreads_; }
 		//! \return Ilość aktualnie zajętych wątków
-		const size_type threadsCount() const { return threadsCount_; }
+		size_type threadsCount() const { return threadsCount_; }
 		//! \return Nowy wątek		
 		Thread get()
 		{
@@ -224,7 +224,7 @@ namespace threadingUtils {
 		//! \param groupSize Ilość wątków w grupie
 		//! \param threads [out] Lista z nowymi wątkami, dopisujemy zawsze na końcu
 		//! \return Ilość faktycznie dostarczonych wątków
-		const size_type get(const size_type groupSize, Threads & threads, const bool exact)
+		size_type get(const size_type groupSize, Threads & threads, const bool exact)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 

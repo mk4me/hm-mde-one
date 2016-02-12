@@ -92,7 +92,7 @@ namespace kinematic
 		static void applyGlobalChange(Skeleton & skeleton, const NonRigidPartialStateChange & stateChange);
 
 		template<typename StateChangeType>
-		void applyChange(Skeleton & skeleton, const StateChangeType & stateChange)
+		static inline void applyChange(Skeleton & skeleton, const StateChangeType & stateChange)
 		{
 			applyChange(skeleton, stateChange, StateChangeType::type == Local);
 		}
@@ -100,13 +100,13 @@ namespace kinematic
 	private:
 
 		template<typename StateChangeType>
-		void applyChange(Skeleton & skeleton, const StateChangeType & stateChange, std::true_type)
+		static inline void applyChange(Skeleton & skeleton, const StateChangeType & stateChange, std::true_type)
 		{
 			applyLocalChange(skeleton, stateChange);
 		}
 
 		template<typename StateChangeType>
-		void applyChange(Skeleton & skeleton, const StateChangeType & stateChange, std::false_type)
+		static inline void applyChange(Skeleton & skeleton, const StateChangeType & stateChange, std::false_type)
 		{
 			applyGlobalChange(skeleton, stateChange);
 		}

@@ -18,9 +18,9 @@ namespace networkUtils {
 	namespace EncryptionUtils 
 	{
 		//! D³ugoœæ klucza szyfruj¹cego
-		const int EncryptionKeyLength = 16;
+		static const unsigned int EncryptionKeyLength = 16;
 		//! Wymusza 16 bajtowy klucz (+ 0 na koñcu)
-		typedef std::array<unsigned char, EncryptionKeyLength + 1> EncryptionKey;
+		using EncryptionKey = std::array<unsigned char, EncryptionKeyLength + 1> ;
 		//! Szyfruje tekst metod¹ aes
 		//! \param txt tekst do szyfrowania
 		//! \version 0.9.1

@@ -34,7 +34,7 @@ void ProtocolSendBufferHelper::add(const CANopenFrame & frame, const uint8_t len
 	frames.push_back(f);
 }
 
-const bool ProtocolSendBufferHelper::empty() const
+bool ProtocolSendBufferHelper::empty() const
 {
 	return frames.empty();
 }

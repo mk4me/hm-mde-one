@@ -55,7 +55,7 @@ namespace threadingUtils
 
 	public:
 
-		const bool interruptible() const 
+		bool interruptible() const 
 		{
 			return interruptFlag != nullptr && *interruptFlag == false;
 		}
@@ -129,7 +129,7 @@ namespace threadingUtils
 
 	public:
 
-		const bool interruptible() const 
+		bool interruptible() const 
 		{
 			return interruptFlag != nullptr && *interruptFlag == false;
 		}
@@ -213,7 +213,7 @@ namespace threadingUtils
 		InterruptibleFuture(const InterruptibleFuture&) = delete;
 		InterruptibleFuture& operator=(const InterruptibleFuture&) = delete;
 
-		const bool valid() const
+		bool valid() const
 		{
 			return future.valid();
 		}
@@ -235,7 +235,7 @@ namespace threadingUtils
 			return future.wait_until(absTime);
 		}
 
-		const T get()
+		T get()
 		{	// block until ready then return the stored result or
 			// throw the stored exception
 			return future.get();
@@ -295,7 +295,7 @@ namespace threadingUtils
 			InterruptibleFuture(const InterruptibleFuture&) = delete;
 			InterruptibleFuture& operator=(const InterruptibleFuture&) = delete;
 
-			const bool valid() const
+			bool valid() const
 			{
 				return future.valid();
 			}
@@ -375,7 +375,7 @@ namespace threadingUtils
 			InterruptibleFuture(const InterruptibleFuture&) = delete;
 			InterruptibleFuture& operator=(const InterruptibleFuture&) = delete;
 
-			const bool valid() const
+			bool valid() const
 			{
 				return future.valid();
 			}

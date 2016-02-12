@@ -24,9 +24,9 @@ namespace hmdbServices{
 		virtual void createUserAccount(const std::string & login, const std::string & email, const std::string & password,
 			const std::string & firstName, const std::string & lastName);
 
-		virtual const bool activateUserAccount(const std::string & login, const std::string & activationCode);
+		virtual bool activateUserAccount(const std::string & login, const std::string & activationCode);
 
-		virtual const bool resetPassword(const std::string & email);
+		virtual bool resetPassword(const std::string & email);
 
 	private:
 		//! Serwis obsługujący tą usługę
@@ -53,13 +53,13 @@ namespace hmdbServices{
 		//! \param activationCode Kod aktywacyjny użytkownika
 		//! \param propagateToHMDB Czy propagować aktywację konta na bazę pacjentów
 		//! \return Czy udało się aktywować konto
-		virtual const bool activateUserAccount(const std::string & login, const std::string & activationCode,
+		virtual bool activateUserAccount(const std::string & login, const std::string & activationCode,
 			const bool propagateToHMDB);
 
 		//! \param email Adres email użytkownika dla którego chcemy zresetować hasło
 		//! \param propagateToHMDB Czy propagować reset hasła na bazę pacjentów
 		//! \return Czy udało się zresetować hasło
-		virtual const bool resetPassword(const std::string & email, const bool propagateToHMDB);
+		virtual bool resetPassword(const std::string & email, const bool propagateToHMDB);
 
 	private:
 		//! Serwis obsługujący tą usługę

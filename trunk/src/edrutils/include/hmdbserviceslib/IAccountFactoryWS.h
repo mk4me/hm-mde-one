@@ -33,11 +33,11 @@ namespace hmdbServices
 		//! \param login Login który chcemy aktywować
 		//! \param activationCode Kod aktywacyjny którym aktywujemy - przysdzedł na zarejestrowany email
 		//! \return Prawda jeśli poprawnie aktywowano
-		virtual const bool activateUserAccount(const std::string & login, const std::string & activationCode) = 0;
+		virtual bool activateUserAccount(const std::string & login, const std::string & activationCode) = 0;
 
 		//! \param email Konto pocztowe związane z naszym użytkownikiem, dla którego chcemy zmienić hasło
 		//! \return Czy poprawnie zresetowano hasło
-		virtual const bool resetPassword(const std::string & email) = 0;
+		virtual bool resetPassword(const std::string & email) = 0;
 	};
 
 	typedef utils::shared_ptr<ISingleAccountFactoryWS> SingleAccountFactoryWSPtr;
@@ -63,13 +63,13 @@ namespace hmdbServices
 		//! \param activationCode Kod aktywacyjny którym aktywujemy - przysdzedł na zarejestrowany email
 		//! \param propagateToHMDB Informacja czy aktywować automatycznie konta w obu usługach
 		//! \return Prawda jeśli poprawnie aktywowano
-		virtual const bool activateUserAccount(const std::string & login, const std::string & activationCode,
+		virtual bool activateUserAccount(const std::string & login, const std::string & activationCode,
 			const bool propagateToHMDB) = 0;
 
 		//! \param email Konto pocztowe związane z naszym użytkownikiem, dla którego chcemy zmienić hasło
 		//! \param propagateToHMDB Informacja czy aktywować automatycznie konta w obu usługach
 		//! \return Czy poprawnie zresetowano hasło
-		virtual const bool resetPassword(const std::string & email, const bool propagateToHMDB) = 0;
+		virtual bool resetPassword(const std::string & email, const bool propagateToHMDB) = 0;
 	};
 
 	typedef utils::shared_ptr<IMultiAccountFactoryWS> MultiAccountFactoryWSPtr;

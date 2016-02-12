@@ -65,7 +65,7 @@ namespace imuCostume
 		//! \param length D³ugoœc ramki
 		void add(const CANopenFrame & frame, const uint8_t length);
 		//! \return Czy zbiór ramek pusty
-		const bool empty() const;
+		bool empty() const;
 		//! \return Upakowane ramki CANopen, gotowe do wsy³ania w jednym pakiecie,
 		//! powoduje ich usuniêcie z lokalnej listy
 		Buffer createBuffer();

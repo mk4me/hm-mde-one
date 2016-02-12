@@ -25,7 +25,7 @@ namespace hmdbCommunication
 
 		virtual void downloadComplete(const int id, const std::string & path);
 
-		virtual const hmdbServices::xmlWsdl::FileData retrieve(const int id);
+		virtual hmdbServices::xmlWsdl::FileData retrieve(const int id);
 
 	private:
 		//! Serwis obsługujący tą usługę
@@ -43,7 +43,7 @@ namespace hmdbCommunication
 
 		virtual void downloadComplete(const int id, const std::string & path);
 
-		virtual const hmdbServices::xmlWsdl::FileData retrieve(const int id);
+		virtual hmdbServices::xmlWsdl::FileData retrieve(const int id);
 
 	private:
 		//! Serwis obsługujący tą usługę
@@ -59,15 +59,15 @@ namespace hmdbCommunication
 
 		virtual ~ShallowStoremanWS();
 
-		virtual const std::string getShallowCopy();
+		virtual std::string getShallowCopy();
 
-		virtual const std::string getMetadata();
+		virtual std::string getMetadata();
 
 		virtual void downloadComplete(const std::string & path);
 
-		virtual const std::string getShallowCopyIncrement(const std::string & dateTime);
+		virtual std::string getShallowCopyIncrement(const std::string & dateTime);
 
-		virtual const std::string getShallowCopyBranchesIncrement(const std::string & dateTime);
+		virtual std::string getShallowCopyBranchesIncrement(const std::string & dateTime);
 
 	private:
 		//! Serwis obsługujący tą usługę
@@ -86,17 +86,17 @@ namespace hmdbCommunication
 
 		virtual void downloadComplete(const std::string & path);
 
-		virtual const hmdbServices::xmlWsdl::FileData retrieve(const int fileID);
+		virtual hmdbServices::xmlWsdl::FileData retrieve(const int fileID);
 
-		virtual const std::string getShallowCopy();
+		virtual std::string getShallowCopy();
 
-		virtual const std::string getShallowCopyIncrement(const std::string & dateTime);
+		virtual std::string getShallowCopyIncrement(const std::string & dateTime);
 
-		virtual const std::string getShallowCopyBranchesIncrement(const std::string & dateTime);
+		virtual std::string getShallowCopyBranchesIncrement(const std::string & dateTime);
 
-		virtual const std::string getMetadata();
+		virtual std::string getMetadata();
 
-		virtual const int storeMeasurementConfFile(const int mcID, const std::string & path,
+		virtual int storeMeasurementConfFile(const int mcID, const std::string & path,
 			const std::string & description, const std::string & filename);
 
 		virtual void storeMeasurementConfFiles(const int measurementConfID,
@@ -110,7 +110,7 @@ namespace hmdbCommunication
 		@param filename nazwa pliku
 		@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 		*/
-		virtual const int storeSessionFile(const int sessionID, const std::string & path,
+		virtual int storeSessionFile(const int sessionID, const std::string & path,
 			const std::string & description, const std::string & filename);
 		/**
 		Realizuje wprowadzenie plików pod kontrolę bazy danych.
@@ -128,7 +128,7 @@ namespace hmdbCommunication
 		@param filename nazwa pliku
 		@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 		*/
-		virtual const int storeTrialFile(const int trialID, const std::string & path,
+		virtual int storeTrialFile(const int trialID, const std::string & path,
 			const std::string & description, const std::string & filename);
 		/**
 		Realizuje wprowadzenie plików pod kontrolę bazy danych.
@@ -157,15 +157,15 @@ namespace hmdbCommunication
 
 		virtual void downloadComplete(const std::string & path);
 
-		virtual const hmdbServices::xmlWsdl::FileData retrieve(const int fileID);
+		virtual hmdbServices::xmlWsdl::FileData retrieve(const int fileID);
 
-		virtual const std::string getShallowCopy();
+		virtual std::string getShallowCopy();
 
-		virtual const std::string getMetadata();
+		virtual std::string getMetadata();
 
-		virtual const std::string getShallowCopyIncrement(const std::string & dateTime);
+		virtual std::string getShallowCopyIncrement(const std::string & dateTime);
 
-		virtual const std::string getShallowCopyBranchesIncrement(const std::string & dateTime);
+		virtual std::string getShallowCopyBranchesIncrement(const std::string & dateTime);
 
 	private:
 		//! Serwis obsługujący tą usługę

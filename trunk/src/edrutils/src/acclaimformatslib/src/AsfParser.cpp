@@ -12,19 +12,16 @@ std::string removeComments(const std::string& txt)
 {
 	std::string result;
 	std::string line;
-	std::istringstream is(txt);
-
-	std::string::size_type position;
+	std::istringstream is(txt);	
 
 	while (std::getline(is, line)) {
-		position = line.find("#");
-		if (position > 0) {
+		const auto position = line.find("#");
+		if (position == std::string::npos) {
+			result += line;
+		}else if(position > 0) {
 			result += line.substr(0, position);
 			result += '\n';
-		}
-		else if (position < 0) {
-			result += line;
-		}
+		}		
 	}
 
 	return result;
@@ -81,7 +78,7 @@ bool splitAsf(const std::string& asf, std::string & name,
 		*section += '\n';
 	}
 
-	int size = name.size();
+	auto size = name.size();
 	if (size > 0) {
 		name.resize(size - 1, ' ');
 	}
@@ -103,9 +100,8 @@ void parseLimit(const std::string& token, std::vector<double>& limitValues)
 	std::string limit;	
 
 	// na pewno jest jakas funkcja do tego...
-	for (unsigned int i = 0; i < token.size(); ++i)
-	{
-		char c = token[i];
+	for(const auto & c : token)
+	{		
 		if (c != '(' && c != ')') {
 			limit += (c != ',' ? c : ' ');
 		}
@@ -113,7 +109,7 @@ void parseLimit(const std::string& token, std::vector<double>& limitValues)
 
 	std::istringstream is(limit);
 
-	for (int i = 0; i < 2; ++i)
+	for (char i = 0; i < 2; ++i)
 	{
 		is >> limit;
 		if (limit.find("inf") != std::string::npos) {
@@ -204,21 +200,21 @@ bool parseSingleBone(const std::string& singleBone, Bone& bone, int & id,
 
 		}
 		else if (localToken.compare("limits") == 0) {
-			for (unsigned int i = 0; i < channels.size(); ++i) {
+			for (decltype(channels.size()) i = 0; i < channels.size(); ++i) {
 				getline(is, token);
 				parseLimit(token, limitValues);
 			}
 		}
 	}
-	unsigned int count = channels.size();
-	unsigned int limitsCount = limitValues.size();
+	auto count = channels.size();
+	auto limitsCount = limitValues.size();
 	if (limitsCount == (2 * count)) {
-		for (unsigned int i = 0; i < count; ++i) {			
+		for (decltype(count) i = 0; i < count; ++i) {			
 			bone.dofs.push_back(DegreeOfFreedom(channels[i], limitValues[2 * i], limitValues[2 * i + 1]));
 		}
 	}
 	else if (limitsCount == 0) {		
-		for (unsigned int i = 0; i < count; ++i) {					
+		for (decltype(count) i = 0; i < count; ++i) {
 			bone.dofs.push_back(DegreeOfFreedom(channels[i]));
 		}
 	}
@@ -234,7 +230,7 @@ bool parseBones(const std::string& bones, Skeleton & model, const bool createUni
 	std::string::size_type begin = 0;
 	std::string::size_type end = 0;
 	int id = 0;
-	for (;;) {
+	while(true) {
 		begin = bones.find("begin", end);
 		end = bones.find("end", begin);
 		begin += shift;
@@ -332,8 +328,8 @@ bool parseRoot(const std::string& root, Skeleton& skeleton)
 
 bool parseHierarchy(const std::string& hierarchyString, Skeleton & model)
 {
-	typedef std::vector<std::string> children;
-	typedef std::pair<std::string, children> hierarchyLine;
+	using children = std::vector<std::string>;
+	using hierarchyLine = std::pair<std::string, children>;
 	std::vector<hierarchyLine> hierarchy;
 
 	std::istringstream stream(hierarchyString);
@@ -348,10 +344,10 @@ bool parseHierarchy(const std::string& hierarchyString, Skeleton & model)
 		}
 
 		hierarchyLine line;
-		int count = tokens.size();
+		auto count = tokens.size();
 		if (count > 1) {
 			line.first = tokens[0];
-			for (int i = 1; i < count; ++i) {
+			for (decltype(count) i = 1; i < count; ++i) {
 				line.second.push_back(tokens[i]);
 			}
 			hierarchy.push_back(line);
@@ -367,26 +363,34 @@ bool parseHierarchy(const std::string& hierarchyString, Skeleton & model)
 	root.direction = model.position;
 	root.direction.normalize();
 
-	for (unsigned int i = 0; i < model.dataOrder.size(); ++i) {
-		root.dofs.push_back(DegreeOfFreedom(model.dataOrder[i]));
+	for (const auto & dO : model.dataOrder) {
+		root.dofs.push_back(DegreeOfFreedom(dO));
 	}
 
 	model.root = root.id;
 	model.bones.insert({ root.id, root });
 
-	for (auto& line : hierarchy) {
+	for (const auto& line : hierarchy) {
 		//TODO - weryfikacja czy coś znaleziono
-		auto parentID = std::find_if(model.bones.begin(), model.bones.end(), [&line](const Skeleton::Bones::value_type & val)
+		auto pit = std::find_if(model.bones.begin(), model.bones.end(), [&line](const Skeleton::Bones::value_type & val)
 		{
 			return val.second.name == line.first;
-		})->first;
+		});
 
-		for (auto& name : line.second) {
-			auto boneID = std::find_if(model.bones.begin(), model.bones.end(), [&name](const Skeleton::Bones::value_type & val)
-			{
-				return val.second.name == name;
-			})->first;
-			model.hierarchy.insert({ parentID, boneID });
+		if (pit != model.bones.end()) {			
+
+			for (const auto& name : line.second) {
+
+				auto bit = std::find_if(model.bones.begin(), model.bones.end(), [&name](const Skeleton::Bones::value_type & val)
+				{
+					return val.second.name == name;
+				});
+
+				if (bit != model.bones.end()) {
+					
+					model.hierarchy.insert({ pit->first, bit->first });
+				}
+			}
 		}
 	}
 
@@ -402,8 +406,8 @@ void saveRoot(std::ostream& out, const Skeleton & model)
 	out << ":root" << std::endl;
 	out << "   order";
 
-	for (int i = 0; i < model.dataOrder.size(); ++i) {
-		out << " " << DegreeOfFreedom::getChannelName(model.dataOrder[i], true);
+	for (const auto & dO : model.dataOrder) {
+		out << " " << DegreeOfFreedom::getChannelName(dO, true);
 	}
 	
 	out << std::endl << "   axis " << Axis::getAxisOrderName(model.axisOrder) << std::endl;
@@ -437,16 +441,17 @@ void saveSingleBone(std::ostream& out, const Bone& bone, const Skeleton & model)
 		Axis::getAxisOrderName(bone.axisOrder) <<
 		std::endl;	
 
-	if (bone.dofs.empty() == false) {
-		auto count = bone.dofs.size();
+	if (bone.dofs.empty() == false) {	
 		out << std::right << "     dof";
-		for (unsigned int i = 0; i < count; ++i) {
-			out << " " << DegreeOfFreedom::getChannelName(bone.dofs[i].channel, false);
+		for (const auto & dof : bone.dofs) {
+			out << " " << DegreeOfFreedom::getChannelName(dof.channel, false);
 		}
 		out << std::endl;
 		out << "     limits ";
 
-		for (unsigned int i = 0; i < count; ++i) {
+		auto count = bone.dofs.size();
+
+		for (decltype(count) i = 0; i < count; ++i) {
 			i != 0 ? out << "          " : out;
 			out << "(";
 			if (bone.dofs[i].minLimit == -std::numeric_limits<double>::infinity()) {
@@ -513,7 +518,7 @@ void saveHierarchy(std::ostream& out, const Skeleton & model)
 		}
 
 		std::reverse(childrenIDs.begin(), childrenIDs.end());
-		for(auto id : childrenIDs) { bonesID.push_front(id); }
+		for(const auto & id : childrenIDs) { bonesID.push_front(id); }
 
 		out << std::endl;
 	}

@@ -114,7 +114,7 @@ namespace threadingUtils
 			template<typename F, class ...Args>
 			void run(F&& f, Args&& ...arguments)
 			{
-				futureWrapper = std::move(thread.run(std::move(f), std::move(arguments)...));
+				futureWrapper = std::move(thread.run(std::forward<F>(f), std::forward<Args>(arguments)...));
 			}
 
 			void swap(Thread& Other)
@@ -124,13 +124,13 @@ namespace threadingUtils
 				std::swap(futureWrapper, Other.futureWrapper);
 			}
 
-			const bool joinable() const { return futureWrapper.valid() && thread.joinable(); }
+			bool joinable() const { return futureWrapper.valid() && thread.joinable(); }
 			void join() { futureWrapper.wait(); }
 			void detach() { threadPool->detach(); threadPool = nullptr; futureWrapper.reset(); thread.detach(); }
 			std::thread::id get_id() const { return thread.get_id(); }
 			std::thread::native_handle_type native_handle() { return thread.native_handle(); }
 			void interrupt() { if (futureWrapper.valid() == false || thread.interruptible() == false) { throw std::logic_error("Operation not permitted"); } thread.interrupt(); }
-			const bool interruptible() const { return futureWrapper.valid() && thread.interruptible(); }
+			bool interruptible() const { return futureWrapper.valid() && thread.interruptible(); }
 			static void interruptionPoint() { InterruptibleMultipleRunThread::interruptionPoint(); }
 			static void resetInterruption() { InterruptibleMultipleRunThread::resetInterruption(); }
 
@@ -247,13 +247,13 @@ namespace threadingUtils
 			}
 		}
 		//! \return Maksymalna iloœc w¹tków jakie mo¿na utworzyæ
-		const size_type maxThreads() const { return maxThreads_; }
+		size_type maxThreads() const { return maxThreads_; }
 		//! \return Minimalna iloœæ w¹tków utrzymywana przez manager
-		const size_type minThreads() const { return minThreads_; }
+		size_type minThreads() const { return minThreads_; }
 		//! \return Iloœæ aktualnie zajêtych w¹tków
-		const size_type threadsCount() const { return threadsCount_; }
+		size_type threadsCount() const { return threadsCount_; }
 		//! \return Iloœæ w¹tków w cache
-		const size_type cachedThreadsCount() const
+		size_type cachedThreadsCount() const
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			return innerThreads.size();
@@ -282,7 +282,7 @@ namespace threadingUtils
 		//! \param groupSize Iloœæ w¹tków w grupie
 		//! \param threads [out] Lista z nowymi w¹tkami, dopisujemy zawsze na koñcu
 		//! \return Iloœæ faktycznie dostarczonych w¹tków
-		const size_type get(const size_type groupSize, Threads & threads, const bool exact)
+		size_type get(const size_type groupSize, Threads & threads, const bool exact)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 

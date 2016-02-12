@@ -53,29 +53,21 @@ namespace threadingUtils
 
 		void deinitializeThread();
 
-		const size_type size() const;
-
-		template<typename F>
-		std::future<typename std::result_of<F()>::type> submit(const F & f)
-		{
-			typedef typename std::result_of<F()>::type result_type;
-			std::packaged_task<result_type()> innerTask(f);
-			return innerSubmit(std::move(innerTask));
-		}
+		size_type size() const;		
 
 		template<typename F>
 		std::future<typename std::result_of<F()>::type> submit(F && f)
 		{
 			typedef typename std::result_of<F()>::type result_type;
-			std::packaged_task<result_type()> innerTask(std::move(f));
+			std::packaged_task<result_type()> innerTask(std::forward<F>(f));
 			return innerSubmit(std::move(innerTask));
 		}
 
-		const bool tryGet(Task & task);
+		bool tryGet(Task & task);
 
 		void clearLocalQueue();
 
-		const bool empty() const;
+		bool empty() const;
 
 	private:
 
@@ -96,13 +88,13 @@ namespace threadingUtils
 
 		void rescheduleLocalQueue();
 		
-		const bool localQueuesEmpty() const;
+		bool localQueuesEmpty() const;
 
-		const bool tryPopWorkFromLocalQueue(Task & task);
+		bool tryPopWorkFromLocalQueue(Task & task);
 
-		const bool tryPopWorkFromCommonQueue(Task & task);
+		bool tryPopWorkFromCommonQueue(Task & task);
 
-		const bool tryPopWorkFromOtherLocalQueue(Task & task);
+		bool tryPopWorkFromOtherLocalQueue(Task & task);
 
 		static StealingQueue<FunctionWrapper> *& localWorkQueue();
 	};	

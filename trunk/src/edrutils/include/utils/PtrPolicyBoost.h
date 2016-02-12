@@ -70,13 +70,13 @@ namespace utils {
 		}
 
 		template<typename T, typename Y>
-		static const boost::shared_ptr<Y> dynamicCastPtr(const boost::shared_ptr<T> & ptr)
+		static boost::shared_ptr<Y> dynamicCastPtr(const boost::shared_ptr<T> & ptr)
 		{
 			return boost::dynamic_pointer_cast<Y>(ptr);
 		}
 
 		template<typename T, typename Y>
-		static const boost::shared_ptr<Y> constCastPtr(const boost::shared_ptr<T> & ptr)
+		static boost::shared_ptr<Y> constCastPtr(const boost::shared_ptr<T> & ptr)
 		{
 			return boost::const_pointer_cast<Y>(ptr);
 		}
@@ -116,14 +116,14 @@ namespace utils {
 		//! Czy wskaźnik jest unikatowy?
 		//! \param ptr
 		template<typename T>
-		static const bool isUnique(const boost::shared_ptr<T> & ptr)
+		static bool isUnique(const boost::shared_ptr<T> & ptr)
 		{
 			return ptr.unique();
 		}
 
 		//! \return Ilość referencji do tego wskaźnika
 		template<typename T>
-		static const long referenceCount(const boost::shared_ptr<T> & ptr)
+		static auto referenceCount(const boost::shared_ptr<T> & ptr) -> decltype(ptr.use_count())
 		{
 			return ptr.use_count();
 		}

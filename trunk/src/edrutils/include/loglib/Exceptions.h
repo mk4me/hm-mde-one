@@ -101,7 +101,7 @@ namespace loglib {
 	public:
 
 		template<typename ExceptionType, class... Args>
-		static void Throw(Args &&... arguments)
+		static inline void Throw(Args &&... arguments)
 		{
 			ExceptionType e(std::forward<Args>(arguments)...);
 			log(typeid(ExceptionType).name(), e.what());
@@ -109,7 +109,7 @@ namespace loglib {
 		}
 
 		template<typename T>
-		static void Throw(const T & val)
+		static inline void Throw(const T & val)
 		{
 			log(typeid(T).name(), val);			
 			throw val;

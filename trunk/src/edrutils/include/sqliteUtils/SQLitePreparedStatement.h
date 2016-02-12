@@ -25,7 +25,7 @@ namespace sqliteUtils
 			Finalizer(const unsigned int retriesCount = 0,
 				const unsigned int stepWaitTime = 150);
 
-			const bool operator()(sqlite3_stmt * statment);
+			bool operator()(sqlite3_stmt * statment);
 
 		private:
 			const unsigned int retriesCount;
@@ -39,11 +39,11 @@ namespace sqliteUtils
 
 		//! \param statement Uchwyt zapytania	
 		//! \return Czy uda³o siê zmakn¹æ uchwyt
-		static const bool finalize(sqlite3_stmt * statement);		
+		static bool finalize(sqlite3_stmt * statement);		
 
 		//! \param statement Uchwyt zapytania
 		//! \return Kod operacji wykonania
-		static const int step(sqlite3_stmt * statement);
+		static int step(sqlite3_stmt * statement);
 	};
 }
 

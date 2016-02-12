@@ -20,6 +20,8 @@ namespace hAnim
 	struct Joint : public Object
 	{
 		Joint();
+		Joint(const Joint & Other);
+		Joint(Joint && Other);
 
 		virtual ~Joint();
 

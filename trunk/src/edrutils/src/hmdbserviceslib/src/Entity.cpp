@@ -7,7 +7,7 @@
 using namespace hmdbServices;
 using namespace hmdbServices::xmlWsdl;
 
-const Entity::Type Entity::convert(const std::string & entity)
+Entity::Type Entity::convert(const std::string & entity)
 {
 	Entity::Type ret = Entity::Unspecified;
 
@@ -35,7 +35,7 @@ const Entity::Type Entity::convert(const std::string & entity)
 	return ret;
 }
 
-const std::string Entity::convert(const Type & entity)
+std::string Entity::convert(const Type & entity)
 {
 	std::string ret("unspecified");
 
@@ -68,7 +68,7 @@ const std::string Entity::convert(const Type & entity)
 	return ret;
 }
 
-const Gender::Type Gender::convert(const std::string & gender)
+Gender::Type Gender::convert(const std::string & gender)
 {
 	Gender::Type ret = Gender::Unspecified;
 
@@ -84,7 +84,7 @@ const Gender::Type Gender::convert(const std::string & gender)
 	return ret;
 }
 
-const std::string Gender::convert(const Type & gender)
+std::string Gender::convert(const Type & gender)
 {
 	std::string ret("unspecified");
 
@@ -101,7 +101,7 @@ const std::string Gender::convert(const Type & gender)
 	return ret;
 }
 
-const AttributeType::Type AttributeType::convert(const std::string & attributeType)
+AttributeType::Type AttributeType::convert(const std::string & attributeType)
 {
 	AttributeType::Type ret = AttributeType::Unspecified;
 
@@ -135,7 +135,7 @@ const AttributeType::Type AttributeType::convert(const std::string & attributeTy
 	return ret;
 }
 
-const std::string AttributeType::convert(const Type & attributeType)
+std::string AttributeType::convert(const Type & attributeType)
 {
 	std::string ret("unspecified");
 
@@ -176,7 +176,7 @@ const std::string AttributeType::convert(const Type & attributeType)
 	return ret;
 }
 
-const BooleanType::Type BooleanType::convert(const std::string & booleanType)
+BooleanType::Type BooleanType::convert(const std::string & booleanType)
 {
 	BooleanType::Type ret = BooleanType::Unspecified;
 
@@ -192,7 +192,7 @@ const BooleanType::Type BooleanType::convert(const std::string & booleanType)
 	return ret;
 }
 
-const std::string BooleanType::convert(const Type & booleanType)
+std::string BooleanType::convert(const Type & booleanType)
 {
 	std::string ret("unspecified");
 
@@ -209,7 +209,7 @@ const std::string BooleanType::convert(const Type & booleanType)
 	return ret;
 }
 
-const AnnotationStatus::Type AnnotationStatus::convert(const std::string & statusType)
+AnnotationStatus::Type AnnotationStatus::convert(const std::string & statusType)
 {
 	Type ret = Unspecified;
 
@@ -225,7 +225,7 @@ const AnnotationStatus::Type AnnotationStatus::convert(const std::string & statu
 	return ret;
 }
 
-const std::string AnnotationStatus::convert(const Type & statusType)
+std::string AnnotationStatus::convert(const Type & statusType)
 {
 	std::string ret("unspecified");
 
@@ -254,7 +254,7 @@ const std::string AnnotationStatus::convert(const Type & statusType)
 	return ret;
 }
 
-const AnnotationsList hmdbServices::xmlWsdl::parseAnnotations(const std::string & xmlResponse)
+AnnotationsList hmdbServices::xmlWsdl::parseAnnotations(const std::string & xmlResponse)
 {
 	AnnotationsList ret;
 
@@ -290,7 +290,7 @@ const AnnotationsList hmdbServices::xmlWsdl::parseAnnotations(const std::string 
 	return ret;
 }
 
-const UserGroupsList hmdbServices::xmlWsdl::parseUserGroups(const std::string & xmlResponse)
+UserGroupsList hmdbServices::xmlWsdl::parseUserGroups(const std::string & xmlResponse)
 {
 	UserGroupsList ret;
 
@@ -326,7 +326,7 @@ const UserGroupsList hmdbServices::xmlWsdl::parseUserGroups(const std::string & 
 	return ret;
 }
 
-const UsersList hmdbServices::xmlWsdl::parseUsersList(const std::string & xmlResponse)
+UsersList hmdbServices::xmlWsdl::parseUsersList(const std::string & xmlResponse)
 {
 	UsersList ret;
 
@@ -362,7 +362,7 @@ const UsersList hmdbServices::xmlWsdl::parseUsersList(const std::string & xmlRes
 	return ret;
 }
 
-const User hmdbServices::xmlWsdl::parseUser(const std::string & xmlResponse)
+User hmdbServices::xmlWsdl::parseUser(const std::string & xmlResponse)
 {
 	User ret;
 
@@ -384,7 +384,7 @@ const User hmdbServices::xmlWsdl::parseUser(const std::string & xmlResponse)
 	return ret;
 }
 
-const AttributeGroupDefinitionList hmdbServices::xmlWsdl::parseAttributeGroupDefinitions(const std::string & xmlResponse)
+AttributeGroupDefinitionList hmdbServices::xmlWsdl::parseAttributeGroupDefinitions(const std::string & xmlResponse)
 {
 	AttributeGroupDefinitionList ret;
 
@@ -421,7 +421,7 @@ const AttributeGroupDefinitionList hmdbServices::xmlWsdl::parseAttributeGroupDef
 	return ret;
 }
 
-const PerformerList hmdbServices::xmlWsdl::parsePerfomers(const std::string & xmlResponse)
+PerformerList hmdbServices::xmlWsdl::parsePerfomers(const std::string & xmlResponse)
 {
 	PerformerList ret;
 
@@ -459,7 +459,7 @@ const PerformerList hmdbServices::xmlWsdl::parsePerfomers(const std::string & xm
 	return ret;
 }
 
-const PerformerDetailsWithAttributes hmdbServices::xmlWsdl::parsePerformer(const std::string & xmlResponse)
+PerformerDetailsWithAttributes hmdbServices::xmlWsdl::parsePerformer(const std::string & xmlResponse)
 {
 	PerformerDetailsWithAttributes ret;
 
@@ -486,7 +486,7 @@ const PerformerDetailsWithAttributes hmdbServices::xmlWsdl::parsePerformer(const
 	return ret;
 }
 
-const PerformerWithAttributesList hmdbServices::xmlWsdl::parsePerfomersWithAttributes(const std::string & xmlResponse)
+PerformerWithAttributesList hmdbServices::xmlWsdl::parsePerfomersWithAttributes(const std::string & xmlResponse)
 {
 	PerformerWithAttributesList ret;
 
@@ -521,7 +521,7 @@ const PerformerWithAttributesList hmdbServices::xmlWsdl::parsePerfomersWithAttri
 	return ret;
 }
 
-const SessionList hmdbServices::xmlWsdl::parseSessions(const std::string & xmlResponse)
+SessionList hmdbServices::xmlWsdl::parseSessions(const std::string & xmlResponse)
 {
 	SessionList ret;
 
@@ -567,7 +567,7 @@ const SessionList hmdbServices::xmlWsdl::parseSessions(const std::string & xmlRe
 	return ret;
 }
 
-const SessionDetailsWithAttributes hmdbServices::xmlWsdl::parseSession(const std::string & xmlResponse)
+SessionDetailsWithAttributes hmdbServices::xmlWsdl::parseSession(const std::string & xmlResponse)
 {
 	SessionDetailsWithAttributes ret;
 
@@ -594,7 +594,7 @@ const SessionDetailsWithAttributes hmdbServices::xmlWsdl::parseSession(const std
 	return ret;
 }
 
-const SessionWithAttributesList hmdbServices::xmlWsdl::parseSessionsWithAttributes(const std::string & xmlResponse)
+SessionWithAttributesList hmdbServices::xmlWsdl::parseSessionsWithAttributes(const std::string & xmlResponse)
 {
 	SessionWithAttributesList ret;
 
@@ -631,7 +631,7 @@ const SessionWithAttributesList hmdbServices::xmlWsdl::parseSessionsWithAttribut
 	return ret;
 }
 
-const SessionGroupDefinitionList hmdbServices::xmlWsdl::parseSessionGroups(const std::string & xmlResponse)
+SessionGroupDefinitionList hmdbServices::xmlWsdl::parseSessionGroups(const std::string & xmlResponse)
 {
 	SessionGroupDefinitionList ret;
 
@@ -668,7 +668,7 @@ const SessionGroupDefinitionList hmdbServices::xmlWsdl::parseSessionGroups(const
 	return ret;
 }
 
-const MotionKindDefinitionList hmdbServices::xmlWsdl::parseMotionKinds(const std::string & xmlResponse)
+MotionKindDefinitionList hmdbServices::xmlWsdl::parseMotionKinds(const std::string & xmlResponse)
 {
 	MotionKindDefinitionList ret;
 
@@ -705,7 +705,7 @@ const MotionKindDefinitionList hmdbServices::xmlWsdl::parseMotionKinds(const std
 	return ret;
 }
 
-const TrialList hmdbServices::xmlWsdl::parseTrials(const std::string & xmlResponse)
+TrialList hmdbServices::xmlWsdl::parseTrials(const std::string & xmlResponse)
 {
 	TrialList ret;
 
@@ -743,7 +743,7 @@ const TrialList hmdbServices::xmlWsdl::parseTrials(const std::string & xmlRespon
 	return ret;
 }
 
-const TrialDetailsWithAttributes hmdbServices::xmlWsdl::parseTrial(const std::string & xmlResponse)
+TrialDetailsWithAttributes hmdbServices::xmlWsdl::parseTrial(const std::string & xmlResponse)
 {
 	TrialDetailsWithAttributes ret;
 
@@ -770,7 +770,7 @@ const TrialDetailsWithAttributes hmdbServices::xmlWsdl::parseTrial(const std::st
 	return ret;
 }
 
-const TrialsWithAttributesList hmdbServices::xmlWsdl::parseTrialsWithAttributes(const std::string & xmlResponse)
+TrialsWithAttributesList hmdbServices::xmlWsdl::parseTrialsWithAttributes(const std::string & xmlResponse)
 {
 	TrialsWithAttributesList ret;
 
@@ -807,7 +807,7 @@ const TrialsWithAttributesList hmdbServices::xmlWsdl::parseTrialsWithAttributes(
 	return ret;
 }
 
-const MeasurementConfDetailsWithAttributes hmdbServices::xmlWsdl::parseMeasurementConf(const std::string & xmlResponse)
+MeasurementConfDetailsWithAttributes hmdbServices::xmlWsdl::parseMeasurementConf(const std::string & xmlResponse)
 {
 	MeasurementConfDetailsWithAttributes ret;
 
@@ -834,7 +834,7 @@ const MeasurementConfDetailsWithAttributes hmdbServices::xmlWsdl::parseMeasureme
 	return ret;
 }
 
-const MeasurementConfWithAttributesList hmdbServices::xmlWsdl::parseMeasurementsConfWithAttributes(const std::string & xmlResponse)
+MeasurementConfWithAttributesList hmdbServices::xmlWsdl::parseMeasurementsConfWithAttributes(const std::string & xmlResponse)
 {
 	MeasurementConfWithAttributesList ret;
 
@@ -871,7 +871,7 @@ const MeasurementConfWithAttributesList hmdbServices::xmlWsdl::parseMeasurements
 	return ret;
 }
 
-const PerformerConfDetailsWithAttributes hmdbServices::xmlWsdl::parsePerfomerConf(const std::string & xmlResponse)
+PerformerConfDetailsWithAttributes hmdbServices::xmlWsdl::parsePerfomerConf(const std::string & xmlResponse)
 {
 	PerformerConfDetailsWithAttributes ret;
 
@@ -898,7 +898,7 @@ const PerformerConfDetailsWithAttributes hmdbServices::xmlWsdl::parsePerfomerCon
 	return ret;
 }
 
-const PerformerConfWithAttributesList hmdbServices::xmlWsdl::parsePerformersConfWithAttributes(const std::string & xmlResponse)
+PerformerConfWithAttributesList hmdbServices::xmlWsdl::parsePerformersConfWithAttributes(const std::string & xmlResponse)
 {
 	PerformerConfWithAttributesList ret;
 
@@ -935,7 +935,7 @@ const PerformerConfWithAttributesList hmdbServices::xmlWsdl::parsePerformersConf
 	return ret;
 }
 
-const FileList hmdbServices::xmlWsdl::parseFiles(const std::string & xmlResponse)
+FileList hmdbServices::xmlWsdl::parseFiles(const std::string & xmlResponse)
 {
 	FileList ret;
 
@@ -971,7 +971,7 @@ const FileList hmdbServices::xmlWsdl::parseFiles(const std::string & xmlResponse
 	return ret;
 }
 
-const FileWithAttributeList hmdbServices::xmlWsdl::parseFilesWithAttributes(const std::string & xmlResponse)
+FileWithAttributeList hmdbServices::xmlWsdl::parseFilesWithAttributes(const std::string & xmlResponse)
 {
 	FileWithAttributeList ret;
 
@@ -1008,7 +1008,7 @@ const FileWithAttributeList hmdbServices::xmlWsdl::parseFilesWithAttributes(cons
 	return ret;
 }
 
-const EnumValueList hmdbServices::xmlWsdl::parseEnumValues(const std::string & xmlResponse)
+EnumValueList hmdbServices::xmlWsdl::parseEnumValues(const std::string & xmlResponse)
 {
 	EnumValueList ret;
 
@@ -1034,7 +1034,7 @@ const EnumValueList hmdbServices::xmlWsdl::parseEnumValues(const std::string & x
 	return ret;
 }
 
-const AttributeDefinitionList hmdbServices::xmlWsdl::parseAttributesDefinitions(const std::string & xmlResponse)
+AttributeDefinitionList hmdbServices::xmlWsdl::parseAttributesDefinitions(const std::string & xmlResponse)
 {
 	AttributeDefinitionList ret;
 

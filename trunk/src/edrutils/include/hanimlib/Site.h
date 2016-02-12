@@ -18,6 +18,8 @@ namespace hAnim
 	struct Site : public Object
 	{
 		Site();
+		Site(const Site & Other);
+		Site(Site && Other);
 
 		virtual ~Site();
 

@@ -19,17 +19,17 @@ HMDBRemoteContext::~HMDBRemoteContext()
 
 }
 
-const IHMDBSessionPtr HMDBRemoteContext::session()
+IHMDBSessionPtr HMDBRemoteContext::session()
 {
 	return session_;
 }
 
-const IHMDBSessionConstPtr HMDBRemoteContext::session() const
+IHMDBSessionConstPtr HMDBRemoteContext::session() const
 {
 	return session_;
 }
 
-const std::list<IHMDBRemoteContext::DownloadOperationPtr> HMDBRemoteContext::prepareSynchronization(const hmdbServices::DateTime & since)
+std::list<IHMDBRemoteContext::DownloadOperationPtr> HMDBRemoteContext::prepareSynchronization(const hmdbServices::DateTime & since)
 {	
 	std::list<IHMDBRemoteContext::DownloadOperationPtr> downloads;	
 
@@ -91,7 +91,7 @@ const std::list<IHMDBRemoteContext::DownloadOperationPtr> HMDBRemoteContext::pre
 	return downloads;
 }
 
-const HMDBRemoteContext::DownloadOperationPtr HMDBRemoteContext::prepareFileDownload(const FileDescriptor & fd)
+HMDBRemoteContext::DownloadOperationPtr HMDBRemoteContext::prepareFileDownload(const FileDescriptor & fd)
 {
 	HMDBRemoteContext::DownloadOperationPtr ret;
 
@@ -120,7 +120,7 @@ const HMDBRemoteContext::DownloadOperationPtr HMDBRemoteContext::prepareFileDown
 	return ret;
 }
 
-const IHMDBFtp::TransferPtr HMDBRemoteContext::prepareFileUpload(const std::string & fileName,
+IHMDBFtp::TransferPtr HMDBRemoteContext::prepareFileUpload(const std::string & fileName,
 	const std::string & path, IHMDBStorageOperations::IStreamPtr source,
 	const DataReference dataReference, const hmdbServices::FileSize fileSize)
 {

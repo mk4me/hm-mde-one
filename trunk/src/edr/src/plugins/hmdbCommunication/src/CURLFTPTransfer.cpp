@@ -23,17 +23,17 @@ CURLFTPTransfer::~CURLFTPTransfer()
 	wait();
 }
 
-const std::string CURLFTPTransfer::file() const
+std::string CURLFTPTransfer::file() const
 {
 	return file_;
 }
 
-const unsigned long long CURLFTPTransfer::processed() const
+std::size_t CURLFTPTransfer::processed() const
 {
 	return data_->progress.processedData();
 }
 
-const unsigned long long CURLFTPTransfer::size() const
+std::size_t CURLFTPTransfer::size() const
 {
 	return std::max(size_, (size_t)processed());
 }
@@ -73,29 +73,29 @@ void CURLFTPTransfer::wait()
 	}
 }
 
-const CURLFTPTransfer::Status CURLFTPTransfer::status() const
+CURLFTPTransfer::Status CURLFTPTransfer::status() const
 {	
 	return data_->sharedState->status.status();
 }
 
-const std::string CURLFTPTransfer::error() const
+std::string CURLFTPTransfer::error() const
 {
 	return data_->sharedState->status.error();
 }
 
-const float CURLFTPTransfer::normalizedProgress() const
+float CURLFTPTransfer::normalizedProgress() const
 {
 	return data_->progress.progress();
 }
 
-const float CURLFTPTransfer::elapsed() const
+float CURLFTPTransfer::elapsed() const
 {
 	double time = -1.0;
 	auto ret = curl_easy_getinfo(data_->sharedState->curl.get(), CURLINFO_TOTAL_TIME, &time);
 	return ret;
 }
 
-const float CURLFTPTransfer::remaining() const
+float CURLFTPTransfer::remaining() const
 {
 	auto avs = averageSpeed();
 	if (avs == 0.0){
@@ -105,7 +105,7 @@ const float CURLFTPTransfer::remaining() const
 	return (size() - processed()) * avs;
 }
 
-const float CURLFTPTransfer::averageSpeed() const
+float CURLFTPTransfer::averageSpeed() const
 {
 	auto e = elapsed();
 	if (e <= 0.0){
@@ -115,7 +115,7 @@ const float CURLFTPTransfer::averageSpeed() const
 	return processed() / e;
 }
 
-const CURLFTPTransfer::Direction CURLFTPTransfer::direction() const
+CURLFTPTransfer::Direction CURLFTPTransfer::direction() const
 {
 	return direction_;
 }

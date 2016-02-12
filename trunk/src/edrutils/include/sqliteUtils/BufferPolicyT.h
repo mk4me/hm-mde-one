@@ -40,7 +40,7 @@ namespace sqliteUtils
 		virtual const T * end() const = 0;
 		//! \param size Nowy rozmiar danych do których powinien siê dopasowaæ bufor
 		//! \return Nowy faktyczny rozmiar bufora
-		virtual const std::size_t updateSize(const std::size_t size) = 0;
+		virtual std::size_t updateSize(const std::size_t size) = 0;
 	};	
 
 	//! \tparam T Typ danych przechowywanych w buforze	
@@ -50,7 +50,7 @@ namespace sqliteUtils
 	{
 	private:
 		//! Typ kolekcji przechowujacej dane
-		typedef std::vector<T> Data;
+		using Data = std::vector<T>;
 
 	public:
 		//! Domyœlny konsturktor
@@ -64,7 +64,7 @@ namespace sqliteUtils
 		virtual const T * begin() const override { return data.data(); }
 		virtual const T * end() const override { return data.data() + data.size(); }
 
-		virtual const std::size_t updateSize(const std::size_t size) override { return data.size(); }
+		virtual std::size_t updateSize(const std::size_t size) override { return data.size(); }
 
 	private:
 		//! Faktyczne dane
@@ -81,7 +81,7 @@ namespace sqliteUtils
 
 	private:
 		//! Typ kolekcji przechowujacej dane
-		typedef std::array<T, Size> Data;
+		using Data = std::array<T, Size>;
 
 	public:
 		//! Domyœlny konsturktor
@@ -95,7 +95,7 @@ namespace sqliteUtils
 		virtual const T * begin() const override { return &(data.data()[0]); }
 		virtual const T * end() const override { return &(data.data()[Size]); }
 
-		virtual const std::size_t updateSize(const std::size_t size) override { return Size; }
+		virtual std::size_t updateSize(const std::size_t size) override { return Size; }
 
 	private:
 		//! Faktyczne dane
@@ -109,9 +109,9 @@ namespace sqliteUtils
 	{
 	private:
 		//! Typ kolekcji przechowujacej dane
-		typedef std::vector<T> Data;
+		using Data = std::vector<T> ;
 		//! Wspó³czynnik procentowy opisuj¹cy rozmiar bufora wzglêdem rozmiaru strumienia
-		static const float BufferFactor() { return 1.1f; }
+		static float BufferFactor() { return 1.1f; }
 
 	public:
 		//! Domyœlny konsturktor
@@ -133,7 +133,7 @@ namespace sqliteUtils
 		virtual const T * begin() const override { return data.data(); }
 		virtual const T * end() const override { return data.data() + data.size(); }
 
-		virtual const std::size_t updateSize(const std::size_t size) override
+		virtual std::size_t updateSize(const std::size_t size) override
 		{
 			const auto newSize = utils::clamp<std::size_t>(size * BufferFactor(), MinSize, MaxSize);
 
@@ -159,9 +159,9 @@ namespace sqliteUtils
 	{
 	private:
 		//! Typ kolekcji przechowujacej dane
-		typedef std::vector<T> Data;
+		using Data = std::vector<T>;
 		//! Wspó³czynnik procentowy opisuj¹cy rozmiar bufora wzglêdem rozmiaru strumienia
-		static const float BufferFactor() { return 0.05f; }
+		static float BufferFactor() { return 0.05f; }
 
 	public:
 		//! Domyœlny konsturktor
@@ -175,7 +175,7 @@ namespace sqliteUtils
 		virtual const T * begin() const override { return data.data(); }
 		virtual const T * end() const override { return data.data() + data.size(); }
 
-		virtual const std::size_t updateSize(const std::size_t size) override
+		virtual std::size_t updateSize(const std::size_t size) override
 		{
 			const auto newSize = utils::clamp(size * BufferFactor(), (std::size_t)MinSize, (std::size_t)MaxSize);
 

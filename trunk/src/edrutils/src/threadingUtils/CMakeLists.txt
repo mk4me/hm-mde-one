@@ -33,7 +33,7 @@ SET_PUBLIC_HEADERS(
 	InterruptHandlingPolicy.h
 	InterruptFlag.h
 	ThreadPolicyHelper.h
-	CallPolicy.h
+	ExceptionHandlePolicy.h
 	ThreadFactoryT.h
 	SmartPtr.h
 	LogPolicy.h

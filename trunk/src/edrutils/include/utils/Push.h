@@ -24,7 +24,7 @@ namespace utils
 	{
 	private:
 
-		template <typename T, typename U>
+		template <typename T>
 		class PushT : public NullType
 		{
 		private:
@@ -33,18 +33,15 @@ namespace utils
 			//! Zmienna.
 			T& variable;
 		public:
+
+			template<typename U>
 			//! \param variable
 			//! \param newValue
-			PushT(T& variable, const U& newValue) : oldValue(variable), variable(variable)
+			PushT(T& variable, U&& newValue) : oldValue(variable), variable(variable)
 			{
-				variable = newValue;
+				variable = std::forward<U>(newValue);
 			}
-			//! \param variable
-			//! \param newValue
-			PushT(T& variable, U&& newValue) : oldValue(std::move(variable)), variable(variable)
-			{
-				variable = std::move(newValue);
-			}
+			
 			//! 
 			~PushT()
 			{
@@ -58,10 +55,7 @@ namespace utils
 	public:
 
 		template<typename T, typename U>
-		Push(T & variable, const U & value) : impl(std::make_shared<PushT<T, U>>(variable, value)) {}
-
-		template<typename T, typename U>
-		Push(T & variable, U && value) : impl(std::make_shared<PushT<T, U>>(variable, std::move(value))) {}
+		Push(T & variable, U && value) : impl(std::make_shared<PushT<T>>(variable, std::forward<U>(value))) {}		
 
 		~Push() {}
 

@@ -44,7 +44,7 @@ namespace hmdbServices
 		virtual ~Date();
 
 		//! \return Zwraca dzisiejszą datę wg ustawień komputera
-		static const Date today();
+		static Date today();
 
 		/**
 		Setter year
@@ -55,7 +55,7 @@ namespace hmdbServices
 		Getter year
 		@return rok
 		*/
-		const int getYear() const;
+		int getYear() const;
 		/**
 		Setter month
 		@param month miesiac
@@ -65,7 +65,7 @@ namespace hmdbServices
 		Getter month
 		@return miesiac
 		*/
-		const unsigned char getMonth() const;
+		unsigned char getMonth() const;
 		/**
 		Setter day
 		@param day dzien
@@ -75,10 +75,10 @@ namespace hmdbServices
 		Getter day
 		@return dzien
 		*/
-		const unsigned char getDay() const;
+		unsigned char getDay() const;
 
 		//! \return Data w formie napisu
-		const std::string toString() const;
+		std::string toString() const;
 
 		//! Operator przypisania
 		//! \param date Wartośc przypisywana
@@ -130,7 +130,7 @@ namespace hmdbServices
 		virtual ~Time();
 
 		//! Aktualny czas wg komputera
-		static const Time now();
+		static Time now();
 
 		/**
 		Setter hour
@@ -141,7 +141,7 @@ namespace hmdbServices
 		Getter hour
 		@return godzina
 		*/
-		const unsigned char getHour() const;
+		unsigned char getHour() const;
 		/**
 		Setter minutes
 		@param minutes minuty
@@ -151,7 +151,7 @@ namespace hmdbServices
 		Getter minutes
 		@return minuty
 		*/
-		const unsigned char getMinutes() const;
+		unsigned char getMinutes() const;
 		/**
 		Setter seconds
 		@param seconds sekundy
@@ -161,10 +161,10 @@ namespace hmdbServices
 		Getter seconds
 		@return sekundy
 		*/
-		const unsigned char getSeconds() const;
+		unsigned char getSeconds() const;
 
 		//! \return Czas w formie tekstu
-		const std::string toString() const;
+		std::string toString() const;
 
 		//! Operator przypisania
 		//! \param time Wartośc przypisywana
@@ -189,7 +189,7 @@ namespace hmdbServices
 	class HMDBSERVICES_EXPORT DateTime : public Date, public Time {
 	public:
 		//! \return Aktualna data i czas
-		static const DateTime now();
+		static DateTime now();
 
 		/**
 		Konstruktor klasy DateTime. Ustawia aktualny czas.
@@ -216,7 +216,7 @@ namespace hmdbServices
 		To string
 		@return format jaki przyjmuja dokumenty WSDL
 		*/
-		const std::string toString() const;
+		std::string toString() const;
 
 		DateTime & operator=(const DateTime & dateTime);
 

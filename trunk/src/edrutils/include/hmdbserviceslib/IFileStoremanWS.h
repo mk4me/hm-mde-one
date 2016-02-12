@@ -34,7 +34,7 @@ namespace hmdbServices
 		@param id ID pliku do pobrania
 		@return ścieżka względna do pliku wraz z nazwa pliku
 		*/
-		virtual const xmlWsdl::FileData retrieve(const int id) = 0;
+		virtual xmlWsdl::FileData retrieve(const int id) = 0;
 	};
 
 	typedef utils::shared_ptr<IBasicStoremanWS> BasicStoremanWSPtr;
@@ -51,21 +51,21 @@ namespace hmdbServices
 		Płytka kopia bazy danych.
 		@return ścieżka do pliku xml z kopią db na serwerze ftp.
 		*/
-		virtual const std::string getShallowCopy() = 0;
+		virtual std::string getShallowCopy() = 0;
 
 		/**
 		Metadane z bazy danych.
 		@return ścieżka do pliku xml z metadanymi na serwerze ftp.
 		*/
-		virtual const std::string getMetadata() = 0;
+		virtual std::string getMetadata() = 0;
 
 		//! \param datTime Czas od którego potrzebujemy zmian jakie zaszły w bazie danych
 		//! \return Ścieżka na serwerze ftp do różnicowej kopii danych ruchu począwszy od czasu jaki zadaliśmy
-		virtual const std::string getShallowCopyIncrement(const std::string & dateTime) = 0;
+		virtual std::string getShallowCopyIncrement(const std::string & dateTime) = 0;
 
 		//! \param datTime Czas od którego potrzebujemy zmian jakie zaszły w bazie danych
 		//! \return Ścieżka na serwerze ftp do różnicowej kopii danych ruchu począwszy od czasu jaki zadaliśmy
-		virtual const std::string getShallowCopyBranchesIncrement(const std::string& dateTime) = 0;
+		virtual std::string getShallowCopyBranchesIncrement(const std::string& dateTime) = 0;
 
 		virtual void downloadComplete(const std::string & path) = 0;
 	};
@@ -99,7 +99,7 @@ namespace hmdbServices
 		@param filename nazwa pliku
 		@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 		*/
-		virtual const int storeMeasurementConfFile(const int mcID, const std::string & path,
+		virtual int storeMeasurementConfFile(const int mcID, const std::string & path,
 			const std::string & description, const std::string & filename) = 0;
 
 		/*
@@ -110,7 +110,7 @@ namespace hmdbServices
 		@param filename nazwa pliku
 		@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 		*/
-		virtual const int storeSessionFile(const int sessionID, const std::string & path,
+		virtual int storeSessionFile(const int sessionID, const std::string & path,
 			const std::string & description, const std::string & filename) = 0;
 		/**
 		Realizuje wprowadzenie pojedynczego pliku sesji pod kontrolę bazy danych.
@@ -120,7 +120,7 @@ namespace hmdbServices
 		@param filename nazwa pliku
 		@return id pliku nadany w ramach tabeli "Plik" w bazie danych
 		*/
-		virtual const int storeTrialFile(const int trialID, const std::string & path,
+		virtual int storeTrialFile(const int trialID, const std::string & path,
 			const std::string & description, const std::string & filename) = 0;
 		/**
 		Realizuje wprowadzenie plików pod kontrolę bazy danych.

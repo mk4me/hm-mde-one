@@ -1,12 +1,12 @@
 /********************************************************************
 	created:  2014/10/09	14:18:19
-	filename: CallPolicy.h
+	filename: ExceptionHandlePolicy.h
 	author:	  Mateusz Janiak
 
 	purpose:
 *********************************************************************/
-#ifndef __HEADER_GUARD_THREADINGUTILS__CALLPOLICY_H__
-#define __HEADER_GUARD_THREADINGUTILS__CALLPOLICY_H__
+#ifndef __HEADER_GUARD_THREADINGUTILS__EXCEPTIONHANDLEPOLICY_H__
+#define __HEADER_GUARD_THREADINGUTILS__EXCEPTIONHANDLEPOLICY_H__
 
 #include <exception>
 #include <type_traits>
@@ -21,12 +21,12 @@ namespace threadingUtils
 		//! \param f Wo³ana metoda
 		//! \param arguments Argumenty metody
 		template<typename T>
-		static void handle(const T & e)
+		static inline void handle(const T & e)
 		{
 			throw e;
 		}
 
-		static void handle(std::exception_ptr eptr)
+		static inline void handle(std::exception_ptr eptr)
 		{
 			std::rethrow_exception(eptr);
 		}
@@ -40,11 +40,11 @@ namespace threadingUtils
 		//! \param f Wo³ana metoda
 		//! \param arguments Argumenty metody
 		template<typename T>
-		static void handle(const T & e)
+		static inline void handle(const T & e)
 		{
 			
 		}
 	};
 }
 
-#endif	// __HEADER_GUARD_THREADINGUTILS__CALLPOLICY_H__
+#endif	// __HEADER_GUARD_THREADINGUTILS__EXCEPTIONHANDLEPOLICY_H__

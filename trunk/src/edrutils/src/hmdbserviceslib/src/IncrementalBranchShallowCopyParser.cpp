@@ -11,9 +11,9 @@ namespace hmdbServices
 	void parseBranch(tinyxml2::XMLElement * parent, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy);
 	void parseFilesBranch(tinyxml2::XMLElement * trial_element, IncrementalBranchShallowCopy::ShallowCopy &shallowCopy, IncrementalBranchShallowCopy::Files& files, IncrementalBranchShallowCopy::Trial& trial);
 
-	const bool IncrementalBranchShallowCopyParser::parseFile(std::istream * document, IncrementalBranchShallowCopy& shallowCopy)
+	bool IncrementalBranchShallowCopyParser::parseFile(std::istream & document, IncrementalBranchShallowCopy& shallowCopy)
 	{
-		auto s = utils::StreamTools::read(*document);
+		auto s = utils::StreamTools::read(document);
 
 		tinyxml2::XMLDocument xmlDocument;
 

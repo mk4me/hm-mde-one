@@ -23,7 +23,7 @@ HMDBFTP::~HMDBFTP()
 
 }
 
-const HMDBFTP::TransferPtr HMDBFTP::preparePut(const std::string & destinationFileName,
+HMDBFTP::TransferPtr HMDBFTP::preparePut(const std::string & destinationFileName,
 	IHMDBStorageOperations::IStreamPtr stream, unsigned long long size)
 {
 	HMDBFTP::TransferPtr ret;
@@ -52,7 +52,7 @@ const HMDBFTP::TransferPtr HMDBFTP::preparePut(const std::string & destinationFi
 	return ret;
 }
 
-const HMDBFTP::TransferPtr HMDBFTP::prepareGet(const std::string & destinationFileName,
+HMDBFTP::TransferPtr HMDBFTP::prepareGet(const std::string & destinationFileName,
 	IHMDBStorageOperations::OStreamPtr stream, unsigned long long size)
 {
 	HMDBFTP::TransferPtr ret;

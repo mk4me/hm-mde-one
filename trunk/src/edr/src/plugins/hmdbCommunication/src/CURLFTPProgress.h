@@ -22,15 +22,15 @@ namespace hmdbCommunication
 		//! Przerywa operacjê
 		void abort();
 		//! \return Czy operacja ma byæ przerwana
-		virtual const bool aborted() const;
+		virtual bool aborted() const;
 		//! \param progress Postêp operacji
 		virtual void setProgress(const float progress);
 		//! \param processedData Ilosc przetworzonych danych [bytes]
-		virtual void setProcessedData(const unsigned long long processedData);
+		virtual void setProcessedData(const std::size_t processedData);
 		//! \return Postêp operacji
-		const float progress() const;
+		float progress() const;
 		//! \return Ilosæ do tej pory przetworzonych danych
-		const unsigned long long processedData() const;
+		std::size_t processedData() const;
 
 	private:
 		//! Czy operacja ma byæ przerwana
@@ -38,7 +38,7 @@ namespace hmdbCommunication
 		//! Postêp operacji
 		volatile float progress_;
 		//! Ilosc przetworzonych danych
-		volatile unsigned long long processedData_;
+		volatile std::size_t processedData_;
 	};
 }
 

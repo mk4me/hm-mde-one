@@ -25,7 +25,7 @@ namespace hmdbServices
 		//! \param name Imię aktora
 		//! \param surname Nazwisko aktora
 		//! \return Identyfikator nowego aktora
-		virtual const int createPerformer(const std::string & name,
+		virtual int createPerformer(const std::string & name,
 			const std::string & surname) = 0;
 
 		//! \param labID Identyfikator laboratorium w którym przeprowadzono sesję
@@ -34,36 +34,36 @@ namespace hmdbServices
 		//! \param sessionDescription Opis sesji
 		//! \param sessionGroupIDs Identyfikatory grup sesji do tkóej nowa sesja ma należeć
 		//! \return Identyfikator nowej sesji
-		virtual const int createSession(const int labID, const std::string & motionKindName,
+		virtual int createSession(const int labID, const std::string & motionKindName,
 			const std::string  & sessionDate, const std::string & sessionDescription,
 			const std::set<int> & sessionGroupIDs) = 0;
 
 		//! \param sessionID Identyfikator sesji w ramach której przeprowadzony był trial (próba pomiarowa)
 		//! \param trialDescription Opis próby pomiarowej
 		//! \return Identyfokator nowej próby pomiarowej
-		virtual const int createTrial(const int sessionID, const std::string & trialDescription) = 0;
+		virtual int createTrial(const int sessionID, const std::string & trialDescription) = 0;
 
 		//! \param mcName Nazwa konfiguracji pomiarowej
 		//! \param mcKind Typ konfiguracji pomiarowej
 		//! \param mcDescription Opis konfiguracji pomiarowej
 		//! \return Identyfokator nowej konfiguracji pomiarowej
-		virtual const int createMeasurementConfiguration(const std::string & mcName,
+		virtual int createMeasurementConfiguration(const std::string & mcName,
 			const std::string & mcKind, const std::string & mcDescription) = 0;
 
 		//! \param sessionID Identyfikator przypisywanej sesji
 		//! \param sessionsGroupID Identyfikator grupy sesji
 		//! \return Wartość logiczna informująca o powodzeniu operacji (TODO - wyjaśnić)
-		virtual const int assignSessionToGroup(const int sessionID, const int sessionsGroupID) = 0;
+		virtual int assignSessionToGroup(const int sessionID, const int sessionsGroupID) = 0;
 
 		//! \param performerID Identyfikator przypisywanego aktora
 		//! \param sessionID Identyfikator sesji
 		//! \return Identyfikator powstałej konfiguracji aktora
-		virtual const int assignPerformerToSession(const int performerID, const int sessionID) = 0;
+		virtual int assignPerformerToSession(const int performerID, const int sessionID) = 0;
 
 		//! \param performerID Identyfikator przypisywanego aktora
 		//! \param measurementID Identyfikator pomiaru
 		//! \return Rezultat operacji - powodzenie/niepowodzenie przypisania
-		virtual const bool assignPerformerToMeasurement(const int performerID, const int measurementID) = 0;
+		virtual bool assignPerformerToMeasurement(const int performerID, const int measurementID) = 0;
 
 		//! \param performerID Identyfikator aktora
 		//! \param attributeName Nazwa atrybutu

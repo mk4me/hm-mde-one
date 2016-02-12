@@ -21,7 +21,7 @@ public:
 	virtual void deserialize(const std::string &) = 0;
 
 	template<class T>
-	static inline const bool isSerializable(T * obj = nullptr)
+	static inline bool isSerializable(T * obj = nullptr)
 	{
 		return std::is_base_of<Serializable, T>();
 	}

@@ -27,13 +27,13 @@ namespace hmdbCommunication
 		//! Destruktor wirtualny
 		virtual ~IHMDBShallowCopyDataContext() {}
 		//! \return Aktualna p³ytka kopia bazy danych
-		virtual const ShallowCopyConstPtr shallowCopy() const = 0;
+		virtual ShallowCopyConstPtr shallowCopy() const = 0;
 		//! \param shallowCopy P³ytka kopia bazy danych
 		virtual void setShallowCopy(const ShallowCopyConstPtr shallowCopy) = 0;
 		//! \return Manager statusów
-		virtual const IHMDBStatusManagerConstPtr dataStatusManager() const = 0;
+		virtual IHMDBStatusManagerConstPtr dataStatusManager() const = 0;
 		//! \return Manager statusów
-		virtual const IHMDBStatusManagerPtr dataStatusManager() = 0;
+		virtual IHMDBStatusManagerPtr dataStatusManager() = 0;
 	};
 
 	DEFINE_SMART_POINTERS(IHMDBShallowCopyDataContext);
@@ -47,25 +47,25 @@ namespace hmdbCommunication
 		//! \param id Identyfikator danych
 		//! \param recursive Czy pobieramy dane w dó³
 		//! \return Dane domenowe za³adowane dla tego typu
-		virtual const core::ConstVariantsList data(const DataType type,
+		virtual core::ConstVariantsList data(const DataType type,
 			const hmdbServices::ID id, const bool recursive = true) const = 0;
 		//! \param type Typ danych które chcemy za³adowaæ
 		//! \param ids Identyfikatory danych		
 		//! \return Czy uda³o siê za³adowaæ
-		virtual const bool load(const DataType type,
+		virtual bool load(const DataType type,
 			const hmdbServices::ID id) = 0;
 
 		//! Metoda ³aduje wszystkie dane
-		virtual const bool loadAll() = 0;
+		virtual bool loadAll() = 0;
 
 		//! \param type Typ danych które chcemy wy³adowaæ
 		//! \param id Identyfikator danych		
 		//! \return Czy uda³o siê wy³adowaæ
-		virtual const bool unload(const DataType type,
+		virtual bool unload(const DataType type,
 			const hmdbServices::ID id) = 0;
 
 		//! Metoda wy³adowuje wszystkie dane
-		virtual const bool unloadAll() = 0;
+		virtual bool unloadAll() = 0;
 
 		//! \param type Typ danych które chcemy wy³adowaæ
 		//! \param id Identyfikator danych		
@@ -74,11 +74,11 @@ namespace hmdbCommunication
 		virtual const bool isLoaded(const DataType type,
 			const hmdbServices::ID id) const = 0;*/
 
-		virtual const IHMDBShallowCopyDataContextPtr shallowCopyContext() = 0;
-		virtual const IHMDBShallowCopyDataContextConstPtr shallowCopyContext() const = 0;
+		virtual IHMDBShallowCopyDataContextPtr shallowCopyContext() = 0;
+		virtual IHMDBShallowCopyDataContextConstPtr shallowCopyContext() const = 0;
 
-		virtual const IHMDBLocalContextPtr localContext() = 0;
-		virtual const IHMDBLocalContextConstPtr localContext() const = 0;
+		virtual IHMDBLocalContextPtr localContext() = 0;
+		virtual IHMDBLocalContextConstPtr localContext() const = 0;
 	};
 
 	DEFINE_SMART_POINTERS(IHMDBShallowCopyLocalContext);
@@ -94,9 +94,9 @@ namespace hmdbCommunication
 			//! Destruktor wirtualny
 			virtual ~ISynchronizeOperation() {}
 			//! \return Pe³na p³ytka kopia bazy danych - ca³a perspektywa dostepnych danych
-			virtual const ShallowCopyConstPtr shallowCopy() const = 0;
+			virtual ShallowCopyConstPtr shallowCopy() const = 0;
 			//! \return Pe³na p³ytka kopia bazy danych - ca³a perspektywa dostepnych danych
-			virtual const IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy() const = 0;
+			virtual IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy() const = 0;
 		};
 
 		//! WskaŸnik dla operacji synchronizacji
@@ -112,10 +112,10 @@ namespace hmdbCommunication
 		//! \param recursive Czy pobieramy wszystkie dane w dó³ hierarchii
 		//! \param forceDownload Czy wymuszamy œci¹ganie wszystkich danych czy tylko brakuj¹cych
 		//! \return Przygotowany transfer danych
-		virtual const std::list<IHMDBRemoteContext::DownloadOperationPtr> prepareDownload(const DataType type,
+		virtual std::list<IHMDBRemoteContext::DownloadOperationPtr> prepareDownload(const DataType type,
 			const hmdbServices::ID id, const bool recursive = true, const bool forceDownload = false) = 0;
 		//! \return Operacja synchronizacji
-		virtual const SynchronizeOperationPtr prepareSynchronization(IHMDBStoragePtr storage) = 0;
+		virtual SynchronizeOperationPtr prepareSynchronization(IHMDBStoragePtr storage) = 0;
 		//! \param shallowCopy P³ytka kopia bazy danych
 		//! \param incrementalBranchShallowCopy Przyrostowa kopia bazy danych
 		virtual void synchronize(const ShallowCopyConstPtr shallowCopy,
@@ -124,11 +124,11 @@ namespace hmdbCommunication
 		//! \param downloadOperations Operacje œci¹gania
 		virtual void synchronize(const SynchronizeOperationPtr downloadOperations) = 0;
 
-		virtual const IHMDBShallowCopyDataContextPtr shallowCopyContext() = 0;
-		virtual const IHMDBShallowCopyDataContextConstPtr shallowCopyContext() const = 0;
+		virtual IHMDBShallowCopyDataContextPtr shallowCopyContext() = 0;
+		virtual IHMDBShallowCopyDataContextConstPtr shallowCopyContext() const = 0;
 
-		virtual const IHMDBRemoteContextPtr remoteContext() = 0;
-		virtual const IHMDBRemoteContextConstPtr remoteContext() const = 0;
+		virtual IHMDBRemoteContextPtr remoteContext() = 0;
+		virtual IHMDBRemoteContextConstPtr remoteContext() const = 0;
 	};
 
 	DEFINE_SMART_POINTERS(IHMDBShallowCopyRemoteContext);
@@ -139,14 +139,14 @@ namespace hmdbCommunication
 		//! Destruktor wirtualny
 		virtual ~IHMDBShallowCopyContext() {}
 
-		virtual const IHMDBShallowCopyDataContextPtr shallowCopyDataContext() = 0;
-		virtual const IHMDBShallowCopyDataContextConstPtr shallowCopyDataContext() const = 0;
+		virtual IHMDBShallowCopyDataContextPtr shallowCopyDataContext() = 0;
+		virtual IHMDBShallowCopyDataContextConstPtr shallowCopyDataContext() const = 0;
 
-		virtual const IHMDBShallowCopyLocalContextPtr shallowCopyLocalContext() = 0;
-		virtual const IHMDBShallowCopyLocalContextConstPtr shallowCopyLocalContext() const = 0;
+		virtual IHMDBShallowCopyLocalContextPtr shallowCopyLocalContext() = 0;
+		virtual IHMDBShallowCopyLocalContextConstPtr shallowCopyLocalContext() const = 0;
 
-		virtual const IHMDBShallowCopyRemoteContextPtr shallowCopyRemoteContext() = 0;
-		virtual const IHMDBShallowCopyRemoteContextConstPtr shallowCopyRemoteContext() const = 0;
+		virtual IHMDBShallowCopyRemoteContextPtr shallowCopyRemoteContext() = 0;
+		virtual IHMDBShallowCopyRemoteContextConstPtr shallowCopyRemoteContext() const = 0;
 	};
 
 	DEFINE_SMART_POINTERS(IHMDBShallowCopyContext);

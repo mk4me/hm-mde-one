@@ -35,8 +35,8 @@ public:
 
 	}
 
-	virtual const QString name() const { return name_; }
-	virtual const float normalizedProgress() const { return op->normalizedProgress(); }
+	virtual QString name() const { return name_; }
+	virtual float normalizedProgress() const { return op->normalizedProgress(); }
 	virtual void abort() { op->abort(); }
 
 	virtual ~OperationImpl() {}
@@ -46,7 +46,7 @@ private:
 	hmdbCommunication::IHMDBRemoteContext::OperationPtr op;
 };
 
-const bool mapContentTypeToDataType(const hmdbCommunication::ContentType ct,
+bool mapContentTypeToDataType(const hmdbCommunication::ContentType ct,
 	hmdbCommunication::DataType & dt)
 {
 	bool ret = true;
@@ -96,7 +96,7 @@ public:
 
 static DataViewMetaTypesInitializerHelper metaInitializer = DataViewMetaTypesInitializerHelper();
 
-const QPixmap mergePixmapsHorizontal(const std::list<QPixmap> & pixmaps)
+QPixmap mergePixmapsHorizontal(const std::list<QPixmap> & pixmaps)
 {
 	int maxPixmapHeight = -1;
 	int maxPixmapWidth = -1;
@@ -133,7 +133,7 @@ const QPixmap mergePixmapsHorizontal(const std::list<QPixmap> & pixmaps)
 
 using namespace hmdbCommunication;
 
-const QIcon DataViewWidget::statusIcon(const DataStatus dataStatus)
+QIcon DataViewWidget::statusIcon(const DataStatus dataStatus)
 {
 	auto it = icons.find(dataStatus);
 	if (it != icons.end()){
@@ -266,7 +266,7 @@ hmdbCommunication::ShallowCopyConstPtr DataViewWidget::completeShallowCopy() con
 	return completeShallowCopy_;
 }
 
-const bool DataViewWidget::tryRebuildDataStatus()
+bool DataViewWidget::tryRebuildDataStatus()
 {
 	if (currentShallowCopy_ != nullptr){
 		coreUI::CoreCursorChanger cc;
@@ -391,7 +391,7 @@ void DataViewWidget::refreshDataStatus(const bool perspectiveFirst)
 	}
 }
 
-const hmdbCommunication::DataStatus DataViewWidget::refreshDataStatus(QTreeWidgetItem * item,
+hmdbCommunication::DataStatus DataViewWidget::refreshDataStatus(QTreeWidgetItem * item,
 	const bool perspectiveFirst)
 {	
 	int statusColumn = -1;
@@ -456,7 +456,7 @@ const hmdbCommunication::DataStatus DataViewWidget::refreshDataStatus(QTreeWidge
 	return status;
 }
 
-const hmdbCommunication::DataStatus DataViewWidget::refrshItemContent(QTreeWidgetItem * item,
+hmdbCommunication::DataStatus DataViewWidget::refrshItemContent(QTreeWidgetItem * item,
 	const bool perspectiveFirst)
 {	
 	int statusColumn = -1;
@@ -1428,7 +1428,7 @@ void DataViewWidget::onSynchronize()
 	}	
 }
 
-const hmdbCommunication::StorageFileNames extractItemFiles(const QTreeWidgetItem* item,
+hmdbCommunication::StorageFileNames extractItemFiles(const QTreeWidgetItem* item,
 	const hmdbCommunication::ShallowCopy & shalowCopy)
 {
 	hmdbCommunication::StorageFileNames ret;
@@ -1476,7 +1476,7 @@ void DataViewWidget::download(hmdbCommunication::IHMDBRemoteContext::OperationPt
 	cursorChanger->restore();
 }
 
-const QString formatFileSize(const unsigned long long size)
+QString formatFileSize(const unsigned long long size)
 {
 	double num = size;
 	QStringList list;
@@ -1553,7 +1553,7 @@ void DataViewWidget::setupDownload(const hmdbCommunication::StorageFileNames & f
 	}
 }
 
-const hmdbCommunication::StorageFileNames filterOutLocalFiles(const hmdbCommunication::StorageFileNames & inputFiles,
+hmdbCommunication::StorageFileNames filterOutLocalFiles(const hmdbCommunication::StorageFileNames & inputFiles,
 	hmdbCommunication::IHMDBStoragePtr storage)
 {
 	hmdbCommunication::StorageFileNames ret;
@@ -1790,7 +1790,7 @@ void extractFiles(StorageFileNames & storageFiles,
 	}
 }
 
-const hmdbCommunication::StorageFileNames DataViewWidget::filterModifiedTrialFiles(IncrementalBranchShallowCopyConstPtr incShallowCopy)
+hmdbCommunication::StorageFileNames DataViewWidget::filterModifiedTrialFiles(IncrementalBranchShallowCopyConstPtr incShallowCopy)
 {
 	hmdbServices::IncrementalBranchShallowCopy::Files raws;
 	if (incShallowCopy->modified.trials.empty() == false){

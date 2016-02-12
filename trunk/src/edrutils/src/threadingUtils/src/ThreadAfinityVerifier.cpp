@@ -16,7 +16,7 @@ public:
 
 	}
 
-	const bool verifyCurrentThreadAfinity() const
+	bool verifyCurrentThreadAfinity() const
 	{
 		return id == std::this_thread::get_id();
 	}
@@ -31,7 +31,7 @@ ThreadAfinityVerifier::ThreadAfinityVerifier() : impl(new ThreadAfinityVerifierI
 
 }
 	
-const bool ThreadAfinityVerifier::verifyCurrentThreadAfinity() const
+bool ThreadAfinityVerifier::verifyCurrentThreadAfinity() const
 {
 	return impl->verifyCurrentThreadAfinity();
 }

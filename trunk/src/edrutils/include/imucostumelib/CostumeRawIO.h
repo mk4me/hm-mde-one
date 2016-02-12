@@ -32,7 +32,7 @@ namespace imuCostume
 		static const uint16_t MaxDataSize = 1024;
 
 		//! Typ surowej ramki danych wysy³anej przez kostium
-		typedef std::array<uint8_t, MaxDataSize> Buffer;		
+		using Buffer = std::array<uint8_t, MaxDataSize>;
 
 		//! Struktura identyfikuj¹ca kostium w sieci
 		struct CostumeAddress
@@ -70,19 +70,19 @@ namespace imuCostume
 		//! \return Adres kostiumu
 		const std::string & ip() const;
 		//! \return Port na którym mamy kostium
-		const unsigned int port() const;
+		unsigned int port() const;
 
 		//! \param buffer [out] Miejsce na odebrane dane
 		//! \param length [out] D³ugoœæ odebranych danych [B]
 		//! \param timeout Dopuszczalny czas oczekiwania na dane [ms] - 0 oznacza nieskoñczonoœæ
 		//! \return Prawda jeœli odebrano poprawn¹ ramke danych
-		const bool receive(Buffer & buffer, uint16_t & length, const uint16_t timeout = 0);
+		bool receive(Buffer & buffer, uint16_t & length, const uint16_t timeout = 0);
 
 		//! \param data Dane do wys³ania
 		//! \param length Ile danych wys³aæ z bufora [B]
 		//! \param timeout Dopuszczalny czas oczekiwania na dane [ms] - 0 oznacza nieskoñczonoœæ
 		//! \return Prawda jeœli wys³ano dane
-		const bool send(const void * data, const uint16_t length, const uint16_t timeout = 0);
+		bool send(const void * data, const uint16_t length, const uint16_t timeout = 0);
 
 		//! \return Lista dostêpnych kostiumów
 		static std::list<CostumeAddress> listAvailableCostumes();
@@ -91,7 +91,7 @@ namespace imuCostume
 		//! \param timeout Czas na wys³anie [ms]
 		void setSamplingDelay(const uint32_t delay, const uint16_t timeout = 0);
 		//! \return Czas przerwy pomiedzy probkami [ms]
-		const uint32_t samplingDelay() const;
+		uint32_t samplingDelay() const;
 
 	private:
 		//! Obiekt implementujacy funkcjonalnoœæ kostiumu

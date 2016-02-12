@@ -37,9 +37,9 @@ namespace kinematicUtils
 	};
 
 	//! Typ okreœlaj¹cy kana³
-	typedef int Channel;
+	using Channel = int;
 	//! Typ okreœlaj¹cy 3 kana³y
-	typedef std::array<Channel, 3> ChannelTriplet;
+	using ChannelTriplet = std::array<Channel, 3>;
 
 	//! Struktura opisuj¹ca kolejnoœæ rotacji osi
 	struct AxisOrder

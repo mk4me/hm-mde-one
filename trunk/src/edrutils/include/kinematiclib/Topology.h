@@ -22,7 +22,7 @@ namespace kinematic
 	};
 
 	//! Typ wêz³a topologii szkieletu
-	typedef treeContainer::NodeT<TopologyData> TopologyNode;
+	using TopologyNode = treeContainer::NodeT<TopologyData>;
 
 	DEFINE_SMART_POINTERS(TopologyNode);
 }

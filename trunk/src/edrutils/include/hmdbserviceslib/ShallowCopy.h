@@ -18,10 +18,10 @@ purpose:
 namespace hmdbServices
 {
 	//! Typ opisuj¹cy rozmiar pliku ( w bajtach)
-	typedef unsigned long long FileSize;
+	using FileSize = std::size_t;
 
 	//! Idektyfikator danych
-	typedef int ID;
+	using ID = int;
 
 	//! Forward declaration
 	namespace MedicalShallowCopy
@@ -43,13 +43,13 @@ namespace hmdbServices
 		struct ShallowCopy;
 
 		//! Mapa atrybut -> wartoœæ
-		typedef std::map<std::string, std::string> Attrs;
+		using Attrs = std::map<std::string, std::string>;
 
 		//! Plik
 		struct File
 		{
 			//! \return Czy plik nale¿y do sesji
-			inline const bool isSessionFile() const
+			inline bool isSessionFile() const
 			{
 				return trial == nullptr;
 			}
@@ -64,7 +64,7 @@ namespace hmdbServices
 		};
 
 		//! Mapa ID pliku -> plik
-		typedef std::map<ID, File*> Files;
+		using Files = std::map<ID, File*>;
 
 		//! Próba pomiarowa
 		struct Trial
@@ -78,7 +78,7 @@ namespace hmdbServices
 		};
 
 		//! Mapa ID próby pomiarowej -> próba pomiarowa
-		typedef std::map<ID, Trial*> Trials;
+		using Trials = std::map<ID, Trial*>;
 
 		//! Sesje
 		struct Session
@@ -100,7 +100,7 @@ namespace hmdbServices
 		};
 
 		//! Mapa ID sesji -> sesja
-		typedef std::map<ID, Session*> Sessions;
+		using Sessions = std::map<ID, Session*>;
 
 		//! Grupa sesji
 		struct GroupAssigment
@@ -110,7 +110,7 @@ namespace hmdbServices
 		};
 
 		//! Mapa ID grupy sesji -> grupa sesji
-		typedef std::map<ID, GroupAssigment*> GroupAssigments;
+		using GroupAssigments = std::map<ID, GroupAssigment*>;
 
 		//! Konfiguracja aktora
 		struct PerformerConf
@@ -122,7 +122,7 @@ namespace hmdbServices
 		};
 
 		//! Mapa ID konfiguracji aktora -> konfiguracja aktora
-		typedef std::map<ID, PerformerConf*> PerformerConfs;
+		using PerformerConfs = std::map<ID, PerformerConf*>;
 
 		//! Aktor
 		struct Performer
@@ -134,7 +134,7 @@ namespace hmdbServices
 		};
 
 		//! Mapa ID aktora -> aktor
-		typedef std::map<ID, Performer*> Performers;
+		using Performers = std::map<ID, Performer*>;
 
 		//! P³ytka kopia bazy danych
 		struct ShallowCopy
@@ -208,7 +208,7 @@ namespace hmdbServices
 		};
 
 		//! Mapa ID schorzenia -> schorzenie
-		typedef std::map<ID, Disorder*> Disorders;
+		using Disorders = std::map<ID, Disorder*>;
 
 		//! Wystapienie schorzenia
 		struct DisorderOccurence
@@ -220,7 +220,7 @@ namespace hmdbServices
 		};
 
 		//! Mapa ID schorzenia -> wyst¹pienia schorzenia
-		typedef std::map<ID, DisorderOccurence> PatientDisorders;
+		using PatientDisorders = std::map<ID, DisorderOccurence>;
 
 		//! Pacjent
 		struct Patient
@@ -236,7 +236,7 @@ namespace hmdbServices
 		};
 
 		//! Mapa ID pacjenta -> pacjent
-		typedef std::map<ID, Patient*> Patients;
+		using Patients = std::map<ID, Patient*>;
 
 		//! P³ytka kopia
 		struct ShallowCopy
@@ -285,7 +285,7 @@ namespace hmdbServices
 		};
 
 		//! Typ mapy ID grupy sesji -> grupa sesji
-		typedef std::map<ID, SessionGroup> SessionGroups;
+		using SessionGroups = std::map<ID, SessionGroup>;
 
 		//! Typ ruchu
 		struct MotionKind
@@ -294,7 +294,7 @@ namespace hmdbServices
 		};
 
 		//! Agregat typów ruchów
-		typedef std::list<MotionKind> MotionKinds;
+		using MotionKinds = std::list<MotionKind>;
 
 		//! Laboratorium
 		struct Lab
@@ -304,7 +304,7 @@ namespace hmdbServices
 		};
 
 		//! Mapa ID laboratorium -> laboratorium
-		typedef std::map<ID, Lab> Labs;
+		using Labs = std::map<ID, Lab>;
 
 		//! Atrybut
 		struct Attribute
@@ -315,7 +315,7 @@ namespace hmdbServices
 		};
 
 		//! Mapa nazwa atrybutu -> atrybut
-		typedef std::map<std::string, Attribute> Attributes;
+		using Attributes = std::map<std::string, Attribute>;
 
 		//! Grupa atrybutów
 		struct AttributeGroup
@@ -327,7 +327,7 @@ namespace hmdbServices
 		};
 
 		//! Agregat grup atrybutów
-		typedef std::map<ID, AttributeGroup> AttributeGroups;
+		using AttributeGroups = std::map<ID, AttributeGroup>;
 
 		//! Metadane
 		struct MetaData
@@ -365,7 +365,7 @@ namespace hmdbServices
 		};
 
 		//! Mapa ID typu badania -> typ badania
-		typedef std::map<int, ExamType> ExamTypes;
+		using ExamTypes = std::map<int, ExamType>;
 
 		//! Typ schorzenia
 		struct DisorderType
@@ -375,7 +375,7 @@ namespace hmdbServices
 		};
 
 		//! Mapa ID typu schorzenia -> typ schorzenia
-		typedef std::map<int, DisorderType> DisorderTypes;
+		using DisorderTypes = std::map<int, DisorderType>;
 
 		//! Metadane
 		struct MetaData

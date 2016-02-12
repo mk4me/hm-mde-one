@@ -16,7 +16,7 @@ ProtocolReadBufferHelper::CANopenFrameProxy::~CANopenFrameProxy()
 
 }
 
-const ProtocolReadBufferHelper::HeaderProxy ProtocolReadBufferHelper::CANopenFrameProxy::header() const
+ProtocolReadBufferHelper::HeaderProxy ProtocolReadBufferHelper::CANopenFrameProxy::header() const
 {	
 	ProtocolReadBufferHelper::HeaderProxy ret;
 	ret.base = base_;
@@ -33,7 +33,7 @@ const uint8_t * ProtocolReadBufferHelper::CANopenFrameProxy::data() const
 	return base_ + 2;
 }
 
-const bool ProtocolReadBufferHelper::CANopenFrameProxy::empty() const
+bool ProtocolReadBufferHelper::CANopenFrameProxy::empty() const
 {
 	return base_ == nullptr;
 }
@@ -81,12 +81,12 @@ ProtocolReadBufferHelper ProtocolReadBufferHelper::create(const void * buffer, c
 	return ProtocolReadBufferHelper(frameBasis);
 }
 
-const uint16_t ProtocolReadBufferHelper::size() const
+uint16_t ProtocolReadBufferHelper::size() const
 {
 	return frameBasis.size();
 }
 
-const bool ProtocolReadBufferHelper::empty() const
+bool ProtocolReadBufferHelper::empty() const
 {
 	return frameBasis.empty();
 }

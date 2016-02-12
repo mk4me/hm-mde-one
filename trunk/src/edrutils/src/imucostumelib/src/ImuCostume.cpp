@@ -10,7 +10,7 @@ Costume::SensorsConfiguration Costume::sensorsConfiguration(const void * data, c
 	Costume::SensorsConfiguration localConfiguration;
 
 	ProtocolReadBufferHelper pd = ProtocolReadBufferHelper::create(data, length);
-	for (uint16_t j = 0; j < pd.size(); ++j){
+	for (decltype(pd.size()) j = 0; j < pd.size(); ++j){
 		auto d = pd[j];
 
 		const auto cobID = d.header().cobID();
@@ -94,7 +94,7 @@ std::list<Costume::SensorDataPtr> Costume::extractSensorsData(const std::list<CA
 			}
 		}
 
-		ret.push_back(Costume::SensorDataPtr(new Costume::IMUSensor(sd.first, dataStatus, acc, mag, gyro, orient)));
+		ret.push_back(utils::make_shared<Costume::IMUSensor>(sd.first, dataStatus, acc, mag, gyro, orient));
 	}
 
 	return ret;
@@ -171,7 +171,7 @@ std::list<Costume::SensorDataPtr> Costume::extractSensorsData(const void * buffe
 			}
 		}
 
-		ret.push_back(Costume::SensorDataPtr(new Costume::IMUSensor(sd.first, dataStatus, acc, mag, gyro, orient)));
+		ret.push_back(utils::make_shared<Costume::IMUSensor>(sd.first, dataStatus, acc, mag, gyro, orient));
 	}
 
 	return ret;
@@ -238,12 +238,12 @@ Costume::GenericSensor::~GenericSensor()
 
 }
 
-const Costume::SensorID Costume::GenericSensor::id() const
+Costume::SensorID Costume::GenericSensor::id() const
 {
 	return id_;
 }	
 
-const int Costume::GenericSensor::type() const
+int Costume::GenericSensor::type() const
 {
 	return type_;
 }
@@ -284,7 +284,7 @@ const osg::Quat & Costume::IMUSensor::orientation() const
 	return orientation_;
 }
 
-const int Costume::IMUSensor::dataStatus() const
+int Costume::IMUSensor::dataStatus() const
 {
 	return dataStatus_;
 }

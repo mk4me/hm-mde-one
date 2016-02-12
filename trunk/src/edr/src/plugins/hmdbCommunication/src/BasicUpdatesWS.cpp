@@ -12,13 +12,13 @@ MotionBasicUpdatesWS::~MotionBasicUpdatesWS()
 {
 }
 
-const int MotionBasicUpdatesWS::createPerformer(const std::string & name,
+int MotionBasicUpdatesWS::createPerformer(const std::string & name,
 	const std::string & surname)
 {
 	return hmdbServices::MotionBasicUpdatesWS(creator()).createPerformer(name, surname);
 }
 
-const int MotionBasicUpdatesWS::createSession(const int labID, const std::string & motionKindName,
+int MotionBasicUpdatesWS::createSession(const int labID, const std::string & motionKindName,
 	const std::string & sessionDate, const std::string & sessionDescription,
 	const std::set<int> & sessionGroupIDs)
 {
@@ -26,31 +26,31 @@ const int MotionBasicUpdatesWS::createSession(const int labID, const std::string
 		sessionDate, sessionDescription, sessionGroupIDs);
 }
 
-const int MotionBasicUpdatesWS::createTrial(const int sessionID, const std::string & trialDescription)
+int MotionBasicUpdatesWS::createTrial(const int sessionID, const std::string & trialDescription)
 {
 	return hmdbServices::MotionBasicUpdatesWS(creator()).createTrial(sessionID, trialDescription);
 }
 
-const int MotionBasicUpdatesWS::createMeasurementConfiguration(const std::string & mcName,
+int MotionBasicUpdatesWS::createMeasurementConfiguration(const std::string & mcName,
 	const std::string & mcKind, const std::string & mcDescription)
 {
 	return hmdbServices::MotionBasicUpdatesWS(creator()).createMeasurementConfiguration(mcName,
 		mcKind, mcDescription);
 }
 
-const int MotionBasicUpdatesWS::assignSessionToGroup(const int sessionID, const int sessionsGroupID)
+int MotionBasicUpdatesWS::assignSessionToGroup(const int sessionID, const int sessionsGroupID)
 {
 	return hmdbServices::MotionBasicUpdatesWS(creator()).assignSessionToGroup(sessionID,
 		sessionsGroupID);
 }
 
-const int MotionBasicUpdatesWS::assignPerformerToSession(const int performerID, const int sessionID)
+int MotionBasicUpdatesWS::assignPerformerToSession(const int performerID, const int sessionID)
 {
 	return hmdbServices::MotionBasicUpdatesWS(creator()).assignPerformerToSession(performerID,
 		sessionID);
 }
 
-const bool MotionBasicUpdatesWS::assignPerformerToMeasurement(const int performerID, const int measurementID)
+bool MotionBasicUpdatesWS::assignPerformerToMeasurement(const int performerID, const int measurementID)
 {
 	return hmdbServices::MotionBasicUpdatesWS(creator()).assignPerformerToMeasurement(performerID,
 		measurementID);

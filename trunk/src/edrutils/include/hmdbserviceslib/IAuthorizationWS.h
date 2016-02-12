@@ -24,10 +24,10 @@ namespace hmdbServices
 		//! --------------- Zarządzanie użytkownikami -------------------------
 
 		//! \return Lista użytkowników bazy danych
-		virtual const std::string listUsers() const = 0;
+		virtual std::string listUsers() const = 0;
 
 		//! \return Opis mojego użytkownika (wynika z konfiguracji połączenia!)
-		virtual const std::string getMyUserData() const = 0;
+		virtual std::string getMyUserData() const = 0;
 
 		//! --------------- Aktualizacja konta użytkownika -------------------------
 
@@ -57,7 +57,7 @@ namespace hmdbServices
 
 		//! \param sessionID Identyikator sesji dla którego pobieram listę praw dostępu
 		//! \return Lista praw dostępu do zadanej sesji
-		virtual const std::string listSessionPrivileges(const int sessionID) const = 0;
+		virtual std::string listSessionPrivileges(const int sessionID) const = 0;
 
 		//! \param grantedUserLogin Login użytkownika którego prawa modyfikujemy
 		//! \param sessionID Identyfikator sesji której dostępność modyfikujemy
@@ -77,14 +77,15 @@ namespace hmdbServices
 		//! ---------------- Sprawdzanie istnienia konta -----------------------
 
 		//! \return Zwraca prawdę jeżeli użytkownik tej usługi występuje w bazie danych
-		virtual const bool checkMyLogin() const = 0;
+		virtual bool checkMyLogin() const = 0;
 		//! \return Zwraca listę grup do których przynależy mój użytkownik
-		virtual const std::string listMyUserGroupsAssigned() const = 0;
+		virtual std::string listMyUserGroupsAssigned() const = 0;
 
 		//! Zwraca ciąg znaków dla aktualizacji, kiedy podana wartość nie ulegnie zmianie
-		inline static const std::string noChangeValue()
+		inline static const std::string & noChangeValue()
 		{
-			return std::string("-nochange-");
+			static const std::string ret = std::string("-nochange-");
+			return ret;
 		}
 	};
 

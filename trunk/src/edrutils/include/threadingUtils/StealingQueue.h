@@ -60,14 +60,14 @@ namespace threadingUtils
 		}
 
 		//! \return Czy kolejka jest pusta
-		const bool empty() const
+		bool empty() const
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			return queue.empty();
 		}
 
 		//! \return Czy kolejka jest pusta
-		const size_type size() const
+		size_type size() const
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			return queue.size();
@@ -75,7 +75,7 @@ namespace threadingUtils
 
 		//! \param data [out] Obiekt w którym zapiszemy wartoœæ œci¹gniêt¹ z kolejki
 		//! \return Czy uda³o siê œci¹gn¹æ dane z kolejki
-		const bool tryPop(T & data)
+		bool tryPop(T & data)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			if (queue.empty())
@@ -90,7 +90,7 @@ namespace threadingUtils
 
 		//! \param data [out] Obiekt w którym zapiszemy wartoœæ œci¹gniêt¹ z koñca kolejki (kradzie¿)
 		//! \return Czy uda³o siê œci¹gn¹æ dane z koñca kolejki
-		const bool trySteal(T & data)
+		bool trySteal(T & data)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			if (queue.empty())

@@ -68,13 +68,13 @@ namespace utils {
 			}
 
 			template<typename T, typename Y>
-			static const std::shared_ptr<Y> dynamicCastPtr(const std::shared_ptr<T> & ptr)
+			static std::shared_ptr<Y> dynamicCastPtr(const std::shared_ptr<T> & ptr)
 			{
 				return std::dynamic_pointer_cast<Y>(ptr);
 			}
 
 			template<typename T, typename Y>
-			static const std::shared_ptr<Y> constCastPtr(const std::shared_ptr<T> & ptr)
+			static std::shared_ptr<Y> constCastPtr(const std::shared_ptr<T> & ptr)
 			{
 				return std::const_pointer_cast<Y>(ptr);
 			}
@@ -114,14 +114,14 @@ namespace utils {
 			//! Czy wskaźnik jest unikatowy?
 			//! \param ptr
 			template<typename T>
-			static const bool isUnique(const std::shared_ptr<T> & ptr)
+			static bool isUnique(const std::shared_ptr<T> & ptr)
 			{
 				return ptr.unique();
 			}
 
 			//! \return Ilość referencji do tego wskaźnika
 			template<typename T>
-			static const long referenceCount(const std::shared_ptr<T> & ptr)
+			static auto referenceCount(const std::shared_ptr<T> & ptr) -> decltype(ptr.use_count())
 			{
 				return ptr.use_count();
 			}

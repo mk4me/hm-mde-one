@@ -6,7 +6,7 @@
 
 using namespace imuCostume;
 
-const bool CostumeCANopenIO::send(const uint8_t seqNumber, const void * data,
+bool CostumeCANopenIO::send(const uint8_t seqNumber, const void * data,
 	const uint16_t length, const uint16_t timeout, CostumeRawIO & costume)
 {
 	const auto totalLength = sizeof(Header) + length;
@@ -22,7 +22,7 @@ const bool CostumeCANopenIO::send(const uint8_t seqNumber, const void * data,
 	return costume.send(dataToTransmit.get(), totalLength, timeout);	
 }
 
-const bool CostumeCANopenIO::verifyReceiveConfirmation(const uint8_t seqNumber,
+bool CostumeCANopenIO::verifyReceiveConfirmation(const uint8_t seqNumber,
 	const void * data, const uint16_t length)
 {
 	const uint8_t * locFrame = static_cast<const uint8_t*>(data);

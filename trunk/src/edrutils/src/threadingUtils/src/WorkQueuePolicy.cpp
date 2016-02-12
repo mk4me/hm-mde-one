@@ -40,7 +40,7 @@ void StealingMultipleWorkQueuePolicy::deinitializeThread()
 	localWorkQueue() = nullptr;
 }
 
-const StealingMultipleWorkQueuePolicy::size_type StealingMultipleWorkQueuePolicy::size() const
+StealingMultipleWorkQueuePolicy::size_type StealingMultipleWorkQueuePolicy::size() const
 {			
 	size_type ret = commonQueue.size();
 
@@ -52,7 +52,7 @@ const StealingMultipleWorkQueuePolicy::size_type StealingMultipleWorkQueuePolicy
 	return ret;
 }
 
-const bool StealingMultipleWorkQueuePolicy::tryGet(Task & task)
+bool StealingMultipleWorkQueuePolicy::tryGet(Task & task)
 {
 	return ((tryPopWorkFromLocalQueue(task) == true) ||
 		(tryPopWorkFromCommonQueue(task) == true) ||
@@ -64,7 +64,7 @@ void StealingMultipleWorkQueuePolicy::clearLocalQueue()
 	if (localWorkQueue() != nullptr) { localWorkQueue()->clear(); }
 }
 
-const bool StealingMultipleWorkQueuePolicy::empty() const
+bool StealingMultipleWorkQueuePolicy::empty() const
 {
 	return ((commonQueue.empty() == true) && (localQueuesEmpty() == true));
 }
@@ -95,7 +95,7 @@ void StealingMultipleWorkQueuePolicy::rescheduleLocalQueue()
 	}
 }
 		
-const bool StealingMultipleWorkQueuePolicy::localQueuesEmpty() const
+bool StealingMultipleWorkQueuePolicy::localQueuesEmpty() const
 {
 	std::lock_guard<std::mutex> lock(mutex);
 	for (auto lqd : localQueues){
@@ -107,7 +107,7 @@ const bool StealingMultipleWorkQueuePolicy::localQueuesEmpty() const
 	return false;
 }
 
-const bool StealingMultipleWorkQueuePolicy::tryPopWorkFromLocalQueue(Task & task)
+bool StealingMultipleWorkQueuePolicy::tryPopWorkFromLocalQueue(Task & task)
 {
 	if ((localWorkQueue() != nullptr) && (localWorkQueue()->tryPop(task.functionWrapper) == true)){
 		task.id = std::this_thread::get_id();
@@ -117,7 +117,7 @@ const bool StealingMultipleWorkQueuePolicy::tryPopWorkFromLocalQueue(Task & task
 	return false;
 }
 
-const bool StealingMultipleWorkQueuePolicy::tryPopWorkFromCommonQueue(Task & task)
+bool StealingMultipleWorkQueuePolicy::tryPopWorkFromCommonQueue(Task & task)
 {
 	if(commonQueue.tryPop(task.functionWrapper) == true){
 		task.id = std::this_thread::get_id();
@@ -127,7 +127,7 @@ const bool StealingMultipleWorkQueuePolicy::tryPopWorkFromCommonQueue(Task & tas
 	return false;
 }
 
-const bool StealingMultipleWorkQueuePolicy::tryPopWorkFromOtherLocalQueue(Task & task)
+bool StealingMultipleWorkQueuePolicy::tryPopWorkFromOtherLocalQueue(Task & task)
 {
 	std::lock_guard<std::mutex> lock(mutex);
 	for (auto lqd : localQueues){

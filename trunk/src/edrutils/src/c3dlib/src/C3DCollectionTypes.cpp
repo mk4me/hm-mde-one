@@ -21,6 +21,12 @@ C3DEventsCollection::C3DEventsCollection(const C3DEventsCollection& es)
 	}
 }
 
+C3DEventsCollection::C3DEventsCollection(C3DEventsCollection&& es) :
+	events(std::move(es.events))
+{
+	
+}
+
 int C3DEventsCollection::getNumEvents() const
 {
 	return events.size();

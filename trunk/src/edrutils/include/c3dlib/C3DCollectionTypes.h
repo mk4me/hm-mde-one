@@ -52,6 +52,7 @@ namespace  c3dlib {
 		C3DEventsCollection();
 		//! Konstruktor kopiuj¹cy
 		C3DEventsCollection(const C3DEventsCollection& es);
+		C3DEventsCollection(C3DEventsCollection&& es);
 
 	public:
 		//! \return liczba wczytanych zdarzeñ

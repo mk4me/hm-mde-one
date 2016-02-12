@@ -35,11 +35,11 @@ namespace hmdbCommunication
 
 		virtual void setError(const std::string & error);
 
-		virtual const bool aborted() const;
+		virtual bool aborted() const;
 
-		const float progress() const;
+		float progress() const;
 
-		const std::string error() const;
+		std::string error() const;
 
 		void abort();
 
@@ -62,11 +62,11 @@ namespace hmdbCommunication
 			//! \param error Opis błędu
 			virtual void setError(const std::string & error);
 			virtual void setProgress(const float progress);
-			virtual const bool aborted() const;
+			virtual bool aborted() const;
 
-			const float progress() const;
+			float progress() const;
 
-			const std::string error() const;
+			std::string error() const;
 
 		private:
 			HMDBCompondStorageProgress * parent;
@@ -83,11 +83,11 @@ namespace hmdbCommunication
 
 		HMDBCompondStorageSubProgress * get(const unsigned int idx);
 
-		virtual const bool aborted() const;
+		virtual bool aborted() const;
 
-		const float progress() const;
+		float progress() const;
 
-		const std::string error() const;
+		std::string error() const;
 
 		void abort();
 
@@ -107,7 +107,7 @@ namespace hmdbCommunication
 
 		void abort();
 
-		const float progress() const;
+		float progress() const;
 
 		void filterDownloaded();
 
@@ -150,7 +150,7 @@ namespace hmdbCommunication
 		//! Destruktor wirtualny
 		virtual ~ICompoundOperation() {}
 		//! \return Postęp
-		virtual const float normalizedProgress() const
+		virtual float normalizedProgress() const
 		{
 			const auto s = size();
 			float ret = 0.0;
@@ -161,15 +161,15 @@ namespace hmdbCommunication
 			return s > 0 ? ret / (float)s : 1.0;
 		}
 		//! \return Ilość podoperacji
-		virtual const unsigned int size() const = 0;
+		virtual unsigned int size() const = 0;
 		//! \param idx Index podoperacji
-		virtual const IHMDBRemoteContext::OperationConstPtr operation(const unsigned int idx) const = 0;
+		virtual IHMDBRemoteContext::OperationConstPtr operation(const unsigned int idx) const = 0;
 		//! \param idx Index podoperacji
-		virtual const IHMDBRemoteContext::OperationPtr operation(const unsigned int idx) = 0;
+		virtual IHMDBRemoteContext::OperationPtr operation(const unsigned int idx) = 0;
 		//! \return Polityka wykonania operacji
-		virtual const ExecutionPolicy executionPolicy() const = 0;
+		virtual ExecutionPolicy executionPolicy() const = 0;
 		//! \return sposób wykonania operacji
-		virtual const ExecutionSchema executionSchema() const = 0;
+		virtual ExecutionSchema executionSchema() const = 0;
 	};
 
 	//! Wskaźnik dla złożonej operacji
@@ -197,15 +197,15 @@ namespace hmdbCommunication
 		//! Destruktor wirtualny
 		virtual ~CompoundOperation();
 		//! \return Ilość podoperacji
-		virtual const unsigned int size() const;
+		virtual unsigned int size() const;
 		//! \param idx Index podoperacji
-		virtual const IHMDBRemoteContext::OperationConstPtr operation(const unsigned int idx) const;
+		virtual IHMDBRemoteContext::OperationConstPtr operation(const unsigned int idx) const;
 		//! \param idx Index podoperacji
-		virtual const IHMDBRemoteContext::OperationPtr operation(const unsigned int idx);
+		virtual IHMDBRemoteContext::OperationPtr operation(const unsigned int idx);
 		//! \return Polityka wykonania operacji
-		virtual const ExecutionPolicy executionPolicy() const;
+		virtual ExecutionPolicy executionPolicy() const;
 		//! \return Sposób wykonania operacji
-		virtual const ExecutionSchema executionSchema() const;
+		virtual ExecutionSchema executionSchema() const;
 		//! Metoda rozpoczyna operację
 		virtual void start();
 		//! Metoda przerywa operację
@@ -213,9 +213,9 @@ namespace hmdbCommunication
 		//! Metoda czeka do zakończenia operacji
 		virtual void wait();
 		//! \return Stan operacji
-		virtual const Status status() const;
+		virtual Status status() const;
 		//! \return Opis błędu
-		virtual const std::string error() const;
+		virtual std::string error() const;
 
 	private:
 		//! Sposoby i polityki wykonania
@@ -226,7 +226,7 @@ namespace hmdbCommunication
 		//! Metoda dla obserwacji
 		void observe();
 
-		const Status compoundStatus() const;
+		Status compoundStatus() const;
 		IHMDBRemoteContext::OperationPtr findErrorOperation() const;
 
 	private:
@@ -279,13 +279,13 @@ namespace hmdbCommunication
 		//! Metoda anuluje aktualne zadanie
 		virtual void abort();
 		//! \return Stan operacji
-		virtual const Status status() const;
+		virtual Status status() const;
 		//! \return Opis błędu
-		virtual const std::string error() const;
+		virtual std::string error() const;
 		//! \return Psotep operacji
-		virtual const float normalizedProgress() const;
+		virtual float normalizedProgress() const;
 		//! \return Identyfikator pliku po zapisie w bazie
-		virtual const hmdbServices::ID fileID() const;
+		virtual hmdbServices::ID fileID() const;
 
 	private:
 		//! Uploaduje plik
@@ -327,7 +327,7 @@ namespace hmdbCommunication
 		virtual ~PrepareHMDB();
 
 		//! \return Mapa przygotowanych plików do ściągnięcia
-		const std::string prepareFilePath();
+		std::string prepareFilePath();
 
 		//! \return Czyści baze danych ruchu
 		void clearHMDB();
@@ -430,17 +430,17 @@ namespace hmdbCommunication
 		//! Metoda anuluje aktualne zadanie
 		virtual void abort();
 		//! \return Stan operacji
-		virtual const Status status() const;
+		virtual Status status() const;
 		//! \return Opis błędu
-		virtual const std::string error() const;
+		virtual std::string error() const;
 		//! \return Psotep operacji
-		virtual const float normalizedProgress() const;
+		virtual float normalizedProgress() const;
 		//! \return Identyfikator ściąganego pliku
-		virtual const IHMDBRemoteContext::FileDescriptor fileID() const;
+		virtual IHMDBRemoteContext::FileDescriptor fileID() const;
 		//! \return Czy plik jest dostepny w storage (ściągnięto i poprawnie zapisano, choć reszta operacji mogła pójsć nie tak)
-		virtual const bool fileDownloaded() const;
+		virtual bool fileDownloaded() const;
 		//! \return Strumień ściągniętych danych
-		virtual const IHMDBStorageOperations::IStreamPtr stream() const;
+		virtual IHMDBStorageOperations::IStreamPtr stream() const;
 		//! Metoda czyści zapisane dane
 		virtual void release();
 
@@ -485,11 +485,11 @@ namespace hmdbCommunication
 		//! Metoda anuluje aktualne zadanie
 		virtual void abort();
 		//! \return Stan operacji
-		virtual const Status status() const;
+		virtual Status status() const;
 		//! \return Opis błędu
-		virtual const std::string error() const;
+		virtual std::string error() const;
 		//! \return Psotep operacji
-		virtual const float normalizedProgress() const;
+		virtual float normalizedProgress() const;
 
 	private:
 		//! Faktyczna operacja ściągania uruchamiana w wątku
@@ -531,12 +531,12 @@ namespace hmdbCommunication
 
 		virtual void abort();
 
-		virtual const float normalizedProgress() const;
+		virtual float normalizedProgress() const;
 
 		//! \return Pełna płytka kopia bazy danych - cała perspektywa dostepnych danych
-		const ShallowCopyConstPtr shallowCopy() const;
+		ShallowCopyConstPtr shallowCopy() const;
 		//! \return Pełna płytka kopia bazy danych - cała perspektywa dostepnych danych
-		const IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy() const;
+		IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy() const;
 
 	private:
 
@@ -556,9 +556,9 @@ namespace hmdbCommunication
 	{
 	public:
 		//! \return Pełna płytka kopia bazy danych - cała perspektywa dostepnych danych
-		const ShallowCopyConstPtr shallowCopy() const;
+		ShallowCopyConstPtr shallowCopy() const;
 		//! \return Pełna płytka kopia bazy danych - cała perspektywa dostepnych danych
-		const IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy() const;	
+		IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy() const;	
 
 		void extract(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads, IHMDBStorageProgress * progress);
 
@@ -584,16 +584,16 @@ namespace hmdbCommunication
 		//! Metoda anuluje aktualne zadanie
 		virtual void abort();
 		//! \return Stan operacji
-		virtual const Status status() const;
+		virtual Status status() const;
 		//! \return Opis błędu
-		virtual const std::string error() const;
+		virtual std::string error() const;
 		//! \return Psotep operacji
-		virtual const float normalizedProgress() const;
+		virtual float normalizedProgress() const;
 
 		//! \return Pełna płytka kopia bazy danych - cała perspektywa dostepnych danych
-		virtual const ShallowCopyConstPtr shallowCopy() const;
+		virtual ShallowCopyConstPtr shallowCopy() const;
 		//! \return Pełna płytka kopia bazy danych - cała perspektywa dostepnych danych
-		virtual const IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy() const;
+		virtual IncrementalBranchShallowCopyConstPtr incrementalBranchShallowCopy() const;
 
 	private:
 		//! Postęp wypakowywania płytkich kopii

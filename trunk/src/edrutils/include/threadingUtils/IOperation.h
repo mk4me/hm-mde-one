@@ -43,9 +43,9 @@ namespace threadingUtils
 		//! Metoda czeka do zakoñczenia operacji
 		virtual void wait() = 0;
 		//! \return Stan operacji
-		virtual const Status status() const = 0;
+		virtual Status status() const = 0;
 		//! \return Opis b³êdu
-		virtual const std::string error() const = 0;
+		virtual std::string error() const = 0;
 	};
 
 	//! Interfejs operacji która mozna przerwaæ

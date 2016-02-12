@@ -105,8 +105,7 @@ const kinematicUtils::AxisOrder::Type Bone::rotationOrder() const
 
 Bone::HelperMotionData Bone::helperData(const Bone & bone, const bool angleInRadians)
 {
-	osg::Quat c = kinematicUtils::convert(angleInRadians == true ? bone.axis : kinematicUtils::toRadians(bone.axis), bone.axisOrder);
-	osg::Quat cInv = c.inverse();
+	const osg::Quat c = kinematicUtils::convert(angleInRadians == true ? bone.axis : kinematicUtils::toRadians(bone.axis), bone.axisOrder);
 
-	return{ c, cInv };
+	return{ c, c.inverse() };
 }

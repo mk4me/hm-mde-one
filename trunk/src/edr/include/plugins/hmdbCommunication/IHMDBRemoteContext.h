@@ -71,7 +71,7 @@ namespace hmdbCommunication
 			//! Destruktor wirtualny
 			virtual ~IUploadOperation() {}
 			//! \return Identyfikator pliku po zapisie w bazie
-			virtual const hmdbServices::ID fileID() const = 0;
+			virtual hmdbServices::ID fileID() const = 0;
 		};
 
 		//! WskaŸnik dla operacji uploadu danych
@@ -86,11 +86,11 @@ namespace hmdbCommunication
 			//! Destruktor wirtualny
 			virtual ~IDownloadOperation() {}
 			//! \return Identyfikator œci¹ganego pliku
-			virtual const FileDescriptor fileID() const = 0;
+			virtual FileDescriptor fileID() const = 0;
 			//! \return Czy plik jest dostepny w storage (œci¹gniêto i poprawnie zapisano, choæ reszta operacji mog³a pójsæ nie tak)
-			virtual const bool fileDownloaded() const = 0;
+			virtual bool fileDownloaded() const = 0;
 			//! \return Strumieñ œci¹gniêtych danych
-			virtual const IHMDBStorageOperations::IStreamPtr stream() const = 0;
+			virtual IHMDBStorageOperations::IStreamPtr stream() const = 0;
 			//! Metoda czyœci zapisane dane
 			virtual void release() = 0;
 		};
@@ -108,18 +108,18 @@ namespace hmdbCommunication
 		//---------- Opis kontekstu zdalnego ---------------
 
 		//! \return Sesja us³ug hmdb
-		virtual const IHMDBSessionPtr session() = 0;
+		virtual IHMDBSessionPtr session() = 0;
 		//! \return Sesja us³ug hmdb
-		virtual const IHMDBSessionConstPtr session() const = 0;
+		virtual IHMDBSessionConstPtr session() const = 0;
 
 		//---------- Operacje kontekstu -----------------
 
 		//! \return Operacja opisuj¹ca odœwie¿enia p³ytkiej kopii bazy danych
-		virtual const std::list<DownloadOperationPtr> prepareSynchronization(const hmdbServices::DateTime & since = hmdbServices::DateTime::now()) = 0;
+		virtual std::list<DownloadOperationPtr> prepareSynchronization(const hmdbServices::DateTime & since = hmdbServices::DateTime::now()) = 0;
 
 		//! \param fd Opis pliku do œci¹gniêcia
 		//! \return Transfer danych
-		virtual const DownloadOperationPtr prepareFileDownload(const FileDescriptor & fd) = 0;
+		virtual DownloadOperationPtr prepareFileDownload(const FileDescriptor & fd) = 0;
 
 		//! \param fileName Nazwa pliku w bazie
 		//! \param path Œcie¿ka po stronie bazy, gdzie zostanie zpaisany plik
@@ -127,7 +127,7 @@ namespace hmdbCommunication
 		//! \param dataReference Której bazy dotyczy upload
 		//! \param fileSize Rozmiar strumienia który chcemy uploadowaæ
 		//! \return Transfer
-		virtual const IHMDBFtp::TransferPtr prepareFileUpload(const std::string & fileName,
+		virtual IHMDBFtp::TransferPtr prepareFileUpload(const std::string & fileName,
 			const std::string & path, IHMDBStorageOperations::IStreamPtr source,
 			const DataReference dataReference,
 			const hmdbServices::FileSize fileSize = 0) = 0;

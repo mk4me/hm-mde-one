@@ -89,7 +89,7 @@ namespace threadingUtils
 		//! \return Czy udało się ściągnąc dane z kolejki
 		template<class Rep = long long,
 		class Period = std::chrono::milliseconds>
-		const bool tryWaitAndPop(T& value, const std::chrono::duration<Rep, Period> & duration)
+		bool tryWaitAndPop(T& value, const std::chrono::duration<Rep, Period> & duration)
 		{
 			std::unique_lock<std::mutex> lk(mutex);
 			condition.wait_for(lk, duration);
@@ -123,7 +123,7 @@ namespace threadingUtils
 
 		//! \param value [out] Wartośc do której będzie zapisany ściągnięty z kolejki element
 		//! \return Czy udało się ściągnać wartość
-		const bool tryPop(T& value)
+		bool tryPop(T& value)
 		{
 			std::lock_guard<std::mutex> lk(mutex);
 			if (queue.empty() == true)
@@ -145,13 +145,13 @@ namespace threadingUtils
 		}
 
 		//! \return Czy kolejka jest pusta
-		const bool empty() const
+		bool empty() const
 		{
 			std::lock_guard<std::mutex> lk(mutex);
 			return queue.empty();
 		}
 
-		const size_type size() const
+		size_type size() const
 		{			
 			std::lock_guard<std::mutex> lk(mutex);
 			return queue.size();

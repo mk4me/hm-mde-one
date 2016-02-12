@@ -9,6 +9,20 @@ Skeleton::Units::Units()
 	setAngleType(kinematicUtils::Deg);
 }
 
+Skeleton::Units::Units(const Units & Other) :
+	typeValueUnits(Other.typeValueUnits),
+	defaultValues(Other.defaultValues)
+{
+
+}
+
+Skeleton::Units::Units(Units && Other) :
+	typeValueUnits(std::move(Other.typeValueUnits)),
+	defaultValues(std::move(Other.defaultValues))
+{
+
+}
+
 Skeleton::Units::~Units()
 {
 
@@ -43,6 +57,28 @@ Skeleton::Skeleton():
 	
 }
 
+Skeleton::Skeleton(const Skeleton & Other) :	
+	version(Other.version), name(Other.name),
+	documentation(Other.documentation),
+	units(Other.units), root(Other.root),
+	bones(Other.bones), hierarchy(Other.hierarchy),
+	position(Other.position), orientation(Other.orientation),
+	axisOrder(Other.axisOrder), dataOrder(Other.dataOrder)
+{
+
+}
+
+Skeleton::Skeleton(Skeleton && Other) :
+version(std::move(Other.version)), name(std::move(Other.name)),
+documentation(std::move(Other.documentation)),
+units(std::move(Other.units)), root(Other.root),
+bones(std::move(Other.bones)), hierarchy(std::move(Other.hierarchy)),
+position(Other.position), orientation(Other.orientation),
+axisOrder(Other.axisOrder), dataOrder(std::move(Other.dataOrder))
+{
+
+}
+
 Skeleton::~Skeleton()
 {
 
@@ -51,8 +87,8 @@ Skeleton::~Skeleton()
 const kinematicUtils::AxisOrder::Type Skeleton::rotationOrder(const Skeleton & skeleton)
 {
 	std::string s;
-	int count = skeleton.dataOrder.size();
-	for (int i = 0; i < count && s.size() < 3; ++i) {
+	auto count = skeleton.dataOrder.size();
+	for (decltype(count) i = 0; i < count && s.size() < 3; ++i) {
 		if (skeleton.dataOrder[i] == kinematicUtils::ChannelType::RX) {
 			s += "X";
 		}

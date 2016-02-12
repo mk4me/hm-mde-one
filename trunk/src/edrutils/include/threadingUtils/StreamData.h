@@ -44,7 +44,7 @@ namespace threadingUtils {
 		//! Destruktor wirtualny
 		~ResetableStreamStatusObserver();
 		//! \return Czy strumień uległ zmianie
-		const bool modified() const;
+		bool modified() const;
 		//! \param sb Strumień aktualizujący mój stan
 		virtual void update() override;
 
@@ -238,7 +238,7 @@ namespace threadingUtils {
 	protected:
 
 		//! Return Czy podłączono jakieś bufory
-		const bool buffersAttached() const
+		bool buffersAttached() const
 		{
 			return streamBufferList.empty() == false;
 		}
@@ -370,45 +370,16 @@ namespace threadingUtils {
 	{
 	public:
 
+		template<typename F = Filter, typename TT = T>
 		//! \param baseStream Strumień który filtruję
 		//! \param filter Obiekt filtrujący zmiany strumienia
 		StreamFilterT(IStreamPtr<T> baseStream,
-			const Filter & filter = Filter(), const T & startValue = T())
+			F && filter = F(), TT && startValue = TT())
 			: baseStream(baseStream), modifierHelper(baseStream, this),
-			filter_(filter), currentData_(startValue)
+			filter_(std::forward<F>(filter)), currentData_(std::forward<TT>(startValue))
 		{
 
-		}
-
-		//! \param baseStream Strumień który filtruję
-		//! \param filter Obiekt filtrujący zmiany strumienia
-		StreamFilterT(IStreamPtr<T> baseStream,
-			const Filter & filter, T && startValue)
-			: baseStream(baseStream), modifierHelper(baseStream, this),
-			filter_(filter), currentData_(std::move(startValue))
-		{
-
-		}
-
-		//! \param baseStream Strumień który filtruję
-		//! \param filter Obiekt filtrujący zmiany strumienia
-		StreamFilterT(IStreamPtr<T> baseStream,
-			Filter && filter, const T & startValue = T())
-			: baseStream(baseStream), modifierHelper(baseStream, this),
-			filter_(std::move(filter)), currentData_(startValue)
-		{
-
-		}
-
-		//! \param baseStream Strumień który filtruję
-		//! \param filter Obiekt filtrujący zmiany strumienia
-		StreamFilterT(IStreamPtr<T> baseStream,
-			Filter && filter, T && startValue)
-			: baseStream(baseStream), modifierHelper(baseStream, this),
-			filter_(std::move(filter)), currentData_(std::move(startValue))
-		{
-
-		}
+		}		
 
 		//! Destruktor wirtualny
 		virtual ~StreamFilterT()
@@ -460,45 +431,13 @@ namespace threadingUtils {
 	{
 	public:
 
+		template<typename P = Processor, typename TT = T>
 		//! \param baseStream Strumień który filtruję
 		//! \param filter Obiekt filtrujący zmiany strumienia
 		StreamProcessorT(IStreamPtr<T> baseStream,
-			const Processor & processor = Processor(), const T & startValue = T())
+			P && processor = P(), TT && startValue = TT())
 			: baseStream(baseStream), modifierHelper(baseStream, this),
-			processor_(processor), currentData_(startValue),
-			processReuired(false)
-		{
-
-		}
-
-		//! \param baseStream Strumień który filtruję
-		//! \param filter Obiekt filtrujący zmiany strumienia
-		StreamProcessorT(IStreamPtr<T> baseStream,
-			const Processor & processor, T && startValue)
-			: baseStream(baseStream), modifierHelper(baseStream, this),
-			processor_(processor), currentData_(std::move(startValue)),
-			processReuired(false)
-		{
-
-		}
-
-		//! \param baseStream Strumień który filtruję
-		//! \param filter Obiekt filtrujący zmiany strumienia
-		StreamProcessorT(IStreamPtr<T> baseStream,
-			Processor && processor, const T & startValue = T())
-			: baseStream(baseStream), modifierHelper(baseStream, this),
-			processor_(std::move(processor)), currentData_(startValue),
-			processReuired(false)
-		{
-
-		}
-
-		//! \param baseStream Strumień który filtruję
-		//! \param filter Obiekt filtrujący zmiany strumienia
-		StreamProcessorT(IStreamPtr<T> baseStream,
-			Processor && processor, T && startValue)
-			: baseStream(baseStream), modifierHelper(baseStream, this),
-			processor_(std::move(processor)), currentData_(std::move(startValue)),
+			processor_(std::forward<P>(processor)), currentData_(std::forward<TT>(startValue)),
 			processReuired(false)
 		{
 
@@ -561,48 +500,17 @@ namespace threadingUtils {
 
 	public:
 
+		template<typename E = Extractor, typename D = Dest>
 		//! \param baseStream Strumień którego reprezentację zmieniamy
 		//! \param extractorFunction Funktor realizujące przepakowanie typów danych
 		StreamAdapterT(IStreamPtr<Base> baseStream,
-			const Extractor & extractor = Extractor(), const Dest & startValue = Dest())
+			E && extractor = E(), D && startValue = D())
 			: baseStream(baseStream), modifierHelper(baseStream, this),
-			extractor_(extractor), currentData_(startValue), unpackRequired_(false)
-		{
-
-		}
-
-		//! \param baseStream Strumień którego reprezentację zmieniamy
-		//! \param extractorFunction Funktor realizujące przepakowanie typów danych
-		StreamAdapterT(IStreamPtr<Base> baseStream,
-			Extractor && extractor, const Dest & startValue = Dest())
-			: baseStream(baseStream), modifierHelper(baseStream, this),
-			extractor_(std::move(extractor)), currentData_(startValue),
+			extractor_(std::forward<E>(extractor)), currentData_(std::forward<D>(startValue)),
 			unpackRequired_(false)
 		{
 
-		}
-
-		//! \param baseStream Strumień którego reprezentację zmieniamy
-		//! \param extractorFunction Funktor realizujące przepakowanie typów danych
-		StreamAdapterT(IStreamPtr<Base> baseStream,
-			const Extractor & extractor, Dest && startValue)
-			: baseStream(baseStream), modifierHelper(baseStream, this),
-			extractor_(extractor), currentData_(std::move(startValue)),
-			unpackRequired_(false)
-		{
-
-		}
-
-		//! \param baseStream Strumień którego reprezentację zmieniamy
-		//! \param extractorFunction Funktor realizujące przepakowanie typów danych
-		StreamAdapterT(IStreamPtr<Base> baseStream,
-			Extractor && extractor, Dest && startValue)
-			: baseStream(baseStream), modifierHelper(baseStream, this),
-			extractor_(std::move(extractor)), currentData_(std::move(startValue)),
-			unpackRequired_(false)
-		{
-
-		}
+		}		
 
 		//! Destruktor wirtualny
 		virtual ~StreamAdapterT()

@@ -1,20 +1,20 @@
 #include <kinematiclib/SkeletonMappingScheme.h>
 #include <tinyxml2.h>
 #include <utils/Debug.h>
+#include <utils/StreamTools.h>
 
 using namespace kinematic;
 
 SkeletonMappingScheme::MappingDictionary readMappingNode(tinyxml2::XMLNode* node)
 {
-	SkeletonMappingScheme::MappingDictionary result;
-	tinyxml2::XMLNode* child;
-	for (child = node->FirstChild(); child != nullptr; child = child->NextSibling()) {
+	SkeletonMappingScheme::MappingDictionary result;	
+	for (auto child = node->FirstChild(); child != nullptr; child = child->NextSibling()) {
 		if (node->ToElement()) {
 			auto element = child ? child->ToElement() : nullptr;
-			const tinyxml2::XMLAttribute* pAttrib = element ? element->FirstAttribute() : nullptr;
+			auto pAttrib = element ? element->FirstAttribute() : nullptr;
 			std::string name;
 			std::string val;
-			while (pAttrib) {
+			while (pAttrib != nullptr) {
 				if (std::strcmp(pAttrib->Name(), "hanim") == 0) {
 					name = pAttrib->Value();
 				}
@@ -43,10 +43,10 @@ void readNode(tinyxml2::XMLNode* node, std::list<SkeletonMappingScheme::MappingD
 		return;
 	}
 
-	if (node->ToUnknown()) {
+	if (node->ToUnknown() != nullptr) {
 		UTILS_ASSERT(false, "Unable to load dictionary");
 	}
-	else if (node->ToElement()) {
+	else if (node->ToElement() != nullptr) {
 		auto element = node->ToElement();
 		if (element && strcmp(element->Value(), "SkeletonScheme") == 0) {
 			SkeletonMappingScheme::MappingDictionary dict = readMappingNode(element);
@@ -56,20 +56,20 @@ void readNode(tinyxml2::XMLNode* node, std::list<SkeletonMappingScheme::MappingD
 			return;
 		}
 	}
-
-	tinyxml2::XMLNode* pChild;
-	for (pChild = node->FirstChild(); pChild != 0; pChild = pChild->NextSibling()) {
+	
+	for (auto pChild = node->FirstChild(); pChild != 0; pChild = pChild->NextSibling()) {
 		readNode(pChild, result);
 	}
 }
 
-void SkeletonMappingScheme::loadFromXML(const std::string& filename, std::list<SkeletonMappingScheme::MappingDictionary>& outSchemes)
+void SkeletonMappingScheme::loadFromXML(std::istream& in, std::list<SkeletonMappingScheme::MappingDictionary>& outSchemes)
 {
+	auto content = utils::StreamTools::read(in);
 	tinyxml2::XMLDocument doc;
-	if (doc.LoadFile(filename.c_str()) == tinyxml2::XML_SUCCESS) {
+	if (doc.Parse(content.c_str()) == tinyxml2::XML_SUCCESS) {
 		readNode(&doc, outSchemes);
 	} else {
-		throw std::runtime_error("Unable to load file: " + filename);
+		throw std::runtime_error("Unable to parse stream");
 	}
 }
 

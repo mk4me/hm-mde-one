@@ -145,25 +145,25 @@ public:
 	@param path ścieżka partycji
 	@return wolna przestrzeń w bajtach dla danego użytkownika
 	*/	
-	static const size_t availableSpace(const Path & path);
+	static size_t availableSpace(const Path & path);
 	/*
 	Wyciąga pojemność partycji
 	@param path ścieżka partycji
 	@return pojemnośc dysku w bajtach
 	*/	
-	static const size_t capacity(const Path & path);
+	static size_t capacity(const Path & path);
 	/*
 	Wyciąga całkowitą wolną przestrzeń do zapisu dla partycji
 	@param path ścieżka partycji
 	@return Całkowita wolna przestrzeń partycji do zapisu w bajtach
 	*/	
-	static const size_t freeSpace(const Path & path);
+	static size_t freeSpace(const Path & path);
 	/*
 	Wyciąga rozmiar pliku/katalogu wskazanego ścieżką
 	@param path ścieżka
 	@return Całkowity rozmiar wskazany przez ścieżke
 	*/	
-	static const size_t size(const Path & path);
+	static size_t size(const Path & path);
 	//! \return Nazwa pliku tymczasowego - uwzględnia czas i wątek
 	static std::string temporaryFileName();
 	//! \return Rozszerzenie pliku tymczasowego

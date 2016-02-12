@@ -21,7 +21,7 @@ namespace hmdbServices
 		//! \param document Strumień z dokumentem XML
 		//! \param metadata [out] Struktura metadanych do wypełnienia
 		//! \return Czy dokument poprawnie sparsowany
-		static const bool parseFile(std::istream * document, MotionMetaData::MetaData & metadata);
+		static bool parseFile(std::istream & document, MotionMetaData::MetaData & metadata);
 	};
 
 	//! Parser metadanych medycznych
@@ -31,7 +31,7 @@ namespace hmdbServices
 		//! \param document Strumień z dokumentem XML
 		//! \param metadata [out] Struktura metadanych do wypełnienia
 		//! \return Czy dokument poprawnie sparsowany
-		static const bool parseFile(std::istream * document, MedicalMetaData::MetaData & metadata);
+		static bool parseFile(std::istream & document, MedicalMetaData::MetaData & metadata);
 	};
 }
 

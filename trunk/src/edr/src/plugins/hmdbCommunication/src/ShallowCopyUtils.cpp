@@ -17,19 +17,18 @@ void ShallowCopyUtils::createShallowCopy(hmdbCommunication::ShallowCopy & shallo
 	hmdbCommunication::ShallowCopy tmpShallowCopy;
 
 	//parsujemy
-	MotionShallowCopyParser::parseFile(motionShallowCopy, tmpShallowCopy.motionShallowCopy);
-	MedicalShallowCopyParser::parseFile(medicalShallowCopy, tmpShallowCopy.medicalShallowCopy);
-	MotionMetadataParser::parseFile(motionMetadata, tmpShallowCopy.motionMetaData);
-	MedicalMetadataParser::parseFile(medicalMetadata, tmpShallowCopy.medicalMetaData);
+	MotionShallowCopyParser::parseFile(*motionShallowCopy, tmpShallowCopy.motionShallowCopy);
+	MedicalShallowCopyParser::parseFile(*medicalShallowCopy, tmpShallowCopy.medicalShallowCopy);
+	MotionMetadataParser::parseFile(*motionMetadata, tmpShallowCopy.motionMetaData);
+	MedicalMetadataParser::parseFile(*medicalMetadata, tmpShallowCopy.medicalMetaData);
 
 	//mamy teoretycznie wszystko - teraz próbuje połączyć obie bazy
-	auto subjectsITEnd = tmpShallowCopy.motionShallowCopy.performers.end();
-	auto patientsITEnd = tmpShallowCopy.medicalShallowCopy.patients.end();
-	for (auto patientIT = tmpShallowCopy.medicalShallowCopy.patients.begin(); patientIT != patientsITEnd; ++patientIT){
-		auto subjectIT = tmpShallowCopy.motionShallowCopy.performers.find(patientIT->second->motionPerformerID);
+	auto subjectsITEnd = tmpShallowCopy.motionShallowCopy.performers.end();	
+	for (auto & p : tmpShallowCopy.medicalShallowCopy.patients){
+		auto subjectIT = tmpShallowCopy.motionShallowCopy.performers.find(p.second->motionPerformerID);
 		if (subjectIT != subjectsITEnd){
-			patientIT->second->performer = subjectIT->second;
-			subjectIT->second->patient = patientIT->second;
+			p.second->performer = subjectIT->second;
+			subjectIT->second->patient = p.second;
 		}
 	}
 
@@ -37,48 +36,48 @@ void ShallowCopyUtils::createShallowCopy(hmdbCommunication::ShallowCopy & shallo
 	std::swap(shallowCopy, tmpShallowCopy);
 }
 
-const ShallowCopyPtr ShallowCopyUtils::extractShallowCopy(const std::string & userHash,
+ShallowCopyPtr ShallowCopyUtils::extractShallowCopy(const std::string & userHash,
 	const IHMDBStorage::TransactionConstPtr storage)
 {
 	ShallowCopyPtr ret(new ShallowCopy);
 
 	auto stream = shallowCopyStream(userHash, IHMDBRemoteContext::Medical, Shallow, storage);
 	if (stream != nullptr){
-		hmdbServices::MedicalShallowCopyParser::parseFile(stream.get(), ret->medicalShallowCopy);
+		hmdbServices::MedicalShallowCopyParser::parseFile(*stream, ret->medicalShallowCopy);
 	}
 
 	stream = shallowCopyStream(userHash, IHMDBRemoteContext::Medical, Meta, storage);
 	if (stream != nullptr){
-		hmdbServices::MedicalMetadataParser::parseFile(stream.get(), ret->medicalMetaData);
+		hmdbServices::MedicalMetadataParser::parseFile(*stream, ret->medicalMetaData);
 	}
 
 	stream = shallowCopyStream(userHash, IHMDBRemoteContext::Motion, Shallow, storage);
 	if (stream != nullptr){
-		hmdbServices::MotionShallowCopyParser::parseFile(stream.get(), ret->motionShallowCopy);
+		hmdbServices::MotionShallowCopyParser::parseFile(*stream, ret->motionShallowCopy);
 	}
 
 	stream = shallowCopyStream(userHash, IHMDBRemoteContext::Motion, Meta, storage);
 	if (stream != nullptr){
-		hmdbServices::MotionMetadataParser::parseFile(stream.get(), ret->motionMetaData);
+		hmdbServices::MotionMetadataParser::parseFile(*stream, ret->motionMetaData);
 	}
 
 	return ret;
 }
 
-const bool ShallowCopyUtils::checkShallowCopyIntegrity(const ShallowCopy & shallowCopy)
+bool ShallowCopyUtils::checkShallowCopyIntegrity(const ShallowCopy & shallowCopy)
 {
 	//TODO
 	//sprawdzać integralność danych w płytkiej kopii bazy danych
 	return true;
 }
 
-const bool ShallowCopyUtils::shallowCopyRequiresRefresh(const ShallowCopy & shallowCopy,
+bool ShallowCopyUtils::shallowCopyRequiresRefresh(const ShallowCopy & shallowCopy,
 	const hmdbServices::DateTime & currentVersion)
 {
 	return ( (shallowCopy.motionShallowCopy.timestamp < currentVersion) ? true : false);
 }
 
-const bool ShallowCopyUtils::shallowCopyInStorage(const std::string & userHash,
+bool ShallowCopyUtils::shallowCopyInStorage(const std::string & userHash,
 	const IHMDBRemoteContext::DataReference dataReference,
 	const ShallowCopyType shallowType,
 	const IHMDBStorage::TransactionConstPtr storage)
@@ -90,8 +89,8 @@ void ShallowCopyUtils::removeAllShallowCopies(IHMDBStorage::TransactionPtr stora
 {
 	auto scfs = allShallowCopiesNames(storage);
 
-	for (auto it = scfs.begin(); it != scfs.end(); ++it){
-		storage->remove(*it);
+	for (const auto & k : scfs){
+		storage->remove(k);
 	}
 }
 
@@ -106,7 +105,7 @@ void ShallowCopyUtils::storeShallowCopy(const std::string & userHash,
 	}
 }
 
-const IHMDBStorageOperations::IStreamPtr ShallowCopyUtils::shallowCopyStream(const std::string & userHash,
+IHMDBStorageOperations::IStreamPtr ShallowCopyUtils::shallowCopyStream(const std::string & userHash,
 	const IHMDBRemoteContext::DataReference dataReference,
 	const ShallowCopyType shallowType,
 	const IHMDBStorage::TransactionConstPtr storage)
@@ -114,7 +113,7 @@ const IHMDBStorageOperations::IStreamPtr ShallowCopyUtils::shallowCopyStream(con
 	return storage->get(shallowCopyName(userHash, dataReference, shallowType));
 }
 
-const std::string ShallowCopyUtils::shallowCopyName(const std::string & userHash,
+std::string ShallowCopyUtils::shallowCopyName(const std::string & userHash,
 	const IHMDBRemoteContext::DataReference dataReference,
 	const ShallowCopyType shallowType)
 {
@@ -156,7 +155,7 @@ const std::string ShallowCopyUtils::shallowCopyName(const std::string & userHash
 	return ret;
 }
 
-const std::list<std::string> ShallowCopyUtils::allShallowCopiesNames(IHMDBStorage::TransactionConstPtr storage)
+std::list<std::string> ShallowCopyUtils::allShallowCopiesNames(IHMDBStorage::TransactionConstPtr storage)
 {
 	static const std::regex r("^(med|m)_[[::alpha::]*?_[inc](s|m)\.xml\.shallow$");
 
@@ -164,18 +163,18 @@ const std::list<std::string> ShallowCopyUtils::allShallowCopiesNames(IHMDBStorag
 
 	const auto sfiles = storage->keys();
 
-	for (auto it = sfiles.begin(); it != sfiles.end(); ++it){
+	for (const auto & f : sfiles){
 		std::smatch what;
-		if (std::regex_match(*it, what, r) == true){
+		if (std::regex_match(f, what, r) == true){
 
-			ret.push_back(*it);
+			ret.push_back(f);
 		}
 	}
 
 	return ret;
 }
 
-const std::list<std::string> ShallowCopyUtils::filterShallowCopiesNames(const std::list<std::string> & src,
+std::list<std::string> ShallowCopyUtils::filterShallowCopiesNames(const std::list<std::string> & src,
 	const IHMDBRemoteContext::DataReference dataReference,
 	const ShallowCopyType shallowType)
 {
@@ -212,36 +211,36 @@ const std::list<std::string> ShallowCopyUtils::filterShallowCopiesNames(const st
 
 	std::list<std::string> ret;
 
-	for (auto it = src.begin(); it != src.end(); ++it){
+	for (const auto & f : src){
 		std::smatch what;
-		if (std::regex_match(*it, what, r) == true){
+		if (std::regex_match(f, what, r) == true){
 
-			ret.push_back(*it);
+			ret.push_back(f);
 		}
 	}
 
 	return ret;
 }
 
-const std::list<std::string> ShallowCopyUtils::removeUserShallowCopiesNames(const std::list<std::string> & src,
+std::list<std::string> ShallowCopyUtils::removeUserShallowCopiesNames(const std::list<std::string> & src,
 	const std::string & userHash)
 {
 	std::list<std::string> ret;
 
-	for (auto it = src.begin(); it != src.end(); ++it){
+	for (const auto & f : src){
 
-		auto s = (*it).find("_") + 1;
-		auto e = (*it).rfind("_");
+		auto s = f.find("_") + 1;
+		auto e = f.rfind("_");
 
-		if ((*it).substr(s, e - s) != userHash){
-			ret.push_back(*it);
+		if (f.substr(s, e - s) != userHash){
+			ret.push_back(f);
 		}
 	}
 
 	return ret;
 }
 
-const std::string ShallowCopyUtils::userHash(const std::string & user, const std::string & password)
+std::string ShallowCopyUtils::userHash(const std::string & user, const std::string & password)
 {
 	std::string hashTmp(user + ":" + password);
 	std::string hash;
@@ -254,20 +253,20 @@ const std::string ShallowCopyUtils::userHash(const std::string & user, const std
 	return hash;
 }
 
-const ShallowCopyUtils::StorageUserFiles ShallowCopyUtils::groupedShallowCopiesNames(IHMDBStorage::TransactionConstPtr storage)
+ShallowCopyUtils::StorageUserFiles ShallowCopyUtils::groupedShallowCopiesNames(IHMDBStorage::TransactionConstPtr storage)
 {
 	StorageUserFiles ret;
 
 	const auto sfiles = allShallowCopiesNames(storage);
 
-	for (auto it = sfiles.begin(); it != sfiles.end(); ++it){
+	for (const auto & f : sfiles){
 		IHMDBRemoteContext::FileDescriptor fd;
 		fd.fileSize = -1;
-		fd.fileName = *it;
+		fd.fileName = f;
 		fd.id.dataReference = IHMDBRemoteContext::Motion;
 		int fileID = 0;
 
-		auto spos = (*it).find("med_");
+		auto spos = f.find("med_");
 		if (spos == 0){
 			fd.id.dataReference = IHMDBRemoteContext::Medical;
 			spos = 4;
@@ -276,7 +275,7 @@ const ShallowCopyUtils::StorageUserFiles ShallowCopyUtils::groupedShallowCopiesN
 			spos = 2;
 		}
 
-		auto epos = (*it).find_last_of(".xml.shallow") - 1;
+		auto epos = f.find_last_of(".xml.shallow") - 1;
 
 		if (epos == 'm'){
 			fd.id.fileID = MetadataFileID;
@@ -285,7 +284,7 @@ const ShallowCopyUtils::StorageUserFiles ShallowCopyUtils::groupedShallowCopiesN
 			fd.id.fileID = ShallowCopyFileID;
 		}
 
-		const std::string userHash((*it).substr(spos, epos - spos - 1));
+		const std::string userHash(f.substr(spos, epos - spos - 1));
 
 		ret[userHash][fileID] = fd;
 	}
@@ -296,13 +295,13 @@ const ShallowCopyUtils::StorageUserFiles ShallowCopyUtils::groupedShallowCopiesN
 void extractFiles(StorageFileNames & storageFiles,
 	const hmdbServices::MotionShallowCopy::Files & files)
 {
-	for (auto fit = files.begin(); fit != files.end(); ++fit){
+	for (const auto & f : files){
 		IHMDBRemoteContext::FileDescriptor fd;
-		fd.id.fileID = fit->first;
-		fd.fileName = fit->second->fileName;
-		fd.fileSize = fit->second->fileSize;
+		fd.id.fileID = f.first;
+		fd.fileName = f.second->fileName;
+		fd.fileSize = f.second->fileSize;
 		fd.id.dataReference = IHMDBRemoteContext::Motion;
-		storageFiles[fit->first] = fd;
+		storageFiles[f.first] = fd;
 	}
 }
 
@@ -318,8 +317,8 @@ void extractFiles(StorageFileNames & storageFiles,
 	extractFiles(storageFiles, session->files);
 
 	if (recursive == true){
-		for (auto it = session->trials.begin(); it != session->trials.end(); ++it){
-			extractFiles(storageFiles, it->second);
+		for (const auto & t : session->trials){
+			extractFiles(storageFiles, t.second);
 		}
 	}
 }
@@ -328,8 +327,8 @@ void extractFiles(StorageFileNames & storageFiles,
 	const hmdbServices::MotionShallowCopy::Performer * subject, const bool recursive)
 {
 	if (recursive == true){
-		for (auto it = subject->performerConfs.begin(); it != subject->performerConfs.end(); ++it){
-			extractFiles(storageFiles, it->second->session, true);
+		for (const auto & pc : subject->performerConfs){
+			extractFiles(storageFiles, pc.second->session, true);
 		}
 	}
 }
@@ -342,7 +341,7 @@ void extractFiles(StorageFileNames & storageFiles,
 	}
 }
 
-const StorageFileNames ShallowCopyUtils::files(const ShallowCopy & shallowCopy)
+StorageFileNames ShallowCopyUtils::files(const ShallowCopy & shallowCopy)
 {
 	StorageFileNames ret;
 
@@ -351,7 +350,7 @@ const StorageFileNames ShallowCopyUtils::files(const ShallowCopy & shallowCopy)
 	return ret;
 }
 
-const StorageFileNames ShallowCopyUtils::files(const DataType dataType,
+StorageFileNames ShallowCopyUtils::files(const DataType dataType,
 	const ShallowCopy & shallowCopy, const bool recursive)
 {
 	StorageFileNames ret;
@@ -363,35 +362,31 @@ const StorageFileNames ShallowCopyUtils::files(const DataType dataType,
 
 	case MotionType:
 
-		for (auto it = shallowCopy.motionShallowCopy.trials.begin();
-			it != shallowCopy.motionShallowCopy.trials.end(); ++it){
-			extractFiles(ret, it->second);
+		for (const auto & t : shallowCopy.motionShallowCopy.trials){
+			extractFiles(ret, t.second);
 		}
 
 		break;
 
 	case SessionType:
 
-		for (auto it = shallowCopy.motionShallowCopy.sessions.begin();
-			it != shallowCopy.motionShallowCopy.sessions.end(); ++it){
-			extractFiles(ret, it->second, recursive);
+		for (const auto & s : shallowCopy.motionShallowCopy.sessions){
+			extractFiles(ret, s.second, recursive);
 		}
 
 		break;
 
 	case SubjectType:
 
-		for (auto it = shallowCopy.motionShallowCopy.performers.begin();
-			it != shallowCopy.motionShallowCopy.performers.end(); ++it){
-			extractFiles(ret, it->second, recursive);
+		for (const auto & p : shallowCopy.motionShallowCopy.performers){
+			extractFiles(ret, p.second, recursive);
 		}
 		break;
 
 	case PatientType:
 
-		for (auto it = shallowCopy.medicalShallowCopy.patients.begin();
-			it != shallowCopy.medicalShallowCopy.patients.end(); ++it){
-			extractFiles(ret, it->second, recursive);
+		for (const auto & p : shallowCopy.medicalShallowCopy.patients){
+			extractFiles(ret, p.second, recursive);
 		}
 		break;
 	}
@@ -399,7 +394,7 @@ const StorageFileNames ShallowCopyUtils::files(const DataType dataType,
 	return ret;
 }
 
-const StorageFileNames ShallowCopyUtils::files(const DataType dataType,
+StorageFileNames ShallowCopyUtils::files(const DataType dataType,
 	const hmdbServices::ID id, const ShallowCopy & shallowCopy, const bool recursive)
 {
 	StorageFileNames ret;
@@ -460,7 +455,7 @@ const StorageFileNames ShallowCopyUtils::files(const DataType dataType,
 	return ret;
 }
 
-const StorageFileNames ShallowCopyUtils::extraFiles(const DataType dataType,
+StorageFileNames ShallowCopyUtils::extraFiles(const DataType dataType,
 	const ShallowCopy & shallowCopy)
 {
 	StorageFileNames ret;
@@ -469,10 +464,9 @@ const StorageFileNames ShallowCopyUtils::extraFiles(const DataType dataType,
 	{
 	case FileType:
 	{
-		for (auto it = shallowCopy.motionShallowCopy.files.begin();
-			it != shallowCopy.motionShallowCopy.files.end(); ++it){
-			if (it->second->session != nullptr){
-				extractFiles(ret, it->second->session, false);
+		for (const auto & f : shallowCopy.motionShallowCopy.files){
+			if (f.second->session != nullptr){
+				extractFiles(ret, f.second->session, false);
 			}
 		}
 	}
@@ -480,10 +474,9 @@ const StorageFileNames ShallowCopyUtils::extraFiles(const DataType dataType,
 
 	case MotionType:
 	{
-		for (auto it = shallowCopy.motionShallowCopy.trials.begin();
-			it != shallowCopy.motionShallowCopy.trials.end(); ++it){
-			if (it->second->session != nullptr){
-				extractFiles(ret, it->second->session, false);
+		for (const auto & t : shallowCopy.motionShallowCopy.trials){
+			if (t.second->session != nullptr){
+				extractFiles(ret, t.second->session, false);
 			}
 		}
 	}
@@ -493,7 +486,7 @@ const StorageFileNames ShallowCopyUtils::extraFiles(const DataType dataType,
 	return ret;
 }
 
-const StorageFileNames ShallowCopyUtils::extraFiles(const DataType dataType,
+StorageFileNames ShallowCopyUtils::extraFiles(const DataType dataType,
 	const hmdbServices::ID id, const ShallowCopy & shallowCopy)
 {
 	StorageFileNames ret;

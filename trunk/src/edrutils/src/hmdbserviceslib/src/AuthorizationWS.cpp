@@ -11,7 +11,7 @@ namespace hmdbServices
 	{
 	}
 
-	const bool AuthorizationWS::checkMyLogin() const
+	bool AuthorizationWS::checkMyLogin() const
 	{
 		wsdlService->setOperation("CheckMyLogin");
 
@@ -37,7 +37,7 @@ namespace hmdbServices
 		return ret;
 	}
 
-	const std::string AuthorizationWS::listMyUserGroupsAssigned() const
+	std::string AuthorizationWS::listMyUserGroupsAssigned() const
 	{
 		wsdlService->setOperation("ListMyUserGroupsAssigned");
 		wsdlService->invoke();
@@ -45,7 +45,7 @@ namespace hmdbServices
 		return wsdlService->xmlResponse();
 	}
 
-	const std::string AuthorizationWS::listUsers() const
+	std::string AuthorizationWS::listUsers() const
 	{
 		wsdlService->setOperation("ListUsers");
 		wsdlService->invoke();
@@ -53,7 +53,7 @@ namespace hmdbServices
 		return wsdlService->xmlResponse();
 	}
 
-	const std::string AuthorizationWS::getMyUserData() const
+	std::string AuthorizationWS::getMyUserData() const
 	{
 		wsdlService->setOperation("GetMyUserData");
 		wsdlService->invoke();
@@ -93,7 +93,7 @@ namespace hmdbServices
 		wsdlService->invoke();
 	}
 
-	const std::string AuthorizationWS::listSessionPrivileges(const int sessionID) const
+	std::string AuthorizationWS::listSessionPrivileges(const int sessionID) const
 	{
 		wsdlService->setOperation("ListSessionPrivileges");
 		wsdlService->setValue("sessionID", sessionID);

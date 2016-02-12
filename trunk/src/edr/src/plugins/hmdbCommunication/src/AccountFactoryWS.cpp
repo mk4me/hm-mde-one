@@ -22,14 +22,14 @@ void SingleAccountFactoryWS::createUserAccount(const std::string & login,
 		email, password, firstName, lastName);
 }
 
-const bool SingleAccountFactoryWS::activateUserAccount(const std::string & login,
+bool SingleAccountFactoryWS::activateUserAccount(const std::string & login,
 	const std::string & activationCode)
 {
 	return hmdbServices::SingleAccountFactoryWS(creator()).activateUserAccount(login,
 		activationCode);
 }
 
-const bool SingleAccountFactoryWS::resetPassword(const std::string & email)
+bool SingleAccountFactoryWS::resetPassword(const std::string & email)
 {
 	return hmdbServices::SingleAccountFactoryWS(creator()).resetPassword(email);
 }
@@ -54,14 +54,14 @@ void MultiAccountFactoryWS::createUserAccount(const std::string & login,
 		email, password, firstName, lastName, propagateToHMDB);
 }
 
-const bool MultiAccountFactoryWS::activateUserAccount(const std::string & login,
+bool MultiAccountFactoryWS::activateUserAccount(const std::string & login,
 	const std::string & activationCode, const bool propagateToHMDB)
 {
 	return hmdbServices::MultiAccountFactoryWS(creator()).activateUserAccount(login,
 		activationCode, propagateToHMDB);
 }
 
-const bool MultiAccountFactoryWS::resetPassword(const std::string & email,
+bool MultiAccountFactoryWS::resetPassword(const std::string & email,
 	const bool propagateToHMDB)
 {
 	return hmdbServices::MultiAccountFactoryWS(creator()).resetPassword(email,

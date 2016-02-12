@@ -107,14 +107,14 @@ struct PtrPolicyRaw
 
     //! Czy wskaźnik jest unikatowy?
 	template <typename T>
-    static const bool isUnique( const T * ptr)
+    static bool isUnique( const T * ptr)
     {
         return false;
     }
 
 	//! \return Ilość referencji do tego wskaźnika
 	template<typename T>
-	static const long referenceCount(const T * ptr)
+	static long referenceCount(const T * ptr)
 	{
 		return -1;
 	}

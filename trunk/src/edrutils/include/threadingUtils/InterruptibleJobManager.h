@@ -164,7 +164,7 @@ namespace threadingUtils
 			}
 		}
 
-		virtual const bool cancellable() const
+		virtual bool cancellable() const
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedState->statusMutex);
 			if (sharedState == nullptr || sharedState->status_ == Cancelled || sharedState->status_ == Finished || sharedState->status_ == Failed){
@@ -183,20 +183,20 @@ namespace threadingUtils
 		}
 
 		template<class Rep, class Per>
-		const std::future_status wait_for(
+		std::future_status wait_for(
 			const std::chrono::duration<Rep, Per>& _Rel_time) const
 		{	// wait for duration
 			return future.wait_for(_Rel_time);
 		}
 
 		template<class _Clock, class _Dur>
-		const std::future_status wait_until(
+		std::future_status wait_until(
 			const std::chrono::time_point<_Clock, _Dur>& _Abs_time) const
 		{	// wait until time point
 			return future.wait_until(_Abs_time);
 		}
 
-		virtual const Status status() const override
+		virtual Status status() const override
 		{
 			return (sharedState == nullptr) ? Initialized : static_cast<Status>(sharedState->status_);
 		}
@@ -346,7 +346,7 @@ namespace threadingUtils
 			}
 		}
 
-		virtual const bool cancellable() const
+		virtual bool cancellable() const
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedState->statusMutex);
 			if (sharedState == nullptr || sharedState->status_ == Cancelled || sharedState->status_ == Finished || sharedState->status_ == Failed){
@@ -365,20 +365,20 @@ namespace threadingUtils
 		}
 
 		template<class Rep, class Per>
-		const std::future_status wait_for(
+		std::future_status wait_for(
 			const std::chrono::duration<Rep, Per>& _Rel_time) const
 		{	// wait for duration
 			return future.wait_for(_Rel_time);
 		}
 
 		template<class _Clock, class _Dur>
-		const std::future_status wait_until(
+		std::future_status wait_until(
 			const std::chrono::time_point<_Clock, _Dur>& _Abs_time) const
 		{	// wait until time point
 			return future.wait_until(_Abs_time);
 		}
 
-		virtual const Status status() const override
+		virtual Status status() const override
 		{
 			return (sharedState == nullptr) ? Initialized : sharedState->status_;
 		}
@@ -528,7 +528,7 @@ namespace threadingUtils
 			}
 		}
 
-		virtual const bool cancellable() const
+		virtual bool cancellable() const
 		{
 			std::lock_guard<std::recursive_mutex> lock(sharedState->statusMutex);
 			if (sharedState == nullptr || sharedState->status_ == Cancelled || sharedState->status_ == Finished || sharedState->status_ == Failed){
@@ -547,20 +547,20 @@ namespace threadingUtils
 		}
 
 		template<class Rep, class Per>
-		const std::future_status wait_for(
+		std::future_status wait_for(
 			const std::chrono::duration<Rep, Per>& _Rel_time) const
 		{	// wait for duration
 			return future.wait_for(_Rel_time);
 		}
 
 		template<class _Clock, class _Dur>
-		const std::future_status wait_until(
+		std::future_status wait_until(
 			const std::chrono::time_point<_Clock, _Dur>& _Abs_time) const
 		{	// wait until time point
 			return future.wait_until(_Abs_time);
 		}
 
-		virtual const Status status() const override
+		virtual Status status() const override
 		{
 			return (sharedState == nullptr) ? Initialized : static_cast<Status>(sharedState->status_);
 		}
@@ -595,7 +595,7 @@ namespace threadingUtils
 		template<typename F, class ...Args>
 		InterruptibleJob<typename std::result_of<F(Args...)>::type> create(F&& f, Args&& ...arguments)
 		{
-			return InterruptibleJob<typename std::result_of<F(Args...)>::type>(workManager, std::move(f), std::move(arguments)...);
+			return InterruptibleJob<typename std::result_of<F(Args...)>::type>(workManager, std::forward<F>(f), std::forward<Args>(arguments)...);
 		}
 
 		//! \tparam T Typ wyniku future

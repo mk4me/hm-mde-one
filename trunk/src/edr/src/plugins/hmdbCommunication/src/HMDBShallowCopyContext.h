@@ -24,11 +24,11 @@ namespace hmdbCommunication
 		//! Destruktor wirtualny
 		virtual ~HMDBShallowCopyDataContext();
 		//! \return Aktualna p³ytka kopia bazy danych
-		virtual const ShallowCopyConstPtr shallowCopy() const;
+		virtual ShallowCopyConstPtr shallowCopy() const;
 		//! \return Manager statusów
-		virtual const IHMDBStatusManagerConstPtr dataStatusManager() const;
+		virtual IHMDBStatusManagerConstPtr dataStatusManager() const;
 		//! \return Manager statusów
-		virtual const IHMDBStatusManagerPtr dataStatusManager();
+		virtual IHMDBStatusManagerPtr dataStatusManager();
 		//! \param shallowCopy P³ytka kopia bazy danych
 		virtual void setShallowCopy(const ShallowCopyConstPtr shallowCopy);
 
@@ -64,40 +64,40 @@ namespace hmdbCommunication
 		//! \param id Identyfikator danych
 		//! \param recursive Czy pobieramy dane w dó³
 		//! \return Dane domenowe za³adowane dla tego typu
-		virtual const core::ConstVariantsList data(const DataType type,
+		virtual core::ConstVariantsList data(const DataType type,
 			const hmdbServices::ID id, const bool recursive = true) const;
 		//! \param type Typ danych które chcemy za³adowaæ
 		//! \param ids Identyfikatory danych
 		//! \param shallowCopy P³ytka kopia wzglêdem której dzia³amy
 		//! \return Identyfikatory plików które za³adowano
-		virtual const bool load(const DataType type,
+		virtual bool load(const DataType type,
 			const hmdbServices::ID id);
 
 		//! Metoda ³aduje wszystkie dane
-		virtual const bool loadAll();
+		virtual bool loadAll();
 
 		//! \param type Typ danych które chcemy wy³adowaæ
 		//! \param ids Identyfikatory danych
 		//! \param shallowCopy P³ytka kopia wzglêdem której wy³adowujemy
 		//! \return Identyfikatory plików które wy³adowano
-		virtual const bool unload(const DataType type,
+		virtual bool unload(const DataType type,
 			const hmdbServices::ID id);
 
 		//! Metoda wy³adowuje wszystkie dane
-		virtual const bool unloadAll();
+		virtual bool unloadAll();
 
-		virtual const IHMDBShallowCopyDataContextPtr shallowCopyContext();
-		virtual const IHMDBShallowCopyDataContextConstPtr shallowCopyContext() const;
+		virtual IHMDBShallowCopyDataContextPtr shallowCopyContext();
+		virtual IHMDBShallowCopyDataContextConstPtr shallowCopyContext() const;
 
-		virtual const IHMDBLocalContextPtr localContext();
-		virtual const IHMDBLocalContextConstPtr localContext() const;
+		virtual IHMDBLocalContextPtr localContext();
+		virtual IHMDBLocalContextConstPtr localContext() const;
 
 	private:
 
 		void updateOrAddRoot(core::IHierarchyItemConstPtr root, std::set<core::IHierarchyItemConstPtr>& roots,
 			core::IDataHierarchyManager::TransactionPtr hierarchyTransaction);
 
-		const core::VariantPtr findObjectByType(const DataType type,
+		core::VariantPtr findObjectByType(const DataType type,
 			const hmdbServices::ID id,
 			const utils::TypeInfo & typeInfo) const;
 
@@ -133,7 +133,7 @@ namespace hmdbCommunication
 			const IndexedData & loadedFilesData,
 			const ShallowCopyConstPtr shallowCopy);
 
-		const SubjectFiles groupDataInHierarchy(const IndexedData & loadedFilesData,
+		SubjectFiles groupDataInHierarchy(const IndexedData & loadedFilesData,
 			const ShallowCopyConstPtr shallowCopy);
 		
 		void addPatientObject(const hmdbServices::MedicalShallowCopy::Patient * patient,
@@ -173,10 +173,10 @@ namespace hmdbCommunication
 		//! \param recursive Czy pobieramy wszystkie dane w dó³ hierarchii
 		//! \param forceDownload Czy wymuszamy œci¹ganie wszystkich danych czy tylko brakuj¹cych
 		//! \return Przygotowany transfer danych
-		virtual const std::list<IHMDBRemoteContext::DownloadOperationPtr> prepareDownload(const DataType type,
+		virtual std::list<IHMDBRemoteContext::DownloadOperationPtr> prepareDownload(const DataType type,
 			const hmdbServices::ID id, const bool recursive = true, const bool forceDownload = false);
 		//! \return Operacja synchronizacji
-		virtual const SynchronizeOperationPtr prepareSynchronization(IHMDBStoragePtr storage);
+		virtual SynchronizeOperationPtr prepareSynchronization(IHMDBStoragePtr storage);
 		//! \param shallowCopy P³ytka kopia bazy danych
 		//! \param incrementalBranchShallowCopy Przyrostowa kopia bazy danych
 		virtual void synchronize(const ShallowCopyConstPtr shallowCopy,
@@ -185,11 +185,11 @@ namespace hmdbCommunication
 		//! \param downloadOperations Operacje œci¹gania
 		virtual void synchronize(const SynchronizeOperationPtr downloadOperations);
 
-		virtual const IHMDBShallowCopyDataContextPtr shallowCopyContext();
-		virtual const IHMDBShallowCopyDataContextConstPtr shallowCopyContext() const;
+		virtual IHMDBShallowCopyDataContextPtr shallowCopyContext();
+		virtual IHMDBShallowCopyDataContextConstPtr shallowCopyContext() const;
 
-		virtual const IHMDBRemoteContextPtr remoteContext();
-		virtual const IHMDBRemoteContextConstPtr remoteContext() const;
+		virtual IHMDBRemoteContextPtr remoteContext();
+		virtual IHMDBRemoteContextConstPtr remoteContext() const;
 
 	private:
 		//! Kontekst p³ytkiej kopii bazy danych
@@ -208,14 +208,14 @@ namespace hmdbCommunication
 
 		virtual ~HMDBShallowCopyContext();
 
-		virtual const IHMDBShallowCopyDataContextPtr shallowCopyDataContext();
-		virtual const IHMDBShallowCopyDataContextConstPtr shallowCopyDataContext() const;
+		virtual IHMDBShallowCopyDataContextPtr shallowCopyDataContext();
+		virtual IHMDBShallowCopyDataContextConstPtr shallowCopyDataContext() const;
 
-		virtual const IHMDBShallowCopyLocalContextPtr shallowCopyLocalContext();
-		virtual const IHMDBShallowCopyLocalContextConstPtr shallowCopyLocalContext() const;
+		virtual IHMDBShallowCopyLocalContextPtr shallowCopyLocalContext();
+		virtual IHMDBShallowCopyLocalContextConstPtr shallowCopyLocalContext() const;
 
-		virtual const IHMDBShallowCopyRemoteContextPtr shallowCopyRemoteContext();
-		virtual const IHMDBShallowCopyRemoteContextConstPtr shallowCopyRemoteContext() const;
+		virtual IHMDBShallowCopyRemoteContextPtr shallowCopyRemoteContext();
+		virtual IHMDBShallowCopyRemoteContextConstPtr shallowCopyRemoteContext() const;
 
 	private:
 

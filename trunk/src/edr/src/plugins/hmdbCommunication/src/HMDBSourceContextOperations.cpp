@@ -43,17 +43,17 @@ void HMDBStorageProgress::setError(const std::string & error)
 	error_ = error;
 }
 
-const bool HMDBStorageProgress::aborted() const
+bool HMDBStorageProgress::aborted() const
 {
 	return aborted_;
 }
 
-const float HMDBStorageProgress::progress() const
+float HMDBStorageProgress::progress() const
 {
 	return progress_;
 }
 
-const std::string HMDBStorageProgress::error() const
+std::string HMDBStorageProgress::error() const
 {
 	return error_;
 }
@@ -86,17 +86,17 @@ void HMDBCompondStorageProgress::HMDBCompondStorageSubProgress::setProgress(cons
 	progress_ = progress;
 }
 
-const bool HMDBCompondStorageProgress::HMDBCompondStorageSubProgress::aborted() const
+bool HMDBCompondStorageProgress::HMDBCompondStorageSubProgress::aborted() const
 {
 	return parent->aborted();
 }
 
-const float HMDBCompondStorageProgress::HMDBCompondStorageSubProgress::progress() const
+float HMDBCompondStorageProgress::HMDBCompondStorageSubProgress::progress() const
 {
 	return progress_;
 }
 
-const std::string HMDBCompondStorageProgress::HMDBCompondStorageSubProgress::error() const
+std::string HMDBCompondStorageProgress::HMDBCompondStorageSubProgress::error() const
 {
 	return error_;
 }
@@ -125,17 +125,17 @@ HMDBCompondStorageProgress::HMDBCompondStorageSubProgress * HMDBCompondStoragePr
 	return subProgresses[idx].get();
 }
 
-const bool HMDBCompondStorageProgress::aborted() const
+bool HMDBCompondStorageProgress::aborted() const
 {
 	return aborted_;
 }
 
-const float HMDBCompondStorageProgress::progress() const
+float HMDBCompondStorageProgress::progress() const
 {
 	return ((subProgresses.empty() == true) ? 0.0 : std::accumulate(subProgresses.begin(), subProgresses.end(), 0.0, [](float total, utils::shared_ptr<HMDBCompondStorageSubProgress> d) { return total + d->progress(); }) / subProgresses.size());
 }
 
-const std::string HMDBCompondStorageProgress::error() const
+std::string HMDBCompondStorageProgress::error() const
 {
 	for (auto it = subProgresses.begin(); it != subProgresses.end(); ++it){
 		auto e = (*it)->error();
@@ -184,13 +184,13 @@ void DownloadHelper::abort()
 	};
 }
 
-const float DownloadHelper::progress() const
+float DownloadHelper::progress() const
 {
 	const auto pd = std::accumulate(downloads.begin(), downloads.end(), 0.0, [](float total, IHMDBRemoteContext::DownloadOperationPtr d) { return total + d->normalizedProgress(); }) / downloads.size();
 	return (pd + storeProgress.progress()) / 2.0;
 }
 
-const std::list<IHMDBRemoteContext::DownloadOperationPtr> filterCompleteDownloads(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads)
+std::list<IHMDBRemoteContext::DownloadOperationPtr> filterCompleteDownloads(const std::list<IHMDBRemoteContext::DownloadOperationPtr> & downloads)
 {
 	std::list<IHMDBRemoteContext::DownloadOperationPtr> ret;
 
@@ -291,27 +291,27 @@ CompoundOperation::~CompoundOperation()
 	wait();
 }
 
-const unsigned int CompoundOperation::size() const
+unsigned int CompoundOperation::size() const
 {
 	return operations.size();
 }
 
-const IHMDBRemoteContext::OperationConstPtr CompoundOperation::operation(const unsigned int idx) const
+IHMDBRemoteContext::OperationConstPtr CompoundOperation::operation(const unsigned int idx) const
 {
 	return operations[idx];
 }
 
-const IHMDBRemoteContext::OperationPtr CompoundOperation::operation(const unsigned int idx)
+IHMDBRemoteContext::OperationPtr CompoundOperation::operation(const unsigned int idx)
 {
 	return operations[idx];
 }
 
-const ICompoundOperation::ExecutionPolicy CompoundOperation::executionPolicy() const
+ICompoundOperation::ExecutionPolicy CompoundOperation::executionPolicy() const
 {
 	return ep;
 }
 
-const ICompoundOperation::ExecutionSchema CompoundOperation::executionSchema() const
+ICompoundOperation::ExecutionSchema CompoundOperation::executionSchema() const
 {
 	return es;
 }
@@ -462,7 +462,7 @@ void CompoundOperation::wait()
 	}
 }
 
-const threadingUtils::IOperation::Status CompoundOperation::compoundStatus() const
+threadingUtils::IOperation::Status CompoundOperation::compoundStatus() const
 {
 	threadingUtils::IOperation::Status s = IOperation::Initialized;
 
@@ -502,7 +502,7 @@ const threadingUtils::IOperation::Status CompoundOperation::compoundStatus() con
 	return s;
 }
 
-const threadingUtils::IOperation::Status CompoundOperation::status() const
+threadingUtils::IOperation::Status CompoundOperation::status() const
 {
 	if (status_ == threadingUtils::IOperation::Running){
 		status_ = compoundStatus();		
@@ -511,7 +511,7 @@ const threadingUtils::IOperation::Status CompoundOperation::status() const
 	return status_;
 }
 
-const std::string CompoundOperation::error() const
+std::string CompoundOperation::error() const
 {
 	if (errorOperation == nullptr){
 		errorOperation = findErrorOperation();
@@ -553,7 +553,7 @@ UploadOperation::~UploadOperation()
 
 }
 
-const hmdbServices::ID UploadOperation::fileID() const
+hmdbServices::ID UploadOperation::fileID() const
 {
 	return fileID_;
 }
@@ -588,7 +588,7 @@ void UploadOperation::abort()
 	job.cancel();
 }
 
-const UploadOperation::Status UploadOperation::status() const
+UploadOperation::Status UploadOperation::status() const
 {
 	if (status_ == Aborted){
 		return status_;
@@ -597,23 +597,23 @@ const UploadOperation::Status UploadOperation::status() const
 	//return fOp.status();
 }
 
-const std::string UploadOperation::error() const
+std::string UploadOperation::error() const
 {
 	//return fOp.error();
 	return "";
 }
 
-const float UploadOperation::normalizedProgress() const
+float UploadOperation::normalizedProgress() const
 {
 	return ((float)progress_ + transfer->normalizedProgress()) / 2.0;
 }
 
-const std::string retrieveData(hmdbServices::IBasicStoremanWS * service, const int id)
+std::string retrieveData(hmdbServices::IBasicStoremanWS * service, const int id)
 {
 	return service->retrieve(id).fileLocation;
 }
 
-const std::string retrievePerspective(hmdbServices::IShallowStoremanWS * service, const int id,
+std::string retrievePerspective(hmdbServices::IShallowStoremanWS * service, const int id,
 	const hmdbServices::DateTime & since = hmdbServices::DateTime::now())
 {
 	std::string ret;
@@ -656,7 +656,7 @@ PrepareHMDB::~PrepareHMDB()
 	clearHMDB();
 }
 
-const std::string PrepareHMDB::prepareFilePath()
+std::string PrepareHMDB::prepareFilePath()
 {
 	if (fileID_ > -1){
 		preparedFilePath_ = retrieveData(fs, fileID_);
@@ -836,7 +836,7 @@ void FileDownload::abort()
 	}
 }
 
-const FileDownload::Status FileDownload::status() const
+FileDownload::Status FileDownload::status() const
 {
 	if (status_ == FileDownload::Aborted){
 		return status_;
@@ -845,28 +845,28 @@ const FileDownload::Status FileDownload::status() const
 	//return fOp.status();
 }
 
-const std::string FileDownload::error() const
+std::string FileDownload::error() const
 {
 	//return fOp.error();
 	return "";
 }
 
-const float FileDownload::normalizedProgress() const
+float FileDownload::normalizedProgress() const
 {
 	return ((float)progress_ + (transfer != nullptr ? transfer->normalizedProgress() : 0.0)) / 5.0;
 }
 
-const IHMDBRemoteContext::FileDescriptor FileDownload::fileID() const
+IHMDBRemoteContext::FileDescriptor FileDownload::fileID() const
 {
 	return fileID_;
 }
 
-const bool FileDownload::fileDownloaded() const
+bool FileDownload::fileDownloaded() const
 {
 	return downloaded_;
 }
 
-const IHMDBStorageOperations::IStreamPtr FileDownload::stream() const
+IHMDBStorageOperations::IStreamPtr FileDownload::stream() const
 {
 	return transferIO->openInput();
 }
@@ -1015,17 +1015,17 @@ void MultipleFilesDownloadAndStore::abort()
 	}
 }
 
-const MultipleFilesDownloadAndStore::Status MultipleFilesDownloadAndStore::status() const
+MultipleFilesDownloadAndStore::Status MultipleFilesDownloadAndStore::status() const
 {
 	return status_;
 }
 
-const std::string MultipleFilesDownloadAndStore::error() const
+std::string MultipleFilesDownloadAndStore::error() const
 {
 	return error_;
 }
 
-const float MultipleFilesDownloadAndStore::normalizedProgress() const
+float MultipleFilesDownloadAndStore::normalizedProgress() const
 {
 	return downloadHelper.progress();
 }
@@ -1099,19 +1099,19 @@ void MultipleFilesDownloadStoreAndStatusUpdate::downloadFinished(const std::list
 	}
 }
 
-const ShallowCopyConstPtr ExtractShallowcopy::shallowCopy() const
+ShallowCopyConstPtr ExtractShallowcopy::shallowCopy() const
 {
 	return shallowCopy_;
 }
 
-const IncrementalBranchShallowCopyConstPtr ExtractShallowcopy::incrementalBranchShallowCopy() const
+IncrementalBranchShallowCopyConstPtr ExtractShallowcopy::incrementalBranchShallowCopy() const
 {
 	return incrementalShallowCopy_;
 }
 
 void extractShallowCopy(const hmdbServices::ID shallowID, const IHMDBRemoteContext::DataReference dataReference,
 	ShallowCopy & shallowCopy, hmdbServices::IncrementalBranchShallowCopy & incShallowCopy,
-	std::istream * stream)
+	std::istream & stream)
 {
 
 	if (dataReference == IHMDBRemoteContext::Motion){
@@ -1180,7 +1180,7 @@ void ExtractShallowcopy::extract(const std::list<IHMDBRemoteContext::DownloadOpe
 
 			auto stream = d->stream();
 			extractShallowCopy(d->fileID().id.fileID, d->fileID().id.dataReference,
-				*locSh, *locIncSh, stream.get());
+				*locSh, *locIncSh, *stream);
 
 			progress->setProgress(progressStep * currentStep++);
 		}
@@ -1213,17 +1213,17 @@ void SynchronizeOperationImpl::abort()
 	MultipleFilesDownloadAndStore::abort();
 }
 
-const float SynchronizeOperationImpl::normalizedProgress() const
+float SynchronizeOperationImpl::normalizedProgress() const
 {
 	return (MultipleFilesDownloadAndStore::normalizedProgress() + extractProgress.progress()) / 2.0;
 }
 
-const ShallowCopyConstPtr SynchronizeOperationImpl::shallowCopy() const
+ShallowCopyConstPtr SynchronizeOperationImpl::shallowCopy() const
 {
 	return shallowCopy_;
 }
 
-const IncrementalBranchShallowCopyConstPtr SynchronizeOperationImpl::incrementalBranchShallowCopy() const
+IncrementalBranchShallowCopyConstPtr SynchronizeOperationImpl::incrementalBranchShallowCopy() const
 {
 	return incrementalShallowCopy_;
 }
@@ -1265,27 +1265,27 @@ void SynchronizeOperation::abort()
 	op.abort();
 }
 
-const SynchronizeOperation::Status SynchronizeOperation::status() const
+SynchronizeOperation::Status SynchronizeOperation::status() const
 {
 	return op.status();
 }
 
-const std::string SynchronizeOperation::error() const
+std::string SynchronizeOperation::error() const
 {
 	return op.error();
 }
 
-const float SynchronizeOperation::normalizedProgress() const
+float SynchronizeOperation::normalizedProgress() const
 {
 	return op.normalizedProgress();
 }
 
-const ShallowCopyConstPtr SynchronizeOperation::shallowCopy() const
+ShallowCopyConstPtr SynchronizeOperation::shallowCopy() const
 {
 	return op.shallowCopy();
 }
 
-const IncrementalBranchShallowCopyConstPtr SynchronizeOperation::incrementalBranchShallowCopy() const
+IncrementalBranchShallowCopyConstPtr SynchronizeOperation::incrementalBranchShallowCopy() const
 {
 	return op.incrementalBranchShallowCopy();
 }

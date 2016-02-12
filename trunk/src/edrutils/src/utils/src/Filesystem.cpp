@@ -199,7 +199,7 @@ bool Filesystem::pathExists(const Path & path)
     return exists(path);
 }
 
-const Filesystem::size_t Filesystem::availableSpace(const Path & path)
+Filesystem::size_t Filesystem::availableSpace(const Path & path)
 {
 	Filesystem::size_t ret = 0;
 
@@ -219,7 +219,7 @@ const Filesystem::size_t Filesystem::availableSpace(const Path & path)
 	return ret;
 }
 
-const Filesystem::size_t Filesystem::capacity(const Path & path)
+Filesystem::size_t Filesystem::capacity(const Path & path)
 {
 	Filesystem::size_t ret = -1;
 
@@ -233,7 +233,7 @@ const Filesystem::size_t Filesystem::capacity(const Path & path)
 	return ret;
 }
 
-const Filesystem::size_t Filesystem::freeSpace(const Path & path)
+Filesystem::size_t Filesystem::freeSpace(const Path & path)
 {
 	Filesystem::size_t ret = -1;
 
@@ -247,7 +247,7 @@ const Filesystem::size_t Filesystem::freeSpace(const Path & path)
 	return ret;
 }
 
-const Filesystem::size_t Filesystem::size(const Path & path)
+Filesystem::size_t Filesystem::size(const Path & path)
 {
 	Filesystem::size_t ret = -1;
 

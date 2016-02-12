@@ -26,13 +26,13 @@ namespace hmdbServices {
 		struct ShallowCopy;
 
 		//! Mapa atrybut -> wartoœæ
-		typedef std::map<std::string, std::string> Attrs;
+		using Attrs = std::map<std::string, std::string>;
 
 		//! Plik
 		struct File
 		{
 			//! \return Czy plik nale¿y do sesji
-			inline const bool isSessionFile() const
+			inline bool isSessionFile() const
 			{
 				return trialID < 0;
 			}
@@ -48,7 +48,7 @@ namespace hmdbServices {
 			File() : trialID(-1), sessionID(-1), fileID(-1) {}
 		};
 		//! Mapa ID pliku -> plik
-		typedef std::vector<File> Files;
+		using Files = std::vector<File>;
 
 		//! Próba pomiarowa
 		struct Trial
@@ -64,7 +64,7 @@ namespace hmdbServices {
 			Trial() : sessionID(-1), trialID(-1) {}
 		};
 
-		typedef std::vector<Trial> Trials;
+		using Trials = std::vector<Trial>;
 
 		//! Sesje
 		struct Session
@@ -87,7 +87,7 @@ namespace hmdbServices {
 		};
 
 		//! Mapa ID sesji -> sesja
-		typedef std::vector<Session> Sessions;
+		using Sessions = std::vector<Session>;
 
 		//! Grupa sesji
 		struct GroupAssigment
@@ -98,7 +98,7 @@ namespace hmdbServices {
 		};
 
 		//! Mapa ID grupy sesji -> grupa sesji
-		typedef std::vector<GroupAssigment> GroupAssigments;
+		using GroupAssigments = std::vector<GroupAssigment>;
 
 		//! Konfiguracja aktora
 		struct PerformerConf
@@ -110,7 +110,7 @@ namespace hmdbServices {
 			PerformerConf() : performerConfID(-1), performerID(-1), sessionID(-1) {}
 		};
 		//! Mapa ID konfiguracji aktora -> konfiguracja aktora
-		typedef std::vector<PerformerConf> PerformerConfs;
+		using PerformerConfs = std::vector<PerformerConf>;
 
 		//! Aktor
 		struct Performer
@@ -122,7 +122,7 @@ namespace hmdbServices {
 		};
 
 		//! Mapa ID aktora -> aktor
-		typedef std::vector<Performer> Performers;
+		using Performers = std::vector<Performer>;
 
 		//! P³ytka kopia bazy danych
 		struct ShallowCopy

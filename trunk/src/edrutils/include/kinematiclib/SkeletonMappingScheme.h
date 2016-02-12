@@ -22,11 +22,11 @@ namespace kinematic
 	struct SkeletonMappingScheme
 	{
 		//! Typ pojedynczego schematu mapowania jointow
-		typedef std::map<std::string, std::string> MappingDictionary;
+		using MappingDictionary = std::map<std::string, std::string>;
 		//! statyczna metoda wczytuje schematy z pliku XML
 		//! \param filename nazwa pliku do wczytania
 		//! \return kolekcja schematów mapowania
-		static void loadFromXML(const std::string& filename, std::list<MappingDictionary>& outSchemes);
+		static void loadFromXML(std::istream& in, std::list<MappingDictionary>& outSchemes);
 		//! \return Domyślne mapowanie
 		static const MappingDictionary& defaultAcclaimToHAnimMappingScheme();
 	};

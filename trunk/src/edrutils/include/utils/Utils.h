@@ -117,7 +117,7 @@ static inline T correctNegativeZero(const T value)
 template <typename T>
 //! \param value Wartość dla której wyciągamy znak
 //! \return 1, 0 albo -1 w zależności od znaku
-static inline int sign(const T x, std::false_type)
+static inline char sign(const T x, std::false_type)
 {
 	return (T(0) < x) == true ? 1 : 0;
 }
@@ -126,7 +126,7 @@ static inline int sign(const T x, std::false_type)
 template <typename T>
 //! \param value Wartość dla której wyciągamy znak
 //! \return 1, 0 albo -1 w zależności od znaku
-static inline int sign(const T x, std::true_type)
+static inline char sign(const T x, std::true_type)
 {
 	return ((T(0) < x) == true ? 1 : 0) - ((x < T(0)) == true ? 1 : 0);
 }
@@ -135,7 +135,7 @@ static inline int sign(const T x, std::true_type)
 template <typename T>
 //! \param value Wartość dla której wyciągamy znak
 //! \return 1, 0 albo -1 w zależności od znaku
-static inline int sign(const T x)
+static inline char sign(const T x)
 {
 	static_assert(std::is_arithmetic<T>::value, "T must be arithmetic type");
 	return sign(x, std::is_signed<T>());
@@ -216,10 +216,10 @@ class Cleanup
 		class CleanupPrivate : public CleanupPrivateBase
 		{
 		public:
+
+			template<typename TT = T>
 			//! \param t Przenoszona operacja
-			CleanupPrivate(T && t) : t(std::move(t)) {}
-			//! \param t Kopiowana operacja
-			CleanupPrivate(const T & t) : t(t) {}
+			CleanupPrivate(TT && t) : t(std::forward<TT>(t)) {}
 			//! Destruktor wirtualny
 			virtual ~CleanupPrivate() { t(); }
 		private:
@@ -227,15 +227,11 @@ class Cleanup
 			T t;
 		};
 
-public:	
+public:		
 
 	//! \param cleanup Obiekt uywany do czyszczenia
 	template<typename T>
-	Cleanup(const T & t) : cleanup(utils::make_shared<CleanupPrivate<T>>(t)) {}
-
-	//! \param cleanup Obiekt uywany do czyszczenia
-	template<typename T>
-	Cleanup(T && t) : cleanup(utils::make_shared<CleanupPrivate<T>>(std::move(t))) {}
+	Cleanup(T && t) : cleanup(utils::make_shared<CleanupPrivate<T>>(std::forward<T>(t))) {}
 
 	//! Destruktor
 	~Cleanup() {}

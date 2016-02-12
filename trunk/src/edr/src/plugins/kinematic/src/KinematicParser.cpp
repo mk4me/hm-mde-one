@@ -30,7 +30,7 @@ void KinematicParser::parse( const std::string & source)
 
 	//if(utils::Filesystem::fileExtension(path).compare(".amc") == 0) {		
 		std::ifstream amcFile(path.string());
-		acclaim::AmcParser::parse(*dataPtr, amcFile);
+		dataPtr->frames = acclaim::AmcParser::parse(amcFile);
 				
 	//} 
 	// bvh chwilowo wylaczone

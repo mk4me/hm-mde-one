@@ -12,7 +12,7 @@ SQLiteDB::Close::Close(const unsigned int maxStatements,
 
 }
 
-const bool SQLiteDB::Close::operator()(sqlite3 * db)
+bool SQLiteDB::Close::operator()(sqlite3 * db)
 {
 	bool ret = SQLiteDB::close(db);
 	if (ret == false){
@@ -27,7 +27,7 @@ const bool SQLiteDB::Close::operator()(sqlite3 * db)
 	return ret;
 }
 
-const bool SQLiteDB::close(sqlite3 * db)
+bool SQLiteDB::close(sqlite3 * db)
 {
 	bool ret = false;
 	if (db != nullptr){
@@ -37,7 +37,7 @@ const bool SQLiteDB::close(sqlite3 * db)
 	return ret;
 }
 
-const bool SQLiteDB::finalizeStatements(sqlite3 * db, const unsigned int maxStatements,
+bool SQLiteDB::finalizeStatements(sqlite3 * db, const unsigned int maxStatements,
 	const unsigned int retriesCount, const unsigned int stepWaitTime)
 {
 	int tries = 0;
@@ -53,7 +53,7 @@ const bool SQLiteDB::finalizeStatements(sqlite3 * db, const unsigned int maxStat
 	return done;
 }
 
-const int SQLiteDB::exec(sqlite3 * db, const std::string & query, unsigned int retriesCount, unsigned int stepWaitTime)
+int SQLiteDB::exec(sqlite3 * db, const std::string & query, unsigned int retriesCount, unsigned int stepWaitTime)
 {
 	auto rc = SQLITE_OK;
 	int tries = 0;
@@ -69,7 +69,7 @@ const int SQLiteDB::exec(sqlite3 * db, const std::string & query, unsigned int r
 	return rc;
 }
 
-const bool SQLiteDB::verify(sqlite3 * db)
+bool SQLiteDB::verify(sqlite3 * db)
 {
 	return exec(db, "SELECT count(*) FROM sqlite_master;", 0, 0) == SQLITE_ROW;
 }

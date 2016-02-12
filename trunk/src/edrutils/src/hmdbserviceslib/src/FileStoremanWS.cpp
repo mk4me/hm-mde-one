@@ -19,7 +19,7 @@ namespace hmdbServices
 		wsdlService->invoke();
 	}
 
-	const xmlWsdl::FileData SimpleFileStoremanWS::retrieve(const int id)
+	xmlWsdl::FileData SimpleFileStoremanWS::retrieve(const int id)
 	{
 		wsdlService->setOperation("RetrieveFile");
 		wsdlService->setValue("fileID", id);
@@ -49,7 +49,7 @@ namespace hmdbServices
 		wsdlService->invoke();
 	}
 
-	const xmlWsdl::FileData PhotoStoremanWS::retrieve(const int id)
+	xmlWsdl::FileData PhotoStoremanWS::retrieve(const int id)
 	{
 		wsdlService->setOperation("RetrievePhoto");
 		wsdlService->setValue("photoID", id);
@@ -71,7 +71,7 @@ namespace hmdbServices
 	{
 	}
 
-	const std::string ShallowStoremanWS::getShallowCopy()
+	std::string ShallowStoremanWS::getShallowCopy()
 	{
 		wsdlService->setOperation("GetShallowCopy");
 		wsdlService->invoke(true);
@@ -82,7 +82,7 @@ namespace hmdbServices
 		return ret;
 	}
 
-	const std::string ShallowStoremanWS::getMetadata()
+	std::string ShallowStoremanWS::getMetadata()
 	{
 		wsdlService->setOperation("GetMetadata");
 		wsdlService->invoke(true);
@@ -98,7 +98,7 @@ namespace hmdbServices
 		SimpleFileStoremanWS(wsdlService).downloadComplete(0, path);
 	}
 
-	const std::string ShallowStoremanWS::getShallowCopyIncrement(const std::string & dateTime)
+	std::string ShallowStoremanWS::getShallowCopyIncrement(const std::string & dateTime)
 	{
 		wsdlService->setOperation("GetShallowCopyIncrement");
 		wsdlService->setValue("since", dateTime);
@@ -110,7 +110,7 @@ namespace hmdbServices
 		return ret;
 	}
 
-	const std::string ShallowStoremanWS::getShallowCopyBranchesIncrement(const std::string & dateTime)
+	std::string ShallowStoremanWS::getShallowCopyBranchesIncrement(const std::string & dateTime)
 	{
 		wsdlService->setOperation("GetShallowCopyBranchesIncrement");
 		std::string date = dateTime;
@@ -143,27 +143,27 @@ namespace hmdbServices
 		ShallowStoremanWS(wsdlService).downloadComplete(path);
 	}
 
-	const xmlWsdl::FileData MotionFileStoremanWS::retrieve(const int fileID)
+	xmlWsdl::FileData MotionFileStoremanWS::retrieve(const int fileID)
 	{
 		return SimpleFileStoremanWS(wsdlService).retrieve(fileID);
 	}
 
-	const std::string MotionFileStoremanWS::getShallowCopy()
+	std::string MotionFileStoremanWS::getShallowCopy()
 	{
 		return ShallowStoremanWS(wsdlService).getShallowCopy();
 	}
 
-	const std::string MotionFileStoremanWS::getShallowCopyIncrement(const std::string & dateTime)
+	std::string MotionFileStoremanWS::getShallowCopyIncrement(const std::string & dateTime)
 	{
 		return ShallowStoremanWS(wsdlService).getShallowCopyIncrement(dateTime);
 	}
 
-	const std::string MotionFileStoremanWS::getMetadata()
+	std::string MotionFileStoremanWS::getMetadata()
 	{
 		return ShallowStoremanWS(wsdlService).getMetadata();
 	}
 
-	const int MotionFileStoremanWS::storeSessionFile(const int sessionID,
+	int MotionFileStoremanWS::storeSessionFile(const int sessionID,
 		const std::string & path, const std::string & description,
 		const std::string & filename)
 	{
@@ -190,7 +190,7 @@ namespace hmdbServices
 		wsdlService->invoke();
 	}
 
-	const int MotionFileStoremanWS::storeTrialFile(const int trialID,
+	int MotionFileStoremanWS::storeTrialFile(const int trialID,
 		const std::string & path, const std::string & description,
 		const std::string& filename)
 	{
@@ -217,7 +217,7 @@ namespace hmdbServices
 		wsdlService->invoke();
 	}
 
-	const int MotionFileStoremanWS::storeMeasurementConfFile(const int mcID,
+	int MotionFileStoremanWS::storeMeasurementConfFile(const int mcID,
 		const std::string & path, const std::string & description,
 		const std::string & filename)
 	{
@@ -253,7 +253,7 @@ namespace hmdbServices
 		wsdlService->invoke();
 	}
 
-	const std::string MotionFileStoremanWS::getShallowCopyBranchesIncrement(const std::string & dateTime)
+	std::string MotionFileStoremanWS::getShallowCopyBranchesIncrement(const std::string & dateTime)
 	{
 		return ShallowStoremanWS(wsdlService).getShallowCopyBranchesIncrement(dateTime);
 	}
@@ -278,27 +278,27 @@ namespace hmdbServices
 		ShallowStoremanWS(wsdlService).downloadComplete(path);
 	}
 
-	const xmlWsdl::FileData MedicalFileStoremanWS::retrieve(const int fileID)
+	xmlWsdl::FileData MedicalFileStoremanWS::retrieve(const int fileID)
 	{
 		return PhotoStoremanWS(wsdlService).retrieve(fileID);
 	}
 
-	const std::string MedicalFileStoremanWS::getShallowCopy()
+	std::string MedicalFileStoremanWS::getShallowCopy()
 	{
 		return ShallowStoremanWS(wsdlService).getShallowCopy();
 	}
 
-	const std::string MedicalFileStoremanWS::getMetadata()
+	std::string MedicalFileStoremanWS::getMetadata()
 	{
 		return ShallowStoremanWS(wsdlService).getMetadata();
 	}
 
-	const std::string MedicalFileStoremanWS::getShallowCopyIncrement(const std::string & dateTime)
+	std::string MedicalFileStoremanWS::getShallowCopyIncrement(const std::string & dateTime)
 	{
 		return ShallowStoremanWS(wsdlService).getShallowCopyIncrement(dateTime);
 	}
 
-	const std::string MedicalFileStoremanWS::getShallowCopyBranchesIncrement(const std::string & dateTime)
+	std::string MedicalFileStoremanWS::getShallowCopyBranchesIncrement(const std::string & dateTime)
 	{
 		return ShallowStoremanWS(wsdlService).getShallowCopyBranchesIncrement(dateTime);
 	}

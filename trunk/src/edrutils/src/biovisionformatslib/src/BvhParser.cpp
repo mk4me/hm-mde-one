@@ -79,10 +79,10 @@ void BvhParser::saveChannelsInHierarchy( std::ostream& out, JointConstPtr joint,
     if (forceZXY) {
 		out << spaceL(lvl) << "CHANNELS 3 Zrotation Xrotation Yrotation" << std::endl;
     } else {
-        int count = joint->channels.size();
+        auto count = joint->channels.size();
         if (count > 0) {
             out << spaceL(lvl) << "CHANNELS " << count;
-            for (int i = 0; i < count; ++i) {
+            for (decltype(count) i = 0; i < count; ++i) {
 				out << " " << getChannelName(joint->channels[i]);
             }
 			out << std::endl;
@@ -90,9 +90,9 @@ void BvhParser::saveChannelsInHierarchy( std::ostream& out, JointConstPtr joint,
     }
 }
 //----------------------------------------------------------------------------------
-void BvhParser::saveJoint(const Skeleton & model, std::ostream& out, JointConstPtr joint, 
-		JointConstPtr parent,  int lvl, std::list<std::string>& jointList) const 
-{
+//void BvhParser::saveJoint(const Skeleton & model, std::ostream& out, JointConstPtr joint, 
+//		JointConstPtr parent,  int lvl, std::list<std::string>& jointList) const 
+//{
 	/*
     if (parent && parent->length == 0.0 && joint->children.size() == 1) {
         // jeśli przetwarzana kość to 'dummy bone' to zostanie ona zignorowana przy zapisie do bvh        
@@ -130,7 +130,7 @@ void BvhParser::saveJoint(const Skeleton & model, std::ostream& out, JointConstP
 		out << spaceL(lvl) << "}" << std::endl;
     }
 	*/
-}
+//}
 //----------------------------------------------------------------------------------
 void BvhParser::save(const Skeleton & model, const MotionData & data, const std::string& filename ) {
 		
@@ -226,58 +226,43 @@ void BvhParser::save(const Skeleton & model, const MotionData & data, const std:
  //   out.close();
 }
 //----------------------------------------------------------------------------------
-BVHData BvhParser::parse(const std::string& filename ) {
-	
-    // tutaj trafiaja jointy w kolejności wystapienia w pliku
-    std::list<JointPtr> jointList;
+BVHData BvhParser::parse(std::istream & in ) {
 
-	std::ifstream in(filename.c_str(), std::ios_base::in);
-    
-    if (!in) {
-        throw std::runtime_error("Unable to open file: " + filename);
-    }
-
-	Skeleton tmpModel;
-	MotionData tmpData;
+	BVHData bvh;
 
     std::string line;
     while (in >> line)
     {
         if (boost::iequals(line, "HIERARCHY")) {
             // rekurencyjne przejście przez cala hierarchie w pliku
-            readSingleJoint(tmpModel, in, jointList, JointPtr());
+            readSingleJoint(bvh.model, in, bvh.model.sourceOrderJoints, JointPtr());
 		}
 		else if (boost::iequals(line, "MOTION")) {
             // odczyt danych animacji
-            int noOfFrames = -1;
+            std::size_t noOfFrames = -1;
             in >> line >> noOfFrames;            
-			in >> line >> line >> tmpData.frameTime;
+			in >> line >> line >> bvh.data.frameTime;
             // wartości dla kolejnych klatek
-            for (int m=0; m < noOfFrames; ++m) {
+            for (decltype(noOfFrames) m=0; m < noOfFrames; ++m) {
                 std::getline(in, line);
                 MotionData::FrameJointData frame;                
                 // zgodnie z kolejnością wystapienia jointów w pliku
-                for (auto it = jointList.begin(); it != jointList.end(); ++it) {
-                    int channelsCount = (*it)->channels.size();
+                for (const auto & joint : bvh.model.sourceOrderJoints) {
+                    auto channelsCount = joint->channels.size();
                     double number;
 					MotionData::ChannelData channelData;
-                    for (int k = 0; k < channelsCount; ++k ) {
+                    for (decltype(channelsCount) k = 0; k < channelsCount; ++k ) {
                         in >> number;
 						channelData.push_back(number);
                     }
 					frame.push_back(std::move(channelData));
                 }
 
-				tmpData.frames.push_back(frame);
+				bvh.data.frames.push_back(frame);
             }
         }
     }
 
-    in.close();
-	BVHData bvh;
-	bvh.model = tmpModel;
-	bvh.model.sourceOrderJoints.insert(bvh.model.sourceOrderJoints.end(), jointList.begin(), jointList.end());
-	bvh.data = tmpData;
 	return bvh;
 }
 //----------------------------------------------------------------------------------
@@ -293,7 +278,7 @@ BvhParser::~BvhParser()
 
 }
 //----------------------------------------------------------------------------------
-void BvhParser::readSingleJoint(Skeleton & model, std::istream& in, std::list<JointPtr>& jointList, JointPtr parent)
+void BvhParser::readSingleJoint(Skeleton & model, std::istream& in, std::vector<JointPtr>& jointList, JointPtr parent)
 {
     std::string token;
     int intBuffer;

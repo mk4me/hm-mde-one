@@ -26,7 +26,7 @@ namespace threadingUtils
 		//! Destruktor wirtualny
 		virtual ~ThreadAfinityVerifier();
 		//! \return Zwraca prawdê jeœli aktualny w¹tek to ten sam dla któego stworzono dany obiekt
-		const bool verifyCurrentThreadAfinity() const;
+		bool verifyCurrentThreadAfinity() const;
 
 	private:
 		//! Implementacja

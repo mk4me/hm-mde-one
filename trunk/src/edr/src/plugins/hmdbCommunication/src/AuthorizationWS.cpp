@@ -12,22 +12,22 @@ AuthorizationWS::~AuthorizationWS()
 {
 }
 
-const bool AuthorizationWS::checkMyLogin() const
+bool AuthorizationWS::checkMyLogin() const
 {
 	return hmdbServices::AuthorizationWS(creator()).checkMyLogin();
 }
 
-const std::string AuthorizationWS::listMyUserGroupsAssigned() const
+std::string AuthorizationWS::listMyUserGroupsAssigned() const
 {
 	return hmdbServices::AuthorizationWS(creator()).listMyUserGroupsAssigned();
 }
 
-const std::string AuthorizationWS::listUsers() const
+std::string AuthorizationWS::listUsers() const
 {
 	return hmdbServices::AuthorizationWS(creator()).listUsers();
 }
 
-const std::string AuthorizationWS::getMyUserData() const
+std::string AuthorizationWS::getMyUserData() const
 {
 	return hmdbServices::AuthorizationWS(creator()).getMyUserData();
 }
@@ -54,7 +54,7 @@ void AuthorizationWS::revokeGroupMembership(const std::string & grantedUserLogin
 		groupName);
 }
 
-const std::string AuthorizationWS::listSessionPrivileges(const int sessionID) const
+std::string AuthorizationWS::listSessionPrivileges(const int sessionID) const
 {
 	return hmdbServices::AuthorizationWS(creator()).listSessionPrivileges(sessionID);
 }

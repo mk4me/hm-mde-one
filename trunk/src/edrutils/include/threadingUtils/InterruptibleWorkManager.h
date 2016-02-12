@@ -171,19 +171,19 @@ namespace threadingUtils
 				thread.interrupt();
 			}
 
-			const bool interruptible() const
+			bool interruptible() const
 			{
 				return thread.interruptible();
 			}
 
 			//! \return Czy na w�tek mo�na czeka�
-			const bool joinable()
+			bool joinable()
 			{
 				return thread.joinable();
 			}
 
 			//! \return Identyfikator w�tku
-			const std::thread::id get_id() const
+			std::thread::id get_id() const
 			{
 				return thread.get_id();
 			}
@@ -314,7 +314,7 @@ namespace threadingUtils
 
 		//! \param thread Dodawany w�tek realizuj�cy zadania
 		//! \return Identyfikator w�tku
-		const std::thread::id addWorkerThread(InterruptibleThread && thread)
+		std::thread::id addWorkerThread(InterruptibleThread && thread)
 		{
 			if (finalize_ == true)
 			{
@@ -345,7 +345,7 @@ namespace threadingUtils
 		}
 
 		//! \return Ilo�� w�tk�w realizuj�cych zadania
-		const unsigned int workerThreadsCount() const
+		std::size_t workerThreadsCount() const
 		{
 			return workExecutors.size();
 		}

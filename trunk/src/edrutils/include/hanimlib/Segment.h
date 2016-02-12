@@ -21,6 +21,8 @@ namespace hAnim {
 	struct Segment : public Object
 	{
 		Segment();
+		Segment(const Segment & Other);
+		Segment(Segment && Other);
 		virtual  ~Segment();
 
 		osg::Vec3 bboxCenter;

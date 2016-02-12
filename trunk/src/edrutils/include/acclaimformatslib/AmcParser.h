@@ -12,7 +12,7 @@ namespace acclaim
         /// \brief  Parsuje podany plik. 
         /// \param  model reprezentacja wewnętrzna animacji
         /// \param  filename  Nazwa pliku do parsowania. 
-		static void parse(MotionData & data, std::istream& stream);
+		static MotionData::FramesData parse(std::istream& stream);
 
 		/// \brief  Inicjalizuje plik *.amc do zapisu danych ruchu
 		//! \param stream Strumień który inicjalizujemy do zapisu

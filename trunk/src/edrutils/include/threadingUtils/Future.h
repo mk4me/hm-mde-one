@@ -29,7 +29,7 @@ namespace std
 
 		template<class _Fty2>
 		explicit packaged_task(_Fty2&& _Fnarg)
-			: _my_func(utils::make_shared<function<void(_ArgTypes...)>>(_Fnarg)) {
+			: _my_func(utils::make_shared<function<void(_ArgTypes...)>>(std::forward<_Fty2>(_Fnarg))) {
 		}
 
 		packaged_task(packaged_task&& _Other)

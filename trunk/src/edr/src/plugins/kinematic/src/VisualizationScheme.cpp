@@ -6,9 +6,9 @@ using namespace std;
 using namespace osg;
 using namespace boost;
 
-vicon::VskPtr Vsk::Count16(nullptr);
-vicon::VskPtr Vsk::Count39(nullptr);
-vicon::VskPtr Vsk::Count53(nullptr);
+vicon::VskPtr Vsk::Count16 = vicon::VskPtr();
+vicon::VskPtr Vsk::Count39 = vicon::VskPtr();
+vicon::VskPtr Vsk::Count53 = vicon::VskPtr();
 
 vicon::VskConstPtr Vsk::get( MarkersCount count )
 {
@@ -17,21 +17,21 @@ vicon::VskConstPtr Vsk::get( MarkersCount count )
     case MarkersCount15:
     case MarkersCount16:
         if (!Count16) {
-			Count16 = utils::make_shared<vicon::Vsk>();
-			vicon::VskParser::parse(plugin::getResourcePath("trial/CZD.vsk").string(), *Count16);
+			std::ifstream fs(plugin::getResourcePath("trial/CZD.vsk").string());
+			Count16 = utils::make_shared<vicon::Vsk>(vicon::VskParser::parse(fs));
         }
         return Count16;
     case MarkersCount39:
         if (!Count39) {
-			Count39 = utils::make_shared<vicon::Vsk>();
-			vicon::VskParser::parse(plugin::getResourcePath("trial/M39.vsk").string(), *Count39);
+			std::ifstream fs(plugin::getResourcePath("trial/M39.vsk").string());
+			Count39 = utils::make_shared<vicon::Vsk>(vicon::VskParser::parse(fs));
         }
         return Count39;
 
     case MarkersCount53:
         if (!Count53) {
-			Count53 = utils::make_shared<vicon::Vsk>();
-			vicon::VskParser::parse(plugin::getResourcePath("trial/M53.vsk").string(), *Count53);
+			std::ifstream fs(plugin::getResourcePath("trial/M53.vsk").string());
+			Count53 = utils::make_shared<vicon::Vsk>(vicon::VskParser::parse(fs));			
         }
         return Count53;
 

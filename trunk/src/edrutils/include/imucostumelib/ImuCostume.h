@@ -27,7 +27,7 @@ namespace imuCostume
 	public:
 
 		//! Typ identyfikatora sensora
-		typedef uint8_t SensorID;
+		using SensorID = uint8_t;
 
 		//! Typ wyliczeniowy obs³ugiwanych czujników przez kostium
 		enum SensorType
@@ -49,9 +49,9 @@ namespace imuCostume
 			//! Destruktor wirtualny
 			virtual ~GenericSensor();
 			//! \return Identyfikator czujnika
-			const SensorID id() const;
+			SensorID id() const;
 			//! \return Typ czujnika
-			const int type() const;
+			int type() const;
 
 		private:
 			//! Identyfikator wêz³a
@@ -60,7 +60,7 @@ namespace imuCostume
 			const int type_;
 		};
 
-		typedef utils::shared_ptr<GenericSensor> SensorDataPtr;
+		using SensorDataPtr = utils::shared_ptr<GenericSensor>;
 
 		//! Klasa opisuj¹ca dane czujników IMU
 		class IMUCOSTUME_EXPORT IMUSensor : public GenericSensor
@@ -100,7 +100,7 @@ namespace imuCostume
 			//! \return Estymowana orientacja na czujniku
 			const osg::Quat & orientation() const;
 			//! \return Status danych
-			const int dataStatus() const;
+			int dataStatus() const;
 
 		private:
 			const int dataStatus_;
@@ -125,7 +125,7 @@ namespace imuCostume
 			};
 
 			//! Lista punktów nacisku
-			typedef std::list<INSOLEData> INSOLESData;
+			using INSOLESData = std::list<INSOLEData>;
 
 		public:
 
@@ -144,10 +144,10 @@ namespace imuCostume
 		};		
 
 		//! Zbiór identyfikatorów sensorów
-		typedef std::set<SensorID> SensorIDsSet;
+		using SensorIDsSet = std::set<SensorID>;
 
 		//! Konfiguracja sensorów kostiumu
-		typedef std::map<SensorType, SensorIDsSet> SensorsConfiguration;
+		using SensorsConfiguration = std::map<SensorType, SensorIDsSet>;
 
 		//! Struktura opisuj¹ca rozpakowane dane sensorów
 		struct IMUCOSTUME_EXPORT Data

@@ -10,7 +10,7 @@ SQLiteBLOB::Close::Close(const unsigned int retriesCount,
 
 }
 
-const bool SQLiteBLOB::Close::operator()(sqlite3_blob * blob)
+bool SQLiteBLOB::Close::operator()(sqlite3_blob * blob)
 {
 	unsigned int tries = 0;
 	bool retry = false;
@@ -43,7 +43,7 @@ sqlite3_blob * SQLiteBLOB::open(sqlite3 * db, const std::string & tableName,
 	return ret;
 }
 
-const bool SQLiteBLOB::close(sqlite3_blob * blob)
+bool SQLiteBLOB::close(sqlite3_blob * blob)
 {
 	return sqlite3_blob_close(blob) == SQLITE_OK;
 }

@@ -14,6 +14,12 @@ Object::Object(const Object & Other)
 
 }
 
+Object::Object(Object && Other)
+	: type(Other.type)
+{
+
+}
+
 Object::~Object()
 {
 

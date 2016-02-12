@@ -114,13 +114,13 @@ namespace threadingUtils {
 			}
 
 			//! \return Czy na w¹tek mo¿na czekaæ
-			const bool joinable()
+			bool joinable()
 			{
 				return thread.joinable();
 			}
 
 			//! \return Identyfikator w¹tku
-			const std::thread::id get_id() const
+			std::thread::id get_id() const
 			{
 				return thread.get_id();
 			}
@@ -184,7 +184,7 @@ namespace threadingUtils {
 				throw std::runtime_error("Operation not permitted");				
 			}
 
-			std::function<result_type()> ff = std::bind(std::_Decay_copy(std::forward<F>(f)), std::_Decay_copy(std::forward<Args>(arguments))...);
+			std::function<result_type()> ff = std::bind(utils::decay_copy(std::forward<F>(f)), utils::decay_copy(std::forward<Args>(arguments))...);
 			LogPolicy::log("Work queue: submiting task");
 			auto ret = workQueue.submit([=, this]()->result_type {
 				this->LogPolicy::log("Work manager task running");
@@ -219,7 +219,7 @@ namespace threadingUtils {
 
 		//! \param thread Dodawany w¹tek realizuj¹cy zadania
 		//! \return Identyfikator w¹tku
-		const std::thread::id addWorkerThread(RunnableThread && thread)
+		std::thread::id addWorkerThread(RunnableThread && thread)
 		{
 			if (finalize_ == true)
 			{
@@ -249,7 +249,7 @@ namespace threadingUtils {
 		}
 
 		//! \return Iloœæ w¹tków realizuj¹cych zadania
-		const unsigned int workerThreadsCount() const
+		unsigned int workerThreadsCount() const
 		{
 			return workExecutors.size();
 		}

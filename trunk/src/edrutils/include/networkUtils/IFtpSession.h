@@ -38,15 +38,15 @@ namespace networkUtils
 			//! Wirtualny destruktor
 			virtual ~ITransfer() {}
 			//! \return Iloœæ danych ju¿ przetworzona [bytes]
-			virtual const unsigned long long processed() const = 0;
+			virtual std::size_t processed() const = 0;
 			//! \return Iloœæ danych do przetworzenia
-			virtual const unsigned long long size() const = 0;
+			virtual std::size_t size() const = 0;
 			//! \return Œrednia prêdkoœæ pobierania bytes/second
-			virtual const float averageSpeed() const = 0;
+			virtual float averageSpeed() const = 0;
 			//! \return Typ transferu
-			virtual const Direction direction() const = 0;
+			virtual Direction direction() const = 0;
 			//! \return Plik, którego dotyczy transfer - lokalny lub zdalny
-			virtual const std::string file() const = 0;
+			virtual std::string file() const = 0;
 		};
 
 	public:
@@ -69,63 +69,63 @@ namespace networkUtils
 			std::ostream * localDestination) const = 0;
 		//! \param remoteFile Zdalny plik do usuniêcia
 		//! \return Prawda jeœli operacja siê powiod³a
-		virtual const bool deleteFile(const std::string& remoteFile) = 0;
+		virtual bool deleteFile(const std::string& remoteFile) = 0;
 		//! \param remoteFile Zdalny plik
 		//! \param size [out] Rozmiar pliku, -1 jeœli pliku nie ma
 		//! \return Prawda jeœli operacja siê powiod³a
-		virtual const bool fileSize(const std::string& remoteFile,
-			long long & size) const = 0;
+		virtual bool fileSize(const std::string& remoteFile,
+			std::size_t & size) const = 0;
 		//! \param dir Katalog do utworzenia
 		//! \return Prawda jeœli operacja siê powiod³a
-		virtual const bool createDirectory(const std::string & dir) = 0;
+		virtual bool createDirectory(const std::string & dir) = 0;
 		//! \param dir Katalog do usuniêcia
 		//! \param recursive Czy usuwaæ jesli nie pusty
 		//! \return Prawda jeœli operacja siê powiod³a
-		virtual const bool removeDirectory(const std::string & dir,
+		virtual bool removeDirectory(const std::string & dir,
 			const bool recursive = false) = 0;
 		//! \param src Œcie¿ka elementu Ÿród³owego
 		//! \param dest Œcie¿ka elementu docelowego
 		//! \return Prawda jeœli operacja siê powiod³a
-		virtual const bool move(const std::string & src, const std::string & dest) = 0;
+		virtual bool move(const std::string & src, const std::string & dest) = 0;
 		//! \param src Œcie¿ka elementu Ÿród³owego
 		//! \param dest Œcie¿ka elementu docelowego
 		//! \return Prawda jeœli operacja siê powiod³a
-		virtual const bool copy(const std::string & src, const std::string & dest) = 0;
+		virtual bool copy(const std::string & src, const std::string & dest) = 0;
 		//! \param dir Aktualny katalog roboczy
 		//! \return Prawda jeœli operacja siê powiod³a
-		virtual const bool setWorkingDirectory(const std::string & dir) = 0;
+		virtual bool setWorkingDirectory(const std::string & dir) = 0;
 		//! \return Prawda jeœli operacja siê powiod³a
-		virtual const bool setParentDirectory() = 0;
+		virtual bool setParentDirectory() = 0;
 		//! \param dir [out] Katalog domowy
 		//! \return Prawda jeœli operacja siê powiod³a
-		virtual const bool parentDirectory(std::string & dir) const = 0;
+		virtual bool parentDirectory(std::string & dir) const = 0;
 		//! \param dir [out] Aktualny katalog roboczy
 		//! \return Prawda jeœli operacja siê powiod³a
-		virtual const bool workingDirectory(std::string & dir) const = 0;
+		virtual bool workingDirectory(std::string & dir) const = 0;
 		//! \param dir Katalog
 		//! \param subDirs [out] Lista podkatalogów
 		//! \param recursive Czy wykonywaæ rekurencyjnie ni¿ej
 		//! \return Prawda jeœli operacja siê powiod³a
-		virtual const bool listSubdirectories(const std::string & dir,
+		virtual bool listSubdirectories(const std::string & dir,
 			std::list<std::string> & subDirs,
 			const bool recursive = false) const = 0;
 		//! \param dir Katalog
 		//! \param files [out] Lista plików
 		//! \param recursive Czy wykonywaæ rekurencyjnie ni¿ej
 		//! \return Prawda jeœli operacja siê powiod³a
-		virtual const bool listFiles(const std::string & dir,
+		virtual bool listFiles(const std::string & dir,
 			std::list<std::string> & files,
 			const bool recursive = false) const = 0;
 		//! \param dir Katalog
 		//! \param content [out] Lista elementów
 		//! \param recursive Czy wykonywaæ rekurencyjnie ni¿ej
 		//! \return Prawda jeœli operacja siê powiod³a
-		virtual const bool list(const std::string & dir,
+		virtual bool list(const std::string & dir,
 			std::list<std::string> & content,
 			const bool recursive = false) const = 0;
 		//! \param command Komenda FTP
 		//! \return Prawda jeœli operacja siê powiod³a
-		virtual const bool execute(const std::string & command) = 0;
+		virtual bool execute(const std::string & command) = 0;
 	};
 
 	typedef utils::shared_ptr<IFtpSession> FtpSessionPtr;

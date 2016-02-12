@@ -20,7 +20,7 @@ namespace threadingUtils
 		//! Obiekt bazowy do wywo³añ future
 		struct ImplBase {			
 			//! \return Czy wrapowany future jest poprawny
-			virtual const bool valid() const = 0;			
+			virtual bool valid() const = 0;			
 			//! Metoda czekaj¹ca a¿ wrapowany future bêdzie gotowy
 			virtual void wait() = 0;
 			//! Destruktor wirtualny
@@ -37,7 +37,7 @@ namespace threadingUtils
 			//! \param f Future do wywo³ania
 			ImplType(Future && f) : future(std::move(f)) {}
 			//! \return Czy wrapowany future jest poprawny
-			virtual const bool valid() const override { return future.valid(); }
+			virtual bool valid() const override { return future.valid(); }
 			//! Metoda czekaj¹ca a¿ wrapowany future bêdzie gotowy
 			virtual void wait() override { future.wait(); };
 			//! Destruktor wirtualny
@@ -56,7 +56,7 @@ namespace threadingUtils
 		}
 		
 		//! \return Czy future poprawny
-		const bool valid() const { return impl != nullptr && impl->valid(); }
+		bool valid() const { return impl != nullptr && impl->valid(); }
 		//! Metoda czekaj¹ca a¿ wrapowany future bêdzie gotowy
 		void wait() { if (impl != nullptr) { impl->wait(); } }
 

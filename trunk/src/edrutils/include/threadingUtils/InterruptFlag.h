@@ -106,10 +106,10 @@ namespace threadingUtils
 		void reset();
 
 		//! \return Czy flaga przerwania jest ustawiona
-		const bool isSet() const;
+		bool isSet() const;
 
 		//! \return Czy flaga aktualnego wątku jest ustawiona
-		static const bool threadIsSet();
+		static bool threadIsSet();
 
 		//! Resetuje flage przerwania aktualnego wątku
 		static void threadReset();

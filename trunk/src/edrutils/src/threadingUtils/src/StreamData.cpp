@@ -10,7 +10,7 @@ public:
 	ResetableStreamStatusImpl() : modified_(false) {}
 	~ResetableStreamStatusImpl() {}
 
-	const bool modified() const
+	bool modified() const
 	{		
 		return modified_.exchange(false);
 	}
@@ -33,7 +33,7 @@ ResetableStreamStatusObserver::~ResetableStreamStatusObserver()
 {
 }
 
-const bool ResetableStreamStatusObserver::modified() const
+bool ResetableStreamStatusObserver::modified() const
 {
 	return impl->modified();
 }

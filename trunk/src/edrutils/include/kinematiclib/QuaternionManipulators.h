@@ -24,7 +24,7 @@ namespace kinematic {
 		//! powielony operator z osg, można polemizować nad jego sensem
 		//! \param q1 pierwszy porównywany kwaternion
 		//! \param q2 drugi porównywany kwaternion
-		static bool isLower(const osg::Quat& q1, const osg::Quat& q2)
+		static inline bool isLower(const osg::Quat& q1, const osg::Quat& q2)
 		{
 			return q1 < q2;
 		}

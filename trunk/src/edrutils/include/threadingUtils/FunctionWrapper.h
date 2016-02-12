@@ -39,19 +39,25 @@ namespace threadingUtils
 			F f;
 		public:
 			//! \param f Funktor do wykonania
-			ImplType(F&& f) : f(std::move(f)) {}
+			template<typename FF>
+			ImplType(FF&& f) : f(std::forward<FF>(f)) {}
 			//! Metoda wirtualna wo³aj¹ca funktor
 			virtual void call() override { f(); }
 			//! Destruktor wirtualny
 			virtual ~ImplType() {}
 		};
 
+	private:
+
+		FunctionWrapper(const FunctionWrapper& Other) = delete;
+		FunctionWrapper& operator=(const FunctionWrapper& Other) = delete;
+
 	public:
 		//! \tparam F Typ funktora który chcemy wrapowaæ
 		//! \param f Funktor do wykonania
 		template<typename F>
 		FunctionWrapper(F&& f) :
-			impl(new ImplType<F>(std::move(f)))
+			impl(new ImplType<F>(std::forward<F>(f)))
 		{
 
 		}
@@ -79,13 +85,9 @@ namespace threadingUtils
 		~FunctionWrapper() = default;
 
 		//! \return Czy funktor poprawny
-		const bool valid() const { return impl != nullptr; }
+		bool valid() const { return impl != nullptr; }
 		//! Metoda zwalnia funktor
-		void reset() { impl.reset(); }
-
-
-		FunctionWrapper(const FunctionWrapper& Other) = delete;
-		FunctionWrapper& operator=(const FunctionWrapper& Other) = delete;
+		void reset() { impl.reset(); }	
 
 	private:
 		//! Obiekt obs³uguj¹cy funktor

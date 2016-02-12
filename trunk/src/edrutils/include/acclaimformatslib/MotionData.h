@@ -11,7 +11,7 @@ namespace acclaim
 	public:
 
 		//! Agregat danych kanału
-		typedef std::vector<double> ChannelValues;
+		using ChannelValues = std::vector<double>;
 
 		/// \brief  Struktura zawiera wartości kanałów dla
 		/// 	    konkretnej kości i konkretnego kanału
@@ -24,7 +24,7 @@ namespace acclaim
 		};
 
 		//! Agregat danych kości
-		typedef std::vector<BoneData> BonesData;
+		using BonesData = std::vector<BoneData>;
 
 		/// \brief  struktura przechowuje wartości kanałów dla wszystkich kości w pojedynczej klatce animacji
 		struct FrameData
@@ -33,13 +33,20 @@ namespace acclaim
 			BonesData bonesData; //!< wartości kanałów			
 		};
 
-		typedef std::vector<FrameData> FramesData;
+		using FramesData = std::vector<FrameData>;
 
 	public:
 		//! \param frameTime Czas trwania ramki w sekundach
 		MotionData(const double frameTime = 0.01) :
 			frameTime(frameTime)
 		{}
+
+		MotionData(const MotionData & Other) : frameTime(Other.frameTime),
+			frames(Other.frames){}
+
+		MotionData(MotionData && Other) : frameTime(Other.frameTime),
+			frames(std::move(Other.frames)) {}
+
 		//! Destruktor
 		~MotionData() {}
 
