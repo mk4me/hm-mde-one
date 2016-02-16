@@ -59,8 +59,8 @@ namespace hmdbServices
 		virtual void downloadAreaCleanup(const int olderThanMinutes) = 0;
 	};
 
-	typedef utils::shared_ptr<IAdministrationWS> AdministrationWSPtr;
-	typedef utils::shared_ptr<const IAdministrationWS> AdministrationWSConstPtr;
+	using AdministrationWSPtr = utils::shared_ptr<IAdministrationWS>;
+	using AdministrationWSConstPtr = utils::shared_ptr<const IAdministrationWS>;
 }
 
 #endif	//	HEADER_GUARD__HMDBSERVICES_IADMINISTRATIONWS_H__

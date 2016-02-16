@@ -23,32 +23,35 @@
 
 namespace  c3dlib {
 
+	using TimeType = float;
+	using ScalarType = float;
+
 	//! interfejs do odczytu czasu timera
-	typedef dataaccessor::IArgumentTrackerReader<float> TimerReader;
+	using TimerReader = dataaccessor::IArgumentTrackerReader<TimeType>;
 	//! wskaźnik do interfejsu do odczytu czasu timera
-	typedef utils::shared_ptr<TimerReader> TimerReaderPtr;
+	using TimerReaderPtr = utils::shared_ptr<TimerReader>;
 	//! niemodyfikowalny wskaźnik do interfejsu do odczytu czasu timera
-	typedef utils::shared_ptr<const TimerReader> TimerReaderConstPtr;
+	using TimerReaderConstPtr = utils::shared_ptr<const TimerReader>;
 
 	//! akcesor umożliwiajacy dostanie się do danych w sposób ciągły
-	typedef dataaccessor::IFunctionAccessorT<float, float> ScalarContiniousTimeAccessor;	
+	using ScalarContiniousTimeAccessor = dataaccessor::IFunctionAccessorT<ScalarType, TimeType>;
 	
 	//! interfejs umożliwiający odczyt kanału
-	typedef dataaccessor::IDiscreteAccessorT<float, float> ScalarChannelReaderInterface;
+	using ScalarChannelReaderInterface = dataaccessor::IDiscreteAccessorT<ScalarType, TimeType>;
 	//! wkaźnik na interfejs umożliwiający odczyt kanału
-	typedef utils::shared_ptr<ScalarChannelReaderInterface> ScalarChannelReaderInterfacePtr;
+	using ScalarChannelReaderInterfacePtr = utils::shared_ptr<ScalarChannelReaderInterface>;
 	//! wkaźnik na niemodyfikowalny interfejs umożliwiający odczyt kanału
-	typedef utils::shared_ptr<const ScalarChannelReaderInterface> ScalarChannelReaderInterfaceConstPtr;
+	using ScalarChannelReaderInterfaceConstPtr = utils::shared_ptr<const ScalarChannelReaderInterface>;
 	
 	//! interfejs umożliwiający odczyt kanału
-	typedef dataaccessor::IDiscreteAccessorT<osg::Vec3, float> VectorChannelReaderInterface;
+	using VectorChannelReaderInterface = dataaccessor::IDiscreteAccessorT<osg::Vec3, TimeType>;
 	//! wkaźnik na interfejs umożliwiający odczyt kanału
-	typedef utils::shared_ptr<VectorChannelReaderInterface> VectorChannelReaderInterfacePtr;
+	using VectorChannelReaderInterfacePtr = utils::shared_ptr<VectorChannelReaderInterface>;
 	//! wkaźnik na niemodyfikowalny interfejs umożliwiający odczyt kanału
-	typedef utils::shared_ptr<const VectorChannelReaderInterface> VectorChannelReaderInterfaceConstPtr;
+	using VectorChannelReaderInterfaceConstPtr = utils::shared_ptr<const VectorChannelReaderInterface>;
 
 	template<typename SignalType, int Type = 0, typename ValueType = utils::remove_toplevel<decltype(std::declval<SignalType>()->getValue(0))>::type>
-	class C3DChannelWrapper : public dataaccessor::IIndependentDiscreteAccessorT<ValueType, float>
+	class C3DChannelWrapper : public dataaccessor::IIndependentDiscreteAccessorT<ValueType, TimeType>
 	{
 	public:
 
@@ -84,14 +87,16 @@ namespace  c3dlib {
 		}
 
 	private:
-		SignalType signal;
-		dataaccessor::UniformArgumentsGenerator<argument_type> argumentsGenerator;
+		const SignalType signal;
+		const dataaccessor::UniformArgumentsGenerator<argument_type> argumentsGenerator;
 	};
 
-	using C3DAnalogChannel = C3DChannelWrapper<C3DParser::IAnalogConstPtr, 0, float>;
+	using AnalogType = ScalarType;
 
-	typedef utils::shared_ptr<C3DAnalogChannel> C3DAnalogChannelPtr;
-	typedef utils::shared_ptr<const C3DAnalogChannel> C3DAnalogChannelConstPtr;
+	using C3DAnalogChannel = C3DChannelWrapper<C3DParser::IAnalogConstPtr, 0, AnalogType>;
+
+	using C3DAnalogChannelPtr = utils::shared_ptr<C3DAnalogChannel>;
+	using C3DAnalogChannelConstPtr = utils::shared_ptr<const C3DAnalogChannel>;
 
 	//! kanał EMG
 	class C3DLIB_EXPORT EMGChannel : public C3DAnalogChannel
@@ -104,11 +109,11 @@ namespace  c3dlib {
 		//! Destruktor wirtualny
 		virtual ~EMGChannel() {}
 	};
-	typedef utils::shared_ptr<EMGChannel> EMGChannelPtr;
-	typedef utils::shared_ptr<const EMGChannel> EMGChannelConstPtr;
+	using EMGChannelPtr = utils::shared_ptr<EMGChannel>;
+	using EMGChannelConstPtr = utils::shared_ptr<const EMGChannel>;
 
 	//! kanał GRF
-	class C3DLIB_EXPORT GRFChannel : public dataaccessor::IIndependentDiscreteAccessorT<osg::Vec3, float>
+	class C3DLIB_EXPORT GRFChannel : public dataaccessor::IIndependentDiscreteAccessorT<osg::Vec3, TimeType>
 	{
 	public:
 		//! rodzaj kanału GRF
@@ -154,14 +159,14 @@ namespace  c3dlib {
 		//! koniec danych, związanych z naciskiem na płytę
 		argument_type dataEnd;
 		//! wewnętrzne kanały
-		c3dlib::C3DParser::IAnalogConstPtr xsignal;
-		c3dlib::C3DParser::IAnalogConstPtr ysignal;
-		c3dlib::C3DParser::IAnalogConstPtr zsignal;
+		const c3dlib::C3DParser::IAnalogConstPtr xsignal;
+		const c3dlib::C3DParser::IAnalogConstPtr ysignal;
+		const c3dlib::C3DParser::IAnalogConstPtr zsignal;
 		//! Generator argumentów
-		dataaccessor::UniformArgumentsGenerator<argument_type> argumentsGenerator;
+		const dataaccessor::UniformArgumentsGenerator<argument_type> argumentsGenerator;
 	};
-	typedef utils::shared_ptr<GRFChannel> GRFChannelPtr;
-	typedef utils::shared_ptr<const GRFChannel> GRFChannelConstPtr;
+	using GRFChannelPtr = utils::shared_ptr<GRFChannel>;
+	using GRFChannelConstPtr = utils::shared_ptr<const GRFChannel>;
 
 #define DECLARE_CHANNEL(name, type)	\
 	class name##Channel : public C3DChannelWrapper<C3DParser::IPointConstPtr, type> { \
@@ -171,8 +176,8 @@ namespace  c3dlib {
 			1.0 / data.getPointFrequency(), data.getNumPointFrames()) {}	\
 		virtual ~name##Channel() {} \
 	}; \
-	typedef utils::shared_ptr<name##Channel> name##ChannelPtr;	\
-	typedef utils::shared_ptr<const name##Channel> name##ChannelConstPtr;
+	using name##ChannelPtr = utils::shared_ptr<name##Channel>;	\
+	using name##ChannelConstPtr = utils::shared_ptr<const name##Channel>;
 
 	DECLARE_CHANNEL(Marker, 1);
 	DECLARE_CHANNEL(Force, 2);

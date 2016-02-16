@@ -456,10 +456,8 @@ namespace dataaccessor
 		public IDiscreteArgumentAccessorT<ArgumentType>
 	{
 	public:
-
-	public:
 		//! Typ mojego akcesora
-		using accessor_type = IDiscreteAccessorT<ValueType, ArgumentType>;
+		using accessor_type = IDiscreteAccessorT<ValueType, ArgumentType>;		
 
 	public:
 		//! Wirtualny destruktor

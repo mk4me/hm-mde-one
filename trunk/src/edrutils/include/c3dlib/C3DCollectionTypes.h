@@ -22,23 +22,23 @@ namespace  c3dlib {
 	{
 	public:
 		//! wskaŸnik na zdarzenie wczytane z pliku C3D
-		typedef utils::shared_ptr<c3dlib::C3DParser::IEvent> EventPtr;
+		using EventPtr = utils::shared_ptr<c3dlib::C3DParser::IEvent>;
 		//! niemodyfikowalny wskaŸnik na zdarzenie wczytane z pliku C3D
-		typedef utils::shared_ptr<const c3dlib::C3DParser::IEvent> EventConstPtr;
+		using EventConstPtr = utils::shared_ptr<const c3dlib::C3DParser::IEvent>;
 		//! kolekcja zdarzeñ wczytanych z pliku C3D
-		typedef std::vector<EventPtr> Collection;
+		using Collection = std::vector<EventPtr>;
 		//! iterator kolekcji zdarzeñ wczytanych z pliku C3D
-		typedef Collection::iterator iterator;
+		using iterator = Collection::iterator;
 		//! niemodyfikowalny iterator kolekcji zdarzeñ wczytanych z pliku C3D
-		typedef Collection::const_iterator const_iterator;
+		using const_iterator = Collection::const_iterator;
 		//! typ zdarzenia wczytanego z pliku C3D
-		typedef c3dlib::C3DParser::IEvent IEvent;
+		using IEvent = c3dlib::C3DParser::IEvent;
 		//! kontekst zdarzenia (strona lewa, prawa, ... )
-		typedef IEvent::Context Context;
+		using Context =  IEvent::Context;
 
 	private:
 		//! kolekcja przechowuje zdarzenia wczytane z pliku c3d
-		std::vector<EventPtr> events;
+		Collection events;
 		// wyglada na to, ze VS2010 ma blad - wrzucenie nag³ówka zawieraj¹cego funkcje lambda
 		// do nag³ówków prekompilowanych skutkuje uniemo¿liwieniem korzystania z lambdy wszedzie indziej
 		// porownywanie eventów odbywa siê zatem w 'klasyczny' sposób
@@ -86,21 +86,21 @@ namespace  c3dlib {
 		//! \return event, który spe³nia za³o¿enia lub pusty wskaŸnik
 		EventConstPtr getEvent(float t, Context context) const;
 	};
-	typedef utils::shared_ptr<C3DEventsCollection> EventsCollectionPtr;
-	typedef utils::shared_ptr<const C3DEventsCollection> EventsCollectionConstPtr;
+	using EventsCollectionPtr = utils::shared_ptr<C3DEventsCollection>;
+	using EventsCollectionConstPtr = utils::shared_ptr<const C3DEventsCollection>;
 
 	//! Kolekcja obiektów EMG, obs³ugiwana w standardowy sposób
-	typedef dataaccessor::AccessorsCollection<EMGChannel> EMGCollection;
-	typedef utils::shared_ptr<EMGCollection> EMGCollectionPtr;
-	typedef utils::shared_ptr<const EMGCollection> EMGCollectionConstPtr;
+	using EMGCollection = dataaccessor::AccessorsCollection<EMGChannel>;
+	using EMGCollectionPtr = utils::shared_ptr<EMGCollection>;
+	using EMGCollectionConstPtr = utils::shared_ptr<const EMGCollection>;
 
 	//! Kolekcja kana³ów opartych o trójwymiarowy wektor
-	typedef dataaccessor::AccessorsCollection<VectorChannelReaderInterface> VectorChannelCollection;
-	typedef utils::shared_ptr<VectorChannelCollection > VectorChannelCollectionPtr;
-	typedef utils::shared_ptr<const VectorChannelCollection > VectorChannelCollectionConstPtr;
+	using VectorChannelCollection = dataaccessor::AccessorsCollection<VectorChannelReaderInterface>;
+	using VectorChannelCollectionPtr = utils::shared_ptr<VectorChannelCollection >;
+	using VectorChannelCollectionConstPtr = utils::shared_ptr<const VectorChannelCollection >;
 
 	//! para liczb zmiennoprzecinkowych, s³u¿¹ca do okreœlenia przedzia³u czasowego zdarzenia
-	typedef utils::shared_ptr<std::pair<float, float>> FloatPairPtr;
+	using FloatPairPtr = utils::shared_ptr<std::pair<float, float>>;
 	//! Metoda wydziela przedzia³y czasowe, dla których realizowana jest analiza
 	//! \param events zdarzenia, z których beda wyci¹gane przedzia³y
 	//! \param context kontekst kroku (lewy, prawy)
@@ -123,8 +123,8 @@ namespace  c3dlib {
 		//! Platformy pomiarowe zwi¹zane z t¹ sam¹ prób¹ pomiarow¹ co kana³y z kolekcji
 		IForcePlatformCollection platforms;
 	};
-	typedef utils::shared_ptr<GRFCollection> GRFCollectionPtr;
-	typedef utils::shared_ptr<const GRFCollection> GRFCollectionConstPtr;
+	using GRFCollectionPtr = utils::shared_ptr<GRFCollection>;
+	using GRFCollectionConstPtr = utils::shared_ptr<const GRFCollection>;
 
 	//! Kontener wszystkich markerów modelu, u³atwia obs³ugê danych, dodaje wsparcie o pliki VSK
 	class C3DLIB_EXPORT MarkerCollection : public dataaccessor::AccessorsCollection<MarkerChannel>
@@ -147,8 +147,8 @@ namespace  c3dlib {
 		//! parser vsk zwi¹zany z kolekcj¹
 		vicon::VskPtr vsk;
 	};
-	typedef utils::shared_ptr<MarkerCollection> MarkerCollectionPtr;
-	typedef utils::shared_ptr<const MarkerCollection> MarkerCollectionConstPtr;
+	using MarkerCollectionPtr = utils::shared_ptr<MarkerCollection>;
+	using MarkerCollectionConstPtr = utils::shared_ptr<const MarkerCollection>;
 
 	//typedef std::vector<double> MovieDelays;
 	DEFINE_SMART_POINTERS(MovieDelays);
@@ -156,8 +156,8 @@ namespace  c3dlib {
 	//! makro u³atwia definicje dodatkowych kana³ów, osobne typy u³atwiaja otrzymanie konkretnych danych z DM
 #define DEFINE_CHANNEL_COLLECTION(name)                                         \
 class C3DLIB_EXPORT name##Collection : public VectorChannelCollection {};				        \
-    typedef utils::shared_ptr<name##Collection> name##CollectionPtr;				\
-    typedef utils::shared_ptr<const name##Collection> name##CollectionConstPtr;
+    using name##CollectionPtr = utils::shared_ptr<name##Collection>;				\
+    using name##CollectionConstPtr = utils::shared_ptr<const name##Collection>;
 
 
 	DEFINE_CHANNEL_COLLECTION(Force);

@@ -20,7 +20,7 @@ class CommandStack : public QObject, public ICommandStack
     Q_OBJECT;
     friend class CommandStackDebug;
 public:
-    typedef std::list<ICommandPtr> Commands;
+    using Commands = std::list<ICommandPtr>;
 public:
     CommandStack();
     virtual ~CommandStack() {}

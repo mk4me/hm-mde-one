@@ -53,10 +53,20 @@ namespace utils
 		//! \tparam Specjalizacja dla zwyk≥ych wksaünikÛw
 		template<typename T, ENABLE_IF(is_general_pointer<T>::value)>
 		//! Klasa pomocnicza przy wyciπganiu typÛw wskazywanych przez wskaxniki  i inteligÍtne wskaüniki
-		struct pointed_type_helper
+		struct pointed_type
 		{
 			//! Typ wskazywany przez wskaünik
-			using type = typename typename std::remove_pointer<typename std::conditional<std::is_pointer<T>::value, T, decltype(std::declval<const T>().operator->())>::type>::type;
+			using type = typename std::remove_pointer<typename std::conditional<std::is_pointer<T>::value, T, decltype(std::declval<const T>().operator->())>::type>::type;
+		};
+
+		//! \tparam T Badany typ
+		//! \tparam Specjalizacja dla zwyk≥ych wksaünikÛw
+		template<typename T, ENABLE_IF(is_general_pointer<T>::value)>
+		//! Klasa pomocnicza przy wyciπganiu typÛw wskazywanych przez wskaxniki  i inteligÍtne wskaüniki
+		struct under_pointer_type
+		{
+			//! Typ wskazywany przez wskaünik
+			using type = typename std::conditional<std::is_pointer<T>::value, typename std::remove_pointer<T>::type, decltype(std::declval<const T>().operator->())>::type;
 		};
 	}
 
@@ -66,7 +76,16 @@ namespace utils
 	struct pointed_type
 	{
 		//! Typ wskazywany przez wskaünik lub wrapowany pod wskaünikiem
-		using type = typename impl::pointed_type_helper<T>::type;
+		using type = typename impl::pointed_type<T>::type;
+	};
+
+	//! \tparam T Badany typ wskaünika
+	template<typename T>
+	//! Klasa pomocnicza przy wyciπganiu ca≥ych typÛw wksazywanych przez wskaüniki
+	struct under_pointer_type
+	{
+		//! Typ wskazywany przez wskaünik lub wrapowany pod wskaünikiem
+		using type = typename impl::under_pointer_type<T>::type;
 	};
 
 	//! \tparam T Badany typ wskaünika
@@ -75,7 +94,7 @@ namespace utils
 	struct clean_pointed_type
 	{
 		//! Typ wskazywany przez wskaünik lub wrapowany pod wskaünikiem
-		using type = typename remove_toplevel<typename impl::pointed_type_helper<T>::type>::type;
+		using type = typename remove_toplevel<typename impl::pointed_type<T>::type>::type;
 	};
 
 	namespace impl
@@ -84,7 +103,7 @@ namespace utils
 		//! \tparam dummy
 		template<typename T, bool = false>
 		//! Specjalizacja dla typÛw nie majπcych charakteru wskaünika
-		struct pointer_levels_helper
+		struct pointer_levels
 		{
 			static const std::size_t levels = 0;
 		};
@@ -92,28 +111,28 @@ namespace utils
 		//! \tparam T Typ tablicy		
 		template<typename T>
 		//! Specjalizacja dla typÛw o charakterze tablicy
-		struct pointer_levels_helper<T, true>
+		struct pointer_levels<T, true>
 		{
 			using _type = typename pointed_type<T>::type;
-			static const std::size_t levels = 1 + pointer_levels_helper<_type, is_general_pointer<_type>::value>::levels;
+			static const std::size_t levels = 1 + pointer_levels<_type, is_general_pointer<_type>::value>::levels;
 		};
 	}
 
 	//! \tparam Typ badany pod kπtem bycia tablicπ
 	template<typename T>
 	//! Wersja specjalizowana dla tablic - wyznacza faktyczny rozmiar tablicy
-	struct pointer_levels : public impl::pointer_levels_helper<T, is_general_pointer<T>::value> {};
+	struct pointer_levels : public impl::pointer_levels<T, is_general_pointer<T>::value> {};
 
 	namespace impl
 	{
 		template<typename T, std::size_t Idx>
-		struct pointer_level_type_helper
+		struct pointer_level_type
 		{
-			using type = typename pointer_level_type_helper<typename pointed_type<T>::type, Idx - 1>::type;
+			using type = typename pointer_level_type<typename pointed_type<T>::type, Idx - 1>::type;
 		};
 
 		template<typename T>
-		struct pointer_level_type_helper<T, 0>
+		struct pointer_level_type<T, 0>
 		{
 			using type = T;
 		};
@@ -127,7 +146,7 @@ namespace utils
 	{
 		static_assert(Level > 0 && Level <= pointer_levels<T>::levels, "Index zagnieødøenia musi byÊ w przedziale <1 - iloúÊ wymiarÛw tablicy>");
 
-		using type = typename impl::pointer_level_type_helper<typename pointed_type<T>::type, Level - 1>::type;
+		using type = typename impl::pointer_level_type<typename pointed_type<T>::type, Level - 1>::type;
 		using clean_type = typename remove_toplevel<type>::type;
 
 	};
@@ -135,7 +154,7 @@ namespace utils
 	//! \tparam T Typ tablicy dla ktÛrej wyciπgamy typ ostatniego wymiaru		
 	template<typename T>
 	//! Klasa pomocnicza przy wycaganiu typu ostatniego wymiaru
-	struct pointer_final_level_type : public pointer_level_type<T, pointer_levels<T>::levels> {};
+	struct pointer_final_level_type : public pointer_level_type<T, pointer_levels<T>::levels> {};	
 }
 
 #endif  // __HEADER_GUARD_UTILS__POINTER_TRAITS_H__

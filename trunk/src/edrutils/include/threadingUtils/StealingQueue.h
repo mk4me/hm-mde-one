@@ -27,7 +27,7 @@ namespace threadingUtils
 	public:
 
 		//! Typ opisuj¹cy rozmiar kolejki
-		typedef typename std::deque<T>::size_type size_type;
+		using size_type = typename std::deque<T>::size_type;
 
 	public:
 		//! Konstruktor domyœlny

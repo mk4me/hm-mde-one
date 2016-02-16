@@ -19,15 +19,15 @@ namespace treeContainer
 	{
 	public:
 		//! Typ przechowywanych w węzłach wartości
-		typedef ValueType value_type;
+		using value_type = ValueType;
 		//! Typ naszego węzła
-		typedef NodeT<value_type> node_type;
+		using node_type = NodeT<value_type>;
 		//! Wskazniki do naszego wezla
 		DEFINE_SMART_POINTERS_EXT(node_type, Node);
 		//! Dzieci wezla
-		typedef Node::Nodes<NodePtr> Children;
+		using Children = Node::Nodes<NodePtr>;
 		//! Typ ilo�ci
-		typedef Node::SizeType size_type;
+		using size_type = Node::SizeType;
 
 	private:
 

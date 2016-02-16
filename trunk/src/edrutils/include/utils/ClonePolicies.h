@@ -40,7 +40,7 @@ namespace utils {
         }
     };
 
-    typedef ClonePolicyForbidden ClonePolicyNotImplemented;
+    using ClonePolicyNotImplemented = ClonePolicyForbidden;
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace utils

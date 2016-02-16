@@ -118,26 +118,26 @@ namespace loglib {
 
 	// rozszerzone wyjątki z stl-a, użycie: throw core::runtime_error("whatever...");
 	
-	typedef Exception::Wrapper<std::bad_cast> bad_cast;
-	typedef Exception::Wrapper<std::bad_alloc> bad_alloc;
-	typedef Exception::Wrapper<std::bad_array_new_length> bad_array_new_length;
-	typedef Exception::Wrapper<std::bad_exception> bad_exception;
-	typedef Exception::Wrapper<std::bad_function_call> bad_function_call;
-	typedef Exception::Wrapper<std::invalid_argument> bad_typeid;
-	typedef Exception::Wrapper<std::invalid_argument> bad_weak_ptr;
+	using bad_cast = Exception::Wrapper<std::bad_cast>;
+	using bad_alloc = Exception::Wrapper<std::bad_alloc>;
+	using bad_array_new_length = Exception::Wrapper<std::bad_array_new_length>;
+	using bad_exception = Exception::Wrapper<std::bad_exception>;
+	using bad_function_call = Exception::Wrapper<std::bad_function_call>;
+	using bad_typeid = Exception::Wrapper<std::invalid_argument>;
+	using bad_weak_ptr = Exception::Wrapper<std::invalid_argument>;
 
-	typedef Exception::Wrapper<std::logic_error> logic_error;
-	typedef Exception::Wrapper<std::out_of_range> out_of_range;
-	typedef Exception::Wrapper<std::domain_error> domain_error;
-	typedef Exception::Wrapper<std::future_error> future_error;
-	typedef Exception::Wrapper<std::invalid_argument> invalid_argument;
-	typedef Exception::Wrapper<std::length_error> length_error;
+	using logic_error = Exception::Wrapper<std::logic_error>;
+	using out_of_range = Exception::Wrapper<std::out_of_range>;
+	using domain_error = Exception::Wrapper<std::domain_error>;
+	using future_error = Exception::Wrapper<std::future_error>;
+	using invalid_argument = Exception::Wrapper<std::invalid_argument>;
+	using length_error = Exception::Wrapper<std::length_error>;
 
-	typedef Exception::Wrapper<std::runtime_error> runtime_error;
-	typedef Exception::Wrapper<std::overflow_error> overflow_error;
-	typedef Exception::Wrapper<std::range_error> range_error;
-	typedef Exception::Wrapper<std::system_error> system_error;
-	typedef Exception::Wrapper<std::underflow_error> underflow_error;
+	using runtime_error = Exception::Wrapper<std::runtime_error>;
+	using overflow_error = Exception::Wrapper<std::overflow_error>;
+	using range_error = Exception::Wrapper<std::range_error>;
+	using system_error = Exception::Wrapper<std::system_error>;
+	using underflow_error = Exception::Wrapper<std::underflow_error>;
 
 }
 

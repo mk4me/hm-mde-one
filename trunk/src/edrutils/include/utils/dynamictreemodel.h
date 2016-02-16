@@ -123,7 +123,7 @@ protected:
 
 };
 
-typedef QList<ModelChangeCommand*> ModelChangeCommandList;
+using ModelChangeCommandList = QList<ModelChangeCommand*>;
 
 class ModelInsertCommand : public ModelChangeCommand
 {

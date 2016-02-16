@@ -22,9 +22,9 @@ namespace utils
 	{
 	public:
 		//! Typ wrapowanych danych
-		typedef T Type;
+		using Type = T;
 		//! Pełny typ aktualnego wrappera
-		typedef __ObjectWrapperT<Type> ImplType;
+		using ImplType = __ObjectWrapperT<Type>;
 
 	private:
 		//! Wrappowany obiekt.

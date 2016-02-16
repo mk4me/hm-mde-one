@@ -32,8 +32,8 @@ namespace threadingUtils
 
 	class THREADINGUTILS_EXPORT StealingMultipleWorkQueuePolicy
 	{
-		typedef StealingQueue<FunctionWrapper> WorkStealingQueue;
-		typedef std::map<std::thread::id, utils::shared_ptr<WorkStealingQueue>> LocalQueues;
+		using WorkStealingQueue = StealingQueue<FunctionWrapper>;
+		using LocalQueues = std::map<std::thread::id, utils::shared_ptr<WorkStealingQueue>>;
 
 		Queue<FunctionWrapper> commonQueue;
 		LocalQueues localQueues;
@@ -41,7 +41,7 @@ namespace threadingUtils
 
 	public:
 
-		typedef Queue<FunctionWrapper>::size_type size_type;
+		using size_type = Queue<FunctionWrapper>::size_type;
 
 	public:
 
@@ -58,7 +58,7 @@ namespace threadingUtils
 		template<typename F>
 		std::future<typename std::result_of<F()>::type> submit(F && f)
 		{
-			typedef typename std::result_of<F()>::type result_type;
+			using result_type = typename std::result_of<F()>::type;
 			std::packaged_task<result_type()> innerTask(std::forward<F>(f));
 			return innerSubmit(std::move(innerTask));
 		}

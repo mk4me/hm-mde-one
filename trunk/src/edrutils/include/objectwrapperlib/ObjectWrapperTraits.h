@@ -135,10 +135,10 @@ namespace utils {
 	template <> struct ObjectWrapperTraits<typeT>\
 {\
 	static const bool isDefinitionVisible = true;\
-	typedef ptrPolicyT PtrPolicy;\
-	typedef PtrPolicy::Ptr<typeT>::Type Ptr;\
-	typedef PtrPolicy::Ptr<const typeT>::Type ConstPtr;\
-	typedef clonePolicyT ClonePolicy;\
+	using PtrPolicy = ptrPolicyT;\
+	using Ptr = PtrPolicy::Ptr<typeT>::Type;\
+	using ConstPtr = PtrPolicy::Ptr<const typeT>::Type;\
+	using ClonePolicy = clonePolicyT;\
 	static ObjectWrapper::TypeInfoPair ptrTypeInfo(){\
 		return ObjectWrapper::TypeInfoPair(typeid(Ptr), typeid(ConstPtr));\
 	}\
@@ -174,10 +174,10 @@ namespace utils {
 	static_assert((ObjectWrapperTraits<baseTypeT>::isDefinitionVisible == true), "Missing wrapper definition for type baseTypeT");\
 	static_assert((std::is_base_of<baseTypeT, typeT>::value), "Type typeT must inherit from baseTypeT");\
 	static const bool isDefinitionVisible = true;\
-	typedef ObjectWrapperTraits<baseTypeT>::PtrPolicy PtrPolicy;\
-	typedef PtrPolicy::Ptr<typeT>::Type Ptr;\
-	typedef PtrPolicy::Ptr<const typeT>::Type ConstPtr;\
-	typedef ObjectWrapperTraits<baseTypeT>::ClonePolicy ClonePolicy;\
+	using PtrPolicy = ObjectWrapperTraits<baseTypeT>::PtrPolicy;\
+	using Ptr = PtrPolicy::Ptr<typeT>::Type;\
+	using ConstPtr = PtrPolicy::Ptr<const typeT>::Type;\
+	using ClonePolicy = ObjectWrapperTraits<baseTypeT>::ClonePolicy;\
 	static ObjectWrapper::TypeInfoPair ptrTypeInfo(){\
 		return ObjectWrapper::TypeInfoPair(typeid(Ptr), typeid(ConstPtr));\
 	}\

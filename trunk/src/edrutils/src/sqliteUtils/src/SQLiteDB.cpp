@@ -17,7 +17,7 @@ bool SQLiteDB::Close::operator()(sqlite3 * db)
 	bool ret = SQLiteDB::close(db);
 	if (ret == false){
 
-		int tries = 0;		
+		unsigned int tries = 0;		
 		
 		while (tries++ < retriesCount && SQLiteDB::finalizeStatements(db, maxStatements, retriesCount, stepWaitTime) == true && sqlite3_next_stmt(db, nullptr) != nullptr) {}
 
@@ -40,7 +40,7 @@ bool SQLiteDB::close(sqlite3 * db)
 bool SQLiteDB::finalizeStatements(sqlite3 * db, const unsigned int maxStatements,
 	const unsigned int retriesCount, const unsigned int stepWaitTime)
 {
-	int tries = 0;
+	unsigned int tries = 0;
 	bool done = true;
 	sqlite3_stmt * stmt = nullptr;
 	SQLitePreparedStatement::Finalizer f(retriesCount, stepWaitTime);
@@ -56,7 +56,7 @@ bool SQLiteDB::finalizeStatements(sqlite3 * db, const unsigned int maxStatements
 int SQLiteDB::exec(sqlite3 * db, const std::string & query, unsigned int retriesCount, unsigned int stepWaitTime)
 {
 	auto rc = SQLITE_OK;
-	int tries = 0;
+	unsigned int tries = 0;
 	do{
 		rc = sqlite3_exec(db, query.c_str(), nullptr, nullptr, nullptr);
 
@@ -80,7 +80,7 @@ sqlite3 * SQLiteDB::open(const std::string & path, const std::string & key,
 	sqlite3 * db = open(path, flags);	
 
 	if (db != nullptr && key.empty() == false){
-		auto rc = sqlite3_key(db, key.c_str(), key.size());
+		auto rc = sqlite3_key(db, key.c_str(), (int)key.size());
 		if (rc != SQLITE_OK){
 			close(db);
 			db = nullptr;

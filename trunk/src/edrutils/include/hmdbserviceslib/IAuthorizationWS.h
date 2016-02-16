@@ -89,8 +89,8 @@ namespace hmdbServices
 		}
 	};
 
-	typedef utils::shared_ptr<IAuthorizationWS> AuthorizationWSPtr;
-	typedef utils::shared_ptr<const IAuthorizationWS> AuthorizationWSConstPtr;
+	using AuthorizationWSPtr = utils::shared_ptr<IAuthorizationWS>;
+	using AuthorizationWSConstPtr = utils::shared_ptr<const IAuthorizationWS>;
 }
 
 #endif	//	HEADER_GUARD__HMDBSERVICES_IAUTHORIZATIONWS_H__

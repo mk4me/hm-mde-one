@@ -40,7 +40,7 @@ namespace boost {
 				: accumulator_base
 			{
 				//! zwracany typ - para : minimum, index
-				typedef std::pair<Sample, std::size_t> result_type;
+				using result_type = std::pair<Sample, std::size_t>;
 
 				template<typename Args>
 				min_with_idex_impl(Args const &args) :
@@ -52,9 +52,8 @@ namespace boost {
 				//! wywoływane po dadanu kolejnej próbki
 				template<typename Args>
 				void operator ()(Args const &args)
-				{
-					typedef typename boost::add_reference<const Sample>::type SampleType;
-					SampleType current = args[sample];
+				{					
+					const auto & current = args[sample];
 					if (current < minimum) {
 						minimum = current;
 						index = count;
@@ -86,7 +85,7 @@ namespace boost {
 			struct max_with_idex_impl
 				: accumulator_base
 			{
-				typedef std::pair<Sample, std::size_t> result_type;
+				using result_type = std::pair<Sample, std::size_t>;
 
 				template<typename Args>
 				max_with_idex_impl(Args const &args) :
@@ -98,7 +97,7 @@ namespace boost {
 				template<typename Args>
 				void operator ()(Args const &args)
 				{
-					typename boost::add_reference<const Sample>::type current = args[sample];
+					const auto & current = args[sample];
 					if (current > maximum) {
 						maximum = current;
 						index = count;
@@ -126,14 +125,14 @@ namespace boost {
 			struct min_with_index
 				: depends_on<>
 			{
-				typedef accumulators::impl::min_with_idex_impl<mpl::_1> impl;
+				using impl = accumulators::impl::min_with_idex_impl<mpl::_1>;
 			};
 
 			//! tag dla akumulatora maksimum z indeksem
 			struct max_with_index
 				: depends_on<>
 			{
-				typedef accumulators::impl::max_with_idex_impl<mpl::_1> impl;
+				using impl = accumulators::impl::max_with_idex_impl<mpl::_1>;
 			};
 		}
 
@@ -241,7 +240,7 @@ namespace dataaccessor {
 			const IDiscreteAccessor::size_type from = 0)
 		{
 			using namespace boost::accumulators;			
-			typedef boost::accumulators::accumulator_set<ValueType, features< tag::mean, tag::variance >> Stats;
+			using Stats = boost::accumulators::accumulator_set<ValueType, features< tag::mean, tag::variance >>;
 
 			typename IStatisticsFeature<ValueType, ArgumentType>::Values result;
 
@@ -283,7 +282,7 @@ namespace dataaccessor {
 
 			typename IStatisticsFeature<ValueType, ArgumentType>::Arguments result;
 
-			typedef boost::accumulators::accumulator_set<ArgumentType, features< tag::mean, tag::variance >> Stats;
+			using Stats = boost::accumulators::accumulator_set<ArgumentType, features< tag::mean, tag::variance >>;
 
 			Stats sts;
 
@@ -312,7 +311,7 @@ namespace dataaccessor {
 			const IDiscreteAccessor::size_type from = 0)
 		{
 			using namespace boost::accumulators;
-			typedef boost::accumulators::accumulator_set<ArgumentType, features< tag::mean, tag::variance >> ArgStats;
+			using ArgStats = boost::accumulators::accumulator_set<ArgumentType, features< tag::mean, tag::variance >>;
 			CompleteResult<ValueType, ArgumentType> result;
 
 			ArgStats argSts;
@@ -328,7 +327,7 @@ namespace dataaccessor {
 				}			
 			}
 			else{
-				typedef boost::accumulators::accumulator_set<ValueType, features< tag::mean, tag::variance >> ValStats;
+				using ValStats = boost::accumulators::accumulator_set<ValueType, features< tag::mean, tag::variance >>;
 
 				ValStats valSts;
 

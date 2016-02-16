@@ -53,7 +53,7 @@ namespace threadingUtils {
 		utils::shared_ptr<ResetableStreamStatusImpl> impl;
 	};
 
-	typedef utils::shared_ptr<IStreamStatusObserver> StreamStatusObserverPtr;
+	using StreamStatusObserverPtr = utils::shared_ptr<IStreamStatusObserver>;
 
 	//! Klasa bazowa strumienia
 	class THREADINGUTILS_EXPORT StreamBase
@@ -94,16 +94,16 @@ namespace threadingUtils {
 	public:
 
 		//! Typ kolekcji danych bufora
-		typedef std::list<T> ListT;
+		using ListT= std::list<T>;
 
 		//! Typ rozmiaru bufora
-		typedef typename ListT::size_type size_type;
+		using size_type = typename ListT::size_type;
 
 		//! Typ referencji do danych
-		typedef typename std::add_lvalue_reference<T>::type ref_type;
+		using ref_type = typename std::add_lvalue_reference<T>::type;
 
 		//! Typ stałej referencji do danych
-		typedef typename std::add_const<ref_type>::type const_ref_type;
+		using const_ref_type = typename std::add_const<ref_type>::type;
 
 	public:
 		//! Konstruktor domyslny
@@ -184,27 +184,27 @@ namespace threadingUtils {
 	public:
 
 		//! Typ interfejsu strumienia do czytania
-		typedef IStreamT<T> stream_reader_type;
+		using stream_reader_type = IStreamT<T>;
 
 		//! Typ bufora
-		typedef StreamBufferT<T> StreamBufferType;
+		using StreamBufferType = StreamBufferT<T>;
 
 		//! Typ danych mojego strumienia
-		typedef T value_type;
+		using value_type = T ;
 
 		//! Typ referencji do danych
-		typedef typename StreamBufferType::ref_type ref_type;
+		using ref_type = typename StreamBufferType::ref_type;
 
 		//! Typ stałej referencji do danych
-		typedef typename StreamBufferType::const_ref_type const_ref_type;
+		using const_ref_type = typename StreamBufferType::const_ref_type;
 
 		//! Typ wskaźnika na bufor
-		typedef utils::shared_ptr<StreamBufferType> StreamBufferPtr;
+		using StreamBufferPtr = utils::shared_ptr<StreamBufferType>;
 
 	private:
 
 		//! Typ listy buforów
-		typedef std::list<StreamBufferPtr> StreamBuffersList;
+		using StreamBuffersList = std::list<StreamBufferPtr>;
 
 	public:
 		//! Destruktor wirtualny
@@ -599,7 +599,7 @@ public:\
 //! \param destType Typ docelowy jeśli chcemy wymusić dostępną konwersję
 //! \param memberName Nazwa wypakowywanego pola
 #define STREAM_MEMBER_ADAPTER_EXT(baseType, destType, memberName) \
-typedef StreamAdapterT<baseType, destType, STREAM_MEMBER_EXTRACTOR_NAME(memberName)> STREAM_MEMBER_ADAPTER_NAME(baseType,memberName);
+using STREAM_MEMBER_ADAPTER_NAME(baseType,memberName) = StreamAdapterT<baseType, destType, STREAM_MEMBER_EXTRACTOR_NAME(memberName)>;
 
 //! Makro definiujące adapter dla wyciąganego pola
 //! \param baseType Typ bazowy z którego wyciągamy pole

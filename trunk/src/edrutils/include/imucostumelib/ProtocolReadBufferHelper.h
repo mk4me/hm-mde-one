@@ -80,7 +80,7 @@ namespace imuCostume
 		static ProtocolReadBufferHelper create(const void * buffer, const uint16_t length);
 
 		//! \return Ilość ramek w buforze
-		uint16_t size() const;
+		std::vector<const uint8_t*>::size_type size() const;
 		//! \return Czy są ramki w buforze
 		bool empty() const;
 		//! \param idx Indeks ramki o która pytamu

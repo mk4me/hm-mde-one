@@ -58,10 +58,6 @@ namespace df{
 //! bazowego, źródłowego, sinka, procesora, pinów wejściowych, wyjściowych, połączenia.
 class ModelImpl
 {
-public:
-
-	typedef unsigned int size_type;
-
 private:
 
 	typedef std::vector<INode*> Nodes;
@@ -73,6 +69,10 @@ private:
 	typedef std::vector<IProcessingNode*> ProcessingNodes;
 	//! Typ opisujący zbiór połączeń
 	typedef std::vector<IConnection*> Connections;
+
+public:
+
+	using size_type = Nodes::size_type;
 
 public:
 

@@ -37,17 +37,17 @@ public:
             //! \return czy dane zawarte w klasie są poprawne
             virtual bool isValid() const = 0;
     };
-    typedef utils::shared_ptr<IStep> IStepPtr;
-    typedef utils::shared_ptr<const IStep> IStepConstPtr;
+    using IStepPtr = utils::shared_ptr<IStep>;
+    using IStepConstPtr = utils::shared_ptr<const IStep>;
 
     //! wektor z krokami
-    typedef std::vector<IStepConstPtr> Steps;
+    using Steps = std::vector<IStepConstPtr>;
     //! niemodyfikowalny zakres kroków z kolekcji
-    typedef boost::iterator_range<Steps::const_iterator> StepsConstRange;
+    using StepsConstRange = boost::iterator_range<Steps::const_iterator>;
     //! wektor z kanałami GRF
-    typedef std::vector<GRFChannelConstPtr> GRFChannels;
+    using GRFChannels = std::vector<GRFChannelConstPtr>;
     //! niemodyfikowalny zakres kanałów GRF
-    typedef boost::iterator_range<GRFChannels::const_iterator> GRFChannelsConstRange;
+    using GRFChannelsConstRange = boost::iterator_range<GRFChannels::const_iterator>;
 
 public:
 	virtual ~IForcePlatform() {}
@@ -78,9 +78,9 @@ public:
         return (getCenter() - vec).length();
     }
 };
-typedef utils::shared_ptr<IForcePlatform> IForcePlatformPtr;
-typedef utils::shared_ptr<const IForcePlatform> IForcePlatformConstPtr;
-typedef std::vector<IForcePlatformPtr> IForcePlatformCollection;
+using IForcePlatformPtr = utils::shared_ptr<IForcePlatform>;
+using IForcePlatformConstPtr = utils::shared_ptr<const IForcePlatform>;
+using IForcePlatformCollection = std::vector<IForcePlatformPtr>;
 
 }
 

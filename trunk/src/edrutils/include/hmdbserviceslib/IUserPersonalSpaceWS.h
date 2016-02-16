@@ -21,8 +21,8 @@ namespace hmdbServices
 		virtual ~IUserPersonalSpaceWS() {}
 	};
 
-	typedef utils::shared_ptr<IUserPersonalSpaceWS> UserPersonalSpaceWSPtr;
-	typedef utils::shared_ptr<const IUserPersonalSpaceWS> UserPersonalSpaceWSConstPtr;
+	using UserPersonalSpaceWSPtr = utils::shared_ptr<IUserPersonalSpaceWS>;
+	using UserPersonalSpaceWSConstPtr = utils::shared_ptr<const IUserPersonalSpaceWS>;
 }
 
 #endif	//	HEADER_GUARD__HMDBSERVICES_IUSERPERSONALSPACEWS_H__

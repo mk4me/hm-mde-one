@@ -136,8 +136,8 @@ namespace networkUtils
 		virtual bool execute(const std::string & command) = 0;
 	};
 
-	typedef utils::shared_ptr<IFtpOperations> FtpOperationsPtr;
-	typedef utils::shared_ptr<const IFtpOperations> FtpOperationsConstPtr;
+	using FtpOperationsPtr = utils::shared_ptr<IFtpOperations>;
+	using FtpOperationsConstPtr = utils::shared_ptr<const IFtpOperations>;
 }
 
 #endif	//	HEADER_GUARD_NETWORKUTILS__IFTPOPERATIONS_H__

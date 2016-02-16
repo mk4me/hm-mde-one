@@ -278,7 +278,7 @@ const std::vector<utils::shared_ptr<ConnectionSphereInstance>> ConnectionSphereI
 		//lci->sphere.geom->setVertexArray(vertices);
 		lci->geode = geode;
 		lci->posAtt = dynamic_cast<osg::PositionAttitudeTransform*>(pat->clone(osg::CopyOp::SHALLOW_COPY));
-		lci->posAtt->setScale(osg::Vec3(0.3, 0.3, 1.0) * r);		
+		lci->posAtt->setScale(osg::Vec3d(0.3, 0.3, 1.0) * r);		
 		ret[i] = lci;
 	}
 
@@ -370,7 +370,7 @@ void ConnectionsSphereDrawer::init(const SegmentsDescriptors & connections)
 		//lci->sphere.geom->setVertexArray(vertices);
 		lci->geode = geode;
 		lci->posAtt = dynamic_cast<osg::PositionAttitudeTransform*>(pat->clone(osg::CopyOp::SHALLOW_COPY));
-		lci->posAtt->setScale(osg::Vec3(0.3, 0.3, 1.0) * r);		
+		lci->posAtt->setScale(osg::Vec3d(0.3, 0.3, 1.0) * r);		
 		tmpConnections.push_back(lci);
 		tmpNode->addChild(lci->posAtt, true);
 	}

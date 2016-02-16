@@ -34,13 +34,13 @@ class Observer
 {
 public:
 	//!
-	typedef T ObservedType;
+	using ObservedType = T;
 	//!
-	typedef Observer<T> ObserverType;
+	using ObserverType = Observer<T>;
 
-	typedef Observable<T> ObservableType;
+	using ObservableType = Observable<T>;
 
-	typedef ObservableType* ObservablePtr;
+	using ObservablePtr = ObservableType* ;
 
 public:
 	//! Polimorficzny destruktor.
@@ -61,13 +61,13 @@ class Observable
 {
 public:
     //! Bieżący typ.
-    typedef Observer<T> ObserverType;
+    using ObserverType = Observer<T>;
     //! Typ wskaźnika.
-    typedef ObserverType * ObserverPtr;
+    using ObserverPtr = ObserverType *;
 
 private:
     //! Kolekcja elementów obserwujących
-    typedef std::set<ObserverPtr> Observers;
+    using Observers = std::set<ObserverPtr>;
 
 private:
     //! Obserwatorzy.
@@ -115,7 +115,7 @@ public:
     //! Czy obserwator jest podpięty?
     //! \param observer Obserwator.
     //! \return
-    const bool isAttached(ObserverPtr observer)
+    bool isAttached(ObserverPtr observer)
     {
         return ( observers.find(observer) != observers.end() );
     }

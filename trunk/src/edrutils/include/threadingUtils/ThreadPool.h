@@ -27,16 +27,16 @@ namespace threadingUtils {
 	{
 	private:
 		//! Typ puli wątków
-		typedef ThreadPool<MultipleRunThread> MyThreadPoolType;
+		using MyThreadPoolType = ThreadPool<MultipleRunThread>;
 		//! Typ listy wątków wielokrotnego uruchamiania
-		typedef std::list<MultipleRunThread> InnerThreadsList;
+		using InnerThreadsList = std::list<MultipleRunThread>;
 
 	public:
 
-		typedef decltype(std::declval<MultipleRunThreadFactory>().create()) MultipleRunThread;
+		using MultipleRunThread = decltype(std::declval<MultipleRunThreadFactory>().create());
 
 		//! Typ opisujący ilość
-		typedef unsigned int size_type;
+		using size_type = unsigned int;
 
 		//! Klasa wątku oferowanego z puli
 		class Thread
@@ -118,7 +118,7 @@ namespace threadingUtils {
 		friend class Thread;
 
 		//! Typ agregujący wątki które pobierają klienci
-		typedef std::list<Thread> Threads;
+		using Threads = std::list<Thread>;
 
 	public:
 

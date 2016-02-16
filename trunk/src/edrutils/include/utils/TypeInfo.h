@@ -141,9 +141,9 @@ namespace utils {
 		std::size_t size() const;
 	};
 
-    typedef std::list<TypeInfo> TypeInfoList;
-    typedef std::set<TypeInfo> TypeInfoSet;
-	typedef std::vector<TypeInfo> TypeInfoVector;
+    using TypeInfoList = std::list<TypeInfo>;
+    using TypeInfoSet = std::set<TypeInfo>;
+	using TypeInfoVector = std::vector<TypeInfo>;
 }
 
 #endif  // HEADER_GUARD_UTILS__TYPEINFO_H__

@@ -19,9 +19,9 @@ namespace dataaccessor {
 	class IArgumentTrackerReader
 	{
 	public:
-		typedef IArgumentTrackerReader<ArgumentType> ArgumentTrackerReaderType;
-		typedef utils::shared_ptr<ArgumentTrackerReaderType> ArgumentTrackerReaderPtr;
-		typedef utils::shared_ptr<const ArgumentTrackerReaderType> ArgumentTrackerReaderConstPtr;
+		using ArgumentTrackerReaderType = IArgumentTrackerReader<ArgumentType>;
+		using ArgumentTrackerReaderPtr = utils::shared_ptr<ArgumentTrackerReaderType>;
+		using ArgumentTrackerReaderConstPtr = utils::shared_ptr<const ArgumentTrackerReaderType>;
 
 	public:
 		//! Destruktor wirtualny
@@ -35,9 +35,9 @@ namespace dataaccessor {
 	class IArgumentTracker : public IArgumentTrackerReader<ArgumentType>
 	{
 	public:
-		typedef IArgumentTracker<ArgumentType> ArgumentTrackerType;
-		typedef utils::shared_ptr<ArgumentTrackerType> ArgumentTrackerPtr;
-		typedef utils::shared_ptr<const ArgumentTrackerType> ArgumentTrackerConstPtr;
+		using ArgumentTrackerType = IArgumentTracker<ArgumentType>;
+		using ArgumentTrackerPtr = utils::shared_ptr<ArgumentTrackerType>;
+		using ArgumentTrackerConstPtr = utils::shared_ptr<const ArgumentTrackerType>;
 
 	public:
 		//! \param time Aktualny czas timera

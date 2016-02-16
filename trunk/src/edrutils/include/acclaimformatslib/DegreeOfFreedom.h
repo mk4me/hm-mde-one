@@ -53,7 +53,7 @@ namespace acclaim
         /// \param  Kanał dla którego powinnien być zwrócony indeks 
         /// \param  dofs lista ze stopniami swobody (na jej podstawie ustalany jest indeks)
         /// \return Indeks kanału lub -1 jeśli kanału nie znaleziono
-		static int getChannelIndex(kinematicUtils::Channel channel, const std::vector<DegreeOfFreedom>& dofs);
+		static std::size_t getChannelIndex(kinematicUtils::Channel channel, const std::vector<DegreeOfFreedom>& dofs);
         /// \brief  Zwraca kanał na podstawie nazwy.
         /// 		jeśli kanał nie zostanie znaleziony to rzucany jest wyjątek 
         /// \param  channel nazwa kanału. 

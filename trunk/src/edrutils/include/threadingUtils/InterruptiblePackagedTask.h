@@ -51,7 +51,7 @@ namespace threadingUtils
 
 	private:
 
-		typedef std::packaged_task<Ret(Args...)> MyPackagedTask;		
+		using MyPackagedTask = std::packaged_task<Ret(Args...)>;
 
 	private:
 

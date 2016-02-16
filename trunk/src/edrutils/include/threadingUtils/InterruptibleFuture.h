@@ -175,8 +175,8 @@ namespace threadingUtils
 	{
 	private:
 
-		typedef std::future<T> MyFuture;
-		typedef InterruptibleSharedFuture<T, InterruptiblePolicy> MySharedFuture;
+		using MyFuture = std::future<T>;
+		using MySharedFuture = InterruptibleSharedFuture<T, InterruptiblePolicy>;
 
 	public:
 
@@ -256,8 +256,8 @@ namespace threadingUtils
 
 	private:
 		
-		typedef std::future<T&> MyFuture;
-		typedef InterruptibleSharedFuture<T&, InterruptiblePolicy> MySharedFuture;
+		using MyFuture = std::future<T&>;
+		using MySharedFuture = InterruptibleSharedFuture<T&, InterruptiblePolicy>;
 
 	public:
 
@@ -283,7 +283,7 @@ namespace threadingUtils
 			InterruptibleFuture& operator=(InterruptibleFuture&& Right) 
 			{	// assign from rvalue future object
 				future = std::move(Right.future);
-				typedef InterruptibleFutureHelper<InterruptiblePolicy> Base;
+				using Base = InterruptibleFutureHelper<InterruptiblePolicy>;
 				this->Base.operator=(std::move(static_cast<InterruptibleFutureHelper<InterruptiblePolicy>&>(Right)));
 				return (*this);
 			}
@@ -337,8 +337,8 @@ namespace threadingUtils
 	{
 	private:
 
-		typedef std::future<void> MyFuture;
-		typedef InterruptibleSharedFuture<void, InterruptiblePolicy> MySharedFuture;
+		using MyFuture = std::future<void>;
+		using MySharedFuture = InterruptibleSharedFuture<void, InterruptiblePolicy>;
 
 	public:
 
@@ -418,9 +418,9 @@ namespace threadingUtils
 		// that holds a value
 	private:
 
-		typedef InterruptibleFuture<T, InterruptiblePolicy> MyInterruptibleFuture;
-		typedef std::shared_future<T> MySharedFuture;
-		typedef InterruptibleSharedFuture<T, InterruptiblePolicy> MyType;
+		using MyInterruptibleFuture = InterruptibleFuture<T, InterruptiblePolicy>;
+		using MySharedFuture = std::shared_future<T>;
+		using MyType = InterruptibleSharedFuture<T, InterruptiblePolicy>;
 
 	public:
 		InterruptibleSharedFuture() 
@@ -489,9 +489,9 @@ namespace threadingUtils
 		// that holds a value
 	private:
 
-		typedef InterruptibleFuture<T&, InterruptiblePolicy> MyInterruptibleFuture;
-		typedef std::shared_future<T&> MySharedFuture;
-		typedef InterruptibleSharedFuture<T&, InterruptiblePolicy> MyType;
+		using MyInterruptibleFuture = InterruptibleFuture<T&, InterruptiblePolicy>;
+		using MySharedFuture = std::shared_future<T&>;
+		using MyType = InterruptibleSharedFuture<T&, InterruptiblePolicy>;
 
 	public:
 		InterruptibleSharedFuture() 
@@ -560,9 +560,9 @@ namespace threadingUtils
 		// that holds a value
 	private:
 
-		typedef InterruptibleFuture<void, InterruptiblePolicy> MyInterruptibleFuture;
-		typedef std::shared_future<void> MySharedFuture;
-		typedef InterruptibleSharedFuture<void, InterruptiblePolicy> MyType;
+		using MyInterruptibleFuture = InterruptibleFuture<void, InterruptiblePolicy>;
+		using MySharedFuture = std::shared_future<void>;
+		using MyType = InterruptibleSharedFuture<void, InterruptiblePolicy>;
 
 	public:
 		InterruptibleSharedFuture() 

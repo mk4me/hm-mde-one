@@ -407,7 +407,7 @@ static int readFunction(void* opaque, uint8_t* buf, int buf_size) {
 	int ret = 0;
 
 	if (me->eof() == false){
-		ret = utils::StreamTools::forceReadSome(*me, reinterpret_cast<char*>(buf), buf_size);
+		ret = (int)utils::StreamTools::forceReadSome(*me, reinterpret_cast<char*>(buf), buf_size);
 	}
 
 	return ret;
@@ -793,7 +793,7 @@ void FFmpegVideoStream::alignPacket( AVPacket * packet )
 
     // alignujemy wskaźnik i rozmiar ...
     uint8_t * alignedData = reinterpret_cast<uint8_t*>(reinterpret_cast<int>(alignedPacket->data + AVIO_FFMPEG_ALIGN_MASK) & (~AVIO_FFMPEG_ALIGN_MASK));
-    int alignedSize = alignedPacket->size - (alignedData - alignedPacket->data);
+    int alignedSize = alignedPacket->size - (int)(alignedData - alignedPacket->data);
 
     // kopiujemy dane
     ::memcpy(alignedData, packet->data, packet->size);

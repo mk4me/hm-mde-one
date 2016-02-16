@@ -40,8 +40,8 @@ namespace hmdbServices
 		virtual bool resetPassword(const std::string & email) = 0;
 	};
 
-	typedef utils::shared_ptr<ISingleAccountFactoryWS> SingleAccountFactoryWSPtr;
-	typedef utils::shared_ptr<const ISingleAccountFactoryWS> SingleAccountFactoryWSConstPtr;
+	using SingleAccountFactoryWSPtr = utils::shared_ptr<ISingleAccountFactoryWS>;
+	using SingleAccountFactoryWSConstPtr = utils::shared_ptr<const ISingleAccountFactoryWS>;
 
 	//! Interfejs serwisu do rejestracji i aktywacji kont w obu usługach - Med i Motion
 	class HMDBSERVICES_EXPORT IMultiAccountFactoryWS
@@ -72,8 +72,8 @@ namespace hmdbServices
 		virtual bool resetPassword(const std::string & email, const bool propagateToHMDB) = 0;
 	};
 
-	typedef utils::shared_ptr<IMultiAccountFactoryWS> MultiAccountFactoryWSPtr;
-	typedef utils::shared_ptr<const IMultiAccountFactoryWS> MultiAccountFactoryWSConstPtr;
+	using MultiAccountFactoryWSPtr = utils::shared_ptr<IMultiAccountFactoryWS>;
+	using MultiAccountFactoryWSConstPtr = utils::shared_ptr<const IMultiAccountFactoryWS>;
 }
 
 #endif	//	HEADER_GUARD__HMDBSERVICES_IACCOUNTFACTORYWS_H__

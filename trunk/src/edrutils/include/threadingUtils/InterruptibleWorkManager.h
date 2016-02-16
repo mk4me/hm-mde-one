@@ -197,9 +197,9 @@ namespace threadingUtils
 
 		friend class WorkExecutor;
 
-		typedef std::map<std::thread::id, WorkExecutor> WorkExecutorsMap;
+		using WorkExecutorsMap = std::map<std::thread::id, WorkExecutor>;
 
-		typedef typename WorkExecutorsMap::size_type size_type;
+		using size_type = typename WorkExecutorsMap::size_type;
 
 		struct WorkSharedState
 		{
@@ -245,7 +245,7 @@ namespace threadingUtils
 		FutureType<typename std::result_of<F(Args...)>::type> submit(F&& f, Args&& ...arguments)
 		{
 			LogPolicy::log("Submitting work");
-			typedef typename std::result_of<F(Args...)>::type result_type;
+			using result_type = typename std::result_of<F(Args...)>::type;
 
 			std::lock_guard<std::mutex> lock(taskMutex);
 			if (isLocalThread == false && finalize_ == true){

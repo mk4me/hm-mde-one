@@ -68,18 +68,18 @@ struct std::less < std::weak_ptr<T> >
 #endif
 
 #define DEFINE_SMART_POINTERS_EXT(className, pointerName)                    \
-	typedef utils::shared_ptr<className> pointerName ## Ptr;                 \
-	typedef utils::shared_ptr<const className> pointerName ## ConstPtr;      \
-	typedef utils::weak_ptr<className> pointerName ## WeakPtr;               \
-	typedef utils::weak_ptr<const className> pointerName ## ConstWeakPtr;
+	using pointerName ## Ptr = utils::shared_ptr<className>;                 \
+	using pointerName ## ConstPtr = utils::shared_ptr<const className>;      \
+	using pointerName ## WeakPtr = utils::weak_ptr<className>;               \
+	using pointerName ## ConstWeakPtr = utils::weak_ptr<const className>;
 
 #define DEFINE_SMART_POINTERS(className)                                  \
 	DEFINE_SMART_POINTERS_EXT(className, className)
 
 #define DEFINE_SCOPED_SMART_POINTERS(className, targetNamespace)                                    \
-	typedef utils::shared_ptr<className> targetNamespace ## :: ## className ## Ptr;                  \
-	typedef utils::shared_ptr<const className> targetNamespace ## :: ## className ## ConstPtr;       \
-	typedef utils::weak_ptr<className> targetNamespace ## :: ## className ## WeakPtr;                \
-	typedef utils::weak_ptr<const className> targetNamespace ## :: ## className ## ConstWeakPtr;
+	using targetNamespace ## :: ## className ## Ptr = utils::shared_ptr<className>;                  \
+	using targetNamespace ## :: ## className ## ConstPtr = utils::shared_ptr<const className>;       \
+	using targetNamespace ## :: ## className ## WeakPtr = utils::weak_ptr<className>;                \
+	using targetNamespace ## :: ## className ## ConstWeakPtr = utils::weak_ptr<const className>;
 
 #endif  // __HEADER_GUARD_CORE__SMARTPTR_H__

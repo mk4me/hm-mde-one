@@ -33,7 +33,7 @@ namespace threadingUtils
 	public:
 
 		//! Typ opisuący rozmiar naszej kolejki
-		typedef typename std::queue<T>::size_type size_type;
+		using size_type = typename std::queue<T>::size_type;
 
 	public:
 		//! Konsturktor domyslny

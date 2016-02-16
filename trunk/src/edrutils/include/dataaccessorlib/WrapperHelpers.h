@@ -108,6 +108,7 @@ namespace dataaccessor
 		template<typename C>
 		struct Sample
 		{
+			//! Musi tak byæ, w przeciwnym razie VS ma problemy
 			typedef typename IAccessorT<typename std::decay<decltype(std::declval<SValueExtractor>().value(std::declval<CValue<C>>()))>::type,
 				typename std::decay<decltype(std::declval<SArgumentExtractor>().value(std::declval<CValue<C>>()))>::type>::sample_type type;
 		};
@@ -329,8 +330,12 @@ namespace dataaccessor
 	class TaggedContainerCarrier : public utils::ValueCarrier<Container>
 	{
 	public:
+		//! TODO VS szaleje z tak¹ konstrukcj¹ wiêc tworzymy konstruktor forwarduj¹cy wszystko dalej do klasy bazowej
 		//! Wci¹gamy konstruktory
-		using utils::ValueCarrier::ValueCarrier;
+		//using utils::ValueCarrier::ValueCarrier;
+		template<class ...Args>
+		TaggedContainerCarrier(Args && ...args) : utils::ValueCarrier<Container>(std::forward<Args>(args)...) {}
+
 		//! Destruktor wirtualny
 		virtual ~TaggedContainerCarrier() {}
 	};

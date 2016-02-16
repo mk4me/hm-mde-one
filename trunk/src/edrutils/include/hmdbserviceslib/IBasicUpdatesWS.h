@@ -135,8 +135,8 @@ namespace hmdbServices
 			const std::string & note) = 0;
 	};
 
-	typedef utils::shared_ptr<IMotionBasicUpdatesWS> MotionBasicUpdatesWSPtr;
-	typedef utils::shared_ptr<const IMotionBasicUpdatesWS> MotionBasicUpdatesWSConstPtr;
+	using MotionBasicUpdatesWSPtr = utils::shared_ptr<IMotionBasicUpdatesWS>;
+	using MotionBasicUpdatesWSConstPtr = utils::shared_ptr<const IMotionBasicUpdatesWS>;
 
 	//! Interfejs usługi pozwalającej edytować dane w bazie medycznej
 	class IMedicalBasicUpdatesWS
@@ -146,8 +146,8 @@ namespace hmdbServices
 		virtual ~IMedicalBasicUpdatesWS() {}
 	};
 
-	typedef utils::shared_ptr<IMedicalBasicUpdatesWS> MedicalBasicUpdatesWSPtr;
-	typedef utils::shared_ptr<const IMedicalBasicUpdatesWS> MedicalBasicUpdatesWSConstPtr;
+	using MedicalBasicUpdatesWSPtr = utils::shared_ptr<IMedicalBasicUpdatesWS>;
+	using MedicalBasicUpdatesWSConstPtr = utils::shared_ptr<const IMedicalBasicUpdatesWS>;
 }
 
 #endif	//	HEADER_GUARD__HMDBSERVICES_IBASICUPDATESWS_H__

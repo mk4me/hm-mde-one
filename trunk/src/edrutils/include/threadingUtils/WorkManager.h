@@ -140,16 +140,16 @@ namespace threadingUtils {
 
 		friend class WorkExector;
 
-		typedef std::map<std::thread::id, WorkExecutor> WorkExecutorsMap;
+		using WorkExecutorsMap = std::map<std::thread::id, WorkExecutor>;
 
-		typedef WorkExecutorsMap::size_type size_type;
+		using size_type = WorkExecutorsMap::size_type;
 
 	public:
 
 		template<typename T>
 		struct FutureType
 		{
-			typedef std::future<T> type;
+			using type = std::future<T>;
 		};
 
 	public:
@@ -177,7 +177,7 @@ namespace threadingUtils {
 		typename FutureType<typename std::result_of<F(Args)>::type>::type submit(F&& f, Args&& arguments...)
 		{
 			LogPolicy::log("Work manager: submiting work");
-			typedef typename std::result_of<F(Args)>::type result_type;
+			using result_type = typename std::result_of<F(Args)>::type;
 
 			std::lock_guard<std::mutex> lock(taskMutex);
 			if (isLocalThread == false && finalize_ == true){

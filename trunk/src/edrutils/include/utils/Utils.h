@@ -39,7 +39,7 @@ namespace utils {
 	//! Klasa pomocnicza przy "oczyszczaniu" typów
 	struct add_const_reference
 	{
-		using type = typename std::add_reference<typename std::add_const<T>::type>::type;
+		using type = typename std::add_lvalue_reference<typename std::add_const<T>::type>::type;
 	};
 
 	//! \tparam T Typ dla którego próbujemy ustalić najmniejszy możliwy krok
@@ -52,11 +52,8 @@ namespace utils {
 		static inline T smallestStep() { return (std::numeric_limits<T>::is_integer == true) ? T(1) : std::numeric_limits<T>::epsilon(); }
 	};
 
-	struct arithmetic_traits
+	namespace impl
 	{
-		template<typename T, typename U>
-		using larger_type = typename std::common_type<T,U>::type;
-
 		template<typename T>
 		struct wider_type {};
 
@@ -76,6 +73,15 @@ namespace utils {
 		template<> struct wider_type<float> { typedef double type; };
 		template<> struct wider_type<double> { typedef long double type; };
 		template<> struct wider_type<long double> { typedef long double type; };
+	}
+
+	struct arithmetic_traits
+	{
+		template<typename T, typename U>
+		using larger_type = typename std::common_type<T,U>::type;	
+
+		template<typename T>
+		using wider_type = impl::wider_type<T>;
 
 		template<typename T, typename U>
 		struct safe_sum_type { typedef typename wider_type<typename larger_type<T, U>::type>::type type; };

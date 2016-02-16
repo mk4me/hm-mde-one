@@ -165,7 +165,7 @@ private:
 		if (query != nullptr && sqliteUtils::SQLitePreparedStatement::step(query) == SQLITE_ROW){
 			const auto rowID = sqlite3_column_int64(query, 0);			
 			return IHMDBStorageOperations::IOStreamPtr(new StreamWrapper<std::iostream, sqliteUtils::SQLiteBLOBStreamBufferT<char>>(
-				new sqliteUtils::SQLiteBLOBStreamBufferT<char>(sqliteUtils::SQLiteBLOBStreamBufferT<char>::_BufferPolicyPtr(new sqliteUtils::DynamicWriteBufferPolicy<char>()),
+				new sqliteUtils::SQLiteBLOBStreamBufferT<char>(sqliteUtils::SQLiteBLOBStreamBufferT<char>::BufferPolicyPtr(new sqliteUtils::DynamicWriteBufferPolicy<char>()),
 				db, "files_table", "file", rowID, "main")));
 		}
 
@@ -180,7 +180,7 @@ private:
 		if (query != nullptr && sqliteUtils::SQLitePreparedStatement::step(query) == SQLITE_ROW){
 			const auto rowID = sqlite3_column_int64(query, 0);
 			return IHMDBStorageOperations::IStreamPtr(new StreamWrapper<std::istream, sqliteUtils::SQLiteBLOBStreamBufferT<char>>(
-				new sqliteUtils::SQLiteBLOBStreamBufferT<char>(sqliteUtils::SQLiteBLOBStreamBufferT<char>::_BufferPolicyPtr(new sqliteUtils::DynamicWriteBufferPolicy<char>()),
+				new sqliteUtils::SQLiteBLOBStreamBufferT<char>(sqliteUtils::SQLiteBLOBStreamBufferT<char>::BufferPolicyPtr(new sqliteUtils::DynamicWriteBufferPolicy<char>()),
 				db, "files_table", "file", rowID, "main", std::ios_base::in)));
 		}
 

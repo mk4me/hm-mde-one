@@ -26,18 +26,18 @@ namespace utils {
 		//! Typ wskaźnika.
 		template <typename T> struct Ptr
 		{
-			typedef boost::shared_ptr<T> Type;
+			using Type = boost::shared_ptr<T>;
 		};
 		//! Tylko deklaracja, specjalizacja wyciąga wskaźnik!
 		template <typename T> struct Pointed;
 		//! Specjalizacja wyciągająca wskaźnik.
 		template <typename T> struct Pointed< boost::shared_ptr<T> >
 		{
-			typedef typename boost::shared_ptr<T>::element_type Type;
+			using Type = typename boost::shared_ptr<T>::element_type;
 		};
 
 		//! Klasa bazowa.
-		typedef NullType Base;
+		using Base = NullType;
 
 		//! Zerowanie wskaźnika.
 		//! \param ptr

@@ -146,7 +146,7 @@ namespace threadingUtils
 
 	private:
 
-		typedef InterruptibleMultipleRunThread<RunnableThread, ExceptionHandlePolicy, InterruptHandlingPolicy, InterruptiblePolicy> MyThreadType;
+		using MyThreadType = InterruptibleMultipleRunThread<RunnableThread, ExceptionHandlePolicy, InterruptHandlingPolicy, InterruptiblePolicy>;
 
 		struct SharedState
 		{
@@ -192,7 +192,7 @@ namespace threadingUtils
 		template<typename F, class ...Args>
 		InterruptibleFuture<typename std::result_of<F(Args...)>::type, InterruptiblePolicy> run(F&& f, Args&& ...arguments)
 		{
-			typedef typename std::result_of<F(Args...)>::type result_type;
+			using result_type = typename std::result_of<F(Args...)>::type;
 
 			if (sharedState != nullptr && sharedState->finalize == true){
 				throw std::logic_error("Operation not permitted");

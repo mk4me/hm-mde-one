@@ -37,8 +37,8 @@ namespace hmdbServices
 		virtual xmlWsdl::FileData retrieve(const int id) = 0;
 	};
 
-	typedef utils::shared_ptr<IBasicStoremanWS> BasicStoremanWSPtr;
-	typedef utils::shared_ptr<const IBasicStoremanWS> BasicStoremanWSConstPtr;
+	using BasicStoremanWSPtr = utils::shared_ptr<IBasicStoremanWS>;
+	using BasicStoremanWSConstPtr = utils::shared_ptr<const IBasicStoremanWS>;
 
 	//! Interfejs usługi zarządzającej pobieraniem/wysyłaniem plików do serwera
 	class IShallowStoremanWS
@@ -70,8 +70,8 @@ namespace hmdbServices
 		virtual void downloadComplete(const std::string & path) = 0;
 	};
 
-	typedef utils::shared_ptr<IShallowStoremanWS> ShallowStoremanWSPtr;
-	typedef utils::shared_ptr<const IShallowStoremanWS> ShallowStoremanWSConstPtr;
+	using ShallowStoremanWSPtr= utils::shared_ptr<IShallowStoremanWS>;
+	using ShallowStoremanWSConstPtr = utils::shared_ptr<const IShallowStoremanWS>;
 
 	//! Inerfejs obsługujący podstawowe operacje na danych instancji bazy
 	class IFileStoremanWS : public IShallowStoremanWS, public IBasicStoremanWS
@@ -81,8 +81,8 @@ namespace hmdbServices
 		virtual ~IFileStoremanWS() {}
 	};
 
-	typedef utils::shared_ptr<IFileStoremanWS> FileStoremanWSPtr;
-	typedef utils::shared_ptr<const IFileStoremanWS> FileStoremanWSConstPtr;
+	using FileStoremanWSPtr = utils::shared_ptr<IFileStoremanWS>;
+	using FileStoremanWSConstPtr = utils::shared_ptr<const IFileStoremanWS>;
 
 	//! Interfejs obsługujący dane bazy ruchu
 	class IMotionFileStoremanWS : public IFileStoremanWS
@@ -154,8 +154,8 @@ namespace hmdbServices
 		virtual void replaceFile(int fileID, const std::string& path, const std::string& filename) = 0;
 	};
 
-	typedef utils::shared_ptr<IMotionFileStoremanWS> MotionFileStoremanWSPtr;
-	typedef utils::shared_ptr<const IMotionFileStoremanWS> MotionFileStoremanWSConstPtr;
+	using MotionFileStoremanWSPtr = utils::shared_ptr<IMotionFileStoremanWS>;
+	using MotionFileStoremanWSConstPtr = utils::shared_ptr<const IMotionFileStoremanWS>;
 
 	//! Interfejs obsługujący dane bazy medycznej
 	class IMedicalFileStoremanWS : public IFileStoremanWS
@@ -165,8 +165,8 @@ namespace hmdbServices
 		virtual ~IMedicalFileStoremanWS() {}
 	};
 
-	typedef utils::shared_ptr<IMedicalFileStoremanWS> MedicalFileStoremanWSPtr;
-	typedef utils::shared_ptr<const IMedicalFileStoremanWS> MedicalFileStoremanWSConstPtr;
+	using MedicalFileStoremanWSPtr = utils::shared_ptr<IMedicalFileStoremanWS>;
+	using MedicalFileStoremanWSConstPtr = utils::shared_ptr<const IMedicalFileStoremanWS>;
 }
 
 #endif	//	HEADER_GUARD__HMDBSERVICES_IFILESTOREMANWS_H__

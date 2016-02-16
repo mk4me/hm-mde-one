@@ -19,10 +19,10 @@ namespace threadingUtils
 	{
 	public:
 
-		typedef T transaction_type;
+		using transaction_type = T;
 
 		//! Typ wskanika do transakcji
-		typedef SmartPtr<T> TransactionPtr;
+		using TransactionPtr = SmartPtr<T>;
 
 	public:
 		//! Destruktor wirtualny
@@ -46,10 +46,10 @@ namespace threadingUtils
 	{
 	public:
 
-		typedef T transaction_type;
+		using transaction_type = T;
 
 		//! Typ wskanika do sta³ej transakcji
-		typedef SmartPtr<const T> TransactionConstPtr;
+		using TransactionConstPtr = SmartPtr<const T>;
 
 	public:
 		//! Destruktor wirtualny
@@ -73,7 +73,7 @@ namespace threadingUtils
 	{
 	public:
 
-		typedef T transaction_type;
+		using transaction_type = T;
 
 	public:
 		//! Destruktor wirtualny
@@ -108,11 +108,11 @@ namespace threadingUtils
 
 	private:
 		//! Typ mutexa
-		typedef MutexType mutex_type;
+		using mutex_type = MutexType;
 
 	public:
 		//! Typ wewnetrznego stanu
-		typedef SharedStateT inner_shared_state_type;
+		using inner_shared_state_type = SharedStateT;
 
 	public:
 		//! Wewnêtrzny stan
@@ -132,8 +132,8 @@ namespace threadingUtils
 	{
 	public:
 
-		typedef TransactionImplHelper<TransactionT, SharedStateT> ImplType;
-		typedef utils::shared_ptr<SharedStateT> SharedStatePtr;
+		using ImplType = TransactionImplHelper<TransactionT, SharedStateT>;
+		using SharedStatePtr = utils::shared_ptr<SharedStateT>;
 
 	protected:
 

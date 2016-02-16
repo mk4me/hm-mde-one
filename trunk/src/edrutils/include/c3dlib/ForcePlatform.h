@@ -22,9 +22,9 @@ class C3DLIB_EXPORT ForcePlatform : public IForcePlatform
 {
 public:
     //! typ zdarzenia wczytanego z pliku C3D
-    typedef C3DParser::IEvent IEvent;
+    using IEvent = C3DParser::IEvent;
     //! kontekst zdarzenia (strona lewa, prawa, ... )
-    typedef C3DParser::IEvent::Context Context;    
+    using Context = C3DParser::IEvent::Context;
 
     //! Reprezentacja wykrytego kroku na płycie pomiarowej.
     //! W tym przypadku jako krok, bierze się moment, w którym cała stopa spoczywa na płycie pomiarowej
@@ -124,8 +124,8 @@ private:
     //! kanał z odpowiadająca płycie momentem siły
     GRFChannelConstPtr moment;
 };
-typedef utils::shared_ptr<ForcePlatform> ForcePlatformPtr;
-typedef utils::shared_ptr<const ForcePlatform> ForcePlatformConstPtr;
+using ForcePlatformPtr = utils::shared_ptr<ForcePlatform>;
+using ForcePlatformConstPtr = utils::shared_ptr<const ForcePlatform>;
 }
 
 #endif

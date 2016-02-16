@@ -62,15 +62,15 @@ const CustomSphereDescription CustomPrimitivesFactory::createSphere( const unsig
 	//ret.geom->setUseVertexBufferObjects(true);
 	ret.geomBase = CustomPrimitivesHelper::createSphereGeometryBase(radius, complex);
 
-	const int n = complex;	
-	const unsigned int numberOfSeparators = 4 * n + 4;
+	const auto n = complex;	
+	const auto numberOfSeparators = 4 * n + 4;
 
 	ret.geom->setVertexArray(ret.geomBase.verticies);
 	ret.geom->setNormalArray(ret.geomBase.normals);
 	ret.geom->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
 	ret.geom->setDataVariance(osg::Object::DYNAMIC);
 
-	auto s = 2 * n;
+	const auto s = (n << 1);
 
 	for (unsigned int e = 0; e < s; ++e) {
 		for (unsigned int i = 0; i < numberOfSeparators; ++i) {

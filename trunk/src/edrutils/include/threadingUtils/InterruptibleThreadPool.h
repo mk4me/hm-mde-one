@@ -25,13 +25,13 @@ namespace threadingUtils
 	{
 	public:		
 
-		typedef decltype(std::declval<InterruptibleMultipleRunThreadFactory>().create()) InterruptibleMultipleRunThread;
+		using InterruptibleMultipleRunThread = decltype(std::declval<InterruptibleMultipleRunThreadFactory>().create());
 
 		//! Typ listy w¹tków wielokrotnego uruchamiania
-		typedef std::list<InterruptibleMultipleRunThread> InnerThreadsList;
+		using InnerThreadsList = std::list<InterruptibleMultipleRunThread>;
 
 		//! Typ opisuj¹cy iloœæ
-		typedef unsigned int size_type;
+		using size_type = unsigned int;
 
 		//! Klasa w¹tku oferowanego z puli
 		class Thread
@@ -41,8 +41,8 @@ namespace threadingUtils
 
 		public:
 			//! Typ puli w¹tków
-			typedef InterruptibleThreadPool<InterruptibleMultipleRunThreadFactory> MyThreadPoolType;
-			typedef typename InterruptibleMultipleRunThread::InterruptiblePolicy InterruptiblePolicy;
+			using MyThreadPoolType = InterruptibleThreadPool<InterruptibleMultipleRunThreadFactory>;
+			using InterruptiblePolicy = typename InterruptibleMultipleRunThread::InterruptiblePolicy;
 
 		private:
 
@@ -174,10 +174,10 @@ namespace threadingUtils
 
 		friend class CustomThread;
 
-		typedef utils::unique_ptr<CustomThread> CustomThreadProxy;
+		using CustomThreadProxy = utils::unique_ptr<CustomThread>;
 
 		//! Typ agreguj¹cy w¹tki które pobieraj¹ klienci
-		typedef std::list<Thread> Threads;
+		using Threads = std::list<Thread>;
 
 	public:
 

@@ -27,8 +27,8 @@ namespace hmdbServices
 		virtual DateTime metadataModificationTime() const = 0;
 	};
 
-	typedef utils::shared_ptr<IGeneralBasicQueriesWS> GeneralBasicQueriesWSPtr;
-	typedef utils::shared_ptr<const IGeneralBasicQueriesWS> GeneralBasicQueriesWSConstPtr;
+	using GeneralBasicQueriesWSPtr = utils::shared_ptr<IGeneralBasicQueriesWS>;
+	using GeneralBasicQueriesWSConstPtr = utils::shared_ptr<const IGeneralBasicQueriesWS>;
 
 	//! Interfejs usługi związanej z danymi ruchu
 	class IMotionBasicQueriesWS : public IGeneralBasicQueriesWS
@@ -168,13 +168,13 @@ namespace hmdbServices
 		virtual std::string listMyReviewedAnnotationsXML() const = 0;
 	};
 
-	typedef utils::shared_ptr<IMotionBasicQueriesWS> MotionBasicQueriesWSPtr;
-	typedef utils::shared_ptr<const IMotionBasicQueriesWS> MotionBasicQueriesWSConstPtr;
+	using MotionBasicQueriesWSPtr = utils::shared_ptr<IMotionBasicQueriesWS>;
+	using MotionBasicQueriesWSConstPtr = utils::shared_ptr<const IMotionBasicQueriesWS>;
 
-	typedef IGeneralBasicQueriesWS IMedicalBasicQueriesWS;
+	using IMedicalBasicQueriesWS = IGeneralBasicQueriesWS;
 
-	typedef utils::shared_ptr<IMedicalBasicQueriesWS> MedicalBasicQueriesWSPtr;
-	typedef utils::shared_ptr<const IMedicalBasicQueriesWS> MedicalBasicQueriesWSConstPtr;
+	using MedicalBasicQueriesWSPtr = utils::shared_ptr<IMedicalBasicQueriesWS>;
+	using MedicalBasicQueriesWSConstPtr = utils::shared_ptr<const IMedicalBasicQueriesWS>;
 }
 
 #endif	//	HEADER_GUARD__HMDBSERVICES_IBASICQUERIESWS_H__

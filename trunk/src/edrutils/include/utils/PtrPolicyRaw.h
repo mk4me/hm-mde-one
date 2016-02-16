@@ -24,14 +24,14 @@ struct PtrPolicyRaw
     //! Typ wskaźnika.
 	template <typename T> struct Ptr
     {
-        typedef T* Type;
+        using Type = T*;
     };
     //! Tylko deklaracja, specjalizacja wyciąga wskaźnik!
 	template <typename T> struct Pointed;
     //! Specjalizacja wyciągająca wskaźnik.
 	template <typename T> struct Pointed<T*>
     {
-        typedef T Type;
+        using Type = T;
     };
 
     //! Klasa bazowa wymagana dla typów poddanych działaniu wskaźnika.

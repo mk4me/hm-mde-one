@@ -32,7 +32,7 @@ namespace dataaccessor
 	{
 	public:
 		//! Typ obiektu z którego czytamy aktualn¹ wartoœæ kana³u
-		typedef typename IArgumentTrackerReader<ValueType>::ArgumentTrackerReaderPtr ArgumentTrackerReaderPtr;
+		using ArgumentTrackerReaderPtr = typename IArgumentTrackerReader<ValueType>::ArgumentTrackerReaderPtr;
 
 	public:
 

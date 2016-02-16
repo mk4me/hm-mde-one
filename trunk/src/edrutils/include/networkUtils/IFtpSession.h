@@ -128,8 +128,8 @@ namespace networkUtils
 		virtual bool execute(const std::string & command) = 0;
 	};
 
-	typedef utils::shared_ptr<IFtpSession> FtpSessionPtr;
-	typedef utils::shared_ptr<const IFtpSession> FtpSessionConstPtr;
+	using FtpSessionPtr = utils::shared_ptr<IFtpSession>;
+	using FtpSessionConstPtr = utils::shared_ptr<const IFtpSession>;
 }
 
 #endif	//	HEADER_GUARD_NETWORKUTILS__IFTPSESSION_H__

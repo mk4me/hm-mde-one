@@ -39,8 +39,8 @@ namespace kinematic
 		//! okres pojedynczej ramki
 		float frameTime;
 	};
-	typedef utils::shared_ptr<SkeletalData> SkeletalDataPtr;
-	typedef utils::shared_ptr<const SkeletalData> SkeletalDataConstPtr;
+	using SkeletalDataPtr = utils::shared_ptr<SkeletalData>;
+	using SkeletalDataConstPtr = utils::shared_ptr<const SkeletalData>;
 
 	
 	struct StreamSkeletonDataFrame
@@ -53,10 +53,10 @@ namespace kinematic
 	DEFINE_SMART_POINTERS(StreamSkeletonDataFrame);
 
 
-	typedef threadingUtils::StreamT<StreamSkeletonDataFrame> SkeletalDataStream;
+	using SkeletalDataStream = threadingUtils::StreamT<StreamSkeletonDataFrame>;
 
-	typedef utils::shared_ptr<SkeletalDataStream> SkeletalDataStreamPtr;
-	typedef utils::shared_ptr<const SkeletalDataStream> SkeletalDataStreamConstPtr;
+	using SkeletalDataStreamPtr = utils::shared_ptr<SkeletalDataStream>;
+	using SkeletalDataStreamConstPtr = utils::shared_ptr<const SkeletalDataStream>;
 
 	//! Klatka dla danych strumieniowych
 	struct StreamSingleFrame
@@ -80,6 +80,6 @@ namespace kinematic
 		}
 	};
 
-	typedef threadingUtils::StreamT<StreamSingleFrame> SkeletalFramesStream;
+	using SkeletalFramesStream = threadingUtils::StreamT<StreamSingleFrame>;
 }
 #endif

@@ -20,7 +20,7 @@
 
 namespace c3dlib {
 
-typedef std::map<std::string, double> MovieDelays;
+using MovieDelays = std::map<std::string, double>;
 
 //! Opis platformy GRF
 struct C3DLIB_EXPORT ForcePlatformStruct
@@ -35,7 +35,6 @@ struct C3DLIB_EXPORT ForcePlatformStruct
     std::set<std::string> channelLabels;
 };
 DEFINE_SMART_POINTERS(ForcePlatformStruct);
-typedef const std::vector<ForcePlatformStructConstPtr>& ForcePlatformStructConstCollection;
 typedef std::vector<ForcePlatformStructPtr> ForcePlatformStructCollection;
 
 //! Klasa służy do pobierania informacji z pliku C3D, przykrywa biblioteke btk
@@ -60,7 +59,7 @@ public:
     class IPoint : public IAquisitionEntry
     {
 	public:
-        typedef enum {Marker, VirtualMarker, VirtualMarkerForFrame, Angle, Force, Moment, Power, Scalar} Type;
+        enum Type {Marker, VirtualMarker, VirtualMarkerForFrame, Angle, Force, Moment, Power, Scalar};
 	public:
         //! \return Typ punktu c3d
         virtual Type getType() const = 0;
@@ -157,7 +156,7 @@ public:
     //! \return event o konkrentym indeksie (zgodnie z kolejnością w c3d)
 	IEventPtr getEvent(int index) const;
     //! \return kolekcja z informacjami o platformach pomiarowych zapisanych w pliku 
-	ForcePlatformStructCollection getForcePlatformsStruct() { return forcePlatforms; }
+	const ForcePlatformStructCollection & getForcePlatformsStruct() const { return forcePlatforms; }
 
 private:
     //! realizacja idiomu "Cashire cat"

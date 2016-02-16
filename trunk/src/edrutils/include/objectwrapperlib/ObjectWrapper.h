@@ -24,14 +24,14 @@ namespace utils {
 
 	DEFINE_SMART_POINTERS(ObjectWrapper);	
 
-	typedef std::set<ObjectWrapperPtr> Objects;
-	typedef std::set<ObjectWrapperConstPtr> ConstObjects;
+	using Objects = std::set<ObjectWrapperPtr>;
+	using ConstObjects = std::set<ObjectWrapperConstPtr>;
 
-	typedef std::list<ObjectWrapperPtr> ObjectsList;
-	typedef std::list<ObjectWrapperConstPtr> ConstObjectsList;
+	using ObjectsList = std::list<ObjectWrapperPtr>;
+	using ConstObjectsList = std::list<ObjectWrapperConstPtr>;
 
-	typedef std::vector<ObjectWrapperPtr> ObjectsVector;
-	typedef std::vector<ObjectWrapperConstPtr> ConstObjectsVector;
+	using ObjectsVector = std::vector<ObjectWrapperPtr>;
+	using ConstObjectsVector = std::vector<ObjectWrapperConstPtr>;
 
 	//! Forward declaration
 	template<typename T>
@@ -44,7 +44,7 @@ namespace utils {
 	public:
 
 		//! Para opisująca typ
-		typedef std::pair<TypeInfo, TypeInfo> TypeInfoPair;
+		using TypeInfoPair = std::pair<TypeInfo, TypeInfo>;
 
 		//! Typ klonowania
 		enum CloneOp {
@@ -53,7 +53,7 @@ namespace utils {
 		};
 
 		//! Lista typów.
-		typedef TypeInfoList Types;		
+		using Types = TypeInfoList;
 
 		//! Return type resolver
 		struct get_t

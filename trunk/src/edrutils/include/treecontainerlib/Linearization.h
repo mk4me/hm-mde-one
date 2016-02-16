@@ -64,7 +64,7 @@ struct LinearizationT
 	using VisitOrder = TreeVisitOrder;
 
 	template<typename TreeType>
-	static decltype(std::declval<const TreeType>().root()) getNode(const TreeType & tree, const Node::SizeType idx)
+	static decltype(std::declval<const TreeType>().root()) node(const TreeType & tree, const Node::SizeType idx)
 	{
 		using NPtr = decltype(std::declval<const TreeType>().root());
 		NPtr ret;
@@ -82,7 +82,7 @@ struct LinearizationT
 	}
 
 	template<typename TreeType>
-	static decltype(std::declval<TreeType>().root()) getNode(TreeType & tree, const Node::SizeType idx)
+	static decltype(std::declval<TreeType>().root()) node(TreeType & tree, const Node::SizeType idx)
 	{
 		using NPtr = decltype(std::declval<const TreeType>().root());
 		NPtr ret;
@@ -100,9 +100,9 @@ struct LinearizationT
 	}
 
 	template<typename TreeType>
-	static decltype(std::declval<const TreeType>().root()->value()) getValue(const TreeType & tree, const Node::SizeType idx)
+	static decltype(std::declval<const TreeType>().root()->value()) value(const TreeType & tree, const Node::SizeType idx)
 	{
-		auto node = getNode(tree, idx);
+		auto node = node(tree, idx);
 
 		if (node == nullptr){
 			throw std::runtime_error("Node index out of range");		
@@ -112,9 +112,9 @@ struct LinearizationT
 	}
 
 	template<typename TreeType>
-	static decltype(std::declval<const TreeType>().root()->value()) getValue(TreeType & tree, const Node::SizeType idx)
+	static decltype(std::declval<const TreeType>().root()->value()) value(TreeType & tree, const Node::SizeType idx)
 	{
-		auto node = getNode(tree, idx);
+		auto node = node(tree, idx);
 
 		if (node == nullptr){
 			throw std::runtime_error("Node index out of range");

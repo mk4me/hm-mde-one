@@ -81,7 +81,7 @@ ProtocolReadBufferHelper ProtocolReadBufferHelper::create(const void * buffer, c
 	return ProtocolReadBufferHelper(frameBasis);
 }
 
-uint16_t ProtocolReadBufferHelper::size() const
+std::vector<const uint8_t*>::size_type ProtocolReadBufferHelper::size() const
 {
 	return frameBasis.size();
 }

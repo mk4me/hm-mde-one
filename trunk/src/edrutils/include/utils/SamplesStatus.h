@@ -21,7 +21,7 @@ namespace utils
 	public:
 		//! Mapa statusów - ich granicznych (górnych) wartoœci do faktycznych statusów
 		//! Wartoœci powinny byæ w przedziale od 0 do 1, w przeciwnym wypakdu zostsan¹ przeskalowane
-		typedef std::map<float, int> StatusMap;
+		using StatusMap = std::map<float, int>;
 
 		enum SampleType{
 			Positive = 2,

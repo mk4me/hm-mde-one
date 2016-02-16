@@ -15,7 +15,7 @@ std::string Axis::getAxisOrderName( kinematicUtils::AxisOrder::Type order ) {
     }
 }
 
-int DegreeOfFreedom::getChannelIndex(kinematicUtils::Channel channel, const std::vector<DegreeOfFreedom>& dofs) {
+std::size_t DegreeOfFreedom::getChannelIndex(kinematicUtils::Channel channel, const std::vector<DegreeOfFreedom>& dofs) {
     
 	auto it = std::find_if(dofs.begin(), dofs.end(), [channel](const DegreeOfFreedom & dof) { return dof.channel == channel; });
 	return it != dofs.end() ? std::distance(dofs.begin(), it) : -1;

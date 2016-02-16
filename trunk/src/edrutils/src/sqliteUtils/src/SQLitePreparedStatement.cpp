@@ -30,7 +30,7 @@ bool SQLitePreparedStatement::Finalizer::operator()(sqlite3_stmt * statment)
 sqlite3_stmt * SQLitePreparedStatement::prepare(sqlite3 * db, const std::string & sql)
 {
 	sqlite3_stmt * ret = nullptr;
-	auto rc = sqlite3_prepare_v2(db, sql.c_str(), sql.size(), &ret, nullptr);
+	auto rc = sqlite3_prepare_v2(db, sql.c_str(), (int)sql.size(), &ret, nullptr);
 	if (rc != SQLITE_OK){
 		finalize(ret);
 		ret = nullptr;

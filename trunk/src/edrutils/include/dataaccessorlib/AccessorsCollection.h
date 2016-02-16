@@ -41,11 +41,11 @@ namespace dataaccessor {
 		template<typename Interpolator, typename Extrapolator>
 		using FAdapter = DiscreteFunctionAccessorAdapter<value_type, argument_type, Interpolator, Extrapolator>;
 
-		typedef std::vector<AccessorPtr> Collection;
-		typedef std::vector<FAccessorPtr> FCollection;
-		typedef typename Collection::iterator iterator;
-		typedef typename Collection::const_iterator const_iterator;
-		typedef boost::tuple<value_type, argument_type, std::size_t> ValueArgumentIndex;
+		using Collection = std::vector<AccessorPtr>;
+		using FCollection = std::vector<FAccessorPtr>;
+		using iterator = typename Collection::iterator;
+		using const_iterator = typename Collection::const_iterator;
+		using ValueArgumentIndex = boost::tuple<value_type, argument_type, std::size_t>;
 	protected:
 		Collection accessors;
 		FCollection faccessors;
@@ -54,10 +54,18 @@ namespace dataaccessor {
 
 	public:
 
-		AccessorsCollection() {}
+		AccessorsCollection() : configurationID(-1) {}
 		AccessorsCollection(const AccessorsCollection& dc)
-			: accessors(dc.accessors), configurationID(dc.configurationID)
+			: accessors(dc.accessors), faccessors(dc.faccessors),
+			configurationID(dc.configurationID)
 		{			
+		}
+
+		AccessorsCollection(AccessorsCollection && dc)
+			: accessors(std::move(dc.accessors)), faccessors(std::move(dc.faccessors)),
+			configurationID(dc.configurationID)
+		{
+			dc.configurationID = -1;
 		}
 		
 		virtual ~AccessorsCollection() {}

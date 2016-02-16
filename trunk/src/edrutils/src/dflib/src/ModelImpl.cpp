@@ -173,8 +173,8 @@ namespace df
 
 		if(src->connected() == true && dest->connected() == true)
 		{
-			int s = dest->connectionsSize();
-			for(int i = 0; i < s; ++i)
+			const auto s = dest->connectionsSize();
+			for(std::size_t i = 0; i < s; ++i)
 			{
 				if(dest->connection(i)->source() == src)
 				{

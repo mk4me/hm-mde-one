@@ -19,14 +19,14 @@ namespace sqliteUtils
 	//! \tparam _Elem Elementy sk³adowane w blobach
 	//! \tparam _Traits Cechy obiektu typu _Elem
 	//! \tparam _BufferPolicy Polityka zarzadzania buforem danych
-	template<typename _Elem = uint8_t,
-		typename _Traits = std::char_traits<_Elem>>
-	class SQLiteBLOBStreamBufferT : public std::basic_streambuf<_Elem, _Traits>
+	template<typename Elem = uint8_t,
+		typename Traits = std::char_traits<Elem>>
+	class SQLiteBLOBStreamBufferT : public std::basic_streambuf<Elem, Traits>
 	{
 	public:
 
-		typedef IBufferPolicyT<_Elem> _BufferPolicy;
-		typedef utils::unique_ptr<_BufferPolicy> _BufferPolicyPtr;
+		using BufferPolicy = IBufferPolicyT<Elem>;
+		using BufferPolicyPtr = utils::unique_ptr<BufferPolicy>;
 
 	private:
 
@@ -39,25 +39,24 @@ namespace sqliteUtils
 		};
 
 		//! Internal state
-		typedef int _Strstate;
+		using Strstate = int;
 
 		//! Typ inta
-		typedef typename _Traits::int_type int_type;
+		using int_type = typename Traits::int_type;
 		//! Typ pozycji
-		typedef typename _Traits::pos_type pos_type;
+		using pos_type = typename Traits::pos_type;
 		//! Typ offsetu
-		typedef typename _Traits::off_type off_type;
+		using off_type = typename Traits::off_type;
 
 	public:
 		//! Typ mojego bufora
-		typedef SQLiteBLOBStreamBufferT<_Elem, _Traits> _Myt;
+		using _Myt = SQLiteBLOBStreamBufferT<Elem, Traits>;
 		//! Typ bufora strumienia
-		typedef std::basic_streambuf<_Elem, _Traits> _Mysb;
+		using _Mysb = std::basic_streambuf<Elem, Traits>;
 		//! Typ mojego stanu
-		typedef typename _Traits::state_type _Myst;
+		using _Myst = typename Traits::state_type;
 
-		static const pos_type _BADOFF; = (-1); //za cppreference, -1 jest uzywane do okreslania wadliwych offsetow;
-
+		static const pos_type _BADOFF; //za cppreference, -1 jest uzywane do okreslania wadliwych offsetow;
 
 	public:
 		//! Konstruktor
@@ -67,7 +66,7 @@ namespace sqliteUtils
 		//! \param table Nazwa tabeli
 		//! \param column Nazwa kolumny
 		//! \param rowID Unikalny identyfikator wiersza w zadanej tabeli		
-		SQLiteBLOBStreamBufferT(_BufferPolicyPtr && buffer, sqlite3 * db, const std::string & table,
+		SQLiteBLOBStreamBufferT(BufferPolicyPtr && buffer, sqlite3 * db, const std::string & table,
 			const std::string & column, const sqlite3_int64 rowID, const std::string & dbName = "main",
 			std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 
@@ -78,9 +77,9 @@ namespace sqliteUtils
 
 		virtual std::streamsize showmanyc();
 
-		virtual int_type pbackfail(int_type = _Traits::eof());
+		virtual int_type pbackfail(int_type = Traits::eof());
 
-		virtual int_type overflow(int_type _Meta = _Traits::eof());
+		virtual int_type overflow(int_type _Meta = Traits::eof());
 
 		virtual int_type underflow();
 
@@ -114,8 +113,8 @@ namespace sqliteUtils
 		//! \param bufferBase Baza lokalna bufora
 		//! \param bufferPos Lokalna pozycja bufora
 		//! \return Globalna pozycja strumienia
-		static int blobGlobalIDX(const int blobBase, const _Elem * bufferBase,
-			const _Elem * bufferPos);
+		static int blobGlobalIDX(const int blobBase, const Elem * bufferBase,
+			const Elem * bufferPos);
 
 		//! \return Globalna pozycja dla zapisu
 		int blobGlobalWriteIDX() const;
@@ -140,11 +139,11 @@ namespace sqliteUtils
 		//! \param blobIDX Wskaznik w obrebie bloba od ktorego zaczynam czytac
 		//! \param blobSize Rozmiar bloba
 		//! \return Ilosc znakow odczytanych z bloba
-		int refillBuffer(const int blobIDX, _Elem * bufferBase);
+		int refillBuffer(const int blobIDX, Elem * bufferBase);
 
 		//! Metoda wypycha lokalne zmiany do bloba - synchronizuje
 		//! \return Czy udalo sie dane zapisac do bloba
-		bool flushBuffer(const _Elem * base, const int count,
+		bool flushBuffer(const Elem * base, const int count,
 			const int blobIDX);
 
 		//! Metoda generuje nazwe tabeli dla zapytaia aktualizujacego bloba
@@ -156,7 +155,7 @@ namespace sqliteUtils
 
 		//! \param _Mode tryb otwarcia strumienia
 		//! \return Wewnêtrzny tryb otwarcia strumienia
-		static _Strstate _Getstate(std::ios_base::openmode _Mode);
+		static Strstate _Getstate(std::ios_base::openmode _Mode);
 
 	private:
 
@@ -179,7 +178,7 @@ namespace sqliteUtils
 
 		//! ----------------- STAN BUFORÓW --------------------
 		//! Bufor
-		_BufferPolicyPtr buffer;
+		BufferPolicyPtr buffer;
 		//! Aktualny indeks wewn¹trz bloba dla bufora odczytu
 		int blobReadBase;
 		//! Aktualny indeks wewn¹trz bloba dla bufora zapisu
@@ -188,11 +187,11 @@ namespace sqliteUtils
 		bool putBackWrite;
 
 		//! -------------- STAN STRUMIENIA ---------------------
-		_Strstate Mystate;	// Stan strumienia
+		Strstate Mystate;	// Stan strumienia
 		int blobSeekhigh;		// Faktyczny rozmiar strumienia - uwzglêdnia rozmiar bloba i stan zape³nienia bufora
 	};
-	template<typename _Elem, typename _Traits>	
-	const typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::pos_type SQLiteBLOBStreamBufferT<_Elem, _Traits>::_BADOFF = typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::pos_type(-1); //za cppreference, -1 jest uzywane do okreslania wadliwych offsetow
+	template<typename Elem, typename Traits>	
+	const typename SQLiteBLOBStreamBufferT<Elem, Traits>::pos_type SQLiteBLOBStreamBufferT<Elem, Traits>::_BADOFF = typename SQLiteBLOBStreamBufferT<Elem, Traits>::pos_type(-1); //za cppreference, -1 jest uzywane do okreslania wadliwych offsetow
 
 	#include <sqliteUtils/SQLiteBLOBStreamBufferTImpl.h>
 }

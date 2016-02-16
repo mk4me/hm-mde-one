@@ -22,8 +22,8 @@
 #include <boost/format.hpp>
 
 
-template<typename _Elem, typename _Traits>
-SQLiteBLOBStreamBufferT<_Elem, _Traits>::SQLiteBLOBStreamBufferT(_BufferPolicyPtr && buff,
+template<typename Elem, typename Traits>
+SQLiteBLOBStreamBufferT<Elem, Traits>::SQLiteBLOBStreamBufferT(BufferPolicyPtr && buff,
 	sqlite3 * db, const std::string & table,
 	const std::string & column, const sqlite3_int64 rowID,
 	const std::string & dbName, std::ios_base::openmode mode) : _Mysb(), buffer(std::move(buff)),
@@ -40,20 +40,20 @@ SQLiteBLOBStreamBufferT<_Elem, _Traits>::SQLiteBLOBStreamBufferT(_BufferPolicyPt
 	blobSize = blobSeekhigh = initialSize;
 }
 
-template<typename _Elem, typename _Traits>
-SQLiteBLOBStreamBufferT<_Elem, _Traits>::~SQLiteBLOBStreamBufferT()
+template<typename Elem, typename Traits>
+SQLiteBLOBStreamBufferT<Elem, Traits>::~SQLiteBLOBStreamBufferT()
 {
 	sync();
 }
 
-template<typename _Elem, typename _Traits>
-typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBufferT<_Elem, _Traits>::pbackfail(typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type _Meta)
+template<typename Elem, typename Traits>
+typename SQLiteBLOBStreamBufferT<Elem, Traits>::int_type SQLiteBLOBStreamBufferT<Elem, Traits>::pbackfail(typename SQLiteBLOBStreamBufferT<Elem, Traits>::int_type _Meta)
 {
 	if ((blobReadBase == 0 && (_Mysb::gptr() == nullptr || _Mysb::gptr() == _Mysb::eback()))
-		|| (!_Traits::eq_int_type(_Traits::eof(), _Meta)
-		&& !_Traits::eq(_Traits::to_char_type(_Meta), _Mysb::gptr()[-1])
+		|| (!Traits::eq_int_type(Traits::eof(), _Meta)
+		&& !Traits::eq(Traits::to_char_type(_Meta), _Mysb::gptr()[-1])
 		&& Mystate & _Constant))
-		return (_Traits::eof());	// can't put back, fail
+		return (Traits::eof());	// can't put back, fail
 	else
 	{	// back up one position and store put-back character
 		const auto pos = toStreamPos(blobGlobalReadIDX());
@@ -63,20 +63,20 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 			underflow();
 		}
 		seekpos(pos-1, std::ios_base::in);
-		if (!_Traits::eq_int_type(_Traits::eof(), _Meta)){
-			*_Mysb::gptr() = _Traits::to_char_type(_Meta);
+		if (!Traits::eq_int_type(Traits::eof(), _Meta)){
+			*_Mysb::gptr() = Traits::to_char_type(_Meta);
 			putBackWrite = true;
 		}
-		return (_Traits::not_eof(_Meta));
+		return (Traits::not_eof(_Meta));
 	}
 }
 
-template<typename _Elem, typename _Traits>
-typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBufferT<_Elem, _Traits>::overflow(int_type _Meta)
+template<typename Elem, typename Traits>
+typename SQLiteBLOBStreamBufferT<Elem, Traits>::int_type SQLiteBLOBStreamBufferT<Elem, Traits>::overflow(int_type _Meta)
 {
-	if ((Mystate & _Constant) || _Traits::eq_int_type(_Traits::eof(), _Meta) == true ||
+	if ((Mystate & _Constant) || Traits::eq_int_type(Traits::eof(), _Meta) == true ||
 		((buffer->begin() == nullptr) && (buffer->updateSize(std::max(toStreamPos(blobSize), (int)DefaultBufferSize)) < 1))){
-		return (_Traits::eof()); // read only mode or no open blob, or EOF or faile dto create buffer
+		return (Traits::eof()); // read only mode or no open blob, or EOF or faile dto create buffer
 	}
 
 	//czy cos było pisane do bufora?
@@ -89,7 +89,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 
 		//zapisuje bufor w stumieniu
 		if (flushBuffer(_Mysb::pbase(), offset, blobWriteBase) == false){
-			return (_Traits::eof());	// zapis sie nie powiodlo, fail
+			return (Traits::eof());	// zapis sie nie powiodlo, fail
 		}
 
 		//czy zmienił się rozmiar?
@@ -105,7 +105,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 
 			//czy cos pobralem albo jakis blad?
 			if (s < 1){
-				return (_Traits::eof()); // nic nie pobralem wiec pewnie koniec
+				return (Traits::eof()); // nic nie pobralem wiec pewnie koniec
 			}
 		}
 
@@ -130,7 +130,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 
 			//zapisuje bufor w stumieniu
 			if (flushBuffer(_Mysb::eback(), std::min<int>(_Mysb::egptr() - _Mysb::eback(), toStreamPos(blobSeekhigh - blobReadBase)), blobReadBase) == false){
-				return (_Traits::eof());	// zapis sie nie powiodlo, fail
+				return (Traits::eof());	// zapis sie nie powiodlo, fail
 			}
 
 			//czy zmienił się rozmiar?
@@ -154,7 +154,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 
 				//czy cos pobralem albo jakis blad?
 				if (s < 1){
-					return (_Traits::eof()); // nic nie pobralem wiec pewnie koniec
+					return (Traits::eof()); // nic nie pobralem wiec pewnie koniec
 				}
 
 				//niestety, obszary są rozłączne, muszę zapamiętac stan bufora do odczytu i zresetować jego obszar
@@ -181,7 +181,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 
 				//czy cos pobralem albo jakis blad?
 				if (s < 1){
-					return (_Traits::eof()); // nic nie pobralem wiec pewnie koniec
+					return (Traits::eof()); // nic nie pobralem wiec pewnie koniec
 				}
 			}
 
@@ -190,7 +190,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 		}
 	}
 	//zapisujemy
-	*_Mysb::pptr() = _Traits::to_char_type(_Meta);
+	*_Mysb::pptr() = Traits::to_char_type(_Meta);
 	 _Mysb::pbump(1);
 	//aktualizuje koniec strumienia dla poprawnego odczytu całego strumienia podczas zapisu
 	updateBlobStreamEnd();
@@ -198,13 +198,13 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 	return (_Meta);
 }
 
-template<typename _Elem, typename _Traits>
-typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBufferT<_Elem, _Traits>::underflow()
+template<typename Elem, typename Traits>
+typename SQLiteBLOBStreamBufferT<Elem, Traits>::int_type SQLiteBLOBStreamBufferT<Elem, Traits>::underflow()
 {
 	// get an element from stream, point on it
 	if (blobSeekhigh < 1 || (Mystate & _Noread) ||
 		((buffer->begin() == nullptr) && (buffer->updateSize(std::max(toStreamPos(blobSize), (int)DefaultBufferSize)) < 1))){
-		return (_Traits::eof());	// no open blob or no data to read or failed to create buffer, fail
+		return (Traits::eof());	// no open blob or no data to read or failed to create buffer, fail
 	}
 	auto oldSeekhigh = blobSeekhigh;
 	updateBlobStreamEnd();
@@ -221,7 +221,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 
 			if (flushBuffer(_Mysb::pbase(), std::min<int>(_Mysb::epptr() - _Mysb::pbase(), toStreamPos(blobSeekhigh - blobWriteBase)), blobWriteBase) == false){
 				blobSeekhigh = oldSeekhigh;
-				return (_Traits::eof());	// zapis sie nie powiodlo, fail
+				return (Traits::eof());	// zapis sie nie powiodlo, fail
 			}
 
 			if (oldBlobSize < blobSize){
@@ -252,7 +252,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 		//zapisuje bufor w stumieniu
 		if (flushBuffer(_Mysb::eback(), std::min<int>(_Mysb::egptr() - _Mysb::eback(), toStreamPos(blobSeekhigh - blobReadBase)), blobReadBase) == false){
 			blobSeekhigh = oldSeekhigh;
-			return (_Traits::eof());	// zapis sie nie powiodlo, fail
+			return (Traits::eof());	// zapis sie nie powiodlo, fail
 		}
 
 		//czy zmienił się rozmiar?
@@ -276,7 +276,7 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 		//czy cos pobralem albo jakis blad?
 		if (s < 1){
 			blobSeekhigh = oldSeekhigh;
-			return (_Traits::eof()); // nic nie pobralem wiec pewnie koniec
+			return (Traits::eof()); // nic nie pobralem wiec pewnie koniec
 		}
 
 		if (readIDX > blobReadBase){
@@ -288,12 +288,12 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::int_type SQLiteBLOBStreamBuffe
 	}
 
 	// no codecvt facet, just get it
-	_Elem _Ch = *(_Mysb::gptr());
-	return _Traits::to_int_type(_Ch);
+	Elem _Ch = *(_Mysb::gptr());
+	return Traits::to_int_type(_Ch);
 }
 
-template<typename _Elem, typename _Traits>
-std::streamsize SQLiteBLOBStreamBufferT<_Elem, _Traits>::showmanyc()
+template<typename Elem, typename Traits>
+std::streamsize SQLiteBLOBStreamBufferT<Elem, Traits>::showmanyc()
 {
 	std::streamsize ret = 0;
 
@@ -322,8 +322,8 @@ std::streamsize SQLiteBLOBStreamBufferT<_Elem, _Traits>::showmanyc()
 	return ret;
 }
 
-template<typename _Elem, typename _Traits>
-typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::pos_type SQLiteBLOBStreamBufferT<_Elem, _Traits>::seekoff(off_type _Off,
+template<typename Elem, typename Traits>
+typename SQLiteBLOBStreamBufferT<Elem, Traits>::pos_type SQLiteBLOBStreamBufferT<Elem, Traits>::seekoff(off_type _Off,
 	std::ios_base::seekdir _Way, std::ios_base::openmode _Which)
 {	
 
@@ -364,8 +364,8 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::pos_type SQLiteBLOBStreamBuffe
 	return ret;
 }
 
-template<typename _Elem, typename _Traits>
-typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::pos_type SQLiteBLOBStreamBufferT<_Elem, _Traits>::seekpos(pos_type _Ptr,
+template<typename Elem, typename Traits>
+typename SQLiteBLOBStreamBufferT<Elem, Traits>::pos_type SQLiteBLOBStreamBufferT<Elem, Traits>::seekpos(pos_type _Ptr,
 	std::ios_base::openmode _Mode)
 {
 	// aktualizuje seek high - ciągle mogły być zapisy
@@ -419,8 +419,8 @@ typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::pos_type SQLiteBLOBStreamBuffe
 	return pos_type(_StreamPos);
 }
 
-template<typename _Elem, typename _Traits>
-int SQLiteBLOBStreamBufferT<_Elem, _Traits>::sync()
+template<typename Elem, typename Traits>
+int SQLiteBLOBStreamBufferT<Elem, Traits>::sync()
 {
 	int ret = 0;
 
@@ -465,75 +465,75 @@ int SQLiteBLOBStreamBufferT<_Elem, _Traits>::sync()
 	return ret;
 }
 
-template<typename _Elem, typename _Traits>
-int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobBufferSize() const
+template<typename Elem, typename Traits>
+int SQLiteBLOBStreamBufferT<Elem, Traits>::blobBufferSize() const
 {
 	return toBlobPos(streamBufferSize());
 }
 
-template<typename _Elem, typename _Traits>
-int SQLiteBLOBStreamBufferT<_Elem, _Traits>::streamBufferSize() const
+template<typename Elem, typename Traits>
+int SQLiteBLOBStreamBufferT<Elem, Traits>::streamBufferSize() const
 {
 	return std::distance(buffer->begin(), buffer->end());
 }
 
-template<typename _Elem, typename _Traits>
-int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobMaxIDX(const int idx) const
+template<typename Elem, typename Traits>
+int SQLiteBLOBStreamBufferT<Elem, Traits>::blobMaxIDX(const int idx) const
 {
 	return std::min(idx + blobBufferSize(), blobSeekhigh);
 }
 
-template<typename _Elem, typename _Traits>
-int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobReadMaxIDX() const
+template<typename Elem, typename Traits>
+int SQLiteBLOBStreamBufferT<Elem, Traits>::blobReadMaxIDX() const
 {
 	return blobMaxIDX(blobReadBase);
 }
 
-template<typename _Elem, typename _Traits>
-int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobWriteMaxIDX() const
+template<typename Elem, typename Traits>
+int SQLiteBLOBStreamBufferT<Elem, Traits>::blobWriteMaxIDX() const
 {
 	return blobMaxIDX(blobWriteBase);
 }
 
-template<typename _Elem, typename _Traits>
-int SQLiteBLOBStreamBufferT<_Elem, _Traits>::toStreamPos(int pos)
+template<typename Elem, typename Traits>
+int SQLiteBLOBStreamBufferT<Elem, Traits>::toStreamPos(int pos)
 {
-	return pos / sizeof(_Elem);
+	return pos / sizeof(Elem);
 }
 
-template<typename _Elem, typename _Traits>
-int SQLiteBLOBStreamBufferT<_Elem, _Traits>::toBlobPos(int pos)
+template<typename Elem, typename Traits>
+int SQLiteBLOBStreamBufferT<Elem, Traits>::toBlobPos(int pos)
 {
-	return pos * sizeof(_Elem);
+	return pos * sizeof(Elem);
 }
 
-template<typename _Elem, typename _Traits>
-int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobGlobalIDX(const int blobBase, const _Elem * bufferBase,
-	const _Elem * bufferPos)
+template<typename Elem, typename Traits>
+int SQLiteBLOBStreamBufferT<Elem, Traits>::blobGlobalIDX(const int blobBase, const Elem * bufferBase,
+	const Elem * bufferPos)
 {
 	return blobBase + (int)((bufferPos == nullptr) ? 0 : toBlobPos(std::distance(bufferBase, bufferPos)));
 }
 
-template<typename _Elem, typename _Traits>
-int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobGlobalWriteIDX() const
+template<typename Elem, typename Traits>
+int SQLiteBLOBStreamBufferT<Elem, Traits>::blobGlobalWriteIDX() const
 {
 	return blobGlobalIDX(blobWriteBase, _Mysb::pbase(), _Mysb::pptr());
 }
 
-template<typename _Elem, typename _Traits>
-int SQLiteBLOBStreamBufferT<_Elem, _Traits>::blobGlobalReadIDX() const
+template<typename Elem, typename Traits>
+int SQLiteBLOBStreamBufferT<Elem, Traits>::blobGlobalReadIDX() const
 {
 	return blobGlobalIDX(blobReadBase, _Mysb::eback(), _Mysb::gptr());
 }
 
-template<typename _Elem, typename _Traits>
-void SQLiteBLOBStreamBufferT<_Elem, _Traits>::updateBlobStreamEnd()
+template<typename Elem, typename Traits>
+void SQLiteBLOBStreamBufferT<Elem, Traits>::updateBlobStreamEnd()
 {
 	blobSeekhigh = std::max(blobSeekhigh, blobGlobalWriteIDX());
 }
 
-template<typename _Elem, typename _Traits>
-int SQLiteBLOBStreamBufferT<_Elem, _Traits>::refillBuffer(const int blobIDX, _Elem * bufferBase)
+template<typename Elem, typename Traits>
+int SQLiteBLOBStreamBufferT<Elem, Traits>::refillBuffer(const int blobIDX, Elem * bufferBase)
 {
 	const int toRead = std::min(toBlobPos(std::distance(bufferBase, buffer->end())), blobSize - blobIDX);
 	using namespace sqliteUtils;
@@ -552,8 +552,8 @@ int SQLiteBLOBStreamBufferT<_Elem, _Traits>::refillBuffer(const int blobIDX, _El
 	return toRead;
 }
 
-template<typename _Elem, typename _Traits>
-bool SQLiteBLOBStreamBufferT<_Elem, _Traits>::flushBuffer(const _Elem * base, const int count,
+template<typename Elem, typename Traits>
+bool SQLiteBLOBStreamBufferT<Elem, Traits>::flushBuffer(const Elem * base, const int count,
 	const int blobIDX)
 {
 	const unsigned int buffSize = toBlobPos(count);
@@ -631,17 +631,17 @@ bool SQLiteBLOBStreamBufferT<_Elem, _Traits>::flushBuffer(const _Elem * base, co
 	return true;
 }
 
-template<typename _Elem, typename _Traits>
-std::string SQLiteBLOBStreamBufferT<_Elem, _Traits>::updateTableName(const std::string & dbName,
+template<typename Elem, typename Traits>
+std::string SQLiteBLOBStreamBufferT<Elem, Traits>::updateTableName(const std::string & dbName,
 	const std::string & table)
 {
 	return (dbName.empty() == true) ? table : dbName + '.' + table;
 }
 
-template<typename _Elem, typename _Traits>
-typename SQLiteBLOBStreamBufferT<_Elem, _Traits>::_Strstate SQLiteBLOBStreamBufferT<_Elem, _Traits>::_Getstate(std::ios_base::openmode _Mode)
+template<typename Elem, typename Traits>
+typename SQLiteBLOBStreamBufferT<Elem, Traits>::Strstate SQLiteBLOBStreamBufferT<Elem, Traits>::_Getstate(std::ios_base::openmode _Mode)
 {
-	_Strstate _State = (_Strstate)0;
+	Strstate _State = (Strstate)0;
 	if (!(_Mode & std::ios_base::in))
 		_State |= _Noread;
 	if (!(_Mode & std::ios_base::out))

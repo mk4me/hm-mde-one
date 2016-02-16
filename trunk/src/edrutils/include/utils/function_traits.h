@@ -18,44 +18,42 @@ namespace std
 	//implementacja wziêta i rozwiniêta na bazie tych Ÿróde³:
 	//https://functionalcpp.wordpress.com/2013/08/05/function-traits/
 
-	//! \tparam F Typ weryfikowany pod k¹tem bycia funktorem
-	template <typename T>
-	//! Klasa pomocnicza przy detekcji funktorów
-	struct functor_check_impl
+	namespace impl
 	{
 		//! \tparam U Badany typ
 		template<typename U>
 		//! \return Typ wskaŸnika do operatora wywo³ania funktora
 		static auto check(U*) -> decltype(&U::operator()); // checks function existence
-		//! \tparam U Badany typ
+														   //! \tparam U Badany typ
 		template<typename U>
 		//! \return Fa³sz
 		static auto check(...)->std::false_type;
-		//! Informacja o funktorze
-		using type = typename std::is_member_function_pointer<decltype(check<T>(0))>::type; // checks return type is some kind of floating point
-	};
 
-	//! \tparam U Badany typ
-	template <typename T>
-	//! Informacja czy typ jest funktorem
-	struct functor_check : public std::functor_check_impl<T>::type {};	
+		//! \tparam F Typ weryfikowany pod k¹tem bycia funktorem
+		template <typename T>
+		//! Klasa pomocnicza przy detekcji funktorów
+		struct functor_check : public std::is_member_function_pointer<decltype(check<T>(0))> {};
+	}
 
 	//! \tparam F Typ funktora
 	template<typename F>
 	//! Trait sprawdzaj¹cy czy typ F jest funktorem
 	struct is_functor : public std::integral_constant<bool, std::is_class<typename std::decay<F>::type>::value &&
-		std::functor_check<typename std::decay<F>::type>::value> {};
+		impl::functor_check<typename std::decay<F>::type>::value> {};
 
-	//TODO - jeszcze do weryfikacji
-	//! \tparam F Sprawdzana funkcja
-	//! \tparam M Funkcja o sygnaturze membera (this, Args...)
-	template<typename F, typename M>
-	//! Klasa pomocnicza przy sprawdzaniu czy dana funkcja jest memberem (statyczna)
-	struct member_function_helper
+	namespace impl
 	{
-		static const bool is_static = !std::is_same<F, M>::value;
-		using type = typename std::conditional<is_static, F, M>::type;
-	};
+		//TODO - jeszcze do weryfikacji
+		//! \tparam F Sprawdzana funkcja
+		//! \tparam M Funkcja o sygnaturze membera (this, Args...)
+		template<typename F, typename M>
+		//! Klasa pomocnicza przy sprawdzaniu czy dana funkcja jest memberem (statyczna)
+		struct member_function
+		{
+			static const bool is_static = !std::is_same<F, M>::value;
+			using type = typename std::conditional<is_static, F, M>::type;
+		};
+	}
 
 	//! \tparam M Czy funkcja jest skladowa klasy
 	//! \tparam S Czy metoda jest statyczna
@@ -68,12 +66,12 @@ namespace std
 		//weryfikujemy
 		//czy wszystko false
 		ENABLE_IF(((M == false) && (M == S) && (M == C) && (M == L) && (M == R)) ||
-		//czy member
-		((M == true) &&
-			// czy static
-			(((S == true) && (C == false) && (V == false) && (L == false) && (R == false)) ||
-				// czy non-static
-				((S == false) && ((!L || !R) == true)))))>
+			//czy member
+			((M == true) &&
+				// czy static
+				(((S == true) && (C == false) && (V == false) && (L == false) && (R == false)) ||
+					// czy non-static
+					((S == false) && ((!L || !R) == true)))))>
 	struct member_function_description
 	{
 		//! Czy funkcja jest skladowa klasy
@@ -98,284 +96,287 @@ namespace std
 		static const bool variadic_arguments_function = Var;
 	};
 
-	//! Forward declaration
-	template<typename>
-	//! Klasa pomocnicza przy dekompozycji sygnatury funkcji
-	struct function_traits_helper;
-
-	//! \tparam R typ zwracany
-	//! \tparam Args Argumenty funkcji
-	template<class R, class... Args>
-	//! Klasa realizuj¹ca dekompozycjê sygnatury funckji
-	struct function_traits_helper<R(Args...)>
+	namespace impl
 	{
-		//! Zwracany typ
-		using return_type = R;
-		//! Zwracany typ bez modyfikatorów (const, &, &&)
-		using decay_return_type = typename std::decay<R>::type;
-		//! Iloœæ argumentów
-		static const std::size_t arity = sizeof...(Args);
-		//! \tparam Idx Numer argumentu o który pytamy
-		template <std::size_t Idx>
-		//! Klasa pomocnicza przy wyci¹ganiu typów kolejnych argumentów z sygnatury
-		struct argument
+		//! Forward declaration
+		template<typename>
+		//! Klasa pomocnicza przy dekompozycji sygnatury funkcji
+		struct function_traits_helper;
+
+		//! \tparam R typ zwracany
+		//! \tparam Args Argumenty funkcji
+		template<class R, class... Args>
+		//! Klasa realizuj¹ca dekompozycjê sygnatury funckji
+		struct function_traits_helper<R(Args...)>
 		{
-			static_assert(Idx < arity, "error: invalid parameter index.");
-			//! Typ zadanego argumentu
-			using type = typename std::tuple_element<Idx, std::tuple<Args...>>::type;
+			//! Zwracany typ
+			using return_type = R;
+			//! Zwracany typ bez modyfikatorów (const, &, &&)
+			using decay_return_type = typename std::decay<R>::type;
+			//! Iloœæ argumentów
+			static const std::size_t arity = sizeof...(Args);
+			//! \tparam Idx Numer argumentu o który pytamy
+			template <std::size_t Idx>
+			//! Klasa pomocnicza przy wyci¹ganiu typów kolejnych argumentów z sygnatury
+			struct argument
+			{
+				static_assert(Idx < arity, "error: invalid parameter index.");
+				//! Typ zadanego argumentu
+				using type = typename std::tuple_element<Idx, std::tuple<Args...>>::type;
+			};
+			//! \tparam Idx Numer argumentu o który pytamy
+			template <std::size_t Idx>
+			//! Klasa pomocnicza przy wyci¹ganiu czystych typów kolejnych argumentów z sygnatury
+			struct decay_argument
+			{
+				//! Czysty typ zadanego argumentu
+				using type = typename std::decay<typename argument<Idx>::type>::type;
+			};
 		};
-		//! \tparam Idx Numer argumentu o który pytamy
-		template <std::size_t Idx>
-		//! Klasa pomocnicza przy wyci¹ganiu czystych typów kolejnych argumentów z sygnatury
-		struct decay_argument
+
+		//! \tparam F Typ funktora
+		//! \tparam dummy
+		template<class F, ENABLE_IF(is_functor<F>::value)>
+		//! Klasa realizuj¹ca dekompozycjê sygnatury funktora
+		struct functor_traits_helper
 		{
-			//! Czysty typ zadanego argumentu
-			using type = typename std::decay<typename argument<Idx>::type>::type;
+			static_assert(is_functor<F>::value, "Type F must be a functor object");
+
+		private:
+			//! Uzywamy klasycznych traitów dla funkcji któr¹ jest operator () funktora
+			using call_type = function_traits_helper<decltype(&F::operator())>;
+		public:
+			//! Zwracany typ
+			using return_type = typename call_type::return_type;
+			//! Zwracany typ bez modyfikatorów (const, &, &&)
+			using decay_return_type = typename std::decay<return_type>::type;
+			//! Iloœæ argumentów
+			static const std::size_t arity = call_type::arity - 1;
+			//! \tparam Idx Numer argumentu o który pytamy
+			template <std::size_t Idx>
+			//! Klasa pomocnicza przy wyci¹ganiu typów kolejnych argumentów z sygnatury
+			struct argument
+			{
+				static_assert(Idx < arity, "error: invalid parameter index.");
+				//! Typ zadanego argumentu
+				using type = typename call_type::template argument<Idx + 1>::type;
+			};
+			//! \tparam Idx Numer argumentu o który pytamy
+			template <std::size_t Idx>
+			//! Klasa pomocnicza przy wyci¹ganiu czystych typów kolejnych argumentów z sygnatury
+			struct decay_argument
+			{
+				//! Czysty typ zadanego argumentu
+				using type = typename std::decay<typename argument<Idx>::type>::type;
+			};
 		};
-	};
 
-	//! \tparam F Typ funktora
-	//! \tparam dummy
-	template<class F, ENABLE_IF(is_functor<F>::value)>
-	//! Klasa realizuj¹ca dekompozycjê sygnatury funktora
-	struct functor_traits_helper
-	{
-		static_assert(is_functor<F>::value, "Type F must be a functor object");
+		// --------------------------------------------------------------------
+		// functor`s traits
+		// --------------------------------------------------------------------
+		template<class F>
+		struct function_traits : public functor_traits_helper<F>, public function_description<>,
+			public member_function_description<>
+		{};
 
-	private:
-		//! Uzywamy klasycznych traitów dla funkcji któr¹ jest operator () funktora
-		using call_type = function_traits_helper<decltype(&F::operator())>;
-	public:
-		//! Zwracany typ
-		using return_type = typename call_type::return_type;
-		//! Zwracany typ bez modyfikatorów (const, &, &&)
-		using decay_return_type = typename std::decay<return_type>::type;
-		//! Iloœæ argumentów
-		static const std::size_t arity = call_type::arity - 1;
-		//! \tparam Idx Numer argumentu o który pytamy
-		template <std::size_t Idx>
-		//! Klasa pomocnicza przy wyci¹ganiu typów kolejnych argumentów z sygnatury
-		struct argument
-		{
-			static_assert(Idx < arity, "error: invalid parameter index.");
-			//! Typ zadanego argumentu
-			using type = typename call_type::template argument<Idx + 1>::type;
-		};
-		//! \tparam Idx Numer argumentu o który pytamy
-		template <std::size_t Idx>
-		//! Klasa pomocnicza przy wyci¹ganiu czystych typów kolejnych argumentów z sygnatury
-		struct decay_argument
-		{
-			//! Czysty typ zadanego argumentu
-			using type = typename std::decay<typename argument<Idx>::type>::type;
-		};
-	};
+		template<class F>
+		struct function_traits<F&> : public function_traits<F>
+		{};
 
-	// --------------------------------------------------------------------
-	// functor`s traits
-	// --------------------------------------------------------------------
-	template<class F>
-	struct function_traits_impl : public functor_traits_helper<F>, public function_description<>,
-		public member_function_description<>
-	{};
+		template<class F>
+		struct function_traits<const F&> : public function_traits<F>
+		{};
 
-	template<class F>
-	struct function_traits_impl<F&> : public function_traits_impl<F>
-	{};
+		template<class F>
+		struct function_traits<F&&> : public function_traits<F>
+		{};
 
-	template<class F>
-	struct function_traits_impl<const F&> : public function_traits_impl<F>
-	{};
+		// --------------------------------------------------------------------
 
-	template<class F>
-	struct function_traits_impl<F&&> : public function_traits_impl<F>
-	{};
+		// --------------------------------------------------------------------
+		// function traits
+		// --------------------------------------------------------------------
+		template<class R, class... Args>
+		struct function_traits<R(Args...)> : public function_traits_helper<R(Args...)>,
+			public function_description<>, public member_function_description<>
+		{};
 
-	// --------------------------------------------------------------------
+		// variadic function
+		template<class R, class... Args>
+		struct function_traits<R(Args..., ...)> : public function_traits_helper<R(Args...)>,
+			public function_description<true>, public member_function_description<>
+		{};
 
-	// --------------------------------------------------------------------
-	// function traits
-	// --------------------------------------------------------------------
-	template<class R, class... Args>
-	struct function_traits_impl<R(Args...)> : public function_traits_helper<R(Args...)>,
-		public function_description<>, public member_function_description<>
-	{};
+		// --------------------------------------------------------------------
+		// function pointer traits
+		// --------------------------------------------------------------------
+		template<class R, class... Args>
+		struct function_traits<R(*)(Args...)> : public function_traits_helper<R(Args...)>
+		{};
 
-	// variadic function
-	template<class R, class... Args>
-	struct function_traits_impl<R(Args..., ...)> : public function_traits_helper<R(Args...)>,
-		public function_description<true>, public member_function_description<>
-	{};
+		// variadic function pointer
+		template<class R, class... Args>
+		struct function_traits<R(*)(Args..., ...)> : public function_traits_helper<R(Args..., ...)>
+		{};
 
-	// --------------------------------------------------------------------
-	// function pointer traits
-	// --------------------------------------------------------------------
-	template<class R, class... Args>
-	struct function_traits_impl<R(*)(Args...)> : public function_traits_impl<R(Args...)>
-	{};
+		// --------------------------------------------------------------------
 
-	// variadic function pointer
-	template<class R, class... Args>
-	struct function_traits_impl<R(*)(Args..., ...)> : public function_traits_impl<R(Args..., ...)>
-	{};
+		// --------------------------------------------------------------------
+		// member function traits
+		// --------------------------------------------------------------------
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...)> : public function_traits_helper<typename member_function<R(C::*)(Args...), R(*)(C * const, Args...)>::type>,
+			public function_description<>, public member_function_description<true, member_function<R(C::*)(Args...), R(*)(C * const, Args...)>::is_static>
+		{};
 
-	// --------------------------------------------------------------------
+		/*
+		// lvalue member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...)&> : public function_traits_helper<R(C * const, Args...)>,
+		public function_traits_qualifiers<>, public member_function_traits<true, false, false, false, true>
+		{};
 
-	// --------------------------------------------------------------------
-	// member function traits
-	// --------------------------------------------------------------------
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...)> : public function_traits_helper<typename member_function_helper<R(C::*)(Args...), R(*)(C * const, Args...)>::type>,
-		public function_description<>, public member_function_description<true, member_function_helper<R(C::*)(Args...), R(*)(C * const, Args...)>::is_static>
-	{};
+		// rvalue member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...)&&> : public function_traits_helper<R(C * const, Args...)>,
+		public function_traits_qualifiers<>, public member_function_traits<true, false, false, false, false, true>
+		{};*/
 
-	/*
-	// lvalue member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...)&> : public function_traits_helper<R(C * const, Args...)>,
-	public function_traits_qualifiers<>, public member_function_traits<true, false, false, false, true>
-	{};
+		// const member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...)const> : public function_traits_helper<R(C const * const, Args...)>,
+			public function_description<>, public member_function_description<true, false, true>
+		{};
 
-	// rvalue member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...)&&> : public function_traits_helper<R(C * const, Args...)>,
-	public function_traits_qualifiers<>, public member_function_traits<true, false, false, false, false, true>
-	{};*/
+		/*
+		// lvalue const member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...)const&> : public function_traits_helper<R(C const * const, Args...)>,
+		public function_traits_qualifiers<>, public member_function_traits<true, false, true, false, true>
+		{};
 
-	// const member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...)const> : public function_traits_helper<R(C const * const, Args...)>,
-		public function_description<>, public member_function_description<true, false, true>
-	{};
+		// rvalue const member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...)const&&> : public function_traits_helper<R(C const * const, Args...)>,
+		public function_traits_qualifiers<>, public member_function_traits<true, false, true, false, false, true>
+		{};
+		*/
 
-	/*
-	// lvalue const member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...)const&> : public function_traits_helper<R(C const * const, Args...)>,
-	public function_traits_qualifiers<>, public member_function_traits<true, false, true, false, true>
-	{};
+		// volatile member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...)volatile> : public function_traits_helper<R(volatile C * const, Args...)>,
+			public function_description<>, public member_function_description<true, false, false, true>
+		{};
 
-	// rvalue const member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...)const&&> : public function_traits_helper<R(C const * const, Args...)>,
-	public function_traits_qualifiers<>, public member_function_traits<true, false, true, false, false, true>
-	{};
-	*/
+		/*
+		// lvalue volatile member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...)volatile&> : public function_traits_helper<R(volatile C * const, Args...)>,
+		public function_traits_qualifiers<>, public member_function_traits<true, false, false, true, true>
+		{};
 
-	// volatile member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...)volatile> : public function_traits_helper<R(volatile C * const, Args...)>,
-		public function_description<>, public member_function_description<true, false, false, true>
-	{};
+		// rvalue volatile member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...)volatile&&> : public function_traits_helper<R(volatile C * const, Args...)>,
+		public function_traits_qualifiers<>, public member_function_traits<true, false, false, true, false, true>
+		{};
+		*/
 
-	/*
-	// lvalue volatile member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...)volatile&> : public function_traits_helper<R(volatile C * const, Args...)>,
-	public function_traits_qualifiers<>, public member_function_traits<true, false, false, true, true>
-	{};
+		// const volatile member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...)const volatile> : public function_traits_helper<R(volatile C const * const, Args...)>,
+			public function_description<>, public member_function_description<true, false, true, true>
+		{};
 
-	// rvalue volatile member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...)volatile&&> : public function_traits_helper<R(volatile C * const, Args...)>,
-	public function_traits_qualifiers<>, public member_function_traits<true, false, false, true, false, true>
-	{};
-	*/
+		/*
+		// lvalue const volatile member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...)const volatile&> : public function_traits_helper<R(volatile C const * const, Args...)>,
+		public function_traits_qualifiers<>, public member_function_traits<true, false, true, true, true>
+		{};
 
-	// const volatile member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...)const volatile> : public function_traits_helper<R(volatile C const * const, Args...)>,
-		public function_description<>, public member_function_description<true, false, true, true>
-	{};
+		// rvalue const volatile member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...)const volatile&&> : public function_traits_helper<R(volatile C const * const, Args...)>,
+		public function_traits_qualifiers<>, public member_function_traits<true, false, true, true, false, true>
+		{};*/
 
-	/*
-	// lvalue const volatile member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...)const volatile&> : public function_traits_helper<R(volatile C const * const, Args...)>,
-	public function_traits_qualifiers<>, public member_function_traits<true, false, true, true, true>
-	{};
+		// variadic member function pointer	
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args..., ...)> : public function_traits_helper<typename member_function<R(C::*)(Args..., ...), R(C * const, Args..., ...)>::type>,
+			public function_description<true>, public member_function_description<true, member_function<R(C::*)(Args..., ...), R(C * const, Args..., ...)>::is_static>
+		{};
 
-	// rvalue const volatile member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...)const volatile&&> : public function_traits_helper<R(volatile C const * const, Args...)>,
-	public function_traits_qualifiers<>, public member_function_traits<true, false, true, true, false, true>
-	{};*/
+		/*
+		// variadic lvalue member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...,...)&> : public function_traits_helper<R(C * const, Args...,...)>,
+		public function_traits_qualifiers<true>, public member_function_traits<true, false, false, false, true>
+		{};
 
-	// variadic member function pointer	
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args..., ...)> : public function_traits_helper<typename member_function_helper<R(C::*)(Args..., ...), R(C * const, Args..., ...)>::type>,
-		public function_description<true>, public member_function_description<true, member_function_helper<R(C::*)(Args..., ...), R(C * const, Args..., ...)>::is_static>
-	{};
+		// variadic rvalue member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...,...) && > : public function_traits_helper<R(C * const, Args...,...)>,
+		public function_traits_qualifiers<true>, public member_function_traits<true, false, false, false, false, true>
+		{};*/
 
-	/*
-	// variadic lvalue member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...,...)&> : public function_traits_helper<R(C * const, Args...,...)>,
-	public function_traits_qualifiers<true>, public member_function_traits<true, false, false, false, true>
-	{};
+		// variadic const member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args..., ...)const> : public function_traits_helper<R(C const * const, Args..., ...)>,
+			public function_description<true>, public member_function_description<true, false, true>
+		{};
 
-	// variadic rvalue member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...,...) && > : public function_traits_helper<R(C * const, Args...,...)>,
-	public function_traits_qualifiers<true>, public member_function_traits<true, false, false, false, false, true>
-	{};*/
+		/*
+		// variadic lvalue const member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...,...)const&> : public function_traits_helper<R(C const * const, Args...,...)>,
+		public function_traits_qualifiers<true>, public member_function_traits<true, false, true, false, true>
+		{};
 
-	// variadic const member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args..., ...)const> : public function_traits_helper<R(C const * const, Args..., ...)>,
-		public function_description<true>, public member_function_description<true, false, true>
-	{};
+		// variadic rvalue const member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...,...)const&&> : public function_traits_helper<R(C const * const, Args...,...)>,
+		public function_traits_qualifiers<true>, public member_function_traits<true, false, true, false, false, true>
+		{};*/
 
-	/*
-	// variadic lvalue const member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...,...)const&> : public function_traits_helper<R(C const * const, Args...,...)>,
-	public function_traits_qualifiers<true>, public member_function_traits<true, false, true, false, true>
-	{};
+		// variadic volatile member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args..., ...)volatile> : public function_traits_helper<R(volatile C * const, Args..., ...)>,
+			public function_description<true>, public member_function_description<true, false, false, true>
+		{};
 
-	// variadic rvalue const member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...,...)const&&> : public function_traits_helper<R(C const * const, Args...,...)>,
-	public function_traits_qualifiers<true>, public member_function_traits<true, false, true, false, false, true>
-	{};*/
+		/*
+		// variadic lvalue volatile member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...,...)volatile&> : public function_traits_helper<R(volatile C * const, Args...,...)>,
+		public function_traits_qualifiers<true>, public member_function_traits<true, false, false, true, true>
+		{};
 
-	// variadic volatile member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args..., ...)volatile> : public function_traits_helper<R(volatile C * const, Args..., ...)>,
-		public function_description<true>, public member_function_description<true, false, false, true>
-	{};
+		// variadic rvalue volatile member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...,...)volatile&&> : public function_traits_helper<R(volatile C * const, Args...,...)>,
+		public function_traits_qualifiers<true>, public member_function_traits<true, false, false, true, false, true>
+		{};*/
 
-	/*
-	// variadic lvalue volatile member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...,...)volatile&> : public function_traits_helper<R(volatile C * const, Args...,...)>,
-	public function_traits_qualifiers<true>, public member_function_traits<true, false, false, true, true>
-	{};
+		// variadic const volatile member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args..., ...)const volatile> : public function_traits_helper<R(volatile C const * const, Args..., ...)>,
+			public function_description<true>, public member_function_description<true, false, true, true>
+		{};
 
-	// variadic rvalue volatile member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...,...)volatile&&> : public function_traits_helper<R(volatile C * const, Args...,...)>,
-	public function_traits_qualifiers<true>, public member_function_traits<true, false, false, true, false, true>
-	{};*/
+		/*
+		// variadic lvalue const volatile member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...,...)const volatile&> : public function_traits_helper<R(volatile C const * const, Args...,...)>,
+		public function_traits_qualifiers<true>, public member_function_traits<true, false, true, true, true>
+		{};
 
-	// variadic const volatile member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args..., ...)const volatile> : public function_traits_helper<R(volatile C const * const, Args..., ...)>,
-		public function_description<true>, public member_function_description<true, false, true, true>
-	{};
-
-	/*
-	// variadic lvalue const volatile member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...,...)const volatile&> : public function_traits_helper<R(volatile C const * const, Args...,...)>,
-	public function_traits_qualifiers<true>, public member_function_traits<true, false, true, true, true>
-	{};
-
-	// variadic rvalue const volatile member function pointer
-	template<class C, class R, class... Args>
-	struct function_traits_impl<R(C::*)(Args...,...)const volatile&&> : public function_traits_helper<R(volatile C const * const, Args...,...)>,
-	public function_traits_qualifiers<true>, public member_function_traits<true, false, true, true, false, true>
-	{};*/
+		// variadic rvalue const volatile member function pointer
+		template<class C, class R, class... Args>
+		struct function_traits<R(C::*)(Args...,...)const volatile&&> : public function_traits_helper<R(volatile C const * const, Args...,...)>,
+		public function_traits_qualifiers<true>, public member_function_traits<true, false, true, true, false, true>
+		{};*/
+	}
 
 	// --------------------------------------------------------------------	
 
@@ -384,7 +385,7 @@ namespace std
 	//! W³aœciwa realizacja traita dla funkcji i obiektów funkcyjnych
 	struct function_traits : public std::enable_if<std::is_function<F>::value ||
 		(std::is_pointer<F>::value && std::is_function<typename std::remove_pointer<F>::type>::value) ||
-		std::is_member_function_pointer<F>::value || std::is_functor<F>::value, function_traits_impl<F >> ::type
+		std::is_member_function_pointer<F>::value || std::is_functor<F>::value, impl::function_traits<F >> ::type
 	{
 		static_assert(std::is_function<F>::value ||
 		(std::is_pointer<F>::value && std::is_function<typename std::remove_pointer<F>::type>::value) ||

@@ -17,7 +17,7 @@ template <class T, class PtrPolicy>
 class Adapter : public PtrPolicy::Base
 {
 public:
-    typedef T value_type;
+    using value_type = T;
 private:
     //! Wartość.
     T value;
