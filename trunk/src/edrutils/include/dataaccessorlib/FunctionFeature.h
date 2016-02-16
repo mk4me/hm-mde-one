@@ -9,6 +9,7 @@ purpose:
 #define __HEADER_GUARD_DATAACCESSOR__FUNCTIONFEATURE_H__
 
 #include <dataaccessorlib/Accessors.h>
+#include <dataaccessorlib/UniformArgumentsFeature.h>
 #include <set>
 #include <utils/Utils.h>
 #include <type_traits>
@@ -22,7 +23,21 @@ purpose:
 
 namespace dataaccessor
 {
-	class FunctionFeature;
+	class IFunctionFeature;
+
+	class DATAACCESSORLIB_EXPORT FunctionFeature
+	{
+	private:
+		static const utils::shared_ptr<IFunctionFeature> functionFeature;
+		static const utils::shared_ptr<IFunctionFeature> nonFunctionFeature;
+
+	public:
+
+		static inline const utils::shared_ptr<IFunctionFeature> & feature(const bool isFunc)
+		{
+			return (isFunc == true) ? functionFeature : nonFunctionFeature;
+		}
+	};
 
 	//! Interfejs opisuj¹cy cechy kana³y reprezentuj¹cego funkcjê - jeden argument jedna wartoœæ,
 	//! jak kana³ nie ma tego interfejsu to traktujemy go jako relacje i mo¿liwa jest tylko wersja dyskretna
@@ -88,35 +103,6 @@ namespace dataaccessor
 			return FunctionFeature::feature(isFun);
 		}
 	};
-
-	//! \tparam IsFun Informacja czy dane przedstawiaj¹ funkcjê czy nie
-	template<bool IsFunc>
-	class FunctionFeatureT : public IFunctionFeature
-	{
-	public:
-		//! konstruktor domyœlny
-		FunctionFeatureT() {}
-
-		virtual ~FunctionFeatureT() {}
-		//! \return Czy funkcja jest parzysta
-		virtual bool isFunction() const override final { return IsFunc; }	
-	};
-	
-
-	class DATAACCESSORLIB_EXPORT FunctionFeature
-	{
-	private:
-		static const utils::shared_ptr<IFunctionFeature> functionFeature;
-		static const utils::shared_ptr<IFunctionFeature> nonFunctionFeature;
-
-	public:
-
-		static inline const utils::shared_ptr<IFunctionFeature> & feature(const bool isFunc)
-		{
-			return (isFunc == true) ? functionFeature : nonFunctionFeature;
-		}
-	};
-	
 }
 
 #endif	// __HEADER_GUARD_DATAACCESSOR__FUNCTIONFEATURE_H__

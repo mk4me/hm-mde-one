@@ -13,6 +13,9 @@ purpose:
 
 namespace dataaccessor
 {
+	template<typename ArgumentType>
+	class BoundedArgumentsFeature;
+
 	//! \tparam ArgumentType Typ argumentu kana³u danych
 	template<typename ArgumentType>
 	//! Interfesj opisuj¹cy zakres argumentów
@@ -32,12 +35,12 @@ namespace dataaccessor
 			IBoundedArgumentsFeature<ArgumentType> * ret = nullptr;
 			if (accessor.empty() == false) {
 
-				auto feature = accessor.featureExists(dataaccessor::Function);
+				auto feature = accessor.feature<dataaccessor::IFunctionFeature>();
 
 				auto min = accessor.argument(0);
 				auto max = min;
 
-				if (feature == true) {
+				if (feature != nullptr && feature->isFunction() == true) {
 					max = accessor.argument(accessor.size() - 1);
 					auto r = std::minmax(min, max);
 					min = r.first;

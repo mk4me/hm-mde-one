@@ -14,6 +14,9 @@
 
 namespace dataaccessor
 {
+	template<typename ArgumentType>
+	class UniformArgumentsFeature;
+
 	//! \tparam ArgumentType Typ argumentu kana³u
 	template<typename ArgumentType>
 	//! Interfejs kana³u dyskretnego o równo oddalonych argumentach

@@ -13,6 +13,9 @@ purpose:
 
 namespace dataaccessor
 {
+	template<typename ValueType>
+	class BoundedValuesFeature;
+
 	//! \rparam ValueType Typ wartoœci kana³u
 	template<class ValueType>
 	//! Interfejs kana³u z ograniczonymi wartoœciami
@@ -34,7 +37,7 @@ namespace dataaccessor
 			IBoundedValuesFeature * ret = nullptr;
 			if (accessor.empty() == false) {
 
-				auto feature = utils::dynamic_pointer_cast<IFunctionDescriptionFeature>(accessor.feature(IFunctionDescriptionFeature::ID));
+				auto feature = accessor.feature<IFunctionDescriptionFeature>();
 
 				auto min = accessor.value(0);
 				auto max = min;
