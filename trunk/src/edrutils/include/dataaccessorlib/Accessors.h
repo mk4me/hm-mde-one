@@ -290,7 +290,7 @@ namespace dataaccessor
 			typename AFT = AccessorFeatureT<typename IValueAccessorT<ValueType>::value_type, typename IArgumentAccessorT<ArgumentType>::argument_type >>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli istnieje cecha o danym id ale to nie ta o jaką pytamy
-			inline auto getOrCreateFeature(AFT * dummy = nullptr) const -> decltype(utils::shared_ptr<AFT>(AFT::create(this->asDiscrete(), this->asFunction()))) { return this->template getOrCreateFeature<AFT>(); }
+			inline utils::shared_ptr<AFT> getOrCreateFeature(AFT * dummy = nullptr) const { return this->template getOrCreateFeature<AFT>(); }
 	};
 
 	//! \tparam ValueType Typ wartości kanału danych
@@ -420,7 +420,7 @@ namespace dataaccessor
 			ENABLE_IF(std::is_base_of<ValueFeature, ValueFeatureT<ValueType>>::value)>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-			inline auto getOrCreateFeature(ValueFeatureT<ValueType> * dummy = nullptr) const -> decltype(utils::shared_ptr<ValueFeatureT<ValueType>>(ValueFeatureT<ValueType>::create(*this)))
+			inline auto getOrCreateFeature(ValueFeatureT<ValueType> * dummy = nullptr) const -> decltype(utils::shared_ptr<ValueFeatureT<ValueType>>(ValueFeatureT<ValueType>::create(std::declval<IDiscreteValueAccessorT<ValueType>>())))
 		{
 			utils::shared_ptr<ValueFeatureT<ValueType>> ret = this->IAccessor::feature<ValueFeatureT<ValueType>>();
 
@@ -459,7 +459,7 @@ namespace dataaccessor
 			ENABLE_IF(std::is_base_of<ArgumentFeature, ArgumentFeatureT<ArgumentType>>::value)>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-			inline auto getOrCreateFeature(ArgumentFeatureT<ArgumentType> * dummy = nullptr) const -> decltype(utils::shared_ptr<ArgumentFeatureT<ArgumentType>>(ArgumentFeatureT<ArgumentType>::create(*this)))
+			inline auto getOrCreateFeature(ArgumentFeatureT<ArgumentType> * dummy = nullptr) const -> decltype(utils::shared_ptr<ArgumentFeatureT<ArgumentType>>(ArgumentFeatureT<ArgumentType>::create(std::declval<IDiscreteArgumentAccessorT<ArgumentType>>())))
 		{
 			utils::shared_ptr<ArgumentFeatureT<ArgumentType>> ret = this->IAccessor::feature<ArgumentFeatureT<ArgumentType>>();
 
