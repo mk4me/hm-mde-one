@@ -76,9 +76,9 @@ public:
 
         if (signal1) {
 			
-			auto uaf = signal1->getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();			
+			auto uaf = signal1->template getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();
 			
-			std::vector<OutputPtr::element_type::sample_type> data;
+			std::vector<typename OutputPtr::element_type::sample_type> data;
 			data.reserve(signal1->size());
 
 			for (size_type i = 0; i < signal1->size(); ++i) {
@@ -130,9 +130,9 @@ public:
 
         if (signal1 && signal2) {
 			const size_type count = (std::min)(signal1->size(), signal2->size());
-			std::vector<OutputPtr::element_type::sample_type> out(count);
+			std::vector<typename OutputPtr::element_type::sample_type> out(count);
 
-			auto uaf = signal1->getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();
+			auto uaf = signal1->template getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();
 
 			const auto interval = uaf->argumentsInterval();            
 
@@ -141,7 +141,7 @@ public:
 				out[i] = { i * interval, val };
             }			
 
-			auto df = signal1->feature<dataaccessor::DescriptorFeature>();
+			auto df = signal1->template feature<dataaccessor::DescriptorFeature>();
 
 			dataaccessor::IFeaturePtr description;
 
@@ -152,8 +152,8 @@ public:
 					df->argumentType(), df->argumentUnit());
 			}
 			else{
-				description.reset(dataaccessor::DescriptorFeature::create<OutputPtr::element_type::value_type,
-					OutputPtr::element_type::argument_type>("Result",
+				description.reset(dataaccessor::DescriptorFeature::create<typename OutputPtr::element_type::value_type,
+					typename OutputPtr::element_type::argument_type>("Result",
 					df->valueUnit(), df->argumentUnit()));
 			}
 

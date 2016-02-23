@@ -15,7 +15,7 @@ namespace utils
 {
 	namespace impl
 	{
-		//! \tparam C Typ kontenera, który weryfikujemy
+		//! \tparam C Typ kontenera, ktï¿½ry weryfikujemy
 		template<typename C>
 		//! Struktura pomocnicza przy weryfikacji tablic (operator [])
 		struct empty_member_check
@@ -28,7 +28,7 @@ namespace utils
 			using type = typename std::is_same<bool, decltype(check<C>(0))>::type;
 		};
 
-		//! \tparam C Typ kontenera, który weryfikujemy
+		//! \tparam C Typ kontenera, ktï¿½ry weryfikujemy
 		template<typename C>
 		//! Struktura pomocnicza przy weryfikacji tablic (operator [])
 		struct size_member_check
@@ -41,9 +41,9 @@ namespace utils
 			using type = typename std::is_integral<decltype(check<C>(0))>::type;
 		};
 
-		//! \tparam C Typ kontenera, który weryfikujemy
+		//! \tparam C Typ kontenera, ktï¿½ry weryfikujemy
 		template<typename C>
-		//! Struktura pomocnicza przy weryfikacji dostêpu do iteratorów
+		//! Struktura pomocnicza przy weryfikacji dostï¿½pu do iteratorï¿½w
 		struct iterator_based_container_check
 		{
 			//! Weryfikacja operatora [] w wersji const
@@ -64,17 +64,17 @@ namespace utils
 		};
 	}
 
-	//! \tparam C Typ kontenera, który weryfikujemy
+	//! \tparam C Typ kontenera, ktï¿½ry weryfikujemy
 	template<typename C>
 	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
 	struct empty_member_check : public impl::empty_member_check<C>::type {};
 
-	//! \tparam C Typ kontenera, który weryfikujemy
+	//! \tparam C Typ kontenera, ktï¿½ry weryfikujemy
 	template<typename C>
 	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
 	struct size_member_check : public impl::size_member_check<C>::type {};
 
-	//! \tparam C Typ kontenera, który weryfikujemy
+	//! \tparam C Typ kontenera, ktï¿½ry weryfikujemy
 	template<typename C>
 	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
 	struct iterator_based_container_check : public impl::iterator_based_container_check<C>::type {};
@@ -95,39 +95,61 @@ namespace utils
 	template <std::size_t Element>
 	using StaticContainerElementExtractor = StaticArrayElementExtractor<Element>;
 
-	//! Klasa pozwalaj¹ca wypakowywaæ dane z wektorów
+	//! Klasa pozwalajï¿½ca wypakowywaï¿½ dane z wektorï¿½w
 	using ContainerElementExtractor = ElementExtractor;
 
-	//! Zwraca d³ugoœæ tablicy
+	//! Zwraca dï¿½ugoï¿½ï¿½ tablicy
 	//! \param fixedArray Tablica
-	//! \return D³ugoœæ tablicy
-	template <class T, ENABLE_IF(size_member_check<T>::value)>
-	static inline std::size_t size(const T & array)
+	//! \return Dï¿½ugoï¿½ï¿½ tablicy
+	template <class T>
+	static inline typename std::enable_if<size_member_check<T>::value, std::size_t>::type size(const T & array)
 	{
 		return array.size();
 	}
 
-	//! Zwraca d³ugoœæ tablicy
+	//! Zwraca dï¿½ugoï¿½ï¿½ tablicy
 	//! \param fixedArray Tablica
-	//! \return D³ugoœæ tablicy
-	template <class T, ENABLE_IF(!size_member_check<T>::value && iterator_based_container_check<T>::value)>
-	static inline std::size_t size(const T & array)
+	//! \return Dï¿½ugoï¿½ï¿½ tablicy
+	template <class T>
+	static inline typename std::enable_if<!size_member_check<T>::value && iterator_based_container_check<T>::value, std::size_t>::type size(const T & array)
 	{
 		return std::distance(array.begin(), array.end());
 	}
 
-	using ContainerSizeExtractor = ArraySizeExtractor;
+	//! Struktura pomocnicza przy wyciï¿½ganiu rozmiaru tablicy
+	struct ContainerSizeExtractor
+	{
+		//! \tparam T Typ tablicy
+		template<typename T>
+		//! \param array Tablica ktï¿½rej rozmiar chcemy wyciï¿½gnï¿½ï¿½
+		//! \return Rozmiar tablicy
+		static inline std::size_t size(const T & array)
+		{
+			return utils::size(array);
+		}
+	};
 
-	//! Zwraca d³ugoœæ tablicy
+	//! Zwraca dï¿½ugoï¿½ï¿½ tablicy
 	//! \param fixedArray Tablica
-	//! \return D³ugoœæ tablicy
-	template <class T, ENABLE_IF(empty_member_check<T>::value)>
-	static inline bool empty(const T & array)
+	//! \return Dï¿½ugoï¿½ï¿½ tablicy
+	template <class T>
+	static inline typename std::enable_if<empty_member_check<T>::value, bool>::type empty(const T & array)
 	{
 		return array.empty();
 	}
 
-	using ContainerEmptinessExtractor = ArrayEmptinessExtractor;
+	//! Struktura pomocnicza przy sprawdzaniu czy tablica jest pusta
+	struct ContainerEmptinessExtractor
+	{
+		//! \tparam T Typ tablicy
+		template<typename T>
+		//! \param array Tablica ktï¿½rï¿½ sprawdzamy czy jest pusta
+		//! \return Czy tablica jest pusta
+		static inline std::size_t empty(const T & array)
+		{
+			return utils::empty(array);
+		}
+	};
 }
 
 #endif  // __HEADER_GUARD_UTILS__CONTAINER_TRAITS_H__

@@ -1,13 +1,13 @@
 #include <plugins/hmdbCommunication/ContextConfigurationSettingsFile.h>
-#include <Qtcore/QSettings>
+#include <QtCore/QSettings>
 #include "corelib/PluginCommon.h"
 #include <networkUtils/EncryptionUtils.h>
 
 using namespace hmdbCommunication;
 
 
-//! Metoda próbuje uaktualniæ podan¹ wartoœæ parametru
-//! \param s Ustawienia, z których podejmowana jest próba aktualizacji parametru
+//! Metoda prï¿½buje uaktualniï¿½ podanï¿½ wartoï¿½ï¿½ parametru
+//! \param s Ustawienia, z ktï¿½rych podejmowana jest prï¿½ba aktualizacji parametru
 //! \param propertyName Nazwa parametru do aktualizacji
 //! \param param Aktualizowany parametr, zmiena we/wy
 //! \param shadow Czy parametr jest szyfrowany

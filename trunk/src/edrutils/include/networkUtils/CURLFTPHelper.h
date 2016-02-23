@@ -23,7 +23,7 @@ namespace networkUtils
 		//! Destruktor wirtualny
 		virtual ~ICURLFTPProgress() {}		
 		//! \param processedData Ilosc przetworzonych danych [bytes]
-		virtual void setProcessedData(const unsigned long long processedData) = 0;
+		virtual void setProcessedData(const std::size_t processedData) = 0;
 	};
 
 	class NETWORKUTILS_EXPORT CURLFTPHelper
