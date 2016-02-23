@@ -24,12 +24,12 @@ python::PythonDataChannel python::PythonDataChannel::convert(c3dlib::VectorChann
 		c.data.push_back(channel->value(i));
 	}
 
-	auto adf = channel->feature<dataaccessor::IDescriptorFeature>();
+	auto adf = channel->feature<dataaccessor::DescriptorFeature>();
 	if (adf != nullptr) {
 		c.name = adf->name();
 	}
 
-	auto uaf = channel->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
+	auto uaf = channel->getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();
 	if (uaf != nullptr) {
 		c.frequency = 1.0 / uaf->argumentsInterval();
 	}
@@ -50,7 +50,7 @@ c3dlib::VectorChannelReaderInterfacePtr python::PythonDataChannel::convert(const
 	auto baf = utils::make_shared<dataaccessor::BoundedArgumentsFeature<c3dlib::VectorChannelReaderInterface::argument_type>>(0.0, (size - 1) / obj.getFrequency());
 	auto ff = dataaccessor::FunctionFeature::feature(true);
 
-	utils::shared_ptr<dataaccessor::IDescriptorFeature> df(dataaccessor::DescriptorFeature::create<c3dlib::VectorChannelReaderInterface::value_type,
+	utils::shared_ptr<dataaccessor::DescriptorFeature> df(dataaccessor::DescriptorFeature::create<c3dlib::VectorChannelReaderInterface::value_type,
 		c3dlib::VectorChannelReaderInterface::argument_type>(name, "", ""));
 
 	auto channel = dataaccessor::wrap(std::move(wdata), dataaccessor::UniformArgumentsGenerator<c3dlib::VectorChannelReaderInterface::argument_type>(uaf->argumentsInterval(), size));

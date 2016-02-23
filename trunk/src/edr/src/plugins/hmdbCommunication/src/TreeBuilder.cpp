@@ -369,7 +369,7 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
         
         for (int i = 0; i < count; ++i) {
 			c3dlib::VectorChannelReaderInterfaceConstPtr c = wrappers[i]->get();
-            std::string channelName = c->getOrCreateFeature<dataaccessor::IDescriptorFeature>()->name();
+            std::string channelName = c->getOrCreateFeature<dataaccessor::DescriptorFeature>()->name();
             std::list<core::HierarchyHelperPtr> helpers;
             NewVector3ItemHelperPtr channelHelper(new NewVector3ItemHelper(wrappers[i], events));
             push_not_null(helpers, channelHelper);
@@ -380,7 +380,7 @@ void TreeBuilder::tryAddVectorToTree( const PluginSubject::MotionConstPtr & moti
             push_not_null(helpers, createNormalized(wrappers[i], motion, c3dlib::C3DParser::IEvent::Right));
             push_not_null(helpers, createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Left));
             push_not_null(helpers, createNormalizedFromAll(channelName, motion->getUnpackedSession(), c3dlib::C3DParser::IEvent::Right));
-            core::IHierarchyItemPtr channelItem (new core::HierarchyDataItem(wrappers[i], childIcon, QString::fromStdString(c->getOrCreateFeature<dataaccessor::IDescriptorFeature>()->name()), desc, helpers));
+            core::IHierarchyItemPtr channelItem (new core::HierarchyDataItem(wrappers[i], childIcon, QString::fromStdString(c->getOrCreateFeature<dataaccessor::DescriptorFeature>()->name()), desc, helpers));
             collectionItem->appendChild(channelItem);
         }
     }
@@ -409,13 +409,13 @@ core::HierarchyHelperPtr TreeBuilder::allTFromSession( const std::string& channe
             int count = collection ? collection->getNumAccessors() : 0;
             for (int i = 0; i < count; ++i) {
 				c3dlib::VectorChannelReaderInterfaceConstPtr channel = collection->getAccessor(i);
-				auto df = channel->feature<dataaccessor::IDescriptorFeature>();
+				auto df = channel->feature<dataaccessor::DescriptorFeature>();
                 if (df != nullptr && df->name() == channelName) {
 					c3dlib::ScalarChannelReaderInterfacePtr reader(dataaccessor::Vector::wrap(channel, channelNo));
 					
-					auto uaf = channel->feature<dataaccessor::IUniformArgumentsFeature>();
-					auto abf = channel->feature<dataaccessor::IBoundedArgumentsFeature>();
-					auto vbf = channel->feature<dataaccessor::IBoundedValuesFeature>();
+					auto uaf = channel->feature<dataaccessor::UniformArgumentsFeature>();
+					auto abf = channel->feature<dataaccessor::BoundedArgumentsFeature>();
+					auto vbf = channel->feature<dataaccessor::BoundedValuesFeature>();
 
 					if (abf != nullptr) {
 						reader->attachFeature(abf);
@@ -471,9 +471,9 @@ core::HierarchyHelperPtr TreeBuilder::createNormalized( core::VariantConstPtr wr
         for (int channelNo = 0; channelNo <= 2; ++channelNo) {
 			auto reader = dataaccessor::Vector::wrap(channel, channelNo);
 			
-			auto uaf = channel->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
-			auto abf = channel->feature<dataaccessor::IBoundedArgumentsFeature>();
-			auto vbf = channel->feature<dataaccessor::IBoundedValuesFeature>();
+			auto uaf = channel->getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();
+			auto abf = channel->feature<dataaccessor::BoundedArgumentsFeature>();
+			auto vbf = channel->feature<dataaccessor::BoundedValuesFeature>();
 
 			if (abf != nullptr) {
 				reader->attachFeature(abf);
@@ -554,7 +554,7 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
             int count = collection ? collection->getNumAccessors() : 0;
             for (int i = 0; i < count; ++i) {
 				auto channel = collection->getAccessor(i);
-                if (channel->feature<dataaccessor::IDescriptorFeature>()->name() == channelName) {
+                if (channel->feature<dataaccessor::DescriptorFeature>()->name() == channelName) {
 
                     int r = rand() % 200;
                     int g = rand() % 200;
@@ -568,9 +568,9 @@ core::HierarchyHelperPtr  TreeBuilder::createNormalizedFromAll( const std::strin
                         for (int channelNo = 0; channelNo <= 2; ++channelNo) {
 							auto reader = dataaccessor::Vector::wrap(channel, channelNo);
 
-							auto uaf = channel->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
-							auto abf = channel->feature<dataaccessor::IBoundedArgumentsFeature>();
-							auto vbf = channel->feature<dataaccessor::IBoundedValuesFeature>();							
+							auto uaf = channel->getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();
+							auto abf = channel->feature<dataaccessor::BoundedArgumentsFeature>();
+							auto vbf = channel->feature<dataaccessor::BoundedValuesFeature>();							
 
 							if (abf != nullptr) {
 								reader->attachFeature(abf);

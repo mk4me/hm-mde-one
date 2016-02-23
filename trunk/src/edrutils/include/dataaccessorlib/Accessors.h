@@ -242,16 +242,16 @@ namespace dataaccessor
 		//! \tparam FeatureT Typ cechy o jaką pytamy
 		//! \tparam dummy
 		template<typename FeatureT,
-			ENABLE_IF(std::is_base_of<IFeature, FeatureT>::value && utils::is_general_pointer<decltype(FeatureT::create((DiscreteAccessor*)0, (FunctionAccessor*)0))>::value)>
-			//! \param dummy
-			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
+			ENABLE_IF(std::is_base_of<IFeature, FeatureT>::value)>// && utils::is_general_pointer<decltype(FeatureT::create((DiscreteAccessor*)0, (FunctionAccessor*)0))>::value)>
+																  //! \param dummy
+																  //! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
 			inline utils::shared_ptr<FeatureT> getOrCreateFeature(FeatureT * dummy = nullptr) const
 		{
 			utils::shared_ptr<FeatureT> ret = this->IAccessor::feature<FeatureT>();
 
 			if (ret == nullptr) {
 				UTILS_ASSERT((asDiscrete() != nullptr) || (asFunction() != nullptr));
-				impl::set(ret, FeatureT::create(asDiscrete(), asFunction()));				
+				impl::set(ret, FeatureT::create(asDiscrete(), asFunction()));
 				this->IAccessor::attachFeature(ret);
 			}
 
@@ -262,24 +262,24 @@ namespace dataaccessor
 		//! \tparam dummy
 		template<template<typename> class ValueFeatureT,
 			ENABLE_IF(std::is_base_of<typename IValueAccessorT<ValueType>::ValueFeature, ValueFeatureT<typename IValueAccessorT<ValueType>::value_type>>::value),
-			typename VFT = ValueFeatureT<typename IValueAccessorT<ValueType>::value_type>>
+			typename VFT = ValueFeatureT<typename IValueAccessorT<ValueType>::value_type >>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-			inline auto getOrCreateFeature(VFT * dummy = nullptr) const -> decltype(this->getOrCreateFeature<VFT>()) { return this->getOrCreateFeature<VFT>(); }
+			inline auto getOrCreateFeature(VFT * dummy = nullptr) const -> decltype(this->template getOrCreateFeature<VFT>()) { return this->template getOrCreateFeature<VFT>(); }
 
 		//! \tparam ArgumentFeatureT Typ cechy argumentów o jaką pytamy
 		//! \tparam dummy
 		template<template<typename> class ArgumentFeatureT,
 			ENABLE_IF(std::is_base_of<typename IArgumentAccessorT<ArgumentType>::ArgumentFeature, ArgumentFeatureT<typename IArgumentAccessorT<ArgumentType>::argument_type>>::value),
-			typename AFT = ArgumentFeatureT<typename IArgumentAccessorT<ArgumentType>::argument_type>>
+			typename AFT = ArgumentFeatureT<typename IArgumentAccessorT<ArgumentType>::argument_type >>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-			inline auto getOrCreateFeature(AFT * dummy = nullptr) const -> decltype(this->getOrCreateFeature < AFT>()) { return this->getOrCreateFeature < AFT>(); }
+			inline auto getOrCreateFeature(AFT * dummy = nullptr) const -> decltype(this->template getOrCreateFeature < AFT>()) { return this->template getOrCreateFeature < AFT>(); }
 
 		//! \tparam AccessorFeatureT Typ cechy o jaką pytamy
 		template<template<typename, typename> class AccessorFeatureT,
 			ENABLE_IF(std::is_base_of<AccessorFeature, AccessorFeatureT<typename IValueAccessorT<ValueType>::value_type, typename IArgumentAccessorT<ArgumentType>::argument_type>>::value),
-			typename AFT = AccessorFeatureT<typename IValueAccessorT<ValueType>::value_type, typename IArgumentAccessorT<ArgumentType>::argument_type>>
+			typename AFT = AccessorFeatureT<typename IValueAccessorT<ValueType>::value_type, typename IArgumentAccessorT<ArgumentType>::argument_type >>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
 			inline auto feature(AFT * dummy = nullptr) const -> decltype(this->template feature < AFT>()) { return this->template feature < AFT>(); }
@@ -287,10 +287,10 @@ namespace dataaccessor
 		//! \tparam AccessorFeatureT Typ cechy danych o jaką pytamy
 		template<template<typename, typename> class AccessorFeatureT,
 			ENABLE_IF(std::is_base_of<AccessorFeature, AccessorFeatureT<typename IValueAccessorT<ValueType>::value_type, typename IArgumentAccessorT<ArgumentType>::argument_type>>::value),
-			typename AFT = AccessorFeatureT<typename IValueAccessorT<ValueType>::value_type, typename IArgumentAccessorT<ArgumentType>::argument_type>>
+			typename AFT = AccessorFeatureT<typename IValueAccessorT<ValueType>::value_type, typename IArgumentAccessorT<ArgumentType>::argument_type >>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli istnieje cecha o danym id ale to nie ta o jaką pytamy
-			inline auto getOrCreateFeature(AFT * dummy = nullptr) const -> decltype(this->getOrCreateFeature<AFT>()) { return this->getOrCreateFeature<AFT>(); }
+			inline utils::shared_ptr<AFT> getOrCreateFeature(AFT * dummy = nullptr) const { return this->template getOrCreateFeature<AFT>(); }
 	};
 
 	//! \tparam ValueType Typ wartości kanału danych
@@ -463,7 +463,7 @@ namespace dataaccessor
 		{
 			utils::shared_ptr<ArgumentFeatureT<ArgumentType>> ret = this->IAccessor::feature<ArgumentFeatureT<ArgumentType>>();
 
-			if (ret == nullptr) {				
+			if (ret == nullptr) {
 				impl::set(ret, ArgumentFeatureT<ArgumentType>::create(*this));
 				this->IAccessor::attachFeature(ret);
 			}
@@ -476,8 +476,7 @@ namespace dataaccessor
 	//! \tparam ArgumentType Typ argumentu kanału danych
 	template<class ValueType, class ArgumentType>
 	//! Interfejs opisujący dyskretny akcesor danych
-	class IDiscreteAccessorT : public virtual IDiscreteAccessor,
-		public IAccessorT<ValueType, ArgumentType>,
+	class IDiscreteAccessorT : public IAccessorT<ValueType, ArgumentType>,
 		public IDiscreteValueAccessorT<ValueType>,
 		public IDiscreteArgumentAccessorT<ArgumentType>
 	{
@@ -523,7 +522,7 @@ namespace dataaccessor
 	template<class ValueType, class ArgumentType>
 	//! Interfejs opisujący dyskretny akcesor danych
 	class IIndependentDiscreteAccessorT : public IDiscreteAccessorT<ValueType, ArgumentType>
-	{	
+	{
 	public:
 		//! Typ mojego akcesora
 		using accessor_type = IDiscreteAccessorT<ValueType, ArgumentType>;
@@ -541,7 +540,7 @@ namespace dataaccessor
 	template<class ValueType, class ArgumentType>
 	//! Interfejs opisujący dyskretny akcesor danych
 	class IOptimizedDiscreteAccessorT : public IDiscreteAccessorT<ValueType, ArgumentType>
-	{	
+	{
 	public:
 		//! Typ mojego akcesora
 		using accessor_type = IDiscreteAccessorT<ValueType, ArgumentType>;

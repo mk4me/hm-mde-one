@@ -70,15 +70,15 @@ void python::PythonProcessingBlock::process()
 			throw std::runtime_error("Wrong output list size");
 		}
 
-		auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
-		auto baf = signal1->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();
-		auto ff = signal1->getOrCreateFeature<dataaccessor::IFunctionFeature>();
+		auto uaf = signal1->getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();
+		auto baf = signal1->getOrCreateFeature<dataaccessor::BoundedArgumentsFeature>();
+		auto ff = signal1->getOrCreateFeature<dataaccessor::FunctionFeature>();
 
 		std::vector<c3dlib::VectorChannelReaderInterface::value_type> data;
 		data.reserve(count);
 
-		auto adf = signal1->feature<dataaccessor::IDescriptorFeature>();
-		utils::shared_ptr<dataaccessor::IDescriptorFeature> df;
+		auto adf = signal1->feature<dataaccessor::DescriptorFeature>();
+		utils::shared_ptr<dataaccessor::DescriptorFeature> df;
 		if (adf != nullptr) {
 			df = utils::make_shared<dataaccessor::DescriptorFeature>(adf->name() + " - Result", adf->valueType(),
 				adf->valueUnit(), adf->argumentType(), adf->argumentUnit());

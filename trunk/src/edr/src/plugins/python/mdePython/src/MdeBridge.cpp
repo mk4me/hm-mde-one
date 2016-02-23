@@ -59,7 +59,7 @@ void python::MdeBridge::addVectorChannel(const PythonDataChannel& channel)
 	core::HierarchyHelperPtr helper = core::HierarchyHelperPtr(new NewVector3ItemHelper(wrapper));
 	std::string name;
 
-	auto adf = c->feature<dataaccessor::IDescriptorFeature>();
+	auto adf = c->feature<dataaccessor::DescriptorFeature>();
 
 	if (adf != nullptr) {
 		name = adf->name();

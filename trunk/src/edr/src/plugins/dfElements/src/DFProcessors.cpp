@@ -10,7 +10,7 @@ void VectorDiff::process()
 
     if (signal1 && signal2) {
 		double step = 0.0;
-		auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
+		auto uaf = signal1->getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();
 		if (uaf != nullptr){
 			step = uaf->argumentsInterval();
 		}
@@ -70,7 +70,7 @@ void VectorAdder::process()
 
     if (signal1 && signal2) {
 		double step = 0.0;
-		auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
+		auto uaf = signal1->getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();
 		if (uaf != nullptr){
 			step = uaf->argumentsInterval();
 		}
@@ -116,7 +116,7 @@ void Vector2Scalar::process()
 	c3dlib::VectorChannelReaderInterfaceConstPtr signal1 = inPinA->getValue();
     if (signal1) {
 
-		auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
+		auto uaf = signal1->getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();
 
 		std::vector<c3dlib::ScalarChannelReaderInterface::sample_type> dataX, dataY, dataZ;
 		dataX.reserve(signal1->size());
@@ -177,7 +177,7 @@ void Scalar2Vector::process()
     if (signal1 && signal2 && signal3) {
 
 		double step = 0.0;
-		auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
+		auto uaf = signal1->getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();
 		if (uaf != nullptr){
 			step = uaf->argumentsInterval();
 		}

@@ -126,7 +126,7 @@ VisualizerPtr NewChartItemHelper::createVisualizer(core::IVisualizerManager* man
         std::string title;
 		c3dlib::ScalarChannelReaderInterfaceConstPtr scalar = wrapper->get();
 
-		auto df = scalar->feature<dataaccessor::IDescriptorFeature>();
+		auto df = scalar->feature<dataaccessor::DescriptorFeature>();
 
 		if (df != nullptr){
 
@@ -184,7 +184,7 @@ VisualizerPtr NewVector3ItemHelper::createVisualizer(core::IVisualizerManager* m
         std::string title;
 		c3dlib::VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
 
-		auto df = vectorChannel->feature<dataaccessor::IDescriptorFeature>();
+		auto df = vectorChannel->feature<dataaccessor::DescriptorFeature>();
 
 		if (df != nullptr){
 
@@ -208,8 +208,8 @@ void NewVector3ItemHelper::createSeries( const VisualizerPtr & visualizer, const
 	c3dlib::VectorChannelReaderInterfaceConstPtr vectorChannel = wrapper->get();
 
 	auto ff = dataaccessor::FunctionFeature::feature(true);
-	auto uaf = vectorChannel->feature<dataaccessor::IUniformArgumentsFeature>();
-	auto baf = vectorChannel->feature<dataaccessor::IBoundedArgumentsFeature>();
+	auto uaf = vectorChannel->feature<dataaccessor::UniformArgumentsFeature>();
+	auto baf = vectorChannel->feature<dataaccessor::BoundedArgumentsFeature>();
 
 	auto x = dataaccessor::StaticVector<0>::wrap(vectorChannel);
 	auto y = dataaccessor::StaticVector<1>::wrap(vectorChannel);
@@ -368,8 +368,8 @@ void EMGFilterHelper::createSeries( const VisualizerPtr & visualizer, const QStr
 	auto ff = dataaccessor::FunctionFeature::feature(true);
 
     auto absTest = AbsMeanValueChannel::wrap(channel);
-	auto uaf = channel->feature<dataaccessor::IUniformArgumentsFeature>();
-	auto baf = channel->feature<dataaccessor::IBoundedArgumentsFeature>();
+	auto uaf = channel->feature<dataaccessor::UniformArgumentsFeature>();
+	auto baf = channel->feature<dataaccessor::BoundedArgumentsFeature>();
 	absTest->attachFeature(ff);
 	absTest->attachFeature(uaf);
 	absTest->attachFeature(baf);

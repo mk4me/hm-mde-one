@@ -291,7 +291,10 @@ public:
 
 public:
 
-	using Base::Base;
+	template<typename... Args>
+	TypeTagWrapper(Args&&... args) : Base(std::forward<Args>(args)...) {}
+
+	virtual ~TypeTagWrapper() {}
 };
 
 template<typename Base, std::size_t Tag>
@@ -305,7 +308,10 @@ public:
 
 public:
 
-	using Base::Base;
+	template<typename... Args>
+	IntegralTagWrapper(Args&&... args) : Base(std::forward<Args>(args)...) {}
+
+	virtual ~IntegralTagWrapper() {}
 };
 
 //! \tparam T Wartość logiczna do weryfikacji

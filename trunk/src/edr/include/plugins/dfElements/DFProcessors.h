@@ -76,7 +76,7 @@ public:
 
         if (signal1) {
 			
-			auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();			
+			auto uaf = signal1->getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();			
 			
 			std::vector<OutputPtr::element_type::sample_type> data;
 			data.reserve(signal1->size());
@@ -132,7 +132,7 @@ public:
 			const size_type count = (std::min)(signal1->size(), signal2->size());
 			std::vector<OutputPtr::element_type::sample_type> out(count);
 
-			auto uaf = signal1->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
+			auto uaf = signal1->getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();
 
 			const auto interval = uaf->argumentsInterval();            
 
@@ -141,7 +141,7 @@ public:
 				out[i] = { i * interval, val };
             }			
 
-			auto df = signal1->feature<dataaccessor::IDescriptorFeature>();
+			auto df = signal1->feature<dataaccessor::DescriptorFeature>();
 
 			dataaccessor::IFeaturePtr description;
 

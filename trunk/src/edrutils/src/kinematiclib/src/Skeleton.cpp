@@ -365,7 +365,7 @@ Skeleton::Skeleton()
 
 Skeleton::JointPtr createJoint(Skeleton::JointPtr parent, Skeleton::JointConstPtr joint)
 {
-	auto ret = Skeleton::Joint::create({ parent->value(), joint->value() });
+	auto ret = Skeleton::Joint::create(Skeleton::JointData(parent->value(), joint->value()));
 
 	for (const auto & c : joint->children())
 	{
@@ -456,7 +456,7 @@ bool Skeleton::convert(TopologyNodeConstPtr topology, Skeleton & skeleton)
 	Skeleton localSkeleton;
 
 	if (topology != nullptr){
-		localSkeleton.root_ = Joint::create({ topology->value().name });
+		localSkeleton.root_ = Joint::create(topology->value().name);
 		createJoint(localSkeleton.root_, topology);
 	}
 

@@ -56,9 +56,9 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
 		 valueUnit = QString::fromStdString(df->valueUnit());
 	 }
 
-	 auto stats = channel->getOrCreateFeature<dataaccessor::StatisticsFeature>();
-	 auto baf = channel->getOrCreateFeature<dataaccessor::BoundedArgumentsFeature>();
-	 auto bvf = channel->getOrCreateFeature<dataaccessor::BoundedValuesFeature>();
+	 auto stats = channel->template getOrCreateFeature<dataaccessor::StatisticsFeature>();
+	 auto baf = channel->template getOrCreateFeature<dataaccessor::BoundedArgumentsFeature>();
+	 auto bvf = channel->template getOrCreateFeature<dataaccessor::BoundedValuesFeature>();
 
      int i = -1;
      item->setText(++i, name);
