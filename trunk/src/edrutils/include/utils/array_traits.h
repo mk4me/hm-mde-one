@@ -16,7 +16,7 @@ namespace utils
 {
 	namespace impl
 	{
-		//! \tparam A Typ tablicowy, który weryfikujemy
+		//! \tparam A Typ tablicowy, ktï¿½ry weryfikujemy
 		template<typename A>
 		//! Struktura pomocnicza przy weryfikacji tablic (operator [])
 		struct array_check
@@ -30,21 +30,21 @@ namespace utils
 		};		
 	}
 
-	//! \tparam A Typ tablicowy, który weryfikujemy
+	//! \tparam A Typ tablicowy, ktï¿½ry weryfikujemy
 	template<typename A>
 	//! Struktura pomocnicza przy weryfikacji tablic (operator [])
 	struct array_check : public impl::array_check<A>::type {};
 
 	//! \tparam A Typ tablicy ajki weryfikujemy
 	template<typename A>
-	//! W³aœciwy trait przepuszczaj¹cy typy z mo¿liwoœci¹ indeksowania operatorem []
+	//! Wï¿½aï¿½ciwy trait przepuszczajï¿½cy typy z moï¿½liwoï¿½ciï¿½ indeksowania operatorem []
 	struct is_general_array : public std::integral_constant<bool, std::is_array<A>::value || array_check<A>::value> {};
 
 	namespace impl
 	{
 		//! \tparam T Typ z operatorem[]
 		template<typename T>
-		//! Klasa pomocnicza przy wyci¹ganiu typu zwracanego przez operator[]
+		//! Klasa pomocnicza przy wyciï¿½ganiu typu zwracanego przez operator[]
 		struct array_type
 		{
 			using type = decltype(std::declval<T>()[0]);
@@ -53,17 +53,17 @@ namespace utils
 		//! \tparam Typ przechowywany w tablicy
 		//! \tparam N Rozmiar tablicy
 		template<typename T, std::size_t N>
-		//! Klasa pomocnicza przy wyci¹ganiu typu zwracanego przez operator[]
+		//! Klasa pomocnicza przy wyciï¿½ganiu typu zwracanego przez operator[]
 		struct array_type<T[N]>
 		{
 			using type = T;
 		};
 	}
 
-	//! \tparam T Typ tablico-podobny dla któego wyci¹gamy typ zwracany przez operator[]
+	//! \tparam T Typ tablico-podobny dla ktï¿½ego wyciï¿½gamy typ zwracany przez operator[]
 	//! \tparam dummy
 	template<typename T, ENABLE_IF(is_general_array<T>::value)>
-	//! Klasa pomocnicza przy wyci¹ganiu typu zwracanego przez operator[]
+	//! Klasa pomocnicza przy wyciï¿½ganiu typu zwracanego przez operator[]
 	struct array_type : public impl::array_type<T> {};
 
 	namespace impl
@@ -71,7 +71,7 @@ namespace utils
 		//! \tparam T Typ tablicy
 		//! \tparam dummy
 		template<typename T, bool = false>
-		//! Specjalizacja dla typów nie maj¹cych charakteru tablic
+		//! Specjalizacja dla typï¿½w nie majï¿½cych charakteru tablic
 		struct array_dimensions
 		{
 			static const std::size_t dimensions = 0;
@@ -79,7 +79,7 @@ namespace utils
 
 		//! \tparam T Typ tablicy		
 		template<typename T>
-		//! Specjalizacja dla typów o charakterze tablicy
+		//! Specjalizacja dla typï¿½w o charakterze tablicy
 		struct array_dimensions<T, true>
 		{
 			using _type = typename array_type<T>::type;
@@ -87,7 +87,7 @@ namespace utils
 		};
 	}
 
-	//! \tparam Typ badany pod k¹tem bycia tablic¹
+	//! \tparam Typ badany pod kï¿½tem bycia tablicï¿½
 	template<typename T>
 	//! Wersja specjalizowana dla tablic - wyznacza faktyczny rozmiar tablicy
 	struct array_dimensions : public impl::array_dimensions<T, is_general_array<T>::value> {};
@@ -108,19 +108,19 @@ namespace utils
 	}
 
 	//! \tparam T Typ tablicy
-	//! \tparam Dim Numer wymiaru tablicy dla któego chcemy pobraæ typ
+	//! \tparam Dim Numer wymiaru tablicy dla ktï¿½ego chcemy pobraï¿½ typ
 	//! \tparam dummy Warunek czy typ faktycznie ma charakter tablicy
 	template<typename T, std::size_t Dim, ENABLE_IF(is_general_array<T>::value)>
 	struct array_dimension_type
 	{
-		static_assert(Dim > 0 && Dim <= array_dimensions<T>::dimensions, "Index zagnie¿d¿enia musi byæ w przedziale <1 - iloœæ wymiarów tablicy>");
+		static_assert(Dim > 0 && Dim <= array_dimensions<T>::dimensions, "Index zagnieï¿½dï¿½enia musi byï¿½ w przedziale <1 - iloï¿½ï¿½ wymiarï¿½w tablicy>");
 
 		using type = typename impl::array_dimension_type<typename array_type<T>::type, Dim - 1>::type;
 		using clean_type = typename remove_toplevel<type>::type;
 
 	};
 
-	//! \tparam T Typ tablicy dla której wyci¹gamy typ ostatniego wymiaru		
+	//! \tparam T Typ tablicy dla ktï¿½rej wyciï¿½gamy typ ostatniego wymiaru		
 	template<typename T>
 	//! Klasa pomocnicza przy wycaganiu typu ostatniego wymiaru
 	struct array_final_dimension_type : public array_dimension_type<T, array_dimensions<T>::dimensions> {};
@@ -145,13 +145,13 @@ namespace utils
 		return array[Element];
 	}
 
-	//! Struktura pomocnicza przy wyci¹ganiu wartoœci z tablicy
+	//! Struktura pomocnicza przy wyciï¿½ganiu wartoï¿½ci z tablicy
 	struct ElementExtractor
 	{
 		//! \tparam T Typ tablicy
 		template <typename T>
 		//! \param array Tablica
-		//! \param idx Indeks elementu który chcemy wyci¹gn¹c
+		//! \param idx Indeks elementu ktï¿½ry chcemy wyciï¿½gnï¿½c
 		//! \return Wypakowany element
 		static inline auto extract(const T & array, const std::size_t idx) -> decltype(utils::extract(array, idx))
 		{
@@ -177,11 +177,15 @@ namespace utils
 		}
 	};
 
-	//! Klasa pozwalaj¹ca wypakowywaæ dane z wektorów
+	//! Klasa pozwalajÄ…ca wypakowywaï¿½ dane z wektorï¿½w
 	class ArrayElementExtractor
 	{
+	private:
+			//! Indeks spod ktï¿½rego wybieramy dane z wektora
+			const std::size_t idx;
+
 	public:
-		//! \param idx Index obiketu który chcemy wypakowywaæ z wektora
+		//! \param idx Index obiketu ktï¿½ry chcemy wypakowywaï¿½ z wektora
 		ArrayElementExtractor(const std::size_t idx) : idx(idx) {}
 		//! \param Other Inny kopiowany extractor
 		ArrayElementExtractor(const ArrayElementExtractor & Other) : idx(Other.idx) {}
@@ -196,28 +200,24 @@ namespace utils
 		{
 			return ElementExtractor::extract(array, idx);
 		}
-
-	private:
-		//! Indeks spod którego wybieramy dane z wektora
-		const std::size_t idx;
 	};
 
-	//! Zwraca d³ugoœæ tablicy
+	//! Zwraca dï¿½ugoï¿½ï¿½ tablicy
 	//! \param fixedArray Tablica
 	template <class T, std::size_t Size>
-	//! \param fixedArray Tablica o znanej d³ugoœci
-	//! \return D³ugoœæ tablicy
+	//! \param fixedArray Tablica o znanej dï¿½ugoï¿½ci
+	//! \return Dï¿½ugoï¿½ï¿½ tablicy
 	static inline std::size_t size(const T(&fixedArray)[Size])
 	{
 		return Size;
 	}
 
-	//! Struktura pomocnicza przy wyci¹ganiu rozmiaru tablicy
+	//! Struktura pomocnicza przy wyciï¿½ganiu rozmiaru tablicy
 	struct ArraySizeExtractor
 	{
 		//! \tparam T Typ tablicy
 		template<typename T>
-		//! \param array Tablica której rozmiar chcemy wyci¹gn¹æ
+		//! \param array Tablica ktï¿½rej rozmiar chcemy wyciï¿½gnï¿½ï¿½
 		//! \return Rozmiar tablicy
 		static inline std::size_t size(const T & array)
 		{
@@ -228,7 +228,7 @@ namespace utils
 	//! \tparam T Typ elementu tablicy
 	//! \tparam N Rozmiar tablicy
 	template<typename T, std::size_t Size>
-	//! \param fixedArray Tablica o znanej d³ugoœci
+	//! \param fixedArray Tablica o znanej dï¿½ugoï¿½ci
 	//! \return Czy tablica jest pusta
 	static inline bool empty(const T(&fixedArray)[Size])
 	{
@@ -249,7 +249,7 @@ namespace utils
 	{
 		//! \tparam T Typ tablicy
 		template<typename T>
-		//! \param array Tablica któr¹ sprawdzamy czy jest pusta
+		//! \param array Tablica ktï¿½rï¿½ sprawdzamy czy jest pusta
 		//! \return Czy tablica jest pusta
 		static inline std::size_t empty(const T & array)
 		{

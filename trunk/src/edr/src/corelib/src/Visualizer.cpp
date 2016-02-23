@@ -223,7 +223,7 @@ public:
 	}
 
 	//! Destruktor
-	VisualizerImpl::~VisualizerImpl()
+	~VisualizerImpl()
 	{
 		dmr->removeObserver(visualizerHelper_);
 		visManager->unregisterVisualizer(visualizer_);

@@ -12,43 +12,9 @@
 #include <dataaccessorlib/Features.h>
 
 namespace dataaccessor {
-	
-	class DescriptorFeature;
 
 	//! Interfejs do czytania opisu kanału - osi x i y oraz nazwy kanału.
-	class IDescriptorFeature : public FeatureHelperT<Description>
-	{
-	public:
-		//! Destruktor wirtualny
-		virtual ~IDescriptorFeature() {}
-
-		//! \return Co reprezentuje kanał (np. "Zależność prędkości od czasu",
-		//! coś na kształt opisu/tytułu wykresu)
-		virtual std::string name() const = 0;
-
-		//! \return Nazwa jednostki dla argumentów
-		virtual std::string argumentType() const = 0;
-
-		//! \return Nazwa jednostki dla argumentów
-		virtual std::string argumentUnit() const = 0;
-
-		//! \return Nazwa jednostki dla wartości
-		virtual std::string valueType() const = 0;
-
-		//! \return Nazwa jednostki dla wartości
-		virtual std::string valueUnit() const = 0;
-
-		template<typename ValueType, typename ArgumentType>
-		inline static DescriptorFeature * create(
-			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
-			const IFunctionAccessorT<ValueType, ArgumentType> * function)
-		{
-			return DescriptorFeature::create<ValueType, ArgumentType>("", "", "");
-		}
-	};
-	
-	//! Implementacja interfejsu IChannelDescriptor
-	class DescriptorFeature : public IDescriptorFeature
+	class DescriptorFeature : public FeatureHelperT<Description>
 	{
 	private:
 		//! Opis kanału
@@ -62,7 +28,7 @@ namespace dataaccessor {
 		//! Jendostka wartości
 		const std::string valueType_;
 
-	public:		
+	public:
 
 		DescriptorFeature(const std::string & name,
 			const std::string & valueType,
@@ -74,14 +40,15 @@ namespace dataaccessor {
 			argumentType_(argumentType)
 		{
 
-		}		
+		}
 
 		DescriptorFeature(const DescriptorFeature & Other)
-			: DescriptorFeature(Other.name_, Other.valueUnit_,
-			Other.argumentUnit_, Other.valueType_, Other.argumentType_)
+			: name_(Other.name_), valueUnit_(Other.valueUnit_),
+			argumentUnit_(Other.argumentUnit_),
+			valueType_(Other.valueType_), argumentType_(Other.argumentType_)
 		{
 
-		}		
+		}
 
 		DescriptorFeature(DescriptorFeature && Other)
 			: name_(std::move(Other.name_)),
@@ -93,13 +60,23 @@ namespace dataaccessor {
 
 		}
 
-		DescriptorFeature(const IDescriptorFeature & Other)
-			: DescriptorFeature(Other.name(), Other.valueUnit(),
-			Other.valueType(), Other.argumentUnit(),
-			Other.argumentType())
-		{
+		//! Destruktor wirtualny
+		~DescriptorFeature() {}
 
-		}		
+		//! \return
+		std::string name() const { return name_; }
+
+		//! \return
+		std::string argumentUnit() const { return argumentUnit_; }
+
+		//! \return
+		std::string valueUnit() const { return valueUnit_; }
+
+		//! \return
+		std::string argumentType() const { return argumentType_; }
+
+		//! \return
+		std::string valueType() const { return valueType_; }
 
 		//! \tparam ValueType Typ wartości
 		//! \tparam ArgumentType Typ argumentu
@@ -116,23 +93,13 @@ namespace dataaccessor {
 				typeid(ArgumentType).name(), argumentUnit);
 		}
 
-		//! Destruktor
-		virtual ~DescriptorFeature() {}
-
-		//! \return
-		virtual std::string name() const override { return name_; }
-
-		//! \return
-		virtual std::string argumentUnit() const override { return argumentUnit_; }
-
-		//! \return
-		virtual std::string valueUnit() const override { return valueUnit_; }
-
-		//! \return
-		virtual std::string argumentType() const override { return argumentType_; }
-
-		//! \return
-		virtual std::string valueType() const override { return valueType_; }
+		template<typename ValueType, typename ArgumentType>
+		inline static DescriptorFeature * create(
+			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
+			const IFunctionAccessorT<ValueType, ArgumentType> * function)
+		{
+			return create<ValueType, ArgumentType>("", "", "");
+		}
 	};
 }
 

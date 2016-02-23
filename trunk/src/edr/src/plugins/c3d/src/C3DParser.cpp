@@ -1,6 +1,7 @@
 #include "C3DPCH.h"
 #include "C3DParser.h"
 
+#include <fstream>
 #include <string>
 #include <vector>
 #include <boost/tuple/tuple.hpp>
@@ -219,7 +220,7 @@ void C3DParser::getObject(core::Variant & object, const core::VariantsVector::si
 	if (idx < 4){
 		c3dlib::GRFChannelPtr ptr = data[idx]->get();
 		if (ptr) {
-			auto df = ptr->feature<dataaccessor::IDescriptorFeature>();
+			auto df = ptr->feature<dataaccessor::DescriptorFeature>();
 			if (df != nullptr){
 				object.setMetadata("core/name", df->name());
 			}			
@@ -228,7 +229,7 @@ void C3DParser::getObject(core::Variant & object, const core::VariantsVector::si
 	else if(idx < 20){
 		c3dlib::EMGChannelPtr ptr = data[idx]->get();
 		if (ptr) {
-			auto df = ptr->feature<dataaccessor::IDescriptorFeature>();
+			auto df = ptr->feature<dataaccessor::DescriptorFeature>();
 			if (df != nullptr){
 				object.setMetadata("core/name", df->name());
 			}

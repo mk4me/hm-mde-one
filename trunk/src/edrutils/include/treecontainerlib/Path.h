@@ -24,7 +24,7 @@ namespace treeContainer
 		//! \param startNode Węzeł z którego ma wystartować ścieżka
 		//! \param endNode Węzeł do którego dojdę ścieżką
 		//! \return Długość ścieżki pomiędzy węzłami
-		static Node::SizeType distance(NPtr startNode, NPtr endNode)
+		static inline Node::SizeType distance(NPtr startNode, NPtr endNode)
 		{
 			return findPath(startNode, endNode).size() - 1;
 		}
@@ -32,7 +32,7 @@ namespace treeContainer
 		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtr>
 		//! \param path [out] ścieżka którą odwracamy
-		static void reversePath(Type<NPtr> & path)
+		static inline void reversePath(Type<NPtr> & path)
 		{
 			std::reverse(path.begin(), path.end());
 		}
@@ -40,7 +40,7 @@ namespace treeContainer
 		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtr>
 		//! \param node Węzeł z którego chcemy pobrać ścieżkę do roota
-		static Type<NPtr> upPath(NPtr startNode)
+		static inline Type<NPtr> upPath(NPtr startNode)
 		{
 			Type<NPtr> ret;
 
@@ -59,7 +59,7 @@ namespace treeContainer
 		//! \param startNode Węzeł z którego ma się rozpocząć ścieżka
 		//! \param endNode Węzeł w którym ma się kończyć ścieżka
 		//! \return ścieżka pomiędzy węzłami - kolejne węzły
-		static Type<NPtr> findPath(NPtr startNode, NPtr endNode)
+		static inline Type<NPtr> findPath(NPtr startNode, NPtr endNode)
 		{
 			Type<NPtr> ret;
 

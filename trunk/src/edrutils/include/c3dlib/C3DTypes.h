@@ -18,6 +18,7 @@
 #include <utils/SmartPtr.h>
 #include <utils/PtrPolicyStd.h>
 #include <utils/ClonePolicies.h>
+#include <utils/Utils.h>
 #include <c3dlib/C3DParser.h>
 #include <c3dlib/Export.h>
 
@@ -50,12 +51,14 @@ namespace  c3dlib {
 	//! wkaźnik na niemodyfikowalny interfejs umożliwiający odczyt kanału
 	using VectorChannelReaderInterfaceConstPtr = utils::shared_ptr<const VectorChannelReaderInterface>;
 
-	template<typename SignalType, int Type = 0, typename ValueType = utils::remove_toplevel<decltype(std::declval<SignalType>()->getValue(0))>::type>
+	template<typename SignalType, typename ValueType = typename utils::remove_toplevel<decltype(std::declval<SignalType>()->getValue(0))>::type>
 	class C3DChannelWrapper : public dataaccessor::IIndependentDiscreteAccessorT<ValueType, TimeType>
 	{
 	public:
 
-		enum { type = Type };
+		using argument_type = typename dataaccessor::IIndependentDiscreteAccessorT<ValueType, TimeType>::argument_type;
+		using size_type = typename dataaccessor::IIndependentDiscreteAccessorT<ValueType, TimeType>::size_type;
+		using value_type = typename dataaccessor::IIndependentDiscreteAccessorT<ValueType, TimeType>::value_type;
 
 	public:
 
@@ -68,7 +71,7 @@ namespace  c3dlib {
 			}
 
 			//attachFeature(utils::make_shared<dataaccessor::UniformArgumentsFeature<argument_type>>(argumentsGenerator.step()));
-			attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<value_type, argument_type >(signal->getLabel(), signal->getUnit(), "s")));
+			this->attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::template create<value_type, argument_type >(signal->getLabel(), signal->getUnit(), "s")));
 			//attachFeature(utils::make_shared<dataaccessor::BoundedArgumentsFeature<argument_type>>(argumentsGenerator.start(), argumentsGenerator.end()));
 		}
 
@@ -93,7 +96,7 @@ namespace  c3dlib {
 
 	using AnalogType = ScalarType;
 
-	using C3DAnalogChannel = C3DChannelWrapper<C3DParser::IAnalogConstPtr, 0, AnalogType>;
+	using C3DAnalogChannel = utils::IntegralTagWrapper<C3DChannelWrapper<C3DParser::IAnalogConstPtr, AnalogType>, 0>;
 
 	using C3DAnalogChannelPtr = utils::shared_ptr<C3DAnalogChannel>;
 	using C3DAnalogChannelConstPtr = utils::shared_ptr<const C3DAnalogChannel>;
@@ -169,10 +172,10 @@ namespace  c3dlib {
 	using GRFChannelConstPtr = utils::shared_ptr<const GRFChannel>;
 
 #define DECLARE_CHANNEL(name, type)	\
-	class name##Channel : public C3DChannelWrapper<C3DParser::IPointConstPtr, type> { \
+	class name##Channel : public utils::IntegralTagWrapper<C3DChannelWrapper<C3DParser::IPointConstPtr>, type> { \
 	public:	\
 		name##Channel(const C3DParser& data, int channelNo)	\
-			: C3DChannelWrapper<C3DParser::IPointConstPtr, type>(data.getPoint(channelNo),	\
+			: utils::IntegralTagWrapper<C3DChannelWrapper<C3DParser::IPointConstPtr>, type>(data.getPoint(channelNo),	\
 			1.0 / data.getPointFrequency(), data.getNumPointFrames()) {}	\
 		virtual ~name##Channel() {} \
 	}; \

@@ -9,7 +9,7 @@
 #define __HEADER_GUARD_TREECONTAINER__NODEVISITPOLICIES_H__
 
 #include <treecontainerlib/Node.h>
-#include <treecontainerlib/Linearization.h>
+#include <treecontainerlib/NodeLinearization.h>
 
 namespace treeContainer
 {
@@ -25,8 +25,12 @@ namespace treeContainer
 				template<typename NPtr, typename Visitor>
 				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
 				//! \param visitor Obiekt przeglądający węzły
-				static void visit(NPtr root, Visitor & visitor)
+				static void visit(NPtr root, Visitor && visitor)
 				{
+					if(root == nullptr){
+						return;
+					}
+
 					visitor(root);
 					for (const auto & child : root->children())
 					{
@@ -40,8 +44,12 @@ namespace treeContainer
 				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
 				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
 				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
-				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
+				static bool visitWhile(NPtr root, CondVisitor && condVisitor)
 				{
+					if(root == nullptr){
+						return false;
+					}
+
 					if (condVisitor(root) == true){
 						for (const auto & child : root->children())
 						{
@@ -66,8 +74,12 @@ namespace treeContainer
 				template<typename NPtr, typename Visitor>
 				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
 				//! \param visitor Obiekt przeglądający węzły
-				static void visit(NPtr root, Visitor & visitor)
+				static void visit(NPtr root, Visitor && visitor)
 				{
+					if(root == nullptr){
+						return;
+					}
+
 					for (const auto & child : root->children())
 					{
 						visit(NPtr(child), visitor);
@@ -81,8 +93,11 @@ namespace treeContainer
 				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
 				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
 				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
-				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
+				static bool visitWhile(NPtr root, CondVisitor && condVisitor)
 				{
+					if(root == nullptr){
+						return false;
+					}
 					for (const auto & child : root->children())
 					{
 						if (visitWhile(NPtr(child), condVisitor) == false){
@@ -101,8 +116,12 @@ namespace treeContainer
 				template<typename NPtr, typename Visitor>
 				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
 				//! \param visitor Obiekt przeglądający węzły i poziomy
-				static void visit(NPtr root, Visitor & visitor)
+				static void visit(NPtr root, Visitor && visitor)
 				{
+					if(root == nullptr){
+						return;
+					}
+
 					treeContainer::Node::Nodes<NPtr> nodes;
 					nodes.push_back(root);
 					treeContainer::Node::SizeType level = 0;
@@ -129,8 +148,12 @@ namespace treeContainer
 				template<typename NPtr, typename CondVisitor>
 				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
 				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
-				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
+				static bool visitWhile(NPtr root, CondVisitor && condVisitor)
 				{
+					if(root == nullptr){
+						return false;
+					}
+
 					treeContainer::Node::Nodes<NPtr> nodes;
 					nodes.push_back(root);
 					treeContainer::Node::SizeType level = 0;
@@ -168,7 +191,7 @@ namespace treeContainer
 				//! \param visitOrder Sposób przegl�dania w kierunku który będziemy odwracać
 				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
 				//! \param visitor Obiekt przeglądający węzły i poziomy
-				static void visit(NPtr root, Visitor & visitor)
+				static void visit(NPtr root, Visitor && visitor)
 				{
 					auto lt = NodeLinearization<VisitOrder, Backward>::linearize(root);
 					for (const auto & node : lt)
@@ -183,7 +206,7 @@ namespace treeContainer
 				//! \param visitOrder Sposób przegl�dania w kierunku który będziemy odwracać
 				//! \param node Węzeł w którym zaczynamy przeglądanie drzewa
 				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
-				static bool visitWhile(NPtr root, CondVisitor & condVisitor)
+				static bool visitWhile(NPtr root, CondVisitor && condVisitor)
 				{
 					auto lt = NodeLinearization<VisitOrder, Backward>::linearize(root);
 					for (const auto & node : lt)

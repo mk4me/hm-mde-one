@@ -17,7 +17,7 @@ namespace core
 	{
 	public:
 
-		//! Domyœlny konstruktor
+		//! Domyï¿½lny konstruktor
 		IJobManager(InnerJobManager * jm) : jm(jm) {}
 
 		//! Desturktor
@@ -56,7 +56,7 @@ namespace core
 		template<typename JobType>
 		void waitForOtherJob(JobType & job)
 		{
-			logError("Job " << job-> << " owned by " << owner << " waiting for other job");
+			logError("Job " << job.name() << " owned by " << job.owner() << " waiting for other job");
 			jm->waitForOtherJob(job);
 		}
 

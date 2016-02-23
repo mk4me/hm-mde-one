@@ -28,7 +28,24 @@ Skeleton::Units::~Units()
 
 }
 
-//! \return Czy k¹t podawany jest w radianach
+Skeleton::Units& Skeleton::Units::operator=(const Units& Other)
+{
+	if(this != &Other){
+		typeValueUnits = Other.typeValueUnits;
+		defaultValues = Other.defaultValues;
+	}
+
+	return *this;
+}
+
+Skeleton::Units& Skeleton::Units::operator=(Units&& Other)
+{
+	typeValueUnits = std::move(Other.typeValueUnits);
+	defaultValues = std::move(Other.defaultValues);
+	return *this;
+}
+
+//! \return Czy kï¿½t podawany jest w radianach
 const bool Skeleton::Units::isAngleInRadians() const {
 	bool ret = false;
 	auto angleIt = typeValueUnits.find("angle");
@@ -82,6 +99,42 @@ axisOrder(Other.axisOrder), dataOrder(std::move(Other.dataOrder))
 Skeleton::~Skeleton()
 {
 
+}
+
+Skeleton& Skeleton::operator=(const Skeleton& Other)
+{
+	if(this != &Other){
+		version = Other.version;
+		name = Other.name;
+		documentation = Other.documentation;
+		units = Other.units;
+		root = Other.root;
+		bones = Other.bones;
+		hierarchy = Other.hierarchy;
+		position = Other.position;
+		orientation = Other.orientation;
+		axisOrder = Other.axisOrder;
+		dataOrder = Other.dataOrder;
+	}
+
+	return *this;
+}
+
+Skeleton& Skeleton::operator=(Skeleton&& Other)
+{
+	version = std::move(Other.version);
+	name = std::move(Other.name);
+	documentation = std::move(Other.documentation);
+	units = std::move(Other.units);
+	root = Other.root;
+	bones = std::move(Other.bones);
+	hierarchy = std::move(Other.hierarchy);
+	position = Other.position;
+	orientation = Other.orientation;
+	axisOrder = Other.axisOrder;
+	dataOrder = std::move(Other.dataOrder);
+
+	return *this;
 }
 
 const kinematicUtils::AxisOrder::Type Skeleton::rotationOrder(const Skeleton & skeleton)

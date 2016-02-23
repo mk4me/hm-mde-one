@@ -13,16 +13,16 @@
 
 namespace dataaccessor
 {
-	//! Manipulator danych bazuj¹cy na operatorach typu. Interpoluje liniowo.
+	//! Manipulator danych bazujï¿½cy na operatorach typu. Interpoluje liniowo.
 	struct LerpInterpolator
 	{
-		//! \tparam ValueType Typ wartoœci
-		//! \tparam ArgumentType Typ argumentów		
+		//! \tparam ValueType Typ wartoï¿½ci
+		//! \tparam ArgumentType Typ argumentï¿½w		
 		template <class ValueType, class ArgumentType>
-		//! \param accessor Zwracana interpolowana wartoœæ
-		//! \param argument próbka dla czasu poni¿ej lub identycznego
-		//! \param startIdx próbka dla czasu powyzej lub identycznego
-		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
+		//! \param accessor Zwracana interpolowana wartoï¿½ï¿½
+		//! \param argument prï¿½bka dla czasu poniï¿½ej lub identycznego
+		//! \param startIdx prï¿½bka dla czasu powyzej lub identycznego
+		//! \param endIdx time Wartoï¿½ï¿½ okreï¿½lajï¿½ca procent przesuniecia wzglï¿½dem prï¿½bki poniï¿½ej
 		inline static ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentType & argument, const std::size_t startIdx, const std::size_t endIdx)
 		{			
@@ -34,45 +34,45 @@ namespace dataaccessor
 		}
 	};
 
-	//! Manipulator danych bazuj¹cy na operatorach typu. Interpoluje liniowo.
+	//! Manipulator danych bazujï¿½cy na operatorach typu. Interpoluje liniowo.
 	struct CosineInterpolator
 	{
-		//! \tparam ValueType Typ wartoœci
-		//! \tparam ArgumentType Typ argumentów		
+		//! \tparam ValueType Typ wartoï¿½ci
+		//! \tparam ArgumentType Typ argumentï¿½w		
 		template <class ValueType, class ArgumentType>
-		//! \param accessor Zwracana interpolowana wartoœæ
-		//! \param argument próbka dla czasu poni¿ej lub identycznego
-		//! \param startIdx próbka dla czasu powyzej lub identycznego
-		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
+		//! \param accessor Zwracana interpolowana wartoï¿½ï¿½
+		//! \param argument prï¿½bka dla czasu poniï¿½ej lub identycznego
+		//! \param startIdx prï¿½bka dla czasu powyzej lub identycznego
+		//! \param endIdx time Wartoï¿½ï¿½ okreï¿½lajï¿½ca procent przesuniecia wzglï¿½dem prï¿½bki poniï¿½ej
 		inline static ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentType & argument, const std::size_t startIdx, const std::size_t endIdx)
 		{
 			static const auto PI = std::atan(1.0)*4.0;
 
-			const auto startSample = channel.sample(startIdx);
-			const auto endSample = channel.sample(startIdx);
+			const auto startSample = accessor.sample(startIdx);
+			const auto endSample = accessor.sample(endIdx);
 			const auto mu = (argument - startSample.first) / (endSample.first - startSample.first);
 			const auto mu2 = (1.0 - std::cos(mu * PI)) / 2.0;
 			return startSample.second * (1.0 - mu2) + endSample.second * mu2;
 		}
 	};
 
-	//! Manipulator danych bazuj¹cy na operatorach typu. Interpoluje liniowo.
+	//! Manipulator danych bazujï¿½cy na operatorach typu. Interpoluje liniowo.
 	struct QubicInterpolator
 	{
-		//! \tparam ValueType Typ wartoœci
-		//! \tparam ArgumentType Typ argumentów		
+		//! \tparam ValueType Typ wartoï¿½ci
+		//! \tparam ArgumentType Typ argumentï¿½w		
 		template <class ValueType, class ArgumentType>
-		//! \param accessor Zwracana interpolowana wartoœæ
-		//! \param argument próbka dla czasu poni¿ej lub identycznego
-		//! \param startIdx próbka dla czasu powyzej lub identycznego
-		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
+		//! \param accessor Zwracana interpolowana wartoï¿½ï¿½
+		//! \param argument prï¿½bka dla czasu poniï¿½ej lub identycznego
+		//! \param startIdx prï¿½bka dla czasu powyzej lub identycznego
+		//! \param endIdx time Wartoï¿½ï¿½ okreï¿½lajï¿½ca procent przesuniecia wzglï¿½dem prï¿½bki poniï¿½ej
 		inline static ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentType & argument, const std::size_t startIdx, const std::size_t endIdx)
 		{
 			const bool startOK = (startIdx > 0);
 			const bool endOK = (endIdx < (accessor.size() - 1));
-			UTILS_ASSERT(startOK || endOK, "Jeden z warunków musi byæ poprawny");
+			UTILS_ASSERT(startOK || endOK, "Jeden z warunkï¿½w musi byï¿½ poprawny");
 
 			const auto y1 = accessor.sample(startIdx);
 			const auto y2 = accessor.sample(endIdx);
@@ -118,22 +118,22 @@ namespace dataaccessor
 		}
 	};
 
-	//! Manipulator danych bazuj¹cy na operatorach typu. Interpoluje liniowo.
+	//! Manipulator danych bazujï¿½cy na operatorach typu. Interpoluje liniowo.
 	struct CatmullRomInterpolator
 	{
-		//! \tparam ValueType Typ wartoœci
-		//! \tparam ArgumentType Typ argumentów		
+		//! \tparam ValueType Typ wartoï¿½ci
+		//! \tparam ArgumentType Typ argumentï¿½w		
 		template <class ValueType, class ArgumentType>
-		//! \param accessor Zwracana interpolowana wartoœæ
-		//! \param argument próbka dla czasu poni¿ej lub identycznego
-		//! \param startIdx próbka dla czasu powyzej lub identycznego
-		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
+		//! \param accessor Zwracana interpolowana wartoï¿½ï¿½
+		//! \param argument prï¿½bka dla czasu poniï¿½ej lub identycznego
+		//! \param startIdx prï¿½bka dla czasu powyzej lub identycznego
+		//! \param endIdx time Wartoï¿½ï¿½ okreï¿½lajï¿½ca procent przesuniecia wzglï¿½dem prï¿½bki poniï¿½ej
 		inline static ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentType & argument, const std::size_t startIdx, const std::size_t endIdx)
 		{
 			const bool startOK = (startIdx > 0);
 			const bool endOK = (endIdx < (accessor.size() - 1));
-			UTILS_ASSERT(startOK || endOK, "Jeden z warunków musi byæ poprawny");
+			UTILS_ASSERT(startOK || endOK, "Jeden z warunkï¿½w musi byï¿½ poprawny");
 
 			const auto y1 = accessor.sample(startIdx);
 			const auto y2 = accessor.sample(endIdx);
@@ -164,7 +164,7 @@ namespace dataaccessor
 		}
 	};
 
-	//! Manipulator danych bazuj¹cy na operatorach typu. Interpoluje liniowo.
+	//! Manipulator danych bazujï¿½cy na operatorach typu. Interpoluje liniowo.
 	class HermitInterpolator
 	{
 	public:
@@ -190,19 +190,19 @@ namespace dataaccessor
 			
 		}
 
-		//! \tparam ValueType Typ wartoœci
-		//! \tparam ArgumentType Typ argumentów		
+		//! \tparam ValueType Typ wartoï¿½ci
+		//! \tparam ArgumentType Typ argumentï¿½w		
 		template <class ValueType, class ArgumentType>
-		//! \param accessor Zwracana interpolowana wartoœæ
-		//! \param argument próbka dla czasu poni¿ej lub identycznego
-		//! \param startIdx próbka dla czasu powyzej lub identycznego
-		//! \param endIdx time Wartoœæ okreœlaj¹ca procent przesuniecia wzglêdem próbki poni¿ej
+		//! \param accessor Zwracana interpolowana wartoï¿½ï¿½
+		//! \param argument prï¿½bka dla czasu poniï¿½ej lub identycznego
+		//! \param startIdx prï¿½bka dla czasu powyzej lub identycznego
+		//! \param endIdx time Wartoï¿½ï¿½ okreï¿½lajï¿½ca procent przesuniecia wzglï¿½dem prï¿½bki poniï¿½ej
 		inline ValueType interpolate(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentType & argument, const std::size_t startIdx, const std::size_t endIdx) const
 		{
 			const bool startOK = (startIdx > 0);
 			const bool endOK = (endIdx < (accessor.size() - 1));
-			UTILS_ASSERT(startOK || endOK, "Jeden z warunków musi byæ poprawny");
+			UTILS_ASSERT(startOK || endOK, "Jeden z warunkï¿½w musi byï¿½ poprawny");
 
 			const auto y1 = accessor.sample(startIdx);
 			const auto y2 = accessor.sample(endIdx);

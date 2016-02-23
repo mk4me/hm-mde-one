@@ -1,5 +1,6 @@
 #include "CorePCH.h"
 
+#include <utils/Filesystem.h>
 #include <corelib/Version.h>
 #include "PluginLoader.h"
 #include <corelib/IPlugin.h>

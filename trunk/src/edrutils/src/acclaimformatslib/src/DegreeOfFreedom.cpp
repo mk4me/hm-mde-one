@@ -1,4 +1,5 @@
 #include <acclaimformatslib/DegreeOfFreedom.h>
+#include <algorithm>
 
 using namespace acclaim;
 

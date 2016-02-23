@@ -98,7 +98,7 @@ namespace dataaccessor {
 		{
 			for (auto & a : accessors)
 			{
-				auto f = a->feature<IDescriptorFeature>();
+				auto f = a->template feature<DescriptorFeature>();
 				if (f != nullptr && f->name() == name){
 					return a;
 				}

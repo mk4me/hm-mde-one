@@ -13,31 +13,39 @@ purpose:
 
 namespace dataaccessor
 {
-	template<typename ValueType>
-	class BoundedValuesFeature;
-
-	//! \rparam ValueType Typ wartoœci kana³u
+	//! \rparam ValueType Typ wartoï¿½ci kanaï¿½u
 	template<class ValueType>
-	//! Interfejs kana³u z ograniczonymi wartoœciami
-	class IBoundedValuesFeature : public FeatureHelperT<ValueBounded, IValueFeatureT<ValueType>>
+	//! Interfejs kanaï¿½u z ograniczonymi wartoï¿½ciami
+	class BoundedValuesFeature : public FeatureHelperT<ValueBounded, IValueFeatureT<ValueType>>
 	{
+	private:
+
+		const ValueType min_;
+		const ValueType max_;
+
 	public:
+
+		template<typename T, typename U>
+		BoundedValuesFeature(T && min, U && max)
+			: min_(std::forward<T>(min)), max_(std::forward<U>(max))
+		{}
+
 		//! Destruktor wirtualny
-		virtual ~IBoundedValuesFeature() {};
+		~BoundedValuesFeature() {}
 
-		//! \return Dolna granica wartoœci
-		virtual ValueType minValue() const = 0;
+		//! \return Dolna granica wartoï¿½ci
+		ValueType minValue() const { return min_; }
 
-		//! \return Górna granica wartoœci
-		virtual ValueType maxValue() const = 0;
+		//! \return Gï¿½rna granica wartoï¿½ci
+		ValueType maxValue() const { return max_; }
 
-		//! Sprawdzamy czy wszystkie argumenty znajduj¹ siê w zadanym przedziale
-		static inline IBoundedValuesFeature * create(const IDiscreteValueAccessorT<ValueType> & accessor)
+		//! Sprawdzamy czy wszystkie argumenty znajdujï¿½ siï¿½ w zadanym przedziale
+		static inline BoundedValuesFeature * create(const IDiscreteValueAccessorT<ValueType> & accessor)
 		{
-			IBoundedValuesFeature * ret = nullptr;
+			BoundedValuesFeature * ret = nullptr;
 			if (accessor.empty() == false) {
 
-				auto feature = accessor.feature<IFunctionDescriptionFeature>();
+				auto feature = accessor.template feature<FunctionDescriptionFeature>();
 
 				auto min = accessor.value(0);
 				auto max = min;
@@ -62,49 +70,26 @@ namespace dataaccessor
 					}
 				}
 
-				ret = new BoundedValuesFeature<ValueType>(min, max);
+				ret = new BoundedValuesFeature(min, max);
 			}
 
 			return ret;
 		}
 
-		//! Sprawdzamy czy wszystkie argumenty znajduj¹ siê w zadanym przedziale
-		template<typename ArgumentType>
-		static inline IBoundedValuesFeature * create(
+		//! Sprawdzamy czy wszystkie argumenty znajdujï¿½ siï¿½ w zadanym przedziale
+		/*template<typename ArgumentType>
+		static inline BoundedValuesFeature * create(
 			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
 			const IFunctionAccessorT<ValueType, ArgumentType> * function)
 		{
-			IBoundedValuesFeature * ret = nullptr;
+			BoundedValuesFeature * ret = nullptr;
 			if (discrete != nullptr) {
-				discrete->getOrCreateFeature<IFunctionFeature>();
+				discrete->template getOrCreateFeature<FunctionFeature>();
 				ret = create(*discrete);
 			}
 
 			return ret;
-		}
-	};
-
-	template<typename ValueType>
-	class BoundedValuesFeature : public IBoundedValuesFeature<ValueType>
-	{
-	public:
-		template<typename T, typename U>
-		BoundedValuesFeature(T && min, U && max)
-			: min_(std::forward<T>(min)), max_(std::forward<U>(max))
-		{}
-
-		virtual ~BoundedValuesFeature() {}
-
-		//! \return Dolna granica wartoœci
-		virtual ValueType minValue() const { return min_; }
-
-		//! \return Górna granica wartoœci
-		virtual ValueType maxValue() const { return max_; }
-
-	private:
-
-		const ValueType min_;
-		const ValueType max_;
+		}*/
 	};
 }
 

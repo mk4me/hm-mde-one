@@ -8,7 +8,7 @@
 #ifndef __HEADER_GUARD_TREECONTAINER__TREEVISITPOLICIES_H__
 #define __HEADER_GUARD_TREECONTAINER__TREEVISITPOLICIES_H__
 
-#include <treecontainerlib/Tree.h>
+#include <treecontainerlib/NodeVisitPolicies.h>
 
 namespace treeContainer
 {
@@ -16,249 +16,72 @@ namespace treeContainer
 	{
 		namespace Tree
 		{
-			//! Polityka przechodzenia drzewa schematem PreOrder
-			struct PreOrder
+			namespace impl
 			{
-				using NodeVisitOrder = VisitPolicies::Node::PreOrder;
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzającego węzły
-				template<typename TreeType, typename Visitor>
-				//! \param tree Drzewo
-				//! \param visitor Obiekt przeglądający węzły
-				static void visit(TreeType & tree, Visitor & visitor)
+				//! Polityka przechodzenia drzewa schematem PreOrder
+				template<typename NodeVisitPolicy>
+				struct OrderT
 				{
-					if (empty(tree) == false)
+					using VisitPolicy = NodeVisitPolicy;
+
+					//! \tparam TreeType Typ drzewa
+					//! \tparam Visitor Typ odwiedzającego węzły
+					template<typename TreeType, typename Visitor>
+					//! \param tree Drzewo
+					//! \param visitor Obiekt przeglądający węzły
+					static void visit(TreeType & tree, Visitor & visitor)
 					{
-						NodeVisitOrder::visit(tree.root(), visitor);
+						VisitPolicy::visit(tree.root(), visitor);
 					}
-				}
 
-				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzającego węzły
-				template<typename TreeType, typename Visitor>
-				//! \param tree Drzewo
-				//! \param visitor Obiekt przeglądający węzły
-				static void visit(const TreeType & tree, Visitor & visitor)
-				{
-					if (empty(tree) == false)
+					//! \tparam TreeType Typ drzewa
+					//! \tparam Visitor Typ odwiedzającego węzły
+					template<typename TreeType, typename Visitor>
+					//! \param tree Drzewo
+					//! \param visitor Obiekt przeglądający węzły
+					static void visit(const TreeType & tree, Visitor & visitor)
 					{
-						NodeVisitOrder::visit(tree.root(), visitor);
-					}
-				}
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzającego węzły
-				template<typename TreeType, typename CondVisitor>
-				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
-				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
-				static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
+						VisitPolicy::visit(tree.root(), visitor);
 					}
 
-					return false;
-				}
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzającego węzły
-				template<typename TreeType, typename CondVisitor>
-				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
-				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
-				static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
+					//! \tparam TreeType Typ drzewa
+					//! \tparam CondVisitor Typ odwiedzającego węzły
+					template<typename TreeType, typename CondVisitor>
+					//! \param tree Drzewo
+					//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
+					//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
+					static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
+					{
+						return VisitPolicy::visitWhile(tree.root(), condVisitor);
 					}
 
-					return false;
-				}
-			};
+					//! \tparam TreeType Typ drzewa
+					//! \tparam CondVisitor Typ odwiedzającego węzły
+					template<typename TreeType, typename CondVisitor>
+					//! \param tree Drzewo
+					//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
+					//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
+					static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
+					{
+						return VisitPolicy::visitWhile(tree.root(), condVisitor);
+					}
+				};
+			}
+
+
+			//! Polityka przechodzenia drzewa schematem PreOrder
+			using PreOrder = impl::OrderT<VisitPolicies::Node::PreOrder>;
 
 			//! Polityka przechodzenia drzewa schematem PostOrder
-			struct PostOrder
-			{
-				using NodeVisitOrder = VisitPolicies::Node::PostOrder;
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzającego węzły
-				template<typename TreeType, typename Visitor>
-				//! \param tree Drzewo
-				//! \param visitor Obiekt przeglądający węzły
-				static void visit(TreeType & tree, Visitor & visitor)
-				{
-					if (empty(tree) == false)
-					{
-						NodeVisitOrder::visit(tree.root(), visitor);
-					}
-				}
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzającego węzły
-				template<typename TreeType, typename Visitor>
-				//! \param tree Drzewo
-				//! \param visitor Obiekt przeglądający węzły
-				static void visit(const TreeType & tree, Visitor & visitor)
-				{
-					if (empty(tree) == false)
-					{
-						NodeVisitOrder::visit(tree.root(), visitor);
-					}
-				}
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzającego węzły
-				template<typename TreeType, typename CondVisitor>
-				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
-				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
-				static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
-					}
-
-					return false;
-				}
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzającego węzły
-				template<typename TreeType, typename CondVisitor>
-				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
-				//! \return Czy nastąpiła przerwa przy przechodzeniu drzewa
-				static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
-					}
-
-					return false;
-				}
-			};
+			using PostOrder = impl::OrderT<VisitPolicies::Node::PostOrder>;
 
 			//! Polityka przechodzenia drzewa schematem LevelOrder
-			struct LevelOrder
-			{
-				using NodeVisitOrder = VisitPolicies::Node::LevelOrder;
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzającego węzły
-				template<typename TreeType, typename Visitor>
-				//! \param tree Drzewo
-				//! \param visitor Obiekt przeglądający węzły
-				static void visit(TreeType & tree, Visitor & visitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false)
-					{
-						NodeVisitOrder::visit(tree.root(), visitor);
-					}
-				}
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzającego węzły
-				template<typename TreeType, typename Visitor>
-				//! \param tree Drzewo
-				//! \param visitor Obiekt przeglądający węzły
-				static void visit(const TreeType & tree, Visitor & visitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false)
-					{
-						NodeVisitOrder::visit(tree.root(), visitor);
-					}
-				}
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzającego węzły
-				template<typename TreeType, typename CondVisitor>
-				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
-				static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
-					}
-
-					return false;
-				}
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzającego węzły
-				template<typename TreeType, typename CondVisitor>
-				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
-				static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
-					}
-
-					return false;
-				}
-			};
+			using LevelOrder = impl::OrderT<VisitPolicies::Node::LevelOrder>;
 
 			//! \tparam NodeVisitOrderT Polityka przechodzenia drzewa którą odwracamy
 			template<typename NodeVisitOrderT>
 			//! Polityka przechodzenia drzewa schematem odwrotnym do danego
-			struct ReverseOrder
-			{
-				using NodeVisitOrder = VisitPolicies::Node::ReverseOrder < NodeVisitOrderT >;
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzającego węzły
-				template<typename TreeType, typename Visitor>
-				//! \param tree Drzewo
-				//! \param visitor Obiekt przeglądający węzły i poziomy
-				static void visit(TreeType & tree, Visitor & visitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						NodeVisitOrder::visit(tree.root(), visitor);
-					}
-				}
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam Visitor Typ odwiedzającego węzły
-				template<typename TreeType, typename Visitor>
-				//! \param tree Drzewo
-				//! \param visitor Obiekt przeglądający węzły i poziomy
-				static void visit(const TreeType & tree, Visitor & visitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						NodeVisitOrder::visit(tree.root(), visitor);
-					}
-				}
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzającego węzły
-				template<typename TreeType, typename CondVisitor>
-				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
-				static bool visitWhile(TreeType & tree, CondVisitor & condVisitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
-					}
-
-					return false;
-				}
-
-				//! \tparam TreeType Typ drzewa
-				//! \tparam CondVisitor Typ odwiedzającego węzły
-				template<typename TreeType, typename CondVisitor>
-				//! \param tree Drzewo
-				//! \param condVisitor Obiekt przeglądający węzły i poziomy z warunkiem
-				static bool visitWhile(const TreeType & tree, CondVisitor & condVisitor)
-				{
-					if (treeContainer::Tree::empty(tree) == false){
-						return NodeVisitOrder::visitWhile(tree.root(), condVisitor);
-					}
-
-					return false;
-				}
-			};
+			using ReverseOrder = impl::OrderT<VisitPolicies::Node::ReverseOrder<NodeVisitOrderT>>;
 		}
 	}
 }

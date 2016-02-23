@@ -12,6 +12,7 @@ purpose:
 #include <map>
 #include <list>
 #include <mutex>
+#include "ApplicationCommon.h"
 #include "ParserManager.h"
 #include "RegisteredDataTypesManager.h"
 #include <corelib/IParserManagerReader.h>
@@ -193,8 +194,8 @@ namespace core {
 	void StreamDataManager::initializeParsers(const IParserManagerReader::ParserPrototypes & parsers,
 											  const IStreamDataManager::StreamGrabberPtr stream, VariantsList & objects)
 	{
-		auto pm = getParserManager();
-		auto hm = getRegisteredDataTypesManager();
+		auto pm = core::getParserManager();
+		auto hm = core::getRegisteredDataTypesManager();
 
 		//jeżeli pliku nie ma dodaj go, stwórz parsery i rozszerz dostępne dane wraz z ich opisem
 		for (auto parserIT = parsers.begin(); parserIT != parsers.end(); ++parserIT) {

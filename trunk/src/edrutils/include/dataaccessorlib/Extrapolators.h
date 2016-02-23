@@ -9,30 +9,31 @@
 #define __HEADER_GUARD_DATAACCESSOR__EXTRAPOLATORS_H__
 
 #include <dataaccessorlib/Interpolators.h>
+#include <utils/Clamping.h>
 
 namespace dataaccessor
 {
-	//! Typ obsuguj¹cy zapytania o wartoœci kana³u dla czasu spoza zakresu pokrytego przez kana³
-	//! Rzuca wyj¹tkami
+	//! Typ obsugujï¿½cy zapytania o wartoï¿½ci kanaï¿½u dla czasu spoza zakresu pokrytego przez kanaï¿½
+	//! Rzuca wyjï¿½tkami
 	class ExceptionExtrapolator
 	{
 	public:
-		//! \tparam ValueType Typ wartoœci
+		//! \tparam ValueType Typ wartoï¿½ci
 		//! \tparam ArgumentType Typ argumentu
 		template<typename ValueType, typename ArgumentType>
-		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
-		//! \return Wartoœæ dla argumentu spoza kana³u
+		//! \param argument Argument ktï¿½ry nie mieï¿½ci siï¿½ w dozwolnym zakresie
+		//! \return Wartoï¿½ï¿½ dla argumentu spoza kanaï¿½u
 		inline static ValueType argumentUnderflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			throw std::runtime_error("Argument below allowed/available value");
 			return ValueType();
 		}
 
-		//! \tparam ValueType Typ wartoœci
+		//! \tparam ValueType Typ wartoï¿½ci
 		//! \tparam ArgumentType Typ argumentu
 		template<typename ValueType, typename ArgumentType>
-		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
-		//! \return Wartoœæ dla argumentu spoza kana³u
+		//! \param argument Argument ktï¿½ry nie mieï¿½ci siï¿½ w dozwolnym zakresie
+		//! \return Wartoï¿½ï¿½ dla argumentu spoza kanaï¿½u
 		inline static ValueType argumentOverflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			throw std::runtime_error("Argument over allowed/available value");
@@ -43,7 +44,7 @@ namespace dataaccessor
 	//! \tparam Interpolator Typ interpolatora
 	//! \tparam ArgumentType Typ argumentu
 	template<typename ArgumentType, typename Interpolator = LerpInterpolator>
-	//! Klasa realizuj¹ca okresowy obraz kana³u
+	//! Klasa realizujï¿½ca okresowy obraz kanaï¿½u
 	class PeriodicExtrapolator
 	{
 	public:
@@ -51,7 +52,7 @@ namespace dataaccessor
 		//! Konstruktor
 		//! \param minArg Minimalny argument
 		//! \param maxArg Maksymalny argument
-		//! \param Interpolator Interpolator u¿ywany do interpolacji wewn¹trz kana³u
+		//! \param Interpolator Interpolator uï¿½ywany do interpolacji wewnï¿½trz kanaï¿½u
 		template<typename I = Interpolator>
 		PeriodicExtrapolator(const ArgumentType & minArg, const ArgumentType & maxArg,
 			I && interpolator = I())
@@ -82,22 +83,22 @@ namespace dataaccessor
 		//! Destruktor
 		~PeriodicExtrapolator() {}
 
-		//! \tparam ValueType Typ wartoœci		
+		//! \tparam ValueType Typ wartoï¿½ci		
 		template<typename ValueType>
-		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
-		//! \param accessor Kana³ dla którego pytaliœmy o argument
-		//! \return Wartoœæ dla argumentu spoza kana³u		
+		//! \param argument Argument ktï¿½ry nie mieï¿½ci siï¿½ w dozwolnym zakresie
+		//! \param accessor Kanaï¿½ dla ktï¿½rego pytaliï¿½my o argument
+		//! \return Wartoï¿½ï¿½ dla argumentu spoza kanaï¿½u		
 		inline ValueType argumentUnderflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor) const
 		{
 			const auto arg = utils::periodic_clamp_underflow(argument, minArg, maxArg, length);				
 			return interpolator.interpolate(arg, accessor);
 		}
 
-		//! \tparam ValueType Typ wartoœci		
+		//! \tparam ValueType Typ wartoï¿½ci		
 		template<typename ValueType>
-		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
-		//! \param accessor Kana³ dla którego pytaliœmy o argument
-		//! \return Wartoœæ dla argumentu spoza kana³u	
+		//! \param argument Argument ktï¿½ry nie mieï¿½ci siï¿½ w dozwolnym zakresie
+		//! \param accessor Kanaï¿½ dla ktï¿½rego pytaliï¿½my o argument
+		//! \return Wartoï¿½ï¿½ dla argumentu spoza kanaï¿½u	
 		inline ValueType argumentOverflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor) const
 		{
 			const auto arg = utils::periodic_clamp_overflow(argument, minArg, maxArg, length);
@@ -109,64 +110,64 @@ namespace dataaccessor
 		const Interpolator interpolator;
 		//! Najmniejszy argument
 		const ArgumentType minArg;
-		//! Najwiêkszy argument
+		//! Najwiï¿½kszy argument
 		const ArgumentType maxArg;
-		//! D³ugoœæ - max argument - min argument
+		//! Dï¿½ugoï¿½ï¿½ - max argument - min argument
 		const ArgumentType length;
 	};
 
-	//! \tparam ValueType Typ wartoœci
+	//! \tparam ValueType Typ wartoï¿½ci
 	template<typename ValueType>
-	//! Typ obsuguj¹cy zapytania o wartoœci kana³u dla wartoœci spoza zakresu pokrytego przez kana³
-	//! Powiela skrajne próbki
+	//! Typ obsugujï¿½cy zapytania o wartoï¿½ci kanaï¿½u dla wartoï¿½ci spoza zakresu pokrytego przez kanaï¿½
+	//! Powiela skrajne prï¿½bki
 	class BorderExtrapolator
 	{
 	public:
-		//! \tparam ValueType Typ wartoœci
+		//! \tparam ValueType Typ wartoï¿½ci
 		//! \tparam ArgumentType Typ argumentu
 		template<typename ArgumentType>
-		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
-		//! \param accessor Kana³ dla którego pytaliœmy o argument
-		//! \return Wartoœæ dla argumentu spoza kana³u		
+		//! \param argument Argument ktï¿½ry nie mieï¿½ci siï¿½ w dozwolnym zakresie
+		//! \param accessor Kanaï¿½ dla ktï¿½rego pytaliï¿½my o argument
+		//! \return Wartoï¿½ï¿½ dla argumentu spoza kanaï¿½u		
 		static inline ValueType argumentUnderflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			return accessor.value(0);
 		}
 
-		//! \tparam ValueType Typ wartoœci
+		//! \tparam ValueType Typ wartoï¿½ci
 		//! \tparam ArgumentType Typ argumentu
 		template<typename ArgumentType>
-		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
-		//! \param accessor Kana³ dla którego pytaliœmy o argument
-		//! \return Wartoœæ dla argumentu spoza kana³u	
+		//! \param argument Argument ktï¿½ry nie mieï¿½ci siï¿½ w dozwolnym zakresie
+		//! \param accessor Kanaï¿½ dla ktï¿½rego pytaliï¿½my o argument
+		//! \return Wartoï¿½ï¿½ dla argumentu spoza kanaï¿½u	
 		static inline ValueType argumentOverflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			return accessor.value(accessor.size() - 1);
 		}	
 	};
 
-	//! Typ realizuj¹cy liniow¹ ekstrapolacjê
+	//! Typ realizujï¿½cy liniowï¿½ ekstrapolacjï¿½
 	class LinearExtrapolator
 	{
 	public:
 
-		//! \tparam ValueType Typ wartoœci
+		//! \tparam ValueType Typ wartoï¿½ci
 		//! \tparam ArgumentType Typ argumentu
 		template<typename ValueType, typename ArgumentType>
-		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
-		//! \param accessor Kana³ dla którego pytaliœmy o argument
-		//! \return Wartoœæ dla argumentu spoza kana³u		
+		//! \param argument Argument ktï¿½ry nie mieï¿½ci siï¿½ w dozwolnym zakresie
+		//! \param accessor Kanaï¿½ dla ktï¿½rego pytaliï¿½my o argument
+		//! \return Wartoï¿½ï¿½ dla argumentu spoza kanaï¿½u		
 		static inline ValueType argumentUnderflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			return LerpInterpolator::interpolate(accessor, argument, 0, 1);
 		}
 
-		//! \tparam ValueType Typ wartoœci
+		//! \tparam ValueType Typ wartoï¿½ci
 		//! \tparam ArgumentType Typ argumentu
 		template<typename ValueType, typename ArgumentType>
-		//! \param argument Argument który nie mieœci siê w dozwolnym zakresie
-		//! \param accessor Kana³ dla którego pytaliœmy o argument
-		//! \return Wartoœæ dla argumentu spoza kana³u	
+		//! \param argument Argument ktï¿½ry nie mieï¿½ci siï¿½ w dozwolnym zakresie
+		//! \param accessor Kanaï¿½ dla ktï¿½rego pytaliï¿½my o argument
+		//! \return Wartoï¿½ï¿½ dla argumentu spoza kanaï¿½u	
 		static inline ValueType argumentOverflow(const ArgumentType & argument, const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			const auto s = accessor.size() - 2;

@@ -13,6 +13,7 @@ purpose:
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/median.hpp>
 #include <boost/accumulators/statistics/variance.hpp>
 #include <boost/accumulators/statistics/moment.hpp>
 #include <boost/accumulators/statistics/min.hpp>
@@ -156,108 +157,63 @@ namespace boost {
 namespace dataaccessor {
 	////////////////////////////////////////////////////////////////////////////////
 
-	template<typename ValueType, typename ArgumentType>
-	class IStatisticsFeature : public FeatureHelperT<Statistics, IAccessorFeatureT<ValueType, ArgumentType>>
+
+//! Klasa ze statystykami kanału, leniwie aktualizowana w momencie zapytania
+	class StatsHelper
 	{
+	private:
+
+		using features = boost::accumulators::features< boost::accumulators::tag::mean, boost::accumulators::tag::median, boost::accumulators::tag::variance >;
+
+		template<typename T>
+		using Stats = boost::accumulators::accumulator_set<T, features>;
+
 	public:
 
 		template<typename T>
 		struct Results
 		{
 			//! Średnia wartość danych w kanale
-			T mean;		
+			T mean;
+			//! Mediana
+			T median;
 			//! Wariancja danych w kanale
 			T variance;
 			//! Wariancja danych w kanale
 			T standardDeviation;
 		};
 
-		using Values = Results<ValueType>;
-		using Arguments = Results<ArgumentType>;
-
-	public:
-		//! Destruktor wirtualny
-		virtual ~IStatisticsFeature() {}
-		//! \return Minimalna wartość argumentu
-		virtual Values values() const = 0;
-		//! \return Maksymalna wartośc argumentu
-		virtual Arguments arguments() const = 0;
-		
-		static IStatisticsFeature<ValueType, ArgumentType> * create(
-			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
-			const IFunctionAccessorT<ValueType, ArgumentType> * function)
-		{
-			IStatisticsFeature<ValueType, ArgumentType> * ret = nullptr;
-			if (discrete != nullptr && discrete->empty() == false){
-				const auto stats = StatsHelper::samples(*discrete);
-				ret = new StatisticsFeature<ValueType, ArgumentType>(stats.values, stats.arguments);
-			}
-
-			return ret;
-		}
-
-	};
-
-	template<typename ValueType, typename ArgumentType>
-	class StatisticsFeature : public IStatisticsFeature<ValueType, ArgumentType>
-	{
-	public:
-		StatisticsFeature(const Results<ValueType> & values,
-			const Results<ArgumentType> & arguments)
-			: values_(values), arguments_(arguments)
-		{
-
-		}
-
-		virtual ~StatisticsFeature() {}
-
-		//! \return Minimalna wartość argumentu
-		virtual Values values() const override { return values_; }
-		//! \return Maksymalna wartośc argumentu
-		virtual Arguments arguments() const override { return arguments_; }
-
-	private:
-		const Values values_;
-		const Arguments arguments_;
-	};
-
-	//! Klasa ze statystykami kanału, leniwie aktualizowana w momencie zapytania
-	class StatsHelper
-	{
-	public:
-
-		template<typename ValueType, typename ArgumentType>//, typename IndexType>
+		template<typename ValueType, typename ArgumentType>
 		struct CompleteResult
 		{
-			typename IStatisticsFeature<ValueType, ArgumentType>::Values values;
-			typename IStatisticsFeature<ValueType, ArgumentType>::Arguments arguments;
+			Results<ValueType> values;
+			Results<ArgumentType> arguments;
 		};
 
 		template<typename ValueType, typename ArgumentType>
-		static typename IStatisticsFeature<ValueType, ArgumentType>::Values
-			values(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
+		static inline Results<ValueType> values(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const IDiscreteAccessor::size_type to,
 			const IDiscreteAccessor::size_type from = 0)
 		{
 			using namespace boost::accumulators;			
-			using Stats = boost::accumulators::accumulator_set<ValueType, features< tag::mean, tag::variance >>;
 
-			typename IStatisticsFeature<ValueType, ArgumentType>::Values result;
+			Results<ValueType> result;
 
-			auto ff = accessor.feature<IFunctionDescriptionFeature>();
+			auto ff = accessor.template feature<FunctionDescriptionFeature>();
 
 			if (ff != nullptr && ff->monotony() == Constant){
-				result.mean = accessor.value(0);
+				result.mean = result.median = accessor.value(0);
 				result.variance = result.standardDeviation = ValueType(0);				
 			}
 			else{
-				Stats sts;
+				Stats<ValueType> sts;
 
 				for (auto i = from; i < to; ++i){
 					sts(accessor.value(i));
 				}
 
-				result.mean = mean(sts);				
+				result.mean = mean(sts);
+				result.median = median(sts);
 				result.variance = variance(sts);
 				result.standardDeviation = std::sqrt(result.variance);
 			}		
@@ -266,31 +222,28 @@ namespace dataaccessor {
 		}
 
 		template<typename ValueType, typename ArgumentType>
-		static typename IStatisticsFeature<ValueType, ArgumentType>::Values
-			values(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
+		static inline Results<ValueType> values(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			return values(accessor, accessor.size());
 		}
 
 		template<typename ValueType, typename ArgumentType>
-		static typename IStatisticsFeature<ValueType, ArgumentType>::Arguments
-			arguments(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,		
+		static inline Results<ArgumentType> arguments(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const IDiscreteAccessor::size_type to,
 			const IDiscreteAccessor::size_type from = 0)
 		{
 			using namespace boost::accumulators;		
 
-			typename IStatisticsFeature<ValueType, ArgumentType>::Arguments result;
+			Results<ArgumentType> result;
 
-			using Stats = boost::accumulators::accumulator_set<ArgumentType, features< tag::mean, tag::variance >>;
-
-			Stats sts;
+			Stats<ArgumentType> sts;
 
 			for (auto i = from; i < to; ++i){
 				sts(accessor.argument(i));
 			}
 
 			result.mean = mean(sts);
+			result.median = median(sts);
 			result.variance = variance(sts);
 			result.standardDeviation = std::sqrt(result.variance);			
 
@@ -298,25 +251,23 @@ namespace dataaccessor {
 		}
 
 		template<typename ValueType, typename ArgumentType>
-		static typename IStatisticsFeature<ValueType, ArgumentType>::Arguments
-			arguments(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
+		static inline Results<ArgumentType>	arguments(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			return arguments(accessor, accessor.size());
 		}
 
 		template<typename ValueType, typename ArgumentType>
-		static CompleteResult<ValueType, ArgumentType>
+		static inline CompleteResult<ValueType, ArgumentType>
 			samples(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const IDiscreteAccessor::size_type to,
 			const IDiscreteAccessor::size_type from = 0)
 		{
 			using namespace boost::accumulators;
-			using ArgStats = boost::accumulators::accumulator_set<ArgumentType, features< tag::mean, tag::variance >>;
 			CompleteResult<ValueType, ArgumentType> result;
 
-			ArgStats argSts;
+			Stats<ArgumentType> argSts;
 
-			auto fdf = accessor.feature<IFunctionDescriptionFeature>();
+			auto fdf = accessor.template feature<FunctionDescriptionFeature>();
 
 			if (fdf != nullptr && fdf->monotony() == Constant){
 				result.values.mean = accessor.value(0);
@@ -327,9 +278,8 @@ namespace dataaccessor {
 				}			
 			}
 			else{
-				using ValStats = boost::accumulators::accumulator_set<ValueType, features< tag::mean, tag::variance >>;
 
-				ValStats valSts;
+				Stats<ValueType> valSts;
 
 				for (auto i = from; i < to; ++i){
 					const auto s = accessor.sample(i);
@@ -337,12 +287,14 @@ namespace dataaccessor {
 					valSts(s.second);
 				}
 
-				result.values.mean = mean(valSts);				
+				result.values.mean = mean(valSts);
+				result.values.median = median(valSts);
 				result.values.variance = variance(valSts);
 				result.values.standardDeviation = std::sqrt(result.values.variance);
 			}
 
 			result.arguments.mean = mean(argSts);			
+			result.arguments.median = median(argSts);
 			result.arguments.variance = variance(argSts);
 			result.arguments.standardDeviation = std::sqrt(result.arguments.variance);
 
@@ -350,11 +302,56 @@ namespace dataaccessor {
 		}
 
 		template<typename ValueType, typename ArgumentType>
-		static CompleteResult<ValueType, ArgumentType>
+		static inline CompleteResult<ValueType, ArgumentType>
 			samples(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor)
 		{
 			return samples(accessor, accessor.size());
 		}
+	};
+
+
+	template<typename ValueType, typename ArgumentType>
+	class StatisticsFeature : public FeatureHelperT<Statistics, IAccessorFeatureT<ValueType, ArgumentType>>
+	{
+	public:
+
+		using Values = StatsHelper::Results<ValueType>;
+		using Arguments = StatsHelper::Results<ArgumentType>;
+
+	public:
+		template<typename RV, typename RA>
+		StatisticsFeature(RV && values,	RA && arguments)
+			: values_(std::forward<RV>(values)),
+			  arguments_(std::forward<RA>(arguments))
+		{
+
+		}
+
+		//! Destruktor wirtualny
+		~StatisticsFeature() {}
+		//! \return Minimalna wartość argumentu
+		Values values() const { return values_; }
+		//! \return Maksymalna wartośc argumentu
+		Arguments arguments() const { return arguments_; }
+
+		static StatisticsFeature * create(
+			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
+			const IFunctionAccessorT<ValueType, ArgumentType> * function)
+		{
+			StatisticsFeature * ret = nullptr;
+			if (discrete != nullptr && discrete->empty() == false){
+				const auto stats = StatsHelper::samples(*discrete);
+				ret = new StatisticsFeature(stats.values, stats.arguments);
+			}
+
+			return ret;
+		}
+
+	private:
+
+		Values values_;
+		Arguments arguments_;
+
 	};
 
 	////////////////////////////////////////////////////////////////////////////////

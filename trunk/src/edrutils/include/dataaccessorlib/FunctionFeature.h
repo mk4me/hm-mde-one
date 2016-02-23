@@ -23,46 +23,39 @@ purpose:
 
 namespace dataaccessor
 {
-	class IFunctionFeature;
-
-	class DATAACCESSORLIB_EXPORT FunctionFeature
+	//! Interfejs opisujï¿½cy cechy kanaï¿½y reprezentujï¿½cego funkcjï¿½ - jeden argument jedna wartoï¿½ï¿½,
+	//! jak kanaï¿½ nie ma tego interfejsu to traktujemy go jako relacje i moï¿½liwa jest tylko wersja dyskretna
+	//! - musi jï¿½ implementowaï¿½, inaczej FAIL
+	class DATAACCESSORLIB_EXPORT FunctionFeature : public FeatureHelperT<Function>
 	{
 	private:
-		static const utils::shared_ptr<IFunctionFeature> functionFeature;
-		static const utils::shared_ptr<IFunctionFeature> nonFunctionFeature;
+			static const utils::shared_ptr<FunctionFeature> functionFeature;
+			static const utils::shared_ptr<FunctionFeature> nonFunctionFeature;
 
 	public:
 
-		static inline const utils::shared_ptr<IFunctionFeature> & feature(const bool isFunc)
-		{
-			return (isFunc == true) ? functionFeature : nonFunctionFeature;
-		}
-	};
+		FunctionFeature(const bool function) : function(function) {}
 
-	//! Interfejs opisuj¹cy cechy kana³y reprezentuj¹cego funkcjê - jeden argument jedna wartoœæ,
-	//! jak kana³ nie ma tego interfejsu to traktujemy go jako relacje i mo¿liwa jest tylko wersja dyskretna
-	//! - musi j¹ implementowaæ, inaczej FAIL
-	class IFunctionFeature : public FeatureHelperT<Function>
-	{
-	public:
 		//! Destruktor wirtualny
-		virtual ~IFunctionFeature() {}
+		~FunctionFeature() {}
 		//! \return Czy funkcja jest parzysta
-		virtual bool isFunction() const = 0;
+		bool isFunction() const { return function; }
+
+		static utils::shared_ptr<FunctionFeature> feature(const bool isFunc);
 
 		template<typename ValueType, typename ArgumentType>
-		inline static utils::shared_ptr<IFunctionFeature> create(
+		inline static utils::shared_ptr<FunctionFeature> create(
 			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
 			const IFunctionAccessorT<ValueType, ArgumentType> * function)
 		{
 			if (discrete != nullptr) {
 				return create(*discrete);
 			}
-			return FunctionFeature::feature(true);
+			return functionFeature;
 		}
 
 		template<typename ArgumentType>
-		inline static utils::shared_ptr<IFunctionFeature> create(
+		inline static utils::shared_ptr<FunctionFeature> create(
 			const IDiscreteArgumentAccessorT<ArgumentType> & accessor)
 		{
 			bool isFun = true;
@@ -70,7 +63,7 @@ namespace dataaccessor
 			if (accessor.empty() == true) {
 				isFun = false;
 			}
-			else if ((accessor.size() > 1) && (accessor.getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>() == nullptr)) {
+			else if ((accessor.size() > 1) && (accessor.template getOrCreateFeature<UniformArgumentsFeature>() == nullptr)) {
 				auto sA = accessor.argument(0);
 				auto sB = accessor.argument(1);
 				if (sA != sB) {
@@ -100,8 +93,12 @@ namespace dataaccessor
 				}
 			}
 
-			return FunctionFeature::feature(isFun);
+			return feature(isFun);
 		}
+
+	private:
+
+		const bool function;
 	};
 }
 

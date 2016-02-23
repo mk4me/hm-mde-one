@@ -43,7 +43,7 @@ namespace treeContainer
 		template<typename NPtrA, typename NPtrB>
 		//! \param me Węzeł dla którego sprawdzamy przodka
 		//! \param ancestor Weryfikowany węzeł przodek
-		static bool isAncestor(NPtrA me, NPtrB * ancestor)
+		static inline bool isAncestor(NPtrA me, NPtrB * ancestor)
 		{
 			if (me == nullptr || me.get() == ancestor){
 				return false;
@@ -60,7 +60,7 @@ namespace treeContainer
 		template<typename NPtrA, typename NPtrB>
 		//! \param me Węzeł dla którego sprawdzamy przodka
 		//! \param ancestor Weryfikowany węzeł przodek
-		static bool isAncestor(NPtrA me, NPtrB ancestor)
+		static inline bool isAncestor(NPtrA me, NPtrB ancestor)
 		{
 			if (me == nullptr || me == ancestor){
 				return false;
@@ -77,7 +77,7 @@ namespace treeContainer
 		template<typename NPtrA, typename NPtrB>
 		//! \param me Węzeł dla którego sprawdzamy potomka
 		//! \param ancestor Weryfikowany węzeł potomek
-		static bool isDescendant(NPtrA me, NPtrB descendant)
+		static inline bool isDescendant(NPtrA me, NPtrB descendant)
 		{
 			return isAncestor(descendant, me);
 		}
@@ -91,7 +91,7 @@ namespace treeContainer
 		//! \param nodeB Węzeł startowy drugiego drzewa
 		//! \param comp Obiekt porównyjący wartości węzłów
 		//! \return Czy oba drzewa są równe - struktura i dane węzłów
-		static bool compare(NPtrA nodeA, NPtrB nodeB, Comp comp = Comp())
+		static inline bool compare(NPtrA nodeA, NPtrB nodeB, Comp comp = Comp())
 		{
 			//zakładamy że struktury takie same
 			bool ret = true;
@@ -132,7 +132,7 @@ namespace treeContainer
 		//! \param nodeA Węzeł startowy pierwszego drzewa
 		//! \param nodeB Węzeł startowy drugiego drzewa
 		//! \return Czy struktury drzew są takie same
-		static bool compareStructure(NPtrA nodeA, NPtrB nodeB)
+		static inline bool compareStructure(NPtrA nodeA, NPtrB nodeB)
 		{	
 			//zakładamy że struktury takie same
 			bool ret = true;
@@ -163,7 +163,7 @@ namespace treeContainer
 		//! \tparam NPtr Typ wskaźnika węzła
 		template<typename NPtr>
 		//! \param node Węzeł dla którego liczymy dzieci
-		static SizeType childrenCount(NPtr node)
+		static inline SizeType childrenCount(NPtr node)
 		{
 			const auto children = node->children();
 			SizeType ret = children.size();

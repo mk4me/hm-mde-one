@@ -165,8 +165,8 @@ void NewChartSerie::setYScale(double val) {
 
 Scales NewChartSerie::getScales() const {
 
-	auto baf = reader->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();
-	auto bvf = reader->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
+	auto baf = reader->getOrCreateFeature<dataaccessor::BoundedArgumentsFeature>();
+	auto bvf = reader->getOrCreateFeature<dataaccessor::BoundedValuesFeature>();
 
 	return Scales(baf->minArgument(), baf->maxArgument(), bvf->minValue(),
 		bvf->maxValue());
@@ -187,7 +187,7 @@ double NewChartSerie::getCurrentValue() const {
 }
 
 double NewChartSerie::getLength() const {
-	auto baf = reader->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();
+	auto baf = reader->getOrCreateFeature<dataaccessor::BoundedArgumentsFeature>();
 	return baf->maxArgument() - baf->minArgument();
 }
 

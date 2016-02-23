@@ -12,45 +12,35 @@
 
 namespace dataaccessor
 {
-	//! \rparam ArgumentType Typ argumentu kana³u
+	//! \rparam ArgumentType Typ argumentu kanaï¿½u
 	template<class ArgumentType>
-	//! Interfejs kana³u z ograniczonymi wartoœciami
-	class IPeriodicFunctionFeature : public FeatureHelperT<Periodic, IArgumentFeatureT<ArgumentType>>
+	//! Interfejs kanaï¿½u z ograniczonymi wartoï¿½ciami
+	class PeriodicFunctionFeature : public FeatureHelperT<Periodic, IArgumentFeatureT<ArgumentType>>
 	{
-	public:
-		//! Destruktor wirtualny
-		virtual ~IPeriodicFunctionFeature() {};
+	private:
 
-		//! \return D³ugoœæ okresu kana³u
-		virtual ArgumentType period() const = 0;
+			const ArgumentType period_;
+
+	public:
+
+		template<typename T>
+		PeriodicFunctionFeature(T && period)
+			: period_(std::forward<T>(period)) {}
+
+		//! Destruktor wirtualny
+		~PeriodicFunctionFeature() {}
+
+		//! \return Dï¿½ugoï¿½ï¿½ okresu kanaï¿½u
+		ArgumentType period() const { return period_; }
 
 		template<typename ValueType>
-		inline static IPeriodicFunctionFeature * create(
+		inline static PeriodicFunctionFeature * create(
 			const IDiscreteAccessor<ValueType, ArgumentType> * discrete,
 			const IFunctionAccessorT<ValueType, ArgumentType> * function)
 		{
 			return nullptr;
 		}
 	};
-	
-	template<class ArgumentType>
-	class PeriodicFunctionFeature : public IPeriodicFunctionFeature<ArgumentType>
-	{
-	public:
-		template<typename T>
-		PeriodicFunctionFeature(T && period)
-			: period_(std::forward<T>(period)) {}
-
-		virtual ~PeriodicFunctionFeature() {};
-
-		//! \return D³ugoœæ okresu kana³u
-		virtual ArgumentType period() const override { return period_; }
-
-	private:
-
-		const ArgumentType period_;
-	};
-
 }
 
 #endif	// __HEADER_GUARD_DATAACCESSOR__PERIODICFUNCTIONFEATURE_H__

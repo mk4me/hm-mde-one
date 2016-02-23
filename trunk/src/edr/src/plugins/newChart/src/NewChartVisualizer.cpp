@@ -779,12 +779,12 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
 						percentDraw->setPercentMode(true);
 						percentDraw->setLeftRightValues(segment->begin, segment->end);
 
-						auto bvf = segment->scalar->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
+						auto bvf = segment->scalar->getOrCreateFeature<dataaccessor::BoundedValuesFeature>();
 
 						qwtPlot->setAxisScale(QwtPlot::yLeft, bvf->minValue(), bvf->maxValue());
 						qwtPlot->setAxisScaleDiv(QwtPlot::xBottom, percentDraw->getScaleDiv());
 					} else {
-						auto bvf = segment->scalar->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
+						auto bvf = segment->scalar->getOrCreateFeature<dataaccessor::BoundedValuesFeature>();
 						float minY = bvf->minValue();
 						float maxY = bvf->maxValue();
 						for (auto it = series.begin(); it != series.end(); ++it) {
@@ -793,7 +793,7 @@ void NewChartVisualizer::setScale( bool scaleToActive, bool eventMode )
 								if (h) {
 									EventsHelper::SegmentConstPtr s = h->getSegment(x, this->context);
 									if (s) {
-										auto bvf = s->scalar->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
+										auto bvf = s->scalar->getOrCreateFeature<dataaccessor::BoundedValuesFeature>();
 										minY = (std::min)(minY, bvf->minValue());
 										maxY = (std::max)(maxY, bvf->maxValue());
 									}
@@ -975,8 +975,8 @@ void NewChartVisualizer::refreshBounds()
     	iserie->getData()->tryGet(data);
     	if(data) {
 
-			auto baf = data->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();
-			//auto bvf = data->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
+			auto baf = data->getOrCreateFeature<dataaccessor::BoundedArgumentsFeature>();
+			//auto bvf = data->getOrCreateFeature<dataaccessor::BoundedValuesFeature>();
     		minT = (std::min)(minT, baf->minArgument());
     		maxT = (std::max)(maxT, baf->maxArgument());
     		channels.push_back(data);

@@ -15,23 +15,26 @@
 
 namespace dataaccessor
 {
-
-	class FunctionDescriptionFeature;
-
-	//! Interfejs opisuj¹cy cechy kana³y reprezentuj¹cego funkcjê - jeden argument jedna wartoœæ,
-	//! jak kana³ nie ma tego interfejsu to traktujemy go jako relacje i mo¿liwa jest tylko wersja dyskretna
-	//! - musi j¹ implementowaæ, inaczej FAIL
-	class IFunctionDescriptionFeature : public FeatureHelperT<FunctionDescription>
+	//! Interfejs opisujï¿½cy cechy kanaï¿½y reprezentujï¿½cego funkcjï¿½ - jeden argument jedna wartoï¿½ï¿½,
+	//! jak kanaï¿½ nie ma tego interfejsu to traktujemy go jako relacje i moï¿½liwa jest tylko wersja dyskretna
+	//! - musi jï¿½ implementowaï¿½, inaczej FAIL
+	class FunctionDescriptionFeature : public FeatureHelperT<FunctionDescription>
 	{
 	public:
+
+		FunctionDescriptionFeature(const bool even, const bool odd,
+					const MonotonyType monotony)
+					: even_(even), odd_(odd), monotony_(monotony)
+				{}
+
 		//! Destruktor wirtualny
-		virtual ~IFunctionDescriptionFeature() {}
+		~FunctionDescriptionFeature() {}
 		//! \return Czy funkcja jest parzysta
-		virtual bool even() const { return false; }
+		bool even() const { return even_; }
 		//! \return Czy funkcja jest nieparzysta
-		virtual bool odd() const { return false; }
+		bool odd() const { return odd_; }
 		//! \return Czy funkcja jest monotoniczna
-		virtual MonotonyType monotony() const { return NonMonotonic; }
+		MonotonyType monotony() const { return monotony_; }
 
 		template<typename ValueType, typename ArgumentType>
 		inline static FunctionDescriptionFeature * create(
@@ -40,7 +43,7 @@ namespace dataaccessor
 		{
 			FunctionDescriptionFeature * ret = nullptr;
 
-			if (discrete != nullptr && discrete->getOrCreateFeature<dataaccessor::IFunctionFeature>()->isFunction() == true) {
+			if (discrete != nullptr && discrete->template getOrCreateFeature<FunctionFeature>()->isFunction() == true) {
 				ret = create(*discrete, std::is_arithmetic<ValueType>());
 			}
 
@@ -55,24 +58,24 @@ namespace dataaccessor
 			FunctionDescriptionFeature * ret = nullptr;
 			bool even = false;
 			bool odd = false;
-			MonotonyType monotonic = Constant;
+			MonotonyType monotony = Constant;
 
-			auto hasUF = (accessor.getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>() != nullptr);
+			auto hasUF = (accessor.template getOrCreateFeature<UniformArgumentsFeature>() != nullptr);
 
 			if (accessor.size() == 1) {
 				const auto s = accessor.sample(0);
 				even = (s.first == Discrete::argument_type());
 				odd = (s.second == -s.second);
-				ret = new FunctionDescriptionFeature(even, odd, monotonic);
+				ret = new FunctionDescriptionFeature(even, odd, monotony);
 			}
 			else {
 				auto sA = accessor.sample(0);
 				auto sB = accessor.sample(1);
 				if (sA.first != sB.first) {
 
-					auto monotony = utils::sign(sB.second - sA.second);
+					const auto vmonotony = utils::sign(sB.second - sA.second);
 
-					std::set<Discrete::argument_type> arguments;
+					std::set<typename Discrete::argument_type> arguments;
 					arguments.insert(sA.first);
 					arguments.insert(sB.first);
 					const auto signum = utils::sign(sB.first - sA.first);
@@ -94,28 +97,28 @@ namespace dataaccessor
 							break;
 						}
 
-						if (monotonic != NonMonotonic) {
+						if (monotony != NonMonotonic) {
 							auto locMonotony = utils::sign(sB.second - sA.second);
-							auto diff = std::abs(locMonotony - monotony);
+							auto diff = std::abs(locMonotony - vmonotony);
 							if (diff > 1) {
-								monotonic = NonMonotonic;
+								monotony = NonMonotonic;
 								if (hasUF == true) {
 									break;
 								}
 							}
-							else if (diff == 1 && !((monotonic == NonDecreasing) || (monotonic == NonGrowing))) {
-								if (monotonic == Decreasing) {
-									monotonic = NonGrowing;
+							else if (diff == 1 && !((monotony == NonDecreasing) || (monotony == NonGrowing))) {
+								if (monotony == Decreasing) {
+									monotony = NonGrowing;
 								}
-								else if (monotonic == Growing) {
-									monotonic = NonDecreasing;
+								else if (monotony == Growing) {
+									monotony = NonDecreasing;
 								}
-								else if (monotonic == Constant) {
+								else if (monotony == Constant) {
 									if (locMonotony > 0) {
-										monotonic = Growing;
+										monotony = Growing;
 									}
 									else {
-										monotonic = Decreasing;
+										monotony = Decreasing;
 									}
 								}
 							}
@@ -123,7 +126,7 @@ namespace dataaccessor
 					}
 
 					if (locSignum == signum) {
-						ret = new FunctionDescriptionFeature(even, odd, monotonic);
+						ret = new FunctionDescriptionFeature(even, odd, monotony);
 					}
 				}
 			}
@@ -139,20 +142,20 @@ namespace dataaccessor
 			FunctionDescriptionFeature * ret = nullptr;
 			bool even = false;
 			bool odd = false;
-			const MonotonyType monotonic = NonMonotonic;
+			MonotonyType monotony = NonMonotonic;
 
 			if (accessor.size() == 1) {
 				const auto s = accessor.sample(0);
 				even = (s.first == Discrete::argument_type());
 				odd = (s.second == -s.second);
-				ret = new FunctionDescriptionFeature(even, odd, monotonic);
+				ret = new FunctionDescriptionFeature(even, odd, monotony);
 			}
 			else {
 				auto sA = accessor.argument(0);
 				auto sB = accessor.argument(1);
 				bool ok = true;
 				if (sA != sB) {
-					std::set<Discrete::argument_type> arguments;
+					std::set<typename Discrete::argument_type> arguments;
 					arguments.insert(sA);
 					arguments.insert(sB);
 					for (decltype(accessor.size()) idx = 2; idx < accessor.size(); ++idx)
@@ -166,35 +169,18 @@ namespace dataaccessor
 					}
 
 					if (ok == true) {
-						ret = new FunctionDescriptionFeature(even, odd, monotonic);
+						ret = new FunctionDescriptionFeature(even, odd, monotony);
 					}
 				}
 			}
 
 			return ret;
 		}
-	};
-
-	class FunctionDescriptionFeature : public IFunctionDescriptionFeature
-	{
-	public:
-		FunctionDescriptionFeature(const bool even, const bool odd,
-			const MonotonyType monotonic)
-			: even_(even), odd_(odd), monotonic_(monotonic)
-		{}
-
-		virtual ~FunctionDescriptionFeature() {}
-		//! \return Czy funkcja jest parzysta
-		virtual bool even() const override final { return even_; }
-		//! \return Czy funkcja jest nieparzysta
-		virtual bool odd() const override final { return odd_; }
-		//! \return Czy funkcja jest monotoniczna
-		virtual MonotonyType monotony() const override final { return monotonic_; }
 
 	private:
-		const bool even_;
-		const bool odd_;
-		const MonotonyType monotonic_;
+			const bool even_;
+			const bool odd_;
+			const MonotonyType monotony_;
 	};
 }
 

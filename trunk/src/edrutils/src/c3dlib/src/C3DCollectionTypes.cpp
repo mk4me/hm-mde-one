@@ -67,7 +67,7 @@ C3DEventsCollection::const_iterator C3DEventsCollection::cend() const
 void C3DEventsCollection::addEvent(EventPtr event)
 {
 	events.push_back(event);
-	// wymuszenie kolejnoœci zwi¹zanej z czasem
+	// wymuszenie kolejnoï¿½ci zwiï¿½zanej z czasem
 	std::sort(events.begin(), events.end(), EventFunctor());
 }
 
@@ -80,7 +80,7 @@ C3DEventsCollection::EventConstPtr C3DEventsCollection::getNextEvent(EventConstP
 			break;
 		}
 	}
-	// jeœli znaleziono event;
+	// jeï¿½li znaleziono event;
 	if (it != events.cend()) {
 		for (it++; it != events.cend(); ++it) {
 			if ((*it)->getContext() == context) {
@@ -94,7 +94,7 @@ C3DEventsCollection::EventConstPtr C3DEventsCollection::getNextEvent(EventConstP
 
 C3DEventsCollection::EventConstPtr C3DEventsCollection::getEvent(float t, Context context) const
 {
-	// przefiltrowanie eventów wzglêdem kontekstu
+	// przefiltrowanie eventï¿½w wzglï¿½dem kontekstu
 	std::vector<EventPtr> temp;
 	for (auto it = events.cbegin(); it != events.cend(); ++it) {
 		if ((*it)->getContext() == context) {
@@ -177,7 +177,7 @@ MarkerCollection::MarkerCollection(vicon::VskPtr vsk) : vsk(vsk)
 std::string MarkerCollection::getMarkerName(int markerNo) const
 {
 	auto a = this->getAccessor(markerNo);
-	auto df = a->feature<dataaccessor::IDescriptorFeature>();
+	auto df = a->feature<dataaccessor::DescriptorFeature>();
 	if (df != nullptr){
 		return df->name();
 	}

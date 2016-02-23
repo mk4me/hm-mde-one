@@ -43,6 +43,9 @@ namespace acclaim
 			//! Destruktor
 			~Units();
 
+			Units& operator=(const Units& Other);
+			Units& operator=(Units&& Other);
+
 			//! \return Czy kąt podawany jest w radianach
 			const bool isAngleInRadians() const;
 			//! \param angleType Typ kąta
@@ -57,6 +60,9 @@ namespace acclaim
 
 		//! Destruktor
 		~Skeleton();
+
+		Skeleton& operator=(const Skeleton& Other);
+		Skeleton& operator=(Skeleton&& Other);
 
 		//! Wersja formatu
 		std::string version;

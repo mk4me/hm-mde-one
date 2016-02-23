@@ -23,15 +23,15 @@ namespace dataaccessor
 {
 	//! \tparam ArgumentType Typ argumentu
 	template<typename ArgumentType>
-	//! Klasa realizuj¹ca generator argumentów
+	//! Klasa realizujï¿½ca generator argumentï¿½w
 	class UniformArgumentsGenerator
 	{
 	public:
 
 		template<typename AT = ArgumentType>
 		//! \param step Krok z jakim generujemy argumenty
-		//! \param start Wartoœc argumentu od którego zaczynamy
-		//! \param end Wartoœc argumentu na której koñczymy!!
+		//! \param start Wartoï¿½c argumentu od ktï¿½rego zaczynamy
+		//! \param end Wartoï¿½c argumentu na ktï¿½rej koï¿½czymy!!
 		UniformArgumentsGenerator(AT && step,
 			const std::size_t size,
 			AT && start = AT(0))
@@ -72,7 +72,7 @@ namespace dataaccessor
 		//! Destruktor
 		~UniformArgumentsGenerator() {}
 
-		//! \param idx Index dla którego generujemy argument
+		//! \param idx Index dla ktï¿½rego generujemy argument
 		inline ArgumentType argument(const std::size_t idx) const
 		{
 			if (idx >= size_) {
@@ -82,33 +82,33 @@ namespace dataaccessor
 			return start_ + idx * step_;
 		}
 
-		//! \return Iloœc próbek do wygenerowania
+		//! \return Iloï¿½c prï¿½bek do wygenerowania
 		inline ArgumentType start() const
 		{
 			return start_;
 		}
 
-		//! \return Iloœc próbek do wygenerowania
+		//! \return Iloï¿½c prï¿½bek do wygenerowania
 		inline ArgumentType end() const
 		{
 			return start_ + size_ * step_;
 		}
 
-		//! \return Iloœc próbek do wygenerowania
+		//! \return Iloï¿½c prï¿½bek do wygenerowania
 		inline std::size_t size() const
 		{
 			return size_;
 		}
 
-		//! \return Krok argumentów
+		//! \return Krok argumentï¿½w
 		inline ArgumentType step() const
 		{
 			return step_;
 		}
 
-		//! \param ValueType Typ wartoœci kana³u
+		//! \param ValueType Typ wartoï¿½ci kanaï¿½u
 		template<typename ValueType>
-		//! \param accessor Akcesor który zasilamy t¹ cech¹
+		//! \param accessor Akcesor ktï¿½ry zasilamy tï¿½ cechï¿½
 		inline void init(IAccessorT<ValueType, ArgumentType> * accessor)
 		{
 			if (accessor != nullptr) {
@@ -123,29 +123,29 @@ namespace dataaccessor
 	private:
 		//! Granice do inicjalizacji
 		utils::shared_ptr<UniformArgumentsFeature<ArgumentType>> feature;
-		//! Wartoœæ pocz¹tkowa argumentu
+		//! Wartoï¿½ï¿½ poczï¿½tkowa argumentu
 		const ArgumentType start_;
-		//! Krok argumentów
+		//! Krok argumentï¿½w
 		const ArgumentType step_;
-		//! Iloœæ próbek
+		//! Iloï¿½ï¿½ prï¿½bek
 		const std::size_t size_;
 	};
 
-	//! Klasa pomocnicza przy znajdowaniu argumentów otaczaj¹cych dany argument w dyskretnym kanale
+	//! Klasa pomocnicza przy znajdowaniu argumentï¿½w otaczajï¿½cych dany argument w dyskretnym kanale
 	struct NearestArgumentsFinder
 	{
-		//! Typ zakresu indeksów
+		//! Typ zakresu indeksï¿½w
 		using Range = std::pair<std::size_t, std::size_t>;
 
-		//! \tparam ArgumentType Typ argumentu o który pytamy
-		//! \tparam ValueType Typ wartoœci
+		//! \tparam ArgumentType Typ argumentu o ktï¿½ry pytamy
+		//! \tparam ValueType Typ wartoï¿½ci
 		template<typename ValueType, typename ArgumentType>
-		//! \param accessor Kana³ dyskretny w którym szukamy otaczaj¹cych próbek
-		//! \param argument Argument wokó³ którego szukamy próbek
-		//! \return Zakres próbek otaczaj¹cych dany argument (ró¿nica wartoœci indeksów 1),
-		//! kiedy próbka znajduje siê w kanale zakres o dwóch identycznych indeksach (ró¿nica 0),
-		//! kiedy próbka poza zakresem kana³u dowolny zakres indeksów z ró¿nic¹ wieksz¹ niæ 1
-		//! Ta implementacja dzia³a w czasie O(log(N)) - podzia³ binarny bo dane sa u³o¿one chronologicznie					
+		//! \param accessor Kanaï¿½ dyskretny w ktï¿½rym szukamy otaczajï¿½cych prï¿½bek
+		//! \param argument Argument wokï¿½ ktï¿½rego szukamy prï¿½bek
+		//! \return Zakres prï¿½bek otaczajï¿½cych dany argument (rï¿½nica wartoï¿½ci indeksï¿½w 1),
+		//! kiedy prï¿½bka znajduje siï¿½ w kanale zakres o dwï¿½ch identycznych indeksach (rï¿½nica 0),
+		//! kiedy prï¿½bka poza zakresem kanaï¿½u dowolny zakres indeksï¿½w z rï¿½nicï¿½ wiekszï¿½ niï¿½ 1
+		//! Ta implementacja dziaï¿½a w czasie O(log(N)) - podziaï¿½ binarny bo dane sa uï¿½oï¿½one chronologicznie					
 		static inline Range range(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentType & argument)
 		{
@@ -180,14 +180,14 @@ namespace dataaccessor
 			return Range(minIdx, maxIdx);
 		}
 
-		//! \tparam ArgumentType Typ argumentu o który pytamy
-		//! \tparam ValueType Typ wartoœci
+		//! \tparam ArgumentType Typ argumentu o ktï¿½ry pytamy
+		//! \tparam ValueType Typ wartoï¿½ci
 		template<typename ValueType, typename ArgumentType>
-		//! \param accessor Kana³ dyskretny w którym szukamy otaczaj¹cych próbek
-		//! \param argument Argument wokó³ którego szukamy próbek
-		//! \return Zakres próbek otaczaj¹cych dany argument (ró¿nica wartoœci indeksów 1),
-		//! kiedy próbka znajduje siê w kanale zakres o dwóch identycznych indeksach (ró¿nica 0),
-		//! kiedy próbka poza zakresem kana³u dowolny zakres indeksów z ró¿nic¹ wieksz¹ niæ 1
+		//! \param accessor Kanaï¿½ dyskretny w ktï¿½rym szukamy otaczajï¿½cych prï¿½bek
+		//! \param argument Argument wokï¿½ ktï¿½rego szukamy prï¿½bek
+		//! \return Zakres prï¿½bek otaczajï¿½cych dany argument (rï¿½nica wartoï¿½ci indeksï¿½w 1),
+		//! kiedy prï¿½bka znajduje siï¿½ w kanale zakres o dwï¿½ch identycznych indeksach (rï¿½nica 0),
+		//! kiedy prï¿½bka poza zakresem kanaï¿½u dowolny zakres indeksï¿½w z rï¿½nicï¿½ wiekszï¿½ niï¿½ 1
 		static inline Range range(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentType & argument, const ArgumentType & interval)
 		{
@@ -200,88 +200,93 @@ namespace dataaccessor
 		}
 	};
 
-	//! \tparam ValueType Typ wartoœci kana³u
-	//! \tparam ArgumentType Typ argumentów kana³u
-	//! \tparam ArgumentsGenerator Generator argumentów dla kolejnych indeksów
+	//! \tparam ValueType Typ wartoï¿½ci kanaï¿½u
+	//! \tparam ArgumentType Typ argumentï¿½w kanaï¿½u
+	//! \tparam ArgumentsGenerator Generator argumentï¿½w dla kolejnych indeksï¿½w
 	template<typename ValueType, typename ArgumentType,
 		typename ArgumentsGenerator = UniformArgumentsGenerator < ArgumentType >>
-		//! Klasa realizuje dyskretny dostêp do ci¹g³ego kana³u danych opisuj¹cego funkcjê
+		//! Klasa realizuje dyskretny dostï¿½p do ciï¿½gï¿½ego kanaï¿½u danych opisujï¿½cego funkcjï¿½
 	class FunctionDiscreteAccessorAdapter : public IOptimizedDiscreteAccessorT<ValueType, ArgumentType>,
 		private ArgumentsGenerator
 	{
 	public:
+
+		using sample_type = typename IOptimizedDiscreteAccessorT<ValueType, ArgumentType>::sample_type;
+		using size_type = typename IOptimizedDiscreteAccessorT<ValueType, ArgumentType>::size_type;
+
+	public:
 		template<typename AG = ArgumentsGenerator>
-		//! \param accessor Kana³ wrapowany		
-		//! \param argumentsGenerator Generator argumentów
+		//! \param accessor Kanaï¿½ wrapowany		
+		//! \param argumentsGenerator Generator argumentï¿½w
 		FunctionDiscreteAccessorAdapter(const IFunctionAccessorT<ValueType, ArgumentType> & accessor,
 			AG && argumentsGenerator = AG())
 			: ArgumentsGenerator(std::forward<AG>(argumentsGenerator)), accessor(accessor)
 		{
-			attachFeature(accessor.getOrCreateFeature<IFunctionFeature>());
+			this->attachFeature(accessor.template getOrCreateFeature<FunctionFeature>());
 			//TODO
-			//na bazie argumentsGenerator dodaæ boundedarguments feature
+			//na bazie argumentsGenerator dodaï¿½ boundedarguments feature
 		}
 
 		//! Destruktor wirtualny
 		virtual ~FunctionDiscreteAccessorAdapter() {}
 
-		//! \param idx Indeks próbki
-		//! \return Próbka dla danego indeksu
+		//! \param idx Indeks prï¿½bki
+		//! \return Prï¿½bka dla danego indeksu
 		virtual sample_type sample(const size_type idx) const override
 		{
 			return accessor.sample(this->ArgumentsGenerator::argument(idx));
 		}
 
-		//! \return Iloœæ próbek w kanale
+		//! \return Iloï¿½ï¿½ prï¿½bek w kanale
 		virtual size_type size() const override { return this->ArgumentsGenerator::size(); }
 
 	private:
-		//! Kana³ ci¹g³y
+		//! Kanaï¿½ ciï¿½gï¿½y
 		const IFunctionAccessorT<ValueType, ArgumentType> & accessor;
 	};
 
-	//! \tparam ValueType Typ wartoœci kana³u
-	//! \tparam ArgumentType Typ argumentów kana³u
-	//! \tparam ArgumentsGenerator Generator argumentów dla kolejnych indeksów
+	//! \tparam ValueType Typ wartoï¿½ci kanaï¿½u
+	//! \tparam ArgumentType Typ argumentï¿½w kanaï¿½u
+	//! \tparam ArgumentsGenerator Generator argumentï¿½w dla kolejnych indeksï¿½w
 	template<typename ValueType, typename ArgumentType,
 		typename ArgumentsGenerator = UniformArgumentsGenerator < ArgumentType >>
-		//! Klasa realizuje dyskretny dostêp do ci¹g³ego kana³u danych opisuj¹cego funkcjê
+		//! Klasa realizuje dyskretny dostï¿½p do ciï¿½gï¿½ego kanaï¿½u danych opisujï¿½cego funkcjï¿½
 		using SafeFunctionDiscreteAccessorAdapter = SafeAccessorWrapper < FunctionDiscreteAccessorAdapter < ValueType, ArgumentType, ArgumentsGenerator >,
 		IFunctionAccessorT < ValueType, ArgumentType >> ;
 
-	//! \tparam ValueType Typ wartoœci kana³u
-	//! \tparam ArgumentType Typ argumentów kana³u
-	//! \tparam Interpolator Obiekt realizuj¹cy interpolacjê pomiêdzy próbkami kana³u
-	//! \tparam Extrapolator Obiekt realizuj¹cy politykê zapytañ o argumenty spoza zakresu kana³u
+	//! \tparam ValueType Typ wartoï¿½ci kanaï¿½u
+	//! \tparam ArgumentType Typ argumentï¿½w kanaï¿½u
+	//! \tparam Interpolator Obiekt realizujï¿½cy interpolacjï¿½ pomiï¿½dzy prï¿½bkami kanaï¿½u
+	//! \tparam Extrapolator Obiekt realizujï¿½cy politykï¿½ zapytaï¿½ o argumenty spoza zakresu kanaï¿½u
 	template<typename ValueType, typename ArgumentType,
 		typename Interpolator = LerpInterpolator,
 		typename Extrapolator = BorderExtrapolator < ValueType >>
-		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
+		//! Klasa realizuje dostï¿½p ciï¿½gï¿½y dla kanaï¿½ï¿½w dyskretnych
 	class DiscreteFunctionAccessorAdapter : public IGeneratedFunctionAccessorT<ValueType, ArgumentType>,
 		private Interpolator, private Extrapolator
 	{
 	public:
 
 		template<typename IT = Interpolator, typename ET = Extrapolator>
-		//! \param accessor Kana³ wrapowany
-		//! \param interpolator Obiekt interpoluj¹cy wewn¹trz kana³u
-		//! \param extrapolator Obiekt ekstrapoluj¹cy poza kana³em
+		//! \param accessor Kanaï¿½ wrapowany
+		//! \param interpolator Obiekt interpolujï¿½cy wewnï¿½trz kanaï¿½u
+		//! \param extrapolator Obiekt ekstrapolujï¿½cy poza kanaï¿½em
 		DiscreteFunctionAccessorAdapter(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			IT && interpolator = IT(), ET && extrapolator = ET())
 			: Interpolator(std::forward<IT>(interpolator)), Extrapolator(std::forward<ET>(extrapolator)), accessor(accessor),
 			range(static_cast<NearestArgumentsFinder::Range(*)(const IDiscreteAccessorT<ValueType, ArgumentType>&,
 				const ArgumentType&)>(&NearestArgumentsFinder::range<ValueType, ArgumentType>))
 		{
-			auto ff = accessor.getOrCreateFeature<IFunctionFeature>();
+			auto ff = accessor.template getOrCreateFeature<FunctionFeature>();
 			if (ff->isFunction() == false) {
 				throw std::runtime_error("Non function data");
 			}
 
-			attachFeature(ff);
+			this->attachFeature(ff);
 
-			feature = accessor.getOrCreateFeature<IBoundedArgumentsFeature>();
+			feature = accessor.template getOrCreateFeature<BoundedArgumentsFeature>();
 
-			auto uaf = accessor.getOrCreateFeature<IUniformArgumentsFeature>();
+			auto uaf = accessor.template getOrCreateFeature<UniformArgumentsFeature>();
 			if (uaf != nullptr) {
 				range = std::bind(static_cast<NearestArgumentsFinder::Range(*)(const IDiscreteAccessorT<ValueType, ArgumentType>&,
 					const ArgumentType&, const ArgumentType&)>(&NearestArgumentsFinder::range<ValueType, ArgumentType>),
@@ -292,8 +297,8 @@ namespace dataaccessor
 		//! Destruktor wirtualny
 		virtual ~DiscreteFunctionAccessorAdapter() {}
 
-		//! \param argument Argument dla któego odpytujemy o wartoœæ
-		//! \return Wartoœæ dla zadanego argumentu
+		//! \param argument Argument dla ktï¿½ego odpytujemy o wartoï¿½ï¿½
+		//! \return Wartoï¿½ï¿½ dla zadanego argumentu
 		ValueType value(const ArgumentType & argument) const override
 		{
 			if (feature != nullptr) {
@@ -334,32 +339,39 @@ namespace dataaccessor
 		}
 
 	private:
-		utils::shared_ptr<IBoundedArgumentsFeature<ArgumentType>> feature;
-		//! Wrapowany kana³ danych
+		utils::shared_ptr<BoundedArgumentsFeature<ArgumentType>> feature;
+		//! Wrapowany kanaï¿½ danych
 		const IDiscreteAccessorT<ValueType, ArgumentType> & accessor;
-		//! Funkcja realizuj¹ca pobieranie najbli¿szych indeksów
+		//! Funkcja realizujï¿½ca pobieranie najbliï¿½szych indeksï¿½w
 		std::function<NearestArgumentsFinder::Range(const IDiscreteAccessorT<ValueType, ArgumentType> &, const ArgumentType & argument)> range;
 	};
 
-	//! \tparam ChannelType Typ kana³u do zmiany reprezentacji dostêpu do danych
-	//! \tparam Interpolator Obiekt realizuj¹cy interpolacjê pomiêdzy próbkami kana³u
-	//! \tparam Extrapolator Obiekt realizuj¹cy politykê zapytañ o argumenty spoza zakresu kana³u
+	//! \tparam ChannelType Typ kanaï¿½u do zmiany reprezentacji dostï¿½pu do danych
+	//! \tparam Interpolator Obiekt realizujï¿½cy interpolacjï¿½ pomiï¿½dzy prï¿½bkami kanaï¿½u
+	//! \tparam Extrapolator Obiekt realizujï¿½cy politykï¿½ zapytaï¿½ o argumenty spoza zakresu kanaï¿½u
 	template<typename ValueType, typename ArgumentType,
 		typename Interpolator = LerpInterpolator,
 		typename Extrapolator = BorderExtrapolator < ValueType >>
-		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
+		//! Klasa realizuje dostï¿½p ciï¿½gï¿½y dla kanaï¿½ï¿½w dyskretnych
 		using SafeDiscreteFunctionAccessorAdapter = SafeAccessorWrapper < DiscreteFunctionAccessorAdapter < ValueType, ArgumentType, Interpolator, Extrapolator >,
 		IDiscreteAccessorT<ValueType, ArgumentType >> ;
 
-	//! \tparam ValueType Typ wartoœci kana³u
-	//! \tparam ArgumentType Typ argumentów kana³u
-	//! \tparam Extrapolator Obiekt realizuj¹cy politykê zapytañ o argumenty spoza zakresu kana³u
+	//! \tparam ValueType Typ wartoï¿½ci kanaï¿½u
+	//! \tparam ArgumentType Typ argumentï¿½w kanaï¿½u
+	//! \tparam Extrapolator Obiekt realizujï¿½cy politykï¿½ zapytaï¿½ o argumenty spoza zakresu kanaï¿½u
 	template<typename ValueType, typename ArgumentType,
 		typename Extrapolator = ExceptionExtrapolator>
-		//! Wrapper dla dyskretnych akcesorów, zawê¿aj¹cy ich zakres
+		//! Wrapper dla dyskretnych akcesorï¿½w, zawï¿½ajï¿½cy ich zakres
 	class DiscreteSubAccessorAdapter : public IDiscreteAccessorT<ValueType, ArgumentType>,
 		private Extrapolator
 	{
+	public:
+
+		using argument_type = typename IDiscreteAccessorT<ValueType, ArgumentType>::argument_type;
+		using value_type = typename IDiscreteAccessorT<ValueType, ArgumentType>::value_type;
+		using sample_type = typename IDiscreteAccessorT<ValueType, ArgumentType>::sample_type;
+		using size_type = typename IDiscreteAccessorT<ValueType, ArgumentType>::size_type;
+
 	private:
 
 		void init()
@@ -368,22 +380,22 @@ namespace dataaccessor
 				throw std::runtime_error("Invalid discrete subaccessor configuration");
 			}
 
-			attachFeature(accessor.getOrCreateFeature<IUniformArgumentsFeature>());
+			this->attachFeature(accessor.template getOrCreateFeature<UniformArgumentsFeature>());
 
-			auto ff = accessor.getOrCreateFeature<IFunctionFeature>();
+			auto ff = accessor.template getOrCreateFeature<FunctionFeature>();
 			if (ff->isFunction() == true) {
 
-				attachFeature(ff);
+				this->attachFeature(ff);
 
-				auto fdf = accessor.feature<IFunctionDescriptionFeature>();
+				auto fdf = accessor.template feature<FunctionDescriptionFeature>();
 
 				if (fdf != nullptr && fdf->monotony() != NonMonotonic) {
 					auto minSample = accessor.sample(start_);
 					auto maxSample = accessor.sample(start_ + size_);
 					auto resArg = std::minmax(minSample.first, maxSample.first);
 					auto resVal = std::minmax(minSample.second, maxSample.second);
-					attachFeature(IFeaturePtr(new BoundedArgumentsFeature<ArgumentType>(resArg.first, resArg.second)));
-					attachFeature(IFeaturePtr(new BoundedValuesFeature<ValueType>(resVal.first, resVal.second)));
+					this->attachFeature(IFeaturePtr(new BoundedArgumentsFeature<ArgumentType>(resArg.first, resArg.second)));
+					this->attachFeature(IFeaturePtr(new BoundedValuesFeature<ValueType>(resVal.first, resVal.second)));
 				}
 			}
 		}
@@ -393,7 +405,7 @@ namespace dataaccessor
 		template<typename ET = Extrapolator>
 		//! \param accessor Wrapowany accessor
 		//! \param start Index startowy
-		//! \param size Iloœc próbek od indeksu startowego
+		//! \param size Iloï¿½c prï¿½bek od indeksu startowego
 		//! \param extrapolator
 		DiscreteSubAccessorAdapter(const IDiscreteAccessorT<ValueType, ArgumentType> & accessor,
 			const std::size_t start, const std::size_t size,
@@ -407,7 +419,7 @@ namespace dataaccessor
 		//! Destruktor wirtualny
 		virtual ~DiscreteSubAccessorAdapter() {}
 
-		//! \param idx Indeks próbki
+		//! \param idx Indeks prï¿½bki
 		//! \return Argument dla danego indeksu
 		virtual argument_type argument(const size_type idx) const override
 		{
@@ -419,8 +431,8 @@ namespace dataaccessor
 			return accessor.argument(ridx);
 		}
 
-		//! \param idx Indeks próbki
-		//! \return Wartoœæ dla danego indeksu
+		//! \param idx Indeks prï¿½bki
+		//! \return Wartoï¿½ï¿½ dla danego indeksu
 		virtual value_type value(const size_type idx) const override
 		{
 			const auto ridx = realIdx(idx);
@@ -436,8 +448,8 @@ namespace dataaccessor
 			}
 		}
 
-		//! \param idx Indeks próbki
-		//! \return Próbka dla danego indeksu
+		//! \param idx Indeks prï¿½bki
+		//! \return Prï¿½bka dla danego indeksu
 		virtual sample_type sample(const size_type idx) const override
 		{
 			const auto ridx = realIdx(idx);
@@ -452,41 +464,47 @@ namespace dataaccessor
 			}
 		}
 
-		//! \return Iloœæ próbek w kanale
+		//! \return Iloï¿½ï¿½ prï¿½bek w kanale
 		virtual size_type size() const override { return size_; }
 
 	private:
 
 		//! \param idx Indeks o jaki pytamy w tym kanale
-		//! \return Mapowanie naszego indeksu na indeks wrapowanego kana³u
+		//! \return Mapowanie naszego indeksu na indeks wrapowanego kanaï¿½u
 		inline std::size_t realIdx(const std::size_t idx) const { return start_ + idx; }
 
 	private:
-		//! Wrapowany kana³
+		//! Wrapowany kanaï¿½
 		const IDiscreteAccessorT<ValueType, ArgumentType> & accessor;
 		//! Indeks startowy
 		const std::size_t start_;
-		//! Iloœæ próbek
+		//! Iloï¿½ï¿½ prï¿½bek
 		const std::size_t size_;
 	};
 
-	//! \tparam ChannelType Typ kana³u do zmiany reprezentacji dostêpu do danych
-	//! \tparam Interpolator Obiekt realizuj¹cy interpolacjê pomiêdzy próbkami kana³u
-	//! \tparam Extrapolator Obiekt realizuj¹cy politykê zapytañ o argumenty spoza zakresu kana³u
+	//! \tparam ChannelType Typ kanaï¿½u do zmiany reprezentacji dostï¿½pu do danych
+	//! \tparam Interpolator Obiekt realizujï¿½cy interpolacjï¿½ pomiï¿½dzy prï¿½bkami kanaï¿½u
+	//! \tparam Extrapolator Obiekt realizujï¿½cy politykï¿½ zapytaï¿½ o argumenty spoza zakresu kanaï¿½u
 	template<typename ValueType, typename ArgumentType,
 		typename Extrapolator = ExceptionExtrapolator>
-		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
+		//! Klasa realizuje dostï¿½p ciï¿½gï¿½y dla kanaï¿½ï¿½w dyskretnych
 		using SafeDiscreteSubAccessorAdapter = SafeAccessorWrapper <DiscreteSubAccessorAdapter < ValueType, ArgumentType, Extrapolator >>;
 
-	//! \tparam ValueType Typ wartoœci kana³u
-	//! \tparam ArgumentType Typ argumentów kana³u
-	//! \tparam Extrapolator Obiekt realizuj¹cy politykê zapytañ o argumenty spoza zakresu kana³u
+	//! \tparam ValueType Typ wartoï¿½ci kanaï¿½u
+	//! \tparam ArgumentType Typ argumentï¿½w kanaï¿½u
+	//! \tparam Extrapolator Obiekt realizujï¿½cy politykï¿½ zapytaï¿½ o argumenty spoza zakresu kanaï¿½u
 	template<typename ValueType, typename ArgumentType,
 		typename Extrapolator = ExceptionExtrapolator>
-		//! Wrapper dla ci¹g³ych akcesorów, zawê¿aj¹cy ich zakres
+		//! Wrapper dla ciï¿½gï¿½ych akcesorï¿½w, zawï¿½ajï¿½cy ich zakres
 	class FunctionSubAccessorAdapter : public IFunctionAccessorT<ValueType, ArgumentType>,
 		private Extrapolator
 	{
+	public:
+
+		using argument_type = typename IFunctionAccessorT<ValueType, ArgumentType>::argument_type;
+		using value_type = typename IFunctionAccessorT<ValueType, ArgumentType>::value_type;
+		using sample_type = typename IFunctionAccessorT<ValueType, ArgumentType>::sample_type;
+
 	private:
 
 		void init()
@@ -495,17 +513,17 @@ namespace dataaccessor
 				throw std::invalid_argument("Invalid arguments for function subaccessor range");
 			}
 
-			attachFeature(accessor.getOrCreateFeature<IFunctionFeature>());
+			this->attachFeature(accessor.template getOrCreateFeature<FunctionFeature>());
 
-			auto fdf = accessor.feature<IFunctionDescriptionFeature>();
+			auto fdf = accessor.template feature<FunctionDescriptionFeature>();
 
 			if (fdf != nullptr && fdf->monotony() != NonMonotonic) {
 				auto minSample = accessor.sample(start);
 				auto maxSample = accessor.sample(end);
 				auto resArg = std::minmax(minSample.first, maxSample.first);
 				auto resVal = std::minmax(minSample.second, maxSample.second);
-				attachFeature(IFeaturePtr(new BoundedArgumentsFeature<ArgumentType>(resArg.first, resArg.second)));
-				attachFeature(IFeaturePtr(new BoundedValuesFeature<ValueType>(resVal.first, resVal.second)));
+				this->attachFeature(IFeaturePtr(new BoundedArgumentsFeature<ArgumentType>(resArg.first, resArg.second)));
+				this->attachFeature(IFeaturePtr(new BoundedValuesFeature<ValueType>(resVal.first, resVal.second)));
 			}
 			else {
 				//TODO
@@ -517,9 +535,9 @@ namespace dataaccessor
 
 		template<typename ET = Extrapolator>
 		//! \param accessor Wrapowany accessor
-		//! \param start Argument od którego zaczynamy
-		//! \param end Argument na którym 
-		//! \param extrapolator Extrapolator dla brzegowych wartoœci argumentów
+		//! \param start Argument od ktï¿½rego zaczynamy
+		//! \param end Argument na ktï¿½rym 
+		//! \param extrapolator Extrapolator dla brzegowych wartoï¿½ci argumentï¿½w
 		FunctionSubAccessorAdapter(const IFunctionAccessorT<ValueType, ArgumentType> & accessor,
 			const ArgumentType & start, const ArgumentType & end,
 			ET && extrapolator = ET())
@@ -531,8 +549,8 @@ namespace dataaccessor
 		//! Destruktor wirtualny
 		virtual ~FunctionSubAccessorAdapter() {}
 
-		//! \param argument Argument dla któego odpytujemy o wartoœæ
-		//! \return Wartoœæ dla zadanego argumentu
+		//! \param argument Argument dla ktï¿½ego odpytujemy o wartoï¿½ï¿½
+		//! \return Wartoï¿½ï¿½ dla zadanego argumentu
 		virtual value_type value(const argument_type & argument) const override
 		{
 			if (argument < start) {
@@ -545,8 +563,8 @@ namespace dataaccessor
 				return accessor.value(argument);
 			}
 		}
-		//! \param argument Argument dla któego odpytujemy o wartoœæ
-		//! \return Próbka dla zadanego argumentu
+		//! \param argument Argument dla ktï¿½ego odpytujemy o wartoï¿½ï¿½
+		//! \return Prï¿½bka dla zadanego argumentu
 		virtual sample_type sample(const argument_type & argument) const override
 		{
 			if (argument < start) {
@@ -561,37 +579,43 @@ namespace dataaccessor
 		}
 
 	private:
-		//! Wrapowany kana³
+		//! Wrapowany kanaï¿½
 		const IFunctionAccessorT<ValueType, ArgumentType> & accessor;
 		//! Indeks startowy
 		const ArgumentType start;
-		//! Iloœæ próbek
+		//! Iloï¿½ï¿½ prï¿½bek
 		const ArgumentType end;
 	};
 
-	//! \tparam ValueType Typ wartoœci
-	//! \tparam ArgumentType Typ argumentów	
-	//! \tparam Extrapolator Obiekt realizuj¹cy politykê zapytañ o argumenty spoza zakresu kana³u
+	//! \tparam ValueType Typ wartoï¿½ci
+	//! \tparam ArgumentType Typ argumentï¿½w	
+	//! \tparam Extrapolator Obiekt realizujï¿½cy politykï¿½ zapytaï¿½ o argumenty spoza zakresu kanaï¿½u
 	template<typename ValueType, typename ArgumentType,
 		typename Extrapolator = ExceptionExtrapolator>
-		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
+		//! Klasa realizuje dostï¿½p ciï¿½gï¿½y dla kanaï¿½ï¿½w dyskretnych
 		using SafeFunctionSubAccessorAdapter = SafeAccessorWrapper < FunctionSubAccessorAdapter < ValueType, ArgumentType, Extrapolator >>;
 
-	//! \tparam ValueType Typ wartoœci kana³u
-	//! \tparam ArgumentType Typ argumentów kana³u
+	//! \tparam ValueType Typ wartoï¿½ci kanaï¿½u
+	//! \tparam ArgumentType Typ argumentï¿½w kanaï¿½u
 	template<typename BaseValueType, typename BaseArgumentType,
 		typename ValueExtractor, typename ArgumentExtractor = utils::TransparentExtractor,
-		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), 0))>::type,
-		typename DestArgumentType = std::decay<decltype(std::declval<ArgumentExtractor>().extract(std::declval<BaseArgumentType>(), 0))>::type>
-		//! Wrapper dla dyskretnych akcesorów, zmieniaj¹cy ich reprezentacjê
+		typename DestValueType = typename std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), 0))>::type,
+		typename DestArgumentType = typename std::decay<decltype(std::declval<ArgumentExtractor>().extract(std::declval<BaseArgumentType>(), 0))>::type>
+		//! Wrapper dla dyskretnych akcesorï¿½w, zmieniajï¿½cy ich reprezentacjï¿½
 	class DiscreteAccessorAdapter : public IIndependentDiscreteAccessorT<DestValueType, DestArgumentType>,
 		private ValueExtractor, private ArgumentExtractor
 	{
 	public:
 
+		using argument_type = typename IIndependentDiscreteAccessorT<DestValueType, DestArgumentType>::argument_type;
+		using value_type = typename IIndependentDiscreteAccessorT<DestValueType, DestArgumentType>::value_type;
+		using size_type = typename IIndependentDiscreteAccessorT<DestValueType, DestArgumentType>::size_type;
+
+	public:
+
 		template<typename VT = ValueExtractor, typename AT = ArgumentExtractor>
-		//! \param accessor Kana³ który adaptujemy
-		//! \param valueExtractor Wyci¹ga/Modyfikuje/Generuje nowe wartoœci na bazie wartoœci adaptowanego kana³u
+		//! \param accessor Kanaï¿½ ktï¿½ry adaptujemy
+		//! \param valueExtractor Wyciï¿½ga/Modyfikuje/Generuje nowe wartoï¿½ci na bazie wartoï¿½ci adaptowanego kanaï¿½u
 		DiscreteAccessorAdapter(const IDiscreteAccessorT<BaseValueType, BaseArgumentType> & accessor,
 			VT && valueExtractor = VT(),
 			AT && argumentExtractor = AT())
@@ -605,18 +629,18 @@ namespace dataaccessor
 		//! Destruktor wirtualny
 		virtual ~DiscreteAccessorAdapter() {}
 
-		//! \param idx Indeks próbki
+		//! \param idx Indeks prï¿½bki
 		//! \return Argument dla danego indeksu
 		virtual argument_type argument(const size_type idx) const override { return this->ArgumentExtractor::extract(accessor.argument(idx), idx); }
 
-		//! \param idx Indeks próbki
-		//! \return Wartoœæ dla danego indeksu
+		//! \param idx Indeks prï¿½bki
+		//! \return Wartoï¿½ï¿½ dla danego indeksu
 		virtual value_type value(const size_type idx) const override { return this->ValueExtractor::extract(accessor.value(idx), idx); }
 
-		//! \return Iloœæ próbek w kanale
+		//! \return Iloï¿½ï¿½ prï¿½bek w kanale
 		virtual size_type size() const override { return accessor.size(); }
 
-		//! \return Czy kana³ nie zawiera danych
+		//! \return Czy kanaï¿½ nie zawiera danych
 		virtual bool empty() const override { return accessor.empty(); }
 
 	private:
@@ -624,41 +648,46 @@ namespace dataaccessor
 		const IDiscreteAccessorT<BaseValueType, BaseArgumentType> & accessor;
 	};
 
-	//! \tparam ValueType Typ wartoœci kana³u
-	//! \tparam ArgumentType Typ argumentów kana³u
+	//! \tparam ValueType Typ wartoï¿½ci kanaï¿½u
+	//! \tparam ArgumentType Typ argumentï¿½w kanaï¿½u
 	template<typename BaseValueType, typename BaseArgumentType,
 		typename ValueExtractor, typename ArgumentExtractor = utils::TransparentExtractor,
-		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), 0))>::type,
-		typename DestArgumentType = std::decay<decltype(std::declval<ArgumentExtractor>().extract(std::declval<BaseArgumentType>(), 0))>::type>
-		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
+		typename DestValueType = typename std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), 0))>::type,
+		typename DestArgumentType = typename std::decay<decltype(std::declval<ArgumentExtractor>().extract(std::declval<BaseArgumentType>(), 0))>::type>
+		//! Klasa realizuje dostï¿½p ciï¿½gï¿½y dla kanaï¿½ï¿½w dyskretnych
 		using SafeDiscreteAccessorAdapter = SafeAccessorWrapper < DiscreteAccessorAdapter < BaseValueType, BaseArgumentType, ValueExtractor, ArgumentExtractor, DestValueType, DestArgumentType >,
 		IDiscreteAccessorT < BaseValueType, BaseArgumentType >> ;
 
-	//! \tparam ValueType Typ wartoœci kana³u
-	//! \tparam ArgumentType Typ argumentów kana³u
+	//! \tparam ValueType Typ wartoï¿½ci kanaï¿½u
+	//! \tparam ArgumentType Typ argumentï¿½w kanaï¿½u
 	template<typename BaseValueType, typename BaseArgumentType, typename ValueExtractor,
-		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), std::declval<BaseArgumentType>()))>::type>
-		//! Wrapper dla funkcji, zmieniaj¹cy ich reprezentacjê
+		typename DestValueType = typename std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), std::declval<BaseArgumentType>()))>::type>
+		//! Wrapper dla funkcji, zmieniajï¿½cy ich reprezentacjï¿½
 	class FunctionAccessorAdapter : public IGeneratedFunctionAccessorT<DestValueType, BaseArgumentType>,
 		private ValueExtractor
 	{
 	public:
 
+		using argument_type = typename IGeneratedFunctionAccessorT<DestValueType, BaseArgumentType>::argument_type;
+		using value_type = typename IGeneratedFunctionAccessorT<DestValueType, BaseArgumentType>::value_type;
+
+	public:
+
 		template<typename VT = ValueExtractor>
-		//! \param accessor Kana³ który adaptujemy
-		//! \param valueExtractor Wyci¹ga/Modyfikuje/Generuje nowe wartoœci na bazie wartoœci adaptowanego kana³u
+		//! \param accessor Kanaï¿½ ktï¿½ry adaptujemy
+		//! \param valueExtractor Wyciï¿½ga/Modyfikuje/Generuje nowe wartoï¿½ci na bazie wartoï¿½ci adaptowanego kanaï¿½u
 		FunctionAccessorAdapter(const IFunctionAccessorT<BaseValueType, BaseArgumentType> & accessor,
 			VT && valueExtractor = VT())
 			: ValueExtractor(std::forward<VT>(valueExtractor)), accessor(accessor)
 		{
-			attachFeature(accessor.getOrCreateFeature<IFunctionFeature>());
+			this->attachFeature(accessor.template getOrCreateFeature<FunctionFeature>());
 		}
 
 		//! Destruktor wirtualny
 		virtual ~FunctionAccessorAdapter() {}
 
-		//! \param argument Argument dla któego odpytujemy o wartoœæ
-		//! \return Wartoœæ dla zadanego argumentu
+		//! \param argument Argument dla ktï¿½ego odpytujemy o wartoï¿½ï¿½
+		//! \return Wartoï¿½ï¿½ dla zadanego argumentu
 		virtual value_type value(const argument_type & argument) const override { return this->ValueExtractor::extract(accessor.value(argument), argument); }
 
 	private:
@@ -666,12 +695,12 @@ namespace dataaccessor
 		const IFunctionAccessorT<BaseValueType, BaseArgumentType> & accessor;
 	};
 
-	//! \tparam ValueType Typ wartoœci kana³u
-	//! \tparam ArgumentType Typ argumentów kana³u
+	//! \tparam ValueType Typ wartoï¿½ci kanaï¿½u
+	//! \tparam ArgumentType Typ argumentï¿½w kanaï¿½u
 	template<typename BaseValueType, typename BaseArgumentType,
 		typename ValueExtractor,
-		typename DestValueType = std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), 0))>::type>
-		//! Klasa realizuje dostêp ci¹g³y dla kana³ów dyskretnych
+		typename DestValueType = typename std::decay<decltype(std::declval<ValueExtractor>().extract(std::declval<BaseValueType>(), 0))>::type>
+		//! Klasa realizuje dostï¿½p ciï¿½gï¿½y dla kanaï¿½ï¿½w dyskretnych
 		using SafeFunctionAccessorAdapter = SafeAccessorWrapper < FunctionAccessorAdapter < BaseValueType, BaseArgumentType, ValueExtractor, DestValueType>>;
 }
 

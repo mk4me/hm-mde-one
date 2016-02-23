@@ -38,15 +38,13 @@ namespace treeContainer
 			value_(std::move(other.value_))
 		{}
 
+		template<typename TT = ValueType>
 		//! \param value Wartość przechowywana w węźle (kopiowanie)
-		NodeT(const value_type & value) : value_(value) {}
-		//! \param value Wartość przechowywana w węźle (move semantics)
-		NodeT(value_type && value) : value_(std::move(value)) {}
+		NodeT(TT && value) : value_(std::forward<TT>(value)) {}
 
+		template<typename TT = ValueType>
 		//! \param value Wartość przechowywana w węźle (kopiowanie)
-		NodeT(NodePtr parent, const value_type & value) : parent_(parent), value_(value) {}
-		//! \param value Wartość przechowywana w węźle (move semantics)
-		NodeT(NodePtr parent, value_type && value) : parent_(parent), value_(std::move(value)) {}
+		NodeT(NodePtr parent, TT && value) : parent_(parent), value_(std::forward<TT>(value)) {}
 
 	public:
 
@@ -66,18 +64,12 @@ namespace treeContainer
 			return ret;
 		}
 
+		template<typename TT = ValueType>
 		//! \param value Wartość z jaką tworzymy Węzeł
 		//! \return Nowy Węzeł z zadaną wartością
-		static NodePtr create(const value_type & value = value_type())
+		static NodePtr create(TT && value = TT())
 		{
-			return NodePtr(new node_type(value));
-		}
-
-		//! \param value Wartość z jaką tworzymy Węzeł
-		//! \return Nowy Węzeł z zadaną wartością
-		static NodePtr create(value_type && value)
-		{
-			return NodePtr(new node_type(std::move(value)));
+			return NodePtr(new node_type(std::forward<TT>(value)));
 		}
 
 		//! \param parentNode Węzeł do którego dodajemy wartość dziecka
@@ -97,22 +89,13 @@ namespace treeContainer
 			node->parent_ = parentNode;
 		}
 
+		template<typename TT = ValueType>
 		//! \param parentNode Węzeł do którego dodajemy wartość dziecka
 		//! \param value Wartość dodawanego węzła
 		//! \return Węzeł dziecko z zadaną wartością
-		static NodePtr add(NodePtr parentNode, const value_type & value)
+		static NodePtr add(NodePtr parentNode, TT && value)
 		{
-			NodePtr ret(new NodeT(parentNode, value));
-			parentNode->children_.push_back(ret);
-			return ret;
-		}
-
-		//! \param parentNode Węzeł do którego dodajemy wartość dziecka
-		//! \param value Wartość dodawanego węzła
-		//! \return Węzeł dziecko z zadaną wartością
-		static NodePtr add(NodePtr parentNode, value_type && value)
-		{
-			NodePtr ret(new NodeT(parentNode, std::move(value)));
+			NodePtr ret(new NodeT(parentNode, std::forward<TT>(value)));
 			parentNode->children_.push_back(ret);
 			return ret;
 		}

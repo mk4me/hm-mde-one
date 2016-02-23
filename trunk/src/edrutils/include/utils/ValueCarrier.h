@@ -12,13 +12,13 @@ purpose:
 
 namespace utils
 {
-	//! \tparam U Typ dla którego chcemy dostaæ ekstraktor
+	//! \tparam U Typ dla ktï¿½rego chcemy dostaï¿½ ekstraktor
 	template<typename U>
-	//! Typ domyœlnego ekstraktora
+	//! Typ domyï¿½lnego ekstraktora
 	using ValueCarrierDefaultExtractor = typename std::conditional<is_like_smart_pointer<U>::value, PointerExtractor, TransparentExtractor>::type;
 
-	//TODO - dodaæ obs³ugê go³ych wskaŸników? Czy ma to sens? Co z nimi robiæ?
-	// kopiowaæ obiekty pod nimi? Trzymaæ tylko wskaŸniki?
+	//TODO - dodaï¿½ obsï¿½ugï¿½ goï¿½ych wskaï¿½nikï¿½w? Czy ma to sens? Co z nimi robiï¿½?
+	// kopiowaï¿½ obiekty pod nimi? Trzymaï¿½ tylko wskaï¿½niki?
 	//! \tparam T Docelowy typ przechowywanych danych
 	template<typename T>
 	//! Klasa realizuje bezpieczne przechowywanie danych
@@ -32,40 +32,40 @@ namespace utils
 
 	private:
 
-		//! Klasa bazowa gwarantuj¹ca dostêp do danych
+		//! Klasa bazowa gwarantujï¿½ca dostï¿½p do danych
 		class ValueCarrierBase
 		{
 		public:
 			//! Destruktor wirtualny
 			virtual ~ValueCarrierBase() {}
-			//! \return Referencja do przechowywanej wartoœci
+			//! \return Referencja do przechowywanej wartoï¿½ci
 			virtual const_ref_type ref() const = 0;
 		};
 
 		template<typename U, typename E>
-		//! Specjalizacja dla prostego przechowywania przez wartoœæ
+		//! Specjalizacja dla prostego przechowywania przez wartoï¿½ï¿½
 		class ValueCarrierImpl : public ValueCarrierBase, private E
 		{
 		public:
 			//! Perfect forwarding penalty
 			template<typename UU, typename EE = E>
-			//! \param value Kopiowana wartoœæ do przechowania
+			//! \param value Kopiowana wartoï¿½ï¿½ do przechowania
 			//! \param e Extractor
 			ValueCarrierImpl(UU && value, EE && e = EE()) : E(std::forward<EE>(e)), value_(std::forward<UU>(value)) {}
 			//! Destruktor wirtualny
 			virtual ~ValueCarrierImpl() {}
-			//! \return Referencja do przechowywanej wartoœci
+			//! \return Referencja do przechowywanej wartoï¿½ci
 			virtual const_ref_type ref() const override final { return this->E::extract(value_); }
 
 		private:
-			//! Przechowywana wartoœæ
+			//! Przechowywana wartoï¿½ï¿½
 			const U value_;
 		};
 
 		//! \tparam U Typ przechowywany w tablicy
 		//! \tparam N Rozmiar tablicy
 		template<typename U, std::size_t N>
-		//! Specjalizacja dla prostego przechowywania przez wartoœæ dla tablic
+		//! Specjalizacja dla prostego przechowywania przez wartoï¿½ï¿½ dla tablic
 		class ValueCarrierImpl<U[N], TransparentExtractor> : public ValueCarrierBase
 		{
 		public:
@@ -73,9 +73,9 @@ namespace utils
 			using LC = U[N];
 
 		private:
-			//! \param value Tablica któr¹ chcemy skopiowaæ
-			//! \param dummy Statyczne rozpoznanie PODów
-			//! \return WskaŸnik do skopiowanej tablicy
+			//! \param value Tablica ktï¿½rï¿½ chcemy skopiowaï¿½
+			//! \param dummy Statyczne rozpoznanie PODï¿½w
+			//! \return Wskaï¿½nik do skopiowanej tablicy
 			static U* init(const LC & value, std::true_type)
 			{
 				utils::unique_ptr<LC> ret(new LC);
@@ -83,14 +83,14 @@ namespace utils
 				return ret.release();
 			}
 
-			//! \param value Tablica któr¹ chcemy skopiowaæ
-			//! \param dummy Statyczne rozpoznanie PODów
-			//! \return WskaŸnik do skopiowanej tablicy
+			//! \param value Tablica ktï¿½rï¿½ chcemy skopiowaï¿½
+			//! \param dummy Statyczne rozpoznanie PODï¿½w
+			//! \return Wskaï¿½nik do skopiowanej tablicy
 			static U* init(const LC & value, std::false_type)
 			{
 				utils::unique_ptr<LC> ret(new LC);
 				static_assert(std::is_default_constructible<U>::value && std::is_copy_assignable<U>::value, "Type U must be default constructible and trivially assignable");
-				auto a = value_.get();
+				auto a = ret.get();
 				for (auto & val : value)
 				{
 					*a = val;
@@ -106,7 +106,7 @@ namespace utils
 			ValueCarrierImpl(const LC & value, TransparentExtractor && e) : value_(init(value, std::is_pod<U>::value)) {}
 			//! Destruktor wirtualny
 			virtual ~ValueCarrierImpl() {}
-			//! \return Referencja do przechowywanej wartoœci
+			//! \return Referencja do przechowywanej wartoï¿½ci
 			virtual const_ref_type ref() const override final { return *(value_.get()); }
 
 		private:
@@ -118,22 +118,22 @@ namespace utils
 
 		//TODO
 		//compile time warning dla kombinacji kopiowanie/move + member!!
-		//bez sensu trzymaæ jeszcze coœ z otoczk¹, skoro ca³a reszta nas nie interesuje
+		//bez sensu trzymaï¿½ jeszcze coï¿½ z otoczkï¿½, skoro caï¿½a reszta nas nie interesuje
 
-		//! \tparam U Typ noœnika danych docelowych
-		//! \tparam dummy Warunki mo¿liwoœci konwersji
+		//! \tparam U Typ noï¿½nika danych docelowych
+		//! \tparam dummy Warunki moï¿½liwoï¿½ci konwersji
 		template<typename U, typename E = ValueCarrierDefaultExtractor<typename utils::remove_toplevel<U>::type>>//, ENABLE_IF(!std::is_pointer<U>::value && (std::is_same<typename remove_toplevel<decltype(std::declval<const E>().extract(std::declval<const U>()))>::type, type>::value || std::is_base_of<type, typename remove_toplevel<decltype(std::declval<const E>().extract(std::declval<const U>()))>::type>::value))>
-																												 //! \param value Kopiowany noœnik danych
+																												 //! \param value Kopiowany noï¿½nik danych
 		ValueCarrier(U && value, E && e = E()) : valueCarier_(new ValueCarrierImpl<U, E>(std::forward<U>(value), std::forward<E>(e))) {}
-		//! Konstruktor kopiuj¹cy
-		//! \param Other Kopiowany noœnik
+		//! Konstruktor kopiujï¿½cy
+		//! \param Other Kopiowany noï¿½nik
 		ValueCarrier(const ValueCarrier & Other) : valueCarier_(Other.valueCarier_) {}
-		//! Konstruktor przenosz¹cy
-		//! \param Other Kopiowany noœnik
+		//! Konstruktor przenoszï¿½cy
+		//! \param Other Kopiowany noï¿½nik
 		ValueCarrier(ValueCarrier && Other) : valueCarier_(std::move(Other.valueCarier_)) {}
 		//! Destruktor
 		~ValueCarrier() {}
-		//! \return Referencja do przechowywanej wartoœci
+		//! \return Referencja do przechowywanej wartoï¿½ci
 		inline const_ref_type ref() const { return valueCarier_->ref(); }
 
 	private:

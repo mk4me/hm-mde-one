@@ -17,13 +17,13 @@ namespace dataaccessor
 {
 	//! ------------------------------- Generowane argumenty ---------------------------------------------
 	//! \tparam ValuesContainer Typ kontenera z danymi
-	//! \tparam ArgumentsGenerator Typ generuj¹cy argumenty
+	//! \tparam ArgumentsGenerator Typ generujï¿½cy argumenty
 	template<typename ValuesContainer, typename ArgumentsGenerator,
 		typename ValuesExtractor = ContainerValueExtractor,
 		typename Ptr = DiscreteAccessorPtr<decltype(std::declval<ValuesExtractor>().value(std::declval<ValuesContainer>(), 0)),
 		decltype(std::declval<ArgumentsGenerator>().argument(0)) >>
 		//! \param data Dane do opakowania
-		//! \param se Obiekt wyci¹gaj¹cy próbki z danych
+		//! \param se Obiekt wyciï¿½gajï¿½cy prï¿½bki z danych
 		//! \return Lekki interfejs do danych
 		static inline Ptr lightWrap(const ValuesContainer & data, ArgumentsGenerator && ag,
 			ValuesExtractor && ve = ValuesExtractor())
@@ -36,14 +36,14 @@ namespace dataaccessor
 
 	//! ---------------------------- Generowane argumenty + dane ------------------------------------------
 	//! \tparam ValuesContainer Typ kontenera z danymi
-	//! \tparam ArgumentsGenerator Typ generuj¹cy argumenty
+	//! \tparam ArgumentsGenerator Typ generujï¿½cy argumenty
 	template<typename Value, typename ArgumentsGenerator, typename ValuesExtractor = ContainerValueExtractor,
 		typename ContainerExtractor = utils::ValueCarrierDefaultExtractor<Value>,
 		typename Container = typename utils::remove_toplevel<decltype(std::declval<ContainerExtractor>().extract(std::declval<Value>()))>::type,
 		typename Ptr = DiscreteAccessorPtr<decltype(std::declval<ValuesExtractor>().value(std::declval<Container>(), 0)),
 		decltype(std::declval<ArgumentsGenerator>().argument(0)) >>
 		//! \param data Dane do opakowania
-		//! \param se Obiekt wyci¹gaj¹cy próbki z danych
+		//! \param se Obiekt wyciï¿½gajï¿½cy prï¿½bki z danych
 		//! \return Lekki interfejs do danych
 		static inline Ptr wrap(Value && value, ArgumentsGenerator && ag,
 			ValuesExtractor && ve = ValuesExtractor(), ContainerExtractor && ce = ContainerExtractor())
@@ -55,49 +55,49 @@ namespace dataaccessor
 				utils::ContainerSizeExtractor::size(c), std::forward<ArgumentsGenerator>(ag), std::forward<ValuesExtractor>(ve)));
 	}
 
-	//! ---------------------- W³asny ekstraktor ca³ych próbek -------------
+	//! ---------------------- Wï¿½asny ekstraktor caï¿½ych prï¿½bek -------------
 	//! \tparam Container Typ kontenera
-	//! \tparam SampleExtractor Typ wyci¹gaj¹cy próbki z kontenera
+	//! \tparam SampleExtractor Typ wyciï¿½gajï¿½cy prï¿½bki z kontenera
 	template<class Container, typename SampleExtractor = DefaultContainerSampleExtractor,
 		typename Ptr = DiscreteAccessorPtr<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0).second),
 		decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0).first) >>
 		//! \param data Dane do opakowania
-		//! \param se Obiekt wyci¹gaj¹cy próbki z danych
+		//! \param se Obiekt wyciï¿½gajï¿½cy prï¿½bki z danych
 		//! \return Lekki interfejs do danych
 		static inline Ptr lightWrap(const Container & data, SampleExtractor && se = SampleExtractor())
 	{
 		return Ptr(new ContainerDiscreteAccessor<Container, typename utils::remove_toplevel<SampleExtractor>::type>(data, utils::ContainerSizeExtractor::size(data), std::forward<SampleExtractor>(se)));
 	}
 
-	//! ---------------------- W³asne ekstraktory wartoœci i argumentów
+	//! ---------------------- Wï¿½asne ekstraktory wartoï¿½ci i argumentï¿½w
 	//! \tparam Container Typ kontenera
-	//! \tparam ValueExtractor Typ wyci¹gaj¹cy wartoœci z kontenera
-	//! \tparam ArgumentExtractor Typ wyci¹gaj¹cy argumenty z kontenera
+	//! \tparam ValueExtractor Typ wyciï¿½gajï¿½cy wartoï¿½ci z kontenera
+	//! \tparam ArgumentExtractor Typ wyciï¿½gajï¿½cy argumenty z kontenera
 	template<class Container, typename ValueExtractor, typename ArgumentExtractor,
 		typename Ptr = DiscreteAccessorPtr<decltype(std::declval<ValueExtractor>().value(ContainerValueExtractor::value(std::declval<Container>(), 0))),
 		decltype(std::declval<ArgumentExtractor>().value(ContainerValueExtractor::value(std::declval<Container>(), 0))) >>
 		//! \param data Dane do opakowania
-		//! \param ve Obiekt wyci¹gaj¹cy wartoœci z danych
-		//! \param ae Obiekt wyci¹gaj¹cy argumenty z danych
+		//! \param ve Obiekt wyciï¿½gajï¿½cy wartoï¿½ci z danych
+		//! \param ae Obiekt wyciï¿½gajï¿½cy argumenty z danych
 		//! \return Lekki interfejs do danych
 		static inline Ptr lightWrap(const Container & data, ValueExtractor && ve,
 			ArgumentExtractor && ae, void * = 0)
 	{
 		using CSE = ContainerSampleExtractor<ValueExtractor, ArgumentExtractor>;
 		return lightWrap<Container, CSE>(data, CSE(std::forward<ValueExtractor>(ve),
-			std::forward<ArgumentExtractor>(se)));
+			std::forward<ArgumentExtractor>(ae)));
 	}
 
-	//! ---------------------- W³asny ekstraktor ca³ych próbek -------------
+	//! ---------------------- Wï¿½asny ekstraktor caï¿½ych prï¿½bek -------------
 	//! \tparam Container Typ kontenera
-	//! \tparam SampleExtractor Typ wyci¹gaj¹cy próbki z kontenera
+	//! \tparam SampleExtractor Typ wyciï¿½gajï¿½cy prï¿½bki z kontenera
 	template<class Value, typename SampleExtractor = DefaultContainerSampleExtractor,
 		typename ContainerExtractor = utils::ValueCarrierDefaultExtractor<Value>,
 		typename Container = typename utils::remove_toplevel<decltype(std::declval<ContainerExtractor>().extract(std::declval<Value>()))>::type,
 		typename Ptr = DiscreteAccessorPtr<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0).second),
 		decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0).first) >>
 		//! \param data Dane do opakowania
-		//! \param se Obiekt wyci¹gaj¹cy próbki z danych
+		//! \param se Obiekt wyciï¿½gajï¿½cy prï¿½bki z danych
 		//! \return Interfejs do danych wraz z danymi
 		static inline Ptr wrap(Value && value, SampleExtractor && se = SampleExtractor(), ContainerExtractor && ce = ContainerExtractor())
 	{
@@ -106,16 +106,16 @@ namespace dataaccessor
 		return Ptr(new ContainerDiscreteData<Container, typename utils::remove_toplevel<SampleExtractor>::type>(std::move(cvc), utils::ContainerSizeExtractor::size(c), std::forward<SampleExtractor>(se)));
 	}
 
-	//! ---------------------- W³asne ekstraktory wartoœci i argumentów
+	//! ---------------------- Wï¿½asne ekstraktory wartoï¿½ci i argumentï¿½w
 	//! \tparam Container Typ kontenera
-	//! \tparam ValueExtractor Typ wyci¹gaj¹cy wartoœci z kontenera
-	//! \tparam ArgumentExtractor Typ wyci¹gaj¹cy argumenty z kontenera
+	//! \tparam ValueExtractor Typ wyciï¿½gajï¿½cy wartoï¿½ci z kontenera
+	//! \tparam ArgumentExtractor Typ wyciï¿½gajï¿½cy argumenty z kontenera
 	template<class Container, typename ValueExtractor, typename ArgumentExtractor,
 		typename Ptr = DiscreteAccessorPtr<decltype(std::declval<ValueExtractor>().value(ContainerValueExtractor::value(std::declval<Container>(), 0))),
 		decltype(std::declval<ArgumentExtractor>().value(ContainerValueExtractor::value(std::declval<Container>(), 0))) >>
 		//! \param data Dane do opakowania
-		//! \param ve Obiekt wyci¹gaj¹cy wartoœci z danych
-		//! \param ae Obiekt wyci¹gaj¹cy argumenty z danych
+		//! \param ve Obiekt wyciï¿½gajï¿½cy wartoï¿½ci z danych
+		//! \param ae Obiekt wyciï¿½gajï¿½cy argumenty z danych
 		//! \return Interfejs do danych wraz z danymi
 		static inline Ptr wrap(Container && data, ValueExtractor && ve,
 			ArgumentExtractor && ae)
@@ -126,16 +126,16 @@ namespace dataaccessor
 	}
 
 	//! \tparam Container Typ kontenera
-	//! \tparam ValueExtractor Typ wyci¹gaj¹cy wartoœci z kontenera
-	//! \tparam ArgumentExtractor Typ wyci¹gaj¹cy argumenty z kontenera
+	//! \tparam ValueExtractor Typ wyciï¿½gajï¿½cy wartoï¿½ci z kontenera
+	//! \tparam ArgumentExtractor Typ wyciï¿½gajï¿½cy argumenty z kontenera
 	template<class Value, typename ValueExtractor, typename ArgumentExtractor,
 		typename ContainerExtractor = utils::ValueCarrierDefaultExtractor<Value>,
 		typename Container = typename utils::remove_toplevel<decltype(std::declval<ContainerExtractor>().extract(std::declval<Value>()))>::type,
 		typename Ptr = DiscreteAccessorPtr<decltype(std::declval<ValueExtractor>().value(ContainerValueExtractor::value(std::declval<Container>(), 0))),
 		decltype(std::declval<ArgumentExtractor>().value(ContainerValueExtractor::value(std::declval<Container>(), 0))) >>
 		//! \param data Dane do opakowania
-		//! \param ve Obiekt wyci¹gaj¹cy wartoœci z danych
-		//! \param ae Obiekt wyci¹gaj¹cy argumenty z danych
+		//! \param ve Obiekt wyciï¿½gajï¿½cy wartoï¿½ci z danych
+		//! \param ae Obiekt wyciï¿½gajï¿½cy argumenty z danych
 		//! \return Interfejs do danych wraz z danymi
 		static inline Ptr wrap(Value && value, ValueExtractor && ve,
 			ArgumentExtractor && ae, ContainerExtractor && ce = ContainerExtractor(),
@@ -147,11 +147,11 @@ namespace dataaccessor
 	}
 
 	//TODO
-	//! -------------------------------- Niezale¿ne wartoœci i próbki ---------------------
+	//! -------------------------------- Niezaleï¿½ne wartoï¿½ci i prï¿½bki ---------------------
 
 
 
-	//! -------------------------------- Rozk³ad wektora na sk³adowe
+	//! -------------------------------- Rozkï¿½ad wektora na skï¿½adowe
 	struct Vector
 	{
 		//! Dyskretny
@@ -172,7 +172,7 @@ namespace dataaccessor
 		}
 
 
-		//! Ci¹g³y
+		//! Ciï¿½gï¿½y
 		template<typename AccessorType,
 			typename RAT = typename utils::remove_toplevel<AccessorType>::type,
 			ENABLE_IF(is_valid_function_accessor_ptr<RAT>::value),
@@ -211,7 +211,7 @@ namespace dataaccessor
 			return Ptr(new DiscreteAccessorAdapter<ValueType, ArgumentType, utils::StaticArrayElementExtractor<Idx>>(accessor));
 		}
 
-		//! Ci¹g³y
+		//! Ciï¿½gï¿½y
 
 		template<typename AccessorType,
 			typename RAT = typename utils::remove_toplevel<AccessorType>::type,
@@ -231,11 +231,11 @@ namespace dataaccessor
 	};
 
 	//! -------------------------------- Funkcje ------------------------------------------
-	//! \tparam T Typ wartoœci
+	//! \tparam T Typ wartoï¿½ci
 	//! \tparam U Typ argumentu
 	template<class T, class U>
-	//! \param func Funkcja jednoargumentowa zwracaj¹ca wartoœci
-	//! \return Interfejs dostêpu do danych
+	//! \param func Funkcja jednoargumentowa zwracajï¿½ca wartoï¿½ci
+	//! \return Interfejs dostï¿½pu do danych
 	static inline FunctionAccessorPtr<T, U> lightWrap(T(*const func)(U),
 		const bool even = false, const bool odd = false, const MonotonyType monotony = NonMonotonic)
 	{
@@ -244,21 +244,21 @@ namespace dataaccessor
 
 	//! \tparam Func Typ funkcji
 	template<typename Func>
-	//! \param func Funkcja jednoargumentowa zwracaj¹ca wartoœci
-	//! \return Interfejs dostêpu do danych
+	//! \param func Funkcja jednoargumentowa zwracajï¿½ca wartoï¿½ci
+	//! \return Interfejs dostï¿½pu do danych
 	static inline typename FuncRet<Func>::type wrap(Func && func, const bool even = false,
 		const bool odd = false, const MonotonyType monotony = NonMonotonic)
 	{
 		return FuncRet<Func>::type(new FunctionAccessor<typename FuncRet<Func>::R(typename FuncRet<Func>::Arg)>(std::forward<Func>(func), even, odd, monotony));
 	}
 
-	//! \tparam T Typ wartoœci
+	//! \tparam T Typ wartoï¿½ci
 	//! \tparam U Typ argumentu
 	//! \tparam Object Typ obiektu
 	template<class T, class U, class Object>
-	//! \param obj Obiekt dostarczaj¹cy danych
-	//! \param func Metoda obiektu za pomoca której pobieramy dane
-	//! \return Interfejs dostêpu do danych wrac z danymi
+	//! \param obj Obiekt dostarczajï¿½cy danych
+	//! \param func Metoda obiektu za pomoca ktï¿½rej pobieramy dane
+	//! \return Interfejs dostï¿½pu do danych wrac z danymi
 	static inline FunctionAccessorPtr<T, U> lightWrap(const Object & obj,
 		T(Object::*const func)(U) const, const bool even = false,
 		const bool odd = false, const MonotonyType monotony = NonMonotonic)
@@ -266,18 +266,18 @@ namespace dataaccessor
 		return FunctionAccessorPtr<T, U>(new FunctionAccessor<T(Object::*)(U)const>(obj, func, even, odd, monotony));
 	}
 
-	//! \tparam T Typ wartoœci
+	//! \tparam T Typ wartoï¿½ci
 	//! \tparam U Typ argumentu
 	//! \tparam Object Typ obiektu
 	template<class T, class U, class Object, typename V>
-	//! \param obj Obiekt dostarczaj¹cy danych
-	//! \param func Metoda obiektu za pomoca której pobieramy dane
-	//! \return Interfejs dostêpu do danych wraz z danymi
+	//! \param obj Obiekt dostarczajï¿½cy danych
+	//! \param func Metoda obiektu za pomoca ktï¿½rej pobieramy dane
+	//! \return Interfejs dostï¿½pu do danych wraz z danymi
 	static inline FunctionAccessorPtr<T, U> wrap(V && value,
 		T(Object::*const func)(U) const, const bool even = false,
 		const bool odd = false, const MonotonyType monotony = NonMonotonic)
 	{
-		return FunctionAccessorPtr<T, U>(new DataFunctionAccessor<T(Object::*)(U)const>(std::forward<V>(value), func, even, odd, monotony));
+		return FunctionAccessorPtr<T, U>(new DataFunctionAccessor<T, U, Object>(std::forward<V>(value), func, even, odd, monotony));
 	}
 
 	template<typename ValueType, typename ArgumentType,

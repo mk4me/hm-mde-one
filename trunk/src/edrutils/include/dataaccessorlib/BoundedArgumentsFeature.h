@@ -13,29 +13,37 @@ purpose:
 
 namespace dataaccessor
 {
+	//! \tparam ArgumentType Typ argumentu kanaï¿½u danych
 	template<typename ArgumentType>
-	class BoundedArgumentsFeature;
-
-	//! \tparam ArgumentType Typ argumentu kana³u danych
-	template<typename ArgumentType>
-	//! Interfesj opisuj¹cy zakres argumentów
-	class IBoundedArgumentsFeature : public FeatureHelperT<ArgumentBounded, IArgumentFeatureT<ArgumentType>>
+	//! Interfesj opisujï¿½cy zakres argumentï¿½w
+	class BoundedArgumentsFeature : public FeatureHelperT<ArgumentBounded, IArgumentFeatureT<ArgumentType>>
 	{
-	public:
-		//! Destruktor wirtualny
-		virtual ~IBoundedArgumentsFeature() {}
-		//! \return Minimalna wartoœæ argumentu
-		virtual ArgumentType minArgument() const = 0;
-		//! \return Maksymalna wartoœc argumentu
-		virtual ArgumentType maxArgument() const = 0;
+	private:
 
-		static IBoundedArgumentsFeature<ArgumentType> * create(
+			const ArgumentType min_;
+			const ArgumentType max_;
+
+	public:
+
+		template<typename T, typename U>
+		BoundedArgumentsFeature(T && min, U && max)
+			: min_(std::forward<T>(min)), max_(std::forward<U>(max))
+		{}
+
+		//! Destruktor wirtualny
+		~BoundedArgumentsFeature() {}
+		//! \return Minimalna wartoï¿½ï¿½ argumentu
+		ArgumentType minArgument() const { return min_; }
+		//! \return Maksymalna wartoï¿½c argumentu
+		ArgumentType maxArgument() const { return max_; }
+
+		static inline BoundedArgumentsFeature * create(
 			const IDiscreteArgumentAccessorT<ArgumentType> & accessor)
 		{
-			IBoundedArgumentsFeature<ArgumentType> * ret = nullptr;
+			BoundedArgumentsFeature * ret = nullptr;
 			if (accessor.empty() == false) {
 
-				auto feature = accessor.feature<dataaccessor::IFunctionFeature>();
+				auto feature = accessor.template feature<FunctionFeature>();
 
 				auto min = accessor.argument(0);
 				auto max = min;
@@ -60,47 +68,25 @@ namespace dataaccessor
 					}
 				}
 
-				ret = new BoundedArgumentsFeature<ArgumentType>(min, max);
+				ret = new BoundedArgumentsFeature(min, max);
 			}
 
 			return ret;
 		}
 
-		template<typename ValueType>
-		static IBoundedArgumentsFeature<ArgumentType> * create(
+		/*template<typename ValueType>
+		static inline BoundedArgumentsFeature * create(
 			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
 			const IFunctionAccessorT<ValueType, ArgumentType> * function)
 		{
-			IBoundedArgumentsFeature<ArgumentType> * ret = nullptr;
+			BoundedArgumentsFeature * ret = nullptr;
 			if (discrete != nullptr) {
-				discrete->getOrCreateFeature<IFunctionFeature>();
+				discrete->template getOrCreateFeature<FunctionFeature>();
 				ret = create(*discrete);
 			}
 
 			return ret;
-		}
-	};
-
-	template<typename ArgumentType>
-	class BoundedArgumentsFeature : public IBoundedArgumentsFeature<ArgumentType>
-	{
-	public:
-		template<typename T, typename U>
-		BoundedArgumentsFeature(T && min, U && max)
-			: min_(std::forward<T>(min)), max_(std::forward<U>(max))
-		{}
-
-		virtual ~BoundedArgumentsFeature() {}
-
-		//! \return Minimalna wartoœæ argumentu
-		virtual ArgumentType minArgument() const override { return min_; }
-		//! \return Maksymalna wartoœc argumentu
-		virtual ArgumentType maxArgument() const override { return max_; }
-
-	private:
-
-		const ArgumentType min_;
-		const ArgumentType max_;
+		}*/
 	};
 }
 

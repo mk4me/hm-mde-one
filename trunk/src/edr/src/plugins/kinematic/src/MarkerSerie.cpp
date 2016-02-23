@@ -18,7 +18,7 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 	sampleDuration(0)
 {
 	markersCollection = data->get();
-	auto uaf = markersCollection->getAccessor(0)->getOrCreateFeature<dataaccessor::IUniformArgumentsFeature>();
+	auto uaf = markersCollection->getAccessor(0)->getOrCreateFeature<dataaccessor::UniformArgumentsFeature>();
 
 	if (uaf != nullptr){
 		sampleDuration = uaf->argumentsInterval();
@@ -44,13 +44,13 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
 
 	if(vsk != nullptr){
 
-		//mapujemy markery i po³¹czenia dla drawera
+		//mapujemy markery i poï¿½ï¿½czenia dla drawera
 		std::vector<std::string> mapping;
 		mapping.reserve(markersCount);
 
 		for (unsigned int i = 0; i < markersCount; ++i){
 			auto a = markersCollection->getAccessor(i);
-			auto df = a->feature<dataaccessor::IDescriptorFeature>();
+			auto df = a->feature<dataaccessor::DescriptorFeature>();
 			if (df != nullptr){
 				mapping.push_back(df->name());
 			}
@@ -125,7 +125,7 @@ MarkerSerie::MarkerSerie(KinematicVisualizer * visualizer,
     }
 
 	// teraz punkty dla ducha przerabiam na punkty dla trajektorii
-	// przechodzê z klatek po czasie do klatek po stawach - generalnie transpozycja
+	// przechodzï¿½ z klatek po czasie do klatek po stawach - generalnie transpozycja
 
 	std::vector<std::vector<osg::Vec3>> trajectories(markersCount);
 
@@ -148,7 +148,7 @@ const std::vector<std::vector<osg::Vec3>> MarkerSerie::createPointsPositions(con
 	std::vector<std::vector<osg::Vec3>> ret;
 
 	auto a = markersCollection->getAccessor(0);
-	auto baf = a->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();
+	auto baf = a->getOrCreateFeature<dataaccessor::BoundedArgumentsFeature>();
 
 	const auto step = (baf->maxArgument() - baf->minArgument()) / (double)density;
 

@@ -18,6 +18,7 @@
 #include <loglib/Exceptions.h>
 #include <dataaccessorlib/BoundedValuesFeature.h>
 #include <dataaccessorlib/Adapters.h>
+#include <dataaccessorlib/Wrappers.h>
 
 using namespace core;
 
@@ -181,7 +182,7 @@ struct AbsMeanValueChannel
 	template<typename ValueType>
 	inline static ValueType mean(const dataaccessor::IDiscreteValueAccessorT<ValueType> & accessor)
 	{
-		auto bvf = accessor.getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
+		auto bvf = accessor.template getOrCreateFeature<dataaccessor::BoundedValuesFeature>();
 		const ValueType min4 = bvf->minValue() / 4;
 		const ValueType max4 = bvf->maxValue() / 4;
 

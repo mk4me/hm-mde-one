@@ -420,7 +420,7 @@ int64_t seekFunction(void* opaque, int64_t offset, int whence)
 	if (whence == AVSEEK_SIZE)
 		return utils::StreamTools::size(*me); // I don't know "size of my handle in bytes"
 	
-	if (!me->seekg(offset, whence)){
+	if (!me->seekg(offset, (std::ios_base::seekdir)whence)){
 		return -1;
 	}
 
@@ -711,7 +711,7 @@ bool FFmpegVideoStream::readFrame()
         }
 
         // alignujemy dane
-        if ( reinterpret_cast<int>(packet->data) & AVIO_FFMPEG_ALIGN_MASK ) {
+        if ( reinterpret_cast<std::size_t>(packet->data) & AVIO_FFMPEG_ALIGN_MASK ) {
             alignPacket(packet.get());
         }
 
@@ -735,6 +735,8 @@ bool FFmpegVideoStream::readFrame()
             }
         }
     }
+
+    return false;
 }
 
 //------------------------------------------------------------------------------
@@ -792,7 +794,7 @@ void FFmpegVideoStream::alignPacket( AVPacket * packet )
     }
 
     // alignujemy wskaźnik i rozmiar ...
-    uint8_t * alignedData = reinterpret_cast<uint8_t*>(reinterpret_cast<int>(alignedPacket->data + AVIO_FFMPEG_ALIGN_MASK) & (~AVIO_FFMPEG_ALIGN_MASK));
+    uint8_t * alignedData = reinterpret_cast<uint8_t*>(reinterpret_cast<std::size_t>(alignedPacket->data + AVIO_FFMPEG_ALIGN_MASK) & (~AVIO_FFMPEG_ALIGN_MASK));
     int alignedSize = alignedPacket->size - (int)(alignedData - alignedPacket->data);
 
     // kopiujemy dane

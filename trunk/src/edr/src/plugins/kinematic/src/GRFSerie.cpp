@@ -138,7 +138,7 @@ GRFSerie::GeodePtr GRFSerie::createStep(c3dlib::IForcePlatform::IStepConstPtr st
     int numSegments = 300;
     auto f1 = platform->getForceChannel();
 
-	auto baf = f1->getOrCreateFeature<dataaccessor::IBoundedArgumentsFeature>();	
+	auto baf = f1->getOrCreateFeature<dataaccessor::BoundedArgumentsFeature>();
 	const auto length = baf->maxArgument() - baf->minArgument();
 	float delta = (length / static_cast<float>(numSegments));
     GeodePtr geode = new osg::Geode();
@@ -157,7 +157,7 @@ GRFSerie::GeodePtr GRFSerie::createStep(c3dlib::IForcePlatform::IStepConstPtr st
     osg::Vec3 lastV1;
     osg::Vec3 lastOrigin1;
 
-	//auto bvf = f1->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
+	//auto bvf = f1->getOrCreateFeature<dataaccessor::BoundedValuesFeature>();
 
 	dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::GRFChannel::value_type,
 		c3dlib::GRFChannel::argument_type> timeAccessor(*f1);
@@ -524,7 +524,7 @@ void GRFSerie::update()
 	for (auto it = platforms.cbegin(); it != platforms.cend(); ++it) {
 		auto f1 = (*it)->getForceChannel();
 
-		//auto bvf = f1->getOrCreateFeature<dataaccessor::IBoundedValuesFeature>();
+		//auto bvf = f1->getOrCreateFeature<dataaccessor::BoundedValuesFeature>();
 
 		dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::ForceChannel::value_type,
 			c3dlib::ForceChannel::argument_type> timeAccessor(*f1);

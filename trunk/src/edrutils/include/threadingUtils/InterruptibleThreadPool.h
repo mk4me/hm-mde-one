@@ -12,14 +12,15 @@
 #include <utils/Debug.h>
 #include <threadingUtils/InterruptibleThread.h>
 #include <threadingUtils/FutureWrapper.h>
+#include <threadingUtils/ThreadPoolException.h>
 
 namespace threadingUtils
 {
-	//! \tparam RunnableThread Typ w¹tku runnable który wrapujemy
-	//! \tparam CallPolicy Polityka wo³ania zadañ w¹tków
-	//! \tparam InterruptPolicy Polityka przerywania dzia³ania w¹tku
-	//! \tparam InterruptHandlingPolicy Polityka obs³ugi przerwania w¹tku
-	//! Klasa realizuj¹ca funkcjonalnoœæ puli w¹tków
+	//! \tparam RunnableThread Typ wï¿½tku runnable ktï¿½ry wrapujemy
+	//! \tparam CallPolicy Polityka woï¿½ania zadaï¿½ wï¿½tkï¿½w
+	//! \tparam InterruptPolicy Polityka przerywania dziaï¿½ania wï¿½tku
+	//! \tparam InterruptHandlingPolicy Polityka obsï¿½ugi przerwania wï¿½tku
+	//! Klasa realizujï¿½ca funkcjonalnoï¿½ï¿½ puli wï¿½tkï¿½w
 	template<class InterruptibleMultipleRunThreadFactory>
 	class InterruptibleThreadPool : private InterruptibleMultipleRunThreadFactory
 	{
@@ -27,20 +28,20 @@ namespace threadingUtils
 
 		using InterruptibleMultipleRunThread = decltype(std::declval<InterruptibleMultipleRunThreadFactory>().create());
 
-		//! Typ listy w¹tków wielokrotnego uruchamiania
+		//! Typ listy wï¿½tkï¿½w wielokrotnego uruchamiania
 		using InnerThreadsList = std::list<InterruptibleMultipleRunThread>;
 
-		//! Typ opisuj¹cy iloœæ
+		//! Typ opisujï¿½cy iloï¿½ï¿½
 		using size_type = unsigned int;
 
-		//! Klasa w¹tku oferowanego z puli
+		//! Klasa wï¿½tku oferowanego z puli
 		class Thread
 		{
-			//! ZaprzyjaŸnienie z pula w¹tku
+			//! Zaprzyjaï¿½nienie z pula wï¿½tku
 			friend class MyThreadPoolType;
 
 		public:
-			//! Typ puli w¹tków
+			//! Typ puli wï¿½tkï¿½w
 			using MyThreadPoolType = InterruptibleThreadPool<InterruptibleMultipleRunThreadFactory>;
 			using InterruptiblePolicy = typename InterruptibleMultipleRunThread::InterruptiblePolicy;
 
@@ -63,14 +64,14 @@ namespace threadingUtils
 
 		public:
 
-			//! \param threadPool Pula w¹tków do której nale¿a³ pierwotnie w¹tek
+			//! \param threadPool Pula wï¿½tkï¿½w do ktï¿½rej naleï¿½aï¿½ pierwotnie wï¿½tek
 			Thread(MyThreadPoolType * threadPool) : threadPool(threadPool)
 			{
 
 			}
 
-			//! \param threadPool Pula w¹tków do której nale¿a³ pierwotnie w¹tek
-			//! \param thread W¹tek wielokrotnego uruchamiania
+			//! \param threadPool Pula wï¿½tkï¿½w do ktï¿½rej naleï¿½aï¿½ pierwotnie wï¿½tek
+			//! \param thread Wï¿½tek wielokrotnego uruchamiania
 			Thread(MyThreadPoolType * threadPool, InterruptibleMultipleRunThread && thread)
 				: threadPool(threadPool), thread(std::move(thread))
 			{
@@ -86,7 +87,7 @@ namespace threadingUtils
 
 			Thread(const Thread & Other) = delete;
 
-			//! \param Other W¹tek którego zasoby przejmujemy
+			//! \param Other Wï¿½tek ktï¿½rego zasoby przejmujemy
 			Thread(Thread && Other) : threadPool(std::move(Other.threadPool)),
 				thread(std::move(Other.thread)), futureWrapper(std::move(Other.futureWrapper))
 			{
@@ -135,15 +136,15 @@ namespace threadingUtils
 			static void resetInterruption() { InterruptibleMultipleRunThread::resetInterruption(); }
 
 		private:
-			//! Pula w¹tków do której nale¿y w¹tek
+			//! Pula wï¿½tkï¿½w do ktï¿½rej naleï¿½y wï¿½tek
 			MyThreadPoolType * threadPool;
-			//! Wewnêtrzny w¹tek wielokrotnego uruchamiania
+			//! Wewnï¿½trzny wï¿½tek wielokrotnego uruchamiania
 			InterruptibleMultipleRunThread thread;
-			//! Wrapper dla future celem okreœlenia czy w¹tek zakoñczy³ przetwarzanie zleconego zadania
+			//! Wrapper dla future celem okreï¿½lenia czy wï¿½tek zakoï¿½czyï¿½ przetwarzanie zleconego zadania
 			FutureWrapper futureWrapper;
 		};
 
-		//! ZaprzyjaŸnienie w¹tku z pula w¹tków
+		//! Zaprzyjaï¿½nienie wï¿½tku z pula wï¿½tkï¿½w
 		friend class Thread;
 
 		class CustomThread
@@ -176,7 +177,7 @@ namespace threadingUtils
 
 		using CustomThreadProxy = utils::unique_ptr<CustomThread>;
 
-		//! Typ agreguj¹cy w¹tki które pobieraj¹ klienci
+		//! Typ agregujï¿½cy wï¿½tki ktï¿½re pobierajï¿½ klienci
 		using Threads = std::list<Thread>;
 
 	public:
@@ -184,14 +185,14 @@ namespace threadingUtils
 		InterruptibleThreadPool(const InterruptibleThreadPool & Other) = delete;
 		InterruptibleThreadPool(InterruptibleThreadPool && Other) = delete;
 
-		//! \param minThreads Minimalna iloœæ w¹tków do utrzymania
-		//! \param maxThreads Maksymalna iloœæ w¹tków do utrzymania
+		//! \param minThreads Minimalna iloï¿½ï¿½ wï¿½tkï¿½w do utrzymania
+		//! \param maxThreads Maksymalna iloï¿½ï¿½ wï¿½tkï¿½w do utrzymania
 		InterruptibleThreadPool(const size_type minThreads, const size_type maxThreads,
 			const InterruptibleMultipleRunThreadFactory & imrtf = InterruptibleMultipleRunThreadFactory())
 			: InterruptibleMultipleRunThreadFactory(imrtf), minThreads_(minThreads),
 			maxThreads_(maxThreads), threadsCount_(0) {}
 		
-		//! Domyœlny konstruktor
+		//! Domyï¿½lny konstruktor
 		InterruptibleThreadPool(const InterruptibleMultipleRunThreadFactory & imrtf = InterruptibleMultipleRunThreadFactory())
 			: InterruptibleThreadPool((std::thread::hardware_concurrency() > 1 ? std::thread::hardware_concurrency() - 1 : 1), std::max<unsigned int>(std::thread::hardware_concurrency() * 8, 4), imrtf) {}
 		
@@ -206,7 +207,7 @@ namespace threadingUtils
 			}
 		}
 
-		//! \param maxThreads Maksymalna iloœæ w¹tków jakie mo¿na stworzyæ
+		//! \param maxThreads Maksymalna iloï¿½ï¿½ wï¿½tkï¿½w jakie moï¿½na stworzyï¿½
 		void setMaxThreads(size_type maxThreads)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
@@ -217,7 +218,7 @@ namespace threadingUtils
 
 			maxThreads_ = maxThreads;
 		}
-		//! \param minThreads Minimalna iloœæ w¹tków jaka bêdzie utrzymywana
+		//! \param minThreads Minimalna iloï¿½ï¿½ wï¿½tkï¿½w jaka bï¿½dzie utrzymywana
 		void setMinThreads(size_type minThreads)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
@@ -246,19 +247,19 @@ namespace threadingUtils
 				}
 			}
 		}
-		//! \return Maksymalna iloœc w¹tków jakie mo¿na utworzyæ
+		//! \return Maksymalna iloï¿½c wï¿½tkï¿½w jakie moï¿½na utworzyï¿½
 		size_type maxThreads() const { return maxThreads_; }
-		//! \return Minimalna iloœæ w¹tków utrzymywana przez manager
+		//! \return Minimalna iloï¿½ï¿½ wï¿½tkï¿½w utrzymywana przez manager
 		size_type minThreads() const { return minThreads_; }
-		//! \return Iloœæ aktualnie zajêtych w¹tków
+		//! \return Iloï¿½ï¿½ aktualnie zajï¿½tych wï¿½tkï¿½w
 		size_type threadsCount() const { return threadsCount_; }
-		//! \return Iloœæ w¹tków w cache
+		//! \return Iloï¿½ï¿½ wï¿½tkï¿½w w cache
 		size_type cachedThreadsCount() const
 		{
 			std::lock_guard<std::mutex> lock(mutex);
 			return innerThreads.size();
 		}
-		//! \return Nowy w¹tek		
+		//! \return Nowy wï¿½tek		
 		Thread get()
 		{
 			std::lock_guard<std::mutex> lock(mutex);
@@ -279,9 +280,9 @@ namespace threadingUtils
 			}
 		}
 
-		//! \param groupSize Iloœæ w¹tków w grupie
-		//! \param threads [out] Lista z nowymi w¹tkami, dopisujemy zawsze na koñcu
-		//! \return Iloœæ faktycznie dostarczonych w¹tków
+		//! \param groupSize Iloï¿½ï¿½ wï¿½tkï¿½w w grupie
+		//! \param threads [out] Lista z nowymi wï¿½tkami, dopisujemy zawsze na koï¿½cu
+		//! \return Iloï¿½ï¿½ faktycznie dostarczonych wï¿½tkï¿½w
 		size_type get(const size_type groupSize, Threads & threads, const bool exact)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
@@ -335,17 +336,17 @@ namespace threadingUtils
 
 	private:
 
-		//! Metoda zmniejsza aktualn¹ iloœc w¹tków w puli
+		//! Metoda zmniejsza aktualnï¿½ iloï¿½c wï¿½tkï¿½w w puli
 		void detach() { --threadsCount_; }
 
-		//! Metoda zwraca customowe w¹tki tworzone poza thread pool
+		//! Metoda zwraca customowe wï¿½tki tworzone poza thread pool
 		void returnCustom(const size_type size)
 		{			
 			std::lock_guard<std::mutex> lock(mutex);
 			threadsCount_ -= size;		
 		}
 
-		//! \param innerThread Wewnêtrzny w¹tek wielokrotnego uruchamiania, który próbujemy zwróciæ przy niszczeniu dostarczonego w¹tku
+		//! \param innerThread Wewnï¿½trzny wï¿½tek wielokrotnego uruchamiania, ktï¿½ry prï¿½bujemy zwrï¿½ciï¿½ przy niszczeniu dostarczonego wï¿½tku
 		void tryReturn(InterruptibleMultipleRunThread & innerThread)
 		{
 			std::lock_guard<std::mutex> lock(mutex);
@@ -356,15 +357,15 @@ namespace threadingUtils
 		}
 
 	private:
-		//! Aktualna iloœæ w¹tków w puli
+		//! Aktualna iloï¿½ï¿½ wï¿½tkï¿½w w puli
 		volatile size_type threadsCount_;
-		//! Minimalna iloœc w¹tków w puli jak¹ chcemy utrzymywaæ
+		//! Minimalna iloï¿½c wï¿½tkï¿½w w puli jakï¿½ chcemy utrzymywaï¿½
 		size_type minThreads_;
-		//! Maksymalna iloœæ w¹tków jakie pozwala stworzyæ pula
+		//! Maksymalna iloï¿½ï¿½ wï¿½tkï¿½w jakie pozwala stworzyï¿½ pula
 		size_type maxThreads_;
-		//! W¹tki wielokrotnego uruchamiania czekaj¹ce na ponowne wyko¿ystanie
+		//! Wï¿½tki wielokrotnego uruchamiania czekajï¿½ce na ponowne wykoï¿½ystanie
 		InnerThreadsList innerThreads;
-		//! Obiekt synchronizuj¹cy pobieraj¹cych
+		//! Obiekt synchronizujï¿½cy pobierajï¿½cych
 		mutable std::mutex mutex;
 	};
 }

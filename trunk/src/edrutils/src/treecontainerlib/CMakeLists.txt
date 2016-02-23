@@ -9,6 +9,8 @@ SET_PUBLIC_HEADERS(
 	TreeT.h
 	TreeVisitPolicies.h	
 	Linearization.h
+	NodeLinearization.h
+	TreeLinearization.h
 	Path.h
 )
 

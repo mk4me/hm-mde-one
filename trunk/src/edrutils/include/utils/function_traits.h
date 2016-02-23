@@ -15,29 +15,29 @@ purpose:
 
 namespace std
 {
-	//implementacja wziêta i rozwiniêta na bazie tych Ÿróde³:
+	//implementacja wziï¿½ta i rozwiniï¿½ta na bazie tych ï¿½rï¿½deï¿½:
 	//https://functionalcpp.wordpress.com/2013/08/05/function-traits/
 
 	namespace impl
 	{
 		//! \tparam U Badany typ
 		template<typename U>
-		//! \return Typ wskaŸnika do operatora wywo³ania funktora
+		//! \return Typ wskaï¿½nika do operatora wywoï¿½ania funktora
 		static auto check(U*) -> decltype(&U::operator()); // checks function existence
 														   //! \tparam U Badany typ
 		template<typename U>
-		//! \return Fa³sz
+		//! \return Faï¿½sz
 		static auto check(...)->std::false_type;
 
-		//! \tparam F Typ weryfikowany pod k¹tem bycia funktorem
+		//! \tparam F Typ weryfikowany pod kï¿½tem bycia funktorem
 		template <typename T>
-		//! Klasa pomocnicza przy detekcji funktorów
+		//! Klasa pomocnicza przy detekcji funktorï¿½w
 		struct functor_check : public std::is_member_function_pointer<decltype(check<T>(0))> {};
 	}
 
 	//! \tparam F Typ funktora
 	template<typename F>
-	//! Trait sprawdzaj¹cy czy typ F jest funktorem
+	//! Trait sprawdzajï¿½cy czy typ F jest funktorem
 	struct is_functor : public std::integral_constant<bool, std::is_class<typename std::decay<F>::type>::value &&
 		impl::functor_check<typename std::decay<F>::type>::value> {};
 
@@ -55,6 +55,16 @@ namespace std
 		};
 	}
 
+	template<bool M, bool S, bool C, bool V, bool L, bool R>
+	using valid_member_function_decription = std::integral_constant<bool,
+			((M == false) && (M == S) && (M == C) && (M == L) && (M == R)) ||
+			//czy member
+			((M == true) &&
+				// czy static
+				(((S == true) && (C == false) && (V == false) && (L == false) && (R == false)) ||
+					// czy non-static
+					((S == false) && ((!L || !R) == true))))>;
+
 	//! \tparam M Czy funkcja jest skladowa klasy
 	//! \tparam S Czy metoda jest statyczna
 	//! \tparam C Czy metoda ma kwalifikator const
@@ -63,15 +73,7 @@ namespace std
 	//! \tparam R Czy metoda ma dekorator rvalue
 	template<bool M = false, bool S = false,
 		bool C = false, bool V = false, bool L = false, bool R = false,
-		//weryfikujemy
-		//czy wszystko false
-		ENABLE_IF(((M == false) && (M == S) && (M == C) && (M == L) && (M == R)) ||
-			//czy member
-			((M == true) &&
-				// czy static
-				(((S == true) && (C == false) && (V == false) && (L == false) && (R == false)) ||
-					// czy non-static
-					((S == false) && ((!L || !R) == true)))))>
+		ENABLE_IF(valid_member_function_decription<M, S, C, V, L, R>::value)>
 	struct member_function_description
 	{
 		//! Czy funkcja jest skladowa klasy
@@ -88,11 +90,11 @@ namespace std
 		static const bool r_ref_member = R;
 	};
 
-	//! \tparam Var Czy funkcja/metoda ma zmienn¹ iloœæ argumentów (...)
+	//! \tparam Var Czy funkcja/metoda ma zmiennï¿½ iloï¿½ï¿½ argumentï¿½w (...)
 	template<bool Var = false>
 	struct function_description
 	{
-		//! Czy metoda ma zmienn¹ iloœæ argumentów (...)
+		//! Czy metoda ma zmiennï¿½ iloï¿½ï¿½ argumentï¿½w (...)
 		static const bool variadic_arguments_function = Var;
 	};
 
@@ -106,27 +108,27 @@ namespace std
 		//! \tparam R typ zwracany
 		//! \tparam Args Argumenty funkcji
 		template<class R, class... Args>
-		//! Klasa realizuj¹ca dekompozycjê sygnatury funckji
+		//! Klasa realizujï¿½ca dekompozycjï¿½ sygnatury funckji
 		struct function_traits_helper<R(Args...)>
 		{
 			//! Zwracany typ
 			using return_type = R;
-			//! Zwracany typ bez modyfikatorów (const, &, &&)
+			//! Zwracany typ bez modyfikatorï¿½w (const, &, &&)
 			using decay_return_type = typename std::decay<R>::type;
-			//! Iloœæ argumentów
+			//! Iloï¿½ï¿½ argumentï¿½w
 			static const std::size_t arity = sizeof...(Args);
-			//! \tparam Idx Numer argumentu o który pytamy
+			//! \tparam Idx Numer argumentu o ktï¿½ry pytamy
 			template <std::size_t Idx>
-			//! Klasa pomocnicza przy wyci¹ganiu typów kolejnych argumentów z sygnatury
+			//! Klasa pomocnicza przy wyciï¿½ganiu typï¿½w kolejnych argumentï¿½w z sygnatury
 			struct argument
 			{
 				static_assert(Idx < arity, "error: invalid parameter index.");
 				//! Typ zadanego argumentu
 				using type = typename std::tuple_element<Idx, std::tuple<Args...>>::type;
 			};
-			//! \tparam Idx Numer argumentu o który pytamy
+			//! \tparam Idx Numer argumentu o ktï¿½ry pytamy
 			template <std::size_t Idx>
-			//! Klasa pomocnicza przy wyci¹ganiu czystych typów kolejnych argumentów z sygnatury
+			//! Klasa pomocnicza przy wyciï¿½ganiu czystych typï¿½w kolejnych argumentï¿½w z sygnatury
 			struct decay_argument
 			{
 				//! Czysty typ zadanego argumentu
@@ -137,33 +139,33 @@ namespace std
 		//! \tparam F Typ funktora
 		//! \tparam dummy
 		template<class F, ENABLE_IF(is_functor<F>::value)>
-		//! Klasa realizuj¹ca dekompozycjê sygnatury funktora
+		//! Klasa realizujï¿½ca dekompozycjï¿½ sygnatury funktora
 		struct functor_traits_helper
 		{
 			static_assert(is_functor<F>::value, "Type F must be a functor object");
 
 		private:
-			//! Uzywamy klasycznych traitów dla funkcji któr¹ jest operator () funktora
+			//! Uzywamy klasycznych traitï¿½w dla funkcji ktï¿½rï¿½ jest operator () funktora
 			using call_type = function_traits_helper<decltype(&F::operator())>;
 		public:
 			//! Zwracany typ
 			using return_type = typename call_type::return_type;
-			//! Zwracany typ bez modyfikatorów (const, &, &&)
+			//! Zwracany typ bez modyfikatorï¿½w (const, &, &&)
 			using decay_return_type = typename std::decay<return_type>::type;
-			//! Iloœæ argumentów
+			//! Iloï¿½ï¿½ argumentï¿½w
 			static const std::size_t arity = call_type::arity - 1;
-			//! \tparam Idx Numer argumentu o który pytamy
+			//! \tparam Idx Numer argumentu o ktï¿½ry pytamy
 			template <std::size_t Idx>
-			//! Klasa pomocnicza przy wyci¹ganiu typów kolejnych argumentów z sygnatury
+			//! Klasa pomocnicza przy wyciï¿½ganiu typï¿½w kolejnych argumentï¿½w z sygnatury
 			struct argument
 			{
 				static_assert(Idx < arity, "error: invalid parameter index.");
 				//! Typ zadanego argumentu
 				using type = typename call_type::template argument<Idx + 1>::type;
 			};
-			//! \tparam Idx Numer argumentu o który pytamy
+			//! \tparam Idx Numer argumentu o ktï¿½ry pytamy
 			template <std::size_t Idx>
-			//! Klasa pomocnicza przy wyci¹ganiu czystych typów kolejnych argumentów z sygnatury
+			//! Klasa pomocnicza przy wyciï¿½ganiu czystych typï¿½w kolejnych argumentï¿½w z sygnatury
 			struct decay_argument
 			{
 				//! Czysty typ zadanego argumentu
@@ -380,9 +382,9 @@ namespace std
 
 	// --------------------------------------------------------------------	
 
-	//! \tparam F Typ funkcji, funktora, wskaŸnika do funkcji, wskaŸnika do membera
+	//! \tparam F Typ funkcji, funktora, wskaï¿½nika do funkcji, wskaï¿½nika do membera
 	template<typename F>
-	//! W³aœciwa realizacja traita dla funkcji i obiektów funkcyjnych
+	//! Wï¿½aï¿½ciwa realizacja traita dla funkcji i obiektï¿½w funkcyjnych
 	struct function_traits : public std::enable_if<std::is_function<F>::value ||
 		(std::is_pointer<F>::value && std::is_function<typename std::remove_pointer<F>::type>::value) ||
 		std::is_member_function_pointer<F>::value || std::is_functor<F>::value, impl::function_traits<F >> ::type
@@ -392,7 +394,7 @@ namespace std
 			std::is_member_function_pointer<F>::value || std::is_functor<F>::value, "Function traits only applicable to functions/functors/function pointers");
 	};
 
-	//! Taka czêœciowa specjalizacja pozwala nam unikn¹æ odwo³añ do function_traits dla typów nie reprezentuj¹cych funkcje/funktory
+	//! Taka czï¿½ciowa specjalizacja pozwala nam uniknï¿½ï¿½ odwoï¿½aï¿½ do function_traits dla typï¿½w nie reprezentujï¿½cych funkcje/funktory
 	template<typename Func, bool = std::is_functor<Func>::value>
 	struct is_one_argument_functor : public std::integral_constant<bool, std::function_traits<Func>::arity == 1> {};
 

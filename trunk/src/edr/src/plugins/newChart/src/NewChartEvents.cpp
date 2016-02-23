@@ -86,7 +86,7 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, c3dlib::C
     QObject::tr("Foot Strike");
     QObject::tr("Foot Off"   );
     SegmentPtr currentSegment;
-	auto uaf = scalar->feature<dataaccessor::IUniformArgumentsFeature>();
+	auto uaf = scalar->template feature<dataaccessor::UniformArgumentsFeature>();
 	std::function<dataaccessor::NearestArgumentsFinder::Range(const dataaccessor::IDiscreteAccessorT<c3dlib::ScalarChannelReaderInterface::value_type, c3dlib::ScalarChannelReaderInterface::argument_type> &, const c3dlib::ScalarChannelReaderInterface::argument_type &)> range = static_cast<dataaccessor::NearestArgumentsFinder::Range(*)(const dataaccessor::IDiscreteAccessorT<c3dlib::ScalarChannelReaderInterface::value_type, c3dlib::ScalarChannelReaderInterface::argument_type>&,
 		const c3dlib::ScalarChannelReaderInterface::argument_type&)>(&dataaccessor::NearestArgumentsFinder::range<c3dlib::ScalarChannelReaderInterface::value_type, c3dlib::ScalarChannelReaderInterface::argument_type>);
 
@@ -121,7 +121,7 @@ void EventsHelper::createSegments(std::vector<SegmentPtr>& collection, c3dlib::C
 
     for (unsigned int i = 0; i < collection.size(); ++i) {		
         SegmentPtr segment = collection[i];
-		auto df = segment->scalar->feature<dataaccessor::IDescriptorFeature>();
+		auto df = segment->scalar->feature<dataaccessor::DescriptorFeature>();
 		std::string sname;
 		if (df != nullptr){
 			sname = df->name();

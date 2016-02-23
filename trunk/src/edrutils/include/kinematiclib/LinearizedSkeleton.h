@@ -13,7 +13,7 @@
 #include <boost/bimap.hpp>
 #include <kinematiclib/Skeleton.h>
 #include <kinematiclib/Types.h>
-#include <treecontainerlib/Linearization.h>
+#include <treecontainerlib/TreeLinearization.h>
 #include <treecontainerlib/TreeVisitPolicies.h>
 
 namespace kinematic
@@ -31,7 +31,7 @@ namespace kinematic
 		using GlobalMapping = GlobalData < Mapping >;
 
 		//! Typ obsługujący przechodzenie po zlinearyzowanym szkielecie
-		using Visitor = treeContainer::LinearizationT < treeContainer::VisitPolicies::Tree::LevelOrder >;
+		using Visitor = treeContainer::LinearizedTree< treeContainer::VisitPolicies::Tree::LevelOrder >;
 
 		//! \param skeleton Szkielet dla którego generujemy mapowanie wszystkich jointów
 		//! \return Mapowanie jointów szkieletu

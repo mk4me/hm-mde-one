@@ -13,7 +13,7 @@
 #include <condition_variable>
 #include <type_traits>
 #include <threadingUtils/Future.h>
-#include <threadingUtils/CallPolicy.h>
+#include <threadingUtils/ExceptionHandlePolicy.h>
 #include <threadingUtils/FunctionWrapper.h>
 #include <utils/Utils.h>
 namespace threadingUtils

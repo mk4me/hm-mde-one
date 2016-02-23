@@ -14,37 +14,44 @@
 
 namespace dataaccessor
 {
+	//! \tparam ArgumentType Typ argumentu kanaï¿½u
 	template<typename ArgumentType>
-	class UniformArgumentsFeature;
-
-	//! \tparam ArgumentType Typ argumentu kana³u
-	template<typename ArgumentType>
-	//! Interfejs kana³u dyskretnego o równo oddalonych argumentach
-	class IUniformArgumentsFeature : public FeatureHelperT<UniformArguments, IArgumentFeatureT<ArgumentType>>
+	//! Interfejs kanaï¿½u dyskretnego o rï¿½wno oddalonych argumentach
+	class UniformArgumentsFeature : public FeatureHelperT<UniformArguments, IArgumentFeatureT<ArgumentType>>
 	{
+	private:
+
+			const ArgumentType interval;
+
 	public:
+
+		template<typename T>
+		UniformArgumentsFeature(T && interval)
+			: interval(std::forward<T>(interval))
+		{}
+
 		//! Destruktor wirtualny
-		virtual ~IUniformArgumentsFeature() {};
+		~UniformArgumentsFeature() {};
 
-		//! \return Czas trwania kana³u
-		virtual ArgumentType argumentsInterval() const = 0;
+		//! \return Czas trwania kanaï¿½u
+		ArgumentType argumentsInterval() const { return interval; }
 
-		template<typename ValueType>
-		static inline IUniformArgumentsFeature * create(
+		/*template<typename ValueType>
+		static inline UniformArgumentsFeature * create(
 			const IDiscreteAccessorT<ValueType, ArgumentType> * discrete,
 			const IFunctionAccessorT<ValueType, ArgumentType> * function)
 		{
-			IUniformArgumentsFeature * ret = nullptr;
+			UniformArgumentsFeature * ret = nullptr;
 			if (discrete != nullptr) {
 				ret = create(*discrete);
 			}
 
 			return ret;
-		}
+		}*/
 		
-		static inline IUniformArgumentsFeature * create(const IDiscreteArgumentAccessorT<ArgumentType> & accessor)
+		static inline UniformArgumentsFeature * create(const IDiscreteArgumentAccessorT<ArgumentType> & accessor)
 		{
-			IUniformArgumentsFeature * ret = nullptr;
+			UniformArgumentsFeature * ret = nullptr;
 
 			if (accessor.size() > 1){
 
@@ -66,30 +73,12 @@ namespace dataaccessor
 				}
 				
 				if (ok == true){
-					ret = new UniformArgumentsFeature<ArgumentType>(interval);
+					ret = new UniformArgumentsFeature(interval);
 				}
 			}
 
 			return ret;
 		}
-	};
-
-	template<typename ArgumentType>
-	class UniformArgumentsFeature : public IUniformArgumentsFeature<ArgumentType>
-	{
-	public:
-		template<typename T>
-		UniformArgumentsFeature(T && interval)
-			: interval(std::forward<T>(interval))
-		{}
-
-		virtual ~UniformArgumentsFeature() {}
-		
-		virtual ArgumentType argumentsInterval() const override { return interval; }
-
-	private:
-
-		const ArgumentType interval;
 	};
 }
 

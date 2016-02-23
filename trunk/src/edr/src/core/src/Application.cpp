@@ -1,4 +1,5 @@
 #include "CorePCH.h"
+#include <utils/Filesystem.h>
 #include <utils/ClonePolicies.h>
 #include <QtWidgets/QApplication>
 #include <osgQt/GraphicsWindowQt>

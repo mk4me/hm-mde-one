@@ -16,8 +16,8 @@ purpose:
 
 namespace dataaccessor
 {
-	//! Taka czêsciowa specjalizacja dzia³a jak enable_if, daj¹c nam potrzebne typy,
-	//! lub brak ich definicji - SFINAE i eliminacja niepasuj¹cych sygnatur wrpaerów
+	//! Taka czï¿½sciowa specjalizacja dziaï¿½a jak enable_if, dajï¿½c nam potrzebne typy,
+	//! lub brak ich definicji - SFINAE i eliminacja niepasujï¿½cych sygnatur wrpaerï¿½w
 	template<typename Func, bool = std::is_one_argument_functor<Func>::value>
 	struct FuncRet
 	{
@@ -29,15 +29,15 @@ namespace dataaccessor
 	template<typename Func>
 	struct FuncRet<Func, false> {};
 
-	//! Extractor wartoœci kontenera
+	//! Extractor wartoï¿½ci kontenera
 	struct ContainerValueExtractor
 	{
 	public:
 
 		//! \tparam C Typ kontenera
 		template<typename C>
-		//! \param C Kontener dla któego pobieramy element
-		//! \param idx Indeks elementu który chcemy pobraæ z kontenera
+		//! \param C Kontener dla ktï¿½ego pobieramy element
+		//! \param idx Indeks elementu ktï¿½ry chcemy pobraï¿½ z kontenera
 		//! \return Element kontenera o podanym indeksie
 		static inline auto value(const C & c, const std::size_t idx) -> decltype(utils::ContainerElementExtractor::extract(c, idx))
 		{
@@ -45,55 +45,55 @@ namespace dataaccessor
 		}
 	};
 
-	//! Struktura pomocnicza przy wyci¹ganiu argumentu z pary
+	//! Struktura pomocnicza przy wyciï¿½ganiu argumentu z pary
 	struct PairArgumentExtractor
 	{
 		//! \tparam T Pierwszy typ w parze
 		//! \tparam U Drugi typ w parze
 		template<typename T, typename U>
-		//! \param sample Próbka
-		//! \return argument próbki
+		//! \param sample Prï¿½bka
+		//! \return argument prï¿½bki
 		static inline const T & value(const std::pair<T, U> & sample)
 		{
 			return sample.first;
 		}
 	};
 
-	//! Struktura pomocnicza przy wyci¹ganiu wartoœci z pary
+	//! Struktura pomocnicza przy wyciï¿½ganiu wartoï¿½ci z pary
 	struct PairValueExtractor
 	{
 		//! \tparam T Pierwszy typ w parze
 		//! \tparam U Drugi typ w parze
 		template<typename T, typename U>
-		//! \param sample Próbka
-		//! \return Wartoœæ próbki
+		//! \param sample Prï¿½bka
+		//! \return Wartoï¿½ï¿½ prï¿½bki
 		static inline const U & value(const std::pair<T, U> & sample)
 		{
 			return sample.second;
 		}
 	};
 
-	//! Domyœlny extraktor próbek z kontenerów
+	//! Domyï¿½lny extraktor prï¿½bek z kontenerï¿½w
 	struct DefaultContainerSampleExtractor
 	{
 		//! \tparam C Typ kontenera
 		template<typename C>
-		//! \param container Kontener z którego pobieramy próbkê
-		//! \param idx Numer próbki któr¹ chcemy pobraæ
-		//! \return Próbka o zadanym indeksie
+		//! \param container Kontener z ktï¿½rego pobieramy prï¿½bkï¿½
+		//! \param idx Numer prï¿½bki ktï¿½rï¿½ chcemy pobraï¿½
+		//! \return Prï¿½bka o zadanym indeksie
 		static inline auto sample(const C & container, const std::size_t idx) -> decltype(ContainerValueExtractor::value(container, idx))
 		{
 			return ContainerValueExtractor::value(container, idx);
 		}
 	};
 
-	//! \tparam SValueExtractor Typ extraktora vartoœci z próbek kontenera
-	//! \tparam SArgumentExtractor Typ extraktora argumentów z próbek kontenera
-	//! \tparam CValueExtractor Typ extraktora próbek z kontenera
+	//! \tparam SValueExtractor Typ extraktora vartoï¿½ci z prï¿½bek kontenera
+	//! \tparam SArgumentExtractor Typ extraktora argumentï¿½w z prï¿½bek kontenera
+	//! \tparam CValueExtractor Typ extraktora prï¿½bek z kontenera
 	template<typename SValueExtractor,
 		typename SArgumentExtractor,
 		typename CValueExtractor = ContainerValueExtractor>
-		//! Klasa pomocnicza przy wypakowywaniu próbek z kontenerów
+		//! Klasa pomocnicza przy wypakowywaniu prï¿½bek z kontenerï¿½w
 	class ContainerSampleExtractor : private CValueExtractor,
 		private SValueExtractor, private SArgumentExtractor
 	{
@@ -101,14 +101,14 @@ namespace dataaccessor
 
 		//! \tparam C Typ kontenera
 		template<typename C>
-		//! Typ wartoœci w kontenerze - z nich wyci¹gamy argumenty i wartoœci
+		//! Typ wartoï¿½ci w kontenerze - z nich wyciï¿½gamy argumenty i wartoï¿½ci
 		using CValue = decltype(std::declval<CValueExtractor>().value(std::declval<C>(), 0));
 
 		//! \tparam C Typ kontenera
 		template<typename C>
 		struct Sample
 		{
-			//! Musi tak byæ, w przeciwnym razie VS ma problemy
+			//! Musi tak byï¿½, w przeciwnym razie VS ma problemy
 			typedef typename IAccessorT<typename std::decay<decltype(std::declval<SValueExtractor>().value(std::declval<CValue<C>>()))>::type,
 				typename std::decay<decltype(std::declval<SArgumentExtractor>().value(std::declval<CValue<C>>()))>::type>::sample_type type;
 		};
@@ -149,9 +149,9 @@ namespace dataaccessor
 
 		//! \tparam C Typ kontenera
 		template<typename C>
-		//! \param container Kontener z którego wypakowujemy próbki accessora
-		//! \param idx Indeks próbki któr¹ chemy wypakowaæ
-		//! \return Próbka accessora któr¹ wypakowaliœmy z kontenera
+		//! \param container Kontener z ktï¿½rego wypakowujemy prï¿½bki accessora
+		//! \param idx Indeks prï¿½bki ktï¿½rï¿½ chemy wypakowaï¿½
+		//! \return Prï¿½bka accessora ktï¿½rï¿½ wypakowaliï¿½my z kontenera
 		inline typename Sample<C>::type sample(const C & container, const std::size_t idx) const
 		{
 			using RCVal = decltype(CValueExtractor::value(container, idx));
@@ -161,15 +161,26 @@ namespace dataaccessor
 	};
 
 	//! \tparam Container Typ kontenera
-	//! \tparam SampleExtractor Typ ekstraktora próbek akcesora	
+	//! \tparam SampleExtractor Typ ekstraktora prï¿½bek akcesora	
 	template<typename Container,
 		typename SampleExtractor = DefaultContainerSampleExtractor>
-		//! Implementacja dyskrentego akseora dla kontenerów danych
+		//! Implementacja dyskrentego akseora dla kontenerï¿½w danych
 	class ContainerDiscreteAccessor : public IOptimizedDiscreteAccessorT<
 		typename std::decay<decltype(std::declval<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0))>().second)>::type,
 		typename std::decay<decltype(std::declval<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0))>().first)>::type>,
 		private SampleExtractor
 	{
+	public:
+
+		using BaseType = IOptimizedDiscreteAccessorT<
+				typename std::decay<decltype(std::declval<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0))>().second)>::type,
+				typename std::decay<decltype(std::declval<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0))>().first)>::type>;
+
+		using value_type = typename BaseType::value_type;
+		using argument_type = typename BaseType::argument_type;
+		using sample_type = typename BaseType::sample_type;
+		using size_type = typename BaseType::size_type;
+
 	public:
 
 		template<typename ST = SampleExtractor>
@@ -184,17 +195,17 @@ namespace dataaccessor
 		//! Destruktor wirtualny
 		virtual ~ContainerDiscreteAccessor() {}
 
-		//! \param idx Indeks próbki
-		//! \return Wartoœæ dla danego indeksu
+		//! \param idx Indeks prï¿½bki
+		//! \return Wartoï¿½ï¿½ dla danego indeksu
 		virtual sample_type sample(const size_type idx) const override
 		{
 			return SampleExtractor::sample(container, idx);
 		}
 
-		//! \return Iloœæ próbek w kanale
+		//! \return Iloï¿½ï¿½ prï¿½bek w kanale
 		virtual size_type size() const override { return size_; }
 
-		//! \return Czy kana³ nie zawiera danych
+		//! \return Czy kanaï¿½ nie zawiera danych
 		virtual bool empty() const override { return empty_; }
 
 	private:
@@ -211,16 +222,27 @@ namespace dataaccessor
 		using ContainerDiscreteData = SafeAccessorWrapper<ContainerDiscreteAccessor<Container, SampleExtractor>, Container>;
 
 	//! \tparam Container Typ kontenera
-	//! \tparam SampleExtractor Typ ekstraktora próbek akcesora	
+	//! \tparam SampleExtractor Typ ekstraktora prï¿½bek akcesora	
 	template<typename Container,
 		typename ArgumentsGenerator,
 		typename ValueExtractor = ContainerValueExtractor>
-		//! Implementacja dyskrentego akseora dla kontenerów danych
+		//! Implementacja dyskrentego akseora dla kontenerï¿½w danych
 	class ContainerDiscreteGeneratedAccessor : public IIndependentDiscreteAccessorT<
 		typename std::decay<decltype(std::declval<ValueExtractor>().value(std::declval<Container>(), 0))>::type,
 		typename std::decay<decltype(std::declval<ArgumentsGenerator>().argument(0))>::type>,
 		private ArgumentsGenerator, private ValueExtractor
 	{
+	public:
+
+		using BaseType = IIndependentDiscreteAccessorT<
+				typename std::decay<decltype(std::declval<ValueExtractor>().value(std::declval<Container>(), 0))>::type,
+				typename std::decay<decltype(std::declval<ArgumentsGenerator>().argument(0))>::type>;
+
+		using value_type = typename BaseType::value_type;
+		using argument_type = typename BaseType::argument_type;
+		using sample_type = typename BaseType::sample_type;
+		using size_type = typename BaseType::size_type;
+
 	public:
 		template<typename AT = ArgumentsGenerator,
 			typename VT = ValueExtractor>
@@ -237,18 +259,18 @@ namespace dataaccessor
 		//! Destruktor wirtualny
 		virtual ~ContainerDiscreteGeneratedAccessor() {}
 
-		//! \param idx Indeks próbki
+		//! \param idx Indeks prï¿½bki
 		//! \return Argument dla danego indeksu
 		virtual argument_type argument(const size_type idx) const override { return ArgumentsGenerator::argument(idx); }
 
-		//! \param idx Indeks próbki
-		//! \return Wartoœæ dla danego indeksu
+		//! \param idx Indeks prï¿½bki
+		//! \return Wartoï¿½ï¿½ dla danego indeksu
 		virtual value_type value(const size_type idx) const override { return ValueExtractor::value(container, idx); }
 
-		//! \return Iloœæ próbek w kanale
+		//! \return Iloï¿½ï¿½ prï¿½bek w kanale
 		virtual size_type size() const override { return size_; }
 
-		//! \return Czy kana³ nie zawiera danych
+		//! \return Czy kanaï¿½ nie zawiera danych
 		virtual bool empty() const override { return empty_; }
 
 	private:
@@ -261,24 +283,35 @@ namespace dataaccessor
 	};
 
 	//! \tparam Container Typ kontenera
-	//! \tparam SampleExtractor Typ ekstraktora próbek akcesora	
+	//! \tparam SampleExtractor Typ ekstraktora prï¿½bek akcesora	
 	template<typename Container,
 		typename ArgumentsGenerator,
 		typename ValueExtractor = ContainerValueExtractor>
 		using ContainerDiscreteGeneratedData = SafeAccessorWrapper<ContainerDiscreteGeneratedAccessor<Container, ArgumentsGenerator, ValueExtractor>, Container>;
 
-	//! \tparam ValuesContainer Typ kontenera z wartoœciami
+	//! \tparam ValuesContainer Typ kontenera z wartoï¿½ciami
 	//! \tparam ArgumentsContainer Typ kontenera z argumentami
-	//! \tparam ValueExtractor Typ obiektu wypakowuj¹cego wartoœci z kontenera wartoœci
-	//! \tparam ArgumentExtractor Typ obiektu wypakowuj¹cego argumenty z kontenera argumentów
+	//! \tparam ValueExtractor Typ obiektu wypakowujï¿½cego wartoï¿½ci z kontenera wartoï¿½ci
+	//! \tparam ArgumentExtractor Typ obiektu wypakowujï¿½cego argumenty z kontenera argumentï¿½w
 	template<typename ValuesContainer, typename ArgumentsContainer,
 		typename ValueExtractor, typename ArgumentExtractor>
-		//! Implementacja realizuje dostêp do kana³u dyskretnego w oparciu o niezale¿ne kontenery wartosci i próbek
+		//! Implementacja realizuje dostï¿½p do kanaï¿½u dyskretnego w oparciu o niezaleï¿½ne kontenery wartosci i prï¿½bek
 	class IndependentContainersDiscreteAccessor : public IIndependentDiscreteAccessorT<
 		typename std::decay<decltype(std::declval<ValueExtractor>().value(std::declval<ValuesContainer>(), 0))>::type,
 		typename std::decay<decltype(std::declval<ArgumentExtractor>().value(std::declval<ArgumentsContainer>(), 0))>::type>,
 		private ArgumentExtractor, private ValueExtractor
 	{
+	public:
+
+		using BaseType = IIndependentDiscreteAccessorT<
+				typename std::decay<decltype(std::declval<ValueExtractor>().value(std::declval<ValuesContainer>(), 0))>::type,
+				typename std::decay<decltype(std::declval<ArgumentExtractor>().value(std::declval<ArgumentsContainer>(), 0))>::type>;
+
+		using value_type = typename BaseType::value_type;
+		using argument_type = typename BaseType::argument_type;
+		using sample_type = typename BaseType::sample_type;
+		using size_type = typename BaseType::size_type;
+
 	public:
 
 		template<typename VT = ValueExtractor,
@@ -287,8 +320,8 @@ namespace dataaccessor
 				const ArgumentsContainer & arguments, const std::size_t vsize,
 				const std::size_t asize, VT && valueExtractor = VT(),
 				AT && argumentExtractor = AT())
-			: ArgumentsGenerator(std::forward<AT>(argumentsGenerator)),
-			ValueExtractor(std::forward<ValueExtractor>(valuesExtractor)),
+			: ValueExtractor(std::forward<VT>(valueExtractor)),
+			  ArgumentExtractor(std::forward<AT>(argumentExtractor)),
 			values(values), arguments(arguments), size_(std::min(vsize, asize)),
 			empty_(size_ == 0)
 		{
@@ -298,22 +331,22 @@ namespace dataaccessor
 		//! Destruktor wirtualny
 		virtual ~IndependentContainersDiscreteAccessor() {}
 
-		//! \param idx Indeks próbki
+		//! \param idx Indeks prï¿½bki
 		//! \return Argument dla danego indeksu
-		virtual argument_type argument(const size_type idx) const override { return ArgumentExtractor::value(container, idx); }
+		virtual argument_type argument(const size_type idx) const override { return ArgumentExtractor::value(arguments, idx); }
 
-		//! \param idx Indeks próbki
-		//! \return Wartoœæ dla danego indeksu
-		virtual value_type value(const size_type idx) const override { return return ValueExtractor::value(container, idx); }
+		//! \param idx Indeks prï¿½bki
+		//! \return Wartoï¿½ï¿½ dla danego indeksu
+		virtual value_type value(const size_type idx) const override { return ValueExtractor::value(values, idx); }
 
-		//! \return Iloœæ próbek w kanale
+		//! \return Iloï¿½ï¿½ prï¿½bek w kanale
 		virtual size_type size() const override { return size_; }
 
-		//! \return Czy kana³ nie zawiera danych
+		//! \return Czy kanaï¿½ nie zawiera danych
 		virtual bool empty() const override { return empty_; }
 
 	private:
-		//! Kontener z wartoœciami
+		//! Kontener z wartoï¿½ciami
 		const ValuesContainer & values;
 		//! Kontener z argumentami
 		const ArgumentsContainer & arguments;
@@ -323,43 +356,42 @@ namespace dataaccessor
 		const bool empty_;
 	};
 
-	//! Klasa realizuj¹ca zadanie wrappera dla kontenera - tag pozwala na dziedziczenie
-	//! po tej klasie przy takich samych typach kontenerów wartoœci i argumentów
-	//! za spraw¹ taga mamy 2 niezale¿ne typy
-	template<typename Container, typename>
-	class TaggedContainerCarrier : public utils::ValueCarrier<Container>
-	{
-	public:
-		//! TODO VS szaleje z tak¹ konstrukcj¹ wiêc tworzymy konstruktor forwarduj¹cy wszystko dalej do klasy bazowej
-		//! Wci¹gamy konstruktory
-		//using utils::ValueCarrier::ValueCarrier;
-		template<class ...Args>
-		TaggedContainerCarrier(Args && ...args) : utils::ValueCarrier<Container>(std::forward<Args>(args)...) {}
+	//! Klasa realizujï¿½ca zadanie wrappera dla kontenera - tag pozwala na dziedziczenie
+	//! po tej klasie przy takich samych typach kontenerï¿½w wartoï¿½ci i argumentï¿½w
+	//! za sprawï¿½ taga mamy 2 niezaleï¿½ne typy
+	template<typename Container, typename Tag>
+	using TaggedContainerCarrier = utils::TypeTagWrapper<utils::ValueCarrier<Container>, Tag>;
 
-		//! Destruktor wirtualny
-		virtual ~TaggedContainerCarrier() {}
-	};
-
-	//! Typy tagów
+	//! Typy tagï¿½w
 	struct Tag {
-		//! Wartoœci
+		//! Wartoï¿½ci
 		class ValueContainer;
 		//! Argumenty
 		class ArgumentContainer;
 	};
 
-	//! \tparam ValuesContainer Typ kontenera z wartoœciami
+	//! \tparam ValuesContainer Typ kontenera z wartoï¿½ciami
 	//! \tparam ArgumentsContainer Typ kontenera z argumentami
-	//! \tparam ValueExtractor Typ obiektu wypakowuj¹cego wartoœci z kontenera wartoœci
-	//! \tparam ArgumentExtractor Typ obiektu wypakowuj¹cego argumenty z kontenera argumentów
+	//! \tparam ValueExtractor Typ obiektu wypakowujï¿½cego wartoï¿½ci z kontenera wartoï¿½ci
+	//! \tparam ArgumentExtractor Typ obiektu wypakowujï¿½cego argumenty z kontenera argumentï¿½w
 	template<typename ValuesContainer, typename ArgumentsContainer,
 		typename ValueExtractor, typename ArgumentExtractor>
-		//! Implementacja realizuje dostêp do kana³u dyskretnego w oparciu o niezale¿ne kontenery wartosci i próbek
+		//! Implementacja realizuje dostï¿½p do kanaï¿½u dyskretnego w oparciu o niezaleï¿½ne kontenery wartosci i prï¿½bek
 	class IndependentContainersDiscreteData : private TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>,
 		private TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>,
-		public IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
+		public IndependentContainersDiscreteAccessor<ValuesContainer, ArgumentsContainer,
 		ValueExtractor, ArgumentExtractor>
 	{
+	public:
+
+		using BaseType = IndependentContainersDiscreteAccessor<ValuesContainer, ArgumentsContainer,
+				ValueExtractor, ArgumentExtractor>;
+
+		using value_type = typename BaseType::value_type;
+		using argument_type = typename BaseType::argument_type;
+		using sample_type = typename BaseType::sample_type;
+		using size_type = typename BaseType::size_type;
+
 	public:
 
 		template<typename VCT = utils::ValueCarrier<ValuesContainer>,
@@ -372,7 +404,7 @@ namespace dataaccessor
 				AT && argumentExtractor = AT())
 			: TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>(std::forward<VCT>(values)),
 			TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>(std::forward<ACT>(arguments)),
-			IndependentContainersDiscreteData<ValuesContainer, ArgumentsContainer,
+			IndependentContainersDiscreteAccessor<ValuesContainer, ArgumentsContainer,
 			ValueExtractor, ArgumentExtractor>(TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>::ref(),
 				TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>::ref(), vsize, asize,
 				std::forward<VT>(valueExtractor), std::forward<AT>(argumentExtractor))
@@ -390,11 +422,20 @@ namespace dataaccessor
 	{
 	public:
 
+		using BaseType = IIndependentDiscreteAccessorT<typename std::decay<ValueType>::type, typename std::decay<decltype(std::declval<ArgumentsGenerator>().argument(0))>::type>;
+
+		using value_type = typename BaseType::value_type;
+		using argument_type = typename BaseType::argument_type;
+		using sample_type = typename BaseType::sample_type;
+		using size_type = typename BaseType::size_type;
+
+	public:
+
 		template<typename AT = ArgumentsGenerator,
 			typename VT = ValueType>
 			ConstDiscreteData(AT && argumentsGenerator, VT && value) :
 			ArgumentsGenerator(std::forward<AT>(argumentsGenerator)),
-			value(std::forward<VT>(value))
+			value_(std::forward<VT>(value))
 		{
 
 		}
@@ -402,19 +443,19 @@ namespace dataaccessor
 		//! Destruktor wirtualny
 		virtual ~ConstDiscreteData() {}
 
-		//! \param idx Indeks próbki
+		//! \param idx Indeks prï¿½bki
 		//! \return Argument dla danego indeksu
 		virtual argument_type argument(const size_type idx) const override { return ArgumentsGenerator::argument(idx); }
 
-		//! \param idx Indeks próbki
-		//! \return Wartoœæ dla danego indeksu
+		//! \param idx Indeks prï¿½bki
+		//! \return Wartoï¿½ï¿½ dla danego indeksu
 		virtual value_type value(const size_type idx) const override { return value_; }
 
-		//! \return Iloœæ próbek w kanale
+		//! \return Iloï¿½ï¿½ prï¿½bek w kanale
 		virtual size_type size() const override { return ArgumentsGenerator::size(); }
 
 	private:
-		//! Wartoœæ
+		//! Wartoï¿½ï¿½
 		const ValueType value_;
 	};
 
@@ -422,8 +463,17 @@ namespace dataaccessor
 	class ConstFunctionData : public IGeneratedFunctionAccessorT<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>
 	{
 	public:
+
+		using BaseType = IGeneratedFunctionAccessorT<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>;
+
+		using value_type = typename BaseType::value_type;
+		using argument_type = typename BaseType::argument_type;
+		using sample_type = typename BaseType::sample_type;
+
+	public:
+
 		template<typename VT = ValueType>
-		//! \param value Wartoœæ kana³u
+		//! \param value Wartoï¿½ï¿½ kanaï¿½u
 		ConstFunctionData(VT && value) : value_(std::forward<VT>(value))
 		{
 
@@ -432,23 +482,33 @@ namespace dataaccessor
 		//! Destruktor wirtualny
 		virtual ~ConstFunctionData() {}
 
-		//! \param idx Indeks próbki
+		//! \param idx Indeks prï¿½bki
 		//! \return Argument dla danego indeksu
 		virtual value_type value(const argument_type & argument) const override { return value_; }
 
 	private:
-		//! Wartoœæ
+		//! Wartoï¿½ï¿½
 		const value_type value_;
 	};
 
 	//! \tparam
 	template<typename>
-	//! Forward declaration opisu funkcji ci¹g³ej
+	//! Forward declaration opisu funkcji ciï¿½gï¿½ej
 	class FunctionAccessor;
 
 	template<typename ValueType, typename ArgumentType>
 	class FunctionAccessorBase : public IGeneratedFunctionAccessorT<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>
 	{
+	public:
+
+	public:
+
+		using BaseType = IGeneratedFunctionAccessorT<typename std::decay<ValueType>::type, typename std::decay<ArgumentType>::type>;
+
+		using value_type = typename BaseType::value_type;
+		using argument_type = typename BaseType::argument_type;
+		using sample_type = typename BaseType::sample_type;
+
 	public:
 
 		//! \param even
@@ -457,56 +517,73 @@ namespace dataaccessor
 		FunctionAccessorBase(const bool even = false, const bool odd = false,
 			const MonotonyType monotony = NonMonotonic)
 		{
-			attachFeature(IFeaturePtr(new FunctionFeature(even, odd, monotony)));
+			this->attachFeature(FunctionFeature::feature(true));
+			this->attachFeature(IFeaturePtr(new FunctionDescriptionFeature(even, odd, monotony)));
 		}
 
 		//! Virtual destructor
 		virtual ~FunctionAccessorBase() {}
 	};
 
-	//! \tparam Ret Typ wartoœci zwracanej z funckji
-	//! \tparam Arg Typ wartoœci argumentu funkcji
+	//! \tparam Ret Typ wartoï¿½ci zwracanej z funckji
+	//! \tparam Arg Typ wartoï¿½ci argumentu funkcji
 	template<typename Ret, typename Arg>
-	//! Implementacja wrappera dla funkcji ci¹g³ej
+	//! Implementacja wrappera dla funkcji ciï¿½gï¿½ej
 	class FunctionAccessor<Ret(Arg)> : public FunctionAccessorBase<Ret, Arg>
 	{
 	public:
+
+		using BaseType = FunctionAccessorBase<Ret, Arg>;
+
+		using value_type = typename BaseType::value_type;
+		using argument_type = typename BaseType::argument_type;
+		using sample_type = typename BaseType::sample_type;
+
+	public:
 		//! \tparam Func Typ funktora
 		template<typename Func>
-		//! \param func Funktor generuj¹cy wartoœci funkcji
+		//! \param func Funktor generujï¿½cy wartoï¿½ci funkcji
 		FunctionAccessor(Func && func, const bool even = false,
 			const bool odd = false, const MonotonyType monotony = NonMonotonic)
-			: FunctionAccessorBase(even, odd, monotony), f_(std::forward<Func>(func)) {}
+			: BaseType(even, odd, monotony), f_(std::forward<Func>(func)) {}
 
 		//! Destruktor
 		virtual ~FunctionAccessor() {}
-		//! \param argument Argument dla któego odpytujemy o wartoœæ
-		//! \return Wartoœæ dla zadanego argumentu
+		//! \param argument Argument dla ktï¿½ego odpytujemy o wartoï¿½ï¿½
+		//! \return Wartoï¿½ï¿½ dla zadanego argumentu
 		virtual value_type value(const argument_type & argument) const override { return f_(argument); }
 
 	private:
-		//! Funktor realizuj¹cy ci¹g³¹ funkcjê - ci¹g³¹ w sensie daje wartoœci dla ka¿dej wartoœci zadanego typu argumentu
+		//! Funktor realizujï¿½cy ciï¿½gï¿½ï¿½ funkcjï¿½ - ciï¿½gï¿½ï¿½ w sensie daje wartoï¿½ci dla kaï¿½dej wartoï¿½ci zadanego typu argumentu
 		std::function<Ret(Arg)> f_;
 	};
 
-	//! \tparam Ret Typ wartoœci zwracanej z funckji
-	//! \tparam Arg Typ wartoœci argumentu funkcji
-	//! \tparam Object Typ obiektu który dostarcza danych
+	//! \tparam Ret Typ wartoï¿½ci zwracanej z funckji
+	//! \tparam Arg Typ wartoï¿½ci argumentu funkcji
+	//! \tparam Object Typ obiektu ktï¿½ry dostarcza danych
 	template<typename Ret, typename Arg, typename Object>
-	//! Implementacja wrappera dla funkcji ci¹g³ej
+	//! Implementacja wrappera dla funkcji ciï¿½gï¿½ej
 	class FunctionAccessor<Ret(Object::*)(Arg)const> : public FunctionAccessorBase<Ret, Arg>
 	{
 	public:
-		//! \param obj Obiekt na którym wo³amy funkcjê
+
+		using BaseType = FunctionAccessorBase<Ret, Arg>;
+
+		using value_type = typename BaseType::value_type;
+		using argument_type = typename BaseType::argument_type;
+		using sample_type = typename BaseType::sample_type;
+
+	public:
+		//! \param obj Obiekt na ktï¿½rym woï¿½amy funkcjï¿½
 		FunctionAccessor(const Object & obj, Ret(Object::*const func)(Arg)const,
 			const bool even = false, const bool odd = false,
 			const MonotonyType monotony = NonMonotonic)
-			: FunctionAccessorBase(even, odd, monotony), obj(obj), func(func) {}
+			: BaseType(even, odd, monotony), obj(obj), func(func) {}
 
 		//! Destruktor
 		virtual ~FunctionAccessor() {}
-		//! \param argument Argument dla któego odpytujemy o wartoœæ
-		//! \return Wartoœæ dla zadanego argumentu
+		//! \param argument Argument dla ktï¿½ego odpytujemy o wartoï¿½ï¿½
+		//! \return Wartoï¿½ï¿½ dla zadanego argumentu
 		virtual value_type value(const argument_type & argument) const override { return (obj.*func)(argument); }
 
 	private:
@@ -516,11 +593,11 @@ namespace dataaccessor
 		Ret(Object::* const func)(Arg)const;
 	};
 
-	//! \tparam Ret Typ wartoœci zwracanej z funckji
-	//! \tparam Arg Typ wartoœci argumentu funkcji
-	//! \tparam Object Typ obiektu który dostarcza danych
+	//! \tparam Ret Typ wartoï¿½ci zwracanej z funckji
+	//! \tparam Arg Typ wartoï¿½ci argumentu funkcji
+	//! \tparam Object Typ obiektu ktï¿½ry dostarcza danych
 	template<typename Ret, typename Arg, typename Object>
-	//! Implementacja wrappera dla funkcji ci¹g³ej
+	//! Implementacja wrappera dla funkcji ciï¿½gï¿½ej
 	using DataFunctionAccessor = SafeAccessorWrapper<FunctionAccessor<Ret(Object::*)(Arg)const>, Object>;
 }
 

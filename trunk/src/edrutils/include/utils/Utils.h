@@ -282,13 +282,39 @@ struct Int2Type
 	enum { value = I };
 };
 
+template<typename Base, typename Tag>
+class TypeTagWrapper : public Base
+{
+public:
+
+	using type = Tag;
+
+public:
+
+	using Base::Base;
+};
+
+template<typename Base, std::size_t Tag>
+class IntegralTagWrapper : public Base
+{
+public:
+
+	enum {
+		type = Tag
+	};
+
+public:
+
+	using Base::Base;
+};
+
 //! \tparam T Wartość logiczna do weryfikacji
 //! \tparam U Wartość logiczna do weryfikacji
 template<bool T, bool U>
 //! Typ pomocniczy realizujący statycznie funkcję logiczną xor
 struct xor_check : public std::integral_constant<bool, T != U> {};
 
-#define ENABLE_IF(...) typename std::enable_if<(__VA_ARGS__)>::type * = 0
+#define ENABLE_IF(...) typename std::enable_if<(__VA_ARGS__)>::type * = nullptr
 
 ////////////////////////////////////////////////////////////////////////////////
 } // namespace util

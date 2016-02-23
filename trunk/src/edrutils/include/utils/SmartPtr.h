@@ -56,14 +56,19 @@ namespace utils {
 
 #elif defined UTILS_CXX0X
 
+namespace std
+{
+
 template<typename T>
-struct std::less < std::weak_ptr<T> >
+struct less < std::weak_ptr<T> >
 {
 	bool operator()(const std::weak_ptr<T>& _Left, const std::weak_ptr<T>& _Right) const
 	{	// apply operator< to operands
 		return (_Left.lock() < _Right.lock());
 	}
 };
+
+}
 
 #endif
 

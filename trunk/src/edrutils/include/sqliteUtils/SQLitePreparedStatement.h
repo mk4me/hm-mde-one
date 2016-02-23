@@ -47,8 +47,11 @@ namespace sqliteUtils
 	};
 }
 
+namespace std
+{
+
 template<>
-struct std::default_delete<sqlite3_stmt>
+struct default_delete<sqlite3_stmt>
 {
 	default_delete() = default;
 
@@ -66,5 +69,7 @@ struct std::default_delete<sqlite3_stmt>
 
 	}
 };
+
+}
 
 #endif	// __HEADER_GUARD_SQLITEUTILS__SQLITEPREPAREDSTATEMENT_H__

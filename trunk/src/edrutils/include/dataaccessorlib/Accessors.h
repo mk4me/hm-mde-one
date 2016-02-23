@@ -15,6 +15,7 @@ purpose:
 #include <utils/SmartPtr.h>
 #include <utils/Utils.h>
 #include <utils/Debug.h>
+#include <utils/pointer_traits.h>
 #include <map>
 
 namespace dataaccessor
@@ -204,8 +205,8 @@ namespace dataaccessor
 	template<typename ValueType, typename ArgumentType>
 	//! Interfejs akcesora cech wartości i argumentów
 	class IAccessorT : public virtual IAccessor,
-		public IValueAccessorT<ValueType>,
-		public IArgumentAccessorT<ArgumentType>
+		public virtual IValueAccessorT<ValueType>,
+		public virtual IArgumentAccessorT<ArgumentType>
 	{
 	public:
 
@@ -241,7 +242,7 @@ namespace dataaccessor
 		//! \tparam FeatureT Typ cechy o jaką pytamy
 		//! \tparam dummy
 		template<typename FeatureT,
-			ENABLE_IF(std::is_base_of<IFeature, FeatureT>::value)>
+			ENABLE_IF(std::is_base_of<IFeature, FeatureT>::value && utils::is_general_pointer<decltype(FeatureT::create((DiscreteAccessor*)0, (FunctionAccessor*)0))>::value)>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
 			inline utils::shared_ptr<FeatureT> getOrCreateFeature(FeatureT * dummy = nullptr) const
@@ -264,7 +265,7 @@ namespace dataaccessor
 			typename VFT = ValueFeatureT<typename IValueAccessorT<ValueType>::value_type>>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-			inline utils::shared_ptr<VFT> getOrCreateFeature(VFT * dummy = nullptr) const { return this->getOrCreateFeature<VFT>(); }
+			inline auto getOrCreateFeature(VFT * dummy = nullptr) const -> decltype(this->getOrCreateFeature<VFT>()) { return this->getOrCreateFeature<VFT>(); }
 
 		//! \tparam ArgumentFeatureT Typ cechy argumentów o jaką pytamy
 		//! \tparam dummy
@@ -273,7 +274,7 @@ namespace dataaccessor
 			typename AFT = ArgumentFeatureT<typename IArgumentAccessorT<ArgumentType>::argument_type>>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-			inline utils::shared_ptr<AFT> getOrCreateFeature(AFT * dummy = nullptr) const { return this->getOrCreateFeature < AFT>(); }
+			inline auto getOrCreateFeature(AFT * dummy = nullptr) const -> decltype(this->getOrCreateFeature < AFT>()) { return this->getOrCreateFeature < AFT>(); }
 
 		//! \tparam AccessorFeatureT Typ cechy o jaką pytamy
 		template<template<typename, typename> class AccessorFeatureT,
@@ -281,7 +282,7 @@ namespace dataaccessor
 			typename AFT = AccessorFeatureT<typename IValueAccessorT<ValueType>::value_type, typename IArgumentAccessorT<ArgumentType>::argument_type>>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-			inline utils::shared_ptr<AFT> feature(AFT * dummy = nullptr) const { return this->feature < AFT>(); }
+			inline auto feature(AFT * dummy = nullptr) const -> decltype(this->template feature < AFT>()) { return this->template feature < AFT>(); }
 
 		//! \tparam AccessorFeatureT Typ cechy danych o jaką pytamy
 		template<template<typename, typename> class AccessorFeatureT,
@@ -289,7 +290,7 @@ namespace dataaccessor
 			typename AFT = AccessorFeatureT<typename IValueAccessorT<ValueType>::value_type, typename IArgumentAccessorT<ArgumentType>::argument_type>>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli istnieje cecha o danym id ale to nie ta o jaką pytamy
-			inline utils::shared_ptr<AFT> getOrCreateFeature(AFT * dummy = nullptr) const { return this->getOrCreateFeature<AFT>(); }
+			inline auto getOrCreateFeature(AFT * dummy = nullptr) const -> decltype(this->getOrCreateFeature<AFT>()) { return this->getOrCreateFeature<AFT>(); }
 	};
 
 	//! \tparam ValueType Typ wartości kanału danych
@@ -354,7 +355,7 @@ namespace dataaccessor
 		virtual ~IGeneratedFunctionAccessorT() {}
 		//! \param argument Argument dla któego odpytujemy o wartość
 		//! \return Próbka dla zadanego argumentu
-		virtual typename accessor_type::sample_type sample(const typename accessor_type::argument_type & argument) const override { return std::make_pair(argument, value(argument)); }
+		virtual typename accessor_type::sample_type sample(const typename accessor_type::argument_type & argument) const override { return std::make_pair(argument, this->value(argument)); }
 	};
 
 	//! \tparam ValueType Typ wartości kanału danych
@@ -371,7 +372,7 @@ namespace dataaccessor
 		virtual ~IOptimizedFunctionAccessorT() {}
 		//! \param argument Argument dla któego odpytujemy o wartość
 		//! \return Wartość dla zadanego argumentu
-		virtual typename accessor_type::value_type value(const typename accessor_type::argument_type & argument) const override { return sample(argument).second; }
+		virtual typename accessor_type::value_type value(const typename accessor_type::argument_type & argument) const override { return this->sample(argument).second; }
 	};
 
 	//! Baza kanałów dyskretnych
@@ -397,9 +398,16 @@ namespace dataaccessor
 	template<typename ValueType>
 	//! Interfejs opisujący dyskretny dostęp do wartości akcesora
 	class IDiscreteValueAccessorT : public virtual IDiscreteAccessor,
-		public IValueAccessorT<ValueType>
+		public virtual IValueAccessorT<ValueType>
 	{
 	public:
+
+		using ValueFeature = typename IValueAccessorT<ValueType>::ValueFeature;
+
+	public:
+
+		using IValueAccessorT<ValueType>::feature;
+
 		//! Destruktor wirtualny
 		virtual ~IDiscreteValueAccessorT() {}
 		//! \param idx Indeks próbki
@@ -409,7 +417,7 @@ namespace dataaccessor
 		//! \tparam FeatureT Typ cechy o jaką pytamy
 		//! \tparam dummy
 		template<template<typename> class ValueFeatureT,
-			ENABLE_IF(std::is_base_of<typename IValueAccessorT<ValueType>::ValueFeature, ValueFeatureT<ValueType>>::value)>
+			ENABLE_IF(std::is_base_of<ValueFeature, ValueFeatureT<ValueType>>::value)>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
 			inline utils::shared_ptr<ValueFeatureT<ValueType>> getOrCreateFeature(ValueFeatureT<ValueType> * dummy = nullptr) const
@@ -429,9 +437,16 @@ namespace dataaccessor
 	template<typename ArgumentType>
 	//! Interfejs opisujący dyskretny dostęp do argumentów akcesora
 	class IDiscreteArgumentAccessorT : public virtual IDiscreteAccessor,
-		public IArgumentAccessorT<ArgumentType>
+		public virtual IArgumentAccessorT<ArgumentType>
 	{
 	public:
+
+		using ArgumentFeature = typename IArgumentAccessorT<ArgumentType>::ArgumentFeature;
+
+	public:
+
+		using IArgumentAccessorT<ArgumentType>::feature;
+
 		//! Destruktor wirtualny
 		virtual ~IDiscreteArgumentAccessorT() {}
 		//! \param idx Indeks próbki
@@ -441,7 +456,7 @@ namespace dataaccessor
 		//! \tparam FeatureT Typ cechy o jaką pytamy
 		//! \tparam dummy
 		template<template<typename> class ArgumentFeatureT,
-			ENABLE_IF(std::is_base_of<typename IArgumentAccessorT<ArgumentType>::ArgumentFeature, ArgumentFeatureT<ArgumentType>>::value)>
+			ENABLE_IF(std::is_base_of<ArgumentFeature, ArgumentFeatureT<ArgumentType>>::value)>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
 			inline utils::shared_ptr<ArgumentFeatureT<ArgumentType>> getOrCreateFeature(ArgumentFeatureT<ArgumentType> * dummy = nullptr) const
@@ -468,9 +483,17 @@ namespace dataaccessor
 	{
 	public:
 		//! Typ mojego akcesora
-		using accessor_type = IDiscreteAccessorT<ValueType, ArgumentType>;		
+		using accessor_type = IDiscreteAccessorT<ValueType, ArgumentType>;
 
 	public:
+
+		using IAccessorT<ValueType, ArgumentType>::feature;
+
+		using IAccessorT<ValueType, ArgumentType>::getOrCreateFeature;
+		using IDiscreteValueAccessorT<ValueType>::getOrCreateFeature;
+		using IDiscreteArgumentAccessorT<ArgumentType>::getOrCreateFeature;
+
+
 		//! Wirtualny destruktor
 		virtual ~IDiscreteAccessorT() {};
 
@@ -510,7 +533,7 @@ namespace dataaccessor
 
 		//! \param idx Indeks próbki
 		//! \return Próbka dla danego indeksu
-		virtual typename accessor_type::sample_type sample(const typename accessor_type::size_type idx) const override { return std::make_pair(argument(idx), value(idx)); }
+		virtual typename accessor_type::sample_type sample(const typename accessor_type::size_type idx) const override { return std::make_pair(this->argument(idx), this->value(idx)); }
 	};
 
 	//! \tparam ValueType Typ wartości kanału danych
@@ -528,11 +551,11 @@ namespace dataaccessor
 
 		//! \param idx Indeks próbki
 		//! \return Argument dla danego indeksu
-		virtual typename accessor_type::argument_type argument(const typename accessor_type::size_type idx) const override { return sample(idx).first; }
+		virtual typename accessor_type::argument_type argument(const typename accessor_type::size_type idx) const override { return this->sample(idx).first; }
 
 		//! \param idx Indeks próbki
 		//! \return Wartość dla danego indeksu
-		virtual typename accessor_type::value_type value(const typename accessor_type::size_type idx) const override { return sample(idx).second; }
+		virtual typename accessor_type::value_type value(const typename accessor_type::size_type idx) const override { return this->sample(idx).second; }
 	};
 }
 

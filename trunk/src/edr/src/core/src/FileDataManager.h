@@ -12,6 +12,9 @@ purpose:
 #include <map>
 #include <list>
 #include <mutex>
+#include "ApplicationCommon.h"
+#include "ParserManager.h"
+#include "RegisteredDataTypesManager.h"
 #include <corelib/IFileManagerReader.h>
 #include <corelib/IFileDataManager.h>
 #include <corelib/IDataManagerReader.h>
@@ -200,8 +203,8 @@ namespace core {
 	template<typename ParserT>
 	void FileDataManager::initializeParsers(const IParserManagerReader::ParserPrototypes & parsers, const std::string & path, VariantsList & objects)
 	{
-		auto pm = getParserManager();
-		auto hm = getRegisteredDataTypesManager();
+		auto pm = core::getParserManager();
+		auto hm = core::getRegisteredDataTypesManager();
 
 		//jeżeli pliku nie ma dodaj go, stwórz parsery i rozszerz dostępne dane wraz z ich opisem
 		for (auto parserIT = parsers.begin(); parserIT != parsers.end(); ++parserIT) {
