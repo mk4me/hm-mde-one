@@ -245,7 +245,7 @@ namespace dataaccessor
 			ENABLE_IF(std::is_base_of<IFeature, FeatureT>::value)>// && utils::is_general_pointer<decltype(FeatureT::create((DiscreteAccessor*)0, (FunctionAccessor*)0))>::value)>
 																  //! \param dummy
 																  //! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-			inline utils::shared_ptr<FeatureT> getOrCreateFeature(FeatureT * dummy = nullptr) const
+			inline auto getOrCreateFeature(FeatureT * dummy = nullptr) const -> decltype(utils::shared_ptr<FeatureT>(FeatureT::create(asDiscrete(), asFunction())))
 		{
 			utils::shared_ptr<FeatureT> ret = this->IAccessor::feature<FeatureT>();
 
@@ -265,7 +265,7 @@ namespace dataaccessor
 			typename VFT = ValueFeatureT<typename IValueAccessorT<ValueType>::value_type >>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-			inline auto getOrCreateFeature(VFT * dummy = nullptr) const -> decltype(this->template getOrCreateFeature<VFT>()) { return this->template getOrCreateFeature<VFT>(); }
+			inline auto getOrCreateFeature(VFT * dummy = nullptr) const -> decltype(utils::shared_ptr<VFT>(VFT::create(this->asDiscrete(), this->asFunction()))) { return this->template getOrCreateFeature<VFT>(); }
 
 		//! \tparam ArgumentFeatureT Typ cechy argumentów o jaką pytamy
 		//! \tparam dummy
@@ -274,7 +274,7 @@ namespace dataaccessor
 			typename AFT = ArgumentFeatureT<typename IArgumentAccessorT<ArgumentType>::argument_type >>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-			inline auto getOrCreateFeature(AFT * dummy = nullptr) const -> decltype(this->template getOrCreateFeature < AFT>()) { return this->template getOrCreateFeature < AFT>(); }
+			inline auto getOrCreateFeature(AFT * dummy = nullptr) const -> decltype(utils::shared_ptr<AFT>(AFT::create(this->asDiscrete(), this->asFunction()))) { return this->template getOrCreateFeature < AFT>(); }
 
 		//! \tparam AccessorFeatureT Typ cechy o jaką pytamy
 		template<template<typename, typename> class AccessorFeatureT,
@@ -290,7 +290,7 @@ namespace dataaccessor
 			typename AFT = AccessorFeatureT<typename IValueAccessorT<ValueType>::value_type, typename IArgumentAccessorT<ArgumentType>::argument_type >>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli istnieje cecha o danym id ale to nie ta o jaką pytamy
-			inline utils::shared_ptr<AFT> getOrCreateFeature(AFT * dummy = nullptr) const { return this->template getOrCreateFeature<AFT>(); }
+			inline auto getOrCreateFeature(AFT * dummy = nullptr) const -> decltype(utils::shared_ptr<AFT>(AFT::create(this->asDiscrete(), this->asFunction()))) { return this->template getOrCreateFeature<AFT>(); }
 	};
 
 	//! \tparam ValueType Typ wartości kanału danych
@@ -420,7 +420,7 @@ namespace dataaccessor
 			ENABLE_IF(std::is_base_of<ValueFeature, ValueFeatureT<ValueType>>::value)>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-			inline utils::shared_ptr<ValueFeatureT<ValueType>> getOrCreateFeature(ValueFeatureT<ValueType> * dummy = nullptr) const
+			inline auto getOrCreateFeature(ValueFeatureT<ValueType> * dummy = nullptr) const -> decltype(utils::shared_ptr<ValueFeatureT<ValueType>>(ValueFeatureT<ValueType>::create(*this)))
 		{
 			utils::shared_ptr<ValueFeatureT<ValueType>> ret = this->IAccessor::feature<ValueFeatureT<ValueType>>();
 
@@ -459,7 +459,7 @@ namespace dataaccessor
 			ENABLE_IF(std::is_base_of<ArgumentFeature, ArgumentFeatureT<ArgumentType>>::value)>
 			//! \param dummy
 			//! \return Cecha o zadanym typie lub nullptr jeśli takiej nie ma
-			inline utils::shared_ptr<ArgumentFeatureT<ArgumentType>> getOrCreateFeature(ArgumentFeatureT<ArgumentType> * dummy = nullptr) const
+			inline auto getOrCreateFeature(ArgumentFeatureT<ArgumentType> * dummy = nullptr) const -> decltype(utils::shared_ptr<ArgumentFeatureT<ArgumentType>>(ArgumentFeatureT<ArgumentType>::create(*this)))
 		{
 			utils::shared_ptr<ArgumentFeatureT<ArgumentType>> ret = this->IAccessor::feature<ArgumentFeatureT<ArgumentType>>();
 
@@ -491,6 +491,7 @@ namespace dataaccessor
 		using IAccessorT<ValueType, ArgumentType>::getOrCreateFeature;
 		using IDiscreteValueAccessorT<ValueType>::getOrCreateFeature;
 		using IDiscreteArgumentAccessorT<ArgumentType>::getOrCreateFeature;
+		using size_type = IDiscreteAccessor::size_type;
 
 
 		//! Wirtualny destruktor

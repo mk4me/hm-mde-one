@@ -9,7 +9,7 @@
 #define __HEADER_GUARD_CORE__VARIANT_H__
 
 #include <corelib/Export.h>
-#include <utils/SmartPtr.h>
+//#include <utils/SmartPtr.h>
 //#include <utils/Utils.h>
 #include <utils/pointer_traits.h>
 #include <objectwrapperlib/ObjectWrapper.h>
@@ -127,7 +127,7 @@ namespace core
 
 		//! \tparam T Typ obiektu dla ktorego chcemy utworzych OW
 		//! \tparam dummy Weryfikacja warunków metody
-		template < typename T, typename std::enable_if<utils::ObjectWrapperTraits<T>::isDefinitionVisible>::type * = 0>
+		template < typename T, ENABLE_IF(utils::ObjectWrapperTraits<T>::isDefinitionVisible)>
 			//! \param value Wartość z jaką chcemy utowrzyć OW
 			//! \return Wrapper obiektu.
 			static inline VariantPtr wrap(const typename utils::ObjectWrapperTraits<T>::Ptr value)
@@ -137,8 +137,7 @@ namespace core
 
 		//! \tparam T Typ obiektu dla ktorego chcemy utworzych OW
 		//! \tparam dummy Weryfikacja warunków metody
-		template < typename T, typename std::enable_if<std::is_pointer<T>::value ||
-			utils::is_like_smart_pointer<T>::value>::type * = 0>
+		template < typename T, ENABLE_IF(utils::is_general_pointer<T>::value)>
 			//! \param value Wartość z jaką chcemy utowrzyć OW
 			//! \return Wrapper obiektu.
 			static inline VariantPtr wrap(const T & value)
