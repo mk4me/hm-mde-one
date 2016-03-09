@@ -227,7 +227,9 @@ void VideoVisualizer::refresh( float width, float height )
     if ( streamImage ) {
         // odświeżenia danych zależnych od obrazka
         // resize obrazka
-        streamImage->setMaxWidth(widget, widget->getWidth());
+		if (widget->getWidth()) {
+			streamImage->setMaxWidth(widget, widget->getWidth());
+		}
 		if(width > 0 && height > 0){
 			workspace->resizeAdd();
 		}

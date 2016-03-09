@@ -10,7 +10,7 @@
 #ifndef HEADER_GUARD_PYTHON__MdeBridge_H__
 #define HEADER_GUARD_PYTHON__MdeBridge_H__
 
-#include "PythonDataChannel.h"
+#include <plugins/python/python/PythonDataChannel.h>
 #include <corelib/ISourceManager.h>
 #include <corelib/IVisualizerManager.h>
 #include <corelib/IDataManager.h>

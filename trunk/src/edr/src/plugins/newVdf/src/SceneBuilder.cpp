@@ -108,6 +108,6 @@ IVisualConnectionPtr SceneBuilder::createConnection(IVisualOutputPinPtr outputPi
 
 SceneBuilder::VisualNodeWithPins vdf::SceneBuilder::createMerged( const QString& name, std::vector<IVisualInputPinPtr> ipins, std::vector<IVisualOutputPinPtr> opins )
 {
-	SceneBuilder::VisualNodeWithPins node = createType(name, QIcon(), nullptr, ipins.size(), opins.size());
+	SceneBuilder::VisualNodeWithPins node = createType(name, QIcon(), nullptr, static_cast<int>(ipins.size()), static_cast<int>(opins.size()));
 	return node;
 }

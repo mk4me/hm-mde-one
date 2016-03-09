@@ -18,7 +18,7 @@ void StyleProcessingNode::addInputPin( IVisualInputPinPtr pin )
     pin->visualItem()->setParentItem(styleItem);
 
 	INodeStrategyPtr nodeStr = utils::dynamic_pointer_cast<INodeStrategy>(styleItem->getStrategy());
-	pin->visualItem()->setPos(nodeStr->getPinPosition(inputPins.size(), true));
+	pin->visualItem()->setPos(nodeStr->getPinPosition(static_cast<int>(inputPins.size()), true));
 
     inputPins.push_back(pin);
 }
@@ -54,7 +54,7 @@ void StyleProcessingNode::addOutputPin( IVisualOutputPinPtr pin )
     pin->visualItem()->setParentItem(styleItem);
 
 	INodeStrategyPtr nodeStr = utils::dynamic_pointer_cast<INodeStrategy>(styleItem->getStrategy());
-	pin->visualItem()->setPos(nodeStr->getPinPosition(outputPins.size(), false));
+	pin->visualItem()->setPos(nodeStr->getPinPosition(static_cast<int>(outputPins.size()), false));
 
     outputPins.push_back(pin);
 }

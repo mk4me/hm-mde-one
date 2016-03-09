@@ -28,6 +28,7 @@
 #include <plugins/newVdf/IDataFlowProvider.h>
 #include <plugins/newVdf/ExampleItems.h>
 #include <plugins/newVdf/Export.h>
+#include "TypesModel.h"
 
 namespace vdf {
 
@@ -89,6 +90,7 @@ private:
     NewVdfWidget* newVdfWidget;
     CanvasStyleEditorWidget* canvasStyleEditorWidget;
     TypesWindow* typesWindow;
+	TypesModelPtr typesModel;
     PropertiesWindow* propertiesWindow;
     QTreeView* resultsView;
     QWidget* resultProperty;

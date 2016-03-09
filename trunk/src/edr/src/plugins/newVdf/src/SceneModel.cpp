@@ -457,7 +457,7 @@ void vdf::SceneModel::addNodeWithPins(const SceneBuilder::VisualNodeWithPins& no
 
 vdf::SceneBuilder::VisualNodeWithPins vdf::SceneModel::Serializer::createItemByEntry(const std::string& name)
 {
-	return typesWindow->createItemByEntry(QString::fromStdString(name));
+	return typesModel->createItemByEntry(QString::fromStdString(name));
 }
 
 vdf::SceneModel::Serializer::Infos vdf::SceneModel::Serializer::extractInfos() const
@@ -470,7 +470,7 @@ vdf::SceneModel::Serializer::Infos vdf::SceneModel::Serializer::extractInfos() c
 		NodeInfo ni;
 		node2idx[nodes[i]] = i;
 		ni.index = i;
-		ni.id = boost::lexical_cast<std::string>(typesWindow->getId(nodes[i]->getName()));
+		ni.id = boost::lexical_cast<std::string>(typesModel->getId(nodes[i]->getName()));
 		ni.x = nodes[i]->visualItem()->x();
 		ni.y = nodes[i]->visualItem()->y();
 		ni.name = nodes[i]->getName().toStdString();

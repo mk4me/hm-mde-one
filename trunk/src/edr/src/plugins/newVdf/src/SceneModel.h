@@ -31,6 +31,8 @@ namespace threadingUtils {
 }
 
 namespace vdf {
+	class TypesModel;
+	DEFINE_SMART_POINTERS(TypesModel)
 	class IVisualItem;
 	typedef utils::shared_ptr<df::IModel> IModelPtr;
 	typedef utils::shared_ptr<df::IConnection> IConnectionPtr;
@@ -158,7 +160,7 @@ namespace vdf {
 		class Serializer
 		{
 		public:
-			Serializer(SceneModelPtr sm, TypesWindow* tw) : model(sm), typesWindow(tw) {}
+			Serializer(SceneModelPtr sm, TypesModelPtr tm) : model(sm), typesModel(tm) {}
 		private:
 			struct NodeInfo
 			{
@@ -249,7 +251,7 @@ namespace vdf {
 			SceneBuilder::VisualNodeWithPins createItemByEntry(const std::string&);
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
 			SceneModelPtr model;
-			TypesWindow* typesWindow;
+			TypesModelPtr typesModel;
 		};
 
 	private:

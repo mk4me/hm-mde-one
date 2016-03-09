@@ -12,9 +12,10 @@
 
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <plugins/c3d/C3DChannels.h>
+#include <plugins/python/python/Export.h>
 
 namespace python {
-	class PythonDataChannel 
+	class PLUGIN_PYTHON_EXPORT PythonDataChannel
 	{
 	public:
 		static PythonDataChannel convert(c3dlib::VectorChannelReaderInterfaceConstPtr channel);

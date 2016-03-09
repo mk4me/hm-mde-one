@@ -33,7 +33,7 @@ public:
     virtual QGraphicsItem * visualItem() const;
     virtual void setSelection(bool selected);
 
-	virtual int getNumOutputPins() const { return pins.size(); }
+	virtual int getNumOutputPins() const { return static_cast<int>(pins.size()); }
 	virtual IVisualOutputPinPtr getOutputPin(int no) { return pins[no]; }
 
 	virtual void setVisualStrategy( IVisualStrategyPtr strategy );

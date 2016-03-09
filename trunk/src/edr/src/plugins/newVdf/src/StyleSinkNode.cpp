@@ -15,7 +15,7 @@ void StyleSinkNode::addInputPin( IVisualInputPinPtr pin )
 {
     pin->visualItem()->setParentItem(styleItem);
 	INodeStrategyPtr nodeStr = utils::dynamic_pointer_cast<INodeStrategy>(styleItem->getStrategy());
-	pin->visualItem()->setPos(nodeStr->getPinPosition(pins.size(), true));
+	pin->visualItem()->setPos(nodeStr->getPinPosition(static_cast<int>(pins.size()), true));
     pins.push_back(pin);
 }
 

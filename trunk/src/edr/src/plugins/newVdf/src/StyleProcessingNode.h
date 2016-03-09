@@ -35,9 +35,9 @@ public:
     virtual QGraphicsItem * visualItem() const;
     virtual void setSelection(bool selected);
 
-	virtual int getNumInputPins() const { return inputPins.size(); }
+	virtual int getNumInputPins() const { return static_cast<int>(inputPins.size()); }
 	virtual IVisualInputPinPtr getInputPin(int no) { return inputPins[no]; }
-	virtual int getNumOutputPins() const { return outputPins.size(); }
+	virtual int getNumOutputPins() const { return static_cast<int>(outputPins.size()); }
 	virtual IVisualOutputPinPtr getOutputPin(int no) { return outputPins[no]; }
 
 	virtual void setVisualStrategy( IVisualStrategyPtr strategy );

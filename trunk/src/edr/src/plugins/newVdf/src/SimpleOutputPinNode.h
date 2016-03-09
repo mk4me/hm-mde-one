@@ -38,7 +38,7 @@ public:
 	virtual void addConnection(IVisualConnectionWeakPtr connection) { connections.push_back(connection); }
     virtual void removeConnection(utils::weak_ptr<IVisualConnection> connection);
 	virtual IVisualConnectionWeakPtr getConnection(int idx) const { return connections[idx]; }
-    virtual int getNumConnections() const { return connections.size(); }
+    virtual int getNumConnections() const { return static_cast<int>(connections.size()); }
 
 	virtual void setVisualStrategy( IVisualStrategyPtr strategy );
 

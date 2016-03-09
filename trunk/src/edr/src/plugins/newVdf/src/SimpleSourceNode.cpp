@@ -15,7 +15,7 @@ void SimpleSourceNode::addOutputPin( IVisualOutputPinPtr pin )
     pin->visualItem()->setParentItem(simpleItem);
     pin->visualItem()->setPos(margin + nodeWidth - pin2, margin + pins.size() * pinHeight);
     pins.push_back(pin);
-    simpleItem->setSize(calculateNodeSize(pins.size()));
+	simpleItem->setSize(calculateNodeSize(static_cast<int>(pins.size())));
 }
 
 

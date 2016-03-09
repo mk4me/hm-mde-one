@@ -248,6 +248,17 @@ std::pair<std::string, std::string> splitPaths(const std::string& te)
 	}
 }
 
+void extractFiles(const std::string& path, const std::string& key, const std::vector<std::string>& toExtract)
+{
+	auto db = openStorage(path, key);
+	auto files = listFiles(db);
+	for (auto& te : toExtract) {
+		std::cout << "Extracting " << te << "... ";
+		extractFile(db, te, te, path, key, files);
+		std::cout << "done." << std::endl;
+	}
+}
+
 void doStuff(const boost::program_options::variables_map& vm, const std::string& path, const std::string& key)
 {
 	if (vm.count("list")) {
@@ -256,16 +267,22 @@ void doStuff(const boost::program_options::variables_map& vm, const std::string&
 		std::copy(files.begin(), files.end(), std::ostream_iterator<std::string>(std::cout, "\n"));
 	} 
 
-	if (vm.count("extract")) {
-		auto toExtract = vm["extract"].as< std::vector<std::string> >();
-		auto db = openStorage(path, key);
-		auto files = listFiles(db);
-		for (auto& te : toExtract) {
-			std::cout << "Extracting " << te << "... ";
-			extractFile(db, te, te, path, key, files);
-			std::cout << "done." << std::endl;
+	if (vm.count("extract-all")) {
+		
+		std::vector<std::string> toExtract;
+		{
+			auto db = openStorage(path, key);
+			toExtract = listFiles(db);
 		}
+		extractFiles(path, key, toExtract);
+
 	}
+
+	if (vm.count("extract")) {
+		std::vector<std::string> toExtract = vm["extract"].as< std::vector<std::string> >();
+		extractFiles(path, key, toExtract);
+	}
+
 
 	if (vm.count("update")) {
 		auto toExtract = vm["update"].as< std::vector<std::string> >();
@@ -292,6 +309,7 @@ int main(int argc, char** argv)
 		("storage,s", po::value<std::string>(), "path to a local storage")
 		("password,p", po::value<std::string>(), "password to a local storage")
 		("list,l", "lists all file names present in storage")
+		("extract-all,a", "extracts all files from storage")
 		("extract,e", po::value< std::vector<std::string> >()->composing(), "extracts given files from storage")
 		("update,u", po::value< std::vector<std::string> >()->composing(), "update files in storage")
 		;
@@ -338,6 +356,8 @@ int main(int argc, char** argv)
 		std::cerr << "Unknown error" << std::endl;
 		return 2;
 	}
+
+	return 0;
 
 }
 

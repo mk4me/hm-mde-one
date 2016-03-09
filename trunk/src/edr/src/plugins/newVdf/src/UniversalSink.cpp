@@ -1,8 +1,10 @@
 #include "NewVdfPCH.h"
 #include <plugins/newVdf/UniversalSink.h>
+#include <plugins/hmdbCommunication/TreeItemHelper.h>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLineEdit>
 #include <corelib/HierarchyItem.h>
+#include <c3dlib/C3DTypes.h>
 #include <QtWidgets/QLabel>
 
 using namespace vdf;
@@ -40,12 +42,11 @@ void UniversalSink::consume()
 		for (auto it = data->begin(); it != data->end(); ++it){
 			core::HierarchyHelperPtr helper;
 
-			//if ((*it)->data()->isSupported(typeid(VectorChannelReaderInterface))) {
-			//	helper = core::HierarchyHelperPtr(new NewVector3ItemHelper(*it));
-			//}
-			//else {
-			helper = core::HierarchyHelperPtr(new core::WrappedItemHelper(*it));
-			//}
+			if ((*it)->data()->isSupported(typeid(c3dlib::VectorChannelReaderInterface))) {
+				helper = core::HierarchyHelperPtr(new NewVector3ItemHelper(*it));
+			} else {
+				helper = core::HierarchyHelperPtr(new core::WrappedItemHelper(*it));
+			}
 
 			std::string name = (*it)->data()->getClassName();
 			(*it)->getMetadata("core/label", name);
@@ -59,12 +60,12 @@ void UniversalSink::consume()
 	else {
 		core::HierarchyHelperPtr helper;
 
-		//if (wrapper->data()->isSupported(typeid(VectorChannelReaderInterface))) {
-		//helper = core::HierarchyHelperPtr(new NewVector3ItemHelper(wrapper));
-		//}
-		//else {
-		helper = core::HierarchyHelperPtr(new core::WrappedItemHelper(wrapper));
-		//}
+		if (wrapper->data()->isSupported(typeid(c3dlib::VectorChannelReaderInterface))) {
+			helper = core::HierarchyHelperPtr(new NewVector3ItemHelper(wrapper));
+		}
+		else {
+			helper = core::HierarchyHelperPtr(new core::WrappedItemHelper(wrapper));
+		}
 
 		dataItem = core::HierarchyItemPtr(new core::HierarchyDataItem(wrapper, QIcon(), QString::fromStdString(wrapper->data()->getClassName()), QString(), helper));
 	}

@@ -45,7 +45,7 @@ QWidget* NewVdfService::getWidget()
 QWidgetList vdf::NewVdfService::getPropertiesWidgets()
 {
     QWidgetList list;
-    list.push_back(canvasStyleEditorWidget);
+    //list.push_back(canvasStyleEditorWidget);
     list.push_back(typesWindow);
     list.push_back(propertiesWindow);
     list.push_back(resultProperty);
@@ -134,16 +134,17 @@ void NewVdfService::init( core::ISourceManager * sourceManager,
 
 	CanvasStyleEditorPtr canvas(new CanvasStyleEditor());
 	SceneModelPtr scene(new SceneModel(canvas, hierarchyManager));
-	newVdfWidget = new NewVdfWidget(commandStack, scene, &resultsModel);
 	//	commandStackDebug = new CommandStackDebug(commandStack);
 	//	QObject::connect(commandStack.get(), SIGNAL(changed()), commandStackDebug, SLOT(refresh()));
 	//	commandStack->addCommand(ICommandPtr(new NullCommand()));
-	typesWindow = new TypesWindow(commandStack, canvas, scene);
+	typesModel = utils::make_shared<TypesModel>(commandStack, canvas, scene);
+	newVdfWidget = new NewVdfWidget(commandStack, scene, typesModel, &resultsModel);
+	typesWindow = new TypesWindow(typesModel);
 	propertiesWindow = new PropertiesWindow(commandStack);
 	QObject::connect(newVdfWidget, SIGNAL(singleNodeSelected(IVisualNodePtr)), propertiesWindow, SLOT(onNodeSelected(IVisualNodePtr)));
-	dataSourceManager->attach(typesWindow);
-	dataProcessorManager->attach(typesWindow);
-	dataSinkManager->attach(typesWindow);
+	dataSourceManager->attach(typesModel.get());
+	dataProcessorManager->attach(typesModel.get());
+	dataSinkManager->attach(typesModel.get());
 	canvasStyleEditorWidget = new CanvasStyleEditorWidget(canvas);
 	QObject::connect(canvasStyleEditorWidget, SIGNAL(backgroundAccepted(IBackgroundStrategyPtr)), newVdfWidget->getScene(), SLOT(setBackgroundStrategy(IBackgroundStrategyPtr)));
 
@@ -160,7 +161,7 @@ void NewVdfService::init( core::ISourceManager * sourceManager,
 
 	mergedWidget = new MergedWidget();
 	mergedWidget->setObjectName("Merged");
-	presetsWidget = new PresetsWidget(newVdfWidget->getSceneModel(), typesWindow);
+	presetsWidget = new PresetsWidget(newVdfWidget->getSceneModel(), typesModel);
 	presetsWidget->setObjectName("Presets");
 }
 

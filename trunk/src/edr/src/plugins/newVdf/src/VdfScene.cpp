@@ -20,9 +20,10 @@ public:
 	}
 };
 
-VdfScene::VdfScene(SceneStateMachinePtr machine, SceneModelPtr sceneModel, QObject *parent /*= 0*/ ) :
+VdfScene::VdfScene(SceneStateMachinePtr machine, SceneModelPtr sceneModel, TypesModelPtr typesModel, QObject *parent /*= 0*/) :
     QGraphicsScene(parent), 
     sceneModel(sceneModel),
+	typesModel(typesModel),
 	stateMachine(machine),
 	moveBlocker(false)
 {
@@ -96,7 +97,6 @@ void VdfScene::dropEvent( QGraphicsSceneDragDropEvent *event )
     QByteArray encoded = event->mimeData()->data("application/x-qabstractitemmodeldatalist");
     QDataStream stream(&encoded, QIODevice::ReadOnly);
 
-    // HACK - zrobic to poprawnie!
     while (!stream.atEnd())
     {
         int row, col;
@@ -105,16 +105,8 @@ void VdfScene::dropEvent( QGraphicsSceneDragDropEvent *event )
 
         QWidget* widget = event->source();
         QObject* parent = widget->parent();
-        TypesWindow* window = nullptr;
-   
-        while(parent && !window) {
-            window = qobject_cast<TypesWindow*>(parent);
-            parent = parent->parent();
-        }
 
-        if (window) {
-            window->insert((roleDataMap.begin()).value().toString(), event->scenePos());
-        }
+        typesModel->insert((roleDataMap.begin()).value().toString(), event->scenePos());
     }
 }
 

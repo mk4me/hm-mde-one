@@ -17,7 +17,7 @@
 
 using namespace vdf;
 
-NewVdfWidget::NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneModel, coreUI::HierarchyTreeModel* treeModel) :
+NewVdfWidget::NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneModel, TypesModelPtr typesModel, coreUI::HierarchyTreeModel* treeModel) :
     sceneModel(sceneModel),
 	commandStack(stack),
     treeModel(treeModel)
@@ -29,7 +29,7 @@ NewVdfWidget::NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneMod
 
 	stateMachine = SceneStateMachinePtr(new SceneStateMachine(this));
     connect(stateMachine.get(), SIGNAL(singleNodeSelected(IVisualNodePtr)), this, SIGNAL(singleNodeSelected(IVisualNodePtr)));
-	scene = new VdfScene(stateMachine, sceneModel);
+	scene = new VdfScene(stateMachine, sceneModel, typesModel);
 	view = new coreUI::WheelGraphicsView(scene, Qt::ControlModifier);
     view->setAcceptDrops(true);
 

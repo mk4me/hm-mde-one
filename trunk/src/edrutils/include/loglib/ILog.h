@@ -13,15 +13,15 @@
 #include <string>
 #include <utils/SmartPtr.h>
 #include <utils/Utils.h>
+#include <loglib/Export.h>
 
 namespace loglib
 {
 	class ILog;
 	DEFINE_SMART_POINTERS(ILog);
-
     //! Interfejs do logowania informacji w aplikacji (w konsoli aplikacji)
 	//! \version 0.9.1
-	class ILog
+	class LOGLIB_EXPORT ILog
 	{
 	public:
 		//! Poziom ważności wiadomości.

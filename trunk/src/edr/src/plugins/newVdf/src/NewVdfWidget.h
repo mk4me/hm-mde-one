@@ -41,7 +41,7 @@ class NewVdfWidget : public QWidget
     Q_OBJECT;
 
 public:
-    NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneModel, coreUI::HierarchyTreeModel* treeModel);
+    NewVdfWidget(utils::ICommandStackPtr stack, SceneModelPtr sceneModel, TypesModelPtr typesModel, coreUI::HierarchyTreeModel* treeModel);
     virtual ~NewVdfWidget();
 
 public:

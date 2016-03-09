@@ -1,5 +1,5 @@
 #include "PythonProcessingBlock.h"
-#include "PythonDataChannel.h"
+#include <plugins/python/python/PythonDataChannel.h>
 #include "boost/python/import.hpp"
 #include <plugins/python/python/PythonEditor.h>
 #include "boost/python/exec.hpp"

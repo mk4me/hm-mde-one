@@ -6,11 +6,13 @@ SET_PRIVATE_HEADERS(
 	PythonHighlighter.h
 	PythonLogic.h
 	PythonPCH.h
+	PythonProcessingBlock.h
 )
 
 SET_PUBLIC_HEADERS(
 	PythonPluginUtils.h
 	PythonEditor.h
+	PythonDataChannel.h
 	Export.h
 )
 
@@ -23,6 +25,8 @@ SET_SOURCE_FILES (
 	PythonLogic.cpp
 	PythonEditor.cpp
 	PythonPCH.cpp
+	PythonDataChannel.cpp
+	PythonProcessingBlock.cpp
 )
 
 SET_MOC_FILES (

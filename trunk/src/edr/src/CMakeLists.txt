@@ -24,7 +24,7 @@ ADD_PROJECT(plugin_hmdbCommunication "CURL;WSDLPULL;corelib;coreui;hmdbservicesl
 ADD_PROJECT(plugin_newChart "QWT;coreui;plugin_c3d" "plugins/newChart")
 ADD_PROJECT(plugin_subject "corelib;vidlib;plugin_c3d" "plugins/subject")
 ADD_PROJECT(plugin_hmm "corelib;coreui;c3dlib;QWT;vidlib;osgutils;kinematiclib;plugin_subject" "plugins/hmmlib")
-ADD_PROJECT(plugin_newVdf "dflib;coreui;corelib" "plugins/newVdf")
+ADD_PROJECT(plugin_newVdf "dflib;coreui;corelib;plugin_hmdbCommunication" "plugins/newVdf")
 ADD_PROJECT(plugin_dfElements "dflib;coreui;plugin_newVdf;plugin_kinematic;plugin_c3d" "plugins/dfElements")
 ADD_PROJECT(plugin_imuCostume "corelib;coreui;kinematiclib;kinematicUtils;BOOST;QT;OSG;plugin_c3d;plugin_hmdbCommunication;imucostumelib" "plugins/imuCostume")
 
@@ -35,6 +35,7 @@ BEGIN_PROJECTS_GROUP("python plugins")
 ADD_PROJECT(plugin_python "dflib;plugin_hmdbCommunication;plugin_c3d;coreui;plugin_newVdf;BOOST;PYTHON;QT;corelib" "plugins/python/python")
 ADD_PROJECT(plugin_mdePython "BOOST;PYTHON;plugin_python" "plugins/python/mdePython")
 ADD_PROJECT(plugin_communicationPython "BOOST;PYTHON;plugin_python;plugin_hmdbCommunication" "plugins/python/communicationPython")
+ADD_PROJECT(plugin_vdfPython "BOOST;PYTHON;plugin_python;plugin_newVdf" "plugins/python/vdfPython")
 END_PROJECTS_GROUP()
 
 BEGIN_PROJECTS_GROUP("view")

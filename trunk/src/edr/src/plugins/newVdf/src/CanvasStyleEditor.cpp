@@ -65,7 +65,7 @@ IConnectionsFactoryPtr CanvasStyleEditor::getConnectionFactory( int index )
 
 int CanvasStyleEditor::getNumConnectionFactories() const
 {
-	return connectionsFactories.size();
+	return static_cast<int>(connectionsFactories.size());
 }
 
 IPinsFactoryPtr CanvasStyleEditor::getPinFactory( int index )
@@ -75,7 +75,7 @@ IPinsFactoryPtr CanvasStyleEditor::getPinFactory( int index )
 
 int CanvasStyleEditor::getNumPinFactories() const
 {
-	return pinsFactories.size();
+	return static_cast<int>(pinsFactories.size());
 }
 
 INodesFactoryPtr CanvasStyleEditor::getNodeFactory( int index )
@@ -85,7 +85,7 @@ INodesFactoryPtr CanvasStyleEditor::getNodeFactory( int index )
 
 int CanvasStyleEditor::getNumNodeFactories() const
 {
-	return nodesFactories.size();
+	return static_cast<int>(nodesFactories.size());
 }
 
 CanvasStyleEditor::ConnectionsFactoriesConstRange CanvasStyleEditor::getConnectionsRange() const
@@ -176,7 +176,7 @@ CanvasStyleEditor::BackgroundsFactoriesConstRange CanvasStyleEditor::getBackgrou
 
 int CanvasStyleEditor::getNumBackgroundFactories() const
 {
-	return backgroundFactories.size();
+	return static_cast<int>(backgroundFactories.size());
 }
 
 IBackgroundsFactoryPtr CanvasStyleEditor::getBackgroundFactory( int index )

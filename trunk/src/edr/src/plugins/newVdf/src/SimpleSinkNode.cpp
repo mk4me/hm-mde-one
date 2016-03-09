@@ -15,7 +15,7 @@ void SimpleSinkNode::addInputPin( IVisualInputPinPtr pin )
     pin->visualItem()->setParentItem(simpleItem);
     pin->visualItem()->setPos(margin, margin + pins.size() * pinHeight);
     pins.push_back(pin);
-    simpleItem->setSize(calculateNodeSize(pins.size()));
+	simpleItem->setSize(calculateNodeSize(static_cast<int>(pins.size())));
 }
 
 void SimpleSinkNode::setName( const QString & name )

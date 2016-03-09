@@ -17,7 +17,7 @@ void SimpleProcessingNode::addInputPin( IVisualInputPinPtr pin )
     pin->visualItem()->setPos(margin, margin + inputPins.size() * pinHeight);
     pin->visualItem()->setParentItem(simpleItem);
     inputPins.push_back(pin);
-    simpleItem->setSize(calculateNodeSize(inputPins.size(), outputPins.size()));
+	simpleItem->setSize(calculateNodeSize(static_cast<int>(inputPins.size()), static_cast<int>(outputPins.size())));
 }
 
 void SimpleProcessingNode::removeInputPin( IVisualInputPinPtr pin )
@@ -68,7 +68,7 @@ void SimpleProcessingNode::addOutputPin( IVisualOutputPinPtr pin )
     pin->visualItem()->setPos(margin + nodeWidth - pin2, margin + outputPins.size() * pinHeight);
 
     outputPins.push_back(pin);
-    simpleItem->setSize(calculateNodeSize(inputPins.size(), outputPins.size()));
+	simpleItem->setSize(calculateNodeSize(static_cast<int>(inputPins.size()), static_cast<int>(outputPins.size())));
 }
 
 void SimpleProcessingNode::removeOutputPin( IVisualOutputPinPtr pin )

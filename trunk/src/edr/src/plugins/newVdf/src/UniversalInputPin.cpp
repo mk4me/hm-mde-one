@@ -59,7 +59,7 @@ void UniversalInputPinBase::copyData( const df::IDFOutput * pin )
     auto wrp = uniPin->getWrapper();
     UTILS_ASSERT(wrp); 
     if (wrp) {
-        wrapper = wrp->clone();
+		wrapper = wrp; // ->clone();
     }
 }
 

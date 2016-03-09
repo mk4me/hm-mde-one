@@ -17,6 +17,7 @@
 
 #include "SceneStateMachine.h"
 #include "SceneModel.h"
+#include "TypesModel.h"
 
 class QGraphicsScene;
 class IVisualItem;
@@ -34,7 +35,7 @@ public:
     //! \param machine 
     //! \param sceneModel 
     //! \param parent 
-    VdfScene(SceneStateMachinePtr machine, SceneModelPtr sceneModel, QObject *parent = 0);
+    VdfScene(SceneStateMachinePtr machine, SceneModelPtr sceneModel, TypesModelPtr typesModel, QObject *parent = 0);
 	virtual ~VdfScene() {}
 
 public:
@@ -102,6 +103,8 @@ private:
     SceneStateMachinePtr stateMachine;
     //! model sceny
     SceneModelPtr sceneModel;
+	//! obsluguje typy elementow
+	TypesModelPtr typesModel;
 	//! flaga blokuj¹ca zdarzenie MouseMove gdy dodawany jest element do sceny.
 	//! Qt musi taki element i jego childy zaindeksowaæ w drzewie bsp, 
 	//! wygl¹da jendak na to, ¿e robi to iteracyjnie, dlatego drag&drop mo¿e wyzwoliæ asercjê

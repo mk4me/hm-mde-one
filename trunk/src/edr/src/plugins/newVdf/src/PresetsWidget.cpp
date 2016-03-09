@@ -10,9 +10,9 @@
 #include <QtWidgets/QPushButton>
 #include "QtWidgets/QFileDialog"
 
-vdf::PresetsWidget::PresetsWidget( SceneModelPtr scene, TypesWindow* tw ) :
+vdf::PresetsWidget::PresetsWidget(SceneModelPtr scene, TypesModelPtr typesModel) :
     model(scene), 
-    tw(tw)
+	typesModel(typesModel)
 {
     setLayout(new QVBoxLayout());
     QWidget* down = new QWidget();
@@ -35,29 +35,31 @@ vdf::PresetsWidget::PresetsWidget( SceneModelPtr scene, TypesWindow* tw ) :
 void vdf::PresetsWidget::load()
 {
     SceneModelPtr scene = model.lock();
-    if (!scene) {
+	TypesModelPtr types = typesModel.lock();
+    if (!scene || !types) {
         return;
     }
     QString filename = QFileDialog::getOpenFileName();
     std::ifstream ifs(filename.toStdString().c_str());
     if (ifs.good()) {
         boost::archive::xml_iarchive xmlIn(ifs);
-        SceneModel::Serializer s(scene, tw);
+        SceneModel::Serializer s(scene, types);
         xmlIn >> BOOST_SERIALIZATION_NVP(s);
     }
 }
 
 void vdf::PresetsWidget::save()
 {
-    SceneModelPtr scene = model.lock();
-    if (!scene) {
-        return;
-    }
+	SceneModelPtr scene = model.lock();
+	TypesModelPtr types = typesModel.lock();
+	if (!scene || !types) {
+		return;
+	}
     QString filename = QFileDialog::getSaveFileName();
     std::ofstream ofs(filename.toStdString().c_str());
     if(ofs.good()) {
         boost::archive::xml_oarchive oa(ofs);
-        SceneModel::Serializer serializer(scene, tw);
+        SceneModel::Serializer serializer(scene, types);
         oa << BOOST_SERIALIZATION_NVP(serializer);
         ofs.close();
     }

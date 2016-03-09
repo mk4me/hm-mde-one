@@ -31,7 +31,7 @@ public:
 	virtual QString getName() const;
     virtual QGraphicsItem * visualItem() const;
     virtual void setSelection(bool selected);
-	virtual int getNumInputPins() const { return pins.size(); }
+	virtual int getNumInputPins() const { return static_cast<int>(pins.size()); }
 	virtual IVisualInputPinPtr getInputPin(int no) { return pins[no]; }
 
 	virtual void setVisualStrategy( IVisualStrategyPtr strategy );

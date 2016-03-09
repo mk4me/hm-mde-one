@@ -1,4 +1,4 @@
-#include "PythonDataChannel.h"
+#include <plugins/python/python/PythonDataChannel.h>
 #include <dataaccessorlib/Wrappers.h>
 
 namespace py = boost::python;

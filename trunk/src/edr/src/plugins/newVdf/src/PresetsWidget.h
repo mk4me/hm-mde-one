@@ -25,7 +25,7 @@ class PresetsWidget : public QWidget
 {
     Q_OBJECT
 public:
-    PresetsWidget(SceneModelPtr scene, TypesWindow* tw);
+    PresetsWidget(SceneModelPtr scene, TypesModelPtr typesModel);
 	virtual ~PresetsWidget() {}
 
 private slots:
@@ -37,7 +37,7 @@ private:
     QPushButton* loadButton;
     QPushButton* saveButton;
     SceneModelWeakPtr model;
-    TypesWindow* tw;
+	TypesModelWeakPtr typesModel;
 };
 
 }

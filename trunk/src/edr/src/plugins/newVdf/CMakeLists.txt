@@ -63,6 +63,7 @@ SET_PRIVATE_HEADERS(
 	DarkConnectionsFactory.h
 	SceneBuilder.h
 	TypesWindow.h
+	TypesModel.h
 	PropertiesWindow.h
 	PinsFactory.h
 	ConnectionsFactory.h
@@ -116,6 +117,7 @@ SET_SOURCE_FILES (
 	DarkConnectionStrategy.cpp
 	Command.cpp
 	SceneModel.cpp
+	TypesModel.cpp
 	SceneBuilder.cpp
 	TypesWindow.cpp
 	PropertiesWindow.cpp
@@ -171,6 +173,7 @@ SET_MOC_FILES(
 	NewVdfService.h
 	CanvasStyleEditorWidget.h
 	TypesWindow.h
+	TypesModel.h
 	PropertiesWindow.h
 	SimpleItem.h
 	SimpleConnection.h
