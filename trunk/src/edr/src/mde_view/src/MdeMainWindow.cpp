@@ -42,6 +42,8 @@
 #include "corelib/IVisualizerManager.h"
 #include "plugins/hmdbCommunication/ContextConfigurationSettingsFile.h"
 
+#include "coreui/KioskUtilities.h"
+
 using namespace core;
 
 class MDEHMDBSourceView : public hmdbCommunication::IHMDBSourceViewManager::IHMDBSourceContextView
@@ -156,15 +158,31 @@ void MdeMainWindow::showSplashScreenMessage(const QString & message)
     splashScreen()->showMessage(message, Qt::AlignBottom | Qt::AlignLeft, Qt::red);
 }
 
+
+
+
+
+
 bool MdeMainWindow::customViewInit(QWidget * log)
 {
    plugin::getDataHierarchyManagerReader()->addObserver(analysisModel);
    trySetStyleByName("hmm");
+
  
 #if defined(_WINDOWS)
    this->showFullScreen();
    this->setFixedSize(this->width(), this->height());
 #endif
+   auto kiosk = [&]() {
+	   ui->minimizeButton->setVisible(false);
+	   ui->exitButton->setVisible(false);
+	   ui->aboutButton->setVisible(false);
+	   #ifdef _DEBUG
+	   ui->minimizeButton->setVisible(true);
+	   #endif
+   };
+   //coreUI::KioskUtilities::startKioskModeIfParamIsSet(kiosk);
+   scopedKiosk = utils::make_unique<coreUI::ScopedKiosk>(kiosk);
 
    utils::shared_ptr<hmdbCommunication::IHMDBSource> icomm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
    plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(icomm);
@@ -323,6 +341,7 @@ void MdeMainWindow::onAbout()
 	std::unique_ptr<AboutDialog> dialog(new AboutDialog);
 	dialog->exec();
 }
+
 
 void MdeMainWindowController::addTab( coreUI::IMdeTabPtr tab )
 {

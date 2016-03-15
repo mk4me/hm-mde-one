@@ -17,6 +17,8 @@ class MdeServiceWindow;
 class MdeMainWindow;
 namespace Ui { class HMMMain; }
 
+namespace coreUI { class ScopedKiosk; }
+
 class MdeMainWindowController : public QObject
 {
     Q_OBJECT;
@@ -42,6 +44,10 @@ private:
     //! mapa [zakładka -> jej kontekst]
     std::map<coreUI::IMdeTabPtr, coreUI::IAppUsageContextPtr> tab2Contex;
 };
+
+
+
+
 //! Klasa realizuje widok aplikacji dla medyków
 //! Z czasem klasa zaczela się rozrastac, wymaga glebszej refaktoryzacji
 class MdeMainWindow : public coreUI::CoreMainWindow, public coreUI::IAppUsageContextManager, coreUI::SingleInstanceWindow
@@ -74,7 +80,7 @@ private:
     MdeServiceWindow* createServiceWidget( plugin::IServicePtr service );
     
     void addTab(coreUI::IMdeTabPtr tab);
-
+	
 private:
     std::list<coreUI::IMdeTabPtr> tabs;
     MdeMainWindowController controller;
@@ -84,6 +90,7 @@ private:
     AnalisisModelPtr analysisModel;
     ContextEventFilterPtr contextEventFilter;
     Ui::HMMMain* ui;
+	utils::unique_ptr<coreUI::ScopedKiosk> scopedKiosk;
 };
 
 

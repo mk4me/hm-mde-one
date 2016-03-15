@@ -49,7 +49,7 @@ SET_PUBLIC_HEADERS(
 	SimpleTab.h
 	IContextRoot.h
 	CoreDockFullScreenSwitch.h
-	
+	KioskUtilities.h
 	findreplacedialog.h
 	finddialog.h
 	
@@ -99,6 +99,7 @@ SET_SOURCE_FILES(
 	ReportsThumbnailContext.cpp
 	ReportsTab.cpp
 	CoreDockFullScreenSwitch.cpp
+	KioskUtilities.cpp
 	findreplacedialog.cpp
 	finddialog.cpp
 	findform.cpp
