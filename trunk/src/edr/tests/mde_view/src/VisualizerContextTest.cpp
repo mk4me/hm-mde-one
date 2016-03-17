@@ -14,21 +14,22 @@ void VisualizerContextTest::testEventFilter()
     MdeMainWindow mmw([](){}, "test");
 
     QWindow window;
-	std::unique_ptr<QWidget> w(QWidget::createWindowContainer(&window));
+	
+	QWidget* w = QWidget::createWindowContainer(&window);
     coreUI::IAppUsageContextPtr context = utils::make_shared<MdeEmptyContext>();
     mmw.addContext(context);
-	mmw.addWidgetToContext(context, w.get());
+	mmw.addWidgetToContext(context, w);
     ContextEventFilterPtr cef = utils::make_shared<ContextEventFilter>(&mmw);
-	cef->registerClosableContextWidget(w.get());
+	cef->registerClosableContextWidget(w);
     VisualizerEventFilter vef(cef);
     ConnectionTester ct;
     QObject::connect(&vef, SIGNAL(focusOn(QWidget*)), &ct, SLOT(onFocus(QWidget*)));
     w->installEventFilter(&vef);
-	QTest::mouseClick(&window, Qt::MouseButton::LeftButton);
-
-	CPPUNIT_ASSERT(ct.getWidget() == w.get());
-	CPPUNIT_ASSERT(mmw.isCurrentContextWidget(w.get()));
-	CPPUNIT_ASSERT(mmw.getCurrentContextWidget() == w.get());
+	QTest::mouseClick(w, Qt::LeftButton);
+	CPPUNIT_ASSERT_EQUAL(ct.getWidget(), w);
+	CPPUNIT_ASSERT_EQUAL(mmw.getCurrentContextWidget(), w);
+	CPPUNIT_ASSERT(mmw.isCurrentContextWidget(w));
+	
 }
 
 void VisualizerContextTest::setUp()

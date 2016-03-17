@@ -20,5 +20,6 @@ SET_MOC_FILES (
 )
 
 set (TARGET_OBJ ${objFiles})
+add_definitions(-DQT_WIDGETS_LIB -DQT_GUI_LIB)
 
 END_PROJECT()

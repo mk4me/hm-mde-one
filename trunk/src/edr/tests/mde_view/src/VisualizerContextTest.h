@@ -22,7 +22,10 @@ public:
     QWidget* getWidget() const { return widget; }
 
 public slots:
-    void onFocus(QWidget* w) { widget = w; }
+    void onFocus(QWidget* w) 
+{ 
+	widget = w; 
+}
 
 private:
     QWidget* widget;

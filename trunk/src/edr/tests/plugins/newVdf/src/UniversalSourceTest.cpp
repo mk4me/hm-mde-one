@@ -2,7 +2,7 @@
 #include <plugins/newVdf/UniversalSource.h>
 #include <plugins/newVdf/UniversalInputPin.h>
 #include <plugins/newVdf/UniversalOutputPin.h>
-#include "plugins/c3d/C3DChannels.h"
+//#include "plugins/c3d/C3DChannels.h"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( UniversalSourceTest );
@@ -16,7 +16,7 @@ void UniversalSourceTest::setUp()
 
 void UniversalSourceTest::testCreate()
 {
-    vdf::UniversalSource<VectorChannelReaderInterface> us;
+    vdf::UniversalSource<int> us;
     CPPUNIT_ASSERT(!us.isNodeValid());
     us.produce();
 }

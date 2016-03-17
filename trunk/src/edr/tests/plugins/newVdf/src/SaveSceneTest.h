@@ -26,7 +26,7 @@ public:
     void testSaveScene();
 
 private:
-    utils::scoped_ptr<QApplication> application;
+    utils::unique_ptr<QApplication> application;
 };
 
 #endif

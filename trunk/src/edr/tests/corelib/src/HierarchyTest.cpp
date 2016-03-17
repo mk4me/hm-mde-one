@@ -5,6 +5,7 @@
 #include "coreui/HierarchyTreeModel.h"
 #include <QtWidgets/QTreeView>
 #include "utils/PtrPolicyStd.h"
+#include "utils/ClonePolicies.h"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( HierarchyTest );
@@ -19,7 +20,6 @@ void HierarchyTest::setUp()
 void HierarchyTest::testHierarchyHelper()
 {
     core::IHierarchyItemPtr rootItem = utils::make_shared<core::HierarchyItem>("ROOT", "ROOT_DESC", QIcon());
-
     CPPUNIT_ASSERT(rootItem->getParent() == core::IHierarchyItemPtr());
     CPPUNIT_ASSERT(rootItem->getNumChildren() == 0);
     CPPUNIT_ASSERT(rootItem->getIndex() == 0);

@@ -6,6 +6,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QTreeView>
 #include "utils/PtrPolicyStd.h"
+#include "utils/ClonePolicies.h"
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION(HierarchyTreeModelTest);
@@ -41,40 +42,39 @@ void HierarchyTreeModelTest::testModel()
     CPPUNIT_ASSERT(model.getNumChildren() == 2);
 
     
-
-    core::IMemoryDataManagerHierarchy::HierarchyChange change;
-    change.value = rootItem3;
-    change.modification = core::IDataManagerReader::ADD_OBJECT;
+	core::IDataHierarchyManagerReader::Change change;
+    change.item = rootItem3;
+	change.modification = core::IDataHierarchyManagerReader::ADD_ITEM;
     model.applyChange(change);
     CPPUNIT_ASSERT(model.getNumChildren() == 3);
     CPPUNIT_ASSERT(model.getChild(2) == rootItem3);
 
-    core::IMemoryDataManagerHierarchy::HierarchyChange change1;
-    core::IMemoryDataManagerHierarchy::HierarchyChange change2;
-    core::IMemoryDataManagerHierarchy::HierarchyChange change3;
+    core::IDataHierarchyManagerReader::Change change1;
+    core::IDataHierarchyManagerReader::Change change2;
+    core::IDataHierarchyManagerReader::Change change3;
 
-    change1.value = createSimpleTree();
-    change1.modification = core::IDataManagerReader::ADD_OBJECT;
+    change1.item = createSimpleTree();
+	change1.modification = core::IDataHierarchyManagerReader::ADD_ITEM;
 
-    change2.value = rootItem2;
-    change2.modification = core::IDataManagerReader::UPDATE_OBJECT;
+    change2.item = rootItem2;
+	change2.modification = core::IDataHierarchyManagerReader::UPDATE_ITEM;
 
-    change3.value = rootItem1;
-    change3.modification = core::IDataManagerReader::REMOVE_OBJECT;
+    change3.item = rootItem1;
+	change3.modification = core::IDataHierarchyManagerReader::REMOVE_ITEM;
     
-    core::IMemoryDataManagerHierarchy::HierarchyChangeList l;
+	core::IDataHierarchyManagerReader::ChangeList l;
     l.push_back(change1);
     l.push_back(change2);
     l.push_back(change3);
 
     model.applyChanges(l);
     CPPUNIT_ASSERT(model.getNumChildren() == 3);
-    CPPUNIT_ASSERT(model.getChild(2) == change1.value);
+    CPPUNIT_ASSERT(model.getChild(2) == change1.item);
 
     CPPUNIT_ASSERT_THROW(model.applyChanges(l), std::runtime_error);
 
     CPPUNIT_ASSERT(model.getNumChildren() == 3);
-    CPPUNIT_ASSERT(model.getChild(2) == change1.value);
+    CPPUNIT_ASSERT(model.getChild(2) == change1.item);
 
     CPPUNIT_ASSERT(model.data( model.index(0,0), Qt::DisplayRole ) == QString("ROOT") );
 }

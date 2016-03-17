@@ -3,10 +3,9 @@
 #include "plugins/dfElements/DFProcessors.h"
 #include "utils/CommandStack.h"
 #include "../src/plugins/newVdf/src/TypesWindow.h"
-#include "threading/QtThreadFactory.h"
 #include "../src/core/src/ThreadPool.h"
 #include "../src/corelib/thread/qthread.h"
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include "../src/plugins/newVdf/src/DataProcessorManager.h"
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
@@ -28,26 +27,22 @@ void SaveSceneTest::setUp()
 struct testInitializer
 {
     testInitializer() :
-        threadFactory(utils::make_shared<utils::QtThreadFactory>()),
         editor(utils::make_shared<CanvasStyleEditor>()),
         sb(editor),
         dataProcessorManager(utils::make_shared<DataProcessorManager>())
     {
         const core::ThreadPool::size_type threadsCount = QThread::idealThreadCount();
-        threadPool = utils::make_shared<core::ThreadPool>(threadFactory, (threadsCount / 2) + 1 , threadsCount * 50);
-        model = utils::make_shared<SceneModel>(editor, threadPool.get());
-        tw = utils::make_shared<TypesWindow>(utils::make_shared<utils::CommandStack>(), editor, model);
-        dataProcessorManager->attach(tw.get());
+		model = utils::make_shared<SceneModel>(editor, nullptr);
+        tm = utils::make_shared<TypesModel>(utils::make_shared<utils::CommandStack>(), editor, model);
+        dataProcessorManager->attach(tm.get());
     }
     
-    utils::shared_ptr<utils::QtThreadFactory> threadFactory;
-    utils::shared_ptr<core::ThreadPool> threadPool;
     CanvasStyleEditorPtr editor;
     SceneModelPtr model;
     vdf::SceneBuilder sb;
 
     DataProcessorManagerPtr dataProcessorManager;
-    utils::shared_ptr<TypesWindow> tw;
+    utils::shared_ptr<TypesModel> tm;
 };
 
 void SaveSceneTest::testSaveScene()
@@ -59,8 +54,8 @@ void SaveSceneTest::testSaveScene()
         [&](const df::IProcessingNode* p) { return new ScalarAdd(); }));
     test.dataProcessorManager->registerDataProcessor(processor);
     
-    auto itm1 = test.tw->createItemByEntry("ScalarAdd");//, QPointF(3.0f, 4.0f));
-    auto itm2 = test.tw->createItemByEntry("ScalarAdd");//, QPointF(303.0f, 404.0f));
+    auto itm1 = test.tm->createItemByEntry("ScalarAdd");//, QPointF(3.0f, 4.0f));
+    auto itm2 = test.tm->createItemByEntry("ScalarAdd");//, QPointF(303.0f, 404.0f));
     itm1.get<0>()->visualItem()->setPos(3.0f, 4.0f);
     itm2.get<0>()->visualItem()->setPos(333.0f, 444.0f);
     test.model->addItem(itm1.get<0>());
@@ -68,8 +63,8 @@ void SaveSceneTest::testSaveScene()
     test.model->addConnection(utils::dynamic_pointer_cast<vdf::IVisualOutputPin>(itm1.get<2>()[0]), 
         utils::dynamic_pointer_cast<vdf::IVisualInputPin>(itm2.get<1>()[0]));
 
-    SceneModel::Serializer serializer(test.model, test.tw.get());
-    core::Filesystem::Path p("test.txt");
+    SceneModel::Serializer serializer(test.model, test.tm);
+    utils::Filesystem::Path p("test.txt");
     std::ofstream ofs(p.c_str());
     assert(ofs.good());
     boost::archive::xml_oarchive oa(ofs);
@@ -82,7 +77,7 @@ void SaveSceneTest::testSaveScene()
             //for read
         std::ifstream ifs(p.c_str());
         boost::archive::xml_iarchive xmlIn(ifs);
-        SceneModel::Serializer s(test2.model, test2.tw.get());
+        SceneModel::Serializer s(test2.model, test2.tm);
         xmlIn >> BOOST_SERIALIZATION_NVP(s);
 
         auto nodes = test.model->getVisualItems<IVisualNodePtr>();

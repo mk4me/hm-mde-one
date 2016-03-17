@@ -1,9 +1,9 @@
 #include "VisualizerContextTest.h"
-#include "..\src\mde_view\src\ContextEventFilter.h"
+#include "../src/medusa_view/src/ContextEventFilter.h"
 #include <QtTest/qtest.h>
 #include <QtTest/qtestmouse.h>
-#include "../src/mde_view/src/MdeMainWindow.h"
-#include "../src/mde_view/src/MdeContexts.h"
+#include "../src/medusa_view/src/MdeMainWindow.h"
+#include "../src/medusa_view/src/MdeContexts.h"
 #include "QApplication"
 
 // Registers the fixture into the 'registry'
@@ -12,8 +12,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION( VisualizerContextTest );
 void VisualizerContextTest::testEventFilter()
 {
 	MdeMainWindow mmw([](){}, "test");
-	QWindow window;
-	std::unique_ptr<QWidget> w(QWidget::createWindowContainer(&window));
+	//QWindow window;
+	//std::unique_ptr<QWidget> w(QWidget::createWindowContainer(&window));
+	auto w = std::make_unique<QWidget>();
 	coreUI::IAppUsageContextPtr context = utils::make_shared<MdeEmptyContext>();
 	mmw.addContext(context);
 	mmw.addWidgetToContext(context, w.get());
@@ -23,7 +24,7 @@ void VisualizerContextTest::testEventFilter()
 	ConnectionTester ct;
 	QObject::connect(&vef, SIGNAL(focusOn(QWidget*)), &ct, SLOT(onFocus(QWidget*)));
 	w->installEventFilter(&vef);
-	QTest::mouseClick(&window, Qt::MouseButton::LeftButton);
+	QTest::mouseClick(w.get(), Qt::MouseButton::LeftButton);
 
 	CPPUNIT_ASSERT(ct.getWidget() == w.get());
 	CPPUNIT_ASSERT(mmw.isCurrentContextWidget(w.get()));
