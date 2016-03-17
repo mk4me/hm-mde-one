@@ -25,8 +25,10 @@ public:
     virtual void setUp();
     void testSaveScene();
 
+	virtual void tearDown() override;
+
 private:
-    utils::unique_ptr<QApplication> application;
+    QApplication* application;
 };
 
 #endif

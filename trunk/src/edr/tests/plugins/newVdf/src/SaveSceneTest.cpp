@@ -21,7 +21,7 @@ void SaveSceneTest::setUp()
     int argc = 1;
     argv[0]="foo.exe";
     argv[1]=nullptr;
-    application.reset(new QApplication(argc, argv)) ;
+    application = new QApplication(argc, argv);
 }
 
 struct testInitializer
@@ -105,4 +105,9 @@ void SaveSceneTest::testSaveScene()
         CPPUNIT_ASSERT(onode2->getOutputPin(0)->getConnection(0).lock()->getInputPin()->getParent().lock() == inode2);
     }
     
+}
+
+void SaveSceneTest::tearDown()
+{
+	delete application;
 }
