@@ -16,16 +16,22 @@
 class RotationConverterTest : public CPPUNIT_NS::TestCase
 {
 	CPPUNIT_TEST_SUITE(RotationConverterTest);
+	CPPUNIT_TEST(testNormalizeAngle);
+	CPPUNIT_TEST(testCompareAngle);
 	CPPUNIT_TEST(testConversion);
 	CPPUNIT_TEST(testIdentity);
 	CPPUNIT_TEST(testDeg2Rad);
 	CPPUNIT_TEST(testEulerQuatEuler);
+	CPPUNIT_TEST(testSameDirection);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
+	void testNormalizeAngle();
+	void testCompareAngle();
 	void testConversion();
 	void testIdentity();
 	void testDeg2Rad();
 	void testEulerQuatEuler();
+	void testSameDirection();
 };
 #endif

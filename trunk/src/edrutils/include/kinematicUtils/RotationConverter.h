@@ -22,6 +22,15 @@ namespace kinematicUtils
 		Rad		//! Radiany
 	};
 
+
+	const double _2PI = 2 * osg::PI;
+
+	template<AngleUnitType T>
+	struct AngleNormalizedMax{};
+	template<> struct AngleNormalizedMax < Deg > { static double value() { return 360.0; } };
+	template<> struct AngleNormalizedMax < Rad > { static double value() { return _2PI; } };
+
+
 	double convertAngleUnit(const double value, const AngleUnitType destType);
 
 	template<int DestinationAngleUnitType>
@@ -30,6 +39,35 @@ namespace kinematicUtils
 		UTILS_ASSERT(false, "Nalezy użyć jednej z dozwolonych specjalizacji wynikających z wyliczenia dla AngleUnitType");
 		return 0.0;
 	}
+
+	
+	template<AngleUnitType T>
+	inline double normalizeAngle(const double value)
+	{
+		auto maxValue = AngleNormalizedMax<T>::value();
+		if (value < 0.0) {
+			return normalizeAngle<T>(value + maxValue);
+		}
+		if (value > maxValue) {
+			return normalizeAngle<T>(value - maxValue);
+		}
+		return value;
+	}
+
+	template<AngleUnitType T>
+	inline bool compareAngle(double a, double b, double epsilon = 0.00001)
+	{
+		a = normalizeAngle<T>(a);
+		b = normalizeAngle<T>(b);
+
+		auto diff = abs(a - b);
+		if (diff < epsilon || diff > (AngleNormalizedMax<T>::value() - epsilon)) {
+			return true;
+		} 
+		return false;
+	}
+
+	bool isSameDirection(const osg::Vec3d& a, const osg::Vec3d& b, osg::Vec3d::value_type epsilon = 0.00001);
 
 	using EulerConverter = osg::Quat(*)(const osg::Vec3d &);
 
@@ -100,6 +138,9 @@ namespace kinematicUtils
 	{
 		return osg::DegreesToRadians(value);
 	}
+
+
+
 
 //-------------------------------------------------------
 

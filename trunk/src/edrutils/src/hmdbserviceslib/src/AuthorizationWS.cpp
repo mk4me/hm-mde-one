@@ -1,4 +1,5 @@
 #include <hmdbserviceslib/AuthorizationWS.h>
+#include "loglib/Logger.h"
 
 namespace hmdbServices
 {
@@ -18,8 +19,9 @@ namespace hmdbServices
 		try{
 			wsdlService->invoke(true);
 		}
-		catch (networkUtils::WSDLServiceException &){
+		catch (networkUtils::WSDLServiceException& e){
 			//nie mam usera
+			UTILS_LOG_INFO("User was not found. " << e.what());
 			return false;
 		}
 
@@ -31,7 +33,11 @@ namespace hmdbServices
 		try{
 			wsdlService->getValue<bool>("CheckMyLoginResult", ret);
 		}
+		catch (std::runtime_error& e) {
+			UTILS_LOG_INFO("Authorization error. " << e.what());
+		}
 		catch (...){
+			UTILS_LOG_INFO("Unknown authorization error");
 		}
 
 		return ret;

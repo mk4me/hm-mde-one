@@ -72,6 +72,7 @@ void RotationConverterTest::testDeg2Rad()
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(rad.z(), -osg::PI, 0.000001);
 }
 
+
 void RotationConverterTest::testEulerQuatEuler()
 {
 	typedef kinematicUtils::AxisOrder AO;
@@ -80,16 +81,61 @@ void RotationConverterTest::testEulerQuatEuler()
 		for (int y = 0; y < 360; y += 10) {
 			for (int z = 0; z < 360; z += 10) {
 				osg::Vec3 rad(kinematicUtils::toRadians(osg::Vec3(x, y, z)));
+				rad.normalize();
 				for (auto o : orders) {
 					osg::Quat q = kinematicUtils::convert(rad, o);
 					osg::Vec3 r2 = kinematicUtils::convert(q, o);
-					CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(kinematicUtils::AxisOrder::toString(o) + std::string(" - x"), rad.x(), r2.x(), 0.000001);
-					CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(kinematicUtils::AxisOrder::toString(o) + std::string(" - y"), rad.y(), r2.y(), 0.000001);
-					CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(kinematicUtils::AxisOrder::toString(o) + std::string(" - z"), rad.z(), r2.z(), 0.000001);
+					//r2.normalize();
+					// obrot mo¿e byæ ten sam, ale k¹ty ró¿ne, dlatego badamy iloczyn skalarny utworzonych wektorów (znormalizowanych dla uproszczenia)
+					//CPPUNIT_ASSERT(abs(r2*rad - 1.0) < 0.0001 || (r2.length() < 0.00001 && rad.length() < 0.00001));
+					CPPUNIT_ASSERT(kinematicUtils::isSameDirection(rad, r2));
 				}
 				
 			}
 		}
 	}
+}
+
+void RotationConverterTest::testNormalizeAngle()
+{
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(kinematicUtils::normalizeAngle<kinematicUtils::Rad>(0.0), 0.0, 0.000001);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(kinematicUtils::normalizeAngle<kinematicUtils::Rad>(-osg::PI), osg::PI, 0.000001);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(kinematicUtils::normalizeAngle<kinematicUtils::Rad>(kinematicUtils::_2PI+ 0.00000001), 0.0, 0.000001);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(kinematicUtils::normalizeAngle<kinematicUtils::Rad>(-0.1), kinematicUtils::_2PI - 0.1, 0.000001);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(kinematicUtils::normalizeAngle<kinematicUtils::Rad>(10 * kinematicUtils::_2PI + 0.1), 0.1, 0.000001);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(kinematicUtils::normalizeAngle<kinematicUtils::Rad>(-10 * kinematicUtils::_2PI + 0.1), 0.1, 0.000001);
+
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(kinematicUtils::normalizeAngle<kinematicUtils::Deg>(0.0), 0.0, 0.000001);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(kinematicUtils::normalizeAngle<kinematicUtils::Deg>(-180.0), 180.0, 0.000001);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(kinematicUtils::normalizeAngle<kinematicUtils::Deg>(360.0 + 0.000001), 0.0, 0.000001);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(kinematicUtils::normalizeAngle<kinematicUtils::Deg>(-1.0), 359.0, 0.000001);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(kinematicUtils::normalizeAngle<kinematicUtils::Deg>(10 * 360.0 + 0.1), 0.1, 0.000001);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(kinematicUtils::normalizeAngle<kinematicUtils::Deg>(-10 * 360.0 + 0.1), 0.1, 0.000001);
+	
+}
+
+void RotationConverterTest::testCompareAngle()
+{
+	CPPUNIT_ASSERT(kinematicUtils::compareAngle<kinematicUtils::Rad>(0.0, 0.0, 0.00001));
+	CPPUNIT_ASSERT(kinematicUtils::compareAngle<kinematicUtils::Rad>(-osg::PI, osg::PI, 0.00001));
+	CPPUNIT_ASSERT(kinematicUtils::compareAngle<kinematicUtils::Rad>(0.0, kinematicUtils::_2PI, 0.00001));
+	CPPUNIT_ASSERT(!kinematicUtils::compareAngle<kinematicUtils::Rad>(0.0, osg::PI, 0.00001));
+
+	CPPUNIT_ASSERT(kinematicUtils::compareAngle<kinematicUtils::Deg>(0.0, 0.0, 0.00001));
+	CPPUNIT_ASSERT(kinematicUtils::compareAngle<kinematicUtils::Deg>(-180.0, 180.0, 0.00001));
+	CPPUNIT_ASSERT(kinematicUtils::compareAngle<kinematicUtils::Deg>(0.0, 360.0, 0.00001));
+	CPPUNIT_ASSERT(kinematicUtils::compareAngle<kinematicUtils::Deg>(10.0, 10* 360.0 + 10.0, 0.00001));
+	CPPUNIT_ASSERT(kinematicUtils::compareAngle<kinematicUtils::Deg>(10.0, -350.0, 0.00001));
+	CPPUNIT_ASSERT(!kinematicUtils::compareAngle<kinematicUtils::Deg>(0.0, 10.0, 0.00001));
+}
+
+void RotationConverterTest::testSameDirection()
+{
+	CPPUNIT_ASSERT(kinematicUtils::isSameDirection(osg::Vec3(0, 1, 0), osg::Vec3(0, 1, 0)));
+	CPPUNIT_ASSERT(kinematicUtils::isSameDirection(osg::Vec3(0, 10, 0), osg::Vec3(0, 1, 0)));
+	CPPUNIT_ASSERT(kinematicUtils::isSameDirection(osg::Vec3(-10, 10, 0), osg::Vec3(-1, 1, 0)));
+	CPPUNIT_ASSERT(kinematicUtils::isSameDirection(osg::Vec3(), osg::Vec3()));
+	CPPUNIT_ASSERT(!kinematicUtils::isSameDirection(osg::Vec3(-10, 10, 0), osg::Vec3(-1, 10, 0)));
+	CPPUNIT_ASSERT(!kinematicUtils::isSameDirection(osg::Vec3(-1, 10.5, 0), osg::Vec3(-1, 10, 0)));
 }
 

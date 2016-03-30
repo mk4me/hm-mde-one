@@ -27,7 +27,7 @@ void NetworkUtilsTest::testCrypto()
    std::string path = "testCrypto.db";
    std::string key = "P,j.W/s<T>k2:0\"1;2";
    std::remove(path.c_str());
-   sqliteUtils::SQLiteDB::Wrapper db(sqliteUtils::SQLiteDB::open(path, key, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_SHAREDCACHE), sqliteUtils::SQLiteDB::Close(maxSqliteExecTries, sqliteExecWaitMS));
+   sqliteUtils::UniqueWrapperT<sqlite3> db(sqliteUtils::SQLiteDB::open(path, key, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_SHAREDCACHE));// , sqliteUtils::SQLiteDB::Close(maxSqliteExecTries, sqliteExecWaitMS));
    CPPUNIT_ASSERT( db != nullptr );
    auto ret = sqliteUtils::SQLiteDB::exec(db, "CREATE TABLE files_table (file_name TEXT PRIMARY KEY, file BLOB);", maxSqliteExecTries, sqliteExecWaitMS);
    CPPUNIT_ASSERT( ret == SQLITE_DONE || ret == SQLITE_OK );

@@ -331,9 +331,9 @@ bool MdeMainWindow::customViewInit(QWidget * log)
    compound->addWidget(aw);
    addTab(coreUI::IMdeTabPtr(new CompoundAnalysisTab(compound, aw, QIcon(":/mde/icons/Analizy.png"), tr("Analysis"))));
 
-#ifndef DEMO_MODE
+//#ifndef DEMO_MODE
    addTab(coreUI::IMdeTabPtr(new SimpleTab(log, QIcon(":/mde/icons/Operacje.png"),tr("Log"))));
-#endif
+//#endif
    // TODO : najlepiej byloby przeniesc to do kontrolera
 //   bool cc = connect(analysisModel.get(), SIGNAL(reportCreated(const QString&)), reportsTab->getMainWidget(), SLOT(setHtml(const QString&)));
    auto serviceManager = plugin::getServiceManager();

@@ -35,12 +35,12 @@ void btkWriteTest::testBasicWrite()
 
 void btkWriteTest::testScalarChannelWrite()
 {
-	c3dlib::ScalarChannelPtr channel = utils::make_shared<c3dlib::ScalarChannel>(100);
-	for (int i = 0; i < 10000; ++i) {
-		channel->addPoint(static_cast<float>(sin(i / 100.0f)));
-	}
-	
-	c3dlib::C3DWriter writer;
-	writer.addScalarChannel(channel);
-	writer.write("ScalarTest.c3d");
+	//c3dlib::ScalarChannelPtr channel = utils::make_shared<c3dlib::ScalarChannel>(100);
+	//for (int i = 0; i < 10000; ++i) {
+	//	channel->addPoint(static_cast<float>(sin(i / 100.0f)));
+	//}
+	//
+	//c3dlib::C3DWriter writer;
+	//writer.addScalarChannel(channel);
+	//writer.write("ScalarTest.c3d");
 }

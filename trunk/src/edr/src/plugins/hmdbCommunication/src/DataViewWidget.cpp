@@ -514,7 +514,9 @@ hmdbCommunication::DataStatus DataViewWidget::refrshItemContent(QTreeWidgetItem 
 
 	item->setIcon(statusColumn, statusIcon(status));
 #ifdef DEMO_MODE
+#ifndef DEMO_MODE_ONLINE
 	item->setHidden(status.storage() == hmdbCommunication::DataStatus::Remote);
+#endif
 #endif
 
 	//TODO

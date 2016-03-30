@@ -18,6 +18,7 @@ std::string removeComments(const std::string& txt)
 		const auto position = line.find("#");
 		if (position == std::string::npos) {
 			result += line;
+			result += '\n';
 		}else if(position > 0) {
 			result += line.substr(0, position);
 			result += '\n';

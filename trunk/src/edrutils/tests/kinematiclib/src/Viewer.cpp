@@ -17,8 +17,8 @@
 
 void kinematicTest::Viewer::start()
 {
-	//std::ifstream fileAsf("./testFiles/test.asf");
-	std::ifstream fileAsf("c:/ProgramData/PJWSTK/IMU-MDE/plugins/imuCostume/recordings/20150601_101449_192.168.001.173_1234/skeleton.asf ");
+	std::ifstream fileAsf("./testFiles/test.asf");
+	//std::ifstream fileAsf("c:/ProgramData/PJWSTK/IMU-MDE/plugins/imuCostume/recordings/20150601_101449_192.168.001.173_1234/skeleton.asf ");
 	std::ofstream fileAsfOut("./testFiles/testOut.asf");
 	auto acclaimSkeleton = acclaim::AsfParser::parse(fileAsf, true);
 

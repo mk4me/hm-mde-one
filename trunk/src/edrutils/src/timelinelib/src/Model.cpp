@@ -613,8 +613,7 @@ void Model::updateChildrenScale(const Model::TChannelConstPtr & child, double ra
 void Model::updateForScaleRatio(const ChannelPtr & channel, double ratio)
 {
     //aktualizuj czas maski
-    channel->setMaskBegin(channel->getMaskBegin() * ratio);
-    channel->setMaskEnd(channel->getMaskEnd() * ratio);
+    channel->setMask(Mask(channel->getMaskBegin() * ratio, channel->getMaskEnd() * ratio));
 
     //aktualizuj zaznaczenia - część automatycznie zaktualizuje tagi
     //tutaj zapamierujemy te tagi by ich ponownie nie modyfikowac

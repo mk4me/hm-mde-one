@@ -88,4 +88,9 @@ add_definitions(-DQT_NO_KEYWORDS -Dsignals=Q_SIGNALS -Dslots=Q_SLOTS -Demit=Q_EM
 if(CONFIG_DEMO_MODE)
 	add_definitions(-DDEMO_MODE)
 endif()
+
+if (CONFIG_DEMO_MODE_ONLINE)
+	add_definitions(-DDEMO_MODE_ONLINE)
+endif()
+
 END_PROJECT()

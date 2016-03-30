@@ -69,8 +69,13 @@ SourceOptionsWidget::SourceOptionsWidget(QWidget * parent, Qt::WindowFlags f)
 	setLoginAdvanceConfiguration(false);
 
 #ifdef DEMO_MODE
+#ifdef DEMO_MODE_ONLINE
+	ui->onlineModeCheckBox->setCheckState(Qt::Checked);
+	ui->onlineModeCheckBox->setEnabled(true);
+#else
 	ui->onlineModeCheckBox->setCheckState(Qt::Unchecked);
 	ui->onlineModeCheckBox->setEnabled(false);
+#endif
 	//ui->loginLineEdit->setText("motion_admin");
 	ui->loginLineEdit->setEnabled(false);
 	//ui->passwordLineEdit->setText("HMDBP@ss");

@@ -31,10 +31,9 @@ AmcParserTest::~AmcParserTest(void)
 void AmcParserTest::testLoad()
 {
 	std::ifstream file("./testFiles/test.amc");
-	acclaim::MotionData md;
-	acclaim::AmcParser::parse(md, file);
-	CPPUNIT_ASSERT_EQUAL(529, (int)md.frames.size());
-	acclaim::MotionData::FrameData& fd = md.frames[0];
+	acclaim::MotionData::FramesData frames = acclaim::AmcParser::parse(file);
+	CPPUNIT_ASSERT_EQUAL(529, (int)frames.size());
+	acclaim::MotionData::FrameData& fd = frames[0];
 	CPPUNIT_ASSERT_EQUAL(1u, fd.id);
 	CPPUNIT_ASSERT_EQUAL(25, (int)fd.bonesData.size());
 	acclaim::MotionData::BoneData& bd = fd.bonesData[0];
@@ -55,7 +54,7 @@ void AmcParserTest::testLoad()
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(8.39191e-014, (double)bd2.channelValues[2], epsilon);
 	
 	{
-		acclaim::MotionData::FrameData& fd = *md.frames.rbegin();
+		acclaim::MotionData::FrameData& fd = *frames.rbegin();
 		CPPUNIT_ASSERT_EQUAL(529u, fd.id);
 		CPPUNIT_ASSERT_EQUAL(25, (int)fd.bonesData.size());
 		acclaim::MotionData::BoneData& bd = fd.bonesData[0];

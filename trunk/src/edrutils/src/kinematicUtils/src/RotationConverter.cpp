@@ -79,6 +79,16 @@ namespace kinematicUtils
 		return ret;
 	}
 
+	bool isSameDirection(const osg::Vec3d& a, const osg::Vec3d& b, osg::Vec3d::value_type epsilon /*= 0.0001*/)
+	{
+		auto v1 = a;
+		auto v2 = b;
+		v1.normalize();
+		v2.normalize();
+		// obrot mo¿e byæ ten sam, ale k¹ty ró¿ne, dlatego badamy iloczyn skalarny utworzonych wektorów (znormalizowanych dla uproszczenia)
+		return (abs(v1*v2 - 1.0) < epsilon || (v1.length() < epsilon && v2.length() < epsilon));
+	}
+
 	EulerConverter eulerConverter(const AxisOrder::Type axisOrder)
 	{
 		EulerConverter ret = nullptr;

@@ -186,5 +186,8 @@ GENERATE_PROJECT_TRANSLATIONS()
 if(CONFIG_DEMO_MODE)
 	add_definitions(-DDEMO_MODE)
 endif()
+if(CONFIG_DEMO_MODE_ONLINE)
+	add_definitions(-DDEMO_MODE_ONLINE)
+endif()
 
 END_PROJECT()
