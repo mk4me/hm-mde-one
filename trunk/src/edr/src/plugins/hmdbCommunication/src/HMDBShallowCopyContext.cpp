@@ -439,7 +439,7 @@ public:
 			}
 		}
 	}
-
+	
 	virtual IVariantInitializer * clone() const
 	{
 		return new JointsInitializer(dataWrapper, modelWrapper);
@@ -756,6 +756,7 @@ core::VariantPtr HMDBShallowCopyLocalContext::getMotion(const Indexes & motionFi
 		for (auto it = motionObjects.begin(); it != motionObjects.end(); ++it){
 			mPtr->addData(*it);
 		}
+
 
 		if (mPtr->hasObject(typeid(VideoChannel), false) && mPtr->hasObject(typeid(c3dlib::MovieDelays), false)) {
 			core::VariantsCollection videoCollection(typeid(VideoChannel), false);

@@ -224,8 +224,8 @@ bool dicom::AbstractEditState::focusOutEvent( QFocusEvent * event )
 
 void dicom::AbstractEditState::begin(coreUI::AbstractStateConstPtr lastState)
 {
-	machine->getGraphicsScene()->addItem(&line[0]);
-	machine->getGraphicsScene()->addItem(&line[1]);
+	//machine->getGraphicsScene()->addItem(&line[0]);
+	//machine->getGraphicsScene()->addItem(&line[1]);
 	line[0].setPen(QPen(Qt::gray, 1, Qt::SolidLine));
 	line[1].setPen(QPen(Qt::gray, 1, Qt::SolidLine));
 	line[0].setZValue(2.0);

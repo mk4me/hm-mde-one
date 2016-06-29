@@ -7,6 +7,7 @@ SET_PUBLIC_HEADERS(
 	ConfigurationPainter.h
 	ConfigurationPainterAreas.h
 	Export.h
+	TreeItemHelper.h
 )
 
 SET_SOURCE_FILES(
@@ -25,6 +26,8 @@ SET_SOURCE_FILES(
 	MarkersFilter.cpp
 	EMGConfigFilter.cpp
 	KineticFilter.cpp
+	TreeItemHelper.cpp
+	TreeBuilder.cpp
 )
 
 SET_PRIVATE_HEADERS(
@@ -37,6 +40,7 @@ SET_PRIVATE_HEADERS(
 	MarkersFilter.h
 	EMGConfigFilter.h
 	KineticFilter.h
+	TreeBuilder.h
 )
 
 SET_UI_FILES(

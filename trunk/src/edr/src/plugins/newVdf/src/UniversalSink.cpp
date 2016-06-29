@@ -1,9 +1,10 @@
 #include "NewVdfPCH.h"
 #include <plugins/newVdf/UniversalSink.h>
-#include <plugins/hmdbCommunication/TreeItemHelper.h>
+#include <corelib/HierarchyHelper.h>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLineEdit>
 #include <corelib/HierarchyItem.h>
+#include <plugins/hmmlib/TreeItemHelper.h>
 #include <c3dlib/C3DTypes.h>
 #include <QtWidgets/QLabel>
 

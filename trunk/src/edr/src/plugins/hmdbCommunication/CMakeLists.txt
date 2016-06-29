@@ -12,7 +12,6 @@ SET_PRIVATE_HEADERS(
 	ShallowCopyUtils.h
 	Patient.h
 	CommunicationPCH.h
-	TreeBuilder.h
 	WSDLPULLService.h
 	CURLFTPTransfer.h
 	CURLFTPManager.h
@@ -58,7 +57,6 @@ SET_PUBLIC_HEADERS (
 	ShallowCopy.h
 	IDataSourcePerspective.h
 	MultiserieColorStrategy.h
-	TreeItemHelper.h
 	IHierarchyPerspective.h
 	Export.h
 	IHMDBSource.h
@@ -98,8 +96,6 @@ SET_SOURCE_FILES(
 	ShallowCopyUtils.cpp
 	DataSourcePerspective.cpp
 	CommunicationPCH.cpp
-	TreeBuilder.cpp
-	TreeItemHelper.cpp
 	DataStatus.cpp
 	WSDLPULLService.cpp
 	CURLFTPTransfer.cpp

@@ -6,7 +6,7 @@
 #include <corelib/DataAccessors.h>
 #include <plugins/subject/IMotion.h>
 #include <corelib/HierarchyDataItem.h>
-#include <plugins/hmdbCommunication/TreeItemHelper.h>
+#include <corelib/HierarchyHelper.h>
 #include <plugins/subject/ISubject.h>
 #include <plugins/hmdbCommunication/IPatient.h>
 #include <corelib/PluginCommon.h>

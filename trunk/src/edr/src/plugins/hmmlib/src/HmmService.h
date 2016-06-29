@@ -29,7 +29,7 @@ public:
         core::IStreamDataManager * streamDataManager, 						 
         core::IFileDataManager * fileDataManager,
 		core::IDataHierarchyManager * hierarchyManager) {}						 
-    virtual const bool lateInit()  { return true; } 					
+	virtual const bool lateInit();
     virtual void finalize() {} 											
     virtual void update( double deltaTime ) {} 							
     virtual QWidget* getWidget() { return nullptr; } 					

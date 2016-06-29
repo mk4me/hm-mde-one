@@ -12,6 +12,11 @@
 #include "MarkersFilter.h"
 #include "EMGConfigFilter.h"
 #include "KineticFilter.h"
+#include "corelib/ISourceManager.h"
+#include "plugins/hmdbCommunication/IHMDBSource.h"
+#include "TreeBuilder.h"
+#include "corelib/PluginCommon.h"
+#include "plugins/hmdbCommunication/IHMDBSourceViewManager.h"
 
 core::IFilterProvider::FilterBundles HmmService::getFilterBundles() const
 {
@@ -73,4 +78,16 @@ void HmmService::addSubjectFilterToBundle( core::IFilterBundlePtr fb, const util
     //SubjectHierarchyFilterPtr filter = utils::make_shared<SubjectHierarchyTypeFilter>(typeInfo);
     core::IFilterCommandPtr command = core::IFilterCommandPtr(new SimpleFilterCommand(typeInfo, name, icon));
     fb->addFilterCommand(command);
+}
+
+const bool HmmService::lateInit()
+{
+	auto comm = core::querySource<hmdbCommunication::IHMDBSource>(plugin::getSourceManager());
+	if (comm != nullptr) {
+		plugin::ISourcePtr commSource = utils::dynamic_pointer_cast<plugin::ISource>(comm);
+		comm->viewManager()->addHierarchyPerspective(utils::make_shared<MotionPerspective>());
+		return true;
+	}
+
+	return false;
 }
