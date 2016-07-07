@@ -8,6 +8,7 @@ SET_PUBLIC_HEADERS(
 	ConfigurationPainterAreas.h
 	Export.h
 	TreeItemHelper.h
+	MultiserieColorStrategy.h
 )
 
 SET_SOURCE_FILES(

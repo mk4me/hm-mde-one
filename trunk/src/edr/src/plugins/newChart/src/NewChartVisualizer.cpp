@@ -187,9 +187,13 @@ QWidget* NewChartVisualizer::createWidget()
     qwtPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
     QVBoxLayout* layout = new QVBoxLayout();
-    layout->addWidget(qwtPlot);
-    layout->setMargin(0);
-    layout->addWidget(statsTable);
+	QSplitter* splitter = new QSplitter(Qt::Vertical);
+	splitter->addWidget(qwtPlot);
+	splitter->addWidget(statsTable);
+	layout->addWidget(splitter);
+    //layout->addWidget(qwtPlot);
+    //layout->setMargin(0);
+    //layout->addWidget(statsTable);
     statsTable->setVisible(false);
     widget->setLayout(layout);
 

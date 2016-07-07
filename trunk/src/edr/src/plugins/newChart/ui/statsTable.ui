@@ -119,7 +119,7 @@ QWidget#header, QWidget#header &gt; QWidget {
       <item>
        <widget class="QTreeWidget" name="table">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>

@@ -12,7 +12,7 @@
 #include <corelib/HierarchyHelper.h>
 #include <corelib/HierarchyDataItem.h>
 #include <plugins/hmdbCommunication/IHMDBSource.h>
-#include <plugins/hmdbCommunication/TreeItemHelper.h>
+#include <plugins/hmmlib/TreeItemHelper.h>
 #include <iosfwd>
 #include <fstream>
 #include "IMUPerspective.h"
@@ -2063,7 +2063,8 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 		{
 			auto data = utils::make_shared<PrecalculatedDataAdapter<MEMBER_EXTRACTOR_NAME(localOrientation)>>(precalculatedFrames, nidx);
 			data->attachFeature(ff);
-
+			typedef decltype(data)::element_type channelT;
+			data->attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<channelT::value_type, channelT::argument_type >("Local orientation", "Deg", "s")));
 			//	joint->value().name() + "\n" + QObject::tr("Local orientation").toStdString(), QObject::tr("s").toStdString(), QObject::tr("deg").toStdString(), nidx);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Local orientation"), "", utils::make_shared<NewVector3ItemHelper>(ow,
@@ -2076,7 +2077,8 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 		{			
 			auto data = utils::make_shared<PrecalculatedDataAdapter<MEMBER_EXTRACTOR_NAME(globalOrientation)>>(precalculatedFrames, nidx);
 			data->attachFeature(ff);
-			
+			typedef decltype(data)::element_type channelT;
+			data->attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<channelT::value_type, channelT::argument_type >("Global orientation", "Deg", "s")));
 			//joint->value().name() + "\n" + QObject::tr("Global orientation").toStdString(), QObject::tr("s").toStdString(), QObject::tr("deg").toStdString(), nidx);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Global orientation"), "", utils::make_shared<NewVector3ItemHelper>(ow,
@@ -2112,7 +2114,8 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 			
 			av = dataaccessor::wrap(std::move(data), uag);
 			av->attachFeature(ff);
-
+			typedef decltype(av)::element_type channelT;
+			av->attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<channelT::value_type, channelT::argument_type >("Angular velocity", "deg/s", "s")));
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(av);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Angular velocity"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
@@ -2141,7 +2144,8 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 
 			auto av = dataaccessor::wrap(std::move(data), uag);
 			av->attachFeature(ff);
-
+			typedef decltype(av)::element_type channelT;
+			av->attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<channelT::value_type, channelT::argument_type >("Angular acceleration", "deg/s^2", "s")));
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(av);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Angular acceleration"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
@@ -2152,6 +2156,8 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 		{
 			auto data = utils::make_shared<PrecalculatedDataAdapter<MEMBER_EXTRACTOR_NAME(localPosition)>>(precalculatedFrames, nidx);
 			data->attachFeature(ff);
+			typedef decltype(data)::element_type channelT;
+			data->attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<channelT::value_type, channelT::argument_type >("Local position", "m", "s")));
 				//joint->value().name() + "\n" + QObject::tr("Local position").toStdString(), QObject::tr("s").toStdString(), "", nidx);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Local position"), "", utils::make_shared<NewVector3ItemHelper>(ow,
@@ -2163,6 +2169,8 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 		{
 			auto data = utils::make_shared<PrecalculatedDataAdapter<MEMBER_EXTRACTOR_NAME(globalPosition)>>(precalculatedFrames, nidx);
 			data->attachFeature(ff);
+			typedef decltype(data)::element_type channelT;
+			data->attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<channelT::value_type, channelT::argument_type >("Global position", "m", "s")));
 				//joint->value().name() + "\n" + QObject::tr("Global position").toStdString(), QObject::tr("s").toStdString(), "", nidx);
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(data);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Global position"), "", utils::make_shared<NewVector3ItemHelper>(ow,
@@ -2191,6 +2199,10 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 			PLUGIN_LOG_DEBUG("linear velocity.size = " << data.size());
 			lv = dataaccessor::wrap(std::move(data), uag);
 			lv->attachFeature(ff);
+
+			typedef decltype(lv)::element_type channelT;
+			lv->attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<channelT::value_type, channelT::argument_type >("Linear velocity", "m/s", "s")));
+
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(lv);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Linear velocity"), "", utils::make_shared<NewVector3ItemHelper>(ow,
 				c3dlib::EventsCollectionConstPtr(), "x", "y", "z"));
@@ -2217,6 +2229,8 @@ void IMUCostumeDataSource::loadRecordedData(const utils::Filesystem::Path & asfF
 
 			auto av = dataaccessor::wrap(std::move(data), uag);
 			av->attachFeature(ff);
+			typedef decltype(av)::element_type channelT;
+			av->attachFeature(dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<channelT::value_type, channelT::argument_type >("Linear acceleration", "m/s^2", "s")));
 
 			auto ow = core::Variant::wrap<c3dlib::VectorChannelReaderInterface>(av);
 			core::HierarchyDataItemPtr di = utils::make_shared<core::HierarchyDataItem>(ow, QIcon(), QObject::tr("Linear acceleration"), "", utils::make_shared<NewVector3ItemHelper>(ow,

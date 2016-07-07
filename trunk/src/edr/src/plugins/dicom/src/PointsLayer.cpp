@@ -249,7 +249,7 @@ std::vector<QPointF> dicom::PointsLayer::getPixelPointsCloud() const
 	int count = path.elementCount();
 	double delta = 1.0 / count;
 	double progress = 0.0;
-	while (progress < 1.0) {
+	while (progress <= 1.0) {
 		auto raw = path.pointAtPercent(progress);
 		auto e = point(raw);
 		res.push_back(e);
@@ -312,14 +312,14 @@ QBrush dicom::PolyDrawer::getLineBrush( bool editable )
 {
 
     return openLine ? QBrush() : QBrush(editable ? 
-        QColor(colorEdit.red(), colorEdit.green(), colorEdit.blue(), 30) : 
-        QColor(color.red(), color.green(), color.blue(), 30));
+        QColor(colorEdit.red(), colorEdit.green(), colorEdit.blue(), 7) : 
+        QColor(color.red(), color.green(), color.blue(), 7));
 }
 
 QPen dicom::PolyDrawer::getLinePen(bool editable)
 {
     QPen pen(editable ? colorEdit : color);
-    pen.setWidth(2);
+    pen.setWidth(1);
     return pen;
 }
 
@@ -378,15 +378,15 @@ QPainterPath dicom::CurveDrawer::createPath(const QVector<QGraphicsItem*>& point
 QBrush dicom::CurveDrawer::getLineBrush( bool editable )
 {
     return openLine ? QBrush() : QBrush(editable ? 
-        QColor(colorEdit.red(), colorEdit.green(), colorEdit.blue(), 30) : 
-        QColor(color.red(), color.green(), color.blue(), 30));
+        QColor(colorEdit.red(), colorEdit.green(), colorEdit.blue(), 7) : 
+        QColor(color.red(), color.green(), color.blue(), 7));
 }
 
 QPen dicom::CurveDrawer::getLinePen(bool editable)
 {
     //QPen pen(editable ? QColor(255, 0, 0) : QColor(220, 128, 128));
     QPen pen(editable ? colorEdit : color);
-    pen.setWidth(2);
+    pen.setWidth(1);
     return pen;
 }
 

@@ -11,7 +11,7 @@
 #define HEADER_GUARD_HMM__MULTISERIECOLORSTRATEGY_H__
 
 #include <QtGui/QColor>
-
+#include <plugins/newChart/INewChartSerie.h>
 //! interfejs realizujący strategie do zmiany kolorów multiserii
 class IMultiserieColorStrategy
 {

@@ -7,75 +7,23 @@
 	purpose:	
 *********************************************************************/
 
-#ifndef HEADER_GUARD_NEWCOMMUNICATION__TREEITEMHELPER_H__
-#define HEADER_GUARD_NEWCOMMUNICATION__TREEITEMHELPER_H__
+#ifndef HEADER_GUARD_HMM__TREEITEMHELPER_H__
+#define HEADER_GUARD_HMM__TREEITEMHELPER_H__
 
 #include <QtCore/QString>
 #include <QtWidgets/QTreeWidgetItem>
 #include <plugins/subject/IMotion.h>
-#include <plugins/newChart/INewChartSerie.h>
+//#include <plugins/newChart/INewChartSerie.h>
 #include <corelib/Visualizer.h>
 #include <corelib/HierarchyHelper.h>
-#include <plugins/hmdbCommunication/MultiserieColorStrategy.h>
-#include <plugins/hmdbCommunication/Export.h>
+#include <plugins/hmmlib/MultiserieColorStrategy.h>
+#include <plugins/hmmlib/Export.h>
+#include <plugins/newChart/NewChartItemHelper.h>
 
-//! klasa pomocnicza przy tworzeniu wizualizatora wykresów
-//! klasa musi dostarczyć ScalarChannelReaderInterface z danymi we wrapperze
-class HMDBCOMMUNICATION_EXPORT NewChartItemHelper : public core::WrappedItemHelper
-{
-public:
-	NewChartItemHelper(const core::VariantConstPtr& wrapper, const c3dlib::EventsCollectionConstPtr& events = c3dlib::EventsCollectionConstPtr());
 
-public:
-    //! Tworzy wizualizator newChart
-    virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
-    //! zwraca utworzone serie danych
-    //! \param visualizer wizualizator, który będzie tworzył serie
-    //! \param path ścieżka dla timeline
-    //! \param series tutaj trafia stworzone serie 
-    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series);
-    //! \return typ ScalarChannelReaderInterface
-    std::vector<utils::TypeInfo> getTypeInfos() const;
-
-protected:
-	c3dlib::EventsCollectionConstPtr events;
-};
-typedef utils::shared_ptr<NewChartItemHelper> NewChartItemHelperPtr;
-typedef utils::shared_ptr<const NewChartItemHelper> NewChartItemHelperConstPtr;
-
-//! klasa pomocnicza przy tworzeniu wykresów z wektora 3-elementowego
-class HMDBCOMMUNICATION_EXPORT NewVector3ItemHelper : public core::WrappedItemHelper
-{
-public:
-    //! Konstruktor pobiera obiekt z wrapperem wektora 3D
-    //! \param wrapper 
-	NewVector3ItemHelper(const core::VariantConstPtr& wrapper,
-		const c3dlib::EventsCollectionConstPtr& events = c3dlib::EventsCollectionConstPtr(),
-		const QString & xAxisName = QString(),
-		const QString & yAxisName = QString(),
-		const QString & zAxisName = QString());
-
-public:
-    //! zwraca utworzone serie danych
-    //! \param visualizer wizualizator, który będzie tworzył serie
-    //! \param path ścieżka dla timeline
-    //! \param series tutaj trafia stworzone serie
-    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series);
-    //! \return wizualizator 2D
-    virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
-    //! \return typ ScalarChannelReaderInterface
-    std::vector<utils::TypeInfo> getTypeInfos() const;
-private:
-	c3dlib::EventsCollectionConstPtr events;
-	const QString xAxisName;
-	const QString yAxisName;
-	const QString zAxisName;
-};
-typedef utils::shared_ptr<NewVector3ItemHelper> NewVector3ItemHelperPtr;
-typedef utils::shared_ptr<const NewVector3ItemHelper> NewVector3ItemHelperConstPtr;
 
 //! pomaga tworzyć wizualizator 2D z wieloma seriami danych
-class HMDBCOMMUNICATION_EXPORT NewMultiserieHelper : public core::HierarchyHelper
+class HMMLIB_EXPORT NewMultiserieHelper : public core::HierarchyHelper
 {
 public:
     //! Krotka : obiekt; związane z nim eventy; próba, z której pochodzi
@@ -139,34 +87,9 @@ private:
 typedef utils::shared_ptr<NewMultiserieHelper> NewMultiserieHelperPtr;
 typedef utils::shared_ptr<const NewMultiserieHelper> NewMultiserieHelperConstPtr;
 
-//! klasa pomocnicza przy tworzeniu wizualizatora jointów (leniwe parsowanie)
-class HMDBCOMMUNICATION_EXPORT JointsItemHelper : public core::HierarchyHelper
-{
-public:
-    //! Konstruktor
-    //! \param motion motion, z którego beda wyciagane elementy do stworzenia JointAnglesCollection
-    JointsItemHelper(core::VariantConstPtr skeletonWithStates);
-
-public:
-    //! zwraca utworzone serie danych
-    //! \param visualizer wizualizator, który będzie tworzył serie
-    //! \param path ścieżka dla timeline
-    //! \param series tutaj trafia stworzone serie 
-    virtual void createSeries(const core::VisualizerPtr & visualizer, const QString& path, std::vector<core::Visualizer::Serie*>& series);
-    //! \return wizualizator 3D
-    virtual core::VisualizerPtr createVisualizer(core::IVisualizerManager* manager);
-    //! \return typ JointAnglesCollection
-    std::vector<utils::TypeInfo> getTypeInfos() const;
-
-private:
-    //! motion, z którego beda wyciagane elementy do stworzenia JointAnglesCollection
-	core::VariantConstPtr skeletonWithStates;
-};
-typedef utils::shared_ptr<JointsItemHelper> JointsItemHelperPtr;
-typedef utils::shared_ptr<const JointsItemHelper> JointsItemHelperConstPtr;
 
 //! klasa pomocnicza przy tworzeniu zbiorczego widoku 3d (markery + jointy + płyty GRF)
-class HMDBCOMMUNICATION_EXPORT Multiserie3D : public core::HierarchyHelper
+class HMMLIB_EXPORT Multiserie3D : public core::HierarchyHelper
 {
 public:
     //! Konstruktor
@@ -193,7 +116,7 @@ typedef utils::shared_ptr<const Multiserie3D> Multiserie3DConstPtr;
 
 //
 //! Klasa tworzy wizualizator wykresów, i wypełnią go przefiltrowanymi danymi EMG
-class EMGFilterHelper : public NewChartItemHelper
+class HMMLIB_EXPORT EMGFilterHelper : public NewChartItemHelper
 {
 public:
     //! Konstruktor

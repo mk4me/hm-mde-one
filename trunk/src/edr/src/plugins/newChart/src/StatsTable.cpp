@@ -149,7 +149,7 @@ StatsTable::StatsTable( QWidget* parent /*= nullptr*/, Qt::WindowFlags f /*= 0*/
      for (int i = 0; i < table->topLevelItemCount(); ++i) {
          height += getTreeItemRows(table->topLevelItem(i));
      }
-     table->setMaximumHeight(height * rowHeight + table->header()->height() + 8);
+     //table->setMaximumHeight(height * rowHeight + table->header()->height() + 8);
      label->height();
  }
 

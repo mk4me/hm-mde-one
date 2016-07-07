@@ -4,6 +4,8 @@ SET_PUBLIC_HEADERS(
 	INewChartVisualizer.h
 	INewChartSerie.h
 	Wrappers.h
+	Export.h
+	NewChartItemHelper.h
 )
 
 SET_PRIVATE_HEADERS (
@@ -47,6 +49,7 @@ SET_SOURCE_FILES (
 	NewChartLabelState.cpp
 	NewChartCurve.cpp
 	NewChartEvents.cpp
+	NewChartItemHelper.cpp
 	NewChartLegend.cpp
 	NewChartScaleDrawer.cpp
 	NewChartSeriesData.cpp

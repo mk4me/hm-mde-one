@@ -34,6 +34,8 @@ SET_PRIVATE_HEADERS(
 SET_PUBLIC_HEADERS (
 	Wrappers.h
 	IKinematicVisualizer.h
+	Export.h
+	JointsItemHelper.h
 )
 
 SET_SOURCE_FILES(
@@ -46,6 +48,7 @@ SET_SOURCE_FILES(
 	KinematicParser.cpp
 	KinematicSerie.cpp
 	KinematicVisualizer.cpp	
+	JointsItemHelper.cpp
 	GRFSerie.cpp
 	MarkerSerie.cpp
 	OsgSerie.cpp

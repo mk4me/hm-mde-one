@@ -56,7 +56,6 @@ SET_PUBLIC_HEADERS (
 	IPatient.h
 	ShallowCopy.h
 	IDataSourcePerspective.h
-	MultiserieColorStrategy.h
 	IHierarchyPerspective.h
 	Export.h
 	IHMDBSource.h

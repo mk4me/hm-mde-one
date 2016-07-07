@@ -3,11 +3,12 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/c3d/C3DCollections.h>
 #include <plugins/subject/IMotion.h>
+#include <plugins/kinematic/JointsItemHelper.h>
 #include <corelib/HierarchyItem.h>
 #include <corelib/HierarchyDataItem.h>
 #include <objectwrapperlib/ObjectWrapper.h>
 #include "TreeBuilder.h"
-#include <plugins/hmdbCommunication/TreeItemHelper.h>
+#include <plugins/hmmlib/TreeItemHelper.h>
 #include <plugins/kinematic/Wrappers.h>
 #include <plugins/video/Wrappers.h>
 #include <plugins/subject/ISubject.h>
