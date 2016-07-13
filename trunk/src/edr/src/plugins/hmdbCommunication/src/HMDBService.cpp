@@ -287,6 +287,10 @@ void HMDBService::init(core::ISourceManager * sourceManager,
 	WsdlPull::SCHEMADIR = (plugin::getPaths()->getResourcesPath() / "schemas/").string();
 	PLUGIN_LOG_INFO("WSDLPULL SCHEMADIR: " << WsdlPull::SCHEMADIR);
 
+	if (!utils::Filesystem::pathExists(utils::Filesystem::Path(WsdlPull::SCHEMADIR))) {
+		PLUGIN_LOG_ERROR("WSDLPULL SCHEMADIR was not found");
+	}
+
 #if defined(_WINDOWS)
 	XmlUtils::TMPFILESDIR = (plugin::getPaths()->getTempPath()).string();
 	PLUGIN_LOG_INFO("XmlUtils TMPFILESDIR: " << XmlUtils::TMPFILESDIR);
