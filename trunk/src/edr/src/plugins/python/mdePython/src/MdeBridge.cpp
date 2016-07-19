@@ -1,7 +1,7 @@
 #include "MdeBridge.h"
 #include "corelib/IHierarchyItem.h"
 #include "corelib/IDataManager.h"
-#include "plugins/hmdbCommunication/TreeItemHelper.h"
+#include "plugins/hmmlib/TreeItemHelper.h"
 #include "corelib/HierarchyDataItem.h"
 #include "corelib/Variant.h"
 #include "corelib/IDataHierarchyManager.h"
@@ -22,40 +22,26 @@ namespace py = boost::python;
 
 
 
-python::PythonDataChannel python::MdeBridge::getVectorChannel(const std::string& sessionDesc, const std::string& dataDesc)
+python::PythonVectorChannel python::MdeBridge::getVectorChannel(const std::string& sessionDesc, const std::string& dataDesc)
 {
-	auto transaction = getDataManagerReader()->transaction();
-	core::ConstVariantsList objects;
-	transaction->getObjects(objects, typeid(c3dlib::VectorChannelReaderInterface), false);
-
-	c3dlib::VectorChannelReaderInterfaceConstPtr channel;
-	for (auto& var : objects) {
-		std::string source; var->getMetadata("core/source", source);
-		std::string name; var->getMetadata("core/name", name);
-		if (source.find(sessionDesc) != std::string::npos && name.find(dataDesc) != std::string::npos) {
-			channel = var->get();
-			break;
-		}
-	}
-	
-	if (channel) {
-		return PythonDataChannel::convert(channel);
-	}
-	else {
-		throw std::runtime_error("No data");
-	}
+	return getDataChannel<PythonVectorChannel>(sessionDesc, dataDesc);
 }
 
-void python::MdeBridge::addVectorChannel(const PythonDataChannel& channel)
+python::PythonScalarChannel python::MdeBridge::getScalarChannel(const std::string& sessionDesc, const std::string& dataDesc)
+{
+	return getDataChannel<PythonScalarChannel>(sessionDesc, dataDesc);
+}
+
+void python::MdeBridge::addVectorChannel(const PythonVectorChannel& channel)
 {
 	if (channel.getFrequency() <= 0.0f) {
 		throw std::runtime_error("Invalid channel frequency");
 	} else if (channel.getData().empty()) {
 		throw std::runtime_error("Channel was not initialized with data");
 	}
-	auto c = PythonDataChannel::convert(channel);
+	auto c = PythonVectorChannel::convert(channel);
 
-	auto wrapper = core::Variant::wrap(c);
+	auto wrapper = core::Variant::wrap(utils::const_pointer_cast<c3dlib::VectorChannelReaderInterface>(c));
 	core::HierarchyHelperPtr helper = core::HierarchyHelperPtr(new NewVector3ItemHelper(wrapper));
 	std::string name;
 
@@ -73,26 +59,52 @@ void python::MdeBridge::addVectorChannel(const PythonDataChannel& channel)
 	hierarchyTransaction->addRoot(dataItem);
 }
 
+//TODO - otemplateowac
+void python::MdeBridge::addScalarChannel(const PythonScalarChannel& channel)
+{
+	if (channel.getFrequency() <= 0.0f) {
+		throw std::runtime_error("Invalid channel frequency");
+	} else if (channel.getData().empty()) {
+		throw std::runtime_error("Channel was not initialized with data");
+	}
+	auto c = PythonScalarChannel::convert(channel);
+
+	auto wrapper = core::Variant::wrap(utils::const_pointer_cast<c3dlib::ScalarChannelReaderInterface>(c));
+	core::HierarchyHelperPtr helper = core::HierarchyHelperPtr(new NewChartItemHelper(wrapper));
+	std::string name;
+
+	auto adf = c->feature<dataaccessor::DescriptorFeature>();
+
+	if (adf != nullptr) {
+		name = adf->name();
+	}
+
+	if (name.empty()) {
+		name = wrapper->data()->getClassName();
+	}
+	core::IHierarchyItemPtr dataItem = core::HierarchyItemPtr(new core::HierarchyDataItem(wrapper, QIcon(), QString::fromStdString(name), QString(), helper));
+	auto hierarchyTransaction = getHierarchyManager()->transaction();
+	hierarchyTransaction->addRoot(dataItem);
+}
 python::DataList python::MdeBridge::listLoadedVectors()
 {
 	python::DataList dataList;
-	auto transaction = getDataManagerReader()->transaction();
-	core::ConstVariantsList objects;
-	transaction->getObjects(objects, typeid(c3dlib::VectorChannelReaderInterface), false);
-	std::string source;
-	std::string name;
-	for (auto& var : objects) {
-		var->getMetadata("core/source", source);
-		var->getMetadata("core/name", name);
-		dataList.push_back(std::make_pair(source, name));
-
-	}
-	return dataList;
+	return listLoadedData<c3dlib::VectorChannelReaderInterface>();
 }
 
-python::PythonDataChannel python::MdeBridge::createVectorChannel()
+python::DataList python::MdeBridge::listLoadedScalars()
 {
-	return PythonDataChannel();
+	return listLoadedData<c3dlib::ScalarChannelReaderInterface>();
+}
+
+python::PythonVectorChannel python::MdeBridge::createVectorChannel()
+{
+	return PythonVectorChannel();
+}
+
+python::PythonScalarChannel python::MdeBridge::createScalarChannel()
+{
+	return PythonScalarChannel();
 }
 
 void python::MdeBridge::addFile(const std::string& file)
@@ -176,6 +188,8 @@ void python::Helper::createVisualizer()
 		//visWidget->show();
 
 		auto dockVisWidget = coreUI::CoreDockWidget::embeddWidget(visWidget, "test", Qt::AllDockWidgetAreas, false);
+		//todo
+		//registerVisualizerContext(getContextEventFilter(), qobject_cast<coreUI::CoreTitleBar*>(dockVisWidget->titleBarWidget()), qobject_cast<coreUI::CoreVisualizerWidget*>(dockVisWidget->widget()), visualizer);
 
 		std::vector<core::Visualizer::Serie*> series;
 		h->getSeries(visualizer, "test/t", series);

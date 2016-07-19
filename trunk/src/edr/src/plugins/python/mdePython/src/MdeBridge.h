@@ -52,16 +52,65 @@ namespace python {
 		//! \param sessionDesc
 		//! \param dataDesc
 		//! \return 
-		PythonDataChannel getVectorChannel(const std::string& sessionDesc, const std::string& dataDesc);
+		PythonVectorChannel getVectorChannel(const std::string& sessionDesc, const std::string& dataDesc);
+		PythonScalarChannel getScalarChannel(const std::string& sessionDesc, const std::string& dataDesc);
+
+		template <class PythonDataChannel>
+		PythonDataChannel getDataChannel(const std::string& sessionDesc, const std::string& dataDesc)
+		{
+			auto transaction = getDataManagerReader()->transaction();
+			core::ConstVariantsList objects;
+			transaction->getObjects(objects, typeid(PythonDataChannel::element_type), false);
+
+			PythonDataChannel::ptr_type channel;
+			for (auto& var : objects) {
+				std::string source; var->getMetadata("core/source", source);
+				std::string name; var->getMetadata("core/name", name);
+				if (source.find(sessionDesc) != std::string::npos && name.find(dataDesc) != std::string::npos) {
+					channel = var->get();
+					break;
+				}
+			}
+
+			if (channel) {
+				return PythonDataChannel::convert(channel);
+			} else {
+				throw std::runtime_error("No data");
+			}
+		}
+
 		//! 
 		//! \param channel
 		//! \return 
-		void addVectorChannel(const PythonDataChannel& channel);
+		void addVectorChannel(const PythonVectorChannel& channel);
+		void addScalarChannel(const PythonScalarChannel& channel);
+
+
 		//! 
 		//! \return 
 		DataList listLoadedVectors();
+		DataList listLoadedScalars();
+		template <class T>
+		DataList listLoadedData()
+		{
+			python::DataList dataList;
+			auto transaction = getDataManagerReader()->transaction();
+			core::ConstVariantsList objects;
+			transaction->getObjects(objects, typeid(T), false);
+			std::string source;
+			std::string name;
+			for (auto& var : objects) {
+				var->getMetadata("core/source", source);
+				var->getMetadata("core/name", name);
+				dataList.push_back(std::make_pair(source, name));
 
-		PythonDataChannel createVectorChannel();
+			}
+			return dataList;
+		}
+
+		PythonVectorChannel createVectorChannel();
+		PythonScalarChannel createScalarChannel();
+
 
 		std::vector<Helper> getHelpers();
 

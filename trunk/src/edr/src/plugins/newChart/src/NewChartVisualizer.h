@@ -325,6 +325,8 @@ private:
     QDoubleSpinBox* scaleSpinX;
     //! spinbox z aktualna skala w T aktywnej serii
     QDoubleSpinBox* scaleSpinY;
+	//! spinbox z oknem czasowym dla średniej kroczącej
+	QDoubleSpinBox* movingAvgSpin;
     //! aktualny kontekst eventów (general, left, right)
 	c3dlib::C3DEventsCollection::Context context;
     //! pomocnicze, do ustalenia czy zmienił się aktualnie obrazowany event

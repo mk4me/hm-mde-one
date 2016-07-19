@@ -23,6 +23,10 @@ MDE_PYTHON_MODULE(plugin_mdePython)
 		.def("getVectorChannel", &python::MdeBridge::getVectorChannel)
 		.def("addVectorChannel", &python::MdeBridge::addVectorChannel)
 		.def("listLoadedVectors", &python::MdeBridge::listLoadedVectors)
+		.def("createScalarChannel", &python::MdeBridge::createScalarChannel)
+		.def("getScalarChannel", &python::MdeBridge::getScalarChannel)
+		.def("addScalarChannel", &python::MdeBridge::addScalarChannel)
+		.def("listLoadedScalars", &python::MdeBridge::listLoadedScalars)
 		.def("addFile", &python::MdeBridge::addFile)
 		.def("close", &python::MdeBridge::close)
 		.def("getHelpers", &python::MdeBridge::getHelpers)
@@ -48,16 +52,25 @@ MDE_PYTHON_MODULE(plugin_mdePython)
 	py::class_<python::DataList>("DataList")
 		.def(py::vector_indexing_suite<python::DataList>());
 
-	py::class_<python::PythonDataChannel>("PythonDataChannel")
-		.def("getData", &python::PythonDataChannel::getData)
-		.def("getFrequency", &python::PythonDataChannel::getFrequency)
-		.def("getName", &python::PythonDataChannel::getName)
-		.def("setData", &python::PythonDataChannel::setData)
-		.def("setFrequency", &python::PythonDataChannel::setFrequency)
-		.def("setName", &python::PythonDataChannel::setName)
+	py::class_<python::PythonVectorChannel>("PythonDataChannel")
+		.def("getData", &python::PythonVectorChannel::getData)
+		.def("getFrequency", &python::PythonVectorChannel::getFrequency)
+		.def("getName", &python::PythonVectorChannel::getName)
+		.def("setData", &python::PythonVectorChannel::setData)
+		.def("setFrequency", &python::PythonVectorChannel::setFrequency)
+		.def("setName", &python::PythonVectorChannel::setName)
 		;
-
+	py::class_<python::PythonScalarChannel>("PythonScalarChannel")
+		.def("getData", &python::PythonScalarChannel::getData)
+		.def("getFrequency", &python::PythonScalarChannel::getFrequency)
+		.def("getName", &python::PythonScalarChannel::getName)
+		.def("setData", &python::PythonScalarChannel::setData)
+		.def("setFrequency", &python::PythonScalarChannel::setFrequency)
+		.def("setName", &python::PythonScalarChannel::setName)
+		;
 
 	py::class_<std::vector<osg::Vec3>>("v3vector")
 		.def(py::vector_indexing_suite<std::vector<osg::Vec3>>());
+	py::class_<std::vector<float>>("scalarVector")
+		.def(py::vector_indexing_suite<std::vector<float>>());
 }

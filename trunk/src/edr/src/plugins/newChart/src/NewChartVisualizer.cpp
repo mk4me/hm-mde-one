@@ -44,6 +44,7 @@ NewChartVisualizer::NewChartVisualizer() :
     shiftSpinY(nullptr),
     scaleSpinX(nullptr),
     scaleSpinY(nullptr),
+	movingAvgSpin(nullptr),
 	legend(nullptr),
 	boundsToRefresh(false),
 	qwtMarker(nullptr),
@@ -235,20 +236,34 @@ QWidget* NewChartVisualizer::createWidget()
     connect(bandsAction, SIGNAL(triggered(bool)), this, SLOT(showBands(bool)));
 	widget->addAction(bandsAction);
 
-
-    upperBoundCurve = new QwtPlotCurve(tr("Upper bound"));
+	upperBoundCurve = new QwtPlotCurve(tr("Upper bound"));
     lowerBoundCurve = new QwtPlotCurve(tr("Lower bound"));
-    averageCurve = new QwtPlotCurve(tr("Moving average"));
 
     upperBoundCurve->setPen( QPen( Qt::black, 2, Qt::DotLine ) ),
     upperBoundCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true);
     lowerBoundCurve->setPen( QPen( Qt::black, 2, Qt::DotLine ) ),
-    lowerBoundCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
-    averageCurve->setPen( QPen( Qt::black, 4, Qt::DashLine ) ),
-    averageCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
-
+	lowerBoundCurve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
     upperBoundCurve->setVisible(false);
     lowerBoundCurve->setVisible(false);
+
+
+	coreUI::CoreAction * movingAvgAction = new coreUI::CoreAction(tr("Moving Average"), QIcon(":/newChart/icons/charts.png"), tr("Moving Average"), widget, coreUI::CoreTitleBar::Left);
+	movingAvgAction->setCheckable(true);
+	movingAvgAction->setChecked(false);
+	connect(movingAvgAction, SIGNAL(triggered(bool)), this, SLOT(showMovingAverageCurve(bool)));
+	widget->addAction(movingAvgAction);
+	auto movingAvgBox = LabeledSpinbox::create(tr("w:"), 0.01, 0.000001, 5.0);
+	connect(movingAvgBox.second, SIGNAL(valueChanged(double)), this, SLOT(setMovingAverageTimeWindow(double)));
+	movingAvgSpin = movingAvgBox.second;
+
+	coreUI::CoreWidgetAction * movingAvgSpinAction = new coreUI::CoreWidgetAction(widget, tr("Moving Average"), coreUI::CoreTitleBar::Right);
+	movingAvgSpinAction->setDefaultWidget(movingAvgBox.first);
+	widget->addAction(movingAvgSpinAction);
+	averageCurve = new QwtPlotCurve(tr("Moving average"));
+	averageCurve->setPen(QPen(Qt::black, 2, Qt::SolidLine)),
+    averageCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+	averageCurve->setZ(100.0); // < hack
+
     averageCurve->setVisible(false);
    
     return widget; 
