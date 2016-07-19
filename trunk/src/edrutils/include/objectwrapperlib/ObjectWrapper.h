@@ -1,10 +1,10 @@
 /********************************************************************
-	created:  2014/04/29	14:32:28
-	filename: ObjectWrapper.h
-	author:	  Mateusz Janiak
+created:  2014/04/29	14:32:28
+filename: ObjectWrapper.h
+author:	  Mateusz Janiak
 
-	purpose:
-	*********************************************************************/
+purpose:
+*********************************************************************/
 #ifndef __HEADER_GUARD_UTILS__OBJECTWRAPPER_H__
 #define __HEADER_GUARD_UTILS__OBJECTWRAPPER_H__
 
@@ -22,7 +22,7 @@ namespace utils {
 	////////////////////////////////////////////////////////////////////////////////
 	class ObjectWrapper;
 
-	DEFINE_SMART_POINTERS(ObjectWrapper);	
+	DEFINE_SMART_POINTERS(ObjectWrapper);
 
 	using Objects = std::set<ObjectWrapperPtr>;
 	using ConstObjects = std::set<ObjectWrapperConstPtr>;
@@ -63,7 +63,7 @@ namespace utils {
 			bool exact;
 
 			template <class Ptr>
-			operator Ptr()
+			inline operator Ptr()
 			{
 				Ptr result;
 				if (wrapper->tryGet(result, exact)) {
@@ -76,7 +76,7 @@ namespace utils {
 			}
 
 			template <class Ptr>
-			operator Ptr() const
+			inline operator Ptr() const
 			{
 				Ptr result;
 				if (constWrapper->tryGet(result, exact)) {
@@ -93,7 +93,7 @@ namespace utils {
 
 		//! \tparam Ptr Typ wskaznika o który pytamy
 		template <class Ptr>
-		operator Ptr()
+		inline operator Ptr()
 		{
 			Ptr result;
 			tryGet(result, false);
@@ -102,7 +102,7 @@ namespace utils {
 
 		//! \tparam Ptr Typ wskaznika o który pytamy
 		template <class Ptr>
-		operator Ptr() const
+		inline operator Ptr() const
 		{
 			Ptr result;
 			tryGet(result, false);
@@ -113,7 +113,7 @@ namespace utils {
 		//! \param dummy Parametr nie powinien być nigdy uzywany
 		//! \return Wrapper obiektu.
 		template <class T>
-		static ObjectWrapperPtr create(T* dummy = nullptr)
+		static inline ObjectWrapperPtr create(T* dummy = nullptr)
 		{
 			UTILS_ASSERT((dummy == nullptr), "Parametr nie powinien byc uzywany");
 			return ObjectWrapperT<T>::create();
@@ -122,10 +122,20 @@ namespace utils {
 		//! \tparam T Typ obiektu dla ktorego chcemy utworzych OW
 		//! \param value Wartość z jaką chcemy utowrzyć OW
 		//! \return Wrapper obiektu.
-		template <class T>
-		static ObjectWrapperPtr wrap(typename ObjectWrapperTraits<T>::Ptr value)
-		{			
+		template <class T, ENABLE_IF(utils::ObjectWrapperTraits<T>::isDefinitionVisible)>
+		static inline ObjectWrapperPtr wrap(typename ObjectWrapperTraits<T>::Ptr value)
+		{
 			return ObjectWrapperT<T>::wrap(value);
+		}
+
+		//! \tparam T Typ obiektu dla ktorego chcemy utworzych OW
+		//! \tparam dummy Weryfikacja warunków metody
+		template < typename T, ENABLE_IF(utils::is_general_pointer<T>::value)>
+		//! \param value Wartość z jaką chcemy utowrzyć OW
+		//! \return Wrapper obiektu.
+		static inline ObjectWrapperPtr wrap(const T & value)
+		{
+			return wrap<typename utils::pointed_type<T>::type>(value);
 		}
 
 		//! \tparam T Typ obiektu ktorego nazwe OW chcemy pobrac
@@ -330,13 +340,13 @@ namespace utils {
 	};
 	////////////////////////////////////////////////////////////////////////////////
 } // namespace utils
-////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-// Operatory porównania dla OW
-////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////
+  // Operatory porównania dla OW
+  ////////////////////////////////////////////////////////////////////////////////
 
-//! Operator poównania realizowany w oparciu o metodę isEqual
+  //! Operator poównania realizowany w oparciu o metodę isEqual
 bool operator==(const utils::ObjectWrapper & a, const utils::ObjectWrapper & b);
 
 //! Operator różności realizowany w oparciu o operator porównania

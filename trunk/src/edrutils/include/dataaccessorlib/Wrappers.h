@@ -38,7 +38,7 @@ namespace dataaccessor
 	//! \tparam ValuesContainer Typ kontenera z danymi
 	//! \tparam ArgumentsGenerator Typ generuj�cy argumenty
 	template<typename Value, typename ArgumentsGenerator, typename ValuesExtractor = ContainerValueExtractor,
-		typename ContainerExtractor = utils::ValueCarrierDefaultExtractor<Value>,
+		typename ContainerExtractor = utils::ValueCarrierDefaultExtractor<typename std::remove_reference<Value>::type>,
 		typename Container = typename utils::remove_toplevel<decltype(std::declval<ContainerExtractor>().extract(std::declval<Value>()))>::type,
 		typename Ptr = DiscreteAccessorPtr<decltype(std::declval<ValuesExtractor>().value(std::declval<Container>(), 0)),
 		decltype(std::declval<ArgumentsGenerator>().argument(0)) >>
@@ -92,7 +92,7 @@ namespace dataaccessor
 	//! \tparam Container Typ kontenera
 	//! \tparam SampleExtractor Typ wyci�gaj�cy pr�bki z kontenera
 	template<class Value, typename SampleExtractor = DefaultContainerSampleExtractor,
-		typename ContainerExtractor = utils::ValueCarrierDefaultExtractor<Value>,
+		typename ContainerExtractor = utils::ValueCarrierDefaultExtractor<typename std::remove_reference<Value>::type>,
 		typename Container = typename utils::remove_toplevel<decltype(std::declval<ContainerExtractor>().extract(std::declval<Value>()))>::type,
 		typename Ptr = DiscreteAccessorPtr<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0).second),
 		decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0).first) >>
@@ -129,7 +129,7 @@ namespace dataaccessor
 	//! \tparam ValueExtractor Typ wyci�gaj�cy warto�ci z kontenera
 	//! \tparam ArgumentExtractor Typ wyci�gaj�cy argumenty z kontenera
 	template<class Value, typename ValueExtractor, typename ArgumentExtractor,
-		typename ContainerExtractor = utils::ValueCarrierDefaultExtractor<Value>,
+		typename ContainerExtractor = utils::ValueCarrierDefaultExtractor<typename std::remove_reference<Value>::type>,
 		typename Container = typename utils::remove_toplevel<decltype(std::declval<ContainerExtractor>().extract(std::declval<Value>()))>::type,
 		typename Ptr = DiscreteAccessorPtr<decltype(std::declval<ValueExtractor>().value(ContainerValueExtractor::value(std::declval<Container>(), 0))),
 		decltype(std::declval<ArgumentExtractor>().value(ContainerValueExtractor::value(std::declval<Container>(), 0))) >>

@@ -23,6 +23,8 @@ SET_PUBLIC_HEADERS(
 	CurrentValueExtractor.h
 	Traits.h
 	SafeAccessorWrapper.h
+	NearestArgumentsFinder.h
+	UniformArgumentsGenerator.h
 )
 
 SET_SOURCE_FILES(

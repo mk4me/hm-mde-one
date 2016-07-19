@@ -30,20 +30,24 @@ namespace dataaccessor
 	struct FuncRet<Func, false> {};
 
 	//! Extractor warto�ci kontenera
-	struct ContainerValueExtractor
+	template<class ElementExtractor = utils::TransparentExtractor>
+	struct GeneralContainerValueExtractor
 	{
 	public:
 
 		//! \tparam C Typ kontenera
-		template<typename C>
+		template<typename C, typename VE = decltype(utils::ContainerElementExtractor::extract(std::declval<C>(), 0))>
 		//! \param C Kontener dla kt�ego pobieramy element
 		//! \param idx Indeks elementu kt�ry chcemy pobra� z kontenera
 		//! \return Element kontenera o podanym indeksie
-		static inline auto value(const C & c, const std::size_t idx) -> decltype(utils::ContainerElementExtractor::extract(c, idx))
+		static inline auto value(const C & c, const std::size_t idx) -> decltype(ElementExtractor::extract(std::declval<VE>(), idx))
 		{
-			return utils::ContainerElementExtractor::extract(c, idx);
+			return ElementExtractor::extract(utils::ContainerElementExtractor::extract(c, idx), idx);
 		}
 	};
+
+	//! Extractor warto�ci kontenera
+	using ContainerValueExtractor = GeneralContainerValueExtractor<>;
 
 	//! Struktura pomocnicza przy wyci�ganiu argumentu z pary
 	struct PairArgumentExtractor
@@ -94,7 +98,7 @@ namespace dataaccessor
 		typename SArgumentExtractor,
 		typename CValueExtractor = ContainerValueExtractor>
 		//! Klasa pomocnicza przy wypakowywaniu pr�bek z kontener�w
-	class ContainerSampleExtractor : private CValueExtractor,
+		class ContainerSampleExtractor : private CValueExtractor,
 		private SValueExtractor, private SArgumentExtractor
 	{
 	public:
@@ -165,7 +169,7 @@ namespace dataaccessor
 	template<typename Container,
 		typename SampleExtractor = DefaultContainerSampleExtractor>
 		//! Implementacja dyskrentego akseora dla kontener�w danych
-	class ContainerDiscreteAccessor : public IOptimizedDiscreteAccessorT<
+		class ContainerDiscreteAccessor : public IOptimizedDiscreteAccessorT<
 		typename std::decay<decltype(std::declval<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0))>().second)>::type,
 		typename std::decay<decltype(std::declval<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0))>().first)>::type>,
 		private SampleExtractor
@@ -173,8 +177,8 @@ namespace dataaccessor
 	public:
 
 		using BaseType = IOptimizedDiscreteAccessorT<
-				typename std::decay<decltype(std::declval<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0))>().second)>::type,
-				typename std::decay<decltype(std::declval<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0))>().first)>::type>;
+			typename std::decay<decltype(std::declval<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0))>().second)>::type,
+			typename std::decay<decltype(std::declval<decltype(std::declval<SampleExtractor>().sample(std::declval<Container>(), 0))>().first)>::type>;
 
 		using value_type = typename BaseType::value_type;
 		using argument_type = typename BaseType::argument_type;
@@ -227,7 +231,7 @@ namespace dataaccessor
 		typename ArgumentsGenerator,
 		typename ValueExtractor = ContainerValueExtractor>
 		//! Implementacja dyskrentego akseora dla kontener�w danych
-	class ContainerDiscreteGeneratedAccessor : public IIndependentDiscreteAccessorT<
+		class ContainerDiscreteGeneratedAccessor : public IIndependentDiscreteAccessorT<
 		typename std::decay<decltype(std::declval<ValueExtractor>().value(std::declval<Container>(), 0))>::type,
 		typename std::decay<decltype(std::declval<ArgumentsGenerator>().argument(0))>::type>,
 		private ArgumentsGenerator, private ValueExtractor
@@ -235,8 +239,8 @@ namespace dataaccessor
 	public:
 
 		using BaseType = IIndependentDiscreteAccessorT<
-				typename std::decay<decltype(std::declval<ValueExtractor>().value(std::declval<Container>(), 0))>::type,
-				typename std::decay<decltype(std::declval<ArgumentsGenerator>().argument(0))>::type>;
+			typename std::decay<decltype(std::declval<ValueExtractor>().value(std::declval<Container>(), 0))>::type,
+			typename std::decay<decltype(std::declval<ArgumentsGenerator>().argument(0))>::type>;
 
 		using value_type = typename BaseType::value_type;
 		using argument_type = typename BaseType::argument_type;
@@ -296,7 +300,7 @@ namespace dataaccessor
 	template<typename ValuesContainer, typename ArgumentsContainer,
 		typename ValueExtractor, typename ArgumentExtractor>
 		//! Implementacja realizuje dost�p do kana�u dyskretnego w oparciu o niezale�ne kontenery wartosci i pr�bek
-	class IndependentContainersDiscreteAccessor : public IIndependentDiscreteAccessorT<
+		class IndependentContainersDiscreteAccessor : public IIndependentDiscreteAccessorT<
 		typename std::decay<decltype(std::declval<ValueExtractor>().value(std::declval<ValuesContainer>(), 0))>::type,
 		typename std::decay<decltype(std::declval<ArgumentExtractor>().value(std::declval<ArgumentsContainer>(), 0))>::type>,
 		private ArgumentExtractor, private ValueExtractor
@@ -304,8 +308,8 @@ namespace dataaccessor
 	public:
 
 		using BaseType = IIndependentDiscreteAccessorT<
-				typename std::decay<decltype(std::declval<ValueExtractor>().value(std::declval<ValuesContainer>(), 0))>::type,
-				typename std::decay<decltype(std::declval<ArgumentExtractor>().value(std::declval<ArgumentsContainer>(), 0))>::type>;
+			typename std::decay<decltype(std::declval<ValueExtractor>().value(std::declval<ValuesContainer>(), 0))>::type,
+			typename std::decay<decltype(std::declval<ArgumentExtractor>().value(std::declval<ArgumentsContainer>(), 0))>::type>;
 
 		using value_type = typename BaseType::value_type;
 		using argument_type = typename BaseType::argument_type;
@@ -321,7 +325,7 @@ namespace dataaccessor
 				const std::size_t asize, VT && valueExtractor = VT(),
 				AT && argumentExtractor = AT())
 			: ValueExtractor(std::forward<VT>(valueExtractor)),
-			  ArgumentExtractor(std::forward<AT>(argumentExtractor)),
+			ArgumentExtractor(std::forward<AT>(argumentExtractor)),
 			values(values), arguments(arguments), size_(std::min(vsize, asize)),
 			empty_(size_ == 0)
 		{
@@ -377,7 +381,7 @@ namespace dataaccessor
 	template<typename ValuesContainer, typename ArgumentsContainer,
 		typename ValueExtractor, typename ArgumentExtractor>
 		//! Implementacja realizuje dost�p do kana�u dyskretnego w oparciu o niezale�ne kontenery wartosci i pr�bek
-	class IndependentContainersDiscreteData : private TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>,
+		class IndependentContainersDiscreteData : private TaggedContainerCarrier<ValuesContainer, Tag::ValueContainer>,
 		private TaggedContainerCarrier<ArgumentsContainer, Tag::ArgumentContainer>,
 		public IndependentContainersDiscreteAccessor<ValuesContainer, ArgumentsContainer,
 		ValueExtractor, ArgumentExtractor>
@@ -385,7 +389,7 @@ namespace dataaccessor
 	public:
 
 		using BaseType = IndependentContainersDiscreteAccessor<ValuesContainer, ArgumentsContainer,
-				ValueExtractor, ArgumentExtractor>;
+			ValueExtractor, ArgumentExtractor>;
 
 		using value_type = typename BaseType::value_type;
 		using argument_type = typename BaseType::argument_type;
