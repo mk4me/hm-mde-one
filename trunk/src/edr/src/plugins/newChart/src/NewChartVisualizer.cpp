@@ -22,14 +22,13 @@
 #include <coreui/CoreWidgetAction.h>
 
 #include "NewChartStreamSerie.h"
+#include "dataaccessorlib/Wrappers.h"
+#include "dataaccessorlib/DescriptorFeature.h"
+#include "c3dlib/C3DTypes.h"
+
+#include <plugins/c3d/C3DChannels.h>
 
 NewChartVisualizer::NewChartVisualizer() :
-	upperBoundCurve(nullptr),
-	lowerBoundCurve(nullptr),
-	averageCurve(nullptr),
-	boundsAutoRefresh(true),
-	movingAverageTimeWindow(0.125),
-	pointsPerWindow(25),
 	qwtPlot(nullptr),
     showLegend(true), 
     currentSerie(-1),
@@ -46,14 +45,12 @@ NewChartVisualizer::NewChartVisualizer() :
     scaleSpinY(nullptr),
 	movingAvgSpin(nullptr),
 	legend(nullptr),
-	boundsToRefresh(false),
 	qwtMarker(nullptr),
 	pickerAction(nullptr),
 	valueMarkerAction(nullptr),
 	vMarkerAction(nullptr),
 	hMarkerAction(nullptr),
 	scaleAction(nullptr),
-	bandsAction(nullptr),
     currentSerieTime(-1.0f),
     currentSerieValue(-1.0f),
 	customScale(false)
@@ -64,9 +61,6 @@ NewChartVisualizer::NewChartVisualizer() :
 
 NewChartVisualizer::~NewChartVisualizer()
 {
-    delete upperBoundCurve;
-    delete lowerBoundCurve;
-    delete averageCurve;
 }
 
 
@@ -192,9 +186,6 @@ QWidget* NewChartVisualizer::createWidget()
 	splitter->addWidget(qwtPlot);
 	splitter->addWidget(statsTable);
 	layout->addWidget(splitter);
-    //layout->addWidget(qwtPlot);
-    //layout->setMargin(0);
-    //layout->addWidget(statsTable);
     statsTable->setVisible(false);
     widget->setLayout(layout);
 
@@ -236,35 +227,18 @@ QWidget* NewChartVisualizer::createWidget()
     connect(bandsAction, SIGNAL(triggered(bool)), this, SLOT(showBands(bool)));
 	widget->addAction(bandsAction);
 
-	upperBoundCurve = new QwtPlotCurve(tr("Upper bound"));
-    lowerBoundCurve = new QwtPlotCurve(tr("Lower bound"));
-
-    upperBoundCurve->setPen( QPen( Qt::black, 2, Qt::DotLine ) ),
-    upperBoundCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true);
-    lowerBoundCurve->setPen( QPen( Qt::black, 2, Qt::DotLine ) ),
-	lowerBoundCurve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
-    upperBoundCurve->setVisible(false);
-    lowerBoundCurve->setVisible(false);
-
-
 	coreUI::CoreAction * movingAvgAction = new coreUI::CoreAction(tr("Moving Average"), QIcon(":/newChart/icons/charts.png"), tr("Moving Average"), widget, coreUI::CoreTitleBar::Left);
 	movingAvgAction->setCheckable(true);
 	movingAvgAction->setChecked(false);
 	connect(movingAvgAction, SIGNAL(triggered(bool)), this, SLOT(showMovingAverageCurve(bool)));
 	widget->addAction(movingAvgAction);
-	auto movingAvgBox = LabeledSpinbox::create(tr("w:"), 0.01, 0.000001, 5.0);
-	connect(movingAvgBox.second, SIGNAL(valueChanged(double)), this, SLOT(setMovingAverageTimeWindow(double)));
+	auto movingAvgBox = LabeledSpinbox::create(tr("w:"), 1, 1, 500);
+	connect(movingAvgBox.second, SIGNAL(valueChanged(int)), this, SLOT(setMovingAverageTimeWindow(int)));
 	movingAvgSpin = movingAvgBox.second;
 
 	coreUI::CoreWidgetAction * movingAvgSpinAction = new coreUI::CoreWidgetAction(widget, tr("Moving Average"), coreUI::CoreTitleBar::Right);
 	movingAvgSpinAction->setDefaultWidget(movingAvgBox.first);
 	widget->addAction(movingAvgSpinAction);
-	averageCurve = new QwtPlotCurve(tr("Moving average"));
-	averageCurve->setPen(QPen(Qt::black, 2, Qt::SolidLine)),
-    averageCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
-	averageCurve->setZ(100.0); // < hack
-
-    averageCurve->setVisible(false);
    
     return widget; 
 }
@@ -293,11 +267,10 @@ plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie(const utils::TypeI
 		series.push_back(chartSerie);
 
 		plotChanged();
-
 		auto statsEntry = statsTable->addEntry(QString("Whole chart"), QString(name.c_str()), chartSerie->getReader());
 
 		chartSerie->setStatsEntry(statsEntry);
-
+		
 		//NewChartLegendItem * legendLabel = qobject_cast<NewChartLegendItem *>(legend->legendWidget(ret->getCurve()));
 		NewChartLegendItem * legendLabel = getLegendLabel(chartSerie->getCurve());
 		if(legendLabel != nullptr){
@@ -965,327 +938,49 @@ void NewChartVisualizer::adjustOffsetStep( QDoubleSpinBox* spinBox, QwtPlot::Axi
 
 void NewChartVisualizer::plotChanged()
 {
-    if(boundsAutoRefresh == true){
-        refreshBounds();
-    }else{
-        boundsToRefresh = true;
-    }
+    //if(boundsAutoRefresh == true){
+    //    refreshBounds();
+    //}else{
+    //    boundsToRefresh = true;
+    //}
 }
 
-void NewChartVisualizer::refreshBounds()
-{
-    boundsToRefresh = false;
-    if(series.empty() == true){
-        return;
-    }
 
-    float minT = (std::numeric_limits<float>::max)();
-    float maxT = (std::numeric_limits<float>::min)();
-
-    //wyznaczamy parametry dla wsteg i średnich
-    //minimalny czas dla wszystkich seri danych
-    //maksymalny czas dla wszystkich serii danych
-    //minimalna rozdzielczość dla wszystkich kanałów
-	std::vector<c3dlib::ScalarChannelReaderInterfaceConstPtr> channels;
-	std::vector<utils::shared_ptr<c3dlib::ScalarContiniousTimeAccessor>> continousChannels;
-    for (auto it = series.begin(); it != series.end(); ++it) {
-		c3dlib::ScalarChannelReaderInterfaceConstPtr data;
-    	auto* iserie = dynamic_cast<plugin::IVisualizer::ISerie*>(*it);
-    	iserie->getData()->tryGet(data);
-    	if(data) {
-
-			auto baf = data->getOrCreateFeature<dataaccessor::BoundedArgumentsFeature>();
-			//auto bvf = data->getOrCreateFeature<dataaccessor::BoundedValuesFeature>();
-    		minT = (std::min)(minT, baf->minArgument());
-    		maxT = (std::max)(maxT, baf->maxArgument());
-    		channels.push_back(data);
-			auto cdata = utils::make_shared < dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::ScalarChannelReaderInterface::value_type,
-				c3dlib::ScalarChannelReaderInterface::argument_type >> (*data);			
-
-			continousChannels.push_back(cdata);
-    	}
-    }
-
-	//TODO
-	//HACK dla strumieni
-	if (channels.empty() == true){
-		return;
-	}
-
-    int totalWindows = (maxT - minT) / movingAverageTimeWindow;
-
-    if(totalWindows == 0){
-        return;
-    }
-
-    //obcinam max do całkowitej liczby okien
-    //maxT = std::min(maxT, (float)totalWindows * (float)movingAverageTimeWindow);
-    maxT = totalWindows * movingAverageTimeWindow;
-    //wyliczam ilość wszystkich punktów jakie mam
-    int totalPoints = totalWindows * pointsPerWindow;
-    //wyliczam pojedynczy krok czasu
-    float timeStep = (maxT - minT) / (float)totalPoints;
-    //dzielnik dla średniej
-    float size = channels.size();
-
-    //wyliczamy próbki czasowe
-    //wyliczam średnią dla wszystkich próbek
-    std::vector<float> timeValues;
-    std::vector<float> avgValues(totalPoints, 0.0f);   
-	int idx = 0;
-	for (auto channel : channels) {
-		auto cch = continousChannels[idx++];
-		int i = 0;
-		for (auto time = minT; i < totalPoints; ++i, time = minT + (float)i * timeStep){            
-            avgValues[i] += cch->value(time);
-        }        
-    }
-
-	int i = 0;
-	for (auto time = minT; i < totalPoints; ++i, time = minT + (float)i * timeStep){
-		timeValues.push_back(time);
-	}
-
-	for (auto & val : avgValues)
-	{
-		val /= channels.size();
-	}
-
-    int outBegIdx = 0;
-    int outNBElement = 0;
-
-    //potem liczę średnią kroczącą z danym oknem    
-    //odświeżyć średnią kroczącą
-    //odświeżyć wstęgi
-
-    std::vector<float> maAvgValues(totalPoints);
-    std::vector<float> upperBandValues(totalPoints);
-    std::vector<float> lowerBandValues(totalPoints);
-
-    bbands(0, totalPoints-1, avgValues, pointsPerWindow, 5, 5, outBegIdx,
-        outNBElement, upperBandValues, maAvgValues, lowerBandValues);
-
-    QPolygonF pointsAvg;
-    QPolygonF pointsUp;
-    QPolygonF pointsDown;
-    for(int i = 0; i < totalPoints; ++i){
-        auto time = timeValues[i];
-        pointsAvg << QPointF( time, maAvgValues[i] );
-        pointsUp << QPointF( time, upperBandValues[i] );
-        pointsDown << QPointF( time, lowerBandValues[i] );
-    }
-    
-    upperBoundCurve->setSamples( pointsUp );
-    lowerBoundCurve->setSamples( pointsDown );
-    averageCurve->setSamples( pointsAvg );
-}
-
-void NewChartVisualizer::showBands(bool show)
-{
-    showDataBounds(show);
-    showMovingAverageCurve(show);
-    qwtPlot->replot();
-}
-
-void NewChartVisualizer::showDataBounds(bool show)
-{
-    upperBoundCurve->setVisible(show);
-    lowerBoundCurve->setVisible(show);
-    if (show) {
-        upperBoundCurve->attach(qwtPlot);
-        lowerBoundCurve->attach(qwtPlot);
-    } else {
-        upperBoundCurve->detach();
-        lowerBoundCurve->detach();
-    }
-}
 
 void NewChartVisualizer::showMovingAverageCurve(bool show)
 {
-    averageCurve->setVisible(show);
-    if (show) {
-        averageCurve->attach(qwtPlot);
-    } else {
-        averageCurve->detach();
-    }
+	INewChartSeriePrivate* origin = tryGetCurrentSerie();
+	auto it = additionalCurve2Origin.find(origin);
+	if (it != additionalCurve2Origin.end()) {
+		origin = it->second;
+	}
+	if (origin) {
+		c3dlib::ScalarChannelReaderInterfaceConstPtr data;
+		origin->asISerie()->getData()->tryGet(data);
+		auto timeWindow = this->movingAvgSpin->value();
+		auto channel = createMovingAverage(data, timeWindow);
+		auto wrapper = core::Variant::wrap <c3dlib::ScalarChannelReaderInterface>(channel);
+		auto cserie = createSerie(typeid(c3dlib::ScalarChannelReaderInterface), wrapper);
+		std::string newName = origin->asISerie()->getName() + "_m.av." + boost::lexical_cast<std::string>(timeWindow);
+		cserie->setName(newName);
+		setActiveSerie(cserie);
+		auto serie = dynamic_cast<INewChartSeriePrivate*>(cserie);
+		additionalCurve2Origin[serie] = origin;
+	}
 }
 
-void NewChartVisualizer::setAutoRefreshDataBounds(bool autorefresh)
-{
-    boundsAutoRefresh = autorefresh;
 
-    if(boundsAutoRefresh == true && boundsToRefresh == true){
-        refreshBounds();
-    }
-}
-
-void NewChartVisualizer::setMovingAverageTimeWindow(double timeWindow)
+void NewChartVisualizer::setMovingAverageTimeWindow(int timeWindow)
 {
-    movingAverageTimeWindow = timeWindow;
-    refreshBounds();
-}
-
-void NewChartVisualizer::simpleMovingAverage(int startIdx, int endIdx, const std::vector<float> & inReal,
-    int optInTimePeriod, int & outBegIdx, int & outNBElement, std::vector<float> & outReal)
-{
-    double periodTotal = 0, tempReal = 0;
-    int i, outIdx, trailingIdx, lookbackTotal;
-    lookbackTotal = (optInTimePeriod-1);
-    if( startIdx < lookbackTotal )
-        startIdx = lookbackTotal;
-    if( startIdx > endIdx )
-    {
-        outBegIdx = 0 ;
-        outNBElement = 0 ;
-        return;
-    }
-    periodTotal = 0;
-    trailingIdx = startIdx-lookbackTotal;
-    i=trailingIdx;
-    if( optInTimePeriod > 1 )
-    {
-        while( i < startIdx )
-            periodTotal += inReal[i++];
-    }
-    outIdx = 0;
-    do
-    {
-        periodTotal += inReal[i++];
-        tempReal = periodTotal;
-        periodTotal -= inReal[trailingIdx++];
-        outReal[outIdx++] = tempReal / optInTimePeriod;
-    } while( i <= endIdx );
-    outNBElement = outIdx;
-    outBegIdx = startIdx;
-}
-
-void NewChartVisualizer::bbands( int startIdx, int endIdx, const std::vector<float> & inReal,
-    int optInTimePeriod, double optInNbDevUp, double optInNbDevDn, int & outBegIdx, int & outNBElement,
-    std::vector<float> & outRealUpperBand,
-    std::vector<float> & outRealMiddleBand,
-    std::vector<float> & outRealLowerBand)
-{
-    int i;
-    double tempReal, tempReal2;
-    std::vector<float> & tempBuffer1 = outRealMiddleBand;
-    std::vector<float> tempBuffer2 ;
-    if( startIdx < 0 )
-        return;
-    if( (endIdx < 0) || (endIdx < startIdx))
-        return;
-    if( optInTimePeriod == (std::numeric_limits<int>::min)() )
-        optInTimePeriod = 5;
-    else if( (optInTimePeriod < 2) || (optInTimePeriod > 100000) )
-        return;
-    if( optInNbDevUp == (-4e+37) )
-        optInNbDevUp = 2.000000e+0;
-    else if( (optInNbDevUp < -3.000000e+37) || (optInNbDevUp > 3.000000e+37) )
-        return;
-    if( optInNbDevDn == (-4e+37) )
-        optInNbDevDn = 2.000000e+0;
-    else if( (optInNbDevDn < -3.000000e+37) || (optInNbDevDn > 3.000000e+37) )
-        return ;
-    //tempBuffer1 = outRealMiddleBand;
-    tempBuffer2 = outRealLowerBand;
-    
-    simpleMovingAverage(startIdx, endIdx, inReal,
-        optInTimePeriod, outBegIdx, outNBElement, tempBuffer1 );
-    
-    stddev_using_precalc_ma ( inReal, tempBuffer1,
-        outBegIdx , outNBElement,
-        optInTimePeriod, tempBuffer2 );
-    
-    if( optInNbDevUp == optInNbDevDn )
-    {
-        if( optInNbDevUp == 1.0 )
-        {
-            for( i=0; i < outNBElement ; ++i )
-            {
-                tempReal = tempBuffer2[i];
-                tempReal2 = outRealMiddleBand[i];
-                outRealUpperBand[i] = tempReal2 + tempReal;
-                outRealLowerBand[i] = tempReal2 - tempReal;
-            }
-        }
-        else
-        {
-            for( i=0; i < outNBElement ; ++i )
-            {
-                tempReal = tempBuffer2[i] * optInNbDevUp;
-                tempReal2 = outRealMiddleBand[i];
-                outRealUpperBand[i] = tempReal2 + tempReal;
-                outRealLowerBand[i] = tempReal2 - tempReal;
-            }
-        }
-    }
-    else if( optInNbDevUp == 1.0 )
-    {
-        for( i=0; i < outNBElement ; ++i )
-        {
-            tempReal = tempBuffer2[i];
-            tempReal2 = outRealMiddleBand[i];
-            outRealUpperBand[i] = tempReal2 + tempReal;
-            outRealLowerBand[i] = tempReal2 - (tempReal * optInNbDevDn);
-        }
-    }
-    else if( optInNbDevDn == 1.0 )
-    {
-        for( i=0; i < outNBElement ; ++i )
-        {
-            tempReal = tempBuffer2[i];
-            tempReal2 = outRealMiddleBand[i];
-            outRealLowerBand[i] = tempReal2 - tempReal;
-            outRealUpperBand[i] = tempReal2 + (tempReal * optInNbDevUp);
-        }
-    }
-    else
-    {
-        for( i=0; i < outNBElement ; ++i )
-        {
-            tempReal = tempBuffer2[i];
-            tempReal2 = outRealMiddleBand[i];
-            outRealUpperBand[i] = tempReal2 + (tempReal * optInNbDevUp);
-            outRealLowerBand[i] = tempReal2 - (tempReal * optInNbDevDn);
-        }
-    }
-}
-
-void NewChartVisualizer::stddev_using_precalc_ma( const std::vector<float> & inReal,
-    const std::vector<float> & inMovAvg,
-    int inMovAvgBegIdx,
-    int inMovAvgNbElement,
-    int timePeriod,
-    std::vector<float> & output)
-{
-    double tempReal, periodTotal2, meanValue2;
-    int outIdx;
-    int startSum, endSum;
-    startSum = 1+inMovAvgBegIdx-timePeriod;
-    endSum = inMovAvgBegIdx;
-    periodTotal2 = 0;
-    for( outIdx = startSum; outIdx < endSum; ++outIdx)
-    {
-        tempReal = inReal[outIdx];
-        tempReal *= tempReal;
-        periodTotal2 += tempReal;
-    }
-    for( outIdx=0; outIdx < inMovAvgNbElement; ++outIdx, ++startSum, ++endSum )
-    {
-        tempReal = inReal[endSum];
-        tempReal *= tempReal;
-        periodTotal2 += tempReal;
-        meanValue2 = periodTotal2/timePeriod;
-        tempReal = inReal[startSum];
-        tempReal *= tempReal;
-        periodTotal2 -= tempReal;
-        tempReal = inMovAvg[outIdx];
-        tempReal *= tempReal;
-        meanValue2 -= tempReal;
-        if( ! (meanValue2<0.00000001) )
-            output[outIdx] = std::sqrt(meanValue2);
-        else
-            output[outIdx] = 0;
-    }
+	auto it = additionalCurve2Origin.find(tryGetCurrentSerie());
+	if (it != additionalCurve2Origin.end()) {
+		auto newChannel = createMovingAverage(it->second, timeWindow);
+		INewChartSeriePrivate* mav = it->first;
+		auto wrapper = core::Variant::wrap(utils::const_pointer_cast<c3dlib::ScalarChannelReaderInterface>(newChannel));
+		std::string newName = it->second->asISerie()->getName() + "_m.av." + boost::lexical_cast<std::string>(timeWindow);
+		mav->asISerie()->setName(newName);
+		mav->updateData(wrapper);
+	}
 }
 
 bool NewChartVisualizer::isCurveFromSerie(const QwtPlotCurve* curve) const
@@ -1309,6 +1004,50 @@ void NewChartVisualizer::setLabelsVisible( bool val )
             }
         }
     }
+}
+
+c3dlib::ScalarChannelReaderInterfacePtr NewChartVisualizer::createMovingAverage(INewChartSeriePrivate* origin, int sampleWindow) const
+{
+	c3dlib::ScalarChannelReaderInterfaceConstPtr data;
+	origin->asISerie()->getData()->tryGet(data);
+	return createMovingAverage(data, sampleWindow);
+}
+
+
+
+c3dlib::ScalarChannelReaderInterfacePtr NewChartVisualizer::createMovingAverage(c3dlib::ScalarChannelReaderInterfaceConstPtr origin, int sampleWindow) const
+{
+	auto size = origin->size();
+	if (size < sampleWindow) {
+		return c3dlib::ScalarChannelReaderInterfacePtr();
+	}
+
+	auto uaf = origin->feature<dataaccessor::UniformArgumentsFeature<float>>();
+	auto baf = origin->feature<dataaccessor::BoundedArgumentsFeature<float>>();
+	auto ff = dataaccessor::FunctionFeature::feature(true);
+
+	utils::shared_ptr<dataaccessor::DescriptorFeature> df(dataaccessor::DescriptorFeature::create<float, float>("name", "", ""));
+
+	
+	std::vector<float> vals;
+	float startSum = 0.0f;
+	for (auto i = 0; i < sampleWindow; ++i) {
+		startSum += origin->value(i); 
+		vals.push_back(startSum / (i+1));
+	}
+	vals.push_back(startSum/sampleWindow);
+	for (auto i = sampleWindow; i < size; ++i) {
+		startSum -= origin->value(i - sampleWindow);
+		startSum += origin->value(i);
+		vals.push_back(startSum / sampleWindow);
+	}
+
+	auto channel = dataaccessor::wrap(std::move(vals), dataaccessor::UniformArgumentsGenerator<float>(uaf->argumentsInterval(), vals.size()));
+	channel->attachFeature(uaf);
+	channel->attachFeature(baf);
+	channel->attachFeature(ff);
+	channel->attachFeature(df);
+	return channel;
 }
 
 boost::iterator_range<std::vector<INewChartSeriePrivate*>::const_iterator> NewChartVisualizer::getSeries() const

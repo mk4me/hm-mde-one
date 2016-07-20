@@ -46,7 +46,20 @@ void NewChartSerie::setData(const utils::TypeInfo & requestedType,
 	_zBase = curve->z();
 	curve->setZ(_zBase + _z);
 }
+void NewChartSerie::updateData(const core::VariantConstPtr & data)
+{
+	//TODO : setData powinno wywolywac ta metode, sprawdzic wyciek przy setSamples ponizej...
+	this->data = data;
+	std::string name = getName();
+	if (name.empty()) {
+		data->getMetadata("core/name", name);
+	}
+	data->tryGet(reader);
+	continousReder = utils::make_shared < dataaccessor::DiscreteFunctionAccessorAdapter < c3dlib::ScalarChannelReaderInterface::value_type,
+		c3dlib::ScalarChannelReaderInterface::argument_type >> (*reader);
 
+	curve->setSamples(new NewChartSeriesData(reader));
+}
 void NewChartSerie::setStatsEntry(QTreeWidgetItem * statsEntry)
 {
 	this->statsEntry = statsEntry;
@@ -147,6 +160,9 @@ QPointF NewChartSerie::getOffset() const {
 void NewChartSerie::setOffset(const QPointF& offset) {
 	curve->setOffset(offset);
 }
+
+
+
 double NewChartSerie::getXScale() const {
 	return curve->getXScale();
 }

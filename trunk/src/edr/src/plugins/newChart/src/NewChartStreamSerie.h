@@ -133,6 +133,8 @@ public:
     //! \param offset nowa wartość przesunięcia
     void setOffset(const QPointF& offset);
 
+	virtual void updateData(const core::VariantConstPtr & data);
+
 private:
     //! wizualizator, który stworzył serie
     NewChartVisualizer* visualizer;

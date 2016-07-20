@@ -134,6 +134,8 @@ public:
     //! \param offset nowa wartość przesunięcia
     void setOffset(const QPointF& offset);
 
+	virtual void updateData(const core::VariantConstPtr & data);
+
 private:
     //! Ustawia kolory dla krzywych znormalizowanych względem eventów
     //! \param range dostarczane segmenty

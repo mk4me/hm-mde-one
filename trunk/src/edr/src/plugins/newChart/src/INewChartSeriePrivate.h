@@ -80,6 +80,8 @@ public:
 	//! ustawia przesunięcie
 	//! \param offset nowa wartość przesunięcia
 	virtual void setOffset(const QPointF& offset) = 0;
+
+	virtual void updateData(const core::VariantConstPtr & data) = 0;
 };
 
 #endif

@@ -279,3 +279,8 @@ const core::VariantConstPtr & NewChartStreamSerie::getData() const
     return data;
 }
 
+void NewChartStreamSerie::updateData(const core::VariantConstPtr & data)
+{
+	throw std::logic_error("The method or operation is not implemented.");
+}
+

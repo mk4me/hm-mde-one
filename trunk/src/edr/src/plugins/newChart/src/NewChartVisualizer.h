@@ -152,50 +152,11 @@ private:
       bool isCurveFromSerie(const QwtPlotCurve* curve) const;
       //! Metoda wywoływana kiedy zmieni się stan wykresów
       void plotChanged();
-      //! odświeża dodatkowe krzywe
-      void refreshBounds();
       //! chowa lub pokazuje wszystkie etykiety
       void setLabelsVisible(bool);
-      //! Tworzy kroczącą średnią dla wykresu
-      //! \param startIdx
-      //! \param endIdx
-      //! \param inReal
-      //! \param optInTimePeriod
-      //! \param outBegIdx
-      //! \param outNBElement
-      //! \param outReal
-      void simpleMovingAverage(int startIdx, int endIdx, const std::vector<float> & inReal,
-          int optInTimePeriod, int & outBegIdx, int & outNBElement, std::vector<float> & outReal);
-      //! tworzy ograniczenia - górne i dolne krzywych
-      //! \param startIdx
-      //! \param endIdx
-      //! \param inReal
-      //! \param optInTimePeriod
-      //! \param optInNbDevUp
-      //! \param optInNbDevDn
-      //! \param outBegIdx
-      //! \param outNBElement
-      //! \param outRealUpperBand
-      //! \param outRealMiddleBand
-      //! \param outRealLowerBand
-      void bbands( int startIdx, int endIdx, const std::vector<float> & inReal,
-          int optInTimePeriod, double optInNbDevUp, double optInNbDevDn, int & outBegIdx, int & outNBElement,
-          std::vector<float> & outRealUpperBand,
-          std::vector<float> & outRealMiddleBand,
-          std::vector<float> & outRealLowerBand);
-      //! Tworzy odchylenie standardowe
-      //! \param inReal
-      //! \param inMovAvg
-      //! \param inMovAvgBegIdx
-      //! \param inMovAvgNbElement
-      //! \param timePeriod
-      //! \param output
-      void stddev_using_precalc_ma( const std::vector<float> & inReal,
-          const std::vector<float> & inMovAvg,
-          int inMovAvgBegIdx,
-          int inMovAvgNbElement,
-          int timePeriod,
-          std::vector<float> & output);
+
+	  c3dlib::ScalarChannelReaderInterfacePtr createMovingAverage(c3dlib::ScalarChannelReaderInterfaceConstPtr origin, int sampleWindow) const;
+	  c3dlib::ScalarChannelReaderInterfacePtr createMovingAverage(INewChartSeriePrivate* origin, int sampleWindow) const;
 
 private slots:
       //! Ustawia aktywną serię danych
@@ -241,33 +202,13 @@ private slots:
       //! Zmieniono skala aktywnej serii
       //! \param d skale względem osi Y
       void onScaleY(double d);
-      //! zmiana widoczności obwiedni
-      //! \param show pokazać / ukryć obwiednie
-      void showBands(bool show);
-      //! Wstęgi wokół serii danych - zbiorcze dla wszystkich serii na wykresie
-      void showDataBounds(bool show);
       //! Średnia danych
       void showMovingAverageCurve(bool show);
-      //! Auto odświeżanie wstęg
-      void setAutoRefreshDataBounds(bool autorefresh);
       //! Okno czasowe dla średniej kroczącej
-      void setMovingAverageTimeWindow(double timeWindow);
+      void setMovingAverageTimeWindow(int timeWindow);
 
 private:
-    //! dodatkowa krzywa - górne ograniczenie serii danych
-    QwtPlotCurve* upperBoundCurve;
-    //! dodatkowa krzywa - dolne ograniczenie serii danych
-    QwtPlotCurve* lowerBoundCurve;
-    //! dodatkowa krzywa - średnia kroczaca
-    QwtPlotCurve* averageCurve;
-    //! automatyczne odświeżanie dodatkowych krzywych
-    bool boundsAutoRefresh;
-    //! dodatkowe krzywe powinny zostac odświeżone
-    bool boundsToRefresh;
-    //! zakres czasowy dla kroczącej krzywej
-    double movingAverageTimeWindow;
-    //! liczba punktów przypadających na zakres czasowy (okno) krzywej kroczącej
-    int pointsPerWindow;
+	std::map<INewChartSeriePrivate*, INewChartSeriePrivate*> additionalCurve2Origin;
     //! Obiekt wykresu z Qwt, serce wizualizatora
     QwtPlot* qwtPlot;
     //! Legenda, która została wzbogacona w customowe widgety
@@ -315,8 +256,6 @@ private:
     QAction* hMarkerAction;
     //! akcja wywołująca skalowanie do aktywnej serii
     QAction* scaleAction;
-    //! akcja wywołująca pokazanie/chowanie dodatkowych krzywych
-    QAction* bandsAction;
     //! spinbox z aktualnym przesunięciem w X aktywnej serii
     QDoubleSpinBox* shiftSpinX;
     //! spinbox z aktualnym przesunięciem w Y aktywnej serii
@@ -326,7 +265,7 @@ private:
     //! spinbox z aktualna skala w T aktywnej serii
     QDoubleSpinBox* scaleSpinY;
 	//! spinbox z oknem czasowym dla średniej kroczącej
-	QDoubleSpinBox* movingAvgSpin;
+	QSpinBox* movingAvgSpin;
     //! aktualny kontekst eventów (general, left, right)
 	c3dlib::C3DEventsCollection::Context context;
     //! pomocnicze, do ustalenia czy zmienił się aktualnie obrazowany event
