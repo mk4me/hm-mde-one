@@ -150,12 +150,15 @@ private:
       //! Czy krzywa należy do jakiejs serii czy może jest krzywa dodatkowa
       //! \param curve badana krzywa
       bool isCurveFromSerie(const QwtPlotCurve* curve) const;
-      //! Metoda wywoływana kiedy zmieni się stan wykresów
-      void plotChanged();
       //! chowa lub pokazuje wszystkie etykiety
       void setLabelsVisible(bool);
-
+	  //! Tworzy średnią kroczącą dla podanego kanału
+	  //! \param origin kanał, dla którego stworzona zostanie krzywa
+	  //! \param sampleWindow liczba próbek okna średniej 
 	  c3dlib::ScalarChannelReaderInterfacePtr createMovingAverage(c3dlib::ScalarChannelReaderInterfaceConstPtr origin, int sampleWindow) const;
+	  //! Tworzy średnią kroczącą dla podanego kanału
+	  //! \param origin seria danych, z której stworzona zostanie krzywa
+	  //! \param sampleWindow liczba próbek okna średniej 
 	  c3dlib::ScalarChannelReaderInterfacePtr createMovingAverage(INewChartSeriePrivate* origin, int sampleWindow) const;
 
 private slots:

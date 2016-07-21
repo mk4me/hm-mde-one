@@ -97,9 +97,7 @@ void NewChartSerie::setActive( bool val) {
 }
 
 NewChartSerie::~NewChartSerie() {
-	//delete[] xvals;
-	//delete[] yvals;
-	curve = nullptr;
+	delete curve;
 }
 
 void NewChartSerie::setEvents(c3dlib::EventsCollectionConstPtr val) {

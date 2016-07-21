@@ -11,6 +11,10 @@ NewChartSeriesData::NewChartSeriesData(c3dlib::ScalarChannelReaderInterfaceConst
 
 }
 
+NewChartSeriesData::~NewChartSeriesData()
+{
+}
+
 size_t NewChartSeriesData::size() const
 {
     return channel->size();

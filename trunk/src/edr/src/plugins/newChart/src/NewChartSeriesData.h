@@ -25,6 +25,7 @@ public:
     //! \param scaleY początkowa skala w pionie (domyślnie 1)
 	NewChartSeriesData(c3dlib::ScalarChannelReaderInterfaceConstPtr channel,
         QPointF offset = QPointF(), double scaleX = 1.0, double scaleY = 1.0);
+	~NewChartSeriesData();
 
 public:
     //! \return liczba próbek

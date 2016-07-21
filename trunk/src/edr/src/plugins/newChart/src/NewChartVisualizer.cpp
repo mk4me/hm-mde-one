@@ -266,7 +266,6 @@ plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie(const utils::TypeI
 		chartSerie->setData(requestedType, data);
 		series.push_back(chartSerie);
 
-		plotChanged();
 		auto statsEntry = statsTable->addEntry(QString("Whole chart"), QString(name.c_str()), chartSerie->getReader());
 
 		chartSerie->setStatsEntry(statsEntry);
@@ -333,8 +332,6 @@ void NewChartVisualizer::removeSerie( plugin::IVisualizer::ISerie *serie )
 	qwtPlot->replot();
 
     series.erase(it);
-
-    plotChanged();
 }
 
 void NewChartVisualizer::setActiveSerie(plugin::IVisualizer::ISerie * serie)
@@ -710,8 +707,6 @@ void NewChartVisualizer::onSerieVisible(const QVariant& info, bool visible )
         setScale();
     }
     legend->blockSignals(false);
-
-    plotChanged();
 }
 
 void NewChartVisualizer::recreateScales()
@@ -867,7 +862,6 @@ void NewChartVisualizer::onShiftX( double d )
     if (s) {
         s->setXOffset(d);
         qwtPlot->replot();
-        plotChanged();
     }
 }
 
@@ -877,7 +871,6 @@ void NewChartVisualizer::onShiftY( double d )
     if (s) {
         s->setYOffset(d);
         qwtPlot->replot();
-        plotChanged();
     }
 }
 
@@ -888,8 +881,6 @@ void NewChartVisualizer::onScaleX( double d )
        
         s->setXScale(d);
         qwtPlot->replot();
-
-        plotChanged();
     }
 }
 
@@ -899,8 +890,6 @@ void NewChartVisualizer::onScaleY( double d )
     if (s && d != 0.0) {
         s->setYScale(d);
         qwtPlot->replot();
-
-        plotChanged();
     }
 }
 
@@ -934,15 +923,6 @@ void NewChartVisualizer::adjustOffsetStep( QDoubleSpinBox* spinBox, QwtPlot::Axi
         spinBox->setSingleStep((upper - lower) / 50.0);
     }
 
-}
-
-void NewChartVisualizer::plotChanged()
-{
-    //if(boundsAutoRefresh == true){
-    //    refreshBounds();
-    //}else{
-    //    boundsToRefresh = true;
-    //}
 }
 
 
