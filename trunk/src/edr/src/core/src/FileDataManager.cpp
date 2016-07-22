@@ -576,20 +576,20 @@ void FileDataManager::rawAddFile(const utils::Filesystem::Path & file, const IDa
 
 	sourceParsersSet.insert(sourceParsers.begin(), sourceParsers.end());
 	streamParsersSet.insert(streamParsers.begin(), streamParsers.end());
-	IParserManagerReader::ParserPrototypes sourcesLeft(sourceParsersSet.size());
+	IParserManagerReader::ParserPrototypes streamLeft(streamParsersSet.size());
 
-	auto lastIT = std::set_difference(sourceParsersSet.begin(), sourceParsersSet.end(), streamParsersSet.begin(), streamParsersSet.end(), sourcesLeft.begin());
+	auto lastIT = std::set_difference(streamParsersSet.begin(), streamParsersSet.end(), sourceParsersSet.begin(), sourceParsersSet.end(), streamLeft.begin());
 
-	sourcesLeft.erase(lastIT, sourcesLeft.end());
+	streamLeft.erase(lastIT, streamLeft.end());
 	//obiekty wyci¹gniête z parserów
-		VariantsList objects;
+	VariantsList objects;
 	//preferuje uzycie parserów z w³asn¹ obs³ug¹ I/O - wierzê ¿e zrobi¹ to maksymalnie wydajnie wg w³asnych zasad
-	if (streamParsers.empty() == false) {
-		initializeParsers<StreameFileParser>(streamParsers, file.string(), objects);
+	if (sourceParsers.empty() == false) {
+		initializeParsers<FileParser>(sourceParsers, file.string(), objects);
 	}
 	//teraz uzywam parserów strumieniowych - sam dostarczê im strumieni
-	if (sourceParsers.empty() == false) {
-		initializeParsers<FileParser>(sourcesLeft, file.string(), objects);
+	if (streamLeft.empty() == false) {
+		initializeParsers<StreameFileParser>(streamLeft, file.string(), objects);
 	}
 
 	if (objects.empty() == true) {

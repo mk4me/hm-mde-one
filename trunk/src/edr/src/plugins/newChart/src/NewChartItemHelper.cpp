@@ -131,9 +131,15 @@ void NewVector3ItemHelper::createSeries(const core::VisualizerPtr & visualizer, 
 		z->attachFeature(descf);
 	}
 
+	/*
 	core::VariantPtr wrapperX = core::Variant::wrap<decltype(x)>(x);
 	core::VariantPtr wrapperY = core::Variant::wrap<decltype(x)>(y);
 	core::VariantPtr wrapperZ = core::Variant::wrap<decltype(x)>(z);
+	*/
+
+	core::VariantPtr wrapperX = core::Variant::wrap(x);
+	core::VariantPtr wrapperY = core::Variant::wrap(y);
+	core::VariantPtr wrapperZ = core::Variant::wrap(z);
 
 	static int number = 0;
 	// hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline

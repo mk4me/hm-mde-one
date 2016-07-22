@@ -210,6 +210,9 @@ void VideoParser::acceptedExpressions(Expressions & expressions) const {
 	expDesc.description = "Moving Picture Experts Group format";
 	expressions.insert(Expressions::value_type(".*\\.mpeg$", expDesc));
 
+	expDesc.description = "MPEG-4 Part 14";
+	expressions.insert(Expressions::value_type(".*\\.mp4$", expDesc));
+
 	expDesc.description = "Custom image sequence format (XML based)";
 	expDesc.objectsTypes.clear();
 	expDesc.objectsTypes.push_back(typeid(::VideoStream));
