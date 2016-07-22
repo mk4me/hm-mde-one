@@ -221,12 +221,7 @@ QWidget* NewChartVisualizer::createWidget()
 	widget->addAction(scaleSpinYAction);
     
     
-	coreUI::CoreAction * bandsAction = new coreUI::CoreAction(tr("Operations"), QIcon(":/newChart/icons/charts.png"), tr("Bands"), widget, coreUI::CoreTitleBar::Left);
-    bandsAction->setCheckable(true);
-    bandsAction->setChecked(false);
-    connect(bandsAction, SIGNAL(triggered(bool)), this, SLOT(showBands(bool)));
-	widget->addAction(bandsAction);
-
+	
 	coreUI::CoreAction * movingAvgAction = new coreUI::CoreAction(tr("Moving Average"), QIcon(":/newChart/icons/charts.png"), tr("Moving Average"), widget, coreUI::CoreTitleBar::Left);
 	movingAvgAction->setCheckable(true);
 	movingAvgAction->setChecked(false);
@@ -265,7 +260,6 @@ plugin::IVisualizer::ISerie * NewChartVisualizer::createSerie(const utils::TypeI
 		chartSerie->setName( name);
 		chartSerie->setData(requestedType, data);
 		series.push_back(chartSerie);
-
 		auto statsEntry = statsTable->addEntry(QString("Whole chart"), QString(name.c_str()), chartSerie->getReader());
 
 		chartSerie->setStatsEntry(statsEntry);
@@ -543,6 +537,15 @@ void NewChartVisualizer::update( double deltaTime )
         
         qwtMarker->setVisible(true);
         NewChartSerie* serie = dynamic_cast<NewChartSerie*>(series[currentSerie]);
+
+		// Dodawna seria nie sa podpieta pod timeline, dlatego przekazujemy jej czas z serii, na podstawie ktorej zostala stworzona
+		auto it = additionalCurve2Origin.find(serie);
+		if (it != additionalCurve2Origin.end()) {
+			NewChartSerie* origin = dynamic_cast<NewChartSerie*>(it->second);
+			if (origin) {
+				serie->setTime(origin->getTime());
+			}
+		}
 		if (serie) {
 			if (currentSerieTime != serie->getTime() || currentSerieValue != serie->getCurrentValue()) {
 				currentSerieTime = serie->getTime();
