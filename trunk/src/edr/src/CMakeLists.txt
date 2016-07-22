@@ -28,6 +28,7 @@ ADD_PROJECT(plugin_hmm "corelib;coreui;c3dlib;QWT;vidlib;osgutils;kinematiclib;n
 ADD_PROJECT(plugin_newVdf "dflib;coreui;corelib;plugin_newChart" "plugins/newVdf")
 ADD_PROJECT(plugin_dfElements "dflib;coreui;plugin_newVdf;plugin_kinematic;plugin_c3d" "plugins/dfElements")
 ADD_PROJECT(plugin_imuCostume "corelib;coreui;kinematiclib;kinematicUtils;BOOST;QT;OSG;plugin_c3d;plugin_hmdbCommunication;plugin_newChart;imucostumelib" "plugins/imuCostume")
+ADD_PROJECT(plugin_skiData "corelib;coreui;BOOST;QT;OSG;plugin_newChart;plugin_c3d;plugin_video" "plugins/skiData")
 
 #ADD_PROJECT(plugin_orientationsFit "corelib;GeneralAlgorithms;OSG;BOOST;utils;IMU;QuatUtils;QT" "plugins/orientationsFit")
 END_PROJECTS_GROUP()
