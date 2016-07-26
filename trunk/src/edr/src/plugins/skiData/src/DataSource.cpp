@@ -304,7 +304,7 @@ core::IHierarchyItemPtr generateVec3ElementSubBranch(core::VariantConstPtr data,
 	v->copyMetadata(*data);
 	v->setMetadata("core/name", name.toStdString());
 
-	return utils::make_shared<core::HierarchyDataItem>(v, QIcon(), name, description);
+	return utils::make_shared<core::HierarchyDataItem>(v, QIcon(), name, description, utils::make_shared<NewChartItemHelper>(v));
 }
 
 core::IHierarchyItemPtr generateVec3MagnitudeSubBranch(core::VariantConstPtr data,
@@ -315,7 +315,7 @@ core::IHierarchyItemPtr generateVec3MagnitudeSubBranch(core::VariantConstPtr dat
 	v->copyMetadata(*data);
 	v->setMetadata("core/name", name.toStdString());
 
-	return utils::make_shared<core::HierarchyDataItem>(v, QIcon(), name, description);
+	return utils::make_shared<core::HierarchyDataItem>(v, QIcon(), name, description, utils::make_shared<NewChartItemHelper>(v));
 }
 
 void generateVec3SubBranches(core::VariantConstPtr data, core::IHierarchyItemPtr root)
@@ -342,10 +342,47 @@ core::IHierarchyItemPtr generateVec3CompleteBranch(core::VariantConstPtr data,
 }
 
 #define GENERATE_IMU_BRANCH_INITIALIZERS(name) \
-	auto initializerAcc = utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(imu, name, accelerometer)>>>(data, uag, feature);\
-	auto initializerGyro = utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(imu, name, gyroscope)>>>(data, uag, feature);\
-	auto initializerMag = utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(imu, name, magnetometer)>>>(data, uag, feature);\
-	auto initializerOrient = utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(imu, name, orientation)>>>(data, uag, feature);
+	auto initializerAcc = utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(imu, name, accelerometer)>>>(data, uag, all_acc_descriptions);\
+	auto initializerGyro = utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(imu, name, gyroscope)>>>(data, uag, all_gyro_descriptions);\
+	auto initializerMag = utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(imu, name, magnetometer)>>>(data, uag, all_mag_descriptions);\
+	auto initializerOrient = utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(imu, name, orientation)>>>(data, uag, all_orient_descriptions);
+
+template<typename ValueType = float>
+dataaccessor::IFeaturePtr generateDescription(const QString & name, const QString & valueUnit)
+{
+	return dataaccessor::IFeaturePtr(dataaccessor::DescriptorFeature::create<ValueType, float>(name.toStdString(), valueUnit.toStdString(), "s"));
+}
+
+static const auto acc_description = generateDescription<osg::Vec3>("Acceleration", "m/s^2");
+static const auto gyro_description = generateDescription<osg::Vec3>("Gyroscope", "deg/s");
+static const auto mag_description = generateDescription<osg::Vec3>("Magnetometer", "mikroT");
+static const auto orient_description = generateDescription<osg::Vec3>("Orientation", "deg");
+static const auto heading_description = generateDescription<>("GPS Heading", "deg");
+static const auto height_description = generateDescription<>("GPS Height", "m");
+static const auto long_description = generateDescription<>("GPS Longitude", "deg");
+static const auto lat_description = generateDescription<>("GPS Latitude", "deg");
+static const auto speed2d_description = generateDescription<>("GPS Speed 2D", "m/s");
+static const auto speed3d_description = generateDescription<>("GPS Speed 3D", "m/s");
+static const auto temp_description = generateDescription<>("Temperature", "degC");
+static const auto pressure_description = generateDescription<>("Pressure", "hPa");
+
+#define GENERATE_IMU_BRANCH_DESCRIPTORS \
+	std::vector<dataaccessor::IFeaturePtr> all_acc_descriptions; all_acc_descriptions.push_back(feature); all_acc_descriptions.push_back(acc_description); \
+	std::vector<dataaccessor::IFeaturePtr> all_gyro_descriptions; all_gyro_descriptions.push_back(feature); all_gyro_descriptions.push_back(gyro_description); \
+	std::vector<dataaccessor::IFeaturePtr> all_mag_descriptions; all_mag_descriptions.push_back(feature); all_mag_descriptions.push_back(mag_description); \
+	std::vector<dataaccessor::IFeaturePtr> all_orient_descriptions; all_orient_descriptions.push_back(feature); all_orient_descriptions.push_back(orient_description);
+
+#define GENERATE_GPS_BRANCH_DESCRIPTORS \
+	std::vector<dataaccessor::IFeaturePtr> all_long_descriptions; all_long_descriptions.push_back(feature); all_long_descriptions.push_back(long_description); \
+	std::vector<dataaccessor::IFeaturePtr> all_lat_descriptions; all_lat_descriptions.push_back(feature); all_lat_descriptions.push_back(lat_description); \
+	std::vector<dataaccessor::IFeaturePtr> all_heading_descriptions; all_heading_descriptions.push_back(feature); all_heading_descriptions.push_back(heading_description); \
+	std::vector<dataaccessor::IFeaturePtr> all_height_descriptions; all_height_descriptions.push_back(feature); all_height_descriptions.push_back(height_description); \
+	std::vector<dataaccessor::IFeaturePtr> all_speed2d_descriptions; all_speed2d_descriptions.push_back(feature); all_speed2d_descriptions.push_back(speed2d_description); \
+	std::vector<dataaccessor::IFeaturePtr> all_speed3d_descriptions; all_speed3d_descriptions.push_back(feature); all_speed3d_descriptions.push_back(speed3d_description); \
+
+#define GENERATE_ENVIRONMENT_BRANCH_DESCRIPTORS \
+	std::vector<dataaccessor::IFeaturePtr> all_temp_descriptions; all_temp_descriptions.push_back(feature); all_temp_descriptions.push_back(temp_description); \
+	std::vector<dataaccessor::IFeaturePtr> all_pressure_descriptions; all_pressure_descriptions.push_back(feature); all_pressure_descriptions.push_back(pressure_description); \
 
 core::IHierarchyItemPtr generateIMUSubBranch(core::VariantConstPtr data,
 	const QString & name, const QString & description, core::VariantInitializerPtr iacc,
@@ -386,6 +423,8 @@ core::IHierarchyItemPtr generateIMUBranch(core::VariantConstPtr data,
 	const dataaccessor::UniformArgumentsGenerator<float> & uag,
 	utils::shared_ptr<dataaccessor::UniformArgumentsFeature<float>> feature)
 {
+	GENERATE_IMU_BRANCH_DESCRIPTORS
+
 	auto root = utils::make_shared<core::HierarchyItem>("IMU", description);
 	{
 		GENERATE_IMU_BRANCH_INITIALIZERS(leftSki)
@@ -416,7 +455,7 @@ core::IHierarchyItemPtr generateScalarBranch(core::VariantConstPtr data,
 	v->copyMetadata(*data);
 	v->setMetadata("core/name", name.toStdString());	
 
-	return utils::make_shared<core::HierarchyDataItem>(v, QIcon(), name, description);
+	return utils::make_shared<core::HierarchyDataItem>(v, QIcon(), name, description, utils::make_shared<NewChartItemHelper>(v));
 }
 
 core::IHierarchyItemPtr generateGPSBranch(core::VariantConstPtr data,
@@ -425,13 +464,16 @@ core::IHierarchyItemPtr generateGPSBranch(core::VariantConstPtr data,
 	utils::shared_ptr<dataaccessor::UniformArgumentsFeature<float>> feature)
 {
 	auto root = utils::make_shared<core::HierarchyItem>("GPS", description);
+
+	GENERATE_GPS_BRANCH_DESCRIPTORS
+
 	{
 		auto child = utils::make_shared<core::HierarchyItem>("Position", description);
 		{
-			child->appendChild(generateScalarBranch(data, "Longitude", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(gps, position, longnitude)>>>(data, uag, feature)));
-			child->appendChild(generateScalarBranch(data, "Latitude", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(gps, position, latitude)>>>(data, uag, feature)));
-			child->appendChild(generateScalarBranch(data, "Height", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(gps, position, height)>>>(data, uag, feature)));
-			child->appendChild(generateScalarBranch(data, "Heading", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(gps, position, heading)>>>(data, uag, feature)));
+			child->appendChild(generateScalarBranch(data, "Longitude", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(gps, position, longnitude)>>>(data, uag, all_long_descriptions)));
+			child->appendChild(generateScalarBranch(data, "Latitude", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(gps, position, latitude)>>>(data, uag, all_lat_descriptions)));
+			child->appendChild(generateScalarBranch(data, "Height", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(gps, position, height)>>>(data, uag, all_height_descriptions)));
+			child->appendChild(generateScalarBranch(data, "Heading", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(gps, position, heading)>>>(data, uag, all_heading_descriptions)));
 		}
 		root->appendChild(child);
 	}
@@ -439,8 +481,8 @@ core::IHierarchyItemPtr generateGPSBranch(core::VariantConstPtr data,
 	{
 		auto child = utils::make_shared<core::HierarchyItem>("Speed", description);
 		{
-			child->appendChild(generateScalarBranch(data, "2D", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(gps, speed, speed2D)>>>(data, uag, feature)));
-			child->appendChild(generateScalarBranch(data, "3D", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(gps, speed, speed3D)>>>(data, uag, feature)));
+			child->appendChild(generateScalarBranch(data, "2D", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(gps, speed, speed2D)>>>(data, uag, all_speed2d_descriptions)));
+			child->appendChild(generateScalarBranch(data, "3D", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(gps, speed, speed3D)>>>(data, uag, all_speed3d_descriptions)));
 		}
 		root->appendChild(child);
 	}
@@ -454,9 +496,11 @@ core::IHierarchyItemPtr generateEnvironmentBranch(core::VariantConstPtr data,
 	utils::shared_ptr<dataaccessor::UniformArgumentsFeature<float>> feature)
 {
 	auto root = utils::make_shared<core::HierarchyItem>("Environment", description);
+
+	GENERATE_ENVIRONMENT_BRANCH_DESCRIPTORS
 	
-	root->appendChild(generateScalarBranch(data, "Temperature", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(environment, temperature)>>>(data, uag, feature)));
-	root->appendChild(generateScalarBranch(data, "Pressure", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(environment, preasure)>>>(data, uag, feature)));
+	root->appendChild(generateScalarBranch(data, "Temperature", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(environment, temperature)>>>(data, uag, all_temp_descriptions)));
+	root->appendChild(generateScalarBranch(data, "Pressure", "", utils::make_shared<SkiDataInitializerT<dataaccessor::GeneralContainerValueExtractor<MEMBER_EXTRACTOR_NAME_N(environment, preasure)>>>(data, uag, all_pressure_descriptions)));
 
 	return root;
 }

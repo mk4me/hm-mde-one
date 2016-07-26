@@ -11,6 +11,17 @@
 #include <QtWidgets/QLayout>
 #include <corelib/Variant.h>
 
+QString processTitle(const std::string & title)
+{
+	QString ret(title.c_str());
+
+	ret.replace("deg", QChar(0x00B0));
+	ret.replace("micro", QChar(0x00B5));
+
+	return ret;
+}
+
+
 core::VisualizerPtr NewChartItemHelper::createVisualizer(core::IVisualizerManager* manager)
 {
 	core::IVisualizerManager::VisualizerPrototypes prototypes;
@@ -40,7 +51,7 @@ core::VisualizerPtr NewChartItemHelper::createVisualizer(core::IVisualizerManage
 
 		}
 
-		chart->setTitle(QString(title.c_str()));
+		chart->setTitle(processTitle(title));
 
 	}
 
@@ -97,7 +108,7 @@ core::VisualizerPtr NewVector3ItemHelper::createVisualizer(core::IVisualizerMana
 
 		}
 
-		chart->setTitle(QString(title.c_str()));
+		chart->setTitle(processTitle(title));
 	}
 	return visualizer;
 }

@@ -20,8 +20,8 @@ namespace skidata
 
 		SkiDataInitializerT(core::VariantConstPtr rawData,
 			const dataaccessor::UniformArgumentsGenerator<float> & uag,
-			utils::shared_ptr<dataaccessor::UniformArgumentsFeature<float>> feature)
-			: rawData(rawData), uag(uag), feature(feature)
+			const std::vector<dataaccessor::IFeaturePtr> & features)
+			: rawData(rawData), uag(uag), features(features)
 		{
 
 		}
@@ -34,7 +34,9 @@ namespace skidata
 			utils::shared_ptr<const SkiData> sd;
 			if (rawData->tryGet(sd) == true) {								
 				auto data = dataaccessor::wrap(sd, uag, Extractor());
-				data->attachFeature(feature);
+				for (const auto & f : features) {
+					data->attachFeature(f);
+				}
 				object->set(utils::ObjectWrapper::wrap(data));
 			}
 		}
@@ -42,13 +44,13 @@ namespace skidata
 		//! \return Kopia inicjalizatora
 		virtual IVariantInitializer * clone() const override
 		{
-			return new SkiDataInitializerT<Extractor>(rawData, uag, feature);
+			return new SkiDataInitializerT<Extractor>(rawData, uag, features);
 		}
 
 	private:
-		core::VariantConstPtr rawData;
-		dataaccessor::UniformArgumentsGenerator<float> uag;
-		utils::shared_ptr<dataaccessor::UniformArgumentsFeature<float>> feature;
+		const core::VariantConstPtr rawData;
+		const dataaccessor::UniformArgumentsGenerator<float> uag;
+		const std::vector<dataaccessor::IFeaturePtr> features;
 	};
 }
 

@@ -57,9 +57,9 @@ static inline ProcessedIMU unpackIMU(const std::vector<std::string> & data, std:
 {
 	ProcessedIMU ret;
 	ret.orientation = unpackVec3(data, idx + 0);
-	ret.accelerometer = unpackVec3(data, idx + 4);
+	ret.accelerometer = unpackVec3(data, idx + 4) * 9.80665f / 1000.0f;
 	ret.gyroscope = unpackVec3(data, idx + 7);
-	ret.magnetometer = unpackVec3(data, idx + 10);
+	ret.magnetometer = unpackVec3(data, idx + 10) / 10.0f;
 	return ret;
 }
 
@@ -68,9 +68,9 @@ static inline GPSData unpackGPS(const std::vector<std::string> & data, std::size
 	GPSData ret;
 	ret.position.latitude = boost::lexical_cast<float>(data[idx + 0]);
 	ret.position.longnitude = boost::lexical_cast<float>(data[idx + 1]);
-	ret.position.height = boost::lexical_cast<float>(data[idx + 2]);
-	ret.speed.speed2D = boost::lexical_cast<float>(data[idx + 3]);
-	ret.speed.speed3D = boost::lexical_cast<float>(data[idx + 4]);
+	ret.position.height = boost::lexical_cast<float>(data[idx + 2]) / 1000.0;
+	ret.speed.speed2D = boost::lexical_cast<float>(data[idx + 3]) / 10.0f;
+	ret.speed.speed3D = boost::lexical_cast<float>(data[idx + 4]) / 10.0f;
 	ret.position.heading = boost::lexical_cast<float>(data[idx + 5]);
 	return ret;
 }
