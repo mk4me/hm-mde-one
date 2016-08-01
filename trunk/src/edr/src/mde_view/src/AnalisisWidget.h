@@ -63,7 +63,10 @@ private:
     QDockWidget* createDockVisualizer(const core::VisualizerPtr & visualizer, const QString& titleName);
     QDockWidget* createAndAddDockVisualizer( core::IHierarchyDataItemConstPtr treeItem, core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet);
     QDockWidget* createAndAddDockVisualizer( core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet, const QString &path );
-     
+
+	QString createPathDesc(core::IHierarchyDataItemConstPtr treeItem);
+
+
     //! dodaje widget z filtrami
     //! \param filter dodawany widget
     void addDataFilterWidget(coreUI::DataFilterWidget* filter);

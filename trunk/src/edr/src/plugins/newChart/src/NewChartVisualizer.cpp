@@ -20,6 +20,9 @@
 #include <boost/lexical_cast.hpp>
 #include <coreui/CoreAction.h>
 #include <coreui/CoreWidgetAction.h>
+#include <corelib/HierarchyHelper.h>
+#include <corelib/HierarchyDataItem.h>
+#include "plugins/newChart/NewChartItemHelper.h"
 
 #include "NewChartStreamSerie.h"
 #include "dataaccessorlib/Wrappers.h"
@@ -234,7 +237,18 @@ QWidget* NewChartVisualizer::createWidget()
 	coreUI::CoreWidgetAction * movingAvgSpinAction = new coreUI::CoreWidgetAction(widget, tr("Moving Average"), coreUI::CoreTitleBar::Right);
 	movingAvgSpinAction->setDefaultWidget(movingAvgBox.first);
 	widget->addAction(movingAvgSpinAction);
+
+	coreUI::CoreAction * removeSerieAction = new coreUI::CoreAction(tr("Operations"), QIcon(":/newChart/icons/charts.png"), tr("Remove serie"), widget, coreUI::CoreTitleBar::Left);
+	removeSerieAction->setCheckable(false);
+	connect(removeSerieAction, SIGNAL(triggered()), this, SLOT(removeCurrentSerie()));
+	widget->addAction(removeSerieAction);
    
+	coreUI::CoreAction * addToHierarchy = new coreUI::CoreAction(tr("Operations"), QIcon(":/newChart/icons/charts.png"), tr("Add to hierarchy"), widget, coreUI::CoreTitleBar::Left);
+	addToHierarchy->setCheckable(false);
+	addToHierarchy->setEnabled(false);
+	connect(addToHierarchy, SIGNAL(triggered()), this, SLOT(addToHierarchy()));
+	widget->addAction(addToHierarchy);
+
     return widget; 
 }
 
@@ -325,7 +339,13 @@ void NewChartVisualizer::removeSerie( plugin::IVisualizer::ISerie *serie )
 	(*it)->removeItemsFromPlot();
 	qwtPlot->replot();
 
+	auto mapIt = additionalCurve2Origin.find(*it);
+	if (mapIt != additionalCurve2Origin.end()) {
+		additionalCurve2Origin.erase(mapIt);
+	}
+
     series.erase(it);
+	setActiveSerie(-1);
 }
 
 void NewChartVisualizer::setActiveSerie(plugin::IVisualizer::ISerie * serie)
@@ -368,7 +388,7 @@ void NewChartVisualizer::setActiveSerie( int idx )
     bool layersRefreshRequired = false;
 
     //ostatnia zmieniamy na nieaktywna
-    if(currentSerie > -1){
+    if(currentSerie > -1 && currentSerie < series.size()){
         INewChartSeriePrivate* serie = series[currentSerie];
         serie->setActive(false);
 
@@ -966,6 +986,14 @@ void NewChartVisualizer::setMovingAverageTimeWindow(int timeWindow)
 	}
 }
 
+void NewChartVisualizer::removeCurrentSerie()
+{
+	auto serie = tryGetCurrentSerie();
+	if (serie) {
+		removeSerie(dynamic_cast<plugin::IVisualizer::ISerie*>(serie));
+	}
+}
+
 bool NewChartVisualizer::isCurveFromSerie(const QwtPlotCurve* curve) const
 {
     for (auto it = series.begin(); it != series.end(); ++it) {
@@ -1057,5 +1085,24 @@ NewChartLegendItem* NewChartVisualizer::getLegendLabel( QwtPlotCurve* curve )
     return nullptr;
 }
 
+void NewChartVisualizer::initHierarchyProvider(core::IHierarchyItemPtr parent)
+{
+	this->parent = parent;
+}
 
+void NewChartVisualizer::disconnectedFromHierarchy()
+{
+	this->parent = core::IHierarchyItemPtr();
+}
+
+void NewChartVisualizer::addToHierarchy()
+{
+	auto serie = tryGetCurrentSerie();
+	if (serie && parent) {
+		auto data = serie->asISerie()->getData();
+		core::HierarchyHelperPtr helper = utils::make_shared<NewChartItemHelper>(data);
+		auto dataItem = core::HierarchyItemPtr(new core::HierarchyDataItem(data, QIcon(), QString::fromStdString(data->data()->getClassName()), QString(), helper));
+		parent->appendChild(dataItem);
+	}
+}
 

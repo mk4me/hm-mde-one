@@ -43,6 +43,7 @@ SET_PUBLIC_HEADERS(
 	HierarchyItem.h
 	IHierarchyDataItem.h
 	IHierarchyItem.h
+	IHierarchyProvider.h
 	IFilterProvider.h
 	IFilterCommand.h
 	IFilterBundle.h

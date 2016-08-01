@@ -32,6 +32,7 @@
 #include "NewChartState.h"
 #include "NewChartPicker.h"
 #include "NewChartEvents.h"
+#include "corelib/IHierarchyProvider.h"
 
 class StatsTable;
 class NewChartLegend;
@@ -40,7 +41,7 @@ class NewChartLegendItem;
 
 //! Wizualizator wykresów, oparty o QWT
 //! \version 0.9.1
-class NewChartVisualizer : public QObject, public INewChartVisualizer
+class NewChartVisualizer : public QObject, public INewChartVisualizer, public core::IHierarchyProvider
 {
     friend class NewChartSerie;
     friend class NewChartStreamSerie;
@@ -209,8 +210,16 @@ private slots:
       void showMovingAverageCurve(bool show);
       //! Okno czasowe dla średniej kroczącej
       void setMovingAverageTimeWindow(int timeWindow);
+	  //! Usuwa wybraną serię danych
+	  void removeCurrentSerie();
+	  void addToHierarchy();
+
+public:
+	  virtual void initHierarchyProvider(core::IHierarchyItemPtr parent);
+	  virtual void disconnectedFromHierarchy();
 
 private:
+	//! Zawiera mapowanie utworzonych krzywych do ich oryginałów
 	std::map<INewChartSeriePrivate*, INewChartSeriePrivate*> additionalCurve2Origin;
     //! Obiekt wykresu z Qwt, serce wizualizatora
     QwtPlot* qwtPlot;
@@ -282,6 +291,8 @@ private:
     // TODO to jest hack dla skali z zewnątrz, powinno stworzyć się obiekt, dla każdego przypadku rysowania skali,
     // np. skala globalna automatyczna, manualna, do aktywnej, procentowa i podmieniac je tak jak we wzorcu strategia
     bool customScale;
+
+	core::IHierarchyItemPtr parent;
 };
 typedef utils::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;
 typedef utils::shared_ptr<const NewChartVisualizer> NewChartVisualizerConstPtr;

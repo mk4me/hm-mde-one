@@ -22,8 +22,12 @@
 #include <QtCore/QBuffer>
 #include "AnalysisTreeContext.h"
 #include <coreui/SimpleContext.h>
+//#include "WaitingWidget.h"
+#include "corelib/IHierarchyProvider.h"
 //#include "SummaryWindow.h"
 //#include "AnalisisTreeWidget.h"
+
+
 
 AnalisisWidget::AnalisisWidget( AnalisisModelPtr model, ContextEventFilterPtr contextEventFilter, QWidget* parent,
 	int margin /*= 2*/, Qt::WindowFlags flags /*= 0*/ ) : 
@@ -165,46 +169,52 @@ void AnalisisWidget::visualizerDestroyed(QObject * visualizer)
 
 QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::IHierarchyDataItemConstPtr treeItem, core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet)
 {
-    std::stack<QString> pathStack;
-    core::IHierarchyItemConstPtr pomItem = utils::dynamic_pointer_cast<const core::IHierarchyItem>(treeItem);
-
-    while(pomItem != nullptr){
-        pathStack.push(pomItem->getName());
-        pomItem = pomItem->getParent();
-    }
-
-    QString path;
-
-    path += pathStack.top();
-    pathStack.pop();
-
-    while(pathStack.empty() == false){
-        path += "/";
-        path += pathStack.top();
-        pathStack.pop();
-    }
-
-    static int incr = 0;
-    QString suffix = QString("/id_%1").arg(incr++);
-    path += suffix;
-    return createAndAddDockVisualizer(helper, dockSet, path);
-
+	auto path = createPathDesc(treeItem);
+	return createAndAddDockVisualizer(helper, dockSet, path);
 }
 
 QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet, const QString &path )
 {
     core::VisualizerPtr visualizer = helper->createVisualizer(plugin::getVisualizerManager());
     visualizer->addObserver(this->model.get());
+	auto visW = visualizer->visualizer();
+	core::IHierarchyProvider* provider = dynamic_cast<core::IHierarchyProvider*>(visW);
+	if (provider) {
+		core::IHierarchyItemPtr parent = utils::const_pointer_cast<core::IHierarchyItem>(helper->getParent().lock());
+		provider->initHierarchyProvider(parent);
+	}
     QDockWidget* visualizerDockWidget = createDockVisualizer(visualizer, path);
-
+	
     if (dockSet) {
         dockSet->addDockWidget(visualizerDockWidget);
     } else {
         topMainWindow->autoAddDockWidget( visualizerDockWidget, tr("Group %1").arg(topMainWindow->count()+1) );
     }
-
+	
     model->addSeriesToVisualizer(visualizer, helper, path, visualizerDockWidget);
     return visualizerDockWidget;
+
+	//--------------------------------	
+	//core::VisualizerPtr visualizer = helper->createVisualizer(plugin::getVisualizerManager());
+	//visualizer->addObserver(this->model.get());
+	//auto visW = visualizer->visualizer();
+	//core::IHierarchyProvider* provider = dynamic_cast<core::IHierarchyProvider*>(visW);
+	//if (provider) {
+	//	core::IHierarchyItemPtr parent = utils::const_pointer_cast<core::IHierarchyItem>(helper->getParent().lock());
+	//	provider->initHierarchyProvider(parent);
+	//}
+	//QDockWidget* visualizerDockWidget = createDockVisualizer(visualizer, path);
+	//auto fun = [=]() -> void {
+	//	model->addSeriesToVisualizer(visualizer, helper, path, visualizerDockWidget);
+	//};
+	//auto dck = new QDockWidget("DA");
+	//dck->setWidget(new WaitingWidget(visualizerDockWidget, fun));
+	//if (dockSet) {
+	//    dockSet->addDockWidget(dck);
+	//} else {
+	//    topMainWindow->autoAddDockWidget( dck, tr("Group %1").arg(topMainWindow->count()+1) );
+	//}
+	//return dck;
 }
 
 void AnalisisWidget::setContextItems( coreUI::IAppUsageContextManager* manager, coreUI::IAppUsageContextPtr parent, QTabWidget * flexiTabWidget )
@@ -808,4 +818,31 @@ void AnalisisWidget::initReportsCombos()
     QDir cssDir(dirPath, "*.css");
     styleComboBox->addItem(tr("Empty"));
     styleComboBox->addItems(cssDir.entryList());
+}
+
+QString AnalisisWidget::createPathDesc(core::IHierarchyDataItemConstPtr treeItem)
+{
+	std::stack<QString> pathStack;
+	core::IHierarchyItemConstPtr pomItem = utils::dynamic_pointer_cast<const core::IHierarchyItem>(treeItem);
+
+	while (pomItem != nullptr) {
+		pathStack.push(pomItem->getName());
+		pomItem = pomItem->getParent();
+	}
+
+	QString path;
+
+	path += pathStack.top();
+	pathStack.pop();
+
+	while (pathStack.empty() == false) {
+		path += "/";
+		path += pathStack.top();
+		pathStack.pop();
+	}
+
+	static int incr = 0;
+	QString suffix = QString("/id_%1").arg(incr++);
+	path += suffix;
+	return path;
 }
