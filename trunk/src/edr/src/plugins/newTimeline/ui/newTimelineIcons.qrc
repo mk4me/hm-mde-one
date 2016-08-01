@@ -1,5 +1,10 @@
 <RCC>
   <qresource prefix="newTimeline/icons">
+    <file alias="configureStep.png">../resources/embedded/icons/configureStep.png</file>
+    <file alias="toBegin.png">../resources/embedded/icons/toBegin.png</file>
+    <file alias="toBegin2.png">../resources/embedded/icons/toBegin2.png</file>
+    <file alias="toEnd.png">../resources/embedded/icons/toEnd.png</file>
+    <file alias="toEnd2.png">../resources/embedded/icons/toEnd2.png</file>
     <file alias="direction-white.png">../resources/embedded/icons/direction-white.png</file>
     <file alias="direction.png">../resources/embedded/icons/direction.png</file>
     <file alias="direction2-white.png">../resources/embedded/icons/direction2-white.png</file>

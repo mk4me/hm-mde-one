@@ -13,7 +13,7 @@
 #include <plugins/newChart/Wrappers.h>
 
 DEFINE_WRAPPER(c3dlib::VectorChannelReaderInterface, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
-//DEFINE_WRAPPER(c3dlib::ScalarChannelReaderInterface, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
+DEFINE_WRAPPER(c3dlib::ScalarChannelReaderInterface, utils::PtrPolicyStd, utils::ClonePolicyForbidden);
 DEFINE_WRAPPER_INHERITANCE(c3dlib::MarkerChannel, c3dlib::VectorChannelReaderInterface);
 DEFINE_WRAPPER_INHERITANCE(c3dlib::ForceChannel, c3dlib::VectorChannelReaderInterface);
 DEFINE_WRAPPER_INHERITANCE(c3dlib::MomentChannel, c3dlib::VectorChannelReaderInterface);

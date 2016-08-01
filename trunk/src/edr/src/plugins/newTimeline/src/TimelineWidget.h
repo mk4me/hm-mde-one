@@ -32,10 +32,19 @@
 #include "TimelineControlsWidget.h"
 #include "ChannelsTreeItem.h"
 
+class TimelineControlActionsWidget;
 
 class TimelineWidget : public QWidget, public Ui::TimelineWidget, public timeline::View
 {
     Q_OBJECT;
+
+private:
+
+	enum TimelinePosition {
+		TStart,
+		TMiddle,
+		TEnd
+	};
 
 public:
     TimelineWidget(const timeline::ControllerPtr & controller, QWidget * parent = nullptr, Qt::WindowFlags f = 0);
@@ -75,10 +84,12 @@ signals:
 
 private slots:
 
-	void onLoopbackStateChanged(int state);
+	//void onLoopbackStateChanged(int state);
 
     void onItemClicked(QTreeWidgetItem * item, int column);
     void onItemDblClicked(QTreeWidgetItem * item, int column);
+
+	void onStepConfiguration();
 
     //! \param pnt Pozycja zapytania o menu kotnekstowe dla drzewa kanałów
     void showChannelsTreeContextMenu(const QPoint& pnt);
@@ -93,15 +104,15 @@ private slots:
     //! \param scale Nowa skala dla timeline
     void scaleChanged(double scale);
     //! \param backward Czy mamy odtwarzac timeline do tyłu
-    void playbackDirectionChanged(bool backward);
+    //void playbackDirectionChanged(bool backward);
     //! \param pauseTimeline Czy wstrzymujemy timeline
-    void pause(bool pauseTimeline);
+    //void pause(bool pauseTimeline);
     //! \brief Cofa czas do początku
-    void toBegin();
+    //void toBegin();
     //! \brief Ustawia czas na końcu
-    void toEnd();
+    //void toEnd();
     //! \brief Zatrzymuje timeline i wraca do początku
-    void stop();
+    //void stop();
     //! \param state Stan checkboxa związanego z danym kanałem
     void channelsActivityChanged(int state);
     //! \brief Właściwa metoda update
@@ -114,7 +125,7 @@ private:
     //! \brief Odświeża kanał, tagi, marker aktualnego czasu
     void refreshChannels();
     //! \brief Odświeża ustawienia odtwarzacza timeline - skalę, kierunek, aktualny czas
-    void refreshPlayerStatus();
+    //void refreshPlayerStatus();
 
     static void compareNodes(const std::set<QTreeWidgetItem*> & uiNodes, const std::set<timeline::Model::TChannelConstPtr> & modelNodes,
         std::set<QTreeWidgetItem*> & toDeleteUINodes, std::vector<timeline::Model::TChannelConstPtr> & missingModelNodes);
@@ -125,12 +136,16 @@ private:
 
     static QWidget * createTreeItemWidget(QWidget * widget);
 
+	static TimelinePosition decodePosition(double normalizedTime);
+
 private:
 
     //! Wpis w drzewie będący jego najwyższym poziomem - zawiera slider z osią czasu
     QTreeWidgetItem * rootItem;
     //! Menu kontekstowe do usuwania zaznaczonych kanałów
     QMenu * removeChannelsMenu;
+
+	QAction * configureStep;
     ////! Labelka opisująca kontrolkę zmiany skali
     //QLabel * scaleLabel;
     //! Kontrolka do zmiany skali timeline
@@ -140,17 +155,17 @@ private:
     ////! Labelka opisująca kontrolkę zmiany czasu w formie tekstowej i spinnera
     //QLabel * timeLabel;
     //! Akcja do zmiany kierunku odtwarzania
-    QAction * playbackDirectionAction;
+    //QAction * playbackDirectionAction;
     //! Akcja ustawiająca czas na początek timeline
-    QAction * timeToBeginAction;
+    //QAction * timeToBeginAction;
     //! Akcja ustawiająca czas na koniec timeline
-    QAction * timeToEndAction;
+    //QAction * timeToEndAction;
     //! Akcja zarządzająca odtwarzaniem/wstrzymywaniem timeline
-    QAction * playPauseAction;
+    //QAction * playPauseAction;
     //! Akcja zatrzymująca timeline
-    QAction * stopAction;
+    //QAction * stopAction;
 	//! Powtarzanie odtwarzania
-	QCheckBox * loopbackCheckBox;
+	//QCheckBox * loopbackCheckBox;
     //! Widget do precyzyjnego ustawiania czasu
     QDateTimeEdit * preciseTimeWidget;
     //! Kontener na akcje kontrolujące timeline
@@ -162,7 +177,7 @@ private:
     //! prawy kontener na kontrolki timeline - aktualnie pusty
     QToolBar * rightTabButton;
 
-
+	TimelineControlActionsWidget * controlActionsWidget;
     //! Nowy slider z osią czasu
     TimeSliderWidget * slider;
 
@@ -171,6 +186,8 @@ private:
     TimelineService::UIChannelAction onItemClickAction;
     TimelineService::UIChannelAction onItemDblClickAction;
     TimelineService::UIChannelAction onItemRemoveAction;
+
+	TimelinePosition previousPosition;
 };
 
 #endif  //  HEADER_GUARD___TIMELINEWIDGET_H__

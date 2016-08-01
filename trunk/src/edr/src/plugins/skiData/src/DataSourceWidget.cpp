@@ -21,11 +21,15 @@ DataSourceWidget::~DataSourceWidget()
 
 void DataSourceWidget::onOpen()
 {	
-	auto dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QString(),
-		QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toStdString();
+	static QString lastPath = QString();
+
+	auto pdir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), lastPath,
+		QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+	auto dir = pdir.toStdString();
 
 	utils::Filesystem::Path p(dir);
 	if (p.empty() == false && utils::Filesystem::pathExists(p) == true) {
+		lastPath = pdir;
 		auto managed = ds->currentRuns();
 
 		if (std::find(managed.begin(), managed.end(), p) == managed.end()) {
@@ -161,6 +165,7 @@ void DataSourceWidget::onRemove()
 	auto path = utils::Filesystem::Path(item->data(2, Qt::DisplayRole).toString().toStdString().c_str());
 	try {
 		ds->removeRun(path);
+		delete ui->dataTreeWidget->takeTopLevelItem(ui->dataTreeWidget->indexOfTopLevelItem(item));
 	}
 	catch (...) {
 
@@ -173,10 +178,12 @@ void DataSourceWidget::onRemoveAll()
 
 	for (const auto & p : managedRuns) {
 		try {
-			ds->removeRun(p);			
+			ds->removeRun(p);
 		}
 		catch (...) {
 
 		}
 	}
+
+	ui->dataTreeWidget->clear();
 }

@@ -17,6 +17,7 @@ SET_PUBLIC_HEADERS(
 	CoreMainWindow.h	
 	CoreAction.h
 	CoreDockWidget.h
+	CoreTimeStepEditorWidget.h
 	CoreVectorInputDelegate.h
 	CoreSplitableDockWidget.h
 	CoreSplitableDockWidgetT.h
@@ -76,6 +77,7 @@ SET_SOURCE_FILES(
 	CoreAction.cpp
 	CorePopupPrivate.cpp
 	CoreDockWidget.cpp
+	CoreTimeStepEditorWidget.cpp
 	CoreSplitableDockWidget.cpp
 	CoreFlexiToolBar.cpp
 	CoreFlexiToolBarSection.cpp
@@ -132,6 +134,7 @@ SET_MOC_FILES(
 	CoreAction.h	
 	CorePopupPrivate.h
 	CoreDockWidget.h
+	CoreTimeStepEditorWidget.h
 	CoreFlexiToolBar.h
 	CoreFlexiToolBarSection.h
 	CoreTitleBar.h
@@ -158,6 +161,7 @@ SET_UI_FILES(
 	CoreLogWidget.ui
 	CoreFlexiToolBarSection.ui
 	CoreTitleBar.ui
+	CoreTimeStepEditorWidget.ui
 	CorePopup.ui
 	configurationDialog.ui
 	filter.ui

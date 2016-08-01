@@ -19,7 +19,7 @@ ADD_PROJECT(plugin_medusaExporter "BOOST;coreui;corelib;plugin_hmdbCommunication
 ADD_PROJECT(plugin_fileSource "BOOST;corelib;c3dlib;kinematiclib;osgutils;kinematicUtils;hanimlib;acclaimformatslib;biovisionformatslib;viconformatslib" "plugins/fileSource")
 #ADD_PROJECT(plugin_sampleService "BOOST;corelib" "plugins/sampleService")
 ADD_PROJECT(plugin_video "vidlib;FFMPEG;corelib;osgui" "plugins/video")
-ADD_PROJECT(plugin_newTimeline "QWT;corelib;timelinelib;OPENTHREADS" "plugins/newTimeline")
+ADD_PROJECT(plugin_newTimeline "QWT;corelib;timelinelib;OPENTHREADS;coreui" "plugins/newTimeline")
 ADD_PROJECT(plugin_kinematic "coreui;plugin_c3d;kinematiclib;kinematicUtils;hanimlib;acclaimformatslib;biovisionformatslib;viconformatslib;osgui;osgutils" "plugins/kinematic")
 ADD_PROJECT(plugin_hmdbCommunication "CURL;WSDLPULL;corelib;coreui;hmdbserviceslib;qthtmlgenlib;sqliteUtils;SQLCIPHER;QUAZIP;plugin_video;plugin_kinematic;threadingUtils;networkUtils" "plugins/hmdbCommunication")
 ADD_PROJECT(plugin_newChart "QWT;coreui;plugin_c3d" "plugins/newChart")

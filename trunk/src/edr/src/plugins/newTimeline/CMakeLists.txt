@@ -15,6 +15,7 @@ SET_PRIVATE_HEADERS(
 	ChannelsTreeItem.h
 	ChannelCheckbox.h
 	TimelinePCH.h
+	TimelineControlActionsWidget.h
 )
 
 SET_SOURCE_FILES (
@@ -28,6 +29,7 @@ SET_SOURCE_FILES (
 	TimelineControlsWidget.cpp
 	TimelinePCH.cpp
 	VisualizerSerieTimelineChannel.cpp
+	TimelineControlActionsWidget.cpp
 )
 
 SET_MOC_FILES (
@@ -36,11 +38,13 @@ SET_MOC_FILES (
 	ChannelCheckbox.h
 	TimeSliderWidget.h
 	TimelineControlsWidget.h
+	TimelineControlActionsWidget.h
 )
 
 SET_UI_FILES (
 	TimelineWidget.ui
 	TimelineControlsWidget.ui
+	TimelineControlActionsWidget.ui
 )
 
 SET_RC_FILES (

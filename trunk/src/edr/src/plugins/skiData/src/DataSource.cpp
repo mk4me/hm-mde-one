@@ -636,36 +636,38 @@ void SkiDataSource::unloadRun(const utils::Filesystem::Path & path)
 	auto it = data.find(path);
 	if (it != data.end()) {
 		
-		{
-			auto hdt = hierarchyDM->transaction();
-			hierarchyRoot->removeChild(it->second.hierarchyItem);
-			if (hierarchyRoot->getNumChildren() == 0) {
-				hdt->removeRoot(hierarchyRoot);
+		if (it->second.loaded == true) {
+			{
+				auto hdt = hierarchyDM->transaction();
+				hierarchyRoot->removeChild(it->second.hierarchyItem);
+				if (hierarchyRoot->getNumChildren() == 0) {
+					hdt->removeRoot(hierarchyRoot);
+				}
+				else {
+					hdt->updateRoot(hierarchyRoot);
+				}
 			}
-			else {
-				hdt->updateRoot(hierarchyRoot);
+
+			{
+				auto fdt = fileDM->transaction();
+				for (const auto & f : it->second.files) {
+					const auto ff = path / f;
+					fdt->tryRemoveFile(ff);
+				}
 			}
+
+			{
+				auto mdt = memoryDM->transaction();
+				for (const auto & d : it->second.generatedData) {
+					mdt->tryRemoveData(d);
+				}
+			}
+
+			it->second.hierarchyItem.reset();
+			//std::list<std::string>().swap(it->second.files);
+			core::VariantsList().swap(it->second.generatedData);
+
+			it->second.loaded = false;
 		}
-
-		{
-			auto fdt = fileDM->transaction();
-			for (const auto & f : it->second.files) {
-				const auto ff = path / f;
-				fdt->tryRemoveFile(ff);
-			}
-		}
-
-		{
-			auto mdt = memoryDM->transaction();
-			for (const auto & d : it->second.generatedData) {
-				mdt->tryRemoveData(d);
-			}
-		}
-
-		it->second.hierarchyItem.reset();
-		//std::list<std::string>().swap(it->second.files);
-		core::VariantsList().swap(it->second.generatedData);
-
-		it->second.loaded = false;
 	}
 }
