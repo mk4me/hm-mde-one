@@ -245,7 +245,6 @@ QWidget* NewChartVisualizer::createWidget()
    
 	coreUI::CoreAction * addToHierarchy = new coreUI::CoreAction(tr("Operations"), QIcon(":/newChart/icons/charts.png"), tr("Add to hierarchy"), widget, coreUI::CoreTitleBar::Left);
 	addToHierarchy->setCheckable(false);
-	addToHierarchy->setEnabled(false);
 	connect(addToHierarchy, SIGNAL(triggered()), this, SLOT(addToHierarchy()));
 	widget->addAction(addToHierarchy);
 
@@ -1085,24 +1084,27 @@ NewChartLegendItem* NewChartVisualizer::getLegendLabel( QwtPlotCurve* curve )
     return nullptr;
 }
 
-void NewChartVisualizer::initHierarchyProvider(core::IHierarchyItemPtr parent)
+void NewChartVisualizer::initHierarchyProvider(core::IHierarchyProviderProxyPtr proxy)
 {
-	this->parent = parent;
+	this->proxy = proxy;
 }
 
 void NewChartVisualizer::disconnectedFromHierarchy()
 {
-	this->parent = core::IHierarchyItemPtr();
+	this->proxy = core::IHierarchyProviderProxyPtr();
 }
 
 void NewChartVisualizer::addToHierarchy()
 {
 	auto serie = tryGetCurrentSerie();
-	if (serie && parent) {
+	if (serie && proxy) {
 		auto data = serie->asISerie()->getData();
 		core::HierarchyHelperPtr helper = utils::make_shared<NewChartItemHelper>(data);
-		auto dataItem = core::HierarchyItemPtr(new core::HierarchyDataItem(data, QIcon(), QString::fromStdString(data->data()->getClassName()), QString(), helper));
-		parent->appendChild(dataItem);
+
+		auto dataItem = core::HierarchyItemPtr(new core::HierarchyDataItem(
+			data, QIcon(), QString::fromStdString(serie->asISerie()->getName()), QString("Generated in chart visualizer"), helper));
+
+		proxy->appendToHierarchy(dataItem);
 	}
 }
 

@@ -10,6 +10,7 @@
 #include <corelib/HierarchyHelper.h>
 #include <coreui/HierarchyTreeModel.h>
 #include <plugins/newTimeline/VisualizerSerieTimelineChannel.h>
+#include <corelib/IHierarchyItem.h>
 //#include <plugins/newVdf/NewVdfService.h>
 #include <coreui/CoreTitleBar.h>
 #include <QtWidgets/QMenu>
@@ -24,6 +25,7 @@
 #include <coreui/SimpleContext.h>
 //#include "WaitingWidget.h"
 #include "corelib/IHierarchyProvider.h"
+#include "corelib/IDataHierarchyManager.h"
 //#include "SummaryWindow.h"
 //#include "AnalisisTreeWidget.h"
 
@@ -173,6 +175,51 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::IHierarchyDataIte
 	return createAndAddDockVisualizer(helper, dockSet, path);
 }
 
+class ProviderProxy : public core::IHierarchyProviderProxy
+{
+public:
+	ProviderProxy(core::IHierarchyItemPtr parent) :
+		_parent(parent)
+	{}
+
+	virtual void appendToHierarchy(core::IHierarchyItemPtr item)
+	{
+		//_parent->appendChild(item);
+		// hack - jak dostac sie do IDataHierarchyManager prawidlowo?
+		auto manager = dynamic_cast<core::IDataHierarchyManager*>(plugin::getDataHierarchyManagerReader());
+		auto hierarchyTransaction = manager->transaction();
+		core::IHierarchyItemConstPtr root = _parent;
+		while (root->getParent()) { root = root->getParent(); }
+
+		_parent->appendChild(item);
+		hierarchyTransaction->updateRoot(root);
+	}
+
+private:
+	core::IHierarchyItemPtr _parent;
+};
+
+core::IHierarchyItemConstPtr getParentByHelper(core::IHierarchyItemConstPtr root, core::HierarchyHelperPtr helper)
+{
+	auto dataItem = utils::dynamic_pointer_cast<const core::IHierarchyDataItem>(root);
+	if (dataItem) {
+		auto& helpers = dataItem->getHelpers();
+		for (auto it : helpers) {
+			if (it == helper) {
+				return root;
+			}
+		}
+	}
+	auto count = root->getNumChildren();
+	for (auto i = 0; i < count; ++i) {
+		auto parent = getParentByHelper(root->getChild(i), helper);
+		if (parent) {
+			return parent;
+		}
+	}
+	return core::IHierarchyItemConstPtr();
+}
+
 QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPtr helper, coreUI::CoreDockWidgetSet* dockSet, const QString &path )
 {
     core::VisualizerPtr visualizer = helper->createVisualizer(plugin::getVisualizerManager());
@@ -180,8 +227,17 @@ QDockWidget* AnalisisWidget::createAndAddDockVisualizer( core::HierarchyHelperPt
 	auto visW = visualizer->visualizer();
 	core::IHierarchyProvider* provider = dynamic_cast<core::IHierarchyProvider*>(visW);
 	if (provider) {
-		core::IHierarchyItemPtr parent = utils::const_pointer_cast<core::IHierarchyItem>(helper->getParent().lock());
-		provider->initHierarchyProvider(parent);
+		core::IHierarchyItemPtr parent;// = utils::const_pointer_cast<core::IHierarchyItem>(helper->getParent().lock());
+		auto manager = plugin::getDataHierarchyManagerReader();
+		auto t = manager->transaction();
+		for (auto it = t->hierarchyBegin(); it != t->hierarchyEnd(); ++it) {
+			core::IHierarchyItemConstPtr root = *it;
+			auto parent = getParentByHelper(*it, helper);
+			if (parent) {
+				provider->initHierarchyProvider(utils::make_shared<ProviderProxy>(utils::const_pointer_cast<core::IHierarchyItem>(parent)));
+			}
+		}
+		//provider->initHierarchyProvider(utils::make_shared<ProviderProxy>(parent));
 	}
     QDockWidget* visualizerDockWidget = createDockVisualizer(visualizer, path);
 	

@@ -12,13 +12,21 @@
 
 namespace core {
 
+class IHierarchyProviderProxy
+{
+public:
+	virtual ~IHierarchyProviderProxy() {}
+	virtual void appendToHierarchy(core::IHierarchyItemPtr item) = 0;
+};
+DEFINE_SMART_POINTERS(IHierarchyProviderProxy);
+
 class IHierarchyProvider
 {
 public:
 	virtual ~IHierarchyProvider() {}
 
 public:
-	virtual void initHierarchyProvider(core::IHierarchyItemPtr parent) = 0;
+	virtual void initHierarchyProvider(core::IHierarchyProviderProxyPtr proxy) = 0;
 	virtual void disconnectedFromHierarchy() = 0;
 };
 DEFINE_SMART_POINTERS(IHierarchyProvider);

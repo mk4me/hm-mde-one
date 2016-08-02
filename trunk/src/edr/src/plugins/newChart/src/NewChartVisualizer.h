@@ -215,7 +215,7 @@ private slots:
 	  void addToHierarchy();
 
 public:
-	  virtual void initHierarchyProvider(core::IHierarchyItemPtr parent);
+	  virtual void initHierarchyProvider(core::IHierarchyProviderProxyPtr proxy);
 	  virtual void disconnectedFromHierarchy();
 
 private:
@@ -292,7 +292,7 @@ private:
     // np. skala globalna automatyczna, manualna, do aktywnej, procentowa i podmieniac je tak jak we wzorcu strategia
     bool customScale;
 
-	core::IHierarchyItemPtr parent;
+	core::IHierarchyProviderProxyPtr proxy;
 };
 typedef utils::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;
 typedef utils::shared_ptr<const NewChartVisualizer> NewChartVisualizerConstPtr;
