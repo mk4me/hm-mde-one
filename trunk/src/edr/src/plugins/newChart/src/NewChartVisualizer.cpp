@@ -30,6 +30,20 @@
 #include "c3dlib/C3DTypes.h"
 
 #include <plugins/c3d/C3DChannels.h>
+#include "MovingAverageGenerator.h"
+
+std::vector<INewChartCurveGeneratorConstPtr> INewChartVisualizer::generators;
+// TODO : jak sama nazwa wskazuje - jest to tymczasowy obiekt
+// trzeba przeniesc gdzies dodawanie domyslnych generatorow
+struct TemporaryNewChartInitializer
+{
+
+	TemporaryNewChartInitializer() {
+		INewChartVisualizer::addGenerator(utils::make_shared<MovingAverageGenerator>());
+	}
+};
+
+TemporaryNewChartInitializer initer;
 
 NewChartVisualizer::NewChartVisualizer() :
 	qwtPlot(nullptr),
@@ -46,7 +60,7 @@ NewChartVisualizer::NewChartVisualizer() :
     shiftSpinY(nullptr),
     scaleSpinX(nullptr),
     scaleSpinY(nullptr),
-	movingAvgSpin(nullptr),
+	//movingAvgSpin(nullptr),
 	legend(nullptr),
 	qwtMarker(nullptr),
 	pickerAction(nullptr),
@@ -56,7 +70,8 @@ NewChartVisualizer::NewChartVisualizer() :
 	scaleAction(nullptr),
     currentSerieTime(-1.0f),
     currentSerieValue(-1.0f),
-	customScale(false)
+	customScale(false),
+	generatorHelper(this)
 {
 
 }
@@ -223,9 +238,11 @@ QWidget* NewChartVisualizer::createWidget()
 	scaleSpinYAction->setDefaultWidget(scaleY.first);
 	widget->addAction(scaleSpinYAction);
     
-    
+	auto actions = generatorHelper.getActions();
+	widget->addActions(actions);
+
 	
-	coreUI::CoreAction * movingAvgAction = new coreUI::CoreAction(tr("Moving Average"), QIcon(":/newChart/icons/charts.png"), tr("Moving Average"), widget, coreUI::CoreTitleBar::Left);
+	/*coreUI::CoreAction * movingAvgAction = new coreUI::CoreAction(tr("Moving Average"), QIcon(":/newChart/icons/charts.png"), tr("Moving Average"), widget, coreUI::CoreTitleBar::Left);
 	movingAvgAction->setCheckable(true);
 	movingAvgAction->setChecked(false);
 	connect(movingAvgAction, SIGNAL(triggered(bool)), this, SLOT(showMovingAverageCurve(bool)));
@@ -236,7 +253,7 @@ QWidget* NewChartVisualizer::createWidget()
 
 	coreUI::CoreWidgetAction * movingAvgSpinAction = new coreUI::CoreWidgetAction(widget, tr("Moving Average"), coreUI::CoreTitleBar::Right);
 	movingAvgSpinAction->setDefaultWidget(movingAvgBox.first);
-	widget->addAction(movingAvgSpinAction);
+	widget->addAction(movingAvgSpinAction);*/
 
 	coreUI::CoreAction * removeSerieAction = new coreUI::CoreAction(tr("Operations"), QIcon(":/newChart/icons/charts.png"), tr("Remove serie"), widget, coreUI::CoreTitleBar::Left);
 	removeSerieAction->setCheckable(false);
@@ -949,42 +966,6 @@ void NewChartVisualizer::adjustOffsetStep( QDoubleSpinBox* spinBox, QwtPlot::Axi
 
 
 
-void NewChartVisualizer::showMovingAverageCurve(bool show)
-{
-	INewChartSeriePrivate* origin = tryGetCurrentSerie();
-	auto it = additionalCurve2Origin.find(origin);
-	if (it != additionalCurve2Origin.end()) {
-		origin = it->second;
-	}
-	if (origin) {
-		c3dlib::ScalarChannelReaderInterfaceConstPtr data;
-		origin->asISerie()->getData()->tryGet(data);
-		auto timeWindow = this->movingAvgSpin->value();
-		auto channel = createMovingAverage(data, timeWindow);
-		auto wrapper = core::Variant::wrap <c3dlib::ScalarChannelReaderInterface>(channel);
-		auto cserie = createSerie(typeid(c3dlib::ScalarChannelReaderInterface), wrapper);
-		std::string newName = origin->asISerie()->getName() + "_m.av." + boost::lexical_cast<std::string>(timeWindow);
-		cserie->setName(newName);
-		setActiveSerie(cserie);
-		auto serie = dynamic_cast<INewChartSeriePrivate*>(cserie);
-		additionalCurve2Origin[serie] = origin;
-	}
-}
-
-
-void NewChartVisualizer::setMovingAverageTimeWindow(int timeWindow)
-{
-	auto it = additionalCurve2Origin.find(tryGetCurrentSerie());
-	if (it != additionalCurve2Origin.end()) {
-		auto newChannel = createMovingAverage(it->second, timeWindow);
-		INewChartSeriePrivate* mav = it->first;
-		auto wrapper = core::Variant::wrap(utils::const_pointer_cast<c3dlib::ScalarChannelReaderInterface>(newChannel));
-		std::string newName = it->second->asISerie()->getName() + "_m.av." + boost::lexical_cast<std::string>(timeWindow);
-		mav->asISerie()->setName(newName);
-		mav->updateData(wrapper);
-	}
-}
-
 void NewChartVisualizer::removeCurrentSerie()
 {
 	auto serie = tryGetCurrentSerie();
@@ -1016,49 +997,7 @@ void NewChartVisualizer::setLabelsVisible( bool val )
     }
 }
 
-c3dlib::ScalarChannelReaderInterfacePtr NewChartVisualizer::createMovingAverage(INewChartSeriePrivate* origin, int sampleWindow) const
-{
-	c3dlib::ScalarChannelReaderInterfaceConstPtr data;
-	origin->asISerie()->getData()->tryGet(data);
-	return createMovingAverage(data, sampleWindow);
-}
 
-
-
-c3dlib::ScalarChannelReaderInterfacePtr NewChartVisualizer::createMovingAverage(c3dlib::ScalarChannelReaderInterfaceConstPtr origin, int sampleWindow) const
-{
-	auto size = origin->size();
-	if (size < sampleWindow) {
-		return c3dlib::ScalarChannelReaderInterfacePtr();
-	}
-
-	auto uaf = origin->feature<dataaccessor::UniformArgumentsFeature<float>>();
-	auto baf = origin->feature<dataaccessor::BoundedArgumentsFeature<float>>();
-	auto ff = dataaccessor::FunctionFeature::feature(true);
-
-	utils::shared_ptr<dataaccessor::DescriptorFeature> df(dataaccessor::DescriptorFeature::create<float, float>("name", "", ""));
-
-	
-	std::vector<float> vals;
-	float startSum = 0.0f;
-	for (auto i = 0; i < sampleWindow; ++i) {
-		startSum += origin->value(i); 
-		vals.push_back(startSum / (i+1));
-	}
-	vals.push_back(startSum/sampleWindow);
-	for (auto i = sampleWindow; i < size; ++i) {
-		startSum -= origin->value(i - sampleWindow);
-		startSum += origin->value(i);
-		vals.push_back(startSum / sampleWindow);
-	}
-
-	auto channel = dataaccessor::wrap(std::move(vals), dataaccessor::UniformArgumentsGenerator<float>(uaf->argumentsInterval(), vals.size()));
-	channel->attachFeature(uaf);
-	channel->attachFeature(baf);
-	channel->attachFeature(ff);
-	channel->attachFeature(df);
-	return channel;
-}
 
 boost::iterator_range<std::vector<INewChartSeriePrivate*>::const_iterator> NewChartVisualizer::getSeries() const
 {
@@ -1108,3 +1047,108 @@ void NewChartVisualizer::addToHierarchy()
 	}
 }
 
+INewChartSeriePrivate* NewChartVisualizer::generateCurve(const INewChartCurveGenerator* generator, const INewChartCurveGenerator::Params& params)
+{
+	auto origin = tryGetCurrentOriginCurve();
+
+	if (origin) {
+		c3dlib::ScalarChannelReaderInterfaceConstPtr data;
+		origin->asISerie()->getData()->tryGet(data);
+		//auto timeWindow = this->movingAvgSpin->value();
+		auto generated = generator->generate(data, params);
+		auto wrapper = core::Variant::wrap <c3dlib::ScalarChannelReaderInterface>(generated.first);
+		auto cserie = createSerie(typeid(c3dlib::ScalarChannelReaderInterface), wrapper);
+		cserie->setName(generated.second);
+		setActiveSerie(cserie);
+		auto serie = dynamic_cast<INewChartSeriePrivate*>(cserie);
+		additionalCurve2Origin[serie] = origin;
+
+		return serie;
+	}
+
+	return nullptr;
+}
+
+INewChartSeriePrivate* NewChartVisualizer::tryGetCurrentOriginCurve()
+{
+	INewChartSeriePrivate* origin = tryGetCurrentSerie();
+	auto it = additionalCurve2Origin.find(origin);
+	if (it != additionalCurve2Origin.end()) {
+		origin = it->second;
+	}
+	return origin;
+}
+
+GeneratorHelper::GeneratorHelper(NewChartVisualizer* v) : visualizer(v)
+{
+
+}
+
+QList<QAction*> GeneratorHelper::getActions()
+{
+	QList<QAction*> actions;
+	for (auto& generator : INewChartVisualizer::generators) {
+		auto section = QString::fromStdString(generator->getName());
+		coreUI::CoreAction * generatorAction = new coreUI::CoreAction(section, QIcon(":/newChart/icons/charts.png"), tr("Generator"), nullptr, coreUI::CoreTitleBar::Left);
+
+		auto fun1 = [=]() {
+			auto params = getCurrentParams(generator);
+			INewChartSeriePrivate* serie = visualizer->generateCurve(generator.get(), params);
+			if (serie) {
+				generator2Generated[generator].insert(serie);
+			}
+		};
+		void (QAction::* triggerPtr)(bool) = &QAction::triggered;
+		connect(generatorAction, triggerPtr, this, fun1);
+		actions.push_back(generatorAction);
+		for (auto& arg : generator->getDefaultParams()) {
+			// TODO : widget generowany na podstawie QVariant posiadajacy jeden sygnal informujacy o zmianie stanu
+			auto tupl = LabeledEditor::create(QString::fromStdString(arg.name), arg.value);
+			QWidget* editorWidget = std::get<2>(tupl);
+			LabeledEditor* editor = std::get<3>(tupl);
+			auto generatorP = [=]() -> INewChartCurveGenerator::Param {
+				return INewChartCurveGenerator::Param(arg.name, editor->getValue());
+			};
+			this->generatorParameterCreator[generator].push_back(generatorP);
+
+			auto updater = [=](){ 
+				auto it = visualizer->additionalCurve2Origin.find(visualizer->tryGetCurrentSerie());
+				if (it != visualizer->additionalCurve2Origin.end()) {
+					c3dlib::ScalarChannelReaderInterfaceConstPtr data;
+					it->second->asISerie()->getData()->tryGet(data);
+					auto generated = generator->generate(data, getCurrentParams(generator));
+					auto newChannel = generated.first;
+					INewChartSeriePrivate* mav = it->first;
+					auto wrapper = core::Variant::wrap(utils::const_pointer_cast<c3dlib::ScalarChannelReaderInterface>(newChannel));
+					std::string newName = generated.second;
+					mav->asISerie()->setName(newName);
+					mav->updateData(wrapper);
+				}
+			};
+			void (LabeledEditor::* valueChangePtr)() = &LabeledEditor::valueChanged;
+			connect(editor, valueChangePtr, this, updater);
+			
+			coreUI::CoreWidgetAction * argumentWidget = new coreUI::CoreWidgetAction(nullptr, section, coreUI::CoreTitleBar::Right);
+			argumentWidget->setDefaultWidget(std::get<0>(tupl));
+			actions.push_back(argumentWidget);
+		}
+	}
+	return actions;
+}
+
+
+
+INewChartCurveGenerator::Params GeneratorHelper::getCurrentParams(INewChartCurveGeneratorConstPtr g)
+{
+	auto it = generatorParameterCreator.find(g);
+	if (it != generatorParameterCreator.end()) {
+		INewChartCurveGenerator::Params params;
+		for (auto fun : it->second) {
+			params.push_back(fun());
+		}
+
+		return params;
+	}
+
+	throw std::logic_error("generator was not registered");
+}

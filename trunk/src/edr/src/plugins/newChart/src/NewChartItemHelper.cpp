@@ -10,6 +10,7 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QLayout>
 #include <corelib/Variant.h>
+#include "QCoreApplication"
 
 QString processTitle(const std::string & title)
 {
@@ -136,10 +137,14 @@ void NewVector3ItemHelper::createSeries(const core::VisualizerPtr & visualizer, 
 	z->attachFeature(uaf);
 	z->attachFeature(baf);
 
+	static int number = 0;
+	// hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
+	std::string suffix = boost::lexical_cast<std::string>(number++);
 	if (descf) {
-		x->attachFeature(descf);
-		y->attachFeature(descf);
-		z->attachFeature(descf);
+		typedef dataaccessor::DescriptorFeature DF;
+		x->attachFeature(utils::shared_ptr<DF>(DF::create<float, float>("X_" + suffix, descf->valueUnit(), descf->argumentUnit())));
+		y->attachFeature(utils::shared_ptr<DF>(DF::create<float, float>("Y_" + suffix, descf->valueUnit(), descf->argumentUnit())));
+		z->attachFeature(utils::shared_ptr<DF>(DF::create<float, float>("Z_" + suffix, descf->valueUnit(), descf->argumentUnit())));
 	}
 
 	/*
@@ -152,9 +157,7 @@ void NewVector3ItemHelper::createSeries(const core::VisualizerPtr & visualizer, 
 	core::VariantPtr wrapperY = core::Variant::wrap(y);
 	core::VariantPtr wrapperZ = core::Variant::wrap(z);
 
-	static int number = 0;
-	// hack + todo - rozwiazanie problemu z zarejesrowanymi nazwami w timeline
-	std::string suffix = boost::lexical_cast<std::string>(number++);
+	
 	std::string p = path.toStdString();
 
 	wrapperX->setMetadata("core/name", "X_" + suffix);
@@ -164,7 +167,7 @@ void NewVector3ItemHelper::createSeries(const core::VisualizerPtr & visualizer, 
 	wrapperY->setMetadata("core/source", p + "/Y_" + suffix);
 	wrapperZ->setMetadata("core/source", p + "/Z_" + suffix);
 	visualizer->getOrCreateWidget();
-
+	
 	auto serieX = visualizer->createSerie(wrapperX);
 	serieX->innerSerie()->setName(xAxisName.isEmpty() == false ? xAxisName.toStdString() : ("X_" + suffix));
 	auto serieY = visualizer->createSerie(wrapperY);

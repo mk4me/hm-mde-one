@@ -184,7 +184,6 @@ public:
 
 	virtual void appendToHierarchy(core::IHierarchyItemPtr item)
 	{
-		//_parent->appendChild(item);
 		// hack - jak dostac sie do IDataHierarchyManager prawidlowo?
 		auto manager = dynamic_cast<core::IDataHierarchyManager*>(plugin::getDataHierarchyManagerReader());
 		auto hierarchyTransaction = manager->transaction();

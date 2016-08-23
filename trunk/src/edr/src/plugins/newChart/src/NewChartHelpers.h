@@ -14,6 +14,28 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QDoubleSpinBox>
 
+class LabeledEditor : public QObject
+{
+	Q_OBJECT;
+public:
+	LabeledEditor(QWidget* parent, int userType);
+
+public Q_SLOTS :
+	void setValue(const QVariant&);
+public:
+	QVariant getValue();
+	bool isEmitingSignals() const;
+Q_SIGNALS:
+	void valueChanged();
+private:
+	int userType;
+	bool isEmiting;
+
+public:
+	static std::tuple<QWidget*, QLabel*, QWidget*, LabeledEditor*> create(const QString& labelText, const QVariant& defaultValue, QWidget* parent = nullptr);
+	bool tryConnect(QWidget* parent);
+};
+
 //! Klasa tworzy widget z dwoma potomkami : Label i SpinBox
 //! \version 0.9.1
 class LabeledSpinbox

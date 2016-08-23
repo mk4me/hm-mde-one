@@ -33,6 +33,7 @@ SET_PRIVATE_HEADERS (
 	NewChartDotFloating.h
 	NewChartDotFixed.h
 	NewChartLabel.h
+	MovingAverageGenerator.h
 	NewChartPCH.h
 )
 
@@ -40,6 +41,7 @@ SET_SOURCE_FILES (
 	NewChartPlugin.cpp	
 	NewChartVisualizer.cpp
 	NewChartSerie.cpp
+	MovingAverageGenerator.cpp
 	NewChartStreamSerie.cpp
 	NewChartPicker.cpp
 	NewChartMarker.cpp
@@ -73,6 +75,7 @@ SET_MOC_FILES (
 	NewChartLabelState.h
 	NewChartLegend.h
 	NewChartLegendItem.h
+	NewChartHelpers.h
 	StatsTable.h
 )
 

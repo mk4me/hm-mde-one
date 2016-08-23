@@ -12,6 +12,31 @@
 
 #include <corelib/IVisualizer.h>
 
+#include <c3dlib/C3DTypes.h>
+#include <QtCore/QVariant>
+
+
+class INewChartCurveGenerator
+{
+public:
+	struct Param
+	{
+		Param(const std::string& n, const QVariant& val) : name(n), value(val) {}
+		std::string name;
+		QVariant value;
+	};
+
+	typedef std::vector<Param> Params;
+public:
+	virtual ~INewChartCurveGenerator() {}
+	virtual std::string getName() const = 0;
+	virtual Params getDefaultParams() const = 0;
+	virtual std::pair<c3dlib::ScalarChannelReaderInterfacePtr, std::string> generate(const c3dlib::ScalarChannelReaderInterfaceConstPtr& sc, const Params&) const = 0;
+};
+DEFINE_SMART_POINTERS(INewChartCurveGenerator)
+
+
+
 //! niektóre elementy wizualizatora wykresów są edytowane z zewnątrz, 
 //! dlatego należy interfejsować serie danych, aby dać dostęp do obiektu bez konieczności linkowania się z pluginem
 //! taką funkcjonalność w obrębie wizualizatora zapewnia właśnie ten interfejs
@@ -40,6 +65,14 @@ public:
 	//! \param max Maksymalna wartość osi
 	//! \param steps Ilość pośrednich podziałek
 	virtual void setAxisScale(const Axis axis, const double min, const double max, unsigned int steps = 10) = 0;
+
+	//TODO : gdzie to przeniesc? osobny serwis to przerost formy nad trescia.
+	static void addGenerator(INewChartCurveGeneratorConstPtr generator)
+	{
+		generators.push_back(generator);
+	}
+protected:
+	static std::vector<INewChartCurveGeneratorConstPtr> generators;
 };
 typedef utils::shared_ptr<INewChartVisualizer> INewChartVisualizerPtr;
 typedef utils::shared_ptr<const INewChartVisualizer> INewChartVisualizerConstPtr;

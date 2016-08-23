@@ -27,6 +27,8 @@
 #include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/INewChartVisualizer.h>
 #include "INewChartSeriePrivate.h"
+#include <vector>
+#include <functional>
 
 #include "NewChartSerie.h"
 #include "NewChartState.h"
@@ -38,11 +40,27 @@ class StatsTable;
 class NewChartLegend;
 class PercentScaleDraw;
 class NewChartLegendItem;
+class NewChartVisualizer;
+class GeneratorHelper : public QObject
+{
+	Q_OBJECT
+public:
+	GeneratorHelper(NewChartVisualizer* v);
+	QList<QAction*> getActions();
+private:
+	std::map<INewChartCurveGeneratorConstPtr, std::vector<std::function<INewChartCurveGenerator::Param (void)>>> generatorParameterCreator;
+	std::map<INewChartCurveGeneratorConstPtr, std::set<INewChartSeriePrivate*>> generator2Generated;
+	NewChartVisualizer* visualizer;
+
+private:
+	INewChartCurveGenerator::Params getCurrentParams(INewChartCurveGeneratorConstPtr g);
+};
 
 //! Wizualizator wykresów, oparty o QWT
 //! \version 0.9.1
 class NewChartVisualizer : public QObject, public INewChartVisualizer, public core::IHierarchyProvider
 {
+	friend class GeneratorHelper;
     friend class NewChartSerie;
     friend class NewChartStreamSerie;
     Q_OBJECT;
@@ -153,15 +171,7 @@ private:
       bool isCurveFromSerie(const QwtPlotCurve* curve) const;
       //! chowa lub pokazuje wszystkie etykiety
       void setLabelsVisible(bool);
-	  //! Tworzy średnią kroczącą dla podanego kanału
-	  //! \param origin kanał, dla którego stworzona zostanie krzywa
-	  //! \param sampleWindow liczba próbek okna średniej 
-	  c3dlib::ScalarChannelReaderInterfacePtr createMovingAverage(c3dlib::ScalarChannelReaderInterfaceConstPtr origin, int sampleWindow) const;
-	  //! Tworzy średnią kroczącą dla podanego kanału
-	  //! \param origin seria danych, z której stworzona zostanie krzywa
-	  //! \param sampleWindow liczba próbek okna średniej 
-	  c3dlib::ScalarChannelReaderInterfacePtr createMovingAverage(INewChartSeriePrivate* origin, int sampleWindow) const;
-
+	 
 private slots:
       //! Ustawia aktywną serię danych
       //! \param idx indeks w comboboxie
@@ -206,10 +216,10 @@ private slots:
       //! Zmieniono skala aktywnej serii
       //! \param d skale względem osi Y
       void onScaleY(double d);
-      //! Średnia danych
-      void showMovingAverageCurve(bool show);
-      //! Okno czasowe dla średniej kroczącej
-      void setMovingAverageTimeWindow(int timeWindow);
+	  INewChartSeriePrivate* generateCurve(const INewChartCurveGenerator* generator, const INewChartCurveGenerator::Params& params);
+
+	  INewChartSeriePrivate* tryGetCurrentOriginCurve();
+
 	  //! Usuwa wybraną serię danych
 	  void removeCurrentSerie();
 	  void addToHierarchy();
@@ -276,8 +286,6 @@ private:
     QDoubleSpinBox* scaleSpinX;
     //! spinbox z aktualna skala w T aktywnej serii
     QDoubleSpinBox* scaleSpinY;
-	//! spinbox z oknem czasowym dla średniej kroczącej
-	QSpinBox* movingAvgSpin;
     //! aktualny kontekst eventów (general, left, right)
 	c3dlib::C3DEventsCollection::Context context;
     //! pomocnicze, do ustalenia czy zmienił się aktualnie obrazowany event
@@ -293,6 +301,7 @@ private:
     bool customScale;
 
 	core::IHierarchyProviderProxyPtr proxy;
+	GeneratorHelper generatorHelper;
 };
 typedef utils::shared_ptr<NewChartVisualizer> NewChartVisualizerPtr;
 typedef utils::shared_ptr<const NewChartVisualizer> NewChartVisualizerConstPtr;

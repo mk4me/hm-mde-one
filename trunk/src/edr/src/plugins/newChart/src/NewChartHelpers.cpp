@@ -1,6 +1,7 @@
 #include "NewChartPCH.h"
 #include <QtWidgets/QHBoxLayout>
 #include "NewChartHelpers.h"
+#include "QItemEditorFactory"
 
 
 template <class Spin, typename T>
@@ -36,3 +37,66 @@ std::pair<QWidget*, QSpinBox*> LabeledSpinbox::create(const QString& label, int 
 	return createSB<QSpinBox, int>(label, singleStep, minimum, maximum);
 }
 
+LabeledEditor::LabeledEditor(QWidget* parent, int userType) : QObject(parent), userType(userType)
+{
+	
+	isEmiting = tryConnect(parent);
+
+	
+}
+
+void LabeledEditor::setValue(const QVariant& val)
+{
+	UTILS_ASSERT(val.type() == userType);
+	QByteArray name = QItemEditorFactory::defaultFactory()->valuePropertyName(val.type());
+	parent()->setProperty(name, val);
+}
+
+QVariant LabeledEditor::getValue()
+{
+	QByteArray name = QItemEditorFactory::defaultFactory()->valuePropertyName(userType);
+	return parent()->property(name);
+}
+
+
+bool LabeledEditor::isEmitingSignals() const
+{
+	return isEmiting;
+}
+
+std::tuple<QWidget*, QLabel*, QWidget*, LabeledEditor*> LabeledEditor::create(const QString& labelText, const QVariant& defaultValue, QWidget* parent)
+{
+	QWidget* mainWidget = new QWidget(parent);
+	auto layout = new QHBoxLayout();
+	layout->setContentsMargins(3, 0, 3, 0);
+	layout->setSpacing(3);
+	mainWidget->setLayout(layout);
+	QLabel* label = new QLabel(labelText, mainWidget);
+	QWidget* widget = QItemEditorFactory::defaultFactory()->createEditor(defaultValue.type(), mainWidget);
+	//QByteArray arra = QItemEditorFactory::defaultFactory()->valuePropertyName(defaultValue.type());
+	//widget->set
+	layout->addWidget(label);
+	layout->addWidget(widget);
+	LabeledEditor* editor = new LabeledEditor(widget, defaultValue.type());
+	editor->setValue(defaultValue);
+	return std::make_tuple(mainWidget, label, widget, editor);
+}
+
+bool LabeledEditor::tryConnect(QWidget* parent)
+{
+	// TODO : niestety nie udalo mi sie znalezc uniwersalnej metody, ktora umozliwialaby laczenie odpowiednich sygnalow
+	// to rozwiazanie dziala, choc jest koszmarne
+	if(connect(parent, SIGNAL(valueChanged(const QString &)), this, SIGNAL(valueChanged()))) {
+		return true;
+	}
+	if (connect(parent, SIGNAL(currentTextChanged(const QString &)), this, SIGNAL(valueChanged()))) {
+		return true;
+	}
+	if (connect(parent, SIGNAL(dateTimeChanged(const QDateTime &)), this, SIGNAL(valueChanged()))) {
+		return true;
+	}
+	if (connect(parent, SIGNAL(textChanged(const QString & )), this, SIGNAL(valueChanged()))) {
+		return true;
+	}
+	return false;
+}
