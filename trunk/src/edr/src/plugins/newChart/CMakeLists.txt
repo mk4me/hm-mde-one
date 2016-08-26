@@ -6,6 +6,7 @@ SET_PUBLIC_HEADERS(
 	Wrappers.h
 	Export.h
 	NewChartItemHelper.h
+	INewChartCurveGenerator.h
 )
 
 SET_PRIVATE_HEADERS (
@@ -34,6 +35,7 @@ SET_PRIVATE_HEADERS (
 	NewChartDotFixed.h
 	NewChartLabel.h
 	MovingAverageGenerator.h
+	SliceGenerator.h
 	NewChartPCH.h
 )
 
@@ -41,7 +43,6 @@ SET_SOURCE_FILES (
 	NewChartPlugin.cpp	
 	NewChartVisualizer.cpp
 	NewChartSerie.cpp
-	MovingAverageGenerator.cpp
 	NewChartStreamSerie.cpp
 	NewChartPicker.cpp
 	NewChartMarker.cpp
@@ -63,6 +64,8 @@ SET_SOURCE_FILES (
 	NewChartDot.cpp
 	NewChartDotFloating.cpp
 	NewChartLabel.cpp
+	MovingAverageGenerator.cpp
+	SliceGenerator.cpp
 	NewChartPCH.cpp
 )
 

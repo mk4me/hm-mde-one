@@ -31,6 +31,7 @@
 
 #include <plugins/c3d/C3DChannels.h>
 #include "MovingAverageGenerator.h"
+#include "SliceGenerator.h"
 
 std::vector<INewChartCurveGeneratorConstPtr> INewChartVisualizer::generators;
 // TODO : jak sama nazwa wskazuje - jest to tymczasowy obiekt
@@ -40,6 +41,7 @@ struct TemporaryNewChartInitializer
 
 	TemporaryNewChartInitializer() {
 		INewChartVisualizer::addGenerator(utils::make_shared<MovingAverageGenerator>());
+		//INewChartVisualizer::addGenerator(utils::make_shared<SliceGenerator>());
 	}
 };
 

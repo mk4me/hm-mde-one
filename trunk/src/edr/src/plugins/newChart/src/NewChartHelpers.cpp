@@ -39,10 +39,7 @@ std::pair<QWidget*, QSpinBox*> LabeledSpinbox::create(const QString& label, int 
 
 LabeledEditor::LabeledEditor(QWidget* parent, int userType) : QObject(parent), userType(userType)
 {
-	
 	isEmiting = tryConnect(parent);
-
-	
 }
 
 void LabeledEditor::setValue(const QVariant& val)
@@ -73,8 +70,6 @@ std::tuple<QWidget*, QLabel*, QWidget*, LabeledEditor*> LabeledEditor::create(co
 	mainWidget->setLayout(layout);
 	QLabel* label = new QLabel(labelText, mainWidget);
 	QWidget* widget = QItemEditorFactory::defaultFactory()->createEditor(defaultValue.type(), mainWidget);
-	//QByteArray arra = QItemEditorFactory::defaultFactory()->valuePropertyName(defaultValue.type());
-	//widget->set
 	layout->addWidget(label);
 	layout->addWidget(widget);
 	LabeledEditor* editor = new LabeledEditor(widget, defaultValue.type());

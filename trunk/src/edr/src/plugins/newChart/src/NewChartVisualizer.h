@@ -24,7 +24,6 @@
 #include <qwt_plot_panner.h>
 #include <qwt_plot_magnifier.h>
 #include <corelib/IVisualizer.h>
-#include <plugins/c3d/C3DChannels.h>
 #include <plugins/newChart/INewChartVisualizer.h>
 #include "INewChartSeriePrivate.h"
 #include <vector>

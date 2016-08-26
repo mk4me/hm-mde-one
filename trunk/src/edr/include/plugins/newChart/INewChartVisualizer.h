@@ -14,27 +14,7 @@
 
 #include <c3dlib/C3DTypes.h>
 #include <QtCore/QVariant>
-
-
-class INewChartCurveGenerator
-{
-public:
-	struct Param
-	{
-		Param(const std::string& n, const QVariant& val) : name(n), value(val) {}
-		std::string name;
-		QVariant value;
-	};
-
-	typedef std::vector<Param> Params;
-public:
-	virtual ~INewChartCurveGenerator() {}
-	virtual std::string getName() const = 0;
-	virtual Params getDefaultParams() const = 0;
-	virtual std::pair<c3dlib::ScalarChannelReaderInterfacePtr, std::string> generate(const c3dlib::ScalarChannelReaderInterfaceConstPtr& sc, const Params&) const = 0;
-};
-DEFINE_SMART_POINTERS(INewChartCurveGenerator)
-
+#include <plugins/newChart/INewChartCurveGenerator.h>
 
 
 //! niektóre elementy wizualizatora wykresów są edytowane z zewnątrz, 

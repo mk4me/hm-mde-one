@@ -8,7 +8,7 @@
 #ifndef HEADER_GUARD_PLUGIN_NEWCHART__MOVINGAVERAGEGENERATOR_H__
 #define HEADER_GUARD_PLUGIN_NEWCHART__MOVINGAVERAGEGENERATOR_H__
 
-#include "plugins/newChart/INewChartVisualizer.h"
+#include "plugins/newChart/INewChartCurveGenerator.h"
 
 class MovingAverageGenerator : public INewChartCurveGenerator
 {
