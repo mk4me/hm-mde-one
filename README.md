@@ -1,4 +1,5 @@
-h1. Human Motion Editor 
+Human Motion Editor 
+===================
 
 **A new model of data channels - DataChannel**
 
