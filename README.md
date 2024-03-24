@@ -1,3 +1,5 @@
+h1. Human Motion Editor 
+
 **A new model of data channels - DataChannel**
 
 Since there is a lot of different temporal data in the application (in
