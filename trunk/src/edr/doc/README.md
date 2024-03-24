@@ -1,4 +1,4 @@
-**A new model of data channels - DataChannel **
+**A new model of data channels - DataChannel**
 
 Since there is a lot of different temporal data in the application (in
 the form of an argument – value, where the argument is usually time),
